@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.2 2002/07/22 15:30:29 palli Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.3 2002/08/13 15:45:34 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -32,6 +32,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.user.data.User;
+import com.idega.util.PersonalIDFormatter;
 
 import com.idega.user.Converter;
 
@@ -138,7 +139,8 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			col = 1;
 			AdminListOfApplications list = (AdminListOfApplications) it.next();
 			data.add(getSmallText(list.getName()), col++, row);
-			data.add(getSmallText(list.getPID()), col++, row);
+			String personalID = PersonalIDFormatter.format(list.getPID(),iwc.getApplication().getSettings().getApplicationLocale());
+			data.add(getSmallText(personalID), col++, row);
 			data.add(getSmallText(list.getAddress()), col++, row);
 
 			SubmitButton details = new SubmitButton(localize(PARAM_FORM_DETAILS, "Administrate"), PARAM_FORM_DETAILS, list.getId());
@@ -182,7 +184,8 @@ public class CitizenAccountAdmin extends CommuneBlock {
 				data.add(getText(user.getName()), col, row++);
 			else
 				row++;
-			data.add(getText(acc.getPID()), col, row++);
+			String personalID = PersonalIDFormatter.format(acc.getPID(),iwc.getApplication().getSettings().getApplicationLocale());
+			data.add(getText(personalID), col, row++);
 			if (user != null) {
 				Collection addresses = user.getAddresses();
 				Iterator it2 = addresses.iterator();

@@ -3,8 +3,12 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.account.data.AccountApplication;
+
+import com.idega.core.data.PostalCode;
 import com.idega.data.*;
 import com.idega.block.process.data.*;
+import com.idega.block.school.data.SchoolArea;
+import com.idega.block.school.data.SchoolType;
 /**
  * Title:        idegaWeb
  * Description:
@@ -26,6 +30,10 @@ public class ProviderApplicationBMPBean
 	private static final String COLUMN_PHONE = "PROV_PHONE";
 	private static final String COLUMN_ADDITIONAL_INFO = "PROV_ADD_INFO";
 	private static final String COLUMN_MANAGER_NAME = "PROV_MANAGER_NAME";
+	private static final String COLUMN_SCHOOL_TYPE = "SCH_TYPE";
+	private static final String COLUMN_SCHOOL_AREA = "SCH_AREA";
+	private static final String COLUMN_POSTAL_CODE = "POSTAL_CODE";
+		
 	public void initializeAttributes()
 	{
 		addGeneralCaseRelation();
@@ -36,6 +44,11 @@ public class ProviderApplicationBMPBean
 		this.addAttribute(COLUMN_EMAIL, "Manager email", String.class);
 		this.addAttribute(COLUMN_PLACES, "Provider places", Integer.class);
 		this.addAttribute(COLUMN_ADDITIONAL_INFO, "Additional info", String.class, 2000);
+		
+		this.addManyToOneRelationship(COLUMN_SCHOOL_TYPE,SchoolType.class);
+		this.addManyToOneRelationship(COLUMN_SCHOOL_AREA,SchoolArea.class);
+		this.addManyToOneRelationship(COLUMN_POSTAL_CODE,PostalCode.class);
+		
 	}
 	public String getEntityName()
 	{
@@ -133,6 +146,82 @@ public class ProviderApplicationBMPBean
 	{
 		setEmailAddress(p0);
 	}
+
+	/**
+	 *Gets the school type according to this application
+	 */
+	public SchoolType getSchoolType()
+	{
+		return (SchoolType)this.getColumnValue(COLUMN_SCHOOL_TYPE);
+	}
+
+	/**
+	 *Sets the school type according to this application
+	 */
+	public void setSchoolType(SchoolType type) throws RemoteException
+	{
+		setColumn(COLUMN_SCHOOL_TYPE,type);
+	}
+
+	/**
+	 *Sets the school type according to this application
+	 */
+	public void setSchoolType(int typeID) throws RemoteException
+	{
+		setColumn(COLUMN_SCHOOL_TYPE,typeID);
+	}
+
+
+	/**
+	 *Gets the school area according to this application
+	 */
+	public SchoolArea getSchoolArea()
+	{
+		return (SchoolArea)this.getColumnValue(COLUMN_SCHOOL_AREA);
+	}
+
+	/**
+	 *Sets the postal code according to this application
+	 */
+	public void setPostalCode(PostalCode code) throws RemoteException
+	{
+		setColumn(COLUMN_POSTAL_CODE,code);
+	}
+
+	/**
+	 *Gets the postal code according to this application
+	 */
+	public void setPostalCode(int postalCodeID) throws RemoteException
+	{
+		setColumn(COLUMN_POSTAL_CODE,postalCodeID);
+	}
+
+	/**
+	 *Gets the postal code according to this application
+	 */
+	public PostalCode getPostalCode()
+	{
+		return (PostalCode)this.getColumnValue(COLUMN_POSTAL_CODE);
+	}
+
+	/**
+	 *Sets the school area according to this application
+	 */
+	public void setSchoolArea(SchoolArea area) throws RemoteException
+	{
+		setColumn(COLUMN_SCHOOL_AREA,area);
+	}
+
+	/**
+	 *Sets the school area according to this application
+	 */
+	public void setSchoolArea(int areaID) throws RemoteException
+	{
+		setColumn(COLUMN_SCHOOL_AREA,areaID);
+	}
+
+
+
 	public Collection ejbFindAllPendingApplications() throws FinderException
 	{
 		try

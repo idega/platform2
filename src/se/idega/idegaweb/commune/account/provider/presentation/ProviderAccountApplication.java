@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplication.java,v 1.2 2002/07/29 23:28:32 tryggvil Exp $
+ * $Id: ProviderAccountApplication.java,v 1.3 2002/08/13 15:45:34 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,29 +9,41 @@
  */
 package se.idega.idegaweb.commune.account.provider.presentation;
 import com.idega.block.process.business.CaseBusiness;
+import com.idega.block.school.data.SchoolArea;
+import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
+import com.idega.core.data.PostalCode;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.ListUtil;
 import com.idega.util.Validator;
-import se.idega.idegaweb.commune.account.provider.business.ProviderAccountBusiness;
+import se
+	.idega
+	.idegaweb
+	.commune
+	.account
+	.provider
+	.business
+	.ProviderAccountBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Vector;
 import java.util.Iterator;
 /**
  * @author <a href="mail:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class ProviderAccountApplication extends CommuneBlock
-{
+public class ProviderAccountApplication extends CommuneBlock {
 	protected final static int ACTION_VIEW_FORM = 0;
 	protected final static int ACTION_SUBMIT_FORM = 1;
 	private final static String PARAM_PROV_NAME = "paa_prov_name";
@@ -42,6 +54,10 @@ public class ProviderAccountApplication extends CommuneBlock
 	private final static String PARAM_ADDR = "paa_addr";
 	private final static String PARAM_MAN_NAME = "paa_man_name";
 	private final static String PARAM_ADD_INFO = "paa_add_info";
+	private final static String PARAM_POSTAL_CODE = "paa_pst_code";
+	private final static String PARAM_SCH_TYPE = "paa_sch_type";
+	private final static String PARAM_SCH_AREA = "paa_sch_area";
+
 	//private final static String PARAM_PROV_TYPE = "paa_prov_type";
 	private final static String ERROR_PROV_NAME = "paa_error_prov_name";
 	private final static String ERROR_MAN_NAME = "paa_error_man_name";
@@ -50,7 +66,8 @@ public class ProviderAccountApplication extends CommuneBlock
 	private final static String ERROR_NUM_PLACES = "paa_error_num_places";
 	private final static String ERROR_NO_INSERT = "paa_no_insert";
 	private final static String ERROR_NOT_EMAIL = "paa_err_email";
-	private final static String TEXT_APPLICATION_SUBMITTED = "paa_app_submitted";
+	private final static String TEXT_APPLICATION_SUBMITTED =
+		"paa_app_submitted";
 	private boolean _isProvNameError = false;
 	private boolean _isManNameError = false;
 	private boolean _isAddressError = false;
@@ -71,35 +88,30 @@ public class ProviderAccountApplication extends CommuneBlock
 	int mainTableRows = 10;
 	int mainTableColumns = 2;
 	private Table inputTable = new Table(mainTableColumns, mainTableRows);
-	public void main(IWContext iwc)
-	{
+	public void main(IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
-		try
-		{
+		try {
 			int action = parseAction(iwc);
 			initData(iwc);
 			performAction(action, iwc);
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}
 	}
-	public Object clone(){
-		ProviderAccountApplication p = (ProviderAccountApplication)super.clone();
-		if(this.inputTable!=null){
-			p.inputTable=(Table)this.inputTable.clone();
+	public Object clone() {
+		ProviderAccountApplication p =
+			(ProviderAccountApplication) super.clone();
+		if (this.inputTable != null) {
+			p.inputTable = (Table) this.inputTable.clone();
 		}
 		return p;
 	}
-	
+
 	/**
 	 * Can be ovverrided in subclasses
 	 */
-	protected void performAction(int action, IWContext iwc) throws Exception
-	{
-		switch (action)
-		{
+	protected void performAction(int action, IWContext iwc) throws Exception {
+		switch (action) {
 			case ACTION_VIEW_FORM :
 				viewForm(iwc);
 				break;
@@ -112,15 +124,12 @@ public class ProviderAccountApplication extends CommuneBlock
 	 * Method initData.
 	 * @param iwc
 	 */
-	private void initData(IWContext iwc)
-	{
+	private void initData(IWContext iwc) {
 		String applicationIDString = iwc.getParameter(PARAM_APPLICATION_ID);
-		if (getValidator().isInt(applicationIDString))
-		{
+		if (getValidator().isInt(applicationIDString)) {
 			setApplicationID(Integer.parseInt(applicationIDString));
 		}
-		if (getApplicationID() == -1)
-		{
+		if (getApplicationID() == -1) {
 			provNameString = iwc.getParameter(PARAM_PROV_NAME);
 			emailString = iwc.getParameter(PARAM_EMAIL);
 			phoneString = iwc.getParameter(PARAM_PHONE);
@@ -134,18 +143,17 @@ public class ProviderAccountApplication extends CommuneBlock
 	 * Method getApplicationID.
 	 * @return int
 	 */
-	protected int getApplicationID()
-	{
+	protected int getApplicationID() {
 		return applicationID;
 	}
-	private void viewForm(IWContext iwc)
-	{
+	private void viewForm(IWContext iwc) {
 		Form accountForm = new Form();
 		inputTable.setCellspacing(2);
 		inputTable.setCellpadding(4);
 		inputTable.setAlignment(2, 6, "right");
 		inputTable.setColor(getBackgroundColor());
-		String provName = localize(PARAM_PROV_NAME, "Shool/ChildcareCenter name");
+		String provName =
+			localize(PARAM_PROV_NAME, "Shool/ChildcareCenter name");
 		String email = localize(PARAM_EMAIL, "E-Mail");
 		String phone = localize(PARAM_PHONE, "Phone");
 		String num_places = localize(PARAM_NUM_PLACES, "Number of places");
@@ -224,16 +232,13 @@ public class ProviderAccountApplication extends CommuneBlock
 		inputTable.mergeCells(1, 8, 2, 8);
 		inputTable.add(inputAddInfo, 1, 8);
 		addButtons(iwc);
-		if (_isError)
-		{
-			if (_errorMsg != null)
-			{
+		if (_isError) {
+			if (_errorMsg != null) {
 				Table errorTable = new Table(1, 1);
 				errorTable.setCellspacing(2);
 				errorTable.setCellpadding(4);
 				Iterator it = _errorMsg.iterator();
-				while (it.hasNext())
-				{
+				while (it.hasNext()) {
 					String errorMsg = (String) it.next();
 					errorTable.add(getErrorText(errorMsg), 1, 1);
 					errorTable.add(Text.getBreak(), 1, 1);
@@ -249,19 +254,18 @@ public class ProviderAccountApplication extends CommuneBlock
 	 * Method addButtons.
 	 * @param iwc
 	 */
-	protected void addButtons(IWContext iwc)
-	{
+	protected void addButtons(IWContext iwc) {
 		SubmitButton submitButton =
 			new SubmitButton(
-				getBundle(iwc).getImageButton(localize(PARAM_FORM_SUBMIT, "Submit application")),
+				getBundle(iwc).getImageButton(
+					localize(PARAM_FORM_SUBMIT, "Submit application")),
 				PARAM_FORM_SUBMIT);
 		submitButton.setStyle(getLinkFontStyle());
 		//inputTable.add(submitButton, 2, 10);
-		addButton(submitButton);	
+		addButton(submitButton);
 	}
 
-	private void submitForm(IWContext iwc)
-	{
+	private void submitForm(IWContext iwc) {
 		String provNameString = iwc.getParameter(PARAM_PROV_NAME);
 		String phoneString = iwc.getParameter(PARAM_PHONE);
 		String emailString = iwc.getParameter(PARAM_EMAIL);
@@ -277,58 +281,54 @@ public class ProviderAccountApplication extends CommuneBlock
 		int numPlaces = -1;
 		String telephone = null;
 		_errorMsg = null;
-		if (provNameString == null || provNameString.equals(""))
-		{
+		if (provNameString == null || provNameString.equals("")) {
 			_isProvNameError = true;
 			_isError = true;
 			addErrorString(localize(ERROR_PROV_NAME, "Provider name invalid"));
 		}
-		if (!getValidator().isEmail(emailString))
-		{
+		if (!getValidator().isEmail(emailString)) {
 			_isEmailError = true;
 			_isError = true;
 			addErrorString(localize(ERROR_NOT_EMAIL, "Email invalid"));
 		}
-		if (phoneString == null || phoneString.equals(""))
-		{
+		if (phoneString == null || phoneString.equals("")) {
 			_isPhoneError = true;
 			_isError = true;
 			addErrorString(localize(ERROR_PHONE, "Phone invalid"));
 		}
-		if (addressString == null || addressString.equals(""))
-		{
+		if (addressString == null || addressString.equals("")) {
 			_isAddressError = true;
 			_isError = true;
 			addErrorString(localize(ERROR_ADDR, "Address invalid"));
 		}
-		if (manNameString == null || manNameString.equals(""))
-		{
+		if (manNameString == null || manNameString.equals("")) {
 			_isManNameError = true;
 			_isError = true;
 			addErrorString(localize(ERROR_MAN_NAME, "Manager name invalid"));
 		}
-		if (!getValidator().isInt(numPlacesString))
-		{
+		if (!getValidator().isInt(numPlacesString)) {
 			_isNumPlacesError = true;
 			_isError = true;
-			addErrorString(localize(ERROR_NUM_PLACES, "Number of places invalid"));
+			addErrorString(
+				localize(ERROR_NUM_PLACES, "Number of places invalid"));
 		}
-		if (_isError == true)
-		{
+		if (_isError == true) {
 			viewForm(iwc);
 			return;
 		}
 		boolean insert = false;
-		try
-		{
+		try {
 			managerEmail = emailString;
 			address = addressString;
 			managerName = manNameString;
 			provName = provNameString;
 			numPlaces = Integer.parseInt(numPlacesString);
 			telephone = phoneString;
-			if (addInfoString != null)
-			{
+			int postalCodeID = -1;
+			int schoolTypeID = -1;
+			int schoolAreaID = -1;
+
+			if (addInfoString != null) {
 				additionalInfo = addInfoString;
 			}
 			//CitizenAccountBusiness business = (CitizenAccountBusiness)IBOLookup.getServiceInstance(iwc,CitizenAccountBusiness.class);
@@ -341,28 +341,32 @@ public class ProviderAccountApplication extends CommuneBlock
 				numPlaces,
 				managerName,
 				managerEmail,
-				additionalInfo);
+				additionalInfo,
+				postalCodeID,
+				schoolTypeID,
+				schoolAreaID);
 			insert = true;
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 			insert = false;
 		}
-		if (!insert)
-		{
+		if (!insert) {
 			_isError = true;
-			addErrorString(localize(ERROR_NO_INSERT, "Unable to insert application"));
+			addErrorString(
+				localize(ERROR_NO_INSERT, "Unable to insert application"));
 			viewForm(iwc);
 			return;
 		}
 		if (getResponsePage() != null)
 			iwc.forwardToIBPage(getParentPage(), getResponsePage());
 		else
-			add(new Text(localize(TEXT_APPLICATION_SUBMITTED, "Application submitted")));
+			add(
+				new Text(
+					localize(
+						TEXT_APPLICATION_SUBMITTED,
+						"Application submitted")));
 	}
-	private void addErrorString(String errorString)
-	{
+	private void addErrorString(String errorString) {
 		if (_errorMsg == null)
 			_errorMsg = new Vector();
 		_errorMsg.add(errorString);
@@ -370,67 +374,58 @@ public class ProviderAccountApplication extends CommuneBlock
 	/**
 	 * This method can be overrided to add new actions
 	 */
-	protected int parseAction(IWContext iwc)
-	{
+	protected int parseAction(IWContext iwc) {
 		int action = ACTION_VIEW_FORM;
-		if (iwc.isParameterSet(PARAM_FORM_SUBMIT))
-		{
+		if (iwc.isParameterSet(PARAM_FORM_SUBMIT)) {
 			action = ACTION_SUBMIT_FORM;
 		}
 		return action;
 	}
-	protected ProviderAccountBusiness getBusiness(IWApplicationContext iwc) throws RemoteException
-	{
-		return (ProviderAccountBusiness) IBOLookup.getServiceInstance(iwc, ProviderAccountBusiness.class);
+	protected ProviderAccountBusiness getBusiness(IWApplicationContext iwc)
+		throws RemoteException {
+		return (ProviderAccountBusiness) IBOLookup.getServiceInstance(
+			iwc,
+			ProviderAccountBusiness.class);
 	}
-	protected Validator getValidator()
-	{
+	protected Validator getValidator() {
 		return Validator.getInstance();
 	}
 	/**
 	 * Returns the addInfoString.
 	 * @return String
 	 */
-	public String getAdditionalInfo()
-	{
+	public String getAdditionalInfo() {
 		return addInfoString;
 	}
 	/**
 	 * Returns the addressString.
 	 * @return String
 	 */
-	public String getAddress()
-	{
+	public String getAddress() {
 		return addressString;
 	}
 	/**
 	 * Returns the emailString.
 	 * @return String
 	 */
-	public String getEmail()
-	{
+	public String getEmail() {
 		return emailString;
 	}
 	/**
 	 * Returns the manNameString.
 	 * @return String
 	 */
-	public String getManagerName()
-	{
+	public String getManagerName() {
 		return manNameString;
 	}
 	/**
 	 * Returns the numPlacesString.
 	 * @return String
 	 */
-	public int getNumPlaces()
-	{
-		try
-		{
+	public int getNumPlaces() {
+		try {
 			return Integer.parseInt(numPlacesString);
-		}
-		catch (NumberFormatException e)
-		{
+		} catch (NumberFormatException e) {
 			return 0;
 		}
 	}
@@ -438,48 +433,42 @@ public class ProviderAccountApplication extends CommuneBlock
 	 * Returns the phoneString.
 	 * @return String
 	 */
-	public String getPhone()
-	{
+	public String getPhone() {
 		return phoneString;
 	}
 	/**
 	 * Returns the provNameString.
 	 * @return String
 	 */
-	public String getProviderName()
-	{
+	public String getProviderName() {
 		return provNameString;
 	}
 	/**
 	 * Sets the addInfoString.
 	 * @param addInfoString The addInfoString to set
 	 */
-	public void setAdditionalInfo(String addInfoString)
-	{
+	public void setAdditionalInfo(String addInfoString) {
 		this.addInfoString = addInfoString;
 	}
 	/**
 	 * Sets the addressString.
 	 * @param addressString The addressString to set
 	 */
-	public void setAddress(String addressString)
-	{
+	public void setAddress(String addressString) {
 		this.addressString = addressString;
 	}
 	/**
 	 * Sets the emailString.
 	 * @param emailString The emailString to set
 	 */
-	public void setEmail(String emailString)
-	{
+	public void setEmail(String emailString) {
 		this.emailString = emailString;
 	}
 	/**
 	 * Sets the manNameString.
 	 * @param manNameString The manNameString to set
 	 */
-	public void setManagerName(String manNameString)
-	{
+	public void setManagerName(String manNameString) {
 		this.manNameString = manNameString;
 	}
 	/**
@@ -487,8 +476,7 @@ public class ProviderAccountApplication extends CommuneBlock
 	 * @param numPlacesString The numPlacesString to set
 	 * @throws NumberFormatException if numPlacesString is not an integer
 	 */
-	public void setNumberofPlaces(String numPlacesString)
-	{
+	public void setNumberofPlaces(String numPlacesString) {
 		Integer.parseInt(numPlacesString);
 		this.numPlacesString = numPlacesString;
 	}
@@ -496,36 +484,121 @@ public class ProviderAccountApplication extends CommuneBlock
 	 * Sets the numPlacesString.
 	 * @param numPlacesString The numPlacesString to set
 	 */
-	public void setNumberOfPlaces(int numPlaces)
-	{
+	public void setNumberOfPlaces(int numPlaces) {
 		this.numPlacesString = Integer.toString(numPlaces);
 	}
 	/**
 	 * Sets the phoneString.
 	 * @param phoneString The phoneString to set
 	 */
-	public void setPhone(String phoneString)
-	{
+	public void setPhone(String phoneString) {
 		this.phoneString = phoneString;
 	}
 	/**
 	 * Sets the provNameString.
 	 * @param provNameString The provNameString to set
 	 */
-	public void setProviderName(String provNameString)
-	{
+	public void setProviderName(String provNameString) {
 		this.provNameString = provNameString;
 	}
-	protected void setApplicationID(Integer applicationID)
-	{
+	protected void setApplicationID(Integer applicationID) {
 		setApplicationID(applicationID.intValue());
 	}
-	protected void setApplicationID(int applicationID)
-	{
+	protected void setApplicationID(int applicationID) {
 		this.applicationID = applicationID;
 	}
-	protected void addButton(PresentationObject po)
-	{
+	protected void addButton(PresentationObject po) {
 		inputTable.add(po, mainTableColumns, mainTableRows);
 	}
+
+	protected DropdownMenu getPostalCodesMenu(IWContext iwc) {
+		DropdownMenu drop = new DropdownMenu(PARAM_POSTAL_CODE);
+		drop.addMenuElement("",localize("paa_choose_pst_code","Choose postal code:"));
+		Collection postalCodes = getAvailablePostalCodes(iwc);
+		if (postalCodes != null) {
+			try {
+				Iterator iter = postalCodes.iterator();
+				while (iter.hasNext()) {
+					PostalCode pCode = (PostalCode) iter.next();
+					int pCodeID = ((Integer) pCode.getPrimaryKey()).intValue();
+					String pCodeName = pCode.toString();
+					drop.addMenuElement(pCodeID, pCode.toString());
+				}
+			} catch (Exception e) {
+				System.err.println("ProviderAccountApplication: Error getting postal codes:");
+				e.printStackTrace();
+			}
+		}
+		return drop;
+	}
+
+	protected Collection getAvailablePostalCodes(IWApplicationContext iwc) {
+		try{
+			return this.getBusiness(iwc).getAvailablePostalCodes();
+		}
+		catch(RemoteException e){
+			return ListUtil.getEmptyList();
+		}
+	}
+
+	protected Collection getAvailableSchoolTypes(IWApplicationContext iwc) {
+		try{
+			return this.getBusiness(iwc).getAvailableSchoolTypes();
+		}
+		catch(RemoteException e){
+			return ListUtil.getEmptyList();
+		}
+	}
+	
+	protected Collection getAvailableSchoolAreas(IWApplicationContext iwc) {
+		try{
+			return this.getBusiness(iwc).getAvailableSchoolAreas();
+		}
+		catch(RemoteException e){
+			return ListUtil.getEmptyList();
+		}
+	}
+
+	protected DropdownMenu getSchoolTypesMenu(IWContext iwc) {
+		DropdownMenu drop = new DropdownMenu(PARAM_SCH_TYPE);
+		drop.addMenuElement("",localize("paa_choose_sch_type","Choose school type:"));
+		Collection postalCodes = getAvailableSchoolTypes(iwc);
+		if (postalCodes != null) {
+			try {
+				Iterator iter = postalCodes.iterator();
+				while (iter.hasNext()) {
+					SchoolType pCode = (SchoolType) iter.next();
+					int pCodeID = ((Integer) pCode.getPrimaryKey()).intValue();
+					String pCodeName = pCode.getName();
+					drop.addMenuElement(pCodeID, pCode.toString());
+				}
+			} catch (Exception e) {
+				System.err.println("ProviderAccountApplication: Error getting school types:");
+				e.printStackTrace();
+			}
+		}
+		return drop;
+	}
+
+	protected DropdownMenu getSchoolAreasMenu(IWContext iwc) {
+		DropdownMenu drop = new DropdownMenu(PARAM_SCH_AREA);
+		drop.addMenuElement("",localize("paa_choose_sch_area","Choose school area:"));
+		Collection postalCodes = getAvailableSchoolAreas(iwc);
+		if (postalCodes != null) {
+			try {
+				Iterator iter = postalCodes.iterator();
+				while (iter.hasNext()) {
+					SchoolArea pCode = (SchoolArea) iter.next();
+					int pCodeID = ((Integer) pCode.getPrimaryKey()).intValue();
+					String pCodeName = pCode.getName();
+					drop.addMenuElement(pCodeID, pCode.toString());
+				}
+			} catch (Exception e) {
+				System.err.println("ProviderAccountApplication: Error getting school areas:");
+				e.printStackTrace();
+			}
+		}
+		return drop;
+	}
+
 }

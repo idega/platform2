@@ -1,5 +1,7 @@
 package se.idega.idegaweb.commune.account.provider.business;
 import java.rmi.RemoteException;
+import java.util.Collection;
+
 import javax.ejb.*;
 import se.idega.idegaweb.commune.account.business.AccountBusiness;
 import se.idega.idegaweb.commune.account.provider.data.ProviderApplication;
@@ -10,13 +12,16 @@ public interface ProviderAccountBusiness extends com.idega.business.IBOService, 
 	public void acceptApplication(int p0, int p1)
 		throws javax.ejb.CreateException, java.rmi.RemoteException, java.rmi.RemoteException;
 	public se.idega.idegaweb.commune.account.provider.data.ProviderApplication createApplication(
-		java.lang.String p0,
-		java.lang.String p1,
-		java.lang.String p2,
-		int p3,
-		java.lang.String p4,
-		java.lang.String p5,
-		java.lang.String p6)
+		String providerName,
+		String address,
+		String telephone,
+		int numberOfPlaces,
+		String managerName,
+		String managerEmail,
+		String additionalInfo,
+		int postalCodeID,
+		int schoolTypeID,
+		int schoolAreaID)
 		throws javax.ejb.CreateException, java.rmi.RemoteException;
 	public void acceptApplication(int p0, com.idega.user.data.User p1)
 		throws java.rmi.RemoteException, javax.ejb.CreateException, javax.ejb.FinderException, java.rmi.RemoteException;
@@ -26,4 +31,20 @@ public interface ProviderAccountBusiness extends com.idega.business.IBOService, 
 		throws java.rmi.RemoteException, javax.ejb.FinderException, java.rmi.RemoteException;
 	public void rejectApplication(int p0, com.idega.user.data.User p1, java.lang.String p2)
 		throws java.rmi.RemoteException, javax.ejb.CreateException, javax.ejb.FinderException, java.rmi.RemoteException;
+
+
+	/**
+	 * Returns a collection of com.idega.core.data.PostalCode
+	 */
+	public Collection getAvailablePostalCodes() throws java.rmi.RemoteException;
+	/**
+	 * Returns a collection of com.idega.block.school.data.SchoolType
+	 */
+	public Collection getAvailableSchoolTypes() throws java.rmi.RemoteException;	
+	/**
+	 * Returns a collection of com.idega.block.school.data.SchoolArea
+	 */
+	public Collection getAvailableSchoolAreas() throws java.rmi.RemoteException;
+
+
 }

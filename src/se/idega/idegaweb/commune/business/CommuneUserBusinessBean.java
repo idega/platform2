@@ -102,6 +102,9 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
    */
   public User createCommuneAdministrator(String firstname, String middlename, String lastname) throws CreateException,RemoteException{
       User newUser;
+      /**
+       * @todo: put the user in an administrator group
+       */
       newUser = this.getUserBusiness().createUser(firstname,middlename,lastname);
       return newUser;
   }

@@ -7,6 +7,8 @@ import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import com.idega.core.data.PostalCode;
 import com.idega.core.data.Address;
 import com.idega.user.data.User;
+import com.idega.util.PersonalIDFormatter;
+
 import java.util.*;
 
 import se.idega.idegaweb.commune.presentation.*;
@@ -115,8 +117,10 @@ public class CheckRequestAdmin extends CommuneBlock {
 			User manager = getCheckBusiness(iwc).getUserById(iwc, check.getManagerId());
 
 			String childSSN = "-";
-			if (child != null)
-				childSSN = child.getPersonalID();
+			if (child != null){
+				childSSN = PersonalIDFormatter.format(child.getPersonalID(),iwc.getApplication().getSettings().getApplicationLocale());
+				
+			}
 			String managerName = "-";
 			if (manager != null)
 				managerName = manager.getName();

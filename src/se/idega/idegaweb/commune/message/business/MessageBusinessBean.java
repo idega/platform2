@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.8 2002/07/30 14:15:57 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.9 2002/08/13 15:45:34 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,8 @@ import se.idega.idegaweb.commune.message.data.MessageHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.UserMessage;
 
+import com.idega.block.process.business.CaseBusiness;
+import com.idega.block.process.data.CaseCode;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOStoreException;
 import com.idega.user.data.User;
@@ -80,6 +82,22 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	
 	private String getTypeArchivationMessage() {
 		return TYPE_SYSTEM_PRINT_ARCHIVATION_MESSAGE;
+	}
+	
+	public CaseCode getCaseCodeSystemArchivationMessage()throws RemoteException,FinderException{
+		return getCaseBusiness().getCaseCode(getTypeArchivationMessage());	
+	}
+	
+	public CaseCode getCaseCodeUserMessage()throws RemoteException,FinderException{
+		return getCaseBusiness().getCaseCode(getTypeUserMessage());	
+	}
+	
+	public CaseCode getCaseCodePrintedLetterMessage()throws RemoteException,FinderException{
+		return getCaseBusiness().getCaseCode(getTypeMailMessage());	
+	}
+
+	protected CaseBusiness getCaseBusiness(){
+		return this;	
 	}
 
 	public Message getMessage(String messageType, int messageId) throws FinderException, RemoteException {

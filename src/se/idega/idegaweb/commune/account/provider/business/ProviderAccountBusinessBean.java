@@ -10,11 +10,17 @@ import se.idega.idegaweb.commune.account.business.IncompleteApplicationException
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 import se.idega.idegaweb.commune.account.provider.data.ProviderApplication;
 import se.idega.idegaweb.commune.account.provider.data.ProviderApplicationHome;
+
+import com.idega.core.data.PostalCode;
+import com.idega.core.data.PostalCodeHome;
 import com.idega.data.IDOCreateException;
 import com.idega.user.data.User;
+import com.idega.util.ListUtil;
 import com.idega.util.Validator;
 import com.idega.block.process.data.*;
+import com.idega.block.school.business.SchoolAreaBusiness;
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.business.SchoolTypeBusiness;
 import com.idega.block.school.data.School;
 /**
  * Title:        idegaWeb
@@ -86,6 +92,9 @@ public class ProviderAccountBusinessBean
 	{
 		return this.getProviderApplicationHome().findByPrimaryKey(new Integer(applicationID));
 	}
+	
+	
+	
 	public ProviderApplication createApplication(
 		String providerName,
 		String address,
@@ -93,7 +102,10 @@ public class ProviderAccountBusinessBean
 		int numberOfPlaces,
 		String managerName,
 		String managerEmail,
-		String additionalInfo)
+		String additionalInfo,
+		int postalCodeID,
+		int schoolTypeID,
+		int schoolAreaID)
 		throws CreateException
 	{
 		try
@@ -119,6 +131,15 @@ public class ProviderAccountBusinessBean
 			appl.setEmailAddress(managerEmail);
 			appl.setNumberOfPlaces(numberOfPlaces);
 			appl.setPhone(telephone);
+			if(postalCodeID!=-1){
+					appl.setPostalCode(postalCodeID);
+			}
+			if(schoolTypeID!=-1){
+					appl.setSchoolType(schoolTypeID);					
+			}
+			if(schoolAreaID!=-1){
+					appl.setSchoolArea(schoolAreaID);					
+			}
 			appl.store();
 			return appl;
 		}
@@ -207,9 +228,55 @@ public class ProviderAccountBusinessBean
 	}
 
 
-	protected SchoolBusiness getSchoolBusiness() throws CreateException, RemoteException
+	/**
+	 * Returns a collection of com.idega.core.data.PostalCode
+	 */
+	public Collection getAvailablePostalCodes() throws java.rmi.RemoteException{
+		try {
+			Collection coll = null;
+			coll = getPostalCodeHome().findAll();
+			return coll;
+		} catch (FinderException e) {
+			return ListUtil.getEmptyVector();
+		}
+	}
+
+	/**
+	 * Returns a collection of com.idega.block.school.data.SchoolType
+	 */
+	public Collection getAvailableSchoolTypes() throws java.rmi.RemoteException{
+		return getSchoolTypeBusiness().findAllSchoolTypes();
+	}
+	
+	/**
+	 * Returns a collection of com.idega.block.school.data.SchoolArea
+	 */
+	public Collection getAvailableSchoolAreas() throws java.rmi.RemoteException{
+		return getSchoolAreaBusiness().findAllSchoolAreas();
+	}
+
+
+	protected SchoolBusiness getSchoolBusiness() throws RemoteException
 	{
 		SchoolBusiness bus = (SchoolBusiness)this.getServiceInstance(SchoolBusiness.class);
+		return bus;
+	}
+	
+	protected SchoolTypeBusiness getSchoolTypeBusiness() throws RemoteException
+	{
+		SchoolTypeBusiness bus = (SchoolTypeBusiness)this.getServiceInstance(SchoolBusiness.class);
+		return bus;
+	}
+
+	protected SchoolAreaBusiness getSchoolAreaBusiness() throws RemoteException
+	{
+		SchoolAreaBusiness bus = (SchoolAreaBusiness)this.getServiceInstance(SchoolBusiness.class);
+		return bus;
+	}
+	
+	protected PostalCodeHome getPostalCodeHome() throws RemoteException
+	{
+		PostalCodeHome bus = (PostalCodeHome)this.getIDOHome(PostalCode.class);
 		return bus;
 	}
 }
