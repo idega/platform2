@@ -108,7 +108,7 @@ public class ImportFileClassBMPBean extends com.idega.data.GenericEntity impleme
     }
     
     //temporary remove
-    try{
+  /*  try{
 		ImportFileClass nacka = ((ImportFileClassHome)IDOLookup.getHome(ImportFileClass.class)).create();
 		nacka.setName("Nacka citizen file");
 		nacka.setDescription("A rows based file reader. Each record starts with a ");
@@ -119,7 +119,7 @@ public class ImportFileClassBMPBean extends com.idega.data.GenericEntity impleme
       ex.printStackTrace();
     }
     
-    
+    */
     
   }
 
