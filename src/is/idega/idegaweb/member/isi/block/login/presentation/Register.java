@@ -83,18 +83,19 @@ public class Register extends Block {
 	}
 	
 	private PresentationObject getStage1Page(String message) {
-		Table T = new Table(2, 3);
+		Table T = new Table();
+		int row = 1;
 		if(message!=null) {
-			T.mergeCells(1,1,1,2);
-			T.add(message, 1, 1);
+			T.mergeCells(1,row,2,row);
+			T.add(message, 1, row++);
 		}
 		String labelPersonNumber = _iwrb.getLocalizedString("register.person_number", "SSN");
 		TextInput inputPersonalNumber = new TextInput("reg_personal_number");
 		if (_iwc.isParameterSet("reg_personal_number")) {
 			inputPersonalNumber.setContent(_iwc.getParameter("reg_personal_number"));
 		}
-		T.add(labelPersonNumber, 1, 2);
-		T.add(inputPersonalNumber, 2, 2);
+		T.add(labelPersonNumber, 1, row);
+		T.add(inputPersonalNumber, 2, row++);
 		
 		SubmitButton ok =
 			new SubmitButton(
@@ -104,8 +105,8 @@ public class Register extends Block {
 		CloseButton close =
 			new CloseButton(_iwrb.getLocalizedImageButton("close", "Close"));
 
-		T.add(ok, 1, 3);
-		T.add(close, 2, 3);
+		T.add(ok, 1, row);
+		T.add(close, 2, row++);
 		Form myForm = new Form();
 		myForm.add(T);
 		return myForm;
@@ -135,10 +136,11 @@ public class Register extends Block {
 	}
 	
 	private PresentationObject getStage2Page(String message) {
-		Table T = new Table(2, 7);
+		Table T = new Table();
+		int row = 1;
 		if(message!=null) {
-			T.mergeCells(1,1,2,1);
-			T.add(message, 1, 1);
+			T.mergeCells(1,row,2,row);
+			T.add(message, 1, row++);
 		}
 		
 		String labelPassword = _iwrb.getLocalizedString("register.password", "Password");
@@ -152,16 +154,16 @@ public class Register extends Block {
 		
 		String textHint = _iwrb.getLocalizedString("reg_hint_instructions", "Provide a question that only you know the answer of, and the answer. This will help you if you forget your password (optional)");
 		
-		T.add(labelPassword, 1, 2);
-		T.add(inputPassword, 2, 2);
-		T.add(labelPasswordConfirmed, 1, 3);
-		T.add(inputPasswordConfirmed, 2, 3);
-		T.mergeCells(1, 4, 2, 4);
-		T.add(textHint, 1, 4);
-		T.add(labelHintQuestion, 1, 5);
-		T.add(inputHintQuestion, 2, 5);
-		T.add(labelHintAnswer, 1, 6);
-		T.add(inputHintAnswer, 2, 6);
+		T.add(labelPassword, 1, row);
+		T.add(inputPassword, 2, row++);
+		T.add(labelPasswordConfirmed, 1, row);
+		T.add(inputPasswordConfirmed, 2, row++);
+		T.mergeCells(1, row, 2, row);
+		T.add(textHint, 1, row++);
+		T.add(labelHintQuestion, 1, row);
+		T.add(inputHintQuestion, 2, row++);
+		T.add(labelHintAnswer, 1, row);
+		T.add(inputHintAnswer, 2, row++);
 		
 		
 		SubmitButton ok =
@@ -171,8 +173,8 @@ public class Register extends Block {
 
 		CloseButton close =
 			new CloseButton(_iwrb.getLocalizedImageButton("close", "Close"));
-		T.add(ok, 1, 7);
-		T.add(close, 2, 7);
+		T.add(ok, 1, row);
+		T.add(close, 2, row++);
 		
 		Form myForm = new Form();
 		myForm.add(T);
@@ -217,13 +219,14 @@ public class Register extends Block {
 		if(user == null || !ok) {
 			return _iwrb.getLocalizedString("register.error_editing_user", "Error registering, Password not set");
 		}
+		String msg = null;
 		try {
 			LoginTable lt = getLoginTable(user);
 			lt.setUserId(user.getID());
 			lt.setUserLogin(kt);
 			lt.store();
 			LoginBusiness.changeUserPassword(user, password);
-			sendMessage(user, kt, password);
+			msg = sendMessage(user, kt, password);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return _iwrb.getLocalizedString("register.error_changing_password", "Error changing password, password unchanged");
@@ -234,21 +237,22 @@ public class Register extends Block {
 			user.addMetaData("HINT_ANSWER", hintA.trim());
 			user.store();
 		}
-		return null;
+		return msg;
 	}
 	
 	private PresentationObject getStage3Page(String message) {
-		Table T = new Table(1, 3);
+		Table T = new Table();
+		int row = 1;
 		if(message!=null) {
-			T.add(message, 1, 1);
+			T.add(message, 1, row++);
 		}
 		
 		String done = _iwrb.getLocalizedString("register.done", "Registration finished.");
-		T.add(done, 1, 2);
+		T.add(done, 1, row++);
 		
 		CloseButton close =
 			new CloseButton(_iwrb.getLocalizedImageButton("close", "Close"));
-		T.add(close, 1, 3);
+		T.add(close, 1, row++);
 		
 		return T;
 	}
@@ -284,11 +288,12 @@ public class Register extends Block {
 		return (UserBusiness) IBOLookup.getServiceInstance(_iwc.getApplicationContext(),UserBusiness.class);
 	}
 	
-	private void sendMessage(User user, String login, String password) {
+	private String sendMessage(User user, String login, String password) {
 		String server = _iwb.getProperty("register.email_server");
 		
 		if(server == null) {
 			System.out.println("email server bundle property not set, no registration notification sent to user " + user.getName());
+			return _iwrb.getLocalizedString("register.no_email_server_configured", "Couldn't send email notification of registration (no server defined)");
 		}
 		
 		String letter =
@@ -299,7 +304,7 @@ public class Register extends Block {
 		if (letter != null) {
 			try {
 				Collection emailCol = user.getEmails();
-				if(emailCol!=null) {
+				if(emailCol!=null && !emailCol.isEmpty()) {
 					Iterator emailIter = user.getEmails().iterator();
 					while(emailIter.hasNext()) {
 						String address = ((Email) emailIter.next()).getEmailAddress();
@@ -317,14 +322,20 @@ public class Register extends Block {
 							_iwrb.getLocalizedString("register.email_subject", "Felix Registration"),
 							body);
 					}
+				} else {
+					return _iwrb.getLocalizedString("register.no_email_address", "Couldn't send email notification of registration, no address to send to");
 				}
 			} catch (Exception e) {
 				System.out.println("Couldn't send email notification for registration for user " + login);
 				e.printStackTrace();
+				return _iwrb.getLocalizedString("register.error_sending_email", "Error sending email notification of registration");
 			}
 		} else {
 			System.out.println("No registration notification letter found, nothing sent to user " + login);
+			return _iwrb.getLocalizedString("register.no_email_letter_configured", "Couldn't send email notification of registration (no letter template defined)");
 		}
+		
+		return null;
 	}
 	
 	private LoginTable getLoginTable(User user) {
