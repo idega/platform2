@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeEditor.java,v 1.5 2003/09/10 08:11:08 anders Exp $
+ * $Id: NoticeEditor.java,v 1.6 2003/09/30 14:25:01 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -37,10 +37,10 @@ import se.idega.idegaweb.commune.accounting.message.business.NoticeException;
  * notice message to all providers. The message is sent as an
  * e-mail and as case.
  * <p>
- * Last modified: $Date: 2003/09/10 08:11:08 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/30 14:25:01 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class NoticeEditor extends AccountingBlock {
 
@@ -64,13 +64,12 @@ public class NoticeEditor extends AccountingBlock {
 	private final static String KEY_TITLE_SEND_CONFIRM = KP + "title_send_confirm";
 	private final static String KEY_TITLE_SEND_CONFIRM_ERROR = KP + "title_send_confirm_error";
 	private final static String KEY_TITLE_NOTICE_SENT = KP + "title_notice_sent";
-//	private final static String KEY_MAIN_ACTIVITY = KP + "main_activity";
 	private final static String KEY_SCHOOL = KP + "school";
 	private final static String KEY_PREVIEW = KP + "preview";
 	private final static String KEY_BACK = KP + "back";
 	private final static String KEY_SEND_NOTICE = KP + "send_notice";
 	private final static String KEY_NOTICE_SENT = KP + "notice_sent";
-	private final static String KEY_HEADMASTER = KP + "headmaster";
+	private final static String KEY_RECIPIENT = KP + "recipient";
 	private final static String KEY_SUBJECT_LABEL = KP + "subject_label";
 	private final static String KEY_SUBJECT = KP + "subject";
 
@@ -221,7 +220,7 @@ public class NoticeEditor extends AccountingBlock {
 
 		ListTable list = new ListTable(this, 2);
 		list.setLocalizedHeader(KEY_SCHOOL, "Skola", 1);
-		list.setLocalizedHeader(KEY_HEADMASTER, "Rektor", 2);
+		list.setLocalizedHeader(KEY_RECIPIENT, "Mottagare", 2);
 		if (schools != null) {
 			Iterator iter = schools.iterator();
 			while (iter.hasNext()) {
