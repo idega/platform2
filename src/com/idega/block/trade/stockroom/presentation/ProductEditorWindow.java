@@ -595,12 +595,14 @@ public class ProductEditorWindow extends IWAdminWindow {
 				box.addMenuElement(string, iwrb.getLocalizedString(METADATA + "multi_" + string, string));
 			}
 			
-			String selected = product.getMetaData(METADATA + key);
-			if (selected != null) {
-				token = new StringTokenizer(selected, ",");
-				while (token.hasMoreTokens()) {
-					String string = token.nextToken();
-					box.setSelectedElement(string);
+			if (product != null) {
+				String selected = product.getMetaData(METADATA + key);
+				if (selected != null) {
+					token = new StringTokenizer(selected, ",");
+					while (token.hasMoreTokens()) {
+						String string = token.nextToken();
+						box.setSelectedElement(string);
+					}
 				}
 			}
 			
@@ -613,7 +615,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 			while (token.hasMoreTokens()) {
 				String string = token.nextToken();
 				group.addRadioButton(string, formatText(iwrb.getLocalizedString(METADATA + "multi_" + string, string)), false);
-				if (product.getMetaData(METADATA + key) != null && product.getMetaData(METADATA + key).equals(string))
+				if (product!= null && product.getMetaData(METADATA + key) != null && product.getMetaData(METADATA + key).equals(string))
 					group.setSelected(string);
 			}
 			return group;
@@ -622,11 +624,11 @@ public class ProductEditorWindow extends IWAdminWindow {
 			TextInput textInput = new TextInput(METADATA + key);
 			setStyle(textInput);
 			if (type.equalsIgnoreCase(IWMetaDataConstants.METADATA_TYPE_STRING)) {
-				if (product.getMetaData(METADATA + key + "_" + locale.toString()) != null)
+				if (product != null && product.getMetaData(METADATA + key + "_" + locale.toString()) != null)
 					textInput.setContent(product.getMetaData(METADATA + key + "_" + locale.toString()));
 			}
 			else {
-				if (product.getMetaData(METADATA + key) != null)
+				if (product != null && product.getMetaData(METADATA + key) != null)
 					textInput.setContent(product.getMetaData(METADATA + key));
 			}
 			return textInput;
