@@ -1025,7 +1025,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         EntityBrowser browser,
         IWContext iwc)  {
       String name = path.getShortKey();
-      return ((EntityRepresentation) entity).getColumnValue(name);
+      Object value = ((EntityRepresentation) entity).getColumnValue(name);
+      // convert from float to int (do not show decimal places)
+      return (Integer) value;
     } 
     
   }       
@@ -1045,8 +1047,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         EntityBrowser browser,
         IWContext iwc) {
       String name = path.getShortKey();
-      String value = ((EntityRepresentation) entity).getColumnValue(name).toString();
-      Text text =  new Text(value);
+      Object value = ((EntityRepresentation) entity).getColumnValue(name);
+      // convert from float to int (do not show decimal places)
+      String valueAsString = ((Integer) value).toString();
+      Text text =  new Text(valueAsString);
       text.setBold();
       return text;
     }
