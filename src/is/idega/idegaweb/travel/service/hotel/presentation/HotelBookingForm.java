@@ -1596,6 +1596,7 @@ public class HotelBookingForm extends BookingForm {
   public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany) throws Exception {
     boolean tooMany = false;
 
+
     int iMany = 0;
 
     String sBookingId = iwc.getParameter(this.parameterBookingId);
@@ -1663,16 +1664,6 @@ public class HotelBookingForm extends BookingForm {
 
 		int totalRooms = 0;
 		
-		if (supplier != null) {
-			hotel.getNumberOfUnits();
-		}else if (_reseller != null) {
-			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
-			if (cont != null) {
-				totalRooms = cont.getAlotment();
-			}	
-		}
-
-
 		int maxPerRoom = hotel.getMaxPerUnit();
 		
 		
@@ -1686,11 +1677,31 @@ public class HotelBookingForm extends BookingForm {
 
 		if (!tooMany) {
 	    int iAvailable;
-	    if (totalRooms > 0) {
+//	    if (totalRooms > 0) {
 	    	for ( int j = 0; j < iManyDays; j++) {
 	    		if (j != 0) {
 						fromStamp.addDays(1);	    			
 	    		}
+
+					if (supplier != null) {
+						totalRooms = hotel.getNumberOfUnits();
+						if (totalRooms < 1) {
+							ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+							ServiceDay sDay = sDayHome.create();
+							sDay = sDay.getServiceDay(_product.getID() , fromStamp.getDayOfWeek());
+			  
+							if (sDay != null) {
+								totalRooms = sDay.getMax();
+							}
+						}
+					}else if (_reseller != null) {
+						Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
+						if (cont != null) {
+							totalRooms = cont.getAlotment();
+						}	
+					}
+
+
 	    		//		    iAvailable = totalRooms - heildarbokanir;
 			    iAvailable = totalRooms + bookingTotal - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, null );
 					//System.out.println("iAvail = totalRooms + bookingTotal - heildarbokanir ....."+iAvailable+" = "+totalRooms+" + " +bookingTotal+ " - "+getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, null ));
@@ -1701,7 +1712,7 @@ public class HotelBookingForm extends BookingForm {
 			    }
 	    	}
 		    
-	    }
+//	    }
 		}
 
     if (tooMany && !bookIfTooMany) {
@@ -1735,7 +1746,16 @@ public class HotelBookingForm extends BookingForm {
 		int max = 0;
 		
 		if (supplier != null) {
-			hotel.getNumberOfUnits();
+			max = hotel.getNumberOfUnits();
+			if (max < 1) {
+				ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+				ServiceDay sDay = sDayHome.create();
+				sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
+		  
+				if (sDay != null) {
+					max = sDay.getMax();
+				}
+			}
 		}else if (_reseller != null) {
 			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
 			if (cont != null) {

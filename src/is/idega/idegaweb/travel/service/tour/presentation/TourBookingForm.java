@@ -1980,6 +1980,16 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 		int max = 0;
 		if (supplier != null) {
 			max = tour.getTotalSeats();
+			if ( max < 1) {
+				ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+				ServiceDay sDay = sDayHome.create();
+				sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
+		  
+				if (sDay != null) {
+					max = sDay.getMax();
+				}
+				
+			}
 		}else if (_reseller != null) {
 			Contract cont = getContractBusiness(iwc).getContract(_reseller, product);
 			max = cont.getAlotment();
