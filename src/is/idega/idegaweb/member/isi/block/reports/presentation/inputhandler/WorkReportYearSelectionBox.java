@@ -12,6 +12,7 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 
 import com.idega.business.InputHandler;
 import com.idega.presentation.IWContext;
@@ -77,22 +78,21 @@ public class WorkReportYearSelectionBox extends SelectionBox implements InputHan
 	}
 	
 	public String getDisplayForResultingObject(Object value, IWContext iwc) {
-		String result = "";
-		if(value instanceof String){
-			result = (String) value;
-		} else if (value instanceof String[]) {
-			String[] values = ((String[])value);
-			int count = values.length;
-			StringBuffer buf = new StringBuffer(5*count);
-			for(int i=0; i<count; i++) {
-				if(i>0) {
-					buf.append(",");
-				}
-				buf.append(values[i]);
+		StringBuffer buffer = new StringBuffer();
+		Collection coll = (Collection) value;
+		Iterator iterator = coll.iterator();
+		boolean notFirstTime = false;
+		while (iterator.hasNext()) {
+			if (notFirstTime) { 
+				buffer.append(", ");
 			}
-			result = buf.toString();
+			else {
+				notFirstTime = true;
+			}
+			String localYear = (String) iterator.next();
+			buffer.append(localYear);
 		}
-		return result;
+		return buffer.toString();
 	}
 		
 	public SelectionBox getYearSelectionBox() {
