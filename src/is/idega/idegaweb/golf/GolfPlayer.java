@@ -5,21 +5,21 @@ public class GolfPlayer{
 
 private int MemberID;
 private String Name;
-private String HandyCap;
+private String Handicap;
 private String Club;
 private int CardNo;
 
 public GolfPlayer(){
 	MemberID = 0;
 	Name = "";
-	HandyCap = "";
+	Handicap = "";
 	Club = "";
 	CardNo = 0;
 }
-public GolfPlayer( int memberid, String name, String handycap, String club, int cardNo){
+public GolfPlayer( int memberid, String name, String handicap, String club, int cardNo){
 	MemberID = memberid;
 	Name = name;
-	HandyCap = handycap;
+	Handicap = handicap;
 	Club = club;
 	CardNo = cardNo;
 }
@@ -32,8 +32,8 @@ public String getName(){
 	return Name;
 }
 
-public String getHandyCap(){
-	return HandyCap;
+public String getHandicap(){
+	return Handicap;
 }
 
 public String getClub(){
@@ -52,8 +52,8 @@ public void setName(String name){
 	Name = name;
 }
 
-public void setHandyCap(String handycap){
-	HandyCap = handycap;
+public void setHandicap(String handicap){
+	Handicap = handicap;
 }
 
 public void setClub(String club){

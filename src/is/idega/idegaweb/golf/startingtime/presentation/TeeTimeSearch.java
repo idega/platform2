@@ -430,19 +430,19 @@ public class TeeTimeSearch extends GolfBlock {
 		Vector RSvector = new Vector();
 		Vector group_num = new Vector();
 		Vector name = new Vector();
-		Vector handycap = new Vector();
+		Vector handicap = new Vector();
 		Vector club = new Vector();
 
 		RSvector.add(0, group_num);
 		RSvector.add(1, name);
-		RSvector.add(2, handycap);
+		RSvector.add(2, handicap);
 		RSvector.add(3, club);
 
 		int k = 0;
 		for (int i = 0; i < result.length; i++) {
 			group_num.add(k, "" + result[i].getGroupNum());
 			name.add(k, result[i].getName());
-			handycap.add(k, "" + result[i].getHandicap());
+			handicap.add(k, "" + result[i].getHandicap());
 			club.add(k, result[i].getClubName());
 
 			k++;

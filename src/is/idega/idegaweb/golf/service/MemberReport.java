@@ -42,8 +42,8 @@ public class MemberReport extends GolfBlock {
   private int[] iCols;
   private int paneWidth=600;
   private String boxName = "kassinn";
-  private String[] sHandiCapLow = {};
-  private String[] sHandiCapHigh = {};
+  private String[] sHandicapLow = {};
+  private String[] sHandicapHigh = {};
   private String sUnionId = null;
   private String sLastOrder;
 

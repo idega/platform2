@@ -239,7 +239,7 @@ public class StartingTimeLogin extends GolfBlock {
 
 		String txtNameUrl = "/pics/rastimask/Heiti-Graphic/Gnafn.gif";
 		String txtTimeUrl = "/pics/rastimask/Heiti-Graphic/Gtimi.gif";
-		String txtHandycapUrl = "/pics/rastimask/Heiti-Graphic/Gforgjof.gif";
+		String txtHandicapUrl = "/pics/rastimask/Heiti-Graphic/Gforgjof.gif";
 		String txtClubUrl = "/pics/rastimask/Heiti-Graphic/Gklubbur.gif";
 		String txtCardUrl = "/pics/rastimask/Heiti-Graphic/Gserkort.gif";
 		String txtCardNoUrl = "/pics/rastimask/Heiti-Graphic/Gkortnumer.gif";
@@ -290,14 +290,14 @@ public class StartingTimeLogin extends GolfBlock {
 			/*
 			 * myTable.add(new Image(txtTimeUrl), 2, 1); myTable.add(new
 			 * Image(txtNameUrl), 3, 1); myTable.add(new Image(txtClubUrl), 4, 1);
-			 * myTable.add(new Image(txtHandycapUrl), 5, 1); myTable.add(new
+			 * myTable.add(new Image(txtHandicapUrl), 5, 1); myTable.add(new
 			 * Image(txtCardUrl), 6, 1);
 			 */
 
 			myTable.add(getLocalizedText("start.time","Time"), 2, 1);
 			myTable.add(getLocalizedText("start.name","Name"), 3, 1);
 			myTable.add(getLocalizedText("start.club","Club"), 4, 1);
-			myTable.add(getLocalizedText("start.handycap","Handycap"), 5, 1);
+			myTable.add(getLocalizedText("start.handicap","Handicap"), 5, 1);
 			myTable.add(getLocalizedText("start.vip_card","VIP card"), 6, 1);
 			myTable.add(getLocalizedText("start.cardnumber","Cardnumber"), 7, 1);
 
@@ -327,7 +327,7 @@ public class StartingTimeLogin extends GolfBlock {
 				if (admin || clubadmin || clubworker) {
 					myTable.add(insertEditBox("name", myForm), 3, i + 1);
 					myTable.add(insertUnionDropdown("club", unionAbbrevation, 5), 4, i + 1);
-					myTable.add(insertEditBox("handycap", 6), 5, i + 1);
+					myTable.add(insertEditBox("handicap", 6), 5, i + 1);
 				}
 				else {
 					if (i == 1 && memberAvailable) {
@@ -336,12 +336,12 @@ public class StartingTimeLogin extends GolfBlock {
 							handicap = "100.0";
 						myTable.add(insertEditBox("name", member.getName()), 3, i + 1);
 						myTable.add(insertUnionDropdown("club", unionAbbrevation, 5), 4, i + 1);
-						myTable.add(insertEditBox("handycap", handicap, 6), 5, i + 1);
+						myTable.add(insertEditBox("handicap", handicap, 6), 5, i + 1);
 					}
 					else {
 						myTable.add(insertEditBox("name", myForm), 3, i + 1);
 						myTable.add(insertUnionDropdown("club", unionAbbrevation, 5), 4, i + 1);
-						myTable.add(insertEditBox("handycap", 6), 5, i + 1);
+						myTable.add(insertEditBox("handicap", 6), 5, i + 1);
 					}
 				}
 
@@ -387,15 +387,15 @@ public class StartingTimeLogin extends GolfBlock {
 
 				String playerName[] = modinfo.getRequest().getParameterValues("name");
 				String playerClub[] = modinfo.getRequest().getParameterValues("club");
-				String playerHandyCap[] = modinfo.getRequest().getParameterValues("handycap");
+				String playerHandicap[] = modinfo.getRequest().getParameterValues("handicap");
 				String playerCard[] = modinfo.getRequest().getParameterValues("card");
 				String playerCardNo[] = modinfo.getRequest().getParameterValues("cardNo");
 				int numPlayers = playerName.length;
 
-				if (modinfo.getRequest().getParameter("handycap") != null) {
-					for (int j = 0; j < playerHandyCap.length; j++) {
-						if (playerHandyCap[j].equals(null) || playerHandyCap[j].equals(""))
-							playerHandyCap[j] = "-1";
+				if (modinfo.getRequest().getParameter("handicap") != null) {
+					for (int j = 0; j < playerHandicap.length; j++) {
+						if (playerHandicap[j].equals(null) || playerHandicap[j].equals(""))
+							playerHandicap[j] = "-1";
 						if (playerClub[j].equals(null) || playerClub[j].equals(""))
 							playerClub[j] = "&nbsp";
 						if (playerName[j].equals(""))
@@ -410,7 +410,7 @@ public class StartingTimeLogin extends GolfBlock {
 							max = checkLine(Line, FieldID, Date, modinfo);
 						}
 					}
-					service.setStartingtime(Line, Date, FieldID, MemberId, playerName[i], playerHandyCap[i], playerClub[i], playerCard[i], playerCardNo[i]);
+					service.setStartingtime(Line, Date, FieldID, MemberId, playerName[i], playerHandicap[i], playerClub[i], playerCard[i], playerCardNo[i]);
 					max++;
 				}
 			}

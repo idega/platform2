@@ -116,7 +116,7 @@ public class AdminRegisterTeeTime extends GolfBlock {
 		String txtDelUrl = "/pics/rastimask/Heiti-Graphic/Geyda.gif";
 		String txtNameUrl = "/pics/rastimask/Heiti-Graphic/Gnafn.gif";
 		String txtTimeUrl = "/pics/rastimask/Heiti-Graphic/Gtimi.gif";
-		String txtHandycapUrl = "/pics/rastimask/Heiti-Graphic/Gforgjof.gif";
+		String txtHandicapUrl = "/pics/rastimask/Heiti-Graphic/Gforgjof.gif";
 		String txtClubUrl = "/pics/rastimask/Heiti-Graphic/Gklubbur.gif";
 		String txtCardUrl = "/pics/rastimask/Heiti-Graphic/Gserkort.gif";
 		String txtCardNoUrl = "/pics/rastimask/Heiti-Graphic/Gkortnumer.gif";
@@ -125,7 +125,7 @@ public class AdminRegisterTeeTime extends GolfBlock {
 		myTable.add(getLocalizedText("start.delete","Delete"), 1, 1);
 		myTable.add(getLocalizedText("start.name","Name"), 2, 1);
 		myTable.add(getLocalizedText("start.club","Club"), 3, 1);
-		myTable.add(getLocalizedText("start.handycap","Handycap"), 4, 1);
+		myTable.add(getLocalizedText("start.handicap","Handicap"), 4, 1);
 		myTable.add(getLocalizedText("start.vip_card","VIP card"), 5, 1);
 		myTable.add(getLocalizedText("start.card_number","Card number"), 6, 1);
 		myTable.add(getLocalizedText("start.date","Date"), 7, 1);
@@ -154,7 +154,7 @@ public class AdminRegisterTeeTime extends GolfBlock {
 
 			String playerName[] = modinfo.getParameterValues("name");
 			String playerClub[] = modinfo.getParameterValues("club");
-			String playerHandyCap[] = modinfo.getParameterValues("handycap");
+			String playerHandicap[] = modinfo.getParameterValues("handicap");
 			String playerCard[] = modinfo.getParameterValues("card");
 			String playerCardNo[] = modinfo.getParameterValues("cardNo");
 
@@ -166,12 +166,12 @@ public class AdminRegisterTeeTime extends GolfBlock {
 				stime.setClubName(playerClub[i]);
 				try {
 
-					stime.setHandicap(new Float(com.idega.util.text.TextSoap.findAndReplace(playerHandyCap[i], ",", ".")));
+					stime.setHandicap(new Float(com.idega.util.text.TextSoap.findAndReplace(playerHandicap[i], ",", ".")));
 				}
 				catch (NumberFormatException e) {
 				}
 				catch (NullPointerException e) {
-					System.err.println("forgjöf null");
+					System.err.println("handicap null");
 				}
 
 				try {
@@ -412,9 +412,9 @@ public class AdminRegisterTeeTime extends GolfBlock {
 				else
 					myTable.add(insertUnionDropdown("club", stime.getClubName(), 5), 3, i + 2);
 				if (stime.getHandicap() == -1)
-					myTable.add(insertEditBox("handycap", "-", 4), 4, i + 2);
+					myTable.add(insertEditBox("handicap", "-", 4), 4, i + 2);
 				else
-					myTable.add(insertEditBox("handycap", new Float(stime.getHandicap()).toString(), 4), 4, i + 2);
+					myTable.add(insertEditBox("handicap", new Float(stime.getHandicap()).toString(), 4), 4, i + 2);
 				if (stime.getCardName() == null || stime.getCardName().equals(""))
 					myTable.add(insertEditBox("card", "&nbsp;", 6), 5, i + 2);
 				else

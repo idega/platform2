@@ -492,11 +492,11 @@ public class TeeTimeTable extends GolfBlock {
 
 		//	 skráir að lokum færslur í töfluna á viðeigandi stöðum
 		int row, row2, count, first_gr;
-		float handyc;
+		float handic;
 		int last_group = first_group + end;
 		int field = myTableInfo.get_field_id();
 		first_gr = first_group + 1;
-		String name, club, handycap;
+		String name, club, handicap;
 
 		TeeTime[] start = service.getTableEntries(modinfo.getSessionAttribute("date").toString(), first_group, last_group, field);
 
@@ -518,16 +518,16 @@ public class TeeTimeTable extends GolfBlock {
 
 				row2 = row;
 
-				handyc = start[i].getHandicap();
+				handic = start[i].getHandicap();
 				name = start[i].getPlayerName();
 				club = start[i].getClubName();
 
-				if (handyc < 1)
-					handycap = "-";
-				else if (handyc == 100)
-					handycap = "-";
+				if (handic < 1)
+					handicap = "-";
+				else if (handic == 100)
+					handicap = "-";
 				else
-					handycap = hadycapFormat.format((double) handyc);
+					handicap = hadycapFormat.format((double) handic);
 
 				// Not visible on the net...
 				/*
@@ -537,8 +537,8 @@ public class TeeTimeTable extends GolfBlock {
 				 * start[i].getPlayerName();
 				 */
 
-				Text tempHandycap = (Text) templateText.clone();
-				tempHandycap.setText(handycap);
+				Text tempHandicap = (Text) templateText.clone();
+				tempHandicap.setText(handicap);
 				Text tempName = (Text) templateText.clone();
 				tempName.setText(Text.NON_BREAKING_SPACE + name);
 				Text tempClub = (Text) templateText.clone();
@@ -547,22 +547,22 @@ public class TeeTimeTable extends GolfBlock {
 				switch (count) {
 					case 1:
 						group1[row - 1].add(tempName, 2, 1);
-						group1[row - 1].add(tempHandycap, 3, 1);
+						group1[row - 1].add(tempHandicap, 3, 1);
 						group1[row - 1].add(tempClub, 4, 1);
 						break;
 					case 2:
 						group1[row - 1].add(tempName, 2, 2);
-						group1[row - 1].add(tempHandycap, 3, 2);
+						group1[row - 1].add(tempHandicap, 3, 2);
 						group1[row - 1].add(tempClub, 4, 2);
 						break;
 					case 3:
 						group2[row - 1].add(tempName, 2, 1);
-						group2[row - 1].add(tempHandycap, 3, 1);
+						group2[row - 1].add(tempHandicap, 3, 1);
 						group2[row - 1].add(tempClub, 4, 1);
 						break;
 					case 4:
 						group2[row - 1].add(tempName, 2, 2);
-						group2[row - 1].add(tempHandycap, 3, 2);
+						group2[row - 1].add(tempHandicap, 3, 2);
 						group2[row - 1].add(tempClub, 4, 2);
 						break;
 				}

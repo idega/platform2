@@ -65,7 +65,7 @@ public class AdminRegisterTime extends GolfWindow {
 	private static String timeParameterString = "STtime";
 	private static String nameParameterString = "STname";
 	private static String unionParameterString = "STunion";
-	private static String handycapParameterString = "SThadycap";
+	private static String handicapParameterString = "SThadycap";
 	private static String showedUpParameterString = "STshowedUp";
 	private static String deleteParameterString = "STdelete";
 	private static String groupNumParameterString = "STgroup";
@@ -422,8 +422,8 @@ public class AdminRegisterTime extends GolfWindow {
 		//    int takenTimesIndex = 0;
 		TextInput nameInput = new TextInput(nameParameterString);
 		nameInput.setSize(30);
-		FloatInput handycapInput = new FloatInput(handycapParameterString);
-		handycapInput.setSize(3);
+		FloatInput handicapInput = new FloatInput(handicapParameterString);
+		handicapInput.setSize(3);
 
 		TextInput unionMenu = new TextInput(unionParameterString, "-");
 		//	TextInput unionMenu = new
@@ -446,7 +446,7 @@ public class AdminRegisterTime extends GolfWindow {
 					if (!forPrinting) {
 						startTable.add(nameInput, 2, i);
 						startTable.add(unionMenu, 3, i);
-						startTable.add(handycapInput, 4, i);
+						startTable.add(handicapInput, 4, i);
 					}
 					startTable.add(new HiddenInput(groupNumParameterString, Integer.toString((int) (((firstGroup - 1) * countInGroups + i - 2) / countInGroups + 1))));
 				} else {
@@ -633,7 +633,7 @@ public class AdminRegisterTime extends GolfWindow {
 			String[] sentNames = modinfo.getParameterValues(nameParameterString);
 			String[] sentGroupNums = modinfo.getParameterValues(groupNumParameterString);
 			String[] sentUnions = modinfo.getParameterValues(unionParameterString);
-			String[] sentHandycaps = modinfo.getParameterValues(handycapParameterString);
+			String[] sentHandicaps = modinfo.getParameterValues(handicapParameterString);
 
 			if (sentTimes != null) {
 
@@ -722,18 +722,18 @@ public class AdminRegisterTime extends GolfWindow {
 							} else {
 								//business.setStartingtime(Integer.parseInt(sentGroupNums[i]),
 								// this.currentDay, this.currentField, null,
-								// MemberID, sentNames[i], sentHandycaps[i],
+								// MemberID, sentNames[i], sentHandicaps[i],
 								// GolfCacher.getCachedUnion(sentUnions[i]).getAbbrevation(),
 								// null, null);
-								business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, MemberID, sentNames[i], sentHandycaps[i], sentUnions[i], null, null);
+								business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, MemberID, sentNames[i], sentHandicaps[i], sentUnions[i], null, null);
 							}
 						} else {
 							//business.setStartingtime(Integer.parseInt(sentGroupNums[i]),
 							// this.currentDay, this.currentField, null,
-							// MemberID, sentNames[i], sentHandycaps[i],
+							// MemberID, sentNames[i], sentHandicaps[i],
 							// GolfCacher.getCachedUnion(sentUnions[i]).getAbbrevation(),
 							// null, null);
-							business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, MemberID, sentNames[i], sentHandycaps[i], sentUnions[i], null, null);
+							business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, null, MemberID, sentNames[i], sentHandicaps[i], sentUnions[i], null, null);
 						}
 					}
 				}

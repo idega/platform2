@@ -233,10 +233,10 @@ public class MembersOverview extends GolfBlock {
 		String handicap;
 		String lastMember = "0";
 
-		DecimalFormat handycapFormat = new DecimalFormat("0.0");
-		DecimalFormatSymbols symbols = handycapFormat.getDecimalFormatSymbols();
+		DecimalFormat handicapFormat = new DecimalFormat("0.0");
+		DecimalFormatSymbols symbols = handicapFormat.getDecimalFormatSymbols();
 		symbols.setDecimalSeparator('.');
-		handycapFormat.setDecimalFormatSymbols(symbols);
+		handicapFormat.setDecimalFormatSymbols(symbols);
 
 		int i = 5;
 		while (RS.next()) {
