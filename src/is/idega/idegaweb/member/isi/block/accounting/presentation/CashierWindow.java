@@ -21,7 +21,6 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.LinkContainer;
-import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
@@ -75,6 +74,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 	private MemberUserBusiness _membBiz;
 
 	private String styledLink = "styledLinkGeneral";
+	private String helpTextKey = "";
+	private String rightBorderTable = "borderRight";
+	private String borderTable = "borderAll";
 
 	protected static final String COLOR_DARKEST = "#9F9F9F";
 	protected static final String COLOR_MIDDLE = "#DFDFDF";
@@ -123,7 +125,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 	}
 
 	private Table getMenuTable(IWContext iwc) {
-		Table menu = new Table(1, 21);
+		Table menu = new Table(2, 21);
 		menu.setWidth(Table.HUNDRED_PERCENT);
 		menu.setCellpadding(3);
 		menu.setCellspacing(0);
@@ -263,6 +265,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 		
 		//add to window
 		menu.add(clubOperations, 1, 1);
+		menu.add(getHelpWithGrayImage("cashierwindow.clubOperations_help",true),2,1);
 		menu.setRowColor(1, COLOR_MIDDLE);
 		menu.add(editTariffType, 1, 2);
 		menu.add(editTariff, 1, 3);
@@ -270,6 +273,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 		menu.add(ccContract, 1, 5);
 		
 		menu.add(memberOperations, 1, 7);
+		menu.add(getHelpWithGrayImage("cashierwindow.memberOperations_help",true),2,7);
 		menu.setRowColor(7, COLOR_MIDDLE);
 		menu.add(selectUser, 1, 8);
 		menu.add(manAss, 1, 9);
@@ -279,6 +283,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 		menu.add(memberCreditCard, 1, 13);
 		
 		menu.add(reports, 1, 15);
+		menu.add(getHelpWithGrayImage("cashierwindow.reports_help",true),2,15);
 		menu.setRowColor(15, COLOR_MIDDLE);
 		menu.add(paymentStatus, 1, 16);
 		menu.add(paymentOverview, 1, 17);
@@ -308,6 +313,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
 		table.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
 		table.setCellpaddingAndCellspacing(0);
+		table.mergeCells(1,1,1,2);
+		table.setStyleClass(1,1,rightBorderTable);
+		table.setStyleClass(borderTable);
 
 		//add left menu of links
 		Table menuTable = getMenuTable(iwc);
@@ -320,49 +328,66 @@ public class CashierWindow extends StyledIWAdminWindow {
 			if (action.equals(ACTION_TARIFF)) {
 				addTitle(iwrb.getLocalizedString(ACTION_TARIFF, "Edit tariff list"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 				subWindow = new EditTariffList();
+				helpTextKey = ACTION_TARIFF + "_help";
 			}
 			else if (action.equals(ACTION_TARIFF_TYPE)) {
 				addTitle(iwrb.getLocalizedString(ACTION_TARIFF_TYPE, "Edit tariff type"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 				subWindow = new EditTariffType();
+				helpTextKey = ACTION_TARIFF_TYPE + "_help";
 			}
 			else if (action.equals(ACTION_MANUAL_ASSESSMENT)) {
 				addTitle(iwrb.getLocalizedString(ACTION_MANUAL_ASSESSMENT, "Manual assessment"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 				subWindow = new ManualAssessment();
+				helpTextKey = ACTION_MANUAL_ASSESSMENT + "_help";
 			}
 			else if (action.equals(ACTION_AUTOMATIC_ASSESSMENT)) {
 				addTitle(iwrb.getLocalizedString(ACTION_AUTOMATIC_ASSESSMENT, "Automatic assessment"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 				subWindow = new AutomaticAssessment();
+				helpTextKey = ACTION_AUTOMATIC_ASSESSMENT + "_help";
 			}
 			else if (action.equals(ACTION_CREDITCARD_COMPANY_CONTRACT)) {
 				addTitle(iwrb.getLocalizedString(ACTION_CREDITCARD_COMPANY_CONTRACT, "Club/division credit cardcontract"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 				subWindow = new ClubCreditCardContract();
+				helpTextKey = ACTION_CREDITCARD_COMPANY_CONTRACT + "_help";
 			}
 			else if (action.equals(ACTION_SELECT_USER)) {
 				addTitle(iwrb.getLocalizedString(ACTION_SELECT_USER, "Select user"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 				subWindow = new SelectUser();
+				helpTextKey = ACTION_SELECT_USER + "_help";
 			}
 			else if (action.equals(ACTION_CONTRACT)) {
 				addTitle(iwrb.getLocalizedString(ACTION_CONTRACT, "Create user contract"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 				subWindow = new UserContract();
+				helpTextKey = ACTION_CONTRACT + "_help";
 			}
 			else if (action.equals(ACTION_PAYMENT)) {
 				addTitle(iwrb.getLocalizedString(ACTION_PAYMENT, "Enter user payment"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 				subWindow = new UserPayment();
+				helpTextKey = ACTION_PAYMENT + "_help";
 			}
 			else if (action.equals(ACTION_PAYMENT_HISTORY)) {
 				addTitle(iwrb.getLocalizedString(ACTION_PAYMENT_HISTORY, "View user payment history"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 				subWindow = new UserPaymentHistory();
+				helpTextKey = ACTION_PAYMENT_HISTORY + "_help";
 			}
 			else if (action.equals(ACTION_MEMBER_CREDITCARD)) {
 				addTitle(iwrb.getLocalizedString(ACTION_MEMBER_CREDITCARD, "Edit users creditcard info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+				subWindow = new EditTariffList();
+				helpTextKey = ACTION_MEMBER_CREDITCARD + "_help";
 				subWindow = new UserCreditcard();
-			}
+		}
 
 			if (subWindow != null) {
 				subWindow.setClub(_group);
 				if (_user != null)
 					subWindow.setUser(_user);
 				table.add(subWindow, 2, 1);
+				Table helpTable =new Table(1,1);
+				helpTable.setWidth(Table.HUNDRED_PERCENT);
+				helpTable.setHeight(15);
+				helpTable.setAlignment(1,1,"right");
+				helpTable.add(getHelpWithGrayImage(helpTextKey,false),1,1);
+				table.add(helpTable,2,1);
 			}
 		}
 
