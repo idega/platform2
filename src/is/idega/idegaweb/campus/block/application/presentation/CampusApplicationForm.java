@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.27 2004/06/09 17:07:36 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.28 2004/07/30 09:26:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package is.idega.idegaweb.campus.block.application.presentation;
 
 import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFormHelper;
+import is.idega.idegaweb.campus.business.CampusService;
 import is.idega.idegaweb.campus.presentation.CampusTypeWindow;
 import is.idega.idegaweb.campus.presentation.Edit;
 
@@ -852,7 +853,7 @@ public class CampusApplicationForm extends ApplicationForm {
 		add(form);
 	}
 
-	public List checkGeneral(IWContext iwc) {
+	public List checkGeneral(IWContext iwc) throws RemoteException{
 		List wrongParameters = new Vector();
 		String first = iwc.getParameter(APP_FIRST_NAME);
 		String last = iwc.getParameter(APP_LAST_NAME);
@@ -866,7 +867,7 @@ public class CampusApplicationForm extends ApplicationForm {
 			wrongParameters.add(APP_FIRST_NAME);
 		if (last == null || last.length() == 0)
 			wrongParameters.add(APP_LAST_NAME);
-		if (ssn == null || !com.idega.util.text.SocialSecurityNumber.isValidIcelandicSocialSecurityNumber(ssn))
+		if (ssn == null || !com.idega.util.text.SocialSecurityNumber.isValidSocialSecurityNumber(ssn,getCampusService(iwc).getCampusSettings().getSystemLocale()))
 			wrongParameters.add(APP_SSN);
 		if (legal == null || legal.length() == 0)
 			wrongParameters.add(APP_LEGAL_RESIDENCE);
@@ -938,6 +939,10 @@ public class CampusApplicationForm extends ApplicationForm {
 	
 	public Text getText(String text){
 		return new Text(text);
+	}
+	
+	public CampusService getCampusService(IWContext iwc)throws RemoteException{
+		return (CampusService)IBOLookup.getServiceInstance(iwc,CampusService.class);
 	}
 
 }
