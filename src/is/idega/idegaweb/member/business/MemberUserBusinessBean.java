@@ -100,7 +100,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 					while (parIter2.hasNext()) {
 						Group parentGroup = (Group) parIter2.next();
 						if( IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(parentGroup.getGroupType()) ){
-							fromRegionalUnionGroup = parentGroup;
+							toRegionalUnionGroup = parentGroup;
 							break;
 						}
 					}
@@ -197,25 +197,29 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 			}
 		}
 		
-		Collection toRegionalEmails = toRegionalUnionGroup.getEmails();
-		if(toRegionalEmails!=null && !toRegionalEmails.isEmpty()){
-			toEmailAddress = ((Email) toRegionalEmails.iterator().next()).getEmailAddress();
-			try {
-				sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body, iwuc);
-			}
-			catch (MessagingException e) {
-				e.printStackTrace();
+		if(toRegionalUnionGroup!=null){
+			Collection toRegionalEmails = toRegionalUnionGroup.getEmails();
+			if(toRegionalEmails!=null && !toRegionalEmails.isEmpty()){
+				toEmailAddress = ((Email) toRegionalEmails.iterator().next()).getEmailAddress();
+				try {
+					sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body, iwuc);
+				}
+				catch (MessagingException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
-		Collection fromRegionalEmails = fromRegionalUnionGroup.getEmails();
-		if(fromRegionalEmails!=null && !fromRegionalEmails.isEmpty()){
-			toEmailAddress = ((Email) fromRegionalEmails.iterator().next()).getEmailAddress();
-			try {
-				sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body, iwuc);
-			}
-			catch (MessagingException e) {
-				e.printStackTrace();
+		if(toRegionalUnionGroup!=null){
+			Collection fromRegionalEmails = fromRegionalUnionGroup.getEmails();
+			if(fromRegionalEmails!=null && !fromRegionalEmails.isEmpty()){
+				toEmailAddress = ((Email) fromRegionalEmails.iterator().next()).getEmailAddress();
+				try {
+					sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body, iwuc);
+				}
+				catch (MessagingException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
