@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.28 2003/07/29 10:48:53 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.29 2003/07/29 11:31:03 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -88,6 +88,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 	 *
 	 */
 	protected void control(IWContext iwc) {
+		debugParameters(iwc);
 		//System.err.println("referencenumbering");
 		 dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
 		 dateFormat = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
@@ -454,7 +455,10 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			 Text tCancel = new Text(_iwrb.getLocalizedString("appCancelApplication", "Cancel application, all entries will be removed"));
 			 tCancel.setBold();
 			 SubmitButton cancelButton = new SubmitButton("cancelApplication", _iwrb.getLocalizedString("cancelApplication", "Cancel"));
-			 cancelButton.setSubmitConfirm(_iwrb.getLocalizedString("cancelApplicationWarning","Do you really want to cancel your application, all application entries will be removed"));
+			 String message = _iwrb.getLocalizedString("cancelApplicationWarning","Do you really want to cancel your application, all application entries will be removed");
+			 cancelButton.setOnClick("return confirm('"+message+"');");
+			 //form.setOnSubmit("theSubmit = confirm('"+message+"');\n	if (theSubmit)\n this.submit();");
+			 //cancelButton.setSubmitConfirm();
 			 table.add(tCancel,1,1);
 			 table.add(Text.getNonBrakingSpace(),1,1);
 			 table.add(Text.getNonBrakingSpace(),1,1);
