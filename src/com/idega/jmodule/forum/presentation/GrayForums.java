@@ -320,7 +320,11 @@ public class GrayForums extends ForumPresentation{
     Textbody.setColor(ItemColor);
     Textbody.setColor(1,1,MenuFontColor);
     // get thread-body
-    Text bodyText = new Text(thread.getThreadBody());
+
+    //added by eiki. fix later this is only for html
+    Text bodyText = new Text( com.idega.util.text.TextSoap.formatText(thread.getThreadBody()));
+
+    //
     bodyText.setFontColor(ItemFontColor) ;
     bodyText.setFontSize(fontSize);
     Textbody.add(bodyText);
