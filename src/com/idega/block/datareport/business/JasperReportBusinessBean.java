@@ -1,5 +1,6 @@
 package com.idega.block.datareport.business;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -78,7 +79,8 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   
   public String getHtmlReport(JasperPrint print, String nameOfReport) {
     // prepare path
-    String path = getRealPathToReportFile(nameOfReport, HTML_FILE_EXTENSION);
+    long folderIdentifier = System.currentTimeMillis();
+    String path = getRealPathToReportFile(nameOfReport, HTML_FILE_EXTENSION,folderIdentifier);
     try {
       JasperExportManager.exportReportToHtmlFile(print, path);
     }
@@ -87,12 +89,13 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       ex.printStackTrace(System.err);
       return null;
     }
-    return getURIToReport(nameOfReport, HTML_FILE_EXTENSION);
+    return getURIToReport(nameOfReport, HTML_FILE_EXTENSION,folderIdentifier);
   }
   
   public String getPdfReport(JasperPrint print, String nameOfReport) {
     // prepare path
-    String path = getRealPathToReportFile(nameOfReport, PDF_FILE_EXTENSION);
+    long folderIdentifier = System.currentTimeMillis();
+    String path = getRealPathToReportFile(nameOfReport, PDF_FILE_EXTENSION,folderIdentifier);
     try {
       JasperExportManager.exportReportToPdfFile(print, path);
     }
@@ -101,12 +104,13 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       ex.printStackTrace(System.err);
       return null;
     }
-    return getURIToReport(nameOfReport, PDF_FILE_EXTENSION);
+    return getURIToReport(nameOfReport, PDF_FILE_EXTENSION,folderIdentifier);
   }  
   
   public String getExcelReport(JasperPrint print, String nameOfReport) {
     // prepare path
-    String path = getRealPathToReportFile(nameOfReport, EXCEL_FILE_EXTENSION);
+    long folderIdentifier = System.currentTimeMillis();
+    String path = getRealPathToReportFile(nameOfReport, EXCEL_FILE_EXTENSION,folderIdentifier);
     // see samples of the jasper download package
     try {
       JRXlsExporter exporter = new JRXlsExporter();
@@ -120,12 +124,12 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       ex.printStackTrace(System.err);
       return null;
     }
-    return getURIToReport(nameOfReport, EXCEL_FILE_EXTENSION);
+    return getURIToReport(nameOfReport, EXCEL_FILE_EXTENSION,folderIdentifier);
   }  
     
 
   
-  public String getRealPathToReportFile(String fileName, String extension) {
+  private String getRealPathToReportFile(String fileName, String extension, long folderIdentifier) {
     IWMainApplication mainApp = getIWApplicationContext().getApplication();
     String separator = FileUtil.getFileSeparator();
     StringBuffer path = new StringBuffer(mainApp.getApplicationRealPath());
@@ -137,15 +141,29 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     // usually the folder should be already be there.
     // the folder is never deleted by this class
     String folderPath = path.toString();
-    FileUtil.createFolder(folderPath);
-    path.append(separator)
+    File[] files = FileUtil.getAllFilesInDirectory(folderPath);
+    long currentTime = System.currentTimeMillis();
+    for (int i = 0; i < files.length; i++) {
+    	File file = files[i];
+    	long modifiedFile = file.lastModified();
+    	if (currentTime - file.lastModified() > 300000)	{
+    		String pathToFile = file.getAbsolutePath();
+    		FileUtil.deleteAllFilesInDirectory(pathToFile);
+    		file.delete();
+    	}
+ 		}
+		path.append(separator);
+		path.append(folderIdentifier);
+		folderPath = path.toString();
+		FileUtil.createFolder(folderPath);
+		path.append(separator)
       .append(fileName)
       .append(DOT)
       .append(extension);
     return path.toString();
   }
   
-  private String getURIToReport(String reportName, String extension) {
+  private String getURIToReport(String reportName, String extension, long folderIdentifier) {
     IWMainApplication mainApp = getIWApplicationContext().getApplication();
     String separator = "/";
     String appContextURI = mainApp.getApplicationContextURI();
@@ -156,6 +174,8 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       uri.append(IWCacheManager.IW_ROOT_CACHE_DIRECTORY)
       .append(separator)
       .append(REPORT_FOLDER)
+      .append(separator)
+      .append(folderIdentifier)
       .append(separator)
       .append(reportName)
       .append(DOT)
