@@ -110,12 +110,8 @@ private Table myTable;
         Member memberInfo = new Member(Integer.parseInt(member_id));
         MemberInfo memberInfo2 = new MemberInfo(Integer.parseInt(member_id));
         Union mainUnion = new Union(memberInfo.getMainUnionID());
-        Union[] union = memberInfo.getUnions();
         int order = memberInfo2.getNumberOfRecords("handicap","<",""+memberInfo.getHandicap()) + 1;
-        int clubOrder = 0;
-        if ( union.length > 0 ) {
-          clubOrder = memberInfo2.getNumberOfRecords("select count(*) from union_,union_member,member_info where union_.union_id='"+union[0].getID()+"' and union_.union_id=union_member.union_id and union_member.member_id=member_info.member_id and handicap<'"+memberInfo.getHandicap()+"'") + 1;
-        }
+        int clubOrder = memberInfo2.getNumberOfRecords("select count(*) from union_,union_member,member_info where union_.union_id='"+mainUnion.getID()+"' and union_.union_id=union_member.union_id and union_member.member_id=member_info.member_id and handicap<'"+memberInfo.getHandicap()+"'") + 1;
         Scorecard[] scoreCards = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id='"+member_id+"' and handicap_correction='N' and scorecard_date is not null order by scorecard_date desc");
         Scorecard[] scoreCards2 = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id='"+member_id+"' and scorecard_date>='"+dagur+"' and scorecard_date is not null and handicap_correction='N' order by total_points desc");
 
