@@ -20,6 +20,7 @@ import com.idega.util.StringHandler;
 public class DirectSQLStatement implements DynamicExpression {
 	
 	static public final String UNIQUE_IDENTIFIER = "UNIQUE_IDENTIFIER"; 
+	static public final int UNIQUE_IDENTIFIER_MAX_LENGTH = 15;
 	public static final String USER_ACCESS_VARIABLE = "user_access_variable";
 	public static final String GROUP_ACCESS_VARIABLE = "group_access_variable";
 	public static final String USER_GROUP_ACCESS_VARIABLE = "user_group_access_variable";
@@ -41,10 +42,7 @@ public class DirectSQLStatement implements DynamicExpression {
   	identifierValueMap.putAll(variableValueMap);
   	identifierInputDescriptionMap.putAll(sqlPart.getInputDescriptionValueMap());
   	keys = variableValueMap.keySet();
-  	long currentTime = System.currentTimeMillis();
-  	StringBuffer buffer = new StringBuffer(uniqueIdentifier);
-  	buffer.append('_').append(currentTime);
-  	this.uniqueIdentifier = buffer.toString();
+  	this.uniqueIdentifier = StringHandler.shortenToLength(uniqueIdentifier, UNIQUE_IDENTIFIER_MAX_LENGTH);
   	postStatement = sqlPart.getPostStatement();
   }
 

@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.idega.block.dataquery.data.QueryConstants;
 import com.idega.block.dataquery.data.xml.QueryBooleanExpressionPart;
 import com.idega.block.dataquery.data.xml.QueryConditionPart;
 import com.idega.block.dataquery.data.xml.QueryEntityPart;
@@ -22,6 +23,7 @@ import com.idega.block.dataquery.data.xml.QuerySQLPart;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOEntity;
 import com.idega.presentation.IWContext;
+import com.idega.util.StringHandler;
 import com.idega.util.datastructures.HashMatrix;
 
 /**
@@ -152,9 +154,9 @@ public class SQLQuery implements DynamicExpression {
   	
   	// table names.... 
   	 // create table name for this instance (unique identifier is user id) 
-  	long currentTime = System.currentTimeMillis();
-  	String myTableName = new StringBuffer("Q_").append(uniqueIdentifier).
-  	append('_').append(++counter).append('_').append(currentTime).toString();
+  	StringBuffer buffer = new StringBuffer("Q_").append(++counter).
+	append('_').append(uniqueIdentifier);
+  	String myTableName = StringHandler.shortenToLength(buffer, QueryConstants.MAX_LENGTH_TABLE_NAME);
   	 // add the table name for this instance to the map
   	 queryTablesNames.put(path, myTableName);
   	// add the new one AND all already existing table names

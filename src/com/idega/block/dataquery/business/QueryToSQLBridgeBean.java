@@ -13,6 +13,8 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import org.doomdark.uuid.UUID;
+import org.doomdark.uuid.UUIDGenerator;
 import com.idega.block.dataquery.data.QueryLog;
 import com.idega.block.dataquery.data.QueryLogHome;
 import com.idega.block.dataquery.data.QueryResult;
@@ -43,8 +45,8 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
   	if (! iwc.isLoggedOn()) {
   		throw new QueryGenerationException("User is not logged on");
   	}
-  	String uniqueIdentifier = Integer.toString(iwc.getCurrentUserId());
-    SQLQuery sqlQuery = SQLQuery.getInstance(queryHelper, uniqueIdentifier, iwc);
+  	String uniqueIdentifier = getUniqueIndentifier(iwc);
+	SQLQuery sqlQuery = SQLQuery.getInstance(queryHelper, uniqueIdentifier, iwc);
     return sqlQuery;
   }
   
@@ -360,5 +362,16 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
 	catch (IDOLookupException e) {
 		throw new RuntimeException("[QueryToSQLBridge] Could not look up QueryLogHome");
 	}
+  }
+  
+  private String getUniqueIndentifier(IWContext iwc) {
+  	// user id plus random number (put user id at the beginning because the string is shortened)
+	UUIDGenerator generator = UUIDGenerator.getInstance();
+	UUID uuid = generator.generateRandomBasedUUID();
+	int currentUserId = iwc.getCurrentUserId();
+  	StringBuffer buffer = new StringBuffer();
+  	buffer.append(currentUserId).append(uuid);
+  	String identifier = buffer.toString();
+  	return identifier.replaceAll("-", "");
   }
 }
