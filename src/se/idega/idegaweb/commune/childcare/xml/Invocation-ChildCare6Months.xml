@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE invoke >
+
+<invoke>
+
+	<method_description name="getRejectedReport">
+
+		<class_description class="se.idega.idegaweb.commune.childcare.business.ChildCareReportBusiness" default_display_name="ChildCareReportBusiness" type="IBOSessionBean" />
+	
+		<input>
+		
+			<class_description class="java.lang.String" default_display_name="From date of birth" name="from_date_of_birth">
+				<localized_name name="Fr&#229;n f&#246;delsedatum" locale="sv_SE"/>
+				<class_handler class="com.idega.presentation.ui.DateInput" />
+			</class_description>
+		
+			<class_description class="java.lang.String" default_display_name="To date of birth" name="to_date_of_birth">
+				<localized_name name="Till f&#246;delsedatum" locale="sv_SE"/>
+				<class_handler class="" />
+			</class_description>
+
+			<class_description class="java.lang.Integer" default_display_name="Provider" name="provider">
+				<localized_name name="Anordnare" locale="sv_SE"/>
+				<class_handler class="se.idega.idegaweb.commune.childcare.presentation.inputhandler.SchoolDropDownMenu" />
+			</class_description>
+		
+			<class_description class="java.lang.String" default_display_name="From date" name="from_date">
+				<localized_name name="Uppdatering fr&#229;n" locale="sv_SE"/>
+				<class_handler class="com.idega.presentation.ui.DateInput" />
+			</class_description>
+		
+			<class_description class="java.lang.String" default_display_name="To date" name="to_date">
+				<localized_name name="Uppdatering till" locale="sv_SE"/>
+				<class_handler class="com.idega.presentation.ui.DateInput" />
+			</class_description>
+				
+		</input>
+	
+		<output>
+		
+			<class_description class="com.idega.block.datareport.util.ReportableCollection" default_display_name="" />
+		
+		</output>
+
+	</method_description>
+
+</invoke>
