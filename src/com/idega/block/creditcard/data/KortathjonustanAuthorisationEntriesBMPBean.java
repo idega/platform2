@@ -204,6 +204,6 @@ public class KortathjonustanAuthorisationEntriesBMPBean extends GenericEntity im
 		query.addCriteria(new MatchCriteria(date, MatchCriteria.GREATEREQUAL, from.getDate().toString()));
 		query.addCriteria(new MatchCriteria(date, MatchCriteria.LESSEQUAL, to.getDate().toString()));
 
-		return this.idoFindIDsBySQL(query.toString());
+		return this.idoFindPKsByQuery(query);
 	}	
 }
