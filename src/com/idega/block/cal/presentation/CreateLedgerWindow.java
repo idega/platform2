@@ -80,6 +80,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
   private String groupString;
   
   private String mainTableStyle = "main";
+  private String titleFont = "font-family:Verdana,Arial,Helvetica,sans-serif;font-size:9pt;font-weight:bold;color:#FFFFFF;";
 	
 	public CreateLedgerWindow() {
 		setHeight(400);
@@ -188,6 +189,9 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	}
 	
 	public void main(IWContext iwc) throws Exception {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		addTitle(iwrb.getLocalizedString("createLedgerWindow.create_ledger","Create Ledger"),titleFont);
+		
 		form = new Form();
 		initializeTexts();
 		initializeFields();

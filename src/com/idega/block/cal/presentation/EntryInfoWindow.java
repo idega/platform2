@@ -66,6 +66,7 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 	//styles
 	private String boldText ="bold";
 	private String borderAllWhiteStyle ="borderAllWhite";
+	private String titleFont = "font-family:Verdana,Arial,Helvetica,sans-serif;font-size:9pt;font-weight:bold;color:#FFFFFF;";
 	
 	private Table table;
 	
@@ -188,6 +189,9 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 		table.add(descriptionField,2,7);
 	}
 	public void main(IWContext iwc) throws Exception {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		addTitle(iwrb.getLocalizedString("entryInfoWindow.entry_info","Entry info"),titleFont);
+		
 		initializeTexts(iwc);
 		initializeFields(iwc);
 		lineUp();

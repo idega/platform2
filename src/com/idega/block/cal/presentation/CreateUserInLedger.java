@@ -53,6 +53,8 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 	private Table table;
 	private Form form;
 	
+	private String titleFont = "font-family:Verdana,Arial,Helvetica,sans-serif;font-size:9pt;font-weight:bold;color:#FFFFFF;";
+	
 	public CreateUserInLedger() {
 		super();
 		setHeight(250);
@@ -94,6 +96,8 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 	}
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+		addTitle(iwrb.getLocalizedString("createUILWindow.create_user","Create user in ledger"),titleFont);
+		
 		form = new Form();
 		initializeTexts();
 		initializeFields();

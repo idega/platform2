@@ -5,6 +5,7 @@ package com.idega.block.cal.presentation;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -119,6 +120,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	private String markLink = "markLink";
 	private String styledLinkUnderline = "styledLinkUnderline";
 	private String bold = "bold";
+	private String titleFont = "font-family:Verdana,Arial,Helvetica,sans-serif;font-size:9pt;font-weight:bold;color:#FFFFFF;";
 	
 	private String groupString = null;
 	private Integer groupID;
@@ -298,48 +300,55 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		addLastMonthPrm(left, timeStamp, iwc);
 		
 		mainTable = new Table();
-//		mainTable.setWidth(288);
 		mainTable.setCellspacing(0);
 		mainTable.setCellpadding(5);
 		mainTable.setStyleClass(borderAllWhiteStyle);
-		mainTable.add(creatorText,1,1);
-		mainTable.add(creatorNameField,2,1);
-		mainTable.add(clubNameText,1,2);
-		mainTable.add(clubNameField,2,2);
-		mainTable.add(divisionNameText,1,3);
-		mainTable.add(divisionNameField,2,3);
-		mainTable.setVerticalAlignment(1,4,"top");
-		mainTable.add(otherCoachesText,1,4);
-		mainTable.setVerticalAlignment(2,4,"top");
-		mainTable.add(otherCoachesNameField,2,4);
-		mainTable.add(groupText,1,5);
-		mainTable.add(groupNameField,2,5);
-		mainTable.add(dateText,1,6);
-		mainTable.add(fromDateField,2,6);
 		
-		mainTable.add(left,1,7);
+		Table headerTable = new Table();
+		headerTable.setCellspacing(0);
+		headerTable.setCellpadding(0);
+		headerTable.setWidth(500);
+		
+		headerTable.add(creatorText,1,1);
+		headerTable.add(creatorNameField,2,1);
+		headerTable.add(clubNameText,1,2);
+		headerTable.add(clubNameField,2,2);
+		headerTable.add(divisionNameText,1,3);
+		headerTable.add(divisionNameField,2,3);
+		headerTable.setVerticalAlignment(1,4,"top");
+		headerTable.add(otherCoachesText,1,4);
+		headerTable.setVerticalAlignment(2,4,"top");
+		headerTable.add(otherCoachesNameField,2,4);
+		headerTable.add(groupText,1,5);
+		headerTable.add(groupNameField,2,5);
+		headerTable.add(dateText,1,6);
+		headerTable.add(fromDateField,2,6);
+		
+		headerTable.add(left,1,7);
 		String dateString = timeStamp.getDateString("MMMMMMMM, yyyy",iwc.getCurrentLocale());
-		mainTable.add(dateString,1,7);
-		mainTable.add(right,2,7);
+		headerTable.add(dateString,1,7);
+		headerTable.add(right,2,7);
 		
-		mainTable.mergeCells(4,1,4,4);
-		mainTable.setVerticalAlignment(3,1,"top");
-		mainTable.setVerticalAlignment(4,1,"top");
-		mainTable.add(allowedMarksText ,3,1);
-		mainTable.add(allowedMarksField,4,1);
+		headerTable.mergeCells(4,1,4,4);
+		headerTable.setVerticalAlignment(3,1,"top");
+		headerTable.setVerticalAlignment(4,1,"top");
+		headerTable.add(allowedMarksText ,3,1);
+		headerTable.add(allowedMarksField,4,1);
 
-		mainTable.setVerticalAlignment(5,4,"bottom");
-		mainTable.setAlignment(5,4,"right");
-		mainTable.add(printButton,5,4);
-		mainTable.add(deleteLink,5,4);
+		headerTable.setVerticalAlignment(5,4,"bottom");
+		headerTable.setAlignment(5,4,"right");
+		headerTable.add(printButton,5,4);
+		headerTable.add(deleteLink,5,4);
+		
+		mainTable.add(headerTable,1,1);
 				
-		mainTable.mergeCells(1,8,5,8);
-		mainTable.add(getUserList(iwc),1,8);
+//		mainTable.mergeCells(1,8,5,8);
+		mainTable.add(getUserList(iwc),1,2);
 	
-		mainTable.setAlignment(5,9,"right");
-		mainTable.add(saveButton,5,9);
-		mainTable.add(Text.NON_BREAKING_SPACE,3,9);
-		mainTable.add(closeButton,5,9);
+		mainTable.setAlignment(1,3,"right");
+		mainTable.add(saveButton,1,3);
+		mainTable.add(Text.NON_BREAKING_SPACE,1,3);
+		mainTable.add(closeButton,1,3);
 		
 		form.add(mainTable);		
 	}
@@ -487,12 +496,6 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				}catch(Exception ex) {
 					ex.printStackTrace(System.err);
 				}
-				Collections.sort(entryList,new Comparator() {
-					public int compare(Object arg0, Object arg1) {
-						return ((CalendarEntry) arg0).getDate().compareTo(((CalendarEntry) arg1).getDate());
-					}				
-				});
-				
 				Iterator entryIter = entryList.iterator();
 								
 				int column = 1;
@@ -503,7 +506,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 					//the userID + underscore + the number of the column is set as the name
 					//of the TextInput - done to make each TextInput name expicit
 					String mark = "";
-					TextInput input = new TextInput(user.getPrimaryKey().toString() + "_" + entry.getPrimaryKey().toString());// + entry.getDate().toString());
+					TextInput input = new TextInput(user.getPrimaryKey().toString() + "_" + entry.getPrimaryKey().toString()); //getDate().toString());
 					input.setMaxlength(1);
 
 					input.setWidth("20");
@@ -633,10 +636,11 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		} catch (Exception e){
 			e.printStackTrace();
 		}
+		final Collator collator = Collator.getInstance(iwc.getLocale());
 		if(users != null) {
 			Collections.sort(users,new Comparator() {
 				public int compare(Object arg0, Object arg1) {
-					return ((User) arg0).getName().compareTo(((User) arg1).getName());
+					return collator.compare(((User) arg0).getName(), ((User) arg1).getName());
 				}				
 			});
 		}
@@ -738,6 +742,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	}
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+		addTitle(iwrb.getLocalizedString("ledgerWindow.ledger","Ledger"),titleFont);
 		
 		form = new Form();
 		initializeTexts(iwc);
@@ -751,7 +756,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		int i = ledger.getGroupID();
 		groupID = new Integer(i);
 				
-		List users = null;
+		Collection users = null;
 		List entries = null;
 		List marks = null;
 		
@@ -772,28 +777,17 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		form.maintainParameter(CalendarParameters.PARAMETER_DAY);
 		
 		try {
-			users = (List) getCalendarBusiness(iwc).getUsersInLedger(ledgerID.intValue());
+			users = getCalendarBusiness(iwc).getUsersInLedger(ledgerID.intValue());
 			entries = (List) getCalendarBusiness(iwc).getPracticesByLedIDandMonth(ledgerID.intValue(),mon,ye);
 			marks = getCalendarBusiness(iwc).getAllMarks();
 			
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-		if(users != null) {
-			Collections.sort(users,new Comparator() {
-				public int compare(Object arg0, Object arg1) {
-					return ((User) arg0).getName().compareTo(((User) arg1).getName());
-				}				
-			});
-		}
-		Collections.sort(entries,new Comparator() {
-			public int compare(Object arg0, Object arg1) {
-				return ((CalendarEntry) arg0).getDate().compareTo(((CalendarEntry) arg1).getDate());
-			}				
-		});
 		
 		String close = iwc.getParameter(ConfirmDeleteWindow.PRM_DELETED);
 		if(close != null) {
+			setOnUnLoad("window.opener.location.reload()");
 			close();
 		}
 		
@@ -832,7 +826,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				while(entryIter.hasNext()) {
 					CalendarEntry entry = (CalendarEntry) entryIter.next();
 					Integer userID = (Integer) user.getPrimaryKey();
-					String mark = iwc.getParameter(userID.toString() + "_" + entry.getPrimaryKey().toString());// + entry.getDate().toString());
+					String mark = iwc.getParameter(userID.toString() + "_" + entry.getPrimaryKey().toString()); //getDate().toString());
 					if(mark != null) {
 						if(mark.equals("")) {
 							Text emptyWarning = new Text(iwrb.getLocalizedString("ledgerWindow.emptyCellWarning","There is a empty cell, to you want to go on?"));
@@ -863,7 +857,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 			}//end while				
 		}//end if(save != null)			
 		add(form,iwc);
-//		setOnUnLoad("window.opener.location.reload()");
+		
 	}
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;

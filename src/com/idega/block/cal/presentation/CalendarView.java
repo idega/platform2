@@ -24,6 +24,7 @@ import com.idega.idegaweb.presentation.SmallCalendar;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.Layer;
 import com.idega.presentation.Page;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -56,11 +57,13 @@ public class CalendarView extends Block{
 	private String borderWhiteTableStyle = "borderAllWhite";
 	private String mainTableStyle = "main";
 	private String menuTableStyle = "menu";
+	private String borderLeftTopRight = "borderLeftTopRight";
 	private String styledLink = "styledLink";
 	private String entryLink = "entryLink";
 	private String entryLinkActive = "entryLinkActive";
 	private String bold = "bold";
 	private String headline ="headline";
+	private String ledgerListStyle = "ledgerList";
 	public static String ACTION = "action";
 	public static String OPEN = "open";
 	public static String CLOSE = "close";
@@ -165,7 +168,7 @@ public class CalendarView extends Block{
 			for(int j=0; j<listOfEntries.size(); j++) {
 				CalendarEntry entry = (CalendarEntry) listOfEntries.get(j);
 				CalendarLedger ledger = null;
-				int groupIDInLedger;
+				int groupIDInLedger = -1;
 				boolean isInGroup = false;
 				//get a collection of groups the current user may view
 				
@@ -180,7 +183,10 @@ public class CalendarView extends Block{
 				
 				if(entry.getLedgerID() != -1) {
 					ledger = getCalBusiness(iwc).getLedger(entry.getLedgerID());
-					groupIDInLedger = ledger.getGroupID();					
+					if(ledger != null) {
+						groupIDInLedger = ledger.getGroupID();
+					}
+										
 				}
 				else {
 					groupIDInLedger = -1;
@@ -366,7 +372,7 @@ public class CalendarView extends Block{
 						Collection viewGroups = null;
 						CalendarLedger ledger = null;
 						boolean isInGroup = false;
-						int groupIDInLedger;
+						int groupIDInLedger = -1;
 						if(user != null) {
 							try {
 								viewGroups = getUserBusiness(iwc).getUserGroups(user);
@@ -377,7 +383,10 @@ public class CalendarView extends Block{
 						
 						if(entry.getLedgerID() != -1) {
 							ledger = getCalBusiness(iwc).getLedger(entry.getLedgerID());
-							groupIDInLedger = ledger.getGroupID();					
+							if(ledger != null) {
+								groupIDInLedger = ledger.getGroupID();
+							}
+												
 						}
 						else {
 							groupIDInLedger = 1;
@@ -829,10 +838,10 @@ public class CalendarView extends Block{
 		table.setCellspacing(0);
 		table.setCellpadding(0);
 		table.setHeight("100%");
-		table.mergeCells(1,1,1,5);
+		table.mergeCells(1,1,1,2);
 		table.setAlignment(1,2,"center");
 		table.setWidth(2,1,"8");
-		table.mergeCells(2,1,2,5);
+		table.mergeCells(2,1,2,2);
 		table.setVerticalAlignment("top");
 		
 		table.setVerticalAlignment(3,1,"top");
@@ -863,28 +872,38 @@ public class CalendarView extends Block{
 			viewTable = yearView(iwc,timeStamp);
 			break;
 		}
-				
+		table.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);		
 		table.add(viewTable,1,1);
+//		table.setBorder(1);
 		
 		if(iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) { 
 			table.setWidth(800);
 			Table headlineTable = new Table();
 			headlineTable.setCellpadding(0);
 			headlineTable.setCellspacing(0);
-			headlineTable.setStyleClass(menuTableStyle);
-			headlineTable.setWidth("100%");
+			headlineTable.setStyleClass(borderLeftTopRight);
+			headlineTable.setStyleClass(1,1,menuTableStyle);
+			headlineTable.setWidth(400);			
 			Text ledgerText = new Text(iwrb.getLocalizedString("calendarView.ledgers", "Ledgers"));
 			ledgerText.setStyleClass(headline);
 			ledgerText.setBold();
-			headlineTable.setAlignment(1,1,"center");
+			headlineTable.setAlignment(1,1,Table.HORIZONTAL_ALIGN_CENTER);
 			headlineTable.add(ledgerText,1,1);
-			table.setStyleClass(3,1,borderWhiteTableStyle);
+			table.setHeight(3,1,200);
 			table.add(headlineTable,3,1);
 			
-			int row = 1;
-			Table ledgerListTable = new Table();
-			ledgerListTable.setCellpadding(2);
-			ledgerListTable.setCellspacing(0);
+			int row = 2;
+			Table ledgerTable = new Table();
+			ledgerTable.setCellpadding(2);
+			ledgerTable.setCellspacing(0);
+			
+			Text linkText = new Text(iwrb.getLocalizedString("calendarwindow.new_ledger","New Ledger"));
+			Link newLedgerLink = new Link(linkText);
+			newLedgerLink.setWindowToOpen(CreateLedgerWindow.class);
+			newLedgerLink.setAsImageButton(true,true);
+		
+			ledgerTable.setAlignment(1,1,Table.HORIZONTAL_ALIGN_RIGHT);
+			ledgerTable.add(newLedgerLink,1,1);
 			
 			Iterator ledgerIter = getCalBusiness(iwc).getAllLedgers().iterator();
 			while(ledgerIter.hasNext()) {
@@ -898,29 +917,23 @@ public class CalendarView extends Block{
 				ledgerLink.setWindowToOpen(LedgerWindow.class);
 				if(user != null) {
 					if(((Integer) user.getPrimaryKey()).intValue() == ledger.getCoachID() || user.getPrimaryGroupID() == ledger.getCoachGroupID()) {						
-						ledgerListTable.add(" - ",1,row);
-						ledgerListTable.add(ledgerLink,1,row++);
+						ledgerTable.add(" - ",1,row);
+						ledgerTable.add(ledgerLink,1,row++);
 					}			
 				}
 				
 			}
-			table.add(ledgerListTable,3,1);
-			Table newLedgerTable = new Table();
-			newLedgerTable.setWidth("100%");
-			newLedgerTable.setCellpadding(0);
-			newLedgerTable.setCellspacing(0);
-			Text linkText = new Text(iwrb.getLocalizedString("calendarwindow.new_ledger","New Ledger"));
-			Link newLedgerLink = new Link(linkText);
-//			newLedgerLink.setStyleClass(styledLink);
-			newLedgerLink.setWindowToOpen(CreateLedgerWindow.class);
-			newLedgerLink.setAsImageButton(true,true);
-			newLedgerTable.setAlignment(1,1,"right");
-			newLedgerTable.add(newLedgerLink,1,1);
 			
-			table.add(newLedgerTable,3,1);
+						
+			Layer layer = new Layer(Layer.DIV);
+			layer.setStyleClass(ledgerListStyle);
+			layer.add(ledgerTable);
 			
-			table.setHeight(3,3,"200");
-			table.add(creator,3,3);	
+			table.add(layer,3,1);
+			
+			table.setVerticalAlignment(3,2,Table.VERTICAL_ALIGN_TOP);
+			table.add(Text.BREAK,3,2);
+			table.add(creator,3,2);	
 		}	
 		else {
 			table.setWidth(500);

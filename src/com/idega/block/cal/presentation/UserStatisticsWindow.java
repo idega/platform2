@@ -3,6 +3,7 @@
  */
 package com.idega.block.cal.presentation;
 
+import java.text.Collator;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +42,6 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 	public static final String BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS = "ledger_variations_class";
 	
 	
-	private String grayBackground = "grayBack";
 	
 	//parameter names
 	private static String userFieldParameterName = "user_stat_window.user";
@@ -78,6 +78,9 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 	private String borderRight = "borderRight";
 	private String borderAllWhite = "borderAllWhite";
 	private String bold = "bold";
+	private String titleFont = "font-family:Verdana,Arial,Helvetica,sans-serif;font-size:9pt;font-weight:bold;color:#FFFFFF;";
+	private String grayBackground = "grayBack";
+	
 	
 	public UserStatisticsWindow() {
 		setWidth(700);
@@ -346,6 +349,9 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 	}
 	
 	public void main(IWContext iwc) throws Exception {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		addTitle(iwrb.getLocalizedString("userStatWindow.user_stat","User statistics"),titleFont);
+		
 		initializeTexts();
 		initializeFields();
 		
@@ -353,10 +359,12 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		ledgerID =new Integer(ledgerString);
 //		CalendarLedger ledger = getCalendarBusiness(iwc).getLedger(ledgerID.intValue());
 		List usersInLedger = (List) getCalendarBusiness(iwc).getUsersInLedger(ledgerID.intValue());
+		
+		final Collator collator = Collator.getInstance(iwc.getLocale());
 		if(usersInLedger != null) {
 			Collections.sort(usersInLedger,new Comparator() {
 				public int compare(Object arg0, Object arg1) {
-					return ((User) arg0).getName().compareTo(((User) arg1).getName());
+					return collator.compare(((User) arg0).getName(), ((User) arg1).getName());
 				}				
 			});
 		}

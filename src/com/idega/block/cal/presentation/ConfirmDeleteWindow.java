@@ -45,65 +45,57 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
   public ConfirmDeleteWindow() {
     setWidth(250);
     setHeight(250);
+    setScrollbar(false);
   }
 
   public void main(IWContext iwc){
-      setTitle("Confirm delete");
-      
-      String typeOfObject = iwc.getParameter(PRM_ENTRY_OR_LEDGER);
-      
-      boolean doConfirm = !(iwc.getParameter(PRM_CONFIRM)!=null || iwc.getParameter(PRM_CONFIRM+".x")!=null);
-      if(doConfirm){
-        add(getConfirmBox(iwc,typeOfObject),iwc);
+  	
+  	IWResourceBundle iwrb = getResourceBundle(iwc);
+    setTitle(iwrb.getLocalizedString("confirmDelete.confirm_delete","Confirm delete"));
+    
+    String typeOfObject = iwc.getParameter(PRM_ENTRY_OR_LEDGER);
+    
+    boolean doConfirm = !(iwc.getParameter(PRM_CONFIRM)!=null || iwc.getParameter(PRM_CONFIRM+".x")!=null);
+    if(doConfirm){
+      add(getConfirmBox(iwc,typeOfObject),iwc);
+    }
+    else{
+    	Link l = new Link();
+    	l.addParameter(PRM_DELETE_ID,"");
+    	l.addParameter(PRM_DELETED,"yes");
+    	
+      String id = iwc.getParameter(PRM_DELETE_ID);
+      String modifyOneOrMany = iwc.getParameter(CalendarEntryCreator.modifyOneOrManyRadioButtonParameterName);
+      try {
+      	if(typeOfObject.equals(CalendarEntryCreator.ENTRY)) {
+      		if(modifyOneOrMany.equals(CalendarEntryCreator.oneValue)) {
+      			getCalendarBusiness(iwc).deleteEntry(Integer.parseInt(id));
+      		}
+      		else if(modifyOneOrMany.equals(CalendarEntryCreator.manyValue)) {
+      			getCalendarBusiness(iwc).deleteEntryGroupByEntryID(Integer.parseInt(id));
+      		}
+      		setOnUnLoad("window.opener.location.reload()"); 
+      		
+      	}
+      	else if(typeOfObject.equals(LedgerWindow.LEDGER)) {
+      		getCalendarBusiness(iwc).deleteLedger(Integer.parseInt(id));
+        		l.setWindowToOpen(CalendarWindow.class);
+      		setOnLoad("window.opener.close()"); 
+        		String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
+        		setOnLoad(script);
+      		
+      	}
+      	else if(typeOfObject.equals(NewMarkWindow.MARK)) {
+      		getCalendarBusiness(iwc).deleteMark(Integer.parseInt(id));
+      		setOnLoad("window.opener.close()");       		
+      	}
+                  
       }
-      else{
-      	Link l = new Link();
-      	l.addParameter(PRM_DELETE_ID,"");
-      	l.addParameter(PRM_DELETED,"yes");
-      	
-        String id = iwc.getParameter(PRM_DELETE_ID);
-        String modifyOneOrMany = iwc.getParameter(CalendarEntryCreator.modifyOneOrManyRadioButtonParameterName);
-        try {
-        	if(typeOfObject.equals(CalendarEntryCreator.ENTRY)) {
-        		if(modifyOneOrMany.equals(CalendarEntryCreator.oneValue)) {
-        			getCalendarBusiness(iwc).deleteEntry(Integer.parseInt(id));
-        		}
-        		else if(modifyOneOrMany.equals(CalendarEntryCreator.manyValue)) {
-        			getCalendarBusiness(iwc).deleteEntryGroupByEntryID(Integer.parseInt(id));
-        		}
-        		setOnUnLoad("window.opener.location.reload()"); 
-//        		l.setWindowToOpen(CalendarWindow.class);
-//        		String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
-//        		setOnLoad(script);
-        		
-        	}
-        	else if(typeOfObject.equals(LedgerWindow.LEDGER)) {
-        		getCalendarBusiness(iwc).deleteLedger(Integer.parseInt(id));
-//        		l.setWindowToOpen(CalendarWindow.class);
-        		setOnLoad("window.opener.close()"); 
-//        		setOnUnLoad("window.opener.parent.parent.location.reload()");
-//        		String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
-//        		setOnLoad(script);
-        		
-        	}
-        	else if(typeOfObject.equals(NewMarkWindow.MARK)) {
-        		getCalendarBusiness(iwc).deleteMark(Integer.parseInt(id));
-//        		l.setWindowToOpen(LedgerWindow.class);
- //       		l.addParameter(LedgerWindow.LEDGER,iwc.getParameter(LedgerWindow.LEDGER));
-//        		setOnUnLoad("top.location.reload()"); //window.opener.parent.parent
-        		setOnLoad("window.opener.close()"); 
-        		
-//        		String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
-//        		setOnLoad(script);
-       		
-        	}
-                    
-        }
-        catch (Exception ex) {
-          ex.printStackTrace();
-        }
-        close();        
+      catch (Exception ex) {
+        ex.printStackTrace();
       }
+      close();        
+    }
   }
 
   public PresentationObject getConfirmBox(IWContext iwc,String typeOfObject){
@@ -134,13 +126,13 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
     
     
     Table radioTable = new Table();
-    radioTable.add(modifyOneRadioButton,1,20);
-    radioTable.add(Text.NON_BREAKING_SPACE,1,20);
-    radioTable.add("delete one",1,20);
-    radioTable.add(Text.BREAK,1,20);
-    radioTable.add(modifyManyRadioButton,1,20);
-    radioTable.add(Text.NON_BREAKING_SPACE,1,20);
-    radioTable.add("delete many",1,20);
+    radioTable.add(modifyOneRadioButton,1,1);
+    radioTable.add(Text.NON_BREAKING_SPACE,1,1);
+    radioTable.add(iwrb.getLocalizedString("confirmDelete.delete_one_entry","Delete one entry"),1,1);
+    radioTable.add(Text.BREAK,1,1);
+    radioTable.add(modifyManyRadioButton,1,1);
+    radioTable.add(Text.NON_BREAKING_SPACE,1,1);
+    radioTable.add(iwrb.getLocalizedString("confirmDelete.delete_many_entries","Delete row of entries"),1,1);
     
 
     Text confirmText = new Text(iwrb.getLocalizedString("confirm_delete","Are you sure you want to delete this calendar entry?"));

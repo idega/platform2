@@ -232,11 +232,11 @@ public class CalendarEntryCreator extends Form{
 		headlineField = new TextInput(headlineFieldParameterName);
 		
 		practiceField =new SelectOption(practiceText.toString(),generalFieldParameterName);
-		practiceField.setSelected(true);
 		generalField =new SelectOption(generalText.toString(),practiceFieldParameterName);
 		
 		
 		typeField = new DropdownMenu(typeFieldParameterName);
+		
 		
 		//if the general and practice types have not been added -> they are added!
 		if(calBusiness.getEntryTypeByName(practiceFieldParameterName) == null) {
@@ -261,6 +261,8 @@ public class CalendarEntryCreator extends Form{
 			}
 			
 		}
+		typeField.setSelectedElement(practiceFieldParameterName);
+		
 		ledgerField = new DropdownMenu(ledgerFieldParameterName);
 		ledgerField.addMenuElement(-1,iwrb.getLocalizedString(noLedgerFieldParameterName,"No ledger"));
 		
@@ -368,7 +370,7 @@ public class CalendarEntryCreator extends Form{
 			deleteLink.setAsImageButton(true,true);
 			
 			headlineField.setContent(entry.getName());
-			typeField.setSelectedElement(entry.getEntryType());
+			typeField.setSelectedElement(entry.getEntryTypeName());
 			repeatField.setSelectedElement(entry.getRepeat());
 			ledgerField.setSelectedElement(entry.getLedgerID());
 			
@@ -438,6 +440,7 @@ public class CalendarEntryCreator extends Form{
 		table.setStyleClass(borderAllWhite);
 		table.setCellspacing(0);
 		table.setCellpadding(0);
+		table.setWidth(400);
 		table.setStyleClass(1,1,menuTableStyle);
 		table.setHeight(1,1,20);
 		
