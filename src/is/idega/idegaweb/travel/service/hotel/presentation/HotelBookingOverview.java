@@ -10,6 +10,8 @@ import is.idega.idegaweb.travel.interfaces.Booking;
 import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.CalendarParameters;
+
 import java.rmi.*;
 import java.sql.*;
 import java.util.*;
@@ -471,9 +473,9 @@ public class HotelBookingOverview extends AbstractBookingOverview {
       Link link;
       // ------------------ INQUERIES ------------------------
       Link answerLink = new Link(_iwrb.getLocalizedImageButton("travel.answer","Answer"),is.idega.idegaweb.travel.presentation.Booking.class);
-      answerLink.addParameter(CalendarBusiness.PARAMETER_YEAR, stamp.getYear());
-      answerLink.addParameter(CalendarBusiness.PARAMETER_MONTH, stamp.getMonth());
-      answerLink.addParameter(CalendarBusiness.PARAMETER_DAY, stamp.getDay());
+      answerLink.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
+      answerLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
+      answerLink.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
       Inquery[] inqueries = null;
 
       int[] iNumbers;

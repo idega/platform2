@@ -5,6 +5,9 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.*;
+import com.idega.idegaweb.presentation.CalendarParameters;
+import com.idega.idegaweb.presentation.SmallCalendar;
+
 import java.rmi.RemoteException;
 import com.idega.data.IDOLookup;
 import com.idega.block.calendar.business.CalendarBusiness;
@@ -14,7 +17,6 @@ import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
-import com.idega.block.calendar.presentation.SmallCalendar;
 import com.idega.util.IWTimestamp;
 import com.idega.util.IWCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -837,9 +839,9 @@ public class Booking extends TravelManager {
 		  String month = iwc.getParameter("month");
 		  String day = iwc.getParameter("day");
 		
-		  String IWCalendar_year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
-		  String IWCalendar_month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
-		  String IWCalendar_day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
+		  String IWCalendar_year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
+		  String IWCalendar_month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+		  String IWCalendar_day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
 		  if (IWCalendar_year != null) year = IWCalendar_year;
 		  if (IWCalendar_month != null) month = IWCalendar_month;
 		  if (IWCalendar_day != null) day = IWCalendar_day;
@@ -970,9 +972,9 @@ public class Booking extends TravelManager {
 
       Link backLink = new Link(iwrb.getImage("buttons/back.gif"));
         backLink.addParameter(this.parameterProductId, this.productId);
-        backLink.addParameter(CalendarBusiness.PARAMETER_DAY, stamp.getDay());
-        backLink.addParameter(CalendarBusiness.PARAMETER_MONTH, stamp.getMonth());
-        backLink.addParameter(CalendarBusiness.PARAMETER_YEAR, stamp.getYear());
+        backLink.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
+        backLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
+        backLink.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
 
       Table table = new Table();
         table.setColor(super.WHITE);

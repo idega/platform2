@@ -15,6 +15,7 @@ import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.idegaweb.*;
+import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.util.*;
 import com.idega.util.text.*;
 import is.idega.idegaweb.travel.business.*;
@@ -107,9 +108,9 @@ public class PublicBooking extends Block  {
     super.getParentPage().setExpiryDate("Tue, 20 Aug 1996 14:25:27 GMT");
     iwc.getResponse().addHeader("Expires","Tue, 20 Aug 1996 14:25:27 GMT");
 
-    String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
-    String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
-    String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
+    String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
+    String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+    String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
 	  stamp = new IWTimestamp(IWTimestamp.RightNow());
 	  if (year != null) {
 	  	stamp.setYear(Integer.parseInt(year));	

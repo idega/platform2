@@ -21,6 +21,7 @@ import com.idega.block.trade.stockroom.data.*;
 import com.idega.core.user.data.*;
 import com.idega.data.*;
 import com.idega.idegaweb.*;
+import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
@@ -169,9 +170,9 @@ public abstract class BookingForm extends TravelManager{
     Form form = new Form();
     Table table = new Table();
       form.add(table);
-      form.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
-      form.addParameter(CalendarBusiness.PARAMETER_MONTH,_stamp.getMonth());
-      form.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
+      form.addParameter(CalendarParameters.PARAMETER_YEAR,_stamp.getYear());
+      form.addParameter(CalendarParameters.PARAMETER_MONTH,_stamp.getMonth());
+      form.addParameter(CalendarParameters.PARAMETER_DAY,_stamp.getDay());
       if (supplier != null) {
         form.addParameter(this.parameterSupplierId, supplier.getID());
       }
@@ -696,9 +697,9 @@ public abstract class BookingForm extends TravelManager{
       form.add(table);
 
       if (_stamp != null) {
-        form.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
-        form.addParameter(CalendarBusiness.PARAMETER_MONTH,_stamp.getMonth());
-        form.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
+        form.addParameter(CalendarParameters.PARAMETER_YEAR,_stamp.getYear());
+        form.addParameter(CalendarParameters.PARAMETER_MONTH,_stamp.getMonth());
+        form.addParameter(CalendarParameters.PARAMETER_DAY,_stamp.getDay());
       }
 
       boolean isDay = true;
@@ -1297,9 +1298,9 @@ public abstract class BookingForm extends TravelManager{
 //      form.maintainParameter(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
 //      form.maintainParameter("room_number");
 //      form.maintainParameter("reference_number");
-      form.maintainParameter(CalendarBusiness.PARAMETER_YEAR);
-      form.maintainParameter(CalendarBusiness.PARAMETER_MONTH);
-      form.maintainParameter(CalendarBusiness.PARAMETER_DAY);
+      form.maintainParameter(CalendarParameters.PARAMETER_YEAR);
+      form.maintainParameter(CalendarParameters.PARAMETER_MONTH);
+      form.maintainParameter(CalendarParameters.PARAMETER_DAY);
       form.maintainParameter(this.parameterBookingId);
       form.maintainParameter(this.parameterSupplierId);
       form.maintainParameter(this.parameterCCNumber);
@@ -1637,9 +1638,9 @@ public abstract class BookingForm extends TravelManager{
       String ccMonth = iwc.getParameter(this.parameterCCMonth);
       String ccYear = iwc.getParameter(this.parameterCCYear);
 
-      String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
-      String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
-      String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
+      String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
+      String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+      String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
 
       String supplierId = iwc.getParameter(this.parameterSupplierId);
 
@@ -2215,9 +2216,9 @@ public abstract class BookingForm extends TravelManager{
 
   protected void setTimestamp(IWContext iwc) {
   	if (_booking == null) {
-	    String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
-	    String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
-	    String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
+	    String year = iwc.getParameter(CalendarParameters.PARAMETER_YEAR);
+	    String month = iwc.getParameter(CalendarParameters.PARAMETER_MONTH);
+	    String day = iwc.getParameter(CalendarParameters.PARAMETER_DAY);
 	    
 		  _stamp = new IWTimestamp(IWTimestamp.RightNow());
 		  if (year != null) {

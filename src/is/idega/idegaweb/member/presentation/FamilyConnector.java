@@ -8,9 +8,10 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
-import com.idega.block.help.presentation.Help;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.help.presentation.Help;
+import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.TabbedPropertyPanel;
 import com.idega.presentation.Table;
@@ -23,7 +24,6 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
-import com.idega.user.presentation.StyledIWAdminWindow;
 
 public class FamilyConnector extends StyledIWAdminWindow {
 	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";

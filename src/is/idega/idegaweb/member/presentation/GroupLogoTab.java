@@ -8,10 +8,10 @@
  */
 package is.idega.idegaweb.member.presentation;
 
-import com.idega.block.help.presentation.Help;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.help.presentation.Help;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;

@@ -3,13 +3,14 @@ package is.idega.idegaweb.travel.presentation;
 import javax.ejb.FinderException;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.*;
+import com.idega.idegaweb.presentation.SmallCalendar;
+
 import java.rmi.RemoteException;
 import com.idega.presentation.Block;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
-import com.idega.block.calendar.presentation.SmallCalendar;
 import com.idega.util.IWTimestamp;
 import com.idega.util.IWCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;

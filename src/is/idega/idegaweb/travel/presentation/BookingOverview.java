@@ -2,6 +2,8 @@
 package is.idega.idegaweb.travel.presentation;
 
 import com.idega.idegaweb.presentation.BusyBar;
+import com.idega.idegaweb.presentation.SmallCalendar;
+
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import javax.ejb.FinderException;
 import java.util.*;
@@ -17,7 +19,6 @@ import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
-import com.idega.block.calendar.presentation.SmallCalendar;
 import com.idega.util.IWTimestamp;
 import com.idega.util.IWCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;

@@ -24,6 +24,7 @@ import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.data.*;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
@@ -87,9 +88,9 @@ public class HotelBookingForm extends BookingForm {
     Table table = new Table();
     table.setBorder(0);
       form.add(table);
-      form.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
-      form.addParameter(CalendarBusiness.PARAMETER_MONTH,_stamp.getMonth());
-      form.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
+      form.addParameter(CalendarParameters.PARAMETER_YEAR,_stamp.getYear());
+      form.addParameter(CalendarParameters.PARAMETER_MONTH,_stamp.getMonth());
+      form.addParameter(CalendarParameters.PARAMETER_DAY,_stamp.getDay());
       if (supplier != null) {
         form.addParameter(this.parameterSupplierId, supplier.getID());
       }
@@ -667,9 +668,9 @@ public class HotelBookingForm extends BookingForm {
       form.add(table);
 
       if (_stamp != null) {
-        form.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
-        form.addParameter(CalendarBusiness.PARAMETER_MONTH,_stamp.getMonth());
-        form.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
+        form.addParameter(CalendarParameters.PARAMETER_YEAR,_stamp.getYear());
+        form.addParameter(CalendarParameters.PARAMETER_MONTH,_stamp.getMonth());
+        form.addParameter(CalendarParameters.PARAMETER_DAY,_stamp.getDay());
       }
 
       boolean isDay = true;

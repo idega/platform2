@@ -50,6 +50,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.HorizontalRule;
@@ -120,9 +121,9 @@ public class CarRentalBookingForm extends BookingForm {
     
   private Form getForm(IWContext iwc) throws RemoteException, FinderException {
 		Form form = new Form();
-	  form.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
-	  form.addParameter(CalendarBusiness.PARAMETER_MONTH,_stamp.getMonth());
-	  form.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
+	  form.addParameter(CalendarParameters.PARAMETER_YEAR,_stamp.getYear());
+	  form.addParameter(CalendarParameters.PARAMETER_MONTH,_stamp.getMonth());
+	  form.addParameter(CalendarParameters.PARAMETER_DAY,_stamp.getDay());
 
 		Table table = new Table();
 		table.setBorder(0);
@@ -729,9 +730,9 @@ public class CarRentalBookingForm extends BookingForm {
 		  form.add(table);
 	
 		  if (_stamp != null) {
-				form.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
-				form.addParameter(CalendarBusiness.PARAMETER_MONTH,_stamp.getMonth());
-				form.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
+				form.addParameter(CalendarParameters.PARAMETER_YEAR,_stamp.getYear());
+				form.addParameter(CalendarParameters.PARAMETER_MONTH,_stamp.getMonth());
+				form.addParameter(CalendarParameters.PARAMETER_DAY,_stamp.getDay());
 		  }
 	
 		  boolean isDay = true;
