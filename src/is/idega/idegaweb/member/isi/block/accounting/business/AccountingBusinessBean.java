@@ -783,7 +783,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 
             BasketBusiness bBiz = getBasketBusiness(iwuc);
             try {
-                bBiz.emtpyExtraInfo();
+                bBiz.emptyExtraInfo();
             } catch (RemoteException e2) {
                 e2.printStackTrace();
             }

@@ -189,7 +189,7 @@ public class BasketBusinessBean extends IBOSessionBean
 	/**
 	 * 
 	 */
-	public void emtpyExtraInfo() {
+	public void emptyExtraInfo() {
 		if (extraData != null && !extraData.isEmpty()) {
 			extraData.clear();
 		}
