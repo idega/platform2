@@ -88,7 +88,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 
 		ReportableField womenUnderAgeLimit = new ReportableField("womenUnderAgeLimit", Integer.class);
 		womenUnderAgeLimit.setLocalizedName(
-			_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimit", "womenUnderAgeLimit"),
+			_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimit", "women under ageLimit"),
 			currentLocale);
 		reportData.addField(womenUnderAgeLimit);
 
@@ -139,10 +139,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		/*reportData.addExtraHeaderParameter(
 					"report_year",
 					_iwrb.getLocalizedString("WorkReportStatsBusiness.year", "Year"),
-					"report year",
+					"report_year_label",
 					year.toString());
+		
 		*/
-
 		return reportData;
 	}
 
