@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.21 2002/07/04 13:51:13 gimmi Exp $
+ *  $Id: TPosClient.java,v 1.22 2002/07/04 15:13:58 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -276,7 +276,7 @@ public class TPosClient {
 
     _client.setProperty(TPOS3Client.PN_PAN, cardnumber);
     _client.setProperty(TPOS3Client.PN_EXPIRE, monthExpires + yearExpires);
-  //  _client.setProperty(TPOS3Client.PN_EXPIRE, yearExpires + monthExpires);
+    //_client.setProperty(TPOS3Client.PN_EXPIRE, yearExpires + monthExpires);
     amount *= amountMultiplier;
     String stringAmount = Integer.toString((int)amount);
     _client.setProperty(TPOS3Client.PN_AMOUNT, stringAmount);
