@@ -48,6 +48,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -100,6 +101,7 @@ public class SchoolUserEditor extends Block {
 	private String PARAMETER_EDIT_SCH_DEP = "sue_edsd";
 	private String PARAMETER_DELETE_SCH_DEP = "sue_dlsd";
 	private static final String PARAMETER_IS_ECONOMICAL_RESP = "sue_is_economical_responsible";
+	public final static String STYLENAME_INTERFACE_BUTTON = "InterfaceButton";
 	private Text TEXT_NORMAL;
 	private Text TEXT_TITLE;
 	private String INPUT_STYLE;
@@ -112,6 +114,8 @@ public class SchoolUserEditor extends Block {
 	private int workPhoneType = PhoneType.WORK_PHONE_ID;
 	private boolean _highSchoolCategory = false;
 	private boolean _hideLogin = false;
+	private boolean _hideBackButton = false;
+	private boolean _addCloseButton = false;
 	
 
 	public String getBundleIdentifier() {
@@ -128,6 +132,22 @@ public class SchoolUserEditor extends Block {
 	
 	public void setHideLogin(boolean b) {
 		_hideLogin = b;
+	}
+	
+	public boolean getHideBackButton() {
+		return _hideBackButton;
+	}
+	
+	public void setHideBackButton(boolean b) {
+		_hideBackButton = b;
+	}
+	
+	public boolean getAddCloseButton() {
+		return _addCloseButton;
+	}
+	
+	public void setAddCloseButton(boolean b) {
+		_addCloseButton = b;
 	}
 
 	private Table schoolList(IWContext iwc) throws RemoteException {
@@ -308,13 +328,22 @@ public class SchoolUserEditor extends Block {
 			//contTable.setBorder(1);
 			
 			++cRow;
-			BackButton back = new BackButton(_iwrb.getLocalizedString("school.back", "Back"));
-			contTable.add(back, 1, cRow);
+			if (!_hideBackButton) {
+				BackButton back = new BackButton(_iwrb.getLocalizedString("school.back", "Back"));
+				back = (BackButton) this.setStyle(back, STYLENAME_INTERFACE_BUTTON);
+				contTable.add(back, 1, cRow);
+			}
 			if (addSubmitButton) {
 				SubmitButton update = new SubmitButton(_iwrb.getLocalizedString("school.save", "Save"), PARAMETER_ACTION, ACTION_UPDATE);
+				update = (SubmitButton) this.setStyle(update, STYLENAME_INTERFACE_BUTTON);
 				contTable.add(update, 1, cRow);
 			}
-
+			if (_addCloseButton) {
+				CloseButton close = new CloseButton(_iwrb.getLocalizedString("school.close", "Close"));
+				close = (CloseButton) this.setStyle(close, STYLENAME_INTERFACE_BUTTON);
+				contTable.add(close, 1, cRow);
+			}
+			
 		}
 		catch (FinderException e) {
 			e.printStackTrace(System.err);

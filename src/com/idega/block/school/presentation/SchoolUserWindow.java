@@ -23,6 +23,8 @@ public class SchoolUserWindow extends Window {
 		this.setParentToReload();
 		SchoolUserEditor e = new SchoolUserEditor();
 		e.setHideLogin(true);
+		e.setHideBackButton(true);
+		e.setAddCloseButton(true);
 		add(e);
 	}	
 }
