@@ -1,5 +1,5 @@
 /*
- * $Id: KBDataInsert.java,v 1.3 2005/03/22 13:20:14 birna Exp $
+ * $Id: KBDataInsert.java,v 1.4 2005/03/22 13:21:41 birna Exp $
  * Created on Feb 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -24,28 +24,24 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import com.idega.block.finance.business.BankFileManager;
 import com.idega.block.finance.business.BankInvoiceFileManager;
 import com.idega.block.finance.business.InvoiceDataInsert;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Window;
 import com.idega.util.IWTimestamp;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/03/22 13:20:14 $ by $Author: birna $
+ *  Last modified: $Date: 2005/03/22 13:21:41 $ by $Author: birna $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
-public class KBDataInsert extends Window implements InvoiceDataInsert {
+public class KBDataInsert /*extends Window*/ implements InvoiceDataInsert {
 	private static String POST_METHOD = "https://www.bi.is/krofulinan/Pages/Senda_skra.aspx";
 	private static String POST_ANSWER_METHOD = "https://www.bi.is/krofulinan/Pages/saekja_greidsluskra.aspx";
 	private static String FILE_NAME = "iw_cache/kbb.txt";
 	private String emptyString = new String();
 	private String zeroString = new String();
 
-	public KBDataInsert() {
+/*	public KBDataInsert() {
 		setWidth(500);
 		setHeight(500);
 	}
@@ -64,7 +60,7 @@ public class KBDataInsert extends Window implements InvoiceDataInsert {
 			getClaimStatusFromBank(0, 170573, from.getDate(), to.getDate());
 		}
 		add(f);
-	}
+	}*/
 
 
 	/* (non-Javadoc)
