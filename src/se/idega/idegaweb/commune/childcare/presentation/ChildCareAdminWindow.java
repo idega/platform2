@@ -1431,12 +1431,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		int row = 1;
 		layoutTbl.mergeCells(1, row, 2, row);
+		layoutTbl.add(getSmallHeader(localize("ccnctw_info_end_contr", "Info about ending contract.")), 1, row++);
+		layoutTbl.mergeCells(1, row, 2, row);
 		layoutTbl.add(getSmallText(localize("ccnctw_cancel_info", "This is just a request to cancel the contract")), 1, row++);
 		layoutTbl.add(getSmallHeader(localize("ccnctw_from_date", "From date") + ":"), 1, row);	
 		DateInput fromDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
 		fromDate.setAsNotEmpty(localize("ccecw_date_format_alert", "Please choose a valid from date."));
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.MONTH, 2);
+		//cal.add(Calendar.MONTH, 2); //removed after request fr Nacka 04
 		fromDate.setEarliestPossibleDate(cal.getTime(), localize("ccecw_date_alert", "Date must be not earlier than two months from today."));
 		layoutTbl.add(fromDate, 2, row++);
 		
