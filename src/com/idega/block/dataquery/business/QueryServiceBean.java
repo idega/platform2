@@ -472,7 +472,6 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		return group;
 	}
 
-	 	
 	public UserQuery storeQuery(String name, ICFile file, boolean isPrivate, Object userQueryToBeReplacedId, IWUserContext iwuc) {
 		UserQuery userQuery = null;
 		UserTransaction transaction = getSessionContext().getUserTransaction();
@@ -718,7 +717,7 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	}
 	
 	public Collection getOwnQueries(IWContext iwc) throws RemoteException, FinderException {
-		Group topGroup = getTopGroupForUser(iwc);
+		Group topGroup = getTopGroupForCurrentUser(iwc);
 		SortedMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
 		getOwnQueries(topGroup,queryRepresentations);
 		return queryRepresentations.values();
@@ -734,7 +733,7 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 			return queryRepresentations.values();
 		}
 		// end: special case: admin
-		Group topGroup = getTopGroupForUser(iwc);
+		Group topGroup = getTopGroupForCurrentUser(iwc);
 			GroupBusiness groupBusiness = getGroupBusiness();
 		Collection parentGroups = new ArrayList();
 		// special case admin
@@ -791,21 +790,7 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		return queryRepresentations.values();
 	}
 	
-	private Group getTopGroupForUser(IWContext iwc) throws RemoteException {
-		User currentUser = iwc.getCurrentUser();
-		UserBusiness userBusiness = getUserBusiness();
-		//TODO: thi solve problem with the group types
-		String[] groupTypes = 
-				{ "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
-			Group topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), iwc);
-			// special hack for damaged databases
-			if (topGroup == null) {
-				List groupType = new ArrayList();
-				groupType.add("general");
-				topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, groupType,iwc);
-			}
-			return topGroup;
-	}
+
 	
 	private void getAllQueriesForSuperAdministrator(SortedMap queryRepresentations, int showOnlyOneQueryWithId, Group superAdministrator) throws FinderException {
 		UserQueryHome userQueryHomeTemp = getUserQueryHome();
