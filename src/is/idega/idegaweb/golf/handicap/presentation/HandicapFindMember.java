@@ -170,7 +170,7 @@ public class HandicapFindMember extends GolfWindow {
 			int manyNames = 0;
 			int numberInserted = 0;
 
-			String SQLString = "Select * from member where ";
+			String SQLString = "Select * from member ";
 			String tempSQLString = "";
 
 			try {
@@ -215,7 +215,7 @@ public class HandicapFindMember extends GolfWindow {
 
 			}
 			catch (Exception e) {
-
+				e.printStackTrace();
 			}
 
 			SQLString += " order by first_name, last_name, middle_name";
