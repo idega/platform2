@@ -191,18 +191,14 @@ public class ProductEditorWindow extends IWAdminWindow {
 	}
 
 	private void setCurrencies(IWContext iwc) throws RemoteException {
-		Locale currentLocale = iwc.getCurrentLocale(), chosenLocale;
 		String sLocaleId = iwc.getParameter(getProductBusiness(iwc).getParameterLocaleDrop());
-		iLocaleID = -1;
 		if (sLocaleId != null) {
-			iLocaleID = Integer.parseInt(sLocaleId);
-			chosenLocale = ICLocaleBusiness.getLocale(iLocaleID);
+			_locale = ICLocaleBusiness.getLocale(Integer.parseInt(sLocaleId));;
 		}
 		else {
-			chosenLocale = currentLocale;
-			iLocaleID = ICLocaleBusiness.getLocaleId(chosenLocale);
+			_locale = iwc.getCurrentLocale();
 		}
-		_locale = chosenLocale;
+		iLocaleID = ICLocaleBusiness.getLocaleId(_locale);
 	}
 
 	public static Link getEditorLink(int productId) {
