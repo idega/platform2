@@ -33,7 +33,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.30 2003/05/22 16:30:42 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.31 2003/05/23 14:37:10 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -250,6 +250,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 					//							+ application.getNodeID()
 					//							+ " "
 					//							+ application.getChoiceNumber());
+									
 					getChildCareBusiness(iwc).parentsAgree(
 						Integer.valueOf(status._appid).intValue(),
 						application.getOwner(),
@@ -489,7 +490,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 					iwc,
 					this,
 					sortApplications(applications, false),
-					hasOffer(applications));
+					hasOffer(applications),
+					getChildCareBusiness(iwc).hasActivePlacement(Integer.parseInt(iwc.getParameter(CHILD_ID)))
+			);
 			//sorted by order number
 
 			Link cancelBtn = new Link(localize(CANCEL));
@@ -705,31 +708,31 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @return
 	 * @throws RemoteException
 	 */
-	private ChildCareApplication getAcceptedOffer(Collection applications)
-		throws RemoteException {
-
-		Iterator i = applications.iterator();
-
-		while (i.hasNext()) {
-			ChildCareApplication app = (ChildCareApplication) i.next();
-
-			String caseStatus = app.getStatus();
-			char appStatus = app.getApplicationStatus();
-			//				System.out.println(
-			//					"STATUS: "
-			//						+ app.getNodeID()
-			//						+ " - "
-			//						+ caseStatus
-			//						+ "/"
-			//						+ appStatus);
-			if (caseStatus
-				.equals(ChildCareCustomerApplicationTable.STATUS_PREL)
-				&& appStatus == childCarebusiness.getStatusParentsAccept())
-				return app;
-
-		}
-		return null;
-	}
+//	private ChildCareApplication getAcceptedOffer(Collection applications)
+//		throws RemoteException {
+//
+//		Iterator i = applications.iterator();
+//
+//		while (i.hasNext()) {
+//			ChildCareApplication app = (ChildCareApplication) i.next();
+//
+//			String caseStatus = app.getStatus();
+//			char appStatus = app.getApplicationStatus();
+//			//				System.out.println(
+//			//					"STATUS: "
+//			//						+ app.getNodeID()
+//			//						+ " - "
+//			//						+ caseStatus
+//			//						+ "/"
+//			//						+ appStatus);
+//			if (caseStatus
+//				.equals(ChildCareCustomerApplicationTable.STATUS_PREL)
+//				&& appStatus == childCarebusiness.getStatusParentsAccept())
+//				return app;
+//
+//		}
+//		return null;
+//	}
 
 	private ChildCareApplication getActiveApplication(Collection applications)
 		throws RemoteException {
