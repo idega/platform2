@@ -8,18 +8,20 @@
  */
 package is.idega.idegaweb.member.presentation;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.help.presentation.Help;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -42,6 +44,9 @@ public class UserStatusTab extends UserTab {
 
 	private static final String TAB_NAME = "usr_stat_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Status";
+	
+	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private static final String HELP_TEXT_KEY = "user_status_tab";
 
 	private CheckBox _inactiveField;
 	private Text _groupField;
@@ -184,7 +189,7 @@ public class UserStatusTab extends UserTab {
 	public void lineUpFields() {
 		empty();
 
-		Table t = new Table(2, 4);
+		Table t = new Table(2, 5);
 		t.add(_inactiveText, 1, 1);
 		t.add(_inactiveField, 2, 1);
 		t.add(_groupText, 1, 2);
@@ -197,6 +202,7 @@ public class UserStatusTab extends UserTab {
 //		t.add(_parent2StatusField, 2, 5);
 		t.add(_parent3StatusText, 1, 4);
 		t.add(_parent3StatusField, 2, 4);
+		t.add(getHelpButton(),1,5);
 
 		add(t);
 	}
@@ -282,6 +288,17 @@ public class UserStatusTab extends UserTab {
 		fieldValues.put(_parent3StatusFieldName, Boolean.FALSE);
 
 		updateFieldsDisplayStatus();
+	}
+	public Help getHelpButton() {
+		IWContext iwc = IWContext.getInstance();
+		IWBundle iwb = getBundle(iwc);
+		Help help = new Help();
+		Image helpImage = iwb.getImage("help.gif");
+		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey(HELP_TEXT_KEY);
+		help.setImage(helpImage);
+		return help;
+		
 	}
 	
 	public UserStatusBusiness getUserStatusBusiness(IWApplicationContext iwc){
