@@ -186,6 +186,7 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("clubexchangewindow.save", "Save"), ACTION, ACTION_SAVE);
 		save.setSubmitConfirm(iwrb.getLocalizedString("clubexchangewindow.confirm_message", "Are you sure you want to transfer the user at the given dates? An email message will be sent to all parties involved."));
 		UserChooserBrowser chooser = new UserChooserBrowser(PARAMETER_USER_ID);
+		chooser.setImageName("magnifyingglass.gif");
 		
 		table.add(new Text(iwrb.getLocalizedString("clubexchangewindow.text","Please select the member to transfer and the dates for the transfer to take place.")), 1,1 );
 		
