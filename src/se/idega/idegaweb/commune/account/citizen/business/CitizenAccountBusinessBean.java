@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.51 2003/04/10 12:51:48 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.52 2003/04/30 09:39:11 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -66,11 +66,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2003/04/10 12:51:48 $ by $Author: laddi $
+ * Last modified: $Date: 2003/04/30 09:39:11 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.51 $
+ * @version $Revision: 1.52 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
   implements CitizenAccountBusiness, AccountBusiness 
@@ -449,8 +449,10 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
             final CommuneUserBusiness userBusiness = getUserBusiness ();
             final String applicationReason = applicant.getApplicationReason();
             final boolean notNackaResident = applicationReason != null
-                    && applicationReason.equals
-                    (CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY);
+                    && (applicationReason.equals
+                        (CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY)
+                        || applicationReason.equals
+                        (CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY));
             final User user = notNackaResident ?
                     userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist
                     (firstName, "", lastName, ssn, gender, timestamp)
