@@ -710,7 +710,7 @@ public class QueryBuilder extends Block {
 	  				ICTreeNode node = (ICTreeNode) iterator.next();
 	  				int id = node.getNodeID();
 	  				String name = node.getNodeName();
-	  				String displayName = new StringBuffer(name).append(" ( ").append(groupName).append(" ) ").toString();
+	  				String displayName = new StringBuffer(groupName).append(" - ").append(name).toString();
 	  				select.addMenuElement(Integer.toString(id), displayName);
 	//  				// show only the query with a specified id if desired 
 	//  				if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
