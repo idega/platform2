@@ -40,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.55 2003/12/02 09:25:50 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.56 2003/12/08 13:21:35 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -64,6 +64,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	private String CHILD_ID = CitizenChildren.getChildIDParameterName();
 
 	ChildCareBusiness childCarebusiness = null;
+
+	private boolean _showOnlyChildcare = false;
+	private boolean _showOnlyAfterSchoolCare = false;
 
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
@@ -631,8 +634,16 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			else {
 				childId = (String) iwc.getSessionAttribute(CHILD_ID);
 			}
+			
+			String caseCode = null;
+			if (_showOnlyChildcare) {
+				caseCode = getChildCareBusiness(iwc).getChildCareCaseCode();
+			}
+			else if (_showOnlyAfterSchoolCare) {
+				caseCode = getChildCareBusiness(iwc).getAfterSchoolCareCaseCode();
+			}
 
-			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByChild(Integer.parseInt(childId));
+			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByChild(Integer.parseInt(childId), caseCode);
 
 			//Add canceled and removed applications from this session	
 			/*Collection deletedApps = (Collection) iwc.getSessionAttribute(DELETED_APPLICATIONS);
@@ -903,5 +914,25 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 */
 	public void setResponsePage(ICPage page) {
 		setEndPage(page);
+	}
+	
+	/**
+	 * @param showOnlyAfterSchoolCare The showOnlyAfterSchoolCare to set.
+	 */
+	public void setShowOnlyAfterSchoolCare(boolean showOnlyAfterSchoolCare) {
+		this._showOnlyAfterSchoolCare = showOnlyAfterSchoolCare;
+		if (showOnlyAfterSchoolCare) {
+			this._showOnlyChildcare = false;
+		}
+	}
+	
+	/**
+	 * @param showOnlyChildcare The showOnlyChildcare to set.
+	 */
+	public void setShowOnlyChildcare(boolean showOnlyChildcare) {
+		this._showOnlyChildcare = showOnlyChildcare;
+		if (showOnlyChildcare) {
+			this._showOnlyAfterSchoolCare = false;
+		}
 	}
 }
