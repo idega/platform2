@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareContractHomeImpl.java,v 1.18 2004/10/14 10:23:41 thomas Exp $
+ * $Id: ChildCareContractHomeImpl.java,v 1.1 2004/10/14 10:53:12 thomas Exp $
  * Created on 16.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -7,7 +7,7 @@
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
  */
-package se.idega.idegaweb.commune.childcare.data;
+package se.idega.idegaweb.commune.care.data;
 
 import java.sql.Date;
 import java.util.Collection;
@@ -23,10 +23,10 @@ import com.idega.util.TimePeriod;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/14 10:23:41 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/14 10:53:12 $ by $Author: thomas $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.1 $
  */
 public class ChildCareContractHomeImpl extends IDOFactory implements
         ChildCareContractHome {

@@ -74,8 +74,8 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
+import se.idega.idegaweb.commune.care.data.ChildCareContract;
+import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
 
 /**
  * InvoiceCompilationEditor is an IdegaWeb block were the user can search, view
@@ -90,10 +90,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/10/14 10:22:53 $ by $Author: thomas $
+ * Last modified: $Date: 2004/10/14 10:53:12 $ by $Author: thomas $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.134 $
+ * @version $Revision: 1.135 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data

@@ -1,5 +1,5 @@
 /*
- * $Id: PaymentAuthorizationBusinessBean.java,v 1.7 2004/10/14 10:22:27 thomas Exp $
+ * $Id: PaymentAuthorizationBusinessBean.java,v 1.8 2004/10/14 10:53:12 thomas Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,8 +22,8 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.presentation.ManuallyPaymentEntriesList;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.business.CareBusiness;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
+import se.idega.idegaweb.commune.care.data.ChildCareContract;
+import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
@@ -42,7 +42,7 @@ import com.idega.user.data.User;
  * This business handles the logic for Payment authorisation
  * 
  * <p>
- * $Id: PaymentAuthorizationBusinessBean.java,v 1.7 2004/10/14 10:22:27 thomas Exp $
+ * $Id: PaymentAuthorizationBusinessBean.java,v 1.8 2004/10/14 10:53:12 thomas Exp $
  *
  * @author Kelly
  */

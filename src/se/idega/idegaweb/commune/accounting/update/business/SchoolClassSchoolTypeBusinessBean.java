@@ -9,8 +9,8 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
+import se.idega.idegaweb.commune.care.data.ChildCareContract;
+import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;

@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.school.business.SchoolConstants;
 
 import com.idega.block.school.data.School;

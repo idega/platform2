@@ -33,8 +33,8 @@ import se.idega.idegaweb.commune.accounting.userinfo.data.InvoiceReceiver;
 import se.idega.idegaweb.commune.accounting.userinfo.data.InvoiceReceiverHome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.SortableSibling;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
+import se.idega.idegaweb.commune.care.data.ChildCareContract;
+import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;

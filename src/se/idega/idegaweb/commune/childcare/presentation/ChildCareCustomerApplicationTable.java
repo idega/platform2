@@ -12,11 +12,11 @@ import java.util.TreeSet;
 import javax.ejb.RemoveException;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
+import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
@@ -42,7 +42,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.73 2004/10/14 10:23:41 thomas Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.74 2004/10/14 10:53:12 thomas Exp $
  * @since 12.2.2003 
  */
 
