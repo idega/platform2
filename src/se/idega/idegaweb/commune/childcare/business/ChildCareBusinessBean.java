@@ -2655,12 +2655,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 	}
 
-	public void deleteOffer(int applicationID) {
+	public void deleteOffer(int applicationID, User performer) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
 			ChildCareApplication application = getChildCareApplication(applicationID);
-			application.setStatus(String.valueOf(getStatusSentIn()));
+			application.setApplicationStatus(getStatusSentIn());
+			changeCaseStatus(application, getCaseStatusOpen().getStatus(), performer);
+
 			Collection contracts = getContractsByApplication(applicationID);
 			Iterator iter = contracts.iterator();
 			while (iter.hasNext()) {
@@ -3959,7 +3961,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public void removeLatestFutureContract(int applicationID, Date earliestAllowedRemoveDate) {
+	public void removeLatestFutureContract(int applicationID, Date earliestAllowedRemoveDate, User performer) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 
 		try {
@@ -4024,8 +4026,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					application.setCancelConfirmationReceived(null);
 					application.setCancelMessage(null);
 					application.setHasDateSet(false);
-					application.setStatus(String.valueOf(this.getStatusSentIn()));
+					application.setApplicationStatus(getStatusSentIn());
 					application.store();
+					
+					changeCaseStatus(application, getCaseStatusOpen().getStatus(), performer);
 
 					latestMember.remove();
 				}
