@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.33 2003/10/03 00:31:26 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.34 2003/10/03 15:18:31 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -54,7 +54,6 @@ import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.IWTimestamp;
-
 
 
 /**
@@ -667,7 +666,35 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			return null;
 		}
 	}	
-	
+
+	/**
+	 * Gets regulations for a certain periode, operationID, FLowTypeID and SortByID
+	 * @param from periode (Date)
+	 * @param to periode (Date)
+	 * @param operationID
+	 * @param flowTypeID
+	 * @param sortByID
+	 * @return collection of Regulations
+	 * @author Kelly
+	 * 
+	 */
+	public Collection findRegulationsByPeriod(
+			Date from, 
+			Date to, 	
+			String operationID,
+			int flowTypeID,
+			int sortByID ) {
+				
+		try {
+			RegulationHome home = getRegulationHome();
+			return home.findRegulationsByPeriod(from, to, operationID, flowTypeID, sortByID);				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+
 
 	/**
 	 * Gets a Regulation

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.6 2003/09/22 01:30:52 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.7 2003/10/03 15:17:34 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.6 2003/09/22 01:30:52 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.7 2003/10/03 15:17:34 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -162,6 +162,33 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		sql.appendOrderByDescending(COLUMN_PERIOD_FROM);
 		return idoFindPKsBySQL(sql.toString());
 	}
+
+	public Collection ejbFindRegulationsByPeriod(
+			Date from, 
+			Date to, 
+			String operationID, 
+			int flowTypeID, 
+			int sortByID
+		) throws FinderException {
+				
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere(COLUMN_PERIOD_FROM);
+		sql.appendGreaterThanOrEqualsSign().append("'"+from+"'");
+		sql.appendAnd().append(COLUMN_PERIOD_TO);
+		sql.appendLessThanOrEqualsSign().append("'"+to+"'");
+		if(operationID.compareTo("0") != 0) {
+			sql.appendAndEquals(COLUMN_OPERATION_ID, "'"+operationID+"'");
+			sql.appendAndEquals(COLUMN_PAYMENT_FLOW_TYPE_ID, flowTypeID);
+		}
+		if(sortByID == 1) {
+			sql.appendOrderByDescending(COLUMN_NAME);
+		} else {
+			sql.appendOrderByDescending(COLUMN_PERIOD_FROM);
+		}
+		return idoFindPKsBySQL(sql.toString());
+	}
+
 
 	public Object ejbFindRegulation(int id) throws FinderException {
 		IDOQuery sql = idoQuery();

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.7 2003/10/03 01:53:10 tryggvil Exp $
+ * $Id: RegulationList.java,v 1.8 2003/10/03 15:18:02 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.7 2003/10/03 01:53:10 tryggvil Exp $
+ * $Id: RegulationList.java,v 1.8 2003/10/03 15:18:02 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class RegulationList extends AccountingBlock {
 
@@ -79,8 +79,8 @@ public class RegulationList extends AccountingBlock {
 	private final static String PARAM_EDIT_ID = "param_edit_id";
 	private final static String PARAM_NEW = "param_button_new";
 	private final static String PARAM_SEARCH = "param_button_search";
-	private final static String PARAM_SELECTOR_OPERATION = "param_sel_operation";
-	private final static String PARAM_SELECTOR_PAYMENT_FLOW_TYPE = "param_sel_payment_flow_type";
+	public final static String PARAM_SELECTOR_OPERATION = "param_sel_operation";
+	public final static String PARAM_SELECTOR_PAYMENT_FLOW_TYPE = "param_sel_payment_flow_type";
 	private final static String PARAM_SELECTOR_SORT_BY = "param_sel_sort_by";
 	private final static String PARAM_FROM = "param_from";
 	private final static String PARAM_TO = "param_to";
@@ -91,6 +91,9 @@ public class RegulationList extends AccountingBlock {
 	private ICPage _editPage;
 	private Date _currentFromDate;
 	private Date _currentToDate;
+	private int _currentFlowType;
+	private int _currentSortBy;
+	private String _currentOperation;
 
 	/**
 	 * Handles the property editPage
@@ -158,6 +161,13 @@ public class RegulationList extends AccountingBlock {
 	 */	
 	private void viewForm(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm(this);
+
+		_currentOperation = iwc.isParameterSet(PARAM_SELECTOR_OPERATION) ? 
+				iwc.getParameter(PARAM_SELECTOR_OPERATION) : "0";
+		_currentFlowType = iwc.isParameterSet(PARAM_SELECTOR_PAYMENT_FLOW_TYPE) ? 
+				Integer.parseInt(iwc.getParameter(PARAM_SELECTOR_PAYMENT_FLOW_TYPE)) : 1;
+		_currentSortBy = iwc.isParameterSet(PARAM_SELECTOR_SORT_BY) ? 
+				Integer.parseInt(iwc.getParameter(PARAM_SELECTOR_SORT_BY)) : 1;
 		
 		if (iwc.isParameterSet(PARAM_FROM)) {
 			_currentFromDate = parseDate(iwc.getParameter(PARAM_FROM));
@@ -207,7 +217,8 @@ public class RegulationList extends AccountingBlock {
 		
 		try {
 			rBiz = getRegulationBusiness(iwc);
-			Collection items = rBiz.findRegulationsByPeriod(_currentFromDate, _currentToDate);
+
+			Collection items = rBiz.findRegulationsByPeriod(_currentFromDate, _currentToDate, _currentOperation, _currentFlowType, _currentSortBy);
 			if (items != null) {
 				Iterator iter = items.iterator();
 				while (iter.hasNext()) {
@@ -281,14 +292,14 @@ public class RegulationList extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_HEADER_PAYMENT_FLOW_TYPE, "Ström"), 1, 2);
 		table.add(getLocalizedLabel(KEY_PERIOD_SEARCH, "Period"), 1, 3);
 		
-		table.add(mainOperationSelector(iwc, PARAM_SELECTOR_OPERATION, 1), 2, 1);
-		table.add(paymentFlowTypeSelector(iwc, PARAM_SELECTOR_PAYMENT_FLOW_TYPE, 1), 2, 2);
+		table.add(mainOperationSelector(iwc, PARAM_SELECTOR_OPERATION, _currentOperation), 2, 1);
+		table.add(paymentFlowTypeSelector(iwc, PARAM_SELECTOR_PAYMENT_FLOW_TYPE, _currentFlowType), 2, 2);
 		table.add(getFromToDatePanel(PARAM_FROM, _currentFromDate, PARAM_TO, _currentToDate), 2, 3);
 
 		table.add(getLocalizedLabel(KEY_HEADER_SORT_BY, "Sortera på"), 3, 1);
 		table.add(getLocalizedButton(PARAM_SEARCH, KEY_SEARCH, "Sök"), 3, 3);
 
-		table.add(sortBySelector(PARAM_SELECTOR_SORT_BY, 1), 4, 1);
+		table.add(sortBySelector(PARAM_SELECTOR_SORT_BY, _currentSortBy), 4, 1);
 
 		return table;
 	}
@@ -330,7 +341,7 @@ public class RegulationList extends AccountingBlock {
 	 * @param refIndex The initial position to set the selector to 
 	 * @return the drop down menu
 	 */
-	private DropdownMenu mainOperationSelector(IWContext iwc, String name, int refIndex) {
+	private DropdownMenu mainOperationSelector(IWContext iwc, String name, String refIndex) {
 		
 		DropdownMenu menu = null;
 		try {

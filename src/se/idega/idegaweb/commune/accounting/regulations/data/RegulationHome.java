@@ -8,5 +8,6 @@ public interface RegulationHome extends com.idega.data.IDOHome
  public java.util.Collection findAllRegulations()throws javax.ejb.FinderException;
  public Regulation findRegulation(int p0)throws javax.ejb.FinderException;
  public java.util.Collection findRegulationsByPeriod(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException;
+ public java.util.Collection findRegulationsByPeriod(java.sql.Date p0,java.sql.Date p1,java.lang.String p2,int p3,int p4)throws javax.ejb.FinderException;
 
 }

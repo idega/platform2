@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.9 2003/10/03 01:53:10 tryggvil Exp $
+ * $Id: RegulationListEditor.java,v 1.10 2003/10/03 15:18:02 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -44,10 +44,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.9 2003/10/03 01:53:10 tryggvil Exp $
+ * $Id: RegulationListEditor.java,v 1.10 2003/10/03 15:18:02 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -667,7 +667,13 @@ public class RegulationListEditor extends AccountingBlock {
 	}
 
 	private void closeMe(IWContext iwc) {
-		getParentPage().setToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _responsePage.getID()));
+
+		String backUrl = BuilderLogic.getInstance().getIBPageURL(iwc, _responsePage.getID());
+		backUrl += 	"&" + RegulationList.PARAM_SELECTOR_OPERATION + "=" + 
+						iwc.getParameter(PARAM_SELECTOR_MAIN_OPERATION) +
+					"&"	+ RegulationList.PARAM_SELECTOR_PAYMENT_FLOW_TYPE + "=" + 
+						iwc.getParameter(PARAM_SELECTOR_PAYMENT_FLOW_TYPE);
+		getParentPage().setToRedirect(backUrl);
 	}
 
 	private String formatCash(Integer cash) {
