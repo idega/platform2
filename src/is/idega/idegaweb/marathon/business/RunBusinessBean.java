@@ -275,6 +275,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	public void saveRun(int userID, String run, String distance, String year, String nationality, String tshirt, String chipOwnershipStatus, String chipNumber, String groupName, String bestTime, String goalTime, Locale locale) {
 		Group groupRun = null;
 		Group disGroup = null;
+		int ageGenderGroupID = -1;
 		User user = null;
 		try {
 			groupRun = getGroupBiz().getGroupByGroupID(Integer.parseInt(run));
@@ -317,6 +318,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 				while (groupsIter.hasNext()) {
 					Group group = (Group) groupsIter.next();
 					if (group.getName().equals(getGroupName(age, groupRun, user.getGenderID()))) {
+						ageGenderGroupID = Integer.parseInt(group.getPrimaryKey().toString());
 						group.addGroup(user);
 						group.store();
 					}
@@ -328,6 +330,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			r.setRunTypeGroupID(Integer.parseInt(run));
 			r.setRunDistanceGroupID(Integer.parseInt(distance));
 			r.setRunYearGroupID(Integer.parseInt(year));
+			if(ageGenderGroupID != -1) {
+				r.setRunGroupGroupID(ageGenderGroupID);
+			}
 			r.setTShirtSize(tshirt);
 			r.setChipOwnershipStatus(chipOwnershipStatus);
 			r.setChipNumber(chipNumber);
