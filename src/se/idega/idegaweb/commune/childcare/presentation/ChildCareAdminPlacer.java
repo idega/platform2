@@ -224,7 +224,7 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 		
 		try {
 			Collection areas = getBusiness().getSchoolBusiness().findAllSchoolAreas();
-			Map providerMap = getBusiness().getProviderAreaMap(areas, locale, emptyString);
+			Map providerMap = getBusiness().getProviderAreaMap(areas, locale, emptyString, false);
 				
 			if (areas != null && providerMap != null) {
 				Iterator iter = areas.iterator();
