@@ -5,6 +5,7 @@ package is.idega.idegaweb.marathon.presentation;
 
 import is.idega.idegaweb.marathon.business.RunBusiness;
 import is.idega.idegaweb.marathon.business.RunGroup;
+import is.idega.idegaweb.marathon.business.RunGroupComparator;
 import is.idega.idegaweb.marathon.business.RunGroupMap;
 import is.idega.idegaweb.marathon.business.RunResultsComparator;
 import is.idega.idegaweb.marathon.data.Run;
@@ -196,7 +197,7 @@ public class RunResultViewer extends Block {
 			int num = 1;
 			while (runIter.hasNext()) {
 				Run run = (Run) runIter.next();
-				row = insertRunIntoTable(table, row, run, num);
+				row = insertRunIntoTable(table, row, run, num, num);
 				num++;
 			}
 		}
@@ -223,7 +224,7 @@ public class RunResultViewer extends Block {
 					int num = 1;
 					while (runIter.hasNext()) {
 						Run run = (Run) runIter.next();
-						row = insertRunIntoTable(table, row, run, num);
+						row = insertRunIntoTable(table, row, run, num, num);
 						num++;
 						
 						if (!runIter.hasNext()) {
@@ -249,7 +250,6 @@ public class RunResultViewer extends Block {
 				runs.addAll(getRunsForRunners(runners));
 			}
 			sortRuns(runs);
-			//System.out.println("Number of runners: " + runs.size());
 			
 			Map runGroups = new HashMap();
 			RunGroupMap map = new RunGroupMap();
@@ -263,22 +263,15 @@ public class RunResultViewer extends Block {
 					if (runnerGroup == null) {
 						runnerGroup = new RunGroup(runner.getRunGroupName());
 						runGroups.put(runner.getRunGroupName(), runnerGroup);
-						//System.out.println("Creating run group: " + runnerGroup.getGroupName());
 					}
 					map.put(runnerGroup, runner);
 				}
 			}
-			//System.out.println("Number of group runners: " + groupRunners.size());
 
-			/*Map orderedGroups = new TreeMap();
-			iterator = map.keySet().iterator();
-			while (iterator.hasNext()) {
-				RunGroup group = (RunGroup) iterator.next();
-				orderedGroups.put(group.getCounter(), group);
-			}*/
-			//System.out.println("Number of ordered groups: " + orderedGroups.size());
-			
-			iterator = map.keySet().iterator();
+			List groupList = new ArrayList(map.keySet());
+			Collections.sort(groupList, new RunGroupComparator());
+
+			iterator = groupList.iterator();
 			while (iterator.hasNext()) {
 				RunGroup runGroup = (RunGroup) iterator.next();
 				Collection runnersInRunGroup = map.getCollection(runGroup);
@@ -291,7 +284,7 @@ public class RunResultViewer extends Block {
 					if (count < 3) {
 						Run run = (Run) runIter.next();
 						num = runs.indexOf(run);
-						row = insertRunIntoTable(table, row, run, num);
+						row = insertRunIntoTable(table, row, run, num, count+1);
 					}
 					count++;
 				}
@@ -399,7 +392,7 @@ public class RunResultViewer extends Block {
 		});
 	}
 
-	private int insertRunIntoTable(Table table, int row, Run run, int num) {
+	private int insertRunIntoTable(Table table, int row, Run run, int num, int participantRow) {
 		User user = (User) _runToRunnerMap.get(run);
 		table.add(getRunnerRowText(Integer.toString(num)), 1, row);
 		table.setStyleClass(1, row, getStyleName(STYLENAME_LIST_ROW));
@@ -442,7 +435,7 @@ public class RunResultViewer extends Block {
 		table.add(getRunnerRowText(run.getRunGroupName()), 13, row);
 		table.setStyleClass(13, row, getStyleName(STYLENAME_LIST_ROW));
 		
-		if (num % 2 == 0) {
+		if (participantRow % 2 == 0) {
 			table.setRowColor(row, LIGHT_COLOR);
 		}
 		else {
