@@ -2125,10 +2125,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			regData = addToIntegerCount(bothGendersAllAge, regData, menMembersUnder + womenMembersUnder + menMembersEqualOrOver + womenMembersEqualOrOver);
 			if(lastYearReport!=null) {
 				try {
-					int lastYearMemberCount = getWorkReportBusiness().getCountOfMembersByWorkReport(lastYearReport);
-					regData = addToIntegerCount(bothGendersLastYear, regData, lastYearMemberCount);
+					int lastYearPlayerCount = getWorkReportBusiness().getCountOfPlayersByWorkReport(lastYearReport);
+					regData = addToIntegerCount(bothGendersLastYear, regData, lastYearPlayerCount);
 				} catch(Exception e) {
-					System.out.println("Error getting member count for last year");
+					System.out.println("Error getting player count for last year");
 					e.printStackTrace();
 				}
 			}
