@@ -114,9 +114,10 @@ public class ReportContentViewer extends Editor{
       modinfo.setSessionAttribute("headers",headers);
       makeView();
       if(v != null){
-        addMain(this.doView(headers,v,listStart));
         this.addHeader(this.doHeader(eReport));
-        this.addMain(this.doFooter(listStart,v.size()));
+        addMain(this.doFooter(listStart,v.size()));
+        addMain(this.doView(headers,v,listStart));
+        addMain(this.doFooter(listStart,v.size()));
 
       }
       else
@@ -168,9 +169,10 @@ public class ReportContentViewer extends Editor{
       this.makeView();
 
       if(v != null){
-        addMain(this.doView(headers,v,listStart));
         this.addHeader(this.doHeader(eReport));
-        this.addMain(this.doFooter(listStart,v.size()));
+        addMain(this.doFooter(listStart,v.size()));
+        addMain(this.doView(headers,v,listStart));
+        addMain(this.doFooter(listStart,v.size()));
       }
       else
         addMain(new Text(" nothing to show"));
@@ -217,37 +219,59 @@ public class ReportContentViewer extends Editor{
     int laststart = lastgroup*displayNumber;
     int nextstart = start+displayNumber;
     int nextend = nextstart + displayNumber-1;
-    if(!(start == 1)){
-      Link leftLink = new Link("<< ");
-      leftLink.addParameter("start",start-displayNumber);
-      leftLink.setFontColor(this.LightColor);
-      T.add(leftLink,1,1);
-      T.add(getHeaderText((start-displayNumber)+"-"+(start-1)),1,1);
-    }
-    if(nextstart <= total){
-      String interval;
-      if(nextend > total){
-        interval = nextstart + "-" +(nextstart+ left-1);
+    if(start != -1){
+      if(!(start == 1)){
+        Link leftLink = new Link("<< ");
+        leftLink.addParameter("start",start-displayNumber);
+        leftLink.setFontColor(this.LightColor);
+        T.add(leftLink,1,1);
+        T.add(getHeaderText((start-displayNumber)+"-"+(start-1)),1,1);
       }
-      else{
-        interval = nextstart+"-"+(nextstart+displayNumber-1);
+      if(nextstart <= total){
+        String interval;
+        if(nextend > total){
+          interval = nextstart + "-" +(nextstart+ left-1);
+        }
+        else{
+          interval = nextstart+"-"+(nextstart+displayNumber-1);
+        }
+        T.add(getHeaderText(interval),5,1);
+        Link rightLink = new Link(" >>");
+        rightLink.addParameter("start",start+displayNumber);
+        rightLink.setFontColor(this.LightColor);
+        T.add(rightLink,5,1);
       }
-      T.add(getHeaderText(interval),5,1);
-      Link rightLink = new Link(" >>");
-      rightLink.addParameter("start",start+displayNumber);
-      rightLink.setFontColor(this.LightColor);
-      T.add(rightLink,5,1);
+      if(!((nextstart-1) < total) )
+        T.add(getHeaderText(start+"-"+(start+left-1)+" of "+total),3,1);
+      else
+        T.add(getHeaderText(start+"-"+(start+displayNumber-1)+" of "+total),3,1);
     }
-    if(nextend > total)
-      T.add(getHeaderText(start+"-"+(start+left-1)+" of "+total),3,1);
-    else
-      T.add(getHeaderText(start+"-"+(start+displayNumber-1)+" of "+total),3,1);
+    else{
+
+      T.add(getHeaderText("Total:"+total),3,1);
+
+      Link PartLink = new Link("Partial");
+      PartLink.addParameter("start",1);
+      PartLink.setFontColor(this.LightColor);
+      T.add(PartLink,2,1);
+
+    }
+
+    Link WholeLink = new Link("All");
+    WholeLink.addParameter("start",-1);
+    WholeLink.setFontColor(this.LightColor);
+    T.add(WholeLink,4,1);
     return T;
   }
 
   private ModuleObject doView(String[] headers,Vector content,int start){
     int len = content.size();
-    Table T= new Table(headers.length+1 ,displayNumber+1);
+    Table T;
+    if(start != -1)
+      T= new Table(headers.length+1 ,displayNumber+1);
+    else
+      T= new Table(headers.length+1 ,len+1);
+
     T.setWidth("100%");
     T.setWidth(1,"30");
     T.setCellpadding(2);
@@ -264,15 +288,28 @@ public class ReportContentViewer extends Editor{
 
     ReportContent RC;
     int cols = headers.length;
-    int index = start;
-    int end = start+displayNumber;
-    for(int i =0; index < end && index <= len;i++){
-      RC = (ReportContent)content.elementAt((index)-1);
-      for(int j = 0; j < cols;j++){
-        T.add(getBodyText(RC.getContent(j)),j+2,i+2);
+    if(start != -1){
+      int index = start;
+      int end = start+displayNumber;
+      for(int i =0; index < end && index <= len;i++){
+        RC = (ReportContent)content.elementAt((index)-1);
+        for(int j = 0; j < cols;j++){
+          T.add(getBodyText(RC.getContent(j)),j+2,i+2);
+        }
+        T.add(getBodyText(String.valueOf(index)),1,i+2);
+        index++;
       }
-      T.add(getBodyText(String.valueOf(index)),1,i+2);
-      index++;
+    }
+    else {
+      int clen = content.size();
+      for (int i = 0; i < clen; i++) {
+        RC = (ReportContent)content.elementAt(i);
+        for(int j = 0; j < cols;j++){
+          T.add(getBodyText(RC.getContent(j)),j+2,i+2);
+        }
+        T.add(getBodyText(String.valueOf(i+1)),1,i+2);
+      }
+
     }
 
     return T;

@@ -26,6 +26,7 @@ public class ReportEditor extends Editor{
   private int iAction = 0;
   private String prefix = "reed_";
   private String sLastOrder = "0";
+  private String sManual = null;
   private int iCategory;
   private int iSaveCategory = -1;
   private int iReportId = -1;
@@ -49,6 +50,9 @@ public class ReportEditor extends Editor{
 
   public void setSaveCategory(int iSaveCategory){
     this.iSaveCategory = iSaveCategory;
+  }
+  public void setManual(String manual){
+    this.sManual = manual;
   }
 
   public void setMainCategoryAttribute(String name,int id){
@@ -186,6 +190,7 @@ public class ReportEditor extends Editor{
       Table U = new Table();
       Table M = new Table();
       Table ML = new Table();
+      Table MLL = new Table();
       Table B = new Table();
       U.setBorder(BORDER);
       U.setCellpadding(0);
@@ -196,6 +201,11 @@ public class ReportEditor extends Editor{
       ML.setBorder(BORDER);
       ML.setCellpadding(0);
       ML.setCellspacing(0);
+      MLL.setBorder(BORDER);
+      MLL.setCellpadding(0);
+      MLL.setCellspacing(0);
+      if(this.sManual != null)
+        MLL.add(this.formatText(sManual));
 
       B.setBorder(BORDER);
       B.setCellpadding(0);
@@ -204,6 +214,7 @@ public class ReportEditor extends Editor{
       M.setWidth(1,"40%");
       M.add(box,1,1);
       M.add(ML,2,1);
+      M.add(MLL,2,1);
       T.add(U,1,1);
       T.add(M,1,2);
       T.add(B,1,3);
