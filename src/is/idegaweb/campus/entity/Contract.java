@@ -1,5 +1,5 @@
 /*
- * $Id: Contract.java,v 1.3 2001/07/09 17:49:28 aron Exp $
+ * $Id: Contract.java,v 1.4 2001/07/12 14:21:38 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,6 +25,7 @@ public class Contract extends GenericEntity {
   private static final String validFrom_ = "valid_from";
   private static final String validTo_ = "valid_to";
   private static final String status_ = "status";
+  private static final String applicantId_ = "app_applicant_id";
 
   public static final String statusCreated = "C";
   public static final String statusSigned = "S";
@@ -39,6 +40,7 @@ public class Contract extends GenericEntity {
     addAttribute(getIDColumnName());
     addAttribute(userId_,"User id",true,true,"java.lang.Integer","one-to-many","com.idega.core.ICUser");
     addAttribute(apartmentId_,"Apartment id",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.Apartment");
+    addAttribute(applicantId_,"Applicant id",true,true,"java.lang.Integer","one-to-one","com.idega.block.application.data.Applicant");
     addAttribute(validFrom_,"Valid from",true,true,"java.sql.Date");
     addAttribute(validTo_,"Valid to",true,true,"java.sql.Date");
     addAttribute(status_,"Status",true,true,"java.sql.String");
@@ -51,6 +53,10 @@ public class Contract extends GenericEntity {
 
   public String getUserIdColumnName() {
     return(userId_);
+  }
+
+  public String getApplicantIdColumnName(){
+    return(applicantId_);
   }
 
   public String getApartmentIdColumnName() {
@@ -79,6 +85,17 @@ public class Contract extends GenericEntity {
 
   public Integer getUserId() {
     return(getIntegerColumnValue(userId_));
+  }
+  public void setApplicantId(int id) {
+    setColumn(applicantId_,id);
+  }
+
+  public void setApplicantId(Integer id) {
+    setColumn(applicantId_,id);
+  }
+
+  public Integer getApplicantId() {
+    return(getIntegerColumnValue(applicantId_));
   }
 
   public void setApartmentId(int id) {

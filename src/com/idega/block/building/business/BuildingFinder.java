@@ -310,7 +310,7 @@ public class BuildingFinder {
     sql.append(" and bu_aprt_type.bu_aprt_type_id = ");
     sql.append(typeId);
     sql.append(" order by bu_apartment.bu_floor_id ");
-    System.err.println(sql.toString());
+
     try{
       L = EntityFinder.findAll(A,sql.toString());
     }
