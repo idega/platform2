@@ -77,7 +77,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				if (!processRecord(item))
 					_failedRecords.add(item);
 
-				if ((count % 10) == 0) {
+				if ((count % 100) == 0) {
 					System.out.println("NationalRegisterHandler processing RECORD [" + count + "] time: " + IWTimestamp.getTimestampRightNow().toString());
 				}
 
@@ -150,7 +150,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		String po = getProperty(COLUMN_PO);
 		String address = getProperty(COLUMN_ADDRESS);
 
-		System.out.println("ssn = " + ssn);
+//		System.out.println("ssn = " + ssn);
 
 		if (ssn == null || ssn.equals(""))
 			return false;
