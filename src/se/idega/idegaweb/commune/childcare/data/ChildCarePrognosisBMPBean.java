@@ -25,6 +25,8 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 	private final static String THREE_MONTHS_PRIORITY = "THREE_MONTHS_PRIORITY";
 	private final static String ONE_YEAR_PRIORITY = "ONE_YEAR_PRIORITY";
 	private final static String PROVIDER_CAPACITY = "PROVIDER_CAPACITY";
+	private final static String VACANCIES = "VACANCIES";
+	private final static String PROVIDER_COMMENTS = "PROVIDER_COMMENTS";
 
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
@@ -44,6 +46,8 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 		addAttribute(THREE_MONTHS_PRIORITY,"",true,true,java.lang.Integer.class);
 		addAttribute(ONE_YEAR_PRIORITY,"",true,true,java.lang.Integer.class);
 		addAttribute(PROVIDER_CAPACITY,"",true,true,java.lang.Integer.class);
+		addAttribute(VACANCIES,"",true,true,java.lang.Integer.class);
+		addAttribute(PROVIDER_COMMENTS,"",true,true,java.lang.String.class);
 		addOneToOneRelationship(PROVIDER_ID,School.class);
 	}
 
@@ -96,6 +100,20 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 		return getIntColumnValue(PROVIDER_CAPACITY);
 	}
 	
+	/**
+	 * @return int
+	 */
+	public int getVacancies() {
+		return getIntColumnValue(VACANCIES);
+	}
+	
+	/**
+	 * @return string
+	 */
+	public String getProviderComments() {
+		return getStringColumnValue(PROVIDER_COMMENTS);
+	}
+	
 	
 	/**
 	 * Sets the oneYearPrognosis.
@@ -128,6 +146,22 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 	 */
 	public void setProviderCapacity(int providerCapacity) {
 		setColumn(PROVIDER_CAPACITY,providerCapacity);
+	}
+	
+	/**
+	 * Sets the vacancies right now.
+	 * @param vacancies The vacancy to set
+	 */
+	public void setVacancies(int vacancies) {
+		setColumn(VACANCIES,vacancies);
+	}
+	
+	/**
+	 * Sets comments for the provider.
+	 * @param  providerComments The providerComments to set
+	 */
+	public void setProviderComments(String providerComments){
+		setColumn(PROVIDER_COMMENTS,providerComments);
 	}
 	
 	/**

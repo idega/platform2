@@ -6,6 +6,8 @@ public interface ChildCarePrognosis extends com.idega.data.IDOEntity
  public int getOneYearPriority();
  public int getOneYearPrognosis();
  public int getProviderCapacity();
+ public int getVacancies();
+ public String getProviderComments();
  public int getProviderID();
  public int getThreeMonthsPriority();
  public int getThreeMonthsPrognosis();
@@ -14,6 +16,8 @@ public interface ChildCarePrognosis extends com.idega.data.IDOEntity
  public void setOneYearPriority(int p0);
  public void setOneYearPrognosis(int p0);
  public void setProviderCapacity(int p0);
+ public void setVacancies(int p0);
+ public void setProviderComments(java.lang.String p0);
  public void setProviderID(int p0);
  public void setThreeMonthsPriority(int p0);
  public void setThreeMonthsPrognosis(int p0);
