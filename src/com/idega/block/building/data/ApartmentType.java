@@ -20,9 +20,7 @@ public class ApartmentType extends GenericEntity {
   public ApartmentType(int id) throws SQLException{
     super(id);
   }
-  public String getEntityName() {
-    return "bu_aprt_type";
-  }
+
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addAttribute(getApartmentCategoryIdColumnName(),"Category",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.ApartmentCategory");
@@ -43,21 +41,25 @@ public class ApartmentType extends GenericEntity {
     super.setMaxLength(getInfoColumnName(),4000);
   }
 
-  public String getApartmentCategoryIdColumnName(){return "apartment_category_id";}
-  public String getNameColumnName(){return "name";}
-  public String getInfoColumnName(){return "info";}
-  public String getImageIdColumnName(){return "ic_image_id"; }
-  public String getFloorPlanIdColumnName(){return "plan_id"; }
-  public String getRoomCountColumnName(){return "room_count";}
-  public String getAreaColumnName(){return "area";}
-  public String getKitchenColumnName(){return "area";}
-  public String getBathroomColumnName(){return "name";}
-  public String getStorageColumnName(){return "info";}
-  public String getBalconyColumnName(){return "name";}
-  public String getStudyColumnName(){return "info";}
-  public String getLoftColumnName(){return "loft";}
-  public String getRentColumnName(){return "rent";}
-  public String getFurnitureColumnName(){return "furniture";}
+  public String getEntityName() {
+    return getNameTableName();
+  }
+  public static String getNameTableName(){return "bu_aprt_type";}
+  public static String getApartmentCategoryIdColumnName(){return "BU_APRT_CAT_ID";}
+  public static String getNameColumnName(){return "name";}
+  public static String getInfoColumnName(){return "info";}
+  public static String getImageIdColumnName(){return "ic_image_id"; }
+  public static String getFloorPlanIdColumnName(){return "plan_id"; }
+  public static String getRoomCountColumnName(){return "room_count";}
+  public static String getAreaColumnName(){return "area";}
+  public static String getKitchenColumnName(){return "kitchen";}
+  public static String getBathroomColumnName(){return "bathroom";}
+  public static String getStorageColumnName(){return "storage";}
+  public static String getBalconyColumnName(){return "balcony";}
+  public static String getStudyColumnName(){return "study";}
+  public static String getLoftColumnName(){return "loft";}
+  public static String getRentColumnName(){return "rent";}
+  public static String getFurnitureColumnName(){return "furniture";}
 
 
   public String getName(){

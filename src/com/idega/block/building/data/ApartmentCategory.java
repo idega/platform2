@@ -20,9 +20,7 @@ public class ApartmentCategory extends GenericEntity {
   public ApartmentCategory(int id) throws SQLException{
     super(id);
   }
-  public String getEntityName() {
-    return "bu_aprt_cat";
-  }
+
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
@@ -30,8 +28,12 @@ public class ApartmentCategory extends GenericEntity {
     super.setMaxLength(getInfoColumnName(),4000);
   }
 
-  public String getNameColumnName(){return "name";}
-  public String getInfoColumnName(){return "info";}
+  public String getEntityName() {
+    return getNameTableName();
+  }
+  public static String getNameTableName(){return "bu_aprt_cat";}
+  public static String getNameColumnName(){return "name";}
+  public static String getInfoColumnName(){return "info";}
 
   public String getName(){
     return getStringColumnValue(getNameColumnName());

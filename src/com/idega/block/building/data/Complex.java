@@ -24,17 +24,17 @@ public class Complex extends GenericEntity {
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
-    addAttribute("description","Description",true,true,"java.lang.String");
+    addAttribute(getInfoColumnName(),"Info",true,true,"java.lang.String");
 
-    super.setMaxLength("info",4000);
+    super.setMaxLength(getInfoColumnName(),4000);
   }
 
   public String getEntityName() {
-    return "bu_complex";
+    return getNameTableName();
   }
-
-  public String getNameColumnName(){return "name";}
-  public String getInfoColumnName(){return "info";}
+  public static String getNameTableName(){return "bu_complex";}
+  public static String getNameColumnName(){return "name";}
+  public static String getInfoColumnName(){return "info";}
 
   public String getName(){
     return getStringColumnValue(getNameColumnName());

@@ -33,15 +33,15 @@ public class Building extends GenericEntity {
   }
 
   public String getEntityName() {
-    return "bu_building";
+    return getNameTableName();
   }
-
-  public String getNameColumnName(){return "name";}
-  public String getInfoColumnName(){return "info";}
-  public String getComplexIdColumnName(){return "complex_id";}
-  public String getImageIdColumnName(){return "ic_image_id";}
-  public String getStreetColumnName(){return "street";}
-  public String getStreetNumberColumnName(){return "street_number";}
+  public static String getNameTableName(){return "bu_building";}
+  public static String getNameColumnName(){return "name";}
+  public static String getInfoColumnName(){return "info";}
+  public static String getComplexIdColumnName(){return "bu_complex_id";}
+  public static String getImageIdColumnName(){return "ic_image_id";}
+  public static String getStreetColumnName(){return "street";}
+  public static String getStreetNumberColumnName(){return "street_number";}
 
   public String getName(){
     return getStringColumnValue(getNameColumnName());

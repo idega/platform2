@@ -31,12 +31,13 @@ public class Floor extends GenericEntity {
   }
 
   public String getEntityName() {
-    return "bu_floor";
+    return getNameTableName();
   }
-  public String getNameColumnName(){return "name";}
-  public String getInfoColumnName(){return "info";}
-  public String getBuildingIdColumnName(){return "building_id";}
-  public String getImageIdColumnName(){return "ic_image_id";}
+  public static String getNameTableName(){return "bu_floor";}
+  public static String getNameColumnName(){return "name";}
+  public static String getInfoColumnName(){return "info";}
+  public static String getBuildingIdColumnName(){return "bu_building_id";}
+  public static String getImageIdColumnName(){return "ic_image_id";}
 
   public String getName(){
     return getStringColumnValue(getNameColumnName());
