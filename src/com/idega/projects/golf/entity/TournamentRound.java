@@ -1,5 +1,5 @@
 /*
- * $Id: TournamentRound.java,v 1.4 2001/05/15 10:43:50 palli Exp $
+ * $Id: TournamentRound.java,v 1.5 2001/05/30 12:47:26 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -110,6 +110,13 @@ public class TournamentRound extends GolfEntity{
           scorecards[j].delete();
         }
       }
+    }
+    catch (java.sql.SQLException e) {
+      e.printStackTrace();
+    }
+
+    try {
+        super.delete();
     }
     catch (java.sql.SQLException e) {
       e.printStackTrace();

@@ -19,7 +19,7 @@ public class Tournament extends GolfEntity{
 		super();
 	}
 
-	public Tournament(int id)throws SQLException{
+	public Tournament(int id) throws SQLException{
 		super(id);
 	}
 
@@ -392,171 +392,90 @@ public class Tournament extends GolfEntity{
          * Delete the tournament if there is no registered data to it - Throws an SQLException if there is data (scorecards) registered to it
          */
 	public void delete()throws SQLException{
-		Connection conn= null;
-		Statement Stmt= null;
-		try{
-
-                        //if there is registered data to the tournament (scorecard)
-                        //this should fail and throw an SQLException
-			Scorecard[] scorecards;
-                        TournamentRound[] rounds = getTournamentRounds();
-
-                        if(rounds!=null){
-                          for(int i=0;i<rounds.length;i++){
-                              rounds[i].delete();
-                          }
-                        }
-
-                        conn = getConnection();
-			Stmt = conn.createStatement();
-
-                        Member member = new Member();
-			Stmt.executeUpdate("delete from "+getNameOfMiddleTable(this,member)+" where "+getIDColumnName()+"='"+getID()+"'");
-			Stmt.close();
-
-			TournamentDay[] days = this.getTournamentDays();
-                        if(days!=null){
-                          for(int i=0;i<days.length;i++){
-                                  days[i].delete();
-                          }
-                        }
-
-
-
-                        StartingtimeFieldConfig[] sFieldConfig = (StartingtimeFieldConfig[]) (new StartingtimeFieldConfig()).findAllByColumn("tournament_id",this.getID()+"") ;
-                        for (int i = 0; i < sFieldConfig.length; i++) {
-                            sFieldConfig[i].delete();
-                        }
-
-
-			TournamentGroup[] groups = getTournamentGroups();
-                        if(groups!=null){
-                          for(int i=0;i<groups.length;i++){
-
-                                  Statement Stmt2 = conn.createStatement();
-                                  Stmt2.executeUpdate("delete from "+getNameOfMiddleTable(this,groups[i])+" where "+getIDColumnName()+"='"+getID()+"'");
-                                  Stmt2.close();
-
-                          }
-                        }
-			TeeColor[] colors = getTeeColors();
-                        if(colors!=null){
-                          for(int i=0;i<colors.length;i++){
-
-                                  Statement Stmt2 = conn.createStatement();
-                                  Stmt2.executeUpdate("delete from "+getNameOfMiddleTable(this,colors[i])+" where "+getIDColumnName()+"='"+getID()+"'");
-                                  Stmt2.close();
-
-                          }
-                        }
-
-                        Startingtime[] stimes = (Startingtime[]) this.findReverseRelated(new Startingtime());
-                        if (stimes != null) {
-                            for (int i = 0; i < stimes.length; i++) {
-                                stimes[i].removeFrom(this);
-                                stimes[i].delete();
-                            }
-
-                        }
-
-			super.delete();
-		}
-		finally{
-			if (Stmt != null){
-				Stmt.close();
-			}
-			if (conn != null){
-				freeConnection(conn);
-			}
-		}
-
+            deleteWithAllData();
 	}
+
+
+        /**
+         * Deletes all data including scorecards,registrations etc.
+         */
+        public void deleteAllData() throws SQLException {
+            try {
+                Member.getStaticInstance("com.idega.projects.golf.entity.Member").reverseRemoveFrom(this);
+            }
+            catch (Exception e) {e.printStackTrace(System.err);}
+
+            try {
+                TournamentRound[] rounds = this.getTournamentRounds();
+                if(rounds!=null){
+                  for(int i=0;i<rounds.length;i++){
+                      try {
+                          Connection conn = this.getConnection();
+                          Statement Stmt = conn.createStatement();
+
+                          Stmt.executeUpdate("DELETE FROM TOURNAMENT_ROUND_STARTINGTIME where TOURNAMENT_ROUND_ID = "+rounds[i].getID());
+
+                          Stmt.close();
+                          freeConnection(conn);
+                      }
+                      catch (Exception e) {e.printStackTrace(System.err);}
+
+                      rounds[i].delete();
+                  }
+                }
+            }
+            catch (Exception e) {e.printStackTrace(System.err);}
+
+            try {
+                TournamentDay[] days = this.getTournamentDays();
+                if(days!=null){
+                  for(int i=0;i<days.length;i++){
+                          days[i].delete();
+                  }
+                }
+            }
+            catch (Exception e) {e.printStackTrace(System.err);}
+
+            try {
+                StartingtimeFieldConfig[] sFieldConfig = (StartingtimeFieldConfig[]) (new StartingtimeFieldConfig()).findAllByColumn("tournament_id",this.getID()+"") ;
+                for (int i = 0; i < sFieldConfig.length; i++) {
+                    sFieldConfig[i].delete();
+                }
+            }
+            catch (Exception e) {e.printStackTrace(System.err);}
+
+            try {
+                TournamentGroup group = new TournamentGroup();
+                group.reverseRemoveFrom(this);
+                        }
+            catch (Exception e) {e.printStackTrace(System.err);}
+
+            try{
+                TeeColor.getStaticInstance("com.idega.projects.golf.entity.TeeColor").removeFrom(this);
+            }
+            catch (Exception e) {e.printStackTrace(System.err);}
+
+
+            try {
+                Startingtime[] stimes = (Startingtime[]) (new Startingtime()).findAll("Select startingtime.* from startingtime ,tournament_startingtime where startingtime.startingtime_id = tournament_startingtime.startingtime_id AND tournament_id = "+this.getID());
+                if (stimes != null) {
+                    for (int i = 0; i < stimes.length; i++) {
+                        stimes[i].removeFrom(new Tournament());
+                        stimes[i].delete();
+                    }
+                }
+            }
+            catch (Exception e) {e.printStackTrace(System.err);}
+
+        }
 
 
         /**
          * Deletes the tournament with all data including scorecards,registrations etc.
          */
 	public void deleteWithAllData()throws SQLException{
-		Connection conn= null;
-		Statement Stmt= null;
-		try{
-			conn = getConnection();
-
-			Member member = new Member();
-
-			Stmt = conn.createStatement();
-			Stmt.executeUpdate("delete from "+getNameOfMiddleTable(this,member)+" where "+getIDColumnName()+"='"+getID()+"'");
-			Stmt.close();
-
-			TournamentDay[] days = this.getTournamentDays();
-                        if(days!=null){
-                          for(int i=0;i<days.length;i++){
-
-                                  days[i].delete();
-
-                          }
-                        }
-
-
-			TournamentRound[] rounds = getTournamentRounds();
-                        if(rounds!=null){
-                          for(int i=0;i<rounds.length;i++){
-
-
-                                  Scorecard[] cards = (Scorecard[])(new Scorecard()).findAllByColumn("tournament_round_id",rounds[i].getID());
-
-                                    if(cards!=null){
-                                      for(int n=0;n<cards.length;n++){
-
-                                        Stroke[] strokes = (Stroke[])(new Stroke()).findAllByColumn("scorecard_id",cards[n].getID());
-
-                                        if(strokes!=null){
-                                          for(int k=0;k<strokes.length;k++){
-                                            strokes[k].delete();
-                                          }
-                                        }
-
-                                        cards[n].delete();
-                                      }
-
-                                    }
-
-                                   rounds[i].delete();
-                          }
-                        }
-			TournamentGroup[] groups = getTournamentGroups();
-                        if(groups!=null){
-                          for(int i=0;i<groups.length;i++){
-
-                                  Statement Stmt2 = conn.createStatement();
-                                  Stmt2.executeUpdate("delete from "+getNameOfMiddleTable(this,groups[i])+" where "+getIDColumnName()+"='"+getID()+"'");
-                                  Stmt2.close();
-
-                          }
-                        }
-			TeeColor[] colors = getTeeColors();
-                        if(colors!=null){
-                          for(int i=0;i<colors.length;i++){
-
-                                  Statement Stmt2 = conn.createStatement();
-                                  Stmt2.executeUpdate("delete from "+getNameOfMiddleTable(this,colors[i])+" where "+getIDColumnName()+"='"+getID()+"'");
-                                  Stmt2.close();
-
-                          }
-                        }
-
-
-			super.delete();
-		}
-		finally{
-			if (Stmt != null){
-				Stmt.close();
-			}
-			if (conn != null){
-				freeConnection(conn);
-			}
-		}
-
+            deleteAllData();
+            super.delete();
 	}
 
 

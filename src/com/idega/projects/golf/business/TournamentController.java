@@ -268,61 +268,44 @@ public class TournamentController{
         return (young && old && sex && maxHand && minHand);
     }
 
-    public static boolean isMemberAllowedToRegister(com.idega.projects.golf.entity.Member member,Tournament tournament)throws SQLException{
 
-            boolean theReturn = false;
-/*
-            if (member.getMainUnionID() != 1) {
-                TournamentGroup[] groups = tournament.getTournamentGroups();
-//                if (tournament.getIfOpenTournament()){
-                                if (tournament.getIfGroupTournament()){
-                                        //Check if member is in the tournament group
-                                        for (int i = 0 ; i < groups.length; i++){
-                                                if (TournamentController.isMemberInTournamentGroup(member, groups[i])) {
-                                                    theReturn = true;
-                                                }
-                                        }
-                                }
-                                else{
-                                        theReturn=true;
-                                }
-                }
-                else{
-                        if (member.isMemberIn(tournament.getUnion())){
-                                if (tournament.getIfGroupTournament()){
-                                        //Check if member is in the tournament group
-                                        for (int i = 0 ; i < groups.length; i++){
-                                                if (TournamentController.isMemberInTournamentGroup(member, groups[i])) {
-                                                    theReturn = true;
-                                                }
-                                        }
-                                }
-                                else{
-                                        theReturn = true;
-                                }
-                        }
-                }
-            }
-            else {
-            }
-*/
+    /**
+     * Returns int error message.
+     *    0: No error, member er allowed to register
+     *    1: UnionMemberInfo entry not correct.
+     *    2: Member does not fit critera for TournamentGroup.
+     *    3: Tournament not set up correctly, no TournamentGroups specified.
+     */
+    public static int isMemberAllowedToRegister(com.idega.projects.golf.entity.Member member,Tournament tournament)throws SQLException{
 
+        int error = 0;
+        boolean theReturn = true;
+
+        UnionMemberInfo[] umi = (UnionMemberInfo[]) (new UnionMemberInfo()).findAll("Select * from union_member_info where member_id = "+member.getID()+" and MEMBER_STATUS = 'A' and MEMBERSHIP_TYPE = 'main'");
+        if (umi.length != 1 ) {
+            theReturn = false;
+            error = 1;
+        }
+
+        if (error == 0) {
             if (tournament.getIfGroupTournament()){
                 TournamentGroup[] groups = tournament.getTournamentGroups();
+                error = 2;
                 for (int i = 0 ; i < groups.length; i++){
                     if (TournamentController.isMemberInTournamentGroup(member, groups[i])) {
                         theReturn = true;
+                        error = 0;
                         break;
                     }
                 }
             }
             else{
                 theReturn=true;
+                error = 3;
             }
+        }
 
-
-
-            return theReturn;
+        return error;
     }
 
 
@@ -475,12 +458,22 @@ public class TournamentController{
         idegaTimestamp tourDay = null;
 
         DropdownMenu rounds = new DropdownMenu("tournament_round");
+          if (!onlineRegistration) {
+            for (int i = 0; i < tourRounds.length; i++) {
+              tourDay = new idegaTimestamp(tourRounds[i].getRoundDate());
+                rounds.addMenuElement(tourRounds[i].getID() ,"Hringur "+tourRounds[i].getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
+            }
 
             if (tournamentRoundId != -1) {
+                rounds.setSelectedElement(""+tournamentRound.getID());
+            }
+            rounds.setToSubmit();
+          }
+          else {
               tourDay = new idegaTimestamp(tournamentRound.getRoundDate());
                 rounds.addMenuElement(tournamentRound.getID() ,"Hringur "+tournamentRound.getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
-                table.add(rounds,1,row);
-            }
+          }
+        table.add(rounds,1,row);
 
         table.mergeCells(1,row,6,row);
         table.setAlignment(1,row,"right");
