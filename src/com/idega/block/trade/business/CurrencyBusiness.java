@@ -104,6 +104,7 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
 	    holder.setTimestamp(stamp);
 	    currencyMap.put(holder.getCurrencyName(),holder);
 	  }
+	  addDefaultCurrency();
 	  saveCurrencyValuesToDatabase();
 	}
 	else {
@@ -128,6 +129,8 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
 	holder.setMiddleValue(1);
       currencyMap.put(holder.getCurrencyName(),holder);
     }
+
+    System.out.println("Default currency: "+defaultCurrency);
   }
 
   public static CurrencyHolder getCurrencyHolder(String currencyName) {
@@ -154,6 +157,15 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
       }
     }
     return amount;
+  }
+
+  public static void addDefaultCurrency() {
+    CurrencyHolder holder = new CurrencyHolder();
+      holder.setCurrencyName(defaultCurrency);
+      holder.setBuyValue(1);
+      holder.setSellValue(1);
+      holder.setMiddleValue(1);
+    currencyMap.put(holder.getCurrencyName(),holder);
   }
 
   public static void saveCurrencyValuesToDatabase() {
@@ -183,6 +195,8 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
 	values.setSellValue(holder.getSellValue());
 	values.setMiddleValue(holder.getMiddleValue());
 	values.setCurrencyDate(stamp.getTimestamp());
+	holder.setCurrencyID(currency.getID());
+	currencyMap.put(holder.getCurrencyName(),holder);
 
 	if ( update )
 	  bulk.add(values,EntityBulkUpdater.update);
