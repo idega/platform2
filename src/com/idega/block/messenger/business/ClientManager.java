@@ -37,6 +37,7 @@ public class ClientManager implements PacketManager{
     try{
       User user = new User(Integer.parseInt(userId));
       clients.put(sessionId,user);
+      removeDoubleRegistry(sessionId,userId);
       reverseClients.put(userId,sessionId);
       version++;
     }
@@ -99,7 +100,6 @@ public class ClientManager implements PacketManager{
         User user = (User) ClientManager.clients.get(sessionId);//already logged on
         if( user == null ){
           clientCheckIn(sessionId,userId);//register this client and check that he's not double logged on
-          removeDoubleRegistry(sessionId,userId);
         }
       }
 
@@ -146,6 +146,7 @@ public class ClientManager implements PacketManager{
       existed = true;
     }
     clients.remove(fromId);
+    reverseClients.remove(userId);//old reference
 
     return existed;
   }
