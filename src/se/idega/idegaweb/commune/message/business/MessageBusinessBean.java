@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.10 2002/09/18 10:26:08 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.11 2002/09/23 21:06:49 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -26,6 +26,7 @@ import com.idega.block.process.data.CaseCode;
 import com.idega.core.data.Email;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOStoreException;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserProperties;
@@ -41,6 +42,11 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	private String TYPE_USER_MESSAGE = "SYMEDAN";
 	private String TYPE_SYSTEM_PRINT_MAIL_MESSAGE = "SYMEBRV";
 	private String TYPE_SYSTEM_PRINT_ARCHIVATION_MESSAGE = "SYMEARK";
+
+	private static String DEFAULT_SMTP_MAILSERVER="mail.idega.is";
+	private static String PROP_SYSTEM_SMTP_MAILSERVER="messagebox_smtp_mailserver";
+	private static String PROP_MESSAGEBOX_FROM_ADDRESS="messagebox_from_mailaddress";
+	private static String DEFAULT_MESSAGEBOX_FROM_ADDRESS="messagebox@idega.com";
 
 	public MessageBusinessBean() {
 	}
@@ -212,11 +218,20 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 
 	public void sendMessage(String email, String subject, String body) {
-		/**
-		 * @todo: Implement better
-		 */
-		String mailServer = "mail.idega.is";
-		String fromAddress = "messagebox@idega.com";
+
+		String mailServer = DEFAULT_SMTP_MAILSERVER;
+		String fromAddress = DEFAULT_MESSAGEBOX_FROM_ADDRESS;
+		try{
+			IWBundle iwb = getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+			mailServer = iwb.getProperty(PROP_SYSTEM_SMTP_MAILSERVER,DEFAULT_SMTP_MAILSERVER);
+			fromAddress = iwb.getProperty(PROP_MESSAGEBOX_FROM_ADDRESS,DEFAULT_MESSAGEBOX_FROM_ADDRESS);
+		}
+		catch(Exception e){
+			System.err.println("MessageBusinessBean: Error getting mail property from bundle");
+			e.printStackTrace();	
+		}
+			
+
 		try {
 			com.idega.util.SendMail.send(fromAddress, email.trim(), "", "", mailServer, subject, body);
 		}
