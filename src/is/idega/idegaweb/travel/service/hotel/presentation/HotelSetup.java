@@ -249,7 +249,7 @@ public class HotelSetup extends TravelManager {
 			}
 			++row;
 			table.add(new TextInput(PARAMETER_NAME), 1, row);
-			table.add(new HiddenInput(PARAMETER_ROOM_TYPE_ID, "-1"), 1, row);
+			table.add(new HiddenInput(PARAMETER_HOTEL_TYPE_ID, "-1"), 1, row);
 			table.add(new BooleanInput(PARAMETER_USE_RATING), 2, row);
 			table.setRowColor(row, GRAY);
 			
