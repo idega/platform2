@@ -964,7 +964,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//then for each get its leagues and the count for
 		//each age and create a row and insert into an ordered map by league
 		//then iterate the map and insert into the final report collection.
-		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, null);
+		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
 		Map regionalUnionsStatsMap = new TreeMap();
 		//Iterating through workreports and creating report data 
 		Iterator iter = clubs.iterator();
@@ -1079,7 +1079,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//then for each get its leagues and the count for
 		//each age and create a row and insert into an ordered map by league
 		//then iterate the map and insert into the final report collection.
-		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, null);
+		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
 		Map regionalUnionsStatsMap = new TreeMap();
 		//Iterating through workreports and creating report data 
 		Iterator iter = clubs.iterator();
@@ -1366,7 +1366,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//then for each get its leagues and the count for
 		//each age and create a row and insert into an ordered map by league
 		//then iterate the map and insert into the final report collection.
-		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, null);
+		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
 		//Iterating through workreports and creating report data 
 		Iterator iter = clubs.iterator();
 		while (iter.hasNext()) {
@@ -1468,7 +1468,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//then for each get its leagues and the count for
 		//each age and create a row and insert into an ordered map by league
 		//then iterate the map and insert into the final report collection.
-		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, null);
+		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
 		Map regionalUnionsStatsMap = new TreeMap();
 		//Iterating through workreports and creating report data 
 		Iterator iter = clubs.iterator();
@@ -1604,7 +1604,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//then for each get its leagues and the count for
 		//each age and create a row and insert into an ordered map by league
 		//then insert into the final report collection.
-		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, null);
+		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
 		Map leagueStatsMap = new TreeMap();
 		List leagueGroupIdList = getGroupIdListFromWorkReportGroupCollection(leaguesFilter);
 	
@@ -2343,7 +2343,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			WorkReport report = (WorkReport) iter.next();
 			String cName = report.getGroupName();
 			System.out.print("Processing club " + cName);
-	
+			
 			boolean showClub = showClubType(report, type) && showClubStatus(report, type);
 			if(!showClub) {
 				System.out.println(" (skipped)");
