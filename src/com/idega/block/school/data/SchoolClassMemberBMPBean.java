@@ -225,6 +225,36 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendOrderBy(REGISTER_DATE + " desc");
 		return (Integer)this.idoFindOnePKBySQL(sql.toString());
 	}
+	
+	public Integer ejbFindLatestByUser(User user) throws FinderException, RemoteException {
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl")
+		
+		.appendWhere()
+		.append(" mb." + MEMBER)
+		.appendEqualSign()
+		.append(user.getPrimaryKey())
+		
+		.appendAnd()
+		.append("(cl." + SchoolClassBMPBean.COLUMN_VALID)
+		.appendEqualSign()
+		.appendWithinSingleQuotes("Y")
+		
+		.appendOr()
+		.append("cl." + SchoolClassBMPBean.COLUMN_VALID)
+		.append(" is null)")
+		
+		.appendAnd()
+		.append(" mb." + SCHOOLCLASS)
+		.appendEqualSign()
+		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		
+		sql.appendOrderBy(REGISTER_DATE + " desc");
+		
+		
+		return (Integer)this.idoFindOnePKBySQL(sql.toString());
+	}
 
 	public Collection ejbFindByStudentAndSchool(int userID, int schoolID) throws FinderException, RemoteException {
 		IDOQuery sql = idoQuery();
