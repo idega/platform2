@@ -6,6 +6,7 @@ package is.idega.idegaweb.campus.block.application.business;
 
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
+import is.idega.idegaweb.campus.block.application.data.ApplicantFamily;
 import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.AppliedHome;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
@@ -1040,6 +1041,21 @@ import com.idega.util.IWTimestamp;
 			e.printStackTrace();
 		}
 		return map;
+	}
+	
+	public ApplicantFamily getApplicantFamily(Applicant applicant){
+		if(applicant!=null){
+			return new ApplicantFamily(applicant);
+		}
+		return null;
+	}
+	
+	public Applicant getSpouseForApplicant(Applicant applicant){
+		return getApplicantFamily(applicant).getSpouse();
+	}
+	
+	public Collection getChildrenForApplication(Applicant applicant){
+		return getApplicantFamily(applicant).getChildren();
 	}
 	
 	

@@ -1,5 +1,6 @@
 package is.idega.idegaweb.campus.block.application.business;
 
+import is.idega.idegaweb.campus.block.application.data.ApplicantFamily;
 import is.idega.idegaweb.campus.block.application.data.AppliedHome;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.data.CampusApplicationHome;
@@ -65,5 +66,8 @@ public interface ApplicationService extends com.idega.business.IBOService
 	public Priority storePriority(String code,String description,String hexColor)throws RemoteException;
 	public void removePriority(String id)throws RemoteException;
 	public Map getPriorityColorMap();
+	public ApplicantFamily getApplicantFamily(Applicant applicant)throws RemoteException;
+	public Applicant getSpouseForApplicant(Applicant applicant)throws RemoteException;
+	public Collection getChildrenForApplication(Applicant applicant) throws RemoteException;
 	
 }
