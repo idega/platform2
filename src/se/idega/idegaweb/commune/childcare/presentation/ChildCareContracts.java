@@ -160,9 +160,9 @@ public class ChildCareContracts extends ChildCareBlock {
 					//registered = new IWTimestamp(student.getRegisterDate());
 					
 					
-					contract = getBusiness().getValidContractForChild(((Integer)child.getPrimaryKey()).intValue());
+					//contract = getBusiness().getValidContractForChild(((Integer)child.getPrimaryKey()).intValue());
 					
-					
+					contract= getBusiness().getLatestContract(((Integer)child.getPrimaryKey()).intValue());
 					
 
 					if (useStyleNames()) {
