@@ -32,11 +32,13 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.presentation.RegulationSearchPanel;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
@@ -74,6 +76,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private String ERROR_PLACING_EMPTY = "error_placing_empty";
 	private String ERROR_DATE_FORMAT = "error_date_form";
 	private String ERROR_DATE_PERIODE_NEGATIVE = "error_date_periode_negative";
+	private String ERROR_REG_SPEC_BLANK = "error_reg_spec_blank";	
+	
 //	private String ERROR_AMOUNT_EMPTY = "error_amount_empty";
 	private String ERROR_POSTING = "error_posting";
 	private String ERROR_OWNPOSTING_EMPTY = "error_ownposting_empty";
@@ -368,7 +372,12 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		if (iwc.getParameter(PAR_PROVIDER) != null){
 			entry.setSchoolId(new Integer(iwc.getParameter(PAR_PROVIDER)).intValue());
 		}
-		entry.setRegSpecTypeId(new Integer(iwc.getParameter(PAR_REGULATION_TYPE)).intValue());
+
+		RegulationSpecType regSpecType = getRegulationSpecType(iwc.getParameter(PAR_REGULATION_TYPE));
+		if (regSpecType.getRegSpecType().equals(RegSpecConstant.BLANK)){
+			errorMessages.put(ERROR_REG_SPEC_BLANK, localize(LOCALIZER_PREFIX + "reg_spec_blank", "Choose another value for regelspec.typ."));
+		}		
+		entry.setRegSpecTypeId(((Integer) regSpecType.getPrimaryKey()).intValue());
 		entry.setChild(user);
 		entry.setVatRuleId(new Integer(iwc.getParameter(PAR_VAT_RULE)).intValue());
 		
@@ -376,6 +385,9 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		try{
 			PostingBlock p = new PostingBlock(iwc);			
 			entry.setOwnPosting(p.getOwnPosting());
+			if (p.getOwnPosting() == null || p.getOwnPosting().length() == 0){
+				errorMessages.put(ERROR_OWNPOSTING_EMPTY, localize(LOCALIZER_PREFIX + "own_posting_null", "Own posting must be given a value"));
+			}			
 			entry.setDoublePosting(p.getDoublePosting());
 		} catch (PostingParametersException e) {
 			errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
@@ -399,14 +411,13 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		if (entry.getPlacing() == null || entry.getPlacing().length() == 0){
 			errorMessages.put(ERROR_PLACING_EMPTY, localize(LOCALIZER_PREFIX + "placing_null", "Placing must be given a value"));
 		} 
+
+		
 //		if (entry.getAmount() == 0){
 //			errorMessages.put(ERROR_AMOUNT_EMPTY, localize(LOCALIZER_PREFIX + "amount_null", "Amount must be given a value"));
 //		}
 
-		if (entry.getOwnPosting() == null || entry.getOwnPosting().length() == 0){
-			errorMessages.put(ERROR_OWNPOSTING_EMPTY, localize(LOCALIZER_PREFIX + "own_posting_null", "Own posting must be given a value"));
-		}
-		
+	
 		if (! errorMessages.isEmpty()){
 			handleEditAction(iwc, entry, user, errorMessages);					
 			
@@ -796,6 +807,10 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
+		if (errorMessages.get(ERROR_REG_SPEC_BLANK) != null) {
+			table.add(getErrorText((String) errorMessages.get(ERROR_REG_SPEC_BLANK)), 2, row++);			
+		}
+		
 		addDropDown(table, PAR_REGULATION_TYPE, KEY_REGULATION_TYPE, regTypes, entry.getRegSpecTypeId(), "getRegSpecType", 1, row++);
 		addDropDownLocalized(table, PAR_VAT_RULE, KEY_VAT_RULE, vatTypes, entry.getVatRuleId(),  "getVATRule", 1, row++);
 
@@ -840,11 +855,11 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		return new RegularInvoiceEntry() {
 		
 			public Date getFrom() {
-				return _reg != null ? _reg.getPeriodFrom() : getDateValue(PAR_FROM);
+				return getDateValue(PAR_FROM);
 			}
 		
 			public Date getTo() {
-				return _reg != null ? _reg.getPeriodTo() : getDateValue(PAR_TO);
+				return getDateValue(PAR_TO);
 			}
 		
 			public String getPlacing() {
@@ -1111,11 +1126,24 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		return schoolBusiness.getSchoolCategoryHome().findByPrimaryKey(opField);					
 	}
 	
-	
 	public static String getUserIDParameterName(){
 		return PAR_USER_ID;
 	}
 	
+	private RegulationSpecType getRegulationSpecType(String id){
+		RegulationSpecType reg = null;
+		try{
+			RegulationSpecTypeHome regHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
+			reg = regHome.findByPrimaryKey(id);
+		}catch(RemoteException ex){
+			ex.printStackTrace();
+			
+		}catch(FinderException ex){
+			ex.printStackTrace();			
+		}		
+		return reg;
+	}
+		
 	
 
 }

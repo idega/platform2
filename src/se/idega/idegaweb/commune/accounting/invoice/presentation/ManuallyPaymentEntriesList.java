@@ -9,15 +9,16 @@ package se.idega.idegaweb.commune.accounting.invoice.presentation;
 import is.idega.idegaweb.member.presentation.UserSearcher;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.sql.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
@@ -62,6 +63,11 @@ import com.idega.user.data.User;
 public class ManuallyPaymentEntriesList extends AccountingBlock {
 
 
+//	private String ERROR_DOUBLE_POSTING_NULL = "error_double_posting";
+//	private String ERROR_OWN_POSTING_NULL = "error_own_posting";
+//	private String ERROR_PLACING_NULL = "error_placing";
+	private String ERROR_AMOUNT_ITEM_NULL = "error_amount_item";
+	private String ERROR_AMOUNT_MONTH_NULL = "error_amount_month";
 	private String ERROR_POSTING = "error_posting";
 	private String ERROR_OWNPOSTING_EMPTY = "error_ownposting_empty";
 
@@ -226,6 +232,12 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	private void handleSaveAction(IWContext iwc /*, School school*/){
 		Map errorMessages = new HashMap();
 		
+		checkNotNull(iwc, PAR_AMOUNT_PR_MONTH, errorMessages, ERROR_AMOUNT_MONTH_NULL, "Amount must be set");
+		checkNotNull(iwc, PAR_AMOUNT_PR_ITEM, errorMessages, ERROR_AMOUNT_ITEM_NULL, "Amount must be set");
+//		checkNotNull(iwc, PAR_PLACING, errorMessages, ERROR_PLACING_NULL, "Placing must be set");
+//		checkNotNull(iwc, PAR_OWN_POSTING, errorMessages, ERROR_OWN_POSTING_NULL, "Amount must be given");
+//		checkNotNull(iwc, PAR_DOUBLE_ENTRY_ACCOUNT, errorMessages, ERROR_DOUBLE_POSTING_NULL, "Amount must be given");
+		
 		PaymentRecord pay = null;
 		PaymentHeader payhdr = null;
 		InvoiceRecord inv = null;
@@ -287,7 +299,11 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		}
 	}
 
-
+	private void checkNotNull(IWContext iwc, String par, Map errorMessages, String errorPar, String errorMsg){
+		if (iwc.getParameter(par) == null || iwc.getParameter(par).length() == 0){
+			errorMessages.put(errorPar, errorMsg);
+		}
+	}
 
 	private PaymentRecordHome getPaymentRecordHome() {
 		PaymentRecordHome home = null;
@@ -419,6 +435,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 				
 		regSearchPanel.setPlacingIfNull(getValue(iwc, PAR_PLACING));
 		regSearchPanel.setSchoolIfNull(getSchool(iwc));
+		regSearchPanel.setOutFlowOnly(true);
 		
 	
 		regSearchPanel.maintainParameter(new String[]{PAR_USER_SSN, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_PK});
@@ -438,13 +455,27 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
-		addFloatField(table, PAR_AMOUNT_PR_ITEM, KEY_AMOUNT_PR_ITEM, getValue(iwc, PAR_AMOUNT_PR_ITEM), 1, row);
-		addField(table, PAR_NUMBER_OF_ITEMS, KEY_NUMBER_OF_ITEMS, getValue(iwc, PAR_NUMBER_OF_ITEMS), 3, row++, 30);
+		if (errorMessages.get(ERROR_AMOUNT_MONTH_NULL) != null) {
+			table.add(getErrorText((String) errorMessages.get(ERROR_AMOUNT_MONTH_NULL)), 2, row++);	
+		}		
+
+
+
+		addField(table, PAR_AMOUNT_PR_ITEM, KEY_AMOUNT_PR_ITEM, ""+AccountingUtil.roundAmount(new Float(getValue(iwc, PAR_AMOUNT_PR_ITEM)).floatValue()), 1, row, 30);
+
+		String items = getValue(iwc, PAR_NUMBER_OF_ITEMS);
+		if (items == null || items.length() == 0){
+			items = "1";
+		}
+		addField(table, PAR_NUMBER_OF_ITEMS, KEY_NUMBER_OF_ITEMS, items, 3, row++, 30);
 		
 		
 		//Amount, vat, remark
 		String amount =(reg != null) ? ""+reg.getAmount() : getValue(iwc, PAR_AMOUNT_PR_MONTH);
-		addFloatField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, amount, 1, row++);
+		if (reg != null && errorMessages.get(ERROR_AMOUNT_ITEM_NULL) != null) {
+			table.add(getErrorText((String) errorMessages.get(ERROR_AMOUNT_ITEM_NULL)), 2, row++);	
+		}			
+		addField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, ""+AccountingUtil.roundAmount(new Float(amount).floatValue()), 1, row++, 30);
 		//Vat is currently set to 0
 		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, "0", 1, row++);
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
