@@ -1573,14 +1573,15 @@ public class IFSFileCreationThread extends Thread {
 
 	private void createDeviationFileExcel(Collection data, String fileName, String headerText) throws IOException, FinderException {
 		if (data != null && !data.isEmpty()) {
-			int[] columnWidths = { 15, 25, 15, 25 };
-			String[] columnNames = { "Fakturaperiod", "Fakturmottagars personnummer", "Belopp", "Avvikelse orsak" };
+			int[] columnWidths = { 15, 20, 12, 35 };
+			String[] columnNames = { "Fakturaperiod", "Fakturmottagars pnr", "Belopp", "Avvikelse orsak" };
 			createExcelWorkBook(columnWidths, columnNames, headerText);
 			HSSFSheet sheet = wb.getSheet("Excel");
 			short rowNumber = (short) (sheet.getLastRowNum() + 1);
 			short cellNumber = 0;
 			float totalAmount = 0;
 			float recordAmount;
+			boolean invoiceHeaderDeviations;
 			Iterator it = data.iterator();
 			createStyleAlignRight();
 			createStyleBold();
@@ -1588,15 +1589,30 @@ public class IFSFileCreationThread extends Thread {
 			while (it.hasNext()) {
 
 				InvoiceHeader iHead = (InvoiceHeader) it.next();
-				Collection iRecs = ((InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class)).findByInvoiceHeader(iHead);
+				ArrayList iRecs = new ArrayList(((InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class)).findByInvoiceHeader(iHead));
 				if (!iRecs.isEmpty()) {
+					int headerSum = 0;
+					invoiceHeaderDeviations = false;
+					for (int i=0;i<iRecs.size();i++)
+						headerSum += ((InvoiceRecord)iRecs.get(i)).getAmount(); 
+					if (headerSum < 0) {
+						setDeviationString("Total belopp från faktura huvud är negativt");
+						invoiceHeaderDeviations = true;
+					}
+					else if (iHead.getCustodian() == null) {
+						setDeviationString("Saknas fakturamottagare");
+						invoiceHeaderDeviations = true;
+					}
+					else if (iHead.getCustodian().getAddresses().size() == 0) {
+						setDeviationString("Saknas faktura adress");
+						invoiceHeaderDeviations = true;
+					}
 					Iterator irIt = iRecs.iterator();
-
 					while (irIt.hasNext()) {
 						InvoiceRecord iRec = (InvoiceRecord) irIt.next();
 						recordAmount = AccountingUtil.roundAmount(iRec.getAmount());
-						if (recordAmount >= 0) {
-							if (hasInvoiceHeaderDeviations(iHead) || hasInvoiceRecordDeviations(iRec)) {
+						if (recordAmount >= 0 || headerSum < 0) {
+							if (invoiceHeaderDeviations || hasInvoiceRecordDeviations(iRec)) {
 								totalAmount += recordAmount;
 								row = sheet.createRow(rowNumber++);
 								row.createCell(cellNumber++).setCellValue(iHead.getPeriod().toString());
@@ -1609,12 +1625,14 @@ public class IFSFileCreationThread extends Thread {
 								cell.setCellStyle(getStyleAlignRight());
 								row.createCell(cellNumber++).setCellValue(getDeviationString());
 								cellNumber = 0;
-								setDeviationString("");
+								if (!invoiceHeaderDeviations)
+									setDeviationString("");
 							}
 						}
 					}
 				}
 			}
+			setDeviationString("");
 			row = sheet.createRow(rowNumber++);
 			cell = row.createCell(cellNumber);
 			cell.setCellValue("Summa");
@@ -1624,18 +1642,6 @@ public class IFSFileCreationThread extends Thread {
 			cell.setCellStyle(getStyleBoldAlignRight());
 			saveExcelWorkBook(fileName, wb);
 		}
-	}
-
-	private boolean hasInvoiceHeaderDeviations(InvoiceHeader iHead) {
-		if (iHead.getCustodian() == null) {
-			setDeviationString("Saknas fakturamottagare");
-			return true;
-		}
-		else if (iHead.getCustodian().getAddresses().size() == 0) {
-			setDeviationString("Saknas faktura adress");
-			return true;
-		}
-		return false;
 	}
 
 	private boolean hasInvoiceRecordDeviations(InvoiceRecord iRec) {
@@ -1666,8 +1672,8 @@ public class IFSFileCreationThread extends Thread {
 
 	private void createPaymentFilesExcel(Collection data, String fileName, String headerText, boolean doublePosting) throws IOException {
 		if (data != null && !data.isEmpty()) {
-			int[] columnWidths = { 11, 7, 6, 7, 10, 8, 7, 7, 7, 10, 35 };
-			String[] columnNames = { "Bokf datum", "Ansvar", "Konto", "Resurs", "Verksamhet", "Aktivitet", "Projekt", "Objekt", "Motpart", "Belopp", "Text" };
+			int[] columnWidths = { 11, 7, 6, 7, 10, 8, 7, 7, 7, 10, 35, 25 };
+			String[] columnNames = { "Bokf datum", "Ansvar", "Konto", "Resurs", "Verksamhet", "Aktivitet", "Projekt", "Objekt", "Motpart", "Belopp", "Text", "Anordnare" };
 			createExcelWorkBook(columnWidths, columnNames, headerText);
 			HSSFSheet sheet = wb.getSheet("Excel");
 			short rowNumber = (short) (sheet.getLastRowNum() + 1);
@@ -1683,11 +1689,12 @@ public class IFSFileCreationThread extends Thread {
 			int numberOfRecords = 0;
 			createStyleAlignRight();
 			while (it.hasNext()) {
-				cellNumber = 0;
 				PaymentRecord pRec = (PaymentRecord) it.next();
+				School school = pRec.getPaymentHeader().getSchool();
 				if (pRec.getTotalAmount() != 0.0f) {
 					amount = AccountingUtil.roundAmount(pRec.getTotalAmount());
 					totalAmount += amount;
+					cellNumber = 0;
 					numberOfRecords++;
 					row = sheet.createRow(rowNumber++);
 					row.createCell(cellNumber++).setCellValue(_paymentDate.getDateString("yyyy-MM-dd"));
@@ -1698,6 +1705,7 @@ public class IFSFileCreationThread extends Thread {
 					cell.setCellValue(getNumberFormat().format(amount));
 					cell.setCellStyle(getStyleAlignRight());
 					row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
+					row.createCell(cellNumber++).setCellValue(school.getName());
 					if (doublePosting) {
 						cellNumber = 0;
 						numberOfRecords++;
@@ -1709,11 +1717,10 @@ public class IFSFileCreationThread extends Thread {
 						cell.setCellValue(getNumberFormat().format(-1 * amount));
 						cell.setCellStyle(getStyleAlignRight());
 						row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
+						row.createCell(cellNumber++).setCellValue(school.getName());
 					}
 				}
 			}
-			//sheet.createRow(rowNumber++).createCell((short) (row.getLastCellNum()
-			// - 1)).setCellValue(totalAmount);
 			sheet.createRow(rowNumber += 2).createCell(row.getFirstCellNum()).setCellValue(numberOfRecords + " bokföringsposter,   Kreditbelopp totalt:  - " + getNumberFormat().format(totalAmount) + ",   Debetbelopp totalt: " + getNumberFormat().format(totalAmount));
 			saveExcelWorkBook(fileName, wb);
 		}
