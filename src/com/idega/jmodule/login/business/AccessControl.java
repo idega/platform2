@@ -132,8 +132,15 @@ public class AccessControl{
 
 
         public static boolean hasPermission(String permissionType, ModuleObject obj,ModuleInfo info){
-          /*@todo*/
-          return true;
+          try {
+            return com.idega.core.accesscontrol.business.AccessControl.hasPermission(permissionType,obj,info);
+          }
+          catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+          }
+
+
         }
 
 

@@ -33,7 +33,7 @@ public class JModuleObject extends ModuleObjectContainer{
 
   public boolean isAdministrator(ModuleInfo modinfo)throws Exception{
     if(usingNewAcessControlSystem){
-      return com.idega.core.accesscontrol.business.AccessControl.hasAdminPermission(this,modinfo);
+      return com.idega.core.accesscontrol.business.AccessControl.hasEditPermission(this,modinfo);
     }
     else{
       return AccessControl.isAdmin(modinfo);

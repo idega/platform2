@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.20 2001/09/20 00:15:21 eiki Exp $
+ * $Id: Table.java,v 1.21 2001/09/20 03:18:42 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1020,7 +1020,8 @@ public boolean isEmpty(int x, int y){
           for (int x = 0;x<theObjects.length;x++){
                   for(int y = 0; y < theObjects[x].length;y++){
                           if (this.theObjects[x][y] != null){
-                                  obj.theObjects[x][y]=(ModuleObjectContainer)((ModuleObjectContainer)this.theObjects[x][y]).clone(modinfo,askForPermission);
+                            obj.theObjects[x][y]=(ModuleObjectContainer)((ModuleObjectContainer)this.theObjects[x][y]).clone(modinfo,askForPermission); // not _clone(m,a) because moduleObject is cunstructed in table class
+                            obj.theObjects[x][y].remove(NULL_CLONE_OBJECT);
                           }
                   }
           }
