@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.17 2003/09/02 14:57:01 anders Exp $
+ * $Id: VATEditor.java,v 1.18 2003/09/02 15:05:59 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
@@ -36,10 +37,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATEditor is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/09/02 14:57:01 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/02 15:05:59 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -175,7 +176,6 @@ public class VATEditor extends AccountingBlock {
 		app.setSearchPanel(getSearchPanel(iwc));
 		app.setMainPanel(getSearchList(iwc, false));
 		app.setButtonPanel(getButtonPanel());
-		app.addHiddenInput(PARAMETER_DELETE_ID, "-1");
 		add(app);
 	}
 
@@ -188,7 +188,6 @@ public class VATEditor extends AccountingBlock {
 		app.setSearchPanel(getSearchPanel(iwc));
 		app.setMainPanel(getSearchList(iwc, true));
 		app.setButtonPanel(getButtonPanel());
-		app.addHiddenInput(PARAMETER_DELETE_ID, "-1");
 		add(app);
 	}
 
@@ -445,7 +444,7 @@ public class VATEditor extends AccountingBlock {
 		Table mainPanel = new Table();
 		mainPanel.setCellpadding(0);
 		mainPanel.setCellspacing(0);
-//		mainPanel.add(new HiddenInput(PARAMETER_DELETE_ID, "-1"));
+		mainPanel.add(new HiddenInput(PARAMETER_DELETE_ID, "-1"));
 	
 		if (errorMessage != null) {
 			Table t = new Table();
