@@ -378,6 +378,10 @@ public class VacationApplication extends VacationBlock {
 				week = from.getWeekOfYear();
 				workingDaysTable.add(getText(String.valueOf(from.getWeekOfYear())), 2, row);
 			}
+			if (week == -1 && (from.getDayOfWeek() == Calendar.SUNDAY)) {
+				row++;
+				workingDaysTable.add(getText(String.valueOf(from.getWeekOfYear())), 2, row);
+			}
 			
 			int hours = selectedHours;
 			int dayOfWeek = from.getDayOfWeek();
@@ -480,6 +484,10 @@ public class VacationApplication extends VacationBlock {
 			if (week != fromDate.getWeekOfYear() && !(fromDate.getDayOfWeek() == Calendar.SUNDAY)) {
 				row++;
 				week = fromDate.getWeekOfYear();
+				table.add(String.valueOf(fromDate.getWeekOfYear()), 2, row);
+			}
+			if (week == -1 && (fromDate.getDayOfWeek() == Calendar.SUNDAY)) {
+				row++;
 				table.add(String.valueOf(fromDate.getWeekOfYear()), 2, row);
 			}
 			

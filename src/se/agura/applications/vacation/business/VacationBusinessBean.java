@@ -142,6 +142,12 @@ public class VacationBusinessBean extends CaseBusinessBean  implements VacationB
 				}
 				time = getVacationTimeHome().create();
 			}
+			if (week == -1 && (stamp.getDayOfWeek() == Calendar.SUNDAY)) {
+				if (time != null) {
+					time.store();
+				}
+				time = getVacationTimeHome().create();
+			}
 			int hours = Integer.parseInt(workingHours[i]);
 			switch (day) {
 				case 1:
