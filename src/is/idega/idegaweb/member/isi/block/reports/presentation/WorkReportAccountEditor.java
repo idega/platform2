@@ -407,7 +407,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     //
     // !!!  add the main board (represented by null)
     //
-    workReportLeagues.add(null);
+    //workReportLeagues.add(null);
 
     // create helper 
     // iterate over leagues
@@ -496,9 +496,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     EntityBrowser browser = new EntityBrowser();
     browser.setLeadingEntity(WorkReportClubAccountRecord.class);
     browser.setShowMirroredView(true);
-    browser.setCellspacing(10);
-    browser.setColorForEvenRows(IWColor.getHexColorString(246, 246, 247));
-    browser.setColorForOddRows("#FFFFFF");
     // no settings button 
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
     browser.setEntities("dummy_string", entities);
@@ -521,7 +518,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       EntityToPresentationObjectConverter converter =
         (specialFieldList.contains(fieldName)) ? textConverter : textEditorConverter;
       if (fieldName.equals(LEAGUE_NAME))  {
-        converter = getConverterForLeague(resourceBundle, form);
+        //converter = getConverterForLeague(resourceBundle, form);
+        converter = null;
       }
       browser.setEntityToPresentationConverter(fieldName, converter);
     }
@@ -529,6 +527,11 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     browser.setEntityToPresentationConverter(CHECK_BOX, checkBoxConverter);
     browser.setMandatoryColumn(i++, OKAY_BUTTON);
     browser.setEntityToPresentationConverter(OKAY_BUTTON, new EditOkayButtonConverter());
+    browser.setCellpadding(2);
+    browser.setCellspacing(0);
+    browser.setBorder(0);
+    browser.setColorForEvenRows(IWColor.getHexColorString(246, 246, 247));
+    browser.setColorForOddRows("#FFFFFF");
     return browser;
   }
   
