@@ -1,8 +1,16 @@
 package is.idega.idegaweb.golf.entity;
 
 
-public interface Statistic extends is.idega.idegaweb.golf.entity.GolfEntity
+public interface Statistic extends com.idega.data.IDOLegacyEntity
 {
+	public final static String COLUMN_SCORECARD_ID = "scorecard_id";
+	public final static String COLUMN_TEE_ID = "tee_id";
+	public final static String COLUMN_FAIRWAY = "fairway";
+	public final static String COLUMN_GREENS = "greens";
+	public final static String COLUMN_PUTTS = "putts";
+	public final static String COLUMN_PUTTS_FLOAT ="putts_float";
+	public final static String TABLE_NAME ="statistic";
+	
  public int getFairway();
  public int getGreens();
  public int getPutts();
