@@ -36,6 +36,8 @@ import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
+import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.Commune;
@@ -56,6 +58,10 @@ import com.idega.util.IWTimestamp;
  */
 public abstract class PaymentThreadSchool extends BillingThread{
 	PaymentHeader paymentHeader;
+
+	//This is a horrible solution... This class should not have to know the localization keys!!!	
+	private static final String OPPEN_VERKSAMHET = "sch_type.school_type_oppen_verksamhet";
+	private static final String FRITIDSKLUBB = "sch_type.school_type_fritidsklubb";
 	
 	public PaymentThreadSchool(Date month, IWContext iwc){
 		super(month,iwc);
@@ -82,7 +88,6 @@ public abstract class PaymentThreadSchool extends BillingThread{
 
 		try {
 			//Set the category parameter to ElementarySchool
-			category = getSchoolCategoryHome().findElementarySchoolCategory();
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).
 					findByPrimaryKeyIDO(category.getPrimaryKey());
 
@@ -141,7 +146,8 @@ public abstract class PaymentThreadSchool extends BillingThread{
 //									ChildCareApplication application = (ChildCareApplication) applicationIter.next();
 
 									schoolClassMember = (SchoolClassMember) schoolClassMemberIter.next();
-
+									
+									System.out.println("Found "+schoolClassMember.getStudent().getName());
 									if( getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent()) ){
 //									if( isInDefaultCommune(schoolClassMember.getStudent()) ){
 //										address.getCommuneID();
@@ -182,6 +188,63 @@ public abstract class PaymentThreadSchool extends BillingThread{
 										System.out.println("about to create payment record");
 										createPaymentRecord(postingDetail,postings[0],postings[1]);
 										System.out.println("created payment record");
+										
+										//Find the oppen verksamhet and fritidsklubb
+										int schoolYear = schoolClassMember.getSchoolYear().getSchoolYearAge();
+										if(schoolYear<=3){
+											Iterator typeIter = schoolClassMember.getSchoolClass().getSchool().getSchoolTypes().iterator();
+											while (typeIter.hasNext()) {
+												SchoolType schoolType = (SchoolType) typeIter.next();
+												if(schoolType.getLocalizationKey().equalsIgnoreCase(OPPEN_VERKSAMHET)){
+													ArrayList oppenConditions = new ArrayList();
+													oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,OPPEN_VERKSAMHET));
+													Collection regulationForTypeArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
+														category.getCategory(),			//The ID that selects barnomsorg in the regulation
+														PaymentFlowConstant.OUT, 		//The payment flow is out
+														currentDate,						//Current date to select the correct date range
+														RuleTypeConstant.DERIVED,		//The conditiontype
+														conditions							//The conditions that need to fulfilled
+														);
+													Iterator regulationForTypeIter = regulationForTypeArray.iterator();
+													while(regulationForTypeIter.hasNext())
+													{
+														regulation = (Regulation)regulationForTypeIter.next();
+														postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
+														regSpecType = getRegulationSpecTypeHome().
+															findByRegulationSpecType(postingDetail.getRuleSpecType());
+														createPaymentRecord(postingDetail,postings[0],postings[1]);
+													}
+
+													//TODO (JJ) Supposed to do something here... Waiting for info from Lotta
+												}
+											}
+										} else if(schoolYear<=6){
+											Iterator typeIter = schoolClassMember.getSchoolClass().getSchool().getSchoolTypes().iterator();
+											while (typeIter.hasNext()) {
+												SchoolType schoolType = (SchoolType) typeIter.next();
+												if(schoolType.getLocalizationKey().equalsIgnoreCase(FRITIDSKLUBB)){
+													//TODO (JJ) Supposed to do something here... Waiting for info from Lotta
+													ArrayList oppenConditions = new ArrayList();
+													oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,OPPEN_VERKSAMHET));
+													Collection regulationForTypeArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
+														category.getCategory(),			//The ID that selects barnomsorg in the regulation
+														PaymentFlowConstant.OUT, 		//The payment flow is out
+														currentDate,						//Current date to select the correct date range
+														RuleTypeConstant.DERIVED,		//The conditiontype
+														conditions							//The conditions that need to fulfilled
+														);
+													Iterator regulationForTypeIter = regulationForTypeArray.iterator();
+													while(regulationForTypeIter.hasNext())
+													{
+														regulation = (Regulation)regulationForTypeIter.next();
+														postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
+														regSpecType = getRegulationSpecTypeHome().
+															findByRegulationSpecType(postingDetail.getRuleSpecType());
+														createPaymentRecord(postingDetail,postings[0],postings[1]);
+													}
+												}
+											}
+										}
 
 										Iterator resourceIter = getResourceBusiness().getResourcePlacementsByMemberId((Integer)schoolClassMember.getStudent().getPrimaryKey()).iterator();
 										while (resourceIter.hasNext()) {
@@ -200,7 +263,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 											Iterator regulationForResourceIter = regulationForResourceArray.iterator();
 											while(regulationForResourceIter.hasNext())
 											{
-												regulation = (Regulation)regulationIter.next();
+												regulation = (Regulation)regulationForResourceIter.next();
 												postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
 												regSpecType = getRegulationSpecTypeHome().
 													findByRegulationSpecType(postingDetail.getRuleSpecType());
@@ -302,6 +365,10 @@ public abstract class PaymentThreadSchool extends BillingThread{
 
 	private SchoolClassMemberHome getSchoolClassMemberHome() throws RemoteException {
 		return (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
+	}
+
+	protected SchoolTypeHome getSchoolTypeHome() throws RemoteException {
+		return (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
 	}
 
 	private CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
