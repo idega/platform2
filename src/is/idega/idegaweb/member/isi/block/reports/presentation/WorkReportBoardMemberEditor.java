@@ -319,7 +319,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     };
     Collections.sort(list, comparator);
     EntityBrowser browser = getEntityBrowser(list, resourceBundle, form);
-    browser.setShowMirroredView(true);
+    browser.setShowMirroredView(false);
     // put browser into a table
     Table mainTable = new Table(1,2);
     mainTable.add(browser, 1,1);
