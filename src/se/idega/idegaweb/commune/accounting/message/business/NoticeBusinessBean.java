@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeBusinessBean.java,v 1.9 2004/01/07 09:11:02 anders Exp $
+ * $Id: NoticeBusinessBean.java,v 1.10 2004/04/06 14:17:19 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import com.idega.user.data.User;
 /** 
  * Business logic for notice messages.
  * <p>
- * Last modified: $Date: 2004/01/07 09:11:02 $ by $Author: anders $
+ * Last modified: $Date: 2004/04/06 14:17:19 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implements NoticeBusiness  {
 
@@ -74,6 +74,7 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 			SchoolBusiness sb = getSchoolBusiness();
 			SchoolCategory childCareCategory = sb.getCategoryChildcare();
 			String childCareCategoryId = childCareCategory.getCategory();
+			HashMap messageReceivers = new HashMap();
 			Collection schoolTypes = sb.findAllSchoolTypes();
 			Iterator iter = schoolTypes.iterator();
 			while (iter.hasNext()) {
@@ -95,12 +96,15 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 						Provider provider = new Provider(school);
 						if (!sc.equals(childCareCategoryId) || 
 								(!school.getCentralizedAdministration() && !provider.getPaymentByInvoice())) {
-							String[] s = new String[2];
-							s[0] = school.getName();
-							s[1] = user.getName();
-							c.add(s);
-							Message message = getMessageBusiness().createUserMessage(user, subject, body, false);
-							message.store();							
+							if (messageReceivers.get(user.getPrimaryKey()) == null) {
+								String[] s = new String[2];
+								s[0] = school.getName();
+								s[1] = user.getName();
+								c.add(s);
+								Message message = getMessageBusiness().createUserMessage(user, subject, body, false);
+								message.store();
+								messageReceivers.put(user.getPrimaryKey(), user);
+							}
 						}
 					}
 				}
