@@ -46,17 +46,19 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
 /**
  * Holds most of the logic for the batchjob that creates the information that is
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/02 12:01:32 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/02 13:22:09 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.73 $
+ * @version $Revision: 1.74 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -463,9 +465,17 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		if (null != vatRule)  record.setVATType (vatRule.intValue ());
 		if (null != providerId) record.setProviderId(providerId.intValue ());
 		if (null != orderId) record.setOrderId(orderId.intValue ());
-		if (null != placementId) {
+		try {
 			record.setSchoolClassMemberId (placementId.intValue ());
-			record.setSchoolType (record.getSchoolClassMember ().getSchoolType ());
+			final SchoolClassMember placement = record.getSchoolClassMember ();
+			record.setSchoolType (placement.getSchoolType ());
+			final ChildCareContract contract
+					= getChildCareContractHome ().findBySchoolClassMember (placement);
+			record.setChildCareContract (contract);
+		} catch (FinderException e) {
+			// no problem, only child care have contracts
+		} catch (NullPointerException e) {
+			// no problem, placementId was null or couldn't find placement
 		}
 		record.store ();
 		try {
@@ -630,6 +640,11 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	
 	public PaymentHeaderHome getPaymentHeaderHome() throws RemoteException {
 		return (PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class);
+	}
+	
+	public ChildCareContractHome getChildCareContractHome()
+		throws RemoteException {
+		return (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
 	}
 	
 	public PaymentRecordHome getPaymentRecordHome() throws RemoteException {
