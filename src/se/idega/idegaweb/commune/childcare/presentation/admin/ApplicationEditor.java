@@ -185,7 +185,7 @@ public class ApplicationEditor extends ChildCareBlock {
 		int row = 1;
 		int column = 1;
 		
-		table.mergeCells(1, row, 6, row);
+		table.mergeCells(1, row, 8, row);
 		table.add(getSmallHeader(child.getName()+Text.NON_BREAKING_SPACE+"-"+Text.NON_BREAKING_SPACE+child.getPersonalID()), 1, row++);
 		
 		table.add(getLocalizedSmallHeader("child_care.provider","Provider"), column++, row);
@@ -193,6 +193,8 @@ public class ApplicationEditor extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.placement_date","Placement date"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.rejection_date","Rejection date"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.care_time","Care time"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.queue_date","Queue date"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.choice_number","Choice number"), column++, row);
 		table.add(getSmallHeader(""), column++, row);
 		table.setRowColor(row, getHeaderColor());
 		
@@ -201,6 +203,7 @@ public class ApplicationEditor extends ChildCareBlock {
 		Link editLink;
 		IWTimestamp rejectionDate = null;
 		IWTimestamp placementDate = null;
+		IWTimestamp queueDate = null;
 		//String phone;
 		if (applications != null && !applications.isEmpty()) {
 			Iterator iter = applications.iterator();
@@ -211,10 +214,20 @@ public class ApplicationEditor extends ChildCareBlock {
 
 				if (application.getFromDate() != null) {
 					placementDate = new IWTimestamp(application.getFromDate());
+				} else {
+					placementDate = null;
 				}
 				if (application.getRejectionDate() != null) {
 					rejectionDate = new IWTimestamp(application.getRejectionDate());
+				} else {
+					placementDate = null;
 				}
+				if (application.getQueueDate() != null) {
+					queueDate = new IWTimestamp(application.getQueueDate());
+				} else {
+					queueDate = null;
+				}
+				
 				
 				editLink = new Link(this.getEditIcon(localize("child_care.edit","Edit")));
 				editLink.addParameter(ACTION, ACTION_EDIT);
@@ -256,6 +269,18 @@ public class ApplicationEditor extends ChildCareBlock {
 				
 				if (application.getCareTime() > 0) {
 					table.add(getSmallText(Integer.toString(application.getCareTime())), column++, row);
+				} else {
+					table.add(getSmallText("-"), column++, row);
+				}
+				
+				if (queueDate != null) {
+					table.add(getSmallText(queueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+				} else {
+					table.add(getSmallText("-"), column++, row);
+				}
+				
+				if (application.getChoiceNumber() > 0) {
+					table.add(getSmallText(Integer.toString(application.getChoiceNumber())), column++, row);
 				} else {
 					table.add(getSmallText("-"), column++, row);
 				}
