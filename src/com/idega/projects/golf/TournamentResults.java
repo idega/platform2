@@ -249,12 +249,12 @@ public class TournamentResults extends JModuleObject {
                 int position = roundScoreColumn + roundIncNumber - 1;
 
                 if ( roundIncNumber != -1 ) {
-                  //System.out.println("RoundIncNumber: "+roundIncNumber);
-                  //System.out.println("RoundNumber: "+collector.getRoundNumber(b));
+                  System.out.println("RoundIncNumber: "+roundIncNumber);
+                  System.out.println("RoundNumber: "+collector.getRoundNumber(b));
                   roundScore2 = collector.getRoundScore(collector.getRoundNumber(b));
                 }
                 else {
-                  //System.out.println("RoundIncNumber: "+roundIncNumber);
+                  System.out.println("RoundIncNumber: "+roundIncNumber);
                 }
 
                 Text roundScoreText = new Text(Integer.toString(roundScore2));
