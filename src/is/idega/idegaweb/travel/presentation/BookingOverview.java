@@ -1,3 +1,4 @@
+
 package is.idega.travel.presentation;
 
 import com.idega.presentation.Block;
@@ -512,6 +513,7 @@ public class BookingOverview extends TravelManager {
 
                           table.add(btnNanar,8,row);
                           if (supplier != null) {
+                            table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,8,row);
                             table.add(btnBook,8,row);
                           } else if (reseller != null) {
                             if (!TravelStockroomBusiness.getIfExpired(contract, tempStamp))

@@ -3,11 +3,12 @@ package is.idega.travel.presentation;
 import com.idega.presentation.IWContext;
 import com.idega.block.login.presentation.Login;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.Table;
-import com.idega.presentation.Image;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.login.business.LoginBusiness;
+import com.idega.development.presentation.Localizer;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -64,20 +65,53 @@ public class LoginPage extends TravelManager {
         table.setCellspacing(15);
         table.setCellpadding(0);
 
-      Table innerTable = new Table(3,1);
+      Table innerTable = new Table(3,2);
         table.add(innerTable,1,1);
         innerTable.setWidth("100%");
         innerTable.setHeight("100%");
         innerTable.setCellpadding(1);
         innerTable.setCellspacing(1);
+        innerTable.setBorder(0);
 
+
+        innerTable.setWidth(2,1,"177");
+
+
+        Image imageBanner = bundle.getImage("buttons/login_bannermynd.gif");
+          imageBanner.setWidth(337);
+          imageBanner.setHeight(28);
+
+        innerTable.add(imageBanner,1,1);
         innerTable.setColor(2,1,GRAY);
+//        innerTable.mergeCells(2,1,3,1);
+
+        Table fexTable = new Table(2,1);
+          fexTable.setCellpadding(0);
+          fexTable.setCellspacing(0);
+          fexTable.setWidth(1,1, "179");
+          fexTable.setAlignment(1,1,"center");
+          fexTable.setWidth("300");
+          fexTable.setBorder(0);
+
+          Text leText = new Text();
+            leText.setFontFace(Text.FONT_FACE_VERDANA);
+            leText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+            leText.setBold();
+            leText.setText(iwrb.getLocalizedString("travel.please_select_language","Please select language"));
+
+          fexTable.add(leText);
+          fexTable.add(getLocaleSwitcherForm(iwc),2,1);
+
+//        innerTable.add(getLocaleSwitcherForm(iwc),3,1);
+        innerTable.mergeCells(2,1,3,1);
+        innerTable.add(fexTable,2,1);
+
 
         Image logo = bundle.getImage("buttons/login_mynd.jpg");
           logo.setWidth(337);
           logo.setHeight(180);
-        innerTable.add(logo,1,1);
-        innerTable.setWidth(1,1,"337");
+        innerTable.add(logo,1,2);
+        innerTable.setWidth(1,2,"337");
 //        innerTable.setHeight(1,1,"180");
 
         Text middleHeader = new Text(iwrb.getLocalizedString("travel.welcome","Welcome"));
@@ -92,11 +126,12 @@ public class LoginPage extends TravelManager {
           middleTextTable.add(middleContent,1,2);
 
         if (!LoginBusiness.isLoggedOn(iwc))
-        innerTable.add(middleTextTable,2,1);
-        innerTable.add(getLoginObject(iwc, iwrb),2,1);
-        innerTable.setWidth(2,1,"177");
-        innerTable.setHeight(2,1,"180");
-        innerTable.setAlignment(2,1,"center");
+        innerTable.add(middleTextTable,2,2);
+        innerTable.add(getLoginObject(iwc, iwrb),2,2);
+        innerTable.setWidth(2,2,"177");
+        innerTable.setColor(2,2,GRAY);
+        innerTable.setHeight(2,2,"180");
+        innerTable.setAlignment(2,2,"center");
 
 
         Text rightHeader = new Text(iwrb.getLocalizedString("travel.usage_rules","Usage rules"));
@@ -122,11 +157,27 @@ public class LoginPage extends TravelManager {
           rightTextTable.add(rightContent,1,2);
           rightTextTable.setColor(TravelManager.WHITE);
 
-        innerTable.add(rightTextTable,3,1);
-        innerTable.setColor(3,1,GRAY);
-
+        innerTable.add(rightTextTable,3,2);
+        innerTable.setColor(3,2,GRAY);
 
     return bigTable;
+  }
+
+  private static Form getLocaleSwitcherForm(IWContext iwc) {
+      Form myForm = new Form();
+      Table table = new Table(1,1);
+        table.setCellspacing(0);
+        table.setCellpadding(0);
+        table.setBorder(0);
+
+        myForm.setEventListener(com.idega.core.localisation.business.LocaleSwitcher.class.getName());
+      DropdownMenu dropdown = Localizer.getAvailableLocalesDropdown(iwc);
+        dropdown.setAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
+        dropdown.setSelectedElement(iwc.getCurrentLocale().toString());
+        table.add(dropdown);
+
+        myForm.add(table);
+      return myForm;
   }
 
 }

@@ -357,12 +357,16 @@ public class Booking extends TravelManager {
 
           table.setColor(6,row,super.backgroundColor);
           table.setVerticalAlignment(6,row,"top");
+          table.add(Text.BREAK ,6,row);
+          table.add(Text.BREAK ,6,row);
           table.add(getCalendar(iwc),6,row);
 
           ++row;
           table.mergeCells(1,row,5,row);
           table.setColor(1,row,super.backgroundColor );
           table.mergeCells(6,1,6,row);
+          table.add(Text.BREAK ,1,row);
+          table.add(Text.BREAK ,1,row);
           table.add(getBookingForm(),1,row);
 
       }else {
@@ -505,7 +509,8 @@ public class Booking extends TravelManager {
           sm.setHeaderColor(super.backgroundColor);
           sm.setDayCellColor(super.backgroundColor);
           sm.setBodyColor("#8484D6");
-          sm.setInActiveCellColor("#B1B1E5");
+          sm.setInActiveCellColor("#666666");
+//          sm.setInActiveCellColor("#B1B1E5");
 //          sm.useColorToday(true);
           sm.setColorToday(colorForToday);
 
@@ -684,9 +689,10 @@ public class Booking extends TravelManager {
 
   public Table getTotalTable(IWContext iwc) {
       Table table = new Table();
-        table.setFrameVoid();
+        table.setFrameHsides();
         table.setWidth("100%");
         table.setCellspacing(0);
+        table.setColor(super.WHITE);
         table.setBorder(1);
         table.setBorderColor(super.textColor);
         int row = 1;
@@ -706,20 +712,28 @@ public class Booking extends TravelManager {
 
       Text dateText = (Text) theBoldText.clone();
           dateText.setText(stamp.getLocaleDate(iwc));
+          dateText.setFontColor(super.BLACK);
       Text countText = (Text) theText.clone();
           countText.setText(iwrb.getLocalizedString("travel.count_sm","count"));
+          countText.setFontColor(super.BLACK);
       Text assignedText = (Text) theText.clone();
           assignedText.setText(iwrb.getLocalizedString("travel.assigned_small_sm","assigned"));
+          assignedText.setFontColor(super.BLACK);
       Text inqText = (Text) theText.clone();
           inqText.setText(iwrb.getLocalizedString("travel.inqueries_small_sm","inq."));
+          inqText.setFontColor(super.BLACK);
       Text bookedText = (Text) theText.clone();
           bookedText.setText(iwrb.getLocalizedString("travel.booked_sm","booked"));
+          bookedText.setFontColor(super.BLACK);
       Text availableText = (Text) theText.clone();
           availableText.setText(iwrb.getLocalizedString("travel.available_small_sm","avail."));
+          availableText.setFontColor(super.BLACK);
       Text bookingStatusText = (Text) theBoldText.clone();
           bookingStatusText.setText(iwrb.getLocalizedString("travel.booking_status","Booking status"));
+          bookingStatusText.setFontColor(super.BLACK);
       Text calendarForBooking = (Text) theText.clone();
           calendarForBooking.setText(iwrb.getLocalizedString("travel.calendar_for_booking","Calendar for booking"));
+          calendarForBooking.setFontColor(super.BLACK);
 
 
       Text dateTextBold = (Text) theSmallBoldText.clone();
@@ -729,6 +743,13 @@ public class Booking extends TravelManager {
       Text inqTextBold = (Text) theSmallBoldText.clone();
       Text bookedTextBold = (Text) theSmallBoldText.clone();
       Text availableTextBold = (Text) theSmallBoldText.clone();
+          dateTextBold.setFontColor(super.BLACK);
+          nameTextBold.setFontColor(super.BLACK);
+          countTextBold.setFontColor(super.BLACK);
+          assignedTextBold.setFontColor(super.BLACK);
+          inqTextBold.setFontColor(super.BLACK);
+          bookedTextBold.setFontColor(super.BLACK);
+          availableTextBold.setFontColor(super.BLACK);
 
       try {
         if (reseller != null) {
@@ -790,6 +811,8 @@ public class Booking extends TravelManager {
       table.add(inqText,4,row);
       table.add(availableText,5,row);
       table.add(calendarForBooking,6,row);
+      table.setRowColor(row, super.GRAY);
+
 
       ++row;
       table.add(bookingStatusText,1,row);
@@ -809,6 +832,7 @@ public class Booking extends TravelManager {
       table.setColumnAlignment(4,"center");
       table.setColumnAlignment(5,"center");
       table.setColumnAlignment(6,"center");
+      table.setRowColor(row, super.GRAY);
 
       return table;
   }

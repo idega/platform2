@@ -130,9 +130,6 @@ public class ServiceOverview extends TravelManager {
         form.add(Text.BREAK);
       Table table = new Table();
         table.setBorder(0);
-        table.setWidth(1,"100");
-        table.setWidth(2,"90");
-        table.setWidth(4,"90");
         form.add(table);
         /*
       ShadowBox sb = new ShadowBox();
@@ -175,18 +172,23 @@ public class ServiceOverview extends TravelManager {
       Text nameText = (Text) theText.clone();
           nameText.setText(iwrb.getLocalizedString("travel.name_of_trip","Name of trip"));
           nameText.addToText(":");
+          nameText.setFontColor(super.BLACK);
       Text timeframeText = (Text) theText.clone();
           timeframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
           timeframeText.addToText(":");
+          timeframeText.setFontColor(super.BLACK);
       Text departureFromText = (Text) theText.clone();
           departureFromText.setText(iwrb.getLocalizedString("travel.departure_from","Departure from"));
           departureFromText.addToText(":");
+          departureFromText.setFontColor(super.BLACK);
       Text departureTimeText = (Text) theText.clone();
           departureTimeText.setText(iwrb.getLocalizedString("travel.departure_time","Departure time"));
           departureTimeText.addToText(":");
+          departureTimeText.setFontColor(super.BLACK);
       Text activeDaysText = (Text) theText.clone();
           activeDaysText.setText(iwrb.getLocalizedString("travel.active_days","Active days"));
           activeDaysText.addToText(":");
+          activeDaysText.setFontColor(super.BLACK);
 
       Image image = new Image("/pics/mynd.gif");
 
@@ -215,16 +217,24 @@ public class ServiceOverview extends TravelManager {
         String stampTxt1;
         String stampTxt2;
 
+        Table contentTable;
+        int contRow = 1;
+
         for (int i = 0; i < products.length; i++) {
           try {
+            contRow = 0;
+            contentTable = new Table();
+
             service = TravelStockroomBusiness.getService(products[i]);
             timeframe = TravelStockroomBusiness.getTimeframe(products[i]);
             address = service.getAddress();
 
             prodName = (Text) theBoldText.clone();
                 prodName.setText(service.getName());
+                prodName.setFontColor(super.BLACK);
 
             timeframeTxt = (Text) theBoldText.clone();
+                timeframeTxt.setFontColor(super.BLACK);
                 stampTxt1 = new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc);
                 stampTxt2 = new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc);
                 try {
@@ -239,50 +249,60 @@ public class ServiceOverview extends TravelManager {
 
 
             depFrom = (Text) theBoldText.clone();
+                depFrom.setFontColor(super.BLACK);
             if (address != null)
                 depFrom.setText(address.getStreetName());
 
             depTimeStamp = new idegaTimestamp(service.getDepartureTime());
             depTime = (Text) theBoldText.clone();
+                depTime.setFontColor(super.BLACK);
                 depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
 
             actDays = (Text) theBoldText.clone();
+                actDays.setFontColor(super.BLACK);
 
             ++row;
-            table.mergeCells(1,row,1,row+3);
-            table.add(image,1,row);
-            table.add(nameText,2,row);
-            table.add(timeframeText,4,row);
-            table.setVerticalAlignment(2,row,"top");
-            table.setVerticalAlignment(3,row,"top");
-            table.setVerticalAlignment(4,row,"top");
-            table.setVerticalAlignment(5,row,"top");
-            table.setAlignment(2,row,"right");
-            table.setAlignment(3,row,"left");
-            table.setAlignment(4,row,"right");
-            table.setAlignment(5,row,"left");
-            table.add(prodName,3,row);
-            table.add(timeframeTxt,5,row);
+            table.mergeCells(1,row,5,row);
+            table.add(contentTable,1,row);
 
-            ++row;
-            table.setVerticalAlignment(2,row,"top");
-            table.setVerticalAlignment(3,row,"top");
-            table.setVerticalAlignment(4,row,"top");
-            table.setVerticalAlignment(5,row,"top");
-            table.add(departureFromText,2,row);
-            table.add(departureTimeText,4,row);
-            table.setAlignment(2,row,"right");
-            table.setAlignment(3,row,"left");
-            table.setAlignment(4,row,"right");
-            table.setAlignment(5,row,"left");
-            table.add(depFrom,3,row);
-            table.add(depTime,5,row);
+            ++contRow;
+            contentTable.mergeCells(1,contRow,1,contRow+3);
+            contentTable.add(image,1,contRow);
+            contentTable.add(nameText,2,contRow);
+            contentTable.add(timeframeText,4,contRow);
+            contentTable.setVerticalAlignment(2,contRow,"top");
+            contentTable.setVerticalAlignment(3,contRow,"top");
+            contentTable.setVerticalAlignment(4,contRow,"top");
+            contentTable.setVerticalAlignment(5,contRow,"top");
+            contentTable.setAlignment(2,contRow,"right");
+            contentTable.setAlignment(3,contRow,"left");
+            contentTable.setAlignment(4,contRow,"right");
+            contentTable.setAlignment(5,contRow,"left");
+            contentTable.add(prodName,3,contRow);
+            contentTable.add(timeframeTxt,5,contRow);
+            contentTable.setRowColor(contRow, super.GRAY);
 
-            ++row;
-            table.setVerticalAlignment(2,row,"top");
-            table.setVerticalAlignment(3,row,"top");
-            table.setAlignment(2,row,"right");
-            table.setAlignment(3,row,"left");
+            ++contRow;
+            contentTable.setVerticalAlignment(2,contRow,"top");
+            contentTable.setVerticalAlignment(3,contRow,"top");
+            contentTable.setVerticalAlignment(4,contRow,"top");
+            contentTable.setVerticalAlignment(5,contRow,"top");
+            contentTable.add(departureFromText,2,contRow);
+            contentTable.add(departureTimeText,4,contRow);
+            contentTable.setAlignment(2,contRow,"right");
+            contentTable.setAlignment(3,contRow,"left");
+            contentTable.setAlignment(4,contRow,"right");
+            contentTable.setAlignment(5,contRow,"left");
+            contentTable.add(depFrom,3,contRow);
+            contentTable.add(depTime,5,contRow);
+            contentTable.setRowColor(contRow, super.GRAY);
+
+            ++contRow;
+            contentTable.setVerticalAlignment(2,contRow,"top");
+            contentTable.setVerticalAlignment(3,contRow,"top");
+            contentTable.setAlignment(2,contRow,"right");
+            contentTable.setAlignment(3,contRow,"left");
+            contentTable.setRowColor(contRow, super.GRAY);
 
             dayOfWeek = ServiceDay.getDaysOfWeek(service.getID());
             for (int j = 0; j < dayOfWeek.length; j++) {
@@ -290,8 +310,8 @@ public class ServiceOverview extends TravelManager {
               actDays.addToText(dayOfWeekName[dayOfWeek[j]]);
             }
 
-            table.add(activeDaysText,2,row);
-            table.add(actDays,3,row);
+            contentTable.add(activeDaysText,2,contRow);
+            contentTable.add(actDays,3,contRow);
 
 
             prices = ProductPrice.getProductPrices(service.getID(), false);
@@ -301,9 +321,11 @@ public class ServiceOverview extends TravelManager {
             for (int j = 0; j < prices.length; j++) {
               currency = new Currency(prices[j].getCurrencyId());
               nameOfCategory = (Text) theText.clone();
+                nameOfCategory.setFontColor(super.BLACK);
                 nameOfCategory.setText(prices[j].getPriceCategory().getName());
                 nameOfCategory.addToText(":");
               priceText = (Text) theBoldText.clone();
+                priceText.setFontColor(super.BLACK);
               try {
                 priceText.setText(Integer.toString((int)tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
                 priceText.addToText(Text.NON_BREAKING_SPACE);
@@ -318,16 +340,25 @@ public class ServiceOverview extends TravelManager {
 
 
 
-              table.setVerticalAlignment(4,row,"top");
-              table.setVerticalAlignment(5,row,"top");
-              table.setAlignment(4,row,"right");
-              table.setAlignment(5,row,"left");
+              contentTable.setVerticalAlignment(4,contRow,"top");
+              contentTable.setVerticalAlignment(5,contRow,"top");
+              contentTable.setAlignment(4,contRow,"right");
+              contentTable.setAlignment(5,contRow,"left");
 
-              table.add(nameOfCategory,4,row);
-              table.add(priceText,5,row);
-              ++row;
+              contentTable.add(nameOfCategory,4,contRow);
+              contentTable.add(priceText,5,contRow);
+            contentTable.setRowColor(contRow, super.GRAY);
+              ++contRow;
             }
-
+            contentTable.setWidth("100%");
+            contentTable.setBorder(0);
+            contentTable.setAlignment("center");
+            contentTable.setWidth(1,"100");
+            contentTable.setWidth(2,"90");
+            contentTable.setWidth(3,"300");
+            contentTable.setWidth(4,"90");
+            contentTable.setCellspacing(1);
+            contentTable.setColor(super.WHITE);
 
 
 
@@ -367,9 +398,9 @@ public class ServiceOverview extends TravelManager {
               hr.setAlignment(hr.ALIGN_CENTER);
               hr.setNoShade(true);
               hr.setColor(super.textColor);
-            table.add(hr,1,row);
+//            table.add(hr,1,row);
 
-            ++row;
+//            ++row;
 
             ++row;
             table.mergeCells(1,row,5,row);

@@ -553,7 +553,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
             sb.append(frame.getTimeframeToColumnName() +" >= '"+stamp.toSQLDateString()+"'");
 //          }
 
-System.err.println(sb.toString());
           String[] result = SimpleQuerier.executeStringQuery(sb.toString());
 
           if (result != null) {

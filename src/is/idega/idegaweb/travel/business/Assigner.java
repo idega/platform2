@@ -62,7 +62,6 @@ public class Assigner {
     idegaTimestamp theStamp= idegaTimestamp.RightNow();
       theStamp.addDays(contract.getExpireDays()-1);
     if (stamp.isLaterThan(theStamp)) {
-      System.err.println(theStamp.toSQLDateString() +" > "+stamp.toSQLDateString());
       return getNumberOfAssignedSeats(serviceId, resellerId, stamp, conn);
     }else {
       return 0;
