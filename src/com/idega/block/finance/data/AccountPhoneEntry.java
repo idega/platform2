@@ -118,6 +118,9 @@ public class AccountPhoneEntry extends GenericEntity {
   public void setLastUpdated(Timestamp last_updated){
     setColumn(getColumnNameLastUpdated(), last_updated);
   }
+  public void setPrice(float price){
+    setColumn(getColumnNamePrice(), price);
+  }
   public void setPrice(Float price){
     setColumn(getColumnNamePrice(), price);
   }

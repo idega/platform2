@@ -68,7 +68,10 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
         updateForm(modinfo);
         add(getMainTable());
       }
-      else if(modinfo.getParameter("delete")!=null){
+      else if( modinfo.getParameter("delete")!= null){
+        add (ConfirmDelete(modinfo));
+      }
+      else if(modinfo.getParameter("conf_delete")!=null){
         deleteText(modinfo);
         add(getHomeLink());
         add(getMainTable());
@@ -256,6 +259,24 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     Form myForm = new Form();
     myForm.add(Frame);
     return myForm;
+  }
+
+  private ModuleObject ConfirmDelete(ModuleInfo modinfo){
+    String sTextId = modinfo.getParameter("text_id");
+    Form F = new Form();
+
+    Table T = new Table(3,2);
+    T.mergeCells(1,1,3,1);
+    if(sTextId != null)
+      T.add(new HiddenInput("text_id",sTextId));
+    SubmitButton del = new SubmitButton("conf_delete",iwrb.getLocalizedString("ok","OK"));
+    BackButton back = new BackButton(iwrb.getLocalizedString("cancel","Cancel"));
+    back.setHistoryMove(2);
+    T.add( Edit.formatText(iwrb.getLocalizedString("sure_to_delete","Do really want to delete")),1,1);
+    T.add( del,1,2);
+     T.add( back,3,2);
+    F.add(T);
+    return F;
   }
 
   private void deleteText(ModuleInfo modinfo){

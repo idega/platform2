@@ -44,6 +44,10 @@ public class AllocationMenu extends FrameList{
     setZebraColors("#FFFFFF","#ECECEC");
   }
 
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
 
   public void makeLinkTable(){
 

@@ -49,6 +49,7 @@ public class CampusAllocator extends ModuleObjectContainer{
   private String blueColor = "#27324B",lightBlue ="#ECEEF0";
   private int iSubjectId = -1;
   private int dayBuffer = 1;
+  private int monthOverlap = 1;
   private String sGlobalStatus = "S";
   private ListIterator iterator = null;
   private LinkedList linkedlist = null;
@@ -78,6 +79,10 @@ public class CampusAllocator extends ModuleObjectContainer{
 
   public void setDayBuffer(int buffer){
     dayBuffer = buffer;
+  }
+
+  public void setOverlap(int overlap  ){
+    monthOverlap = overlap;
   }
 
   protected void control(ModuleInfo modinfo){
@@ -495,28 +500,31 @@ public class CampusAllocator extends ModuleObjectContainer{
         boolean first = ATP.hasFirstPeriod();
         boolean second = ATP.hasSecondPeriod();
          idegaTimestamp today = new idegaTimestamp();
-        // One Period
+        // Two Periods
         if(first && second){
 
-          if(today.getMonth() <= ATP.getFirstDateMonth()){
-            contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
-            contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
-          }
-          else if(today.getMonth() <= ATP.getSecondDateMonth() ){
+          if(today.getMonth() > ATP.getFirstDateMonth()+monthOverlap && today.getMonth() <= ATP.getSecondDateMonth()+monthOverlap ){
             contractDateFrom = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
             contractDateTo = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
           }
-          else{
-            contractDateTo = new idegaTimestamp();
-            contractDateFrom = new idegaTimestamp();
+          else if(today.getMonth() <= 12){
+            contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
+            contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
           }
+          else{
+            contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
+            contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
+          }
+
         }
-        // Two Periods
+        // One Periods
         else if(first && !second){
+          System.err.println("two sectors");
           contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
           contractDateTo = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
         }
         else if(!first && second){
+          System.err.println("two sectors");
           contractDateFrom = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
           contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
         }

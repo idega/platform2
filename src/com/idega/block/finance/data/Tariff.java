@@ -30,6 +30,8 @@ public class Tariff extends GenericEntity {
     addAttribute(getAttributeColumnName(),"",true,true,java.lang.String.class);
     addAttribute(getUseIndexColumnName(),"Gild",true,true,java.lang.Boolean.class);
     addAttribute(getInUseColumnName(),"In Use",true,true,java.lang.Boolean.class);
+    addAttribute(getIndexTypeColumnName(),"Index type",true,true,java.lang.String.class,10);
+    addAttribute(getIndexUpdateColumnName(),"Index updated",true,true,java.sql.Timestamp.class);
 
   }
   public static String getTariffEntityName(){return "FIN_TARIFF";}
@@ -42,6 +44,8 @@ public class Tariff extends GenericEntity {
   public static String getInUseColumnName(){return "IN_USE";}
   public static String getUseIndexColumnName(){return "USE_INDEX";}
   public static String getAttributeColumnName(){return "ATTRIBUTE";}
+   public static String getIndexTypeColumnName(){return "INDEX_TYPE";}
+   public static String getIndexUpdateColumnName(){return "INDEX_UPDATED";}
 
   public String getEntityName() {
     return getTariffEntityName();
@@ -96,6 +100,13 @@ public class Tariff extends GenericEntity {
     setColumn(getToDateColumnName(),use_date);
   }
 
+  public Timestamp getIndexUpdated(){
+    return (Timestamp) getColumnValue(getIndexUpdateColumnName());
+  }
+  public void setIndexUpdated(Timestamp use_date){
+    setColumn(getIndexUpdateColumnName(),use_date);
+  }
+
   public void setUseIndex(boolean useindex){
     setColumn(getUseIndexColumnName(),useindex);
   }
@@ -107,5 +118,12 @@ public class Tariff extends GenericEntity {
   }
   public boolean getInUse(){
     return getBooleanColumnValue(getInUseColumnName());
+  }
+
+  public String getIndexType(){
+    return getStringColumnValue(getIndexTypeColumnName());
+  }
+  public void setIndexType(String type){
+    setColumn(getIndexTypeColumnName(), type);
   }
 }

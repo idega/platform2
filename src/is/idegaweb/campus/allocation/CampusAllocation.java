@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocation.java,v 1.7 2001/08/30 01:33:38 aron Exp $
+ * $Id: CampusAllocation.java,v 1.8 2001/09/11 00:17:49 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ import is.idegaweb.campus.allocation.AllocationMenu;
 public class CampusAllocation extends JModuleObject{
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
-  public final static String FRAME_NAME = "rightFrame";
+  public final static String FRAME_NAME = "cal_rightFrame";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 

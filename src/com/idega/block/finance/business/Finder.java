@@ -3,6 +3,9 @@ package com.idega.block.finance.business;
 import com.idega.block.finance.data.*;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Vector;
 import com.idega.util.idegaCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.EntityFinder;
@@ -125,6 +128,72 @@ public class Finder  {
       return null;
     }
 
+  }
+
+  public static Map mapOfIndicesByTypes(List listOfTariffIndices){
+    List L = listOfTariffIndices;
+    if(L!= null){
+      int len = L.size();
+      Hashtable T = new Hashtable(len);
+      TariffIndex ti;
+      for (int i = 0; i < len; i++) {
+        ti = (TariffIndex) L.get(i);
+        T.put(ti.getType(),ti);
+      }
+      return T;
+    }
+    else
+     return null;
+  }
+
+  public static Map mapOfIndexIds(List listOfTariffIndices){
+    List L = listOfTariffIndices;
+    if(L!= null){
+      int len = L.size();
+      Hashtable T = new Hashtable(len);
+      TariffIndex ti;
+      for (int i = 0; i < len; i++) {
+        ti = (TariffIndex) L.get(i);
+        T.put(ti.getType(),Integer.toString(ti.getID()));
+      }
+      return T;
+    }
+    else
+     return null;
+  }
+
+  public static List listOfTariffIndices(){
+    try {
+      return EntityFinder.findAll(new TariffIndex());
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
+  public static List listOfTypeGroupedIndices(){
+    Vector V = new Vector();
+    for (int i = 0; i < TariffIndex.indexType.length(); i++) {
+      TariffIndex ti= getTariffIndex(String.valueOf(TariffIndex.indexType.charAt(i)));
+      if(ti!= null)
+        V.add(ti);
+    }
+    return V;
+  }
+
+  public static TariffIndex getTariffIndex(String type){
+    TariffIndex ti = new TariffIndex();
+    try {
+      List L = EntityFinder.findAllByColumnDescendingOrdered(ti,ti.getColumnNameType(),type,ti.getIDColumnName());
+      if(L!= null)
+        ti =  (TariffIndex) L.get(0);
+      else
+        ti =  null;
+    }
+    catch (SQLException ex) {
+      ti = null;
+    }
+    return ti;
   }
 
 
