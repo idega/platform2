@@ -98,7 +98,7 @@ public class TravelWindow extends Window {
     }
   }
 
-  protected void close(boolean reloadParent) {
+  public void close(boolean reloadParent) {
     if (reloadParent)
       jPage.setParentToReload();
     jPage.close();
