@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReport.java,v 1.11 2004/12/29 15:53:11 laddi Exp $ Created on
+ * $Id: MeetingReport.java,v 1.12 2005/01/05 07:28:10 laddi Exp $ Created on
  * 24.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 24.11.2004 13:46:01 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class MeetingReport extends MeetingFeeBlock {
 
@@ -163,8 +163,11 @@ public class MeetingReport extends MeetingFeeBlock {
 		RadioButton meetingPlaceOut = (RadioButton) getRadioButton(new RadioButton(PARAMETER_MEETING_FEE_MEETING_LOCATION, Boolean.FALSE.toString()));
 		
 		IWTimestamp stamp = new IWTimestamp();
+		stamp.addDays(1);
 		DateInput meetingDateInput = (DateInput) getInput(new DateInput(PARAMETER_MEETING_FEE_DATE));
-		meetingDateInput.setYearRange(stamp.getYear(), stamp.getYear() - 5);
+		meetingDateInput.setYearRange(stamp.getYear(), stamp.getYear() - 2);
+		meetingDateInput.setLatestPossibleDate(stamp.getDate(), getResourceBundle().getLocalizedString("meeting.fee.no_future_dates", "You can't select dates ahead in time"));
+		meetingDateInput.setAsNotEmpty(getResourceBundle().getLocalizedString("meeting.fee.must_select_date", "You must select a meeting date"));
 		
 		DropdownMenu participantsMenu = getParticipantsMenu(iwc, iwc.getCurrentUser());
 		TextArea comment = new TextArea(PARAMETER_MEETING_FEE_COMMENT);
