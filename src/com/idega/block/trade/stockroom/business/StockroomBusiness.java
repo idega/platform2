@@ -183,7 +183,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
   }
 
 
-  public int createProduct(int supplierId, Integer fileId, String productName, String ProductDescription, boolean isValid) throws Exception{
+  public static int createProduct(int supplierId, Integer fileId, String productName, String ProductDescription, boolean isValid) throws Exception{
     Product product = new Product();
 
     product.setSupplierId(supplierId);

@@ -140,14 +140,14 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
 
 
-  public int createService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival, int[] pickupPlaceIds) throws Exception{
+  public static int createService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival, int[] pickupPlaceIds) throws Exception{
 
 
     TransactionManager transaction = IdegaTransactionManager.getInstance();
     try{
       transaction.begin();
 
-      int id = super.createProduct(supplierId,fileId,serviceName,serviceDescription,isValid);
+      int id = StockroomBusiness.createProduct(supplierId,fileId,serviceName,serviceDescription,isValid);
       Service service = new Service();
       service.setID(id);
 
@@ -178,6 +178,13 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       throw new RuntimeException("IWE226TB89");
     }
   }
+
+
+  public static int createTripService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival, int[] pickupPlaceIds) throws Exception {
+
+      return TravelStockroomBusiness.createService(supplierId, fileId, serviceName, serviceDescription, isValid, addressIds, departure,arrival, pickupPlaceIds);
+  }
+
 
 
 
