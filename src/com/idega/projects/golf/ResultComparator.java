@@ -250,14 +250,16 @@ public class ResultComparator implements Comparator {
 
     if ( r1.getDifference() == r2.getDifference() ) {
       if ( r1.getTournamentPosition() == r2.getTournamentPosition() ) {
-        if ( r1.getDate().isLaterThan(r2.getDate()) ) {
-          result = 1;
-        }
-        else if ( r2.getDate().isLaterThan(r1.getDate()) ) {
-          result = -1;
-        }
-        else {
-          result = 0;
+        if ( r1.getDate() != null && r2.getDate() != null ) {
+          if ( r1.getDate().isLaterThan(r2.getDate()) ) {
+            result = 1;
+          }
+          else if ( r2.getDate().isLaterThan(r1.getDate()) ) {
+            result = -1;
+          }
+          else {
+            result = 0;
+          }
         }
       }
       else {

@@ -102,7 +102,7 @@ private Table resultTable;
     String tournamentRounds_ = modinfo.getParameter("tournament_round_id");
       if ( tournamentRounds_ != null ) {
         if ( tournamentRounds_.length() > 0 ) {
-          if ( tournamentRounds_ != "0" ) {
+          if ( Integer.parseInt(tournamentRounds_) != 0 ) {
             String[] query = null;
 
             try {
