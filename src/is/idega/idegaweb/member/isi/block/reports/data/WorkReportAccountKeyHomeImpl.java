@@ -27,6 +27,34 @@ public WorkReportAccountKey findAccountKeyByNumber(java.lang.String p0)throws ja
 	return this.findByPrimaryKey(pk);
 }
 
+public java.util.Collection findAssetAccountKeys()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WorkReportAccountKeyBMPBean)entity).ejbFindAssetAccountKeys();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findDeptAccountKeys()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WorkReportAccountKeyBMPBean)entity).ejbFindDeptAccountKeys();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findExponsesAccountKeys()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WorkReportAccountKeyBMPBean)entity).ejbFindExponsesAccountKeys();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findIncomeAccountKeys()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WorkReportAccountKeyBMPBean)entity).ejbFindIncomeAccountKeys();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public WorkReportAccountKey findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (WorkReportAccountKey) super.findByPrimaryKeyIDO(pk);
  }

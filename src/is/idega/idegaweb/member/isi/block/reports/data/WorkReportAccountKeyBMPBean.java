@@ -3,14 +3,11 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.data;
 
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.user.data.Group;
-import com.idega.user.data.User;
 
 /**
  * Description: Account key entity, debet (d) or credit (c)<br>
@@ -98,7 +95,6 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		setColumn(COLUMN_NAME_KEY_TYPE,keyType);
 	}
 	
-	
 	public Integer ejbFindAccountKeyByName(String name) throws FinderException{
 		return (Integer) idoFindOnePKByColumnBySQL(COLUMN_NAME_KEY_NAME,name);
 	}
@@ -107,4 +103,63 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		return (Integer) idoFindOnePKByColumnBySQL(COLUMN_NAME_KEY_NUMBER,number);
 	}
 
+	public Collection ejbFindIncomeAccountKeys() throws FinderException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getEntityName());
+		sql.append(" where ");
+		sql.append(COLUMN_NAME_KEY_TYPE);
+		sql.append(" = '");
+		sql.append(INCOME_SHEET);
+		sql.append(" and '");
+		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
+		sql.append(" = '");
+		sql.append(DEBET);
+		
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+	
+	public Collection ejbFindExponsesAccountKeys() throws FinderException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getEntityName());
+		sql.append(" where ");
+		sql.append(COLUMN_NAME_KEY_TYPE);
+		sql.append(" = '");
+		sql.append(INCOME_SHEET);
+		sql.append(" and '");
+		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
+		sql.append(" = '");
+		sql.append(CREDIT);
+		
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+	
+	public Collection ejbFindAssetAccountKeys() throws FinderException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getEntityName());
+		sql.append(" where ");
+		sql.append(COLUMN_NAME_KEY_TYPE);
+		sql.append(" = '");
+		sql.append(BALANCE_SHEET);
+		sql.append(" and '");
+		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
+		sql.append(" = '");
+		sql.append(DEBET);
+		
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+
+	public Collection ejbFindDeptAccountKeys() throws FinderException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getEntityName());
+		sql.append(" where ");
+		sql.append(COLUMN_NAME_KEY_TYPE);
+		sql.append(" = '");
+		sql.append(BALANCE_SHEET);
+		sql.append(" and '");
+		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
+		sql.append(" = '");
+		sql.append(CREDIT);
+		
+		return super.idoFindPKsBySQL(sql.toString());
+	}	
 }
