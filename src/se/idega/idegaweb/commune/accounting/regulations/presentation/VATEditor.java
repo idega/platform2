@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.4 2003/08/21 15:58:22 anders Exp $
+ * $Id: VATEditor.java,v 1.5 2003/08/21 17:09:35 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -27,10 +27,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusi
  * VATRegulations is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/08/21 15:58:22 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/21 17:09:35 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -147,10 +147,12 @@ public class VATEditor extends AccountingBlock {
 	private void viewAddVATForm(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm();
 		app.setTitle(KEY_TITLE, "Momssats");
-		Table addPanel = new Table();
-		addPanel.setCellpadding(getCellpadding());
-		addPanel.setCellspacing(getCellspacing());
-		app.setMainPanel(addPanel);
+		
+		Table table = new Table();
+		table.setCellpadding(getCellpadding());
+		table.setCellspacing(getCellspacing());
+		app.setMainPanel(table);
+		
 		ButtonPanel bp = new ButtonPanel();
 		app.setButtonPanel(getButtonPanel());
 		add(app);
