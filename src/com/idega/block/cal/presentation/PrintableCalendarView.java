@@ -19,8 +19,8 @@ public class PrintableCalendarView extends Window{
 	public PrintableCalendarView() {
 		setResizable(true);
 		setScrollbar(true);
-		setHeight(700);
-		setWidth(550);
+		setHeight(750);
+		setWidth(570);
 	}
 	public void main(IWContext iwc) throws Exception{
 		String groupString = iwc.getParameter("group_id");
