@@ -85,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/01 14:08:23 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/01 15:39:37 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.100 $
+ * @version $Revision: 1.101 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -602,6 +602,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final Provider provider
 				= (null != placement ? new Provider
 					 (placement.getSchoolClass ().getSchool ()) : null); 
+		Regulation matchedRegulation  = null;
 		if (null != searchString && null != period && null != categoryId
 				&& null != provider && getActionId (context)
 				== ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT) {
@@ -611,16 +612,26 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				regulations.addAll
 						(home.findRegulationsByNameNoCaseDateAndCategory
 						 (searchString + '%', period, categoryId));
+				if (1 == regulations.size ()) {
+					matchedRegulation = (Regulation) regulations.iterator ().next ();
+				} else {
+					for (Iterator i = regulations.iterator ();
+							 i.hasNext () && null == matchedRegulation;) {
+						final Regulation regulation = (Regulation) i.next ();
+						if (regulation.getName ().trim ().equalsIgnoreCase
+								(searchString.trim ())) {
+							matchedRegulation = regulation;
+						}
+					}
+				}
 			} catch (FinderException e) {
 				// no problem, no regulation found
 			}
 		} 
-		if (1 == regulations.size ()) {
+		if (null != matchedRegulation) {
 			// found exactly one regulation, display it
-			final Regulation regulation
-					= (Regulation) regulations.iterator ().next ();
 			addPresentationObjectsForNewRecordForm
-					(context, inputs, header, business, provider, regulation,
+					(context, inputs, header, business, provider, matchedRegulation,
 					 placement);
 		} else {
 			// found 0 or more than 1 regulation, present search form
