@@ -198,7 +198,13 @@ public class ReportOverview extends Block {
     
   private void  getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle) {
   	List queryRepresentations = new ArrayList();
+  	// pretty cool implementation:
+  	// if the children list is empty null is returned. Well done and thank you!
+  	//TODO: thi: change this nonsense
   	Iterator iterator = queryFolder.getChildren();
+  	if (iterator == null) {
+  		iterator = (new ArrayList(0)).iterator();
+  	}
   	while (iterator.hasNext())	{
   		ICTreeNode node = (ICTreeNode) iterator.next();
   		String name = node.getNodeName();
