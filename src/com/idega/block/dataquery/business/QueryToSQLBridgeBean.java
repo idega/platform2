@@ -52,6 +52,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
 	 * Use this method for printing or showing the executed sql statements
 	 */
   public QueryResult executeQueries(SQLQuery sqlQuery, int numberOfRowsLimit, List executedSQLStatements) {
+  	// we are not using transactions because some databases don't support transactions and rollbacks
   	QueryResult queryResult = null;
   	List postStatements = new ArrayList();
 		Connection connection = ConnectionBroker.getConnection();
@@ -93,10 +94,8 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
   		executedSQLStatements.add(postStatement);
 		}
 		catch (SQLException ex) {
-			String message =
-				"[QueryToSQLBridge]: Can't execute " + postStatement;
-			System.err.println(message + " Message is: " + ex.getMessage());
-			ex.printStackTrace(System.err);
+			logError("[QueryToSQLBridge]: Can't execute " + postStatement);
+			log(ex);
 			throw ex;
 		}
   }
@@ -155,27 +154,27 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
 				postStatement = sqlQuery.getPostStatement();
 			}
 			// execute statement
-	    statement.execute(sqlStatement);
-	    executedSQLStatements.add(sqlStatement);
+			statement.execute(sqlStatement);
+			executedSQLStatements.add(sqlStatement);
 		}
-    catch (SQLException ex) {
-      System.err.println("[QueryToSQLBridge] sql statement could not be executed. Message was: " + 
-        ex.getMessage());
-        throw ex;
-    }
-    finally {
-    	// do not hide an existing exception
-    	try {
-    		if (statement != null)  {
-    			statement.close();
-    		}
-    	}
-    	catch (SQLException statementCloseEx) {
-    		logError("[QueryToSQLBridge] statement could not be closed");
-    		log(statementCloseEx);
-    	}
-    }
-    return postStatement;
+		catch (SQLException ex) {
+			logError("[QueryToSQLBridge] sql statement could not be executed.");
+			log(ex);
+			throw ex;
+		}
+		finally {
+			// do not hide an existing exception
+			try {
+				if (statement != null)  {
+					statement.close();
+				}
+			}
+			catch (SQLException statementCloseEx) {
+				logError("[QueryToSQLBridge] statement could not be closed");
+				log(statementCloseEx);
+			}
+		}
+		return postStatement;
 	}
 
 	private QueryResult executeQuery(Connection connection, SQLQuery sqlQuery, int numberOfRowsLimit, List executedSQLStatements) throws SQLException	{
@@ -221,8 +220,8 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
       }
     }   
     catch (SQLException sqlEx) {
-      	logError("[QueryToSQLBridge] sql statement could not be executed. Message was: " + 
-        sqlEx.getMessage());
+      	logError("[QueryToSQLBridge] sql statement could not be executed."); 
+        log(sqlEx);
         throw sqlEx;
     }
     finally {
