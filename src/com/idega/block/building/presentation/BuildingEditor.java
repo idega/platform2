@@ -43,6 +43,12 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
+  private boolean includeLinks = true;
+
+  public void setToIncludeLinks(boolean include){
+    includeLinks = include;
+  }
+
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
@@ -529,6 +535,67 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
       }
     }
     catch(SQLException sql){sql.printStackTrace();}
+  }
+
+  public ModuleObject getLinkTable(ModuleInfo modinfo){
+    int iAct = BUILDING;
+    IWResourceBundle iwrb = getResourceBundle(modinfo);
+    if(modinfo.getParameter(sAction)!= null){
+      iAct = Integer.parseInt(modinfo.getParameter(sAction));
+    }
+
+    Table LinkTable = new Table();
+      LinkTable.setBorder(0);
+      //LinkTable.setCellpadding(3);
+      //LinkTable.setCellspacing(3);
+
+    Link B1 = new Link(iwrb.getLocalizedString("complex","Complex"));
+      B1.setFontStyle("text-decoration: none");
+      B1.setFontColor("#FFFFFF");
+      B1.setBold();
+      B1.addParameter(sAction,COMPLEX);
+    Link B2 = new Link(iwrb.getLocalizedString("building","Building"));
+      B2.setFontStyle("text-decoration: none");
+      B2.setFontColor("#FFFFFF");
+      B2.setBold();
+      B2.addParameter(sAction,BUILDING);
+    Link B3 = new Link(iwrb.getLocalizedString("floor","Floor"));
+      B3.setFontStyle("text-decoration: none");
+      B3.setFontColor("#FFFFFF");
+      B3.setBold();
+      B3.addParameter(sAction,FLOOR);
+    Link B4 = new Link(iwrb.getLocalizedString("category","Category"));
+      B4.setFontStyle("text-decoration: none");
+      B4.setFontColor("#FFFFFF");
+      B4.setBold();
+      B4.addParameter(sAction,CATEGORY);
+    Link B5 = new Link(iwrb.getLocalizedString("type","Type"));
+      B5.setFontStyle("text-decoration: none");
+      B5.setFontColor("#FFFFFF");
+      B5.setBold();
+      B5.addParameter(sAction,TYPE);
+    Link B6 = new Link(iwrb.getLocalizedString("apartment","Apartment"));
+      B6.setFontStyle("text-decoration: none");
+      B6.setFontColor("#FFFFFF");
+      B6.setBold();
+      B6.addParameter(sAction,APARTMENT);
+
+    switch (iAct) {
+      case COMPLEX  : B1.setFontColor("#FF9933");   break;
+      case BUILDING : B2.setFontColor("#FF9933");  break;
+      case FLOOR    : B3.setFontColor("#FF9933");     break;
+      case APARTMENT: B6.setFontColor("#FF9933"); break;
+      case CATEGORY : B4.setFontColor("#FF9933");  break;
+      case TYPE     : B5.setFontColor("#FF9933");   break;
+    }
+
+    LinkTable.add(B1,1,1);
+    LinkTable.add(B2,2,1);
+    LinkTable.add(B3,3,1);
+    LinkTable.add(B4,4,1);
+    LinkTable.add(B5,5,1);
+    LinkTable.add(B6,6,1);
+    return LinkTable;
   }
 
   protected ModuleObject makeLinkTable(int i){
