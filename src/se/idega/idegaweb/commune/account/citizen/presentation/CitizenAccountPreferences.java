@@ -267,7 +267,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		String valueNewPasswordRepeated = iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED) != null ? iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED) : "";
 		String valuePhoneHome = iwc.getParameter(PARAMETER_PHONE_HOME);
 		if (valuePhoneHome == null) {
-			Phone p = ub.getUserPhone(user.getID(), 0);
+			Phone p = ub.getUserPhone(user.getID(), 1);
 			if (p != null) {
 				valuePhoneHome = p.getNumber();
 			} else {
@@ -276,7 +276,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		}
 		String valuePhoneWork = iwc.getParameter(PARAMETER_PHONE_WORK);
 		if (valuePhoneWork == null) {
-			Phone p = ub.getUserPhone(user.getID(), 1);
+			Phone p = ub.getUserPhone(user.getID(), 2);
 			if (p != null) {
 				valuePhoneWork = p.getNumber();
 			} else {
