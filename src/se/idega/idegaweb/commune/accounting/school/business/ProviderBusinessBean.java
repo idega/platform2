@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.9 2003/10/07 16:07:57 gimmi Exp $
+ * $Id: ProviderBusinessBean.java,v 1.10 2003/10/09 11:44:06 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 import javax.ejb.CreateException;
-import javax.ejb.RemoveException;
+import javax.transaction.UserTransaction;
 
 import com.idega.business.IBOLookup;
 
@@ -32,10 +32,10 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderAccountingProper
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2003/10/07 16:07:57 $ by $Author: gimmi $
+ * Last modified: $Date: 2003/10/09 11:44:06 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
@@ -209,7 +209,10 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 	 * @throws ProviderException if the provider could not be deleted
 	 */ 
 	public void deleteProvider(String id) throws ProviderException {
+		UserTransaction trans = null;
 		try {
+			trans = this.getSessionContext().getUserTransaction();
+			trans.begin();
 			Integer schoolId = new Integer(id);
 			ProviderAccountingPropertiesHome home = getProviderAccountingPropertiesHome();
 			
@@ -221,10 +224,13 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 				pap.remove();
 			}
 			SchoolBusiness sb = getSchoolBusiness();
-			sb.removeSchool(schoolId.intValue());
-		} catch (RemoteException e) { 
-			throw new ProviderException(KEY_CANNOT_DELETE_PROVIDER, DEFAULT_CANNOT_DELETE_PROVIDER);
-		} catch (RemoveException e) { 
+			sb.removeProvider(schoolId.intValue());
+			trans.commit();
+		} catch (Exception e) {
+			try {
+				trans.rollback(); 
+			} catch (Exception e2) {}
+			
 			throw new ProviderException(KEY_CANNOT_DELETE_PROVIDER, DEFAULT_CANNOT_DELETE_PROVIDER);
 		}
 	}
