@@ -1,5 +1,5 @@
 /*
- * $Id: PaymentFlowTypeBMPBean.java,v 1.2 2003/08/19 10:35:09 anders Exp $
+ * $Id: PaymentFlowTypeBMPBean.java,v 1.3 2003/08/19 20:37:25 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,15 +21,16 @@ import com.idega.data.IDOLookup;
 /**
  * Entity bean for the payment flow type (in, out, e t c).
  * <p>
- * Last modified: $Date: 2003/08/19 10:35:09 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/19 20:37:25 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PaymentFlowTypeBMPBean  extends GenericEntity implements PaymentFlowType {
 
 	private static final String ENTITY_NAME = "cacc_payment_flow_type";
 
+	private static final String COLUMN_PAYMENT_FLOW_TYPE_ID = "payment_flow_type_id";
 	private static final String COLUMN_TEXT_KEY = "text_key";
 
 	private static final String KEY_PREFIX = ENTITY_NAME + ".";
@@ -39,6 +40,13 @@ public class PaymentFlowTypeBMPBean  extends GenericEntity implements PaymentFlo
 	 */
 	public String getEntityName() {
 		return ENTITY_NAME;
+	}
+	
+	/**
+	 * @see com.idega.data.GenericEntity#getIdColumnName()
+	 */
+	public String getIDColumnName() {
+		return COLUMN_PAYMENT_FLOW_TYPE_ID;
 	}
 
 	/**
