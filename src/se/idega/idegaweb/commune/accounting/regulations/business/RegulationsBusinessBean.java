@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.102 2003/12/29 16:23:44 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.103 2003/12/30 11:50:04 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1589,12 +1589,14 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					}
 				}
 				else if (match.size() > 1) {
+					TooManyRegulationsException ex = new TooManyRegulationsException("reg_exp_to_many_results", "Too many regulation match conditions"); 
 					Iterator regIterator = match.iterator();
 					while (regIterator.hasNext()) {
 						Regulation tmpreg = (Regulation) regIterator.next();
 						logDebug("Too many regulations found: " + tmpreg.getName());
+						ex.addRegulationName(tmpreg.getName());
 					}
-					throw new TooManyRegulationsException("reg_exp_to_many_results", "Too many regulation match conditions");
+					throw ex;
 				}
 				else {
 					logDebug("No regulations found");
