@@ -1432,6 +1432,10 @@ public abstract class BookingForm extends TravelManager{
   }
 
   public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany) throws Exception {
+		return checkBooking(iwc, saveBookingIfValid, bookIfTooMany, false);
+  }
+  
+  public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany, boolean bookIfTooFew) throws Exception {
     boolean tooMany = false;
 
     int iMany = 0;
@@ -1483,7 +1487,7 @@ public abstract class BookingForm extends TravelManager{
       iMany += current;
     }
 
-		if (iMany < 1) {
+		if (!bookIfTooFew && iMany < 1) {
 			return errorTooFew;
 		}
 

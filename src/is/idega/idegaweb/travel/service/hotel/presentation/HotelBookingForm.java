@@ -1596,8 +1596,11 @@ public class HotelBookingForm extends BookingForm {
     return table;
   }
 
-
   public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany) throws Exception {
+		return checkBooking(iwc, saveBookingIfValid, bookIfTooMany, false);
+  }
+  
+  public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany, boolean bookIfTooFew) throws Exception {
     boolean tooMany = false;
 
 
@@ -1634,7 +1637,7 @@ public class HotelBookingForm extends BookingForm {
       iMany += current;
     }
 
-		if (iMany < 1) {
+		if (!bookIfTooFew && iMany < 1) {
 			return errorTooFew;
 		}
 
@@ -1651,7 +1654,6 @@ public class HotelBookingForm extends BookingForm {
 		try {
 			iManyDays = Integer.parseInt(manyDays);
 		}catch (NumberFormatException n) {}
-    
   
     try {
       fromStamp = new IWTimestamp(fromDate);
