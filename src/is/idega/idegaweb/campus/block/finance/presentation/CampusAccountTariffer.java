@@ -29,7 +29,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DataTable;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 
 /**
@@ -66,18 +65,20 @@ public class CampusAccountTariffer extends AccountTariffer {
 			int row = 1;
 			T.add(getHeader(localize("apartment","Apartment")),1,row);
 			T.add(getHeader(localize("contract_period","Contract period")),2,row);
+			row++;
 			Collection caas =getContractAccountApartmentHome().findByAccount(getAccountId());
 			for (Iterator iter = caas.iterator(); iter.hasNext();) {
 				ContractAccountApartment caa = (ContractAccountApartment) iter.next();
 				
 				Apartment apartment = getApartmentHome().findByPrimaryKey(new Integer(caa.getApartmentId()));
 				Building building = getBuildingHome().findByPrimaryKey(new Integer(caa.getBuildingId()));
-				T.add(getText(apartment.getName()+" ,"+building.getName()),1,1);
+				T.add(getText(apartment.getName()+" ,"+building.getName()),1,row);
 				
 				DateFormat df = getShortDateFormat(iwc.getCurrentLocale());
-				T.add(getText(df.format(caa.getValidFrom())+" - "+df.format(caa.getValidTo())),2,2);
+				T.add(getText(df.format(caa.getValidFrom())+" - "+df.format(caa.getValidTo())),2,row);
 				RadioButton rb = new RadioButton(getExternalIDParameter(),String.valueOf(caa.getApartmentId()));
-				T.add(rb,3,2);
+				rb.setSelected(caa.getIsRented());
+				T.add(rb,3,row++);
 			}
 			
 		} catch (IDOLookupException e) {
