@@ -160,7 +160,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
       Group group = (Group)coll.iterator().next();
       return convertGroupToUser(group);
     }
-    catch(FinderException e){
+    catch(Exception e){
       throw new NoSpouseFound(userName);
     }
   }
