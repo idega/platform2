@@ -295,16 +295,14 @@ public class CashierWindow extends StyledIWAdminWindow {
         LinkContainer removePayments = new LinkContainer();
         removePayments.setStyleClass(styledLink);
         removePayments.add(formatText(iwrb.getLocalizedString(
-                "isi_acc_cashierwindow.remove_payments",
-                "Remove payments")));
+                "isi_acc_cashierwindow.remove_payments",                "Remove payments")));
         addParametersToMenuItems(removePayments, ACTION_REMOVE_PAYMENTS);
 
         //reports
         LinkContainer paymentStatus = new LinkContainer();
         paymentStatus.setStyleClass(styledLink);
         paymentStatus.add(formatText(iwrb.getLocalizedString(
-        		"isi_acc_cashierwindow.paymentStatus", 
-				"Payment Status (A.29)"), false));
+        		"isi_acc_cashierwindow.paymentStatus", "Payment Status (A.29)"), false));
         addParametersToMenuItems(paymentStatus, ACTION_REPORTS);
         paymentStatus.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.1.xml");
         paymentStatus.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.1.xml");
@@ -313,8 +311,7 @@ public class CashierWindow extends StyledIWAdminWindow {
         LinkContainer paymentOverview = new LinkContainer();
         paymentOverview.setStyleClass(styledLink);
         paymentOverview.add(formatText(iwrb.getLocalizedString(
-                "isi_acc_cashierwindow.paymentOverview",
-                "Payment overview (A.29)")));
+                "isi_acc_cashierwindow.paymentOverview", "Payment overview (A.29)")));
         addParametersToMenuItems(paymentOverview, ACTION_REPORTS);
         paymentOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.2.xml");
         paymentOverview.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.2.xml");
@@ -325,39 +322,36 @@ public class CashierWindow extends StyledIWAdminWindow {
         debtOverview.add(formatText(iwrb.getLocalizedString(
                 "isi_acc_cashierwindow.debtOverview", "Debt overview (A.29)")));
         addParametersToMenuItems(debtOverview, ACTION_REPORTS);
-        //paymentStatus.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.3.xml");
-        //paymentStatus.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.3.xml");
-        //paymentStatus.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.debtOverview");
+        //debtOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.3.xml");
+        //debtOverview.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.3.xml");
+        //debtOverview.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.debtOverview");
         
         LinkContainer entryOverview = new LinkContainer();
         entryOverview.setStyleClass(styledLink);
-        entryOverview
-                .add(formatText(iwrb.getLocalizedString(
-                        "isi_acc_cashierwindow.entryOverview",
-                        "Entry overview (A.29)")));
+        entryOverview.add(formatText(iwrb.getLocalizedString(
+        		"isi_acc_cashierwindow.entryOverview", "Entry overview (A.29)")));
         addParametersToMenuItems(entryOverview, ACTION_REPORTS);
-        //paymentStatus.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.4.xml");
-        //paymentStatus.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.4.xml");
-        //paymentStatus.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.entryOverview");
+        entryOverview.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.4.xml");
+        entryOverview.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.4.xml");
+        entryOverview.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.entryOverview");
         
         LinkContainer latePaymentList = new LinkContainer();
         latePaymentList.setStyleClass(styledLink);
         latePaymentList.add(formatText(iwrb.getLocalizedString(
-                "isi_acc_cashierwindow.latePaymentList",
-                "Late payment list (A.29)")));
+        		"isi_acc_cashierwindow.latePaymentList", "Late payment list (A.29)")));
         addParametersToMenuItems(latePaymentList, ACTION_REPORTS);
-        //paymentStatus.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.5.xml");
-        //paymentStatus.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.5.xml");
-        //paymentStatus.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.latePaymentList");
+        //latePaymentList.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.5.xml");
+        //latePaymentList.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.5.xml");
+        //latePaymentList.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.latePaymentList");
         
         LinkContainer paymentList = new LinkContainer();
         paymentList.setStyleClass(styledLink);
         paymentList.add(formatText(iwrb.getLocalizedString(
-                "isi_acc_cashierwindow.paymentList", "Payment list (A.29)")));
+        		"isi_acc_cashierwindow.paymentList", "Payment list (A.29)")));
         addParametersToMenuItems(paymentList, ACTION_REPORTS);
-        //paymentStatus.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.6.xml");
-        //paymentStatus.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.6.xml");
-        //paymentStatus.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.paymentList");
+        //paymentList.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE, "Invocation-A29.6.xml");
+        //paymentList.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE, "Layout-A29.6.xml");
+        //paymentList.addParameter(STATS_LOCALIZABLE_KEY_NAME, "isi_acc_cashierwindow.paymentList");
         
         LinkContainer ledgerList = new LinkContainer();
         ledgerList.setStyleClass(styledLink);
@@ -369,8 +363,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 
         //add to window
         menu.add(clubOperations, 1, 1);
-        menu
-                .add(getHelpWithGrayImage("cashierwindow.clubOperations_help",
+        menu.add(getHelpWithGrayImage("cashierwindow.clubOperations_help",
                         true), 2, 1);
         menu.setRowColor(1, COLOR_MIDDLE);
         menu.add(editTariffType, 1, 2);
@@ -379,8 +372,7 @@ public class CashierWindow extends StyledIWAdminWindow {
         menu.add(ccContract, 1, 5);
 
         menu.add(memberOperations, 1, 7);
-        menu.add(getHelpWithGrayImage("cashierwindow.memberOperations_help",
-                true), 2, 7);
+        menu.add(getHelpWithGrayImage("cashierwindow.memberOperations_help", true), 2, 7);
         menu.setRowColor(7, COLOR_MIDDLE);
         menu.add(manAss, 1, 8);
         menu.add(paymentHistory, 1, 9);
@@ -389,8 +381,7 @@ public class CashierWindow extends StyledIWAdminWindow {
         menu.add(removePayments, 1, 12);
 
         menu.add(reports, 1, 15);
-        menu.add(getHelpWithGrayImage("cashierwindow.reports_help", true), 2,
-                15);
+        menu.add(getHelpWithGrayImage("cashierwindow.reports_help", true), 2, 15);
         menu.setRowColor(15, COLOR_MIDDLE);
         menu.add(paymentStatus, 1, 16);
         menu.add(paymentOverview, 1, 17);
@@ -411,19 +402,15 @@ public class CashierWindow extends StyledIWAdminWindow {
     
     private void addParametersToMenuItems(LinkContainer menuItem, String action) {
         menuItem.addParameter(ACTION, action);
-        menuItem.addParameter(PARAMETER_GROUP_ID, ((Integer) eGroup
-                .getPrimaryKey()).toString());
+        menuItem.addParameter(PARAMETER_GROUP_ID, ((Integer) eGroup.getPrimaryKey()).toString());
         if (eUser != null) {
-            menuItem.addParameter(PARAMETER_USER_ID, ((Integer) eUser
-                    .getPrimaryKey()).toString());
+            menuItem.addParameter(PARAMETER_USER_ID, ((Integer) eUser.getPrimaryKey()).toString());
         }
         if (eDiv != null) {
-            menuItem.addParameter(PARAMETER_DIVISION_ID, ((Integer) eDiv
-                    .getPrimaryKey()).toString());
+            menuItem.addParameter(PARAMETER_DIVISION_ID, ((Integer) eDiv.getPrimaryKey()).toString());
         }
         if (eClub != null) {
-            menuItem.addParameter(PARAMETER_CLUB_ID, ((Integer) eClub
-                    .getPrimaryKey()).toString());
+            menuItem.addParameter(PARAMETER_CLUB_ID, ((Integer) eClub.getPrimaryKey()).toString());
         }
     }
 
