@@ -143,7 +143,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private CloseButton close;
 	private Form form;
 	private boolean restrictDates;
-	boolean onlyAllowFutureCareDate = false;
+	boolean onlyAllowFutureCareDate = true; //Changed according to #nacc149
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -959,7 +959,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		int row = 1;
 		
-		layoutTbl.add(getSmallHeader(localize("ccnctw_info", "Info about care time.")), 1, row++);
 		
 		layoutTbl.add(getSmallHeader(localize("ccnctw_from_date", "From date") + ":"), 1, row);	
 		DateInput fromDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
@@ -1225,8 +1224,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				application,
 				localize("ccecw_signcon_subject", "Contract signed"),
 				owner.getName() + " " + localize("ccecw_signcon_body", " has signed the contract for ") + " " +
-				child.getName() + " " +  child.getPersonalID() + ".",
-				application.getOwner());	
+				child.getName() + " " +  child.getPersonalID() + ".");	
 			
 	}
 			
