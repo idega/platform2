@@ -44,7 +44,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 				
 	public final static String NBS_SIGNED_ENTITY = "se.idega.block.pki.business.NBS_SIGNED_ENTITY";
 	
-	private Map _hiddenInputs = new HashMap();
+	private Map _addedParameters = new HashMap();
 		
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
@@ -59,7 +59,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		try{
 			
-			add(new Text(iwrb.getLocalizedString("nbssb_signcon","Sign Contract")));
+//			add(new Text(iwrb.getLocalizedString("nbssb_signcon","Sign Contract")));
 			
 			if (iwc.isInEditMode() || iwc.isInPreviewMode()){
 				return;
@@ -70,12 +70,10 @@ public class NBSSigningBlock extends Block implements Builderaware{
 			NBSSignedEntity signedEntity = getNBSSignedEntity(iwc);
 			String toBeSigned = signedEntity.getText();
 			
-			System.out.println("signedEntity.getAction():" + signedEntity.getAction());
-		
 			switch(signedEntity.getAction()){
 				case NBSSignedEntity.ACTION_INIT:
 					NBSSigningApplet applet = new NBSSigningApplet(initSignContract(iwc, toBeSigned));
-					applet.setHiddenInputs(_hiddenInputs);
+					applet.addParameters(_addedParameters);
 					add(applet);
 					break;
 										
@@ -92,17 +90,13 @@ public class NBSSigningBlock extends Block implements Builderaware{
 			
 			signedEntity.setNextAction();
 			
-//			if (! initDone){
-//		
-//				
-//			}else {	
-//				
-//
-//	
-//			}
+
 		}catch(NBSException ex){
 			String errorMsg = null;
 			switch(ex.getCode()){
+				case NBSException.ERROR_SRVCLNT_SERVER_UNAVAILABLE:
+					errorMsg = "Server unavailable";	
+					break;	
 				case NBSException.ERROR_SRV_CERT_EXPIRED: 		
 					errorMsg = "Certificate expired";	
 					break;	
@@ -119,7 +113,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 					errorMsg = "NBS Error";	
 					break;											
 			}
-			add(new Text(iwrb.getLocalizedString("NBSException_code_"+ex.getCode(),errorMsg+" ErrorCode: "+ex.getCode())));			
+			add(new Text(iwrb.getLocalizedString("NBSException_code_"+ex.getCode(), errorMsg + " ErrorCode: " + ex.getCode())));			
 			
 		}catch(Exception ex){
 			ex.printStackTrace();
@@ -133,29 +127,24 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	}
 	
 	public IBPage getGotoPage(){
-		System.out.println("forwardToIBPage : " + _page.getName());
 		return _page;
 	}
 			
 
-	public void setHiddenInput(String name, String value){
-		_hiddenInputs.put(name, value);
+	public void setParameter(String name, String value){
+		_addedParameters.put(name, value);
 	}
 			
 			
 	public NBSMessageHttp initSignContract(IWContext iwc, String toBeSigned) throws NBSException, Exception{
-		System.out.println("initSignContract()");
-
-		System.out.println("toBeSigned: " + toBeSigned);	
-				
-		NBSServerHttp server = getNBSServer(iwc);	
+		NBSServerHttp server = getNBSServer(iwc);
 		HttpMessage httpReq = new HttpMessage();
 		ServletUtil.servletRequestToHttpMessage(iwc.getRequest(), httpReq);
-							
 		NBSMessageResult result =  (NBSMessageResult) server.doSign(toBeSigned, httpReq);	
-		
+				
 		if (result != null)
 		{
+
 			// Send the message to the Client.
 			return (NBSMessageHttp) result.getMessage();
 		}			
@@ -164,8 +153,6 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	
 	
 	public void processSignContract(IWContext iwc) throws NBSException, Exception{
-		System.out.println("processSignContract");
-
 		NBSSignedEntity entity = getNBSSignedEntity(iwc);				
 					
 		NBSServerHttp server = getNBSServer(iwc);	
