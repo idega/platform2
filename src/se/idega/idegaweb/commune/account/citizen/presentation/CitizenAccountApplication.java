@@ -51,11 +51,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/02/09 13:10:12 $ by $Author: sigtryggur $
+ * Last modified: $Date: 2005/02/21 16:52:33 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.74 $
+ * @version $Revision: 1.75 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -136,6 +136,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String ZIP_CODE_DEFAULT = "Postnummer";
 	private final static String ZIP_CODE_KEY = "caa_zip_code";
 	private final static String NOT_LIVING_IN_SWEDEN_KEY = "caa_not_living_in_sweden";
+	private final static String MUST_SELECT_COMMUNE_KEY = "caa_must_select_commune";
+	private final static String MUST_SELECT_COMMUNE_DEFAULT = "You must select a commune";
 	
 	private final static String SIMPLE_FORM_SUBMIT_KEY = "caa_simpleSubmit";
 	private final static String SIMPLE_FORM_SUBMIT_DEFAULT = "Skicka ansökan";
@@ -943,7 +945,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 	
 	private DropdownMenu getCommuneDropdownMenu(IWContext iwc, String parameter, String communeId) {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
-		//	menu.addMenuElement(0, localize(KEY_COMMUNE_SELECTOR_HEADER, "Choose commune"));
+		menu.addMenuElement(0, "");
+		menu.setAsNotEmpty(localize(MUST_SELECT_COMMUNE_KEY, MUST_SELECT_COMMUNE_DEFAULT), "0");
 		try {
 			Collection c = getCommuneBusiness(iwc).getCommunes();
 			int defaultCommuneId = ((Integer) getCommuneBusiness(iwc).getDefaultCommune().getPrimaryKey()).intValue(); 
