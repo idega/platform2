@@ -6,7 +6,9 @@
  */
 package com.idega.block.dataquery.business;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import com.idega.core.data.IWTreeNode;
@@ -72,6 +74,18 @@ public class QueryEntityPart extends IWTreeNode implements QueryPart {
 		return getNodeName();
 	}
 	
+  public List getPathNames()  {
+    List list = new ArrayList();
+    String path = getPath();
+    StringTokenizer tokenizer = new StringTokenizer(path, IWTreeNode.PATH_DELIMITER);
+    while (tokenizer.hasMoreTokens()) {
+      String element = tokenizer.nextToken();
+      list.add(element);
+    }
+    return list;
+  }
+      
+  
 	public String getPath(){
 		return getNodePath();
 	}
