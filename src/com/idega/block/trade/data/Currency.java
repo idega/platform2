@@ -55,6 +55,7 @@ public class Currency extends GenericEntity {
 
 
 
+  public static String getColumnNameCurrencyID(){return "TR_CURRENCY_ID";}
   public static String getColumnNameCurrencyName(){return"CURRENCY_NAME";}
   public static String getColumnNameCurrencyAbbreviation(){return"CURRENCY_ABBREVIATION";}
 
