@@ -1,17 +1,21 @@
 package is.idega.idegaweb.golf.member;
 
-import is.idega.idegaweb.golf.member.Service;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import is.idega.idegaweb.golf.entity.*;
-import is.idega.idegaweb.golf.service.*;
+import is.idega.idegaweb.golf.entity.Address;
+import is.idega.idegaweb.golf.entity.PaymentType;
+import is.idega.idegaweb.golf.entity.PriceCatalogue;
+import is.idega.idegaweb.golf.entity.UnionMemberInfo;
+import is.idega.idegaweb.golf.service.Tariffer;
 
-import com.idega.data.IDOLookup;
-import com.idega.jmodule.image.presentation.ImageInserter;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.ListIterator;
+
+import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.TextInput;
 
 public class UnionMemberInfoInput extends Input{
 

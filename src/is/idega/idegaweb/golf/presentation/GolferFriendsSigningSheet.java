@@ -1,12 +1,13 @@
 package is.idega.idegaweb.golf.presentation;
 
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.business.GolferFriendsDataBusiness;
 
 import java.sql.SQLException;
 
+import com.idega.block.text.presentation.TextReader;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.text.presentation.TextReader;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -648,7 +649,7 @@ public class GolferFriendsSigningSheet extends Block {
   public void main(IWContext modinfo) {
 
     try {
-      isAdmin =  com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+      isAdmin = AccessControl.isAdmin(modinfo);
     }
     catch(SQLException E) {    }
 

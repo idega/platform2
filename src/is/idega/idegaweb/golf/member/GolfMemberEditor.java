@@ -2,19 +2,18 @@ package is.idega.idegaweb.golf.member;
 
 
 
-import com.idega.presentation.*;
-
-import com.idega.presentation.ui.*;
-
-import com.idega.presentation.text.*;
-
-import is.idega.idegaweb.golf.entity.*;
-
-import is.idega.idegaweb.golf.service.*;
-
-import com.idega.jmodule.image.presentation.ImageInserter;
+import is.idega.idegaweb.golf.entity.Member;
 
 import java.sql.SQLException;
+
+import com.idega.block.media.presentation.ImageInserter;
+import com.idega.presentation.Editor;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
 
 
 

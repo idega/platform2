@@ -3,21 +3,17 @@ package is.idega.idegaweb.golf.presentation;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import com.idega.util.IWTimestamp;
-import com.idega.presentation.Block;
-import com.idega.presentation.Table;
-
-import com.idega.jmodule.news.data.*;
-import com.idega.presentation.ui.HeaderTable;
+import com.idega.block.news.presentation.News;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.data.EntityFinder;
-import com.idega.data.GenericEntity;
-import com.idega.data.IDOLookup;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
-import java.sql.SQLException;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.HeaderTable;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:        idegaWeb Golf classes
@@ -46,7 +42,7 @@ public class ClubNewsBox extends Block {
   public void main(IWContext modinfo) throws Exception{
     iwrb = getResourceBundle(modinfo);
     iwb = getBundle(modinfo);
-
+    //FIXME Fix so it works with old News data...
 /*
     HeaderTable headerTable = new HeaderTable();
     headerTable.setWidth(148);
@@ -101,7 +97,7 @@ public class ClubNewsBox extends Block {
 
     headerTable.add(myTable);
 
-    return headerTable;*/
+    return headerTable;
 
     News[] news = (News[]) (new News()).findAll("select distinct news_category_id,news_date from news where news_category_id > 3 and news_category_id < 228 and news_category_id != 226 order by news_date desc");
 
@@ -161,7 +157,7 @@ public class ClubNewsBox extends Block {
         headerTable.add(myTable);
 
         add(headerTable);
-
+*/
       }
 
 }

@@ -1,15 +1,6 @@
 package is.idega.idegaweb.golf.moduleobject;
 
-import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Image;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.tournament.presentation.CloseTournament;
@@ -21,6 +12,17 @@ import is.idega.idegaweb.golf.tournament.presentation.TournamentRegistration;
 import is.idega.idegaweb.golf.tournament.presentation.TournamentSelector;
 import is.idega.idegaweb.golf.tournament.presentation.TournamentStartingtimeSetup;
 import is.idega.idegaweb.golf.tournament.presentation.TournamentUpdater;
+
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 
 
 public class GolfTournamentAdminDialog extends PresentationObjectContainer{
@@ -90,7 +92,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
     iwrb = getResourceBundle(modinfo);
     iwb = getBundle(modinfo);
 
-    if (com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo) || com.idega.jmodule.login.business.AccessControl.isClubAdmin(modinfo)) {
+    if (AccessControl.isAdmin(modinfo) || AccessControl.isClubAdmin(modinfo)) {
 	    String view = modinfo.getParameter(ADMIN_VIEW_PARAMETER);
 	    if (adminView != null) {
 	    	view = adminView;	

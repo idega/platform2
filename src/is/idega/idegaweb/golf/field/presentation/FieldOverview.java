@@ -3,24 +3,6 @@
  */
 package is.idega.idegaweb.golf.field.presentation;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.sql.SQLException;
-
-import javax.ejb.FinderException;
-
-import com.idega.presentation.Image;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Window;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import com.idega.data.IDOLookup;
-import com.idega.jmodule.text.presentation.TextReader;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.FieldImage;
@@ -30,6 +12,25 @@ import is.idega.idegaweb.golf.entity.TeeColor;
 import is.idega.idegaweb.golf.entity.TeeColorHome;
 import is.idega.idegaweb.golf.entity.TeeImage;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.SQLException;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.text.presentation.TextReader;
+import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
 
 /**
  * @author laddi

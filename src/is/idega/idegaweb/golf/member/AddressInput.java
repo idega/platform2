@@ -1,15 +1,18 @@
 package is.idega.idegaweb.golf.member;
 
-import is.idega.idegaweb.golf.member.Service;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import is.idega.idegaweb.golf.entity.*;
-import is.idega.idegaweb.golf.service.*;
+import is.idega.idegaweb.golf.entity.Address;
+import is.idega.idegaweb.golf.entity.Country;
+import is.idega.idegaweb.golf.entity.ZipCode;
+
+import java.sql.SQLException;
 
 import com.idega.data.IDOLookup;
-import com.idega.jmodule.image.presentation.ImageInserter;
-import java.sql.SQLException;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.TextInput;
 
 public class AddressInput extends Input{
 

@@ -1,10 +1,9 @@
 package is.idega.idegaweb.golf.templates;
 
-import com.idega.jmodule.JSPModule;
 import is.idega.idegaweb.golf.templates.page.GolfersPage;
-import javax.servlet.jsp.JspPage;
+
+import com.idega.builder.servlet.IBMainServlet;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Image;
 
 /**
  * Title:        idegaWeb Classes
@@ -15,7 +14,7 @@ import com.idega.presentation.Image;
  * @version 1.0
  */
 
-public abstract class GolferTemplate extends JSPModule implements JspPage{
+public abstract class GolferTemplate extends IBMainServlet {
   public void initializePage(){
     setPage(new GolfersPage());
   }

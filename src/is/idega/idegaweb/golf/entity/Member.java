@@ -1,6 +1,5 @@
 package is.idega.idegaweb.golf.entity;
 
-import javax.ejb.*;
 
 public interface Member extends GolfEntity
 {
@@ -14,7 +13,7 @@ public interface Member extends GolfEntity
  public java.lang.String getGender();
  public is.idega.idegaweb.golf.entity.Group[] getGroups()throws java.sql.SQLException;
  public float getHandicap()throws java.sql.SQLException;
- public com.idega.jmodule.image.data.ImageEntity getImage();
+ public ImageEntity getImage();
  public int getImageId();
  public int getAge();
  public java.lang.String getJob();

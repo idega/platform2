@@ -2,21 +2,11 @@
 package is.idega.idegaweb.golf.startingtime.servlet.popupwidow;
 
 
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
-import com.idega.presentation.ui.*;
-import com.idega.jmodule.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import is.idega.idegaweb.golf.templates.page.JmoduleWindowModuleWindow;
 import is.idega.idegaweb.golf.startingtime.presentation.RegisterTime;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
+import is.idega.idegaweb.golf.templates.JmoduleWindowModule;
 
 
-public class RegisterTeeTime extends com.idega.jmodule.JSPWindowModule {
+public class RegisterTeeTime extends JmoduleWindowModule {
 
   public void initializePage(){
     setPage(new RegisterTime());

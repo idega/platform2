@@ -1,19 +1,13 @@
 package is.idega.idegaweb.golf.presentation;
 
-import com.idega.presentation.Table;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Image;
-import com.idega.jmodule.news.presentation.NewsReader;
-import java.lang.String;
 import java.sql.SQLException;
-import com.idega.presentation.text.*;
-import com.idega.jmodule.text.presentation.TextReader;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import is.idega.idegaweb.golf.entity.GolferPageData;
 
-import com.idega.presentation.Block;
+import com.idega.block.news.presentation.NewsReader;
+import com.idega.block.text.presentation.TextReader;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 
 /**
  * Title:        idegaWeb Classes
@@ -47,17 +41,17 @@ public class HomeView extends GolferBlock {
     NewsReader news = new NewsReader();
 
     news.setConnectionAttributes("golfer_page", golferPageData.getNewsReaderID());
-    news.setNewsEditorURL("/golfers/newsIndex.jsp");
+    //news.setNewsEditorURL("/golfers/newsIndex.jsp");
 //    news.setNumberOfDays(4);
     news.setHeadlineImageURL("/idegaweb/bundles/golf.bundle/resources/shared/bullet.gif");
     news.setWidth("100%");
-    news.setNewsReaderURLAsSamePage(iwc);
+    //news.setNewsReaderURLAsSamePage(iwc);
     news.setNumberOfExpandedNews(8);
     news.setNumberOfDisplayedNews(8);
     news.setNumberOfLetters(200);
     news.getTextProxy().setFontSize(1);
     news.getHeadlineProxy().setFontSize(1);
-    news.setCollectionImage("collection.gif");
+    //news.setCollectionImage("collection.gif");
     news.showNewsCollectionButton(false);
     news.setShowImages(false);
     news.setShowOnlyDates(true);

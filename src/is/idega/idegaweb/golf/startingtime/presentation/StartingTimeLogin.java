@@ -3,6 +3,16 @@
  */
 package is.idega.idegaweb.golf.startingtime.presentation;
 
+import is.idega.idegaweb.golf.GolfField;
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.MemberHome;
+import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
+import is.idega.idegaweb.golf.entity.Tournament;
+import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.service.StartService;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -12,26 +22,17 @@ import javax.ejb.FinderException;
 
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
-import com.idega.presentation.Image;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import is.idega.idegaweb.golf.GolfField;
-import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.entity.MemberHome;
-import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
-import is.idega.idegaweb.golf.entity.Tournament;
-import is.idega.idegaweb.golf.entity.TournamentDay;
-import is.idega.idegaweb.golf.entity.Union;
-import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.service.StartService;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -302,9 +303,9 @@ public class StartingTimeLogin extends GolfBlock {
 			//int unionId = -1;
 
 			if (memberAvailable) {
-				admin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
-				clubadmin = com.idega.jmodule.login.business.AccessControl.isClubAdmin(modinfo);
-				clubworker = com.idega.jmodule.login.business.AccessControl.isClubWorker(modinfo);
+				admin = AccessControl.isAdmin(modinfo);
+				clubadmin = AccessControl.isClubAdmin(modinfo);
+				clubworker = AccessControl.isClubWorker(modinfo);
 				unionAbbrevation = member.getMainUnion().getAbbrevation();
 				//unionId = member.getMainUnion().getID();
 			}

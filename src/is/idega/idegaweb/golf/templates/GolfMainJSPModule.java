@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModule.java,v 1.5 2004/04/01 17:08:26 laddi Exp $
+ * $Id: GolfMainJSPModule.java,v 1.6 2004/04/01 20:11:21 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,14 +9,16 @@
  */
 package is.idega.idegaweb.golf.templates;
 
-import is.idega.idegaweb.golf.templates.page.GolfMainJSPModulePage;
-import com.idega.presentation.IWContext;
-import com.idega.jmodule.*;
-import com.idega.presentation.PresentationObject;
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.templates.page.GolfMainJSPModulePage;
+
 import java.sql.SQLException;
+
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 
 /**
  * @author
@@ -45,7 +47,7 @@ public class GolfMainJSPModule extends MainSideJSPModule {
 
   public boolean isAdmin() {
     try {
-      return com.idega.jmodule.login.business.AccessControl.isAdmin(getModuleInfo());
+      return AccessControl.isAdmin(getModuleInfo());
     }
     catch(SQLException E) {
     }
@@ -53,18 +55,18 @@ public class GolfMainJSPModule extends MainSideJSPModule {
   }
 
   public boolean isDeveloper() {
-    return com.idega.jmodule.login.business.AccessControl.isDeveloper(getModuleInfo());
+    return AccessControl.isDeveloper(getModuleInfo());
   }
 
   public boolean isClubAdmin() {
-    return com.idega.jmodule.login.business.AccessControl.isClubAdmin(getModuleInfo());
+    return AccessControl.isClubAdmin(getModuleInfo());
   }
 
   public boolean isClubWorker() {
     boolean ret;
 
     try {
-      ret = com.idega.jmodule.login.business.AccessControl.isClubWorker(getModuleInfo());
+      ret = AccessControl.isClubWorker(getModuleInfo());
     }
     catch(java.sql.SQLException e) {
       e.printStackTrace();
@@ -75,7 +77,7 @@ public class GolfMainJSPModule extends MainSideJSPModule {
   }
 
   public boolean isUser() {
-    return com.idega.jmodule.login.business.AccessControl.isUser(getModuleInfo());
+    return AccessControl.isUser(getModuleInfo());
   }
 
     public void removeUnionIdSessionAttribute(IWContext modinfo){

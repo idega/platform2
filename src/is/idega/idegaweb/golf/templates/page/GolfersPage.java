@@ -1,22 +1,17 @@
 package is.idega.idegaweb.golf.templates.page;
 
-import com.idega.presentation.Page;
-import com.idega.presentation.Table;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.jmodule.banner.presentation.*;
-import com.idega.jmodule.sidemenu.presentation.Sidemenu;
-import com.idega.presentation.Image;
-import com.idega.presentation.text.Link;
-import com.idega.jmodule.news.presentation.NewsReader;
-import java.util.Vector;
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
+
 import java.sql.SQLException;
 
-import is.idega.idegaweb.golf.handicap.presentation.HandicapOverview;
-import com.idega.presentation.text.*;
-import com.idega.jmodule.text.presentation.TextReader;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 
 /**
  * Title:        idegaWeb Classes
@@ -215,7 +210,7 @@ public class GolfersPage extends Page {
 
   public void main(IWContext modinfo) throws Exception{
     try {
-      isAdmin =  com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+      isAdmin = AccessControl.isAdmin(modinfo);
     }
     catch(SQLException E) {    }
     iwrb = getResourceBundle(modinfo);

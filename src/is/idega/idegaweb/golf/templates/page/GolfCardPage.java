@@ -1,16 +1,16 @@
 package is.idega.idegaweb.golf.templates.page;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
-import is.idega.idegaweb.golf.templates.*;
-import com.idega.jmodule.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.jmodule.banner.presentation.BannerContainer;
-import java.sql.*;
-import java.io.*;
+import java.io.IOException;
+import java.sql.SQLException;
+
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
 
 public class GolfCardPage extends GolfMainJSPModulePage{
 
@@ -221,10 +221,10 @@ public class GolfCardPage extends GolfMainJSPModulePage{
         adalTable.add(Text.getBreak());
     }
 
-    BannerContainer contain = new BannerContainer();
+    /*BannerContainer contain = new BannerContainer();
       contain.setConnectionAttributes("union_id",Integer.parseInt(union_id));
 
-    adalTable.add(contain,1,1);
+    adalTable.add(contain,1,1);*/
 
     return myForm;
   }

@@ -1,28 +1,30 @@
 package is.idega.idegaweb.golf.templates.page;
 
-import com.idega.presentation.Block;
-import com.idega.presentation.Table;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.Image;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.TextArea;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.RadioButton;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Parameter;
-import com.idega.presentation.ui.Window;
-import com.idega.jmodule.text.presentation.TextReader;
-import com.idega.presentation.Script;
-import com.idega.presentation.ui.DateInput;
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.business.GolferFriendsDataBusiness;
-import java.sql.Date;
+
+import java.sql.SQLException;
+
+import com.idega.block.text.presentation.TextReader;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import java.sql.SQLException;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Script;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
 
 /**
  * Title:        idegaWeb Classes
@@ -647,7 +649,7 @@ public class GolferFriendsSigningSheet extends Block {
   public void main(IWContext modinfo) {
 
     try {
-      isAdmin =  com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+      isAdmin = AccessControl.isAdmin(modinfo);
     }
     catch(SQLException E) {    }
 

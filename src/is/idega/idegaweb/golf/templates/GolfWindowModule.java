@@ -1,14 +1,9 @@
 package is.idega.idegaweb.golf.templates;
 
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
-import com.idega.presentation.ui.*;
-import com.idega.jmodule.*;
+import com.idega.presentation.ui.Window;
 
 
-public class GolfWindowModule extends JSPModule implements JspPage{
+public class GolfWindowModule extends JmoduleWindowModule {
 
 
 	public void setWindow(Window window){

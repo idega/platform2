@@ -24,9 +24,8 @@ import java.sql.SQLException;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.block.text.presentation.TextReader;
 import com.idega.data.IDOLookup;
-import com.idega.jmodule.text.data.TextModule;
-import com.idega.jmodule.text.presentation.TextReader;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -511,7 +510,8 @@ public class FieldEditor extends GolfBlock {
 
 		if (hole_number != -1) {
 			System.out.println("updateHoleText, hole_number != null");
-			TextModule text = new TextModule();
+			//FIXME Gimmi, hér ﬂarf a› laga ﬂetta eitthva› til ﬂannig a› ﬂa› virki a› vista texta á holu...
+			/*TextModule text = new TextModule();
 			text.insert();
 
 			returner = text.getID();
@@ -525,7 +525,7 @@ public class FieldEditor extends GolfBlock {
 			}
 			catch (CreateException ce) {
 				throw new SQLException(ce.getMessage());
-			}
+			}*/
 		}
 
 		return returner;

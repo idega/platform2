@@ -1,5 +1,6 @@
 package is.idega.idegaweb.golf.service;
 
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.business.GolfCacher;
 import is.idega.idegaweb.golf.entity.Account;
 import is.idega.idegaweb.golf.entity.AccountEntry;
@@ -1859,7 +1860,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
 
   public void main(IWContext modinfo) {
     try{
-      isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+      isAdmin = AccessControl.isAdmin(modinfo);
     }
     catch(SQLException sql){ isAdmin = false;}
     iwrb = getResourceBundle(modinfo);

@@ -1,19 +1,28 @@
 package is.idega.idegaweb.golf.business;
 
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import is.idega.idegaweb.golf.service.*;
-import is.idega.idegaweb.golf.entity.*;
+import is.idega.idegaweb.golf.entity.Address;
+import is.idega.idegaweb.golf.entity.Group;
+import is.idega.idegaweb.golf.entity.GroupHome;
+import is.idega.idegaweb.golf.entity.LoginTable;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.MemberHome;
+import is.idega.idegaweb.golf.entity.MemberInfo;
+import is.idega.idegaweb.golf.entity.Phone;
+import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.entity.UnionHome;
 
-import com.idega.data.IDOLookup;
-import com.idega.jmodule.login.data.LoginTable;
-import java.sql.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLException;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
-import com.idega.util.IWTimestamp;
+import com.idega.data.IDOLookup;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SelectionBox;
 
 /**
  * Title:        idegaUtil
@@ -90,7 +99,7 @@ public class ClubAdminHandler extends Block {
         login = union.getAbbrevation();
         password = com.idega.util.StringHandler.getRandomString(8);
 
-        LoginTable loggi = new LoginTable();
+        LoginTable loggi = (LoginTable) IDOLookup.createLegacy(LoginTable.class);
         loggi.setMemberId(member.getID());
         loggi.setUserLogin(login);
         ut.print( member.getName() + " \t-> Notandi : " + login );

@@ -1,14 +1,12 @@
 package is.idega.idegaweb.golf.templates;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
-import is.idega.idegaweb.golf.*;
+import is.idega.idegaweb.golf.templates.page.MainPage;
 
 import com.idega.builder.servlet.IBMainServlet;
-import com.idega.jmodule.*;
-import com.idega.presentation.*;
-import is.idega.idegaweb.golf.templates.page.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Script;
 
 
 public class MainSideJSPModule extends IBMainServlet{

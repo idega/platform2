@@ -23,8 +23,8 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.media.presentation.ImageInserter;
 import com.idega.data.IDOLookup;
-import com.idega.jmodule.image.presentation.ImageInserter;
 import com.idega.presentation.Editor;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;

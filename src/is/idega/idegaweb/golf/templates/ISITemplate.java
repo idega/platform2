@@ -1,19 +1,17 @@
 package is.idega.idegaweb.golf.templates;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
-import is.idega.idegaweb.golf.*;
-import com.idega.jmodule.login.presentation.Login;
-import com.idega.jmodule.*;
-import com.idega.jmodule.banner.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.jmodule.poll.moduleobject.*;
-import com.idega.jmodule.boxoffice.presentation.*;
-import java.sql.*;
-import is.idega.idegaweb.golf.entity.*;
-import java.io.*;
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.block.login.presentation.Login;
+import is.idega.idegaweb.golf.entity.Member;
+
+import java.io.IOException;
+import java.sql.SQLException;
+
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 
 
 public class ISITemplate extends MainSideJSPModule{
@@ -239,7 +237,7 @@ public class ISITemplate extends MainSideJSPModule{
         public boolean isAdmin() {
 
           try{
-            return com.idega.jmodule.login.business.AccessControl.isAdmin(getModuleInfo());
+            return AccessControl.isAdmin(getModuleInfo());
           }catch (SQLException E) {
             /*
             out.print("SQLException: " + E.getMessage());

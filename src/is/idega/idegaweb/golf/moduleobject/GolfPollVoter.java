@@ -1,18 +1,25 @@
 package is.idega.idegaweb.golf.moduleobject;
 
-import com.idega.jmodule.*;
-import com.idega.data.*;
+import is.idega.idegaweb.golf.entity.Poll;
+import is.idega.idegaweb.golf.entity.PollHome;
+import is.idega.idegaweb.golf.entity.Poll_option;
+import is.idega.idegaweb.golf.entity.Poll_result;
 
-import java.io.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
+import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.ejb.FinderException;
-import javax.servlet.http.*;
-import java.sql.SQLException;
-import java.util.*;
-import is.idega.idegaweb.golf.entity.*;
+
+import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.RadioGroup;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
 
 public class GolfPollVoter extends PresentationObjectContainer{
 

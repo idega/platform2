@@ -2,16 +2,14 @@
 package is.idega.idegaweb.golf.templates.page;
 
 
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
-import com.idega.presentation.ui.*;
-import com.idega.jmodule.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.MenuBar;
+import com.idega.presentation.ui.Window;
 
 
 public class JmoduleWindowModuleWindow extends Window{

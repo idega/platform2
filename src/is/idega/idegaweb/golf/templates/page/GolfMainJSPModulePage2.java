@@ -9,15 +9,12 @@
  */
 package is.idega.idegaweb.golf.templates.page;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
-import is.idega.idegaweb.golf.*;
-import com.idega.jmodule.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import java.sql.*;
-import java.io.*;
+import java.io.IOException;
+import java.sql.SQLException;
+
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
 
 
 public class GolfMainJSPModulePage2 extends GolfMainJSPModulePage{

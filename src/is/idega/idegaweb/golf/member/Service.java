@@ -1,14 +1,12 @@
 package is.idega.idegaweb.golf.member;
 
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import is.idega.idegaweb.golf.entity.*;
-import is.idega.idegaweb.golf.service.*;
+import is.idega.idegaweb.golf.entity.Country;
+import is.idega.idegaweb.golf.entity.ZipCode;
+
+import java.sql.SQLException;
 
 import com.idega.data.IDOLookup;
-import com.idega.jmodule.image.presentation.ImageInserter;
-import java.sql.SQLException;
+import com.idega.presentation.ui.DropdownMenu;
 
 public class Service{
 

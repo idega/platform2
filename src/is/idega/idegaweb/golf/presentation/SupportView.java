@@ -1,24 +1,18 @@
 package is.idega.idegaweb.golf.presentation;
 
-import com.idega.presentation.Table;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Image;
-import java.lang.String;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.MemberHome;
+
 import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
-import com.idega.presentation.text.*;
+import com.idega.block.text.presentation.TextReader;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import is.idega.idegaweb.golf.entity.GolferPageData;
-import is.idega.idegaweb.golf.entity.MemberHome;
-
-import com.idega.jmodule.text.presentation.TextReader;
-import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.handicap.presentation.HandicapOverview;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 
 /**
  * Title: idegaWeb Classes Description: Copyright: Copyright (c) 2001 Company:

@@ -6,34 +6,6 @@
 
 package is.idega.idegaweb.golf.tournament.business;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
-import javax.ejb.FinderException;
-
-import com.idega.data.EntityFinder;
-import com.idega.data.GenericEntity;
-import com.idega.data.IDOLookup;
-import com.idega.data.SimpleQuerier;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.text.HorizontalRule;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-
 import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.entity.DisplayScores;
 import is.idega.idegaweb.golf.entity.Field;
@@ -56,6 +28,33 @@ import is.idega.idegaweb.golf.entity.TournamentType;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.handicap.business.Handicap;
 import is.idega.idegaweb.golf.tournament.presentation.TournamentBox;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+import com.idega.data.SimpleQuerier;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.HorizontalRule;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -241,9 +240,9 @@ public class TournamentController
 	{
 		try
 		{
-			boolean clubAdmin = com.idega.jmodule.login.business.AccessControl.isClubAdmin(modinfo);
-			is.idega.idegaweb.golf.entity.Member member =
-				(is.idega.idegaweb.golf.entity.Member) com.idega.jmodule.login.business.AccessControl.getMember(modinfo);
+			boolean clubAdmin = AccessControl.isClubAdmin(modinfo);
+			Member member =
+				(Member) AccessControl.getMember(modinfo);
 			Union union = null;
 			try
 			{

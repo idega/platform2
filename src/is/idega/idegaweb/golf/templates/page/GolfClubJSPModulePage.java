@@ -11,10 +11,6 @@ import java.sql.SQLException;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOLookup;
-import com.idega.jmodule.banner.presentation.BannerContainer;
-import com.idega.jmodule.boxoffice.presentation.BoxReader;
-import com.idega.jmodule.forum.data.ForumAttributes;
-import com.idega.jmodule.text.data.TextModule;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
@@ -60,7 +56,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
     innerTable.setCellspacing(0);
     innerTable.setCellpadding(2);
 
-    ForumAttributes[] forum = (ForumAttributes[]) (new ForumAttributes()).findAllByColumn("attribute_id",union_id);
+    //ForumAttributes[] forum = (ForumAttributes[]) (new ForumAttributes()).findAllByColumn("attribute_id",union_id);
     Text clubLink = new Text(iwrb.getLocalizedString("clubs.about","About")+" "+abbreviation);
     clubLink.setFontSize(1);
     Text fieldLink = new Text(iwrb.getLocalizedString("clubs.course","Courses"));
@@ -71,11 +67,11 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
     Link chatLink = new Link(iwrb.getLocalizedString("clubs.forums","Forums"),"/clubs/thread.jsp");
     chatLink.setFontSize(1);
     chatLink.addParameter("union_id",union_id);
-    if ( forum.length > 0 ) {
+    /*if ( forum.length > 0 ) {
       chatLink.addParameter("forum_id",forum[0].getForumID()+"");
       chatLink.addParameter("from","FList");
       chatLink.addParameter("state","2");
-    }
+    }*/
     Window applyWindow = new Window(iwrb.getLocalizedString("clubs.applications","Applications"),550,600,"/clubs/application.jsp");
     Window requestWindow = new Window(iwrb.getLocalizedString("clubs.applications","Applications"),900,600,"/clubs/request_member.jsp");
     applyWindow.setResizable(true);
@@ -192,7 +188,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
 
       if ( unionText.length > 0) {
 	for ( int b = 0; b < unionText.length; b++ ) {
-	  TextModule text = new TextModule(unionText[b].getTextId());
+	  /*TextModule text = new TextModule(unionText[b].getTextId());
 	  Link textHeadline = new Link(text.getTextHeadline(),"/clubs/text.jsp");
 	  textHeadline.addParameter("text_id",String.valueOf(text.getID()));
 	  textHeadline.addParameter("clubpage","true");
@@ -208,7 +204,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
 	    myTable.add(spacer,1,b+1);
 	    myTable.add(textHeadline,1,b+1);
 	    myTable.addBreak(1,b+1);
-	  }
+	  }*/
 	}
 	innerTable.add(myTable,1,1);
       }
@@ -248,7 +244,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
     leftTable.add(Languages(), 1,1);
     leftTable.add(clubTable(modinfo), 1,2);
     leftTable.add(register(),1,4);
-    leftTable.add(getLinks(modinfo),1,6);
+    //leftTable.add(getLinks(modinfo),1,6);
     leftTable.setHeight(6,"100%");
       return leftTable;
   }
@@ -308,12 +304,12 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
 	adalTable.add(Text.getBreak());
 
     }
-    BannerContainer contain = new BannerContainer();
+    /*BannerContainer contain = new BannerContainer();
     contain.setConnectionAttributes("union_id",Integer.parseInt(union_id));
-    adalTable.add(contain,1,1);
+    adalTable.add(contain,1,1);*/
     return myForm;
   }
-  public BoxReader getLinks(IWContext modinfo){
+  /*public BoxReader getLinks(IWContext modinfo){
 
     String union_id = modinfo.getParameter("union_id");
     if ( union_id == null ) union_id = (String) modinfo.getSession().getAttribute("golf_union_id");
@@ -343,5 +339,5 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
     box_office.setTopBoxHeight(21);
     box_office.setBoxURL("/clubs/boxoffice.jsp");
     return box_office;
-  }
+  }*/
 }

@@ -1,5 +1,6 @@
 package is.idega.idegaweb.golf.tournament.presentation;
 
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberBMPBean;
 import is.idega.idegaweb.golf.entity.MemberHome;
@@ -17,7 +18,6 @@ import java.util.List;
 
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.login.business.AccessControl;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;

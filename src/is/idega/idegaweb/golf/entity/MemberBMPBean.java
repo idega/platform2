@@ -164,8 +164,8 @@ public class MemberBMPBean extends GenericEntity implements Member {
   public void setImageId(Integer image_id){
     setColumn("image_id",image_id);
   }
-  public com.idega.jmodule.image.data.ImageEntity getImage(){
-    return (com.idega.jmodule.image.data.ImageEntity)getColumnValue("image_id");
+  public ImageEntity getImage(){
+    return (ImageEntity)getColumnValue("image_id");
   }
   public String getJob() {
     return getStringColumnValue("job");

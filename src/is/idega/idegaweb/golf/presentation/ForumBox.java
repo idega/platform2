@@ -4,7 +4,6 @@ import java.sql.SQLException;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.forum.data.ForumThread;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -69,9 +68,10 @@ public class ForumBox extends Block {
 
     table.setHeadlineAlign("left");
     table.setWidth(148);
-    table.setHeaderText(iwrb.getLocalizedString("Chat","Chat"));
+	    table.setHeaderText(iwrb.getLocalizedString("Chat","Chat"));
 
-    ForumThread[] forum = (ForumThread[]) (new ForumThread()).findAllByColumnOrdered("parent_thread_id","-1","thread_date desc");
+	    //FIXME Commented out but needs to be fixed...
+    /*ForumThread[] forum = (ForumThread[]) (new ForumThread()).findAllByColumnOrdered("parent_thread_id","-1","thread_date desc");
 
     int links = 4;
     Table myTable = new Table();
@@ -110,7 +110,7 @@ public class ForumBox extends Block {
       myTable.addBreak(1,a+1);
       myTable.add(chatLink,1,a+1);
     }
-    table.add(myTable);
+    table.add(myTable);*/
 
     add(table);
   }

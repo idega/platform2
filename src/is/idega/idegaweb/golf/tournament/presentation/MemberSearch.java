@@ -3,25 +3,26 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.tournament.business.TournamentController;
+
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.login.business.AccessControl;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
-import com.idega.presentation.text.Link;
-import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.entity.Union;
-import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.tournament.business.TournamentController;
 import com.idega.util.IWTimestamp;
 
 /**

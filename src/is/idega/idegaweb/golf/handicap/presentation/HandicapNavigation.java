@@ -3,19 +3,20 @@
  */
 package is.idega.idegaweb.golf.handicap.presentation;
 
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.service.GolfGroup;
+
 import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.login.business.AccessControl;
-import com.idega.presentation.Image;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
-import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.service.GolfGroup;
 
 /**
  * @author laddi

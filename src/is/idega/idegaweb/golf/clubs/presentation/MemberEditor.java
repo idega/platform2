@@ -46,11 +46,12 @@ import javax.ejb.FinderException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 
+import com.idega.block.image.presentation.SimpleUploaderWindow;
+import com.idega.block.media.presentation.ImageInserter;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.image.presentation.ImageInserter;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -410,7 +411,7 @@ public class MemberEditor extends GolfBlock {
 	    }
 	    imageInsert.setHasUseBox(false);
 	    imageInsert.setMaxImageWidth(110);
-	    imageInsert.setWindowClassToOpen(com.idega.jmodule.image.presentation.SimpleUploaderWindow.class);
+	    imageInsert.setWindowClassToOpen(SimpleUploaderWindow.class);
 //	    imageInsert.setDefaultImageURL(sMemberImageURL);
 	    imageObject = imageInsert;
 

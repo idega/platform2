@@ -3,6 +3,7 @@
  */
 package is.idega.idegaweb.golf.presentation;
 
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Member;
 
 import java.sql.Connection;
@@ -10,7 +11,6 @@ import java.sql.SQLException;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.login.business.AccessControl;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.util.database.ConnectionBroker;

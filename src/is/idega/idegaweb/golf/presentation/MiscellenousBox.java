@@ -4,19 +4,10 @@ package is.idega.idegaweb.golf.presentation;
 
 
 
-import com.idega.presentation.*;
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
 
-import com.idega.presentation.text.*;
-
-import com.idega.presentation.ui.HeaderTable;
-
-import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.idegaweb.IWBundle;
-
-
-
-import com.idega.jmodule.boxoffice.presentation.BoxReader;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
 
 
 
@@ -64,7 +55,7 @@ public class MiscellenousBox extends Block {
 
     try {
 
-      return com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
+      return AccessControl.isAdmin(iwc);
 
     }
 
@@ -94,7 +85,7 @@ public class MiscellenousBox extends Block {
 
 
 
-      add(getLinks(iwc));
+      //add(getLinks(iwc));
 
   }
 
@@ -102,7 +93,7 @@ public class MiscellenousBox extends Block {
 
 
 
-  public BoxReader getLinks(IWContext iwc){
+  /*public BoxReader getLinks(IWContext iwc){
 
           IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
 
@@ -152,7 +143,7 @@ public class MiscellenousBox extends Block {
 
           return box_office;
 
-  }
+  }*/
 
 
 

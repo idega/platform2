@@ -5,12 +5,14 @@
 
 package is.idega.idegaweb.golf.templates;
 
+import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.entity.Member;
+
 import java.sql.SQLException;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import is.idega.idegaweb.golf.entity.Member;
 
 
 
@@ -36,7 +38,7 @@ public abstract class TournamentAdmin extends JmoduleWindowModule{
         public boolean isAdmin() {
 
           try{
-            return com.idega.jmodule.login.business.AccessControl.isAdmin(getModuleInfo());
+            return AccessControl.isAdmin(getModuleInfo());
           }catch (SQLException E) {
             /*
             out.print("SQLException: " + E.getMessage());
@@ -52,15 +54,15 @@ public abstract class TournamentAdmin extends JmoduleWindowModule{
 
 
         public boolean isDeveloper() {
-            return com.idega.jmodule.login.business.AccessControl.isDeveloper(getModuleInfo());
+            return AccessControl.isDeveloper(getModuleInfo());
        }
 
         public boolean isClubAdmin() {
-            return com.idega.jmodule.login.business.AccessControl.isClubAdmin(getModuleInfo());
+            return AccessControl.isClubAdmin(getModuleInfo());
         }
 
         public boolean isUser() {
-            return com.idega.jmodule.login.business.AccessControl.isUser(getModuleInfo());
+            return AccessControl.isUser(getModuleInfo());
         }
 
   public IWResourceBundle getResourceBundle(){

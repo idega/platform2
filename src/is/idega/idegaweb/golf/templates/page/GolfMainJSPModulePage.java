@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.8 2004/04/01 17:08:27 laddi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.9 2004/04/01 20:11:21 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,8 +20,6 @@ import java.sql.SQLException;
 import com.idega.core.localisation.business.LocaleSwitcher;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.boxoffice.presentation.BoxReader;
-import com.idega.jmodule.poll.moduleobject.BasicPollVoter;
 import com.idega.presentation.Block;
 import com.idega.presentation.Flash;
 import com.idega.presentation.IWContext;
@@ -410,7 +408,7 @@ public class GolfMainJSPModulePage extends MainPage {
 		return idegaTable;
 	}
 
-	public BoxReader getLinks(IWContext modinfo) {
+	/*public BoxReader getLinks(IWContext modinfo) {
 
 		BoxReader box_office = new BoxReader("1", isAdmin(modinfo), 3); //bullshit isadmin crap
 		box_office.setBoxBorder(0);
@@ -435,7 +433,7 @@ public class GolfMainJSPModulePage extends MainPage {
 		box_office.setHeadlineAlign("left");
 
 		return box_office;
-	}
+	}*/
 
 	protected GolfLogin getLogin() {
 		GolfLogin log = new GolfLogin();
@@ -476,7 +474,7 @@ public class GolfMainJSPModulePage extends MainPage {
 	}
 
 	protected HeaderTable getPollVoter() {
-		BasicPollVoter poll = new BasicPollVoter("/poll/results.jsp", true);
+		/*BasicPollVoter poll = new BasicPollVoter("/poll/results.jsp", true);
 		poll.setConnectionAttributes("union_id", 3);
 		poll.setHeaderColor("#8ab490");
 		poll.setColor1("#FFFFFF");
@@ -484,7 +482,7 @@ public class GolfMainJSPModulePage extends MainPage {
 		poll.setHeadlineSize(1);
 		poll.setNumberOfShownPolls(3);
 		poll.setHeadlineLeft();
-		poll.setAdminButtonURL("/pollmanager.gif");
+		poll.setAdminButtonURL("/pollmanager.gif");*/
 
 		HeaderTable pollTable = new HeaderTable();
 		pollTable.setBorderColor("#8ab490");
@@ -494,7 +492,7 @@ public class GolfMainJSPModulePage extends MainPage {
 		pollTable.setWidth(148);
 		pollTable.setHeaderText(iwrb.getLocalizedString("questionOfTheDay", "Question of the week"));
 
-		pollTable.add(poll);
+		//pollTable.add(poll);
 
 		return pollTable;
 	}
@@ -633,9 +631,9 @@ public class GolfMainJSPModulePage extends MainPage {
 		//gLinks.setCacheable("gLinks",86400000);//24 hour
 		rightTable.add(Block.getCacheableObject(gLinks, "gLinks", 86400000), 1, 15); //1,9
 
-		BoxReader bLinks = getLinks(modinfo); //uses is admin crappers
+		/*BoxReader bLinks = getLinks(modinfo); //uses is admin crappers
 		bLinks.setCacheable("Miscbox", 86400000); //1000*60*60*24 = 24 hours
-		rightTable.add(bLinks, 1, 17); //1,11
+		rightTable.add(bLinks, 1, 17); //1,11*/
 
 		rightTable.add(idega(), 1, 19); //1,13
 
@@ -679,9 +677,9 @@ public class GolfMainJSPModulePage extends MainPage {
 		HeaderTable gLinks = getGolfLinks();
 		rightTable.add(Block.getCacheableObject(gLinks, "gLinks", 86400000), 1, 7); //1,9
 
-		BoxReader bLinks = getLinks(modinfo); //uses is admin crappers
+		/*BoxReader bLinks = getLinks(modinfo); //uses is admin crappers
 		bLinks.setCacheable("Miscbox", 86400000); //1000*60*60*24 = 24 hours
-		rightTable.add(bLinks, 1, 9);
+		rightTable.add(bLinks, 1, 9);*/
 
 		return rightTable;
 	}
