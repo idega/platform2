@@ -5,9 +5,9 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-import javax.ejb.CreateException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
@@ -23,6 +23,10 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
@@ -42,10 +46,10 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/06 14:42:47 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/07 11:03:47 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.36 $
+ * @version $Revision: 1.37 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -316,6 +320,88 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
             throw new CreateException (e.getMessage ());
         }
     }
+
+    public InvoiceRecord createInvoiceRecord
+        (final User createdBy, final Integer amount,
+         final Date checkStartPeriod, final Date checkEndPeriod,
+         final String doublePosting, final Integer invoiceHeaderId,
+         final String invoiceText, final String note,
+         final Integer numberOfDays, final String ownPosting,
+         final Date placementStartPeriod, final Date placementEndPeriod,
+         final Integer providerId, final String regulationSpecType,
+         final Integer vatAmount, final Integer vatRule)
+        throws CreateException {
+        try {
+            final InvoiceRecord record = getInvoiceRecordHome ().create ();
+            if (null != createdBy) {
+                final String createdBySignature
+                        = createdBy.getFirstName ().charAt (0)
+                        + "" + createdBy.getLastName ().charAt (0);
+                record.setCreatedBy (createdBySignature);
+            }
+            record.setDateCreated (new Date (new java.util.Date ().getTime()));
+            if (null != amount) record.setAmount (amount.floatValue ());
+            if (null != vatAmount) record.setAmountVAT
+                                           (vatAmount.floatValue ());
+            if (null != numberOfDays) record.setDays (numberOfDays.intValue ());
+            record.setDoublePosting (doublePosting);
+            if (null != invoiceHeaderId) record.setInvoiceHeader
+                                                 (invoiceHeaderId.intValue ());
+            record.setInvoiceText (invoiceText);
+            record.setNotes (note);
+            record.setOwnPosting (ownPosting);
+            if (null != checkEndPeriod) record.setPeriodEndCheck
+                                                (checkEndPeriod);
+            if (null != placementEndPeriod) record.setPeriodEndPlacement
+                                                    (placementEndPeriod);
+            if (null != checkStartPeriod) record.setPeriodStartCheck
+                                                  (checkStartPeriod);
+            if (null != placementStartPeriod) record.setPeriodStartPlacement
+                                                      (placementStartPeriod);
+            record.setRuleSpecType (regulationSpecType);
+            if (null != vatRule)  record.setVATType (vatRule.intValue ());
+            if (null != providerId) record.setProviderId
+                                            (providerId.intValue ());
+            record.store ();
+            return record;
+        } catch (RemoteException e) {
+            e.printStackTrace ();
+            throw new CreateException (e.getMessage ());
+        }
+    }
+
+    public RegulationSpecType [] getAllRegulationSpecTypes ()
+        throws RemoteException {
+        try {
+            final Collection collection = getRegulationSpecTypeHome ()
+                    .findAllRegulationSpecTypes ();
+            return null == collection ? new RegulationSpecType [0]
+                    : (RegulationSpecType []) collection.toArray
+                    (new RegulationSpecType [0]);
+        } catch (FinderException e) {
+            return new RegulationSpecType [0];
+        }
+    }
+
+    public VATRule [] getAllVatRules () throws RemoteException {
+        try {
+            final Collection collection = getVatRuleHome ().findAllVATRules ();
+            return null == collection ? new VATRule [0]
+                    : (VATRule []) collection.toArray (new VATRule [0]);
+        } catch (FinderException e) {
+            return new VATRule [0];
+        }
+    }
+
+	protected RegulationSpecTypeHome getRegulationSpecTypeHome ()
+        throws RemoteException {
+		return (RegulationSpecTypeHome)
+                IDOLookup.getHome(RegulationSpecType.class);
+	}
+
+	protected VATRuleHome getVatRuleHome () throws RemoteException {
+		return (VATRuleHome) IDOLookup.getHome(VATRule.class);
+	}
 
 	protected PaymentHeaderHome getPaymentHeaderHome() throws RemoteException {
 		return (PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class);

@@ -15,6 +15,7 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.*;
 import se.idega.idegaweb.commune.accounting.presentation.*;
+import se.idega.idegaweb.commune.accounting.regulations.data.*;
 
 /**
  * InvoiceCompilationEditor is an IdegaWeb block were the user can search, view
@@ -29,10 +30,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/06 19:59:31 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/07 11:03:47 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -48,10 +49,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String AMOUNT_KEY = PREFIX + "amount";
     private static final String CHECK_FAMILY_CHILDCARE_40H_DEFAULT = "Check familjedaghem, 40 tim/v";
     private static final String CHECK_FAMILY_CHILDCARE_40H_KEY = PREFIX + "check_family_childcare_40h";
-    private static final String CHECK_FROM_PERIOD_KEY = PREFIX + "check_from_period";
+    private static final String CHECK_START_PERIOD_KEY = PREFIX + "check_start_period";
     private static final String CHECK_PERIOD_DEFAULT = "Checkperiod";
     private static final String CHECK_PERIOD_KEY = PREFIX + "check_period";
-    private static final String CHECK_TO_PERIOD_KEY = PREFIX + "check_to_period";
+    private static final String CHECK_END_PERIOD_KEY = PREFIX + "check_end_period";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT = "Det gick inte att at bort fakturaunderlaget eller någon av dess fakturarader";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY = PREFIX + "could_not_remove_invoice_compilation_or_records";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT = "Kunde inte ta bort fakturarad";
@@ -74,15 +75,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String EDIT_INVOICE_COMPILATION_KEY = PREFIX + "edit_invoice_compilation";
     private static final String FIRST_NAME_DEFAULT = "Förnamn";
     private static final String FIRST_NAME_KEY = PREFIX + "first_name";
-    private static final String FROM_PERIOD_DEFAULT = "Fr o m ";
-    private static final String FROM_PERIOD_KEY = PREFIX + "from_period";
     private static final String GO_BACK_DEFAULT = "Tillbaka";
     private static final String GO_BACK_KEY = PREFIX + "go_back";
     private static final String INVOICE_ADDRESS_DEFAULT = "Faktureringsadress";
     private static final String INVOICE_ADDRESS_KEY = PREFIX + "invoice_address";
     private static final String INVOICE_COMPILATION_AND_RECORDS_REMOVED_DEFAULT = "Fakturaunderlaget och dess fakturarader är nu borttagna";
     private static final String INVOICE_COMPILATION_AND_RECORDS_REMOVED_KEY = PREFIX + "invoice_compilation_and_records_removed";
-    private static final String INVOICE_COMPILATION_CREATED_DEFAULT = "Fakturaunderlag är nu skapat";
+    private static final String INVOICE_COMPILATION_CREATED_DEFAULT = "Fakturaunderlaget är nu skapat";
     private static final String INVOICE_COMPILATION_CREATED_KEY = PREFIX + "invoice_compilation_created";
     private static final String INVOICE_COMPILATION_DEFAULT = "Faktureringsunderlag";
     private static final String INVOICE_COMPILATION_KEY = PREFIX + "invoice_compilation";
@@ -90,6 +89,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String INVOICE_COMPILATION_LIST_KEY = PREFIX + "invoice_compilation_list";
     private static final String INVOICE_RECEIVER_DEFAULT = "Fakturamottagare";
     private static final String INVOICE_RECEIVER_KEY = PREFIX + "invoice_receiver";
+    private static final String INVOICE_RECORD_CREATED_DEFAULT = "Fakturaraden är nu skapad";
+    private static final String INVOICE_RECORD_CREATED_KEY = PREFIX + "invoice_record_created";
     private static final String INVOICE_RECORD_DEFAULT = "Fakturarad";
     private static final String INVOICE_RECORD_KEY = PREFIX + "invoice_record";
     private static final String INVOICE_RECORD_REMOVED_DEFAULT = "Fakturaraden är borttagen";
@@ -105,6 +106,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String NAME_DEFAULT = "Namn";
     private static final String NAME_KEY = PREFIX + "name";
     private static final String NEW_DEFAULT = "Ny";
+    private static final String START_PERIOD_DEFAULT = "Fr o m ";
+    private static final String START_PERIOD_KEY = PREFIX + "start_period";
     private static final String NEW_KEY = PREFIX + "new";
     private static final String NOTE_DEFAULT = "Anmärkning";
     private static final String NOTE_KEY = PREFIX + "note";
@@ -114,18 +117,18 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String OWN_POSTING_KEY = PREFIX + "own_posting";
     private static final String PERIOD_DEFAULT = "Period";
     private static final String PERIOD_KEY = PREFIX + "period";
-    private static final String PLACEMENT_FROM_PERIOD_KEY = PREFIX + "placement_from_period";
+    private static final String PLACEMENT_START_PERIOD_KEY = PREFIX + "placement_start_period";
     private static final String PLACEMENT_PERIOD_DEFAULT = "Placeringsperiod";
     private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
-    private static final String PLACEMENT_TO_PERIOD_KEY = PREFIX + "placement_to_period";
+    private static final String PLACEMENT_END_PERIOD_KEY = PREFIX + "placement_end_period";
     private static final String PLACMENT_DEFAULT = "Placering";
     private static final String PLACMENT_KEY = PREFIX + "placment";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String REMARK_DEFAULT = "Anmärkning";
     private static final String REMARK_KEY = PREFIX + "remark";
-    private static final String RULE_SPEC_TYPE_DEFAULT = "Regelspec.typ";
-    private static final String RULE_SPEC_TYPE_KEY = PREFIX + "rule_spec_type";
+    private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
+    private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sök efter fakturamottagare";
     private static final String SEARCH_INVOICE_RECEIVER_KEY = PREFIX + "search_invoice_receiver";
@@ -142,16 +145,16 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String TOTAL_AMOUNT_VAT_EXCLUSIVE_DEFAULT = "Totalbelopp, exklusive moms";
     private static final String TOTAL_AMOUNT_VAT_EXCLUSIVE_KEY = PREFIX + "total_amount_vat_exclusive";
     private static final String TOTAL_AMOUNT_VAT_KEY = PREFIX + "total_amount_vat";
-    private static final String TO_PERIOD_DEFAULT = "T o m ";
-    private static final String TO_PERIOD_KEY = PREFIX + "to_period";
+    private static final String END_PERIOD_DEFAULT = "T o m ";
+    private static final String END_PERIOD_KEY = PREFIX + "end_period";
     private static final String USERSEARCHER_ACTION_KEY = "mbe_act_search" + PREFIX;
     private static final String USERSEARCHER_FIRSTNAME_KEY = "usrch_search_fname" + PREFIX;
     private static final String USERSEARCHER_LASTNAME_KEY = "usrch_search_lname" + PREFIX;
     private static final String USERSEARCHER_PERSONALID_KEY = "usrch_search_pid" + PREFIX;
     private static final String VAT_AMOUNT_DEFAULT = "Momsbelopp";
     private static final String VAT_AMOUNT_KEY = PREFIX + "vat_amount";
-    private static final String VAT_TYPE_DEFAULT = "Momstyp";
-    private static final String VAT_TYPE_KEY = PREFIX + "vat_type";
+    private static final String VAT_RULE_DEFAULT = "Momstyp";
+    private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
 
 
     private static final String ACTION_KEY = PREFIX + "action_key";
@@ -209,6 +212,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                     showNewRecordForm (context);
                     break;
 
+                case ACTION_NEW_RECORD:
+                    newRecord (context);
+                    break;
+
                 default:
                     showCompilationList (context);
 					break;					
@@ -241,6 +248,43 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             logUnexpectedException (context, exception);
 		}
 	}
+
+    private void newRecord (final IWContext context)
+        throws RemoteException, javax.ejb.CreateException {
+        final String operationalField = getSession ().getOperationalField ();
+        final User currentUser = context.getCurrentUser ();
+        final Integer amount = getIntegerParameter (context, AMOUNT_KEY);
+        final Date checkEndPeriod = getPeriodParameter (context, CHECK_END_PERIOD_KEY);
+        final Date checkStartPeriod = getPeriodParameter (context, CHECK_START_PERIOD_KEY);
+        final String doublePosting = context.getParameter (DOUBLE_POSTING_KEY);
+        final Integer invoiceCompilation = getIntegerParameter (context, INVOICE_COMPILATION_KEY);
+        final String invoiceText = context.getParameter (INVOICE_TEXT_KEY);
+        final String note = context.getParameter (NOTE_KEY);
+        final Integer numberOfDays = getIntegerParameter (context, NUMBER_OF_DAYS_KEY);
+        final String ownPosting = context.getParameter (OWN_POSTING_KEY);
+        final Date placementEndPeriod = getPeriodParameter (context, PLACEMENT_END_PERIOD_KEY);
+        final Date placementStartPeriod = getPeriodParameter (context, PLACEMENT_START_PERIOD_KEY);
+        final Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
+        final String regulationSpecType = context.getParameter (REGULATION_SPEC_TYPE_KEY);
+        final Integer vatAmount = getIntegerParameter (context, VAT_AMOUNT_KEY);
+        final Integer vatRule = getIntegerParameter (context, VAT_RULE_KEY);
+        final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
+                .getServiceInstance (context, InvoiceBusiness.class);
+        business.createInvoiceRecord
+                (currentUser, amount,
+                 new java.sql.Date (checkStartPeriod.getTime ()),
+                 new java.sql.Date (checkEndPeriod.getTime ()), doublePosting,
+                 invoiceCompilation, invoiceText, note, numberOfDays,
+                 ownPosting,
+                 new java.sql.Date (placementStartPeriod.getTime ()),
+                 new java.sql.Date (placementEndPeriod.getTime ()),
+                 providerId, regulationSpecType, vatAmount, vatRule);
+        final Table table = getConfirmTable
+                (INVOICE_RECORD_CREATED_KEY,
+                 INVOICE_RECORD_CREATED_DEFAULT);
+        add (createMainTable (CREATE_INVOICE_RECORD_KEY,
+                              CREATE_INVOICE_RECORD_DEFAULT, table));
+    }
 
     private void showNewRecordForm (final IWContext context)
         throws RemoteException, FinderException {
@@ -285,19 +329,19 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         col = 1; row++;
         addSmallHeader (table, col++, row, CHECK_PERIOD_KEY,
                         CHECK_PERIOD_DEFAULT, ":");
-        addSmallHeader (table, col, row, FROM_PERIOD_KEY, FROM_PERIOD_DEFAULT);
-        table.add (getStyledInput (CHECK_FROM_PERIOD_KEY, nowPeriod), col++,
+        addSmallHeader (table, col, row, START_PERIOD_KEY, START_PERIOD_DEFAULT);
+        table.add (getStyledInput (CHECK_START_PERIOD_KEY, nowPeriod), col++,
                    row);
-        addSmallHeader (table, col, row, TO_PERIOD_KEY, TO_PERIOD_DEFAULT);
-        table.add (getStyledInput (CHECK_TO_PERIOD_KEY, nowPeriod), col++, row);
+        addSmallHeader (table, col, row, END_PERIOD_KEY, END_PERIOD_DEFAULT);
+        table.add (getStyledInput (CHECK_END_PERIOD_KEY, nowPeriod), col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, PLACEMENT_PERIOD_KEY,
                         PLACEMENT_PERIOD_DEFAULT, ":");
-        addSmallHeader (table, col, row, FROM_PERIOD_KEY, FROM_PERIOD_DEFAULT);
-        table.add (getStyledInput (PLACEMENT_FROM_PERIOD_KEY, nowPeriod), col++,
+        addSmallHeader (table, col, row, START_PERIOD_KEY, START_PERIOD_DEFAULT);
+        table.add (getStyledInput (PLACEMENT_START_PERIOD_KEY, nowPeriod), col++,
                    row);
-        addSmallHeader (table, col, row, TO_PERIOD_KEY, TO_PERIOD_DEFAULT);
-        table.add (getStyledInput (PLACEMENT_TO_PERIOD_KEY, nowPeriod), col++,
+        addSmallHeader (table, col, row, END_PERIOD_KEY, END_PERIOD_DEFAULT);
+        table.add (getStyledInput (PLACEMENT_END_PERIOD_KEY, nowPeriod), col++,
                    row);
         col = 1; row++;
         addSmallHeader (table, col++, row, DATE_CREATED_KEY,
@@ -322,8 +366,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addSmallHeader (table, col++, row, NOTE_KEY, NOTE_DEFAULT, ":");
         table.add (getStyledInput (NOTE_KEY), col++, row);
         col = 1; row++;
-        addSmallHeader (table, col++, row, RULE_SPEC_TYPE_KEY,
-                        RULE_SPEC_TYPE_DEFAULT, ":");
+        addSmallHeader (table, col++, row, REGULATION_SPEC_TYPE_KEY,
+                        REGULATION_SPEC_TYPE_DEFAULT, ":");
+        table.add (getLocalizedDropdown (business.getAllRegulationSpecTypes ()),
+                   col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, OWN_POSTING_KEY, OWN_POSTING_DEFAULT,
                         ":");
@@ -333,7 +379,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                         DOUBLE_POSTING_DEFAULT, ":");
         table.add (getStyledInput (DOUBLE_POSTING_KEY), col++, row);
         col = 1; row++;
-        addSmallHeader (table, col++, row, VAT_TYPE_KEY, VAT_TYPE_DEFAULT, ":");
+        addSmallHeader (table, col++, row, VAT_RULE_KEY, VAT_RULE_DEFAULT, ":");
+        table.add (getLocalizedDropdown (business.getAllVatRules ()),
+                   col++, row);
         col = 1; row++;
         table.setHeight (row++, 12);
         table.mergeCells (col, row, table.getColumns (), row);
@@ -341,6 +389,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                     CREATE_INVOICE_RECORD_KEY,
                                     CREATE_INVOICE_RECORD_DEFAULT), 1, row++);
         final Form form = new Form ();
+        form.maintainParameter (INVOICE_COMPILATION_KEY);
         form.setOnSubmit("return checkInfoForm()");
         form.add (table);
         final Table outerTable = createTable (1);
@@ -370,10 +419,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         if (null != searcher.getUser ()) {
             // exactly one user found - display users invoice compilation list
             final User userFound = searcher.getUser ();
-            final Date fromPeriod = getPeriodFromString
-                    (context.getParameter (FROM_PERIOD_KEY));
-            final Date toPeriod = getPeriodFromString
-                    (context.getParameter (TO_PERIOD_KEY));
+            final Date fromPeriod = getPeriodParameter (context, START_PERIOD_KEY);
+            final Date toPeriod = getPeriodParameter (context, END_PERIOD_KEY);
             final InvoiceBusiness business = (InvoiceBusiness)
                     IBOLookup.getServiceInstance (context,
                                                   InvoiceBusiness.class);
@@ -599,8 +646,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private void newCompilation (final IWContext context)
         throws RemoteException, javax.ejb.CreateException {
         final String operationalField = getSession ().getOperationalField ();
-        final Date period
-                = getPeriodFromString (context.getParameter (PERIOD_KEY));
+        final Date period = getPeriodParameter (context, PERIOD_KEY);
         final int custodianId = Integer.parseInt (context.getParameter
                                                   (INVOICE_RECEIVER_KEY));
         final User currentUser = context.getCurrentUser ();
@@ -870,9 +916,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                         final IWContext context) {
         int col = 1;
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
-        table.add (getUserSearcherInput (context, FROM_PERIOD_KEY), col, row);
+        table.add (getUserSearcherInput (context, START_PERIOD_KEY), col, row);
         table.add (new Text (" - "), col, row);
-        table.add (getUserSearcherInput (context, TO_PERIOD_KEY), col, row);
+        table.add (getUserSearcherInput (context, END_PERIOD_KEY), col, row);
     }
 
     private TextInput getUserSearcherInput (final IWContext context,
@@ -922,14 +968,17 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
     /**
-     * Returns a date from a string of type "YYMM". The date represents the
-     * first day of that month. If the input string is unparsable for this
-     * format then null is returned.
+     * Returns a date from a parameter string of type "YYMM". The date
+     * represents the first day of that month. If the input string is unparsable
+     * for this format then null is returned.
      *
-     * @param rawString input string of type "YYMM"
+     * @param context session data
+     * @param key key to lookup in context to retreive the actual value
      * @return date from the first of this particular month or null on failure
      */
-    private static Date getPeriodFromString (final String rawString) {
+    private static Date getPeriodParameter (final IWContext context,
+                                            final String key) {
+        final String rawString = context.getParameter (key);
         if (null == rawString || rawString.length () != 4) return null;
         try {
             final int year = Integer.parseInt (rawString.substring (0, 2))
@@ -939,6 +988,18 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             final Calendar calendar = Calendar.getInstance ();
             calendar.set (year, month, 1, 0, 0);
             return new Date (calendar.getTimeInMillis ());
+        } catch (final NumberFormatException exception) {
+            return null;
+        }
+    }
+
+    private static Integer getIntegerParameter (final IWContext context,
+                                                final String key) {
+        final String rawString = context.getParameter (key);
+        if (null == rawString) return null;
+        try {
+            final Integer result = new Integer (rawString);
+            return result;
         } catch (final NumberFormatException exception) {
             return null;
         }
@@ -1101,6 +1162,31 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private String formatSsn (final String ssn) {
         return null == ssn || 12 != ssn.length () ? ssn
                 : ssn.substring (2, 8) + '-' + ssn.substring (8, 12);
+    }
+
+    private DropdownMenu getLocalizedDropdown (final VATRule [] rules) {
+        final DropdownMenu dropdown = (DropdownMenu)
+                getStyledInterface (new DropdownMenu (VAT_RULE_KEY));
+        for (int i = 0; i < rules.length; i++) {
+            final VATRule rule = rules [i];
+            final String ruleName = rule.getVATRule ();
+            dropdown.addMenuElement (rule.getPrimaryKey () + "",
+                                     localize (ruleName, ruleName));
+        }
+        return dropdown;
+    }
+
+    private DropdownMenu getLocalizedDropdown
+        (final RegulationSpecType [] types) {
+        final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
+                (new DropdownMenu (REGULATION_SPEC_TYPE_KEY));
+        for (int i = 0; i < types.length; i++) {
+            final RegulationSpecType type = types [i];
+            final String regSpecType = type.getRegSpecType ();
+            dropdown.addMenuElement (regSpecType, localize (regSpecType,
+                                                            regSpecType));
+        }
+        return dropdown;
     }
 
     private void displayRedText (final String string) {
