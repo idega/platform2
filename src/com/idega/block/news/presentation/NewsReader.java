@@ -522,8 +522,10 @@ public class NewsReader extends Block implements IWBlock{
 			}
 
 			if ( alignWithHeadline ){
-				if(headlineImage !=null)
-					T.add(headlineImage, 1, 2);
+				if(headlineImage !=null) {
+				  headlineImage.setHorizontalSpacing(3);
+                                  	T.add(headlineImage, 1, 2);
+                                }
 				if(headlineImageURL!=null)
 					T.add(iwb.getImage(headlineImageURL), 1, 2);
       }
