@@ -81,8 +81,10 @@ public class Importer extends Window {
     String groupId = iwc.getParameter(this.PARAMETERSTRING_GROUP_ID);
 
     if( groupId!=null ){
+
     	
     	group =  getGroupBusiness(iwc).getGroupHome().findByPrimaryKey(new Integer(groupId));
+    	    	iwc.setSessionAttribute("gruppan",group);
     }
 
     Link selectFolderLink = new Link(iwrb.getLocalizedString("importer.select.folder","Select folder"));
@@ -163,6 +165,7 @@ public class Importer extends Window {
          
          boolean success = false;
          
+         group =     	(Group)iwc.getSessionAttribute("gruppan");
         ColumnSeparatedImportFile importFile = new ColumnSeparatedImportFile(new File(values[i]));
         if(group!=null){
         	
@@ -181,7 +184,7 @@ public class Importer extends Window {
         Text fileStatus = new Text(values[i]+" : "+status);
         fileStatus.setBold();
 
-        add(fileStatus);*/
+        add(fileStatus);
 
 
         addBreak();
