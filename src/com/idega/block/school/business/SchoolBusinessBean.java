@@ -954,16 +954,20 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
-	public Collection findAllSchoolYearsBySchoolType(int schoolTypeId) throws java.rmi.RemoteException {
+	public Collection findAllSchoolYearsBySchoolType(int schoolTypeId) {
 		try {
 			SchoolYearHome shome = getSchoolYearHome();
 			return shome.findAllSchoolYearBySchoolType(schoolTypeId);
 			//return shome.findAllSchoolYears();
 		}
-		catch (Exception ex) {
+		catch (FinderException ex) {
 			ex.printStackTrace();
 			return new java.util.Vector();
 		}
+	}
+	
+	public Collection findSchoolYearsBySchoolCategory(String schoolCategory) throws FinderException {
+		return getSchoolYearHome().findBySchoolCategory(schoolCategory);
 	}
 
 	public Collection findAllSchoolYearsByAge(int age) throws java.rmi.RemoteException {
