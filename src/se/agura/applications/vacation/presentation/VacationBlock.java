@@ -76,9 +76,11 @@ public abstract class VacationBlock extends Block {
 	private String iInputStyleClass;
 	private String iButtonStyleClass;
 	private String iRadioStyleClass;
+	private String iLogColor = "#00FFFF";
 
 	protected int iCellpadding = 3;
 	protected int iHeaderColumnWidth = 260;
+	private int iLogColorColumnWidth = 12;
 	protected String iWidth = Table.HUNDRED_PERCENT;
 
 	public void main(IWContext iwc) throws Exception {
@@ -210,7 +212,7 @@ public abstract class VacationBlock extends Block {
 		if (logs != null) {
 			Table table = new Table();
 			table.setWidth(iWidth);
-			table.setCellpadding(iCellpadding);
+			table.setCellpadding(0);
 			table.setCellspacing(0);
 			int row = 1;
 			
@@ -220,20 +222,43 @@ public abstract class VacationBlock extends Block {
 				User performer = log.getPerformer();
 				String comment = log.getComment();
 				IWTimestamp timestamp = new IWTimestamp(log.getTimeStamp());
+				String status = log.getCaseStatusAfter().getStatus();
 				
-				table.add(getHeader(getResourceBundle().getLocalizedString("vacation.supported_by", "Supported by")), 1, row);
-				table.add(getText(performer.getName()), 2, row++);
+				Table logTable = new Table(3, 3);
+				logTable.setCellpadding(iCellpadding);
+				logTable.setCellspacing(0);
+				logTable.mergeCells(1, 1, 1, 3);
+				logTable.setColor(1, 1, iLogColor);
+				logTable.setWidth(2, iHeaderColumnWidth);
+				logTable.setWidth(1, iLogColorColumnWidth);
+				
+				String action = "";
+				if (status.equals(getBusiness(iwc).getCaseStatusDenied().getStatus())) {
+					action = getResourceBundle().getLocalizedString("vacation.rejected_by", "Supported by");
+				}
+				else if (status.equals(getBusiness(iwc).getCaseStatusGranted().getStatus())) {
+					action = getResourceBundle().getLocalizedString("vacation.granted_by", "Supported by");
+				}
+				else if (status.equals(getBusiness(iwc).getCaseStatusMoved().getStatus())) {
+					action = getResourceBundle().getLocalizedString("vacation.supported_by", "Supported by");
+				}
+				
+				logTable.add(getHeader(action), 2, 1);
+				logTable.add(getText(performer.getName()), 3, 1);
 
-				table.add(getHeader(getResourceBundle().getLocalizedString("vacation.message", "Message")), 1, row);
-				table.add(getText(comment), 2, row++);
+				logTable.add(getHeader(getResourceBundle().getLocalizedString("vacation.message", "Message")), 2, 2);
+				logTable.add(getText(comment), 3, 2);
 
-				table.add(getHeader(getResourceBundle().getLocalizedString("vacation.date", "Date")), 1, row);
-				table.add(getText(timestamp.getLocaleDate(iwc.getCurrentLocale())), 2, row++);
+				logTable.add(getHeader(getResourceBundle().getLocalizedString("vacation.date", "Date")), 2, 3);
+				logTable.add(getText(timestamp.getLocaleDate(iwc.getCurrentLocale())), 3, 3);
+				
+				table.add(logTable, 1, row);
+				table.setCellBorder(1, row++, 1, "#dfdfdf", "solid");
+				if (iter.hasNext()) {
+					table.setHeight(row++, 6);
+				}
 			}
 			
-			table.setWidth(1, iHeaderColumnWidth);
-			table.setCellpaddingLeft(1, 0);
-
 			return table;
 		}
 		return null;
@@ -376,5 +401,19 @@ public abstract class VacationBlock extends Block {
 	 */
 	public void setHeaderColumnWidth(int headerColumnWidth) {
 		iHeaderColumnWidth = headerColumnWidth;
+	}
+	
+	/**
+	 * @param logColor The logColor to set.
+	 */
+	public void setLogColor(String logColor) {
+		iLogColor = logColor;
+	}
+	
+	/**
+	 * @param logColorColumnWidth The logColorColumnWidth to set.
+	 */
+	public void setLogColorColumnWidth(int logColorColumnWidth) {
+		iLogColorColumnWidth = logColorColumnWidth;
 	}
 }
