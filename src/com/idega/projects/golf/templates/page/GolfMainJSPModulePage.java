@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.18 2001/07/06 14:03:54 laddi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.19 2001/07/30 10:35:33 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -113,7 +113,8 @@ public class GolfMainJSPModulePage extends MainPage {
     leftTable.setCellpadding(0);
     leftTable.setCellspacing(0);
 
-    leftTable.add(Languages(),1,1);
+    leftTable.add(Canon(),1,1);
+    leftTable.add(Languages(),1,2);
     leftTable.add(Sponsors(), 1,3);
     leftTable.add(clubNews(),1,5);
     leftTable.add(new TournamentBox(),1,7);
@@ -122,6 +123,11 @@ public class GolfMainJSPModulePage extends MainPage {
     leftTable.add(idega(),1,13);
 
     return leftTable;
+  }
+
+  protected Link Canon() {
+      Link link = new Link(iwb.getImage("shared/canon_holufholu.jpg"),"/tournament/holeview.jsp?&tournamentID=100&tournamentGroupID=3&tournamentRoundID=232");
+      return link;
   }
 
   protected Table Languages() throws SQLException {
