@@ -1,22 +1,27 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
 
-import is.idega.idegaweb.campus.presentation.Edit;
-import is.idega.idegaweb.campus.data.SystemProperties;
-import is.idega.idegaweb.campus.block.allocation.data.*;
-import is.idega.idegaweb.campus.block.allocation.business.CampusContractWriter;
-import is.idega.idegaweb.campus.block.allocation.presentation.ContractFiler;
-import com.idega.idegaweb.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.util.IWTimestamp;
-import com.idega.block.finance.presentation.KeyEditor;
-import com.idega.development.presentation.Localizer;
-import com.idega.util.LocaleUtil;
-import java.util.List;
-import java.sql.SQLException;
 import com.idega.data.EntityFinder;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import is.idega.idegaweb.campus.block.allocation.business.CampusContractWriter;
+import is.idega.idegaweb.campus.block.allocation.data.ContractText;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean;
+import is.idega.idegaweb.campus.presentation.Edit;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Title:   idegaclasses
