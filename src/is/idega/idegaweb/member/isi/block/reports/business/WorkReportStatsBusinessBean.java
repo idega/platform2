@@ -1155,9 +1155,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(regionalUnionAbbreviation);
 
 		//fake columns (data gotten by business methods)
-		final ReportableField leagueString = new ReportableField("league_info", String.class);
-		leagueString.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_LEAGUE_INFO, "League"), currentLocale);
-		reportCollection.addField(leagueString);
 
 		ReportableField womenUnderAgeLimit = new ReportableField("womenUnderAgeLimit", Integer.class);
 		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER + age, "women -"+age), currentLocale);
@@ -1202,14 +1199,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		while (iter.hasNext()) {
 			WorkReport report = (WorkReport) iter.next();
 			//get last years report for comparison
-			WorkReport lastYearReport=null;
-			try {
-				lastYearReport = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(report.getGroupId().intValue(),year.intValue()-1);
-			}
-			catch (FinderException e1) {
-				//e1.printStackTrace();
-				System.err.println("WorkReportStatsBusiness : No report for year before :"+year);
-			}
 
 			String cName = report.getGroupName();
 			String regUniAbbr = report.getRegionalUnionAbbreviation();
@@ -1221,10 +1210,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					WorkReportGroup league = (WorkReportGroup) iterator.next();
 		
 					//create a new ReportData for each row
-					ReportableData data = new ReportableData();
+					ReportableData regData = new ReportableData();
 					//					add the data to the correct fields/columns
 		
-					data.addData(clubName, cName);
+					regData.addData(clubName, cName);
 		
 					if(regUniAbbr==null){
 						regUniAbbr = report.getRegionalUnionNumber();
@@ -1236,27 +1225,25 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						regUniAbbr = report.getRegionalUnionGroupId().toString();
 					}
 		
-					data.addData(regionalUnionAbbreviation, regUniAbbr );
+					regData.addData(regionalUnionAbbreviation, regUniAbbr );
 		
-					data.addData(womenUnderAgeLimit, new Integer(getWorkReportBusiness().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
-					data.addData(womenOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
-					data.addData(menUnderAgeLimit,new Integer(getWorkReportBusiness().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
-					data.addData(menOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
 		
-					if(lastYearReport!=null){
-						Integer lastYear = new Integer(getWorkReportBusiness().getCountOfPlayersByWorkReportAndWorkReportGroup(lastYearReport,league));
-						data.addData(comparingYearStat,lastYear);
-					}
-		
-					String leagueText = getLeagueIdentifier(league);
-		
-					data.addData(leagueString, leagueText);
-		
+					int womenMembersUnder = getWorkReportBusiness().getCountOfFemaleMembersOfYoungerAgeAndByWorkReport(age, report);
+					int womenMembersEqualOrOver = getWorkReportBusiness().getCountOfFemaleMembersEqualOrOlderThanAgeAndByWorkReport(age, report);
+					int menMembersUnder = getWorkReportBusiness().getCountOfMaleMembersOfYoungerAgeAndByWorkReport(age, report);
+					int menMembersEqualOrOver = getWorkReportBusiness().getCountOfMaleMembersEqualOrOlderThanAgeAndByWorkReport(age, report);
+					regData = addToIntegerCount(womenUnderAgeLimit, regData, womenMembersUnder);
+					regData = addToIntegerCount(womenOverOrEqualAgeLimit, regData, womenMembersEqualOrOver);
+					regData = addToIntegerCount(menUnderAgeLimit, regData, menMembersUnder);
+					regData = addToIntegerCount(menOverOrEqualAgeLimit, regData, menMembersEqualOrOver);
+					regData = addToIntegerCount(bothGendersEqualOrOver, regData, menMembersEqualOrOver + womenMembersEqualOrOver);
+					regData = addToIntegerCount(bothGendersUnderAge, regData, menMembersUnder + womenMembersUnder);
+					regData = addToIntegerCount(bothGendersAllAge, regData, menMembersUnder + womenMembersUnder + menMembersEqualOrOver + womenMembersEqualOrOver);
 		
 					List statsForLeague = (List) workReportsByLeagues.get(league.getPrimaryKey());
 					if (statsForLeague == null)
 						statsForLeague = new Vector();
-					statsForLeague.add(data);
+					statsForLeague.add(regData);
 					workReportsByLeagues.put(league.getPrimaryKey(), statsForLeague);
 		
 				}
@@ -1278,7 +1265,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			reportCollection.addAll(datas);
 		}
 
-		ReportableField[] sortFields = new ReportableField[] {regionalUnionAbbreviation, leagueString};
+		ReportableField[] sortFields = new ReportableField[] {regionalUnionAbbreviation, clubName};
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 
