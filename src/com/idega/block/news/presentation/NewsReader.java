@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.107 2002/12/10 12:05:21 aron Exp $
+ * $Id: NewsReader.java,v 1.108 2002/12/10 12:19:32 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -581,7 +581,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
       sTeaser = locText.getTitle();
     }
     // shortening headlinestext
-    boolean needMoreButton = false;
+    boolean needMoreButton = collection;
     if(!showAll && numberOfHeadlineLetters > -1 && sHeadline.length() >= numberOfHeadlineLetters ){
       sHeadline=sHeadline.substring(0,numberOfHeadlineLetters)+"...";
       needMoreButton = true;
