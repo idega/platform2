@@ -107,8 +107,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	public static final String PARAMETER_VACANCIES = "cc_vacancies";
 
-	public static final String PARAMETER_SHOW_VACANCIES = "cc_show_vacancies";
-
 	public static final String PARAMETER_PROVIDER_COMMENTS = "cc_provider_comments";
 
 	public static final String PARAMETER_OFFER_VALID_UNTIL = "cc_offer_valid_until";
@@ -348,7 +346,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		form.maintainParameter(PARAMETER_PAGE_ID);
 		form.maintainParameter(PARAMETER_CONTRACT_ID);
 		form.maintainParameter(PARAMETER_PLACEMENT_ID);
-		form.maintainParameter(PARAMETER_SHOW_VACANCIES);
 		form.maintainParameter(PARAMETER_SHOW_PARENTAL);
 		form.maintainParameter(PARAMETER_SHOW_EMPLOYMENT_DROP);
 		form.maintainParameter(PARAMETER_SHOW_PRE_SCHOOL);
@@ -1946,9 +1943,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (iwc.isParameterSet(PARAMETER_PAGE_ID))
 			_pageID = Integer.parseInt(iwc.getParameter(PARAMETER_PAGE_ID));
 
-		if (iwc.isParameterSet(PARAMETER_SHOW_VACANCIES))
-			_showVacancies = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_VACANCIES)).booleanValue();
-
+		_showVacancies = getBusiness().getUseVacancies();
 		if (iwc.isParameterSet(PARAMETER_SHOW_EMPLOYMENT_DROP))
 			_showEmploymentDrop = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_EMPLOYMENT_DROP)).booleanValue();
 		if (iwc.isParameterSet(PARAMETER_SHOW_PRE_SCHOOL))
