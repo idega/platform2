@@ -25,16 +25,15 @@ import java.util.StringTokenizer;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
-import com.idega.block.boxoffice.data.BoxLink;
-import com.idega.block.boxoffice.data.BoxLinkHome;
+import com.idega.block.boxoffice.business.BoxBusiness;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICFileHome;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.user.data.User;
 import com.idega.core.user.data.UserHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
-import com.idega.util.IWTimestamp;
 
 /**
  * This class does something very clever.....
@@ -244,7 +243,7 @@ public class NewProductApplicationBusinessBean extends IBOServiceBean implements
 
 					System.out.println("ssn = " + ssn);
 
-					BoxLink bx = ((BoxLinkHome) IDOLookup.getHome(BoxLink.class)).create();
+//					BoxLink bx = ((BoxLinkHome) IDOLookup.getHome(BoxLink.class)).create();
 
 					User user = null;
 					try {
@@ -287,15 +286,17 @@ public class NewProductApplicationBusinessBean extends IBOServiceBean implements
 						}
 
 						if (boxid > -1 && catid > -1) {
-							bx.setBoxCategoryID(boxid);
-							bx.setBoxID(catid);
-							bx.setCreationDate(IWTimestamp.getTimestampRightNow());
-							bx.setName(name);
-							bx.setFileID(((Integer)icfile.getPrimaryKey()).intValue());
-							bx.setTarget("_blank");
-							bx.setUserID(((Integer)user.getPrimaryKey()).intValue());
-							
-							bx.store();
+							int localeId = ICLocaleBusiness.getLocaleId(getIWApplicationContext().getApplication().getSettings().getApplicationLocale());
+							BoxBusiness.saveLink(((Integer)user.getPrimaryKey()).intValue(),boxid,catid,-1,name,((Integer)icfile.getPrimaryKey()).intValue(),-1,null,"_blank",localeId);
+//							bx.setBoxCategoryID(boxid);
+//							bx.setBoxID(catid);
+//							bx.setCreationDate(IWTimestamp.getTimestampRightNow());
+//							bx.setName(name);
+//							bx.setFileID(((Integer)icfile.getPrimaryKey()).intValue());
+//							bx.setTarget("_blank");
+//							bx.setUserID(((Integer)user.getPrimaryKey()).intValue());
+//							
+//							bx.store();
 						}
 					}
 					
