@@ -3,6 +3,7 @@ package is.idega.idegaweb.travel.presentation;
 import is.idega.idegaweb.travel.business.Booker;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.data.GeneralBookingHome;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.Collection;
@@ -15,6 +16,7 @@ import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -117,7 +119,15 @@ public class BookingRefunder extends TravelBlock {
 		
 		String action  = iwc.getParameter(ACTION);
 
-		if (bookingSupplier.equals(super.getSupplier()) || super.isSuperAdmin ) {
+		boolean hasPermission = (bookingSupplier.equals(super.getSupplier()) || super.isSuperAdmin); 
+		
+		if (isSupplierManager() && !hasPermission) {
+			SupplierHome supplierHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+			Collection coll = supplierHome.findAll(getSupplierManager());
+			hasPermission = coll.contains(bookingSupplier);
+		}
+		
+		if (hasPermission ) {
 			if (ccAuthEntry == null) {
 				table.add(getHeaderText(iwrb.getLocalizedString("travel.not_booked_with_a_creditcard", "Not booked with a creditcard")), 1, row);
 				++row;
@@ -364,12 +374,12 @@ public class BookingRefunder extends TravelBlock {
 
 
 	  try{
-	  		if (!ccAuthEntry.getCardExpires().equals(month+year)) {
-	  			CreditCardAuthorizationException e = new CreditCardAuthorizationException();
-	  			e.setDisplayError(iwrb.getLocalizedString("travel.card_expire_date_wrong", "Creditcard expire date is incorrect."));
-	  			throw e;
-	  		}
-	    System.out.println("Starting CreditCard test : "+IWTimestamp.RightNow().toString());
+  		if (!ccAuthEntry.getCardExpires().equals(month+year)) {
+  			CreditCardAuthorizationException e = new CreditCardAuthorizationException();
+  			e.setDisplayError(iwrb.getLocalizedString("travel.card_expire_date_wrong", "Creditcard expire date is incorrect."));
+  			throw e;
+  		}
+	    System.out.println("Starting CreditCard refund : "+IWTimestamp.RightNow().toString());
       number = number.replaceAll(" ", "");
       number = number.replaceAll("-", "");
 	    String heimild = ccClient.doRefund(number,month,year,cvc,Float.parseFloat(amount),ccAuthEntry.getCurrency(), ccAuthEntry.getPrimaryKey(), ccAuthEntry.getExtraField());
@@ -377,7 +387,7 @@ public class BookingRefunder extends TravelBlock {
 //	    booking.setIsValid(false);
 	    getBooker(iwc).deleteBooking(booking, true);
 //	    booking.store();
-	    System.out.println("Ending CreditCard test : "+IWTimestamp.RightNow().toString());
+	    System.out.println("Ending CreditCard refund : "+IWTimestamp.RightNow().toString());
 	
 	    table.add(getText(iwrb.getLocalizedString("travel.success","Success")),1,row);
 	    table.mergeCells(1,row,2,row);
@@ -386,7 +396,9 @@ public class BookingRefunder extends TravelBlock {
 	    table.add(getText(iwrb.getLocalizedString("travel.credidcard_authorization_number","Creditcard authorization number")),1,row);
 	    table.add(getText(heimild),2, row);
 	    table.setAlignment(2, row, "right");
-
+	    
+	    BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
+	    bf.sendEmails(iwc, booking, iwrb, true);
 	  }
 	  catch(CreditCardAuthorizationException e) {
 	    String errMsge = e.getErrorMessage();
