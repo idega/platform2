@@ -79,11 +79,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/16 16:09:41 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/19 08:14:35 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.77 $
+ * @version $Revision: 1.78 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -298,7 +298,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private void generateCheckAmountListPdf (final IWContext context)
 		throws RemoteException, DocumentException, FinderException {
 			final String schoolCategory = getSession().getOperationalField ();
-			final Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
+			final Integer providerId = getProviderIdParameter (context);
 			PaymentRecord [] records = new PaymentRecord [0];
 			if (null != schoolCategory && null != providerId) {
 				final InvoiceBusiness business = getInvoiceBusiness (context);
@@ -450,7 +450,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	
 	private PdfPTable getRecordsHeaderPdfTable (final IWContext context)
 	throws RemoteException {
-		final Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
+		final Integer providerId = getProviderIdParameter (context);
 		final String schoolCategoryId = getSession().getOperationalField ();
 		final Date startPeriod = getPeriodParameter (context, START_PERIOD_KEY);
 		final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
@@ -819,7 +819,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 																SEARCH_KEY, SEARCH_DEFAULT),
 							 columnCount, row++);
 		final String schoolCategory = getSession().getOperationalField ();
-		final Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
+		final Integer providerId = getProviderIdParameter (context);
 		if (null != schoolCategory && null != providerId) {
 			final InvoiceBusiness business = getInvoiceBusiness (context);
 			final Date startPeriod
@@ -1123,7 +1123,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				= {{ ACTION_KEY, ACTION_SHOW_RECORD_DETAILS + "" },
 					 { PAYMENT_RECORD_KEY, recordId }};
 		//final String regSpecType = record.getRuleSpecType ();
-		final boolean userIsSchoolManager = null != getSchool (context);
+		final boolean userIsSchoolManager
+				= null != getSchoolByLoggedInUser (context);
 		//final boolean isFlowInAndOut
 		//		= hasCurrentSchoolCategoryFlowInAndFlowOut (context);
 		final boolean isRecordEditAllowed = !userIsSchoolManager;
@@ -1519,6 +1520,18 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		return result;
 	}
 	
+	private static Integer getProviderIdParameter (final IWContext context) {
+		Integer result = null;
+		final String postedString = context.getParameter (PROVIDER_KEY);
+		try {
+			result = new Integer (postedString);
+		} catch (final Exception exception) {
+			result = (Integer) context.getSessionAttribute (PROVIDER_KEY);
+		}
+		context.setSessionAttribute (PROVIDER_KEY, result);
+		return result;
+	}
+	
 	/**
 	 * Returns a styled table with content placed properly
 	 *
@@ -1601,25 +1614,27 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		int col = 1;
 		addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
 		final String schoolCategory = getSession ().getOperationalField ();
-		final School provider = getSchool (context);
-		if (null != provider) {
-			addSmallText (table, provider.getName (), col, row);
-			table.add (new HiddenInput (PROVIDER_KEY, "" + provider.getPrimaryKey ()),
+		final School loggedInUsersProvider = getSchoolByLoggedInUser (context);
+		if (null != loggedInUsersProvider) {
+			addSmallText (table, loggedInUsersProvider.getName (), col, row);
+			table.add (new HiddenInput
+								 (PROVIDER_KEY,	"" + loggedInUsersProvider.getPrimaryKey ()),
 								 col, row);
 		} else if (null != schoolCategory) {
 			final DropdownMenu providerDropdown = (DropdownMenu)
 					getStyledInterface (new DropdownMenu (PROVIDER_KEY));
 			final Collection schools
 					= business.findAllSchoolsByCategory (schoolCategory);
-			final String oldProviderId = context.getParameter (PROVIDER_KEY)
-					+ "";
+			final Integer oldProviderId = getProviderIdParameter (context);
 			for (Iterator i = schools.iterator (); i.hasNext ();) {
-				final School school = (School) i.next ();
-				final String primaryKey = school.getPrimaryKey ().toString ();
-				final String name = school.getName ();
-				providerDropdown.addMenuElement (primaryKey, name);
-				if (primaryKey.equals (oldProviderId)) {
-					providerDropdown.setSelectedElement (primaryKey);
+				final School provider = (School) i.next ();
+				final Integer providerId = (Integer) provider.getPrimaryKey ();
+				final String providerName = provider.getName ();
+				if (null != providerName && null != providerId) {
+					providerDropdown.addMenuElement (providerId + "", providerName);
+					if (null != oldProviderId && oldProviderId.equals (providerId)) {
+						providerDropdown.setSelectedElement (oldProviderId + "");
+					}
 				}
 			}
 			table.add (providerDropdown, col++, row);
@@ -1635,7 +1650,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private Collection getSchoolCategoryIdsManagedByLoggedOnUser (final IWContext context) {
 		final Collection categoryIds = new HashSet ();
 		try {
-			final School provider = getSchool (context);
+			final School provider = getSchoolByLoggedInUser (context);
 			if (null != provider) {
 				final Collection schoolTypes = provider.getSchoolTypes ();
 				for (Iterator i = schoolTypes.iterator (); i.hasNext ();) {
@@ -1861,7 +1876,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 																			ACTION_KEY, action));
 	}
 	
-	private School getSchool (final IWContext context) throws RemoteException {
+	private School getSchoolByLoggedInUser (final IWContext context)
+		throws RemoteException {
 		final User user = context.getCurrentUser ();
 		School school = null;
 		if (null != user) {
