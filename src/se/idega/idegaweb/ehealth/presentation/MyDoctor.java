@@ -10,6 +10,7 @@ package se.idega.idegaweb.ehealth.presentation;
 import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookup;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -42,6 +43,8 @@ public class MyDoctor extends EHealthBlock {
 	private int userID = -1;
 	private User user;
 	IWContext _iwc = null;
+	ICPage _messagePage = null;
+	ICPage _appointmentPage = null;
 	
 	public void main(IWContext iwc) throws Exception {
 		_iwc = iwc;
@@ -130,13 +133,15 @@ public class MyDoctor extends EHealthBlock {
 			
 			table.add(doctorInfo,3,1);
 			GenericButton message = getButton(new GenericButton("send_message", localize(prmSendMessage, "Send message")));
-			message.setPageToOpen(121);			
-					
+			if (_messagePage != null) 
+				message.setPageToOpen(_messagePage);
+								
 			table.add(message, 3, 2);
 			table.setHeight(3,2,"25");
 			
 			GenericButton visitbooking = getButton(new GenericButton("visit", localize(prmVisitBooking, "Book an appointment")));
-			visitbooking.setPageToOpen(132);
+			if (_appointmentPage != null) 
+				visitbooking.setPageToOpen(_appointmentPage);
 			
 			SubmitButton smb = new SubmitButton();
 			smb.setStyleClass("ehealth_InterfaceButton");
@@ -147,6 +152,21 @@ public class MyDoctor extends EHealthBlock {
 				
 		
 		return myForm;
+	}
+	
+	
+	/**
+	 * @param messagePage The message Page to set.
+	 */
+	public void setMessagePage(ICPage messagePage) {
+		_messagePage = messagePage;
+	}
+	
+	/**
+	 * @param appointmentPage The appointment Page to set.
+	 */
+	public void setAppointmentPage(ICPage appointmentPage) {
+		_appointmentPage = appointmentPage;
 	}
 	
 	}
