@@ -15,7 +15,6 @@ import com.idega.block.category.data.ICInformationCategoryHome;
 import com.idega.block.category.data.ICInformationCategoryTranslation;
 import com.idega.block.category.data.ICInformationCategoryTranslationHome;
 import com.idega.block.category.data.ICInformationFolder;
-import com.idega.block.category.data.ICInformationFolderHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
@@ -385,7 +384,7 @@ public class FolderBlockBusinessBean extends IBOServiceBean implements FolderBlo
 
 	public void storeInstanceCategories(int iObjectInstanceId, int[] CategoryIds) {
 		try {
-			ICObjectInstance instance = ((ICObjectInstanceHome)IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(iObjectInstanceId);
+			ICObjectInstance instance = ((ICObjectInstanceHome)IDOLookup.getHome(ICObjectInstance.class)).findByPrimaryKey(new Integer(iObjectInstanceId));
 
 			instance.removeFrom(ICInformationCategory.class);
 			for (int i = 0; i < CategoryIds.length; i++) {
@@ -400,8 +399,9 @@ public class FolderBlockBusinessBean extends IBOServiceBean implements FolderBlo
 		boolean toReturn = true;
 		
 		try {
-			((ICInformationCategoryHome)IDOLookup.getHome(ICInformationCategory.class)).removeObjectInstanceRelation(instance);
-			((ICInformationFolderHome)IDOLookup.getHome(ICInformationFolder.class)).removeObjectInstanceRelation(instance);
+		    ICObjectInstanceHome home = ((ICObjectInstanceHome)IDOLookup.getHome(ICObjectInstance.class));
+		    home.removeRelation(instance,ICInformationCategory.class);
+		    home.removeRelation(instance,ICInformationFolder.class);
 		} catch (IDORemoveRelationshipException e) {
 			e.printStackTrace();
 			toReturn = false;

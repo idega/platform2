@@ -524,9 +524,7 @@ public class ICInformationCategoryBMPBean extends TreeableEntityBMPBean implemen
 		query.appendLeftParenthesis().appendEqualsQuoted(getColumnDeleted(), GenericEntity.COLUMN_VALUE_FALSE).appendOrIsNull(getColumnDeleted()).appendRightParenthesis();
 	}
 	
-	public void ejbHomeRemoveObjectInstanceRelation(ICObjectInstance instance) throws IDORemoveRelationshipException{
-		idoRemoveFrom(instance);
-	}
+	
 	
 	public boolean ejbHomeHasAvailableCategory(int icObjectID) throws IDOException{
 		IDOQuery query = idoQuery();

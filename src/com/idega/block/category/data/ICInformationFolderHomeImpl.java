@@ -45,11 +45,4 @@ public class ICInformationFolderHomeImpl extends com.idega.data.IDOFactory imple
  }
 
 
-public void removeObjectInstanceRelation(com.idega.core.component.data.ICObjectInstance p0)throws com.idega.data.IDORemoveRelationshipException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	((ICInformationFolderBMPBean)entity).ejbHomeRemoveObjectInstanceRelation(p0);
-	this.idoCheckInPooledEntity(entity);
-}
-
-
 }

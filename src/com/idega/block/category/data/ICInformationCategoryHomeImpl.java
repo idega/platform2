@@ -61,12 +61,6 @@ public java.util.Collection findAvailableTopNodeCategories(int p0,int p1)throws 
  }
 
 
-public void removeObjectInstanceRelation(com.idega.core.component.data.ICObjectInstance p0)throws com.idega.data.IDORemoveRelationshipException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	((ICInformationCategoryBMPBean)entity).ejbHomeRemoveObjectInstanceRelation(p0);
-	this.idoCheckInPooledEntity(entity);
-}
-
 public boolean hasAvailableCategory(int icObjectID) throws IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	boolean result = ((ICInformationCategoryBMPBean)entity).ejbHomeHasAvailableCategory(icObjectID);
