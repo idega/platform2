@@ -284,7 +284,7 @@ public class GolferPage extends Page{
 
   private void setLinkMenu(){
 
-    Table topTable = new Table(7,1);
+    Table topTable = new Table(8,1);
     topTable.setHeight("101");
 
     Image iInfo = iwrb.getImage("/golferpage/navbar_01.gif");
@@ -294,6 +294,7 @@ public class GolferPage extends Page{
     Image iPictures = iwrb.getImage("/golferpage/navbar_05.gif");
     Image iHome = iwrb.getImage("/golferpage/navbar_06.gif");
     Image iMenuBackground = iwb.getImage("/shared/menuBackground.gif");
+    Image iGolf = iwrb.getImage("/golferpage/navbar_07.gif");
 
     Link lInfo = new Link(iInfo);
     Link lRecord = new Link(iRecord);
@@ -301,6 +302,7 @@ public class GolferPage extends Page{
     Link lStatistics = new Link(iStatistics);
     Link lPictures = new Link(iPictures);
     Link lHome = new Link(iHome);
+    Link lGolf = new Link(iGolf, "/");
 
     /*lHome.addParameter("text_id","753");
     lHome.addParameter("module_object","com.idega.jmodule.text.presentation.TextReader");*/
@@ -316,6 +318,7 @@ public class GolferPage extends Page{
     topTable.add(lStatistics,4,1);
     //topTable.add(lPictures,5,1);
     topTable.add(lHome,6,1);
+    topTable.add(lGolf,7,1);
 
     //topTable.add(iRecord,2,1);
     //topTable.add(iInterviews,3,1);
@@ -328,6 +331,7 @@ public class GolferPage extends Page{
     topTable.setWidth(4,1,"20");
     topTable.setWidth(5,1,"20");
     topTable.setWidth(6,1,"20");
+    topTable.setWidth(7,1,"20");
 
     topTable.setWidth("100%");
     topTable.setAlignment("left");
@@ -338,6 +342,7 @@ public class GolferPage extends Page{
     topTable.setVerticalAlignment(4,1,"bottom");
     topTable.setVerticalAlignment(5,1,"bottom");
     topTable.setVerticalAlignment(6,1,"bottom");
+    topTable.setVerticalAlignment(7,1,"bottom");
 
     topTable.setCellpadding(0);
     topTable.setCellspacing(0);
@@ -462,7 +467,12 @@ public class GolferPage extends Page{
     text.setTableTextSize(1);
     text.setHeadlineSize(1);
     text.setTextSize(1);
-    pictureTable.add(text,1,2);
+    Table dummyTable2 = new Table(2,1);
+    dummyTable2.setCellpadding(0);
+    dummyTable2.setWidth(1,"9");
+    dummyTable2.setCellspacing(0);
+    dummyTable2.add(text,2,1);
+    pictureTable.add(dummyTable2,1,2);
     homeTable.add(pictureTable,3,1);
     homeTable.setVerticalAlignment(3,1,"top");
     add(homeTable);
