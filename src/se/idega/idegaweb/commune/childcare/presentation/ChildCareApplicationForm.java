@@ -9,9 +9,7 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
-import com.idega.block.school.business.SchoolAreaBusiness;
 import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.business.SchoolTypeBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.builder.data.IBPage;
@@ -414,7 +412,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 
 	private Collection getSchoolTypes(IWContext iwc, String category) {
 		try {
-			SchoolTypeBusiness sBuiz = (SchoolTypeBusiness) IBOLookup.getServiceInstance(iwc, SchoolTypeBusiness.class);
+			SchoolBusiness sBuiz = (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
 			return sBuiz.findAllSchoolTypesInCategory(category);
 		}
 		catch (Exception ex) {
@@ -425,7 +423,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 
 	private Collection getAreas(IWContext iwc) {
 		try {
-			SchoolAreaBusiness sBuiz = (SchoolAreaBusiness) IBOLookup.getServiceInstance(iwc, SchoolAreaBusiness.class);
+			SchoolBusiness sBuiz = (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
 			return sBuiz.findAllSchoolAreasByTypes(_schoolTypes);
 		}
 		catch (Exception ex) {

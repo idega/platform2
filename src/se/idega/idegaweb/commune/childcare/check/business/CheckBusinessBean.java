@@ -1,15 +1,14 @@
 package se.idega.idegaweb.commune.childcare.check.business;
 
-import com.idega.block.process.business.CaseBusinessBean;
-import com.idega.block.school.business.SchoolTypeBusiness;
-import com.idega.block.school.data.SchoolType;
-import com.idega.core.data.Address;
-import com.idega.core.data.PostalCode;
-import com.idega.user.business.UserBusiness;
-import com.idega.user.data.User;
-
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.business.NoCustodianFound;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.childcare.check.data.CheckHome;
@@ -18,13 +17,13 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.FinderException;
+import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.SchoolType;
+import com.idega.core.data.Address;
+import com.idega.core.data.PostalCode;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
 
 
 /**
@@ -201,8 +200,8 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 
 	public SchoolType getSchoolType(int schoolTypeId) throws Exception {
 		try {
-			SchoolTypeBusiness schoolTypeBusiness = (SchoolTypeBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolTypeBusiness.class);
-			return schoolTypeBusiness.getSchoolType(new Integer(schoolTypeId));
+			SchoolBusiness schoolBusiness = (SchoolBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
+			return schoolBusiness.getSchoolType(new Integer(schoolTypeId));
 		} catch (EJBException e) {
 			return null;
 		}

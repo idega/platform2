@@ -48,10 +48,10 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 			
 		if (action == ACTION_SAVE) {
 			String name = iwc.getParameter(PARAMETER_CLASS_NAME);
-			getBusiness().getSchoolClassBusiness().storeSchoolClass(getSession().getSchoolClassID(), name, getSchoolID(), getSchoolSeasonID(), getSchoolYearID(), -1);
+			getBusiness().getSchoolBusiness().storeSchoolClass(getSession().getSchoolClassID(), name, getSchoolID(), getSchoolSeasonID(), getSchoolYearID(), -1);
 		}	
 		else if (action == ACTION_DELETE) {
-			getBusiness().getSchoolClassBusiness().invalidateSchoolClass(getSession().getSchoolClassID());
+			getBusiness().getSchoolBusiness().invalidateSchoolClass(getSession().getSchoolClassID());
 		}	
 	}
 	
@@ -91,7 +91,7 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 			classID.setValue(getSchoolClassID());
 		table.add(classID,3,row++);
 
-		Collection schoolClasses = getBusiness().getSchoolClassBusiness().findSchoolClassesBySchoolAndSeasonAndYear(getSchoolID(), getSchoolSeasonID(), getSchoolYearID());
+		Collection schoolClasses = getBusiness().getSchoolBusiness().findSchoolClassesBySchoolAndSeasonAndYear(getSchoolID(), getSchoolSeasonID(), getSchoolYearID());
 		if (!schoolClasses.isEmpty()) {
 			Iterator iter = schoolClasses.iterator();
 			while (iter.hasNext()) {
@@ -107,7 +107,7 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 				SubmitButton delete = (SubmitButton) getStyledInterface(new SubmitButton(getDeleteIcon(""),PARAMETER_ACTION,String.valueOf(ACTION_DELETE)));
 				delete.setValueOnClick(getSession().getParameterSchoolClassID(), element.getPrimaryKey().toString());
 				delete.setDescription(localize("school.delete_class","Delete this class"));
-				if (getBusiness().getSchoolClassBusiness().getNumberOfStudentsInClass(((Integer)element.getPrimaryKey()).intValue()) > 0)
+				if (getBusiness().getSchoolBusiness().getNumberOfStudentsInClass(((Integer)element.getPrimaryKey()).intValue()) > 0)
 					delete.setSubmitConfirm(localize("school.confirm_class_delete","This class has students, delete anyway?"));
 				
 				if (row % 2 == 0)
