@@ -42,7 +42,7 @@ import com.idega.core.location.data.Address;
 import com.idega.data.IDOStoreException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
-import com.idega.util.IWTimestamp;
+import com.idega.util.TimePeriod;
 
 /**
  * UserInfoServiceBean
@@ -240,15 +240,14 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 	 * Returns the sibling order according to Check & Peng rules.
 	 * Most importantly, it only involves children i pre-school
 	 */
-	public int getSiblingOrder(User child, IWTimestamp startPeriod) throws RemoteException, SiblingOrderException {
-		return getSiblingOrder (child, new HashMap (), startPeriod);
+	public int getSiblingOrder(User child, TimePeriod period) throws RemoteException, SiblingOrderException {
+		return getSiblingOrder (child, new HashMap (), period);
 	}
 
 	private boolean hasValidContract
-		(final User child, final IWTimestamp startPeriod) throws RemoteException {
+		(final User child, final TimePeriod period) throws RemoteException {
 		try {
-			getChildCareContractHome ().findValidContractByChild
-					(((Integer) child.getPrimaryKey()).intValue(),startPeriod.getDate());
+			getChildCareContractHome ().findContractByChildAndPeriod (child, period);
 			return true;
 		} catch (FinderException e) {
 			return false;
@@ -259,7 +258,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 	 * Returns the sibling order according to Check & Peng rules.
 	 * Most importantly, it only involves children i pre-school
 	 */
-	public int getSiblingOrder(User child, Map siblingOrders, IWTimestamp startPeriod) throws RemoteException, SiblingOrderException {
+	public int getSiblingOrder(User child, Map siblingOrders, TimePeriod period) throws RemoteException, SiblingOrderException {
 		UserBusiness userBus = (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
 		//First see if the child already has been given a sibling order
 		Integer order = (Integer)siblingOrders.get(child.getPrimaryKey());
@@ -267,7 +266,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		{
 			return order.intValue();	//Sibling order already calculated.
 		}
-		if (!hasValidContract (child, startPeriod)) {
+		if (!hasValidContract (child, period)) {
 			throw new SiblingOrderException (child.getName() + " has no contract");
 		}	
 		TreeSet sortedSiblings = new TreeSet();		//Container for the siblings that keeps them in sorted order
@@ -320,7 +319,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 					User sibling = (User) siblingsIter.next();		
 					try {
 						Address siblingAddress = userBus.getUsersMainAddress(sibling);
-						if (hasValidContract (sibling, startPeriod)
+						if (hasValidContract (sibling, period)
 								&& childAddress.isEqualTo( siblingAddress)) {
 							SortableSibling sortableSibling = new SortableSibling(sibling);
 							if(!sortedSiblings.contains(sortableSibling)){

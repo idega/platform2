@@ -97,6 +97,13 @@ public ChildCareContract findLatestContractByApplication(int p0)throws javax.ejb
 	return this.findByPrimaryKey(pk);
 }
 
+ public ChildCareContract findContractByChildAndPeriod(com.idega.user.data.User child, com.idega.util.TimePeriod period)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ChildCareContractBMPBean)entity).ejbFindContractByChildAndPeriod(child, period);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public ChildCareContract findLatestContractByChild(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((ChildCareContractBMPBean)entity).ejbFindLatestContractByChild(p0);

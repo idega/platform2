@@ -15,6 +15,7 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
+import com.idega.util.TimePeriod;
 
 /**
  * The main class of a childcare contract. Is thought to be an extension of the standard Contract object (com.idega.block.contract.data.Contract).
@@ -259,6 +260,21 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(date);
 		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(date);
 		sql.appendOr().append(COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+
+	public Integer ejbFindContractByChildAndPeriod(User child, TimePeriod period) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_CHILD_ID, child);
+		sql.appendAnd();
+		sql.append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(period.getLastTimestamp().getDate ());
+		sql.appendAnd();
+		sql.appendLeftParenthesis ();
+		sql.append(COLUMN_TERMINATED_DATE).appendGreaterThanOrEqualsSign().append(period.getFirstTimestamp().getDate ());
+		sql.appendOr().append(COLUMN_TERMINATED_DATE).append(" is null");
+		sql.appendRightParenthesis();
 		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
 		return (Integer) idoFindOnePKByQuery(sql);
 	}

@@ -66,6 +66,7 @@ import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.User;
 import com.idega.util.Age;
+import com.idega.util.CalendarMonth;
 
 /**
  * Holds most of the logic for the batchjob that creates the information that is base for invoicing 
@@ -856,7 +857,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	private int getSiblingOrder(ChildCareContract contract, Map siblingOrders) throws EJBException, CreateException, RemoteException, SiblingOrderException{
 			User contractChild = contract.getChild ();	
 			UserInfoService userInfo = (UserInfoService) IBOLookup.getServiceInstance(iwc, UserInfoService.class);
-			return userInfo.getSiblingOrder(contractChild, siblingOrders, startPeriod);
+			return userInfo.getSiblingOrder(contractChild, siblingOrders, new CalendarMonth (startPeriod));
 	}
 
 /*
