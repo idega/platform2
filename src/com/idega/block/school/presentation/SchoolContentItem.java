@@ -36,17 +36,10 @@ public abstract class SchoolContentItem extends Block {
 
 	protected abstract PresentationObject getObject() throws RemoteException;
 
-	public void main(IWContext iwc) throws RemoteException{
+	public void main(IWContext iwc) throws Exception{
 		_iwc = iwc;
 		_iwrb = super.getResourceBundle( _iwc );
-		String id = iwc.getParameter( getSchoolContentBusiness(iwc).getParameterSchoolId());
-		if (id != null) {
-			try {
-				_school = getSchoolBusiness( iwc ).getSchoolHome().findByPrimaryKey(new Integer(id));
-			}catch (FinderException fe) {
-				
-			}
-		}
+		_school = getSchool(iwc);
 		
 		if ( _school != null) {
 			add(getObject());
@@ -54,6 +47,18 @@ public abstract class SchoolContentItem extends Block {
 			add(getText(_iwrb.getLocalizedString("content_item_not_found","Item not found")));
 		}
 		
+	}
+	
+	protected School getSchool(IWContext iwc) throws RemoteException {
+		String id = iwc.getParameter( getSchoolContentBusiness(iwc).getParameterSchoolId());
+		if (id != null) {
+			try {
+				return getSchoolBusiness( iwc ).getSchoolHome().findByPrimaryKey(new Integer(id));
+			}
+			catch (FinderException fe) {
+			}
+		}
+		return null;
 	}
 
 	public String getBundleIdentifier() {
