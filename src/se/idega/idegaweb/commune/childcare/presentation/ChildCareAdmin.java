@@ -12,6 +12,7 @@ import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import com.idega.presentation.CollectionNavigator;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.HorizontalRule;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
@@ -136,6 +137,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 			IWCalendar queueDate;
 			IWCalendar placementDate;
 			Link link;
+			HorizontalRule hr;
 			boolean hasOtherPlacing = false;
 			boolean hasMessage = false;
 				
@@ -155,9 +157,13 @@ public class ChildCareAdmin extends ChildCareBlock {
 				hasMessage = application.getMessage() != null;		
 				
 				if (netOrder == 1 && row != 2) {
+					hr = new HorizontalRule();
 					applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
 					applicationTable.setStyle(1, row, "padding", "0px");
-					applicationTable.setColor(1, row++, "#000000");
+					hr.setHeight(1);
+					hr.setColor("#000000");
+					applicationTable.add(hr, 1, row++);			
+					//applicationTable.setColor(1, row++, "#000000");
 				}
 					
 				if (application.getApplicationStatus() == getBusiness().getStatusAccepted()) {
