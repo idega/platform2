@@ -1,5 +1,5 @@
 /*
- * $Id: Applicant.java,v 1.5 2001/06/28 10:33:16 aron Exp $
+ * $Id: Applicant.java,v 1.6 2001/07/19 11:03:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -27,6 +27,8 @@ public class Applicant extends GenericEntity {
   private static final String residence_ = "residence";
   private static final String residencePhone_ = "residence_phone";
   private static final String po_ = "po";
+  private static final String mobilePhone_ = "mobile_phone";
+  private static final String sendSMS_ = "send_sms";
 
   public Applicant() {
     super();
@@ -38,14 +40,16 @@ public class Applicant extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(firstName_,"First name",true,true,"java.lang.String");
-    addAttribute(middleName_,"Middle name",true,true,"java.lang.String");
-    addAttribute(lastName_,"Last name",true,true,"java.lang.String");
-    addAttribute(ssn_,"Social security number",true,true,"java.lang.String");
-    addAttribute(legalResidence_,"Legal residence",true,true,"java.lang.String");
-    addAttribute(residence_,"Residence",true,true,"java.lang.String");
-    addAttribute(residencePhone_,"Telephone",true,true,"java.lang.String");
-    addAttribute(po_,"Post office",true,true,"java.lang.String");
+    addAttribute(firstName_,"First name",true,true,java.lang.String.class.getClass());
+    addAttribute(middleName_,"Middle name",true,true,java.lang.String.class.getClass());
+    addAttribute(lastName_,"Last name",true,true,java.lang.String.class.getClass());
+    addAttribute(ssn_,"Social security number",true,true,java.lang.String.class.getClass());
+    addAttribute(legalResidence_,"Legal residence",true,true,java.lang.String.class.getClass());
+    addAttribute(residence_,"Residence",true,true,java.lang.String.class.getClass());
+    addAttribute(residencePhone_,"Telephone",true,true,java.lang.String.class.getClass());
+    addAttribute(po_,"Post office",true,true,java.lang.String.class.getClass());
+    addAttribute(mobilePhone_,"Mobile phone",true,true,java.lang.String.class.getClass());
+    addAttribute(sendSMS_,"Send SMS",true,true,java.lang.String.class.getClass());
     setMaxLength(firstName_,255);
     setMaxLength(middleName_,255);
     setMaxLength(lastName_,255);
@@ -54,6 +58,8 @@ public class Applicant extends GenericEntity {
     setMaxLength(residence_,255);
     setMaxLength(residencePhone_,40);
     setMaxLength(po_,255);
+    setMaxLength(mobilePhone_,40);
+    setMaxLength(sendSMS_,1);
   }
 
   public String getEntityName() {
@@ -92,12 +98,20 @@ public class Applicant extends GenericEntity {
     return(po_);
   }
 
+  public String getMobilePhoneColumnName() {
+    return(mobilePhone_);
+  }
+
+  public String getSendSMSColumnName() {
+    return(sendSMS_);
+  }
+
   public void setFirstName(String name) {
     setColumn(firstName_,name);
   }
 
   public String getFirstName() {
-    return((String)getColumnValue(firstName_));
+    return(getStringColumnValue(firstName_));
   }
 
   public void setMiddleName(String name) {
@@ -105,7 +119,7 @@ public class Applicant extends GenericEntity {
   }
 
   public String getMiddleName() {
-    return((String)getColumnValue(middleName_));
+    return(getStringColumnValue(middleName_));
   }
 
   public void setLastName(String name) {
@@ -113,7 +127,7 @@ public class Applicant extends GenericEntity {
   }
 
   public String getLastName() {
-    return((String)getColumnValue(lastName_));
+    return(getStringColumnValue(lastName_));
   }
 
   public void setSSN(String ssn) {
@@ -121,7 +135,7 @@ public class Applicant extends GenericEntity {
   }
 
   public String getSSN() {
-    return((String)getColumnValue(ssn_));
+    return(getStringColumnValue(ssn_));
   }
 
   public void setLegalResidence(String legal) {
@@ -129,7 +143,7 @@ public class Applicant extends GenericEntity {
   }
 
   public String getLegalResidence() {
-    return((String)getColumnValue(legalResidence_));
+    return(getStringColumnValue(legalResidence_));
   }
 
   public void setResidence(String residence) {
@@ -137,7 +151,7 @@ public class Applicant extends GenericEntity {
   }
 
   public String getResidence() {
-    return((String)getColumnValue(residence_));
+    return(getStringColumnValue(residence_));
   }
 
   public void setResidencePhone(String phone) {
@@ -145,7 +159,7 @@ public class Applicant extends GenericEntity {
   }
 
   public String getResidencePhone() {
-    return((String)getColumnValue(residencePhone_));
+    return(getStringColumnValue(residencePhone_));
   }
 
   public void setPO(String po) {
@@ -153,8 +167,34 @@ public class Applicant extends GenericEntity {
   }
 
   public String getPO() {
-    return((String)getColumnValue(po_));
+    return(getStringColumnValue(po_));
   }
+
+  public void setMobilePhone(String mobilePhone) {
+    setColumn(mobilePhone_,mobilePhone);
+  }
+
+  public String getMobilePhone() {
+    return(getStringColumnValue(mobilePhone_));
+  }
+
+  public boolean getSendSMS() {
+    String send = getStringColumnValue(sendSMS_);
+    if ((send == null) || (send.equalsIgnoreCase("n")))
+      return(false);
+    else if (send.equalsIgnoreCase("y"))
+      return(true);
+    else
+      return(false);
+  }
+
+  public void setSendSMS(boolean send) {
+    if (send)
+      setColumn(sendSMS_,"Y");
+    else
+      setColumn(sendSMS_,"N");
+  }
+
   public String getFullName(){
     return (getFirstName()!= null?getFirstName():"")+
     " "+(getMiddleName()!= null?getMiddleName():"")+
