@@ -278,9 +278,13 @@ private void finalize(IWContext iwc) throws Exception {
           Link servDaySetter = new Link(iwrb.getLocalizedImageButton("travel.active_dats","Active days"));
           servDaySetter.addParameter(ServiceDaySetter.PARAMETER_SERVICE_ID,  product.getID());
           servDaySetter.setWindowToOpen(ServiceDaySetter.class);
-
+          
           Link productPriceDesigner = ProductPriceDesigner.getLink(product.getID());
           productPriceDesigner.setImage(iwrb.getLocalizedImageButton("travel.product_price_designer","Price designer"));
+          
+          Link creditCardHandler = new Link(iwrb.getLocalizedImageButton("travel.authorization_check", "Authorization Check Setter"));
+          creditCardHandler.addParameter(CreditCardPropertiesSetter.PARAMETER_PRODUCT_ID, product.getID());
+          creditCardHandler.setWindowToOpen(CreditCardPropertiesSetter.class);
 
           Timeframe[] tFrames = product.getTimeframes();
           List addresses = com.idega.util.ListUtil.getEmptyList();
@@ -322,6 +326,10 @@ private void finalize(IWContext iwc) throws Exception {
           table.mergeCells(1,row,3,row);
           ++row;
           table.add(productPriceDesigner,1,row);
+          table.setRowColor(row, super.GRAY);
+          table.mergeCells(1,row,3,row);
+          ++row;
+          table.add(creditCardHandler,1,row);
           table.setRowColor(row, super.GRAY);
           table.mergeCells(1,row,3,row);
           ++row;
