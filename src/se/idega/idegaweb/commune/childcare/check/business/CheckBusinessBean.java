@@ -1,22 +1,5 @@
 package se.idega.idegaweb.commune.childcare.check.business;
 
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
-import is.idega.idegaweb.member.business.NoCustodianFound;
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.ejb.CreateException;
-import javax.ejb.EJBException;
-import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.childcare.check.data.Check;
-import se.idega.idegaweb.commune.childcare.check.data.CheckHome;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
-import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.data.Message;
-
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolType;
@@ -24,6 +7,28 @@ import com.idega.core.data.Address;
 import com.idega.core.data.PostalCode;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
+
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.business.NoCustodianFound;
+
+import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.childcare.check.data.CheckHome;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheckHome;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
+import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.data.Message;
+
+import java.rmi.RemoteException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
 
 
 /**
@@ -251,6 +256,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 	
 	public void approveCheck(Check check,String subject,String body,User performer) throws Exception {
 		changeCaseStatus(check, this.getCaseStatusGranted().getPrimaryKey().toString(), performer);
+		this.createGrantedCheck(check);
 		sendMessageToCitizen(check,getUserID(check),subject,body);
 		sendMessageToArchive(check,getUserID(check),subject,body);
 		sendMessageToPrinter(check,getUserID(check),subject,body);
@@ -342,4 +348,28 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return -1;
 	}
 	
+	public int createGrantedCheck(User child) throws CreateException,RemoteException {
+		GrantedCheckHome home = (GrantedCheckHome) com.idega.data.IDOLookup.getHome(GrantedCheck.class);
+		GrantedCheck grantedCheck = home.create();
+		grantedCheck.setChild(child);
+			
+		Timestamp now = IWTimestamp.getTimestampRightNow();
+		grantedCheck.setDateGranted(now);
+		
+		grantedCheck.store();
+		return ((Integer)grantedCheck.getPrimaryKey()).intValue();
+	}
+	
+	public int createGrantedCheck(Check check) throws CreateException,RemoteException {
+		GrantedCheckHome home = (GrantedCheckHome) com.idega.data.IDOLookup.getHome(GrantedCheck.class);
+		GrantedCheck grantedCheck = home.create();
+		grantedCheck.setChildId(check.getChildId());
+		grantedCheck.setCheck(check);
+			
+		Timestamp now = IWTimestamp.getTimestampRightNow();
+		grantedCheck.setDateGranted(now);
+		
+		grantedCheck.store();
+		return ((Integer)grantedCheck.getPrimaryKey()).intValue();
+	}		
 }
