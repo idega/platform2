@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.41 2002/12/12 16:20:34 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.42 2002/12/17 13:06:33 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -29,11 +29,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/12/12 16:20:34 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/17 13:06:33 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.41 $
+ * @version $Revision: 1.42 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -104,6 +104,8 @@ public class CitizenAccountApplication extends CommuneBlock {
     private final static String USER_ALLREADY_HAS_A_LOGIN_KEY = "caa_user_allready_has_a_login";
 	final static String YES_DEFAULT = "Ja";
 	final static String YES_KEY = "caa_yes";
+    private final static String YOU_MUST_BE_18_KEY = "caa_youMustBe18";
+    private final static String YOU_MUST_BE_18_DEFAULT = "Du måste vara 18 år gammal för att kunna ansöka om medborgarkonto";
 	private final static String ZIP_CODE_DEFAULT = "Postnummer";
 	private final static String ZIP_CODE_KEY = "caa_zip_code";
 
@@ -166,6 +168,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 		try {
 			final Map parameters = parseParameters(getResourceBundle(), iwc, mandatoryParametersNames, stringParameterNames, ssnParameterNames, integerParameters);
 			final String ssn = parameters.get(SSN_KEY).toString();
+            if (!isOver18 (ssn)) {
+                throw new ParseException (localize (YOU_MUST_BE_18_KEY, YOU_MUST_BE_18_DEFAULT));
+            }
 			final String email = parameters.get(EMAIL_KEY).toString();
 			final String phoneHome = parameters.get(PHONE_HOME_KEY).toString();
 			final String phoneWork = parameters.get(PHONE_WORK_KEY).toString();
@@ -442,6 +447,9 @@ public class CitizenAccountApplication extends CommuneBlock {
                      stringParameterNames, ssnParameterNames,
                      integerParameters);
 			final String ssn = parameters.get(SSN_KEY).toString();
+            if (!isOver18 (ssn)) {
+                throw new ParseException (localize (YOU_MUST_BE_18_KEY, YOU_MUST_BE_18_DEFAULT));
+            }
 			final String email = parameters.get(EMAIL_KEY).toString();
 			final String phoneHome = parameters.get(PHONE_HOME_KEY).toString();
 			final String phoneWork = parameters.get(PHONE_WORK_KEY).toString();
@@ -658,6 +666,21 @@ public class CitizenAccountApplication extends CommuneBlock {
 		return digitOnlyInput.toString();
 	}
 
+    private static boolean isOver18 (final String ssn) {
+        if (ssn == null || ssn.length () != 12) {
+            throw new IllegalArgumentException ("'" + ssn + "' isn't a SSN");
+        }
+
+		final int year = new Integer(ssn.substring(0, 4)).intValue();
+		final int month = new Integer(ssn.substring(4, 6)).intValue();
+		final int day = new Integer(ssn.substring(6, 8)).intValue();
+		final Date rightNow = Calendar.getInstance ().getTime ();
+        final Calendar birthday18 = Calendar.getInstance ();
+        birthday18.set (year + 18, month - 1, day);
+
+        return rightNow.after (birthday18.getTime ());
+    }
+
 	private static int parseAction(final IWContext iwc) {
 		int action = ACTION_VIEW_FORM;
 
@@ -736,6 +759,11 @@ public class CitizenAccountApplication extends CommuneBlock {
 		ParseException(final IWResourceBundle bundle, final String key) {
 			super(createMessage(bundle, key));
 			this.key = key;
+		}
+
+		ParseException(final String message) {
+			super (message);
+			key = "";
 		}
 
 		static String createMessage(final IWResourceBundle bundle, final String key) {
