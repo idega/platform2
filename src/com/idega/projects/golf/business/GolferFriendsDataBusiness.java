@@ -56,7 +56,6 @@ public class GolferFriendsDataBusiness {
     int supportesID, int supportPreSigningID) throws SQLException{
     GolferPageData golferPageData = new GolferPageData();
 
-
   }
 
 }

@@ -620,7 +620,7 @@ public class GolferFriendsSigningSheet extends JModuleObject {
           GolferFriendsDataBusiness.insertFriendsData(name, sSNumber, email, adress,
            cardType, cardNumber, cardExpDate, nameAppearance, paymentAmount,
            paymentDuration, billingAdress, billingName, billingNameSSN, appearName,
-           fullGolferName);
+           (String) modinfo.getSessionAttribute("fullGolferName"));
         }
         catch (Exception ex) {
 
