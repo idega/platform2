@@ -159,11 +159,12 @@ public class CheckRequestAdmin extends CommuneBlock {
 		checkInfoTable.add(getLocalizedSmallHeader("check.case_number", "Case number"), 1, row);
 		checkInfoTable.add(getSmallHeader(":"), 1, row);
 
-		long checkNumber = ((Long) new Long(check.getPrimaryKey().toString())).longValue();
+		String number = check.getPrimaryKey().toString();
+		/*long checkNumber = ((Long) new Long(check.getPrimaryKey().toString())).longValue();
 		checkNumber = 666;
 
 		DecimalFormat format = new DecimalFormat("0000000");
-		String number = format.format(checkNumber);
+		String number = format.format(checkNumber);*/
 		checkInfoTable.add(getSmallText(number), 2, row++);
 
 		checkInfoTable.add(getLocalizedSmallHeader("check.request_regarding", "Request regarding"), 1, row);
