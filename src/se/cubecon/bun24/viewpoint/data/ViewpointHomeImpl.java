@@ -7,7 +7,10 @@ import javax.ejb.*;
 import java.rmi.RemoteException;
 
 /**
+ * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @version $Revision: 1.2 $
  */
 public class ViewpointHomeImpl extends IDOFactory implements ViewpointHome {
     public Viewpoint create () throws CreateException{

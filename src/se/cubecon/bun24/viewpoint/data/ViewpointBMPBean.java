@@ -7,7 +7,10 @@ import java.util.*;
 import javax.ejb.FinderException;
 
 /**
+ * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @version $Revision: 1.7 $
  */
 public class ViewpointBMPBean extends AbstractCaseBMPBean
     implements Viewpoint, Case {

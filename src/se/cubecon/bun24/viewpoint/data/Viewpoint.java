@@ -8,7 +8,10 @@ import javax.ejb.FinderException;
 import java.util.Collection;
 
 /**
+ * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @version $Revision: 1.3 $
  */
 public interface Viewpoint extends IDOEntity, Case {
     String CASE_CODE_KEY = "SYMESYN";

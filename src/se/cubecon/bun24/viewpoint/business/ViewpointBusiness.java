@@ -10,7 +10,10 @@ import java.util.Collection;
 import javax.ejb.*;
 
 /**
+ * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @version $Revision: 1.2 $
  */
 public interface ViewpointBusiness extends IBOService, CaseBusiness {
     void createViewpoint (User user, String subject, String message,

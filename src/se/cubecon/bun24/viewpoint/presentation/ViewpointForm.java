@@ -1,25 +1,40 @@
 package se.cubecon.bun24.viewpoint.presentation;
 
-import com.idega.block.process.data.CaseCode;
-import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
-import com.idega.data.IDOLookup;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
-import com.idega.user.Converter;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.*;
 import java.rmi.RemoteException;
-import java.util.*;
 import javax.ejb.*;
 import se.cubecon.bun24.viewpoint.business.ViewpointBusiness;
 import se.cubecon.bun24.viewpoint.data.*;
-import se.idega.idegaweb.commune.business.CommuneCaseBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 /**
+ * ViewpointForm is an IdegaWeb block that inputs and handles viewpoints from
+ * all kind of system users. It is based on session ejb classes in
+ * {@link se.cubecon.bun24.viewpoint.business} and entity ejb classes in
+ * {@link se.cubecon.bun24.viewpoint.data}.
+ * <p>
+ * The user enters viewpoints by first selecting in a category tree and then
+ * writes the message. This makes it possible for the system to act as a
+ * broker when deciding who should be able to manage the viewpoint and send an
+ * answer.
+ * <p>
+ * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @version $Revision: 1.9 $
+ * @see com.idega.business
+ * @see com.idega.presentation
+ * @see com.idega.presentation.text
+ * @see com.idega.presentation.ui
+ * @see com.idega.user.business
+ * @see com.idega.user.data
+ * @see se.cubecon.bun24.viewpoint.business
+ * @see se.cubecon.bun24.viewpoint.data
  */
 public class ViewpointForm extends CommuneBlock {
     public final static String PARAM_ACTION = "vp_action";
@@ -38,76 +53,90 @@ public class ViewpointForm extends CommuneBlock {
     public final static int ACCEPTTOHANDLEVIEWPOINT_ACTION = 7;
     public final static int ANSWERVIEWPOINT_ACTION = 8;
 
-    public final static String ANSWER_KEY = "viewpoint.answer";
-    public final static String ANSWER_DEFAULT = "Svar till medborgare";
-    public final static String APPLIES_KEY = "viewpoint.applies";
-    public final static String APPLIES_DEFAULT = "Avser";
-    public final static String CONFIRMANSWERSENT_KEY
+    private final static String ANSWER_KEY = "viewpoint.answer";
+    private final static String ANSWER_DEFAULT = "Svar till medborgare";
+    private final static String APPLIES_KEY = "viewpoint.applies";
+    private final static String APPLIES_DEFAULT = "Avser";
+    private final static String CONFIRMANSWERSENT_KEY
         = "viewpoint.confirmAnswerSent";
-    public final static String CONFIRMANSWERSENT_DEFAULT
+    private final static String CONFIRMANSWERSENT_DEFAULT
         = "Ditt svar har nu skickats till medborgaren.";
-    public final static String CONFIRMENTERVIEWPOINT_KEY
+    private final static String CONFIRMENTERVIEWPOINT_KEY
         = "viewpoint.confirmEnterViewpoint";
-    public final static String CONFIRMENTERVIEWPOINT_DEFAULT
+    private final static String CONFIRMENTERVIEWPOINT_DEFAULT
         = "Tack för din synpunkt. Den är nu registrerad som ett ärende på "
         + "BUN24. En handläggare kommer att hantera och besvara ärendet.";
-    public final static String CONFIRMSETHANDLER_KEY
+    private final static String CONFIRMSETHANDLER_KEY
         = "viewpoint.confirmSetHandler";
-    public final static String CONFIRMSETHANDLER_DEFAULT
+    private final static String CONFIRMSETHANDLER_DEFAULT
         = "Du är nu registrerad som handläggare för det här ärendet.";
-    public final static String CONTINUE_KEY = "viewpoint.continue";
-    public final static String CONTINUE_DEFAULT = "Fortsätt";
-    public final static String DESCRIPTION1_KEY = "viewpoint.description1";
-    public final static String DESCRIPTION1_DEFAULT
+    private final static String CONTINUE_KEY = "viewpoint.continue";
+    private final static String CONTINUE_DEFAULT = "Fortsätt";
+    private final static String DESCRIPTION1_KEY = "viewpoint.description1";
+    private final static String DESCRIPTION1_DEFAULT
         = "När du använder 'Synpunkter' i BUN24 så ska du ange vilken typ av "
         + "synpunkter du vill lämna. Det möjliggör för oss att länka dem till "
         + "rätt tjänsteman för snabb handläggning och respons. De olika "
         + "kategorierna ger också möjlighet till en systematisk uppföljning av "
         + "hur medborgarna uppfattar verksamhet och service i kommunen.";
-    public final static String DESCRIPTION2_KEY = "viewpoint.description2";
-    public final static String DESCRIPTION2_DEFAULT
+    private final static String DESCRIPTION2_KEY = "viewpoint.description2";
+    private final static String DESCRIPTION2_DEFAULT
         = "Problem ska i första hand lösas där de uppstår. Om du har "
         + "synpunkter på hur en enskild skola eller förskola fungerar så ska "
         + "du därför i första hand vända dig till personal, rektor eller "
         + "förskolechef.";
-    public final static String ENTERSUBCATEGORY_KEY
+    private final static String ENTERSUBCATEGORY_KEY
         = "viewpoint.enterSubCategory";
-    public final static String ENTERSUBCATEGORY_DEFAULT
+    private final static String ENTERSUBCATEGORY_DEFAULT
         = "Vilket underområde vill du ge synpunkter om?";
-    public final static String ENTERTOPCATEGORY_KEY
+    private final static String ENTERTOPCATEGORY_KEY
         = "viewpoint.enterTopCategory";
-    public final static String ENTERTOPCATEGORY_DEFAULT
+    private final static String ENTERTOPCATEGORY_DEFAULT
         = "Vilket område vill du ge synpunkter om?";
-    public final static String FROMCITIZEN_KEY = "viewpoint.fromCitizen";
-    public final static String FROMCITIZEN_DEFAULT = "Från medborgare";
-    public final static String IACCEPTTOHANDLETHISVIEWPOINT_KEY
+    private final static String FROMCITIZEN_KEY = "viewpoint.fromCitizen";
+    private final static String FROMCITIZEN_DEFAULT = "Från medborgare";
+    private final static String IACCEPTTOHANDLETHISVIEWPOINT_KEY
         = "viewpoint.iAcceptToHandleThisViewpoint";
-    public final static String IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT
+    private final static String IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT
         = "Jag accepterar att handlägga den här synpunkten";
-    public final static String MESSAGE_KEY = "viewpoint.message";
-    public final static String MESSAGE_DEFAULT = "Meddelande";
-    public final static String NOTLOGGEDON_KEY = "viewpoint.notLoggedOn";
-    public final static String NOTLOGGEDON_DEFAULT
+    private final static String MESSAGE_KEY = "viewpoint.message";
+    private final static String MESSAGE_DEFAULT = "Meddelande";
+    private final static String NOTLOGGEDON_KEY = "viewpoint.notLoggedOn";
+    private final static String NOTLOGGEDON_DEFAULT
         = "Du måste vara inloggad för att använda den här funktionen.";
-    public final static String SENDANSWERTOCITIZEN_KEY
+    private final static String SENDANSWERTOCITIZEN_KEY
         = "viewpoint.sendAnswerToCitizen";
-    public final static String SENDANSWERTOCITIZEN_DEFAULT
+    private final static String SENDANSWERTOCITIZEN_DEFAULT
         = "Skicka svar till medborgare";
-    public final static String SUBJECT_KEY = "viewpoint.subject";
-    public final static String SUBJECT_DEFAULT = "Rubrik";
-    public final static String SUBMITVIEWPOINT_KEY
+    private final static String SUBJECT_KEY = "viewpoint.subject";
+    private final static String SUBJECT_DEFAULT = "Rubrik";
+    private final static String SUBMITVIEWPOINT_KEY
         = "viewpoint.submitViewpoint";
-    public final static String SUBMITVIEWPOINT_DEFAULT = "Skicka synpunkt";
-    public final static String VIEWPOINTS_KEY = "viewpoint.viewpoints";
-    public final static String VIEWPOINTS_DEFAULT = "Synpunkter";
-    public final static String GOBACKTOMYPAGE_KEY = "viewpoint.goBackToMyPage";
-    public final static String GOBACKTOMYPAGE_DEFAULT
+    private final static String SUBMITVIEWPOINT_DEFAULT = "Skicka synpunkt";
+    private final static String VIEWPOINTS_KEY = "viewpoint.viewpoints";
+    private final static String VIEWPOINTS_DEFAULT = "Synpunkter";
+    private final static String GOBACKTOMYPAGE_KEY = "viewpoint.goBackToMyPage";
+    private final static String GOBACKTOMYPAGE_DEFAULT
         = "Gå tillbaka till min sida";
 
-    public final static String UNKNOWN_PAGE = "Unknown Page";
+    private final static String UNKNOWN_PAGE = "Unknown Page";
 
     private int userHomePageId = -1;    
 
+    /**
+     * main is the event handler of ViewpointForm. It can handle the following
+     * events set in {@link #PARAM_ACTION}:<br>
+     * - {@link #SHOWTOPCATEGORIESFORM_ACTION}<br>
+     * - {@link #SHOWSUBCATEGORIESFORM_ACTION}<br>
+     * - {@link #REGISTERVIEWPOINT_ACTION}<br>
+     * - {@link #SHOWACCEPTFORM_ACTION}<br>
+     * - {@link #SHOWANSWERFORM_ACTION}<br>
+     * - {@link #NOTLOGGEDON_ACTION}<br>
+     * - {@link #ACCEPTTOHANDLEVIEWPOINT_ACTION}<br>
+     * - {@link #ANSWERVIEWPOINT_ACTION}<br>
+     *
+     * @param iwc session data like user info etc.
+     */
 	public void main (final IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
 
