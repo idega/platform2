@@ -1,12 +1,16 @@
 package is.idega.idegaweb.travel.presentation;
 
+import is.idega.idegaweb.travel.business.TravelSessionManager;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import com.idega.block.login.business.LoginBusiness;
+import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -35,6 +39,7 @@ public class SupplierManagerEditor extends TravelManager {
 	private static String ACTION_EDIT = "sme_ace";
 	private static String ACTION_SAVE = "sme_acs";
 	private static String ACTION_DELETE = "sme_acd";
+	private static String PARAMETER_CHOOSE = "sme_chU";
 	private static String PARAMETER_MANAGER_ID = "sme_mid";
 	private static String PARAMETER_MANAGER_NAME = "sme_mn";
 	private static String PARAMETER_MANAGER_DESCRIPTION = "sme_md";
@@ -47,7 +52,32 @@ public class SupplierManagerEditor extends TravelManager {
 	private IWResourceBundle iwrb;
 	private String errorMessage;
 
-
+	public void _main(IWContext iwc) throws Exception {
+		if (PARAMETER_CHOOSE.equals(iwc.getParameter(this.ACTION))) {
+			try {
+				GroupHome uhome = (GroupHome) IDOLookup.getHome(Group.class);
+				
+				Group group = uhome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_MANAGER_ID)));
+				TravelSessionManager tsm = (TravelSessionManager) IBOLookup.getSessionInstance(iwc, TravelSessionManager.class);
+				tsm.clearAll();
+				Collection coll = getSupplierManagerBusiness(iwc).getSupplierManagerAdmins(group);
+				LoginBusiness lBiz = new LoginBusiness();
+				if (coll != null) {
+					Iterator iter = coll.iterator();
+					if (iter.hasNext()) {
+						User user = (User) iter.next();
+						lBiz.logInAsAnotherUser(iwc, user);
+						add(Text.getBreak());
+						add(getHeaderText("Logged in as "+group.getName()));
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		super._main(iwc);
+	}
+	
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		add(Text.getBreak());
@@ -181,11 +211,13 @@ public class SupplierManagerEditor extends TravelManager {
 		table.add(getHeaderText(iwrb.getLocalizedString("travel.supplier_manager", "Supplier manager")), 1, row);
 		table.add(getHeaderText(iwrb.getLocalizedString("travel.description", "Discription")), 2, row);
 		table.add(getHeaderText(""), 3, row);
+		table.add(getHeaderText(""), 4, row);
 		table.setRowColor(row++, backgroundColor);
 		List supplierManagers = getSupplierManagerBusiness(iwc).getSupplierManagerGroup().getChildGroups();
 		if (supplierManagers != null) {
 			Iterator iter = supplierManagers.iterator();
 			Link name;
+			Link use;
 			Link del;
 			Group manager;
 			while (iter.hasNext()) {
@@ -196,10 +228,14 @@ public class SupplierManagerEditor extends TravelManager {
 				del = new Link(getText(iwrb.getLocalizedString("delete", "Delete")));
 				del.addParameter(ACTION, ACTION_DELETE);
 				del.addParameter(PARAMETER_MANAGER_ID, manager.getPrimaryKey().toString());
+				use = new Link(iwrb.getLocalizedImageButton("use", "Use"));
+				use.addParameter(ACTION, PARAMETER_CHOOSE);
+				use.addParameter(PARAMETER_MANAGER_ID, manager.getPrimaryKey().toString());
 
 				table.add(name, 1, row);
 				table.add(getText(manager.getDescription()), 2, row);
-				table.add(del, 3, row);
+				table.add(use, 3, row);
+				table.add(del, 4, row);
 				table.setRowColor(row++, GRAY);
 			}
 		}
