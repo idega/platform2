@@ -27,6 +27,7 @@ import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.user.data.User;
@@ -133,10 +134,16 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			table.add(getInputTable(iwc), 1, row++);
 			table.setHeight(row++, 12);
 	
+			GenericButton showPrognosis = (GenericButton) getButton(new GenericButton("show_prognosis", localize("child_care.view_prognosis", "View prognosis")));
+			showPrognosis.setWindowToOpen(ChildCarePrognosisWindow.class);
+			
 			SubmitButton submit = (SubmitButton)getButton(new SubmitButton(localize(PARAM_FORM_SUBMIT, "Submit application"), PARAMETER_ACTION, String.valueOf(ACTION_SUBMIT)));
+
+			table.add(showPrognosis, 1, row);
+			table.add(Text.getNonBrakingSpace(), 1, row);
 			table.add(submit, 1, row);
 	
-			Page page = this.getParentPage();
+			Page page = getParentPage();
 			if (page != null) {
 				Script script = page.getAssociatedScript();
 				script.addFunction("checkApplication", getSubmitCheckScript());

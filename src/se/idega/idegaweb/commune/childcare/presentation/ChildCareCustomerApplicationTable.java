@@ -37,7 +37,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.41 2003/05/28 18:33:27 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.42 2003/05/28 20:44:05 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -435,11 +435,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 			Table appTable = new ChildCarePlaceOfferTable1(iwc, this, sortApplications(applications, false), hasOffer, hasActiveApplication);
 
-			GenericButton cancelBtn = (GenericButton) getStyledInterface(new GenericButton("cancel", localize(CANCEL)));
+			GenericButton cancelBtn = (GenericButton) getButton(new GenericButton("cancel", localize(CANCEL)));
 			cancelBtn.setPageToOpen(getParentPageID());
 			cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_1);
 
-			SubmitButton submitBtn = (SubmitButton) getStyledInterface(new SubmitButton(localize(SUBMIT)));
+			SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(SUBMIT)));
 			submitBtn.setValueOnClick(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_1));
 			
 			int row = 1;
@@ -505,11 +505,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(getSmallText(school.getSchoolAddress()), 3, row++);
 			layoutTbl.add(getSmallText(school.getSchoolPhone()), 3, row++);
 
-			GenericButton careTimePopup = (GenericButton) getStyledInterface(new GenericButton("new_care_time", localize(NEW_CARETIME)));
+			GenericButton careTimePopup = (GenericButton) getButton(new GenericButton("new_care_time", localize(NEW_CARETIME)));
 			careTimePopup.setWindowToOpen(ChildCareNewCareTimeWindow.class);
 			careTimePopup.addParameterToWindow(CCConstants.APPID, acceptedOffer.getNodeID());
 
-			GenericButton cancelPopup = (GenericButton) getStyledInterface(new GenericButton("end_contract", localize(END_CARETIME)));
+			GenericButton cancelPopup = (GenericButton) getButton(new GenericButton("end_contract", localize(END_CARETIME)));
 			cancelPopup.setWindowToOpen(ChildCareEndContractWindow.class);
 			cancelPopup.addParameterToWindow(CCConstants.APPID, acceptedOffer.getNodeID());
 
@@ -519,7 +519,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(cancelPopup, 3, row);
 			
 			if (archive != null) {
-				GenericButton contractPopup = (GenericButton) getStyledInterface(new GenericButton("contract", localize("child_care.show_contract", "Show contract")));
+				GenericButton contractPopup = (GenericButton) getButton(new GenericButton("contract", localize("child_care.show_contract", "Show contract")));
 				contractPopup.setFileToOpen(archive.getContractFileID());
 				layoutTbl.add(Text.getNonBrakingSpace(), 3, row);
 				layoutTbl.add(contractPopup, 3, row);
@@ -542,11 +542,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	private String createPagePhase2(IWContext iwc, Table layoutTbl, Collection applications) throws RemoteException {
 		Table appTable = new ChildCarePlaceOfferTable2(iwc, this, sortApplications(applications, true));
 
-		GenericButton cancelBtn = (GenericButton) getStyledInterface(new GenericButton("cancel", localize(CANCEL)));
+		GenericButton cancelBtn = (GenericButton) getButton(new GenericButton("cancel", localize(CANCEL)));
 		cancelBtn.setPageToOpen(getParentPageID());
 		cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_1);
 
-		SubmitButton submitBtn = (SubmitButton) getStyledInterface(new SubmitButton(localize(SUBMIT)));
+		SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(SUBMIT)));
 		submitBtn.setValueOnClick(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_1));
 
 		layoutTbl.add(new HiddenInput(CCConstants.ACTION, "-1"));

@@ -70,6 +70,7 @@ import com.idega.io.PDFTemplateWriter;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.TextSoap;
 import com.lowagie.text.ElementTags;
 import com.lowagie.text.xml.XmlPeer;
 
@@ -1671,7 +1672,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		map.put(peer.getAlias(), peer);
      
 		peer = new XmlPeer(ElementTags.CHUNK, "childName");
-		peer.setContent(child.getName());
+		peer.setContent(TextSoap.convertSpecialCharactersToNumeric(child.getName()));
 		map.put(peer.getAlias(), peer);
      
 		peer = new XmlPeer(ElementTags.CHUNK, "personalID");
@@ -1679,15 +1680,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		map.put(peer.getAlias(), peer);
      
 		peer = new XmlPeer(ElementTags.CHUNK, "provider");
-		peer.setContent(provider.getSchoolName());
+		peer.setContent(TextSoap.convertSpecialCharactersToNumeric(provider.getSchoolName()));
 		map.put(peer.getAlias(), peer);
 		
 		peer = new XmlPeer(ElementTags.CHUNK, "parent1");
-		peer.setContent(parent1Name);
+		peer.setContent(TextSoap.convertSpecialCharactersToNumeric(parent1Name));
 		map.put(peer.getAlias(), peer);
 		
 		peer = new XmlPeer(ElementTags.CHUNK, "parent2");
-		peer.setContent(parent2Name);
+		peer.setContent(TextSoap.convertSpecialCharactersToNumeric(parent2Name));
 		map.put(peer.getAlias(), peer);
 		
 		peer = new XmlPeer(ElementTags.CHUNK, "personalID1");
@@ -1699,7 +1700,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		map.put(peer.getAlias(), peer);
 		
 		peer = new XmlPeer(ElementTags.CHUNK, "address");
-		peer.setContent(addressString);
+		peer.setContent(TextSoap.convertSpecialCharactersToNumeric(addressString));
 		map.put(peer.getAlias(), peer);
 		
 		peer = new XmlPeer(ElementTags.CHUNK, "phone");
@@ -1708,7 +1709,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		
    return map;          
 	}
-
+	
 	public String getXMLContractURL(IWBundle iwb, Locale locale){
 		return "file://"+ iwb.getResourcesRealPath(locale)+"/childcare_contract.xml";
 	}

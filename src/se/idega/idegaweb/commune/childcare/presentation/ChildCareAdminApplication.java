@@ -30,6 +30,7 @@ import com.idega.util.PersonalIDFormatter;
 public class ChildCareAdminApplication extends ChildCareBlock {
 
 	private boolean showParentsAgree = false;
+	private boolean showRecreateContract = false;
 
 	private static final String PARAMETER_COMMENTS = "cc_comments";
 	
@@ -367,14 +368,22 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				}
 			}
 			else if (status == getBusiness().getStatusContract()) {
+				int column = 3;
+
 				GenericButton viewContract = (GenericButton) getStyledInterface(new GenericButton("view_contract", localize("child_care.view_contract","View contract")));
 				viewContract.setFileToOpen(application.getContractFileId());
-				table.add(viewContract, 3, 1);
-				/*GenericButton recreateContract = getButton("recreate_contract", localize("child_care.recreate_contract","Recreate contract"), -1);
-				recreateContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT);
-				table.add(recreateContract, 5, 1);*/
+				table.add(viewContract, column++, 1);
+				column++;
+
+				if (showRecreateContract) {
+					GenericButton recreateContract = getButton("recreate_contract", localize("child_care.recreate_contract", "Recreate contract"), -1);
+					recreateContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT);
+					table.add(recreateContract, column++, 1);
+					column++;
+				}
+
 				GenericButton placeInGroup = getButton("place_in_group", localize("child_care.place_in_group","Place in group"), ChildCareAdminWindow.METHOD_PLACE_IN_GROUP);
-				table.add(placeInGroup, 5, 1);
+				table.add(placeInGroup, column, 1);
 			}
 		}
 		
@@ -424,4 +433,11 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	public void setShowParentsAgree(boolean b) {
 		showParentsAgree = b;
 	}
+	/**
+	 * @param b
+	 */
+	public void setShowRecreateContract(boolean b) {
+		showRecreateContract = b;
+	}
+
 }
