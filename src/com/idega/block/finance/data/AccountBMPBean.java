@@ -198,24 +198,24 @@ public class AccountBMPBean extends GenericEntity implements Account{
     sql.append(" = ");
     sql.append(iCategoryId);
     if(id !=null && !"".equals(id)){
-      sql.append(" and a.name like '");
+      sql.append(" and a.name like '%");
       sql.append(id);
-      sql.append("' ");
+      sql.append("%' ");
     }
     if(first !=null && !"".equals(first )){
-      sql.append(" and u.first_name like '");
+      sql.append(" and u.first_name like '%");
       sql.append(first);
-      sql.append("' ");
+      sql.append("%' ");
     }
     if(middle !=null && !"".equals(middle)){
-      sql.append(" and u.middle_name like '");
+      sql.append(" and u.middle_name like '%");
       sql.append(middle);
-      sql.append("' ");
+      sql.append("&' ");
     }
     if(last !=null && !"".equals(last)){
-      sql.append(" and u.last_name like '");
+      sql.append(" and u.last_name like '%");
       sql.append(last);
-      sql.append("' ");
+      sql.append("%' ");
     }
     if(type !=null && !"".equals(type)){
       sql.append(" and a.account_type like '");

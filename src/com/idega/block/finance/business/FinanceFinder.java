@@ -358,32 +358,33 @@ public class FinanceFinder  {
       if(first !=null && !"".equals(first)){
         if(!isfirst)
           sql.append(" and ");
-        sql.append(" u.first_name like '");
+        sql.append(" u.first_name like '%");
         sql.append(first);
-        sql.append("' ");
+        sql.append("%' ");
         isfirst = false;
       }
       if(middle !=null && !"".equals(middle)){
         if(!isfirst)
           sql.append(" and ");
-        sql.append(" and u.middle_name like '");
+        sql.append(" u.middle_name like '%");
         sql.append(middle);
-        sql.append("' ");
+        sql.append("%' ");
         isfirst = false;
       }
       if(last !=null && !"".equals(last )){
         if(!isfirst)
           sql.append(" and ");
-        sql.append(" u.last_name like '");
+        sql.append(" u.last_name like '%");
         sql.append(last);
-        sql.append("' ");
+        sql.append("%' ");
         isfirst = false;
       }
       //System.err.println(sql.toString());
       try {
-        return EntityFinder.findAll(((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).createLegacy(),sql.toString());
+				return EntityFinder.getInstance().findAll(User.class,sql.toString());
+        //return EntityFinder.findAll(((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).createLegacy(),sql.toString());
       }
-      catch (SQLException ex) {
+      catch (Exception ex) {
         ex.printStackTrace();
       }
     }
