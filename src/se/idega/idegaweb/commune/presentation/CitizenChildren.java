@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
+import se.idega.util.PIDChecker;
+
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
@@ -116,7 +118,11 @@ public class CitizenChildren extends CommuneBlock {
 			while (iter.hasNext()) {
 				child = (User) iter.next();
 				if (child.getDateOfBirth() != null) {
-					Age age = new Age(child.getDateOfBirth());
+					Age age = null;
+					if (child.getDateOfBirth() != null)
+						age = new Age(child.getDateOfBirth());
+					else
+						age = new Age(PIDChecker.getInstance().getDateFromPersonalID(child.getPersonalID()));
 					if(age.getYears() <= toAge && age.getYears() >=fromAge){
 						//rad = new RadioButton(prmChildId, ((Integer) user.getPrimaryKey()).toString());
 						T.add(getChildLink(user), 1, row);
