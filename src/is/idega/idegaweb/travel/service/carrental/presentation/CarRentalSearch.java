@@ -85,7 +85,9 @@ public class CarRentalSearch extends AbstractSearchForm {
 
 	protected Collection getResults() throws RemoteException, InvalidSearchException {
 		String supplierName = iwc.getParameter(PARAMETER_SUPPLIER_NAME);
-		supplierName.trim();
+		if (supplierName != null) {
+			supplierName = supplierName.trim();
+		}
 		try {
 			Object[] postalCodeIds = getBookingForm().getPostalCodeIds(iwc);
 			Object[] suppIds = getSupplierIDs();
