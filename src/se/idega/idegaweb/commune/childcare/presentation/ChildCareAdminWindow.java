@@ -82,6 +82,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_THREE_MONTHS_PRIORITY = "cc_three_months_priority";
 	public static final String PARAMETER_ONE_YEAR_PRIORITY = "cc_one_year_priority";
 	public static final String PARAMETER_PROVIDER_CAPACITY = "cc_provider_capacity";
+	public static final String PARAMETER_VACANCIES = "cc_vacancies";
+	public static final String PARAMETER_SHOW_VACANCIES = "cc_show_vacancies";
+	public static final String PARAMETER_PROVIDER_COMMENTS = "cc_provider_comments";
 	public static final String PARAMETER_OFFER_VALID_UNTIL = "cc_offer_valid_until";
 	public static final String PARAMETER_CANCEL_REASON = "cc_cancel_reason";
 	public static final String PARAMETER_CANCEL_MESSAGE = "cc_cancel_message";
@@ -151,6 +154,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private int _applicationID = -1;
 	private int _placementID = -1;
 	private int _pageID;
+	private boolean _showVacancies= false;
 	
 	//private IWTimestamp earliestDate;
 
@@ -242,6 +246,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		form.maintainParameter(PARAMETER_PAGE_ID);
 		form.maintainParameter(PARAMETER_CONTRACT_ID);
 		form.maintainParameter(PARAMETER_PLACEMENT_ID);
+		form.maintainParameter(PARAMETER_SHOW_VACANCIES);
 		form.setStyleAttribute("height:100%");
 
 		Table table = new Table(3, 5);
@@ -1196,7 +1201,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
-		
 		ChildCarePrognosis prognosis = getBusiness().getPrognosis(getSession().getChildCareID());
 
 		table.mergeCells(1, row, 4, row);
@@ -1259,8 +1263,33 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallText(localize("child_care.provider_capacity", "Provider capacity")+":"), 1, row);
 		table.add(providerCapacity, 2, row);
 		table.add("", 3, row++);
+		if (_showVacancies){
+			TextInput tiVacancies = (TextInput) getStyledInterface(new TextInput(PARAMETER_VACANCIES));
+			tiVacancies.setLength(3);
+			//tiVacancies.setAsNotEmpty(localize("child_care.vacancies_required","You must fill in vacancies."));
+			tiVacancies.setAsIntegers(localize("child_care.vacancies_only_integers_allowed","Not a valid number."));
+			if (prognosis != null && prognosis.getVacancies() != -1){
+				tiVacancies.setContent(String.valueOf(prognosis.getVacancies()));
+			}
+			table.add(getSmallText(localize("child_care.vacancies", "Number of vacancies")+":"), 1, row);
+			table.add(tiVacancies, 2, row);
+			table.add("", 3, row++);
+		}
 		
-			
+		
+		
+		TextArea taProviderComments = (TextArea) getStyledInterface(new TextArea(PARAMETER_PROVIDER_COMMENTS));
+		taProviderComments.setColumns(50);
+		taProviderComments.setRows(6);
+		taProviderComments.setMaximumCharacters(200);
+		if (prognosis != null && prognosis.getProviderComments() != null)
+			taProviderComments.setContent(String.valueOf(prognosis.getProviderComments()));
+
+		table.add(getSmallHeader(localize("child_care.provider_comments", "Comments")+":"), 1, row++);
+		table.mergeCells(1, row, 4, row);
+		table.add(taProviderComments, 1, row);
+		table.add("", 3, row++);
+		
 		SubmitButton updatePrognosis = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.set_prognosis", "Set prognosis"), PARAMETER_ACTION, String.valueOf(ACTION_UPDATE_PROGNOSIS)));
 		form.setToDisableOnSubmit(updatePrognosis, true);
 		table.add(updatePrognosis, 1, row);
@@ -1380,8 +1409,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		layoutTbl.setHeight(Table.HUNDRED_PERCENT);		
 
 		int row = 1;
-		
-		
+		layoutTbl.mergeCells(1, row, 2, row);
+		layoutTbl.add(getSmallText(localize("ccnctw_cancel_info", "This is just a request to cancel the contract")), 1, row++);
 		layoutTbl.add(getSmallHeader(localize("ccnctw_from_date", "From date") + ":"), 1, row);	
 		DateInput fromDate = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
 		fromDate.setAsNotEmpty(localize("ccecw_date_format_alert", "Please choose a valid from date."));
@@ -1406,12 +1435,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		layoutTbl.setCellpadding(5);
 		layoutTbl.setWidth(Table.HUNDRED_PERCENT);
 		layoutTbl.setHeight(Table.HUNDRED_PERCENT);			
-
+	
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);	
 
 		int row = 1;
 		layoutTbl.add(getSmallHeader(localize("ccnctw_info", "Info about care time.")), 1, row++);
-				
+		layoutTbl.mergeCells(1, row, 2, row);
+		layoutTbl.add(getSmallText(localize("ccnctw_info_more", "This is just a request about changing the caretime")), 1, row++);
+		
 		layoutTbl.add(
 			getSmallHeader(localize("ccnctw_care_time", "Care time") + ":"),
 			1,
@@ -1695,7 +1726,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (iwc.isParameterSet(PARAMETER_PAGE_ID))
 			_pageID = Integer.parseInt(iwc.getParameter(PARAMETER_PAGE_ID));
 			
-		//if (iwc.isParameterSet(PARAMETER_EARLIEST_DATE))
+		if (iwc.isParameterSet(PARAMETER_SHOW_VACANCIES))
+			_showVacancies = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_VACANCIES)).booleanValue();		
+			//if (iwc.isParameterSet(PARAMETER_EARLIEST_DATE))
 			//earliestDate = new IWTimestamp(iwc.getParameter(PARAMETER_EARLIEST_DATE));
 
 		String restrict = getBundle().getProperty(PROPERTY_RESTRICT_DATES, "false");
@@ -1945,12 +1978,17 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 	
 	private void updatePrognosis(IWContext iwc) throws RemoteException {
+		int vacancies = -1;
 		int threeMonths = Integer.parseInt(iwc.getParameter(PARAMETER_THREE_MONTHS_PROGNOSIS));
 		int oneYear = Integer.parseInt(iwc.getParameter(PARAMETER_ONE_YEAR_PROGNOSIS));
 		int threeMonthsPriority = Integer.parseInt(iwc.getParameter(PARAMETER_THREE_MONTHS_PRIORITY));
 		int oneYearPriority = Integer.parseInt(iwc.getParameter(PARAMETER_ONE_YEAR_PRIORITY));
 		int providerCapacity = Integer.parseInt(iwc.getParameter(PARAMETER_PROVIDER_CAPACITY));
-		getBusiness().updatePrognosis(getSession().getChildCareID(), threeMonths, oneYear, threeMonthsPriority, oneYearPriority, providerCapacity);
+		if (iwc.isParameterSet(PARAMETER_VACANCIES))			
+			vacancies = Integer.parseInt(iwc.getParameter(PARAMETER_VACANCIES));
+	
+		String providerComments = iwc.getParameter(PARAMETER_PROVIDER_COMMENTS);
+		getBusiness().updatePrognosis(getSession().getChildCareID(), threeMonths, oneYear, threeMonthsPriority, oneYearPriority, providerCapacity, vacancies, providerComments);
 		
 		getSession().setHasPrognosis(true);
 		getSession().setHasOutdatedPrognosis(false);
