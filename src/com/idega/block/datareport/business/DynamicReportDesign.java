@@ -60,7 +60,7 @@ public class DynamicReportDesign {
 	private int _headerParametersMaxXCoordinate = -1;
 	private int _headerParametersYCoordinate = 0;
 	private int _headerParametersHeight = 16;
-	private int _extraspaceBetweenParameterGroupsInHeader = 5;
+	private int _extraspaceBetweenParameterGroupsInHeader = 10;
 	private int _pageHeaderHeight = 20;
 	
 	
