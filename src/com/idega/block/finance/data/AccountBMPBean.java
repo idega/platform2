@@ -202,7 +202,7 @@ public class AccountBMPBean extends CategoryEntityBMPBean implements Account{
     if(middle !=null && !"".equals(middle)){
       sql.append(" and u.middle_name like '%");
       sql.append(middle);
-      sql.append("&' ");
+      sql.append("%' ");
     }
     if(last !=null && !"".equals(last)){
       sql.append(" and u.last_name like '%");
