@@ -72,7 +72,7 @@ public class ClubPageIncluder extends PageIncluder {
             //the division id
             finalUrl.append(PARAM_ROOT_CLUB_ID).append("=").append(groupId);
             if(rootClubParamName!=null) {
-            	finalUrl.append(rootClubParamName).append("=").append(groupId);
+            	finalUrl.append("&").append(rootClubParamName).append("=").append(groupId);
             }
             
             if(page!=null) {
