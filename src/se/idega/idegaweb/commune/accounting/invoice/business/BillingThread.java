@@ -165,9 +165,10 @@ public abstract class BillingThread extends Thread{
 	
     protected InvoiceRecord createInvoiceRecord
         (final PaymentRecord paymentRecord, final SchoolClassMember placement,
-         final float pieceAmount) throws RemoteException, CreateException {
+         final PostingDetail postingDetail) throws RemoteException,
+                                                   CreateException {
         final InvoiceRecord result = getInvoiceRecordHome ().create ();
-        result.setAmount (months * pieceAmount);
+        result.setAmount (months * postingDetail.getAmount ());
         result.setCreatedBy (BATCH_TEXT);
         result.setDateCreated (new Date (System.currentTimeMillis()));
         result.setDays (days);
@@ -195,11 +196,15 @@ public abstract class BillingThread extends Thread{
             final SchoolType schoolType = placement.getSchoolType ();
             if (null != schoolType) result.setSchoolType (schoolType);
         }
-        /*
-        result.setRegSpecTypeId(int p0);
-        result.setRegSpecType(se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType p0);
-        result.setRuleText(java.lang.String p0);
-        */
+        try {
+            final RegulationSpecType regSpecType
+                    = getRegulationSpecTypeHome ().findByRegulationSpecType
+                    (postingDetail.getRuleSpecType ());
+            result.setRegSpecType (regSpecType);
+            //        result.setRuleText(java.lang.String p0);
+        } catch (Exception e) {
+            e.printStackTrace ();
+        }
         result.store ();
         return result;
     }

@@ -58,11 +58,11 @@ import com.idega.user.data.User;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/11 10:59:58 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/11 14:19:20 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.44 $
+ * @version $Revision: 1.45 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -275,8 +275,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
                                );
 			String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
             final PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1]);
-            createInvoiceRecord (record, schoolClassMember,
-                                 postingDetail.getAmount ());
+            createInvoiceRecord (record, schoolClassMember, postingDetail);
 			SchoolType schoolType = null;
 			//Find the oppen verksamhet and fritidsklubb
 			try {
@@ -343,8 +342,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
-				createPaymentRecord(postingDetail, postings[0], postings[1]);
+				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1]);
 				log.info("Payment record created "+postingDetail.getTerm());
+                createInvoiceRecord (record, schoolClassMember, postingDetail);
 			} catch (BruttoIncomeException e) {
 				//Who cares!!!
 			} catch (LowIncomeException e) {
@@ -371,8 +371,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
                 PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
                 RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
                 String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
-                createPaymentRecord(postingDetail, postings[0], postings[1]);
+                PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1]);
                 System.out.println("created payment info for fritidsklubb " + schoolClassMember.getStudent().getName());
+                createInvoiceRecord (record, schoolClassMember, postingDetail);
             } catch (BruttoIncomeException e) {
                 //Who cares!!!
             } catch (LowIncomeException e) {
@@ -398,8 +399,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
-				createPaymentRecord(postingDetail, postings[0], postings[1]);
+				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1]);
 				System.out.println("created payment info for oppen verksamhet " + schoolClassMember.getStudent().getName());
+                createInvoiceRecord (record, schoolClassMember, postingDetail);
 			} catch (BruttoIncomeException e) {
 				//Who cares!!!
 			} catch (LowIncomeException e) {
@@ -453,7 +455,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			for (Iterator i = getRegularPayments().iterator(); i.hasNext();) {
 				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) i.next();
 				postingDetail = new PostingDetail(regularPaymentEntry);
-				createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting());
+				PaymentRecord record = createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
