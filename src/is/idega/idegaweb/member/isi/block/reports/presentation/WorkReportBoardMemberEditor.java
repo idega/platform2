@@ -561,20 +561,6 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     return member;
   }
   
-  // business method: update
-  private void updateWorkReportBoardMember(EntityPathValueContainer valueContainer, IWContext iwc)  {
-    // precondition: value container is valid, that is its method isValid() returns true.
-    // get the corresponding entity
-    Integer id = valueContainer.getEntityId();
-    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
-    WorkReportBoardMember member = findWorkReportBoardMember(id, iwc);
-    if (member == null) {
-      return;
-    }
-    setValuesOfWorkReportBoardMember(valueContainer, member, workReportBusiness);
-    member.store();
-  }
-
   // business method: set values (invoked by 'update' or 'create')
   private void setValuesOfWorkReportBoardMember(EntityPathValueContainer valueContainer, WorkReportBoardMember member, WorkReportBusiness workReportBusiness)  {
     String pathShortKey = valueContainer.getEntityPathShortKey();

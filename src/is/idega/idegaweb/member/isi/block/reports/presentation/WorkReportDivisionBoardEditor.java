@@ -493,20 +493,6 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     return workReportDivisionBoard;
   }
 
-  // business method: update  
-  private void updateWorkReportDivisionBoard(EntityPathValueContainer valueContainer, IWContext iwc)  {
-    // precondition: value container is valid, that is its method isValid() returns true.
-    // get the corresponding entity
-    Integer id = valueContainer.getEntityId();
-    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
-    WorkReportDivisionBoard board = findWorkReportDivisionBoard(id, iwc);
-    if (board == null)  {
-      return;
-    }
-    setValuesOfWorkReportDivisionBoard(valueContainer, board, workReportBusiness);
-    board.store();
-  }
-
   private void setValuesOfWorkReportDivisionBoard(EntityPathValueContainer valueContainer, WorkReportDivisionBoard board, WorkReportBusiness workReportBusiness)  {
     String pathShortKey = valueContainer.getEntityPathShortKey();
     Object value = valueContainer.getValue();

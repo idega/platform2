@@ -294,6 +294,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       throw new RuntimeException("[WorkReportMemberEditor]: Can't retrieve WorkReportGroups.");
     }
     fieldList = new ArrayList();
+    leagueList = new ArrayList();
     fieldList.add(NAME);
     fieldList.add(PERSONAL_ID);
     fieldList.add(STREET_NAME);
