@@ -100,12 +100,12 @@ public PollQuestionChooser(){
       Form myForm = new Form();
 
       DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(PollAdminWindow.prmLocale);
-        localeDrop.setAttribute("style",STYLE);
+        localeDrop.setMarkupAttribute("style",STYLE);
         localeDrop.setToSubmit();
         localeDrop.setSelectedElement(Integer.toString(iLocaleId));
 
       DropdownMenu questionDrop = PollBusiness.getQuestions(prmQuestions,userID,iLocaleId,superAdmin);
-        questionDrop.setAttribute("style",STYLE);
+        questionDrop.setMarkupAttribute("style",STYLE);
         questionDrop.setToSubmit();
 
       Text localeText = this.formatText(iwrb.getLocalizedString("locale","Locale"),true);

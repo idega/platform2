@@ -158,7 +158,7 @@ public StaffEditor(){
           catch (Exception e) {
             attribute.setContent("");
           }
-        attribute.setAttribute("style",STYLE);
+        attribute.setMarkupAttribute("style",STYLE);
         attribute.setLength(20);
       metaTable.add(attribute,1,a+1);
 
@@ -170,7 +170,7 @@ public StaffEditor(){
           catch (Exception e) {
             value.setContent("");
           }
-        value.setAttribute("style",STYLE);
+        value.setMarkupAttribute("style",STYLE);
       metaTable.add(value,2,a+1);
     }
     addLeft(_iwrb.getLocalizedString("extra_info","Extra info")+":",metaTable,true,false);

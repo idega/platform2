@@ -642,7 +642,7 @@ public class TenantsProfile extends Block {
           if ( value != null )
             ((TextArea) iObj).setContent(value);
         }
-      iObj.setAttribute("style","font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000");
+      iObj.setMarkupAttribute("style","font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000");
      table.add(iObj,2,row);
     }
     else {

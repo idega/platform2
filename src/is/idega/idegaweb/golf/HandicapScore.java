@@ -376,7 +376,7 @@ private Form myForm;
 
       Image selectMemberImage = iwrb.getImage("buttons/search_for_member.gif","handicap.select","Select member");
 
-        selectMemberImage.setAttribute("hspace","10");
+        selectMemberImage.setMarkupAttribute("hspace","10");
 
       Link selectMember = new Link(selectMemberImage,memberWindow);
 
@@ -388,7 +388,7 @@ private Form myForm;
 
       Image selectFieldImage =  iwrb.getImage("buttons/choose.gif","handicap.select_course","Select course");
 
-        selectFieldImage.setAttribute("hspace","10");
+        selectFieldImage.setMarkupAttribute("hspace","10");
 
       Link selectField = new Link(selectFieldImage,fieldWindow);
 

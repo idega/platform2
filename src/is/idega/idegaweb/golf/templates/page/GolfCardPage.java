@@ -268,7 +268,7 @@ public class GolfCardPage extends GolfMainJSPModulePage{
 
       Link backLink = new Link(new Image("/pics/golfcard/bottom4.gif"),"#");
 
-        backLink.setAttribute("OnClick", "history.go(-1)");
+        backLink.setMarkupAttribute("OnClick", "history.go(-1)");
 
       golfFooter.add(backLink,4,1);
 

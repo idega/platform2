@@ -129,7 +129,7 @@ public boolean initialized = false;
 
             topRight.setWidth(154);
 
-            topRight.setAttribute("align","right");
+            topRight.setMarkupAttribute("align","right");
 
           Image back = new Image("/pics/jmodules/images/golf/idegaweb_Background.gif");
 

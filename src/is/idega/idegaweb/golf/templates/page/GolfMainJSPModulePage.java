@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.3 2002/01/16 12:53:49 tryggvil Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.4 2003/11/21 19:01:27 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -426,7 +426,7 @@ public class GolfMainJSPModulePage extends MainPage {
       private Form getYellowLine() {
 
         Form myForm = new Form("http://www.gulalinan.is/leit.asp","get");
-          myForm.setAttribute("target","_blank");
+          myForm.setMarkupAttribute("target","_blank");
           myForm.setName("Search");
 
         Table myTable = new Table(1,3);
@@ -461,7 +461,7 @@ public class GolfMainJSPModulePage extends MainPage {
 
         Image submitImage = new Image("/pics/gulalinan/leita.gif","Leita",39,13);
         SubmitButton submit = new SubmitButton(submitImage,"image1");
-          submit.setAttribute("hspace","5");
+          submit.setMarkupAttribute("hspace","5");
 
         innerTable.add(yellowLink,1,1);
         innerTable.add(textInput,1,2);
@@ -575,7 +575,7 @@ public class GolfMainJSPModulePage extends MainPage {
           golfFooter.add(new Link (iwrb.getImage("/mainpage/bottom2.gif"), "/index.jsp"),2,1);
           golfFooter.add(iwrb.getImage("/mainpage/bottom3.gif"),3,1);
           Image back = iwrb.getImage("/mainpage/bottom4.gif");
-          back.setAttribute("OnClick", "history.go(-1)");
+          back.setMarkupAttribute("OnClick", "history.go(-1)");
           golfFooter.add(back,4,1);
           golfFooter.add(iwrb.getImage("/mainpage/bottom5.gif"),5,1);
           golfFooter.add(new Link (iwrb.getImage("/mainpage/bottom6.gif"), "mailto: golf@idega.is"),6,1);

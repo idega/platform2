@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.122 2003/10/03 01:42:00 tryggvil Exp $
+ * $Id: NewsReader.java,v 1.123 2003/11/21 19:01:13 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1217,7 +1217,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 
 				Image newsImage = new Image(imid);
 				if(att != null)
-					newsImage.setAttributes(getAttributeMap(att));
+					newsImage.addMarkupAttributes(getAttributeMap(att));
 				else{
 					newsImage.setAlignment("right");
 					newsImage.setBorder(ImageBorder);

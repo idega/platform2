@@ -163,7 +163,7 @@ public BannerEditorWindow(){
     DropdownMenu adDrop = BannerBusiness.getAdsDrop(BannerBusiness.PARAMETER_AD_ID,banner,_userID);
       adDrop.addMenuElementFirst("-1","");
       adDrop.setToSubmit();
-      adDrop.setAttribute("style",STYLE);
+      adDrop.setMarkupAttribute("style",STYLE);
       if ( _adID != -1 ) {
         adDrop.setSelectedElement(Integer.toString(_adID));
       }

@@ -126,7 +126,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 			button.setPageToOpen(getParentPageID());
 			button.addParameterToPage(PARAMETER_ACTION, ACTION_EDIT);
 			Parameter providerPar = getProviderAsParameter();
-			button.addParameterToPage(providerPar.getName(), providerPar.getValue());
+			button.addParameterToPage(providerPar.getName(), providerPar.getValueAsString());
 			table.add(button, 1, 5);
 		
 		}

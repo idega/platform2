@@ -178,7 +178,7 @@ public class TournamentResults extends Block {
       Window scoreWindow = new Window(iwrb.getLocalizedString("tournament.scorecard","Scorecard"),650,650,"/tournament/handicap_skor.jsp");
       Image linkImage = iwb.getImage("shared/view.gif",iwrb.getLocalizedString("tournament.view_scorecard","View scorecards"),9,18);
         linkImage.setHorizontalSpacing(4);
-        linkImage.setAttribute("align","absmiddle");
+        linkImage.setMarkupAttribute("align","absmiddle");
 
       for ( int a = 0; a < size; a++ ) {
         ResultsCollector collector = (ResultsCollector) result.elementAt(a);
@@ -373,7 +373,7 @@ public class TournamentResults extends Block {
 
           Image dismissImage = iwb.getImage("shared/red.gif");
             dismissImage.setHorizontalSpacing(4);
-            dismissImage.setAttribute("align","absmiddle");
+            dismissImage.setMarkupAttribute("align","absmiddle");
           if ( dismissal.getName() != null ) {
             dismissImage.setName(dismissal.getName());
           }

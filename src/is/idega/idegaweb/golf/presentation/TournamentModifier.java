@@ -108,7 +108,7 @@ public void main(IWContext iwc) throws Exception{
 
                         }
 
-                            Dropdown2.setAttribute("size","10");
+                            Dropdown2.setMarkupAttribute("size","10");
 
                             //Dropdown2.setToSubmit();
 

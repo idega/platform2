@@ -86,7 +86,7 @@ public class Input{
 
    protected static void setStyle(InterfaceObject O){
 
-    O.setAttribute("style",styleAttribute);
+    O.setMarkupAttribute("style",styleAttribute);
 
   }
 

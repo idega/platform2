@@ -320,7 +320,7 @@ public void setSpecialAttributes(String name,List attributes){
          roomTypes.addMenuElement(types[a].getID(),types[a].getName());
         }
         roomTypes.setSelectedElement(String.valueOf(type.getID()));
-        roomTypes.setAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
+        roomTypes.setMarkupAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
 
       formTable.add(appartmentText,1,1);
       formTable.add(roomTypes,1,1);
@@ -352,7 +352,7 @@ public void setSpecialAttributes(String name,List attributes){
          roomTypes.addMenuElement(types[a].getID(),types[a].getName());
         }
         roomTypes.setSelectedElement(String.valueOf(type.getID()));
-        roomTypes.setAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
+        roomTypes.setMarkupAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
 
       formTable.add(appartmentText,1,1);
       formTable.add(roomTypes,1,1);

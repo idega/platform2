@@ -445,7 +445,7 @@ public class TravelManager extends Block {
 
     protected Link getBackLink(int backUpHowManyPages) throws RemoteException {
         Link backLink = new Link(tsm.getIWResourceBundle().getImage("buttons/back.gif"),"#");
-            backLink.setAttribute("onClick","history.go(-"+backUpHowManyPages+")");
+            backLink.setMarkupAttribute("onClick","history.go(-"+backUpHowManyPages+")");
 
         return backLink;
     }

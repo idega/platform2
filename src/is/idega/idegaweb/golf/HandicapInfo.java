@@ -446,7 +446,7 @@ private Table myTable;
 
         Image selectMemberImage = iwrb.getImage("buttons/search_for_member.gif","handicap.select","Select member");
 
-          selectMemberImage.setAttribute("hspace","10");
+          selectMemberImage.setMarkupAttribute("hspace","10");
 
         Link selectMember = new Link(selectMemberImage,memberWindow);
 
@@ -458,7 +458,7 @@ private Table myTable;
 
         Image updateHandicapImage = iwrb.getImage("buttons/update.gif","handicap.update_handicap","Update handicap");
 
-          updateHandicapImage.setAttribute("hspace","10");
+          updateHandicapImage.setMarkupAttribute("hspace","10");
 
         Link handicapUpdate = new Link(updateHandicapImage,handicapWindow);
 
@@ -560,9 +560,9 @@ private Table myTable;
 
           memberImage.setMaxImageWidth(102);
 
-          memberImage.setAttribute("alt",memberInfo.getName());
+          memberImage.setMarkupAttribute("alt",memberInfo.getName());
 
-          memberImage.setAttribute("align","absmiddle");
+          memberImage.setMarkupAttribute("align","absmiddle");
 
 
 

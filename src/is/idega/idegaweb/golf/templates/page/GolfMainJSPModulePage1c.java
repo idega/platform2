@@ -176,11 +176,11 @@ public class GolfMainJSPModulePage1c extends GolfMainJSPModulePage{
 
             Image dotImage = new Image("/pics/klubbaicon/english.gif");
 
-                    dotImage.setAttribute("hspace","6");
+                    dotImage.setMarkupAttribute("hspace","6");
 
-                    dotImage.setAttribute("vspace","2");
+                    dotImage.setMarkupAttribute("vspace","2");
 
-                    dotImage.setAttribute("align","absmiddle");
+                    dotImage.setMarkupAttribute("align","absmiddle");
 
 
 

@@ -188,7 +188,7 @@ private Table resultTable;
       formTable.setCellspacing(1);
 
     DropdownMenu genderMenu = new DropdownMenu("gender");
-      genderMenu.setAttribute("style",getStyle());
+      genderMenu.setMarkupAttribute("style",getStyle());
       genderMenu.addMenuElement("","- "+iwrb.getLocalizedString("tournament.genders","Genders")+" -");
       genderMenu.addMenuElement("M",iwrb.getLocalizedString("tournament.males","Male"));
       genderMenu.addMenuElement("F",iwrb.getLocalizedString("tournament.females","Female"));
@@ -196,7 +196,7 @@ private Table resultTable;
       genderMenu.keepStatusOnAction();
 
     DropdownMenu groupsMenu = new DropdownMenu("tournament_group_id");
-      groupsMenu.setAttribute("style",getStyle());
+      groupsMenu.setMarkupAttribute("style",getStyle());
       groupsMenu.addMenuElement("","- "+iwrb.getLocalizedString("tournament.groups","Groups")+" -");
 
       TournamentGroup[] groups = null;
@@ -224,7 +224,7 @@ private Table resultTable;
     }
 
     DropdownMenu roundsMenu = new DropdownMenu("tournament_round_id");
-      roundsMenu.setAttribute("style",getStyle());
+      roundsMenu.setMarkupAttribute("style",getStyle());
       roundsMenu.addMenuElement("","- "+round+" -");
 
       TournamentRound[] rounds = null;
@@ -242,7 +242,7 @@ private Table resultTable;
       roundsMenu.keepStatusOnAction();
 
     DropdownMenu scoreMenu = new DropdownMenu("sort");
-      scoreMenu.setAttribute("style",getStyle());
+      scoreMenu.setMarkupAttribute("style",getStyle());
       scoreMenu.addMenuElement("","- "+iwrb.getLocalizedString("tournament.score","Score")+" -");
       scoreMenu.addMenuElement(ResultComparator.TOTALSTROKES,iwrb.getLocalizedString("tournament.strokes_without_handicap","Strokes"));
       scoreMenu.addMenuElement(ResultComparator.TOTALSTROKESWITHHANDICAP,iwrb.getLocalizedString("tournament.strokes_with_handicap","Strokes w/handicap"));
@@ -250,7 +250,7 @@ private Table resultTable;
       scoreMenu.keepStatusOnAction();
 
     DropdownMenu orderMenu = new DropdownMenu("order");
-      orderMenu.setAttribute("style",getStyle());
+      orderMenu.setMarkupAttribute("style",getStyle());
       orderMenu.addMenuElement("","- "+iwrb.getLocalizedString("tournament.order","Order")+" -");
       orderMenu.addMenuElement(0,iwrb.getLocalizedString("tournament.by_score","By score"));
       orderMenu.addMenuElement(ResultComparator.NAME,iwrb.getLocalizedString("tournament.by_name","By name"));

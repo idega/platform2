@@ -666,7 +666,7 @@ protected IWBundle iwb;
 
 			TextInput login = new TextInput("login");
 
-				login.setAttribute("style","fontsize: 10pt");
+				login.setMarkupAttribute("style","fontsize: 10pt");
 
 				login.setSize(6);
 
@@ -690,7 +690,7 @@ protected IWBundle iwb;
 
 			PasswordInput passw = new PasswordInput("password");
 
-				passw.setAttribute("style","fontsize: 10pt");
+				passw.setMarkupAttribute("style","fontsize: 10pt");
 
 				passw.setSize(6);
 
@@ -730,7 +730,7 @@ protected IWBundle iwb;
 
 			TextInput login = new TextInput("login");
 
-				login.setAttribute("style","fontsize: 10pt");
+				login.setMarkupAttribute("style","fontsize: 10pt");
 
 				login.setSize(10);
 
@@ -742,7 +742,7 @@ protected IWBundle iwb;
 
 			PasswordInput passw = new PasswordInput("password");
 
-				passw.setAttribute("style","fontsize: 10pt");
+				passw.setMarkupAttribute("style","fontsize: 10pt");
 
 				passw.setSize(10);
 

@@ -1,5 +1,5 @@
 /*
- * $Id: PersonalNumberSearch.java,v 1.2 2003/10/03 01:52:42 tryggvil Exp $
+ * $Id: PersonalNumberSearch.java,v 1.3 2003/11/21 19:01:27 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -108,7 +108,7 @@ public class PersonalNumberSearch extends Block {
     Table inputTable;
 
     TextInput number = new TextInput(PERSONAL_NUMBER);
-    number.setAttribute("style",_styleAttribute);
+    number.setMarkupAttribute("style",_styleAttribute);
     number.setSize(_inputLength);
     if (_maxInputLength > 0)
       number.setMaxlength(_maxInputLength);

@@ -1,6 +1,6 @@
 /*
 
- * $Id: Edit.java,v 1.8 2002/04/06 19:11:14 tryggvil Exp $
+ * $Id: Edit.java,v 1.9 2003/11/21 19:01:27 tryggvil Exp $
 
  *
 
@@ -294,7 +294,7 @@ public class Edit {
 
   public static void setStyle(InterfaceObject O) {
 
-    O.setAttribute("style",styleAttribute);
+    O.setMarkupAttribute("style",styleAttribute);
 
   }
 
@@ -308,7 +308,7 @@ public class Edit {
 
   public static void setStyle(PresentationObject p) {
 
-    p.setAttribute("style",styleAttribute);
+    p.setMarkupAttribute("style",styleAttribute);
 
   }
 

@@ -270,7 +270,7 @@ public void main(IWContext iwc)throws Exception{
 
             DropdownMenu menu = TournamentController.getDropdownOrderedByUnion(new DropdownMenu("tournament"),iwc);
 
-                menu.setAttribute("size","10");
+                menu.setMarkupAttribute("size","10");
 
 
 

@@ -50,7 +50,7 @@ public class AdministratorReports extends Reports {
 					Parameter p;
 					while (iter.hasNext()) {
 							p = (Parameter) iter.next();
-								form.addParameter(p.getName(), p.getValue());
+								form.addParameter(p.getName(), p.getValueAsString());
 					}
 				}
 				form.add(topTable(iwc));

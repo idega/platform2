@@ -72,7 +72,7 @@ public class Reports extends TravelManager {
 			      Parameter p;
 			      while (iter.hasNext()) {
 			      	p = (Parameter) iter.next();
-			      	form.addParameter(p.getName(), p.getValue());
+			      	form.addParameter(p.getName(), p.getValueAsString());
 			      }
 					}
           

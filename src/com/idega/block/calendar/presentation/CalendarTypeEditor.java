@@ -250,7 +250,7 @@ public CalendarTypeEditor(){
 
       entryTypes.setToSubmit();
 
-      entryTypes.setAttribute("style",STYLE);
+      entryTypes.setMarkupAttribute("style",STYLE);
 
       if ( _typeID != -1 )
 

@@ -2281,7 +2281,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
         yes.setOnClick("this.form.submit()");
         yes.setOnClick("this.form."+yes.getName()+".disabled = true");
       Link no = new Link(iwrb.getImage("buttons/no.gif"),"#");
-          no.setAttribute("onClick","history.go(-1)");
+          no.setMarkupAttribute("onClick","history.go(-1)");
 
 
       if (inquiry == null) {

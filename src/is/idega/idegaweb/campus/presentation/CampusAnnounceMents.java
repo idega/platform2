@@ -58,7 +58,7 @@ public class CampusAnnounceMents extends PresentationObjectContainer {
 
       news.getHeadlineProxy().setFontColor("#232D44");
 
-      news.getHeadlineProxy().setAttribute("style","text-decoration: none");
+      news.getHeadlineProxy().setMarkupAttribute("style","text-decoration: none");
 
       news.getTextProxy().setFontSize(1);
 

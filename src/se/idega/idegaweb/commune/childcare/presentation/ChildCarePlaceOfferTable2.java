@@ -106,11 +106,11 @@ class ChildCarePlaceOfferTable2 extends Table {
 		RadioButton rb2 = new RadioButton(CCConstants.KEEP_IN_QUEUE + index, CCConstants.NO);
 
 		if (offer) {
-			rb1.setAttribute("disabled");
-			rb2.setAttribute("disabled");
+			rb1.setMarkupAttributeWithoutValue("disabled");
+			rb2.setMarkupAttributeWithoutValue("disabled");
 		}
 		else {
-			rb1.setAttribute("checked");
+			rb1.setMarkupAttributeWithoutValue("checked");
 		}
 
 		if (!isCancelled && !offer) {

@@ -1,5 +1,5 @@
 /*
- * $Id: ExtendedDropdownDouble.java,v 1.5 2003/10/29 10:18:38 kjell Exp $
+ * $Id: ExtendedDropdownDouble.java,v 1.6 2003/11/21 19:01:19 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -138,7 +138,7 @@ public class ExtendedDropdownDouble extends InterfaceObjectContainer {
                 getPrimaryDropdown().addOption(option);
                 if(!hasSelected)
                 {
-                    getPrimaryDropdown().setSelectedOption(option.getValue());
+                    getPrimaryDropdown().setSelectedOption(option.getValueAsString());
                     hasSelected = true;
                 }
             }

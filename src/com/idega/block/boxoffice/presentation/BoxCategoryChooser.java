@@ -210,7 +210,7 @@ public BoxCategoryChooser(){
 
     SelectionBox left = sdb.getLeftBox();
 
-    left.setAttribute("style",STYLE);
+    left.setMarkupAttribute("style",STYLE);
 
     left.setHeight(6);
 
@@ -220,7 +220,7 @@ public BoxCategoryChooser(){
 
     SelectionBox right = sdb.getRightBox();
 
-    right.setAttribute("style",STYLE);
+    right.setMarkupAttribute("style",STYLE);
 
     right.setHeight(6);
 

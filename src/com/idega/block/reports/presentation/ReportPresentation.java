@@ -174,7 +174,7 @@ public abstract class ReportPresentation extends com.idega.presentation.Block {
     return formatText(String.valueOf(i));
   }
   protected static void setStyle(InterfaceObject O){
-    O.setAttribute("style",styleAttribute);
+    O.setMarkupAttribute("style",styleAttribute);
   }
   public void main(IWContext iwc){
     isAdmin = iwc.hasEditPermission(this);

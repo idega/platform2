@@ -956,7 +956,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
         Link backLink = new Link(iwrb.getImage("buttons/back.gif"),"#");
 
-            backLink.setAttribute("onClick","history.go(-"+backUpHowManyPages+")");
+            backLink.setMarkupAttribute("onClick","history.go(-"+backUpHowManyPages+")");
 
 
 
@@ -1148,7 +1148,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
             DropdownMenu rounds = new DropdownMenu("tournament_round");
 
-              rounds.setAttribute("style","font-size: 8pt");
+              rounds.setMarkupAttribute("style","font-size: 8pt");
 
               if (!onlineRegistration) {
 
@@ -1578,7 +1578,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
                                                 }
 
-                                                socialNumber.setAttribute("style","font-size: 8pt");
+                                                socialNumber.setMarkupAttribute("style","font-size: 8pt");
 
                                                 socialNumber.setLength(15);
 

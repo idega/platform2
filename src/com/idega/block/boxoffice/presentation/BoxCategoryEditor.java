@@ -270,7 +270,7 @@ public BoxCategoryEditor(){
 
       categoryDrop.addMenuElementFirst("-1","");
 
-      categoryDrop.setAttribute("style",STYLE);
+      categoryDrop.setMarkupAttribute("style",STYLE);
 
       categoryDrop.setToSubmit();
 

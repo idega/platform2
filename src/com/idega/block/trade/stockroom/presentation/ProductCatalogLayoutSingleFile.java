@@ -104,7 +104,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 			String attributes = file.getMetaData(ProductEditorWindow.imageAttributeKey);
 			image = new Image(fileId);
 			if ( attributes != null )
-				image.setAttributes(getAttributeMap(attributes));
+				image.addMarkupAttributes(getAttributeMap(attributes));
 			table.add(image, 1, row);
 	      }
 	    }

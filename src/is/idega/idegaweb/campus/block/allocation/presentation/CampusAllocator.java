@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.54 2003/08/11 10:33:35 aron Exp $
+ * $Id: CampusAllocator.java,v 1.55 2003/11/21 19:01:27 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -807,8 +807,8 @@ public class CampusAllocator extends Block implements Campus {
 			if(wl.getRemovedFromList())
 				T.addButton(reactivate);
 			if (pTypeId != null && pComplexId != null) {
-						form.addParameter(pTypeId.getName(),pTypeId.getValue());
-						form.addParameter(pComplexId.getName(),pComplexId.getValue());
+						form.addParameter(pTypeId.getName(),pTypeId.getValueAsString());
+						form.addParameter(pComplexId.getName(),pComplexId.getValueAsString());
 			}
 			
 			
@@ -965,8 +965,8 @@ public class CampusAllocator extends Block implements Campus {
 			Frame.add(getFreeApartments(AT, CX, applicant_id, C), 1, 1);
 		myForm.add(Frame);
 
-		myForm.add(new HiddenInput(pTypeId.getName(), pTypeId.getValue()));
-		myForm.add(new HiddenInput(pComplexId.getName(), pComplexId.getValue()));
+		myForm.add(new HiddenInput(pTypeId.getName(), pTypeId.getValueAsString()));
+		myForm.add(new HiddenInput(pComplexId.getName(), pComplexId.getValueAsString()));
 		return myForm;
 	}
 
@@ -982,8 +982,8 @@ public class CampusAllocator extends Block implements Campus {
 		Frame.add(getApartmentContracts(A.getID()), 1, 3);
 		myForm.add(Frame);
 
-		myForm.add(new HiddenInput(pTypeId.getName(), pTypeId.getValue()));
-		myForm.add(new HiddenInput(pComplexId.getName(), pComplexId.getValue()));
+		myForm.add(new HiddenInput(pTypeId.getName(), pTypeId.getValueAsString()));
+		myForm.add(new HiddenInput(pComplexId.getName(), pComplexId.getValueAsString()));
 		return myForm;
 	}
 
@@ -1263,8 +1263,8 @@ public class CampusAllocator extends Block implements Campus {
 		T.setBorder(0);
 		myForm.add(T);
 
-		myForm.add(new HiddenInput(pTypeId.getName(), pTypeId.getValue()));
-		myForm.add(new HiddenInput(pComplexId.getName(), pComplexId.getValue()));
+		myForm.add(new HiddenInput(pTypeId.getName(), pTypeId.getValueAsString()));
+		myForm.add(new HiddenInput(pComplexId.getName(), pComplexId.getValueAsString()));
 
 		return myForm;
 	}
@@ -1479,7 +1479,7 @@ public class CampusAllocator extends Block implements Campus {
 	}
 
 	protected void setStyle(InterfaceObject O) {
-		O.setAttribute("style", this.styleAttribute);
+		O.setMarkupAttribute("style", this.styleAttribute);
 	}
 
 	public void main(IWContext iwc) {

@@ -495,7 +495,7 @@ private void addParameters(Link link) {
 private void addParameters(Form form) {
 	for (Iterator iter = maintainedParameters.iterator(); iter.hasNext();) {
 		Parameter element = (Parameter) iter.next();
-		form.addParameter(element.getName(), element.getValue());
+		form.addParameter(element.getName(), element.getValueAsString());
 	}
 	if(monitorMap!=null){
 		for (Iterator iter = monitorMap.entrySet().iterator(); iter.hasNext();) {

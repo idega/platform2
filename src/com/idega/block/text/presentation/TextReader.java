@@ -218,7 +218,7 @@ public class TextReader extends Block implements Builderaware {
 
 				Image textImage = new Image(imid);
 				if (att != null)
-					textImage.setAttributes(getAttributeMap(att));
+					textImage.addMarkupAttributes(getAttributeMap(att));
 				T.add(textImage, 1, bodyRow);
 			}
 			catch (SQLException ex) {

@@ -352,8 +352,8 @@ private int _layout = RADIO_BUTTON_VIEW;
 	      if ( _linkOverImage != null ) {
 		  image.setOverImage(_linkOverImage);
 		  _linkOverImage.setVerticalSpacing(3);
-		answerLink.setAttribute("onMouseOver","swapImage('"+image.getName()+"','','"+_linkOverImage.getMediaURL(iwc)+"',1)");
-		answerLink.setAttribute("onMouseOut","swapImgRestore()");
+		answerLink.setMarkupAttribute("onMouseOver","swapImage('"+image.getName()+"','','"+_linkOverImage.getMediaURL(iwc)+"',1)");
+		answerLink.setMarkupAttribute("onMouseOut","swapImgRestore()");
 	      }
 
 	      imageTable.add(image,1,1);

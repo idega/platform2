@@ -504,7 +504,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
 
   public  DropdownMenu getPaymentTypes(IWResourceBundle iwrb) {
     DropdownMenu menu = getPaymentTypeDropdown(iwrb, "payment_type");
-      menu.setAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
+      menu.setMarkupAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
     return menu;
   }
 

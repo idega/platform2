@@ -198,9 +198,9 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
 
       memberImage = new Image("/pics/klubbaicon/member.gif");
 
-      memberImage.setAttribute("hspace","6");
+      memberImage.setMarkupAttribute("hspace","6");
 
-      memberImage.setAttribute("align","absmiddle");
+      memberImage.setMarkupAttribute("align","absmiddle");
 
 
 
@@ -218,47 +218,47 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
 
       Image clubImage = new Image("/pics/klubbaicon/about.gif");
 
-      clubImage.setAttribute("hspace","6");
+      clubImage.setMarkupAttribute("hspace","6");
 
-      clubImage.setAttribute("align","absmiddle");
+      clubImage.setMarkupAttribute("align","absmiddle");
 
       Image fieldImage = new Image("/pics/klubbaicon/course.gif");
 
-      fieldImage.setAttribute("hspace","6");
+      fieldImage.setMarkupAttribute("hspace","6");
 
-      fieldImage.setAttribute("align","absmiddle");
+      fieldImage.setMarkupAttribute("align","absmiddle");
 
       Image tournImage = new Image("/pics/klubbaicon/tournamentlist.gif");
 
-      tournImage.setAttribute("hspace","6");
+      tournImage.setMarkupAttribute("hspace","6");
 
-      tournImage.setAttribute("align","absmiddle");
+      tournImage.setMarkupAttribute("align","absmiddle");
 
       Image chatImage = new Image("/pics/klubbaicon/forum.gif");
 
-      chatImage.setAttribute("hspace","6");
+      chatImage.setMarkupAttribute("hspace","6");
 
-      chatImage.setAttribute("align","absmiddle");
+      chatImage.setMarkupAttribute("align","absmiddle");
 
       Image mailImage = new Image("/pics/klubbaicon/contact.gif");
 
-      mailImage.setAttribute("hspace","6");
+      mailImage.setMarkupAttribute("hspace","6");
 
-      mailImage.setAttribute("align","absmiddle");
+      mailImage.setMarkupAttribute("align","absmiddle");
 
       Image englishImage = new Image("/pics/klubbaicon/english.gif");
 
-      englishImage.setAttribute("hspace","6");
+      englishImage.setMarkupAttribute("hspace","6");
 
-      englishImage.setAttribute("vspace","2");
+      englishImage.setMarkupAttribute("vspace","2");
 
-      englishImage.setAttribute("align","absmiddle");
+      englishImage.setMarkupAttribute("align","absmiddle");
 
       Image homeImage = new Image("/pics/klubbaicon/mainpage.gif");
 
-      homeImage.setAttribute("hspace","6");
+      homeImage.setMarkupAttribute("hspace","6");
 
-      homeImage.setAttribute("align","absmiddle");
+      homeImage.setMarkupAttribute("align","absmiddle");
 
 
 

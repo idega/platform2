@@ -50,7 +50,7 @@ public class OperationalFieldsMenu extends AccountingBlock {
 		Iterator i = _setParameters.iterator();
 		while (i.hasNext()){
 			Parameter par = (Parameter) i.next();
-			_form.add(new HiddenInput(par.getName(), par.getValue()));
+			_form.add(new HiddenInput(par.getName(), par.getValueAsString()));
 		}
 				
 	}

@@ -263,7 +263,7 @@ public class LoginPage extends TravelManager {
 
         myForm.setEventListener(localeSwitcherName);
       DropdownMenu dropdown = LocalePresentationUtil.getAvailableLocalesDropdown(iwc);
-        dropdown.setAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
+        dropdown.setMarkupAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
         dropdown.setSelectedElement(iwc.getCurrentLocale().toString());
         table.add(dropdown);
 

@@ -174,7 +174,7 @@ public class SchoolUserEditor extends Block {
 
 	private void setTextInputStyle(TextInput input) {
 		if (this.INPUT_STYLE != null) {
-      		input.setAttribute("style",INPUT_STYLE);
+      		input.setMarkupAttribute("style",INPUT_STYLE);
 		}
 	}
 

@@ -480,7 +480,7 @@ public class FamilyInsertWindow extends com.idega.presentation.ui.Window{
 
     //selectFamily.setHeight(8);
 
-    selectFamily.setAttribute("size", "8");
+    selectFamily.setMarkupAttribute("size", "8");
 
     Member mem = null;
 

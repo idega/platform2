@@ -1499,9 +1499,9 @@ public class BuildingEditor extends com.idega.presentation.Block {
 		control(iwc);
 	}
 	protected void setStyle(InterfaceObject O) {
-		O.setAttribute("style", this.styleAttribute);
+		O.setMarkupAttribute("style", this.styleAttribute);
 	}
 	protected void setStyle2(InterfaceObject O) {
-		O.setAttribute("style", this.styleAttribute2);
+		O.setMarkupAttribute("style", this.styleAttribute2);
 	}
 } // class BuildingEditor

@@ -73,7 +73,7 @@ public class ProductItemThumbnail extends ProductItem {
 			String att = file.getMetaData(ProductEditorWindow.imageAttributeKey);
 	
 			if (att != null) {
-				image.setAttributes(getAttributeMap(att));
+				image.addMarkupAttributes(getAttributeMap(att));
 				if (!getAttributeMap(att).containsKey("align"))
 					image.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 			}

@@ -400,7 +400,7 @@ public class ISITemplate extends MainSideJSPModule{
 
           Image back = new Image("/pics/templates/botn4.gif", "til baka");
 
-          back.setAttribute("OnClick", "history.go(-1)");
+          back.setMarkupAttribute("OnClick", "history.go(-1)");
 
           golfFooter.add(back,4,1);
 

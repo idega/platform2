@@ -538,7 +538,7 @@ private Link textLink = new Link();
 				}
 
 				start_y.setSelectedElement(start_year);
-				start_y.setAttribute("style","font-size: 8pt");
+				start_y.setMarkupAttribute("style","font-size: 8pt");
 
 			DropdownMenu start_m = new DropdownMenu("start_month");
 
@@ -551,7 +551,7 @@ private Link textLink = new Link();
 				}
 
 				start_m.setSelectedElement(start_month);
-				start_m.setAttribute("style","font-size: 8pt");
+				start_m.setMarkupAttribute("style","font-size: 8pt");
 
 			DropdownMenu start_d = new DropdownMenu("start_day");
 
@@ -562,7 +562,7 @@ private Link textLink = new Link();
 				}
 
 				start_d.setSelectedElement(start_day);
-				start_d.setAttribute("style","font-size: 8pt");
+				start_d.setMarkupAttribute("style","font-size: 8pt");
 
 			DropdownMenu end_y = new DropdownMenu("end_year");
 				for ( int y = 2000 ; y <= year ; y++ ) {
@@ -572,7 +572,7 @@ private Link textLink = new Link();
 				}
 
 				end_y.setSelectedElement(end_year);
-				end_y.setAttribute("style","font-size: 8pt");
+				end_y.setMarkupAttribute("style","font-size: 8pt");
 
 			DropdownMenu end_m = new DropdownMenu("end_month");
 
@@ -585,7 +585,7 @@ private Link textLink = new Link();
 				}
 
 				end_m.setSelectedElement(end_month);
-				end_m.setAttribute("style","font-size: 8pt");
+				end_m.setMarkupAttribute("style","font-size: 8pt");
 
 			DropdownMenu end_d = new DropdownMenu("end_day");
 
@@ -596,10 +596,10 @@ private Link textLink = new Link();
 				}
 
 				end_d.setSelectedElement(end_day);
-				end_d.setAttribute("style","font-size: 8pt");
+				end_d.setMarkupAttribute("style","font-size: 8pt");
 
 			SubmitButton skoda = new SubmitButton(iwrb.getLocalizedString("handicap.get_overview","Get overview"));
-				skoda.setAttribute("style","font-size: 8pt");
+				skoda.setMarkupAttribute("style","font-size: 8pt");
         if ( setDifferentOverviewButton ) {
           skoda = new SubmitButton(iwrb.getImage(getOverviewButtonImageUrlInBundle), getOverviewButtonParameterName, getOverviewButtonParameterValue);
         }

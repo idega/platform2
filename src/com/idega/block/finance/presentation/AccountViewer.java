@@ -161,12 +161,12 @@ public class AccountViewer extends Finance {
     T.add(new HiddenInput(prmAccountId,String.valueOf(iAccountId)));
     TextInput tiFromDate = new TextInput(prmFromDate,sFromDate);
     tiFromDate.setLength(10);
-    tiFromDate.setAttribute("style",styleAttribute);
+    tiFromDate.setMarkupAttribute("style",styleAttribute);
     TextInput tiToDate = new TextInput(prmToDate,sToDate);
     tiToDate.setLength(10);
-    tiToDate.setAttribute("style",styleAttribute);
+    tiToDate.setMarkupAttribute("style",styleAttribute);
     SubmitButton fetch = new SubmitButton("fetch",iwrb.getLocalizedString("fetch","Fetch"));
-    fetch.setAttribute("style",styleAttribute);
+    fetch.setMarkupAttribute("style",styleAttribute);
 
 
     CheckBox specialCheck = new CheckBox("specview");

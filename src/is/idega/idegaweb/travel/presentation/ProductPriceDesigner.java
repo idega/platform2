@@ -154,7 +154,7 @@ public class ProductPriceDesigner extends TravelWindow {
       table.add(super.getTextHeader(" : "), 2, row);
 
       DropdownMenu menu = super.getTravelStockroomBusiness(iwc).getCurrencyDropdownMenu(PARAMETER_CURRENCY_ID);
-      menu.setAttribute("style","font-size: 8pt");
+      menu.setMarkupAttribute("style","font-size: 8pt");
       menu.setToSubmit();
       if (iwc.isParameterSet(PARAMETER_CURRENCY_ID)) {
         menu.setSelectedElement(iwc.getParameter(PARAMETER_CURRENCY_ID));
@@ -509,7 +509,7 @@ public class ProductPriceDesigner extends TravelWindow {
     Text categoryName = getText(pCat.getName());
     Text infoText = getText(pCat.getName());
     TextInput priceDiscount = new TextInput(PARAMETER_PRICE_DISCOUNT);
-    priceDiscount.setAttribute("style","font-size: 8pt");
+    priceDiscount.setMarkupAttribute("style","font-size: 8pt");
 
     if (pCat.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
       infoText.setText("");

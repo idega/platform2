@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.18 2003/10/03 01:42:00 tryggvil Exp $
+ * $Id: ReferenceNumber.java,v 1.19 2003/11/21 19:01:14 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -106,7 +106,7 @@ public class ReferenceNumber extends Block {
     Table inputTable;
 
     TextInput reference = new TextInput(CAM_REF_NUMBER);
-    reference.setAttribute("style",_styleAttribute);
+    reference.setMarkupAttribute("style",_styleAttribute);
     reference.setSize(_inputLength);
 
     switch (_layout) {

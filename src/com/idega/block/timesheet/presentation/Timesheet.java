@@ -3099,7 +3099,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                 }
 
             SelectionBox projects_used = new SelectionBox("project_id");
-                projects_used.setAttribute("size","20");
+                projects_used.setMarkupAttribute("size","20");
             if (usedProjects.length > 0 ) {
                 String project_number;
                 String project_name;
@@ -3129,7 +3129,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
 
 
             SelectionBox projects_available = new SelectionBox("project_id");
-                projects_available.setAttribute("size","20");
+                projects_available.setMarkupAttribute("size","20");
             if (projects_left.size() > 0 ) {
                 TimesheetProject project;
                 String project_number;

@@ -941,10 +941,10 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
 
       TextInput Description  = new TextInput(this.getDscPrm());
       Description.setLength(20);
-      Description.setAttribute("style",this.styleAttribute);
+      Description.setMarkupAttribute("style",this.styleAttribute);
       TextInput Price = new TextInput(this.getPrcPrm());
       Price.setLength(5);
-      Price.setAttribute("style",this.styleAttribute);
+      Price.setMarkupAttribute("style",this.styleAttribute);
       CheckBox chk = new CheckBox("correction","true");
       chk.setStyleClass(this.styleAttribute);
       /*
@@ -1021,18 +1021,18 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       String name = (P.getName()!=null?P.getName():"");
       TextInput Description  = new TextInput(this.getDscPrm(),name);
       Description.setLength(20);
-      Description.setAttribute("style",this.styleAttribute);
+      Description.setMarkupAttribute("style",this.styleAttribute);
       IntegerInput Price = new IntegerInput(this.getPrcPrm(),P.getPrice());
       Price.setLength(5);
-      Price.setAttribute("style",this.styleAttribute);
+      Price.setMarkupAttribute("style",this.styleAttribute);
       TextInput PayDate = new TextInput(this.getDtPrm(),new IWTimestamp(P.getPaymentDate()).getISLDate(".",true));
       PayDate.setLength(10);
-      PayDate.setAttribute("style",this.styleAttribute);
+      PayDate.setMarkupAttribute("style",this.styleAttribute);
 
       DropdownMenu drdPaytypes = new DropdownMenu(this.getPTPrm());
       for(int i = 1; i < 5; i++){ drdPaytypes.addMenuElement( String.valueOf(i),this.getPaymentType(i));  }
       drdPaytypes.setSelectedElement(String.valueOf(P.getPaymentTypeID()));
-      drdPaytypes.setAttribute("style",this.styleAttribute);
+      drdPaytypes.setMarkupAttribute("style",this.styleAttribute);
 
       Text tPart = new Text(P.getInstallmentNr()+"/"+P.getTotalInstallment());
       tPart.setFontSize(fontSize);
@@ -1110,11 +1110,11 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       DropdownMenu drdInst = new DropdownMenu(this.getInstPrm());
       for(int i = 0; i < 28; i++){ drdInst.addMenuElement( String.valueOf(i));  }
       drdInst.setSelectedElement("1");
-      drdInst.setAttribute("style",this.styleAttribute);
+      drdInst.setMarkupAttribute("style",this.styleAttribute);
 
       DropdownMenu drdPaytypes = new DropdownMenu(this.getPTPrm());
       for(int i = 1; i < 5; i++){ drdPaytypes.addMenuElement( String.valueOf(i),this.getPaymentType(i));  }
-      drdPaytypes.setAttribute("style",this.styleAttribute);
+      drdPaytypes.setMarkupAttribute("style",this.styleAttribute);
       if(umi !=null)
         drdPaytypes.setSelectedElement(String.valueOf(umi.getPaymentTypeID()));
 
@@ -1139,11 +1139,11 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
 
       IntegerInput Interest = new IntegerInput(this.getInterestprm());
       Interest.setLength(4);
-      Interest.setAttribute("style",this.styleAttribute);
+      Interest.setMarkupAttribute("style",this.styleAttribute);
 
       IntegerInput Cost = new IntegerInput(this.getCostprm());
       Cost.setLength(4);
-      Cost.setAttribute("style",this.styleAttribute);
+      Cost.setMarkupAttribute("style",this.styleAttribute);
 
       Table CostTable = new Table(4,3);
       CostTable.setWidth("100%");
@@ -1713,15 +1713,15 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     Form myForm = new Form();
     TextInput tiFromDate = new TextInput(prmFromDate,sFromDate);
     tiFromDate.setLength(10);
-    tiFromDate.setAttribute("style",styleAttribute);
+    tiFromDate.setMarkupAttribute("style",styleAttribute);
     TextInput tiToDate = new TextInput(prmToDate,sToDate);
     tiToDate.setLength(10);
-    tiToDate.setAttribute("style",styleAttribute);
+    tiToDate.setMarkupAttribute("style",styleAttribute);
     SubmitButton fetch = new SubmitButton("fetch",iwrb.getLocalizedString("fetch","Fetch"));
-    fetch.setAttribute("style",styleAttribute);
+    fetch.setMarkupAttribute("style",styleAttribute);
 
     DropdownMenu drpYears = drpAccountYears("acc_yr_id");
-    drpYears.setAttribute("style",styleAttribute);
+    drpYears.setMarkupAttribute("style",styleAttribute);
     T.add(new HiddenInput(prmString,action));
     int row = 1;
     T.add(drpYears,1,row);

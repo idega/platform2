@@ -124,7 +124,7 @@ public class DailyReport extends TravelManager implements Report{
 
       TextInput textBoxToClone = new TextInput("attendance");
 	  textBoxToClone.setSize(3);
-	  textBoxToClone.setAttribute("style","font-size: 8pt");
+	  textBoxToClone.setMarkupAttribute("style","font-size: 8pt");
       TextInput attTextBox = new TextInput();
 
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.22 2003/07/25 17:59:41 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.23 2003/11/21 19:01:26 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -201,7 +201,7 @@ public class CampusApplicationForm extends ApplicationForm {
 		String text3 = _iwrb.getLocalizedString("thirdChoice", "?ri?ja val");
 
 		Image back = _iwrb.getImage("back.gif");
-		back.setAttribute("onClick", "history.go(-1)");
+		back.setMarkupAttribute("onClick", "history.go(-1)");
 //		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "?fram")), APP_STATUS, Integer.toString(_statusAppliedFor));
 		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "?fram")));//, APP_STATUS, Integer.toString(_statusAppliedFor));
 
@@ -328,7 +328,7 @@ public class CampusApplicationForm extends ApplicationForm {
 		DropdownMenu aprtCat = new DropdownMenu(categories, "aprtCat");
 		Edit.setStyle(aprtCat);
 		Image back = _iwrb.getImage("back.gif");
-		back.setAttribute("onClick", "history.go(-1)");
+		back.setMarkupAttribute("onClick", "history.go(-1)");
 		SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif", _iwrb.getLocalizedString("ok", "?fram")));
 
 		form.add(t);
