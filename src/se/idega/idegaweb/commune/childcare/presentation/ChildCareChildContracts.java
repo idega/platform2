@@ -112,7 +112,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		if(iwc.isParameterSet(PARAMETER_CHILD_ID)){
 			contracts = getBusiness().getContractsByChild(getChildID(iwc));
 		}
-		if (getSession().getApplicationID() != -1)
+		else if (getSession().getApplicationID() != -1)
 			contracts = getBusiness().getContractsByApplication(getSession().getApplicationID());
 		else
 			contracts = getBusiness().getContractsByChild(getChildID(iwc));
