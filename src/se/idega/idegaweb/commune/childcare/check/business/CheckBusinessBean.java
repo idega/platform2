@@ -2,23 +2,19 @@ package se.idega.idegaweb.commune.childcare.check.business;
 
 import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.family.business.NoCustodianFound;
-
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.care.check.data.Check;
 import se.idega.idegaweb.commune.care.check.data.CheckHome;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheckHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
-
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolType;
@@ -420,19 +416,6 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		
 		grantedCheck.store();
 		return ((Integer)grantedCheck.getPrimaryKey()).intValue();
-	}
-	
-	public boolean hasGrantedCheck(User child) throws RemoteException {
-		try {
-			GrantedCheckHome home = (GrantedCheckHome) com.idega.data.IDOLookup.getHome(GrantedCheck.class);
-			GrantedCheck check = home.findChecksByUser(child);
-			if (check != null)
-				return true;
-			return false;
-		}
-		catch (FinderException fe) {
-			return false;
-		}
 	}
 	
 	public Check getCheckForChild(User child) throws RemoteException {

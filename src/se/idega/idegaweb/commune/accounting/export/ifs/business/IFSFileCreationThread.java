@@ -18,23 +18,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Locale;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-
 import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.business.PaymentComparator;
-import se.idega.idegaweb.commune.care.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeader;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeaderHome;
@@ -55,7 +50,8 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness;
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
-
+import se.idega.idegaweb.commune.care.business.CareBusiness;
+import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.business.IBOLookup;
@@ -1823,7 +1819,7 @@ public class IFSFileCreationThread extends Thread {
     		}
     		
     		try {
-				CheckBusiness business = (CheckBusiness) IBOLookup.getServiceInstance(iwac, CheckBusiness.class);
+				CareBusiness business = (CareBusiness) IBOLookup.getServiceInstance(iwac, CareBusiness.class);
 				return !business.hasGrantedCheck(contract.getChild());
 			}
 			catch (RemoteException re) {
