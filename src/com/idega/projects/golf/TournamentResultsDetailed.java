@@ -145,11 +145,14 @@ public class TournamentResultsDetailed extends JModuleObject {
         Vector v = handler.getTournamentMembers();
         if (v != null) {
           if (v.size() > 0) {
-              ResultsCollector rip = (ResultsCollector) v.get(0);
-              if (rip != null) {
-                  rip.calculateCompareInfo();
-                  difference = rip.getDifference();
-              }
+            ResultsCollector rip = (ResultsCollector) v.get(0);
+            if (rip != null) {
+                rip.calculateCompareInfo();
+                difference = rip.getDifference();
+            }
+            Text pastDifference = (Text) blackText.clone();
+              pastDifference.setText(getDifference(difference));
+              myTable.add(pastDifference,1,row+1);
           }
         }
       }
