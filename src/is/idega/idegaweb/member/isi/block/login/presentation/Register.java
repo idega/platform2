@@ -6,6 +6,7 @@
  */
 package is.idega.idegaweb.member.isi.block.login.presentation;
 
+import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -352,8 +353,7 @@ public class Register extends Block {
 						
 						System.out.println("Sending registration notification to " + address);
 						
-						SendMail.send(
-							_iwrb.getLocalizedString("register.email_sender", "<Felix-felagakerfi>felix@isi.is"),
+						SendMail.send((String)_iwc.getApplicationAttribute(IWMemberConstants.APPLICATION_PARAMETER_ADMINISTRATOR_MAIN_EMAIL,"isi@isisport.is"),
 							address,
 							"",
 							"",
