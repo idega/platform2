@@ -1,14 +1,16 @@
 package com.idega.block.websearch.business;
 
-import com.lucene.search.DateFilter;
-import com.lucene.search.BooleanQuery;
 
-import com.lucene.search.Searcher;
-import com.lucene.search.Hits;
-import com.lucene.analysis.StopAnalyzer;
-import com.lucene.analysis.Analyzer;
-import com.lucene.queryParser.QueryParser;
-import com.idega.block.websearch.data.*;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.StopAnalyzer;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.DateFilter;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Searcher;
+
+import com.idega.block.websearch.data.WebSearchIndex;
 
 
 
@@ -60,12 +62,12 @@ public final class WebSearcher {
             Hits hits;
             WebSearchHitIterator searchHits = null;
             
-            searcher = new com.lucene.search.IndexSearcher(indexPath);
+            searcher = new IndexSearcher(indexPath);
             Analyzer analyzer = new StopAnalyzer();
             
             if (phraseSearch) {
                 input = "\"" + input + "\"";
-            }
+            } 
             
             BooleanQuery query = new BooleanQuery();
             
@@ -98,8 +100,7 @@ public final class WebSearcher {
                 hits = searcher.search(query, dateFilter);
             }
             
-            searchHits = new WebSearchHitIterator(input, hits,
-            (this.hitsPerSet != 0) ? this.hitsPerSet : 30);
+            searchHits = new WebSearchHitIterator(input, hits,(this.hitsPerSet != 0) ? this.hitsPerSet : 30);
             
             return searchHits;
             

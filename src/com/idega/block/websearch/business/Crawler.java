@@ -5,12 +5,17 @@ package com.idega.block.websearch.business;
 import java.io.File;
 import java.net.HttpURLConnection;
 
+import org.apache.lucene.analysis.StopAnalyzer;
+import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+
 import com.idega.block.websearch.data.WebSearchIndex;
 import com.idega.util.FileUtil;
 import com.idega.util.text.TextSoap;
-import com.lucene.document.DateField;
-import com.lucene.document.Field;
-import com.lucene.index.IndexWriter;
+
 
 /**
  * <p><code>Crawler</code> Web crawler.</p>
@@ -25,7 +30,7 @@ import com.lucene.index.IndexWriter;
 public final class Crawler {
     
     private WebSearchIndex index;
-    private com.lucene.index.IndexReader reader;
+    private IndexReader reader;
     private IndexWriter writer;
     
     private java.util.Stack linkQueue;
@@ -110,7 +115,7 @@ public final class Crawler {
              	FileUtil.createFileAndFolder(indexPath,"segments");
              
                 if (reporting > 0) System.out.println("create new index");
-                IndexWriter writer = new IndexWriter(indexPath, new com.lucene.analysis.StopAnalyzer(), true);
+                IndexWriter writer = new IndexWriter(indexPath, new StopAnalyzer(), true);
                 writer.close();
             } else {
                 // delete all files for now and build new index.
@@ -118,7 +123,7 @@ public final class Crawler {
                 
                 //delete all
                 if (reporting > 0) System.out.println("index exists, delete all files");
-                com.lucene.index.IndexReader reader = com.lucene.index.IndexReader.open(indexPath);
+                IndexReader reader = IndexReader.open(indexPath);
                 int count = reader.numDocs();
                 if (reporting > 0) {
                     System.out.println("deleting " + count + " records");
@@ -137,7 +142,7 @@ public final class Crawler {
             
             
             // create new IndexWriter
-            writer = new IndexWriter(indexPath, new com.lucene.analysis.StopAnalyzer(), false);
+            writer = new IndexWriter(indexPath, new StopAnalyzer(), false);
             
             String url;
             //System.out.println(linkQueue.toString());
@@ -269,7 +274,7 @@ public final class Crawler {
             //} else {
             //writer = new IndexWriter(this.indexPath, new StopAnalyzer(), false);
             //}
-            com.lucene.document.Document mydoc = new com.lucene.document.Document();
+            Document mydoc = new Document();
             mydoc.add(new Field("uid", currentURL.toString().toLowerCase(), false, true, false));
             mydoc.add(Field.Text("url", currentURL.toString()));
             mydoc.add(Field.Text("contentType", contentType));

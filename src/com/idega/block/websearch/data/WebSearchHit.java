@@ -3,8 +3,9 @@ package com.idega.block.websearch.data;
 import java.text.SimpleDateFormat;
 import java.util.StringTokenizer;
 
-import com.lucene.document.Document;
-import com.lucene.document.DateField;
+import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.Document;
+
 
 
 

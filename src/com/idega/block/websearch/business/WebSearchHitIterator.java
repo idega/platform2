@@ -1,8 +1,10 @@
 package com.idega.block.websearch.business;
 
-import com.lucene.search.Hits;
-import com.lucene.document.Document;
-import com.idega.block.websearch.data.*;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.search.Hits;
+
+import com.idega.block.websearch.data.WebSearchHit;
 
 
 /**
