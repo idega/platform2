@@ -14,6 +14,12 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public java.util.Collection findRelatedSchoolYears()throws com.idega.data.IDORelationshipException;
  public java.lang.String getActivity();
  public int getAssistantHeadmasterGroupId();
+ public boolean getCentralizedAdministration();
+ public com.idega.core.data.Commune getCommune();
+ public int getCommuneId();
+ public com.idega.core.data.Country getCountry();
+ public int getCountryId();
+ public java.lang.String getExtraProviderId();
  public com.idega.user.data.Group getHeadmasterGroup()throws java.rmi.RemoteException,javax.ejb.FinderException;
  public int getHeadmasterGroupId();
  public int getHeadmasterUserId();
@@ -22,6 +28,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public java.lang.String getMapUrl();
  public java.lang.String getName();
  public java.lang.String getOpenHours();
+ public java.lang.String getOrganizationNumber();
  public java.lang.String getSchoolAddress();
  public com.idega.block.school.data.SchoolArea getSchoolArea();
  public int getSchoolAreaId();
@@ -38,11 +45,16 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public java.lang.String getSchoolWebPage();
  public java.lang.String getSchoolZipArea();
  public java.lang.String getSchoolZipCode();
+ public java.sql.Date getTerminationDate();
  public void initializeAttributes();
  public void removeFromClass(java.lang.Class p0)throws com.idega.data.IDORemoveRelationshipException;
  public void removeImages()throws com.idega.data.IDORelationshipException;
  public void setActivity(java.lang.String p0);
  public void setAssistantHeadmasterGroupId(int p0);
+ public void setCentralizedAdministration(boolean p0);
+ public void setCommuneId(int p0);
+ public void setCountryId(int p0);
+ public void setExtraProviderId(java.lang.String p0);
  public void setHeadmasterGroupId(int p0);
  public void setHeadmasterUserId(int p0);
  public void setImage(com.idega.core.data.ICFile p0)throws com.idega.data.IDORelationshipException;
@@ -50,6 +62,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public void setLocalizedText(java.lang.String p0,int p1)throws com.idega.data.IDORelationshipException;
  public void setMapUrl(java.lang.String p0);
  public void setOpenHours(java.lang.String p0);
+ public void setOrganizationNumber(java.lang.String p0);
  public void setSchoolAddress(java.lang.String p0);
  public void setSchoolAreaId(int p0);
  public void setSchoolFax(java.lang.String p0);
@@ -63,4 +76,5 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public void setSchoolWebPage(java.lang.String p0);
  public void setSchoolZipArea(java.lang.String p0);
  public void setSchoolZipCode(java.lang.String p0);
+ public void setTerminationDate(java.sql.Date p0);
 }
