@@ -1183,7 +1183,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				}
 				catch (FinderException e) {
 					//					System.err.println("User not found for ssn : " + ssn + " skipping...");
-					notRead.add(ssn);
+					notRead.add(name + " "+ ssn);
 				}
 			}
 		}
