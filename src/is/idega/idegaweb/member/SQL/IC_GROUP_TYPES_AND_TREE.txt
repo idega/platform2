@@ -14,7 +14,7 @@ insert into ic_group_type(group_type,description,is_visible) values('iwme_league
 insert into ic_group_type(group_type,description,is_visible) values('iwme_league_staff','An employee of a league','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_league_committee','An member of a league committee','Y')
 
-insert into ic_group_type(group_type,description,is_visible) values('iwme_club','A sports club (VALUR)','Y')
+insert into ic_group_type(group_type,description,is_visible) values('iwme_club','A sports club','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club_division','A sports club divison (FOOTBALL)','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club_member','A sports club member active or inactive','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club_player','A sports club member that competes','Y')
