@@ -250,12 +250,13 @@ public class RunResultViewer extends Block {
 				runs.addAll(getRunsForRunners(runners));
 			}
 			sortRuns(runs);
+			System.out.println("Number of runners: " + runs.size());
 			
 			List groupRunners = new ArrayList();
 			Iterator iter = runs.iterator();
 			while (iter.hasNext()) {
 				Run runner = (Run) iter.next();
-				if (runner.getRunGroupName() != null && runner.getRunGroupName().length() > 0) {
+				if (runner.getRunGroupName() != null && runner.getRunGroupName().trim().length() > 0) {
 					groupRunners.add(runner);
 				}
 			}
@@ -266,7 +267,7 @@ public class RunResultViewer extends Block {
 			Iterator iterator = groupRunners.iterator();
 			while (iterator.hasNext()) {
 				Run runner = (Run) iterator.next();
-				RunGroup runnerGroup = (RunGroup) runGroups.get(groups);
+				RunGroup runnerGroup = (RunGroup) runGroups.get(runner.getRunGroupName());
 				if (runnerGroup == null) {
 					runnerGroup = new RunGroup(runner.getRunGroupName());
 					runGroups.put(runner.getRunGroupName(), runnerGroup);
