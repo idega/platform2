@@ -28,8 +28,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/12/09 14:28:34 $ by $Author: goranb $
- * @version $Revision: 1.79 $
+ * Last modified: $Date: 2003/12/17 12:49:45 $ by $Author: goranb $
+ * @version $Revision: 1.80 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -352,7 +352,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public Integer ejbFindByUserAndSeason(int userID, int seasonID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl").appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID).appendAnd().append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
-
+		
 		return (Integer)this.idoFindOnePKBySQL(sql.toString());
 	}
 
@@ -508,6 +508,62 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.append("mb." + REGISTER_DATE)
 		.appendRightParenthesis()
 					
+		.appendOrderBy(REGISTER_DATE + " desc");
+		
+		return (Integer)this.idoFindOnePKBySQL(sql.toString());
+	}
+
+	public Integer ejbFindLatestByUserAndSchCategoryAndSeason(User user, SchoolCategory cat, SchoolSeason season) 
+	throws FinderException {
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + ", " 
+				+ SchoolClassBMPBean.SCHOOLCLASS + " cl, "
+				+ SchoolTypeBMPBean.SCHOOLTYPE + " tp")
+		
+		.appendWhere()
+		.append(" mb." + MEMBER)
+		.appendEqualSign()
+		.append(user.getPrimaryKey())
+		
+		.appendAnd()
+		.append("(cl." + SchoolClassBMPBean.COLUMN_VALID)
+		.appendEqualSign()
+		.appendWithinSingleQuotes("Y")
+		
+		.appendOr()
+		.append("cl." + SchoolClassBMPBean.COLUMN_VALID)
+		.append(" is null)")
+
+		.appendAnd()
+		.append(" mb." + SCHOOLCLASS)
+		.appendEqualSign()
+		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
+		
+		.appendAnd()
+		.append("cl." + SchoolClassBMPBean.SEASON)
+		.appendEqualSign()
+		.append(season.getPrimaryKey())
+
+		.appendAnd()
+		.append("mb." + SCHOOL_TYPE)
+		.appendEqualSign()
+		.append("tp." + SchoolTypeBMPBean.SCHOOLTYPE + "_id")
+		
+		.appendAnd()
+		.append("tp." + SchoolTypeBMPBean.SCHOOLCATEGORY)
+		.appendEqualSign()
+		.append("'" + cat.getPrimaryKey() + "'")
+		
+		.appendAnd()
+		.appendLeftParenthesis()
+		.append("mb." + REMOVED_DATE + " is null")
+		.appendOr()
+		.append("mb." + REMOVED_DATE)
+		.appendGreaterThanOrEqualsSign()
+		.append("mb." + REGISTER_DATE)
+		.appendRightParenthesis()
+		
 		.appendOrderBy(REGISTER_DATE + " desc");
 		
 		return (Integer)this.idoFindOnePKBySQL(sql.toString());

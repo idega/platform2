@@ -258,6 +258,13 @@ public SchoolClassMember findLatestByUserAndSchCategory(com.idega.user.data.User
 	return this.findByPrimaryKey(pk);
 }
 
+public SchoolClassMember findLatestByUserAndSchCategoryAndSeason(com.idega.user.data.User p0,com.idega.block.school.data.SchoolCategory p1,com.idega.block.school.data.SchoolSeason p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolClassMemberBMPBean)entity).ejbFindLatestByUserAndSchCategoryAndSeason(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public SchoolClassMember findLatestByUserAndSchool(int p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((SchoolClassMemberBMPBean)entity).ejbFindLatestByUserAndSchool(p0,p1);
