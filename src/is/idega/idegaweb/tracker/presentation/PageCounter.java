@@ -1,12 +1,18 @@
 package is.idega.idegaweb.tracker.presentation;
 
 import com.idega.presentation.Block;
-import com.idega.presentation.text.Text;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+
 import com.idega.presentation.IWContext;
 import is.idega.idegaweb.tracker.business.TrackerBusiness;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
 
+import is.idega.idegaweb.tracker.data.*;
 /**
  * Title:        is.idega.idegaweb.tracker.presentation.PageCounter
  * Description:  A simple page counter that can display the number of visits/hits with text/images
@@ -61,6 +67,47 @@ public class PageCounter extends Block {
       Text hits3 = new Text("Total website hits: "+TrackerBusiness.getTotalHits());
       hits3.setBold(true);
       add(hits3);
+    }
+
+
+
+    if(cph){
+
+    //referers
+    Table refs = new Table();
+    int y = 1;
+    refs.add("Referer url",1,y);
+    refs.add("Count",2,y);
+
+    Hashtable referers = (Hashtable) TrackerBusiness.getReferers();
+    if( referers != null ){
+      Iterator iter = referers.keySet().iterator();
+      while (iter.hasNext()) {
+        ReferrerStatistics item = (ReferrerStatistics) referers.get((String)iter.next());
+        refs.add(item.getReferrerUrl(),1,++y);
+        refs.add(String.valueOf(item.getSessions()),1,y);
+      }
+    }
+    add(refs);
+
+addBreak();
+    //agents
+    Table agents = new Table();
+    int y2 = 1;
+    agents.add("User agents",1,y2);
+    agents.add("Count",2,y2);
+
+    Hashtable ua = (Hashtable) TrackerBusiness.getReferers();
+    if( ua != null ){
+      Iterator iter = ua.keySet().iterator();
+      while (iter.hasNext()) {
+        UserAgentStatistics item = (UserAgentStatistics) ua.get((String)iter.next());
+        agents.add(item.getUserAgent(),1,++y2);
+        agents.add(String.valueOf(item.getSessions()),1,y2);
+      }
+    }
+    add(agents);
+
     }
 
   }

@@ -138,6 +138,8 @@ public class TrackerBusiness {
 
   public static void handleUserAgentStats(IWContext iwc){
     String userAgent = iwc.getUserAgent();
+    if( agents == null ){ agents = new Hashtable();}
+
 
     if(userAgent!=null){
       UserAgentStatistics stats = (UserAgentStatistics) agents.get(userAgent);
@@ -146,7 +148,7 @@ public class TrackerBusiness {
         stats.setUserAgent(userAgent);
         stats.setSessions(1);
         stats.setModificationDate(idegaTimestamp.getTimestampRightNow());
-        referers.put(stats.getUserAgent(),stats);
+        agents.put(stats.getUserAgent(),stats);
       }
       else{
         stats.setSessions(stats.getSessions()+1);
@@ -190,5 +192,13 @@ public class TrackerBusiness {
 
   public static int getTotalSessions(){
     return totalSessions;
+  }
+
+  public static Map getReferers(){
+    return referers;
+  }
+
+  public static Map getUserAgents(){
+    return agents;
   }
 }
