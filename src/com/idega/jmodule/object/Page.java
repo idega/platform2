@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.12 2001/07/18 19:55:15 tryggvil Exp $
+ * $Id: Page.java,v 1.13 2001/07/18 20:01:22 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -402,20 +402,38 @@ public class Page extends ModuleObjectContainer {
    */
   public static Page getPage(ModuleInfo modinfo){
       String frameKey = modinfo.getParameter(IW_FRAME_STORAGE_PARMETER);
+      String classKey = modinfo.getParameter(IW_FRAME_CLASS_PARAMETER);
 
-      if(frameKey==null){
+
+      if(frameKey!=null){
+
+        Page page = getPage(getFrameStorageInfo(modinfo),modinfo);
+        return page;
+        //return getPageFromSession(modinfo,frameKey);
+      }
+      else if(classKey!=null){
+        try{
+        Page page = (Page)Class.forName(classKey).newInstance();
+        return page;
+        }
+        catch(Exception e){
+          Page page = new Page();
+          page.add("Page invalid");
+          page.addBreak();
+          page.add(e.getClass().getName()+"Message: "+e.getMessage());
+          e.printStackTrace();
+          return page;
+        }
+      }
+      else{
       /**
        * Inside a top level page:
        */
        Page page =  (Page) IWCoreServlet.retrieveObject(IW_PAGE_KEY);
        return page;
       }
-      else{
 
-        Page page = getPage(getFrameStorageInfo(modinfo),modinfo);
-        return page;
-        //return getPageFromSession(modinfo,frameKey);
-      }
+
       /*Page page = (Page)retrieveObject("idega_page");
         if (page==null){
           String servletName = this.getServletConfig().getServletName();
