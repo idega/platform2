@@ -23,6 +23,18 @@ public interface ProviderAccountBusiness extends com.idega.business.IBOService, 
 		int schoolTypeID,
 		int schoolAreaID)
 		throws javax.ejb.CreateException, java.rmi.RemoteException;
+	public se.idega.idegaweb.commune.account.provider.data.ProviderApplication createApplication(
+		String providerName,
+		String address,
+		String telephone,
+		int numberOfPlaces,
+		String managerName,
+		String managerEmail,
+		String additionalInfo,
+		int postalCodeID,
+		int[] schoolTypeIDs,
+		int schoolAreaID)
+		throws javax.ejb.CreateException, java.rmi.RemoteException;
 	public void acceptApplication(int p0, com.idega.user.data.User p1)
 		throws java.rmi.RemoteException, javax.ejb.CreateException, javax.ejb.FinderException, java.rmi.RemoteException;
 	public void rejectApplication(int p0, com.idega.user.data.User p1)

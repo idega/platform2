@@ -1,6 +1,8 @@
 package se.idega.idegaweb.commune.account.provider.business;
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
+
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
@@ -22,6 +24,7 @@ import com.idega.block.school.business.SchoolAreaBusiness;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolTypeBusiness;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolType;
 /**
  * Title:        idegaWeb
  * Description:
@@ -93,8 +96,6 @@ public class ProviderAccountBusinessBean
 		return this.getProviderApplicationHome().findByPrimaryKey(new Integer(applicationID));
 	}
 	
-	
-	
 	public ProviderApplication createApplication(
 		String providerName,
 		String address,
@@ -105,6 +106,28 @@ public class ProviderAccountBusinessBean
 		String additionalInfo,
 		int postalCodeID,
 		int schoolTypeID,
+		int schoolAreaID)
+		throws CreateException
+	{
+
+		int[] schoolTypeIDs = {schoolTypeID};
+		return createApplication(providerName,address,telephone,numberOfPlaces,managerName,managerEmail,additionalInfo,
+			postalCodeID,
+			schoolTypeIDs,
+			schoolAreaID);
+	}
+
+	
+	public ProviderApplication createApplication(
+		String providerName,
+		String address,
+		String telephone,
+		int numberOfPlaces,
+		String managerName,
+		String managerEmail,
+		String additionalInfo,
+		int postalCodeID,
+		int[] schoolTypeIDs,
 		int schoolAreaID)
 		throws CreateException
 	{
@@ -134,8 +157,8 @@ public class ProviderAccountBusinessBean
 			if(postalCodeID!=-1){
 					appl.setPostalCode(postalCodeID);
 			}
-			if(schoolTypeID!=-1){
-					appl.setSchoolType(schoolTypeID);					
+			if(schoolTypeIDs!=null){
+					appl.setSchoolTypes(schoolTypeIDs);					
 			}
 			if(schoolAreaID!=-1){
 					appl.setSchoolArea(schoolAreaID);					
@@ -216,14 +239,26 @@ public class ProviderAccountBusinessBean
 		String providerName = appl.getName();
 		String address = appl.getAddress();
 		String phone = appl.getPhone();
-		String zipcode = "";
-		String ziparea = "NACKA";
+		PostalCode pCode = appl.getPostalCode();
+		String zipcode = pCode.getPostalCode();
+		String ziparea = pCode.getName();
 		/**
 		 * @todo: Remove hardcoding
 		 */
-		int school_type = 1;
-		int school_area = 1;
-		School school = getSchoolBusiness().createSchool(providerName,address,phone,zipcode,ziparea,school_type);
+		//int school_type = 1;
+		//int school_area = 1;
+		int school_area = ((Integer)appl.getSchoolArea().getPrimaryKey()).intValue();
+		//int[] school_types = {1};
+		Collection schoolTypes = appl.getSchoolTypes();
+		int[] school_types = new int[schoolTypes.size()];
+		int i=0;
+		for (Iterator iter = schoolTypes.iterator(); iter.hasNext();)
+		{
+			SchoolType element = (SchoolType) iter.next();
+			int schTypeID = ((Integer)element.getPrimaryKey()).intValue();
+			school_types[i++]=schTypeID;
+		}
+		School school = getSchoolBusiness().createSchool(providerName,address,phone,zipcode,ziparea,school_area,school_types);
 		return school;
 	}
 
@@ -234,7 +269,7 @@ public class ProviderAccountBusinessBean
 	public Collection getAvailablePostalCodes() throws java.rmi.RemoteException{
 		try {
 			Collection coll = null;
-			coll = getPostalCodeHome().findAll();
+			coll = getPostalCodeHome().findAllOrdererByCode();
 			return coll;
 		} catch (FinderException e) {
 			return ListUtil.getEmptyVector();
@@ -264,13 +299,13 @@ public class ProviderAccountBusinessBean
 	
 	protected SchoolTypeBusiness getSchoolTypeBusiness() throws RemoteException
 	{
-		SchoolTypeBusiness bus = (SchoolTypeBusiness)this.getServiceInstance(SchoolBusiness.class);
+		SchoolTypeBusiness bus = (SchoolTypeBusiness)this.getServiceInstance(SchoolTypeBusiness.class);
 		return bus;
 	}
 
 	protected SchoolAreaBusiness getSchoolAreaBusiness() throws RemoteException
 	{
-		SchoolAreaBusiness bus = (SchoolAreaBusiness)this.getServiceInstance(SchoolBusiness.class);
+		SchoolAreaBusiness bus = (SchoolAreaBusiness)this.getServiceInstance(SchoolAreaBusiness.class);
 		return bus;
 	}
 	

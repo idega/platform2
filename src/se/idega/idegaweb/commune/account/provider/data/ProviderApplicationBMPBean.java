@@ -1,14 +1,18 @@
 package se.idega.idegaweb.commune.account.provider.data;
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
+
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 
 import com.idega.core.data.PostalCode;
 import com.idega.data.*;
+import com.idega.util.ListUtil;
 import com.idega.block.process.data.*;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolTypeHome;
 /**
  * Title:        idegaWeb
  * Description:
@@ -30,7 +34,7 @@ public class ProviderApplicationBMPBean
 	private static final String COLUMN_PHONE = "PROV_PHONE";
 	private static final String COLUMN_ADDITIONAL_INFO = "PROV_ADD_INFO";
 	private static final String COLUMN_MANAGER_NAME = "PROV_MANAGER_NAME";
-	private static final String COLUMN_SCHOOL_TYPE = "SCH_TYPE";
+	//private static final String COLUMN_SCHOOL_TYPE = "SCH_TYPE";
 	private static final String COLUMN_SCHOOL_AREA = "SCH_AREA";
 	private static final String COLUMN_POSTAL_CODE = "POSTAL_CODE";
 		
@@ -45,7 +49,9 @@ public class ProviderApplicationBMPBean
 		this.addAttribute(COLUMN_PLACES, "Provider places", Integer.class);
 		this.addAttribute(COLUMN_ADDITIONAL_INFO, "Additional info", String.class, 2000);
 		
-		this.addManyToOneRelationship(COLUMN_SCHOOL_TYPE,SchoolType.class);
+		//this.addManyToOneRelationship(COLUMN_SCHOOL_TYPE,SchoolType.class);
+		this.addManyToManyRelationShip(SchoolType.class);
+		
 		this.addManyToOneRelationship(COLUMN_SCHOOL_AREA,SchoolArea.class);
 		this.addManyToOneRelationship(COLUMN_POSTAL_CODE,PostalCode.class);
 		
@@ -147,30 +153,105 @@ public class ProviderApplicationBMPBean
 		setEmailAddress(p0);
 	}
 
-	/**
-	 *Gets the school type according to this application
-	 */
+/**
+
+	//
+	 //Gets the school type according to this application
+	 //
 	public SchoolType getSchoolType()
 	{
 		return (SchoolType)this.getColumnValue(COLUMN_SCHOOL_TYPE);
 	}
 
-	/**
-	 *Sets the school type according to this application
-	 */
+	//
+	 //Sets the school type according to this application
+	 //
 	public void setSchoolType(SchoolType type) throws RemoteException
 	{
 		setColumn(COLUMN_SCHOOL_TYPE,type);
 	}
 
-	/**
-	 *Sets the school type according to this application
-	 */
+	//
+	//Sets the school type according to this application
+	//
 	public void setSchoolType(int typeID) throws RemoteException
 	{
 		setColumn(COLUMN_SCHOOL_TYPE,typeID);
 	}
+**/
 
+	//
+	 //Gets the school type according to this application
+	 //
+	public Collection getSchoolTypes()
+	{
+		//return (SchoolType)this.getColumnValue(COLUMN_SCHOOL_TYPE);
+		try{
+			return this.idoGetRelatedEntities(SchoolType.class);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return ListUtil.getEmptyList();
+		}
+	}
+
+	//
+	 //Sets the school type according to this application
+	 //
+	public void setSchoolTypes(Collection types) 
+	{
+		//setColumn(COLUMN_SCHOOL_TYPE,type);
+		for (Iterator iterator = types.iterator(); iterator.hasNext();)
+		{
+			try{
+				SchoolType element = (SchoolType) iterator.next();
+				addSchoolType(element);
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+	}
+
+	//
+	//Sets the school type according to this application
+	//
+	public void setSchoolTypes(int[] typeIDs)
+	{
+		//setColumn(COLUMN_SCHOOL_TYPE,typeID);
+		for (int i = 0; i < typeIDs.length; i++)
+		{
+			int id = typeIDs[i];
+			try{
+				SchoolType type  = getSchoolTypeHome().findByPrimaryKey(new Integer(id));
+				addSchoolType(type);
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Method getSchoolTypeHome.
+	 */
+	private SchoolTypeHome getSchoolTypeHome()throws RemoteException
+	{
+		return (SchoolTypeHome)IDOLookup.getHome(SchoolType.class);
+	}
+
+
+	/**
+	 * Adds a schooltype to this application
+	 **/
+	public void addSchoolType(SchoolType type){
+			try{
+				this.idoAddTo(type);
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}	
+	}
 
 	/**
 	 *Gets the school area according to this application
@@ -220,6 +301,12 @@ public class ProviderApplicationBMPBean
 		setColumn(COLUMN_SCHOOL_AREA,areaID);
 	}
 
+	/**
+	 * Mandates EJB standard behaviour
+	 **/
+	protected boolean doInsertInCreate(){
+		return true;
+	}
 
 
 	public Collection ejbFindAllPendingApplications() throws FinderException
