@@ -43,6 +43,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -234,12 +235,7 @@ public class SchoolUserEditor extends Block {
 
 	private Table schoolUsersTable(IWContext iwc, School school, boolean addSubmitButton) throws RemoteException {
 		Table contTable = new Table();
-		int cRow = 1;
-		Table tableUf = this.getUserForm(iwc, school);
-		contTable.add(tableUf, 1, cRow++);
-
-		contTable.setColor(1, cRow, "#c7c7c7");
-		contTable.setHeight(1, cRow++, "1");
+		int cRow = 0;
 
 		try {
 			Collection suTypes = getSchoolUserBusiness(iwc).getSchoolUserTypes(school);
@@ -251,8 +247,8 @@ public class SchoolUserEditor extends Block {
 					userType = (String[]) iter.next();
 					++cRow;
 
-					contTable.add(getTextTitle(_iwrb.getLocalizedString(userType[0], userType[1])), 1, cRow);
 					Collection users = getSchoolUserBusiness(iwc).getUsers(school, Integer.parseInt(userType[2]));
+					contTable.add(getTextTitle(_iwrb.getLocalizedString(userType[0], userType[1])), 1, cRow);
 
 					if (users != null && users.size() > 0) {
 						Iterator userIter = users.iterator();
@@ -273,14 +269,31 @@ public class SchoolUserEditor extends Block {
 						}
 						contTable.add(table, 1, ++cRow);
 					}
+					else {
+						contTable.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+"-", 1, ++cRow);
+						//contTable.add("<>", 1, ++cRow);
+					}
 				}
 			}
 			else {
 				cRow = 1;
 			}
+
+			contTable.setColor(1, ++cRow, "#c7c7c7");
+			contTable.setHeight(1, cRow, "1");
+
+			Table tableUf = this.getUserForm(iwc, school);
+			contTable.add(tableUf, 1, ++cRow);
+
+			contTable.setColor(1, ++cRow, "#c7c7c7");
+			contTable.setHeight(1, cRow, "1");
+			//contTable.setBorder(1);
+			
+			++cRow;
+			BackButton back = new BackButton(_iwrb.getLocalizedString("school.back", "Back"));
+			contTable.add(back, 1, cRow);
 			if (addSubmitButton) {
-				++cRow;
-				SubmitButton update = new SubmitButton(_iwrb.getLocalizedImageButton("school.save", "Save"), PARAMETER_ACTION, ACTION_UPDATE);
+				SubmitButton update = new SubmitButton(_iwrb.getLocalizedString("school.save", "Save"), PARAMETER_ACTION, ACTION_UPDATE);
 				contTable.add(update, 1, cRow);
 			}
 
@@ -1051,16 +1064,16 @@ public class SchoolUserEditor extends Block {
 		this.setTextInputStyle(pPhone);
 
 		table.add(tType, 1, 1);
-		table.add(pType, 1, 2);
+		table.add(pType, 2, 1);
 
-		table.add(tName, 2, 1);
+		table.add(tName, 1, 2);
 		table.add(pName, 2, 2);
 
-		table.add(tEmail, 3, 1);
-		table.add(pEmail, 3, 2);
+		table.add(tEmail, 1, 3);
+		table.add(pEmail, 2, 3);
 
-		table.add(tPhone, 4, 1);
-		table.add(pPhone, 4, 2);
+		table.add(tPhone, 1, 4);
+		table.add(pPhone, 2, 4);
 
 		addIsEconomicalResponsibleCheckBox(table, 5, null);
 
@@ -1631,13 +1644,13 @@ public class SchoolUserEditor extends Block {
 	}
 
 	private Table mainForm(IWContext iwc) throws RemoteException {
-		Table table = new Table(2, 2);
-		table.add(getTextTitle(_iwrb.getLocalizedString("school.select_school", "Select School")), 1, 1);
-		table.add(getTextTitle(_school.getName()), 2, 1);
-		table.add(schoolList(iwc), 1, 2);
-		table.add(schoolUsers(iwc, _school), 2, 2);
-		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_TOP);
-		table.setVerticalAlignment(2, 2, Table.VERTICAL_ALIGN_TOP);
+		Table table = new Table(1, 2);
+		//table.add(getTextTitle(_iwrb.getLocalizedString("school.select_school", "Select School")), 1, 1);
+		table.add(getTextTitle(_school.getName()), 1, 1);
+		//table.add(schoolList(iwc), 1, 2);
+		table.add(schoolUsers(iwc, _school), 1, 2);
+//		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_TOP);
+//		table.setVerticalAlignment(2, 2, Table.VERTICAL_ALIGN_TOP);
 		return table;
 	}
 
