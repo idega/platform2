@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.26 2003/07/25 17:59:41 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.27 2003/07/28 09:30:38 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -247,6 +247,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			appliedTable.add(appliedText5, 5, 1);
 		
 			int pos = 1;
+			if(choices!=null){
 			Iterator it = choices.iterator();
 			
 			while (it.hasNext()) {
@@ -332,7 +333,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			refTable.add(signed, 1, row);
 			row++;
 		}
-		
+		}
 		form.add(refTable);
 		add(form);
 		add(Text.getBreak());
