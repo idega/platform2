@@ -72,13 +72,19 @@ public class GroupApplicationFormHandler extends Block {
 				//KR hack
 				if(adminComment==null){
 					String paymentType = iwc.getParameter("payment_type");
+					String validMonth = iwc.getParameter("valid_month");
+					String validYear = iwc.getParameter("valid_year");
+					String nameOnCard = iwc.getParameter("name_on_credit_card");
+					String pinOnCard = iwc.getParameter("credit_card_pin");
+					String caretakerName = iwc.getParameter("caretaker_name");
+					String caretakerPin = iwc.getParameter("caretaker_pin");
+					String caretakerEmail = iwc.getParameter("caretaker_email");	
+					String cardNumber = iwc.getParameter("credit_card_number");			
 					boolean credit = false;
-					String cardNumber = null;
 					
 					if( paymentType!=null ){
 						if( paymentType.equals("C") ){
-							credit = true;
-							cardNumber = iwc.getParameter("credit_card_number");
+							credit = true;		
 						}
 						else if( paymentType.equals("M") ){
 							credit = false;	
@@ -86,14 +92,25 @@ public class GroupApplicationFormHandler extends Block {
 					}
 					
 					if( credit && cardNumber!=null ){
-						adminComment = "Vill borga med korti: "+cardNumber;
+						adminComment = "Vill borga með kredit korti:\n"
+										+"Kortanúmer : "+cardNumber+"\n"
+										+"Gildir til : "+validMonth+"/"+validYear+"\n"
+										+"Korthafi : "+nameOnCard+"\n"
+										+"Kennitala korthafa : "+pinOnCard+"\n";						
 					}
 					else if( !credit ){
-						adminComment = "Vill stadgreida";
+						adminComment = "Vill stadgreiða\n";
 					}
 					else {
-						adminComment = "Vill borga med korti en kortanumerid vantar med!";	
+						adminComment = "Vill borga med korti en kortanúmerið vantar!\n";	
 					}
+					
+					if( caretakerName!=null ){
+						adminComment += "Forráðamaður : "+caretakerName+"\n"
+									+"Kennitala forráðamanns : "+caretakerPin+"\n"
+									+"Netfang forráðamanns : "+caretakerEmail+"\n";
+					}
+					
 					
 				}
 
