@@ -217,8 +217,6 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 		sql.appendLessThanOrEqualsSign();
 		sql.append(COLUMN_PERIOD_TO);
 		
-		System.out.println("sql = " + sql.toString());
-		
 		return idoFindPKsByQuery(sql);
 	}
 	

@@ -55,6 +55,13 @@ public class EditTariffList extends CashierSubWindowTemplate {
 
 	protected static final String PROPERTY_SKIP = "isi_acc_skip_assessment";
 
+    private static final String ERROR_NO_GROUP_SELECTED = "isi_acc_etl_no_group_selected";
+    private static final String ERROR_NO_TYPE_SELECTED = "isi_acc_etl_no_type_selected";
+    private static final String ERROR_NO_TEXT_ENTERED = "isi_acc_etl_no_text_entered";
+    private static final String ERROR_NO_AMOUNT_ENTERED = "isi_acc_etl_no_amount_entered";
+    private static final String ERROR_NO_FROM_DATE_SELECTED = "isi_acc_etl_no_from_date_selected";
+    private static final String ERROR_NO_TO_DATE_SELECTED = "isi_acc_etl_no_to_date_selected";
+
 	/**
 	 *  
 	 */
@@ -62,7 +69,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		super();
 	}
 
-	private void saveTariffEntry(IWContext iwc) {
+	private boolean saveTariffEntry(IWContext iwc) {
 		errorList = new ArrayList();
 		
 		String group = iwc.getParameter(LABEL_GROUP);
@@ -101,6 +108,33 @@ public class EditTariffList extends CashierSubWindowTemplate {
 			toTimestamp.setSecond(0);
 			toTimestamp.setMilliSecond(0);
 		}
+		
+        if (group == null || "".equals(group)) {
+            errorList.add(ERROR_NO_GROUP_SELECTED);
+        }
+
+        if (type == null || "".equals(type)) {
+            errorList.add(ERROR_NO_TYPE_SELECTED);
+        }
+        
+        if (text == null || "".equals(text)) {
+            errorList.add(ERROR_NO_TEXT_ENTERED);
+        }
+
+        if (amount == null || "".equals(amount)) {
+            errorList.add(ERROR_NO_AMOUNT_ENTERED);
+        }
+
+        if (fromTimestamp == null) {
+            errorList.add(ERROR_NO_FROM_DATE_SELECTED);
+        }
+
+        if (toTimestamp == null) {
+            errorList.add(ERROR_NO_TO_DATE_SELECTED);
+        }
+
+        if (!errorList.isEmpty()) { return false; }
+
 
 		boolean applChildren = false;
 		if (children != null) {
@@ -109,12 +143,16 @@ public class EditTariffList extends CashierSubWindowTemplate {
 
 		String skip = getBundle(iwc).getProperty(PROPERTY_SKIP, "");
 
+		boolean insert = false;
+		
 		try {
-			getAccountingBusiness(iwc).insertTariff(getClub(), getDivision(), group, type, text, amount, fromTimestamp.getDate(), toTimestamp.getDate(), applChildren, skip);
+			insert = getAccountingBusiness(iwc).insertTariff(getClub(), getDivision(), group, type, text, amount, fromTimestamp.getDate(), toTimestamp.getDate(), applChildren, skip);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
+		
+		return insert;
 	}
 
 	private void deleteTariffEntry(IWContext iwc) {
@@ -129,16 +167,40 @@ public class EditTariffList extends CashierSubWindowTemplate {
 	}
 
 	public void main(IWContext iwc) {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+
+		Form f = new Form();
 		if (iwc.isParameterSet(ACTION_SUBMIT)) {
-			saveTariffEntry(iwc);
+            if (!saveTariffEntry(iwc)) {
+                Table error = new Table();
+                Text labelError = new Text(iwrb.getLocalizedString(
+                        ERROR_COULD_NOT_SAVE, "Could not save")
+                        + ":");
+                labelError
+                        .setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+
+                int r = 1;
+                error.add(labelError, 1, r++);
+                if (errorList != null && !errorList.isEmpty()) {
+                    Iterator it = errorList.iterator();
+                    while (it.hasNext()) {
+                        String loc = (String) it.next();
+                        Text errorText = new Text(iwrb.getLocalizedString(loc,
+                                ""));
+                        errorText
+                                .setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+
+                        error.add(errorText, 1, r++);
+                    }
+                }
+
+                f.add(error);
+            }
 		}
 		else if (iwc.isParameterSet(ACTION_DELETE)) {
 			deleteTariffEntry(iwc);
 		}
 
-		IWResourceBundle iwrb = getResourceBundle(iwc);
-
-		Form f = new Form();
 		Table t = new Table();
 		Table inputTable = new Table();
 		t.setCellpadding(5);
@@ -208,6 +270,9 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		inputTable.add(submit, 8, row);
 
 		row = 1;
+        CheckBox checkAll = new CheckBox("checkall");
+        checkAll.setToCheckOnClick(LABEL_DELETE, "this.checked");
+        t.add(checkAll, 1, row);
 		t.add(labelDiv, 2, row);
 		t.add(labelGroup, 3, row);
 		t.add(labelType, 4, row);
@@ -223,8 +288,8 @@ public class EditTariffList extends CashierSubWindowTemplate {
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
 				ClubTariff tariff = (ClubTariff) it.next();
-				CheckBox delete = new CheckBox(LABEL_DELETE, tariff.getPrimaryKey().toString());
-				t.add(delete, 1, row);
+				CheckBox deleteCheck = new CheckBox(LABEL_DELETE, tariff.getPrimaryKey().toString());
+				t.add(deleteCheck, 1, row);
 
 				if (tariff.getDivision() != null)
 					t.add(tariff.getDivision().getName(), 2, row);

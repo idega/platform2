@@ -594,6 +594,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				round.setEndTime(end);
 			round.setIncludeChildren(includeChildren);
 			round.setPaymentDate(paymentDate);
+			round.setRunOnDate(runOnDate);
 
 			round.store();
 		}
@@ -620,11 +621,13 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 					Iterator it = rec.iterator();
 					while (it.hasNext()) {
 						FinanceEntry entry = (FinanceEntry) it.next();
-						try {
-							entry.remove();
-						}
-						catch (RemoveException e1) {
-							e1.printStackTrace();
+						if (entry.getAmountEqualized() == 0.0) {
+						    try {
+						        entry.remove();
+						    }
+						    catch (RemoveException e1) {
+						        e1.printStackTrace();
+						    }
 						}
 					}
 				}

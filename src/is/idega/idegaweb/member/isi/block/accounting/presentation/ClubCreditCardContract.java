@@ -7,17 +7,15 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
-import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness;
 import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContract;
-import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
-import com.idega.business.IBOLookup;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -26,6 +24,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SelectDropdownDouble;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
@@ -45,7 +44,13 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 	protected static final String LABEL_DELETE = "isi_acc_cccc_delete";
 
 	protected static final String ELEMENT_ALL_DIVISIONS = "isi_acc_cccc_all_divisions";
-	
+	protected static final String ELEMENT_ALL_GROUPS = "isi_acc_cccc_all_groups";
+
+    private static final String ERROR_NO_DIVISION_SELECTED = "isi_acc_cccc_no_division_selected";
+    private static final String ERROR_NO_GROUP_SELECTED = "isi_acc_cccc_no_group_selected";
+    private static final String ERROR_NO_NUMBER_ENTERED = "isi_acc_cccc_no_number_entered";
+    private static final String ERROR_NO_TYPE_SELECTED = "isi_acc_cccc_no_type_selected";
+
 	/**
 	 *  
 	 */
@@ -53,18 +58,43 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		super();
 	}
 
-	private void saveContract(IWContext iwc) {
+	private boolean saveContract(IWContext iwc) {
+	    errorList = new ArrayList();
+	    
 		String div = iwc.getParameter(LABEL_DIVISION);
 		String grp = iwc.getParameter(LABEL_GROUP);
 		String number = iwc.getParameter(LABEL_CONTRACT_NUMBER);
 		String type = iwc.getParameter(LABEL_CARD_TYPE);
 
+        if (div == null || "".equals(div)) {
+            errorList.add(ERROR_NO_DIVISION_SELECTED);
+        }
+
+        if (grp == null || "".equals(grp)) {
+            errorList.add(ERROR_NO_GROUP_SELECTED);
+        }
+
+        if (number == null || "".equals(number)) {
+            errorList.add(ERROR_NO_NUMBER_ENTERED);
+        }
+
+        if (type == null || "".equals(type)) {
+            errorList.add(ERROR_NO_TYPE_SELECTED);
+        }
+
+        
+        if (!errorList.isEmpty()) { return false; }
+		
+		boolean insert = false;
+		
 		try {
-			getAccountingBusiness(iwc).insertCreditCardContract(getClub(), div, grp, number, type);
+			insert = getAccountingBusiness(iwc).insertCreditCardContract(getClub(), div, grp, number, type);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
+		
+		return insert;
 	}
 
 	private void deleteContract(IWContext iwc) {
@@ -79,16 +109,42 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 	}
 
 	public void main(IWContext iwc) {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+
+		Form f = new Form();
+
 		if (iwc.isParameterSet(ACTION_SUBMIT)) {
-			saveContract(iwc);
+			if (!saveContract(iwc)) {
+                Table error = new Table();
+                Text labelError = new Text(iwrb.getLocalizedString(
+                        ERROR_COULD_NOT_SAVE, "Could not save")
+                        + ":");
+                labelError
+                        .setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+
+                int r = 1;
+                error.add(labelError, 1, r++);
+                if (errorList != null && !errorList.isEmpty()) {
+                    Iterator it = errorList.iterator();
+                    while (it.hasNext()) {
+                        String loc = (String) it.next();
+                        Text errorText = new Text(iwrb.getLocalizedString(loc,
+                                ""));
+                        errorText
+                                .setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+
+                        error.add(errorText, 1, r++);
+                    }
+                }
+
+                f.add(error);
+
+			}
 		}
 		else if (iwc.isParameterSet(ACTION_DELETE)) {
 			deleteContract(iwc);
 		}
 
-		IWResourceBundle iwrb = getResourceBundle(iwc);
-
-		Form f = new Form();
 		Table t = new Table();
 		Table inputTable = new Table();
 		t.setCellpadding(5);
@@ -118,16 +174,28 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 			e.printStackTrace();
 		}
 
-		DropdownMenu divInput = new DropdownMenu(LABEL_DIVISION);
+		SelectDropdownDouble divInput = new SelectDropdownDouble(LABEL_DIVISION, LABEL_GROUP);
+		divInput.addEmptyElement(iwrb.getLocalizedString(ELEMENT_ALL_DIVISIONS, "All divisions"), iwrb.getLocalizedString(ELEMENT_ALL_GROUPS, "All groups"));
 		ArrayList divisions = new ArrayList();
 		getClubDivisions(divisions, getClub());
-		divInput.addMenuElement("-1", iwrb.getLocalizedString(ELEMENT_ALL_DIVISIONS, "All divisions"));
-		if (divisions != null && !divisions.isEmpty()) {
-			Iterator it = divisions.iterator();
-			while (it.hasNext()) {
-				Group div = (Group) it.next();
-				divInput.addMenuElement(div.getPrimaryKey().toString(), div.getName());
-			}
+		if (!divisions.isEmpty()) {
+		    Iterator it = divisions.iterator();
+		    while (it.hasNext()) {
+		        Group division = (Group) it.next();
+				ArrayList groups = new ArrayList();
+				getGroupsUnderDivision(groups, division);
+				Map map = new HashMap();
+				if (groups != null && !groups.isEmpty()) {
+					map.put("-1", iwrb.getLocalizedString(ELEMENT_ALL_GROUPS, "All groups"));
+
+				    Iterator it2 = groups.iterator();
+				    while (it2.hasNext()) {
+				        Group group = (Group) it.next();
+				        map.put(group.getPrimaryKey().toString(), group.getName());
+				    }
+				}
+				divInput.addMenuElement(division.getPrimaryKey().toString(), division.getName(), map);
+		    }
 		}
 		TextInput numberInput = new TextInput(LABEL_CONTRACT_NUMBER);
 		DropdownMenu typeInput = new DropdownMenu(LABEL_CARD_TYPE);
@@ -143,7 +211,10 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		inputTable.add(submit, 4, row);
 
 		row = 1;
-		t.add(labelDivision, 2, row);
+        CheckBox checkAll = new CheckBox("checkall");
+        checkAll.setToCheckOnClick(LABEL_DELETE, "this.checked");
+        t.add(checkAll, 1, row);
+        t.add(labelDivision, 2, row);
 		t.add(labelContractNumber, 3, row);
 		t.add(labelCardType, 4, row++);
 
@@ -151,8 +222,8 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
 				CreditCardContract cont = (CreditCardContract) it.next();
-				CheckBox delete = new CheckBox(LABEL_DELETE, cont.getPrimaryKey().toString());
-				t.add(delete, 1, row);
+				CheckBox deleteCheck = new CheckBox(LABEL_DELETE, cont.getPrimaryKey().toString());
+				t.add(deleteCheck, 1, row);
 				Group div = cont.getDivision();
 				if (div != null)
 					t.add(div.getName(), 2, row);

@@ -7,16 +7,14 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
-import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness;
 import is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRound;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.idega.business.IBOLookup;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -55,12 +53,19 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 	
 	protected static final String LABEL_DELETE = "isi_acc_aa_delete";
 	protected static final String LABEL_REFRESH = "isi_acc_aa_refresh";
+
+	private static final String ERROR_NO_NAME_ENTERED = "isi_acc_aa_no_name_entered";
+	private static final String ERROR_NO_GROUP_SELECTED = "isi_acc_aa_no_group_selected";
+	private static final String ERROR_NO_TARIFFS_SELECTED = "isi_acc_aa_no_tariffs_selected";
+	private static final String ERROR_NO_PAYMENT_DATE_SELECTED = "isi_acc_aa_no_payment_date_selected";		    
+	private static final String ERROR_NO_RUN_ON_DATE_SELECTED = "isi_acc_aa_no_run_on_date_selected";		    
 	
 	public AutomaticAssessment() {
 		super();
 	}
 
-	private void executeAssessment(IWContext iwc) {
+	private boolean executeAssessment(IWContext iwc) {
+		errorList = new ArrayList();
 		String name = iwc.getParameter(LABEL_NAME);
 		String group = iwc.getParameter(LABEL_GROUP);
 		String tariffs[] = iwc.getParameterValues(LABEL_TARIFF_TYPE);
@@ -100,13 +105,40 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 			runOnDateTimestamp.setMilliSecond(0);
 		}
 		
+		if (name == null || "".equals(name)) {
+			errorList.add(ERROR_NO_NAME_ENTERED);
+		}
+
+		if (group == null || "".equals(group)) {
+			errorList.add(ERROR_NO_GROUP_SELECTED);
+		}
+
+		if (tariffs == null || tariffs.length == 0) {
+			errorList.add(ERROR_NO_TARIFFS_SELECTED);
+		}
+		
+		if (paymentDateTimestamp == null) {
+			errorList.add(ERROR_NO_PAYMENT_DATE_SELECTED);		    
+		}
+
+		if (runOnDateTimestamp == null) {
+			errorList.add(ERROR_NO_RUN_ON_DATE_SELECTED);		    
+		}
+
+		if (!errorList.isEmpty()) {
+			return false;
+		}
+		
+		boolean execute = false;
 		
 		try {
-			getAccountingBusiness(iwc).doAssessment(name, getClub(), getDivision(), group, iwc.getCurrentUser(), includeChildren, tariffs, paymentDateTimestamp.getTimestamp(), runOnDateTimestamp.getTimestamp());
+			execute = getAccountingBusiness(iwc).doAssessment(name, getClub(), getDivision(), group, iwc.getCurrentUser(), includeChildren, tariffs, paymentDateTimestamp.getTimestamp(), runOnDateTimestamp.getTimestamp());
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
+		
+		return execute;
 	}
 	
 	private void deleteAssessment(IWContext iwc) {
@@ -121,16 +153,36 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 	}
 	
 	public void main(IWContext iwc) {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+
+		Form f = new Form();
+
 		if (iwc.isParameterSet(ACTION_SUBMIT)) {
-			executeAssessment(iwc);
+			if (!executeAssessment(iwc)) {
+				Table error = new Table();
+				Text labelError = new Text(iwrb.getLocalizedString(ERROR_COULD_NOT_SAVE, "Could not save") + ":");
+				labelError.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+				
+				int r = 1;
+				error.add(labelError, 1, r++);
+				if (errorList != null && !errorList.isEmpty()) {
+					Iterator it = errorList.iterator();
+					while (it.hasNext()) {
+						String loc = (String) it.next();
+						Text errorText = new Text(iwrb.getLocalizedString(loc, ""));
+						errorText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+						
+						error.add(errorText, 1, r++);
+					}
+				}
+				
+				f.add(error);
+			}
 		}
 		else if (iwc.isParameterSet(ACTION_DELETE)) {
 			deleteAssessment(iwc);
 		}
 
-		IWResourceBundle iwrb = getResourceBundle(iwc);
-
-		Form f = new Form();
 		Table t = new Table();
 		Table inputTable = new Table();
 		t.setCellpadding(5);
@@ -206,13 +258,18 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 		inputTable.add(refresh, 8, row);
 		
 		row = 1;
+        CheckBox checkAll = new CheckBox("checkall");
+        checkAll.setToCheckOnClick(LABEL_DELETE, "this.checked");
+        t.add(checkAll, 1, row);
 		t.add(labelName, 2, row);
 		t.add(labelDiv, 3, row);
 		t.add(labelGroup, 4, row);
 		t.add(labelStart, 5, row);
 		t.add(labelEnd, 6, row);
 		t.add(labelUser, 7, row);
-		t.add(labelIncludeChildren, 8, row++);
+		t.add(labelIncludeChildren, 8, row);
+		t.add(labelPaymentDate, 9, row);
+		t.add(labelRunOnDate, 10, row++);
 		
 		Collection col = null;
 		try {
@@ -231,8 +288,8 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
 				AssessmentRound round = (AssessmentRound) it.next();
-				CheckBox delete = new CheckBox(LABEL_DELETE, round.getPrimaryKey().toString());
-				t.add(delete, 1, row);
+				CheckBox deleteCheck = new CheckBox(LABEL_DELETE, round.getPrimaryKey().toString());
+				t.add(deleteCheck, 1, row);
 				if (round.getEndTime() == null) {
 					t.add(round.getName(), 2, row);
 				}
@@ -257,6 +314,14 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 				if (round.getIncludeChildren())
 					children.setChecked(true);
 				t.add(children, 8, row);
+				if (round.getPaymentDate() != null) {
+				    IWTimestamp paymentDate = new IWTimestamp(round.getPaymentDate());
+				    t.add(paymentDate.getDateString("dd.MM.yyyy"), 9, row);
+				}
+				if (round.getRunOnDate() != null) {
+				    IWTimestamp runOnDate = new IWTimestamp(round.getRunOnDate());
+				    t.add(runOnDate.getDateString("dd.MM.yyyy"), 10, row);
+				}
 				row++;
 			}
 			

@@ -81,17 +81,6 @@ public class CashierWindow extends StyledIWAdminWindow {
 
     private static final String ACTION_REPORTS = "isi_acc_cw_reports";
 
-    //    private static final String REPORT_PAYMENT_OVERVIEW =
-    // "isi_acc_cw_rep_payment_overview";
-    //    private static final String REPORT_DEBT_OVERVIEW =
-    // "isi_acc_cw_rep_debt_overview";
-    //    private static final String REPORT_ENTRY_OVERVIEW =
-    // "isi_acc_cw_rep_entry_overview";
-    //    private static final String REPORT_LATE_PAYMENT_LIST =
-    // "isi_acc_cw_rep_late_payment_list";
-    //    private static final String REPORT_PAYMENT_LIST =
-    // "isi_acc_cw_rep_payment_list";
-
     private static final String STATS_LOCALIZABLE_KEY_NAME = "STATS_LOCALIZABLE_KEY_NAME";
 
     private static final String STATS_LAYOUT_PARAM = "STATS_LAYOUT_PARAM";
@@ -197,8 +186,6 @@ public class CashierWindow extends StyledIWAdminWindow {
         }
 
         //Checks the user parameter and sets the eUser variable accordingly.
-        // @TODO Change this. Use a session variable instead. Mini shopping
-        // basket....
         String sUserId = iwc.getParameter(PARAMETER_USER_ID);
         if (sUserId != null && !"".equals(sUserId)) {
             try {
@@ -611,7 +598,6 @@ public class CashierWindow extends StyledIWAdminWindow {
 
         table.add(menuTable, 1, 1);
 
-        add(table, iwc);
 
         if (action != null) {
             CashierSubWindowTemplate subWindow = null;
@@ -726,6 +712,7 @@ public class CashierWindow extends StyledIWAdminWindow {
                 actionTitle.append(" - ");
                 actionTitle.append(eClub.getName());
             }
+            
             addTitle(actionTitle.toString(),
                     IWConstants.BUILDER_FONT_STYLE_TITLE);
 
@@ -744,6 +731,7 @@ public class CashierWindow extends StyledIWAdminWindow {
                 table.add(subWindow, 2, 1);
             }
         }
+        add(table, iwc);
     }
 
     public String getBundleIdentifier() {
