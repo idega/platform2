@@ -30,10 +30,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/07 13:14:50 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/07 15:33:57 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -67,12 +67,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String DATE_ADJUSTED_KEY = PREFIX + "date_adjusted";
     private static final String DATE_CREATED_DEFAULT = "Skapandedag";
     private static final String DATE_CREATED_KEY = PREFIX + "date_created";
-    private static final String DELETE_INVOICE_COMPILATION_DEFAULT = "Ta bort fakturaunderlag";
-    private static final String DELETE_INVOICE_COMPILATION_KEY = PREFIX + "delete_invoice_compilation";
+    private static final String DELETE_ROW_DEFAULT = "Ta bort fakturaunderlag";
+    private static final String DELETE_ROW_KEY = PREFIX + "delete_invoice_compilation";
     private static final String DOUBLE_POSTING_DEFAULT = "Motkontering";
     private static final String DOUBLE_POSTING_KEY = PREFIX + "double_posting";
-    private static final String EDIT_INVOICE_COMPILATION_DEFAULT = "Ändra fakturaunderlag";
-    private static final String EDIT_INVOICE_COMPILATION_KEY = PREFIX + "edit_invoice_compilation";
+    private static final String EDIT_ROW_DEFAULT = "Ändra rad";
+    private static final String EDIT_ROW_KEY = PREFIX + "edit_row";
     private static final String END_PERIOD_DEFAULT = "T o m ";
     private static final String END_PERIOD_KEY = PREFIX + "end_period";
     private static final String FIRST_NAME_DEFAULT = "Förnamn";
@@ -165,10 +165,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             ACTION_NEW_RECORD = 2,
             ACTION_DELETE_COMPILATION = 3,
             ACTION_DELETE_RECORD = 4,
-            ACTION_SHOW_RECORD = 5,
-            ACTION_SHOW_NEW_COMPILATION_FORM = 6,
-            ACTION_NEW_COMPILATION = 7,
-            ACTION_SHOW_NEW_RECORD_FORM = 8;
+            ACTION_SHOW_NEW_COMPILATION_FORM = 5,
+            ACTION_NEW_COMPILATION = 6,
+            ACTION_SHOW_NEW_RECORD_FORM = 7;
 
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
@@ -229,21 +228,17 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                      + "<li>klicka på faktureringsrad och se detaljer"
                      + "<li>se faktureringsunderlag i pdf"
                      + "<li>tillåt inte negativt taxbelopp mm"
-                     + "<li>uppdatera totalb. och momsersättning vid justering"
                      + "<li>namn etc i sökrutorna om man hittar exakt en"
                      + "<li>sök på huvudverksamhet - bara barnomsorg"
                      + "<li>felhantering för periodinmatning, t ex '1313'"
-                     + "<li>högerjustera totalAmount och andra tal"
-                     + "<li>inte skriva ut null på egen kontering/motkontering"
-                     + "<li>visa amount utan decimaler"
                      + "<li>confirm-page tillbaka till rätt sida"
-                     + "<li>ta bort invoice record => ta bort payment-record?"
                      + "<li>sortera efter order_id eller något annat"
                      + "<li>byt inte funktion vid byte av huvudverksamhet"
                      + "<li>kontroll av felaktig eller utelämnad indata"
                      + "<li>'Check familjedaghem...' ska inte hårdkodas"
                      + "<li>skriv ut anordnare på 'skapa fakturarrad'"
-                     + "<li>skriv ut inloggad signatur på skapa record"
+                     + "<li>uppdatera totalb. och momsersättning vid justering"
+                     + "<li>ta bort invoice record => ta bort payment-record?"
 
                      + "</ol>\n\n(" + actionId + ')');
 		} catch (Exception exception) {
@@ -361,6 +356,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addSmallText(table, dateFormatter.format (new Date ()), col++, row);
         addSmallHeader (table, col++, row, SIGNATURE_KEY, SIGNATURE_DEFAULT,
                         ":");
+        final User currentUser = context.getCurrentUser ();
+        if (null != currentUser) {
+            final String createdBySignature
+                    = currentUser.getFirstName ().charAt (0)
+                    + "" + currentUser.getLastName ().charAt (0);
+            table.add (createdBySignature, col++, row);
+        }
         col = 1; row++;
         addSmallHeader (table, col++, row, DATE_ADJUSTED_KEY,
                         DATE_ADJUSTED_DEFAULT, ":");
@@ -779,6 +781,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		table.add (status + "", col++, row);
 		table.add (periodLink, col++, row);
 		table.add (getUserName (custodian), col++, row);
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add (totalAmount + "", col++, row);
         final Link editLink = createIconLink (getEditIcon (),
                                               editLinkParameters);
@@ -831,10 +834,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.mergeCells (1, row, 4, row);
         addSmallHeader (table, 1, row, TOTAL_AMOUNT_VAT_EXCLUSIVE_KEY,
                         TOTAL_AMOUNT_VAT_EXCLUSIVE_DEFAULT, ":");
+        table.setAlignment (5, row, Table.HORIZONTAL_ALIGN_RIGHT);
         table.add (getTotalAmount (records) + "", 5, row++);
         table.mergeCells (1, row, 4, row);
         addSmallHeader (table, 1, row, TOTAL_AMOUNT_VAT_KEY,
                         TOTAL_AMOUNT_VAT_DEFAULT, ":");
+        table.setAlignment (5, row, Table.HORIZONTAL_ALIGN_RIGHT);
         table.add (getTotalAmountVat (records) + "", 5, row++);
         addSmallHeader (table, 1, row, OWN_POSTING_KEY, OWN_POSTING_DEFAULT,
                         ":");
@@ -845,7 +850,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.mergeCells (2, row, table.getColumns (), row);
         table.add (header.getDoublePosting (), 2, row++);
         
-       return table;
+        return table;
     }
 
 	private void showInvoiceRecordOnARow
@@ -861,19 +866,26 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         } else {
             col += 2;
         }
-		table.add (record.getInvoiceText (), col++, row);
-		table.add (record.getDays () + "", col++, row);
-		table.add (((long) record.getAmount ()) + "", col++, row);
-		table.add (record.getNotes (), col++, row);
-
         final String recordId = record.getPrimaryKey ().toString ();
         final String [][] editLinkParameters = getRecordLinkParameters
-                (ACTION_SHOW_RECORD, recordId);
-        final Link editLink = createIconLink (getEditIcon (),
-                                              editLinkParameters);
-        table.add (editLink, col++, row);
+                (ACTION_SHOW_NEW_RECORD_FORM, recordId);
         final String createdBy = record.getCreatedBy ();
         if (null != createdBy && 2 == createdBy.length ()) {
+            final Link textLink = createSmallLink (record.getInvoiceText (),
+                                                   editLinkParameters);
+            table.add (textLink, col++, row);
+        } else {
+            table.add (record.getInvoiceText (), col++, row);
+        }
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add (record.getDays () + "", col++, row);
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add (((long) record.getAmount ()) + "", col++, row);
+		table.add (record.getNotes (), col++, row);
+        if (null != createdBy && 2 == createdBy.length ()) {
+            final Link editLink = createIconLink (getEditIcon (),
+                                                  editLinkParameters);
+            table.add (editLink, col++, row);
             final String [][] deleteLinkParamaters = getRecordLinkParameters
                     (ACTION_DELETE_RECORD,  recordId);
             final Link deleteLink = createIconLink (getDeleteIcon (),
@@ -1097,13 +1109,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
     private Image getEditIcon () {
-        return getEditIcon (localize (EDIT_INVOICE_COMPILATION_KEY,
-                                      EDIT_INVOICE_COMPILATION_DEFAULT));
+        return getEditIcon (localize (EDIT_ROW_KEY,
+                                      EDIT_ROW_DEFAULT));
     }
 
     private Image getDeleteIcon () {
-        return getDeleteIcon (localize (DELETE_INVOICE_COMPILATION_KEY,
-                                        DELETE_INVOICE_COMPILATION_DEFAULT));
+        return getDeleteIcon (localize (DELETE_ROW_KEY,
+                                        DELETE_ROW_DEFAULT));
     }
 
     private void setIconColumnWidth (final Table table) {
