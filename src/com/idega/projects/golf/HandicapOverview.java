@@ -52,6 +52,7 @@ private String end_month;
 private String end_day;
 private Table myTable;
 private Form myForm = new Form();
+private boolean noIcons = false;
 
 private String headerColor = "#336660";
 private String headerTextColor = "#FFFFFF";
@@ -380,7 +381,7 @@ private String headerTextColor = "#FFFFFF";
         myTable.add(update,11,a+3);
       }
       else {
-        if ( canWrite && tournament_name.length() == 0 ) {
+        if ( canWrite && tournament_name.length() == 0 && !noIcons ) {
           myTable.add(update,11,a+3);
         }
         if ( tournament_name.length() > 0 ) {
@@ -647,6 +648,10 @@ private String headerTextColor = "#FFFFFF";
 
     public void setHeaderTextColor(String headerTextColor) {
       this.headerTextColor=headerTextColor;
+    }
+
+    public void noIcons() {
+      this.noIcons = true;
     }
 
     public String getBundleIdentifier(){
