@@ -6,6 +6,7 @@ package is.idega.idegaweb.golf.templates.page;
 
 
 
+import is.idega.idegaweb.golf.moduleobject.MenuBar;
 import java.io.*;
 
 import javax.servlet.*;
