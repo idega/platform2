@@ -7,12 +7,14 @@ import java.util.Iterator;
 import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
+import se.idega.idegaweb.commune.childcare.business.ChildCareQueueWriter;
 import se.idega.idegaweb.commune.childcare.business.QueueCleaningSession;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.DownloadLink;
 import com.idega.presentation.text.HorizontalRule;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -66,7 +68,7 @@ public class ChildCareAdmin extends ChildCareBlock {
      * @throws RemoteException
      */
     private void addTable(IWContext iwc) throws RemoteException {
-        Table table = new Table(1,7);
+        Table table = new Table(1,9);
         table.setWidth(getWidth());
         table.setHeight(2, 12);
         //table.setHeight(4, 3);
@@ -74,14 +76,19 @@ public class ChildCareAdmin extends ChildCareBlock {
         table.setHeight(4, 6);
         table.setCellpadding(0);
         table.setCellspacing(0);
+        table.setAlignment(1, 5, Table.HORIZONTAL_ALIGN_RIGHT);
+        
         add(table);
         
         table.add(getSortTable(), 1, 1);
         //table.add(getNavigator(iwc), 1, 3);
         //table.add(getApplicationTable(iwc), 1, 5);
         table.add(getLegendTable(true), 1, 3);
-        table.add(getApplicationTable(iwc), 1, 5);
-        table.add(getLegendTable(true), 1, 7);
+        table.add(getPDFLink(), 1, 5);
+        table.add(Text.getNonBrakingSpace(), 1, 5);
+        table.add(getXSLLink(), 1, 5);
+         table.add(getApplicationTable(iwc), 1, 7);
+        table.add(getLegendTable(true), 1, 9);
     }
 
 	
@@ -372,6 +379,41 @@ public class ChildCareAdmin extends ChildCareBlock {
 		
 		return form;
 	}
+	
+	protected Link getPDFLink() throws RemoteException {		
+		DownloadLink link = new DownloadLink(getBundle().getImage("shared/pdf.gif"));
+		link.setMediaWriterClass(ChildCareQueueWriter.class);
+		link.addParameter(ChildCareQueueWriter.PARAMETER_TYPE, ChildCareQueueWriter.PDF);
+		link.addParameter(ChildCareQueueWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
+		link.addParameter(ChildCareQueueWriter.PARAMETER_SORT_BY, getSession().getSortBy());
+		link.addParameter(ChildCareQueueWriter.PARAMETER_NUMBER_PER_PAGE, _numberPerPage);
+		link.addParameter(ChildCareQueueWriter.PARAMETER_START, _start);
+		if (getSession().getFromTimestamp() != null)
+			link.addParameter(ChildCareQueueWriter.PARAMETER_FROM_DATE, String.valueOf(getSession().getFromTimestamp().getDate()));
+		if (getSession().getToTimestamp() != null)
+			link.addParameter(ChildCareQueueWriter.PARAMETER_TO_DATE, String.valueOf(getSession().getToTimestamp().getDate()));
+		
+		return link;
+	}
+	
+	protected Link getXSLLink() throws RemoteException {
+		DownloadLink link = new DownloadLink(getBundle().getImage("shared/xls.gif"));
+		link.setMediaWriterClass(ChildCareQueueWriter.class);
+		link.addParameter(ChildCareQueueWriter.PARAMETER_TYPE, ChildCareQueueWriter.XLS);
+		link.addParameter(ChildCareQueueWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
+		link.addParameter(ChildCareQueueWriter.PARAMETER_SORT_BY, getSession().getSortBy());
+		link.addParameter(ChildCareQueueWriter.PARAMETER_NUMBER_PER_PAGE, _numberPerPage);
+		link.addParameter(ChildCareQueueWriter.PARAMETER_START, _start);
+		if (getSession().getFromTimestamp() != null)
+			link.addParameter(ChildCareQueueWriter.PARAMETER_FROM_DATE, String.valueOf(getSession().getFromTimestamp().getDate()));
+		if (getSession().getToTimestamp() != null)
+			link.addParameter(ChildCareQueueWriter.PARAMETER_TO_DATE, String.valueOf(getSession().getToTimestamp().getDate()));
+		
+
+		return link;
+	}
+	
+	
 	
 	/**
 	 * @param showQueueCleaning The showQueueCleaning to set.
