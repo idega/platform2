@@ -18,9 +18,7 @@ public class PollListener implements IWEventListener{
   }
 
   public void actionPerformed(IWContext iwc){
-    System.out.println("Action performed");
     if (PollBusiness.thisObjectSubmitted(iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER))){
-      System.out.println("Handling insert");
       PollBusiness.handleInsert(iwc);
     }
   }

@@ -244,7 +244,6 @@ public static final String COOKIE_NAME = "idegaPOLL_";
       cookie.setMaxAge(31 * 24 * 60 * 60);
       cookie.setPath("/");
       iwc.addCookies(cookie);
-      System.out.println("Cookie added");
     }
   }
 
@@ -375,7 +374,6 @@ public static final String COOKIE_NAME = "idegaPOLL_";
     if ( pollEndDate != null && pollEndDate.length() > 0 ) {
       pollQuestion.setEndTime(new idegaTimestamp(pollEndDate).getTimestamp());
     }
-    System.out.println("Update: "+update);
 
     if ( !update ) {
       try {

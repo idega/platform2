@@ -48,6 +48,8 @@ private String _parameterString;
 private String _styleAttribute;
 private String _hoverStyle;
 private String _questionStyleAttribute;
+private String _votedColor;
+private String _whiteColor;
 
 private String _pollWidth;
 private int _numberOfShownPolls;
@@ -229,9 +231,6 @@ private int _layout = RADIO_BUTTON_VIEW;
           }
         }
       }
-      else {
-        System.out.println("locText is null");
-      }
 
       if ( hasAnswers ) {
         radioGroup.setStyle(_styleAttribute);
@@ -397,10 +396,35 @@ private int _layout = RADIO_BUTTON_VIEW;
               answerTable.add(answerText,1,row);
               row++;
 
-              Image graph = _iwbPoll.getImage("shared/graph.gif");
-                graph.setHeight(11);
-                graph.setWidth(Integer.toString((int) percent)+"%");
-              answerTable.add(graph,1,row);
+              Table table = new Table();
+                table.setCellpadding(0);
+                table.setCellspacing(1);
+                table.setWidth("100%");
+                table.setColor("#000000");
+
+              Image transImage = answerTable.getTransparentCell(iwc);
+                transImage.setHeight(10);
+                transImage.setWidth(Integer.toString((int) percent)+"%");
+              Image transImage2 = answerTable.getTransparentCell(iwc);
+                transImage2.setHeight(10);
+                transImage2.setWidth(Integer.toString(100 - (int) percent)+"%");
+              if ( percent > 0 ) {
+                table.setColor(1,1,_votedColor);
+                table.add(transImage,1,1);
+                table.setWidth(1,1,Integer.toString((int) percent)+"%");
+                if ( percent < 100 ) {
+                  table.setColor(2,1,_whiteColor);
+                  table.add(transImage2,2,1);
+                  table.setWidth(2,1,Integer.toString(100 - (int) percent)+"%");
+                }
+              }
+              else if ( percent <= 0 ) {
+                table.setColor(1,1,_whiteColor);
+                table.setWidth(1,1,"100%");
+                table.add(transImage2,1,1);
+              }
+
+              answerTable.add(table,1,row);
               answerTable.add(percentText,2,row);
               answerTable.setWidth(1,row,"100%");
 
@@ -452,6 +476,8 @@ private int _layout = RADIO_BUTTON_VIEW;
     _showCollection = true;
     _questionAlignment = "center";
     _pollID = -1;
+    _votedColor = "#104584";
+    _whiteColor = "#FFFFFF";
   }
 
   private void setStyles() {
@@ -538,6 +564,14 @@ private int _layout = RADIO_BUTTON_VIEW;
 
   public void setQuestionAlignment(String alignment) {
     _questionAlignment = alignment;
+  }
+
+  public void setVotedColor(String color) {
+    _votedColor = color;
+  }
+
+  public void setWhiteColor(String color) {
+    _whiteColor = color;
   }
 
   public Object clone() {
