@@ -53,6 +53,8 @@ public class TravelManager extends Block {
     protected static String parameterDailyReport = "lDailyReport";
     protected static String parameterContracts = "lContracts";
     protected static String parameterInitialData = "lInitialData";
+    protected static String parameterUpdatePassword = "lUpdatePassword";
+    protected static String parameterHome = "lHome";
 
 
 
@@ -109,7 +111,7 @@ public class TravelManager extends Block {
           table.mergeCells(1,2,2,2);
           table.setAlignment(2,1,"right");
           table.setHeight(1,2,"100%");
-          table.setWidth("850");
+          table.setWidth("849");
 
         Image iDesign = iwrb.getImage("buttons/design_trip.gif");
         Image iMyTrip = iwrb.getImage("buttons/my_trips.gif");
@@ -119,6 +121,9 @@ public class TravelManager extends Block {
         Image iDailyReport = iwrb.getImage("buttons/daily_report.gif");
         Image iContracts = iwrb.getImage("buttons/contracts.gif");
         Image iInitialData = iwrb.getImage("buttons/initial_data.gif");
+        Image iUpdatePassword = iwrb.getImage("buttons/update_password.gif");
+        Image iHome = iwrb.getImage("buttons/home.gif");
+
         if (action.equals(this.parameterServiceDesigner)) {
           iDesign = iwrb.getImage("buttons/design_trip_on.gif");
         }else if (action.equals(this.parameterServiceOverview)) {
@@ -131,6 +136,16 @@ public class TravelManager extends Block {
           iStatistics = iwrb.getImage("buttons/statistics_on.gif");
         }else if (action.equals(this.parameterDailyReport)) {
           iDailyReport = iwrb.getImage("buttons/daily_report_on.gif");
+        }else if (action.equals(this.parameterContracts)) {
+          iContracts = iwrb.getImage("buttons/contracts_on.gif");
+        }else if (action.equals(this.parameterInitialData)) {
+          iInitialData = iwrb.getImage("buttons/initial_data_on.gif");
+        }else if (action.equals(this.parameterUpdatePassword)) {
+          iUpdatePassword = iwrb.getImage("buttons/update_password_on.gif");
+        }else if (action.equals(this.parameterHome)) {
+          iHome = iwrb.getImage("buttons/home_on.gif");
+        }else {
+          iHome = iwrb.getImage("buttons/home_on.gif");
         }
 
         if (iwc.hasEditPermission(this)){
@@ -139,9 +154,10 @@ public class TravelManager extends Block {
               lInitialData.addParameter(this.sAction,this.parameterInitialData);
             table.add(lInitialData,1,1);
 
-            Link lUpdatePassword = new Link("update password");
+            Link lUpdatePassword = new Link(iUpdatePassword);
               lUpdatePassword.setWindowToOpen(LoginChanger.class);
             table.add(lUpdatePassword,1,1);
+
         }else if (supplier != null) {
 
             Link lDesign = new Link(iDesign,ServiceDesigner.class);
@@ -170,7 +186,7 @@ public class TravelManager extends Block {
             table.add(lContracts,1,1);
             table.add(lInitialData,1,1);
 
-            Link lUpdatePassword = new Link("update password");
+            Link lUpdatePassword = new Link(iUpdatePassword);
               lUpdatePassword.setWindowToOpen(LoginChanger.class);
             table.add(lUpdatePassword,1,1);
         }
@@ -183,12 +199,13 @@ public class TravelManager extends Block {
               lOverview.addParameter(this.sAction,this.parameterBookingOverview);
             table.add(lOverview,1,1);
 
-            Link lUpdatePassword = new Link("update password");
+            Link lUpdatePassword = new Link(iUpdatePassword);
               lUpdatePassword.setWindowToOpen(LoginChanger.class);
             table.add(lUpdatePassword,1,1);
         }
 
-        Link lHome = new Link("heim","/index.jsp");
+        Link lHome = new Link(iHome,"/index.jsp");
+          lHome.addParameter(this.sAction, this.parameterHome);
         table.add(lHome,2,1);
 
         if (oldLogin) {
