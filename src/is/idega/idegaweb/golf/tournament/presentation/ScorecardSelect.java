@@ -12,7 +12,6 @@ import is.idega.idegaweb.golf.entity.TournamentType;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapRegister;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapRegisterWindow;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapUtility;
-import is.idega.idegaweb.golf.handicap.presentation.HandicapUtilityWindow;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
@@ -317,14 +316,14 @@ public class ScorecardSelect extends TournamentBlock {
 				Image changeImage = iwb.getImage("shared/change_tees.gif", iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 11, 13);
 				changeImage.setAlignment("absmiddle");
 				Link changeLink = new Link(changeImage);
-				changeLink.setWindowToOpen(HandicapUtilityWindow.class);
+				changeLink.setWindowToOpen(HandicapUtility.class);
 				changeLink.addParameter(HandicapUtility.PARAMETER_SCORECARD_ID, scorecard_id);
 				changeLink.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_CHANGE_TEES);
 
 				Image changeImage2 = iwb.getImage("shared/correct_handicap.gif", iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"), 11, 13);
 				changeImage2.setAlignment("absmiddle");
 				Link changeLink2 = new Link(changeImage2);
-				changeLink2.setWindowToOpen(HandicapUtilityWindow.class);
+				changeLink2.setWindowToOpen(HandicapUtility.class);
 				changeLink2.addParameter(HandicapUtility.PARAMETER_MEMBER_ID, members[a].getMemberID());
 				changeLink2.addParameter(HandicapUtility.PARAMETER_TOURNAMENT_ID, members[a].getTournamentID());
 				changeLink2.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_UPDATE_HANDICAP);

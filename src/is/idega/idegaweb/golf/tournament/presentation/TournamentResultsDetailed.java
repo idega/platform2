@@ -184,7 +184,7 @@ public class TournamentResultsDetailed extends Block {
 			member.setText(r.getName());
 
 			Link seeScores = new Link(member);
-			seeScores.setWindowToOpen(HandicapScoreWindow.class);
+			seeScores.setWindowToOpen(HandicapScore.class);
 			seeScores.addParameter("member_id", r.getMemberId());
 			seeScores.addParameter("tournament_id", tournamentId_);
 			seeScores.addParameter("tournament_group_id", r.getTournamentGroupId());
