@@ -356,16 +356,14 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 				
 		if (errorMessage != null){
 			entry = getNotStoredEntry(iwc);
-		}
-		
-		RegularInvoiceEntryHome home = getRegularInvoiceEntryHome();
-		if (home != null){
+		} else {
 			try{
-				entry = home.findByPrimaryKey(iwc.getParameter(PAR_PK));
+				entry = getRegularInvoiceEntryHome().findByPrimaryKey(iwc.getParameter(PAR_PK));
 			}catch(FinderException ex){
-				ex.printStackTrace();
+				entry = getNotStoredEntry(iwc);
 			}
 		}
+	
 		handleEditAction(iwc, entry, user, errorMessage);
 	}
 
@@ -527,6 +525,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		list.setLocalizedHeader(KEY_PLACING, "Placing", 2);
 		list.setLocalizedHeader(KEY_AMOUNT, "Amount", 3);
 		list.setLocalizedHeader(KEY_NOTE, "Note", 4);
+		list.setHeader(" ",  5);
+		list.setHeader(" ",  6);
 		
 		try {
 			if (invoices != null) {
@@ -586,23 +586,25 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 				
-				
-//		addDropDown(table, PAR_PROVIDER, KEY_PROVIDER, providers, entry.getSchoolId(), "getSchoolName", 1, row++);
-//
-//		addNoEmptyField(table, PAR_PLACING, KEY_PLACING, entry.getPlacing(), 1, row);		
-//		addField(table, PAR_VALID_DATE, KEY_VALID_DATE, iwc.getParameter(PAR_VALID_DATE), 3, row);	
-//		
-//		table.add(getLocalizedButton(PAR_SEARCH_REGULATION, KEY_SEARCH, "Search"), 5, row++);
 		RegulationSearchPanel searchPanel = new RegulationSearchPanel(iwc);
 		
 		searchPanel.maintainParameter(new String[]{PAR_USER_SSN, PAR_FROM, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_SEEK_FROM, PAR_SEEK_TO, PAR_PK});
+		searchPanel.setPlacingIfNull(entry.getPlacing());
+		searchPanel.setSchoolIdIfNull(entry.getSchoolId());
+		
 		searchPanel.setParameter(PAR_EDIT, " ");
 		searchPanel.maintainAllParameters();
 		table.mergeCells(1, row, 10, row);
 		table.add(searchPanel, 1, row++);
 
-		Regulation reg = searchPanel.getRegulation();
-		entry = getNotStoredEntry(iwc, reg);
+		Regulation reg = searchPanel.getRegulation(); 
+		String[] posting = searchPanel.getPosting();
+		posting[1] = posting[1]; //TODO: present posting on page
+		
+		if (reg != null){
+			entry = getNotStoredEntry(iwc, reg);
+		}
+
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		
