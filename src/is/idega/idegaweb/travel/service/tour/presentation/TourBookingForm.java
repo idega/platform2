@@ -1314,6 +1314,12 @@ public class TourBookingForm extends TravelManager {
     String sBookingId = iwc.getParameter(this.parameterBookingId);
     int iBookingId = -1;
 
+    if (tFrame == null) {
+      debug("tFrame == null");
+    }else {
+      debug("tFrame != null");
+    }
+
     int previousBookings = 0;
     if (sBookingId != null){
       iBookingId = Integer.parseInt(sBookingId);
@@ -1487,14 +1493,18 @@ public class TourBookingForm extends TravelManager {
       return 0;
     }
     */
+    debug("action = "+action);
 
     if (check.equals(this.parameterSaveBooking)) {
       if (action != null) {
         if (action.equals(this.BookingParameter)) {
           if (inquiry == null) {
+            debug("her 0");
             return checkBooking(iwc, true);
           }else {
+            debug("her 1");
             int checkInt = checkBooking(iwc, true, true);
+            debug("checkInt : "+checkInt);
             ///// INquiry STUFF JAMMS
             if (checkInt > 0) {
               int inqId = this.sendInquery(iwc, checkInt, true);

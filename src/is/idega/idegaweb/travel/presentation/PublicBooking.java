@@ -841,6 +841,7 @@ public class PublicBooking extends Block  {
 
         debug("Repps 3");
         TourBookingForm tbf = new TourBookingForm(iwc,product);
+        debug("Repps 4");
         int bookingId = tbf.handleInsert(iwc);
         debug("bookingId = "+bookingId);
 
