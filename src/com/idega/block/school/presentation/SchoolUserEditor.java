@@ -1474,7 +1474,7 @@ private Table getDepartmentForm() {
 							user.addPhone(phone);
 						}
 
-						postSaveUpdate();
+						postSaveUpdate(school, user, iUserType);
 					}
 			
 			}
@@ -1526,7 +1526,7 @@ private Table getDepartmentForm() {
 					schUsr = getSchoolUserBusiness(iwc).addUser(school, user, iUserType);
 				}
 
-				postSaveNew();
+				postSaveNew(school, user, iUserType);
 				try { 
 					if (schdep_id != -1) {
 						getSchoolBusiness(iwc).addSchoolUsr(schdep_id, schUsr);
@@ -1637,8 +1637,9 @@ public boolean updateDepartment(IWContext iwc) throws RemoteException {
 	 * @param school School
 	 * @param user User
 	 */
-	protected void postSaveNew(){
-
+	protected void postSaveNew(School school, User user, int userType) throws RemoteException {
+		// This is overridden in se.idega.idegaweb.commune.school.presentation.SchoolUserEditor, 
+		//so pahaaleeeeease do NOT remove the parameters, or the users int the school system will create incorrectly
 	}
 
 	/** 
@@ -1646,8 +1647,9 @@ public boolean updateDepartment(IWContext iwc) throws RemoteException {
 	 * @param school School
 	 * @param user User
 	 */
-	protected void postSaveUpdate(){
-
+	protected void postSaveUpdate(School school, User user, int userType) throws RemoteException {
+		// This is overridden in se.idega.idegaweb.commune.school.presentation.SchoolUserEditor, 
+		//so pahaaleeeeease do NOT remove the parameters, or the users int the school system will create incorrectly
 	}
 	
 	private Table mainForm(IWContext iwc) throws RemoteException {
