@@ -88,6 +88,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 
 	private void init(IWContext iwc) {
 		String sGroupId = iwc.getParameter(PARAMETER_GROUP_ID);
+		System.out.println("CashierWindow : sGroupId = " + sGroupId);
 		if (sGroupId != null) {
 			try {
 				_group = getGroupBusiness(iwc).getGroupByGroupID(new Integer(sGroupId).intValue());
@@ -104,6 +105,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 		}
 		
 		String sUserId = iwc.getParameter(PARAMETER_USER_ID);
+		System.out.println("CashierWindow : sUserId = " + sUserId);
 		if (sUserId != null) {
 			try {
 				_user = getUserBusiness(iwc).getUser(new Integer(sUserId));
@@ -137,61 +139,91 @@ public class CashierWindow extends StyledIWAdminWindow {
 		editTariffType.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.edit_tariff_type", "Edit club tariff type (A.12)")));
 		editTariffType.addParameter(ACTION, ACTION_TARIFF_TYPE);
 		editTariffType.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
+		if (_user != null) {
+			editTariffType.addParameter(PARAMETER_USER_ID,((Integer)_user.getPrimaryKey()).toString());
+		}
 		
 		LinkContainer editTariff = new LinkContainer();
 		editTariff.setStyleClass(styledLink);
 		editTariff.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.edit_tariff", "Edit club tariff list (A.12)")));
 		editTariff.addParameter(ACTION, ACTION_TARIFF);
 		editTariff.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
-
+		if (_user != null) {
+			editTariff.addParameter(PARAMETER_USER_ID,((Integer)_user.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer autoAss = new LinkContainer();
 		autoAss.setStyleClass(styledLink);
 		autoAss.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.auto_assessment", "Automatic assessment (A.15)")));
 		autoAss.addParameter(ACTION, ACTION_AUTOMATIC_ASSESSMENT);
 		autoAss.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
-
+		if (_user != null) {
+			autoAss.addParameter(PARAMETER_USER_ID,((Integer)_user.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer ccContract = new LinkContainer();
 		ccContract.setStyleClass(styledLink);
 		ccContract.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.cc_contract", "Edit creditcard company contract (A.24)")));
 		ccContract.addParameter(ACTION, ACTION_CREDITCARD_COMPANY_CONTRACT);
 		ccContract.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
-
+		if (_user != null) {
+			ccContract.addParameter(PARAMETER_USER_ID,((Integer)_user.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer selectUser = new LinkContainer();
 		selectUser.setStyleClass(styledLink);
 		selectUser.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.select_user", "Select user to work with")));
 		selectUser.addParameter(ACTION, ACTION_SELECT_USER);
 		selectUser.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
-
+		if (_user != null) {
+			selectUser.addParameter(PARAMETER_USER_ID,((Integer)_user.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer manAss = new LinkContainer();
 		manAss.setStyleClass(styledLink);
 		manAss.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.manual_assessment", "Manual assessment (A.14)")));
 		manAss.addParameter(ACTION, ACTION_MANUAL_ASSESSMENT);
 		manAss.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
+		if (_user != null) {
+			manAss.addParameter(PARAMETER_USER_ID,((Integer)_user.getPrimaryKey()).toString());
+		}
 		
 		LinkContainer insertContract = new LinkContainer();
 		insertContract.setStyleClass(styledLink);
 		insertContract.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.insert_contract", "Insert/edit member contract (new/A.10)")));
 		insertContract.addParameter(ACTION, ACTION_CONTRACT);
 		insertContract.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
-
+		if (_user != null) {
+			insertContract.addParameter(PARAMETER_USER_ID,((Integer)_user.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer registerPayment = new LinkContainer();
 		registerPayment.setStyleClass(styledLink);
 		registerPayment.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.payment", "Register payment (A.11)")));
 		registerPayment.addParameter(ACTION, ACTION_PAYMENT);
 		registerPayment.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
-
+		if (_user != null) {
+			registerPayment.addParameter(PARAMETER_USER_ID,((Integer)_user.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer paymentHistory = new LinkContainer();
 		paymentHistory.setStyleClass(styledLink);
 		paymentHistory.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.paymentHistory", "Payment history (3.11)")));
 		paymentHistory.addParameter(ACTION, ACTION_PAYMENT_HISTORY);
 		paymentHistory.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
-
+		if (_user != null) {
+			paymentHistory.addParameter(PARAMETER_USER_ID,((Integer)_user.getPrimaryKey()).toString());
+		}
+		
 		LinkContainer memberCreditCard = new LinkContainer();
 		memberCreditCard.setStyleClass(styledLink);
 		memberCreditCard.add(formatText(_iwrb.getLocalizedString("isi_acc_cashierwindow.memberCreditCard", "Member credit card info (A.10)")));
 		memberCreditCard.addParameter(ACTION, ACTION_MEMBER_CREDITCARD);
 		memberCreditCard.addParameter(PARAMETER_GROUP_ID,((Integer)_group.getPrimaryKey()).toString());
-
+		if (_user != null) {
+			memberCreditCard.addParameter(PARAMETER_USER_ID,((Integer)_user.getPrimaryKey()).toString());
+		}
+		
 		//reports
 		LinkContainer paymentStatus = new LinkContainer();
 		paymentStatus.setStyleClass(styledLink);
@@ -267,15 +299,11 @@ public class CashierWindow extends StyledIWAdminWindow {
 		addTitle(_iwrb.getLocalizedString("isi_acc_cashier_window", "Cashier Window"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 
 		String action = iwc.getParameter(ACTION);
-//		System.out.println("ACTION = " + action);
-		
-		String groupId = iwc.getParameter(PARAMETER_GROUP_ID);
-//		System.out.println("GROUPID = " + groupId);
 
 		Table table = new Table(2, 1);
 		table.setWidthAndHeightToHundredPercent();
 		table.setColumnColor(1, COLOR_LIGHTEST);
-		table.setColumnWidth(1, "220");
+		table.setColumnWidth(1, "200");
 		table.setRowHeight(1, Table.HUNDRED_PERCENT);
 		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
 		table.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
@@ -331,7 +359,6 @@ public class CashierWindow extends StyledIWAdminWindow {
 			}
 
 			if (subWindow != null) {
-//				System.out.println("_group = " + _group);
 				subWindow.setClub(_group);
 				table.add(subWindow, 2, 1);
 			}

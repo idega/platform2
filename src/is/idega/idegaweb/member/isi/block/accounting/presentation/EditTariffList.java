@@ -9,6 +9,7 @@ package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
 import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness;
 import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariff;
+import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -67,11 +68,25 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		if (group != null) {
 			group = group.substring(group.indexOf("_")+1);
 		}
-
+		
+		IWTimestamp fromTimestamp = null;
+		IWTimestamp toTimestamp = null;
+		
 		try {
-			IWTimestamp fromTimestamp = new IWTimestamp(from);
-			IWTimestamp toTimestamp = new IWTimestamp(to);
-			System.out.println("Inserting entry");
+			fromTimestamp = new IWTimestamp(from);
+		}
+		catch (IllegalArgumentException e) {
+			fromTimestamp = new IWTimestamp(Long.parseLong(from));
+		}
+		
+		try {
+			toTimestamp = new IWTimestamp(to);
+		}
+		catch (IllegalArgumentException e) {
+			toTimestamp = new IWTimestamp(Long.parseLong(to));
+		}
+		
+		try {
 			getAccountingBusiness(iwc).insertTariff(getClub(),group,type,text,amount,fromTimestamp.getDate(), toTimestamp.getDate()); 
 		}
 		catch (RemoteException e) { 
@@ -171,7 +186,9 @@ public class EditTariffList extends CashierSubWindowTemplate {
 				Group group = tariff.getGroup();
 				if (group != null)
 					t.add(group.getName(), 2, row);
-				t.add(tariff.getTariffType().getName(), 3, row);
+
+				ClubTariffType type = tariff.getTariffType();
+				t.add(type.getName(), 3, row);
 				t.add(tariff.getText(), 4, row);
 				t.add(Float.toString(tariff.getAmount()), 5, row);
 				t.add(tariff.getPeriodFrom().toString(), 6, row);
