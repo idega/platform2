@@ -73,11 +73,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/01 16:38:16 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/02 10:01:12 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.51 $
+ * @version $Revision: 1.52 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -621,8 +621,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 						 getSmallSignature (record.getCreatedBy ()));
 		addSmallText (map, DATE_ADJUSTED_KEY, record.getDateChanged ());
 		addSmallText (map, DATE_CREATED_KEY, record.getDateCreated ());
-		addStyledInput (map, NOTE_KEY, record.getNotes ());
-		addStyledInput (map, PAYMENT_TEXT_KEY, record.getPaymentText ());
+		addStyledWideInput (map, NOTE_KEY, record.getNotes ());
+		addStyledWideInput (map, PAYMENT_TEXT_KEY, record.getPaymentText ());
 		map.put (PERIOD_KEY, getStyledInput (PERIOD_KEY, getFormattedPeriod
 																				 (record.getPeriod ())));
 		addStyledInput (map, PIECE_AMOUNT_KEY, record.getPieceAmount ());
@@ -665,7 +665,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 			addSmallText (map, MANAGEMENT_TYPE_KEY, managementType.getLocalizedKey (),
 										managementType.getName ());
 		} catch (Exception e) {
-			logWarning ("Missing school properties i payment record "
+			logWarning ("Missing school properties in payment record "
 									+ record.getPrimaryKey ());
 			log (e);
 		}
@@ -1758,6 +1758,20 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		final PostingField [] array = new PostingField [0];
 		return fields != null ? (PostingField []) fields.toArray (array)
 				: array;
+	}
+	
+	private TextInput getStyledWideInput (final String key,
+																				final String value) {
+		final TextInput input = getStyledInput (key, value);
+		input.setLength (48);
+		return input;
+	}
+	
+	private void addStyledWideInput (final java.util.Map map, final String key,
+															 final String value) {
+		final TextInput input = getStyledWideInput
+				(key, null != value && !value.equals (null + "") ? value : "");
+		map.put (key, input);
 	}
 	
 	private void addStyledInput (final java.util.Map map, final String key,
