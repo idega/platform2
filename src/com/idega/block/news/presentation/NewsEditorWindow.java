@@ -317,6 +317,12 @@ private IWResourceBundle iwrb;
 
 		List L = NewsFinder.listOfNewsCategories();
 		DropdownMenu catDrop = new DropdownMenu(L,prmCategory);
+
+		Link newLink = new Link(iwb.getImage("/shared/create.gif"));
+		newLink.addParameter(prmCategory,-1);
+		newLink.addParameter(prmObjInstId,iObjInst);
+		newLink.addParameter(prmFormProcess,"C");
+
 		catDrop.addMenuElementFirst("-1",sCategory);
 		catDrop.setToSubmit();
 
@@ -362,8 +368,16 @@ private IWResourceBundle iwrb;
 
     }
 
+		Table catTable = new Table(3,1);
+		catTable.setCellpadding(0);
+		catTable.setCellspacing(0);
+		setStyle(catDrop);
+		catTable.add(catDrop,1,1);
+		catTable.add(newLink,3,1);
+		catTable.setWidth(2,1,"30");
 
-		addLeft(sCategory,catDrop,true);
+
+		addLeft(sCategory,catTable,true,false);
     addLeft(sName,tiName,true);
     addLeft(sDesc,taDesc,true);
 
