@@ -328,8 +328,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			DateInput date = (DateInput)getStyledInterface(new DateInput(PARAM_DATE + "_" + i));
 			if (application != null)
 				date.setDate(application.getFromDate());
-			else
-				date.setToCurrentDate();
+		//	else Nacka doesn't want the dates to be set by default
+		//		date.setToCurrentDate();
 			if (isAdmin)
 				date.setYearRange(stamp.getYear() - 5, stamp.getYear() + 5);
 			inputTable.add(fromText, 1, row);
@@ -411,17 +411,55 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n\t var five = 0;");
 		buffer.append("\n\t var length = 0;");
 
+			
+		
+		
 		buffer.append("\n\n\t if (dropOne.selectedIndex > 0) {\n\t\t one = dropOne.options[dropOne.selectedIndex].value;\n\t\t length++;\n\t }");
 		buffer.append("\n\t if (dropTwo.selectedIndex > 0) {\n\t\t two = dropTwo.options[dropTwo.selectedIndex].value;\n\t\t length++;\n\t }");
 		buffer.append("\n\t if (dropThree.selectedIndex > 0) {\n\t\t three = dropThree.options[dropThree.selectedIndex].value;\n\t\t length++;\n\t }");
 		buffer.append("\n\t if (dropFour.selectedIndex > 0) {\n\t\t four = dropFour.options[dropFour.selectedIndex].value;\n\t\t length++;\n\t }");
+		
+		buffer.append("\n\t var dateDayOne = ").append("findObj('").append(PARAM_DATE + "_1_day").append("');");
+		buffer.append("\n\t var dateDayTwo = ").append("findObj('").append(PARAM_DATE + "_2_day").append("');");
+		buffer.append("\n\t var dateDayThree = ").append("findObj('").append(PARAM_DATE + "_3_day").append("');");
+		buffer.append("\n\t var dateDayFour = ").append("findObj('").append(PARAM_DATE + "_4_day").append("');");
+		
 		if (!hasActivePlacement) {
 			buffer.append("\n\t if (dropFive.selectedIndex > 0) {\n\t\t five = dropFive.options[dropFive.selectedIndex].value;\n\t\t length++;\n\t }");
+			buffer.append("\n\t var dateDayFive = ").append("findObj('").append(PARAM_DATE + "_5_day").append("');");
 		}
-
+	
+		buffer.append("\n\t if(one > 0 && dateDayOne.selectedIndex <= 0){");
+		String message = localize("must_set_date", "Please set the date.");
+		buffer.append("\n\t\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t\t return false;");
+		buffer.append("\n\t\t }");
+		buffer.append("\n\t else if(two > 0 && dateDayTwo.selectedIndex <= 0){");
+		message = localize("must_set_date", "Please set the date.");
+		buffer.append("\n\t\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t\t return false;");
+		buffer.append("\n\t\t }");
+		buffer.append("\n\t else if(three > 0 && dateDayThree.selectedIndex <= 0){");
+		message = localize("must_set_date", "Please set the date.");
+		buffer.append("\n\t\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t\t return false;");
+		buffer.append("\n\t\t }");
+		buffer.append("\n\t else if(four > 0 && dateDayFour.selectedIndex <= 0){");
+		message = localize("must_set_date", "Please set the date.");
+		buffer.append("\n\t\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t\t return false;");
+		buffer.append("\n\t\t }");
+		if (!hasActivePlacement){
+		buffer.append("\n\t else if(five > 0 && dateDayFive.selectedIndex <= 0){");
+		message = localize("must_set_date", "Please set the date.");
+		buffer.append("\n\t\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t\t return false;");
+		buffer.append("\n\t\t }");
+		}
+		
 		buffer.append("\n\t if(length > 0){");
 		buffer.append("\n\t\t if(one > 0 && (one == two || one == three || one == four || one == five)){");
-		String message = localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once.");
+		message = localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once.");
 		buffer.append("\n\t\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t\t return false;");
 		buffer.append("\n\t\t }");
