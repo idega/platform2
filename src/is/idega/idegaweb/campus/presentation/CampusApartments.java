@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApartments.java,v 1.1 2002/01/29 18:34:30 aron Exp $
+ * $Id: CampusApartments.java,v 1.2 2002/02/15 12:29:24 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -66,6 +66,7 @@ public class CampusApartments extends Block{
     objects.add(0,new ApartmentSerie());
     objects.add(0,new AprtTypePeriodMaker());
     objects.add(0,new BuildingEditor());
+    objects.add(0,new CampusPhones());
   }
 
 

@@ -9,7 +9,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.block.building.data.*;
 import com.idega.block.building.business.*;
@@ -36,7 +36,7 @@ import java.sql.SQLException;
  * @version 1.1
  */
 
-public class CampusPhones extends PresentationObjectContainer implements IWEventListener{
+public class CampusPhones extends Block implements IWEventListener{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
@@ -58,6 +58,14 @@ public class CampusPhones extends PresentationObjectContainer implements IWEvent
 
   public CampusPhones() {
     super();
+  }
+
+  public String getLocalizedNameKey(){
+    return "campus_phones";
+  }
+
+  public String getLocalizedNameValue(){
+    return "Phones";
   }
 
   protected void control(IWContext iwc){
