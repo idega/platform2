@@ -29,6 +29,7 @@ public class QuestionsServiceBean extends IBOServiceBean implements QuestionsSer
 					quest.setAnswerID(AnswerID);
 				quest.setCategoryId(CategoryID);
 				quest.setValid(true);
+				quest.setSequence(quest.getID());
 				quest.store();
 				return quest;
 			}
@@ -40,7 +41,7 @@ public class QuestionsServiceBean extends IBOServiceBean implements QuestionsSer
 		return null;
 	}
 	
-	public void invalidateQueston(int id)throws RemoteException{
+	public void invalidateQuestion(int id)throws RemoteException{
 		try {
 			Question question = getQuestionHome().findByPrimaryKey(new Integer(id));
 			question.setValid(false);
@@ -50,4 +51,31 @@ public class QuestionsServiceBean extends IBOServiceBean implements QuestionsSer
 			throw new RemoteException(e.getMessage());
 		}
 	}
+	
+	public void validateQuestion(int id)throws RemoteException{
+		try {
+			Question question = getQuestionHome().findByPrimaryKey(new Integer(id));
+			question.setValid(true);
+			question.store();
+		}
+		catch (Exception e) {
+			throw new RemoteException(e.getMessage());
+		}
+	}
+	
+	public void swapSequences(int currentId,int otherId){
+		try {
+			Question currentQuestion = getQuestionHome().findByPrimaryKey(new Integer(currentId));	
+			Question otherQuestion = getQuestionHome().findByPrimaryKey(new Integer(otherId));
+			int currentSeqence = currentQuestion.getSequence();
+			currentQuestion.setSequence(otherQuestion.getSequence());
+			otherQuestion.setSequence(currentSeqence);
+			currentQuestion.store();
+			otherQuestion.store();
+		}
+		catch (Exception e) {
+		}
+	
+	}
+	
 }

@@ -21,6 +21,7 @@ public class QuestionBMPBean extends CategoryEntityBMPBean implements Question{
 	public final static String QUESTION = "question_id";
 	public final static String ANSWER = "answer_id";
 	public final static String VALID = "valid";
+	public final static String SEQUENCE = "sequence";
 	
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#initializeAttributes()
@@ -30,6 +31,7 @@ public class QuestionBMPBean extends CategoryEntityBMPBean implements Question{
 		 addAttribute(QUESTION, "Question", true, true, Integer.class,MANY_TO_ONE,TxText.class);
 		 addAttribute(ANSWER, "Answert", true, true, Integer.class,MANY_TO_ONE,TxText.class);
 		 addAttribute(VALID,"Valid",true,true,Boolean.class);
+		 addAttribute(SEQUENCE,"sequence",true,true,Integer.class);
 	}
 
 	
@@ -64,11 +66,27 @@ public class QuestionBMPBean extends CategoryEntityBMPBean implements Question{
 		this.setColumn(VALID,valid);
 	}
 	
+	public void setSequence(int sequence){
+		this.setColumn(SEQUENCE,sequence);
+	}
+	
+	public int getSequence(){
+		return this.getIntColumnValue(SEQUENCE);
+	}
+	
 	public Collection ejbFindAllByCategory(int iCategory) throws FinderException{
 		StringBuffer sql = new StringBuffer("select * from ").append(TABLE_NAME);
 		sql.append(" where ").append(this.getColumnCategoryId()).append("=").append(iCategory);
 		sql.append(" and ").append(VALID).append("='Y'");
-		sql.append(" order by ").append(getIDColumnName());
+		sql.append(" order by ").append(SEQUENCE);
+		return this.idoFindPKsBySQL(sql.toString());
+	} 
+	
+	public Collection ejbFindAllInvalidByCategory(int iCategory) throws FinderException{
+		StringBuffer sql = new StringBuffer("select * from ").append(TABLE_NAME);
+		sql.append(" where ").append(this.getColumnCategoryId()).append("=").append(iCategory);
+		sql.append(" and ").append(VALID).append("='N'");
+		sql.append(" order by ").append(SEQUENCE);
 		return this.idoFindPKsBySQL(sql.toString());
 	} 
 	
