@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.121 2004/02/24 14:03:09 staffan Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.122 2004/03/08 14:08:39 staffan Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1699,15 +1699,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 								User custodian = (User) it.next();
 								try {
 									BruttoIncome userIncome = getUserInfoService().getBruttoIncomeHome().findLatestByUserAndDate((Integer) custodian.getPrimaryKey(), IWTimestamp.RightNow());
-
-									/////////////////////// temporary logg ///////////////////////
-									if (userIncome != null
-											&& !(0.0f <= userIncome.getIncome().floatValue())) {
-										System.err.println ("### negative income for "
-																				+ custodian.getPrimaryKey());
-									}
-									//////////////////////////////////////////////////////////////
-
 									if (userIncome != null
 											&& 0.0f <= userIncome.getIncome().floatValue()) {
 										// income set for this person, increase family income
@@ -1731,7 +1722,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						}
 
 						float perc = reg.getMaxAmountDiscount();
-						if (!missingIncome && income > 0.0f && perc > 0.0f) {
+						if (!missingIncome && income >= 0.0f && perc > 0.0f) {
 							float amount = income * perc / 100;
 							if (placementTimes != null && placementTimes.getMonths() != 0.0f)
 								total_sum /= placementTimes.getMonths();
