@@ -1113,6 +1113,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, Timestamp registerDate, int registrator, String notes) throws RemoteException {
+		return storeSchoolClassMember(studentID, schoolClassID, registerDate, null, registrator, notes);
+	}
+	
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) throws RemoteException {
 		try {
 			SchoolClassMember member = findClassMemberInClass(studentID, schoolClassID);
 			if (member == null)
@@ -1123,6 +1127,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				member.setSchoolClassId(schoolClassID);
 				if (registerDate != null)
 					member.setRegisterDate(registerDate);
+				if (removedDate != null)
+					member.setRemovedDate(removedDate);
 				if (registrator != -1)
 					member.setRegistratorId(registrator);
 				if (notes != null)
