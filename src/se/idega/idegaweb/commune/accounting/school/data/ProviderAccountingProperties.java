@@ -1,0 +1,22 @@
+package se.idega.idegaweb.commune.accounting.school.data;
+
+
+public interface ProviderAccountingProperties extends com.idega.data.IDOEntity
+{
+ public java.lang.String getBankgiro();
+ public java.lang.String getDoublePosting();
+ public java.lang.String getIDColumnName();
+ public java.lang.String getOwnPosting();
+ public boolean getPaymentByInvoice();
+ public java.lang.String getPostgiro();
+ public com.idega.block.school.data.School getSchool();
+ public int getStatisticsType();
+ public void initializeAttributes();
+ public void setBankgiro(java.lang.String p0);
+ public void setDoublePosting(java.lang.String p0);
+ public void setOwnPosting(java.lang.String p0);
+ public void setPaymentByInvoice(boolean p0);
+ public void setPostgiro(java.lang.String p0);
+ public void setSchoolId(int p0);
+ public void setStatisticsType(int p0);
+}
