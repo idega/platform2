@@ -246,7 +246,39 @@ public class CommuneForum extends Forum {
 	}
 	
 	public boolean hasDeletePermission(IWContext iwc) {
-		if (iwc.hasEditPermission(this))
+		if (super.hasDeletePermission(iwc))
+			return true;
+
+		if (getTopicID() != -1) {
+			try {
+				return getCommuneForumBusiness(iwc).isModerator(getTopicID(), iwc.getCurrentUser());
+			}
+			catch (RemoteException e) {
+				return false;
+			}
+		}
+
+		return false;
+	}
+	
+	public boolean hasAddPermission(IWContext iwc) {
+		if (super.hasAddPermission(iwc))
+			return true;
+
+		if (getTopicID() != -1) {
+			try {
+				return getCommuneForumBusiness(iwc).isModerator(getTopicID(), iwc.getCurrentUser());
+			}
+			catch (RemoteException e) {
+				return false;
+			}
+		}
+
+		return false;
+	}
+	
+	public boolean hasReplyPermission(IWContext iwc) {
+		if (super.hasReplyPermission(iwc))
 			return true;
 
 		if (getTopicID() != -1) {
