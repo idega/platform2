@@ -7,6 +7,8 @@ import java.rmi.RemoteException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOException;
+
 import is.idega.idegaweb.travel.business.Booker;
 
 import com.idega.util.*;
@@ -34,7 +36,7 @@ public class TourBookerBean extends BookerBean implements TourBooker {
     return (Booker) IBOLookup.getServiceInstance(getIWApplicationContext(), Booker.class);
   }
 
-
+/*
 
   public int BookBySupplier(int serviceId, int hotelPickupPlaceId, String roomNumber, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws SQLException, RemoteException, CreateException {
     int _bookingId = getBooker().Book(serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType, userId, ownerId, addressId, comment);
@@ -50,57 +52,26 @@ public class TourBookerBean extends BookerBean implements TourBooker {
     int _bookingId = getBooker().updateBooking(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount,  postalCode, paymentType, userId, ownerId, addressId, comment);
     return Book(_bookingId, hotelPickupPlaceId, roomNumber);
   }
-
-  private int Book(int bookingId, int hotelPickupPlaceId, String roomNumber) throws SQLException, RemoteException {
+*/
+  public int book(int bookingId, int pickupPlaceId, String roomNumber) throws IDOException, RemoteException {
     try {
-      boolean update = false;
       TourBooking booking = null;
       try {
         booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHome(TourBooking.class)).findByPrimaryKey(new Integer(bookingId));
-        update = true;
       }catch (Exception sql) {
         booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHome(TourBooking.class)).create();
         booking.setPrimaryKey(new Integer(bookingId));
-//        booking.setColumn(is.idega.idegaweb.travel.service.tour.data.TourBookingBMPBean.getTourBookingIDColumnName(), bookingId);
       }
-      if (booking == null) {
-        System.err.println("TourBooker : booking  == null !!!");
-        System.err.println("...bookingId          =  "+bookingId);
-        System.err.println("...hotelPickupPlaceId =  "+hotelPickupPlaceId);
-        System.err.println("...roomNumber         =  "+bookingId);
+
+      if (pickupPlaceId != -1) {
+				super.setPickup(booking.getID(), pickupPlaceId, roomNumber);
       }
 
 
-/*      if (hotelPickupPlaceId != -1) {
-        booking.setPickupPlaceID(hotelPickupPlaceId);
-        if (roomNumber != null) {
-          booking.setPickupExtraInfo(roomNumber);
-        }
-
-      }
-*/
-      if (hotelPickupPlaceId != -1) {
-				super.setPickup(booking.getID(), hotelPickupPlaceId, roomNumber);
-//        booking.setPickupPlaceID(hotelPickupPlaceId);
-//        if (roomNumber != null) {
-//          booking.setPickupExtraInfo(roomNumber);
-//        }
-      }
-
-
-      if (update) {
-        booking.store();
-      } else {
-        booking.store();
-      }
-
+  	  booking.store();
 
       return bookingId;
     }catch (CreateException s) {
-
-
-
-
       s.printStackTrace(System.err);
       return bookingId;
     }
