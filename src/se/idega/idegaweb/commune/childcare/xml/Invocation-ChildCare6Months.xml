@@ -3,7 +3,7 @@
 
 <invoke>
 
-	<method_description name="getRejectedReport">
+	<method_description name="getRemovedReport">
 
 		<class_description class="se.idega.idegaweb.commune.childcare.business.ChildCareReportBusiness" default_display_name="ChildCareReportBusiness" type="IBOSessionBean" />
 	
