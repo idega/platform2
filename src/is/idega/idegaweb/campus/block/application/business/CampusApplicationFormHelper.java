@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.5 2002/04/03 18:09:08 aron Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.6 2002/04/04 15:13:23 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -150,16 +150,15 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
           try {
             new javax.mail.internet.InternetAddress(e_mail);
             receiver = e_mail;
+            String body = new String("Umsókn þín hefur verið skráð. Tilvísunarnúmer þitt er : " + cypher);
+            SendMail.send("postmaster@studentagardar.is",receiver,"","palli@idega.is","mail.idega.is","Umsókn skráð",body);
           }
           catch (Exception ex) {
-
+            ex.printStackTrace();
           }
 
         }
       }
-
-      String body = new String("Umsókn þín hefur verið skráð. Tilvísunarnúmer þitt er : " + cypher);
-      SendMail.send("admin@campus.is",receiver,"","palli@idega.is","mail.idega.is","Umsókn skráð",body);
 
       t.commit();
       iwc.removeSessionAttribute("applicant");

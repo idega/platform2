@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.8 2002/04/04 09:47:33 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.9 2002/04/04 15:17:10 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -286,7 +286,9 @@ public class CampusApplicationForm extends ApplicationForm {
     List subjects = ApplicationFinder.listOfNonExpiredSubjects();
     List categories = BuildingFinder.listOfApartmentCategory();
     Text textTemplate = new Text();
-
+    idegaTimestamp today = idegaTimestamp.RightNow();
+    int fromYear = today.getYear()-7;
+    int toYear = today.getYear()+7;
     Edit.setStyle(textTemplate);
 
     Form form = new Form();
@@ -323,15 +325,19 @@ public class CampusApplicationForm extends ApplicationForm {
     DateInput studyBegin = new DateInput("studyBegin");
     Edit.setStyle(studyBegin);
     studyBegin.setToShowDay(false);
+    studyBegin.setYearRange(fromYear,toYear);
     DateInput studyEnd = new DateInput("studyEnd");
     Edit.setStyle(studyEnd);
     studyEnd.setToShowDay(false);
+    studyEnd.setYearRange(fromYear,toYear);
     DateInput spouseStudyBegin = new DateInput("spouseStudyBegin");
     Edit.setStyle(spouseStudyBegin);
     spouseStudyBegin.setToShowDay(false);
+    spouseStudyBegin.setYearRange(fromYear,toYear);
     DateInput spouseStudyEnd = new DateInput("spouseStudyEnd");
     Edit.setStyle(spouseStudyEnd);
     spouseStudyEnd.setToShowDay(false);
+    spouseStudyEnd.setYearRange(fromYear,toYear);
 
     int currentYear = idegaTimestamp.RightNow().getYear();
 
