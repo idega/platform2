@@ -62,8 +62,8 @@ public class CareLinkSearchPatient extends EHealthBlock {
 	private String prmTo = PREFIX + "to";
 	
 	private String searchString;
-	private String personalID = null;
-	private String userID = null;
+	//private String personalID = null;
+	//private String userID = null;
 	private int method = METHOD_SEARCH;
 	private String searchIdentifier = "commlogin";
 	private boolean useSearcher = true;
@@ -116,12 +116,12 @@ public class CareLinkSearchPatient extends EHealthBlock {
 		else
 			method = METHOD_SEARCH;
 			
-		if (iwc.isParameterSet(PARAMETER_PERSONAL_ID))
+		/*if (iwc.isParameterSet(PARAMETER_PERSONAL_ID))
 			personalID = iwc.getParameter(PARAMETER_PERSONAL_ID);
 		
 		String searcherUserPRM = UserSearcher.getUniqueUserParameterName(searchIdentifier);
 		if (iwc.isParameterSet(searcherUserPRM))
-			userID = iwc.getParameter(searcherUserPRM);
+			userID = iwc.getParameter(searcherUserPRM);*/
 	}
 	
 	private void drawForm2(){
