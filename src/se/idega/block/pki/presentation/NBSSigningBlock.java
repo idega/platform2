@@ -42,6 +42,7 @@ import com.idega.presentation.ui.Parameter;
  */
 public class NBSSigningBlock extends Block implements Builderaware{
 
+	//Session key for text to be signed
 	private final static String SIGNED_TEXT = "se.idega.block.pki.presentation.NBSSigningBlock.SIGNED_TEXT";
 	
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.block.pki";	
@@ -49,6 +50,9 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	public final static String INIT_DONE = "se.idega.block.pki.INIT_DONE";
 				
 	public final static String NBS_SIGNED_ENTITY = "se.idega.block.pki.business.NBS_SIGNED_ENTITY";
+	
+	//localization of signature date
+	public final static String LOCAL_SIGNATURE_DATE = "se.idega.block.pki.business.SIGNATURE_DATE";
 	
 	private Map _addedParameters = new HashMap();
 		
@@ -72,7 +76,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 			
 			DateFormat dateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, iwc.getCurrentLocale());
 						
-			String toBeSigned = signedEntity.getText() + "\n\n\nDOCUMENT SIGNED: " + dateFormat.format(new Date());
+			String toBeSigned = signedEntity.getText() + "\n\n\n" + iwrb.getLocalizedString(LOCAL_SIGNATURE_DATE, "DOCUMENT SIGNED:") + dateFormat.format(new Date());
 			iwc.setSessionAttribute(SIGNED_TEXT, toBeSigned);
 			//TODO: (roar) TBD:
 			System.out.println("### ToBeSigned: " + toBeSigned);
