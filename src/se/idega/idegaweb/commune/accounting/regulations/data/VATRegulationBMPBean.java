@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulationBMPBean.java,v 1.12 2003/10/06 14:42:41 anders Exp $
+ * $Id: VATRegulationBMPBean.java,v 1.13 2003/12/15 08:48:29 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,23 +9,25 @@
  */
 package se.idega.idegaweb.commune.accounting.regulations.data;
 
-import java.util.Collection;
 import java.sql.Date;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
-
-import com.idega.block.school.data.SchoolCategory;
+import com.idega.util.IWTimestamp;
 
 /**
  * Entity bean for VATRegulation entries.
  * <p>
- * Last modified: $Date: 2003/10/06 14:42:41 $ by $Author: anders $
+ * Last modified: $Date: 2003/12/15 08:48:29 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class VATRegulationBMPBean extends GenericEntity implements VATRegulation {
 
@@ -176,6 +178,7 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	 * @throws FinderException
 	 */
 	public Collection ejbFindByPeriod(Date from, Date to, String category) throws FinderException {
+		to = getEndOfMonth(to);
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhereEqualsQuoted(COLUMN_CATEGORY, category);
@@ -199,4 +202,30 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 		sql.appendCommaDelimited(s);
 		return idoFindPKsByQuery(sql);
 	}		  
+
+	/*
+	 * This is a fix to always make sure the last date in the (to) month is covered
+	 * See nacp377 
+	 */
+	private Date getEndOfMonth(Date date) {
+		SimpleDateFormat formatter = new SimpleDateFormat ("yyMM");
+		IWTimestamp modDate;
+		Date outDate;
+		String dateString = "";
+		if (formatter != null) {
+			java.util.Date d = new java.util.Date(date.getTime());
+			dateString = formatter.format(d);		
+		} else {
+			return date;
+		}
+		formatter = new SimpleDateFormat ("yyyyMMdd");
+		java.util.Date d = formatter.parse("20" + dateString + "01", new ParsePosition(0));
+
+		modDate = new IWTimestamp(d.getTime());
+		modDate.setAsDate();
+		modDate.addMonths(1);
+		modDate.addDays(-1);
+		outDate = modDate.getDate();
+		return outDate;
+	}	
 }
