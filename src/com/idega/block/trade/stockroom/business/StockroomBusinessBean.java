@@ -155,7 +155,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 
             if (productPriceId != -1) {
               buffer.append(" and ");
-              buffer.append(ppr.getIDColumnName()+" = "+productPriceId);
+              buffer.append("p."+ppr.getIDColumnName()+" = "+productPriceId);
             }
             buffer.append(" and ");
             buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
