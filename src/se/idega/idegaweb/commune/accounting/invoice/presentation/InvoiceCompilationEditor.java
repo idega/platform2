@@ -21,6 +21,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
@@ -85,10 +86,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/22 13:39:45 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/22 14:49:25 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.93 $
+ * @version $Revision: 1.94 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -799,7 +800,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                             Table.HORIZONTAL_ALIGN_RIGHT);
         table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST,
                                     SEARCH_KEY, SEARCH_DEFAULT),
-                   table.getColumns (), row++);
+                   table.getColumns (), row);
+				addClearFormButton (table, table.getColumns (), row++);
 
         if (null != searcher.getUser ()) {
             // exactly one user found - display users invoice compilation list
@@ -835,6 +837,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         createForm (context, table, INVOICE_COMPILATION_LIST_KEY,
                     INVOICE_COMPILATION_LIST_DEFAULT);
     }
+
+	private void addClearFormButton (final Table table, final int col,
+																	 final int row) {
+		table.add (Text.getNonBrakingSpace (), col, row);
+		table.add (getButton (new ResetButton ("Rensa")), col, row);
+	}
 
 	/**
      * Shows one invoice compilation.
@@ -1178,7 +1186,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.mergeCells (1, row, table.getColumns (), row);
         table.add (getSubmitButton (ACTION_SHOW_NEW_COMPILATION_FORM,
                                     SEARCH_INVOICE_RECEIVER_KEY,
-                                    SEARCH_INVOICE_RECEIVER_DEFAULT), 1, row++);
+                                    SEARCH_INVOICE_RECEIVER_DEFAULT), 1, row);
         if (null != searcher.getUser ()) {
             // exactly one user found - display users invoice compilation list
             table.setHeight (row++, 12);
