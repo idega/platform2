@@ -24,10 +24,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2002/11/29 13:19:07 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/29 13:27:24 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -333,18 +333,12 @@ public class ViewpointForm extends CommuneBlock {
         } else if (isCurrentUserOriginator || isCurrentUserHandler) {
             final Table table = createViewpointTable (viewpoint, iwc);
             int row = 5;
-		table.add(getLocalizedHeader(ANSWER_KEY, ANSWER_DEFAULT), 1, row);
-		table.add(new Break(), 1, row);
-		table.add("apa", 1, row++);
-
             if (viewpoint.isAnswered ()) {
                 table.add (getLocalizedSmallHeader (ANSWER_KEY, ANSWER_DEFAULT),
                            1, row);
                 table.add (new Break (), 1, row);
                 table.add (new Text (viewpoint.getAnswer ()), 1, row++);
-            } else {
-                table.add (new Text ("not answered"), 1, row++);
-            }                
+            }              
             table.add(getUserHomePageLink(iwc), 1, row++);
             add (createViewpointTable (viewpoint, iwc));
             
