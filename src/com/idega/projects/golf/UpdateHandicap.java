@@ -148,7 +148,7 @@ public class UpdateHandicap {
                       realTotalPoints = Handicap.calculatePointsWithoutUpdate(stroke2,realLeik);
                     }
                     else {
-                      grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
+                      //grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
                       scorecard[m].setHandicapBefore((float) grunn);
                     }
 
@@ -159,20 +159,22 @@ public class UpdateHandicap {
                       else {
                         grunn = reiknaHandicap2(member,(double)grunn,heildarpunktar);
                       }
-                      grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
+                      //grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
                       scorecard[m].setHandicapAfter((float) grunn);
                     }
                     else {
+                      //grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
                       scorecard[m].setHandicapAfter((float) grunn);
                     }
                 }
                 else {
+                    //grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
                     scorecard[m].setHandicapBefore((float) grunn);
                     if ( m == 0 ) {
                       scorecard[m].setHandicapBefore(memberInfo.getFirstHandicap());
                     }
                     grunn = (double) scorecard[m].getHandicapAfter();
-                    grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
+                    //grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
                 }
 
                 scorecard[m].update();
@@ -225,6 +227,7 @@ public class UpdateHandicap {
           e.printStackTrace(System.out);
       }
 
+      nyForgjof = Double.parseDouble(TextSoap.singleDecimalFormat(nyForgjof));
       return nyForgjof;
     }
 

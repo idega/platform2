@@ -21,127 +21,100 @@ private double grunn;
 	}
 
 	public double getNewHandicap(double breyting) {
+    if ( breyting > 0 ) {
+      int change = (int) breyting;
+      for ( int a = 1; a <= change; a++ ) {
+        grunn -= getMultiplier();
+        grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
+      }
+    }
+    else {
+      handicapIncrease(breyting);
+    }
 
-         if ( breyting > 0 ) {
+    return grunn;
+	}
 
-          int change = (int) breyting;
+  public double getMultiplier() {
 
-          for ( int a = 1; a <= change; a++ ) {
+    double haekkun = 0.0;
 
-            grunn -= getMultiplier();
+    if (grunn < 4.5) {
+        haekkun = 0.1;
+    }
+    else if ((grunn >= 4.5) && (grunn < 11.5)) {
+        haekkun = 0.2;
+    }
+    else if ((grunn >= 11.5) && (grunn < 18.5)) {
+        haekkun = 0.3;
+    }
+    else if ((grunn >= 18.5) && (grunn < 26.5)) {
+        haekkun = 0.4;
+    }
+    else if (grunn >= 26.5) {
+        haekkun = 0.5;
+    }
 
-          }
-
-         }
-
-         else {
-          handicapIncrease(breyting);
-         }
-
-         return grunn;
+    return haekkun;
 
 	}
 
-        public double getMultiplier() {
-
-          double haekkun = 0.0;
-
-          if (grunn < 4.5) {
-              haekkun = 0.1;
-          }
-
-          else if ((grunn >= 4.5) && (grunn < 11.5)) {
-              haekkun = 0.2;
-          }
-
-          else if ((grunn >= 11.5) && (grunn < 18.5)) {
-              haekkun = 0.3;
-          }
-
-          else if ((grunn >= 18.5) && (grunn < 26.5)) {
-              haekkun = 0.4;
-          }
-
-          else if (grunn >= 26.5) {
-              haekkun = 0.5;
-          }
-
-          return haekkun;
-
-	}
-
-        private void handicapIncrease(double breyting) {
-
-            if (grunn < 4.5) {
-                if ( breyting < -1.0 ) {
-                        grunn += 0.1;
-                }
-            }
-
-            else if ((grunn >= 4.5) && (grunn < 11.5)) {
-                if ( breyting < -2.0 ) {
-                        grunn += 0.1;
-                }
-            }
-
-            else if ((grunn >= 11.5) && (grunn < 18.5)) {
-                if ( breyting < -3.0 ) {
-                        grunn += 0.1;
-                }
-            }
-
-            else if ((grunn >= 18.5) && (grunn < 26.5)) {
-                if ( breyting < -4.0 ) {
-                        grunn += 0.1;
-                }
-            }
-
-            else if (grunn >= 26.5) {
-                if ( breyting < -5.0 ) {
-                        grunn += 0.2;
-                }
-            }
-
+  private void handicapIncrease(double breyting) {
+    if (grunn < 4.5) {
+        if ( breyting < -1.0 ) {
+                grunn += 0.1;
         }
+    }
+    else if ((grunn >= 4.5) && (grunn < 11.5)) {
+        if ( breyting < -2.0 ) {
+                grunn += 0.1;
+        }
+    }
+    else if ((grunn >= 11.5) && (grunn < 18.5)) {
+        if ( breyting < -3.0 ) {
+                grunn += 0.1;
+        }
+    }
+    else if ((grunn >= 18.5) && (grunn < 26.5)) {
+        if ( breyting < -4.0 ) {
+                grunn += 0.1;
+        }
+    }
+    else if (grunn >= 26.5) {
+        if ( breyting < -5.0 ) {
+                grunn += 0.2;
+        }
+    }
+  }
 
 	public int getLeikHandicap (int slope,float course_rating,int field_par) {
-
 		int leik = getLeikHandicap((double)slope,(double)course_rating,(double)field_par);
-
 		return leik;
-
-
 	}
 
 	public int getLeikHandicap (double slope, double course_rating, double field_par) {
-
 		double leikhandicap = grunn * (slope/113) + (course_rating-field_par);
-
 		int leik = (int) Math.rint(leikhandicap);
-
 		return leik;
-
 	}
 
 	public static float getHandicapForScorecard (int tournament_id, int tee_color_id, float max_handicap) throws IOException,SQLException {
+    Tournament tournament = new Tournament(tournament_id);
+    Field field = tournament.getField();
 
-            Tournament tournament = new Tournament(tournament_id);
-            Field field = tournament.getField();
+    float course_rating = 72;
+    int slope = 113;
+    int field_par = field.getFieldPar();
 
-            float course_rating = 72;
-            int slope = 113;
-            int field_par = field.getFieldPar();
+    Tee[] tee = (Tee[]) (new Tee()).findAllByColumn("field_id",field.getID()+"","tee_color_id",tee_color_id+"");
+    if ( tee.length > 0 ) {
+      course_rating = tee[0].getCourseRating();
+      slope = tee[0].getSlope();
+    }
 
-            Tee[] tee = (Tee[]) (new Tee()).findAllByColumn("field_id",field.getID()+"","tee_color_id",tee_color_id+"");
-            if ( tee.length > 0 ) {
-              course_rating = tee[0].getCourseRating();
-              slope = tee[0].getSlope();
-            }
+    float handicap = (float) ( ( max_handicap - ( course_rating - field_par ) ) * 113 ) / slope;
 
-            float handicap = (float) ( ( max_handicap - ( course_rating - field_par ) ) * 113 ) / slope;
-
-            return handicap;
-
+    return handicap;
 	}
 
   public static int calculatePoints(Scorecard sc, Vector strokes, int playHandicap) {
@@ -262,9 +235,7 @@ private double grunn;
   }
 
   public static int getTotalPoints(int scorecard_id, float grunnHandicap) {
-
     int totalPoints = 0;
-
     try {
       Scorecard scorecard = new Scorecard(scorecard_id);
       Handicap handicap = new Handicap((double) grunnHandicap);
@@ -280,13 +251,10 @@ private double grunn;
     }
 
     return totalPoints;
-
   }
 
   public static int getTotalPoints(int scorecard_id, int leikHandicap) {
-
     int totalPoints = 0;
-
     try {
       Stroke[] stroke = (Stroke[]) (new Stroke()).findAll("select stroke.* from stroke s,tee t where s.tee_id = t.tee_id and scorecard_id = "+scorecard_id+" order by hole_number");
 
@@ -297,7 +265,5 @@ private double grunn;
     }
 
     return totalPoints;
-
   }
-
 }

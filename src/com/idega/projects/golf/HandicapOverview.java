@@ -242,9 +242,9 @@ private String headerTextColor = "#FFFFFF";
             showRealHandicap = true;
           }
         }
-      }
-      if ( tournament.getTournamentType().getModifier() != -1 ) {
-        showRealHandicap = true;
+        if ( tournament.getTournamentType().getModifier() != -1 ) {
+          showRealHandicap = true;
+        }
       }
       if ( tournamentRound.getRoundNumber() > 1 ) {
         showRealHandicap = true;
