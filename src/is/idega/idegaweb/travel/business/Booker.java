@@ -1,6 +1,11 @@
 package is.idega.idegaweb.travel.business;
 
+import is.idega.idegaweb.travel.interfaces.Booking;
+
+import java.rmi.RemoteException;
 import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 public interface Booker extends com.idega.business.IBOService
 {
@@ -16,7 +21,8 @@ public interface Booker extends com.idega.business.IBOService
  public float getBookingPrice(is.idega.idegaweb.travel.data.GeneralBooking[] p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public float getBookingPrice(is.idega.idegaweb.travel.interfaces.Booking[] p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public float getBookingPrice(is.idega.idegaweb.travel.interfaces.Booking p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- //public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(int[] p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int[] p3)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public boolean deleteBooking(Booking booking, boolean deleteRelated) throws RemoteException, FinderException;
+	 //public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(int[] p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int[] p3)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  //public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(int[] p0,com.idega.util.IWTimestamp p1,int[] p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(int[] p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int[] p3,com.idega.block.trade.stockroom.data.TravelAddress p4)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(int p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;

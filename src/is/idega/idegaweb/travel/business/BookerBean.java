@@ -496,6 +496,22 @@ public class BookerBean extends IBOServiceBean implements Booker{
     Booking booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
     return deleteBooking(booking);
   }
+  
+  public boolean deleteBooking(Booking booking, boolean deleteRelated) throws RemoteException, FinderException {
+  		if (deleteRelated) {
+  			List list = getMultibleBookings((GeneralBooking) booking);
+  			if (list != null) {
+  				Iterator iter = list.iterator();
+  				while (iter.hasNext()) {
+  					GeneralBooking gBook = (GeneralBooking) iter.next();
+  					deleteBooking(gBook);
+  				}
+  			}
+			return true;
+  		} else {
+  			return deleteBooking(booking);
+  		}
+  }
 
   public  boolean deleteBooking(Booking booking) throws RemoteException {
       booking.setIsValid(false);
