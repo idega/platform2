@@ -169,9 +169,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 
 	public Collection checkResults(IWContext iwc, Collection results) throws RemoteException {
 		if (results != null && !results.isEmpty()) {
-			System.out.println("ServiceSearchBusiness : checking reults : " +results.size());
+//			System.out.println("ServiceSearchBusiness : checking reults : " +results.size());
 			results = getProductInstanceCollection(results);
-			System.out.println("ServiceSearchBusiness : results converted to products");
+//			System.out.println("ServiceSearchBusiness : results converted to products");
 			HashMap map = new HashMap();
 			Collection coll = new Vector();
 			ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
@@ -211,13 +211,13 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			while (iter.hasNext() && from != null && to != null) {
 				try {
 					product = (Product) iter.next();
-					System.out.println("ServiceSearchBusiness : checking product : " +product.getProductName(iwc.getCurrentLocaleId()));
+//					System.out.println("ServiceSearchBusiness : checking product : " +product.getProductName(iwc.getCurrentLocaleId()));
 					productIsValid = getBookingBusiness(iwc).getIsProductValid(iwc, product, from, to);
 					if (productIsValid) {
-						System.out.println("ServiceSearchBusiness : valid");
+//						System.out.println("ServiceSearchBusiness : valid");
 						map.put(product, new Boolean(productIsValid));
 					}	else {
-						System.out.println("ServiceSearchBusiness : invalid");
+//						System.out.println("ServiceSearchBusiness : invalid");
 						toRemove.add(product);
 					}
 				} catch (Exception e1) {
@@ -227,7 +227,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			results.removeAll(toRemove);
 			return results;
 		} else {
-			System.out.println("ServiceSearchBusiness : No results");
+//			System.out.println("ServiceSearchBusiness : No results");
 		}
 		return new Vector();
 	}

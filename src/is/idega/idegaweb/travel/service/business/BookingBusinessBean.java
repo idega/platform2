@@ -59,34 +59,34 @@ public class BookingBusinessBean extends IBOServiceBean  implements BookingBusin
 		if (timeframe != null) {
 			timeframeId = timeframe.getID();
 		}
-		System.out.println("BookingBusinessBean checking product");
+//		System.out.println("BookingBusinessBean checking product");
 		prices = ProductPriceBMPBean.getProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
 		
 		if (prices != null && prices.length > 0) { 
-			System.out.println("BookingBusinessBean found prices : "+prices.length);
+//			System.out.println("BookingBusinessBean found prices : "+prices.length);
 			/** Not inserting product without proper price categories */
 			tmp = new IWTimestamp(from);
 			productIsValid = true;
 			while ( tmp.isEarlierThan(to) && productIsValid) {
 				/** Checking if day is available */
 				productIsValid = getServiceHandler().getServiceBusiness(product).getIfDay(iwc, product, product.getTimeframes(), tmp, false, true);
-				System.out.println("BookingBusinessBean productIsValid 1 = "+productIsValid);
+//				System.out.println("BookingBusinessBean productIsValid 1 = "+productIsValid);
 				
 				if (productIsValid) {
 					productIsValid = !bf.isFullyBooked(iwc, product, tmp);
 				}
-				System.out.println("BookingBusinessBean productIsValid 2 = "+productIsValid);
+//				System.out.println("BookingBusinessBean productIsValid 2 = "+productIsValid);
 				if (productIsValid) {
 					productIsValid = !bf.isUnderBooked(iwc, product, tmp);
 				}
-				System.out.println("BookingBusinessBean productIsValid 3 = "+productIsValid);
+//				System.out.println("BookingBusinessBean productIsValid 3 = "+productIsValid);
 				//productIsValid = (bf.checkBooking(iwc, false, false, false) >= 0);
 				//productIsValid = bus.getIfDay(iwc, product, tmp);
 				tmp.addDays(1);
 			}
 			return productIsValid;
 		} else {
-			System.out.println("BookingBusinessBean no prices found, type = "+bf.getPriceCategorySearchKey());
+//			System.out.println("BookingBusinessBean no prices found, type = "+bf.getPriceCategorySearchKey());
 		}
 		return false;
 	}	
