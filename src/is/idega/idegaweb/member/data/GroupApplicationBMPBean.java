@@ -148,10 +148,12 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
   } 
 	
   public void addGroups(List groups) throws IDOAddRelationshipException {
-	for (Iterator iter = groups.iterator(); iter.hasNext();) {
-		Group group = (Group) iter.next();
-		this.idoAddTo(group);
-	}
+  	if(groups!=null){
+		for (Iterator iter = groups.iterator(); iter.hasNext();) {
+			Group group = (Group) iter.next();
+			this.idoAddTo(group);
+		}
+  	}
   }	
 
   public Collection ejbFindAllApplicationsByStatus(String status) throws FinderException,RemoteException{
