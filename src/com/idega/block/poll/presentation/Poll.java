@@ -387,6 +387,7 @@ private int _layout = RADIO_BUTTON_VIEW;
                 percent = ( (float) answers[i].getHits() / (float) total ) * 100;
 
               Text answerText = new  Text(answerLocText.getHeadline());
+                if ( _showVotes ) answerText.addToText(" ("+Integer.toString(answers[i].getHits())+")");
                 answerText.setFontSize(1);
                 answerText.setFontStyle(_styleAttribute);
               Text percentText = new Text(Text.NON_BREAKING_SPACE+com.idega.util.text.TextSoap.decimalFormat(percent,1)+"%");
