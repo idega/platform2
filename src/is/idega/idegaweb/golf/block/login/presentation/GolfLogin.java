@@ -11,6 +11,7 @@ import is.idega.idegaweb.golf.presentation.GolfBlock;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
@@ -49,7 +50,7 @@ public class GolfLogin extends GolfBlock {
 		Text loginTexti = getSmallHeader(userText);
 		Text passwordTexti = getSmallHeader(passwordText);
 
-		Table myTable = new Table(5,1);
+		Table myTable = new Table(6,1);
 		myTable.setCellpadding(0);
 		myTable.setCellspacing(0);
 		myTable.setCellpaddingRight(1,1,5);
@@ -57,27 +58,32 @@ public class GolfLogin extends GolfBlock {
 		myTable.setCellpaddingRight(3,1,5);
 		myTable.setCellpaddingRight(4,1,5);
 		myTable.setCellpaddingRight(5,1,5);
+		myTable.setCellpaddingRight(6,1,5);
 
 		myTable.add(loginTexti, 1, 1);
 
 
-		TextInput login = new TextInput("login");
-		login.setStyleAttribute("fontsize: 10pt");
-		login.setSize(6);
+		TextInput login = (TextInput) getStyledSmallInterface(new TextInput("login"));
+		login.setSize(8);
 		myTable.add(login, 2, 1);
 
 
 		myTable.add(passwordTexti, 3, 1);
 
-		PasswordInput passw = new PasswordInput("password");
-		passw.setStyleAttribute("fontsize: 10pt");
-		passw.setSize(6);
+		PasswordInput passw = (PasswordInput) getStyledSmallInterface(new PasswordInput("password"));
+		passw.setSize(8);
 		myTable.add(passw, 4, 1);
 
-		GenericButton loginButton = getSubmitButton("tengja");
+		/*GenericButton loginButton = getSubmitButton("tengja");
 		loginButton.setContent(localize("login.login","Login"));
-		myTable.add(loginButton, 5, 1);
+		myTable.add(loginButton, 5, 1);*/
 		
+		Text spacer = getStyleText("|", this.STYLENAME_TEMPLATE_HEADER2);
+		myTable.add(spacer, 5, 1);
+		
+		Link loginLink = getStyleLink(localize("login.login","Login"), this.STYLENAME_TEMPLATE_LINK);
+		loginLink.setToFormSubmit(myForm);
+		myTable.add(loginLink, 6, 1);
 		
 //		if (showNewUserImage) {
 //			GenericButton button = getSubmitButton();
@@ -146,17 +152,24 @@ public class GolfLogin extends GolfBlock {
 		Table myTable = new Table();
 		myTable.setCellspacing(0);
 		myTable.setCellpadding(0);
-		myTable.setCellpaddingLeft(2,1,10);
-		myTable.setCellpaddingRight(2,1,10);
+		myTable.setCellpaddingLeft(1,1,5);
+		myTable.setCellpaddingRight(2,1,5);
 
 		Member member = (Member) modinfo.getSession().getAttribute("member_login");
 		Text userName = getSmallHeader(member.getName());
 		myTable.add(userName,1,1);
 		myTable.setNoWrap(1,1);
 
-		GenericButton button = getSubmitButton();
+		Text spacer = getStyleText("|", this.STYLENAME_TEMPLATE_HEADER2);
+		myTable.add(spacer, 2, 1);
+		
+		Link logout = getStyleLink(localize("login.logout","Log out"), this.STYLENAME_TEMPLATE_LINK);
+		logout.setToFormSubmit(myForm);
+		myTable.add(logout, 3, 1);
+
+		/*GenericButton button = getSubmitButton();
 		button.setContent(localize("login.logout","Log out"));
-		myTable.add(button, 2, 1);
+		myTable.add(button, 2, 1);*/
 		myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "logoff"));
 
 		myForm.add(myTable);
@@ -181,10 +194,11 @@ public class GolfLogin extends GolfBlock {
 		Table myTable = new Table();
 		myTable.setCellspacing(0);
 		myTable.setCellpadding(0);
-		myTable.setCellpaddingRight(1,1,10);
+		myTable.setCellpaddingRight(1,1,5);
+		myTable.setCellpaddingRight(2,1,5);
 		
 		Text failed = getMessageText(getResourceBundle().getLocalizedString("loginfailed", "Login failed"));
-		failed.setFontSize(1);
+		//failed.setFontSize(1);
 		if (what.equals("empty")) {
 			failed.setText(getResourceBundle().getLocalizedString("id_needed", "Identification needed"));
 		} else if (what.equals("toBig")) {
@@ -193,9 +207,16 @@ public class GolfLogin extends GolfBlock {
 		myTable.add(failed,1,1);
 		myTable.setAlignment(1, 1, "center");
 		
-		GenericButton tryAgain = getSaveButton();
-		tryAgain.setContent(localize("login.try_again","Try again"));
+		Text spacer = getStyleText("|", this.STYLENAME_TEMPLATE_HEADER2);
+		myTable.add(spacer, 2, 1);
+		
+		Link tryAgain = getStyleLink(localize("login.try_again","Try again"), this.STYLENAME_TEMPLATE_LINK);
+		tryAgain.setToFormSubmit(myForm);
 		myTable.add(tryAgain, 3, 1);
+
+		/*GenericButton tryAgain = getSaveButton();
+		tryAgain.setContent(localize("login.try_again","Try again"));
+		myTable.add(tryAgain, 3, 1);*/
 		myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "tryagain"));
 
 		myForm.add(myTable);
