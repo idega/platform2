@@ -114,6 +114,7 @@ public class TournamentResultsDetailed extends JModuleObject {
       int totalStrokes = 0;
       int difference = 0;
 
+
       myTable.setHeight(row,"20");
       myTable.setHeight(row+1,"20");
       myTable.setRowColor(row,"#EAFAEC");
@@ -331,8 +332,29 @@ public class TournamentResultsDetailed extends JModuleObject {
 
   private void getMemberVector() {
     try {
-      int[] tournamentRounds_ = new int[1];
-        tournamentRounds_[0] = tournamentRound_;
+
+      TournamentRound[] rounds = tournament.getTournamentRounds();
+      TournamentRound tRound = new TournamentRound(tournamentRound_);
+      Vector ids = new Vector();
+      for (int i = 0; i < rounds.length; i++) {
+        if (rounds[i].getRoundNumber() <= tRound.getRoundNumber()) {
+          ids.add(rounds[i].getID());
+        }
+      }
+
+      int[] tournamentRounds_;
+      if (ids != null) {
+          tournamentRounds_ = new int[ids.size()];
+          for (int i = 0; i < ids.size(); i++) {
+              tournamentRounds_[i] = (int) ids.get(i);
+          }
+      }else {
+          //int[]
+          tournamentRounds_ = new int[1];
+            tournamentRounds_[0] = tournamentRound_;
+
+      }
+
 
       ResultDataHandler handler = new ResultDataHandler(tournamentId_,ResultComparator.TOTALSTROKES,tournamentGroupId_,tournamentRounds_,null);
       result = handler.getTournamentMembers();
