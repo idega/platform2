@@ -14,7 +14,6 @@ import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.event.MessageListener;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
-
 import com.idega.presentation.CollectionNavigator;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
@@ -24,7 +23,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-
 import com.idega.user.data.User;
 import com.idega.util.CustomDateFormat;
 
@@ -110,8 +108,24 @@ public class MessageBox extends CommuneBlock {
 			User user = iwc.getCurrentUser();
 
 			CollectionNavigator navigator = getNavigator(iwc, user);
-			messageTable.mergeCells(1, 1, messageTable.getColumns(), 1);
-			messageTable.add(navigator, 1, 1);
+
+			if (useStyleNames) {
+				messageTable.setRowStyleClass(1, getHeadingRowClass());
+				messageTable.mergeCells(1, 1, 2, 1);
+				messageTable.add(localize("message.messages", "Messages"), 1, 1);
+				messageTable.mergeCells(3, 1, 4, 1);
+				messageTable.setAlignment(3, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+				
+				navigator.setUseShortText(true);
+				navigator.setWidth(50);
+				navigator.setLinkStyle(getStyleName(STYLENAME_SMALL_HEADER_LINK));
+				navigator.setTextStyle(getStyleName(STYLENAME_SMALL_HEADER));
+				messageTable.add(navigator, 3, 1);
+			}
+			else {
+				messageTable.mergeCells(1, 1, messageTable.getColumns(), 1);
+				messageTable.add(navigator, 1, 1);
+			}
 			
 			Collection messages = getMessages(iwc, user, _numberPerPage, _start); 
 						
@@ -119,7 +133,13 @@ public class MessageBox extends CommuneBlock {
 //			Text date = null;
 //			CheckBox deleteCheck = null;
 //			boolean isRead = false;
-			DateFormat dateFormat = CustomDateFormat.getDateTimeInstance(iwc.getCurrentLocale());
+			DateFormat dateFormat = null;
+			if (useStyleNames) {
+				dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
+			}
+			else {
+				dateFormat = CustomDateFormat.getDateTimeInstance(iwc.getCurrentLocale());
+			}
 
 			if (messages != null && !messages.isEmpty()) {
 				hasMessages = true;
