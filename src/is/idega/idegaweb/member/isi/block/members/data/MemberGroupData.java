@@ -214,11 +214,19 @@ public class MemberGroupData {
 	}
 	
 	private String getStatusLocalizedName(String statusKey) {
-		return _comUserBundle.getLocalizedString(statusKey, null);
+		String value = _comUserBundle.getLocalizedString(statusKey, null);
+		if(value==null) {
+			System.out.println("No localized name found for user status, key was " + statusKey);
+		}
+		return value;
 	}
 	
 	private String getGroupTypeLocalizedName(String groupTypeKey) {
-		return _iwrb.getLocalizedString(LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + groupTypeKey, null);
+		String value = _iwrb.getLocalizedString(LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + groupTypeKey, null);
+		if(value==null) {
+			System.out.println("No localized name found for group type, key was " + groupTypeKey);
+		}
+		return value;
 	}
 	
 	
