@@ -16,10 +16,11 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 
@@ -64,9 +65,10 @@ public class TournamentRegistrationMobile extends Block {
 	
 	private PresentationObject getTournamentSelectionForm(IWContext iwc) {
 		try {
-			Form form = new Form();
+			Paragraph cont = new Paragraph();
 			
 			String selectionLabel = _iwrb.getLocalizedString(LOCALIZATION_KEY_TOURNAMENT_SELECTION_TEXT, "Select tournament");
+			cont.add(selectionLabel);
 			
 			boolean week = SEARCH_INTERVAL_WEEK.equals(iwc.getParameter(PARAM_NAME_SEARCH_INTERVAL));
 			IWTimestamp begin = new IWTimestamp();
@@ -76,20 +78,22 @@ public class TournamentRegistrationMobile extends Block {
 			end.addDays(week?7:31);
 			end.setHour(23);
 			Tournament[] tournaments = getTournamentBusiness(iwc).getTournaments(begin, end);
-			System.out.println("Got " + tournaments.length + " tournaments from " + begin + " to " + end);
-			DropdownMenu menu = new DropdownMenu(RegistrationForMembers.PRM_TOURNAMENT_ID);
 			for(int i=0; i<tournaments.length; i++) {
 				Tournament t = tournaments[i];
-				String displayStr = t.getStartTime() + " - " + t.getName() + " - " + t.getField().getName();
-				menu.addMenuElement(t.getPrimaryKey().toString(), displayStr);
+				String day = (new IWTimestamp(t.getStartTime())).getDateString("EEE d MMM", iwc.getCurrentLocale());
+				String name = t.getName();
+				String place = t.getField().getName();
+				String displayStr = day + " - " + name + " - " + place;
+				cont.addBreak();
+				Link link = new Link();
+				link.addParameter(RegistrationForMembers.PRM_TOURNAMENT_ID, t.getPrimaryKey().toString());
+				link.addParameter(RegistrationForMembers.PRM_ACTION, RegistrationForMembers.VAL_ACTION_OPEN);
+				link.setText(displayStr);
+				link.setPage(_pageToSubmitTo);
+				cont.add(link);
 			}
-			form.add(selectionLabel);
-			form.add(menu);
 			
-			HiddenInput actionInput = new HiddenInput(RegistrationForMembers.PRM_ACTION, RegistrationForMembers.VAL_ACTION_OPEN);
-			form.add(actionInput);
-			form.setPageToSubmitTo(_pageToSubmitTo);
-		 	return form;
+		 	return cont;
 		} catch(Exception e) {
 			e.printStackTrace();
 			return new Text();
