@@ -34,6 +34,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 
 /**
  * This class does something very clever.....
@@ -123,7 +124,8 @@ public class SchoolFreeTimeList extends SchoolCommuneBlock {
 				else
 					table.setRowColor(row, getZebraColor2());
 
-				table.add(getSmallText(pupil.getNameLastFirst(true)),1,row);
+				Name name = new Name(pupil.getFirstName(), pupil.getMiddleName(), pupil.getLastName());
+				table.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)),1,row);
 				table.add(getSmallText(PersonalIDFormatter.format(pupil.getPersonalID(),iwc.getCurrentLocale())),2,row);
 				if (address != null)
 					table.add(getSmallText(address.getStreetAddress()),3,row);

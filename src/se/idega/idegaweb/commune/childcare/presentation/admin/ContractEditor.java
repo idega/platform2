@@ -37,6 +37,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 
 /**
  * @author gimmi
@@ -467,15 +468,18 @@ public class ContractEditor extends ChildCareBlock {
 					if (hasComment)
 						table.add(getSmallErrorText(Text.NON_BREAKING_SPACE), column, row);
 					if (getResponsePage() != null) {
-						archive = getSmallLink(child.getNameLastFirst(true));
+						Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+						archive = getSmallLink(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true));
 						archive.setEventListener(ChildCareEventListener.class);
 						archive.addParameter(getSession().getParameterUserID(), application.getChildId());
 						archive.addParameter(getSession().getParameterApplicationID(), ((Integer)application.getPrimaryKey()).intValue());
 						archive.setPage(getResponsePage());
 						table.add(archive, column++, row);
 					}
-					else
-						table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
+					else {
+						Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+						table.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), column++, row);
+					}
 	
 					table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 					table.add(getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
@@ -534,7 +538,8 @@ public class ContractEditor extends ChildCareBlock {
 					table.add(deleteLink, column++, row);
 				}
 				else {
-					table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
+					Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+					table.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), column++, row);
 					table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 				}
 				row++;

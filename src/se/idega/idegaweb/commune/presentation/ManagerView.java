@@ -13,6 +13,7 @@ import com.idega.presentation.text.Text;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.text.Name;
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
@@ -100,7 +101,8 @@ public class ManagerView extends CommuneBlock {
 				}
 				mainTable.add(picture,3,1);
 				
-				String sManagerName = manager.getNameLastFirst(true);
+				Name name = new Name(manager.getFirstName(), manager.getMiddleName(), manager.getLastName());
+				String sManagerName = name.getName(iwc.getApplicationSettings().getDefaultLocale(), true);
 				Text tManagerName = getSmallHeader(sManagerName);
 				leftTable.add(tManagerName,1,1);
 				

@@ -24,6 +24,7 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 
 /**
  * @author laddi
@@ -231,8 +232,10 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 				childInfo.setPage(getResponsePage());
 				table.add(childInfo, column++, row);
 			}
-			else
-				table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
+			else {
+				Name userName = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+				table.add(getSmallText(userName.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), column++, row);
+			}
 			table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 			if (address != null)
 				table.add(getSmallText(address.getStreetAddress()), column, row);

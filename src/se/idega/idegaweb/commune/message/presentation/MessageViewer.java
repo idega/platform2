@@ -18,6 +18,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.Name;
 import com.idega.util.text.TextSoap;
 import com.idega.presentation.Page;
 import com.idega.presentation.Script;
@@ -199,7 +200,8 @@ public class MessageViewer extends CommuneBlock {
 		User sender = msg.getSender();
 		IWTimestamp stamp = new IWTimestamp(msg.getCreated());
 		
-		Object[] arguments = { sender.getNameLastFirst(true), stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT) };
+		Name name = new Name(sender.getFirstName(), sender.getMiddleName(), sender.getLastName());
+		Object[] arguments = { name.getName(iwc.getApplicationSettings().getDefaultLocale(), true), stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT) };
 		String bodyMessage = MessageFormat.format(localize("message.reply_info", "On {1}, {0} wrote:\n"), arguments);
 		if (msg.getBody() != null)
 			bodyMessage += "\"" + TextSoap.formatText(msg.getBody()) + "\"";

@@ -23,6 +23,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 import com.idega.util.text.TextSoap;
 
 /**
@@ -187,7 +188,8 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 					
 						table.add(radio, 1, row);
 						table.add(Text.getNonBrakingSpace(), 1, row);
-						table.add(getSmallText(user.getNameLastFirst(true)), 1, row);
+						Name name = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
+						table.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), 1, row);
 						if (user.getPersonalID() != null) {
 							table.add(getSmallText(" ("), 1, row);
 							table.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())+")"), 1, row++);
