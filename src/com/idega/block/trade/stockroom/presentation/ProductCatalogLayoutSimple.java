@@ -70,7 +70,7 @@ public class ProductCatalogLayoutSimple extends AbstractProductCatalogLayout {
 	      productTable.add(iconImage,pColumn++,pRow);
 	      productTable.add(spacer,pColumn++,pRow);
 	    }
-	    productTable.add(productCatalog.getNamePresentationObject(product), pColumn, pRow);
+	    productTable.add(productCatalog.getNamePresentationObject(product), pColumn++, pRow);
 
 	    if (productCatalog._hasEditPermission) {
 	      productTable.add(productCatalog.getProductEditorLink(product), pColumn++, pRow);
