@@ -25,7 +25,7 @@ import com.idega.presentation.awt.SingleLineItem;
  */
 
 public class MessengerApplet extends Applet implements Runnable{
-    private boolean isStandalone = false;
+  private boolean listenerStarted = false;
   private boolean runThread = true;
   private boolean isfirstRun = true;
   private static String FRAME_NAME= "IdegaWeb Messenger";
@@ -62,8 +62,7 @@ public class MessengerApplet extends Applet implements Runnable{
 
   /**Get a parameter value*/
   public String getParameter(String key, String def) {
-    return isStandalone ? System.getProperty(key, def) :
-       (getParameter(key) != null ? getParameter(key) : def);
+    return (getParameter(key) != null ? getParameter(key) : def);
   }
 
   /**Construct the applet*/
@@ -98,7 +97,8 @@ public class MessengerApplet extends Applet implements Runnable{
       dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
       listener.addMessageDialog(dialog);
-      listener.start();
+
+      if(!listenerStarted) listener.start();
 
       SingleLineItem test = new SingleLineItem(this);
       test.setWindowToOpen(dialog);
@@ -176,7 +176,7 @@ public class MessengerApplet extends Applet implements Runnable{
           dialogs.put(Integer.toString(aMessage.getId()),messageDialog);
           messageDialog.setVisible(true);
           listener.addMessageDialog(messageDialog);
-          listener.start();
+          if(!listenerStarted) listener.start();
 
         }
         else {
