@@ -3,6 +3,8 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
+import com.idega.presentation.IWContext;
+
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 
@@ -32,6 +34,10 @@ public class GroupScorecardWindow extends GolfWindow {
 		super(name, width, height);
 		this.setGolfClassToInstanciate(GroupScorecard.class);
 		this.setResizable(true);
+	}
+	
+	public void main(IWContext iwc) throws Exception {
+		this.setTitle(getResourceBundle(iwc).getLocalizedString("tournament.groupregistration", "Group registration"));
 	}
 
 	
