@@ -16,6 +16,7 @@ import com.idega.business.IBOServiceBean;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.util.FileUtil;
 
@@ -128,7 +129,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     IWMainApplication mainApp = getIWApplicationContext().getApplication();
     String separator = FileUtil.getFileSeparator();
     StringBuffer path = new StringBuffer(mainApp.getApplicationRealPath());
-    path.append(mainApp.getIWCacheManager().IW_ROOT_CACHE_DIRECTORY)
+    path.append(IWCacheManager.IW_ROOT_CACHE_DIRECTORY)
       .append(separator)
       .append(REPORT_FOLDER);
 
@@ -146,13 +147,13 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   
   private String getURIToReport(String reportName, String extension) {
     IWMainApplication mainApp = getIWApplicationContext().getApplication();
-    String separator = FileUtil.getFileSeparator();
+    String separator = "/";
     String appContextURI = mainApp.getApplicationContextURI();
     StringBuffer uri = new StringBuffer(appContextURI);
     if(!appContextURI.endsWith(separator)){
 			uri.append(separator);
     }
-      uri.append(mainApp.getIWCacheManager().IW_ROOT_CACHE_DIRECTORY)
+      uri.append(IWCacheManager.IW_ROOT_CACHE_DIRECTORY)
       .append(separator)
       .append(REPORT_FOLDER)
       .append(separator)
