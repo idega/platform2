@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
+import javax.ejb.FinderException;
 
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.AccountEntryBMPBean;
@@ -22,6 +23,7 @@ import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDOStoreException;
 import com.idega.data.SimpleQuerier;
 import com.idega.util.IWTimestamp;
 /**
@@ -221,17 +223,23 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 		Date paydate,
 		Integer tariffGroupID,
 		Integer financeCategoryID,Integer externalID,
-		boolean save) {
+		boolean save,Integer assessmentRound) {
 		javax.transaction.UserTransaction transaction = this.getSessionContext().getUserTransaction();
 		try {
 			transaction.begin();
 
 			AssessmentRoundHome arh = (AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class);
-			AssessmentRound AR = arh.create();
-			AR.setAsNew("account " + accountID);
-			AR.setTariffGroupId(tariffGroupID.intValue());
-			AR.setCategoryId(financeCategoryID.intValue());
-			AR.store();
+			AssessmentRound AR = null;
+			if(assessmentRound!=null && assessmentRound.intValue()>0){
+				AR = arh.findByPrimaryKey(assessmentRound);
+			}
+			else{
+				AR = arh.create();
+				AR.setAsNew("account " + accountID);
+				AR.setTariffGroupId(tariffGroupID.intValue());
+				AR.setCategoryId(financeCategoryID.intValue());
+				AR.store();
+			}
 			
 			createAccountEntry(
 				accountID,
@@ -274,7 +282,7 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 		int discount,
 		Integer tariffGroupID,
 		Integer financeCategoryID,
-		Integer externalID)
+		Integer externalID,Integer assessmentRound)
 		throws java.rmi.RemoteException {
 		try {
 			boolean useFactors = (multiplyFactors!=null && tariffIds.length==multiplyFactors.length);
@@ -290,7 +298,7 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 			}
 			
 			//Collection tariffs = ((TariffHome) IDOLookup.getHome(Tariff.class)).findAllByPrimaryKeyArray(tariffIds);
-			assessTariffsToAccount(tariffs,factors, accountID, paydate, discount, tariffGroupID, financeCategoryID,externalID);
+			assessTariffsToAccount(tariffs,factors, accountID, paydate, discount, tariffGroupID, financeCategoryID,externalID,assessmentRound);
 		}
 		catch (javax.ejb.FinderException ex) {
 			throw new java.rmi.RemoteException(ex.getMessage());
@@ -302,12 +310,17 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 		Date paydate,
 		int discount,
 		Integer tariffGroupID,
-		Integer financeCategoryID,Integer externalID) {
+		Integer financeCategoryID,Integer externalID,Integer assessmentRound) {
 		javax.transaction.UserTransaction transaction = this.getSessionContext().getUserTransaction();
 
 		try {
 			transaction.begin();
-			AssessmentRound AR = createAssessmentRound(accountID, tariffGroupID, financeCategoryID,(java.sql.Date)paydate);
+			AssessmentRound AR = null;
+			if(assessmentRound!=null && assessmentRound.intValue()>0)
+			   AR = ((AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class)).create();
+			else
+			   AR = createAssessmentRound(accountID, tariffGroupID, financeCategoryID,(java.sql.Date)paydate);
+			
 			Integer roundID = ((Integer) AR.getPrimaryKey());
 			createAccountEntries(tariffs,multiplyFactors,accountID, paydate, discount, roundID,externalID);
 			transaction.commit();
@@ -418,5 +431,22 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 			e.printStackTrace();
 		}
 		return false;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.block.finance.business.AssessmentBusiness#publishAssessment(java.lang.Integer)
+	 */
+	public void publishAssessment(Integer roundId) {
+		try {
+			AssessmentRound AR = ((AssessmentRoundHome) getIDOHome(AssessmentRound.class)).findByPrimaryKey(roundId);
+			AR.setAsPublished(AR.getName());
+			AR.store();
+		} catch (IDOStoreException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+
 	}
 }

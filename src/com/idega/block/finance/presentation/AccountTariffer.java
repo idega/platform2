@@ -1,6 +1,7 @@
 package com.idega.block.finance.presentation;
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +14,8 @@ import javax.ejb.FinderException;
 import com.idega.block.finance.business.AssessmentBusiness;
 import com.idega.block.finance.business.FinanceHandler;
 import com.idega.block.finance.data.AccountKey;
+import com.idega.block.finance.data.AssessmentRound;
+import com.idega.block.finance.data.AssessmentStatus;
 import com.idega.block.finance.data.FinanceAccount;
 import com.idega.block.finance.data.Tariff;
 import com.idega.block.finance.data.TariffGroup;
@@ -125,6 +128,7 @@ public class AccountTariffer extends Finance {
 				setMainPanel(getTariffTable(group));
 			else
 				setMainPanel(getNewTariffTable(iwc));
+			setMainPanel(getAssessmentRoundChoiceTable(iwc));
 			setMainPanel(getTariffPropertiesTable());
 			//T.setWidth("450");
 			addHiddenInput(prmCategoryId, getFinanceCategoryId().toString());
@@ -140,6 +144,7 @@ public class AccountTariffer extends Finance {
 			String paydate = iwc.getParameter(prmPayDate);
 			IWTimestamp Pd = new IWTimestamp(paydate);
 			String SDiscount = iwc.getParameter(prmDiscount);
+			Integer assessmentRound = iwc.isParameterSet("latest_assmts")?Integer.valueOf(iwc.getParameter("latest_assmts")):null;
 			int discount = SDiscount != null && !SDiscount.equals("") ? Integer.parseInt(SDiscount) : -1;
 			System.out.println(discount);
 			//AssessmentBusiness assBuiz = getAssessmentService(iwc);
@@ -160,7 +165,7 @@ public class AccountTariffer extends Finance {
 				if (tariffIDs.size() > 0) {
 					Integer[] tariffIds = (Integer[]) tariffIDs.toArray(new Integer[0]);
 					Double[] mfactors = (Double[]) factors.toArray(new Double[0]);
-					createTariffs(iwc,Pd, discount, tariffIds, mfactors);
+					createTariffs(iwc,Pd, discount, tariffIds, mfactors,assessmentRound);
 				}
 			} else if (iwc.isParameterSet(prmTariffCheck)) {
 				//System.err.println("using tariffs checks");
@@ -169,7 +174,7 @@ public class AccountTariffer extends Finance {
 				for (int i = 0; i < tariff_ids.length; i++) {
 					tar_ids[i] = new Integer(tariff_ids[i]);
 				}
-				createTariffs(iwc,Pd, discount, tar_ids);
+				createTariffs(iwc,Pd, discount, tar_ids,assessmentRound);
 			} else {
 				Integer keyId = iwc.isParameterSet(prmAccountKey) ? Integer.valueOf(iwc.getParameter(prmAccountKey)) : null;
 				;
@@ -181,7 +186,7 @@ public class AccountTariffer extends Finance {
 					String name = iwc.getParameter(prmTariffName);
 					String info = iwc.getParameter(prmTariffInfo);
 					boolean saveTariff = iwc.isParameterSet(prmSaveTariff);
-					createTariff(iwc,Pd, keyId, price, TariffGroupId, name, info, saveTariff);
+					createTariff(iwc,Pd, keyId, price, TariffGroupId, name, info, saveTariff,assessmentRound);
 				}
 			}
 		}
@@ -191,22 +196,22 @@ public class AccountTariffer extends Finance {
 		return null;
 	}
 	
-	protected void createTariffs(IWContext iwc,IWTimestamp paymentDate, int discountPercentage,  Integer[] tariffIDs, Double[] multiplyFactors) throws RemoteException {
+	protected void createTariffs(IWContext iwc,IWTimestamp paymentDate, int discountPercentage,  Integer[] tariffIDs, Double[] multiplyFactors,Integer assessmentRound) throws RemoteException {
 		//System.err.println("trying
 		// assessTariffsToAcount("+tariffIds+","+iAccountId+","+Pd.toString()+","+discount+","+iGroupId+","+iCategoryId);
 		getAssessmentService(iwc).assessTariffsToAccount(tariffIDs, multiplyFactors, accountId, paymentDate.getSQLDate(),
-				discountPercentage, groupId, getFinanceCategoryId(),externalID);
+				discountPercentage, groupId, getFinanceCategoryId(),externalID,assessmentRound);
 	}
-	protected void createTariff(IWContext iwc,IWTimestamp paymentDate, Integer tariffkeyID, int amount, Integer tariffGroupID, String name, String info, boolean saveTariff) throws RemoteException {
+	protected void createTariff(IWContext iwc,IWTimestamp paymentDate, Integer tariffkeyID, int amount, Integer tariffGroupID, String name, String info, boolean saveTariff,Integer assessmentRound) throws RemoteException {
 		getAssessmentService(iwc).assessTariffsToAccount(amount, name, info, accountId, tariffkeyID, paymentDate.getSQLDate(),
-				tariffGroupID, getFinanceCategoryId(), externalID,saveTariff);
+				tariffGroupID, getFinanceCategoryId(), externalID,saveTariff,assessmentRound);
 	}
 	protected AssessmentBusiness getAssessmentService(IWApplicationContext iwac) throws RemoteException {
 		return getFinanceService().getFinanceBusiness();
 	}
-	protected void createTariffs(IWContext iwc,IWTimestamp paymentDate, int discountPercentage,  Integer[] tariffIDs) throws RemoteException {
+	protected void createTariffs(IWContext iwc,IWTimestamp paymentDate, int discountPercentage,  Integer[] tariffIDs,Integer assessmentRound) throws RemoteException {
 		getAssessmentService(iwc).assessTariffsToAccount(tariffIDs, null, accountId, paymentDate.getSQLDate(), discountPercentage, groupId
-				, getFinanceCategoryId(),externalID);
+				, getFinanceCategoryId(),externalID,assessmentRound);
 	}
 	protected void createInvoice(Integer accountID, Integer tariffGroupID, Integer categoryID, Date dueDate, List tariffs,List multipliers , int discount){
 		
@@ -232,12 +237,16 @@ public class AccountTariffer extends Finance {
 			User user = uBuiz.getUser(account.getUserId());
 			T	.add(getHeader(localize("account_owner", "Account owner")), 1, 2);
 			T.add(getText(user.getName()+Text.getNonBrakingSpace()+" ( "+user.getPersonalID() +" )"), 2, 2);
+			
+			T.add(getHeader(localize("published_account_balance", "Published Account balance")),					1, 3);
+			T.add(getAmountText(getFinanceService().getAccountBalance(account.getAccountId(),AssessmentStatus.PUBLISHED)), 2, 3);
 
-			T.add(getHeader(localize("account_balance", "Account balance")),					1, 3);
-			T.add(getAmountText(getFinanceService().getAccountBalance(account.getAccountId())), 2, 3);
+			T.add(getHeader(localize("account_balance", "Account balance")),					1, 4);
+			T.add(getAmountText(getFinanceService().getAccountBalance(account.getAccountId())), 2, 4);
 
-			T.add(getHeader(localize("last_updated", "Last updated")), 1, 4);
-			T.add(getText(account.getLastUpdated().toString()), 2, 4);
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
+			T.add(getHeader(localize("last_updated", "Last updated")), 1, 5);
+			T.add(getText(df.format(getFinanceService().getAccountLastUpdate(account.getAccountId()))), 2, 5);
 		}
 		return T;
 	}
@@ -370,6 +379,34 @@ public class AccountTariffer extends Finance {
 		T.add(confirm, col, row);
 		if (account != null)
 			T.add(new HiddenInput(prmAccountId, String.valueOf(account.getAccountId())));
+		return T;
+	}
+	
+	private PresentationObject getAssessmentRoundChoiceTable(IWContext iwc) throws java.rmi.RemoteException {
+		DataTable T = getDataTable();
+		T.setUseBottom(false);
+		T.setWidth(Table.HUNDRED_PERCENT);
+		T.setTitlesHorizontal(false);
+		//T.addTitle(localize("properties","Properties"));
+		int row = 1;
+		int col = 1;
+		T.add(getHeader(localize("latest_assessmendround", "Latest assessments")), col++, row);
+		DropdownMenu latestAssessments = new DropdownMenu("latest_assmts");
+		latestAssessments.addMenuElement("",localize("create_new_assessment","Create new assessment"));
+		try {
+			Collection rounds = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),getGroupId(),null,null,AssessmentStatus.ASSESSED,20,-1);
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
+			for (Iterator iter = rounds.iterator(); iter.hasNext();) {
+				AssessmentRound element = (AssessmentRound) iter.next();
+				String display = element.getName()+" ("+df.format(element.getRoundStamp())+")";
+				latestAssessments.addMenuElement(element.getPrimaryKey().toString(),display);
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		T.add(latestAssessments,col,row);
 		return T;
 	}
 	private PresentationObject getNewTariffTable(IWContext iwc) throws java.rmi.RemoteException {

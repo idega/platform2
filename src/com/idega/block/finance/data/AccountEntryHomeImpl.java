@@ -20,9 +20,9 @@ public java.util.Collection findByAccountAndAssessmentRound(java.lang.Integer p0
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findByAccountAndStatus(java.lang.Integer p0,java.lang.String p1,java.sql.Date p2,java.sql.Date p3)throws javax.ejb.FinderException{
+public java.util.Collection findByAccountAndStatus(java.lang.Integer p0,java.lang.String p1,java.sql.Date p2,java.sql.Date p3,String assessmentStatus)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AccountEntryBMPBean)entity).ejbFindByAccountAndStatus(p0,p1,p2,p3);
+	java.util.Collection ids = ((AccountEntryBMPBean)entity).ejbFindByAccountAndStatus(p0,p1,p2,p3,assessmentStatus);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -70,6 +70,13 @@ public java.sql.Date getMaxDateByAccount(java.lang.Integer p0)throws com.idega.d
 public double getTotalSumByAccount(java.lang.Integer p0)throws java.sql.SQLException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	double theReturn = ((AccountEntryBMPBean)entity).ejbHomeGetTotalSumByAccount(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public double getTotalSumByAccount(java.lang.Integer p0,String roundStatus)throws java.sql.SQLException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	double theReturn = ((AccountEntryBMPBean)entity).ejbHomeGetTotalSumByAccount(p0,roundStatus);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }

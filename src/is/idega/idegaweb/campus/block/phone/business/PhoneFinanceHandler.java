@@ -513,4 +513,13 @@ public class PhoneFinanceHandler implements FinanceHandler {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.finance.business.FinanceHandler#publishAssessment(com.idega.idegaweb.IWApplicationContext, java.lang.Integer)
+	 */
+	public void publishAssessment(IWApplicationContext iwc, Integer roundId) {
+		// TODO Auto-generated method stub
+
+	}
 }

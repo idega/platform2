@@ -1,15 +1,17 @@
 package com.idega.block.finance.presentation;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+
 import javax.ejb.FinderException;
+
 import com.idega.block.finance.data.Account;
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.AccountInfo;
 import com.idega.block.finance.data.AccountPhoneEntry;
+import com.idega.block.finance.data.AssessmentStatus;
 import com.idega.block.finance.data.FinanceAccount;
 import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
@@ -23,7 +25,6 @@ import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-
 import com.idega.util.IWTimestamp;
 /**
  * Title: Description: Copyright: Copyright (c) 2000-2001 idega.is All Rights
@@ -46,6 +47,7 @@ public class AccountViewer extends Finance {
 	private Integer userID = null, accountID = null;
 	private boolean specialview = false;
 	private DateFormat df,tf;
+	private String roundStatus = null;
 	
 	public AccountViewer() {
 		this(-1);
@@ -64,6 +66,9 @@ public class AccountViewer extends Finance {
 		IWTimestamp itToDate = getToDate(iwc);
 		specialview = iwc.isParameterSet("specview");
 		boolean clean = iwc.isParameterSet(prmClean);
+		if(!isAdmin){
+			roundStatus = AssessmentStatus.PUBLISHED;
+		}
 		if (isAdmin || isLoggedOn) {
 			if (accounts != null && accounts.size() > 0) {
 				FinanceAccount eAccount = getAccount(accountID, accounts);
@@ -75,11 +80,14 @@ public class AccountViewer extends Finance {
 		}
 	}
 	private FinanceAccount getAccount(Integer accountID, Collection listOfAccounts) throws java.rmi.RemoteException {
+		Iterator iter = listOfAccounts.iterator();
 	    if (accountID == null) {
-	        return null;
+	    		FinanceAccount account =  (FinanceAccount)iter.next();
+	    		this.accountID = account.getAccountId();
+	    		return account;
 	    }
 	    
-		Iterator iter = listOfAccounts.iterator();
+		
 		FinanceAccount account = (FinanceAccount) iter.next();
 		while (iter.hasNext()) {
 			FinanceAccount acc = (FinanceAccount) iter.next();
@@ -177,7 +185,14 @@ public class AccountViewer extends Finance {
 		T.add(getHeader(localize("account", "Account")), col++, row);
 		T.add(getHeader(localize("owner", "Owner")), col++, row);
 		T.add(getHeader(localize("lastentry", "Last entry")), col++, row);
-		T.add(getHeader(localize("balance", "Balance")), col++, row);
+		
+		if(isAdmin){
+			T.add(getHeader(localize("published_balance", "Published")), col++, row);
+			T.add(getHeader(localize("total_balance", "Total")), col++, row);
+		}
+		else{
+			T.add(getHeader(localize("balance", "Balance")), col++, row);
+		}
 		row++;
 		if (accounts != null) {
 			Iterator iter = accounts.iterator();
@@ -191,16 +206,18 @@ public class AccountViewer extends Finance {
 				T.add(accountLink, col++, row);
 				T.add(getText(eUser.getName()), col++, row);
 				T.add(getText(getDateString(new IWTimestamp(account.getLastUpdated()))), col++, row);
-				double b = 0;//eAccount.getBalance();
-				
-					b = getFinanceService().getAccountBalance(account.getAccountId());
+				double b = getFinanceService().getAccountBalance(account.getAccountId(),AssessmentStatus.PUBLISHED);
 					//b = b * tax;
 				
 				T.add(getAmountText( b), col++, row);
+				if(isAdmin)
+					T.add(getAmountText(getFinanceService().getAccountBalance(account.getAccountId())),col++,row);
 				row++;
 			}
 			T.getContentTable().setColumnAlignment(4, Table.HORIZONTAL_ALIGN_RIGHT);
 			T.getContentTable().setColumnAlignment(3, Table.HORIZONTAL_ALIGN_RIGHT);
+			if(isAdmin)
+				T.getContentTable().setColumnAlignment(5, Table.HORIZONTAL_ALIGN_RIGHT);
 		} else {
 			T.add(localize("no_account", "No Account"));
 		}
@@ -274,19 +291,17 @@ public class AccountViewer extends Finance {
 				if (showallkeys) {
 					//entries =
 					// getFinanceService().//accBuiz.listOfAccountEntries(eAccount.getAccountId(),from,to);
-					entries = getFinanceService().getAccountEntryHome().findByAccountAndStatus(accountID, null,
-							from.getDate(), to.getDate());
+					entries = getFinanceService().getAccountBusiness().getAccountEntries(accountID.intValue(),from, to,null,roundStatus);
 				} else {
 					//entries =
 					// accBuiz.listOfKeySortedEntries(account.getAccountId(),from,to);
-					entries = getFinanceService().getAccountBusiness().listOfKeySortedEntries(accountID.intValue(),
-							from, to);
+					entries = getFinanceService().getAccountBusiness().getKeySortedAccountEntries(accountID.intValue(),from, to,roundStatus);
 				}
 				if (clean)
 					return getCleanFinanceEntryTable(account, entries, from, to);
 				else
 					return getFinanceEntryTable(account, entries, from, to);
-			} else if (account.getAccountType().equals(getFinanceService().getAccountTypeFinance())) {
+			} else if (account.getAccountType().equals(getFinanceService().getAccountTypePhone())) {
 				entries = getFinanceService().getAccountPhoneEntryHome().findByAccountAndStatus(accountID, null,
 						from.getDate(), to.getDate());
 				//listEntries =

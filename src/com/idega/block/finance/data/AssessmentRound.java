@@ -17,6 +17,7 @@ public interface AssessmentRound extends com.idega.block.category.data.CategoryE
  public void setAsNew(java.lang.String p0);
  public void setAsReceived(java.lang.String p0);
  public void setAsSent(java.lang.String p0);
+ public void setAsPublished(String name);
  public void setDueDate(java.sql.Date p0);
  public void setName(java.lang.String p0);
  public void setPeriodFromDate(java.sql.Date p0);

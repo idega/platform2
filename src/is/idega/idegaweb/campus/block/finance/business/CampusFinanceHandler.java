@@ -546,4 +546,16 @@ public class CampusFinanceHandler implements FinanceHandler {
 		}
 		return userTariffs;
 	}
+	/* (non-Javadoc)
+	 * @see com.idega.block.finance.business.FinanceHandler#publishAssessment(com.idega.idegaweb.IWApplicationContext, java.lang.Integer)
+	 */
+	public void publishAssessment(IWApplicationContext iwac, Integer roundId) {
+		try {
+			CampusAssessmentBusiness assBuiz = (CampusAssessmentBusiness)IBOLookup.getServiceInstance(iwac,CampusAssessmentBusiness.class);
+			assBuiz.publishAssessment(roundId);
+		} catch (IBOLookupException e) {
+			e.printStackTrace();
+		}
+
+	}
 }

@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -47,6 +48,7 @@ import com.idega.block.finance.data.TariffIndexHome;
 import com.idega.block.finance.data.TariffKey;
 import com.idega.block.finance.data.TariffKeyHome;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOException;
 import com.idega.util.IWTimestamp;
 /**
  * FinanceServiceBean
@@ -317,8 +319,11 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 	}
 	  
 	public double getAccountBalance(Integer accountID){
+		return getAccountBalance(accountID,null);
+	}
+	public double getAccountBalance(Integer accountID,String roundStatus){
 		try {
-			return getAccountEntryHome().getTotalSumByAccount(accountID);
+			return getAccountEntryHome().getTotalSumByAccount(accountID,roundStatus);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
@@ -326,4 +331,19 @@ public class FinanceServiceBean extends IBOServiceBean implements FinanceService
 		}
 		return 0;
 	}
+	/* (non-Javadoc)
+	 * @see com.idega.block.finance.business.FinanceService#getAccountLastUpdate(java.lang.Integer)
+	 */
+	public Date getAccountLastUpdate(Integer accountID) {
+		try {
+			return getAccountEntryHome().getMaxDateByAccount(accountID);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (IDOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 }

@@ -20,21 +20,20 @@ import com.idega.block.finance.data.AccountInfo;
 import com.idega.block.finance.data.AccountUser;
 import com.idega.block.finance.data.AccountUserHome;
 import com.idega.block.finance.data.AssessmentRound;
+import com.idega.block.finance.data.AssessmentStatus;
 import com.idega.block.finance.data.TariffGroup;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOException;
 import com.idega.idegaweb.presentation.BusyBar;
-//import com.idega.idegaweb.presentation.StatusBar;
 import com.idega.presentation.CollectionNavigator;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
-
-import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -53,7 +52,7 @@ public class TariffAssessments extends Finance {
 	private static final String PRM_ROUND_ID = "ass_round_id";
 	private static final String PRM_GROUP_ID = "tass_grp";
 	private static final String PRM_SHOW_ALL = "shw_all";
-	protected static final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5, ACT6 = 6, ACT7 = 7;
+	protected static final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5, ACT6 = 6, ACT7 = 7,ACT8=8;
 	public static final String PRM_ACTION = "tt_action";
 	protected boolean isAdmin = false;
 	private Integer groupID = null;
@@ -141,6 +140,12 @@ public class TariffAssessments extends Finance {
 							setMainPanel(getTableOfAssessmentAccountEntries(iwc));
 							
 							break;
+						case ACT8 :
+							doPublish(iwc);
+							initCollections(iwc);
+							setMainPanel(  getTableOfAssessments(iwc));
+							
+							break;
 						default :
 							initCollections(iwc);
 							setMainPanel( getTableOfAssessments(iwc));
@@ -189,7 +194,7 @@ public class TariffAssessments extends Finance {
 			if(roundID==null && accountID==null){
 				
 				try {
-					int assessmentCount = getFinanceService().getAssessmentRoundHome().getCountByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate);
+					int assessmentCount = getFinanceService().getAssessmentRoundHome().getCountByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate,null);
 					setCollectionSize(assessmentCount);
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
@@ -202,7 +207,7 @@ public class TariffAssessments extends Finance {
 				collectionNavigator.addMaintainParameter(PRM_ACTION);
 				
 				try {
-					assessments = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate,getCollectionViewSize(),getCollectionIndex());
+					assessments = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate,null,getCollectionViewSize(),getCollectionIndex());
 					
 				} catch (RemoteException e) {
 					e.printStackTrace();
@@ -386,6 +391,31 @@ public class TariffAssessments extends Finance {
 			}
 		}
 	}
+	private void doPublish(IWContext iwc) {
+		String sRoundId = iwc.getParameter("publish");
+		if (sRoundId != null) {
+			Integer roundId = Integer.valueOf(sRoundId);
+			try {
+				//boolean rb = false;
+				if (handler != null) {
+					handler.publishAssessment(iwc,roundId);
+				} else {
+					AssessmentBusiness assBuiz = (AssessmentBusiness) com.idega.business.IBOLookup.getServiceInstance(
+							iwc, AssessmentBusiness.class);
+					assBuiz.publishAssessment(roundId);
+				}
+				//AssessmentBusiness.rollBackAssessment(iRoundId);
+				/*if (rb)
+					status.setMessage(localize("rollback_success", "Rollback was successfull"));
+				else
+					status.setMessage(localize("rollback_unsuccess", "Rollback was unsuccessfull"));
+					*/
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				//status.setMessage(localize("rollback_illegal", "Rollback was illegal"));
+			}
+		}
+	}
 	private void doAssess(IWContext iwc)throws RemoteException {
 		//add(handler.getClass().getName());
 		//PresentationObject MO = new Text("failed");
@@ -474,7 +504,9 @@ public class TariffAssessments extends Finance {
 			T.add(getHeader(localize("assessment_name", "Assessment name")), 1, 1);
 			T.add(getHeader(localize("assessment_stamp", "Timestamp")), 2, 1);
 			T.add(getHeader(localize("totals", "Total amount")), 3, 1);
-			T.add(getHeader(sRollBack), 4, 1);
+			T.add(getHeader(localize("status", "Status")), 4, 1);
+			T.add(getHeader(localize("totals", "Total amount")), 5, 1);
+			T.add(getHeader(sRollBack), 6, 1);
 			//int col = 1;
 			row = 2;
 			AssessmentRound AR;
@@ -487,6 +519,7 @@ public class TariffAssessments extends Finance {
 				rndID = (Integer )AR.getPrimaryKey();
 				T.add(getRoundLink(AR.getName(),rndID, groupID), 1, row);
 				T.add(getText(df.format(AR.getRoundStamp())), 2, row);
+			
 				try {
 					double subtotal  = eHome.getTotalSumByAssessmentRound(rndID);
 					T.add(getAmountText(subtotal), 3, row);
@@ -495,11 +528,15 @@ public class TariffAssessments extends Finance {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
+				T.add(getText((localize("assessmentstatus."+AR.getStatus(),AR.getStatus()))), 4, row);
+				if(AR.getStatus().equals(AssessmentStatus.ASSESSED)){
+					Link R = getRollbackLink(AR);
+					//status.setMessageCaller(R, localize("rollback", "Rolls back this assessment"));
+					busy.setLinkObject(R);
+					T.add(getPublishLink(AR),5,row);
+					T.add(R,6, row);
 				
-				Link R = getRollbackLink(AR);
-				//status.setMessageCaller(R, localize("rollback", "Rolls back this assessment"));
-				busy.setLinkObject(R);
-				T.add(R,4, row);
+				}
 				
 				row++;
 			}
@@ -518,9 +555,16 @@ public class TariffAssessments extends Finance {
 		return T;
 	}
 	private Link getRollbackLink(AssessmentRound AR) {
-		Link R = new Link(iwb.getImage("rollback.gif"));
+		Link R = new Link(iwb.getImage("rollback.gif","roll"));
 		R.addParameter("rollback", AR.getPrimaryKey().toString());
 		R.addParameter(PRM_ACTION, ACT5);
+		R.addParameter(PRM_GROUP_ID, groupID.toString());
+		return R;
+	}
+	private Link getPublishLink(AssessmentRound AR) {
+		Link R = new Link(iwb.getImage("publish.gif","publish"));
+		R.addParameter("publish", AR.getPrimaryKey().toString());
+		R.addParameter(PRM_ACTION, ACT8);
 		R.addParameter(PRM_GROUP_ID, groupID.toString());
 		return R;
 	}
@@ -864,7 +908,7 @@ public class TariffAssessments extends Finance {
 		try {
 			T.add(getHeader(localize("excess_round","Excess round")),1,row);
 			DropdownMenu excessRounds = new DropdownMenu("excess_round_id");
-			Collection rounds = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate,-1,-1);
+			Collection rounds = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate,null,-1,-1);
 			excessRounds.addMenuElement(-1,localize("old_batches","Old batches"));
 			DateFormat df = getShortDateFormat(iwc.getCurrentLocale());
 			for (Iterator iter = rounds.iterator(); iter.hasNext();) {
@@ -916,6 +960,11 @@ public class TariffAssessments extends Finance {
 		L.setFontSize(Edit.textFontSize);
 		return L;
 	}
+	
+	private String getLocalizedAssessmentStatus(String status){
+		return localize("assessmentstatus."+status,status);
+	}
+	
 	public void main(IWContext iwc) {
 		/*if (status == null)
 			status = new StatusBar("ass_status");

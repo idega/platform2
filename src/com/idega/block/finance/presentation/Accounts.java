@@ -3,6 +3,7 @@ package com.idega.block.finance.presentation;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,7 +11,9 @@ import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.block.finance.business.FinanceService;
 import com.idega.block.finance.data.Account;
+import com.idega.block.finance.data.AssessmentStatus;
 import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -106,7 +109,7 @@ public class Accounts extends Finance {
 		int userID = Integer.parseInt(iwc.getParameter("fin_usr_id"));
 		type = iwc.getParameter("fin_type");
 		try {
-			getFinanceService().getAccountBusiness().makeNewAccount(userID,accountName,"",1,type,getFinanceCategoryId().intValue());
+			getFinanceService().getAccountBusiness().createNewAccount(userID,accountName,"",1,type,getFinanceCategoryId().intValue());
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (CreateException e) {
@@ -320,17 +323,20 @@ public class Accounts extends Finance {
 			T.add(getHeader(localize("account_id", "Account id")), 2, row);
 			T.add(getHeader(localize("user_name", "User name")), 3, row);
 			T.add(getHeader(localize("personal_id", "Personal ID")), 4, row);
-			T.add(getHeader(localize("balance", "Balance")), 5, row);
-			T.add(getHeader(localize("last_updated", "Last updated")), 6, row);
+			T.add(getHeader(localize("published_balance", "Published")), 5, row);
+			T.add(getHeader(localize("total_balance", "Total")), 6, row);
+			T.add(getHeader(localize("last_updated", "Last updated")), 7, row);
 			row++;
 			Iterator I = accounts.iterator();
 			Account A;
-			
+			Integer accountID;
+			FinanceService financeService = getFinanceService();
 			Integer uid;
 			Link accountLink, tariffLink;
 			while (I.hasNext()) {
 				col = 1;
 				A = (Account)I.next();
+				accountID = A.getAccountId();
 				uid = new Integer(A.getUserId());
 				if (M != null && M.containsKey(uid)) {
 					U = (User)M.get(uid);
@@ -362,8 +368,11 @@ public class Accounts extends Finance {
 
 				T.add(getText(U.getName()), col++, row);
 				T.add(getText(U.getPersonalID()), col++, row);
-				T.add(getAmountText((getFinanceService().getAccountBalance(A.getAccountId()))), col++, row);
-				T.add(getText(df.format(A.getLastUpdated())), col++, row);
+				T.add(getAmountText((financeService.getAccountBalance(accountID,AssessmentStatus.PUBLISHED))), col++, row);
+				T.add(getAmountText((financeService.getAccountBalance(accountID))), col++, row);
+				Date date = financeService.getAccountLastUpdate(accountID);
+				if(date!=null)
+				T.add(getText(df.format(date)), col++, row);
 				row++;
 			}
 			T.getContentTable().setColumnAlignment(5,Table.HORIZONTAL_ALIGN_RIGHT);

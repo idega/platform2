@@ -42,7 +42,7 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
     }
   }
 
-  public Collection listOfAccounts(int iUserId){
+  public Collection getUserAccounts(int iUserId){
     Collection A = null;
     try{
       AccountHome aHome = (AccountHome)IDOLookup.getHome(Account.class);
@@ -53,7 +53,7 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
     return A;
   }
 
-  public Collection listOfAccounts(int iUserId,String sType){
+  public Collection getUserAccounts(int iUserId,String sType){
 
     try{
       AccountHome aHome = (AccountHome)IDOLookup.getHome(Account.class);
@@ -65,7 +65,7 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
     return null;
   }
 
-  public Collection listOfAccounts(){
+  public Collection getAccounts(){
     /*try{
        //AccountHome aHome = (AccountHome)IDOLookup.getHome(Account.class);
 
@@ -75,7 +75,7 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
     return null;
   }
 
-  public Collection listOfAccountEntries( Integer assessmentRoundId){
+  public Collection getAccountEntries( Integer assessmentRoundId){
     try {
     	return getFinanceService().getAccountEntryHome().findByAssessmentRound(assessmentRoundId);
       //return EntityFinder.findAllByColumnOrdered(((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(),com.idega.block.finance.data.AccountEntryBMPBean.getRoundIdColumnName(),String.valueOf(iAssessmentRoundId) ,com.idega.block.finance.data.AccountEntryBMPBean.getAccountIdColumnName());
@@ -86,16 +86,16 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
     }
   }
 
-  public  Collection listOfAccountEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
-    return listOfAccEntries(iAccountId, from,to,null);
+  public  Collection getAccountEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
+    return getAccountEntries(iAccountId, from,to,null,null);
   }
-  public  Collection listOfPhoneEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
-    return listOfPhoneEntries(iAccountId, from,to,null);
+  public  Collection getPhoneEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
+    return getPhoneEntries(iAccountId, from,to,null);
   }
-  public  Collection listOfPhoneEntries(int iAccountId,IWTimestamp to,String status){
-    return listOfPhoneEntries(iAccountId,null,to,status);
+  public  Collection getPhoneEntries(int iAccountId,IWTimestamp to,String status){
+    return getPhoneEntries(iAccountId,null,to,status);
   }
-  private  Collection listOfAccEntries(int iAccountId,IWTimestamp from,IWTimestamp to,String status){
+  public  Collection getAccountEntries(int iAccountId,IWTimestamp from,IWTimestamp to,String status,String roundStatus){
     try {
 		/*
 		StringBuffer sql = new StringBuffer("select * from ");
@@ -137,7 +137,7 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
 		catch(Exception e){A=null;}
 		return A;
 		*/
-		return getFinanceService().getAccountEntryHome().findByAccountAndStatus(new Integer(iAccountId),status,from.getDate(),to.getDate());
+		return getFinanceService().getAccountEntryHome().findByAccountAndStatus(new Integer(iAccountId),status,from.getDate(),to.getDate(),roundStatus);
 	} catch (RemoteException e) {
 		e.printStackTrace();
 	} catch (FinderException e) {
@@ -146,7 +146,7 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
 	return null;
   }
 
-  private  Collection listOfPhoneEntries(int iAccountId,IWTimestamp from,IWTimestamp to,String status){
+  private  Collection getPhoneEntries(int iAccountId,IWTimestamp from,IWTimestamp to,String status){
     try {
 		/*
 		StringBuffer sql = new StringBuffer("select * from ");
@@ -195,7 +195,7 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
 
 
 
-  public  Collection listOfAccountKeys(){
+  public  Collection getAccountKeys(){
 		   try {
 			return getFinanceService().getAccountKeyHome().findAll();
 		} catch (RemoteException e) {
@@ -206,7 +206,7 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
 		return null;
   }
 
-  public  Collection listOfTariffKeys(){
+  public  Collection getTariffKeys(){
 	    try {
 			return getFinanceService().getTariffKeyHome().findAll();
 		} catch (RemoteException e) {
@@ -217,8 +217,8 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
 		return null;
   }
 
-  public  Map mapOfAccountKeys(){
-  	 Collection L = listOfAccountKeys();
+  public  Map getAccountKeyMap(){
+  	 Collection L = getAccountKeys();
      if(L != null){
        int len = L.size();
        Hashtable H = new Hashtable(len);
@@ -232,8 +232,8 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
        return null;
   }
 
-  public Map mapOfTariffKeys(){
-  	    Collection L = listOfTariffKeys();
+  public Map getTariffKeyMap(){
+  	    Collection L = getTariffKeys();
   	    if(L != null){
   	      int len = L.size();
   	      Hashtable H = new Hashtable(len);
@@ -248,11 +248,11 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
   }
 
 
-  public Collection listOfKeySortedEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
-    Map acckeys = mapOfAccountKeys();
-    Map takeys = mapOfTariffKeys();
+  public Collection getKeySortedAccountEntries(int iAccountId,IWTimestamp from,IWTimestamp to,String roundStatus){
+    Map acckeys = getAccountKeyMap();
+    Map takeys = getTariffKeyMap();
     if(acckeys != null && takeys != null){
-      Collection entries = listOfAccountEntries(iAccountId,from,to);
+      Collection entries = getAccountEntries(iAccountId,from,to,null,roundStatus);
       if(entries != null){
         int len = entries.size();
         Hashtable hash = new Hashtable(len);
@@ -286,7 +286,7 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
       return null;
   }
 
-  public  Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,String type,int iCategoryId)throws java.rmi.RemoteException,javax.ejb.CreateException{
+  public  Account createNewAccount(int iUserId, String sName,String sExtra, int iCashierId,String type,int iCategoryId)throws java.rmi.RemoteException,javax.ejb.CreateException{
     AccountHome aHome = (AccountHome) IDOLookup.getHome(Account.class);
     Account A = aHome.create();
     //Account A = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy();
@@ -308,16 +308,16 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
     return A;
   }
 
-  public Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws java.rmi.RemoteException,javax.ejb.CreateException{
-    return makeNewAccount(iUserId,sName,sExtra,iCashierId,com.idega.block.finance.data.AccountBMPBean.typeFinancial,iCategoryId);
+  public Account createNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws java.rmi.RemoteException,javax.ejb.CreateException{
+    return createNewAccount(iUserId,sName,sExtra,iCashierId,com.idega.block.finance.data.AccountBMPBean.typeFinancial,iCategoryId);
   }
 
-  public Account makeNewPhoneAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws  java.rmi.RemoteException,javax.ejb.CreateException{
-    return makeNewAccount(iUserId,sName,sExtra,iCashierId,com.idega.block.finance.data.AccountBMPBean.typePhone,iCategoryId);
+  public Account createNewPhoneAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws  java.rmi.RemoteException,javax.ejb.CreateException{
+    return createNewAccount(iUserId,sName,sExtra,iCashierId,com.idega.block.finance.data.AccountBMPBean.typePhone,iCategoryId);
   }
 
-  public Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws  java.rmi.RemoteException,javax.ejb.CreateException{
-   return makeNewAccount(iUserId,sName,sExtra,iCashierId,"",iCategoryId);
+  public Account createNewAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws  java.rmi.RemoteException,javax.ejb.CreateException{
+   return createNewAccount(iUserId,sName,sExtra,iCashierId,"",iCategoryId);
   }
   
   public FinanceService getFinanceService()throws RemoteException{

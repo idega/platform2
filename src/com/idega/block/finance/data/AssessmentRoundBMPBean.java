@@ -47,9 +47,6 @@ public class AssessmentRoundBMPBean extends com.idega.block.category.data.Catego
 
   }
 
-  public static final String statusAssessed = "A";
-  public static final String statusSent = "S";
-  public static final String statusReceived = "R";
 
   public static String getEntityTableName(){return "FIN_ASSESSMENT_ROUND";}
   public static String getColumnTariffGroupId(){return "FIN_TARIFF_GROUP_ID";}
@@ -129,9 +126,10 @@ public class AssessmentRoundBMPBean extends com.idega.block.category.data.Catego
   }
 
    public void setStatus(String status) throws IllegalStateException {
-    if ((status.equalsIgnoreCase(statusAssessed)) ||
-        (status.equalsIgnoreCase(statusSent)) ||
-        (status.equalsIgnoreCase(statusReceived)) )
+    if ((status.equalsIgnoreCase(AssessmentStatus.ASSESSED)) ||
+        (status.equalsIgnoreCase(AssessmentStatus.PUBLISHED)) ||
+        (status.equalsIgnoreCase(AssessmentStatus.SENT))||
+		(status.equalsIgnoreCase(AssessmentStatus.RECEIVED)))
       setColumn(getStatusColumnName(),status);
     else
       throw new IllegalStateException("Undefined state : " + status);
@@ -140,13 +138,16 @@ public class AssessmentRoundBMPBean extends com.idega.block.category.data.Catego
     return((String)getColumnValue(getStatusColumnName()));
   }
   public void setStatusAssessed() {
-    setStatus(statusAssessed);
+    setStatus(AssessmentStatus.ASSESSED);
   }
   public void setStatusSent() {
-    setStatus(statusSent);
+    setStatus(AssessmentStatus.SENT);
   }
   public void setStatusReceived() {
-    setStatus(statusReceived);
+    setStatus(AssessmentStatus.RECEIVED);
+  }
+  public void setStatusPublished() {
+    setStatus(AssessmentStatus.PUBLISHED);
   }
 
   public void setType(String type){
@@ -185,18 +186,32 @@ public class AssessmentRoundBMPBean extends com.idega.block.category.data.Catego
     setRoundStamp(IWTimestamp.getTimestampRightNow());
   }
   
-  public Collection ejbFindByCategoryAndTariffGroup(Integer categoryID,Integer groupID,Date fromDate,Date toDate,int resultSetSize,int startIndex )throws FinderException{
+  public void setAsPublished(String name){
+    setName(name);
+    setStatusPublished();
+    setRoundStamp(IWTimestamp.getTimestampRightNow());
+  }
+  
+  public Collection ejbFindByCategoryAndTariffGroup(Integer categoryID,Integer groupID,Date fromDate,Date toDate,String status,int resultSetSize,int startIndex )throws FinderException{
   		IDOQuery query = super.idoQueryGetSelect().appendWhereEquals(getColumnCategoryId(),categoryID);
+  		if(groupID!=null)
   		query.appendAndEquals(getColumnTariffGroupId(),groupID);
-  		query.appendAnd().appendWithinDates(getRoundStampColumnName(),fromDate,toDate);
-  		
+  		if(fromDate!=null && toDate!=null)
+  			query.appendAnd().appendWithinDates(getRoundStampColumnName(),fromDate,toDate);
+  		if(status!=null)
+  			query.appendAndEqualsQuoted(getStatusColumnName(),status);
+  		query.appendOrderByDescending(getRoundStampColumnName());
   		return super.idoFindPKsByQuery(query,resultSetSize,startIndex);
   }
   
-  public int ejbHomeGetCountByCategoryAndTariffGroup(Integer categoryID,Integer groupID,Date fromDate,Date toDate)throws IDOException{
+  public int ejbHomeGetCountByCategoryAndTariffGroup(Integer categoryID,Integer groupID,Date fromDate,Date toDate,String status)throws IDOException{
   		IDOQuery query = super.idoQueryGetSelectCount().appendWhereEquals(getColumnCategoryId(),categoryID);
+  		if(groupID!=null)
 		query.appendAndEquals(getColumnTariffGroupId(),groupID);
-		query.appendAnd().appendWithinDates(getRoundStampColumnName(),fromDate,toDate);
+		if(toDate!=null && fromDate!=null)
+			query.appendAnd().appendWithinDates(getRoundStampColumnName(),fromDate,toDate);
+		if(status!=null)
+			query.appendAndEqualsQuoted(getStatusColumnName(),status);
 		return super.idoGetNumberOfRecords(query);
   }
   

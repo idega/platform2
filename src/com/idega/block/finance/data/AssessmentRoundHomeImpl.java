@@ -13,9 +13,9 @@ public class AssessmentRoundHomeImpl extends com.idega.data.IDOFactory implement
  }
 
 
-public java.util.Collection findByCategoryAndTariffGroup(java.lang.Integer p0,java.lang.Integer p1,java.sql.Date p2,java.sql.Date p3,int p4,int p5)throws javax.ejb.FinderException{
+public java.util.Collection findByCategoryAndTariffGroup(java.lang.Integer categoryId,java.lang.Integer groupId,java.sql.Date from,java.sql.Date to,String status,int resultSize,int startIndex)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AssessmentRoundBMPBean)entity).ejbFindByCategoryAndTariffGroup(p0,p1,p2,p3,p4,p5);
+	java.util.Collection ids = ((AssessmentRoundBMPBean)entity).ejbFindByCategoryAndTariffGroup(categoryId,groupId,from,to,status,resultSize,startIndex);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -25,9 +25,9 @@ public java.util.Collection findByCategoryAndTariffGroup(java.lang.Integer p0,ja
  }
 
 
-public int getCountByCategoryAndTariffGroup(java.lang.Integer p0,java.lang.Integer p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException{
+public int getCountByCategoryAndTariffGroup(java.lang.Integer p0,java.lang.Integer p1,java.sql.Date p2,java.sql.Date p3,String status)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((AssessmentRoundBMPBean)entity).ejbHomeGetCountByCategoryAndTariffGroup(p0,p1,p2,p3);
+	int theReturn = ((AssessmentRoundBMPBean)entity).ejbHomeGetCountByCategoryAndTariffGroup(p0,p1,p2,p3,status);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }

@@ -9,6 +9,12 @@ import javax.ejb.FinderException;
 
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.SumColumn;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -219,12 +225,33 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
   }
   
   public double ejbHomeGetTotalSumByAccount(Integer accountID)throws SQLException{
-  	StringBuffer sql = new StringBuffer();
-  	sql.append("select sum(").append(getColumnTotal()).append(") from ");
-  	sql.append(getEntityTableName()).append( " where ").append(getAccountIdColumnName()).append("=").append(accountID);
+  	 return ejbHomeGetTotalSumByAccount(accountID,null);
   	
-  	//select sum(total) from fin_acc_entry where fin_account_id = 165 and fin_assessment_round_id = 3187
-  	return (super.getDoubleTableValue(sql.toString()));
+  }
+  
+  public double ejbHomeGetTotalSumByAccount(Integer accountID,String roundStatus)throws SQLException{
+  	try {
+		Table entryTable = new Table(this);
+		Table roundTable = new Table(AssessmentRound.class);
+		SelectQuery query = new SelectQuery(entryTable);
+		query.addColumn(new SumColumn(entryTable,getColumnTotal()));
+		query.addCriteria(new MatchCriteria(entryTable.getColumn(getAccountIdColumnName()),MatchCriteria.EQUALS,accountID));
+		if(roundStatus!=null){
+			query.addJoin(entryTable,roundTable);
+			query.addCriteria(new MatchCriteria(roundTable.getColumn(AssessmentRoundBMPBean.getStatusColumnName()),MatchCriteria.EQUALS,roundStatus,true));
+		}
+		
+		/*
+		
+		StringBuffer sql = new StringBuffer();
+		sql.append("select sum(").append(getColumnTotal()).append(") from ");
+		sql.append(getEntityTableName()).append( " where ").append(getAccountIdColumnName()).append("=").append(accountID);
+		*/
+		//select sum(total) from fin_acc_entry where fin_account_id = 165 and fin_assessment_round_id = 3187
+		return (super.getDoubleTableValue(query.toString()));
+	} catch (IDORelationshipException e) {
+		throw new SQLException(e.getMessage());
+	}
   }
   
   public double ejbHomeGetTotalSumByAssessmentRound(Integer roundID)throws SQLException{
@@ -238,19 +265,31 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
   	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getRoundIdColumnName(),assessmentRoundID));
   }
   
-  public Collection ejbFindByAccountAndStatus(Integer accountID,String status, Date fromDate,Date toDate)throws FinderException{
-		IDOQuery query = super.idoQueryGetSelect().appendWhereEquals(getFieldNameAccountId(),accountID);
-		if(status!=null){
-			query.appendAndEquals(getColumnNameStatus(),status);
+  public Collection ejbFindByAccountAndStatus(Integer accountID,String status, Date fromDate,Date toDate,String assessmentStatus)throws FinderException{
+		try {
+			Table entryTable = new Table(this);
+			Table roundTable = new Table(AssessmentRound.class);
+			SelectQuery query = new SelectQuery(entryTable);
+			query.addColumn(new WildCardColumn(entryTable));
+			if(assessmentStatus!=null)
+				query.addJoin(entryTable,roundTable);
+			query.addCriteria(new MatchCriteria(entryTable,getFieldNameAccountId(),MatchCriteria.EQUALS,accountID));
+			if(status!=null)
+				query.addCriteria(new MatchCriteria(entryTable.getColumn(getColumnNameStatus()),MatchCriteria.EQUALS,status,true));
+			
+			if(fromDate!=null && toDate!=null){
+				IWTimestamp from = new IWTimestamp(fromDate);
+				IWTimestamp to = new IWTimestamp(toDate);
+				to.setTime(23,59,59);
+				query.addCriteria(new MatchCriteria(entryTable,getFieldNameLastUpdated(),MatchCriteria.GREATEREQUAL,from.getTimestamp()));
+				query.addCriteria(new MatchCriteria(entryTable,getFieldNameLastUpdated(),MatchCriteria.LESSEQUAL,to.getTimestamp()));
+			}
+			if(assessmentStatus!=null)
+				query.addCriteria(new MatchCriteria(roundTable.getColumn(AssessmentRoundBMPBean.getStatusColumnName()),MatchCriteria.EQUALS,assessmentStatus,true));
+			return super.idoFindPKsBySQL(query.toString());
+		} catch (IDORelationshipException e) {
+			throw new FinderException(e.getMessage());
 		}
-		if(fromDate!=null && toDate!=null){
-			IWTimestamp from = new IWTimestamp(fromDate);
-			IWTimestamp to = new IWTimestamp(toDate);
-			to.setTime(23,59,59);
-			query.appendAnd();
-			query.appendWithinStamps(getFieldNameLastUpdated(), from.getTimestamp(),to.getTimestamp());
-		}
-		return super.idoFindPKsByQuery(query);
 }
   
   public int ejbHomeCountByGroup(Integer groupID)throws IDOException{

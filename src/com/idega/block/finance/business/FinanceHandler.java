@@ -1,8 +1,8 @@
 package com.idega.block.finance.business;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
 
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.util.IWTimestamp;
@@ -25,5 +25,11 @@ public interface FinanceHandler {
   public Map getAttributeMap();
   public Collection listOfAssessmentTariffPreviews(IWApplicationContext iwac,Integer  tariffGroupId,IWTimestamp start,IWTimestamp end)throws java.rmi.RemoteException;
   public Collection getTariffsForAccountInGroup(Integer accountID,Integer tariffGroupID);
-
+/**
+ * Called when the a assessment is published
+ * @param iwc
+ * @param roundId
+ */
+public void publishAssessment(IWApplicationContext iwc, Integer roundId);
+	
 }
