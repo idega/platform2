@@ -163,7 +163,7 @@ public class ProviderAccountBusinessBean
 	{
 		School school = createSchoolForApplication(theCase);
 		User user = createProviderAdministratorForApplication(theCase,school);
-		createLoginAndSendMessage(theCase);
+		//createLoginAndSendMessage(theCase);
 		return user;
 	}	
 	
