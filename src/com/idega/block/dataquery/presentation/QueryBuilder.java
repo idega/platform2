@@ -24,7 +24,6 @@ import com.idega.block.dataquery.business.QueryPart;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QuerySession;
 import com.idega.block.media.presentation.FileChooser;
-
 import com.idega.business.IBOLookup;
 import com.idega.core.ICTreeNode;
 import com.idega.core.IWTreeNode;
@@ -42,7 +41,6 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SelectionDoubleBox;
-import com.idega.presentation.ui.SpinInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TreeViewer;
