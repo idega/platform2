@@ -215,7 +215,7 @@ public class TextEditorWindow extends IWAdminWindow{
     imageInsert.setImSessionImageName(prmImageId);
     imageInsert.setUseBoxParameterName(prmUseImage);
     imageInsert.setSelected(false);
-      if ( update ) {
+      if ( hasTxText ) {
         if ( txText.getIncludeImage()) {
           imageInsert.setImageId(txText.getImageId());
           imageInsert.setSelected(true);
