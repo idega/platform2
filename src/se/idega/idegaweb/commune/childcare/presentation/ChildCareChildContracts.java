@@ -6,10 +6,16 @@ package se.idega.idegaweb.commune.childcare.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
+
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberLog;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
@@ -127,6 +133,8 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		ChildCareContract contract;
 		School provider;
 		SchoolClass group;
+		SchoolClassMember member;
+		SchoolClassMemberLog log;
 		IWTimestamp created;
 		IWTimestamp validFrom;
 		IWTimestamp terminated = null;
@@ -146,13 +154,21 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			contracts = getBusiness().getContractsByChild(getChildID(iwc));
 			//contracts = getBusiness().getContractsByChild(getSession().getUserID());
 
+		IWTimestamp stamp = new IWTimestamp();
 		Iterator iter = contracts.iterator();
 		while (iter.hasNext()) {
 			column = 1;
 			contract = (ChildCareContract) iter.next();
 			provider = contract.getApplication().getProvider();
 			created = new IWTimestamp(contract.getCreatedDate());
-			group = contract.getSchoolClassMember().getSchoolClass();
+			member = contract.getSchoolClassMember();
+			try {
+				log = getBusiness().getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(member, stamp.getDate());
+				group = log.getSchoolClass();
+			}
+			catch (FinderException fe) {
+				group = member.getSchoolClass();
+			}
 			if (contract.getValidFromDate() != null)
 				validFrom = new IWTimestamp(contract.getValidFromDate());
 			else
