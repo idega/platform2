@@ -111,6 +111,12 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		
 		if (choices != null && choices.size() > 0) {
 			Map choiceMap = getChoiceMap(choices);
+			try {
+				_hasPlacing = getBusiness().hasActivePlacement(_childID);
+			}
+			catch (RemoteException e) {
+				_hasPlacing = false;
+			}
 			Table table = new Table();
 			table.setCellpadding(0);
 			table.setCellspacing(0);
