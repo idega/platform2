@@ -340,6 +340,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.setSize(16,100);
 
       add(item);
+      layout();
       repaint();
   }
 
@@ -503,13 +504,13 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   }
 
 
-/*  public void update(Graphics g){
+  public void update(Graphics g){
     super.repaint();
   }
 
   public void paint(Graphics g){
   //use the update method
-  }*/
+  }
 
   /**Start the applet*/
   public void start() {
