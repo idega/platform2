@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.5 2003/05/21 13:55:22 roar Exp $
+ * $Id: ContractBMPBean.java,v 1.6 2003/05/22 16:29:29 roar Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -205,7 +205,10 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
   public void setSignedFlag(java.lang.Boolean p0){
 	setColumn(signedFlag_, p0);  	
   }
-
+  
+  public boolean isSigned(){
+  	return getSignedFlag() != null && getSignedFlag().booleanValue();
+  }
     
     
 }

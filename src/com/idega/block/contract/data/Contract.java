@@ -32,4 +32,5 @@ public interface Contract extends com.idega.data.IDOLegacyEntity
  public void setXmlSignedData(java.lang.String p0);
  public void setText(java.lang.String p0);
  public void setSignedFlag(Boolean p0);
+ public boolean isSigned();
 }
