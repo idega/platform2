@@ -571,7 +571,7 @@ public class IWMainApplication{//implements ServletContext{
 
   private void loadCryptoProperties(){
     cryptoProps = new Properties();
-    System.err.println("Loading Cryptonium");
+    System.out.println("[idegaWeb] : startup : Loading Cryptonium");
     String file = getPropertiesRealPath()+FileUtil.getFileSeparator()+"crypto.properties";
     try{
       cryptoProps.load(new FileInputStream(file));
@@ -589,7 +589,7 @@ public class IWMainApplication{//implements ServletContext{
 
    private void storeCryptoProperties(){
     if(cryptoProps!=null){
-      System.err.println("Storing Cryptonium");
+      System.err.println("[idegaWeb] : shutdown : Storing Cryptonium");
       try{
       String file = getPropertiesRealPath()+FileUtil.getFileSeparator()+"crypto.properties";
       cryptoProps.store(new FileOutputStream(file),"Cryptonium");
@@ -609,19 +609,19 @@ public class IWMainApplication{//implements ServletContext{
   }
 
   public static String getHashCode(Class classObject){
-    String hashcode = Integer.toString(classObject.hashCode());
-    //System.err.println(classObject.getName()+" "+hashcode);
-    if(cryptoProps==null)
-      cryptoProps = new Properties();
 
-    if(!cryptoProps.containsKey(hashcode) ){
-      cryptoProps.put(hashcode,classObject.getName());
+    String hashcode;
+    if(cryptoCodes.containsKey(classObject.getName())){
+      hashcode = (String) cryptoCodes.get(classObject.getName());
     }
-    if(cryptoCodes == null)
-      cryptoCodes = new Properties();
-    if(!cryptoCodes.containsKey(classObject.getName())){
+    else{
+      hashcode = Integer.toString(classObject.hashCode());
       cryptoCodes.put(classObject.getName(),hashcode);
     }
+
+      cryptoProps.put(hashcode,classObject.getName());
+
+
     return hashcode;
   }
 

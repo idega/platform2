@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.10 2002/02/25 09:18:46 aron Exp $
+ * $Id: ReferenceNumber.java,v 1.11 2002/02/25 19:04:37 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -287,10 +287,17 @@ public class ReferenceNumber extends Block {
     this.textStyles=styleAttribute;
   }
 
-  public Object clone() {
+  public synchronized Object clone() {
     ReferenceNumber obj = null;
+    System.err.println("cloning ReferenceNumber");
     try {
       obj = (ReferenceNumber)super.clone();
+      if(this.outerTable_!=null)
+        obj.outerTable_ = (Table)this.outerTable_.clone();
+      if(this.referenceImage_!=null)
+        obj.referenceImage_ = (Image)this.referenceImage_.clone();
+      if(this.myForm_!=null)
+        obj.myForm_ = (Form)this.myForm_.clone();
 
 
     }
