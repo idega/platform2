@@ -457,6 +457,36 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		throw new FinderException("No school found that " + user.getName() + " manages");
 	}
+
+	public School getFirstManagingChildCareForUser(User user) throws FinderException, RemoteException {
+		try {
+			Group rootGroup = getRootProviderAdministratorGroup();
+			if (user.getPrimaryGroup().equals(rootGroup)) {
+				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
+				Collection schoolIds = sub.getSchools(user);
+				if (!schoolIds.isEmpty()) {
+					Iterator iter = schoolIds.iterator();
+					while (iter.hasNext()) {
+						School school = sub.getSchoolHome().findByPrimaryKey(iter.next());
+						return school;
+					}
+				}
+			}
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace();
+		}
+		catch (FinderException e) {
+			Collection schools = ((SchoolBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), SchoolBusiness.class)).getSchoolHome().findAllBySchoolGroup(user);
+			if (!schools.isEmpty()) {
+				Iterator iter = schools.iterator();
+				while (iter.hasNext()) {
+					return (School) iter.next();
+				}
+			}
+		}
+		throw new FinderException("No childcare found that " + user.getName() + " manages");
+	}
 	public boolean hasCitizenAccount(User user) throws RemoteException {
 		return hasUserLogin(user);
 	}
