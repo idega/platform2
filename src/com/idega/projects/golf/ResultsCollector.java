@@ -473,8 +473,10 @@ public class ResultsCollector {
 
   public int getRoundScore(int roundNumber) {
     int roundScore = 0;
-    if ( roundScore_.size() >= roundNumber ) {
-      roundScore = ((Integer)roundScore_.elementAt(roundNumber-1)).intValue();
+    if ( roundScore_ != null ) {
+      if ( roundScore_.size() >= roundNumber ) {
+        roundScore = ((Integer)roundScore_.elementAt(roundNumber-1)).intValue();
+      }
     }
 
     return(roundScore);

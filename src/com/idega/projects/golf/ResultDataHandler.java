@@ -136,6 +136,7 @@ public class ResultDataHandler {
       RS.close();
       stmt.close();
       result = new Vector(hash.values());
+      hash.clear();
 
     }
     finally{

@@ -98,11 +98,6 @@ private Table resultTable;
           }
         }
       }
-      else {
-        if ( championship ) {
-          showAllGroups = true;
-        }
-      }
 
     String tournamentRounds_ = modinfo.getParameter("tournament_round_id");
       if ( tournamentRounds_ != null ) {
@@ -201,17 +196,9 @@ private Table resultTable;
       genderMenu.addMenuElement("B",iwrb.getLocalizedString("tournament.both","Both"));
       genderMenu.keepStatusOnAction();
 
-    String all = "";
-    String allGroups = "0";
-
-    if ( championship ) {
-      all = "0";
-      allGroups = "";
-    }
-
     DropdownMenu groupsMenu = new DropdownMenu("tournament_group_id");
       groupsMenu.setAttribute("style",getStyle());
-      groupsMenu.addMenuElement(all,"- "+iwrb.getLocalizedString("tournament.groups","Groups")+" -");
+      groupsMenu.addMenuElement("","- "+iwrb.getLocalizedString("tournament.groups","Groups")+" -");
 
       TournamentGroup[] groups = null;
       try {
@@ -224,7 +211,7 @@ private Table resultTable;
         e.printStackTrace(System.err);
       }
 
-      groupsMenu.addMenuElement(allGroups,iwrb.getLocalizedString("tournament.all","All"));
+      groupsMenu.addMenuElement("0",iwrb.getLocalizedString("tournament.all","All"));
       groupsMenu.keepStatusOnAction();
 
     String roundShort = iwrb.getLocalizedString("tournament.round","Round");

@@ -113,7 +113,11 @@ public class TournamentResults extends JModuleObject {
       tournament = new Tournament(tournamentId_);
       numberOfRounds = tournament.getNumberOfRounds();
       getMemberVector();
-      sortMemberVector();
+      if ( result != null ) {
+        if ( result.size() > 1 ) {
+          sortMemberVector();
+        }
+      }
       drawResultTable();
       getResults();
     }
@@ -178,6 +182,10 @@ public class TournamentResults extends JModuleObject {
 
       for ( int a = 0; a < size; a++ ) {
         ResultsCollector collector = (ResultsCollector) result.elementAt(a);
+        if ( size <= 1 ) {
+          collector.calculateCompareInfo();
+        }
+
         int handicap = collector.getHandicap();
         int finalScore = collector.getTotalScore();
         int difference = collector.getDifference();
@@ -278,25 +286,28 @@ public class TournamentResults extends JModuleObject {
 
             case ResultComparator.TOTALSTROKESWITHHANDICAP :
               int roundScoreColumn2 = 10;
-              int roundSize = 0;
-              Vector roundSizeVector = collector.getRoundScore();
-              if ( roundSizeVector != null ) {
-                roundSize = roundSizeVector.size();
-              }
-
               for ( int b = 1; b <= numberOfRounds; b++ ) {
-                int position2 = roundScoreColumn2 + collector.getRound(b) - 1;
-                int roundScore2 = collector.getRoundScore(b);
-                int roundScoreBrutto = roundScore2 + handicap;
+                int roundScore2 = 0;
+                int roundScoreBrutto = 0;
+                int roundIncNumber = collector.getRound(b);
+                int position2 = roundScoreColumn2 + (roundIncNumber*2 - 1) - 1;
+
+                if ( roundIncNumber != -1 ) {
+                  roundScore2 = collector.getRoundScore(collector.getRoundNumber(b));
+                  roundScoreBrutto = roundScore2 + handicap;
+                }
+
                 Text roundScoreText = new Text(Integer.toString(roundScore2));
                   roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
                 Text roundScoreBruttoText = new Text(Integer.toString(roundScoreBrutto));
                   roundScoreBruttoText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+
                 if ( roundScore2 > 0 ) {
                   myTable.add(roundScoreBruttoText,position2,a+3);
                   myTable.add(roundScoreText,position2+1,a+3);
                 }
               }
+
               Text finalBruttoText = new Text(Integer.toString(collector.getTotalStrokes()));
                 finalBruttoText.setFontSize(Text.FONT_SIZE_7_HTML_1);
                 finalBruttoText.setBold();
@@ -316,12 +327,18 @@ public class TournamentResults extends JModuleObject {
             case ResultComparator.TOTALPOINTS :
               int roundScoreColumn3 = 9;
               for ( int b = 1; b <= numberOfRounds; b++ ) {
-                int position3 = roundScoreColumn3 + collector.getRound(b) - 1;
-                int roundScore2 = collector.getRoundScore(b);
+                int roundScore2 = 0;
+                int roundIncNumber = collector.getRound(b);
+                int position = roundScoreColumn3 + roundIncNumber - 1;
+
+                if ( roundIncNumber != -1 ) {
+                  roundScore2 = collector.getRoundScore(collector.getRoundNumber(b));
+                }
+
                 Text roundScoreText = new Text(Integer.toString(roundScore2));
                   roundScoreText.setFontSize(Text.FONT_SIZE_7_HTML_1);
                 if ( roundScore2 > 0 ) {
-                  myTable.add(roundScoreText,position3,a+3);
+                  myTable.add(roundScoreText,position,a+3);
                 }
               }
               Text finalScoreText3 = new Text(Integer.toString(finalScore));
