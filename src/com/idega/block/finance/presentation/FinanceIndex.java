@@ -1,5 +1,5 @@
 /*
- * $Id: FinanceIndex.java,v 1.1 2001/12/17 00:34:16 aron Exp $
+ * $Id: FinanceIndex.java,v 1.2 2001/12/17 02:41:49 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -54,7 +54,7 @@ public class FinanceIndex extends Block {
   public void main(IWContext iwc){
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-/*
+
     Table myTable = new Table(2,2);
       myTable.setBorderColor("#000000");
       myTable.mergeCells(2,1,2,2);
@@ -69,7 +69,7 @@ public class FinanceIndex extends Block {
       myTable.setVerticalAlignment(1,1,"top");
       myTable.setVerticalAlignment(2,1,"top");
       myTable.setVerticalAlignment(1,2,"top");
-*/
+
       /*
     IFrame iFrame = new IFrame("menuFrame");
       iFrame.setSrc(CampusFinanceMenu.class);
@@ -83,7 +83,7 @@ public class FinanceIndex extends Block {
       myTable.add(iFrame,1,1);
 
     */
-    /*
+
     myTable.add(getLinkTable() ,1,1);
 
     IFrame iFrame2 = new IFrame(FRAME_NAME);
@@ -95,8 +95,8 @@ public class FinanceIndex extends Block {
       iFrame2.setAlignment(IFrame.ALIGN_LEFT);
       iFrame2.setStyle("border: 1 solid #000000");
       myTable.add(iFrame2,2,1);
-    */
-    add(getBoxLinks());
+
+    add(myTable);
   }
 
   public PresentationObject getLinkTable(){

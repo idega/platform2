@@ -4,6 +4,8 @@ package com.idega.block.finance.presentation;
 import com.idega.block.finance.data.*;
 import com.idega.block.finance.business.Finder;
 import com.idega.block.finance.presentation.KeyEditor;
+import com.idega.block.finance.business.FinanceBusiness;
+import com.idega.block.finance.business.FinanceFinder;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.Table;
@@ -48,27 +50,28 @@ public class TariffIndexEditor extends PresentationObjectContainer {
   }
   protected void control(IWContext iwc){
     if(isAdmin){
+      int iCategoryId = Finance.parseCategoryId(iwc);
       try{
         PresentationObject MO = new Text("nothing");
         if(iwc.getParameter(strAction) == null){
-          MO = getMainTable(iwc);
+          MO = getMainTable(iwc,iCategoryId);
         }
         if(iwc.getParameter(strAction) != null){
           String sAct = iwc.getParameter(strAction);
           int iAct = Integer.parseInt(sAct);
 
           switch (iAct) {
-            case ACT1 : MO =  getMainTable(iwc);        break;
-            case ACT2 : MO = getChangeTable(iwc);      break;
-            case ACT3 : MO = doUpdate(iwc);      break;
-            default: MO = getMainTable(iwc);           break;
+            case ACT1 : MO =  getMainTable(iwc,iCategoryId);        break;
+            case ACT2 : MO = getChangeTable(iwc,iCategoryId);      break;
+            case ACT3 : MO = doUpdate(iwc,iCategoryId);      break;
+            default: MO = getMainTable(iwc,iCategoryId);           break;
           }
         }
         Table T = new Table(1,3);
           T.setCellpadding(0);
           T.setCellspacing(0);
           add(Edit.headerText(iwrb.getLocalizedString("tariff_index_editor","Tariff index editor"),3));
-          T.add(makeLinkTable(1));
+          T.add(makeLinkTable(1,iCategoryId));
           T.add(MO);
           T.setWidth("100%");
           add(T);
@@ -81,7 +84,7 @@ public class TariffIndexEditor extends PresentationObjectContainer {
       add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
 
-  protected PresentationObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr,int iCategoryId){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
@@ -93,10 +96,12 @@ public class TariffIndexEditor extends PresentationObjectContainer {
     Link1.setFontColor(Edit.colorLight);
     Link1.setBold();
     Link1.addParameter(this.strAction,String.valueOf(this.ACT1));
+    Link1.addParameter(Finance.getCategoryParameter(iCategoryId));
     Link Link2 = new Link(iwrb.getLocalizedString("change","Change"));
     Link2.setFontColor(Edit.colorLight);
     Link2.setBold();
     Link2.addParameter(this.strAction,String.valueOf(this.ACT2));
+    Link2.addParameter(Finance.getCategoryParameter(iCategoryId));
     if(isAdmin){
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,2,1);
@@ -104,9 +109,9 @@ public class TariffIndexEditor extends PresentationObjectContainer {
     return LinkTable;
   }
 
-  protected PresentationObject getMainTable(IWContext iwc){
+  protected PresentationObject getMainTable(IWContext iwc,int iCategoryId){
     DateFormat dfLong = DateFormat.getDateInstance(DateFormat.LONG,iwc.getCurrentLocale());
-    List L = getIndices();
+    List L = getIndices(iCategoryId);
     int count = 0;
     if(L!= null)
       count = L.size();
@@ -139,10 +144,10 @@ public class TariffIndexEditor extends PresentationObjectContainer {
     return (keyTable);
   }
 
-  protected PresentationObject getChangeTable(IWContext iwc) throws SQLException{
+  protected PresentationObject getChangeTable(IWContext iwc,int iCategoryId) throws SQLException{
     Form myForm = new Form();
     myForm.maintainAllParameters();
-    List L= getIndices();
+    List L= getIndices(iCategoryId);
     String t = TariffIndex.indexType;
     int count = 0;
     if(L!= null)
@@ -208,13 +213,14 @@ public class TariffIndexEditor extends PresentationObjectContainer {
     }
     myForm.add(new HiddenInput("ti_count", String.valueOf(inputcount) ));
     myForm.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
+    myForm.add(Finance.getCategoryParameter(iCategoryId));
     myForm.add(inputTable);
     myForm.add(new SubmitButton("save","Vista"));
 
     return (myForm);
   }
 
-  protected PresentationObject doUpdate(IWContext iwc) throws SQLException{
+  protected PresentationObject doUpdate(IWContext iwc,int iCategoryId) throws SQLException{
     int count = Integer.parseInt(iwc.getParameter("ti_count"));
     String sName,sInfo,sDel,sIndex,sType;
     int ID;
@@ -234,51 +240,23 @@ public class TariffIndexEditor extends PresentationObjectContainer {
 
       }
 
-      try{
-        if(ID != -1 ){
-          ti = new TariffIndex(ID);
-          float oldvalue = ti.getNewValue();
-          if( sDel != null && sDel.equalsIgnoreCase("true")){
-              ti.delete();
-          }
-          else if(!sName.equalsIgnoreCase(ti.getName()) || !sInfo.equalsIgnoreCase(ti.getInfo()) ||
-                  !sType.equalsIgnoreCase(ti.getType()) || !(findex == ti.getIndex())  ){
-
-            ti = new TariffIndex();
-            ti.setName(sName);
-            ti.setInfo(sInfo);
-            ti.setNewValue(findex);
-            ti.setOldValue(oldvalue);
-            ti.setIndex(findex);
-            ti.setDate(stamp);
-            ti.setType(sType);
-            ti.insert();
-
-          }
+      if(ID != -1 ){
+        ti = FinanceFinder.getTariffIndex(ID) ;
+        float oldvalue = ti.getNewValue();
+        if( sDel != null && sDel.equalsIgnoreCase("true")){
+            FinanceBusiness.deleteTariffIndex(ID);
         }
-        else if(!"".equalsIgnoreCase(sName) && !"".equals(sIndex)){
-
-          ti = new TariffIndex();
-          ti.setName(sName);
-          ti.setInfo(sInfo);
-          ti.setNewValue(findex);
-          ti.setOldValue(findex);
-          ti.setDate(stamp);
-          ti.setType(sType);
-          ti.insert();
+        else if(!sName.equalsIgnoreCase(ti.getName()) || !sInfo.equalsIgnoreCase(ti.getInfo()) ||
+                !sType.equalsIgnoreCase(ti.getType()) || !(findex == ti.getIndex())  ){
+          FinanceBusiness.saveTariffIndex(-1,sName,sInfo,sType,findex,oldvalue,stamp,iCategoryId);
         }
       }
-      catch (SQLException ex) {
-        ex.printStackTrace();
+      else if(!"".equalsIgnoreCase(sName) && !"".equals(sIndex)){
+        FinanceBusiness.saveTariffIndex(-1,sName,sInfo,sType,findex,findex,stamp,iCategoryId);
       }
-      catch (Exception ex) {
-        ex.printStackTrace();
-      }
-
-
     }// for loop
 
-   return getMainTable(iwc);
+   return getMainTable(iwc,iCategoryId);
   }
 
 
@@ -293,10 +271,10 @@ public class TariffIndexEditor extends PresentationObjectContainer {
     return drp;
   }
 
-  private List getIndices(){
+  private List getIndices(int iCategoryId){
     Vector V = new Vector();
     for (int i = 0; i < TariffIndex.indexType.length(); i++) {
-      TariffIndex ti= Finder.getTariffIndex(String.valueOf(TariffIndex.indexType.charAt(i)));
+      TariffIndex ti= FinanceFinder.getTariffIndex(String.valueOf(TariffIndex.indexType.charAt(i)),iCategoryId);
       if(ti!= null)
         V.add(ti);
     }

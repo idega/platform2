@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.util.StringTokenizer;
 import java.util.List;
 import java.util.Vector;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Hashtable;
 import com.idega.idegaweb.IWBundle;
@@ -252,22 +253,30 @@ public class TariffAssessments extends Block {
 
   private PresentationObject getPreviewTable(FinanceHandler handler,TariffGroup group){
     Table T = new Table();
+    T.setWidth("100%");
     if(handler !=null && group !=null){
-      List L = handler.listOfAssessmentTariffPreviews(group.getID());
+      Collection L = handler.listOfAssessmentTariffPreviews(group.getID());
       if(L!=null){
         int row = 1;
+        float totals = 0;
         T.add(iwrb.getLocalizedString("tariff_name","Tariff name"),1,row);
         T.add(iwrb.getLocalizedString("account_count","Account count"),2,row);
         T.add(iwrb.getLocalizedString("total_amount","Total amount"),3,row);
         row++;
         Iterator I = L.iterator();
         AssessmentTariffPreview preview;
+        double amount;
         while(I.hasNext()){
           preview = (AssessmentTariffPreview) I.next();
           T.add(Edit.formatText(preview.getName()),1,row);
           T.add(Edit.formatText(preview.getAccounts()),2,row);
-          T.add(Edit.formatText(Float.toString(preview.getTotals())),2,row);
+          amount = preview.getTotals();
+          T.add(Edit.formatText(Double.toString(amount)),3,row);
+          totals+=amount;
+          row++;
         }
+        T.add(Edit.formatText(Double.toString(totals)),3,row);
+        T.setColumnAlignment(3,"right");
       }
     }
 

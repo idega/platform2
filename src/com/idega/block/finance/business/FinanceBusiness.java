@@ -162,6 +162,7 @@ public  class FinanceBusiness {
       }
       return false;
   }
+
   public static boolean deleteTariffKey(int id){
     try {
       new TariffKey(id).delete();
@@ -171,6 +172,54 @@ public  class FinanceBusiness {
 
     }
     return false;
+  }
+
+  public static boolean deleteTariffIndex(int id){
+    try {
+      new TariffIndex(id).delete();
+      return true;
+    }
+    catch (SQLException ex) {
+
+    }
+    return false;
+  }
+
+  public static boolean saveTariffIndex(int id, String sName,String sInfo,
+      String sType, float newvalue,float oldvalue,Timestamp stamp, int iCategoryId){
+     try {
+      TariffIndex ti = new TariffIndex();
+      boolean update = false;
+      if(iCategoryId > 0){
+        if(id > 0){
+          ti = new TariffIndex(id);
+          update = true;
+        }
+
+        ti = new TariffIndex();
+        ti.setName(sName);
+        ti.setInfo(sInfo);
+
+        ti.setOldValue(oldvalue);
+        ti.setIndex(newvalue);
+        ti.setDate(stamp);
+        ti.setType(sType);
+        ti.setCategoryId(iCategoryId);
+        ti.setNewValue(newvalue);
+        if(update){
+          ti.update();
+        }
+        else{
+          ti.insert();
+        }
+        return true;
+        }
+        return false;
+      }
+      catch (SQLException ex) {
+        ex.printStackTrace();
+      }
+      return false;
   }
   public static boolean saveAccountKey(int id, String sName,String sInfo,int TariffKeyId, int iCategoryId){
      try {

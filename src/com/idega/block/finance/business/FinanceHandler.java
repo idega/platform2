@@ -2,6 +2,7 @@ package com.idega.block.finance.business;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
 import com.idega.util.idegaTimestamp;
 /**
  * Title:
@@ -18,6 +19,6 @@ public interface FinanceHandler {
   public List listOfAttributes();
   public boolean executeAssessment(int iTariffGroupId,String assessmentName,int iCashierId,idegaTimestamp payDate);
   public Map getAttributeMap();
-  public List listOfAssessmentTariffPreviews(int iTariffGroupId);
+  public Collection listOfAssessmentTariffPreviews(int iTariffGroupId);
 
 }

@@ -200,6 +200,7 @@ public class AccountKeyEditor extends PresentationObjectContainer {
     }
     myForm.add(new HiddenInput("ake_count", String.valueOf(inputcount) ));
     myForm.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
+    myForm.add(Finance.getCategoryParameter(iCategoryId));
     myForm.add(inputTable);
     SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save","Save"));
     Edit.setStyle(save);

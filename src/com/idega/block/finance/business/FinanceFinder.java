@@ -372,4 +372,44 @@ public class FinanceFinder  {
     return (User) User.getEntityInstance(User.class,id);
   }
 
+  public static TariffIndex getTariffIndex(int iTariffIndexId){
+     if(iTariffIndexId > 0){
+      try {
+        return new TariffIndex(iTariffIndexId);
+      }
+      catch (SQLException ex) {
+
+      }
+    }
+    return null;
+  }
+
+  public static TariffIndex getTariffIndex(String type,int iCategoryId){
+    TariffIndex ti = new TariffIndex();
+    try {
+      StringBuffer sql = new StringBuffer(" select * from ");
+      sql.append(ti.getEntityName());
+      sql.append(" where ");
+      sql.append(ti.getColumnNameType());
+      sql.append( " = '");
+      sql.append(type);
+      sql.append("' and");
+      sql.append(ti.getColumnCategoryId());
+      sql.append(" = ");
+      sql.append(iCategoryId);
+      sql.append(" order by ");
+      sql.append(ti.getIDColumnName());
+      sql.append(" desc ");
+      List L = EntityFinder.findAll(ti,sql.toString());
+      if(L!= null)
+        ti =  (TariffIndex) L.get(0);
+      else
+        ti =  null;
+    }
+    catch (SQLException ex) {
+      ti = null;
+    }
+    return ti;
+  }
+
 }// class FinanceFinder
