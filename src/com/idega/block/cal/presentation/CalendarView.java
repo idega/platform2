@@ -494,7 +494,7 @@ public class CalendarView extends CategoryBlock{
 			for(int h=0; h<listOfEntries.size(); h++) {
 				CalendarEntry entry = (CalendarEntry) listOfEntries.get(h);
 				CalendarLedger ledger = null;
-				int groupIDInLedger;
+				int groupIDInLedger = 0;
 				Collection viewGroups = null;
 
 				try {
@@ -506,7 +506,11 @@ public class CalendarView extends CategoryBlock{
 				
 				if(entry.getLedgerID() != -1) {
 					ledger = getCalBusiness(iwc).getLedger(entry.getLedgerID());
-					groupIDInLedger = ledger.getGroupID();					
+					if(ledger != null) {
+						groupIDInLedger = ledger.getGroupID();
+					}
+					
+										
 				}
 				else {
 					groupIDInLedger = 1;
