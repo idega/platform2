@@ -85,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/09 09:00:19 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/09 09:12:03 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.110 $
+ * @version $Revision: 1.111 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -419,7 +419,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 								INVOICE_COMPILATION_DEFAULT);
 	}
 	
-	private Document createPdfDocument(final MemoryFileBuffer buffer, final String title) throws DocumentException {
+	private Document createPdfDocument
+		(final MemoryFileBuffer buffer, final String title)
+		throws DocumentException {
 		final Document document = new Document
 				(PageSize.A4, mmToPoints (20), mmToPoints (20),
 				 mmToPoints (20), mmToPoints (20));
@@ -435,7 +437,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		return document;
 	}
 
-	private PdfPTable getSummaryPdfTable(final InvoiceRecord[] records) {
+	private PdfPTable getSummaryPdfTable (final InvoiceRecord[] records) {
 		final PdfPTable summaryTable = new PdfPTable (3);
 		summaryTable.setWidthPercentage (100f);
 		summaryTable.getDefaultCell ().setBorder (0);
@@ -450,6 +452,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 																			 TOTAL_AMOUNT_VAT_DEFAULT) + ':');
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
 		addPhrase (summaryTable, getTotalAmountVat (records));
+		addPhrase (summaryTable, ""); // add empty cell
 		return summaryTable;
 	}
 
