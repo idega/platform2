@@ -797,7 +797,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   }
 
   private User getUserBySocialSecurityNumber(String socialSecurirtyNumber, WorkReportBusiness workReportBusiness)  {
-    User user;
+    User user = null;
     try {
       user = workReportBusiness.getUser(socialSecurirtyNumber);
     } 
@@ -806,8 +806,14 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         "[WorkReportAccountEditor]: Can't retrieve user.";
       System.err.println(message + " Message is: " + ex.getMessage());
       ex.printStackTrace(System.err);
-      return null;
-    } ;
+    }
+	catch (RemoteException ex) {
+		ex.printStackTrace();
+		String message =
+	        "[WorkReportAccountEditor]: Can't retrieve user.";
+	      System.err.println(message + " Message is: " + ex.getMessage());
+	      ex.printStackTrace(System.err);
+	}
     return user;
   }    
 

@@ -311,6 +311,9 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			}catch(FinderException ex){
 				ex.printStackTrace(); 
 			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
 		}
 		return user;	
 	}
@@ -1007,6 +1010,9 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 						return getUserBusiness(_iwc.getApplicationContext()).getUser(userSsn);
 					}catch(FinderException ex){
 						ex.printStackTrace();
+					}
+					catch (RemoteException e) {
+						e.printStackTrace();
 					}
 				}
 				return null;

@@ -287,11 +287,15 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		String userID = iwc.getParameter(PAR_USER_ID);
 		User user = null;
 		if(userPid !=null){
-		try{
-			user = getUserBusiness(iwc.getApplicationContext()).getUser(userPid);
-		}catch(FinderException ex){
-			ex.printStackTrace(); 
-		}}
+			try{
+				user = getUserBusiness(iwc.getApplicationContext()).getUser(userPid);
+			}catch(FinderException ex){
+				ex.printStackTrace(); 
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
 		else if(userID!=null){
 			try{
 				user = getUserBusiness(iwc.getApplicationContext()).getUser(Integer.parseInt(userID));

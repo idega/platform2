@@ -133,6 +133,10 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
                 } catch (FinderException e) {
                     ssnUser = null;
                 }
+				catch (RemoteException e) {
+					e.printStackTrace();
+					return false;
+				}
 
                 if (ssnUser == null) {
                     errorList.add(ERROR_SSN_NOT_FOUND);

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.user.business.DeceasedUserBusiness;
@@ -626,7 +627,13 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 
 
-		rootGroup.removeUser(user,performer,time);
+		try {
+			rootGroup.removeUser(user,performer,time);
+		}
+		catch (RemoveException e) {
+			e.printStackTrace();
+			return false;
+		}
 		
 		rootSpecialGroup.addGroup(user,time);
 		user.setPrimaryGroup(rootSpecialGroup);
@@ -675,7 +682,13 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
     
 
-		rootSpecialGroup.removeUser(user,performer,time);
+		try {
+			rootSpecialGroup.removeUser(user,performer,time);
+		}
+		catch (RemoveException e) {
+			e.printStackTrace();
+			return false;
+		}
 		rootGroup.addGroup(user,time);
 		user.setPrimaryGroup(rootGroup);
 		user.store();
@@ -733,8 +746,14 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			return false;
 		}
 
-		rootSpecialGroup.removeUser(user, performer,time);
-		rootGroup.removeUser(user, performer,time);
+		try {
+			rootSpecialGroup.removeUser(user, performer,time);
+			rootGroup.removeUser(user, performer,time);
+		}
+		catch (RemoveException e) {
+			e.printStackTrace();
+			return false;
+		}
 		
 		rootProtectedGroup.addGroup(user,time);
 		user.setPrimaryGroup(rootProtectedGroup);
