@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.transaction.UserTransaction;
@@ -347,5 +348,14 @@ public Group getRootGroup() {
 public void setRootGroup(Group rootGroup) {
 	this.rootGroup = rootGroup;
 }
+
+/**
+ * @see com.idega.block.importer.business.ImportFileHandler#getFailedRecords()
+ */
+public List getFailedRecords(){
+	return failedRecords;	
+}
+
+
 
   }
