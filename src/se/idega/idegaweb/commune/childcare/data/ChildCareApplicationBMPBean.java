@@ -497,7 +497,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public Integer ejbFindNewestApplication(int providerID, Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(PROVIDER_ID, providerID);
-		sql.appendAnd().append(QUEUE_DATE).appendLessThanOrEqualsSign().append(date);
+		sql.appendAnd().append(QUEUE_DATE).appendLessThanSign().append(date);
 		sql.appendOrderBy(QUEUE_ORDER+" desc");
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
