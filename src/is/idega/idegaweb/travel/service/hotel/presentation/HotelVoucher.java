@@ -3,8 +3,12 @@ package is.idega.idegaweb.travel.service.hotel.presentation;
 import is.idega.idegaweb.travel.presentation.Voucher;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.util.IWTimestamp;
 import com.idega.idegaweb.IWResourceBundle;
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * <p>Title: idega</p>
@@ -20,6 +24,18 @@ public class HotelVoucher extends Voucher {
   public HotelVoucher(Booking booking) throws Exception{
     super(booking);
   }
+
+  protected void addBookingDates(Table table, List bookings, IWContext iwc) throws RemoteException {
+		if (bookings.size() > 0) {
+			IWResourceBundle iwrb = super.getResourceBundle(iwc);
+		  IWTimestamp fromStamp = new IWTimestamp(((Booking)bookings.get(0)).getBookingDate());
+		  IWTimestamp toStamp = new IWTimestamp(((Booking)bookings.get(bookings.size()-1)).getBookingDate());
+		  toStamp.addDays(1);
+		  table.add(getText(iwrb.getLocalizedString("travel.arrival_date","Arrival date")+" : "+fromStamp.getLocaleDate(iwc)), 1, 2);
+		  table.add(getText(Text.BREAK), 1, 2);
+		  table.add(getText(iwrb.getLocalizedString("travel.departure_date","Departure date")+" : "+toStamp.getLocaleDate(iwc)), 1, 2);
+		}
+	}
 
   protected void setupVoucher(IWContext iwc) throws RemoteException {
     IWResourceBundle iwrb = super.getResourceBundle(iwc);
