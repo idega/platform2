@@ -220,19 +220,22 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		sql.appendSelectCountFrom(this.getEntityName()).append(" memb, ")
 		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
-		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue())
-		.appendAnd();
+		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
+		
 		if(gender!=null){
-			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender)
-			.appendAnd();
+			sql.appendAnd();
+			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender);
 		}
 		
 		if(stamp!=null){
+			sql.appendAnd();
 			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
 			.appendLessThanOrEqualsSign()
-			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote()
-			.appendAnd();
+			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote();
 		}
+		
+		sql.appendAnd();
+		
 		sql.append("memb.")
 		.append(IDColumnName)
 		.appendEqualSign()
@@ -263,19 +266,21 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		sql.appendSelectCountFrom(this.getEntityName()).append(" memb, ")
 		.append(getNameOfMiddleTable(this,league)).append(" middle ")
 		.appendWhere()
-		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue())
-		.appendAnd();
+		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
+		
 		if(gender!=null){
-			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender)
-			.appendAnd();
+			sql.appendAnd();
+			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender);
 		}
 		
 		if(stamp!=null){
+			sql.appendAnd();
 			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
 			.appendGreaterThanSign()
-			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote()
-			.appendAnd();
+			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote();
 		}
+
+		sql.appendAnd();
 		
 		sql.append("memb.")
 		.append(IDColumnName)
@@ -311,6 +316,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		}
 	
 		if(age>0) {
+			sql.appendAnd();
 			IWTimestamp stamp = getYearlyAgeBorderIWTimestamp(age,report.getYearOfReport().intValue());
 			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
 			.appendLessThanOrEqualsSign()
@@ -339,6 +345,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		}
 
 		if(age>0) {
+			sql.appendAnd();
 			IWTimestamp stamp = getYearlyAgeBorderIWTimestamp(age,report.getYearOfReport().intValue());
 			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
 			.appendGreaterThanSign()
@@ -361,14 +368,15 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		
 		sql.appendSelectCountFrom(this.getEntityName()).append(" memb ")
 		.appendWhere()
-		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue())
-		.appendAnd();
+		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
 		if(gender!=null){
-			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender)
-			.appendAnd();
+			sql.appendAnd()
+			.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender);
+			
 		}
 		if(stamp!=null){
-			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
+			sql.appendAnd()
+			.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
 			.appendGreaterThanSign()
 			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote();
 		}
@@ -389,14 +397,14 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		
 		sql.appendSelectCountFrom(this.getEntityName()).append(" memb ")
 		.appendWhere()
-		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue())
-		.appendAnd();
+		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
 		if(gender!=null){
-			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender)
-			.appendAnd();
+			sql.appendAnd()
+			.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender);
 		}
 		if(stamp!=null){
-			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
+			sql.appendAnd()
+			.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
 			.appendLessThanOrEqualsSign()
 			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote();
 		}
