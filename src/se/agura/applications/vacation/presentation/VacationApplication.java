@@ -368,15 +368,18 @@ public class VacationApplication extends VacationBlock {
 		IWTimestamp from = new IWTimestamp(iwc.getParameter(PARAMETER_VACATION_FROM_DATE));
 		IWTimestamp to = new IWTimestamp(iwc.getParameter(PARAMETER_VACATION_TO_DATE));
 		
-		String vacationPeriod = from.getDate() + " - " + to.getDate();
-		int maxDays = getVacationType(iwc) != null ? getVacationType(iwc).getMaxDays() : -1;
+		String vacationPeriod = from.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + " - " + to.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT);
+		int maxDays = getVacationType(iwc) != null ? getVacationType(iwc).getMaxDays() : 35;
 		Table workingDaysTable = new Table();
 		workingDaysTable.setBorder(0);
 		workingDaysTable.setCellspacing(0);
 		workingDaysTable.setCellpadding(iCellpadding);
 		int row = 1;
+		if (maxDays == -1) {
+			maxDays = 35;
+		}
 		
-		if (maxDays != -1 && IWTimestamp.getDaysBetween(from, to) < maxDays) {
+		if (IWTimestamp.getDaysBetween(from, to) < maxDays) {
 			workingDaysTable.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.period",
 					"Working days and hours under the period")), 1, row);
 			workingDaysTable.add(getText(getResourceBundle().getLocalizedString("vacation.time.week", "Week")), 2, row);
@@ -420,7 +423,7 @@ public class VacationApplication extends VacationBlock {
 		if (IWTimestamp.getDaysBetween(from, to) > 35) {
 			workingDaysTable.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.period",
 			"Vacation period")), 1, row);
-			workingDaysTable.add(vacationPeriod, 2, row++);
+			workingDaysTable.add(getText(vacationPeriod), 2, row++);
 		}
 		
 		workingDaysTable.mergeCells(1, 1, 1, workingDaysTable.getRows());
