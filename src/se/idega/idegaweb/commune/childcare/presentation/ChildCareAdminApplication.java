@@ -1,7 +1,5 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
-import is.idega.idegaweb.campus.block.phone.business.PhoneFinder;
-
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;

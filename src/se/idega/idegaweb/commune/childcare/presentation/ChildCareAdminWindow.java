@@ -24,7 +24,6 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
-import se.idega.idegaweb.commune.user.data.Citizen;
 
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractHome;

@@ -182,12 +182,14 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 				double sum = 0;
 				while (it.hasNext()) {
 					FinanceExtraBasketInfo info = (FinanceExtraBasketInfo) it.next();
-					if (info.division != null)
+					if (info.division != null) {
 						t.add(info.division.getName(), 1, row);
+					}
 					t.add(info.group.getName(), 2, row);
 					t.add(info.user.getName(), 3, row);
-					if (info.info != null)
+					if (info.info != null) {
 						t.add(info.info, 4, row);
+					}
 					t.add(nf.format(info.amount.doubleValue()), 5, row);
 					t.setAlignment(5, row, "RIGHT");
 					t.add(nf.format(info.amountPaid), 6, row);
@@ -200,13 +202,7 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 				t.add(labelSum, 5, row);
 				t.add(nf.format(sum), 6, row);
 				t.setAlignment(6, row, "RIGHT");
-			}
-            
-            try {
-                getBasketBusiness(iwc).emtpyExtraInfo();
-            } catch (RemoteException e2) {
-                e2.printStackTrace();
-            }
+			}            
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 		}
