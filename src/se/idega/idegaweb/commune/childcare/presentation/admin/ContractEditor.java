@@ -10,6 +10,7 @@ import javax.ejb.EJBException;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
+import se.idega.idegaweb.commune.childcare.data.EmploymentType;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock;
 
@@ -44,6 +45,7 @@ public class ContractEditor extends ChildCareBlock {
 	private static String PARAMETER_FROM_DATE = "p_fd";
 	private static String PARAMETER_CANCELLED_DATE = "p_cd";
 	private static String PARAMETER_CARE_TIME = "p_ct";
+	private static String PARAMETER_EMPLOYMENT_TYPE = "p_et";
 	
 	public void init(IWContext iwc) throws Exception {
 		int applId = session.getApplicationID();
@@ -94,13 +96,16 @@ public class ContractEditor extends ChildCareBlock {
 			String fromDate = iwc.getParameter(PARAMETER_FROM_DATE);
 			String toDate = iwc.getParameter(PARAMETER_CANCELLED_DATE);
 			String careTime = iwc.getParameter(PARAMETER_CARE_TIME);
+			String empType = iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE);
 			
 			int iCareTime = -1;
+			int iEmpType = -1;
 			Date dFromDate = null;
 			Date dToDate = null;
 			
 			try {
 				iCareTime = Integer.parseInt(careTime);
+				iEmpType = Integer.parseInt(empType);
 				dFromDate = (new IWTimestamp(fromDate)).getDate();
 				try {
 					dToDate = (new IWTimestamp(toDate)).getDate();
@@ -112,12 +117,12 @@ public class ContractEditor extends ChildCareBlock {
 			boolean success = false;
 			if ( dFromDate != null && iCareTime > 0) {
 				success = getBusiness().alterContract(contract, iCareTime, dFromDate, dToDate, iwc.getCurrentLocale(), iwc.getCurrentUser());
+				if (iEmpType > 0) {
+					contract.setEmploymentType(iEmpType);
+					contract.store();
+				}
 			}
 			
-			logError("contract = "+contract.getPrimaryKey().toString());
-			logError("fromDate = "+fromDate);
-			logError("toDate   = "+toDate);
-			logError("careTime = "+careTime);
 			add(getLocalizedSmallHeader("child_care.update_success", "Update success"));
 			return success;
 		} catch (Exception e) {
@@ -167,6 +172,13 @@ public class ContractEditor extends ChildCareBlock {
 			table.add(cancelled, 2, row++);
 			table.add(getLocalizedSmallText("child_care.care_time","Care time"), 1, row);
 			table.add(careTime, 2, row++);
+			table.add(getLocalizedSmallText("child_care.employment", "Employment"), 1, row);
+			EmploymentType et = contract.getEmploymentType();
+			int etId = -1;
+			if (et != null) {
+				etId = new Integer(et.getPrimaryKey().toString()).intValue();
+			}
+			table.add(getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, etId), 2, row++);
 			
 			Link back = new Link(getResourceBundle().getLocalizedImageButton("child_care.cancel","Cancel"));
 			table.add(back, 1, row);
@@ -199,7 +211,7 @@ public class ContractEditor extends ChildCareBlock {
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setColumns(10);
+		table.setColumns(11);
 		
 		
 		int row = 1;
@@ -217,6 +229,7 @@ public class ContractEditor extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.terminated","Terminated"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.care_time","Care time"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.employment","Employment"), column++, row);
 		table.setRowColor(row++, getHeaderColor());
 		
 		boolean showComment = false;
@@ -229,6 +242,7 @@ public class ContractEditor extends ChildCareBlock {
 			IWTimestamp created;
 			IWTimestamp validFrom;
 			IWTimestamp cancelledDate;
+			EmploymentType et;
 			Link editLink = null;
 			Link deleteLink = null;
 			Link viewContract;
@@ -332,6 +346,14 @@ public class ContractEditor extends ChildCareBlock {
 						table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
 					column++;
 					table.add(getSmallText(String.valueOf(contract.getCareTime())), column++, row);
+					
+					et = contract.getEmploymentType();
+					if (et != null) {
+						table.add(getSmallText(localize(et.getLocalizationKey(), et.getLocalizationKey())), column, row);
+					} else {
+						table.add(getSmallText("-"), column, row);
+					}
+					column++;
 					
 					table.setWidth(column, row, 12);
 					table.add(viewContract, column++, row);
