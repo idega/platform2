@@ -10,12 +10,13 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Vector;
 
 import javax.ejb.FinderException;
 
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.PriceCategoryHome;
-import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
@@ -78,31 +79,49 @@ public class HotelSearch extends AbstractSearchForm {
 			}
 		
 			Object[] postalCodeIds = getSearchBusiness(iwc).getPostalCodeIds(iwc);
+			
+			Object[] suppIds = new Object[]{};
+			try {
+				Collection supps = engine.getSuppliers();
+				if (supps != null && !supps.isEmpty()) {
+					Iterator iter =supps.iterator();
+					int i = 0;
+					suppIds = new Object[supps.size()];
+					while (iter.hasNext()) {
+						suppIds[i] = ((Supplier) iter.next()).getPrimaryKey();
+						i++;
+					}
+				}
+			}catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
 
 			HotelHome hHome = (HotelHome) IDOLookup.getHome(Hotel.class);
 
-			Collection coll = hHome.find(null, null, roomTypeIds, postalCodeIds);
-
+			Collection coll = new Vector();
+			
+			if (suppIds.length > 0) {
+				coll = hHome.find(null, null, roomTypeIds, postalCodeIds, suppIds);
+			}
+			
 			PriceCategoryHome pcHome = (PriceCategoryHome) IDOLookup.getHome(PriceCategory.class);
 			PriceCategory priceCat = pcHome.findByKey(HotelSetup.HOTEL_SEARCH_PRICE_CATEGORY_KEY);
 			IWTimestamp from = from = new IWTimestamp(iwc.getParameter(AbstractSearchForm.PARAMETER_FROM_DATE));
 
-			System.out.println("Before : ");
-			showCollectionContent(coll);
+			//showCollectionContent(coll);
 			coll = getSearchBusiness(iwc).sortProducts(coll, priceCat, new IWTimestamp(sFromDate));
-			System.out.println("After : ");
-			showCollectionContent(coll);
+			//showCollectionContent(coll);
 
 			HashMap map = getSearchBusiness(iwc).checkResults(iwc, coll);
 			int mapSize = map.size();
 			String foundString = "";
-			if (map != null) {
+/*			if (map != null) {
 				foundString = "Found "+mapSize+" match";
 				if (mapSize != 1) foundString += "es !<br>";
 			} else {
 				foundString = getText(iwrb.getLocalizedString("travel.search.no_matches","No matches"))+"<BR>";
 			}
-			
+*/			
 			if (mapSize > 0) {
 				add(foundString);
 			}
