@@ -592,6 +592,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			years = getGroupBiz().getChildGroupsRecursiveResultFiltered(run, type, true);
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			years = null;
 		}
 		return years;
