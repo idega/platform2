@@ -244,6 +244,11 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
 
     rightTable.add(ClubSponsors(modinfo),1,1);
 
+    if ((modinfo.getParameter("union_id")).equalsIgnoreCase("81")){
+      rightTable.resize(1,2);
+      HeaderTable  dummyTable = this.getProGolfers();
+      rightTable.add(dummyTable,1,2);
+    }
     return rightTable;
   }
   protected Form ClubSponsors(ModuleInfo modinfo) throws IOException{
