@@ -629,7 +629,7 @@ public class ReportOverview extends Block {
 			EntityPath path,
 			EntityBrowser browser,
 			IWContext iwc) {
-			String shortKeyPath = path.getShortKey();
+			//String shortKeyPath = path.getShortKey();
 			EntityRepresentation idoEntity = (EntityRepresentation) value;
 			Link link = new Link(display);
 			link.addParameter(QueryBuilder.SHOW_WIZARD, QueryBuilder.SHOW_WIZARD);
