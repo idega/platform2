@@ -7,6 +7,7 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
+import se.idega.idegaweb.commune.message.business.MessageSession;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.util.PIDChecker;
 
@@ -233,7 +234,7 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 	private void handleKnownUserLoggedIn(LoginTable loginTable, User user, IWContext iwc) throws RemoteException, CreateException  {
     String newPassword = createNewPassword();
     CitizenAccountBusiness business = getBusiness(iwc);
-    business.changePasswordAndSendLetterOrEmail(loginTable, user,newPassword, false, true);
+    business.changePasswordAndSendLetterOrEmail(iwc,loginTable, user,newPassword, false);
 	}
 
 	/**
@@ -250,7 +251,7 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
     // create new password
     String newPassword = createNewPassword();
     CitizenAccountBusiness business = getBusiness(iwc);
-    business.changePasswordAndSendLetterOrEmail(loginTable, user,newPassword, true, false);
+    business.changePasswordAndSendLetterOrEmail(iwc,loginTable, user,newPassword, true);
 	}
 
 
@@ -439,5 +440,9 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 	 */
 	public void setAlwaysSendEmail(boolean alwaysSendEmail) {
 		this.alwaysSendEmail = alwaysSendEmail;
+	}
+	
+	private MessageSession getMessageSession(IWContext iwc) throws Exception {
+		return (MessageSession) com.idega.business.IBOLookup.getSessionInstance(iwc, MessageSession.class);
 	}
 }

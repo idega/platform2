@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.74 2004/09/30 08:25:11 aron Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.75 2004/11/02 21:20:21 aron Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -38,6 +38,7 @@ import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantPutChildre
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.MessageSession;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.util.PIDChecker;
 
@@ -63,6 +64,7 @@ import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
@@ -74,11 +76,11 @@ import com.idega.util.LocaleUtil;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2004/09/30 08:25:11 $ by $Author: aron $
+ * Last modified: $Date: 2004/11/02 21:20:21 $ by $Author: aron $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.74 $
+ * @version $Revision: 1.75 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -778,13 +780,13 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	 * @throws CreateException
 	 *           If changing of the password failed.
 	 */
-	public void changePasswordAndSendLetterOrEmail(LoginTable loginTable, User user, String newPassword, boolean sendLetter, boolean sendEmail) throws CreateException {
+	public void changePasswordAndSendLetterOrEmail(IWUserContext iwuc,LoginTable loginTable, User user, String newPassword,boolean sendLetter) throws CreateException {
 
 		UserTransaction trans = null;
 		try {
 			trans = this.getSessionContext().getUserTransaction();
 			trans.begin();
-			createAndStoreNewPasswordAndSendLetterOrEmail(loginTable, user, newPassword, sendLetter, sendEmail);
+			createAndStoreNewPasswordAndSendLetterOrEmail(iwuc,loginTable, user, newPassword, sendLetter);
 			trans.commit();
 		}
 		catch (Exception e) {
@@ -802,7 +804,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		}
 	}
 
-	protected void createAndStoreNewPasswordAndSendLetterOrEmail(LoginTable loginTable, User user, String newPassword, boolean sendLetter, boolean sendEmail) throws CreateException, RemoteException {
+	protected void createAndStoreNewPasswordAndSendLetterOrEmail(IWUserContext iwuc,LoginTable loginTable, User user, String newPassword,boolean sendLetter) throws CreateException, RemoteException {
 		// encrypte new password
 		String encryptedPassword = Encrypter.encryptOneWay(newPassword);
 		// store new password
@@ -815,17 +817,23 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		String messageBody = getNewPasswordWasCreatedMessageBody(userName, loginName, newPassword);
 		// send letter or email to user
 		MessageBusiness messageBusiness = getMessageBusiness();
+		//MessageSession messageSession = messageBusiness.getMessageSession(iwuc);
 		Message messageLetter = null;
 		Message messageEmail = null;
+		// user has a registered email and wants to receive messages by email
+		//boolean sendEmail = messageSession.getIfUserCanReceiveEmails(user);
 		if (sendLetter)
 			messageLetter = messageBusiness.createPasswordMessage(user, loginName, newPassword);
-		if (sendEmail)
-			messageEmail = messageBusiness.createUserMessage(user, messageSubject, messageBody, false);
+		else
+			messageEmail = messageBusiness.createUserMessage(user, messageSubject, messageBody, true);
+
+		/*
 		if ((messageLetter == null && sendLetter) || (messageEmail == null && sendEmail)) {
 			//do something: email or letter was not sent!
 			throw new CreateException("Email or letter could not be created");
-		}
+		}*/
 	}
+	
 
 	public int getNumberOfApplications() throws RemoteException {
 		try {
