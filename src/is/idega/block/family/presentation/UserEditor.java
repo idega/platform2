@@ -2,7 +2,7 @@
  * Created on 6.7.2003
  *
  */
-package com.idega.user.presentation;
+package is.idega.block.family.presentation;
 import is.idega.idegaweb.member.presentation.FamilyRelationConnector;
 import is.idega.idegaweb.member.presentation.UserRelationConnector;
 import java.rmi.RemoteException;
@@ -17,11 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-
 import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
@@ -70,6 +68,7 @@ import com.idega.user.data.GroupRelation;
 import com.idega.user.data.GroupRelationHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserStatus;
+import com.idega.user.presentation.UserSearcher;
 import com.idega.util.IWTimestamp;
 import com.idega.util.URLUtil;
 

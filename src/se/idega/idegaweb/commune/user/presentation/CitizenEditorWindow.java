@@ -7,7 +7,7 @@ package se.idega.idegaweb.commune.user.presentation;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.Window;
-import com.idega.user.presentation.UserEditor;
+import is.idega.block.family.presentation.UserEditor;
 
 /**
  * UserEditorWindow

@@ -28,7 +28,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.user.presentation.UserEditor;
+import is.idega.block.family.presentation.UserEditor;
 /**
  * CitizenEditor
  * @author aron 
