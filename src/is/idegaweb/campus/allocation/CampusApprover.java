@@ -9,6 +9,9 @@ import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.business.BuildingFinder;
+import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.application.business.ApplicationFinder;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicationSubject;
@@ -26,6 +29,7 @@ import java.util.ListIterator;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.sql.SQLException;
+import java.util.Vector;
 
 
 public class CampusApprover extends KeyEditor{
@@ -41,6 +45,7 @@ public class CampusApprover extends KeyEditor{
   private ListIterator iterator = null;
   private LinkedList linkedlist = null;
   private String bottomThickness = "8";
+  private final String sView = "view",sEdit = "edit";
 
   /*
   Blár litur í topp # 27324B
@@ -86,10 +91,31 @@ public class CampusApprover extends KeyEditor{
     if(isAdmin){
       if(modinfo.getParameter("view")!=null){
         int id = Integer.parseInt(modinfo.getParameter("view"));
-        add(makeApplicationTable(id,modinfo,iwrb));
+        add(makeApplicationTable(id,false,modinfo,iwrb));
       }
       else if(modinfo.getParameter("application_id")!=null){
-        this.updateApplication(modinfo,iwrb);
+        int id = Integer.parseInt(modinfo.getParameter("application_id"));
+        boolean bEdit = false;
+        if(modinfo.getParameter("editor")!=null){
+          bEdit = true;
+        }
+        else if(modinfo.getParameter("viewer")!=null){
+          bEdit = false;
+        }
+
+        if(modinfo.getParameter("save")!= null){
+          updateWholeApplication(modinfo,id);
+        }
+        else{
+          updateApplication(modinfo,id);
+        }
+
+        if(bEdit){
+          add(makeApplicationForm(id,bEdit,modinfo,iwrb));
+        }
+        else{
+          add(makeApplicationTable(id,bEdit,modinfo,iwrb));
+        }
       }
       else{
         add(subjectForm());
@@ -111,19 +137,57 @@ public class CampusApprover extends KeyEditor{
     return LinkTable;
   }
 
-  private void updateApplication(ModuleInfo modinfo,IWResourceBundle iwrb){
-    int id = Integer.parseInt(modinfo.getParameter("application_id"));
+  private void updateApplication(ModuleInfo modinfo,int id){
+    //int id = Integer.parseInt(modinfo.getParameter("application_id"));
     String status = modinfo.getParameter("status_drop");
     try{
       Application A = new Application(id);
       A.setStatus(status);
       A.update();
-      add(makeApplicationTable(id,modinfo,iwrb));
     }
     catch(Exception e){
       e.printStackTrace();
 
     }
+  }
+
+  private void updateWholeApplication(ModuleInfo modinfo,int id){
+    try {
+      Application eApplication = new Application(id);
+      Applicant eApplicant = new Applicant(eApplication.getApplicantId());
+      if( eApplication !=null && eApplicant != null){
+        CampusApplication A = new CampusApplication();
+        CampusApplication eCampusApplication = ((CampusApplication[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
+        List L = CampusApplicationFinder.listOfAppliedInApplication(eCampusApplication.getID());
+        updateApplicant(modinfo,eApplicant,eCampusApplication);
+        updateApartment(modinfo,eCampusApplication,L);
+        updateSpouse(modinfo,eCampusApplication);
+        updateChildren(modinfo,eCampusApplication);
+        try {
+          eApplicant.update();
+          eCampusApplication.update();
+          for (int i = 0; i < L.size(); i++) {
+            Applied applied = (Applied) L.get(i);
+            int aid = applied.getID();
+            if(aid == -1)
+              applied.insert();
+            else if(aid < -1)
+              applied.delete();
+            else if(aid > 0)
+              applied.update();
+          }
+
+        }
+        catch (SQLException ex) {
+          ex.printStackTrace();
+        }
+      }
+    }
+    catch (SQLException ex) {
+
+    }
+
+
   }
 
   public ModuleObject makeApplicantTable(ModuleInfo modinfo,IWResourceBundle iwrb){
@@ -188,7 +252,7 @@ public class CampusApprover extends KeyEditor{
     return T;
   }
 
-  public ModuleObject makeApplicationTable(int id,ModuleInfo modinfo,IWResourceBundle iwrb){
+  public ModuleObject makeApplicationTable(int id,boolean bEdit,ModuleInfo modinfo,IWResourceBundle iwrb){
      Table OuterFrame = new Table(2,1);
         OuterFrame.setCellpadding(0);
         OuterFrame.setCellspacing(0);
@@ -235,18 +299,18 @@ public class CampusApprover extends KeyEditor{
           InnerFrame.setVerticalAlignment(2,2,"top");
           InnerFrame.setWidth(1,"50%");
           InnerFrame.setWidth(2,"50%");
-          InnerFrame.add(this.getApplicantTable(eApplicant,eCampusApplication,iwrb),1,1);
-          InnerFrame.add(this.getSpouseTable(eCampusApplication,iwrb),2,1);
-          InnerFrame.add(this.getChildrenTable(eCampusApplication,iwrb),2,2);
+          InnerFrame.add(getViewApplicant(eApplicant,eCampusApplication,iwrb),1,1);
+          InnerFrame.add(getViewSpouse(eCampusApplication,iwrb),2,1);
+          InnerFrame.add(getViewChildren(eCampusApplication,iwrb),2,2);
 
         Table Frame = new Table(1,6);
           Frame.setCellpadding(2);
           Frame.setCellspacing(1);
           Frame.setWidth("100%");
           Frame.setBorder(border);
-          Frame.add(getApplicationTable(eApplication),1,1);
+          Frame.add(getViewApplication(eApplication),1,1);
           Frame.add(InnerFrame,1,3);
-          Frame.add(this.getApartmentTable(eCampusApplication,L,modinfo,iwrb),1,5);
+          Frame.add(getViewApartment(eCampusApplication,L,modinfo,iwrb),1,5);
 
         Table OtherFrame = new Table(1,2);
           OtherFrame.setCellpadding(2);
@@ -255,8 +319,8 @@ public class CampusApprover extends KeyEditor{
           OtherFrame.setWidth("200");
           OtherFrame.setRowVerticalAlignment(1,"top");
           OtherFrame.add(new HiddenInput("application_id",String.valueOf(id)));
-          OtherFrame.add(this.getRemoteControl(eApplication.getStatus(),iwrb),1,1);
-          OtherFrame.add(this.getKnobs(iwrb),1,2);
+          OtherFrame.add(getRemoteControl(eApplication.getStatus(),bEdit,iwrb),1,1);
+          OtherFrame.add(getKnobs(iwrb),1,2);
 
         Form theForm = new Form();
         theForm.add(OtherFrame);
@@ -271,7 +335,93 @@ public class CampusApprover extends KeyEditor{
     return OuterFrame;
   }
 
-  public ModuleObject getApplicantTable(Applicant eApplicant,CampusApplication eCampusApplication,IWResourceBundle iwrb){
+
+  public ModuleObject makeApplicationForm(int id,boolean bEdit,ModuleInfo modinfo,IWResourceBundle iwrb){
+     Form theForm = new Form();
+
+     Table OuterFrame = new Table(2,1);
+        OuterFrame.setCellpadding(0);
+        OuterFrame.setCellspacing(0);
+    theForm.add(OuterFrame);
+
+    try{
+      Application  eApplication = null;
+      Applicant eApplicant = null;
+      if(id < -1 && iterator != null){
+        ApplicationHolder AS = null;
+        if( id == -2 && iterator.hasPrevious()){
+          AS = (ApplicationHolder)iterator.previous();
+        }
+        else if(id == -4 && iterator.hasNext()){
+          AS = (ApplicationHolder)iterator.next();
+        }
+        if(AS !=null){
+          eApplication = AS.getApplication();
+          eApplicant = AS.getApplicant();
+          id = eApplication.getID();
+        }
+      }
+      else{
+        eApplication = new Application(id);
+        eApplicant = new Applicant(eApplication.getApplicantId());
+      }
+
+      if( eApplication !=null && eApplicant != null){
+        CampusApplication A = new CampusApplication();
+        CampusApplication eCampusApplication = ((CampusApplication[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
+        List L = CampusApplicationFinder.listOfAppliedInApplication(eCampusApplication.getID());
+
+        int border = 0;
+        OuterFrame.setBorder(border);
+        OuterFrame.setRowVerticalAlignment(1,"top");
+        OuterFrame.setWidth(1,"550");
+
+        Table InnerFrame = new Table(2,2);
+          InnerFrame.mergeCells(1,1,1,2);
+          InnerFrame.setCellpadding(0);
+          InnerFrame.setCellspacing(0);
+          InnerFrame.setBorder(border);
+          InnerFrame.setWidth("100%");
+          InnerFrame.setRowVerticalAlignment(1,"top");
+          InnerFrame.setVerticalAlignment(2,2,"top");
+          InnerFrame.setWidth(1,"50%");
+          InnerFrame.setWidth(2,"50%");
+          InnerFrame.add(this.getFieldsApplicant(eApplicant,eCampusApplication,iwrb),1,1);
+          InnerFrame.add(this.getFieldsSpouse(eCampusApplication,iwrb),2,1);
+          InnerFrame.add(this.getFieldsChildren(eCampusApplication,iwrb),2,2);
+
+        Table Frame = new Table(1,6);
+          Frame.setCellpadding(2);
+          Frame.setCellspacing(1);
+          Frame.setWidth("100%");
+          Frame.setBorder(border);
+          Frame.add( getViewApplication(eApplication) ,1,1);
+          Frame.add(InnerFrame,1,3);
+          Frame.add( getFieldsApartment(eCampusApplication,L,modinfo,iwrb) ,1,5);
+
+        Table OtherFrame = new Table(1,2);
+          OtherFrame.setCellpadding(2);
+          OtherFrame.setCellspacing(1);
+          OtherFrame.setBorder(border);
+          OtherFrame.setWidth("200");
+          OtherFrame.setRowVerticalAlignment(1,"top");
+          OtherFrame.add(new HiddenInput("application_id",String.valueOf(id)));
+          OtherFrame.add(this.getRemoteControl(eApplication.getStatus(),bEdit,iwrb),1,1);
+          OtherFrame.add(this.getKnobs(iwrb),1,2);
+
+
+        OuterFrame.add(Frame,1,1);
+        OuterFrame.add(OtherFrame,2,1);
+
+
+      }
+    }
+    catch(SQLException sql){sql.printStackTrace();}
+    catch(Exception e){e.printStackTrace();}
+    return theForm;
+  }
+
+  public ModuleObject getViewApplicant(Applicant eApplicant,CampusApplication eCampusApplication,IWResourceBundle iwrb){
     Table T = new Table();
       int col = 1;
       int row = 1;
@@ -323,7 +473,156 @@ public class CampusApprover extends KeyEditor{
       return T;
   }
 
-  public ModuleObject getSpouseTable(CampusApplication eCampusApplication,IWResourceBundle iwrb){
+  public ModuleObject getFieldsApplicant(Applicant eApplicant,CampusApplication eCampusApplication,IWResourceBundle iwrb){
+    int year = idegaTimestamp.RightNow().getYear();
+    Table T = new Table();
+      int col = 1;
+      int row = 1;
+      T.add(headerText(iwrb.getLocalizedString("applicant","Applicant")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("name","Name")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("legal_residence","Legal Residence")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("residence","Residence")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("po","PO")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("phone","Residence phone")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("email","Email")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("faculty","Faculty")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("income","Income")),col,row++);
+
+      col = 2;
+      row = 2;
+
+      TextInput tiFullName = new TextInput("ti_full",eApplicant.getFullName());
+      setStyle(tiFullName);
+      TextInput tiSsn = new TextInput("ti_ssn",eApplicant.getSSN());
+      setStyle(tiSsn);
+      TextInput tiLegRes = new TextInput("ti_ssn",eApplicant.getLegalResidence());
+      setStyle(tiLegRes);
+      TextInput tiRes = new TextInput("ti_legres",eApplicant.getResidence());
+      setStyle(tiRes);
+      TextInput tiPo = new TextInput("ti_po",eApplicant.getPO());
+      setStyle(tiPo);
+      TextInput tiResPho = new TextInput("ti_respho",eApplicant.getResidencePhone());
+      setStyle(tiResPho);
+      TextInput tiEmail = new TextInput("ti_email",eCampusApplication.getEmail());
+      setStyle(tiEmail);
+      TextInput tiFac = new TextInput("ti_facult",eCampusApplication.getFaculty());
+      setStyle(tiFac);
+      TextInput tiTrack= new TextInput("ti_track",eCampusApplication.getStudyTrack());
+      setStyle(tiTrack);
+      TextInput tiIncome= new TextInput("ti_income",eCampusApplication.getIncome().toString());
+      setStyle(tiIncome);
+      tiIncome.setAsIntegers();
+
+      T.add(tiFullName,col,row++);
+      T.add(tiSsn,col,row++);
+      T.add(tiLegRes,col,row++);
+      T.add(tiRes,col,row++);
+      T.add(tiPo,col,row++);
+      T.add(tiResPho,col,row++);
+      T.add(tiEmail,col,row++);
+      T.add(tiFac,col,row++);
+      T.add(tiTrack,col,row++);
+      String beginMonth = (eCampusApplication.getStudyBeginMonth().toString());
+      String endMonth = (eCampusApplication.getStudyEndMonth().toString());
+      String beginYear = eCampusApplication.getStudyBeginYear().toString();
+      String endYear = eCampusApplication.getStudyEndYear().toString();
+      DropdownMenu drBM = intDrop("dr_bm",beginMonth,1,12);
+      DropdownMenu drEM = intDrop("dr_em",endMonth,1,12);
+      DropdownMenu drBY = intDrop("dr_by",beginYear,year-10,year+10);
+      DropdownMenu drEY = intDrop("dr_ey",endYear,year-10,year+10);
+      setStyle(drBM);
+      setStyle(drEM);
+      setStyle(drBY);
+      setStyle(drEY);
+      T.add(drBM,col,row);
+      T.add(drBY,col,row++);
+      T.add(drEM,col,row);
+      T.add(drEY,col,row++);
+      T.add(tiIncome,col,row);
+
+      T.setCellpadding(1);
+      T.setCellspacing(1);
+      T.mergeCells(1,1,2,1);
+      T.setBorder(0);
+      T.setHorizontalZebraColored(lightBlue,WhiteColor);
+      T.setRowColor(1,blueColor);
+      int lastrow = row+1;
+      T.setRowColor(lastrow,redColor);
+      T.mergeCells(1,lastrow,2,lastrow);
+      T.add(formatText(" "),1,lastrow);
+      T.setHeight(lastrow,bottomThickness);
+      T.setWidth(1,"50");
+      T.setWidth("100%");
+      return T;
+  }
+
+  public void updateApplicant(ModuleInfo modinfo,Applicant eApplicant,CampusApplication eCampusApplication){
+    String sFullName =modinfo.getParameter("ti_full");
+    String sLegRes = modinfo.getParameter("ti_ssn");
+    String sRes = modinfo.getParameter("ti_legres");
+    String sPo = modinfo.getParameter("ti_po");
+    String sResPho = modinfo.getParameter("ti_respho");
+    String sEmail = modinfo.getParameter("ti_email");
+    String sFac = modinfo.getParameter("ti_facult");
+    String sTrack= modinfo.getParameter("ti_track");
+    String sIncome= modinfo.getParameter("ti_income");
+    String sBM = modinfo.getParameter("dr_bm");
+    String sEM = modinfo.getParameter("dr_em");
+    String sBY = modinfo.getParameter("dr_by");
+    String sEY = modinfo.getParameter("dr_ey");
+
+    try{
+      int iIncome = 0;
+      if(sIncome != null)
+       iIncome = Integer.parseInt(sIncome);
+      int iBM = sBM!=null ?Integer.parseInt(sBM):0;
+      int iEM = sEM!=null ?Integer.parseInt(sEM):0;
+      int iBY = sBY!=null?Integer.parseInt(sBY):0;
+      int iEY = sEY!=null? Integer.parseInt(sEY):0;
+      eCampusApplication.setIncome(iIncome);
+      eCampusApplication.setStudyBeginMonth(iBM);
+      eCampusApplication.setStudyBeginYear(iBY);
+      eCampusApplication.setStudyEndMonth(iEM);
+      eCampusApplication.setStudyEndYear(iEY);
+    }
+    catch(Exception ex){
+      ex.printStackTrace();
+    }
+    eCampusApplication.setEmail(sEmail);
+    eCampusApplication.setFaculty(sFac);
+    eCampusApplication.setStudyTrack(sTrack);
+    eApplicant.setLegalResidence(sLegRes);
+    eApplicant.setPO(sPo);
+    eApplicant.setResidencePhone(sResPho);
+    eApplicant.setResidence(sRes);
+    if(sFullName!= null){
+      StringTokenizer st = new StringTokenizer(sFullName);
+      if(st.hasMoreTokens()){
+        eApplicant.setFirstName(st.nextToken());
+      }
+      String mid = "";
+      if(st.hasMoreTokens()){
+        mid = (st.nextToken());
+      }
+
+      if(st.hasMoreTokens()){
+        eApplicant.setLastName(st.nextToken());
+        eApplicant.setMiddleName(mid);
+      }
+      else{
+        eApplicant.setLastName(mid);
+      }
+    }
+
+
+  }
+
+  public ModuleObject getViewSpouse(CampusApplication eCampusApplication,IWResourceBundle iwrb){
+    int year = idegaTimestamp.RightNow().getYear();
     Table T = new Table();
       int col = 1;
       int row = 1;
@@ -364,7 +663,117 @@ public class CampusApprover extends KeyEditor{
       return T;
   }
 
-  public ModuleObject getChildrenTable(CampusApplication eCampusApplication,IWResourceBundle iwrb){
+  public ModuleObject getFieldsSpouse(CampusApplication eCampusApplication,IWResourceBundle iwrb){
+    int year = idegaTimestamp.RightNow().getYear();
+    Table T = new Table();
+      int col = 1;
+      int row = 1;
+      T.add(headerText(iwrb.getLocalizedString("spouse","Spouse")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("name","Name")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("school","School")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("income","Income")),col,row++);
+      col = 2;
+      row = 2;
+
+      TextInput tiSpName = new TextInput("ti_sp_name",eCampusApplication.getSpouseName());
+      TextInput tiSpSsn = new TextInput("ti_sp_ssn",eCampusApplication.getSpouseSSN());
+      TextInput tiSpSchl = new TextInput("ti_sp_schl",eCampusApplication.getSpouseSchool());
+      TextInput tiSpStTr = new TextInput("ti_sp_sttr",eCampusApplication.getSpouseStudyTrack());
+      TextInput tiSPIncome = new TextInput("ti_sp_income",eCampusApplication.getSpouseIncome().toString());
+      setStyle(tiSpName);
+      setStyle(tiSpSsn);
+      setStyle(tiSpSchl);
+      setStyle(tiSpStTr);
+      setStyle(tiSPIncome);
+
+      T.add(tiSpName,col,row++);
+      T.add(tiSpSsn,col,row++);
+      T.add(tiSpSchl,col,row++);
+      T.add(tiSpStTr,col,row++);
+
+      String beginMonth = eCampusApplication.getSpouseStudyBeginMonth().toString();
+      String endMonth = eCampusApplication.getSpouseStudyEndMonth().toString();
+      String beginYear = eCampusApplication.getSpouseStudyBeginYear().toString();
+      String endYear = eCampusApplication.getSpouseStudyEndYear().toString();
+      DropdownMenu drBM = intDrop("dr_sp_bm",beginMonth,1,12);
+      DropdownMenu drEM = intDrop("dr_sp_em",endMonth,1,12);
+      DropdownMenu drBY = intDrop("dr_sp_by",beginYear,year-10,year+10);
+      DropdownMenu drEY = intDrop("dr_sp_ey",endYear,year-10,year+10);
+      setStyle(drBM);
+      setStyle(drEM);
+      setStyle(drBY);
+      setStyle(drEY);
+      T.add(drBM,col,row);
+      T.add(drBY,col,row++);
+      T.add(drEM,col,row);
+      T.add(drEY,col,row++);
+      T.add(tiSPIncome,col,row);
+
+      T.setCellpadding(1);
+      T.setCellspacing(1);
+      T.mergeCells(1,1,2,1);
+      T.setBorder(0);
+      T.setHorizontalZebraColored(lightBlue,WhiteColor);
+      T.setRowColor(1,blueColor);
+      int lastrow = row+1;
+      T.setRowColor(lastrow,redColor);
+      T.mergeCells(1,lastrow,2,lastrow);
+      T.add(formatText(" "),1,lastrow);
+      T.setHeight(lastrow,bottomThickness);
+      T.setWidth(1,"50");
+      T.setWidth("100%");
+      return T;
+  }
+
+  public void updateSpouse(ModuleInfo modinfo,CampusApplication eCampusApplication){
+    String sSpName = modinfo.getParameter("ti_sp_name");
+    String sSpSsn = modinfo.getParameter("ti_sp_ssn");
+    String sSpSchl = modinfo.getParameter("ti_sp_schl");
+    String sSpStTr = modinfo.getParameter("ti_sp_sttr");
+    String sSPIncome = modinfo.getParameter("ti_sp_income");
+    String sBM = modinfo.getParameter("dr_sp_bm");
+    String sEM = modinfo.getParameter("dr_sp_em");
+    String sBY = modinfo.getParameter("dr_sp_by");
+    String sEY = modinfo.getParameter("dr_sp_ey");
+
+    try{
+      int iIncome = Integer.parseInt(sSPIncome);
+      int iBM = Integer.parseInt(sBM);
+      int iEM = Integer.parseInt(sEM);
+      int iBY = Integer.parseInt(sBY);
+      int iEY = Integer.parseInt(sEY);
+      eCampusApplication.setSpouseIncome(iIncome);
+      eCampusApplication.setSpouseStudyBeginMonth(iBM);
+      eCampusApplication.setSpouseStudyBeginYear(iBY);
+      eCampusApplication.setSpouseStudyEndMonth(iEM);
+      eCampusApplication.setSpouseStudyEndYear(iEY);
+    }
+    catch(Exception ex){
+      ex.printStackTrace();
+    }
+    /*
+    eCampusApplication.setChildren();
+    eCampusApplication.setContactPhone();
+    eCampusApplication.setCurrentResidenceId();
+    eCampusApplication.setEmail();
+    eCampusApplication.setFaculty();
+    eCampusApplication.setHousingFrom();
+    eCampusApplication.setIncome();
+    eCampusApplication.setOnWaitinglist();
+    eCampusApplication.setOtherInfo();
+    */
+
+    eCampusApplication.setSpouseName(sSpName);
+    eCampusApplication.setSpouseStudyTrack(sSpStTr);
+    eCampusApplication.setSpouseSchool(sSpSchl);
+    eCampusApplication.setSpouseSSN(sSpSsn);
+  }
+
+  public ModuleObject getViewChildren(CampusApplication eCampusApplication,IWResourceBundle iwrb){
     Table T = new Table();
       int col = 1;
       int row = 1;
@@ -387,7 +796,41 @@ public class CampusApprover extends KeyEditor{
       T.setWidth("100%");
       return T;
   }
-  public ModuleObject getApartmentTable(CampusApplication eCampusApplication,List lApplied,ModuleInfo modinfo,IWResourceBundle iwrb){
+
+  public ModuleObject getFieldsChildren(CampusApplication eCampusApplication,IWResourceBundle iwrb){
+    Table T = new Table();
+      int col = 1;
+      int row = 1;
+      T.add(headerText(iwrb.getLocalizedString("children","Children")),col,row++);
+      TextArea taChilds = new TextArea("ti_sp_childs",eCampusApplication.getChildren());
+      taChilds.setWidth(30);
+      taChilds.setHeight(4);
+      setStyle(taChilds);
+      T.add(taChilds,col,row++);
+
+      T.setCellpadding(1);
+      T.setCellspacing(1);
+      T.setBorder(0);
+      T.setHorizontalZebraColored(lightBlue,WhiteColor);
+      T.setRowColor(1,blueColor);
+      int lastrow = row;
+      T.setRowColor(lastrow,redColor);
+      T.mergeCells(1,lastrow,2,lastrow);
+      T.setVerticalAlignment("top");
+      T.add(formatText(" "),1,lastrow);
+      T.setHeight(lastrow,bottomThickness);
+      T.setWidth("100%");
+      return T;
+  }
+
+  public void updateChildren(ModuleInfo modinfo,CampusApplication eCampusApplication){
+    String sChilds = modinfo.getParameter("ti_sp_childs");
+    if(sChilds != null){
+      eCampusApplication.setChildren(sChilds);
+    }
+  }
+
+  public ModuleObject getViewApartment(CampusApplication eCampusApplication,List lApplied,ModuleInfo modinfo,IWResourceBundle iwrb){
     Table T = new Table();
       int col = 1;
       int row = 1;
@@ -430,7 +873,184 @@ public class CampusApprover extends KeyEditor{
       return T;
   }
 
-  public ModuleObject getApplicationTable(Application eApplication){
+  public DropdownMenu drpTypes(Vector v,String name,String selected,boolean firstEmpty){
+    DropdownMenu drpTypes = new DropdownMenu(name);
+    setStyle(drpTypes);
+    if(firstEmpty)
+      drpTypes.addMenuElementFirst("-1","-");
+    for (int i = 0; i < v.size(); i++) {
+      ApartmentTypeComplexHelper eAprtType = (ApartmentTypeComplexHelper)v.elementAt(i);
+      drpTypes.addMenuElement(eAprtType.getKey(),eAprtType.getName());
+    }
+    drpTypes.setSelectedElement(selected);
+    return drpTypes;
+  }
+
+  public ModuleObject getFieldsApartment(CampusApplication eCampusApplication,List lApplied,ModuleInfo modinfo,IWResourceBundle iwrb){
+    Table T = new Table();
+      int col = 1;
+      int row = 1;
+
+      T.add(headerText(iwrb.getLocalizedString("applied","Applied")),col,row++);
+
+      String sOne = "-1",sTwo = "-1",sThree = "-3";
+      if(lApplied != null){
+        int len = lApplied.size();
+        Applied A;
+        ApartmentTypeComplexHelper ATCH;
+        if(len >= 1){
+          A = (Applied) lApplied.get(0);
+          ATCH = new ApartmentTypeComplexHelper(A.getApartmentTypeId().intValue(),A.getComplexId().intValue());
+          sOne = ATCH.getKey();
+        }
+        if(len >= 2){
+          A = (Applied) lApplied.get(1);
+          ATCH = new ApartmentTypeComplexHelper(A.getApartmentTypeId().intValue(),A.getComplexId().intValue());
+          sTwo = ATCH.getKey();
+        }
+        if(len >= 3){
+          A = (Applied) lApplied.get(2);
+          ATCH = new ApartmentTypeComplexHelper(A.getApartmentTypeId().intValue(),A.getComplexId().intValue());
+          sThree = ATCH.getKey();
+        }
+      }
+
+      java.util.Vector vAprtType = BuildingFinder.getAllApartmentTypesComplex();
+      DropdownMenu drpOne = drpTypes(vAprtType,"drp_one",sOne,false);
+      DropdownMenu drpTwo = drpTypes(vAprtType,"drp_two",sTwo,true);
+      DropdownMenu drpThree = drpTypes(vAprtType,"drp_three",sThree,true);
+      setStyle(drpOne);
+      setStyle(drpTwo);
+      setStyle(drpThree);
+
+      T.add(boldText(1),1,row);
+      T.add(drpOne,2,row++);
+      T.add(boldText(2),1,row);
+      T.add(drpTwo,2,row++);
+      T.add(boldText(3),1,row);
+      T.add(drpThree,2,row++);
+
+      col = 3;
+      row = 1;
+       T.add(headerText(iwrb.getLocalizedString("requests","Requests")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("housingfrom","Housing from")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("wantfurniture","Wants furniture")),col,row++);
+      T.add(boldText(iwrb.getLocalizedString("onwaitinglist","On waitinglist")),col,row++);
+      col = 4;
+      row = 2;
+      idegaTimestamp iT = new idegaTimestamp(eCampusApplication.getHousingFrom());
+
+      DateInput diRentFrom = new DateInput("ap_rentfrom",true);
+      diRentFrom.setDate(iT.getSQLDate());
+      diRentFrom.setStyleAttribute("style",styleAttribute);
+      T.add(diRentFrom,col,row++);
+      CheckBox chkFurni = new CheckBox("ap_furni","true");
+      setStyle(chkFurni);
+      CheckBox chkWait = new CheckBox("ap_wait","true");
+      setStyle(chkWait);
+      if(eCampusApplication.getWantFurniture())
+        chkFurni.setChecked(true);
+      T.add(chkFurni,col,row++);
+      if(eCampusApplication.getOnWaitinglist())
+        chkWait.setChecked(true);
+      T.add(chkWait,col,row++);
+      T.mergeCells(1,1,2,1);
+      T.mergeCells(3,1,4,1);
+      T.setCellpadding(1);
+      T.setCellspacing(1);
+      T.setBorder(0);
+      T.setHorizontalZebraColored(lightBlue,WhiteColor);
+      T.setRowColor(1,blueColor);
+      int lastrow = 5;
+      T.setRowColor(lastrow,redColor);
+      T.mergeCells(1,lastrow,4,lastrow);
+      T.add(formatText(" "),1,lastrow);
+      T.setHeight(lastrow,bottomThickness);
+      T.setWidth("100%");
+      return T;
+  }
+
+  public void updateApartment(ModuleInfo modinfo,CampusApplication eCampusApplication,List lApplied){
+    String sRentFrom = modinfo.getParameter("ap_rentfrom");
+    String sFurni = modinfo.getParameter("ap_furni");
+    String sWait = modinfo.getParameter("ap_wait");
+    System.err.println("RentFrom "+sRentFrom);
+    if(sRentFrom!= null)
+      eCampusApplication.setHousingFrom(new idegaTimestamp(sRentFrom).getSQLDate());
+    if("true".equals(sFurni)){
+      eCampusApplication.setWantFurniture(true);
+    }
+    else
+      eCampusApplication.setWantFurniture(false);
+    if("true".equals(sWait)){
+      eCampusApplication.setOnWaitinglist(true);
+    }
+    else
+      eCampusApplication.setOnWaitinglist(false);
+
+    String key1 = (String)modinfo.getParameter("drp_one");
+    String key2 = (String)modinfo.getParameter("drp_two");
+    String key3 = (String)modinfo.getParameter("drp_three");
+    if(key1!=null && key2!=null && key3!=null){
+      Applied applied1 = null;
+      Applied applied2 = null;
+      Applied applied3 = null;
+      if(lApplied!=null){
+        System.err.println("lapplied er nul");
+        applied1 = (Applied) lApplied.get(0);
+      }
+      else{
+        applied1 = new Applied();
+      }
+      int type = ApartmentTypeComplexHelper.getPartKey(key1,1);
+      int complex = ApartmentTypeComplexHelper.getPartKey(key1,2);
+      applied1.setApartmentTypeId(type);
+      applied1.setComplexId(complex);
+      applied1.setOrder(1);
+
+      if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
+        if(lApplied.size() >= 2){
+          applied2 = (Applied) lApplied.get(1);
+        }
+        else{
+          applied2 = new Applied();
+        }
+        type = ApartmentTypeComplexHelper.getPartKey(key2,1);
+        complex = ApartmentTypeComplexHelper.getPartKey(key2,2);
+        applied2.setApartmentTypeId(type);
+        applied2.setComplexId(complex);
+        applied2.setOrder(2);
+      }
+
+      if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
+        if(lApplied.size() >= 3){
+          applied3 = (Applied) lApplied.get(2);
+        }
+        else{
+          applied3 = new Applied();
+        }
+        type = ApartmentTypeComplexHelper.getPartKey(key3,1);
+        complex = ApartmentTypeComplexHelper.getPartKey(key3,2);
+        applied3.setApartmentTypeId(type);
+        applied3.setComplexId(complex);
+        applied3.setOrder(3);
+
+      }
+
+      if(applied3 == null && lApplied.size() >= 3){
+        ((Applied)lApplied.get(2)).setID(-3);
+      }
+      if(applied2 == null && lApplied.size() >= 2){
+        ((Applied)lApplied.get(1)).setID(-3);
+      }
+    }
+    else{
+      System.err.println("no key parameters for apartment");
+    }
+  }
+
+
+  public ModuleObject getViewApplication(Application eApplication){
     Table T = new Table();
       T.add(headerText(iwrb.getLocalizedString("application","Application")),1,1);
       T.add(boldText(iwrb.getLocalizedString("submitted","Submitted")),1,2);
@@ -456,7 +1076,7 @@ public class CampusApprover extends KeyEditor{
     return T;
   }
 
-  private ModuleObject getRemoteControl(String sStatus,IWResourceBundle iwrb){
+  private ModuleObject getRemoteControl(String sStatus,boolean bEdit,IWResourceBundle iwrb){
       Table T = new Table();
       T.add(headerText(iwrb.getLocalizedString("control","Control")),1,1);
       T.add(boldText(iwrb.getLocalizedString("tax_return","Tax return")),1,2);
@@ -480,13 +1100,24 @@ public class CampusApprover extends KeyEditor{
       status.setToSubmit();
       setStyle(status);
       T.add(status,2,6);
+      if(bEdit){
+        SubmitButton view = new SubmitButton("viewer","View");
+        T.add(view,2,7);
+      }
+      else{
+        SubmitButton edit = new SubmitButton("editor","Edit");
+        T.add(edit,2,7);
+      }
+      SubmitButton save = new SubmitButton("save","Save");
+      T.add(save,2,7);
+
       T.mergeCells(1,1,2,1);
       T.setCellpadding(1);
       T.setCellspacing(1);
       T.setBorder(0);
        T.setHorizontalZebraColored(lightBlue,WhiteColor);
       T.setRowColor(1,blueColor);
-      int lastrow = 7;
+      int lastrow = 8;
       T.setRowColor(lastrow,redColor);
       T.mergeCells(1,lastrow,4,lastrow);
       T.add(formatText(" "),1,lastrow);
@@ -578,6 +1209,15 @@ public class CampusApprover extends KeyEditor{
       case 'R': r = iwrb.getLocalizedString("rejected","Rejected");  break;
     }
     return r;
+  }
+
+  private DropdownMenu intDrop(String name,String selected,int low,int high){
+    DropdownMenu drp = new DropdownMenu(name);
+    for (int i = low; i <= high; i++) {
+      drp.addMenuElement(String.valueOf(i));
+    }
+    drp.setSelectedElement(selected);
+    return drp;
   }
 
   private DropdownMenu statusDrop(String name,String selected){
