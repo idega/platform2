@@ -18,6 +18,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.TimePeriod;
 
 /**
  * The databean for the payment header. The payment header holds all the 
@@ -124,20 +125,16 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 
-	public Integer ejbFindBySchoolCategoryAndSchoolAndPeriodAndStatus(School school, SchoolCategory schoolCategory, Date period, String status) throws FinderException {
-		IWTimestamp start = new IWTimestamp(period);
-		start.setAsDate();
-		start.setDay(1);
-		IWTimestamp end = new IWTimestamp(start);
-		end.addMonths(1);
-
+	public Integer ejbFindBySchoolCategoryAndSchoolAndPeriodAndStatus(School school, SchoolCategory schoolCategory, TimePeriod period, String status) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCHOOL_ID, school);
-		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCHOOL_ID, school);
-		sql.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, (String) schoolCategory.getPrimaryKey());
-		sql.appendAndEqualsQuoted(COLUMN_STATUS, status);
-		sql.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());
-		sql.appendAnd().append(COLUMN_PERIOD).appendLessThanSign().append(end.getDate());
+		sql.appendSelectAllFrom (this);
+		sql.appendWhereEquals (COLUMN_SCHOOL_ID, school);
+		sql.appendAndEqualsQuoted (COLUMN_SCHOOL_CATEGORY_ID,
+															 (String) schoolCategory.getPrimaryKey());
+		sql.appendAndEqualsQuoted (COLUMN_STATUS, status);
+		sql.appendAnd ();
+		sql.appendWithinDates(COLUMN_PERIOD, period.getFirstTimestamp().getDate (),
+													period.getLastTimestamp ().getDate ());
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 

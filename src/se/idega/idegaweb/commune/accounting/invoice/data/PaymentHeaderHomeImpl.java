@@ -48,7 +48,7 @@ public PaymentHeader findBySchoolCategorySchoolPeriod(com.idega.block.school.dat
 	return this.findByPrimaryKey(pk);
 }
 
- public PaymentHeader findBySchoolCategoryAndSchoolAndPeriodAndStatus(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolCategory p1,java.sql.Date p2, String status)throws javax.ejb.FinderException{
+ public PaymentHeader findBySchoolCategoryAndSchoolAndPeriodAndStatus(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolCategory p1,com.idega.util.TimePeriod p2, String status)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((PaymentHeaderBMPBean)entity).ejbFindBySchoolCategoryAndSchoolAndPeriodAndStatus(p0,p1,p2,status);
 	this.idoCheckInPooledEntity(entity);

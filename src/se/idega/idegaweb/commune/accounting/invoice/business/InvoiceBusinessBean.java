@@ -57,11 +57,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/29 13:25:49 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/29 13:53:28 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.89 $
+ * @version $Revision: 1.90 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -661,7 +661,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		try {
 			paymentHeader	= paymentHeaderHome
 					.findBySchoolCategoryAndSchoolAndPeriodAndStatus
-					(school, schoolCategory, period, status + "");
+					(school, schoolCategory, new CalendarMonth (period), status + "");
 		} catch (FinderException e) {
 			paymentHeader = paymentHeaderHome.create ();
 			paymentHeader.setSchool (school);
