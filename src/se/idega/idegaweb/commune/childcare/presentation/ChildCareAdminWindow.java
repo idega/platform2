@@ -400,84 +400,84 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		switch (_method) {
 			case METHOD_GRANT_PRIORITY:
-				headerTable.add(getHeader(localize("child_care.grant_priority", "Grant priority") + personalIdUserName));
-				contentTable.add(getPriorityForm(iwc));
+				headerTable.add(getHeader(localize("child_care.grant_priority", "Grant priority") + personalIdUserName), 1, 1);
+				contentTable.add(getPriorityForm(iwc), 1, 1);
 				break;
 			case METHOD_OFFER:
-				headerTable.add(getHeader(localize("child_care.offer_placing", "Offer placing") + personalIdUserName));
-				contentTable.add(getOfferForm(iwc));
+				headerTable.add(getHeader(localize("child_care.offer_placing", "Offer placing") + personalIdUserName), 1, 1);
+				contentTable.add(getOfferForm(iwc), 1, 1);
 				break;
 			case METHOD_CHANGE_DATE:
-				headerTable.add(getHeader(localize("child_care.change_date", "Change date") + personalIdUserName));
-				contentTable.add(getChangeDateForm(iwc, false));
+				headerTable.add(getHeader(localize("child_care.change_date", "Change date") + personalIdUserName), 1, 1);
+				contentTable.add(getChangeDateForm(iwc, false), 1, 1);
 				break;
 			case METHOD_PLACE_IN_GROUP:
-				headerTable.add(getHeader(localize("child_care.place_in_group", "Place in group") + personalIdUserName));
-				contentTable.add(getPlaceInGroupForm());
+				headerTable.add(getHeader(localize("child_care.place_in_group", "Place in group") + personalIdUserName), 1, 1);
+				contentTable.add(getPlaceInGroupForm(), 1, 1);
 				break;
 			case METHOD_MOVE_TO_GROUP:
-				headerTable.add(getHeader(localize("child_care.move_to_group", "Move to group") + personalIdUserName));
-				contentTable.add(getMoveGroupForm(iwc));
+				headerTable.add(getHeader(localize("child_care.move_to_group", "Move to group") + personalIdUserName), 1, 1);
+				contentTable.add(getMoveGroupForm(iwc), 1, 1);
 				break;
 			case METHOD_CREATE_GROUP:
 				if (getSession().getGroupID() != -1)
-					headerTable.add(getHeader(localize("child_care.change_group", "Change group") + personalIdUserName));
+					headerTable.add(getHeader(localize("child_care.change_group", "Change group") + personalIdUserName), 1, 1);
 				else
-					headerTable.add(getHeader(localize("child_care.create_group", "Create group")));
-				contentTable.add(getCreateGroupForm());
+					headerTable.add(getHeader(localize("child_care.create_group", "Create group")), 1, 1);
+				contentTable.add(getCreateGroupForm(), 1, 1);
 				break;
 			case METHOD_UPDATE_PROGNOSIS:
-				headerTable.add(getHeader(localize("child_care.set_prognosis", "Set prognosis")));
-				contentTable.add(getUpdatePrognosisForm());
+				headerTable.add(getHeader(localize("child_care.set_prognosis", "Set prognosis")), 1, 1);
+				contentTable.add(getUpdatePrognosisForm(), 1, 1);
 				break;
 			case METHOD_ALTER_CARE_TIME:
 				// headerTable.add(getHeader(localize("child_care.alter_care_time",
 				// "Alter care time")));
-				headerTable.add(getHeader(localize("child_care.alter_contract_or_schooltype_for_child", "Alter the contract/schooltype for this child.") + personalIdUserName));
-				contentTable.add(getAlterCareTimeForm(iwc));
+				headerTable.add(getHeader(localize("child_care.alter_contract_or_schooltype_for_child", "Alter the contract/schooltype for this child.") + personalIdUserName), 1, 1);
+				contentTable.add(getAlterCareTimeForm(iwc), 1, 1);
 				break;
 			case METHOD_CANCEL_CONTRACT:
-				headerTable.add(getHeader(localize("child_care.cancel_contract", "Cancel contract") + personalIdUserName));
-				contentTable.add(getCancelContractForm(iwc));
+				headerTable.add(getHeader(localize("child_care.cancel_contract", "Cancel contract") + personalIdUserName), 1, 1);
+				contentTable.add(getCancelContractForm(iwc), 1, 1);
 				break;
 			case METHOD_CHANGE_OFFER:
-				headerTable.add(getHeader(localize("child_care.change_offer_placing", "Change offer placing") + personalIdUserName));
-				contentTable.add(getChangeOfferForm(iwc));
+				headerTable.add(getHeader(localize("child_care.change_offer_placing", "Change offer placing") + personalIdUserName), 1, 1);
+				contentTable.add(getChangeOfferForm(iwc), 1, 1);
 				break;
 			case METHOD_RETRACT_OFFER:
-				headerTable.add(getHeader(localize("child_care.retract_offer", "Retract offer") + personalIdUserName));
-				contentTable.add(getRetractOfferForm(iwc));
+				headerTable.add(getHeader(localize("child_care.retract_offer", "Retract offer") + personalIdUserName), 1, 1);
+				contentTable.add(getRetractOfferForm(iwc), 1, 1);
 				break;
 			case METHOD_ALTER_VALID_FROM_DATE:
-				headerTable.add(getHeader(localize("child_care.alter_valid_from_date", "Change placement date") + personalIdUserName));
-				contentTable.add(getChangeDateForm(iwc, true));
+				headerTable.add(getHeader(localize("child_care.alter_valid_from_date", "Change placement date") + personalIdUserName), 1, 1);
+				contentTable.add(getChangeDateForm(iwc, true), 1, 1);
 				break;
 			case METHOD_VIEW_PROVIDER_QUEUE:
-				headerTable.add(getHeader(localize("child_care.view_provider_queue", "Provider queue")));
-				contentTable.add(getProviderQueueForm(iwc));
+				headerTable.add(getHeader(localize("child_care.view_provider_queue", "Provider queue")), 1, 1);
+				contentTable.add(getProviderQueueForm(iwc), 1, 1);
 				break;
 			case METHOD_END_CONTRACT:
-				headerTable.add(getHeader(localize("child_care.end_contract", "End contract") + personalIdUserName));
-				contentTable.add(getEndContractForm());
+				headerTable.add(getHeader(localize("child_care.end_contract", "End contract") + personalIdUserName), 1, 1);
+				contentTable.add(getEndContractForm(), 1, 1);
 				break;
 			case METHOD_NEW_CARE_TIME:
-				headerTable.add(getHeader(localize("child_care.new_care_time", "New care time") + personalIdUserName));
-				contentTable.add(getNewCareTimeForm());
+				headerTable.add(getHeader(localize("child_care.new_care_time", "New care time") + personalIdUserName), 1, 1);
+				contentTable.add(getNewCareTimeForm(), 1, 1);
 				break;
 			case METHOD_SIGN_CONTRACT:
 
 				Object[] contractFormResult = getContractSignerForm(iwc);
 				contentTable.add(contractFormResult[1]);
 				if (((Boolean) contractFormResult[0]).booleanValue()) {
-					headerTable.add(getHeader(localize("child_care.sign_contract", "Sign contract") + personalIdUserName));
+					headerTable.add(getHeader(localize("child_care.sign_contract", "Sign contract") + personalIdUserName), 1, 1);
 				}
 				else {
-					headerTable.add(getHeader(localize("child_care.fill_in_fields", "Fill in contract fields") + personalIdUserName));
+					headerTable.add(getHeader(localize("child_care.fill_in_fields", "Fill in contract fields") + personalIdUserName), 1, 1);
 				}
 				break;
 			case METHOD_REJECT_APPLICATION:
-				headerTable.add(getHeader(localize("child_care.reject_application", "Reject application") + personalIdUserName));
-				contentTable.add(getRejectApplicationForm(iwc));
+				headerTable.add(getHeader(localize("child_care.reject_application", "Reject application") + personalIdUserName), 1, 1);
+				contentTable.add(getRejectApplicationForm(iwc), 1, 1);
 				break;
 
 		}
@@ -548,7 +548,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		HiddenInput action = new HiddenInput(PARAMETER_ACTION);
 		action.setValue(String.valueOf(ACTION_OFFER));
-		table.add(action);
+		table.add(action, 1, 1);
 		SubmitButton offer = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.make_offer", "Make offer")));
 		form.setToDisableOnSubmit(offer, true);
 
@@ -770,7 +770,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(getSmallText(localize("child_care.child_care_time", "Time") + ":"), 1, row);
 
 			if (isUsePredefinedCareTimeValues()) {
-				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
+				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME, archive.getChild());
 				if (helper.getCurrentCareTimeHours() != null)
 					menu.setSelectedElement(helper.getCurrentCareTimeHours());
 				table.add(menu, 1, row++);
@@ -828,14 +828,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (hasBankId) {
 			table.add(getSmallText(localize("child_care.child_care_time", "Time") + ":"), 1, row);
 			table.add(getSmallText(getCareTime(application.getCareTime())), 1, row++);
-			table.add(new HiddenInput(PARAMETER_CHILDCARE_TIME, application.getCareTime()));
+			table.add(new HiddenInput(PARAMETER_CHILDCARE_TIME, application.getCareTime()), 1, 1);
 
 		}
 		else {
 			table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
 			table.add(getSmallText(localize("child_care.child_care_time", "Time") + ":"), 1, row);
 			if (isUsePredefinedCareTimeValues()) {
-				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
+				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME, application.getChild());
 				table.add(menu, 1, row++);
 			}
 			else {
@@ -959,7 +959,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		TimePeriod deadlinePeriod = null;
 		deadlinePeriod = helper.getValidPeriod();
 
-		table.add(new HiddenInput("ccc_old_archive_id", helper.getContract().getPrimaryKey().toString()));
+		table.add(new HiddenInput("ccc_old_archive_id", helper.getContract().getPrimaryKey().toString()), 1, 1);
 
 		Date rejectDate = helper.getApplication().getRejectionDate();
 		IWTimestamp rejectionDate = null;
@@ -970,7 +970,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallText(localize("child_care.child_care_time", "Time") + ":"), 1, row);
 
 		if (isUsePredefinedCareTimeValues()) {
-			DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
+			DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME, helper.getApplication().getChild());
 			if (helper.getCurrentCareTimeHours() != null)
 				menu.setSelectedElement(helper.getCurrentCareTimeHours());
 			table.add(menu, 1, row++);
@@ -1705,7 +1705,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		layoutTbl.add(getSmallHeader(localize("ccnctw_care_time", "Care time") + ":"), 1, row);
 		if (isUsePredefinedCareTimeValues()) {
-			DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
+			DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME, application.getChild());
 			menu.setSelectedElement(application.getCareTime());
 			layoutTbl.add(menu, 2, row++);
 		}
@@ -1848,7 +1848,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 			if (table != null) {
 				HiddenInput action = new HiddenInput(PARAMETER_METHOD, String.valueOf(METHOD_SIGN_CONTRACT));
-				table.add(action);
+				table.add(action, 1, 1);
 				SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit")));
 				table.add(submit, 1, row);
 				table.add(Text.getNonBrakingSpace(), 1, row);
