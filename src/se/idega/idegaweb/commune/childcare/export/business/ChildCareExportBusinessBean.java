@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareExportBusinessBean.java,v 1.5 2005/02/14 19:32:14 anders Exp $
+ * $Id: ChildCareExportBusinessBean.java,v 1.6 2005/02/15 07:44:49 anders Exp $
  *
  * Copyright (C) 2005 Idega. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import com.idega.util.IWTimestamp;
  * The first version of this class implements the business logic for
  * exporting text files for the IST Extens system.
  * <p>
- * Last modified: $Date: 2005/02/14 19:32:14 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/15 07:44:49 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ChildCareExportBusinessBean extends IBOServiceBean implements ChildCareExportBusiness {
 
@@ -239,6 +239,7 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 				if (contract.getValidFromDate().compareTo(from) >= 0 ||
 						(contract.getTerminatedDate() != null && (contract.getTerminatedDate().compareTo(from) >= 0))) {
 					s += getTaxekatLine(user, school, group, schoolType, placementFromDate, contract.getCareTime(), contract.getValidFromDate(), contract.getTerminatedDate());
+					s += "\r\n";						
 				} else {
 					log = null;
 				}
@@ -256,14 +257,11 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 							continue;
 						}
 						if (isLogInInterval(l, from, to) && isLogInContract(l, contract)) {
-							s += getTaxekatLine(user, school, group, schoolType, l.getStartDate(), contract.getCareTime(), l.getStartDate(), l.getEndDate());
+							s += getTaxekatLine(user, school, l.getSchoolClass(), schoolType, l.getStartDate(), contract.getCareTime(), l.getStartDate(), l.getEndDate());
+							s += "\r\n";						
 						}
 					}
 				}
-					
-				if (contracts.hasNext()) {
-					s += "\r\n";						
-				}				
 			}			
 		} catch (Exception e) {
 			log(e);
