@@ -230,19 +230,15 @@ public class ReportContentViewer extends Block implements Reports,IWEventListene
     T.add(getBodyText(R.getName()),2,1);
     T.add(getBodyText(R.getInfo()),2,2);
     T2.add(T,1,1);
-    Table T3 = new Table(2,1);
+    Table T3 = new Table(3,1);
 
-    Link XLS = new Link(iwb.getImage("/shared/xls.gif"));//new Image("/reports/pics/xls.gif"));
-    XLS.setWindowToOpen(ReportFileWindow.class);
-    XLS.addParameter(PRM_REPORTID,R.getID());
-    XLS.addParameter("type","xls");
+    Link XLS = Reporter.getXLSLink(iwb.getImage("/shared/xls.gif"),R.getID());
+    Link PDF = Reporter.getPDFLink(iwb.getImage("/shared/pdf.gif"),R.getID());
+    Link TXT = Reporter.getTXTLink(iwb.getImage("/shared/pdf.gif"),R.getID());
 
-    Link PDF = new Link(iwb.getImage("/shared/pdf.gif"));//new Image("/reports/pics/pdf.gif"));
-    PDF.setWindowToOpen(ReportFileWindow.class);
-    PDF.addParameter(PRM_REPORTID,R.getID());
-    PDF.addParameter("type","pdf");
     T3.add(XLS,1,1);
     T3.add(PDF,2,1);
+    T3.add(TXT,2,1);
     T2.add(T3,2,1);
     return T2;
   }

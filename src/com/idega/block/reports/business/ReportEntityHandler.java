@@ -168,12 +168,17 @@ public class ReportEntityHandler {
     }
   }
 
-
   public static Report saveReport(String name,String info,String[] headers,String sql,int Category){
+    return saveReport(name,info,"",headers,sql,Category);
+  }
+
+
+  public static Report saveReport(String name,String info,String colinfo,String[] headers,String sql,int Category){
     try {
       Report r = new Report();
       r.setName(name);
       r.setInfo(info);
+      r.setColInfo(colinfo);
       r.setHeaders(headers );
       r.setSQL(sql);
       r.setCategoryId(Category);
@@ -185,12 +190,18 @@ public class ReportEntityHandler {
       return null;
     }
   }
+
   public static Report updateReport(int id,String name,String info,String[] headers,String sql,int Category){
+    return updateReport(id,name,info,"",headers,sql,Category);
+  }
+
+  public static Report updateReport(int id,String name,String info,String colinfo,String[] headers,String sql,int Category){
      try {
       if(id != -1){
         Report r = new Report(id);
         r.setName(name);
         r.setInfo(info);
+        r.setColInfo(colinfo);
         r.setHeaders(headers );
         r.setSQL(sql);
         r.setCategoryId(Category);

@@ -109,4 +109,10 @@ public class ReportInfo extends CategoryEntity {
   public boolean getLandscape(){
     return getBooleanColumnValue(getColumnLandscape());
   }
+  public String getDescription(){
+    if(getType().equals("sticker"))
+      return getWidth()+" x "+getHeight()+" "+getPagesize();
+    else
+      return getColumnColumns()+" "+getPagesize();
+  }
 }

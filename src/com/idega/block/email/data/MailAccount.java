@@ -1,6 +1,7 @@
 package com.idega.block.email.data;
 
 import com.idega.block.email.business.EmailAccount;
+import com.idega.block.email.business.MailFinder;
 import com.idega.data.*;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -210,6 +211,10 @@ public class MailAccount extends GenericEntity implements EmailAccount {
    */
   public void setName(String name) {
     setColumn(NAME, name);
+  }
+
+  public String getProtocolName(){
+    return MailFinder.getInstance().getProtocolName(getProtocol());
   }
 
 }

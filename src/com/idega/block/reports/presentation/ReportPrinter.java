@@ -269,20 +269,7 @@ public class ReportPrinter extends Block implements Reports{
   }
 
   private Link getPrintLink(Image image,int iReportId,int iReportInfoId){
-    Link L = new Link( image );
-    /*
-    StringBuffer url = new StringBuffer("/servlet/MediaServlet?&");
-    url.append(ReportWriter.prmReportId).append("=").append(iReportId);
-    url.append("&").append(ReportWriter.prmReportInfoId).append("=").append(iReportInfoId);
-    url.append("&").append(ReportWriter.PRM_WRITABLE_CLASS).append("=").append(IWMainApplication.getEncryptedClassName(ReportWriter.class));
-    Window w = new Window("report",url.toString());
-    */
-    L.setWindowToOpen(ReportFileWindow.class);
-    L.addParameter(PRM_REPORTID,iReportId);
-    L.addParameter(ReportWriter.prmReportId,iReportId);
-    L.addParameter(ReportWriter.prmReportInfoId,iReportInfoId);
-    L.addParameter(ReportWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(ReportWriter.class));
-    return L;
+    return Reporter.getPrintLink(image,iReportId,iReportInfoId);
   }
 
   private void print(Report eReport,ReportInfo reportInfo){

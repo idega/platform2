@@ -265,4 +265,14 @@ public class MailFinder {
     }
     return null;
   }
+
+  public String getProtocolName(int protocol){
+    String p = "pop3";
+    switch (protocol) {
+      case MailProtocol.POP3: p="pop3";break;
+      case MailProtocol.SMTP: p="smtp";break;
+      case MailProtocol.IMAP4: p="imap";break;
+    }
+    return p;
+  }
 }

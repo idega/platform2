@@ -53,6 +53,14 @@ public interface EmailAccount {
 
 
   /**
+   *  Gets the protocol of the EmailAccount object
+   *
+   * @return    The protocol name value
+   */
+  public String getProtocolName();
+
+
+  /**
    *  Gets the created of the EmailAccount object
    *
    * @return    The created value

@@ -511,21 +511,25 @@ public class ReportSQLEditor extends Block implements Reports{
 
     Text nameText = Edit.formatText(iwrb.getLocalizedString("name","Name"));
     Text infoText = Edit.formatText(iwrb.getLocalizedString("info","Info"));
+    Text colInfoText = Edit.formatText(iwrb.getLocalizedString("colinfo","Column Info"));
     Text headersText = Edit.formatText(iwrb.getLocalizedString("headers","Headers"));
     Text sqlText = Edit.formatText(iwrb.getLocalizedString("sql","SQL"));
     TextInput nameInput = new TextInput(prefix+"name");
     TextInput infoInput = new TextInput(prefix+"info");
+    TextInput colInfoInput = new TextInput(prefix+"colinfo");
     TextInput headersInput = new TextInput(prefix+"headers");
     TextArea sqlInput = new TextArea(prefix+"sql");
 
     nameInput.setLength(80);
     infoInput.setLength(80);
+    colInfoInput.setLength(80);
     headersInput.setLength(80);
     sqlInput.setWidth(80);
     sqlInput.setHeight(8);
 
     Edit.setStyle(nameInput);
     Edit.setStyle(infoInput);
+    Edit.setStyle(colInfoInput);
     Edit.setStyle(headersInput);
     Edit.setStyle(sqlInput);
 
@@ -535,6 +539,8 @@ public class ReportSQLEditor extends Block implements Reports{
       T.add(new HiddenInput(prefix+"repcatid",String.valueOf(R.getCategoryId())));
       nameInput.setContent(R.getName());
       infoInput.setContent(R.getInfo());
+      if(R.getColInfo()!=null)
+        colInfoInput.setContent(R.getColInfo());
       headersInput.setContent(R.getHeader());
       sqlInput.setContent(R.getSQL());
     }
@@ -545,11 +551,13 @@ public class ReportSQLEditor extends Block implements Reports{
     T.add(infoInput,1,4);
     T.add(headersText,1,5);
     T.add(headersInput,1,6);
-    T.add(sqlText,1,7);
-    T.add(sqlInput,1,8);
+    T.add(colInfoText,1,7);
+    T.add(colInfoInput,1,8);
+    T.add(sqlText,1,9);
+    T.add(sqlInput,1,10);
 
-    T.add(new SubmitButton("Ok"),1,9);
-    T.add(new HiddenInput(sAction, String.valueOf(ACT1)),1,9);
+    T.add(new SubmitButton("Ok"),1,11);
+    T.add(new HiddenInput(sAction, String.valueOf(ACT1)),1,11);
     T.add(new HiddenInput(PRM_REPORTID,String.valueOf(iReportId)));
     T.add(new HiddenInput(PRM_CATEGORYID,String.valueOf(iCategoryId)));
     return T;
@@ -559,6 +567,7 @@ public class ReportSQLEditor extends Block implements Reports{
     String msg = "";
     String sName = iwc.getParameter(prefix+"name").trim();
     String sInfo = iwc.getParameter(prefix+"info").trim();
+    String sColInfo = iwc.getParameter(prefix+"colinfo").trim();
     String sHeaders = iwc.getParameter(prefix+"headers").trim();
 
     String sSql = iwc.getParameter(prefix+"sql").trim();
@@ -575,14 +584,14 @@ public class ReportSQLEditor extends Block implements Reports{
         if(iCategoryId > 0){
           int iSaveCat = iCategoryId;
           if(id < 1 && catid != iSaveCat ){
-            saved = ReportEntityHandler.saveReport(sName ,sInfo ,he,sSql,iSaveCat);
+            saved = ReportEntityHandler.saveReport(sName ,sInfo ,sColInfo,he,sSql,iSaveCat);
             if(saved!=null)
               msg = iwrb.getLocalizedString("report_saved","Report was saved");
             else
               msg = iwrb.getLocalizedString("report_not_saved","Report was not saved");
           }
           else{
-            saved = ReportEntityHandler.updateReport(id,sName ,sInfo ,he,sSql,iSaveCat);
+            saved = ReportEntityHandler.updateReport(id,sName ,sInfo ,sColInfo,he,sSql,iSaveCat);
             if(saved!=null)
               msg = iwrb.getLocalizedString("report_updated","Report was updated");
             else

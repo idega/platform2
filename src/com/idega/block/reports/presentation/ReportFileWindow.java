@@ -1,6 +1,6 @@
 package com.idega.block.reports.presentation;
 
-import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.ui.Window;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -13,6 +13,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.io.*;
+import javax.servlet.RequestDispatcher;
 
 
 
@@ -25,7 +26,7 @@ import com.idega.io.*;
  * @version 1.1
  */
 
-public class ReportFileWindow extends IWAdminWindow implements Reports{
+public class ReportFileWindow extends Window implements Reports{
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.reports";
   protected IWResourceBundle iwrb;
@@ -33,6 +34,7 @@ public class ReportFileWindow extends IWAdminWindow implements Reports{
 
 
   public ReportFileWindow() {
+    setURL("/servlet/MediaServlet");
     setWidth(800);
     setHeight(600);
     setResizable( true);
@@ -42,10 +44,13 @@ public class ReportFileWindow extends IWAdminWindow implements Reports{
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
-
+/*
   public void main(IWContext iwc) throws Exception{
-
     iwrb = getResourceBundle(iwc);
+
+    //RequestDispatcher dispatcher =  iwc.getServletContext().getRequestDispatcher(iwc.getApplication().getMediaServletURI());
+    //dispatcher.forward(iwc.getRequest(),iwc.getResponse());
+    /*
 
     if(iwc.getParameter(ReportWriter.prmReportId)!=null && iwc.getParameter(ReportWriter.prmReportInfoId)!=null){
       StringBuffer url = new StringBuffer("/servlet/MediaServlet?&");
@@ -101,7 +106,8 @@ public class ReportFileWindow extends IWAdminWindow implements Reports{
       else
          add(formatText(iwrb.getLocalizedString("no_report","No Report")));
     }
-  }
+    */
+//  }
 
   private PresentationObject getLinkTable(){
     Link L = new Link(iwrb.getLocalizedString("close","Close"));
