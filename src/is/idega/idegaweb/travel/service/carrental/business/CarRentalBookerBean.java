@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import javax.ejb.CreateException;
 
 import com.idega.business.IBOLookup;
+import com.idega.data.IDOException;
 import com.idega.util.IWTimestamp;
 
 import is.idega.idegaweb.travel.business.*;
@@ -30,7 +31,7 @@ public class CarRentalBookerBean extends BookerBean implements CarRentalBooker {
   private Booker getBooker() throws RemoteException {
 		return (Booker) IBOLookup.getServiceInstance(getIWApplicationContext(), Booker.class);
   }	
-  
+  /*
   public int BookBySupplier(int serviceId, int pickupPlaceId, IWTimestamp pickupTime, int dropoffPlaceId, IWTimestamp dropoffTime, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws SQLException, RemoteException, CreateException {
 		int _bookingId = getBooker().Book(serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType, userId, ownerId, addressId, comment);
 		return Book(_bookingId, pickupPlaceId, pickupTime, dropoffPlaceId, dropoffTime);
@@ -44,11 +45,11 @@ public class CarRentalBookerBean extends BookerBean implements CarRentalBooker {
   public int updateBooking(int bookingId, int serviceId, int pickupPlaceId, IWTimestamp pickupTime, int dropoffPlaceId, IWTimestamp dropoffTime, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws SQLException, RemoteException, CreateException {
 		int _bookingId = getBooker().updateBooking(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount,  postalCode, paymentType, userId, ownerId, addressId, comment);
 		return Book(_bookingId, pickupPlaceId, pickupTime, dropoffPlaceId, dropoffTime);
-  }
+  }*/
 
-  private int Book(int bookingId, int pickupPlaceId, IWTimestamp pickupTime, int dropoffPlaceId, IWTimestamp dropoffTime) throws SQLException, RemoteException {
+  public int book(int bookingId, int pickupPlaceId, IWTimestamp pickupTime, int dropoffPlaceId, IWTimestamp dropoffTime) throws IDOException, RemoteException {
 		try {
-			System.out.println("[CarRentalBooking] Book()");
+			System.out.println("[CarRentalBooker] Book()");
 		  boolean update = false;
 		  CarRentalBooking booking = null;
 		  try {
@@ -69,18 +70,14 @@ public class CarRentalBookerBean extends BookerBean implements CarRentalBooker {
 			}
 	
 		  if (update) {
-			booking.store();
+				booking.store();
 		  } else {
-			booking.store();
+				booking.store();
 		  }
 	
 	
 		  return bookingId;
 		}catch (CreateException s) {
-	
-	
-	
-	
 		  s.printStackTrace(System.err);
 		  return bookingId;
 		}
