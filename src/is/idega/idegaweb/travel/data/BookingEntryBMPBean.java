@@ -1,11 +1,14 @@
 package is.idega.idegaweb.travel.data;
 
-import java.rmi.RemoteException;
-import javax.ejb.FinderException;
-import java.util.Collection;
-import com.idega.data.*;
-import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.interfaces.Booking;
+
+import java.rmi.RemoteException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.ProductPriceHome;
 
 /**
  * Title:        idegaWeb TravelBooking

@@ -3,10 +3,7 @@ package is.idega.idegaweb.member.isi.block.reports.presentation;
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroupHome;
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
-import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
@@ -14,14 +11,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -30,7 +24,6 @@ import javax.ejb.RemoveException;
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.data.EntityPathValueContainer;
-import com.idega.block.entity.data.EntityValueHolder;
 import com.idega.block.entity.presentation.EntityBrowser;
 import com.idega.block.entity.presentation.converter.CheckBoxConverter;
 import com.idega.block.entity.presentation.converter.ConverterConstants;
@@ -39,12 +32,9 @@ import com.idega.block.entity.presentation.converter.editable.DropDownPostalCode
 import com.idega.block.entity.presentation.converter.editable.EditOkayButtonConverter;
 import com.idega.block.entity.presentation.converter.editable.OptionProvider;
 import com.idega.block.entity.presentation.converter.editable.TextEditorConverter;
-import com.idega.business.IBOLookup;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.EntityRepresentation;
 import com.idega.data.IDOException;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -57,7 +47,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
-import com.idega.util.IWColor;
 
 /**
  * <p>Title: idegaWeb</p>

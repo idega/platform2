@@ -1,16 +1,15 @@
 package is.idega.idegaweb.project.business;
 
-import com.idega.builder.handler.PropertyHandler;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IWContext;
-import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusinessBean;
-import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
-import is.idega.idegaweb.project.data.IPCategoryType;
 import java.util.Iterator;
 import java.util.List;
-import java.sql.SQLException;
+
+import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusinessBean;
+import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
+import com.idega.builder.handler.PropertyHandler;
 import com.idega.core.data.GenericGroup;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.DropdownMenu;
 
 
 /**

@@ -1,6 +1,5 @@
 package is.idega.idegaweb.travel.service.fishing.business;
 
-import javax.ejb.*;
 import com.idega.util.IWTimestamp;
 
 public interface FishingBusiness extends is.idega.idegaweb.travel.business.TravelStockroomBusiness

@@ -1,16 +1,24 @@
 package is.idega.idegaweb.travel.presentation;
 
 import java.rmi.RemoteException;
-import com.idega.data.IDOException;
-import javax.ejb.FinderException;
 import java.sql.SQLException;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.util.IWTimestamp;
-import com.idega.block.trade.stockroom.data.*;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.data.IDOException;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BooleanInput;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:        idegaWeb TravelBooking

@@ -1,31 +1,15 @@
 package is.idega.idegaweb.tracker.app;
 
-import com.idega.presentation.app.IWApplication;
-import com.idega.presentation.app.IWApplicationComponent;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Page;
-import com.idega.presentation.FrameSet;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.SelectionDoubleBox;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.SelectionBox;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.Image;
-import com.idega.presentation.ui.CloseButton;
-
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
+import is.idega.idegaweb.tracker.business.TrackerBusiness;
+import is.idega.idegaweb.tracker.presentation.PageCounter;
 
 import com.idega.idegaweb.IWConstants;
-
-import is.idega.idegaweb.tracker.business.TrackerBusiness;
-import is.idega.idegaweb.tracker.data.*;
-import is.idega.idegaweb.tracker.presentation.PageCounter;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Page;
+import com.idega.presentation.Table;
+import com.idega.presentation.app.IWApplication;
+import com.idega.presentation.ui.CloseButton;
 
 
 /**

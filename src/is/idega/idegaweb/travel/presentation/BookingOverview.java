@@ -1,40 +1,40 @@
 
 package is.idega.idegaweb.travel.presentation;
 
-import com.idega.idegaweb.presentation.BusyBar;
-import com.idega.idegaweb.presentation.SmallCalendar;
+import is.idega.idegaweb.travel.data.Contract;
+import is.idega.idegaweb.travel.data.ContractHome;
+import is.idega.idegaweb.travel.service.tour.business.TourBusiness;
 
-import is.idega.idegaweb.travel.service.business.ServiceHandler;
-import javax.ejb.FinderException;
-import java.util.*;
-import com.idega.business.IBOLookup;
-import com.idega.idegaweb.*;
 import java.rmi.RemoteException;
-import com.idega.block.calendar.business.CalendarBusiness;
-import com.idega.data.IDOLookup;
-import com.idega.core.user.data.User;
-import com.idega.presentation.Block;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.util.IWTimestamp;
-import com.idega.util.IWCalendar;
-import com.idega.core.accesscontrol.business.AccessControl;
-import is.idega.idegaweb.travel.business.*;
-import is.idega.idegaweb.travel.service.tour.business.*;
-import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
 
-import is.idega.idegaweb.travel.business.Assigner;
-import is.idega.idegaweb.travel.business.Booker;
-import is.idega.idegaweb.travel.business.Inquirer;
-import is.idega.idegaweb.travel.data.*;
-import is.idega.idegaweb.travel.service.tour.data.*;
-import is.idega.idegaweb.travel.service.tour.business.*;
-import is.idega.idegaweb.travel.service.tour.presentation.*;
-import is.idega.idegaweb.travel.interfaces.Booking;
-import javax.ejb.*;
+import javax.ejb.FinderException;
+
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductCategory;
+import com.idega.block.trade.stockroom.data.ProductCategoryHome;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.BusyBar;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.PrintButton;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.IWCalendar;
+import com.idega.util.IWTimestamp;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:

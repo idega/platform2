@@ -1,6 +1,5 @@
 package is.idega.idegaweb.tracker.data;
 
-import javax.ejb.*;
 
 public interface PageStatistics extends com.idega.data.IDOLegacyEntity
 {

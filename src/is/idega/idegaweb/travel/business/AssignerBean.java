@@ -1,21 +1,20 @@
 package is.idega.idegaweb.travel.business;
 
-import java.rmi.RemoteException;
-import com.idega.business.IBOServiceBean;
-import com.idega.data.IDOLookup;
-import com.idega.data.SimpleQuerier;
-import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.travel.data.Contract;
 import is.idega.idegaweb.travel.data.ContractHome;
 
-import com.idega.block.trade.stockroom.data.Product;
-import java.sql.SQLException;
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOLookup;
+import com.idega.data.SimpleQuerier;
+import com.idega.util.IWTimestamp;
 import com.idega.util.database.ConnectionBroker;
 /**
  * Title:        idegaWeb TravelBooking

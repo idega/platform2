@@ -1,6 +1,5 @@
 package is.idega.idegaweb.travel.data;
 
-import javax.ejb.*;
 
 public interface Service extends com.idega.data.IDOLegacyEntity
 {

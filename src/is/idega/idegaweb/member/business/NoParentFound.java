@@ -1,5 +1,4 @@
 package is.idega.idegaweb.member.business;
-import com.idega.user.data.User;
 
 /**
  * Title:        idegaWeb User Subsystem

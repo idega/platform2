@@ -12,7 +12,6 @@ import is.idega.idegaweb.travel.presentation.Report;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 
 import javax.ejb.FinderException;
 
@@ -20,7 +19,6 @@ import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.data.IDOLookup;
-import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.util.IWTimestamp;

@@ -10,7 +10,6 @@ package is.idega.idegaweb.member.isi.block.accounting.presentation;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
 
 import java.rmi.RemoteException;
-import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;

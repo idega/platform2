@@ -3,9 +3,9 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
-import java.rmi.RemoteException;
-
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
+
+import java.rmi.RemoteException;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -14,7 +14,6 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.util.IWTimestamp;
 
 /**
  * Description: This class extends ClubSelector to add the step of selecting the year of the work report and creating the report if needed.

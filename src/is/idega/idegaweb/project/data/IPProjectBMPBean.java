@@ -1,11 +1,13 @@
 package is.idega.idegaweb.project.data;
 
-import java.sql.*;
-import com.idega.data.*;
-import com.idega.util.IWTimestamp;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.data.User;
+import com.idega.util.IWTimestamp;
 
 
 /**

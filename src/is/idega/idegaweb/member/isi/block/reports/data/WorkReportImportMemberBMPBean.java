@@ -11,13 +11,11 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
-import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.data.User;
 
 /**

@@ -1,42 +1,37 @@
 package is.idega.idegaweb.project.business;
 
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOAddRelationshipException;
-import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import is.idega.idegaweb.project.data.IPCategory;
 import is.idega.idegaweb.project.data.IPCategoryType;
-import is.idega.idegaweb.project.data.IPProject;
 import is.idega.idegaweb.project.data.IPParticipantGroup;
+import is.idega.idegaweb.project.data.IPProject;
 
-import com.idega.core.component.data.ICObject;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
 import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
 import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusiness;
 import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusinessBean;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
-import com.idega.data.EntityFinder;
-import com.idega.event.EventLogic;
-import com.idega.presentation.IWContext;
-import com.idega.core.data.GenericGroup;
-import com.idega.core.data.ICTreeNode;
-import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.data.ICPermission;
 import com.idega.core.builder.business.BuilderConstants;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
+import com.idega.core.data.GenericGroup;
+import com.idega.core.data.ICTreeNode;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.event.EventLogic;
+import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
-
-import java.util.List;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Map;
-
-import java.sql.SQLException;
 
 /**
  * Title:        IW Project

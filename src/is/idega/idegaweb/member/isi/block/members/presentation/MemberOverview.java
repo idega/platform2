@@ -10,7 +10,6 @@ import is.idega.idegaweb.member.isi.block.members.data.MemberGroupData;
 
 import java.sql.SQLException;
 import java.text.Collator;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,11 +28,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.PrintButton;
 import com.idega.user.data.Group;
-import com.idega.user.data.GroupRelation;
-import com.idega.user.data.GroupRelationHome;
 import com.idega.user.data.User;
-import com.idega.util.IWTimestamp;
-import com.sun.rsasign.t;
 
 /**
  * @author jonas

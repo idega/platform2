@@ -1,6 +1,5 @@
 package is.idega.idegaweb.member.data;
 
-import javax.ejb.*;
 
 public interface GroupApplication extends com.idega.data.IDOEntity
 {

@@ -9,9 +9,8 @@ import java.util.Iterator;
 
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.TextArea;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;

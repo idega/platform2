@@ -1,6 +1,5 @@
 package is.idega.idegaweb.travel.presentation;
 
-import is.idega.idegaweb.travel.business.Booker;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 

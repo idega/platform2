@@ -1,7 +1,5 @@
 package is.idega.idegaweb.project.data;
 
-import com.idega.data.*;
-
 import java.sql.SQLException;
 
 /**

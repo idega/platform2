@@ -1,6 +1,5 @@
 package is.idega.idegaweb.project.data;
 
-import javax.ejb.*;
 
 public interface IPCategory extends com.idega.data.IDOLegacyEntity
 {

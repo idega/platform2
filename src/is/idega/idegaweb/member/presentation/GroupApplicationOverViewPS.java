@@ -1,17 +1,12 @@
 package is.idega.idegaweb.member.presentation;
 
-import com.idega.user.event.*;
-import com.idega.core.builder.data.ICDomain;
+import com.idega.event.IWActionListener;
+import com.idega.event.IWPresentationEvent;
+import com.idega.event.IWPresentationStateImpl;
+import com.idega.idegaweb.IWException;
 import com.idega.presentation.event.ResetPresentationEvent;
 import com.idega.user.data.Group;
-import com.idega.presentation.event.TreeViewerEvent;
-import com.idega.idegaweb.browser.event.IWBrowseEvent;
-import java.util.Iterator;
-import java.util.List;
-import com.idega.presentation.Page;
-import javax.swing.event.ChangeListener;
-import com.idega.idegaweb.IWException;
-import com.idega.event.*;
+import com.idega.user.event.SelectGroupEvent;
 
 
 /**

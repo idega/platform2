@@ -1,32 +1,46 @@
 package is.idega.idegaweb.travel.service.hotel.presentation;
 
+import is.idega.idegaweb.travel.business.ServiceNotFoundException;
+import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
+import is.idega.idegaweb.travel.data.Contract;
+import is.idega.idegaweb.travel.data.ContractHome;
+import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.data.Inquery;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.data.ServiceDay;
+import is.idega.idegaweb.travel.data.ServiceDayHome;
+import is.idega.idegaweb.travel.interfaces.Booking;
+import is.idega.idegaweb.travel.presentation.BookingDeleterWindow;
+import is.idega.idegaweb.travel.presentation.VoucherWindow;
 import is.idega.idegaweb.travel.service.hotel.business.HotelBooker;
 import is.idega.idegaweb.travel.service.hotel.data.Hotel;
 import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
-import is.idega.idegaweb.travel.presentation.*;
+import is.idega.idegaweb.travel.service.presentation.AbstractBookingOverview;
+
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
 import com.idega.block.trade.stockroom.business.ResellerManager;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.business.IBOLookup;
 import com.idega.core.user.data.User;
-import is.idega.idegaweb.travel.interfaces.Booking;
-import com.idega.block.calendar.business.CalendarBusiness;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.CalendarParameters;
-
-import java.rmi.*;
-import java.sql.*;
-import java.util.*;
-
-import javax.ejb.*;
-
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.business.*;
-import com.idega.data.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.util.*;
-import is.idega.idegaweb.travel.business.*;
-import is.idega.idegaweb.travel.data.*;
-import is.idega.idegaweb.travel.service.presentation.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.util.IWCalendar;
+import com.idega.util.IWTimestamp;
 
 /**
  * <p>Title: idegaWeb TravelBooking</p>

@@ -7,7 +7,6 @@
 package is.idega.idegaweb.member.isi.block.clubs.presentation;
 
 import is.idega.idegaweb.member.isi.block.clubs.business.ClubInfoBusinessBean;
-import is.idega.idegaweb.member.isi.block.members.presentation.GroupMemberList;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.text.Collator;

@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopTemplateHome.java,v 1.3 2002/04/06 19:11:21 tryggvil Exp $
+ *  $Id: IShopTemplateHome.java,v 1.4 2004/05/24 14:56:57 palli Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,13 +9,14 @@
  */
 package is.idega.idegaweb.intershop.business;
 
-import com.idega.data.IDOLegacyEntity;
-import com.idega.data.EntityFinder;
-import com.idega.data.SimpleQuerier;
-import com.idega.data.IDOFinderException;
 import is.idega.idegaweb.intershop.data.IShopTemplate;
 import is.idega.idegaweb.intershop.data.IShopTemplateBean;
+
 import java.util.List;
+
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOFinderException;
+import com.idega.data.SimpleQuerier;
 
 /**
  * @author    <a href="mail:palli@idega.is">Pall Helgason</a>

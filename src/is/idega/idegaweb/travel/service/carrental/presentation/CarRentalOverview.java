@@ -1,30 +1,38 @@
 package is.idega.idegaweb.travel.service.carrental.presentation;
+import is.idega.idegaweb.travel.business.ServiceNotFoundException;
+import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
+import is.idega.idegaweb.travel.business.TravelSessionManager;
+import is.idega.idegaweb.travel.data.Service;
 import is.idega.idegaweb.travel.presentation.TravelCurrencyCalculatorWindow;
-import com.idega.presentation.text.Link;
-import java.util.*;
-import is.idega.idegaweb.travel.data.*;
-import com.idega.idegaweb.IWBundle;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.business.IBOLookup;
-import is.idega.idegaweb.travel.business.*;
-import javax.ejb.FinderException;
 import is.idega.idegaweb.travel.presentation.TravelManager;
 import is.idega.idegaweb.travel.service.presentation.AbstractServiceOverview;
+
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Locale;
+
+import javax.ejb.FinderException;
 
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
+import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierHome;
+import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
-import com.idega.util.text.TextSoap;
 
 /**
  * <p>Title: idegaWeb TravelBooking</p>

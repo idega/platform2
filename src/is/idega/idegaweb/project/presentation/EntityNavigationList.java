@@ -1,26 +1,20 @@
 package is.idega.idegaweb.project.presentation;
 
-import com.idega.presentation.Block;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.IFrame;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import is.idega.idegaweb.project.business.ProjectBusiness;
-import is.idega.idegaweb.project.data.IPProject;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.data.EntityAttribute;
-import com.idega.event.GenericState;
-import com.idega.util.datastructures.HashtableMultivalued;
 import is.idega.idegaweb.project.business.EntityNavigationListState;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 
 import java.util.List;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.ListIterator;
+
+import com.idega.data.EntityAttribute;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.event.GenericState;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 
 /**
  * Title:        IW Project

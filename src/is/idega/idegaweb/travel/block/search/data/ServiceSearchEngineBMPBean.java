@@ -1,6 +1,5 @@
 package is.idega.idegaweb.travel.block.search.data;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
 import javax.ejb.FinderException;

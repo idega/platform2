@@ -2,7 +2,6 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
-import com.idega.business.InputHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropDownMenuInputHandler;

@@ -1,18 +1,17 @@
 package is.idega.idegaweb.travel.service.carrental.business;
 
+import is.idega.idegaweb.travel.business.Booker;
+import is.idega.idegaweb.travel.business.BookerBean;
+import is.idega.idegaweb.travel.service.carrental.data.CarRentalBooking;
+import is.idega.idegaweb.travel.service.carrental.data.CarRentalBookingHome;
+
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 
 import javax.ejb.CreateException;
 
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOException;
 import com.idega.util.IWTimestamp;
-
-import is.idega.idegaweb.travel.business.*;
-import is.idega.idegaweb.travel.interfaces.Booking;
-import is.idega.idegaweb.travel.service.carrental.data.CarRentalBooking;
-import is.idega.idegaweb.travel.service.carrental.data.CarRentalBookingHome;
 
 /**
  * Title:        idegaWeb Travel

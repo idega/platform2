@@ -1,6 +1,5 @@
 package is.idega.idegaweb.travel.block.search.data;
 
-import com.idega.core.data.GenericGroup;
 import com.idega.core.data.GenericGroupBMPBean;
 
 public class ServiceSearchEngineStaffGroupBMPBean extends GenericGroupBMPBean implements ServiceSearchEngineStaffGroup {

@@ -1,11 +1,15 @@
 package is.idega.idegaweb.travel.interfaces;
 
-import javax.ejb.FinderException;
-import com.idega.data.IDOEntity;
+import is.idega.idegaweb.travel.data.BookingEntry;
+import is.idega.idegaweb.travel.data.PickupPlace;
+import is.idega.idegaweb.travel.data.Service;
+
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
-import com.idega.data.IDOLegacyEntity;
-import is.idega.idegaweb.travel.data.*;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOEntity;
 /**
  * Title:        idegaWeb Travel
  * Description:

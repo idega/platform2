@@ -7,7 +7,6 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
-import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContract;
 import is.idega.idegaweb.member.isi.block.accounting.data.UserCreditCard;
 
 import java.rmi.RemoteException;

@@ -1,5 +1,8 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
+import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
+import is.idega.idegaweb.member.util.IWMemberConstants;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -8,10 +11,6 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
-import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
-import is.idega.idegaweb.member.util.IWMemberConstants;
-
-import com.idega.business.InputHandler;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
  

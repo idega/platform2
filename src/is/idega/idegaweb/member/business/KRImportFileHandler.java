@@ -1,6 +1,5 @@
 package is.idega.idegaweb.member.business;
 
-import javax.ejb.*;
 
 public interface KRImportFileHandler extends com.idega.business.IBOService,com.idega.block.importer.business.ImportFileHandler
 {

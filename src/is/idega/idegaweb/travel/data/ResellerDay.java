@@ -1,8 +1,5 @@
 package is.idega.idegaweb.travel.data;
 
-import java.util.Collection;
-
-import javax.ejb.FinderException;
 
 
 public interface ResellerDay extends com.idega.data.IDOEntity

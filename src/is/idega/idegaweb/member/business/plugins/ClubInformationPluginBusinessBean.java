@@ -19,11 +19,8 @@ import java.util.Map;
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
 
-import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.accesscontrol.business.AccessController;
-import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;

@@ -1,17 +1,21 @@
 package is.idega.idegaweb.travel.presentation;
-import com.idega.block.trade.business.CurrencyHolder;
-import java.util.*;
-import com.idega.block.trade.business.CurrencyBusiness;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.Text;
-import com.idega.block.trade.stockroom.data.*;
-import javax.ejb.FinderException;
-import javax.ejb.CreateException;
 import java.rmi.RemoteException;
+
+import javax.ejb.CreateException;
+
+import com.idega.block.trade.business.CurrencyBusiness;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.Settings;
+import com.idega.block.trade.stockroom.data.SettingsHome;
+import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.data.IDOLookup;
-import com.idega.presentation.Table;
-import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.BooleanInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
 
 /**
  *  Title: idegaWeb TravelBooking Description: Copyright: Copyright (c) 2001

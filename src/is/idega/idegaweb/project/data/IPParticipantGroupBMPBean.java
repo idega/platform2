@@ -1,7 +1,6 @@
 package is.idega.idegaweb.project.data;
 
-import com.idega.core.data.GenericGroup;
-import java.sql.*;
+import java.sql.SQLException;
 
 /**
  * Title:        IW Project

@@ -1,7 +1,6 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
-import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.Block;

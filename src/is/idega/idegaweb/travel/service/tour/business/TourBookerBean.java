@@ -1,22 +1,20 @@
 package is.idega.idegaweb.travel.service.tour.business;
 
+import is.idega.idegaweb.travel.business.Booker;
+import is.idega.idegaweb.travel.business.BookerBean;
+import is.idega.idegaweb.travel.interfaces.Booking;
+import is.idega.idegaweb.travel.service.tour.data.TourBooking;
+
+import java.rmi.RemoteException;
+import java.util.List;
+import java.util.Vector;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import is.idega.idegaweb.travel.business.BookerBean;
-import java.rmi.RemoteException;
-import com.idega.idegaweb.IWApplicationContext;
+
 import com.idega.business.IBOLookup;
-import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOException;
-
-import is.idega.idegaweb.travel.business.Booker;
-
-import com.idega.util.*;
-import is.idega.idegaweb.travel.interfaces.Booking;
-import is.idega.idegaweb.travel.service.tour.data.*;
-
-import java.sql.SQLException;
-import java.util.*;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:        idegaWeb Travel

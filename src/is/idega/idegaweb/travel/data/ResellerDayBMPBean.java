@@ -6,7 +6,6 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
-import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
@@ -14,7 +13,6 @@ import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
-import com.idega.data.SimpleQuerier;
 
 
 /**

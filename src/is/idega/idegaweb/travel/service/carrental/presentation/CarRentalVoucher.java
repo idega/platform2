@@ -1,19 +1,17 @@
 package is.idega.idegaweb.travel.service.carrental.presentation;
 
+import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.presentation.Voucher;
 import is.idega.idegaweb.travel.service.carrental.data.CarRentalBooking;
 import is.idega.idegaweb.travel.service.carrental.data.CarRentalBookingHome;
-import is.idega.idegaweb.travel.interfaces.Booking;
+
+import java.rmi.RemoteException;
+
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.idegaweb.IWResourceBundle;
-import java.rmi.RemoteException;
-
-import javax.ejb.EJBException;
-import javax.ejb.FinderException;
 
 /**
  * <p>Title: idega</p>

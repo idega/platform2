@@ -1,24 +1,22 @@
 package is.idega.idegaweb.travel.service.presentation;
 
-import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
 import is.idega.idegaweb.travel.business.ServiceNotFoundException;
+import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
+import is.idega.idegaweb.travel.presentation.TravelManager;
+
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Locale;
 
-import com.idega.data.IDOFinderException;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.Timeframe;
-
-import java.rmi.RemoteException;
+import com.idega.data.IDOFinderException;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.Table;
-import com.idega.util.IWTimestamp;
-import com.idega.util.IWCalendar;
 import com.idega.presentation.IWContext;
-import is.idega.idegaweb.travel.presentation.TravelManager;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.util.IWCalendar;
+import com.idega.util.IWTimestamp;
 
 /**
  * <p>Title: idegaWeb TravelBooking</p>

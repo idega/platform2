@@ -1,7 +1,6 @@
 package is.idega.idegaweb.travel.service.hotel.business;
 
 import is.idega.idegaweb.travel.business.Booker;
-import javax.ejb.*;
 
 public interface HotelBooker extends com.idega.business.IBOService, Booker
 {

@@ -1,11 +1,11 @@
 package is.idega.idegaweb.travel.service.business;
 
-import javax.ejb.*;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.block.trade.stockroom.data.Supplier;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.data.IDORelationshipException;
 import java.rmi.RemoteException;
+
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.data.IDORelationshipException;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.ui.DropdownMenu;
 
 public interface ProductCategoryFactory extends com.idega.business.IBOService
 {

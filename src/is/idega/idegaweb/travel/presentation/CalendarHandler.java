@@ -1,29 +1,39 @@
 package is.idega.idegaweb.travel.presentation;
 
 
-import com.idega.data.IDOLookup;
-import javax.ejb.FinderException;
-import com.idega.business.IBOLookup;
+import is.idega.idegaweb.travel.business.ServiceNotFoundException;
+import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.data.Contract;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
+import is.idega.idegaweb.travel.service.tour.business.TourBusiness;
+
 import java.rmi.RemoteException;
-import com.idega.idegaweb.*;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.business.IBOLookup;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.CalendarParameters;
 import com.idega.idegaweb.presentation.SmallCalendar;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.block.calendar.business.CalendarBusiness;
-import com.idega.util.*;
-import java.util.*;
-import java.sql.SQLException;
-
-import com.idega.block.trade.stockroom.business.*;
-import is.idega.idegaweb.travel.business.*;
-import is.idega.idegaweb.travel.data.*;
-import is.idega.idegaweb.travel.service.presentation.BookingForm;
-
-import com.idega.block.trade.stockroom.data.*;
-import is.idega.idegaweb.travel.service.tour.data.Tour;
-import is.idega.idegaweb.travel.service.tour.business.TourBusiness;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.util.IWCalendar;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:        idegaWeb Travel

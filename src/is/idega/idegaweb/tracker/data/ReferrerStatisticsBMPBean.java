@@ -1,8 +1,7 @@
 package is.idega.idegaweb.tracker.data;
 
-import java.sql.Timestamp;
 import java.sql.SQLException;
-import com.idega.data.IDOLegacyEntity;
+import java.sql.Timestamp;
 
 /**
  * Title:        com.idega.idegaweb.tracker.data.ReferrerStatistics

@@ -1,19 +1,18 @@
 package is.idega.idegaweb.project.presentation;
 
-import com.idega.presentation.Block;
 import is.idega.idegaweb.project.business.ProjectBusiness;
-import com.idega.presentation.IWContext;
-import is.idega.idegaweb.project.data.IPCategory;
-import com.idega.presentation.text.Link;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.presentation.ui.IFrame;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.builder.business.BuilderLogic;
-import com.idega.presentation.IFrameContainer;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IFrameContent;
 
 import java.util.List;
+
+import com.idega.builder.business.BuilderLogic;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.presentation.Block;
+import com.idega.presentation.IFrameContainer;
+import com.idega.presentation.IFrameContent;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.IFrame;
 
 
 /**

@@ -1,26 +1,20 @@
 package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.business.GroupApplicationBusiness;
-import is.idega.idegaweb.member.data.GroupApplicationHome;
 import is.idega.idegaweb.member.data.GroupApplication;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.event.IWPresentationEvent;
-import com.idega.event.IWPresentationState;
-import com.idega.event.IWStateMachine;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWUserContext;
 import com.idega.idegaweb.browser.presentation.IWBrowserView;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
-import com.idega.presentation.StatefullPresentation;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;

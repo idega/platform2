@@ -38,7 +38,6 @@ import com.idega.data.IDOException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.Group;
-import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 

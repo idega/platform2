@@ -1,6 +1,5 @@
 package is.idega.idegaweb.member.data;
 
-import javax.ejb.*;
 
 public interface UserTitles extends com.idega.data.IDOEntity
 {

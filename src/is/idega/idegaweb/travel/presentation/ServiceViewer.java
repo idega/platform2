@@ -1,39 +1,48 @@
 package is.idega.idegaweb.travel.presentation;
 
-import javax.ejb.FinderException;
-import com.idega.data.IDOFinderException;
-import com.idega.business.IBOLookup;
-import java.rmi.RemoteException;
-import com.idega.data.IDOLookup;
-import com.idega.idegaweb.*;
-import java.util.*;
-import com.idega.util.*;
-import com.idega.core.localisation.business.LocaleSwitcher;
-import com.idega.presentation.Block;
-
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.block.text.presentation.TextReader;
-
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.block.trade.data.Currency;
-import is.idega.idegaweb.travel.data.*;
-import com.idega.core.data.*;
-
-import com.idega.util.text.TextSoap;
-
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
-import com.idega.block.trade.stockroom.business.ProductPriceException;
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness.*;
-import is.idega.idegaweb.travel.service.tour.business.TourBusiness;
-import com.idega.block.trade.stockroom.business.ProductBusiness;
-import com.idega.block.text.business.TextFinder;
-import com.idega.block.text.data.*;
-import com.idega.core.localisation.business.ICLocaleBusiness;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.data.ServiceDay;
+import is.idega.idegaweb.travel.data.ServiceDayHome;
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.text.data.TxText;
+import com.idega.block.text.presentation.TextReader;
+import com.idega.block.trade.data.Currency;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.business.ProductPriceException;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.business.IBOLookup;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.business.LocaleSwitcher;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.HorizontalRule;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Window;
+import com.idega.util.IWCalendar;
+import com.idega.util.IWTimestamp;
+import com.idega.util.LocaleUtil;
 
 /**
  * Title: com.idega.idegaweb.travel.presentation.ServiceViewer

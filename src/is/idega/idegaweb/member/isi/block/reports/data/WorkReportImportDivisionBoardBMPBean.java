@@ -14,7 +14,6 @@ import javax.ejb.FinderException;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
-import com.idega.data.IDOQuery;
 import com.idega.user.data.Group;
 
 /**

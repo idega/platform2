@@ -1,19 +1,22 @@
 package is.idega.idegaweb.travel.service.carrental.business;
 
-import java.sql.*;
+import is.idega.idegaweb.travel.business.TravelStockroomBusinessBean;
+import is.idega.idegaweb.travel.data.PickupPlace;
+import is.idega.idegaweb.travel.data.PickupPlaceHome;
+import is.idega.idegaweb.travel.service.business.ProductCategoryFactoryBean;
+import is.idega.idegaweb.travel.service.carrental.data.CarRental;
+import is.idega.idegaweb.travel.service.carrental.data.CarRentalHome;
+
+import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
-
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.data.*;
-import com.idega.util.*;
-import is.idega.idegaweb.travel.business.*;
-import is.idega.idegaweb.travel.data.PickupPlace;
-import is.idega.idegaweb.travel.data.PickupPlaceHome;
-import is.idega.idegaweb.travel.service.business.*;
-import is.idega.idegaweb.travel.service.carrental.data.CarRental;
-import is.idega.idegaweb.travel.service.carrental.data.CarRentalHome;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductCategory;
+import com.idega.block.trade.stockroom.data.ProductCategoryHome;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOLookup;
 
 
 /**

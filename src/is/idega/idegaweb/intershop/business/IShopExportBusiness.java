@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopExportBusiness.java,v 1.9 2002/05/06 14:51:15 palli Exp $
+ *  $Id: IShopExportBusiness.java,v 1.10 2004/05/24 14:56:57 palli Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,17 +9,18 @@
  */
 package is.idega.idegaweb.intershop.business;
 
-import com.idega.idegaweb.IWApplicationContext;
-import com.strengur.idegaweb.intershop.business.IShopXMLDesc;
 import is.idega.idegaweb.intershop.data.IShopTemplate;
-import is.idega.idegaweb.intershop.data.IShopTemplateBean;
+
+import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Properties;
-import java.io.ByteArrayInputStream;
+
+import com.idega.idegaweb.IWApplicationContext;
+import com.strengur.idegaweb.intershop.business.IShopXMLDesc;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>

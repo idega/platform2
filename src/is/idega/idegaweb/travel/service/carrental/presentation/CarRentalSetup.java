@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.service.carrental.presentation;
 
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.presentation.TravelManager;
+
 import java.rmi.RemoteException;
 
 import com.idega.block.trade.stockroom.data.PriceCategory;
@@ -11,14 +14,10 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
-import is.idega.idegaweb.travel.presentation.TravelManager;
 
 /**
  * @author gimmi

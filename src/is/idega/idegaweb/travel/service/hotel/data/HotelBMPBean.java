@@ -1,25 +1,27 @@
 package is.idega.idegaweb.travel.service.hotel.data;
 
-import java.rmi.RemoteException;
-import java.sql.*;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.data.ServiceBMPBean;
+
+import java.sql.SQLException;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-
-import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductBMPBean;
-import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierBMPBean;
 import com.idega.core.location.data.Address;
-import com.idega.core.location.data.AddressBMPBean;
 import com.idega.core.location.data.PostalCode;
-import com.idega.core.location.data.PostalCodeBMPBean;
-import com.idega.data.*;
+import com.idega.data.EntityControl;
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOCompositePrimaryKeyException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.util.IWTimestamp;
-
-import is.idega.idegaweb.travel.data.*;
 
 
 /**

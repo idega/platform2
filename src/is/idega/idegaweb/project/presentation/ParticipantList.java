@@ -1,9 +1,15 @@
 package is.idega.idegaweb.project.presentation;
 
+import is.idega.idegaweb.project.business.ProjectBusiness;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import com.idega.block.staff.business.StaffFinder;
 import com.idega.block.staff.business.StaffHolder;
-import com.idega.block.staff.business.StaffBusiness;
-import com.idega.block.staff.presentation.StaffEditor;
 import com.idega.block.staff.presentation.StaffPropertyWindow;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.business.UserBusiness;
@@ -26,12 +32,6 @@ import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.Window;
-import is.idega.idegaweb.project.business.ProjectBusiness;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 
 /**

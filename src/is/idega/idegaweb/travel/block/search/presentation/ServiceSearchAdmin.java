@@ -6,8 +6,6 @@ import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineHome;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngineStaffGroup;
 import is.idega.idegaweb.travel.presentation.AdministratorReport;
 import is.idega.idegaweb.travel.presentation.AdministratorReports;
-import is.idega.idegaweb.travel.presentation.Report;
-import is.idega.idegaweb.travel.presentation.Reports;
 import is.idega.idegaweb.travel.presentation.TravelManager;
 import is.idega.idegaweb.travel.presentation.Users;
 

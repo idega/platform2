@@ -1,5 +1,5 @@
 /*
- * $Id: IShopCreatePageWindow.java,v 1.6 2003/10/03 01:52:42 tryggvil Exp $
+ * $Id: IShopCreatePageWindow.java,v 1.7 2004/05/24 14:56:57 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,39 +9,31 @@
  */
 package is.idega.idegaweb.intershop.presentation;
 
-import com.idega.idegaweb.IWConstants;
-import com.idega.builder.business.IBPropertyHandler;
-import com.idega.builder.business.IBXMLPage;
-import com.idega.builder.business.PageTreeNode;
-import com.idega.builder.business.IBPageHelper;
-import com.idega.core.builder.data.ICDomain;
-import com.idega.core.builder.data.ICPage;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.Page;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.RadioGroup;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Window;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Map;
-import com.strengur.idegaweb.intershop.business.IShopXMLDesc;
+import is.idega.idegaweb.intershop.business.IShopExportBusiness;
 import is.idega.idegaweb.intershop.business.IShopTemplateHome;
 import is.idega.idegaweb.intershop.data.IShopTemplate;
-import is.idega.idegaweb.intershop.business.IShopExportBusiness;
-import com.idega.util.FileUtil;
-import java.util.Properties;
-import java.io.IOException;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
+
+import com.idega.builder.business.IBPageHelper;
+import com.idega.builder.business.PageTreeNode;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.FileUtil;
+import com.strengur.idegaweb.intershop.business.IShopXMLDesc;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>

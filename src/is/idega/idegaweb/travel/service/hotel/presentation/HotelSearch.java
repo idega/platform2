@@ -10,16 +10,12 @@ import is.idega.idegaweb.travel.service.hotel.data.RoomTypeHome;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.trade.stockroom.data.PriceCategory;
-import com.idega.block.trade.stockroom.data.PriceCategoryHome;
-import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;

@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopBundleStarter.java,v 1.8 2003/10/03 01:52:42 tryggvil Exp $
+ *  $Id: IShopBundleStarter.java,v 1.9 2004/05/24 14:56:57 palli Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,34 +9,30 @@
  */
 package is.idega.idegaweb.intershop.business;
 
-import com.idega.builder.app.IBApplication;
-import com.idega.builder.business.IBPageHelper;
-import com.idega.core.builder.data.ICDomain;
-import com.idega.core.builder.data.ICPage;
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOFinderException;
-import com.idega.idegaweb.IWBundleStartable;
-import com.idega.idegaweb.IWBundle;
-import com.idega.presentation.IWContext;
-import com.idega.util.FileUtil;
-import com.strengur.idegaweb.intershop.business.IShopXMLDesc;
+import is.idega.idegaweb.intershop.data.IShopTemplate;
 import is.idega.idegaweb.intershop.presentation.IShopToolbarButton;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
-import java.util.Vector;
-import java.util.Properties;
-import java.util.Iterator;
-import java.util.Hashtable;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.SQLException;
-import is.idega.idegaweb.intershop.data.IShopTemplate;
-import is.idega.idegaweb.intershop.data.IShopTemplateBean;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.Vector;
+
+import com.idega.builder.app.IBApplication;
+import com.idega.builder.business.IBPageHelper;
+import com.idega.core.builder.data.ICDomain;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOFinderException;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWBundleStartable;
+import com.idega.util.FileUtil;
 
 /**
  * @author    <a href="mail:palli@idega.is">Pall Helgason</a>

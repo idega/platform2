@@ -5,10 +5,7 @@ import is.idega.idegaweb.travel.data.ContractHome;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import javax.ejb.FinderException;
 

@@ -1,6 +1,5 @@
 package is.idega.idegaweb.member.business.plugins;
 
-import javax.ejb.*;
 
 public interface GroupOfficeContactPluginBusiness extends com.idega.business.IBOService,com.idega.user.business.UserGroupPlugInBusiness
 {

@@ -1,9 +1,7 @@
 package is.idega.idegaweb.tracker.data;
 
-import java.sql.Timestamp;
 import java.sql.SQLException;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.core.localisation.data.ICLocale;
+import java.sql.Timestamp;
 
 
 /**

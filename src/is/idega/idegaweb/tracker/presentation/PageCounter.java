@@ -1,18 +1,22 @@
 package is.idega.idegaweb.tracker.presentation;
 
+import is.idega.idegaweb.tracker.business.TrackerBusiness;
+import is.idega.idegaweb.tracker.data.PageStatistics;
+import is.idega.idegaweb.tracker.data.ReferrerStatistics;
+import is.idega.idegaweb.tracker.data.UserAgentStatistics;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.builder.data.ICPageHome;
 import com.idega.data.IDOLookup;
-import java.util.*;
 import com.idega.presentation.Block;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-
 import com.idega.presentation.IWContext;
-import is.idega.idegaweb.tracker.business.TrackerBusiness;
-
-import is.idega.idegaweb.tracker.data.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 /**
  * Title:        is.idega.idegaweb.tracker.presentation.PageCounter
  * Description:  A simple page counter that can display the number of visits/hits with text/images

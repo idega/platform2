@@ -3,8 +3,6 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.data;
 
-import is.idega.idegaweb.member.util.IWMemberConstants;
-
 import java.util.Collection;
 
 import javax.ejb.FinderException;

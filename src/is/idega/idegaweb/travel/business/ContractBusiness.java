@@ -1,6 +1,5 @@
 package is.idega.idegaweb.travel.business;
 
-import javax.ejb.*;
 
 public interface ContractBusiness extends com.idega.business.IBOService
 {

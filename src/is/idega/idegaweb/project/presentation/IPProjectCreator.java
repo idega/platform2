@@ -1,24 +1,24 @@
 package is.idega.idegaweb.project.presentation;
 
+import is.idega.idegaweb.project.business.ProjectBusiness;
+import is.idega.idegaweb.project.data.IPCategory;
+import is.idega.idegaweb.project.data.IPCategoryType;
+import is.idega.idegaweb.project.data.IPProject;
+
+import java.util.Iterator;
+import java.util.List;
+
 import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.Table;
-import is.idega.idegaweb.project.business.ProjectBusiness;
-import is.idega.idegaweb.project.data.IPCategoryType;
-import is.idega.idegaweb.project.data.IPCategory;
-import com.idega.presentation.PresentationObject;
-import is.idega.idegaweb.project.data.IPProject;
-import com.idega.data.EntityFinder;
-
-import java.util.List;
-import java.util.Iterator;
 
 /**
  * Title:        IW Project

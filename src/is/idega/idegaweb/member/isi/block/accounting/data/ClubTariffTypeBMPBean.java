@@ -12,7 +12,6 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOLookup;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.Group;
 

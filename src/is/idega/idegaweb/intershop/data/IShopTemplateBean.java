@@ -1,6 +1,5 @@
 package is.idega.idegaweb.intershop.data;
 
-import javax.ejb.*;
 
 public interface IShopTemplateBean extends com.idega.data.IDOLegacyEntity,is.idega.idegaweb.intershop.data.IShopTemplate
 {

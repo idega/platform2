@@ -1,6 +1,5 @@
 package is.idega.idegaweb.travel.service.tour.data;
 
-import javax.ejb.*;
 
 public interface TourBooking extends com.idega.data.IDOEntity,is.idega.idegaweb.travel.interfaces.Booking
 {

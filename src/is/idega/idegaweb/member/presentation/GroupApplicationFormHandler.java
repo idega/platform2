@@ -1,18 +1,16 @@
 package is.idega.idegaweb.member.presentation;
 
-import java.rmi.RemoteException;
-import java.util.Enumeration;
-
 import is.idega.idegaweb.member.business.GroupApplicationBusiness;
+
+import java.rmi.RemoteException;
 
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
-import com.idega.presentation.IWContext;
 import com.idega.presentation.Block;
-import com.idega.user.data.Group;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.PostalCodeDropdownMenu;
+import com.idega.user.data.Group;
 import com.idega.user.presentation.GroupSelectionDoubleBox;
-import com.idega.util.IWTimestamp;
 
 /**
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>

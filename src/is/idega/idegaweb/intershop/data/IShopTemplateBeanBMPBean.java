@@ -1,6 +1,6 @@
 /*
 
- *  $Id: IShopTemplateBeanBMPBean.java,v 1.2 2003/10/03 01:52:42 tryggvil Exp $
+ *  $Id: IShopTemplateBeanBMPBean.java,v 1.3 2004/05/24 14:56:56 palli Exp $
 
  *
 
@@ -20,11 +20,9 @@ package is.idega.idegaweb.intershop.data;
 
 
 
-import com.idega.core.builder.data.ICPage;
-import com.idega.data.IDOLegacyEntity;
-
-
 import java.sql.SQLException;
+
+import com.idega.core.builder.data.ICPage;
 
 
 

@@ -1,48 +1,18 @@
 package is.idega.idegaweb.travel.presentation;
 
-import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusiness;
-import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
 import is.idega.idegaweb.travel.block.search.presentation.ServiceSearchAdmin;
 import is.idega.idegaweb.travel.block.search.presentation.ServiceSearchEditor;
-import is.idega.idegaweb.travel.business.Assigner;
-import is.idega.idegaweb.travel.business.Booker;
-import is.idega.idegaweb.travel.business.ContractBusiness;
-import is.idega.idegaweb.travel.business.Inquirer;
-import is.idega.idegaweb.travel.business.TravelSessionManager;
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
-import is.idega.idegaweb.travel.service.business.ProductCategoryFactory;
-import is.idega.idegaweb.travel.service.business.ServiceHandler;
 
 import java.rmi.RemoteException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
-import com.idega.block.creditcard.business.CreditCardBusiness;
-import com.idega.block.trade.stockroom.business.ProductBusiness;
-import com.idega.block.trade.stockroom.business.ResellerManager;
-import com.idega.block.trade.stockroom.business.SupplierManager;
-import com.idega.block.trade.stockroom.data.Reseller;
-import com.idega.block.trade.stockroom.data.Supplier;
-import com.idega.block.trade.stockroom.data.SupplierHome;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
-import com.idega.business.IBORuntimeException;
-import com.idega.core.accesscontrol.data.PermissionGroup;
-import com.idega.core.user.data.User;
-import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.user.business.GroupBusiness;
-import com.idega.user.business.UserBusiness;
 
 public class TravelManager extends TravelBlock {
 

@@ -10,7 +10,6 @@ import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Vector;
 
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.business.IBOLookup;
