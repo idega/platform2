@@ -374,7 +374,7 @@ public class FieldOverview extends GolfBlock {
 
 		outerTable.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
 		outerTable.add(myTable, 1, row++);
-		outerTable.setHeight(row++, 6);
+		outerTable.setHeight(row++, 18);
 
 		TextReader fieldText = null;
 		HoleText[] hole_text = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("field_id", "" + field.getID(), "hole_number", hole_number);

@@ -39,8 +39,8 @@ public class FieldNameText extends Text {
 		}
 
 		if (hole_number != null) {
-			setText(Text.NON_BREAKING_SPACE + "-" + Text.NON_BREAKING_SPACE);
-			setText(iwrb.getLocalizedString("field.hole", "Hole") + Text.NON_BREAKING_SPACE + hole_number);
+			addToText(Text.NON_BREAKING_SPACE + "-" + Text.NON_BREAKING_SPACE);
+			addToText(iwrb.getLocalizedString("field.hole", "Hole") + Text.NON_BREAKING_SPACE + hole_number);
 		}
 	}
 
