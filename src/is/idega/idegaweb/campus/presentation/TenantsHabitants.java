@@ -158,9 +158,9 @@ private String darkRed = "#932A2D";
     Building building = BuildingCacher.getBuilding(floor.getBuildingId());
     Complex complex = null;
     if ( _campusID != -1 )
-      BuildingCacher.getComplex(_campusID);
+      complex = BuildingCacher.getComplex(_campusID);
     else
-      BuildingCacher.getComplex(building.getComplexId());
+      complex = BuildingCacher.getComplex(building.getComplexId());
     Map phoneMap = PhoneFinder.mapOfPhonesByApartmentId(PhoneFinder.listOfPhones());
     CampusPhone phone = null;
 
