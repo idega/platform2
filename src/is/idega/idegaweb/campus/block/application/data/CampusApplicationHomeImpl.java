@@ -39,5 +39,12 @@ public class CampusApplicationHomeImpl extends com.idega.data.IDOFactory impleme
 
  }
 
+public java.util.Collection findAllByApplicationId(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((CampusApplicationBMPBean)entity).ejbFindAllByApplicationId(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 
 }

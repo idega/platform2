@@ -98,6 +98,9 @@ public class CampusApprover extends Block{
 
         if(iwc.getParameter("save")!= null){
           id = updateWholeApplication(iwc,id);
+          if (iwc.isParameterSet("priority_drop")) {
+            updatePriorityLevel(iwc,id);
+          }
           if(iwc.isParameterSet("status_drop"))
             updateApplication(iwc,id);
         }
@@ -137,7 +140,7 @@ public class CampusApprover extends Block{
     return LinkTable;
   }
 
-  private void updateApplication(IWContext iwc,int id){
+  private void updateApplication(IWContext iwc,int id) {
     //int id = Integer.parseInt(iwc.getParameter("application_id"));
 
     String status = iwc.getParameter("status_drop");
@@ -146,14 +149,87 @@ public class CampusApprover extends Block{
       A.setStatus(status);
       A.update();
       Applicant Appli = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(A.getApplicantId());
-      if(status.equals("A"))
-        MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
+
+      if(status.equals("A")) {
+        /**@todo setja inn aftur */
+//        MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
+
+        CampusApplicationHome CAHome = null;
+        CampusApplication CA = null;
+
+        CAHome = (CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class);
+        java.util.Collection coll = CAHome.findAllByApplicationId(((Integer)A.getPrimaryKeyValue()).intValue());
+        if (coll != null) {
+          java.util.Iterator it = coll.iterator();
+          if (it.hasNext())
+            CA = (CampusApplication)it.next();//CAHome.findByPrimaryKeyLegacy(((Integer)it.next()).intValue());
+        }
+
+        if (CA != null) {
+          List L = CampusApplicationFinder.listOfAppliedInApplication(CA.getID());
+          java.util.Iterator it = L.iterator();
+          if (it != null) {
+            while (it.hasNext()) {
+              Applied applied = (Applied)it.next();
+
+              WaitingList wl = ((is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).createLegacy();
+              wl.setApartmentTypeId(applied.getApartmentTypeId());
+              wl.setComplexId(applied.getComplexId().intValue());
+              wl.setType(new String("A"));
+              wl.setApplicantId(Appli.getID());
+              wl.setOrder(0);
+              wl.setChoiceNumber(applied.getOrder());
+              wl.insert();
+              wl.setOrder(wl.getID());
+              String level = CA.getPriorityLevel();
+              if (level.equals("A"))
+                wl.setPriorityLevelA();
+              else if (level.equals("B"))
+                wl.setPriorityLevelB();
+              else if (level.equals("C"))
+                wl.setPriorityLevelC();
+              else if (level.equals("D"))
+                wl.setPriorityLevelD();
+              wl.update();
+            }
+          }
+
+        }
+
+      }
       if(status.equals("R"))
         MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.REJECTION);
     }
     catch(Exception e){
       e.printStackTrace();
 
+    }
+  }
+
+  private void updatePriorityLevel(IWContext iwc,int id) {
+    //int id = Integer.parseInt(iwc.getParameter("application_id"));
+    String level = iwc.getParameter("priority_drop");
+    try{
+      Application A = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).findByPrimaryKeyLegacy(id);
+
+      CampusApplicationHome CAHome = null;
+      CampusApplication CA = null;
+
+      CAHome = (CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class);
+      java.util.Collection coll = CAHome.findAllByApplicationId(((Integer)A.getPrimaryKeyValue()).intValue());
+      if (coll != null) {
+        java.util.Iterator it = coll.iterator();
+        if (it.hasNext())
+          CA = (CampusApplication)it.next();//CAHome.findByPrimaryKeyLegacy(((Integer)it.next()).intValue());
+      }
+
+      if (CA != null) {
+        CA.setPriorityLevel(level);
+        CA.update();
+      }
+    }
+    catch(Exception e){
+      e.printStackTrace();
     }
   }
 
@@ -215,6 +291,7 @@ public class CampusApprover extends Block{
           eApplication.insert();
           eCampusApplication = ((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy();
           eCampusApplication.setAppApplicationId(new Integer(eApplication.getID()));
+          eCampusApplication.setPriorityLevel("A");
           eCampusApplication.insert();
           returnid = eApplication.getID();
         }
@@ -268,6 +345,7 @@ public class CampusApprover extends Block{
     Image viewImage = iwb.getImage("view.gif");
     Image trashImage = iwb.getImage("trashcan.gif");
     T.add(headerText(iwrb.getLocalizedString("nr","Nr")),col++,row);
+    T.add(headerText(iwrb.getLocalizedString("prior","Pr")),col++,row);
     T.add(headerText(iwrb.getLocalizedString("name","Name")),col++,row);
     T.add(headerText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,row);
     T.add(headerText(iwrb.getLocalizedString("legal_residence","Legal Residence")),col++,row);
@@ -302,7 +380,26 @@ public class CampusApprover extends Block{
         ApplicationHolder AH = (ApplicationHolder) L.get(i);
         Applicant A = AH.getApplicant();
         Application a = AH.getApplication();
+        CampusApplicationHome CAHome = null;
+        CampusApplication CA = null;
+        try {
+          CAHome = (CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class);
+          java.util.Collection coll = CAHome.findAllByApplicationId(((Integer)a.getPrimaryKeyValue()).intValue());
+          if (coll != null) {
+            java.util.Iterator it = coll.iterator();
+            if (it.hasNext())
+              CA = (CampusApplication)it.next();//CAHome.findByPrimaryKeyLegacy(((Integer)it.next()).intValue());
+          }
+        }
+        catch(Exception e) {
+          e.printStackTrace();
+        }
+
         T.add(Edit.formatText(String.valueOf(i+1)),col++,row);
+        if (CA == null)
+          T.add(Edit.formatText("A"),col++,row);
+        else
+          T.add(Edit.formatText(CA.getPriorityLevel()),col++,row);
         String Name = A.getFirstName()+" "+A.getMiddleName()+" "+A.getLastName();
         T.add(Edit.formatText(Name),col++,row);
         T.add(Edit.formatText(A.getSSN()!=null?A.getSSN():""),col++,row);
@@ -406,7 +503,7 @@ public class CampusApprover extends Block{
         Table Right =new Table(1,3);
           Right.add(getRemoteControl(iwrb),1,1);
           Right.add(getKnobs(iwrb),1,2);
-          Right.add(getButtons(eApplication,eApplication.getStatus(),bEdit,iwrb),1,3);
+          Right.add(getButtons(eApplication,eApplication.getStatus(),eCampusApplication.getPriorityLevel(),bEdit,iwrb),1,3);
 
           OuterFrame.add(Left,1,1);
           OuterFrame.add(Middle,2,1);
@@ -499,7 +596,8 @@ public class CampusApprover extends Block{
           Right.add(getRemoteControl(iwrb),1,1);
           Right.add(getKnobs(iwrb),1,2);
           String status = eApplication!=null ? eApplication.getStatus():"";
-          Right.add(getButtons(eApplication,status,bEdit,iwrb),1,3);
+          String pStatus = eCampusApplication!=null ? eCampusApplication.getPriorityLevel():"";
+          Right.add(getButtons(eApplication,status,pStatus,bEdit,iwrb),1,3);
 
           OuterFrame.add(Left,1,1);
           OuterFrame.add(Middle,2,1);
@@ -1251,7 +1349,7 @@ public class CampusApprover extends Block{
     return T;
   }
 
-  private PresentationObject getButtons(Application eApplication,String sStatus,boolean bEdit,IWResourceBundle iwrb){
+  private PresentationObject getButtons(Application eApplication,String sStatus,String sPriority,boolean bEdit,IWResourceBundle iwrb){
     DataTable T = new DataTable();
     T.setWidth("100%");
     T.addTitle(iwrb.getLocalizedString("control","Control"));
@@ -1262,6 +1360,10 @@ public class CampusApprover extends Block{
         //status.setToSubmit();
         Edit.setStyle(status);
         T.add(status,col,row);
+
+        DropdownMenu priority = priorityDrop("priority_drop",sPriority);
+        Edit.setStyle(priority);
+        T.add(priority,col,row);
       }
       if(bEdit){
         SubmitButton view = new SubmitButton("viewer","View");
@@ -1398,6 +1500,17 @@ public class CampusApprover extends Block{
     drp.setSelectedElement(selected);
     return drp;
   }
+
+  private DropdownMenu priorityDrop(String name,String selected){
+    DropdownMenu drp = new DropdownMenu(name);
+    drp.addMenuElement("A","A");
+    drp.addMenuElement("B","B");
+    drp.addMenuElement("C","C");
+    drp.addMenuElement("D","D");
+    drp.setSelectedElement(selected);
+    return drp;
+  }
+
 
    private DropdownMenu orderDrop(String name,String selected){
     DropdownMenu drp = new DropdownMenu(name);

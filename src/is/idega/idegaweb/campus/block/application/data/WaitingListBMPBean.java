@@ -1,627 +1,245 @@
 /*
-
- * $Id: WaitingListBMPBean.java,v 1.1 2002/04/06 19:11:13 tryggvil Exp $
-
+ * $Id: WaitingListBMPBean.java,v 1.2 2002/04/19 23:44:41 palli Exp $
  *
-
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
-
  *
-
  * This software is the proprietary information of Idega hf.
-
  * Use is subject to license terms.
-
  *
-
  */
-
 package is.idega.idegaweb.campus.block.application.data;
 
-
-
 import com.idega.data.IDOLegacyEntity;
-
 import java.sql.Timestamp;
-
 import java.sql.SQLException;
 
-
-
 /**
-
  *
-
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
-
  * @version 1.0
-
  */
-
 public class WaitingListBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.campus.block.application.data.WaitingList {
-
-  private static final String _name = "cam_waiting_list";
-
-  private static final String _complexId = "bu_complex_id";
-
-  private static final String _apartmentTypeId = "bu_apartment_type_id";
-
-  private static final String _applicantId = "app_applicant_id";
-
-  private static final String _order = "ordered";
-
-  private static final String _type = "list_type";
-
-  private static final String _choiceNumber = "choice_number";
-
-  private static final String _lastConfirmation = "last_confirmation";
-
-  private static final String _numberOfRejections = "number_of_rejections";
-
-  private static final String _removedFromList = "removed_from_list";
-
-
+  private static final String ENTITY_NAME = "cam_waiting_list";
+  private static final String COMPLEX_ID = "bu_complex_id";
+  private static final String APARTMENT_TYPE_ID = "bu_apartment_type_id";
+  private static final String APPLICANT_ID = "app_applicant_id";
+  private static final String ORDER = "ordered";
+  private static final String TYPE = "list_type";
+  private static final String CHOICE_NUMBER = "choice_number";
+  private static final String LAST_CONFIRMATION = "last_confirmation";
+  private static final String NUMBER_OF_REJECTIONS = "number_of_rejections";
+  private static final String REMOVED_FROM_LIST = "removed_from_list";
+  private static final String PRIORITY_LEVEL = "priority_level";
 
   public static final String YES = "Y";
-
   public static final String NO = "N";
 
-
-
-  /**
-
-   *
-
-   */
+  private final String PRIORITY_A = "A";
+  private final String PRIORITY_B = "B";
+  private final String PRIORITY_C = "C";
+  private final String PRIORITY_D = "D";
 
   public WaitingListBMPBean() {
-
     super();
-
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public WaitingListBMPBean(int id) throws SQLException {
-
     super(id);
-
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void initializeAttributes() {
-
     addAttribute(getIDColumnName());
-
-    addAttribute(_complexId,"Complex",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.Complex");
-
-    addAttribute(_apartmentTypeId,"Apartment type",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.ApartmentType");
-
-    addAttribute(_applicantId,"Applicant",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.Applicant");
-
-    addAttribute(_order,"Order",true,true,"java.lang.Integer");
-
-    addAttribute(_type,"Waiting list type",true,true,"java.lang.String");
-
-    addAttribute(_choiceNumber,"Choice number",true,true,"java.lang.Integer");
-
-    addAttribute(_lastConfirmation,"Last confirmation date",true,true,"java.sql.Timestamp");
-
-    addAttribute(_numberOfRejections,"Number of rejections",true,true,"java.lang.Integer");
-
-    addAttribute(_removedFromList,"Removed from list",true,true,"java.lang.String");
-
-    setMaxLength(_type,1);
-
-    setMaxLength(_removedFromList,1);
-
+    addAttribute(COMPLEX_ID,"Complex",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.Complex");
+    addAttribute(APARTMENT_TYPE_ID,"Apartment type",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.ApartmentType");
+    addAttribute(APPLICANT_ID,"Applicant",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.Applicant");
+    addAttribute(ORDER,"Order",true,true,"java.lang.Integer");
+    addAttribute(TYPE,"Waiting list type",true,true,"java.lang.String");
+    addAttribute(CHOICE_NUMBER,"Choice number",true,true,"java.lang.Integer");
+    addAttribute(LAST_CONFIRMATION,"Last confirmation date",true,true,"java.sql.Timestamp");
+    addAttribute(NUMBER_OF_REJECTIONS,"Number of rejections",true,true,"java.lang.Integer");
+    addAttribute(REMOVED_FROM_LIST,"Removed from list",true,true,"java.lang.String");
+    addAttribute(PRIORITY_LEVEL,"Priority level",true,true,String.class);
+    setMaxLength(TYPE,1);
+    setMaxLength(REMOVED_FROM_LIST,1);
+    setMaxLength(PRIORITY_LEVEL,1);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public String getEntityName() {
-
-    return(_name);
-
+    return ENTITY_NAME;
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public static String getEntityTableName(){
-
-    return(_name);
-
+    return ENTITY_NAME;
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public static String getComplexIdColumnName() {
-
-    return(_complexId);
-
+    return COMPLEX_ID;
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public static String getApartmentTypeIdColumnName() {
-
-    return(_apartmentTypeId);
-
+    return APARTMENT_TYPE_ID;
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public static String getApplicantIdColumnName() {
-
-    return(_applicantId);
-
+    return APPLICANT_ID;
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public static String getTypeColumnName() {
-
-    return(_type);
-
+    return TYPE;
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public static String getOrderColumnName() {
-
-    return(_order);
-
+    return ORDER;
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public static String getChoiceNumberColumnName() {
-
-    return(_choiceNumber);
-
+    return CHOICE_NUMBER;
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public static String getLastConfirmationColumnName() {
-
-    return(_lastConfirmation);
-
+    return LAST_CONFIRMATION;
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public static String getNumberOfRejectionsColumnName() {
-
-    return(_numberOfRejections);
-
+    return NUMBER_OF_REJECTIONS;
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public static String getRemovedFromListColumnName() {
-
-    return(_removedFromList);
-
+    return REMOVED_FROM_LIST;
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void setComplexId(int id) {
-
-    setColumn(_complexId,id);
-
+    setColumn(COMPLEX_ID,id);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public Integer getComplexId() {
-
-    return(getIntegerColumnValue(_complexId));
-
+    return getIntegerColumnValue(COMPLEX_ID);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void setApartmentTypeId(int id) {
-
-    setColumn(_apartmentTypeId,id);
-
+    setColumn(APARTMENT_TYPE_ID,id);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void setApartmentTypeId(Integer id) {
-
-    setColumn(_apartmentTypeId,id);
-
+    setColumn(APARTMENT_TYPE_ID,id);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public Integer getApartmentTypeId() {
-
-    return(getIntegerColumnValue(_apartmentTypeId));
-
+    return getIntegerColumnValue(APARTMENT_TYPE_ID);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void setApplicantId(int id) {
-
-    setColumn(_applicantId,id);
-
+    setColumn(APPLICANT_ID,id);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void setApplicantId(Integer id) {
-
-    setColumn(_applicantId,id);
-
+    setColumn(APPLICANT_ID,id);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public Integer getApplicantId() {
-
-    return(getIntegerColumnValue(_applicantId));
-
+    return getIntegerColumnValue(APPLICANT_ID);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void setType(String type) {
-
-    setColumn(_type,type);
-
+    setColumn(TYPE,type);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public String getType() {
-
-    return(getStringColumnValue(_type));
-
+    return getStringColumnValue(TYPE);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void setOrder(int order) {
-
-    setColumn(_order,order);
-
+    setColumn(ORDER,order);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void setOrder(Integer order) {
-
-    setColumn(_order,order);
-
+    setColumn(ORDER,order);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public Integer getOrder() {
-
-    return(getIntegerColumnValue(_order));
-
+    return getIntegerColumnValue(ORDER);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void setLastConfirmationDate(Timestamp date) {
-
-    setColumn(_lastConfirmation,date);
-
+    setColumn(LAST_CONFIRMATION,date);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public Timestamp getLastConfirmationDate() {
-
-    return((Timestamp)getColumnValue(_lastConfirmation));
-
+    return (Timestamp)getColumnValue(LAST_CONFIRMATION);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void setNumberOfRejections(int count) {
-
-    setColumn(_numberOfRejections,count);
-
+    setColumn(NUMBER_OF_REJECTIONS,count);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void setNumberOfRejections(Integer count) {
-
-    setColumn(_numberOfRejections,count);
-
+    setColumn(NUMBER_OF_REJECTIONS,count);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public int getNumberOfRejections() {
-
-    return(getIntColumnValue(_numberOfRejections));
-
+    return getIntColumnValue(NUMBER_OF_REJECTIONS);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void setChoiceNumber(int choice) {
-
-    setColumn(_choiceNumber,choice);
-
+    setColumn(CHOICE_NUMBER,choice);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public void setChoiceNumber(Integer choice) {
-
-    setColumn(_choiceNumber,choice);
-
+    setColumn(CHOICE_NUMBER,choice);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public Integer getChoiceNumber() {
-
-    return(getIntegerColumnValue(_choiceNumber));
-
+    return getIntegerColumnValue(CHOICE_NUMBER);
   }
-
-
-
-  /**
-
-   *
-
-   */
 
   public boolean getRemovedFromList() {
-
-    String removed = getStringColumnValue(_removedFromList);
-
-    if ((removed == null) || (removed.equals(NO)))
-
-      return(false);
-
-    else if (removed.equals(YES))
-
-      return(true);
-
-    else
-
-      return(false);
-
+    String removed = getStringColumnValue(REMOVED_FROM_LIST);
+    if ((removed == null) || (removed.equals(NO))) {
+      return false;
+    }
+    else if (removed.equals(YES)) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 
-
-
-  /**
-
-   *
-
-   */
-
   public void setRemovedFromList(String removed) {
+    if ((removed != null) && (removed.equalsIgnoreCase(YES))) {
+      setColumn(REMOVED_FROM_LIST,YES);
+    }
+    else {
+      setColumn(REMOVED_FROM_LIST,NO);
+    }
+  }
 
-    if ((removed != null) && (removed.equalsIgnoreCase(YES)))
+  public String getPriorityLevel() {
+    return getStringColumnValue(PRIORITY_LEVEL);
+  }
 
-      setColumn(_removedFromList,YES);
+  private void setPriorityLevel(String level) {
+    setColumn(PRIORITY_LEVEL,level);
+  }
 
-    else
+  public void setPriorityLevelA() {
+    setPriorityLevel(PRIORITY_A);
+  }
 
-      setColumn(_removedFromList,NO);
+  public void setPriorityLevelB() {
+    setPriorityLevel(PRIORITY_B);
+  }
 
+  public void setPriorityLevelC() {
+    setPriorityLevel(PRIORITY_C);
+  }
+
+  public void setPriorityLevelD() {
+    setPriorityLevel(PRIORITY_D);
+  }
+
+  public static String getPriorityColumnName() {
+    return PRIORITY_LEVEL;
   }
 
 }

@@ -350,6 +350,7 @@ public class CampusAllocator extends Block implements Campus{
     int col = 1;
     boolean ifLong = ContractId < 0? true:false;
 
+    Frame.add(formatText(iwrb.getLocalizedString("priority","Pr")),col++,row);
     Frame.add(formatText(iwrb.getLocalizedString("nr","Nr")),col++,row);
     Frame.add(formatText(iwrb.getLocalizedString("a","A")),col++,row);
     Frame.add(formatText(iwrb.getLocalizedString("name","Name")),col++,row);
@@ -383,6 +384,7 @@ public class CampusAllocator extends Block implements Campus{
 
           Applicant A = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(WL.getApplicantId().intValue());
 
+          Frame.add(formatText(WL.getPriorityLevel()),col++,row);
           Frame.add(formatText(WL.getOrder().intValue()),col++,row);
 
           if(bcontracts && HT.containsKey(new Integer(A.getID()))){

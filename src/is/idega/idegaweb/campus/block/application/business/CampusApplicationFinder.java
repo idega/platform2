@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.6 2002/04/06 19:11:13 tryggvil Exp $
+ * $Id: CampusApplicationFinder.java,v 1.7 2002/04/19 23:44:41 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -288,7 +288,7 @@ public abstract class CampusApplicationFinder {
   public static List listOfWaitinglist(int aprtTypeId,int cmplxId){
      try {
       WaitingList WL = ((is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).createLegacy();
-      return(EntityFinder.findAllByColumn(WL,is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApartmentTypeIdColumnName(),String.valueOf(aprtTypeId),is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getComplexIdColumnName(),String.valueOf(cmplxId)));
+      return(EntityFinder.findAllByColumnOrdered(WL,is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getApartmentTypeIdColumnName(),String.valueOf(aprtTypeId),is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getComplexIdColumnName(),String.valueOf(cmplxId),is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.getPriorityColumnName()));
     }
     catch(SQLException e){
       return(null);
