@@ -40,6 +40,7 @@ public abstract class AbstractChooser extends ModuleObjectContainer{
   private boolean addForm=true;
   private Form form = null;
   private Image buttonImage = null;
+  private String _style;
 
   public AbstractChooser() {
   }
@@ -86,7 +87,12 @@ public abstract class AbstractChooser extends ModuleObjectContainer{
 
   public ModuleObject getTable(ModuleInfo modinfo,IWBundle bundle){
     Table table = new Table(2,1);
+      table.setCellpadding(0);
+      table.setCellspacing(0);
     TextInput input = new TextInput(displayInputName);
+    if ( _style != null ) {
+      input.setAttribute("style",_style);
+    }
     Parameter value = new Parameter(getChooserParameter(),"");
     table.add(value);
     table.add(new Parameter(VALUE_PARAMETER_NAME,value.getName()));
@@ -106,7 +112,7 @@ public abstract class AbstractChooser extends ModuleObjectContainer{
       link.setWindowToOpen(getChooserWindowClass());
       link.addParameter(CHOOSER_SELECTION_PARAMETER,getChooserParameter());
       //debug skiiiiiiiiiiiiiiiiiiiitamix getParentForm ekki að virka??
-      link.addParameter(SCRIPT_PREFIX_PARAMETER,"window.opener.document."+getParentObject().getParentObject().getID()+".");
+      link.addParameter(SCRIPT_PREFIX_PARAMETER,"window.opener.document."+getParentFormString(this));
       link.addParameter(SCRIPT_SUFFIX_PARAMETER,"value");
       link.addParameter(DISPLAYSTRING_PARAMETER_NAME,input.getName());
       link.addParameter(VALUE_PARAMETER_NAME,value.getName());
@@ -122,6 +128,26 @@ public abstract class AbstractChooser extends ModuleObjectContainer{
     table.add(input,1,1);
     table.add(new Parameter(DISPLAYSTRING_PARAMETER_NAME,input.getName()));
     return table;
+  }
+
+  private String getParentFormString(ModuleObject obj) {
+    String returnString = "";
+
+    if ( obj.getParentObject() != null ) {
+      Object newObj = obj.getParentObject();
+      if ( !(newObj instanceof Form) ) {
+        returnString = getParentFormString((ModuleObject)newObj);
+      }
+      else {
+        returnString =  ((ModuleObject)newObj).getID()+".";
+      }
+    }
+
+    return returnString;
+  }
+
+  public void setInputStyle(String style) {
+    _style = style;
   }
 
   public void addForm(boolean addForm){
