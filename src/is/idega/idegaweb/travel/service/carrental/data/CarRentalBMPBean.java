@@ -117,16 +117,12 @@ public class CarRentalBMPBean extends GenericEntity implements CarRental{
 		
 		boolean postalCode = (postalCodeId != null && postalCodeId.length > 0); 
 		boolean timeframe = (fromStamp != null && toStamp != null);
-		//boolean roomType = (roomTypeId != null && roomTypeId.length > 0);
-		//boolean hotelType = ( hotelTypeId != null && hotelTypeId.length > 0);
 		boolean supplier = (supplierId != null && supplierId.length > 0);
 		boolean name = (supplierName != null && !supplierName.equals(""));
 
 		try {		
 			String addressSupplierMiddleTableName = EntityControl.getManyToManyRelationShipTableName(Address.class, Supplier.class);
 			String productCategoryMiddleTableName = EntityControl.getManyToManyRelationShipTableName(Product.class, ProductCategory.class);
-			//String roomTypeHotelMiddleTableName = EntityControl.getManyToManyRelationShipTableName(RoomType.class, Hotel.class);
-			//String hotelTypeHotelMiddleTableName = EntityControl.getManyToManyRelationShipTableName(HotelType.class, Hotel.class);
 			
 			String postalCodeTableName = IDOLookup.getEntityDefinitionForClass(PostalCode.class).getSQLTableName();//  PostalCodeBMPBean.getEntityName();
 			String addressTableName = IDOLookup.getEntityDefinitionForClass(Address.class).getSQLTableName();
@@ -134,8 +130,6 @@ public class CarRentalBMPBean extends GenericEntity implements CarRental{
 			String productTableName = ProductBMPBean.getProductEntityName();
 			String supplierTableName = SupplierBMPBean.getSupplierTableName();
 			String productCategoryTableName = IDOLookup.getEntityDefinitionForClass(ProductCategory.class).getSQLTableName();
-//			String roomTypeTableName = IDOLookup.getEntityDefinitionForClass(RoomType.class).getSQLTableName();
-//			String hotelTypeTableName = IDOLookup.getEntityDefinitionForClass(HotelType.class).getSQLTableName();
 	
 			String postalCodeTableIDColumnName = postalCodeTableName+"_id";
 			String addressTableIDColumnName = addressTableName+"_id";
@@ -143,17 +137,7 @@ public class CarRentalBMPBean extends GenericEntity implements CarRental{
 			String productTableIDColumnName = productTableName+"_id";
 			String supplierTableIDColumnName = supplierTableName+"_id";
 			String productCategoryTableIDColumnName = productCategoryTableName+"_id";
-			//String roomTypeTableIDColumnName = null;
-			//String hotelTypeTableIDColumnName = null;
-			/*
-			try {
-				roomTypeTableIDColumnName = IDOLookup.getEntityDefinitionForClass(RoomType.class).getPrimaryKeyDefinition().getField().getSQLFieldName();
-				hotelTypeTableIDColumnName = IDOLookup.getEntityDefinitionForClass(HotelType.class).getPrimaryKeyDefinition().getField().getSQLFieldName();
-			} catch (IDOCompositePrimaryKeyException e1) {
-				roomTypeTableIDColumnName = roomTypeTableName+"_id";
-				hotelTypeTableIDColumnName = hotelTypeTableName+"_id";
-			}*/
-			
+
 			StringBuffer sql = new StringBuffer();
 			sql.append("select distinct h.* from ").append(getEntityName()).append(" h, ")
 			.append(serviceTableName).append(" s, ")
@@ -164,13 +148,7 @@ public class CarRentalBMPBean extends GenericEntity implements CarRental{
 			if (postalCode || supplier) {
 				sql.append(", ").append(supplierTableName).append(" su");
 			}	
-/*			if (roomType) {
-				sql.append(", ").append(roomTypeHotelMiddleTableName).append(" rth");
-			}
-			if (hotelType) {
-				sql.append(", ").append(hotelTypeHotelMiddleTableName).append(" hth");
-			}
-*/
+
 			if (postalCode) {
 				sql.append(", ").append(addressSupplierMiddleTableName).append(" asm, ")
 				.append(addressTableName).append(" a, ")
@@ -212,49 +190,11 @@ public class CarRentalBMPBean extends GenericEntity implements CarRental{
 				sql.append(")");
 			}
 			if(name) {
-				sql.append(" AND su.").append(SupplierBMPBean.getColumnNameName()).append(" like ").append("'%" + supplierName + "%'");
+				sql.append(" AND su.").append(SupplierBMPBean.COLUMN_NAME_NAME_ALL_CAPS ).append(" like ").append("'%" + supplierName.toUpperCase() + "%'");
 			}
 
-			/*
-			if (roomType) {
-				sql.append(" AND h.").append(getIDColumnName()).append("= rth.").append(getIDColumnName());
-				sql.append(" AND  rth.").append(roomTypeTableIDColumnName).append(" in (");
-				for (int i = 0; i < roomTypeId.length; i++) {
-					if (i != 0) {
-						sql.append(", ");
-					}
-					sql.append(roomTypeId[i]);
-				}			
-				sql.append(") ");
-			}
-*/
-/*			
-			if (hotelType) {
-				sql.append(" AND h.").append(getIDColumnName()).append("= hth.").append(getIDColumnName());
-				sql.append(" AND  hth.").append(hotelTypeTableIDColumnName).append(" in (");
-				for (int i = 0; i < hotelTypeId.length; i++) {
-					if (i != 0) {
-						sql.append(", ");
-					}
-					sql.append(hotelTypeId[i]);
-				}			
-				sql.append(") ");
-				
-			}
-*/	
-/*
-			if (minRating > -1) {
-				sql.append(" AND h.").append(getColumnNameRating()).append(" >= ").append(minRating);
-			}
-*/
-/*
-			if (maxRating > -1) {
-				sql.append(" AND h.").append(getColumnNameRating()).append(" <= ").append(maxRating);
-			}
-*/
-			//sql.append(" order by ").append();
-			
 			//System.out.println(sql.toString());
+			
 			return this.idoFindPKsBySQL(sql.toString());
 		}catch (IDOLookupException e) {
 			return null;

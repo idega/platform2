@@ -267,7 +267,7 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 				sql.append(" AND h.").append(getColumnNameRating()).append(" <= ").append(maxRating);
 			}
 			if(name) {
-				sql.append(" AND su.").append(SupplierBMPBean.getColumnNameName()).append(" like ").append("'%" + supplierName + "%'");
+				sql.append(" AND su.").append(SupplierBMPBean.COLUMN_NAME_NAME_ALL_CAPS ).append(" like ").append("'%" + supplierName.toUpperCase() + "%'");
 			}
 			//sql.append(" order by ").append();
 			

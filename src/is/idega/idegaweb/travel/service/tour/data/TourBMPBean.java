@@ -274,7 +274,7 @@ public class TourBMPBean extends GenericEntity implements Tour {
 				sql.append(") ");
 			}
 			if(name) {
-				sql.append(" AND su.").append(SupplierBMPBean.getColumnNameName()).append(" like ").append("'%" + supplierName + "%'");
+				sql.append(" AND su.").append(SupplierBMPBean.COLUMN_NAME_NAME_ALL_CAPS ).append(" like ").append("'%" + supplierName.toUpperCase() + "%'");
 			}
 
 			//sql.append(" order by ").append();
