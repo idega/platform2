@@ -46,7 +46,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.20 2004/01/08 05:09:25 jonas Exp $
+ * @version $Id: EventList.java,v 1.21 2004/01/11 03:40:00 jonas Exp $
  * @since 17.3.2003 
  */
 
@@ -106,8 +106,6 @@ public class EventList extends CommuneBlock {
 	private String searchMsgId = "";
 
 	private Table mainTable = null;
-
-	private IWContext _iwc = null;
 	
 	public EventList() {
 	}
@@ -118,7 +116,6 @@ public class EventList extends CommuneBlock {
 
 	public void main(IWContext iwc) {
 		//this.debugParameters(iwc);
-		_iwc = iwc;
 		this.setResourceBundle(getResourceBundle(iwc));
 		if (iwc.isLoggedOn()) {
 			try {
@@ -251,7 +248,7 @@ public class EventList extends CommuneBlock {
 		while (iter.hasNext()) {
 			int row = 1;
 
-			Table message = new Table(2, 8);
+			Table message = new Table(2, 9);
 			PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
 
 			addField(
@@ -287,16 +284,6 @@ public class EventList extends CommuneBlock {
 			message.mergeCells(1, row, 2, row);
 			message.add(getSmallText(msg.getBody()), 1, row++);
 			
-			int fileID = createPrintableMessage(msg);
-			if(fileID!=-1) {
-				System.out.println("adding link for pdf");
-				Link viewLink = new Link(localize("printdoc.view", "View"));
-				viewLink.setFile(fileID);
-				message.add(viewLink, 1, row++);
-			} else {
-				System.out.println("Could not create pdf, no link added");
-			}
-
 			layout.add(message, 1, layoutRow++);
 			
 			if (iter.hasNext()) {
@@ -316,42 +303,6 @@ public class EventList extends CommuneBlock {
 
 		layout.add(toolbar, 1, layoutRow);
 		add(layout);
-	}
-	
-	/* creates the pdf file and returns the ICFile identifier */
-	private int createPrintableMessage(PrintMessage msg) {
-		try {
-			DocumentBusiness docBiz = getDocumentBusiness();
-			String userName = _iwc.getCurrentUser().getName();
-			String fileName = "schoolLetter-" + userName + "-" + msg.getPrimaryKey();
-			ICFile file = getICFileHome().findByFileName(fileName);
-			System.out.println("pdf filename is " + fileName);
-			if(file==null) {
-				System.out.println("creating new pdf");
-				return docBiz.writePDF(msg, _iwc.getCurrentUser(), fileName, _iwc.getLocale(), false);
-			} else {
-				System.out.println("Using existing pdf");
-				return Integer.parseInt(file.getPrimaryKey().toString());
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return -1;
-	}
-	
-	private ICFileHome getICFileHome() {
-		try {
-			return (ICFileHome) getIDOHome(ICFile.class);
-		} catch (Exception e) {
-			throw new IBORuntimeException(e);
-		}
-	}
-	
-	private DocumentBusiness getDocumentBusiness() throws RemoteException {
-		return (DocumentBusiness) com.idega.business.IBOLookup.getServiceInstance(
-			_iwc,
-			DocumentBusiness.class);
 	}
 	
 	private void addField(Table layout, String label, String value, int row) {
