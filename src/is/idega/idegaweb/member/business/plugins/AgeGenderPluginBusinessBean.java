@@ -402,7 +402,7 @@ public List getGroupToolbarElements(Group group) throws RemoteException {
  * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group,java.lang.String)
  */
 public String canCreateSubGroup(Group group, String groupTypeOfSubGroup) throws RemoteException {
-	if(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType())){
+	if(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType()) || (IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(group.getGroupType()) && IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(groupTypeOfSubGroup))){
 		return "Only leagues can add groups under this type";
 	}
 	
