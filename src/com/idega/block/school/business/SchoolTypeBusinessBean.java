@@ -63,7 +63,7 @@ public class SchoolTypeBusinessBean extends IBOServiceBean implements SchoolType
 
       SchoolTypeHome shome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
       SchoolType newType;
-      System.err.println("type id = "+id);
+
       try{
         if(id > 0){
           newType = shome.findByPrimaryKey(new Integer(id));
