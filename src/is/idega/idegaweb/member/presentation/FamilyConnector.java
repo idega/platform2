@@ -215,6 +215,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 			}
 		}
 
+		iwc.setSessionAttribute(TabbedPropertyPanel.TAB_STORE_WINDOW, "TRUE");
 		setParentPageFormToSubmitOnUnLoad(TabbedPropertyPanel.TAB_FORM_NAME);
 		close();
 	}
