@@ -92,15 +92,20 @@ public class UserInfo extends Block {
 		table.add(name, 3, row++);
 		if(_showTitle) {
 			String title = userExtraInfo.getTitle();
-			String titleLabel = _iwrb.getLocalizedString("title", "Title: ");
-			table.add(titleLabel, 2, row);
-			table.add(title, 3, row++);
+			if(_showEmptyFields || (title!=null && title.length()>0)) {
+				System.out.println("title is " + title);
+				String titleLabel = _iwrb.getLocalizedString("title", "Title: ");
+				addTextToTable(table, row++, titleLabel, title);
+			}
 		}
 		if(_showAge) {
 			try {
 				String age = _biz.getAge(user);
-				String ageLabel = _iwrb.getLocalizedString("age", "Age: ");
-				addTextToTable(table, row++, ageLabel, age);
+				if(_showEmptyFields || (age!=null && age.length()>0)) {
+					System.out.println("age is " + age);
+					String ageLabel = _iwrb.getLocalizedString("age", "Age: ");
+					addTextToTable(table, row++, ageLabel, age);
+				}
 			} catch(Exception e) {
 				System.out.println("Could not display age");
 				e.printStackTrace();
@@ -108,31 +113,46 @@ public class UserInfo extends Block {
 		}
 		if(_showWorkPhone) {
 			String workPhone = phones[0];
-			String workPhoneLabel = _iwrb.getLocalizedString("workphone", "Workphone: ");
-			addTextToTable(table, row++, workPhoneLabel, workPhone);
+			if(_showEmptyFields || (workPhone!=null && workPhone.length()>0)) {
+				System.out.println("workphone is " + workPhone);
+				String workPhoneLabel = _iwrb.getLocalizedString("workphone", "Workphone: ");
+				addTextToTable(table, row++, workPhoneLabel, workPhone);
+			}
 		}
 		if(_showHomePhone) {
 			String homePhone = phones[1];
-			String homePhoneLabel = _iwrb.getLocalizedString("homephone", "Homephone: ");
-			addTextToTable(table, row++, homePhoneLabel, homePhone);
+			if(_showEmptyFields || (homePhone!=null && homePhone.length()>0)) {
+				System.out.println("homephone is " + homePhone);
+				String homePhoneLabel = _iwrb.getLocalizedString("homephone", "Homephone: ");
+				addTextToTable(table, row++, homePhoneLabel, homePhone);
+			}
 		}
 		if(_showMobilePhone) {
 			String mobilePhone = phones[2];
-			String mobilePhoneLabel = _iwrb.getLocalizedString("mobilePhone", "Mobilephone: ");
-			addTextToTable(table, row++, mobilePhoneLabel, mobilePhone);
+			if(_showEmptyFields || (mobilePhone!=null && mobilePhone.length()>0)) {
+				System.out.println("mobilephone is " + mobilePhone);
+				String mobilePhoneLabel = _iwrb.getLocalizedString("mobilePhone", "Mobilephone: ");
+				addTextToTable(table, row++, mobilePhoneLabel, mobilePhone);
+			}
 		}
 		if(_showEmails) {
 			Table emails = getEmailTable(user);
-			Text emailsLabel = new Text(_iwrb.getLocalizedString("email", "Email: "));
-			emailsLabel.setStyle(_textLabelStyle);
-			table.add(emailsLabel, 2, row);
-			table.add(emails, 3, row++);
+			if(_showEmptyFields || (emails!=null && emails.getRows()>0)) {
+				Text emailsLabel = new Text(_iwrb.getLocalizedString("email", "Email: "));
+				emailsLabel.setStyle(_textLabelStyle);
+				table.add(emailsLabel, 2, row);
+				if(emails.getRows()>0) {
+					table.add(emails, 3, row++);
+				}
+			}
 		}
 		/*if(_showStatus) {
 			try {
 				String status = _biz.getStatusKey(iwc, user, user.getPrimaryGroup());
-				String statusLabel = _iwrb.getLocalizedString("status", "Status: ");
-				addTextToTable(table, row++, statusLabel, status);
+				if(_showEmptyFields || (status!=null && status.length()>0)) {
+					String statusLabel = _iwrb.getLocalizedString("status", "Status: ");
+					addTextToTable(table, row++, statusLabel, status);
+				}
 			} catch(Exception e) {
 				System.out.println("Could not display user status");
 				e.printStackTrace();
@@ -140,23 +160,35 @@ public class UserInfo extends Block {
 		}*/
 		if(_showEducation) {
 			String education = userExtraInfo.getEducation();
-			String educationLabel = _iwrb.getLocalizedString("education", "Education: ");
-			addTextToTable(table, row++, educationLabel, education);
+			if(_showEmptyFields || (education!=null && education.length()>0)) {
+				System.out.println("education is " + education);
+				String educationLabel = _iwrb.getLocalizedString("education", "Education: ");
+				addTextToTable(table, row++, educationLabel, education);
+			}
 		}
 		if(_showSchool) {
 			String school = userExtraInfo.getSchool();
-			String schoolLabel = _iwrb.getLocalizedString("school", "School: ");
-			addTextToTable(table, row++, schoolLabel, school);
+			if(_showEmptyFields || (school!=null && school.length()>0)) {
+				System.out.println("school is " + school);
+				String schoolLabel = _iwrb.getLocalizedString("school", "School: ");
+				addTextToTable(table, row++, schoolLabel, school);
+			}
 		}
 		if(_showArea) {
 			String area = userExtraInfo.getArea();
-			String areaLabel = _iwrb.getLocalizedString("area", "Area: ");
-			addTextToTable(table, row++, areaLabel, area);
+			if(_showEmptyFields || (area!=null && area.length()>0)) {
+				System.out.println("area is " + area);
+				String areaLabel = _iwrb.getLocalizedString("area", "Area: ");
+				addTextToTable(table, row++, areaLabel, area);
+			}
 		}
 		if(_showBeganWork) {
 			String begunWork = (new IWTimestamp(userExtraInfo.getBeganWork())).getDateString("dd-MM-yyyy");
-			String begunWorkLabel = _iwrb.getLocalizedString("begun_work", "Begun work: ");
-			addTextToTable(table, row++, begunWorkLabel, begunWork);
+			if(_showEmptyFields || (begunWork!=null && begunWork.length()>0)) {
+				System.out.println("begunWork is " + begunWork);
+				String begunWorkLabel = _iwrb.getLocalizedString("begun_work", "Begun work: ");
+				addTextToTable(table, row++, begunWorkLabel, begunWork);
+			}
 		}
 		if(_showImage) {
 			Image image = getImage(user);
@@ -170,8 +202,6 @@ public class UserInfo extends Block {
 			table.add(image, 1, 1);
 		}
 		
-		//@TODO add a back link
-		
 		return table;
 	}
 	
@@ -184,7 +214,9 @@ public class UserInfo extends Block {
 	 */
 	private void addTextToTable(Table table, int row, String strLabel, String strText) {
 		Text text = new Text(strText);
-		Text label = new Text(strText);
+		text.setStyle(_textInfoStyle);
+		Text label = new Text(strLabel);
+		label.setStyle(_textLabelStyle);
 		table.add(label, 2, row);
 		table.add(text, 3, row);
 	}
@@ -221,6 +253,9 @@ public class UserInfo extends Block {
 			Iterator addressIter = _biz.getEmailList(user).iterator();
 			while(addressIter.hasNext()) {
 				String address = (String) addressIter.next();
+				if(address==null || address.length()==0) {
+					continue;
+				}
 				Link link = new Link(address);
 				link.setURL("mailto:" + address);
 				link.setSessionId(false);
@@ -301,6 +336,10 @@ public class UserInfo extends Block {
 		_textLabelStyle = style;
 	}
 	
+	public void setShowEmptyFields(boolean value) {
+		_showEmptyFields = value;
+	}
+		
 	private boolean _showImage = true;
 	private boolean _showTitle = true;
 	private boolean _showAge = true;
@@ -313,6 +352,7 @@ public class UserInfo extends Block {
 	private boolean _showSchool = true;
 	private boolean _showArea = true;
 	private boolean _showBeganWork = true;
+	private boolean _showEmptyFields = false;
 	private String _imageWidth = null;
 	private String _imageHeight = null;
 	private String _textInfoStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;";
