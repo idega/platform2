@@ -15,6 +15,9 @@ public interface WorkReportMemberHome extends com.idega.data.IDOHome
  public int getCountOfMalePlayersByWorkReportAndWorkReportGroup(is.idega.idegaweb.member.isi.block.reports.data.WorkReport p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p1);
  public int getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReport p1,is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p2);
  public int getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(int p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReport p1,is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p2);
+ public int getCountOfMembersByWorkReport(is.idega.idegaweb.member.isi.block.reports.data.WorkReport p0);
+ public int getCountOfMembersEqualOrOlderThanAgeByWorkReport(int p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReport p1);
+ public int getCountOfMembersOfYoungerAgeByWorkReport(int p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReport p1);
  public int getCountOfPlayersByWorkReportAndWorkReportGroup(is.idega.idegaweb.member.isi.block.reports.data.WorkReport p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p1);
  public int getCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReport p1,is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p2);
  public int getCountOfPlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(int p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReport p1,is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p2);

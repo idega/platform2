@@ -169,6 +169,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return getWorkReportMemberHome().getCountOfFemalePlayersByWorkReportAndWorkReportGroup(report,league);
 	}
 	
+	public int getCountOfMembersByWorkReport(WorkReport report) {
+		return getWorkReportMemberHome().getCountOfMembersByWorkReport(report);
+	}
+	
 	//equal or older
 	public int getCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
 		return getWorkReportMemberHome().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age,report,league);
@@ -180,6 +184,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	
 	public int getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
 		return getWorkReportMemberHome().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age,report,league);
+	}
+	
+	public int getCountOfMembersEqualOrOlderThanAgeAndByWorkReport(int age, WorkReport report) {
+		return getWorkReportMemberHome().getCountOfMembersEqualOrOlderThanAgeByWorkReport(age, report);
 	}
 	
 	//younger
@@ -195,6 +203,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return getWorkReportMemberHome().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age,report,league);
 	}
 	
+	public int getCountOfMembersOfYoungerAgeAndByWorkReport(int age, WorkReport report) {
+		return getWorkReportMemberHome().getCountOfMembersOfYoungerAgeByWorkReport(age, report);
+	}
 	
 /*	data.addData(womenUnderAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
 						data.addData(womenOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league)));

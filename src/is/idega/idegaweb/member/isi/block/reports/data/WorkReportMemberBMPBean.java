@@ -287,6 +287,62 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		}
 	}
 	
+	private int getCountOfMembersOfYoungerAgeByGenderAndWorkReport(int age,String gender, WorkReport report) {
+		IDOQuery sql = idoQuery();
+		IWTimestamp stamp = getYearlyAgeBorderIWTimestamp(age,report.getYearOfReport().intValue());
+		String IDColumnName = getIDColumnName();
+		
+		sql.appendSelectCountFrom(this.getEntityName()).append(" memb ")
+		.appendWhere()
+		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue())
+		.appendAnd();
+		if(gender!=null){
+			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender)
+			.appendAnd();
+		}
+		if(age>=0){
+			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
+			.appendGreaterThanSign()
+			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote();
+		}
+		
+		try {
+			return idoGetNumberOfRecords(sql);
+		}
+		catch (IDOException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
+	private int getCountOfMembersOfEqualOrOlderThanAgeByGenderAndWorkReport(int age,String gender, WorkReport report) {
+		IDOQuery sql = idoQuery();
+		IWTimestamp stamp = getYearlyAgeBorderIWTimestamp(age,report.getYearOfReport().intValue());
+		String IDColumnName = getIDColumnName();
+		
+		sql.appendSelectCountFrom(this.getEntityName()).append(" memb ")
+		.appendWhere()
+		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue())
+		.appendAnd();
+		if(gender!=null){
+			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender)
+			.appendAnd();
+		}
+		if(age>=0){
+			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
+			.appendLessThanOrEqualsSign()
+			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote();
+		}
+		
+		try {
+			return idoGetNumberOfRecords(sql);
+		}
+		catch (IDOException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
 	//any age
 	public int ejbHomeGetCountOfPlayersByWorkReportAndWorkReportGroup(WorkReport report,WorkReportGroup league) {
 		return getCountOfPlayersEqualOrOlderThanAgeAndByGenderWorkReportAndWorkReportGroup(-1,null,report,league);
@@ -298,6 +354,10 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	
 	public int ejbHomeGetCountOfFemalePlayersByWorkReportAndWorkReportGroup(WorkReport report,WorkReportGroup league) {
 		return getCountOfPlayersEqualOrOlderThanAgeAndByGenderWorkReportAndWorkReportGroup(-1,FEMALE,report,league);
+	}
+	
+	public int ejbHomeGetCountOfMembersByWorkReport(WorkReport report) {
+		return getCountOfMembersOfEqualOrOlderThanAgeByGenderAndWorkReport(-1,null,report);
 	}
 	
 	//equal or older
@@ -313,6 +373,10 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		return getCountOfPlayersEqualOrOlderThanAgeAndByGenderWorkReportAndWorkReportGroup(age,FEMALE,report,league);
 	}
 	
+	public int ejbHomeGetCountOfMembersEqualOrOlderThanAgeByWorkReport(int age, WorkReport report) {
+		return getCountOfMembersOfEqualOrOlderThanAgeByGenderAndWorkReport(age,null,report);
+	}
+	
 	//younger
 	public int ejbHomeGetCountOfPlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
 		return getCountOfPlayersOfYoungerAgeAndByGenderWorkReportAndWorkReportGroup(age,null,report,league);
@@ -326,7 +390,9 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		return getCountOfPlayersOfYoungerAgeAndByGenderWorkReportAndWorkReportGroup(age,FEMALE,report,league);
 	}
 	
-	
+	public int ejbHomeGetCountOfMembersOfYoungerAgeByWorkReport(int age, WorkReport report) {
+		return getCountOfMembersOfYoungerAgeByGenderAndWorkReport(age,null,report);
+	}
 
 	
 	public Collection getLeaguesForMember() throws IDOException {

@@ -88,6 +88,27 @@ public int getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(in
 	return theReturn;
 }
 
+public int getCountOfMembersByWorkReport(is.idega.idegaweb.member.isi.block.reports.data.WorkReport p0){
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((WorkReportMemberBMPBean)entity).ejbHomeGetCountOfMembersByWorkReport(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getCountOfMembersEqualOrOlderThanAgeByWorkReport(int p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReport p1){
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((WorkReportMemberBMPBean)entity).ejbHomeGetCountOfMembersEqualOrOlderThanAgeByWorkReport(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getCountOfMembersOfYoungerAgeByWorkReport(int p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReport p1){
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((WorkReportMemberBMPBean)entity).ejbHomeGetCountOfMembersOfYoungerAgeByWorkReport(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public int getCountOfPlayersByWorkReportAndWorkReportGroup(is.idega.idegaweb.member.isi.block.reports.data.WorkReport p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p1){
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((WorkReportMemberBMPBean)entity).ejbHomeGetCountOfPlayersByWorkReportAndWorkReportGroup(p0,p1);
