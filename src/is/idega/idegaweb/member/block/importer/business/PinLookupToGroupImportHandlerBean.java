@@ -1,48 +1,30 @@
 package is.idega.idegaweb.member.block.importer.business;
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
-
-import java.io.LineNumberReader;
-import java.io.StringReader;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-
-
 import com.idega.block.importer.business.ImportFileHandler;
 import com.idega.block.importer.data.ImportFile;
-import com.idega.block.process.business.CaseBusiness;
-import com.idega.business.IBOServiceBean;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.business.AddressBusiness;
-import com.idega.core.data.Address;
-import com.idega.core.data.AddressHome;
-import com.idega.core.data.AddressType;
-import com.idega.core.data.Country;
-import com.idega.core.data.CountryHome;
-import com.idega.core.data.PostalCode;
-import com.idega.data.IDORemoveRelationshipException;
-import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
-import com.idega.user.data.GenderHome;
 import com.idega.user.data.Group;
+import com.idega.user.data.Status;
+import com.idega.user.data.StatusHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.idega.user.data.UserStatus;
+import com.idega.user.data.UserStatusHome;
 import com.idega.util.IWTimestamp;
 import com.idega.util.Timer;
-import com.idega.util.datastructures.HashtableMultivalued;
-import com.idega.util.text.TextSoap;
-
 /**
  * <p>Title: PinLookupToGroupImportHandlerBean</p>
  * <p>Description: A simple import file handler that reads file with personalIds and names and if the PIN exists in the database it adds that user to the root group</p>
@@ -51,190 +33,167 @@ import com.idega.util.text.TextSoap;
  * @author <a href="mailto:eiki@idega.is">Eirikur Sveinn Hrafnsson</a>
  * @version 1.0
  */
-
-
-
-public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements PinLookupToGroupImportHandler,ImportFileHandler{
-
+public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements PinLookupToGroupImportHandler, ImportFileHandler {
 	private static final int PIN_COLUMN = 0;
 	private static final int NAME_COLUMN = 1;
 	private static final int STATUS_COLUMN = 2;
-	
-	
 	private List userProperties;
 	private UserHome home;
+	private UserStatusHome userStatusHome;
+	private StatusHome statusHome;
 	private AddressBusiness addressBiz;
 	private UserBusiness userBiz;
-	
 	private Group rootGroup;
 	private ImportFile file;
-	
-	
 	private UserTransaction transaction;
-	
 	private ArrayList failedRecords;
-  
-  private Gender male;
-  private Gender female;
-
-  
-  public PinLookupToGroupImportHandlerBean(){}
-
-  public boolean handleRecords() throws RemoteException{
-  
-    transaction =  this.getSessionContext().getUserTransaction();
-
-    Timer clock = new Timer();
-    clock.start();
-
-    try {
-    	//TODO : Eiki virkni support og henda userum inn i tempororary group ef rootGroup er iwme_club
-    	
-      //initialize business beans and data homes
-      userBiz = (UserBusiness) this.getServiceInstance(UserBusiness.class);
-      //addressBiz = (AddressBusiness) this.getServiceInstance(AddressBusiness.class);
-			
-			failedRecords = new ArrayList();
-
-      //if the transaction failes all the users and their relations are removed
-      transaction.begin();
-
-      //iterate through the records and process them
-      String item;
-
-      int count = 0;
-      while ( !(item=(String)file.getNextRecord()).equals("") ) {
-        count++;
-        if( ! processRecord(item) ) failedRecords.add(item);
-      }
-
-      clock.stop();
-      System.out.println("Time to handleRecords: "+clock.getTime()+" ms  OR "+((int)(clock.getTime()/1000))+" s.");
-
-      // System.gc();
-      //success commit changes
-      transaction.commit();
-      return true;
-    }
-    catch (Exception ex) {
-     ex.printStackTrace();
-
-     try {
-      transaction.rollback();
-     }
-     catch (SystemException e) {
-       e.printStackTrace();
-     }
-
-     return false;
-    }
-
-  }
-
-  private boolean processRecord(String record) throws RemoteException{
-    userProperties = file.getValuesFromRecordString(record);
-    
-    User user = null;
-    //variables
-    String name = (String) userProperties.get(NAME_COLUMN);
-    String PIN = (String) userProperties.get(PIN_COLUMN);
-		String statusId = (String) userProperties.get(STATUS_COLUMN);
-    
-    if(PIN == null ) return false;
-		
-   // Gender gender = getGenderFromPin(PIN);
-    //IWTimestamp dateOfBirth = getBirthDateFromPin(PIN);
-    
-    try{
-     user = userBiz.getUser(PIN);
-    }
-    catch(Exception e){
-      e.printStackTrace();
-      return false;
-    }
-    
-
-		rootGroup.addGroup(user);
-    
-    if(name!=null ) user.setFullName(name);
-    if(statusId!=null){
-    	
-    	
-    	
-    	
-    }
-			/*
-    
-        String streetName = addressBiz.getStreetNameFromAddressString(addressLine);
-        String streetNumber = addressBiz.getStreetNumberFromAddressString(addressLine);
-        String postalCode = getUserProperty(POSTAL_CODE_COLUMN);
-        String postalName = getUserProperty(POSTAL_NAME_COLUMN);
-
-        Address address = userBiz.getUsersMainAddress(user);
-        Country sweden = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("SE");
-        PostalCode code = addressBiz.getPostalCodeAndCreateIfDoesNotExist(postalCode,postalName,sweden);
-
-        boolean addAddress = false;
-
-        if( address == null ){
-          AddressHome addressHome = addressBiz.getAddressHome();
-          address = addressHome.create();
-          AddressType mainAddressType = addressHome.getAddressType1();
-          address.setAddressType(mainAddressType);
-          addAddress = true;
-        }
-
-        address.setCountry(sweden);
-        address.setPostalCode(code);
-        //address.setProvince("Nacka" );//set as 01 ?
-        //address.setCity("Stockholm" );//set as 81?
-				address.setProvince(county );
-				address.setCity(commune );
-        
-        
-        address.setStreetName(streetName);
-        address.setStreetNumber(streetNumber);
-
-        address.store();
-
-        if(addAddress){
-          user.addAddress(address);
-        }
-
-	    }
-	     catch(Exception e){
-	      e.printStackTrace();
-	      return false;
-	    }
-	    */
-
-
-    //finished with this user
-    user = null;
-    return true;
-  }
-
-
-
-  public void setImportFile(ImportFile file){
-    this.file = file;
-  }
-
-  
-/**
- * @see com.idega.block.importer.business.ImportFileHandler#setRootGroup(Group)
- */
-  public void setRootGroup(Group group){
-  	rootGroup = group;
-  }
-  
-  
-	  /**
-	 * @see com.idega.block.importer.business.ImportFileHandler#getFailedRecords()
-	 */
-	public List getFailedRecords(){
-		return failedRecords;	
+	private Gender male;
+	private Gender female;
+	public PinLookupToGroupImportHandlerBean() {
 	}
-	
-	
+	public boolean handleRecords() throws RemoteException {
+		transaction = this.getSessionContext().getUserTransaction();
+		Timer clock = new Timer();
+		clock.start();
+		try {
+			//initialize business beans and data homes
+			userBiz = (UserBusiness) this.getServiceInstance(UserBusiness.class);
+			statusHome = (StatusHome) this.getIDOHome(Status.class);
+			userStatusHome = (UserStatusHome) this.getIDOHome(UserStatus.class);
+			//addressBiz = (AddressBusiness) this.getServiceInstance(AddressBusiness.class);
+			failedRecords = new ArrayList();
+			//if the transaction failes all the users and their relations are removed
+			transaction.begin();
+			//iterate through the records and process them
+			String item;
+			int count = 0;
+			while (!(item = (String) file.getNextRecord()).equals("")) {
+				count++;
+				if (!processRecord(item))
+					failedRecords.add(item);
+			}
+			clock.stop();
+			System.out.println("Time to handleRecords: " + clock.getTime() + " ms  OR " + ((int) (clock.getTime() / 1000)) + " s.");
+			// System.gc();
+			//success commit changes
+			transaction.commit();
+			return true;
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			try {
+				transaction.rollback();
+			}
+			catch (SystemException e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
+	}
+	private boolean processRecord(String record) throws RemoteException {
+		
+		userProperties = file.getValuesFromRecordString(record);
+		User user = null;
+		//variables
+		String name = (String) userProperties.get(NAME_COLUMN);
+		String PIN = (String) userProperties.get(PIN_COLUMN);
+		String statusId = (String) userProperties.get(STATUS_COLUMN);
+		
+		if (PIN == null)
+			return false;
+		try {
+			user = userBiz.getUser(PIN);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		
+		if (!IWMemberConstants.GROUP_TYPE_CLUB.equals(rootGroup.getGroupType())) {
+			rootGroup.addGroup(user);
+		}
+		else { //if a club then 
+			String[] tempType = { IWMemberConstants.GROUP_TYPE_TEMPORARY };
+			Collection groups = rootGroup.getChildGroups(tempType, true);
+			if (groups != null && !groups.isEmpty()) {
+				((Group) groups.iterator().next()).addGroup(user);
+			}
+		}
+		
+		
+		if (name != null){
+			user.setFullName(name);
+		}
+		
+		
+		if (statusId != null) {
+			int statusNumber = Integer.parseInt(statusId);
+			try {
+				Status status = statusHome.findByPrimaryKey(new Integer(statusNumber));
+				try {
+					Collection statuses = userStatusHome.findAllByUserIDAndStatusID(((Integer) user.getPrimaryKey()), ((Integer) status.getPrimaryKey()));
+					Iterator iter = statuses.iterator();
+					while (iter.hasNext()) {
+						UserStatus stat = (UserStatus) iter.next();
+						if (stat.getDateTo() != null && stat.getDateTo().before(IWTimestamp.getTimestampRightNow())) {
+							//no valid userstatus (by date)
+							UserStatus userStatus;
+							try {
+								userStatus = userStatusHome.create();
+								userStatus.setUser(user);
+								userStatus.setStatus(status);
+								userStatus.setDateFrom(IWTimestamp.getTimestampRightNow());
+								userStatus.store();
+							}
+							catch (CreateException e3) {
+								e3.printStackTrace();
+								return false;
+							}
+						}
+					}
+				}
+				catch (EJBException e2) {
+					//no userstatus found add it
+					UserStatus userStatus;
+					try {
+						userStatus = userStatusHome.create();
+						userStatus.setUser(user);
+						userStatus.setStatus(status);
+						userStatus.setDateFrom(IWTimestamp.getTimestampRightNow());
+						userStatus.store();
+					}
+					catch (CreateException e3) {
+						e3.printStackTrace();
+						return false;
+					}
+				}
+			}
+			catch (FinderException e1) {
+				e1.printStackTrace();
+				return false;
+			}
+		}
+
+
+		user.store();
+		
+		user = null;
+		return true;
+	}
+	public void setImportFile(ImportFile file) {
+		this.file = file;
+	}
+	/**
+	 * @see com.idega.block.importer.business.ImportFileHandler#setRootGroup(Group)
+	 */
+	public void setRootGroup(Group group) {
+		rootGroup = group;
+	}
+	/**
+	* @see com.idega.block.importer.business.ImportFileHandler#getFailedRecords()
+	*/
+	public List getFailedRecords() {
+		return failedRecords;
+	}
 }
