@@ -63,7 +63,7 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
     addAttribute(COLUMN_NAME_EMAIL,"Email",true,true,String.class);
     
     
-		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP_ID, "Work report group id",true,true,Integer.class,"one-to-one",WorkReportGroup.class);
+		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP_ID, "Work report group id",true,true,Integer.class,"many-to-one",WorkReportGroup.class);
     
     
   }
