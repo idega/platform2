@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.38 2002/08/24 15:43:56 aron Exp $
+ * $Id: CampusAllocator.java,v 1.39 2002/08/28 16:05:44 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,27 +9,63 @@
  */
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
-import com.idega.block.application.data.*;
-import com.idega.block.building.business.*;
-import com.idega.block.building.data.*;
-import com.idega.business.*;
-import com.idega.data.*;
-import com.idega.idegaweb.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.user.data.*;
-import com.idega.util.*;
-import is.idega.idegaweb.campus.block.allocation.business.*;
-import is.idega.idegaweb.campus.block.allocation.data.*;
-import is.idega.idegaweb.campus.block.application.business.*;
-import is.idega.idegaweb.campus.block.application.data.*;
-import is.idega.idegaweb.campus.block.application.presentation.*;
-import is.idega.idegaweb.campus.block.building.data.*;
-import is.idega.idegaweb.campus.data.*;
-import is.idega.idegaweb.campus.presentation.*;
-import java.sql.*;
-import java.util.*;
+import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import is.idega.idegaweb.campus.block.allocation.business.ContractService;
+import is.idega.idegaweb.campus.block.allocation.business.WaitingListFinder;
+import is.idega.idegaweb.campus.block.allocation.data.AllocationView;
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
+import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
+import is.idega.idegaweb.campus.block.application.data.WaitingList;
+import is.idega.idegaweb.campus.block.application.presentation.ApplicationFilerWindow;
+import is.idega.idegaweb.campus.block.application.presentation.CampusApprover;
+import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
+import is.idega.idegaweb.campus.data.ApartmentContracts;
+import is.idega.idegaweb.campus.data.SystemProperties;
+import is.idega.idegaweb.campus.presentation.Campus;
+import is.idega.idegaweb.campus.presentation.CampusProperties;
+import is.idega.idegaweb.campus.presentation.Edit;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.Application;
+import com.idega.block.building.business.ApartmentTypeComplexHelper;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.business.BuildingFinder;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.ApartmentCategory;
+import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.Building;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.Floor;
+import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.user.Converter;
+import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author  <a href="mailto:aron@idega.is">aron@idega.is
@@ -87,8 +123,8 @@ public class CampusAllocator extends Block implements Campus {
 
 	protected void control(IWContext iwc)throws java.rmi.RemoteException {
 		fontSize = 1;
-/*		if (iwc.getParameter("list") != null) {
-		}*/
+		/*		if (iwc.getParameter("list") != null) {
+				}*/
 
 		if (iwc.getParameter("type_id") != null) {
 			pTypeId = new Parameter("type_id", iwc.getParameter("type_id"));
@@ -184,15 +220,15 @@ public class CampusAllocator extends Block implements Campus {
 			Image printImage = iwb.getImage("print.gif");
 			for (int i = 0; i < cLen; i++) {
 				ApartmentCategory AC = (ApartmentCategory) Categories.get(i);
-				List L = (List)allocationView.get(AC.getIDInteger());//BuildingFinder.getApartmentTypesComplexForCategory(AC.getID());
+				List L = (List) allocationView.get(AC.getIDInteger()); //BuildingFinder.getApartmentTypesComplexForCategory(AC.getID());
 				if (L != null) {
 					int lLen = L.size();
 					int catlist = 0, catfree = 0, catcont = 0, catapp = 0, catcnt1 = 0, catcnt2 = 0, catcnt3 = 0;
 					T.add(boldText(AC.getName()), 1, row);
 					row++;
 					for (int j = 0; j < lLen; j++) {
-//						ApartmentTypeComplexHelper eAprtType = (ApartmentTypeComplexHelper) L.get(j);
-						AllocationView view = (AllocationView)L.get(j);
+						//						ApartmentTypeComplexHelper eAprtType = (ApartmentTypeComplexHelper) L.get(j);
+						AllocationView view = (AllocationView) L.get(j);
 						type = view.getTypeId();
 						cmpx = view.getComplexId();
 						listCount = view.getTotalNumberOfApartments();
@@ -205,7 +241,7 @@ public class CampusAllocator extends Block implements Campus {
 
 						totalCount += listCount;
 						catlist += listCount;
-//						freeCount = listCount - contractCount;
+						//						freeCount = listCount - contractCount;
 						totalFree += freeCount;
 						catfree += freeCount;
 						totalApplied += appliedCount;
@@ -223,7 +259,7 @@ public class CampusAllocator extends Block implements Campus {
 						name.append(")");
 
 						T.add(getPDFLink(printImage, type, cmpx), 1, row);
-						T.add(getListLink(name.toString(),type,cmpx), 2, row);
+						T.add(getListLink(name.toString(), type, cmpx), 2, row);
 						T.add(formatText(listCount), 3, row);
 						T.add(formatText(freeCount), 4, row);
 						T.add(formatText(appliedCount), 5, row);
@@ -262,128 +298,8 @@ public class CampusAllocator extends Block implements Campus {
 		return T;
 	}
 
-/*	private PresentationObject getCategoryLists() {
-		DataTable T = new DataTable();
-		T.setTitlesHorizontal(true);
-		T.addTitle(iwrb.getLocalizedString("apartment_category", "Apartment category"));
-		T.setWidth("100%");
-		List Categories = BuildingFinder.listOfApartmentCategory();
-		if (Categories != null) {
-			int row = 2;
-			int cLen = Categories.size();
-			int listCount = 0, contractCount = 0, appliedCount = 0, appCnt1 = 0, appCnt2 = 0, appCnt3 = 0;
-
-			int totalCount = 0, totalFree = 0, totalApplied = 0, totApp1 = 0, totApp2 = 0, totApp3 = 0;
-			int freeCount = 0;
-			int type, cmpx;
-			Image printImage = iwb.getImage("print.gif");
-			for (int i = 0; i < cLen; i++) {
-				ApartmentCategory AC = (ApartmentCategory) Categories.get(i);
-				List L = BuildingFinder.getApartmentTypesComplexForCategory(AC.getID());
-				if (L != null) {
-					int lLen = L.size();
-					int catlist = 0, catfree = 0, catcont = 0, catapp = 0, catcnt1 = 0, catcnt2 = 0, catcnt3 = 0;
-					T.add(boldText(AC.getName()), 1, row);
-					row++;
-					for (int j = 0; j < lLen; j++) {
-						ApartmentTypeComplexHelper eAprtType = (ApartmentTypeComplexHelper) L.get(j);
-						type = eAprtType.getKeyOne();
-						cmpx = eAprtType.getKeyTwo();
-						listCount = BuildingFinder.countApartmentsInTypeAndComplex(type, cmpx);
-						contractCount = ContractFinder.countApartmentsInTypeAndComplex(type, cmpx, is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusSigned);
-
-						appliedCount = CampusApplicationFinder.countWaitingWithTypeAndComplex(type, cmpx, 0);
-						appCnt1 = CampusApplicationFinder.countWaitingWithTypeAndComplex(type, cmpx, 1);
-						appCnt2 = CampusApplicationFinder.countWaitingWithTypeAndComplex(type, cmpx, 2);
-						appCnt3 = CampusApplicationFinder.countWaitingWithTypeAndComplex(type, cmpx, 3);
-
-						totalCount += listCount;
-						catlist += listCount;
-						freeCount = listCount - contractCount;
-						totalFree += freeCount;
-						catfree += freeCount;
-						totalApplied += appliedCount;
-						catapp += appliedCount;
-						totApp1 += appCnt1;
-						totApp2 += appCnt2;
-						totApp3 += appCnt3;
-						catcnt1 += appCnt1;
-						catcnt2 += appCnt2;
-						catcnt3 += appCnt3;
-
-						T.add(getPDFLink(printImage, type, cmpx), 1, row);
-						T.add(getListLink(eAprtType), 2, row);
-						T.add(formatText(listCount), 3, row);
-						T.add(formatText(freeCount), 4, row);
-						T.add(formatText(appliedCount), 5, row);
-						T.add(formatText(appCnt1), 6, row);
-						T.add(formatText(appCnt2), 7, row);
-						T.add(formatText(appCnt3), 8, row);
-						row++;
-					}
-					T.add(boldText(catlist), 3, row);
-					T.add(boldText(catfree), 4, row);
-					T.add(boldText(catapp), 5, row);
-					T.add(boldText(catcnt1), 6, row);
-					T.add(boldText(catcnt2), 7, row);
-					T.add(boldText(catcnt3), 8, row);
-					row++;
-				}
-			}
-
-			T.add(boldText(iwrb.getLocalizedString("apartment_category", "Apartment category")), 1, 1);
-			T.add(boldText(iwrb.getLocalizedString("apartments", "Apartments")), 3, 1);
-			T.add(boldText(iwrb.getLocalizedString("available", "Available")), 4, 1);
-			T.add(boldText(iwrb.getLocalizedString("applied", "Applied")), 5, 1);
-			T.add(boldText(iwrb.getLocalizedString("choice1", "1.Choice")), 6, 1);
-			T.add(boldText(iwrb.getLocalizedString("choice2", "2.Choice")), 7, 1);
-			T.add(boldText(iwrb.getLocalizedString("choice3", "3.Choice")), 8, 1);
-			T.add(getPDFLink(printImage, -1, -1), 1, row);
-			T.add(boldText(totalCount), 3, row);
-			T.add(boldText(totalFree), 4, row);
-			T.add(boldText(totalApplied), 5, row);
-			T.add(boldText(totApp1), 6, row);
-			T.add(boldText(totApp2), 7, row);
-			T.add(boldText(totApp3), 8, row);
-			row++;
-		}
-
-		return T;
-	}*/
-
-/*	private PresentationObject getWaitingLists(ApartmentCategory AC) {
-		Table T = new Table();
-
-		List L = BuildingFinder.getApartmentTypesComplexForCategory(AC.getID());
-		int row = 2;
-		if (L != null) {
-			int lLen = L.size();
-			int listCount = 0;
-			for (int i = 0; i < lLen; i++) {
-				ApartmentTypeComplexHelper eAprtType = (ApartmentTypeComplexHelper) L.get(i);
-				listCount = BuildingFinder.countApartmentsInTypeAndComplex(eAprtType.getKeyOne(), eAprtType.getKeyTwo());
-				T.add(getListLink(eAprtType), 2, row);
-				T.add(formatText(listCount), 3, row);
-				row++;
-			}
-			T.setHorizontalZebraColored(lightBlue, WhiteColor);
-			T.setRowColor(1, blueColor);
-			T.setRowColor(row, redColor);
-			T.mergeCells(1, 1, 2, 1);
-			T.mergeCells(1, row, 2, row);
-			T.setWidth(1, "15");
-			T.add(headerText(AC.getName()), 1, 1);
-			T.add(formatText(" "), 1, row);
-			T.setColumnAlignment(1, "left");
-			T.setHeight(row, bottomThickness);
-			T.setWidth("100%");
-		}
-
-		return T;
-	}*/
-
 	private Link getListLink(ApartmentTypeComplexHelper eAprtType) {
-		return getListLink(eAprtType.getName(),eAprtType.getKeyOne(),eAprtType.getKeyTwo());
+		return getListLink(eAprtType.getName(), eAprtType.getKeyOne(), eAprtType.getKeyTwo());
 	}
 
 	private Link getListLink(String name, int type_id, int complex_id) {
@@ -416,8 +332,8 @@ public class CampusAllocator extends Block implements Campus {
 		Frame.add(formatText(iwrb.getLocalizedString("phone", "Phone")), col++, row);
 
 		java.util.Collection L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId, cmplxId);
-		java.util.Collection w_application = CampusApplicationFinder.listOfWaitinglistForTypeApplication(aprtTypeId, cmplxId);
-		java.util.Collection t_application = CampusApplicationFinder.listOfWaitinglistForTypeTransfer(aprtTypeId, cmplxId);
+//		java.util.Collection w_application = CampusApplicationFinder.listOfWaitinglistForTypeApplication(aprtTypeId, cmplxId);
+//		java.util.Collection t_application = CampusApplicationFinder.listOfWaitinglistForTypeTransfer(aprtTypeId, cmplxId);
 		Hashtable HT = ContractFinder.hashOfApplicantsContracts();
 		boolean bcontracts = false;
 		Contract C;
@@ -443,7 +359,18 @@ public class CampusAllocator extends Block implements Campus {
 					else
 						TextFontColor = TempColor;
 
-					Frame.add(formatText(numberOnList), col++, row);
+					//				Frame.add(formatText(numberOnList), col++, row);
+					Link onList = new Link(new Integer(numberOnList).toString());
+					onList.addParameter(WaitingListOrganizerWindow.COMPLEX_ID, cmplxId);
+					onList.addParameter(WaitingListOrganizerWindow.APARTMENT_TYPE_ID, aprtTypeId);
+					onList.addParameter(WaitingListOrganizerWindow.WL_ORDER, WL.getOrder().intValue());
+					onList.addParameter(WaitingListOrganizerWindow.NUMBER_ON_LIST, numberOnList);
+					onList.addParameter(WaitingListOrganizerWindow.MAX_LIST, L.size());
+					onList.addParameter(WaitingListOrganizerWindow.WL_ID,WL.getID());
+					onList.setWindowToOpen(WaitingListOrganizerWindow.class);
+
+					Edit.setStyle(onList);
+					Frame.add(onList, col++, row);
 					numberOnList++;
 					Frame.add(formatText(WL.getPriorityLevel()), col++, row);
 					String cypher = null;
@@ -643,7 +570,7 @@ public class CampusAllocator extends Block implements Campus {
 				C = (Contract) I.next();
 				UID = C.getUserId();
 				if (M != null && M.containsKey(UID)) {
-					user = (User) M.get(UID);
+					user = Converter.convertToNewUser((com.idega.core.user.data.User)M.get(UID));
 					T.add(formatText(user.getName()), 1, row);
 				}
 				T.add(formatText(df.format((java.util.Date) C.getValidFrom())), 2, row);
