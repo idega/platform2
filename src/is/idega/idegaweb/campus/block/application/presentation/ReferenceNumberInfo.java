@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.27 2003/07/28 09:30:38 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.28 2003/07/29 10:48:53 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package is.idega.idegaweb.campus.block.application.presentation;
 
 import is.idega.idegaweb.campus.presentation.CampusColors;
 import is.idega.idegaweb.campus.block.application.data.Applied;
+import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
 import is.idega.idegaweb.campus.block.allocation.data.AllocationView;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
@@ -24,6 +25,8 @@ import is.idega.idegaweb.campus.block.application.business.CampusApplicationHold
 import is.idega.idegaweb.campus.block.application.business.CampusReferenceNumberInfoHelper;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
+import com.idega.block.application.data.ApplicationBMPBean;
+import com.idega.block.application.data.ApplicationHome;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.Building;
@@ -49,6 +52,7 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.util.IWTimestamp;
 
+import java.util.Collection;
 import java.util.Vector;
 import java.util.Date;
 import java.util.Iterator;
@@ -84,6 +88,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 	 *
 	 */
 	protected void control(IWContext iwc) {
+		//System.err.println("referencenumbering");
 		 dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
 		 dateFormat = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
 		String which = (String) iwc.getSessionAttribute("DUMMY_LOGIN");
@@ -124,6 +129,9 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 		}
 		else if(iwc.isParameterSet("acceptAllocation")){
 			acceptAllocation(iwc);
+		}
+		else if(iwc.isParameterSet("cancelApplication")){
+			cancelApplication(iwc);
 		}
 		
 		Table refTable = new Table();
@@ -320,7 +328,7 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			row++;
 		
 			
-		}
+		}}
 		else if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED)) { //Ekki b?i? a? ?thluta
 				Text notAllocated = new Text("&nbsp;*&nbsp;" + _iwrb.getLocalizedString("appSubmitted", "Application not processed yet"));
 					notAllocated.setStyle("required");
@@ -333,12 +341,56 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 			refTable.add(signed, 1, row);
 			row++;
 		}
-		}
+		
+		
+		
 		form.add(refTable);
 		add(form);
 		add(Text.getBreak());
+		if(!status.equalsIgnoreCase(ApplicationBMPBean.STATUS_GARBAGE)){
+			addAbortApplicationTable(refTable);
+		}
+		add(Text.getBreak());
+		add(Text.getBreak());
 		
 	}
+	
+	private void cancelApplication(IWContext iwc){
+		if(iwc.isParameterSet("cancel_application_id")){
+			try {
+				Integer AID = new Integer(iwc.getParameter("cancel_application_id"));
+				Application application = ( (ApplicationHome) IDOLookup.getHome(Application.class)).findByPrimaryKey(AID);
+				application.setStatus(ApplicationBMPBean.STATUS_GARBAGE);
+				application.store();
+				ContractBusiness.deleteFromWaitingList(new Integer(application.getApplicantId()));
+				Collection contracts = ((ContractHome) IDOLookup.getHome(Contract.class)).findByApplicant(new Integer(application.getApplicantId()));
+				if(contracts!=null && !contracts.isEmpty()){
+					for (Iterator iter = contracts.iterator(); iter.hasNext();) {
+						Contract con = (Contract) iter.next();
+						if(con.getStatus().equalsIgnoreCase(ContractBMPBean.statusCreated)){
+							ContractBusiness.doGarbageContract(((Integer)con.getPrimaryKey()).intValue());
+						}
+					}
+				}
+			}
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+			catch (IDOLookupException e) {
+				e.printStackTrace();
+			}
+			catch (IDOStoreException e) {
+				e.printStackTrace();
+			}
+			catch (IllegalStateException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private void acceptAllocation(IWContext iwc){
 	if(iwc.isParameterSet("adWaitL_id")){
 		try {
@@ -392,6 +444,25 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 		
 	}
 	
+	private void addAbortApplicationTable(Table refTable){
+		if(holder!=null ){
+			Form form = new Form();
+			Table table = new Table();
+			form.add(table);
+			add(form);
+			 
+			 Text tCancel = new Text(_iwrb.getLocalizedString("appCancelApplication", "Cancel application, all entries will be removed"));
+			 tCancel.setBold();
+			 SubmitButton cancelButton = new SubmitButton("cancelApplication", _iwrb.getLocalizedString("cancelApplication", "Cancel"));
+			 cancelButton.setSubmitConfirm(_iwrb.getLocalizedString("cancelApplicationWarning","Do you really want to cancel your application, all application entries will be removed"));
+			 table.add(tCancel,1,1);
+			 table.add(Text.getNonBrakingSpace(),1,1);
+			 table.add(Text.getNonBrakingSpace(),1,1);
+			 table.add(cancelButton);	
+			 table.add(new HiddenInput("cancel_application_id",holder.getApplication().getPrimaryKey().toString()));		
+		}
+	}
+	
 	private void addAllocationDenialTable(Table refTable){
 		if(holder!=null && allocatedWaitinglistID!=null){
 			Contract contract = holder.getContract();
@@ -417,16 +488,13 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 				dTable.setAlignment(3,2,Table.HORIZONTAL_ALIGN_RIGHT);
 				SubmitButton deny = new SubmitButton("denyAllocation", _iwrb.getLocalizedString("denyAllotion", "No thanks"));
 				deny.setSubmitConfirm(_iwrb.getLocalizedString("denyAllocationWarning","Do you really want to deny this apartment ?"));
-				SubmitButton accept = new SubmitButton("acceptAllocation", _iwrb.getLocalizedString("acceptAllotion", "Yes please"));
+				SubmitButton accept = new SubmitButton("acceptAllocation", _iwrb.getLocalizedString("acceptAllotion", "Accept"));
 				dTable.add(deny, 3, 2);
 				dTable.add(accept, 3, 2);
 				dTable.add(new HiddenInput("adWaitL_id",allocatedWaitinglistID.toString()));
 				
-				
 			}
-		
 		}
-		
 	}
 	
 	private String getApartmentString(Contract eContract) {
