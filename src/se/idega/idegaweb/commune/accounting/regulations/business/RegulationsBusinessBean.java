@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.70 2003/11/24 17:51:19 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.71 2003/11/25 17:13:48 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -575,6 +575,115 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 								break;
 							case 4 :
 								if (value.intValue() < 4)
+									match = false;
+								break;
+						}
+					}
+				}
+
+				if (!match)
+					return 0;
+			}
+			else if (condition.equals(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR)) {
+				String value = (String) param.getInterval();
+				Iterator i = cond.iterator();
+				boolean match = true;
+				while (i.hasNext() && match) {
+					Condition regCond = (Condition) i.next();
+					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR)) {
+						int id = regCond.getIntervalID();
+						//I'll just use the fact that this is hardcoded.						
+						switch (id) {
+							case 1 :
+								try {
+									int intValue = Integer.parseInt(value);
+									if (1 > intValue || intValue > 3)
+										match = false;
+								}
+								catch (Exception e) {
+								}
+								break;
+							case 2 :
+								try {
+									int intValue = Integer.parseInt(value);
+									if (1 > intValue || intValue > 6)
+										match = false;
+								}
+								catch (Exception e) {
+								}
+								break;
+							case 3 :
+								try {
+									int intValue = Integer.parseInt(value);
+									if (4 > intValue || intValue > 6)
+										match = false;
+								}
+								catch (Exception e) {
+								}
+								break;
+							case 4 :
+								try {
+									int intValue = Integer.parseInt(value);
+									if (7 > intValue || intValue > 9)
+										match = false;
+								}
+								catch (Exception e) {
+								}
+								break;
+							case 5 :
+								if (!"S1".equals(value) && !"S2".equals(value) && !"S3".equals(value))
+									match = false;
+								break;
+							case 6 :
+								if (!"S4".equals(value) && !"S5".equals(value) && !"S6".equals(value))
+									match = false;
+								break;
+							case 7 :
+								if (!"S7".equals(value) && !"S8".equals(value) && !"S9".equals(value) && !"S10".equals(value))
+									match = false;
+								break;
+							case 8 :
+								if (!"G1".equals(value) && !"G2".equals(value) && !"G3".equals(value))
+									match = false;
+								break;
+							case 9 :
+								if (!"G1".equals(value))
+									match = false;
+								break;
+							case 10 :
+								if (!"G2".equals(value))
+									match = false;
+								break;
+							case 11 :
+								if (!"G3".equals(value))
+									match = false;
+								break;
+							case 12 :
+								if (!"G4".equals(value))
+									match = false;
+								break;
+							case 13 :
+								if (!"G1".equals(value) && !"G2".equals(value) && !"G3".equals(value) && !"G4".equals(value))
+									match = false;
+								break;
+							case 14 :
+								if (!"GS1".equals(value) && !"GS2".equals(value) && !"GS3".equals(value) && !"GS4".equals(value))
+									match = false;
+								break;
+							case 15 :
+								if (!"GS1".equals(value))
+									match = false;
+								break;
+							case 16 :
+								if (!"GS2".equals(value))
+									match = false;
+								break;
+							case 17 :
+								if (!"GS3".equals(value))
+									match = false;
+								break;
+							case 18 :
+								if (!"GS4".equals(value))
 									match = false;
 								break;
 						}
