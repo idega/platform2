@@ -1,5 +1,9 @@
 package se.idega.idegaweb.commune.accounting.userinfo.business;
 
+import com.idega.user.data.User;
+
+import se.idega.idegaweb.commune.accounting.userinfo.data.HouseHoldFamily;
+
 
 public interface UserInfoService extends com.idega.business.IBOService
 {
@@ -7,6 +11,7 @@ public interface UserInfoService extends com.idega.business.IBOService
  public se.idega.idegaweb.commune.accounting.userinfo.data.InvoiceReceiver createInvoiceReceiver(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome getBruttoIncomeHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.userinfo.data.InvoiceReceiverHome getInvoiceReceiverHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public HouseHoldFamily getHouseHoldFamily(User headOfFamily) throws java.rmi.RemoteException;
  public boolean isInvoiceReceiver(int p0) throws java.rmi.RemoteException;
  public boolean isInvoiceReceiver(com.idega.user.data.User p0) throws java.rmi.RemoteException;
 	boolean isSameAddress (com.idega.core.location.data.Address adress1, com.idega.core.location.data.Address address2);
@@ -18,4 +23,5 @@ public interface UserInfoService extends com.idega.business.IBOService
 		}
 	}
 }
+
 

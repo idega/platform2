@@ -4,6 +4,7 @@
  */
 package se.idega.idegaweb.commune.accounting.userinfo.business;
 
+
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCohabitantFound;
@@ -19,21 +20,26 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.invoice.business.SiblingOrderException;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome;
+import se.idega.idegaweb.commune.accounting.userinfo.data.HouseHoldFamily;
 import se.idega.idegaweb.commune.accounting.userinfo.data.InvoiceReceiver;
 import se.idega.idegaweb.commune.accounting.userinfo.data.InvoiceReceiverHome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.SortableSibling;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.location.data.Address;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOStoreException;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
@@ -129,6 +135,125 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		} catch (Exception e) {}
 		return isInvoiceReceiver(userId);
 	}
+
+	/**
+	 * Returns a HouseHoldFamily created from head of family
+	 * @param headOfFamilly
+	 * @return
+	 */
+	public HouseHoldFamily getHouseHoldFamily(User head)throws RemoteException{
+		if(head!=null){
+			CommuneUserBusiness userService = (CommuneUserBusiness) getServiceInstance(CommuneUserBusiness.class);
+			MemberFamilyLogic familyService = userService.getMemberFamilyLogic();
+			User spouse = null;
+			try {
+				spouse = familyService.getSpouseFor(head);
+			}
+			catch (NoSpouseFound e) {
+				
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			User cohabitant = null;
+			try {
+				cohabitant = familyService.getCohabitantFor(head);
+			}
+			catch (NoCohabitantFound e1) {
+				
+			}
+			catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+			Collection parentialChildren= null;
+			try {
+				parentialChildren = familyService.getChildrenFor(head);
+			}
+			catch (NoChildrenFound e2) {
+				
+			}
+			catch (RemoteException e2) {
+				e2.printStackTrace();
+			}
+			Collection custodyChildren= null;
+			try {
+				custodyChildren = familyService.getChildrenInCustodyOf(head);
+			}
+			catch (NoChildrenFound e3) {
+				
+			}
+			catch (RemoteException e3) {
+				e3.printStackTrace();
+			}
+			Address address = userService.getUserAddress1(((Integer)head.getPrimaryKey()).intValue());
+			HouseHoldFamily family = new HouseHoldFamily(head);
+			Address addr;
+			if(address!=null){
+				family.setAddress(address);
+				if(spouse!=null){
+					addr = userService.getUserAddress1(((Integer)spouse.getPrimaryKey()).intValue());
+					if(compareAddresses(addr,address)){
+						family.setSpouse(spouse);
+					}
+				}
+				if(cohabitant!=null){
+					// is spouse the same person as cohabitant
+					//if(spouse!=null && !spouse.getPrimaryKey().toString().equals(cohabitant.getPrimaryKey().toString()) ){
+						addr = userService.getUserAddress1(((Integer)cohabitant.getPrimaryKey()).intValue());
+						if(compareAddresses(addr,address))
+							family.setCohabitant(cohabitant);
+					//}
+				}
+				if(parentialChildren!=null && !parentialChildren.isEmpty()){
+					Collection childs = new Vector(parentialChildren.size());
+					for (Iterator iter = parentialChildren.iterator(); iter.hasNext();) {
+						User child = (User) iter.next();
+						addr = userService.getUserAddress1(((Integer)child.getPrimaryKey()).intValue());
+						if(compareAddresses(addr,address)){
+							childs.add(child);
+						}
+					}
+					if(!childs.isEmpty())
+						family.setParentialChildren(childs);
+				}
+				if(custodyChildren!=null && !custodyChildren.isEmpty()){
+					Collection childs = new Vector(custodyChildren.size());
+					for (Iterator iter = custodyChildren.iterator(); iter.hasNext();) {
+						User child = (User) iter.next();
+						addr = userService.getUserAddress1(((Integer)child.getPrimaryKey()).intValue());
+						if(compareAddresses(addr,address)){
+							childs.add(child);
+						}
+					}
+					if(!childs.isEmpty())
+						family.setCustodyChildren(childs);
+				}
+			
+			}
+			return family;
+		}
+		return null;
+	}
+	private boolean compareAddresses(Address one,Address two){
+		if(one!=null && two!=null){
+			boolean b=  (one.getStreetName().equalsIgnoreCase(two.getStreetName())
+					&& one.getStreetNumber().equalsIgnoreCase(two.getStreetNumber())
+					&& comparePostal(one.getPostalCode(),two.getPostalCode()));
+			return b;
+		}
+		return false;
+	}
+	
+	private boolean comparePostal(PostalCode one,PostalCode two){
+		if(one!=null && two !=null){
+			boolean b =  (one.getPostalCode().equalsIgnoreCase(two.getPostalCode())
+			&& one.getName().equalsIgnoreCase(two.getName()));
+			return b;
+		}
+		
+		return false;
+	}
+
 
 	public boolean isSameAddress (final Address address1,
 																final Address address2) {
@@ -265,4 +390,5 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		//This should really never happen
 		throw new SiblingOrderException("Could not find the sibling order.");
 	}
+
 }
