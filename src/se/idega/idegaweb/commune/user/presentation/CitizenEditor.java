@@ -48,6 +48,8 @@ public class CitizenEditor extends UserEditor {
 		setAllowPersonalIdEdit(false);
 		setBundleIdentifer(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 		setShowSeperators(true);
+		// allow temporary pid search
+		setLegalNonDigitPIDLetters("TFtf");
 		
 	}
 	/* (non-Javadoc)
