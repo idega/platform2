@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.6 2004/10/14 11:39:44 gimmi Exp $
+ *  $Id: TPosClient.java,v 1.7 2004/10/29 18:15:00 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -94,7 +94,7 @@ public class TPosClient implements CreditCardClient{
 
 
       if (_merchant == null) {
-      	System.out.println("TPosClient : Using default TPosMerchant");
+      	System.out.println("TPosClient : Using default TPosMerchant, ipset = "+ipset);
         _userId = _iwb.getProperty(TPOS_USER_ID);
         _passwd = _iwb.getProperty(TPOS_PASSWD);
         _merchantId = _iwb.getProperty(TPOS_MERCHANT_ID);
@@ -102,7 +102,7 @@ public class TPosClient implements CreditCardClient{
         _posId = _iwb.getProperty(TPOS_POS_ID);
         _receivePasswd = _iwb.getProperty(TPOS_KEY_RECEIVE_PASSWD);
       }else {
-      	System.out.println("TPosClient : Using TPosMerchant "+_merchant.getName());
+      	System.out.println("TPosClient : Using TPosMerchant "+_merchant.getName()+", ipset = "+ipset);
         _userId = _merchant.getUser();
         _passwd = _merchant.getPassword();
         _merchantId = _merchant.getMerchantID();
@@ -204,7 +204,7 @@ public class TPosClient implements CreditCardClient{
     return (valid);
   }
   public String creditcardAuthorization(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException{
-  	throw new CreditCardAuthorizationException("Unsupported");
+  	return (doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "5", null, referenceNumber));
   }
   	
 
@@ -220,7 +220,7 @@ public class TPosClient implements CreditCardClient{
    * @exception TPosException  Description of the Exception
    */
   public String doSale(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws TPosException {
-  	return (doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "1", null));
+  	return (doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "1", null, null));
   }
 /*
   public String doSale(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, double amount, String currency, String referenceNumber, String merchantId) throws TPosException {
@@ -241,7 +241,7 @@ public class TPosClient implements CreditCardClient{
    */
   public String doRefund(String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, Object parentDataPK, String captureProperties) throws TPosException {
   		System.out.println("Warning : TPosClient is NOT using CVC number");
-  		return doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "3", parentDataPK);
+  		return doAuth(cardnumber, monthExpires, yearExpires, amount, currency, "3", parentDataPK, null);
   }
   public void finishTransaction(String properties) throws CreditCardAuthorizationException {
   	throw new CreditCardAuthorizationException("Unsupported");
@@ -267,7 +267,7 @@ public class TPosClient implements CreditCardClient{
    * @return                   Description of the Return Value
    * @exception TPosException  Description of the Exception
    */
-  private String doAuth(String cardnumber, String monthExpires, String yearExpires, double amount, String currency, String transactionType, Object parentDataPK) throws TPosException {
+  private String doAuth(String cardnumber, String monthExpires, String yearExpires, double amount, String currency, String transactionType, Object parentDataPK, String authRspID) throws TPosException {
   	if(_client != null) {
 
       _client.setProperty(TPOS3Client.PN_USERID, _userId);
@@ -288,7 +288,29 @@ public class TPosClient implements CreditCardClient{
         _client.setProperty(TPOS3Client.PN_CARDHOLDERCODE, "2");
       }
 
-      boolean valid = _client.sendAuthorisationReq();
+      boolean valid = false;
+      try {
+      	valid = _client.sendAuthorisationReq();
+      } catch (IllegalArgumentException e) {
+      	getKeys();
+      	createNewBatch();
+        _client.setProperty(TPOS3Client.PN_USERID, _userId);
+        _client.setProperty(TPOS3Client.PN_PASSWORD, _passwd);
+        _client.setProperty(TPOS3Client.PN_MERCHANTID, _merchantId);
+        _client.setProperty(TPOS3Client.PN_LOCATIONID, _locationId);
+        _client.setProperty(TPOS3Client.PN_POSID, _posId);
+
+        _client.setProperty(TPOS3Client.PN_PAN, cardnumber);
+        _client.setProperty(TPOS3Client.PN_EXPIRE, monthExpires + yearExpires);
+        //_client.setProperty(TPOS3Client.PN_EXPIRE, yearExpires + monthExpires);
+        _client.setProperty(TPOS3Client.PN_AMOUNT, stringAmount);
+        _client.setProperty(TPOS3Client.PN_CURRENCY, currency);
+        _client.setProperty(TPOS3Client.PN_TRANSACTIONTYPE, transactionType);
+        if (transactionType.equals("2")) {
+          _client.setProperty(TPOS3Client.PN_CARDHOLDERCODE, "2");
+        }
+      	valid = _client.sendAuthorisationReq();
+      }
       boolean inserted = false;
       
       TPosAuthorisationEntriesBean entry;
