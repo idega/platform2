@@ -24,6 +24,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 
   public final static String SCHOOLCLASS = "sch_school_class";
   public final static String SCHOOLYEAR = "sch_school_year_id";
+  public final static String SCHOOLTYPE = "sch_school_type_id";
   public final static String TEACHER = "ic_user_id";
   public final static String SEASON = "sch_school_season_id";
   public final static String NAME = "class_name";
@@ -38,7 +39,8 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addManyToOneRelationship(SCHOOL,"School",School.class);
-    addManyToOneRelationship(SCHOOLYEAR,"Schoolyear",SchoolYear.class);
+	addManyToOneRelationship(SCHOOLYEAR,"Schoolyear",SchoolYear.class);
+	addManyToOneRelationship(SCHOOLTYPE,"Schoolytype",SchoolType.class);
     addAttribute(TEACHER,"Teacher",true,true,Integer.class);
     addManyToOneRelationship(SEASON,"Season",SchoolSeason.class);
     addAttribute(NAME,"Name",true,true,String.class);
@@ -62,6 +64,15 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 	}
   public void setSchoolId(int id){
     this.setColumn(SCHOOL,id);
+  }
+  public int getSchoolTypeId(){
+	return getIntColumnValue(SCHOOLTYPE);
+  }
+  public SchoolType getSchoolType(){
+    return (SchoolType) getColumnValue(SCHOOLTYPE);
+  }
+  public void setSchoolTypeId(int id){
+	this.setColumn(SCHOOLTYPE,id);
   }
   public void setSchoolYearId(int year){
     this.setColumn(SCHOOLYEAR,year);
