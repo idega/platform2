@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.1 2003/08/20 11:53:39 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.2 2003/08/20 13:16:39 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -28,16 +28,24 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
 
 
 /**
- * PostingList is an idegaWeb block that handles maintenance of some default data that 
- * is used in a "posting". The block shows/edits Periode, Activity, Regulation specs, Company types 
- * and Commune belonging. 
- *  
+ * PostingList is an idegaWeb block that handles maintenance of some default data (PostingParameters) 
+ * that is used in a "posting". The block shows/edits a list of Periode, Activity, Regulation specs, 
+ * Company types and Commune belonging. 
+ * This list shows only the most essential values of the PostingParameter.
+ * 
+ * Other submodules will use this data to search for a match on 
+ * Periode, Activity, Regulation sec, Company type and Commune belonging.
+ * When you have a hit you can retrive accounting data such as accounts, resources, activity codes 
+ * etc. These values are always mirrored in "Own entries" and "Double entries". See Book-Keeping
+ * terms.
+ * 
+ * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.1 2003/08/20 11:53:39 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.2 2003/08/20 13:16:39 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PostingParameterList extends AccountingBlock {
 

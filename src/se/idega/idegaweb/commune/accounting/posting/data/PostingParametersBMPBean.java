@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.4 2003/08/20 11:52:22 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.5 2003/08/20 13:15:50 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,15 +26,22 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTyp
  * PostingParameters Holds information about default posting info.
  * It is used to match a posting and get its posting accounts etc
  * 
+ * Other submodules will use this data to search for a match on 
+ * Periode, Activity, Regulation sec, Company type and Commune belonging.
+ * When you have a hit you can retrive accounting data such as accounts, resources, activity codes 
+ * etc. These values are always mirrored in "Own entries" and "Double entries". See Book-Keeping
+ * terms.
+ *  
+ * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.4 2003/08/20 11:52:22 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.5 2003/08/20 13:15:50 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
