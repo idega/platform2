@@ -76,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/02/25 13:22:15 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/25 15:06:26 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.133 $
+ * @version $Revision: 1.134 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -298,6 +298,12 @@ public class InvoiceChildcareThread extends BillingThread{
 					if (providerType.equals (communeProviderType)
 							&& !commune.equals (homeCommune)) {
 						throw new CommuneChildcareOutsideHomeCommuneException ();
+					}
+					//Check if both provider and child is outside home commune
+					UserBusiness userBus = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+					if(!commune.equals(homeCommune) && userBus.getUsersMainAddress(child).getCommuneID() != ((Integer)homeCommune.getPrimaryKey()).intValue()){
+						throw new NotDefaultCommuneException(getLocalizedString("invoice.School","School")+":"+provider.getSchool().getName()+
+								"; "+getLocalizedString("invoice.Student","Student")+":"+child.getName());
 					}
 					
 					// if provider has payment by invoice set, then ignore this silently
@@ -594,6 +600,9 @@ public class InvoiceChildcareThread extends BillingThread{
 				} catch (FinderException e) {
 					e.printStackTrace();
 					createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"),getLocalizedString("invoice.NoContractsFound","No contracts found"));
+				} catch (NotDefaultCommuneException e) {
+					e.printStackTrace();
+					createNewErrorMessage(errorRelated, getLocalizedString("invoice.BothStudentAndSchoolOutsideDefaultCommmune","Both student and school outside default commmune"));
 				}
 				if(!running){
 					return;

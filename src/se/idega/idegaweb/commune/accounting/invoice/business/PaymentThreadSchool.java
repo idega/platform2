@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/02/20 16:15:39 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/25 15:06:26 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.125 $
+ * @version $Revision: 1.126 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -298,7 +298,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					}
 				}
 			}else{
-//				log.info("School "+school.getName()+" is not in home commune and not private or gets payment by invoice");
+				log.info("School "+school.getName()+" is not in home commune and not private or gets payment by invoice");
 			}
 		}
 		catch (RemoteException e) {
@@ -352,9 +352,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 
 	protected void createPaymentForSchoolClassMember(RegulationsBusiness regBus, 
 			Provider provider, SchoolClassMember schoolClassMember, 
-			boolean schoolIsInDefaultCommune, boolean schoolIsPrivate
-//			boolean schoolIsInDefaultCommuneAndNotPrivate
-			) 
+			boolean schoolIsInDefaultCommune, boolean schoolIsPrivate)
 			throws FinderException, EJBException, PostingException, CreateException, 
 			RegulationException, MissingFlowTypeException, MissingConditionTypeException, 
 			MissingRegSpecTypeException, TooManyRegulationsException, RemoteException, 
