@@ -213,10 +213,12 @@ public class SchoolGroupEditor extends ProviderBlock {
 			}
 
 			table.add(getSmallText(group.getSchoolClassName()), column++, row);
-			if (!showStudyPaths && group.getSchoolTypeId() != -1)
-				table.add(getSmallText(group.getSchoolType().getSchoolTypeName()), column++, row);
-			else
-				table.add(getSmallText("-"), column++, row);
+			if (!showStudyPaths) {
+				if (group.getSchoolTypeId() != -1)
+					table.add(getSmallText(group.getSchoolType().getSchoolTypeName()), column++, row);
+				else
+					table.add(getSmallText("-"), column++, row);
+			}
 			if (group.getSchoolSeasonId() != -1)
 				table.add(getSmallText(group.getSchoolSeason().getSchoolSeasonName()), column++, row);
 			else
