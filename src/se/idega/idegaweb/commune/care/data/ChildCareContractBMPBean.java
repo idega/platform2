@@ -414,6 +414,14 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 
+	public Integer ejbFindContractByApplicationAndDate(int applicationID, Date date) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_APPLICATION_ID, applicationID);
+		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(date);
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE).append(" desc");
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
 	public Collection ejbFindFutureContractsByApplication(int applicationID, Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_APPLICATION_ID, applicationID);

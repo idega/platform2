@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareContractHomeImpl.java,v 1.5 2005/02/14 12:51:53 anders Exp $
+ * $Id: ChildCareContractHomeImpl.java,v 1.6 2005/02/23 12:36:01 anders Exp $
  * Created on 22.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.util.TimePeriod;
 
 /**
  * 
- *  Last modified: $Date: 2005/02/14 12:51:53 $ by $Author: anders $
+ *  Last modified: $Date: 2005/02/23 12:36:01 $ by $Author: anders $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ChildCareContractHomeImpl extends IDOFactory implements ChildCareContractHome {
     protected Class getEntityInterfaceClass() {
@@ -176,6 +176,13 @@ public class ChildCareContractHomeImpl extends IDOFactory implements ChildCareCo
         return this.findByPrimaryKey(pk);
     }
 
+    public ChildCareContract findContractByApplicationAndDate(int applicationID, Date date) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        Object pk = ((ChildCareContractBMPBean) entity).ejbFindContractByApplicationAndDate(applicationID, date);
+        this.idoCheckInPooledEntity(entity);
+        return this.findByPrimaryKey(pk);
+    }
+    
     public Collection findFutureContractsByApplication(int applicationID, Date date) throws FinderException {
         com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
         java.util.Collection ids = ((ChildCareContractBMPBean) entity).ejbFindFutureContractsByApplication(
