@@ -305,9 +305,48 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	
 	private int getCountOfPlayersEqualOrOlderThanAgeAndByGenderAndWorkReport(int age,String gender, WorkReport report) {
 		IDOQuery sql = idoQuery();
+		
+		IWTimestamp stamp = getYearlyAgeBorderIWTimestamp(age,report.getYearOfReport().intValue());
+		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		String IDColumnName = getIDColumnName();
+
+		sql.appendSelectCountFrom(this.getEntityName()).append(" memb, ")
+		.append(getNameOfMiddleTable(this,new WorkReportBMPBean())).append(" middle ")
+		.appendWhere()
+		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
+
+		if(gender!=null){
+			sql.appendAnd();
+			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender);
+		}
+
+		if(stamp!=null){
+			sql.appendAnd();
+			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
+			.appendLessThanOrEqualsSign()
+			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote();
+		}
+
+		sql.appendAnd();
+
+		sql.append("memb.")
+		.append(IDColumnName)
+		.appendEqualSign()
+		.append("middle.")
+		.append(IDColumnName);
+
+		try {
+			return idoGetNumberOfRecords(sql);
+		}
+		catch (IDOException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		/*IDOQuery sql = idoQuery();
+		String IDColumnName = getIDColumnName();
+		String reportId = report.getPrimaryKey().toString();
 	
-		sql.appendSelectCountFrom(this.getEntityName()).append(" memb ")
+		//sql.appendSelectCountFrom(this.getEntityName()).append(" memb ")
 		.appendWhere()
 		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
 		if(gender!=null){
@@ -329,11 +368,49 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		catch (IDOException e) {
 			e.printStackTrace();
 			return 0;
-		}
+		}*/
 	}
 	
 	private int getCountOfPlayersYoungerThanAgeAndByGenderAndWorkReport(int age,String gender, WorkReport report) {
 		IDOQuery sql = idoQuery();
+		IWTimestamp stamp = getYearlyAgeBorderIWTimestamp(age,report.getYearOfReport().intValue());
+		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
+		String IDColumnName = getIDColumnName();
+
+		sql.appendSelectCountFrom(this.getEntityName()).append(" memb, ")
+		.append(getNameOfMiddleTable(this,new WorkReportGroupBMPBean())).append(" middle ")
+		.appendWhere()
+		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
+
+		if(gender!=null){
+			sql.appendAnd();
+			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender);
+		}
+
+		if(stamp!=null){
+			sql.appendAnd();
+			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
+			.appendGreaterThanSign()
+			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote();
+		}
+
+		sql.appendAnd();
+
+		sql.append("memb.")
+		.append(IDColumnName)
+		.appendEqualSign()
+		.append("middle.")
+		.append(IDColumnName);
+
+
+		try {
+			return idoGetNumberOfRecords(sql);
+		}
+		catch (IDOException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		/*IDOQuery sql = idoQuery();
 		String IDColumnName = getIDColumnName();
 
 		sql.appendSelectCountFrom(this.getEntityName()).append(" memb ")
@@ -358,7 +435,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		catch (IDOException e) {
 			e.printStackTrace();
 			return 0;
-		}
+		}*/
 	}
 	
 	private int getCountOfMembersOfYoungerAgeByGenderAndWorkReport(int age,String gender, WorkReport report) {
@@ -504,7 +581,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	public int ejbHomeGetCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
 		return getCountOfPlayersOfYoungerAgeAndByGenderWorkReportAndWorkReportGroup(age,FEMALE,report,league);
 	}
-	
+
 	public int ejbHomeGetCountOfMembersOfYoungerAgeByWorkReport(int age, WorkReport report) {
 		return getCountOfMembersOfYoungerAgeByGenderAndWorkReport(age,null,report);
 	}
