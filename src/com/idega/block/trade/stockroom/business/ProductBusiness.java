@@ -167,7 +167,7 @@ public class ProductBusiness {
         String pTable = Product.getProductEntityName();
 
         StringBuffer sqlQuery = new StringBuffer();
-          sqlQuery.append("SELECT .* FROM "+pTable);
+          sqlQuery.append("SELECT * FROM "+pTable);
           sqlQuery.append(" WHERE ");
           sqlQuery.append(pTable+"."+Product.getColumnNameIsValid()+" = 'Y'");
           if (supplierId != -1)

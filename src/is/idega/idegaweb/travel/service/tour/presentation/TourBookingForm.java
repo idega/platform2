@@ -427,8 +427,25 @@ public class TourBookingForm extends TravelManager {
 
       isDay = TourBusiness.getIfDay(iwc, _tour, stamp, false);
 
+      System.err.println("isDay : "+isDay);
 
       ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), true);
+
+      Text availSeats = (Text) theText.clone();
+        availSeats.setText(iwrb.getLocalizedString("travel.there_are_available_seats","There are available seats "));
+
+      Text notAvailSeats = (Text) theText.clone();
+        notAvailSeats.setText(iwrb.getLocalizedString("travel.there_are_no_available_seats","There are no available seats "));
+
+      Text dateText = (Text) theBoldText.clone();
+        dateText.setText(stamp.getLocaleDate(iwc));
+        dateText.addToText("."+Text.NON_BREAKING_SPACE);
+
+      Text pleaseBook = (Text) theText.clone();
+        pleaseBook.setText(iwrb.getLocalizedString("travel.please_book","Please book"));
+
+      Text pleaseFindAnotherDay = (Text) theText.clone();
+        pleaseFindAnotherDay.setText(iwrb.getLocalizedString("travel.please_find_another_day","Please find another day"));
 
       if (pPrices.length > 0) {
           int row = 1;
@@ -441,21 +458,6 @@ public class TourBookingForm extends TravelManager {
 
           Text subHeader;
 
-          Text availSeats = (Text) theText.clone();
-            availSeats.setText(iwrb.getLocalizedString("travel.there_are_available_seats","There are available seats "));
-
-          Text notAvailSeats = (Text) theText.clone();
-            notAvailSeats.setText(iwrb.getLocalizedString("travel.there_are_no_available_seats","There are no available seats "));
-
-          Text dateText = (Text) theBoldText.clone();
-            dateText.setText(stamp.getLocaleDate(iwc));
-            dateText.addToText("."+Text.NON_BREAKING_SPACE);
-
-          Text pleaseBook = (Text) theText.clone();
-            pleaseBook.setText(iwrb.getLocalizedString("travel.please_book","Please book"));
-
-          Text pleaseFindAnotherDay = (Text) theText.clone();
-            pleaseFindAnotherDay.setText(iwrb.getLocalizedString("travel.please_find_another_day","Please find another day"));
 
           table.mergeCells(1,row,6,row);
 
@@ -857,8 +859,12 @@ public class TourBookingForm extends TravelManager {
             table.add(dateText,1,row);
             table.add(pleaseFindAnotherDay,1,row);
           }
-            table.setAlignment(1,1,"left");
+        }else {
+            table.add(notAvailSeats,1,1);
+            table.add(dateText,1,1);
+            table.add(pleaseFindAnotherDay,1,1);
         }
+        table.setAlignment(1,1,"left");
     return form;
   }
 

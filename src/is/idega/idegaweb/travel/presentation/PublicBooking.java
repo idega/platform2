@@ -91,7 +91,7 @@ public class PublicBooking extends Block  {
         if (!product.getIsValid()) {
           throw new SQLException("Product not valid");
         }
-//        service = new Service(productId);
+        service = new Service(productId);
         timeframe = product.getTimeframe();
         supplier = new Supplier(product.getSupplierId());
 
@@ -244,13 +244,21 @@ public class PublicBooking extends Block  {
       table.setAlignment("center");
       table.setBorder(0);
 
-      String stampTxt1 = new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc);
-      String stampTxt2 = new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc);
-      if (timeframe.getIfYearly()) {
-        try {
-          stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
-          stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
-        }catch (NumberFormatException n) {}
+
+      String stampTxt1 = "";
+      String stampTxt2 = "";
+      if (timeframe == null) {
+        stampTxt1 = iwrb.getLocalizedString("travel.not_configured","Not configured");
+        stampTxt2 = iwrb.getLocalizedString("travel.not_configured","Not configured");
+      }else {
+        stampTxt1 = new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc);
+        stampTxt2 = new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc);
+        if (timeframe.getIfYearly()) {
+          try {
+            stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
+            stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
+          }catch (NumberFormatException n) {}
+        }
       }
 
       idegaTimestamp depTimeStamp = new idegaTimestamp(service.getDepartureTime());
@@ -385,7 +393,8 @@ public class PublicBooking extends Block  {
       CalendarHandler ch  = new CalendarHandler(iwc);
         ch.setProduct(product);
 
-      boolean legalDay = stamp.isLaterThanOrEquals(idegaTimestamp.RightNow()) && idegaTimestamp.isInTimeframe(new idegaTimestamp(timeframe.getFrom()), new idegaTimestamp(timeframe.getTo()), stamp, timeframe.getIfYearly());;
+      boolean legalDay = false;
+      if (timeframe != null) legalDay = stamp.isLaterThanOrEquals(idegaTimestamp.RightNow()) && idegaTimestamp.isInTimeframe(new idegaTimestamp(timeframe.getFrom()), new idegaTimestamp(timeframe.getTo()), stamp, timeframe.getIfYearly());;
 
       Form form = new Form();
 

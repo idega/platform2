@@ -426,16 +426,18 @@ public class TourDesigner extends TravelManager {
           Parameter par1 = new Parameter(this.parameterIsUpdate, Integer.toString(tourId));
             par1.keepStatusOnAction();
           table.add(par1);
-          Parameter par2 = new Parameter(this.parameterTimeframeId, Integer.toString(timeframe.getID()));
-            par2.keepStatusOnAction();
-          table.add(par2);
+          if (timeframe != null) {
+            Parameter par2 = new Parameter(this.parameterTimeframeId, Integer.toString(timeframe.getID()));
+              par2.keepStatusOnAction();
+            table.add(par2);
+            active_from.setDate(new idegaTimestamp(timeframe.getFrom()).getSQLDate());
+            active_to.setDate(new idegaTimestamp(timeframe.getTo()).getSQLDate());
+            active_yearly.setSelected(timeframe.getIfYearly());
+          }
 
           name.setContent(service.getName());
           number.setContent(product.getNumber());
           description.setContent(ProductBusiness.getProductDescription(product, iwc));
-          active_from.setDate(new idegaTimestamp(timeframe.getFrom()).getSQLDate());
-          active_to.setDate(new idegaTimestamp(timeframe.getTo()).getSQLDate());
-          active_yearly.setSelected(timeframe.getIfYearly());
 
           int[] days = ServiceDay.getDaysOfWeek(service.getID());
           for (int i = 0; i < days.length; i++) {
@@ -653,6 +655,7 @@ public class TourDesigner extends TravelManager {
             serviceId = tb.createTourService(supplier.getID(),iImageId,name, number,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, iEstSeats, iDiscountType);
         } else {
             String timeframeId = iwc.getParameter(this.parameterTimeframeId);
+            if (timeframeId == null) timeframeId = "-1";
             tb.setTimeframe(Integer.parseInt(timeframeId), activeFromStamp, activeToStamp, yearly);
             serviceId = tb.updateTourService(tourId,supplier.getID(),iImageId,name,number, description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, Integer.parseInt(estSeats), Integer.parseInt(discountType));
         }

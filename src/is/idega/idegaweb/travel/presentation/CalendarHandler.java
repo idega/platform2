@@ -104,15 +104,17 @@ public class CalendarHandler extends TravelManager {
         if (_timeframe == null) {
           _timeframe = _product.getTimeframe();
         }
-        if (new idegaTimestamp(_timeframe.getFrom()).isLaterThan(_fromStamp)) {
-          _fromStamp = new idegaTimestamp(_timeframe.getFrom());
-        }
-        if (_toStamp.isLaterThan(new idegaTimestamp(_timeframe.getTo()))) {
-          _toStamp = new idegaTimestamp(_timeframe.getTo());
-        }
-        if (_fromStamp.isLaterThan(_toStamp)) {
-          _toStamp = new idegaTimestamp(_fromStamp);
-          _toStamp.addMonths(1);
+        if (_timeframe != null) {
+          if (new idegaTimestamp(_timeframe.getFrom()).isLaterThan(_fromStamp)) {
+            _fromStamp = new idegaTimestamp(_timeframe.getFrom());
+          }
+          if (_toStamp.isLaterThan(new idegaTimestamp(_timeframe.getTo()))) {
+            _toStamp = new idegaTimestamp(_timeframe.getTo());
+          }
+          if (_fromStamp.isLaterThan(_toStamp)) {
+            _toStamp = new idegaTimestamp(_fromStamp);
+            _toStamp.addMonths(1);
+          }
         }
 
       }catch (SQLException s) {

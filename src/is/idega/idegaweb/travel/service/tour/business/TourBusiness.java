@@ -312,6 +312,7 @@ public class TourBusiness extends TravelStockroomBusiness {
       Product product = new Product(tour.getID());
       Service service = new Service(tour.getID());
       Timeframe frame = product.getTimeframe();
+      if (frame == null) return returner;
       boolean yearly = frame.getIfYearly();
 
       idegaTimestamp tFrom = new idegaTimestamp(frame.getFrom());

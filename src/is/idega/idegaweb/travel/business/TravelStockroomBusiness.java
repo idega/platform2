@@ -161,15 +161,21 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           for (int i = 0; i < addressIds.length; i++) {
             try {
               service.addTo(Address.class, addressIds[i]);
-            }catch (SQLException sql) {}
+            }catch (SQLException sql) {
+              //sql.printStackTrace(System.err);
+            }
           }
         }
 
         if (timeframe != null) {
-            try {
-              Product product = new Product(serviceId);
-              product.addTo(timeframe);
-            }catch (SQLException sql) {}
+          try {
+            Product product = new Product(id);
+            product.addTo(timeframe);
+          }catch (SQLException sql) {
+            //sql.printStackTrace(System.err);
+          }
+        }else {
+          System.err.println("Timeframe is null");
         }
         //transaction.commit();
 
@@ -229,7 +235,11 @@ public class TravelStockroomBusiness extends StockroomBusiness {
    */
   public Product[] getProducts(int supplierId) {
     List list = ProductBusiness.getProducts(supplierId);
-    return (Product[]) list.toArray(new Product[]{});
+    if (list == null) {
+      return new Product[]{};
+    }else {
+      return (Product[]) list.toArray(new Product[]{});
+    }
   }
 
   /**
@@ -237,7 +247,11 @@ public class TravelStockroomBusiness extends StockroomBusiness {
    */
   public Product[] getProducts(int supplierId, idegaTimestamp stamp) {
     List list = ProductBusiness.getProducts(supplierId, stamp);
-    return (Product[]) list.toArray(new Product[]{});
+    if (list == null) {
+      return new Product[]{};
+    }else {
+      return (Product[]) list.toArray(new Product[]{});
+    }
   }
 
   /**
@@ -245,7 +259,11 @@ public class TravelStockroomBusiness extends StockroomBusiness {
    */
   public Product[] getProducts(int supplierId, idegaTimestamp from, idegaTimestamp to) {
     List list = ProductBusiness.getProducts(supplierId, from, to);
-    return (Product[]) list.toArray(new Product[]{});
+    if (list == null) {
+      return new Product[]{};
+    }else {
+      return (Product[]) list.toArray(new Product[]{});
+    }
   }
 
 
