@@ -14,9 +14,12 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.presentation.ColumnList;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
+import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOHome;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.ExceptionWrapper;
@@ -43,7 +46,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.17 2003/11/13 10:28:35 roar Exp $
+ * @version $Id: EventList.java,v 1.18 2004/01/07 11:24:07 jonas Exp $
  * @since 17.3.2003 
  */
 
@@ -104,6 +107,8 @@ public class EventList extends CommuneBlock {
 
 	private Table mainTable = null;
 
+	private IWContext _iwc = null;
+	
 	public EventList() {
 	}
 
@@ -113,6 +118,7 @@ public class EventList extends CommuneBlock {
 
 	public void main(IWContext iwc) {
 		//this.debugParameters(iwc);
+		_iwc = iwc;
 		this.setResourceBundle(getResourceBundle(iwc));
 		if (iwc.isLoggedOn()) {
 			try {
@@ -244,7 +250,7 @@ public class EventList extends CommuneBlock {
 		while (iter.hasNext()) {
 			int row = 1;
 
-			Table message = new Table(2, 7);
+			Table message = new Table(2, 8);
 			PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
 
 			addField(
@@ -279,9 +285,16 @@ public class EventList extends CommuneBlock {
 			//Body
 			message.mergeCells(1, row, 2, row);
 			message.add(getSmallText(msg.getBody()), 1, row++);
+			
+			int fileID = createPrintableMessage(msg);
+			if(fileID!=-1) {
+				Link viewLink = new Link(localize("printdoc.view", "View"));
+				viewLink.setFile(fileID);
+				message.add(viewLink, 1, row++);
+			}
 
 			layout.add(message, 1, layoutRow++);
-
+			
 			if (iter.hasNext()) {
 				layout.add(new HorizontalRule(), 1, layoutRow);
 				layout.setHeight(layoutRow++, 1, "70");
@@ -300,7 +313,40 @@ public class EventList extends CommuneBlock {
 		layout.add(toolbar, 1, layoutRow);
 		add(layout);
 	}
-
+	
+	/* creates the pdf file and returns the ICFile identifier */
+	private int createPrintableMessage(PrintMessage msg) {
+		try {
+			DocumentBusiness docBiz = getDocumentBusiness();
+			String userName = _iwc.getCurrentUser().getName();
+			String fileName = "schoolLetter-" + userName + "-" + msg.getPrimaryKey();
+			ICFile file = getICFileHome().findByFileName(fileName);
+			if(file==null) {
+				return docBiz.writePDF(msg, _iwc.getCurrentUser(), fileName, _iwc.getLocale(), false);
+			} else {
+				return Integer.parseInt(file.getPrimaryKey().toString());
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	private ICFileHome getICFileHome() {
+		try {
+			return (ICFileHome) getIDOHome(ICFile.class);
+		} catch (Exception e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	
+	private DocumentBusiness getDocumentBusiness() throws RemoteException {
+		return (DocumentBusiness) com.idega.business.IBOLookup.getServiceInstance(
+			_iwc,
+			DocumentBusiness.class);
+	}
+	
 	private void addField(Table layout, String label, String value, int row) {
 		Text lbl = getSmallText(label + ":");
 		lbl.setStyleAttribute("font-weight:bold");
