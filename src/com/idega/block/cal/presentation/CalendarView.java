@@ -480,8 +480,8 @@ public class CalendarView extends Block{
 		backTable.setColor("#cccccc");
 		backTable.setCellspacing(1);
 		backTable.setCellpadding(0);
-		backTable.setWidth(500);
-		backTable.setHeight(400);
+		backTable.setWidth(700);
+		backTable.setHeight(270);
 		
 		String dateString = stamp.getDateString("MMMMMMMM, yyyy",iwc.getCurrentLocale());
 		backTable.mergeCells(1,1,7,1);
@@ -516,7 +516,7 @@ public class CalendarView extends Block{
 			nameOfDayTable.setColor("#ffffff");
 			nameOfDayTable.add(nameOfDay,1,1);
 			backTable.add(nameOfDayTable,i,2);
-			backTable.setWidth(i,2,"200");
+//			backTable.setWidth(i,2,"200");
 		}
 		while (n <= daycount) {
 			Table dayCell = new Table();
@@ -971,6 +971,7 @@ public class CalendarView extends Block{
 			printLink.setWindowToOpen(PrintableCalendarView.class);
 			printLink.addParameter("group_id", getViewGroupID());
 			printLink.addParameter("user_id", getViewUserID());
+			printLink.addParameter(CalendarParameters.PARAMETER_VIEW,view);
 			printLink.setStyleClass(styledLink);
 			table.add(printLink,1,3);
 		}
