@@ -195,6 +195,8 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 				else {
 					Link nameLink = new Link(round.getName());
 					nameLink.setParameter(this.ASSESSMENT_ID, round.getPrimaryKey().toString());
+					nameLink.setWindowToOpen(AssessmentListWindow.class);
+					t.add(nameLink, 2, row);
 				}
 				t.add(round.getClub().getName(), 3, row);
 				if (round.getDivision() != null)

@@ -86,16 +86,6 @@ public class AssessmentRoundThread extends Thread {
 	}
 
 	private void assessGroup(Group group, boolean includeChildren, ClubTariffType tariffType) {
-		if (includeChildren) {
-			Iterator it = group.getChildren();
-			if (it != null) {
-				while (it.hasNext()) {
-					Group child = (Group) it.next();
-					assessGroup(child, includeChildren, tariffType);
-				}
-			}
-		}
-		
 		try {
 			Collection tariffs = ((ClubTariffHome) IDOLookup.getHome(ClubTariff.class)).findByGroupAndTariffType(group, tariffType);
 			if (tariffs != null && !tariffs.isEmpty()) {
@@ -135,9 +125,18 @@ public class AssessmentRoundThread extends Thread {
 			e.printStackTrace();
 		}
 		catch (CreateException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		if (includeChildren) {
+			Iterator it = group.getChildren();
+			if (it != null) {
+				while (it.hasNext()) {
+					Group child = (Group) it.next();
+					assessGroup(child, includeChildren, tariffType);
+				}
+			}
+		}	
 	}
 	
 	private UserBusiness getUserBusiness() {
