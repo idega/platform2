@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.84 2002/04/03 19:49:07 laddi Exp $
+ * $Id: NewsReader.java,v 1.85 2002/04/04 16:10:47 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -112,6 +112,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
   private Text headlineProxy  = new Text();
   private Text informationProxy  = new Text();
   private Text moreProxy = new Text();
+  private Image spacerImage = null;
 
   private static String prmFromPage = "nwr_from_page";
   private static String prmDelete = "nwr_delete";
@@ -752,11 +753,16 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 	if(showInfo){
 	  T.add(newsInfo,dateCol,1);
 	}
+	if ( spacerImage == null ) {
+	  spacerImage = T.getTransparentCell(iwc);
+	  spacerImage.setWidth(iSpaceBetweenNewsAndBody);
+	  spacerImage.setHeight(1);
+	}
 	T.setAlignment(headlineCol,1,"left");
 	T.setAlignment(4,1,"right");
 	T.setWidth(headlineCol,1,"100%");
 	T.setWidth(dateCol,1,"45");
-	T.setWidth(2,1,"3");
+	T.add(spacerImage,2,1);
 	//T.add(Text.getNonBrakingSpace(2),2,1);
 	if ( headlineAsLink ) {
 	  Link headlineLink = new Link(headLine);
@@ -1163,6 +1169,8 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 	  obj.secondTableColor = secondTableColor;
 	if(objectsBetween != null)
 	  obj.objectsBetween = objectsBetween;
+	if(spacerImage != null)
+	  obj.spacerImage = spacerImage;
 
 	// Text proxies :
 	obj.textProxy = textProxy;
