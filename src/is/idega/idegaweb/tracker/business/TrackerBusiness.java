@@ -197,8 +197,8 @@ public class TrackerBusiness {
     return comparer.sortedArrayList(getAgentArrayList());
   }
 
-  public static ArrayList getAgentArrayListSortedByURL(){
-    AgentComparator comparer = new AgentComparator(AgentComparator.ORDER_BY_URL);
+  public static ArrayList getAgentArrayListSortedByAgent(){
+    AgentComparator comparer = new AgentComparator(AgentComparator.ORDER_BY_AGENT);
     return comparer.sortedArrayList(getAgentArrayList());
   }
 
