@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.54 2001/12/10 20:56:40 aron Exp $
+ * $Id: NewsReader.java,v 1.55 2001/12/10 21:15:20 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -121,6 +121,7 @@ public class NewsReader extends Block implements IWBlock {
   public NewsReader(){
     init();
     showAll = true;
+
   }
 
   public NewsReader(int iCategoryId){
@@ -159,30 +160,35 @@ public class NewsReader extends Block implements IWBlock {
     informationProxy.setFontColor("#666666");
     textProxy.setFontSize(1);
     informationProxy.setFontSize(1);
-
   }
 
   private void checkCategories(){
 
   }
-	/** @todo take out when instanceId handler is used */
-	private String getInstanceIDString(IWContext iwc){
-          if(viewPageId > 0 || iwc.isParameterSet(prmFromPage))
-            return "";
-          else
-            return String.valueOf(getICObjectInstanceID());
-	}
 
-	private Parameter getFromPageParameter(){
-	  return new Parameter(prmFromPage,"true");
-	}
+  /** @todo take out when instanceId handler is used */
+  private String getInstanceIDString(IWContext iwc){
+    if(viewPageId > 0 || iwc.isParameterSet(prmFromPage))
+      return "";
+    else
+      return String.valueOf(getICObjectInstanceID());
+  }
 
-	private void checkFromPage(Link link){
-	  if(viewPageId > 0)
-            link.addParameter(getFromPageParameter());
-	}
+  private Parameter getFromPageParameter(){
+    return new Parameter(prmFromPage,"true");
+  }
+
+  private void checkFromPage(Link link){
+    if(viewPageId > 0)
+      link.addParameter(getFromPageParameter());
+  }
 
   private void control(IWContext iwc){
+    if(moreImage == null)
+      moreImage = iwrb.getImage("more.gif");
+    if(backImage == null)
+      backImage = iwrb.getImage("back.gif");
+
     Locale locale = iwc.getCurrentLocale();
     String sNewsId = null;
     if(viewNews)
