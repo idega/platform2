@@ -44,7 +44,7 @@ public class ClientManager implements PacketManager{
     version++;
   }
 
-  public static String getClientName(String sessionId){
+  public synchronized static String getClientName(String sessionId){
     User user = (User) clients.get(sessionId);
     if( user!=null ){
       return user.getName();

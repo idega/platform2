@@ -41,8 +41,10 @@ public class MessageManager implements PacketManager{
         for (int i = 0; i < length; i++) {
           Message msg = (Message) messages.elementAt(i);
           System.out.println("MessageManager : getting sender name from ClientManager");
+
+          System.out.println("MessageManager : msg.getsender"+msg.getSender());
+
           senderName = ClientManager.getClientName(msg.getSender());
-                      System.out.println("MessageManager : msg.getsender"+msg.getSender());
 
           if ( senderName != null ){
              msg.setSenderName(senderName);
