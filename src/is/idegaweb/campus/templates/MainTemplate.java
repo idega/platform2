@@ -1,5 +1,5 @@
 /*
- * $Id: MainTemplate.java,v 1.2 2001/07/13 12:54:41 laddi Exp $
+ * $Id: MainTemplate.java,v 1.3 2001/08/17 11:31:47 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -106,6 +106,7 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
   public void initMainTable(){
     MainTable = new Table(3,1);
     MainTable.setBorder(BORDER);
+    MainTable.setVerticalAlignment(1,1,"top");
     MainTable.setVerticalAlignment(2,1,"top");
     MainTable.setVerticalAlignment(3,1,"top");
     MainTable.setCellpadding(0);
