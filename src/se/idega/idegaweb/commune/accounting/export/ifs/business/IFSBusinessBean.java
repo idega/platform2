@@ -747,7 +747,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 						bWriter.write("60");
 						//Filler etc
 						//					for (int i = 0; i < 22; i++)
-						bWriter.write(empty.substring(0, 21));
+						bWriter.write(empty.substring(0, 22));
 						//Perioden
 						if (periodText.length() < 20) {
 							StringBuffer p = new StringBuffer(periodText);
