@@ -1,20 +1,24 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
-import com.idega.presentation.IWContext;
+import com.idega.presentation.*;
+import com.idega.presentation.text.Text;
+import com.idega.user.data.User;
+import is.idega.idegaweb.member.presentation.UserSearcher;
+import java.rmi.RemoteException;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
-import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.*;
 
 /**
  * InvoiceCompilationEditor is an IdegaWeb block were the user can search, view
  * and edit invoice compilations.
  * <p>
- * <b>English - Swedish mini lexicon:<b><br/>
+ * <b>English - Swedish mini lexicon:</b><br/>
  * Invoice compilation = Faktureringsunderlag<br/>
  * <p>
- * Last modified: $Date: 2003/10/27 11:16:53 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/27 16:15:33 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -23,6 +27,13 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PREFIX = "cacc_invcmp_";
     
+    private static final String INVOICE_COMPILATION_DEFAULT = "Faktureringsunderlag";
+    private static final String INVOICE_COMPILATION_KEY = PREFIX + "invoice_compilation";
+    private static final String INVOICE_COMPILATION_LIST_DEFAULT = "Faktureringsunderlagslista";
+    private static final String INVOICE_COMPILATION_LIST_KEY = PREFIX + "invoice_compilation_list";
+    private static final String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";
+    private static final String MAIN_ACTIVITY_KEY = PREFIX + "main_activity";
+
 	private static final int ACTION_SHOW_COMPILATION = 0,
             ACTION_SHOW_COMPILATION_LIST = 1;
 
@@ -60,7 +71,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	 * @param context session data like user info etc.
 	 */
     private void showCompilation (final IWContext context) {
-        throw new UnsupportedOperationException ();
+        throw new UnsupportedOperationException ("n.i.y.");
     }
 
     /**
@@ -68,10 +79,45 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	 *
 	 * @param context session data like user info etc.
 	 */
-    private void showCompilationList (final IWContext context) {
-        throw new UnsupportedOperationException ();
+    private void showCompilationList (final IWContext context)
+        throws RemoteException {
+        add (createMainTable (new Text ("content goes here...")));
+        throw new UnsupportedOperationException ("n.i.y.");
     }
 
+	/**
+	 * Returns a styled table with content placed properly
+	 *
+	 * @param content the page unique content
+     * @return Table to add to output
+	 */
+    private Table createMainTable (final PresentationObject content)
+        throws RemoteException {
+        final Table mainTable = new Table();
+        mainTable.setCellpadding (getCellpadding ());
+        mainTable.setCellspacing (getCellspacing ());
+        mainTable.setWidth (Table.HUNDRED_PERCENT);
+        mainTable.setColumns (1);
+        mainTable.setRowColor (1, getHeaderColor ());
+        mainTable.setRowAlignment(1, Table.HORIZONTAL_ALIGN_CENTER) ;
+        
+        mainTable.add (getSmallHeader
+                       (localize (INVOICE_COMPILATION_KEY,
+                                  INVOICE_COMPILATION_DEFAULT)),
+                       1, 1);
+        final Table innerTable = new Table ();
+        innerTable.setColumns (2);
+        innerTable.add (getSmallHeader (localize (MAIN_ACTIVITY_KEY,
+                                                  MAIN_ACTIVITY_DEFAULT) + ":"),
+                        1, 1);
+        String operationalField = getSession ().getOperationalField();
+        operationalField = operationalField == null ? "" : operationalField;
+        innerTable.add (new OperationalFieldsMenu (), 2, 1);
+        mainTable.add (innerTable, 1, 2);
+        mainTable.add (content, 1, 3);
+        return mainTable;
+    }
+    
     private void logUnexpectedException (final IWContext context,
                                          final Exception exception) {
         System.err.println ("Exception caught in " + getClass ().getName ()
