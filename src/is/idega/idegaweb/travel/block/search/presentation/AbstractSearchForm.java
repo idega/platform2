@@ -650,11 +650,11 @@ public abstract class AbstractSearchForm extends Block{
 						Table table = new Table();
 						table.setWidth("100%");
 						int row = 1;
-						table.add(getText(supplier.getName()), 1, row);
-						table.mergeCells(1, row, 2, row);
-						++row;
+						table.add(getHeaderText(supplier.getName()), 1, row);
+						//table.mergeCells(1, row, 2, row);
+						//++row;
 						available = productAvailability.booleanValue();
-						table.add(getText(product.getProductName(iwc.getCurrentLocaleId())), 1, row);
+						//table.add(getText(product.getProductName(iwc.getCurrentLocaleId())), 1, row);
 						table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
 						if (available) {
 							table.add(getText(iwrb.getLocalizedString("travel.search.available","Available")), 2, row);
@@ -722,6 +722,7 @@ public abstract class AbstractSearchForm extends Block{
 						}
 						
 						add(table);
+						add(Text.BREAK);
 					}
 				}catch(Exception e) {
 					e.printStackTrace();
