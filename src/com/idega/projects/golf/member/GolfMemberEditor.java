@@ -79,7 +79,7 @@ public class GolfMemberEditor extends Editor{
       ImageInserter imageInsert = new ImageInserter("image_id");
       imageInsert.setHasUseBox(false);
       imageInsert.setMaxImageWidth(110);
-      imageInsert.setDefaultImageURL(sMemberImageURL);
+      //imageInsert.setDefaultImageURL(sMemberImageURL);
       imageObject = imageInsert;
     }
 
