@@ -1,5 +1,5 @@
 /*
- * $Id: AgeBusinessBean.java,v 1.14 2003/10/13 13:42:35 anders Exp $
+ * $Id: AgeBusinessBean.java,v 1.15 2003/10/24 09:52:21 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,10 +26,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation;
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/13 13:42:35 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/24 09:52:21 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class AgeBusinessBean extends com.idega.business.IBOServiceBean implements AgeBusiness  {
 
@@ -408,6 +408,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	 */
 	public int getChildAge(String childPersonalId, Date date, String operationalField) {
 		int childAgeAccordingToRegulations = -1;
+		int childRealAge = -1;
 		
 		try {
 			IWTimestamp calendarDate = new IWTimestamp(date);
@@ -417,7 +418,13 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 			IWTimestamp childDate = new IWTimestamp(sqlDateFormat);
 			childDate.setAsDate();
 			int childMaxAge = calendarDate.getYear() - childDate.getYear();
-			
+			childRealAge = childMaxAge;
+			if (calendarDate.getMonth() <= childDate.getMonth()) {
+				if (calendarDate.getDay() < childDate.getDay()) {
+					childRealAge = childRealAge - 1;
+				}
+			}
+				
 			Collection ageRegulations = findByOperationalField(operationalField);
 			Iterator iter = ageRegulations.iterator();
 			AgeRegulation regulationToUse = null; 
@@ -447,6 +454,9 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 			}
 		} catch (Exception e) {}
 		
+		if (childAgeAccordingToRegulations == -1) {
+			childAgeAccordingToRegulations = childRealAge;
+		}
 		return childAgeAccordingToRegulations;		
 	}
 	
