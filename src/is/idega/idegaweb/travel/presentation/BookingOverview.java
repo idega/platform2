@@ -399,6 +399,7 @@ public class BookingOverview extends TravelManager {
                   dateTextBold.setText(tempStamp.getLocaleDate(iwc));
                   dateTextBold.setFontColor(super.BLACK);
               table.add(dateTextBold,1,row);
+              table.setRowColor(row, super.GRAY);
 
               boolean bContinue= false;
 
