@@ -166,15 +166,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		return getSchoolDepartmentHome().findAllDepartmentsBySchool(school);
 	}
 	
-	public int getDepartmentID(SchoolDepartment schDepm) throws RemoteException, FinderException {
+	public int getDepartmentID(SchoolDepartment schDepm) {
 		return schDepm.getDepartmentID();
 	}
 	
-	public void removeDepartment(SchoolDepartment schDep) throws FinderException, RemoteException, RemoveException {
+	public void removeDepartment(SchoolDepartment schDep) throws RemoveException {
 		schDep.remove();				
 	}
 	
-	public void addSchoolUsr(int schDep_id, SchoolUser schUser) throws FinderException, RemoteException, RemoveException {
+	public void addSchoolUsr(int schDep_id, SchoolUser schUser) throws FinderException, RemoteException {
 		try {
 			
 			SchoolDepartmentHome schDepHome = (SchoolDepartmentHome) IDOLookup.getHome(SchoolDepartment.class);
@@ -186,7 +186,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}				
 	}
 	
-	public void removeSchoolUsr(int schDep_id, SchoolUser schUser) throws FinderException, RemoteException, RemoveException, IDORemoveRelationshipException, IDOAddRelationshipException {
+	public void removeSchoolUsr(int schDep_id, SchoolUser schUser) throws FinderException, RemoteException, IDORemoveRelationshipException {
 			SchoolDepartmentHome schDepHome = (SchoolDepartmentHome) IDOLookup.getHome(SchoolDepartment.class);
 			SchoolDepartment schDep = schDepHome.findByPrimaryKey(new Integer(schDep_id));
 			schDep.removeSchoolUser(schUser);			
@@ -710,7 +710,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		return storeSchoolClass(-1, schoolClassName, ((Integer)school.getPrimaryKey()).intValue(), ((Integer)season.getPrimaryKey()).intValue(), ((Integer)year.getPrimaryKey()).intValue(), -1);
 	}
 
-	public SchoolClassMember storeSchoolClassMember(SchoolClass sClass, User user) throws RemoteException {
+	public SchoolClassMember storeSchoolClassMember(SchoolClass sClass, User user) {
 		return storeSchoolClassMember(((Integer)user.getPrimaryKey()).intValue(), ((Integer)sClass.getPrimaryKey()).intValue(), -1, -1, IWTimestamp.getTimestampRightNow(), -1);
 		/*
 		try {
@@ -1143,7 +1143,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	/**
 		 * @return The School type key registered for Highschool types.
 		 */
-	public String getHighSchoolSchoolCategory() throws RemoteException{
+	public String getHighSchoolSchoolCategory(){
 		SchoolCategory category = getCategoryHighSchool();
 		if (category != null){				
 			return category.getCategory();
@@ -1475,7 +1475,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	 * @return returns -1 if typeId is not found
 	 * @throws RemoteException
 	 */	
-	public int getSchoolTypeIdFromSchoolClass(int schoolClassID) throws RemoteException {
+	public int getSchoolTypeIdFromSchoolClass(int schoolClassID) {
 		int schoolTypeId = -1;
 		if (schoolClassID != -1) {
 			SchoolClass group = null;			
@@ -1493,36 +1493,36 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	/**
 	 * Used by ChildCare placements that don't store school year
 	 */
-	public SchoolClassMember storeSchoolClassMemberCC(int studentID, int schoolClassID, int schoolTypeID, Timestamp registerDate, int registrator) throws RemoteException {
+	public SchoolClassMember storeSchoolClassMemberCC(int studentID, int schoolClassID, int schoolTypeID, Timestamp registerDate, int registrator) {
 		return storeSchoolClassMember(studentID, schoolClassID, -1, schoolTypeID, registerDate, registrator, null);
 	}
 
 	/**
 	 * Used by ChildCare placements that don't store school year
 	 */
-	public SchoolClassMember storeSchoolClassMemberCC(int studentID, int schoolClassID, int schoolTypeID, Timestamp registerDate, int registrator, String notes) throws RemoteException {
+	public SchoolClassMember storeSchoolClassMemberCC(int studentID, int schoolClassID, int schoolTypeID, Timestamp registerDate, int registrator, String notes) {
 		return storeSchoolClassMember(studentID, schoolClassID, -1, schoolTypeID, registerDate, null, registrator, notes);
 	}
 
 	/**
 	 * Used by ChildCare placements that don't store school year
 	 */	
-	public SchoolClassMember storeSchoolClassMemberCC(int studentID, int schoolClassID, int schoolTypeID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) throws RemoteException {
+	public SchoolClassMember storeSchoolClassMemberCC(int studentID, int schoolClassID, int schoolTypeID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) {
 		return storeSchoolClassMember(studentID, schoolClassID, -1, schoolTypeID, registerDate, removedDate, registrator, notes);
 	}	
 
-	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, int registrator) throws RemoteException {
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, int registrator) {
 		return storeSchoolClassMember(studentID, schoolClassID, schoolYearID, schoolTypeID, registerDate, registrator, null);
 	}
 
-	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, int registrator, String notes) throws RemoteException {
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, int registrator, String notes) {
 		return storeSchoolClassMember(studentID, schoolClassID, schoolYearID, schoolTypeID, registerDate, null, registrator, notes);
 	}
 	
 	/**
 	 *  Stores placement. If placement for student and schoolgroup exist placement is updated
 	 */
-	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) throws RemoteException {
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) {
 		try {
 			SchoolClassMember member = findClassMemberInClass(studentID, schoolClassID);
 			if (member == null)
@@ -1555,7 +1555,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
-	public SchoolClassMember storeNewSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, int registrator, String notes) throws RemoteException {
+	public SchoolClassMember storeNewSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, int registrator, String notes) {
 		return storeNewSchoolClassMember(studentID, schoolClassID, schoolYearID, schoolTypeID, registerDate, null, registrator, notes);
 	}
 
@@ -1573,7 +1573,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	 * @return
 	 * @throws RemoteException
 	 */	
-	public SchoolClassMember storeNewSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) throws RemoteException {
+	public SchoolClassMember storeNewSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) {
 		try {
 			SchoolClassMember member = getSchoolClassMemberHome().create();
 

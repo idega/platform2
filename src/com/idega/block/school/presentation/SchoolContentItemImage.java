@@ -1,6 +1,5 @@
 package com.idega.block.school.presentation;
 
-import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -21,7 +20,7 @@ public class SchoolContentItemImage extends SchoolContentItem {
 	/**
 	 * @see com.idega.block.school.presentation.SchoolContentItem#getObject()
 	 */
-	protected PresentationObject getObject() throws RemoteException {
+	protected PresentationObject getObject() {
 		try {
 			Collection images = _school.getImages();
 			if (images != null && images.size() > 0) {

@@ -520,7 +520,7 @@ private Table highschoolUsersTable(IWContext iwc, School school, boolean addSubm
 		return contTable;
 	}
 
-	 private Table schoolDepartmentTable(IWContext iwc, School school) throws RemoteException {
+	 private Table schoolDepartmentTable(IWContext iwc, School school) {
 		  Table contTable = new Table();
 		  int schoolId = ((Integer) school.getPrimaryKey()).intValue();
 		  try {
@@ -564,7 +564,7 @@ private Table highschoolUsersTable(IWContext iwc, School school, boolean addSubm
 		return contTable;
 	}
 
-	private Table getShowInfoTable() throws RemoteException {
+	private Table getShowInfoTable() {
 		Table contTable = new Table();
 		contTable.setWidth(2, "5");
 		contTable.setWidth(4, "5");
@@ -589,7 +589,7 @@ private Table highschoolUsersTable(IWContext iwc, School school, boolean addSubm
 
 
 
-private int insertDepmIntoTable(Table table, SchoolDepartment schDep, int row) throws RemoteException {
+private int insertDepmIntoTable(Table table, SchoolDepartment schDep, int row) {
 		
 		table.setWidth(2, "5");
 		table.setWidth(4, "5");
@@ -648,7 +648,7 @@ private int insertDepmIntoTable(Table table, SchoolDepartment schDep, int row) t
 
 
 
-	private int insertEditableDepmIntoTable(Table table, SchoolDepartment schDep, int row) throws RemoteException {
+	private int insertEditableDepmIntoTable(Table table, SchoolDepartment schDep, int row) {
 		
 			String sdepname = PARAMETER_SCHOOL_DEPARTMENT;
 			String sphone = PARAMETER_SCHOOL_DEPARTMENT_PHONE;
@@ -712,7 +712,7 @@ private int insertDepmIntoTable(Table table, SchoolDepartment schDep, int row) t
 			return row;
 		}
 
-private int insertHighschUserIntoTable(Table table, User hm, int row, boolean show) throws RemoteException {
+private int insertHighschUserIntoTable(Table table, User hm, int row, boolean show) {
 		Collection emails;
 		Collection phones;
 
@@ -810,7 +810,7 @@ private int insertHighschUserIntoTable(Table table, User hm, int row, boolean sh
 		return row;
 	}
 
-private int insertEditableHighschUserIntoTable(Table table, User hm, int userType, int row, boolean show) throws RemoteException {
+private int insertEditableHighschUserIntoTable(Table table, User hm, int userType, int row, boolean show) {
 		
 		String sname = PARAMETER_SCHOOL_USER_NAME;
 		String semail = PARAMETER_SCHOOL_USER_EMAIL;
@@ -926,7 +926,7 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 		return row;
 	}
 
-	private int insertUserIntoTable(Table table, User hm, int row) throws RemoteException {
+	private int insertUserIntoTable(Table table, User hm, int row) {
 		Collection emails;
 		Collection phones;
 		int uRow;
@@ -988,7 +988,7 @@ private int insertEditableHighschUserIntoTable(Table table, User hm, int userTyp
 
 
 
-	private int insertEditableUserIntoTable(Table table, User hm, int userType, int row) throws RemoteException {
+	private int insertEditableUserIntoTable(Table table, User hm, int userType, int row) {
 		
 		String sname = PARAMETER_SCHOOL_USER_NAME;
 		String semail = PARAMETER_SCHOOL_USER_EMAIL;

@@ -4,8 +4,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
-
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
@@ -371,7 +369,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 		return (Integer)super.idoFindOnePKByQuery(query);
   }
 
-  public int ejbHomeGetNumberOfStudentsInClass(int schoolClassID) throws FinderException, IDOException {
+  public int ejbHomeGetNumberOfStudentsInClass(int schoolClassID) throws IDOException {
   	IDOQuery sql = idoQuery();
   	sql.appendSelect().append("count(*)").appendFrom().append(getEntityName()).append(" sc,").append(SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER).append(" scm");
   	sql.appendWhere().append("sc.").append(getIDColumnName()).appendEqualSign().append(schoolClassID).appendAnd().append("sc.").append(getIDColumnName()).appendEqualSign().append("scm.").append(getIDColumnName());
@@ -420,7 +418,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 	/* (non-Javadoc)
 	 * @see javax.ejb.EJBLocalObject#remove()
 	 */
-	public void remove() throws RemoveException {
+	public void remove() {
 		setValid(false);
 		super.store();
 	}

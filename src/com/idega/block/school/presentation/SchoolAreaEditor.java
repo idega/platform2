@@ -67,7 +67,7 @@ public class SchoolAreaEditor extends Block {
 
   }
 
-  private void initBeans(IWContext iwc) throws java.rmi.RemoteException,javax.ejb.CreateException{
+  private void initBeans(IWContext iwc) throws java.rmi.RemoteException{
     sabBean = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
     //sabBean = sabHome.create();
   }

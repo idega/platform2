@@ -207,7 +207,7 @@ public SchoolClass findOneBySchool(int p0)throws javax.ejb.FinderException{
  }
 
 
-public int getNumberOfStudentsInClass(int p0)throws javax.ejb.FinderException,com.idega.data.IDOException{
+public int getNumberOfStudentsInClass(int p0)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((SchoolClassBMPBean)entity).ejbHomeGetNumberOfStudentsInClass(p0);
 	this.idoCheckInPooledEntity(entity);

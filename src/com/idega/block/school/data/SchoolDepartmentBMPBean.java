@@ -123,7 +123,7 @@ public class SchoolDepartmentBMPBean extends GenericEntity implements SchoolDepa
 		return idoFindPKsByQuery(query);
 	}
 	
-	public Collection ejbFindAllDepartmentsByUser(SchoolUser schuser) throws FinderException {
+	public Collection ejbFindAllDepartmentsByUser(SchoolUser schuser) {
 		try {
 			IDOQuery query = idoQuery();
 			query.append("Select sd.* FROM SCH_SCHOOL_DEPARTMENT sd, SCH_SCHOOL_DEPARTMENT_USER sdu ");

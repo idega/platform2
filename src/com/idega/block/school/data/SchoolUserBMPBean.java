@@ -43,7 +43,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	 */
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
-		this.addAttribute(COLUMN_NAME_SCHOOL_ID, "school id", true, true, Integer.class, this.ONE_TO_MANY, School.class);
+		this.addAttribute(COLUMN_NAME_SCHOOL_ID, "school id", true, true, Integer.class, ONE_TO_MANY, School.class);
 		this.addAttribute(COLUMN_NAME_USER_ID, "user id", true, true, Integer.class, ONE_TO_MANY, User.class);
 		this.addAttribute(COLUMN_NAME_USER_TYPE, "user type", true, true, Integer.class);
 		this.addAttribute(COLUMN_NAME_SHOW_IN_CONTACTS, "show in contacts", true, true, Boolean.class);

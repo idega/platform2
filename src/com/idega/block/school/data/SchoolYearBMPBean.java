@@ -146,7 +146,7 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear{
   public Collection ejbFindBySchoolCategory(String schoolCategory) throws javax.ejb.FinderException {
   	IDOQuery query = idoQuery();
   	query.appendSelect().append("y.*").appendFrom().append(getEntityName()).append(" y, sch_school_type t ");
-  	query.appendWhereEquals("y."+this.SCHOOL_TYPE, "t.sch_school_type_id").appendAndEqualsQuoted("t.school_category", schoolCategory);
+  	query.appendWhereEquals("y."+SCHOOL_TYPE, "t.sch_school_type_id").appendAndEqualsQuoted("t.school_category", schoolCategory);
   	return idoFindPKsByQuery(query);
   }
   

@@ -5,7 +5,6 @@ import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
@@ -588,7 +587,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 			"AND c.category LIKE '" + schoolCategory.getPrimaryKey() + "' order by s.school_name");
 	}
 
-	public Collection ejbFindAllInHomeCommuneByCategory(SchoolCategory schoolCategory) throws IDOLookupException, EJBException, FinderException, CreateException {
+	public Collection ejbFindAllInHomeCommuneByCategory(SchoolCategory schoolCategory) throws IDOLookupException, EJBException, FinderException {
 		int homeCommunePK = ((Integer)((CommuneHome) IDOLookup.getHome(Commune.class)).findDefaultCommune().getPrimaryKey()).intValue();
 		StringBuffer sql = new StringBuffer("select distinct s.* ");
 		sql.append(" from sch_school s, sch_school_type t, sch_school_sch_school_type m, sch_school_category c ");
@@ -601,7 +600,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
-	public Collection ejbFindAllBySchoolGroup(Group schoolGroup) throws javax.ejb.FinderException, RemoteException {
+	public Collection ejbFindAllBySchoolGroup(Group schoolGroup) throws javax.ejb.FinderException {
 		StringBuffer sql = new StringBuffer("Select s.* ");
 		sql.append("  from sch_school s ");
 		sql.append(" where s.headmaster_group_id in ( ");
@@ -644,7 +643,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 
 	}
 
-	public LocalizedText getLocalizedText(int localeId) throws IDORelationshipException, RemoteException{
+	public LocalizedText getLocalizedText(int localeId) throws IDORelationshipException{
 		Collection coll = getText();
 		//TxTextHome textHome = (TxTextHome) IDOLookup.getHome(TxText.class);
 		if (coll != null && !coll.isEmpty()) {

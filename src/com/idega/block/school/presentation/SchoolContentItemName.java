@@ -1,7 +1,5 @@
 package com.idega.block.school.presentation;
 
-import java.rmi.RemoteException;
-
 import com.idega.presentation.PresentationObject;
 
 /**
@@ -17,7 +15,7 @@ public class SchoolContentItemName extends SchoolContentItem {
 	/**
 	 * @see com.idega.block.school.presentation.SchoolItem#getObject()
 	 */
-	protected PresentationObject getObject() throws RemoteException{
+	protected PresentationObject getObject(){
 		String name = super._school.getName();
 		return getText(name);
 	}

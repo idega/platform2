@@ -157,7 +157,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 		this.formatText(testText2, true);
 		sue.setTextStyleTitle( testText2 );
 
-		sue.setInputStyle(this.STYLE);
+		sue.setInputStyle(STYLE);
 	}
 
 	public String getBundleIdentifier(){
@@ -704,7 +704,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 		return (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
 	}
 
-	public static Form getFormWithButton(School school, String text, String styleClass) throws RemoteException {
+	public static Form getFormWithButton(School school, String text, String styleClass) {
 		Form form = new Form();
 		SubmitButton button = new SubmitButton(text);
 		form.setWindowToOpen( SchoolContentEditor.class );
@@ -717,7 +717,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 		return form;
 	}
 	
-	public static Link getLink(School school, PresentationObject po) throws RemoteException {
+	public static Link getLink(School school, PresentationObject po) {
 		Link link = new Link(po);
 		link.setWindowToOpen( SchoolContentEditor.class);
 		link.addParameter(PARAMETER_SCHOOL_ID, school.getPrimaryKey().toString() );

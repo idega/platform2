@@ -8,7 +8,6 @@ import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
-import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
@@ -134,17 +133,17 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 
-	public Collection ejbHomeFindStudyPaths(School school) throws IDOLookupException, IDORelationshipException, FinderException {
+	public Collection ejbHomeFindStudyPaths(School school) throws IDORelationshipException, FinderException {
 		return ejbHomeFindStudyPaths(school, school.getSchoolTypes());
 	}
 
-	public Collection ejbHomeFindStudyPaths(School school, Object schoolTypePK) throws IDOLookupException, IDORelationshipException, FinderException {
+	public Collection ejbHomeFindStudyPaths(School school, Object schoolTypePK) throws FinderException {
 		Vector vector = new Vector();
 		vector.add(schoolTypePK);
 		return ejbHomeFindStudyPaths(school, vector);
 	}
 
-	public Collection ejbHomeFindStudyPaths(School school, Collection schoolTypePKs) throws FinderException, IDOLookupException {
+	public Collection ejbHomeFindStudyPaths(School school, Collection schoolTypePKs) throws FinderException {
 		boolean useTypes = schoolTypePKs != null && !schoolTypePKs.isEmpty();
 		
 		if (useTypes) {

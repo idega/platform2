@@ -137,7 +137,7 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
 		IDOQuery query = this.idoQueryGetSelect();
 		query.appendWhereEqualsQuoted(SCHOOLCATEGORY,category);
 		if (!showFreetimeTypes) {
-			query.appendAnd().appendLeftParenthesis().appendEquals(this.IS_FREETIME_TYPE, false).appendOr().append(IS_FREETIME_TYPE).appendIsNull().appendRightParenthesis();
+			query.appendAnd().appendLeftParenthesis().appendEquals(IS_FREETIME_TYPE, false).appendOr().append(IS_FREETIME_TYPE).appendIsNull().appendRightParenthesis();
 		}
 		return super.idoFindPKsByQuery(query);
 	}

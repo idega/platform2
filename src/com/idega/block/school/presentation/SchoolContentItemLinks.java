@@ -280,7 +280,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		return table;
 	}
 
-	protected int insertUser(Table table, int row, User user) throws RemoteException {
+	protected int insertUser(Table table, int row, User user) {
 		++row;
 		String name = user.getName();
 		Collection emails = user.getEmails();

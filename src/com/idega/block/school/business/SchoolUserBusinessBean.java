@@ -58,7 +58,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 			return sUser;
 		}
 
-	public SchoolUser updateSchUser(School school, User user, int userType, boolean showInContacts) throws RemoteException, CreateException, FinderException {
+	public SchoolUser updateSchUser(School school, User user, int userType, boolean showInContacts) throws RemoteException, FinderException {
 			//SchoolUser sUser = getSchoolUserHome().findByPrimaryKey(user.getPrimaryKey().intValue());
 			Object id = null;
 			SchoolUser sUser = null;
@@ -329,7 +329,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
  *	Returns a collection of Strings. "SCHOOL" or "CHILDCARE" or both or "HIGH_SCHOOL" 
 	 *	//added handling for Highschool (Malin) 
 	 */
-	public Collection getSchoolTypeCategories(School school) throws IDORelationshipException, RemoteException, FinderException {
+	public Collection getSchoolTypeCategories(School school) throws IDORelationshipException, RemoteException {
 		Collection sTypes = school.getSchoolTypes();
 		SchoolType sType;
 		boolean SCHOOL = false;
@@ -378,7 +378,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 	 * @throws RemoteException
 	 * @throws FinderException
 	 */
-	public Collection getSchoolUserTypes(School school) throws IDORelationshipException, RemoteException, FinderException {
+	public Collection getSchoolUserTypes(School school) throws IDORelationshipException, RemoteException {
 		Collection schoolTypeCategories = getSchoolTypeCategories(school);
 		Collection userTypes = null;
 		if (schoolTypeCategories != null && !schoolTypeCategories.isEmpty()) {
@@ -435,9 +435,6 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 			return getSchoolBusiness().getElementarySchoolSchoolCategory();
 		}
 		catch (IDORelationshipException e) {
-			return getSchoolBusiness().getElementarySchoolSchoolCategory();
-		}
-		catch (FinderException e) {
 			return getSchoolBusiness().getElementarySchoolSchoolCategory();
 		}
 	}
