@@ -23,6 +23,8 @@ import javax.ejb.FinderException;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -66,7 +68,7 @@ public class CourseBusinessBean extends IBOServiceBean implements CourseBusiness
 		}
 	}
 
-	public boolean storeCourse(Object courseID, Object clubID, String courseName, String courseType, int numberOfHoles) {
+	public boolean storeCourse(Object courseID, Group club, String courseName, String description, int numberOfHoles) {
 		Course course = null;
 
 		try {
@@ -82,11 +84,10 @@ public class CourseBusinessBean extends IBOServiceBean implements CourseBusiness
 			}
 		}
 
-		course.setClubID(clubID);
-		course.setCourseName(courseName);
-		course.setCourseType(courseType);
+		course.setOwner(club);
+		course.setName(courseName);
+		course.setDescription(description);
 		course.setNumberOfHoles(numberOfHoles);
-		course.setIsValid(true);
 		course.store();
 
 		return true;
@@ -176,14 +177,11 @@ public class CourseBusinessBean extends IBOServiceBean implements CourseBusiness
 		return true;
 	}
 
-	public void setCourseValidation(int courseID, boolean isValid) {
-		try {
-			Course course = getCourseHome().findByPrimaryKey(new Integer(courseID));
-			course.setIsValid(isValid);
-			course.store();
+	public void setCourseValidation(Course course, boolean isValid, User user) {
+		course.setDeleted(isValid);
+		if (!isValid) {
+			course.setDeletedBy(user);
 		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
+		course.store();
 	}
 }

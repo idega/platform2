@@ -5,137 +5,141 @@ package is.idega.idegaweb.golf.course.data;
 
 import java.util.Collection;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
-import com.idega.data.GenericEntity;
-import com.idega.data.IDOQuery;
+import com.idega.block.venue.data.AbstractVenueBMPBean;
+import com.idega.block.venue.data.Venue;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 import com.idega.user.data.Group;
 
 /**
  * @author laddi
  */
-public class CourseBMPBean extends GenericEntity implements Course {
+public class CourseBMPBean extends AbstractVenueBMPBean implements Course {
 
-	public static final String ENTITY_NAME = "golf_course";
+	protected String getTypeName() {
+		return "GOLF_COURSE";
+	}
 
-	public static final String COLUMN_COURSE_ID = "course_id";
-	public static final String COLUMN_NAME = "course_name";
-	public static final String COLUMN_TYPE = "course_type";
-	public static final String COLUMN_NUMBER_OF_HOLES = "number_of_holes";
-	public static final String COLUMN_VALID = "valid";
-	public static final String COLUMN_CLUB_ID = "club_id";
-	
-	/* (non-Javadoc)
-	 * @see com.idega.data.GenericEntity#getIDColumnName()
-	 */
+	protected String getTypeDescription() {
+		return "The default type for all golf courses in the idegaWeb Golf System";
+	}
+
 	public String getIDColumnName() {
 		return COLUMN_COURSE_ID;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.data.GenericEntity#getEntityName()
-	 */
 	public String getEntityName() {
-		return ENTITY_NAME;
+		return Course.ENTITY_NAME;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.data.GenericEntity#initializeAttributes()
-	 */
 	public void initializeAttributes() {
-		addAttribute(COLUMN_COURSE_ID);
-		setAsPrimaryKey(COLUMN_COURSE_ID, true);
+		addGeneralVenueRelation();
 		
-		addAttribute(COLUMN_NAME, "The course name", true, true, String.class, 255);
-		addAttribute(COLUMN_TYPE, "The course's type", true, true, String.class, 255);
 		addAttribute(COLUMN_NUMBER_OF_HOLES, "Number of holes", true, true, Integer.class);
-		addAttribute(COLUMN_VALID, "Is valid", true, true, Boolean.class);
-		addManyToOneRelationship(COLUMN_CLUB_ID, Group.class);
+	}
+	
+	public void insertStartData() {
+		super.insertStartData();
+		try {
+			Course course = ((CourseHome) com.idega.data.IDOLookup.getHome(Course.class)).create();
+			course.setName("Test course");
+			course.setDescription("The default test course in the system");
+			course.setNumberOfHoles(18);
+			course.store();
+		}
+		catch (IDOLookupException ile) {
+			log(ile);
+		}
+		catch (CreateException ce) {
+			log(ce);
+		}
 	}
 	
 	//Getters
-	public String getCourseName() {
-		return getStringColumnValue(COLUMN_NAME);
-	}
-	
-	public String getCourseType() {
-		return getStringColumnValue(COLUMN_TYPE);
-	}	
-
 	public int getNumberOfHoles() {
 		return getIntColumnValue(COLUMN_NUMBER_OF_HOLES);
 	}	
 
-	public boolean getIsValid() {
-		return getBooleanColumnValue(COLUMN_VALID, true);
-	}	
-
-	public Object getClubID() {
-		return getColumnValue(COLUMN_CLUB_ID);
-	}	
-
-	public Group getClub() {
-		return (Group) getColumnValue(COLUMN_CLUB_ID);
-	}
-	
 	//Setters
-	public void setCourseName(String name) {
-		setColumn(COLUMN_NAME, name);
-	}
-
-	public void setCourseType(String type) {
-		setColumn(COLUMN_TYPE, type);
-	}	
-
 	public void setNumberOfHoles(int numberOfHoles) {
 		setColumn(COLUMN_NUMBER_OF_HOLES, numberOfHoles);
 	}	
 
-	public void setIsValid(boolean isValid) {
-		setColumn(COLUMN_VALID, isValid);
-	}	
-
-	public void setClubID(Object clubID) {
-		setColumn(COLUMN_CLUB_ID, clubID);
-	}	
-
-	public void setClub(Group club) {
-		setColumn(COLUMN_CLUB_ID, club);
-	}
-	
 	//Find methods
 	public Collection ejbFindAllCourses() throws FinderException {
-		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendOrderBy(COLUMN_NAME);
-
-		return this.idoFindPKsByQuery(query);
+		Table table = new Table(this);
+		Table venue = new Table(Venue.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, venue);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addOrder(venue, Venue.COLUMN_NAME, true);
+		
+		return this.idoFindPKsBySQL(query.toString());
 	}
 
-	public Collection ejbFindCoursesByClub(Object clubID) throws FinderException {
-		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CLUB_ID, clubID).appendOrderBy(COLUMN_NAME);
-
-		return this.idoFindPKsByQuery(query);
+	public Collection ejbFindCoursesByClub(Group club) throws FinderException {
+		Table table = new Table(this);
+		Table venue = new Table(Venue.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, venue);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(venue, Venue.COLUMN_OWNER, MatchCriteria.EQUALS, club));
+		query.addOrder(venue, Venue.COLUMN_NAME, true);
+		
+		return this.idoFindPKsBySQL(query.toString());
 	}
 
-	public Collection ejbFindCoursesByType(String type) throws FinderException {
-		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_TYPE, type).appendOrderBy(COLUMN_NAME);
+	public Integer ejbFindCourseByClubAndName(Group club, String name) throws FinderException {
+		Table table = new Table(this);
+		Table venue = new Table(Venue.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, venue);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(venue, Venue.COLUMN_OWNER, MatchCriteria.EQUALS, club));
+		query.addCriteria(new MatchCriteria(venue, Venue.COLUMN_NAME, MatchCriteria.EQUALS, name));
 
-		return this.idoFindPKsByQuery(query);
-	}
-
-	public Integer ejbFindCourseByClubAndName(Object clubID, String name) throws FinderException {
-		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CLUB_ID, clubID).appendAndEqualsQuoted(COLUMN_NAME, name);
-
-		return (Integer) idoFindOnePKByQuery(query);
+		return (Integer) idoFindOnePKBySQL(query.toString());
 	}
 
 	public Integer ejbFindCourseByName(String name) throws FinderException {
-		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, name);
+		Table table = new Table(this);
+		Table venue = new Table(Venue.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		try {
+			query.addJoin(table, venue);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage());
+		}
+		query.addCriteria(new MatchCriteria(venue, Venue.COLUMN_NAME, MatchCriteria.EQUALS, name));
 
-		return (Integer) idoFindOnePKByQuery(query);
+		return (Integer) idoFindOnePKBySQL(query.toString());
 	}
 }

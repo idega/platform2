@@ -1,20 +1,15 @@
 package is.idega.idegaweb.golf.course.data;
 
+import com.idega.block.venue.data.Venue;
 
-public interface Course extends com.idega.data.IDOEntity
-{
- public com.idega.user.data.Group getClub();
- public java.lang.Object getClubID();
- public java.lang.String getCourseName();
- public java.lang.String getCourseType();
- public java.lang.String getIDColumnName();
- public boolean getIsValid();
- public int getNumberOfHoles();
- public void initializeAttributes();
- public void setClub(com.idega.user.data.Group p0);
- public void setClubID(java.lang.Object p0);
- public void setCourseName(java.lang.String p0);
- public void setCourseType(java.lang.String p0);
- public void setIsValid(boolean p0);
- public void setNumberOfHoles(int p0);
+
+public interface Course extends Venue {
+	
+	public static final String ENTITY_NAME = "golf_course";
+
+	public static final String COLUMN_COURSE_ID = "course_id";
+	public static final String COLUMN_NUMBER_OF_HOLES = "number_of_holes";
+	
+	public int getNumberOfHoles();
+	public void setNumberOfHoles(int p0);
 }

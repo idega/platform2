@@ -20,7 +20,7 @@ public java.util.Collection findAllCourses()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public Course findCourseByClubAndName(java.lang.Object p0,java.lang.String p1)throws javax.ejb.FinderException{
+public Course findCourseByClubAndName(com.idega.user.data.Group p0,java.lang.String p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((CourseBMPBean)entity).ejbFindCourseByClubAndName(p0,p1);
 	this.idoCheckInPooledEntity(entity);
@@ -34,16 +34,9 @@ public Course findCourseByName(java.lang.String p0)throws javax.ejb.FinderExcept
 	return this.findByPrimaryKey(pk);
 }
 
-public java.util.Collection findCoursesByClub(java.lang.Object p0)throws javax.ejb.FinderException{
+public java.util.Collection findCoursesByClub(com.idega.user.data.Group p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((CourseBMPBean)entity).ejbFindCoursesByClub(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public java.util.Collection findCoursesByType(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((CourseBMPBean)entity).ejbFindCoursesByType(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
