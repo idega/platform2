@@ -4309,6 +4309,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
+	public ChildCareContract getLatestContractByApplication(int applicationID) {
+		try {
+			return getChildCareContractArchiveHome().findLatestContractByApplication(applicationID);
+		}
+		catch (FinderException e) {
+			return null;
+		}
+	}
+
 	public Collection getCaseLogNewContracts(Timestamp fromDate, Timestamp toDate) {
 		try {
 			return getCaseLogsByCaseAndDatesAndStatusChange(CareConstants.CASE_CODE_KEY, fromDate, toDate, getCaseStatusContract().toString(), getCaseStatusReady().toString());
