@@ -30,7 +30,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
 
   public static PollEntity[] getPolls(int pollQuestionID) {
     try {
-      return (PollEntity[]) PollEntity.getStaticInstance(PollEntity.class).findAllByColumn(PollQuestion.getColumnNameID(),pollQuestionID);
+      return (PollEntity[]) PollEntity.getStaticInstance(PollEntity.class).findAllByColumn(PollQuestion.getColumnNameID(),Integer.toString(pollQuestionID),"=");
     }
     catch (SQLException e) {
       return null;
@@ -119,7 +119,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
 
   public static PollAnswer[] getAnswers(int pollQuestionID) {
     try {
-      return (PollAnswer[]) PollAnswer.getStaticInstance(PollAnswer.class).findAllByColumn(PollQuestion.getColumnNameID(),pollQuestionID);
+      return (PollAnswer[]) PollAnswer.getStaticInstance(PollAnswer.class).findAllByColumn(PollQuestion.getColumnNameID(),Integer.toString(pollQuestionID),"=");
     }
     catch (SQLException e) {
       return null;
@@ -310,7 +310,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
       if ( superAdmin )
         pollQuestion = (PollQuestion[]) PollQuestion.getStaticInstance(PollQuestion.class).findAll();
       else
-        pollQuestion = (PollQuestion[]) PollQuestion.getStaticInstance(PollQuestion.class).findAllByColumn(PollQuestion.getColumnNameUserID(),userID);
+        pollQuestion = (PollQuestion[]) PollQuestion.getStaticInstance(PollQuestion.class).findAllByColumn(PollQuestion.getColumnNameUserID(),Integer.toString(userID),"=");
     }
     catch (SQLException e) {
       pollQuestion = null;
@@ -430,9 +430,9 @@ public static final String COOKIE_NAME = "idegaPOLL_";
       }
     }
 
-    pollAnswer.setPollQuestionID(pollQuestionID);
 
     if ( !update ) {
+      pollAnswer.setPollQuestionID(pollQuestionID);
       pollAnswer.setHits(0);
       try {
         pollAnswer.insert();
@@ -443,13 +443,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
       }
     }
     else {
-      try {
-        pollAnswer.update();
-        _pollAnswerID = pollAnswer.getID();
-      }
-      catch (SQLException e) {
-        e.printStackTrace(System.err);
-      }
+      _pollAnswerID = pollAnswer.getID();
     }
 
 

@@ -86,15 +86,26 @@ public PollQuestionEditor(){
     if ( iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION) != null ) {
       try {
         pollQuestionID = Integer.parseInt(iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION));
-        iwc.setApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestionID));
       }
       catch (NumberFormatException e) {
         pollQuestionID = -1;
       }
     }
 
-    if ( sLocaleId != null ) {
-      savePollQuestion(iwc,iLocaleId,false);
+    /*if ( sLocaleId != null ) {
+      savePollQuestion(iwc,iLocaleId);
+    }*/
+
+    if ( iwc.getParameter(PollBusiness._PARAMETER_MODE) != null ) {
+      if ( iwc.getParameter(PollBusiness._PARAMETER_MODE).equalsIgnoreCase(PollBusiness._PARAMETER_CLOSE) ) {
+        closePollQuestion(iwc);
+      }
+      else if ( iwc.getParameter(PollBusiness._PARAMETER_MODE).equalsIgnoreCase(PollBusiness._PARAMETER_SAVE) ) {
+        if ( pollID != -1 )
+          savePollQuestion(iwc,iLocaleId);
+        else
+          closePollQuestion(iwc);
+      }
     }
 
     if ( (String) iwc.getApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION) != null ) {
@@ -103,18 +114,6 @@ public PollQuestionEditor(){
       }
       catch (NumberFormatException e) {
         pollQuestionID = -1;
-      }
-    }
-
-    if ( iwc.getParameter(PollBusiness._PARAMETER_MODE) != null ) {
-      if ( iwc.getParameter(PollBusiness._PARAMETER_MODE).equalsIgnoreCase(PollBusiness._PARAMETER_CLOSE) ) {
-        closePollQuestion(iwc);
-      }
-      else if ( iwc.getParameter(PollBusiness._PARAMETER_MODE).equalsIgnoreCase(PollBusiness._PARAMETER_SAVE) ) {
-        if ( pollID != -1 )
-          savePollQuestion(iwc,iLocaleId,true);
-        else
-          closePollQuestion(iwc);
       }
     }
 
@@ -176,7 +175,7 @@ public PollQuestionEditor(){
     close();
   }
 
-  private void savePollQuestion(IWContext iwc,int iLocaleID, boolean close) {
+  private void savePollQuestion(IWContext iwc,int iLocaleID) {
     String pollQuestionString = iwc.getParameter(prmQuestionParameter);
     String pollStartDate = iwc.getParameter(prmStartDateParameter);
     String pollEndDate = iwc.getParameter(prmEndDateParameter);
@@ -199,17 +198,12 @@ public PollQuestionEditor(){
       _pollQuestionID = PollBusiness.savePollQuestion(_userID,pollID,pollQuestionID,pollQuestionString,pollStartDate,pollEndDate,Integer.parseInt(localeString));
     }
     iwc.setApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(_pollQuestionID));
-
-    if ( close ) {
-      iwc.removeApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION);
-      iwc.setApplicationAttribute(PollQuestionChooser.prmQuestions,Integer.toString(_pollQuestionID));
-      setParentToReload();
-      close();
-    }
   }
 
   private void closePollQuestion(IWContext iwc) {
     iwc.removeApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION);
+    iwc.setApplicationAttribute(PollQuestionChooser.prmQuestions,Integer.toString(pollQuestionID));
+    setParentToReload();
     close();
   }
 
