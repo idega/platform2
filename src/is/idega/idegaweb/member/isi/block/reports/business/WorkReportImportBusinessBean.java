@@ -676,7 +676,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						ssn.setCellValue(memb.getPersonalId());
 						address.setCellValue(memb.getStreetName());
 						try {
-							po.setCellValue(memb.getPostalCode().getPostalCode());
+							PostalCode postalCode = memb.getPostalCode();
+						    if (postalCode != null) {
+						        po.setCellValue(postalCode.getPostalCode());
+						    }
 						}
 						catch (SQLException e1) {
 							e1.printStackTrace();
