@@ -82,6 +82,11 @@ public class ProductItemImages extends ProductItem {
       for (int i = 0; i < images.size(); i++) {
 	file = (ICFile) images.get(i);
 	image = new Image(file.getID());
+	String att = file.getMetaData(ProductEditorWindow.imageAttributeKey);
+
+	if(att != null)
+	  image.setAttributes(getAttributeMap(att));
+
 	if ( _width > 0 ) {
 	  System.out.println("Setting image width: "+_width);
 	  image.setWidth( _width );
