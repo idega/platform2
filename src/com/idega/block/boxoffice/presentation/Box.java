@@ -448,7 +448,13 @@ public class Box extends Block implements Builderaware {
 						if (_showFileSize) {
 							ICFile file = links[b].getFile();
 							
-							double size = (double) file.getFileSize().intValue() / (double) 1024;
+							double size = 0;
+							try {
+								size = (double) file.getFileSize().intValue() / (double) 1024;
+							}
+							catch (Exception e) {
+								size = 0;
+							}
 							DecimalFormat format = new DecimalFormat("0.0 KB");
 							
 							Text fileSize = new Text(format.format(size));
@@ -458,20 +464,28 @@ public class Box extends Block implements Builderaware {
 							table.add(fileSize, column++, linkRow);
 							
 							if (_showMimeType) {
-								String mimeType = file.getMimeType();
-								mimeType = mimeType.replace('\\','_');
-								mimeType = mimeType.replace('/','_');
-								mimeType = mimeType.replace(':','_');
-								mimeType = mimeType.replace('*','_');
-								mimeType = mimeType.replace('?','_');
-								mimeType = mimeType.replace('<','_');
-								mimeType = mimeType.replace('>','_');
-								mimeType = mimeType.replace('|','_');
-								mimeType = mimeType.replace('\"','_');
+								String mimeType = null;
+								try {
+									mimeType = file.getMimeType();
+									mimeType = mimeType.replace('\\', '_');
+									mimeType = mimeType.replace('/', '_');
+									mimeType = mimeType.replace(':', '_');
+									mimeType = mimeType.replace('*', '_');
+									mimeType = mimeType.replace('?', '_');
+									mimeType = mimeType.replace('<', '_');
+									mimeType = mimeType.replace('>', '_');
+									mimeType = mimeType.replace('|', '_');
+									mimeType = mimeType.replace('\"', '_');
+								}
+								catch (Exception e) {
+									mimeType = null;
+								}
  
-								Image mime = _iwb.getImage(_DEFAULT_ICON_PREFIX+mimeType+_DEFAULT_ICON_SUFFIX);
-								table.setWidth(column++, linkRow, 12);
-								table.add(mime, column++, linkRow);
+								if (mimeType != null) {
+									Image mime = _iwb.getImage(_DEFAULT_ICON_PREFIX+mimeType+_DEFAULT_ICON_SUFFIX);
+									table.setWidth(column++, linkRow, 12);
+									table.add(mime, column++, linkRow);
+								}
 							}
 						}
 
