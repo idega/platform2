@@ -52,10 +52,12 @@ private ImageViewer viewer = new ImageViewer();
   private Form getBrowserTable(ModuleInfo modinfo) throws SQLException {
 
     String mode = modinfo.getParameter("mode");
+    String edit = modinfo.getParameter("edit");//so it doesn't conflict with imageviewer
       if ( mode == null ) { mode = "image"; }
 
     Form categoryForm = new Form();
       categoryForm.add(new HiddenInput("mode","search"));
+      categoryForm.setMethod("GET");
 
     Table myTable = new Table(1,3);
       myTable.setWidth(getWidth());
@@ -108,7 +110,7 @@ private ImageViewer viewer = new ImageViewer();
       viewer.setFooterBackgroundImage("/pics/jmodules/image/myndamodule/footer/foottiler.gif");
       imageTable.add(viewer,3,1);
     }
-    else {
+    else if( mode.equalsIgnoreCase("search") && (edit==null) ){
       imageTable.add(getSearchResults(modinfo),3,1);
     }
 
