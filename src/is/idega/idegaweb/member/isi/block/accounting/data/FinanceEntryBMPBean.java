@@ -8,8 +8,12 @@
 package is.idega.idegaweb.member.isi.block.accounting.data;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
@@ -26,7 +30,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	protected final static String COLUMN_GROUP_ID = "group_id";
 	protected final static String COLUMN_AMOUNT = "amount";
 	protected final static String COLUMN_STATUS = "status";
-	protected final static String COLUMN_TYPE = "type";
+	protected final static String COLUMN_TYPE = "entry_type";
 	protected final static String COLUMN_DATE_OF_ENTRY = "date_of_entry";
 	
 	protected final static String STATUS_CREATED = "C";
@@ -66,6 +70,30 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 		setNullable(COLUMN_GROUP_ID, true);
 	}
 
+	public void setStatusCreated() {
+		setColumn(COLUMN_STATUS, STATUS_CREATED);
+	}
+
+	public void setStatusReady() {
+		setColumn(COLUMN_STATUS, STATUS_READY);
+	}
+	
+	public void setStatusSent() {
+		setColumn(COLUMN_STATUS, STATUS_SENT);
+	}
+	
+	public void setTypeAssessment() {
+		setColumn(COLUMN_TYPE, TYPE_ASSESSMENT);
+	}
+
+	public void setTypeManual() {
+		setColumn(COLUMN_TYPE, TYPE_MANUAL);
+	}
+	
+	public void setTypePayment() {
+		setColumn(COLUMN_TYPE, TYPE_PAYMENT);
+	}
+	
 	public double getAmount() {
 		return getDoubleColumnValue(COLUMN_AMOUNT);
 	}
@@ -161,4 +189,14 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry {
 	public void setUser(User user) {
 		setColumn(COLUMN_USER_ID, user);
 	}
+	
+	public Collection ejbFindAllByAssessmentRound(AssessmentRound round) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_ASSESSMENT_ROUND_ID, round);
+		
+		System.out.println("sql =" + sql.toString());
+		
+		return idoFindPKsByQuery(sql);
+	}	
 }

@@ -20,7 +20,7 @@ import com.idega.user.data.Group;
  * @author palli
  */
 public class ClubTariffTypeBMPBean extends GenericEntity implements ClubTariffType {
-	protected final static String ENTITY_NAME = "isi_club_tariff_type";
+	protected final static String ENTITY_NAME = "isi_tariff_type";
 
 	protected final static String COLUMN_TARIFF_TYPE = "tariff_type";
 	protected final static String COLUMN_NAME = "tariff_type_name";

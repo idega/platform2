@@ -25,6 +25,12 @@ public interface FinanceEntry extends com.idega.data.IDOEntity
  public void setDivisionID(int p0);
  public void setGroup(com.idega.user.data.Group p0);
  public void setGroupID(int p0);
+ public void setStatusCreated();
+ public void setStatusReady();
+ public void setStatusSent();
+ public void setTypeAssessment();
+ public void setTypeManual();
+ public void setTypePayment();
  public void setUser(com.idega.user.data.User p0);
  public void setUserID(int p0);
 }

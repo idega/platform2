@@ -3,6 +3,7 @@ package is.idega.idegaweb.member.isi.block.accounting.data;
 
 public interface AssessmentRound extends com.idega.data.IDOEntity
 {
+ public void addTariffType(is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType p0)throws com.idega.data.IDOAddRelationshipException;
  public com.idega.user.data.Group getClub();
  public int getClubId();
  public boolean getDeleted();
@@ -17,7 +18,6 @@ public interface AssessmentRound extends com.idega.data.IDOEntity
  public boolean getIncludeChildren();
  public java.lang.String getName();
  public java.sql.Timestamp getStartTime();
- public boolean getUseParentTariff();
  public void setClub(com.idega.user.data.Group p0);
  public void setClubId(int p0);
  public void setDeleted(boolean p0);
@@ -32,5 +32,4 @@ public interface AssessmentRound extends com.idega.data.IDOEntity
  public void setIncludeChildren(boolean p0);
  public void setName(java.lang.String p0);
  public void setStartTime(java.sql.Timestamp p0);
- public void setUseParentTariff(boolean p0);
 }

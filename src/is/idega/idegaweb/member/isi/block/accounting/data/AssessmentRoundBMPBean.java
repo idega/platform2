@@ -13,6 +13,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -31,7 +32,6 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 	protected final static String COLUMN_GROUP = "group_id";
 	protected final static String COLUMN_START_TIME = "start_time";
 	protected final static String COLUMN_END_TIME = "end_time";
-	protected final static String COLUMN_USE_PARENT_TARIFF = "use_parent";
 	protected final static String COLUMN_INCLUDE_CHILDREN = "include_children";
 	protected final static String COLUMN_DELETED = "deleted";
 
@@ -59,11 +59,15 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 		addManyToOneRelationship(COLUMN_GROUP, Group.class);
 		addAttribute(COLUMN_START_TIME, "The start time of the thread", true, true, Timestamp.class);
 		addAttribute(COLUMN_END_TIME, "The end time of the thread", true, true, Timestamp.class);
-		addAttribute(COLUMN_USE_PARENT_TARIFF, "Use the tariff of the parent", true, true, Boolean.class);
 		addAttribute(COLUMN_INCLUDE_CHILDREN, "Include children", true, true, Boolean.class);
 		addAttribute(COLUMN_DELETED, "Deleted", true, true, Boolean.class);
+		addManyToManyRelationShip(ClubTariffType.class);
 	}
 
+	public void addTariffType(ClubTariffType tariffType) throws IDOAddRelationshipException {
+		idoAddTo(tariffType);
+	}
+	
 	public void setName(String name) {
 		setColumn(COLUMN_NAME, name);
 	}
@@ -110,10 +114,6 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 
 	public void setEndTime(Timestamp time) {
 		setColumn(COLUMN_END_TIME, time);
-	}
-	
-	public void setUseParentTariff(boolean use) {
-		setColumn(COLUMN_USE_PARENT_TARIFF, use);
 	}
 	
 	public void setIncludeChildren(boolean include) {
@@ -170,10 +170,6 @@ public class AssessmentRoundBMPBean extends GenericEntity implements AssessmentR
 
 	public Timestamp getEndTime() {
 		return (Timestamp) getColumnValue(COLUMN_END_TIME);
-	}
-	
-	public boolean getUseParentTariff() {
-		return getBooleanColumnValue(COLUMN_USE_PARENT_TARIFF, false);
 	}
 	
 	public boolean getIncludeChildren() {

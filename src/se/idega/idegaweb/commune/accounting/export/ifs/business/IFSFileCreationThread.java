@@ -1376,8 +1376,7 @@ public class IFSFileCreationThread extends Thread {
 			throw new IBORuntimeException(e.getMessage());
 		}
 	}
-	
-	
+		
 	private IFSCheckRecordHome getIFSCheckRecordHome() {
 		try {
 			return (IFSCheckRecordHome) IDOLookup.getHome(IFSCheckRecord.class);

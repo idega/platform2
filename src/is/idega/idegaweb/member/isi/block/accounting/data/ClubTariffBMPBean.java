@@ -15,12 +15,13 @@ import javax.ejb.FinderException;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.Group;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author palli
  */
 public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
-	protected final static String ENTITY_NAME = "isi_club_tariff";
+	protected final static String ENTITY_NAME = "isi_tariff";
 	
 	protected final static String COLUMN_CLUB = "club_id";
 	protected final static String COLUMN_GROUP = "group_id";
@@ -144,7 +145,7 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 	public Collection ejbFindAllByClub(Group club) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.appendWhereEquals(COLUMN_CLUB, ((Integer)club.getPrimaryKey()).intValue());
+		sql.appendWhereEquals(COLUMN_CLUB, club);
 		sql.appendAnd();
 		sql.appendLeftParenthesis();
 		sql.appendEquals(COLUMN_DELETED,false);
@@ -152,6 +153,35 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 		sql.append(COLUMN_DELETED);
 		sql.append(" is null");
 		sql.appendRightParenthesis();
+		
+		System.out.println("sql =" + sql.toString());
+		
+		return idoFindPKsByQuery(sql);
+	}
+	
+	public Collection ejbFindByGroupAndTariffType(Group group, ClubTariffType type) throws FinderException {
+		IWTimestamp now = IWTimestamp.RightNow();
+		
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_GROUP, group);
+		sql.appendAnd();
+		sql.appendEquals(COLUMN_TARIFF_TYPE, type);
+		sql.appendAnd();
+		sql.appendLeftParenthesis();
+		sql.appendEquals(COLUMN_DELETED,false);
+		sql.appendOr();
+		sql.append(COLUMN_DELETED);
+		sql.append(" is null");
+		sql.appendRightParenthesis();
+		sql.appendAnd();
+		sql.append(COLUMN_PERIOD_FROM);
+		sql.appendLessThanOrEqualsSign();
+		sql.append(now.getDate());
+		sql.appendAnd();
+		sql.append(now.getDate());
+		sql.appendLessThanOrEqualsSign();
+		sql.append(COLUMN_PERIOD_TO);
 		
 		System.out.println("sql =" + sql.toString());
 		

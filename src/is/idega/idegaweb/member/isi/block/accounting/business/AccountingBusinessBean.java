@@ -20,6 +20,7 @@ import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardTypeHome;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -39,7 +40,7 @@ import com.idega.util.IWTimestamp;
  * @author palli
  */
 public class AccountingBusinessBean extends IBOServiceBean implements AccountingBusiness {
-	public boolean doAssessment(String name, Group club, Group division, String groupId, User user, boolean useParent, boolean includeChildren) {
+	public boolean doAssessment(String name, Group club, Group division, String groupId, User user, boolean includeChildren, String tariffs[]) {
 		Group group = null;
 		if (groupId != null) {
 			try {
@@ -58,28 +59,9 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		}
 
 		IWTimestamp now = IWTimestamp.RightNow();
-		AssessmentRound round = null;
-		try {
-			round = ((AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class)).create();
-			round.setName(name);
-			round.setClub(club);
-			round.setDivision(division);
-			round.setGroup(group);
-			round.setStartTime(now.getTimestamp());
-			round.setExecutedBy(user);
-			round.setUseParentTariff(useParent);
-			round.setIncludeChildren(includeChildren);
+		AssessmentRound round = insertAssessmentRound(name, club, division, group, user, now.getTimestamp(), null, includeChildren);
 
-			round.store();
-		}
-		catch (IDOLookupException e) {
-			e.printStackTrace();
-		}
-		catch (CreateException e) {
-			e.printStackTrace();
-		}
-
-		Thread assRoundThread = new AssessmentRoundThread(round, getIWApplicationContext());
+		Thread assRoundThread = new AssessmentRoundThread(round, getIWApplicationContext(), Arrays.asList(tariffs));
 		assRoundThread.start();
 
 		return true;
@@ -346,9 +328,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return null;
 	}
 
-	public boolean insertAssessmentRound(String name, Group club, Group division, Group group, User user, Timestamp start, Timestamp end, boolean useParent, boolean includeChildren) {
+	public AssessmentRound insertAssessmentRound(String name, Group club, Group division, Group group, User user, Timestamp start, Timestamp end, boolean includeChildren) {
+		AssessmentRound round = null;
 		try {
-			AssessmentRound round = getAssessmentRoundHome().create();
+			round = getAssessmentRoundHome().create();
 			round.setName(name);
 			round.setClub(club);
 			if (division != null)
@@ -359,7 +342,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			round.setStartTime(start);
 			if (end != null)
 				round.setEndTime(end);
-			round.setUseParentTariff(useParent);
 			round.setIncludeChildren(includeChildren);
 
 			round.store();
@@ -367,10 +349,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (CreateException e) {
 			e.printStackTrace();
 
-			return false;
+			return null;
 		}
 
-		return true;
+		return round;
 	}
 	
 	public boolean deleteAssessmentRound(String ids[]) {
