@@ -1052,8 +1052,15 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				int lastCell = row.getLastCellNum();
 
 				//String name = HSSFCellUtil.translateUnicodeValues(row.getCell(COLUMN_MEMBER_NAME)).getStringCellValue();
-				String name = row.getCell(COLUMN_MEMBER_NAME).getStringCellValue();
+				HSSFCell nameCell = row.getCell(COLUMN_MEMBER_NAME);
+				String name = null;
+				if(nameCell!=null){
+					name =nameCell.getStringCellValue();
+				}
+				
+				
 				String ssn = getStringValueFromExcelNumberOrStringCell(row, COLUMN_MEMBER_SSN);
+				
 				ssn = TextSoap.findAndCut(ssn, "-");
 				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
 				String first_name = "";

@@ -1469,7 +1469,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   }
 
   public WorkReportGroup getMainBoardWorkReportGroup(int year)  {
-    String mainBoardName  = getIWApplicationContext().getApplication().getBundle(ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_MAIN_BOARD_NAME);
+    String mainBoardName  = getIWApplicationContext().getApplication().getBundle(ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_MAIN_BOARD_NAME,"ADA");
     
     
     WorkReportGroup group = findWorkReportGroupByNameAndYear(mainBoardName, year);
