@@ -273,9 +273,7 @@ private double grunn;
 
     try {
       Stroke[] stroke = (Stroke[]) (new Stroke()).findAll("select stroke.* from stroke s,tee t where s.tee_id = t.tee_id and scorecard_id = "+scorecard_id+" order by hole_number");
-      //Stroke[] stroke = (Stroke[]) (new Stroke()).findAllByColumnOrdered("scorecard_id",scorecard_id+"","tee_id");
 
-      System.out.println("calculatePointsWithoutUpdate: "+new idegaTimestamp().getTimestampRightNow().toString());
       totalPoints = calculatePointsWithoutUpdate(stroke,leikHandicap);
     }
     catch(Exception e) {
