@@ -349,6 +349,8 @@ public static final int PAGE = 3;
     }
 
     locText.setHeadline(categoryName);
+		locText.setBody("");
+		locText.setCreated(com.idega.util.idegaTimestamp.getTimestampRightNow());
 
     if ( newLocText ) {
       locText.setLocaleId(iLocaleID);
