@@ -48,17 +48,25 @@ public class StockroomBusiness /* implements SupplyManager */ {
     throw new java.lang.UnsupportedOperationException("Method getSupplyStatus() not yet implemented.");
   }
 
-  public void setPrice(int productPriceIdToReplace, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId) throws SQLException {
+  public ProductPrice setPrice(int productPriceIdToReplace, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId) throws SQLException {
+    return setPrice(productPriceIdToReplace, productId, priceCategoryId, currencyId, time, price, priceType, timeframeId, addressId, -1);
+  }
+
+  public ProductPrice setPrice(int productPriceIdToReplace, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId, int maxUsage) throws SQLException {
     if (productPriceIdToReplace != -1) {
         ProductPrice pPrice = ((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class)).findByPrimaryKeyLegacy(productPriceIdToReplace);
           pPrice.invalidate();
           pPrice.update();
     }
 
-    setPrice(productId, priceCategoryId, currencyId, time, price, priceType, timeframeId, addressId);
+    return setPrice(productId, priceCategoryId, currencyId, time, price, priceType, timeframeId, addressId, maxUsage);
   }
 
-  public void setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId) throws SQLException {
+  public ProductPrice setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId) throws SQLException {
+    return setPrice(productId, priceCategoryId, currencyId, time, price, priceType, timeframeId, addressId, -1);
+  }
+
+  public ProductPrice setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType, int timeframeId, int addressId, int maxUsage) throws SQLException {
        ProductPrice prPrice = ((com.idega.block.trade.stockroom.data.ProductPriceHome)com.idega.data.IDOLookup.getHomeLegacy(ProductPrice.class)).createLegacy();
          prPrice.setProductId(productId);
          prPrice.setCurrencyId(currencyId);
@@ -66,6 +74,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
          prPrice.setPriceDate(time);
          prPrice.setPrice(price);
          prPrice.setPriceType(priceType);
+         prPrice.setMaxUsage(maxUsage);
        prPrice.insert();
        if (timeframeId != -1) {
         prPrice.addTo(Timeframe.class, timeframeId);
@@ -73,6 +82,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
        if (addressId != -1) {
         prPrice.addTo(TravelAddress.class, addressId);
        }
+       return prPrice;
   }
 
   public static float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {

@@ -8,6 +8,7 @@ public interface ProductPrice extends com.idega.data.IDOLegacyEntity
  public int getCurrencyId();
  public int getDiscount();
  public boolean getIsValid();
+ public int getMaxUsage();
  public float getPrice();
  public com.idega.block.trade.stockroom.data.PriceCategory getPriceCategory();
  public int getPriceCategoryID();
@@ -20,6 +21,7 @@ public interface ProductPrice extends com.idega.data.IDOLegacyEntity
  public void setCurrencyId(java.lang.Integer p0);
  public void setDefaultValues();
  public void setIsValid(boolean p0);
+ public void setMaxUsage(int p0);
  public void setPrice(float p0);
  public void setPriceCategoryID(int p0);
  public void setPriceDate(java.sql.Timestamp p0);

@@ -35,6 +35,8 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     addAttribute(getColumnNamePriceDate(), "Dagsetning verðs", true, true, Timestamp.class);
     addAttribute(getColumnNamePriceType(),"Gerð",true,true,Integer.class);
     addAttribute(getColumnNameIsValid(), "virkt", true, true, Boolean.class);
+    /** added 22.04.2002 by gimmi */
+    addAttribute(getColumnNameMaxUsage(), "hámarks fjoldi", true, true, Integer.class);
 
     this.addManyToManyRelationShip(Timeframe.class,getProductPriceTableName()+"_TIMEFRAME");
     this.addManyToManyRelationShip(Address.class,getProductPriceTableName()+"_ADDRESS");
@@ -60,6 +62,7 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
 
   public void setDefaultValues() {
     this.setIsValid(true);
+    this.setMaxUsage(-1);
   }
 
   public int getProductId() {
@@ -209,6 +212,16 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
       return prices;
   }
 
+  /** added 22.04.2002 by gimmi */
+  public int getMaxUsage() {
+    return getIntColumnValue(getColumnNameMaxUsage());
+  }
+
+  public void setMaxUsage(int maxUsage) {
+    setColumn(getColumnNameMaxUsage(), maxUsage);
+  }
+
+
 
   public static String getProductPriceTableName(){return "SR_PRODUCT_PRICE";}
   public static String getColumnNameProductId(){return "SR_PRODUCT_ID";}
@@ -218,8 +231,8 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
   public static String getColumnNameCurrencyId() {return "TR_CURRENCY_ID"; }
   public static String getColumnNamePriceType() {return "PRICE_TYPE"; }
   public static String getColumnNameIsValid() {return "IS_VALID";}
-
-
+  /** added 22.04.2002 by gimmi */
+  public static String getColumnNameMaxUsage() {return "MAX_USAGE";}
 
 
 
