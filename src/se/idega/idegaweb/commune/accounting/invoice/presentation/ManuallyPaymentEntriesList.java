@@ -9,7 +9,6 @@ package se.idega.idegaweb.commune.accounting.invoice.presentation;
 import is.idega.idegaweb.member.presentation.UserSearcher;
 
 import java.rmi.RemoteException;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -64,7 +63,6 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 
 	private String ERROR_POSTING = "error_posting";
 	private String ERROR_OWNPOSTING_EMPTY = "error_ownposting_empty";
-	private String ERROR_DATE_FORMAT = "error_date_form";	
 
 	private String LOCALIZER_PREFIX = "regular_payment_entries_list.";
 	
