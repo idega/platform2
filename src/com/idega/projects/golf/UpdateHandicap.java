@@ -2,6 +2,7 @@ package com.idega.projects.golf;
 
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.*;
+import com.idega.projects.golf.business.TournamentController;
 
 public class UpdateHandicap {
 
@@ -9,31 +10,53 @@ public class UpdateHandicap {
 
       try {
 
-            MemberInfo member = new MemberInfo(member_id);
+            Member member = new Member(member_id);
+            MemberInfo memberInfo = new MemberInfo(member_id);
+            TournamentRound round;
+            TournamentRound[] rounds;
 
-            double grunn = (double) member.getFloatColumnValue("handicap_first");
+            double grunn = (double) memberInfo.getFirstHandicap();
             int tee_id = 0;
 
-            Scorecard[] scorecard = (Scorecard[]) (new Scorecard()).findAllByColumnOrdered("member_id",member_id+"","scorecard_date");
+            Scorecard[] scorecard = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date is not null order by scorecard_date");
             for (int m=0; m < scorecard.length; m++) {
 
-                TournamentRound round = scorecard[m].getTournamentRound();
-                TournamentRound[] rounds = (TournamentRound[]) (new TournamentRound()).findAllByColumn("tournament_id",round.getTournamentID());
+                round = new TournamentRound(scorecard[m].getTournamentRoundId());
+                rounds = (TournamentRound[]) (new TournamentRound()).findAllByColumn("tournament_id",round.getTournamentID());
 
                 if ( scorecard[m].getHandicapCorrection().equalsIgnoreCase("N") ) {
 
-                            float slope = (float) scorecard[m].getSlope();
-                            float course_rating = scorecard[m].getCourseRating();
-                            int field_id = scorecard[m].getFieldID();
+                    float slope = (float) scorecard[m].getSlope();
+                    float course_rating = scorecard[m].getCourseRating();
+                    int teeColorID = scorecard[m].getTeeColorID();
+                    int field_id = scorecard[m].getFieldID();
+                    double tournamentHandicap = 0;
+                    int tournamentRoundID = scorecard[m].getTournamentRoundId();
 
                     Field field = new Field(field_id);
                             float field_par = (float) field.getIntColumnValue("field_par");
 
                     Handicap leikForgjof = new Handicap(grunn);
-                      if ( scorecard[m].getTournamentRoundId() > 1 ) {
-                        leikForgjof = new Handicap((double) scorecard[m].getHandicapBefore());
+                      if ( tournamentRoundID > 1 ) {
+                        if ( round.getRoundNumber() == 1 ) {
+                          tournamentHandicap = grunn;
+                        }
+                        Tournament tournament = round.getTournament();
+                        if ( member.getGender().equalsIgnoreCase("m") ) {
+                          if ( tournamentHandicap > (double) tournament.getMaxHandicap() ) {
+                            tournamentHandicap = leikForgjof.getHandicapForScorecard(tournament.getID(),teeColorID,tournament.getMaxHandicap());
+                          }
+                        }
+                        else if ( member.getGender().equalsIgnoreCase("f") ) {
+                          if ( tournamentHandicap > (double) tournament.getFemaleMaxHandicap() ) {
+                            tournamentHandicap = leikForgjof.getHandicapForScorecard(tournament.getID(),teeColorID,tournament.getFemaleMaxHandicap());
+                          }
+                        }
+                        leikForgjof = new Handicap((double) tournamentHandicap);
+
                       }
-                            int leik = leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
+
+                    int leik = leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
 
                     int leikpunktar = leik + 36;
                     int punktar = leikpunktar/18;
@@ -80,20 +103,24 @@ public class UpdateHandicap {
 
                     }
 
-                    if ( stroke2.length <= 9 ) {
+                    if ( stroke2.length == 9 ) {
                             heildarpunktar *= 2;
                     }
 
+                    System.err.println(leik+": "+heildarpunktar);
                     scorecard[m].setTotalPoints(heildarpunktar);
 
-                    if ( scorecard[m].getTournamentRoundId() == 1 ) {
+                    if ( tournamentRoundID == 1 ) {
                       scorecard[m].setHandicapBefore((float) grunn);
+                    }
+                    else {
+                      scorecard[m].setHandicapBefore((float) tournamentHandicap);
                     }
 
                     if ( scorecard[m].getUpdateHandicap().equalsIgnoreCase("Y") ) {
                       grunn = reiknaHandicap2((double)grunn,heildarpunktar);
 
-                      if ( scorecard[m].getTournamentRoundId() == 1 || round.getRoundNumber() == rounds.length ) {
+                      if ( tournamentRoundID == 1 || round.getRoundNumber() == rounds.length ) {
                         scorecard[m].setHandicapAfter((float) grunn);
                       }
                     }
@@ -104,7 +131,7 @@ public class UpdateHandicap {
                 else {
                     scorecard[m].setHandicapBefore((float) grunn);
                     if ( m == 0 ) {
-                      scorecard[m].setHandicapBefore(member.getFirstHandicap());
+                      scorecard[m].setHandicapBefore(memberInfo.getFirstHandicap());
                     }
                     grunn = (double) scorecard[m].getHandicapAfter();
                 }
@@ -113,8 +140,8 @@ public class UpdateHandicap {
 
             }
 
-            member.setHandicap((float) grunn);
-            member.update();
+            memberInfo.setHandicap((float) grunn);
+            memberInfo.update();
 
       }
 
