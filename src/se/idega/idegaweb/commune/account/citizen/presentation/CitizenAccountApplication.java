@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.25 2002/11/14 12:32:39 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.26 2002/11/14 14:02:51 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,11 +28,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/14 12:32:39 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/14 14:02:51 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -67,9 +67,6 @@ public class CitizenAccountApplication extends CommuneBlock {
     private final static String GENDER_KEY = "caa_gender";
     private final static String HAS_COHABITANT_DEFAULT = "Är du sammanboende?";
     private final static String HAS_COHABITANT_KEY = "caa_has_cohabitant";
-    private final static String HAS_SCHOOL_CHECK_DEFAULT
-        = "Har du beviljats skolpeng av din hemkommun för att studera i Nacka?";
-    private final static String HAS_SCHOOL_CHECK_KEY = "caa_has_school_check";
     private final static String HOUSING_TYPE_KEY = "caa_housing_type";
     private final static String LAST_NAME_DEFAULT = "Efternamn";
     private final static String LAST_NAME_KEY = "caa_last_name";
@@ -413,15 +410,6 @@ public class CitizenAccountApplication extends CommuneBlock {
             addHeader (this, table, 1, row++, CURRENT_KOMMUN_KEY,
                        CURRENT_KOMMUN_DEFAULT);
             addSingleInput (this, table, 1, row++, iwc, CURRENT_KOMMUN_KEY, 30);
-            table.mergeCells (1, row, 2, row);
-            addHeader (this, table, 1, row++, HAS_SCHOOL_CHECK_KEY,
-                       HAS_SCHOOL_CHECK_DEFAULT);
-            final RadioGroup hasSchoolCheck
-                    = new RadioGroup (HAS_SCHOOL_CHECK_KEY);
-            addRadioInput (this, iwc, hasSchoolCheck, YES_KEY, YES_DEFAULT);
-            addRadioInput (this, iwc, hasSchoolCheck, NO_KEY, NO_DEFAULT);
-            hasSchoolCheck.setSelected (YES_KEY);
-            table.add (hasSchoolCheck, 1, row++);
         }
         
         addSubmitButton (this, table, row + 1, iwc,
@@ -497,10 +485,8 @@ public class CitizenAccountApplication extends CommuneBlock {
                 MOVING_IN_ADDRESS_KEY, MOVING_IN_DATE_KEY, HOUSING_TYPE_KEY,
                 PROPERTY_TYPE_KEY }));
         } else if (applicationReason.equals (PUT_CHILDREN_IN_NACKA_KEY)) {
-            mandatoryParameterNames.addAll (Arrays.asList (new String [] {
-                CURRENT_KOMMUN_KEY, HAS_SCHOOL_CHECK_KEY }));
-            stringParameterNames.addAll (Arrays.asList (new String [] {
-                CURRENT_KOMMUN_KEY, HAS_SCHOOL_CHECK_KEY }));
+            mandatoryParameterNames.add (CURRENT_KOMMUN_KEY);
+            stringParameterNames.add (CURRENT_KOMMUN_KEY);
         }
 
         boolean isInserted = false;
@@ -803,7 +789,13 @@ public class CitizenAccountApplication extends CommuneBlock {
         
         static String createMessage (final IWResourceBundle bundle,
                                      final String key) {
-            final String displayName = bundle.getLocalizedString (key);
+            String displayName = bundle.getLocalizedString (key);
+            if ((displayName == null || displayName.trim ().length () == 0)
+            && key.lastIndexOf ("caa_") > 0) {
+                final int secondIndex = key.indexOf ("caa_", 2);
+                final String shortKey = key.substring (0, secondIndex);
+                displayName = bundle.getLocalizedString (shortKey);
+            }
             final String formatErrorString = bundle.getLocalizedString
                     ("caa_format_error", "Felaktigt inmatat värde");
             return formatErrorString + ": " + displayName;
@@ -813,28 +805,5 @@ public class CitizenAccountApplication extends CommuneBlock {
             return key;
         }
     }
-    
-    /*
-      private static void addCustodianInput (CommuneBlock communeBlock,
-      final Table table, final int row,
-      final IWContext iwc,
-      final int custodianId) {
-      final String custodianKey = CUSTODIAN_KEY + "_" + custodianId;
-      final Text custodianHeader = communeBlock.getLocalizedHeader
-      (custodianKey, CUSTODIAN_DEFAULT + " " + custodianId);
-      table.add (custodianHeader, 1, row);
-      
-      addHeader (communeBlock, table, 1, row + 1, SSN_KEY,
-      SSN_DEFAULT);
-      final String ssnKey = getCustodianKey (SSN_KEY, custodianId);
-      addSingleInput (communeBlock, table, 1, row + 2, iwc, ssnKey, 12);
-      addHeader (communeBlock, table, 2, row + 1, false, CIVIL_STATUS_KEY,
-      CIVIL_STATUS_DEFAULT);
-      final String civilStatusKey
-      = getCustodianKey (CIVIL_STATUS_KEY, custodianId);
-      addSingleInput (communeBlock, table, 2, row + 2, iwc, civilStatusKey,
-      40);
-      }
-    */
 }
 
