@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.42 2003/11/21 14:05:24 roar Exp $
+ * $Id: PostingBusinessBean.java,v 1.43 2003/11/21 15:57:31 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -249,6 +249,13 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	
 	public PostingParameters getPostingParameter(Date date, int act_id, 
 			int reg_id, String com_id, int com_bel_id, int schoolYear1_id, int schoolYear2_id) throws PostingParametersException {
+		System.out.println("date: " + date);				
+		System.out.println("act_id: " + act_id);				
+		System.out.println("reg_id: " + reg_id);				
+		System.out.println("com_id: " + com_id);				
+		System.out.println("com_bel_id: " + com_bel_id);				
+		System.out.println("schoolYear1_id: " + schoolYear1_id);				
+		System.out.println("schoolYear2_id: " + schoolYear2_id);				
 		
 		try {
 			int match;
