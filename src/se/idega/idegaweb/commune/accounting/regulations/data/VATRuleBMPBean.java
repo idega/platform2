@@ -1,5 +1,5 @@
 /*
- * $Id: VATRuleBMPBean.java,v 1.2 2003/09/08 08:10:07 laddi Exp $
+ * $Id: VATRuleBMPBean.java,v 1.3 2003/11/11 10:57:45 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.data.IDOLookup;
  * Holds VAT rules ("Momsersättning förskoleklass", "Momsersättning grundskola" etc) 
  * 
  * <p>
- * $Id: VATRuleBMPBean.java,v 1.2 2003/09/08 08:10:07 laddi Exp $
+ * $Id: VATRuleBMPBean.java,v 1.3 2003/11/11 10:57:45 anders Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class VATRuleBMPBean extends GenericEntity implements VATRule {
 	
@@ -43,16 +43,24 @@ public class VATRuleBMPBean extends GenericEntity implements VATRule {
 		VATRuleHome home
 				= (VATRuleHome) IDOLookup.getHome(VATRule.class);
 		final String [] data = { 
-			"momsersattning_forskola", 
-			"momsersattning_grundskola", 
-			"momsersattning_sarskola", 
-			"momsersattning_oppen_verksamhet", 
-			"momsersattning_fritid", 
-			"momsersattning_modersmal", 
-			"momsersattning_grundskola", 
-			"momsersattning_individ", 
-			"momsersattning_familjedaghem", 
-			"momsersattning_allman_forskola" 
+			"momsersattning_forskola",
+			"momsersattning_familjedaghem",
+			"momsersattning_allman_forskola",
+			"momsersattning_oppen_forskoleverksamhet",
+			"momsersattning_fritidshem",
+			"momsersattning_familjefritidshem",
+			"momsersattning_oppen_fritidsverksamhet",
+			"momsersattning_forskoleklass",
+			"momsersattning_grundskola",
+			"momsersattning_obligatorisk_sarskola",
+			"momsersattning_gymnasieskola",
+			"momsersattning_gymnasiesarskola",
+			"momsersattning_individresurs_enligt_regelverk",
+			"momsersattning_individresurs_for_nyanlanda",
+			"momsersattning_individresurs_enligt_avtal",
+			"momsersattning_modersmal",
+			"momsersattning_svenska_som_andrasprak",
+			"momsersattning_mindre_undervisningsgrupper"
 		};
 		for (int i = 0; i < data.length; i++) {
 			VATRule sc = home.create();
