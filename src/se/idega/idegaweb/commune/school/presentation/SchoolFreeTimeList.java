@@ -17,6 +17,8 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
@@ -24,6 +26,7 @@ import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceComparator;
 import se.idega.idegaweb.commune.school.business.SchoolFreetimeWriter;
 import se.idega.idegaweb.commune.school.data.SchoolChoice;
+import se.idega.idegaweb.commune.school.event.SchoolEventListener;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -40,15 +43,26 @@ import java.util.Vector;
  * @version 1.0
  */
 public class SchoolFreeTimeList extends SchoolCommuneBlock {
+	
+	public static final String PARAMETER_ACTION = "sch_action";	
 
 	public SchoolFreeTimeList() {		
 	}
 
+
+	private boolean multipleSchools = false;
+	private boolean showBunRadioButtons = false;	
+	
+	
 	/**
 	 * @see se.idega.idegaweb.commune.school.presentation.SchoolCommuneBlock#init(IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
 		int schoolId = getSchoolID();
+		
+		Form form = new Form();
+		form.setEventListener(SchoolEventListener.class);
+
 	
 		Collection choices = getSchoolChoiceBusiness(iwc).findBySchoolAndFreeTime(schoolId,getSchoolSeasonID(),true);
 		Map students = getBusiness().getUserMapFromChoices(choices);
@@ -64,12 +78,18 @@ public class SchoolFreeTimeList extends SchoolCommuneBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		add(table);
+		
+		form.add(table);
+		add(form);
 
 		int row = 1;		
+		table.mergeCells(1,row,4,row);	
 
+		
+		table.add(getNavigationTable(false, multipleSchools, showBunRadioButtons), 1, row++);
+		
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-		table.mergeCells(1,row,4,row);
+		table.mergeCells(1,row,4,row);		
 		Link pdfLink = getPDFLink(SchoolFreetimeWriter.class,getBundle().getImage("shared/pdf.gif"));
 		pdfLink.addParameter(SchoolFreetimeWriter.prmSchoolId, getSchoolID());
 		pdfLink.addParameter(SchoolFreetimeWriter.prmSchoolSeasonID, getSchoolSeasonID());
@@ -119,4 +139,19 @@ public class SchoolFreeTimeList extends SchoolCommuneBlock {
 	protected SchoolChoiceBusiness getSchoolChoiceBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (SchoolChoiceBusiness) IBOLookup.getServiceInstance(iwac, SchoolChoiceBusiness.class);
 	}
+	
+	/* Setters */
+	/**
+	 * Turns on/of view of drop down showing providers
+	 */
+	public void setMultipleSchools(boolean multiple) {
+		multipleSchools = multiple;
+	}	
+	/**
+	 * Turns on/off view of radiobuttons for showing BUN administrated shools or not
+	 * @param show
+	 */
+	public void setShowBunRadioButtons(boolean show){
+		showBunRadioButtons = show;		
+	}	
 }
