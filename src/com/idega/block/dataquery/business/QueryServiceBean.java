@@ -34,7 +34,7 @@ import com.idega.block.dataquery.data.sql.SQLQuery;
 import com.idega.block.dataquery.data.xml.QueryEntityPart;
 import com.idega.block.dataquery.data.xml.QueryFieldPart;
 import com.idega.block.dataquery.data.xml.QueryHelper;
-import com.idega.block.dataquery.presentation.ReportQueryOverview;
+import com.idega.block.datareport.presentation.ReportQueryOverview;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.business.AccessController;
