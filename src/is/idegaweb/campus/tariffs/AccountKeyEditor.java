@@ -2,6 +2,7 @@ package is.idegaweb.campus.tariffs;
 
 import com.idega.block.finance.presentation.*;
 import is.idegaweb.campus.tariffs.*;
+import is.idegaweb.campus.presentation.Edit;
 import com.idega.block.finance.presentation.*;
 import com.idega.block.finance.data.*;
 import com.idega.block.finance.business.Finder;
@@ -9,11 +10,14 @@ import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleObject;
+import com.idega.jmodule.object.ModuleObjectContainer;
 import com.idega.jmodule.object.textObject.*;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 import com.idega.data.EntityFinder;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 /**
  * Title:
@@ -24,53 +28,53 @@ import com.idega.data.EntityFinder;
  * @version 1.0
  */
 
-public class AccountKeyEditor extends KeyEditor {
+public class AccountKeyEditor extends ModuleObjectContainer {
 
   public String strAction = "ake_action";
+  protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
+  protected boolean isAdmin = false;
+  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.finance";
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
 
   public AccountKeyEditor(){
-    this("");
-  }
 
-  public AccountKeyEditor(String sHeader){
-    super(sHeader);
-  }
-
-  public void setColors(String LightColor,String MainColor,String DarkColor){
-    if(LightColor.startsWith("#"))
-      this.LightColor = LightColor;
-    if(MainColor.startsWith("#"))
-      this.MiddleColor = MainColor;
-    if(DarkColor.startsWith("#"))
-      this.DarkColor = DarkColor;
-  }
-  public void setHeaderText(String sHeader){
-    this.sHeader = sHeader;
   }
 
    protected void control(ModuleInfo modinfo){
 
-    try{
+   if(isAdmin){
+      try{
+        ModuleObject MO = new Text();
 
-      if(modinfo.getParameter(strAction) == null){
-        doMain(modinfo);
-      }
-      if(modinfo.getParameter(strAction) != null){
-        String sAct = modinfo.getParameter(strAction);
-        int iAct = Integer.parseInt(sAct);
-
-        switch (iAct) {
-          case ACT1 : doMain(modinfo);        break;
-          case ACT2 : doChange(modinfo);      break;
-          case ACT3 : doUpdate(modinfo);      break;
-          default: doMain(modinfo);           break;
+        if(modinfo.getParameter(strAction) == null){
+          MO = getMain(modinfo);
         }
+        if(modinfo.getParameter(strAction) != null){
+          String sAct = modinfo.getParameter(strAction);
+          int iAct = Integer.parseInt(sAct);
+
+          switch (iAct) {
+            case ACT1 : MO = getMain(modinfo);        break;
+            case ACT2 : MO = getChange(modinfo);      break;
+            case ACT3 : MO = doUpdate(modinfo);      break;
+            default: MO = getMain(modinfo);           break;
+          }
+        }
+        Table T = new Table(1,3);
+        add(Edit.headerText(iwrb.getLocalizedString("account_key_editor","Account key editor"),3));
+        T.add(makeLinkTable(1));
+        T.add(MO);
+        T.setWidth("100%");
+        add(T);
 
       }
+      catch(Exception S){
+        S.printStackTrace();
+      }
     }
-    catch(Exception S){
-      S.printStackTrace();
-    }
+    else
+      add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
 
   protected ModuleObject makeLinkTable(int menuNr){
@@ -79,14 +83,14 @@ public class AccountKeyEditor extends KeyEditor {
     LinkTable.setWidth("100%");
     LinkTable.setCellpadding(2);
     LinkTable.setCellspacing(1);
-    LinkTable.setColor(this.DarkColor);
+    LinkTable.setColor(Edit.colorDark);
     LinkTable.setWidth(last,"100%");
-    Link Link1 = new Link("Yfirlit");
-    Link1.setFontColor(this.LightColor);
+    Link Link1 = new Link(iwrb.getLocalizedString("view","View"));
+    Link1.setFontColor(Edit.colorLight);
     Link1.addParameter(this.strAction,String.valueOf(this.ACT1));
-    Link Link2 = new Link("Breyta");
-    Link2.setFontColor(this.LightColor);
-    Link2.addParameter(this.strAction,String.valueOf(this.ACT2));
+    Link Link2 = new Link(iwrb.getLocalizedString("change","Change"));
+    Link2.setFontColor(Edit.colorLight);
+    Link2.addParameter(strAction,String.valueOf(this.ACT2));
     if(isAdmin){
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,2,1);
@@ -94,40 +98,39 @@ public class AccountKeyEditor extends KeyEditor {
     return LinkTable;
   }
 
-  private void doMain(ModuleInfo modinfo){
+  private ModuleObject getMain(ModuleInfo modinfo){
 
     AccountKey[] keys = Finder.findAccountKeys();
     int count = keys.length;
     Table keyTable = new Table(4,count+1);
     keyTable.setWidth("100%");
-    keyTable.setHorizontalZebraColored(LightColor,WhiteColor);
-    keyTable.setRowColor(1,MiddleColor);
+    keyTable.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
+    keyTable.setRowColor(1,Edit.colorMiddle);
     keyTable.setCellpadding(2);
     keyTable.setCellspacing(1) ;
-    keyTable.add(formatText("Nr"),1,1);
-    keyTable.add(formatText("Auðkenni"),2,1);
-    keyTable.add(formatText("Lýsing"),3,1);
-    keyTable.add(formatText("Gjaldliður"),4,1);
+    keyTable.add(Edit.formatText("Nr"),1,1);
+    keyTable.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),2,1);
+    keyTable.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),3,1);
+    keyTable.add(Edit.formatText(iwrb.getLocalizedString("account_key","Account key")),4,1);
 
     Hashtable hk = getKeys();
     if(isAdmin){
       if(count > 0){
         for (int i = 0;i < count;i++){
-          keyTable.add(formatText(String.valueOf(i+1)),1,i+2);
-          keyTable.add(formatText(keys[i].getName()),2,i+2);
-          keyTable.add(formatText(keys[i].getInfo()),3,i+2);
+          keyTable.add(Edit.formatText(String.valueOf(i+1)),1,i+2);
+          keyTable.add(Edit.formatText(keys[i].getName()),2,i+2);
+          keyTable.add(Edit.formatText(keys[i].getInfo()),3,i+2);
           Integer tkid = new Integer(keys[i].getTariffKeyId());
           if(hk.containsKey(tkid))
-            keyTable.add( formatText( (String)hk.get( tkid) ),4,i+2);
+            keyTable.add( Edit.formatText( (String)hk.get( tkid) ),4,i+2);
         }
       }
     }
-    this.makeView();
-    this.addHeader(this.makeLinkTable(0));
-    this.addMain(keyTable);
+
+    return(keyTable);
   }
 
-  private void doChange(ModuleInfo modinfo) throws SQLException{
+  private ModuleObject getChange(ModuleInfo modinfo) throws SQLException{
     Form myForm = new Form();
     myForm.maintainAllParameters();
     AccountKey[] keys = Finder.findAccountKeys();
@@ -135,16 +138,17 @@ public class AccountKeyEditor extends KeyEditor {
     int inputcount = count+5;
     Table inputTable =  new Table(5,inputcount+1);
     inputTable.setWidth("100%");
+    //inputTable.setWidth(1,"15");
     inputTable.setCellpadding(2);
     inputTable.setCellspacing(1);
-    inputTable.setColumnAlignment(1,"right");
-    inputTable.setHorizontalZebraColored(LightColor,WhiteColor);
-    inputTable.setRowColor(1,MiddleColor);
-    inputTable.add(formatText("Nr"),1,1);
-    inputTable.add(formatText("Auðkenni"),2,1);
-    inputTable.add(formatText("Lýsing"),3,1);
-    inputTable.add(formatText("Gjaldliður"),4,1);
-    inputTable.add(formatText("Eyða"),5,1);
+    //inputTable.setColumnAlignment(1,"right");
+    inputTable.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
+    inputTable.setRowColor(1,Edit.colorMiddle);
+    inputTable.add(Edit.formatText("Nr"),1,1);
+    inputTable.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),2,1);
+    inputTable.add(Edit.formatText(iwrb.getLocalizedString("info","Inro")),3,1);
+    inputTable.add(Edit.formatText(iwrb.getLocalizedString("account_key","Account key")),4,1);
+    inputTable.add(Edit.formatText(iwrb.getLocalizedString("delete","Delete")),5,1);
     List TK = null;
     try{
       TK = EntityFinder.findAll(new TariffKey());
@@ -159,7 +163,7 @@ public class AccountKeyEditor extends KeyEditor {
       CheckBox delCheck;
       DropdownMenu iDrp =  keyDrp(TK);
       iDrp.setName("ake_keydrp"+i);
-      setStyle(iDrp);
+      Edit.setStyle(iDrp);
       int pos;
       if(i <= count ){
         pos = i-1;
@@ -169,7 +173,7 @@ public class AccountKeyEditor extends KeyEditor {
         idInput = new HiddenInput("ake_idinput"+i,sId);
         delCheck = new CheckBox("ake_delcheck"+i,"true");
         iDrp.setSelectedElement(String.valueOf(keys[pos].getTariffKeyId()));
-        setStyle(delCheck);
+        Edit.setStyle(delCheck);
         inputTable.add(delCheck,5,i+1);
       }
       else{
@@ -180,10 +184,10 @@ public class AccountKeyEditor extends KeyEditor {
       nameInput.setSize(20);
       infoInput.setSize(40);
 
-      setStyle(nameInput);
-      setStyle(infoInput);
+      Edit.setStyle(nameInput);
+      Edit.setStyle(infoInput);
 
-      inputTable.add(formatText(rownum),1,i+1);
+      inputTable.add(Edit.formatText(rownum),1,i+1);
       inputTable.add(nameInput,2,i+1);
       inputTable.add(infoInput,3,i+1);
       inputTable.add(iDrp,4,i+1);
@@ -192,14 +196,14 @@ public class AccountKeyEditor extends KeyEditor {
     myForm.add(new HiddenInput("ake_count", String.valueOf(inputcount) ));
     myForm.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
     myForm.add(inputTable);
-    myForm.add(new SubmitButton("Vista"));
+    SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save","Save"));
+    Edit.setStyle(save);
+    myForm.add(save);
 
-    this.makeView();
-    this.addHeader(this.makeLinkTable(0));
-    this.addMain(myForm);
+    return (myForm);
   }
 
-  private void doUpdate(ModuleInfo modinfo) throws SQLException{
+  private ModuleObject doUpdate(ModuleInfo modinfo) throws SQLException{
     int count = Integer.parseInt(modinfo.getParameter("ake_count"));
     String sName,sInfo,sDel,sTKid;
     int ID,TKid;
@@ -244,7 +248,7 @@ public class AccountKeyEditor extends KeyEditor {
       }
     }// for loop
 
-   doMain(modinfo);
+   return getMain(modinfo);
   }
 
   private Hashtable getKeys(){
@@ -271,6 +275,21 @@ public class AccountKeyEditor extends KeyEditor {
     if(TK != null)
       drp.addMenuElements(TK);
     return drp;
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
+  public void main(ModuleInfo modinfo){
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
+    try{
+    //isStaff = com.idega.core.accesscontrol.business.AccessControl
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    }
+    catch(SQLException sql){ isAdmin = false;}
+    control(modinfo);
   }
 
 }// class AccountKeyEditor

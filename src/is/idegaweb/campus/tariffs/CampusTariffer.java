@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffer.java,v 1.6 2001/08/27 11:16:36 laddi Exp $
+ * $Id: CampusTariffer.java,v 1.7 2001/08/30 05:43:03 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package is.idegaweb.campus.tariffs;
 
+import is.idegaweb.campus.presentation.Edit;
 import com.idega.block.finance.data.*;
 import com.idega.block.building.data.*;
 import com.idega.block.finance.business.Finder;
@@ -19,6 +20,7 @@ import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleObject;
+import com.idega.jmodule.object.ModuleObjectContainer;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
@@ -28,6 +30,7 @@ import java.util.List;
 import java.util.Vector;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.util.idegaTimestamp;
 
 import is.idegaweb.campus.entity.ContractAccountApartment;
 import is.idegaweb.campus.allocation.ContractFinder;
@@ -38,10 +41,11 @@ import is.idegaweb.campus.entity.Contract;
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class CampusTariffer extends KeyEditor {
+public class CampusTariffer extends ModuleObjectContainer {
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4;
   public  String strAction = "tt_action";
+  protected boolean isAdmin = false;
   public final char cComplex = 'x';
   public final char cAll = 'a';
   public final char cBuilding = 'b';
@@ -51,112 +55,230 @@ public class CampusTariffer extends KeyEditor {
   public final char cApartment = 'p';
 
   private int iCashierId = -1;
-  private String redColor = "#942829";
-  private String blueColor = "#27324B",lightBlue ="#ECEEF0";
-  private String bottomThickness = "8";
+
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.finance";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
-  public CampusTariffer(String sHeader) {
-    super(sHeader);
-  }
-
   public CampusTariffer() {
-    super();
+
   }
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
+   protected void control(ModuleInfo modinfo){
 
-  protected void control(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
-    if(isAdmin){
-      ModuleObject MO = new Text("Nothing");
-      if(modinfo.getParameter("commit")!=null){
-        if(modinfo.getParameter("pay_date")!=null){
-          String date = modinfo.getParameter("pay_date");
-          String roundName = modinfo.getParameter("round_name");
-          if(date !=null && date.length() == 10){
-            roundName = roundName == null?"":roundName;
-            idegaTimestamp paydate = new idegaTimestamp(date);
-            add(paydate.getISLDate());
-            MO = doAssess(paydate,roundName);
-          }
-          else{
-            MO = doMainTable();
+   if(isAdmin){
+      try{
+        ModuleObject MO = new Text();
+
+        if(modinfo.getParameter(strAction) == null){
+          MO = getTableOfAssessments(modinfo);
+        }
+        if(modinfo.getParameter(strAction) != null){
+          String sAct = modinfo.getParameter(strAction);
+          int iAct = Integer.parseInt(sAct);
+
+          switch (iAct) {
+            case ACT1 : MO = getTableOfAssessments(modinfo); break;
+            case ACT2 : MO = doMainTable(modinfo);      break;
+            case ACT3 : MO = doSomeThing( modinfo);      break;
+            case ACT4 : MO = getTableOfAssessmentAccounts( modinfo);      break;
+            default: MO = getTableOfAssessments(modinfo);           break;
           }
         }
-        else{
-          MO = doMainTable();
-        }
+         Table T = new Table();
+         T.setWidth("100%");
+        T.setCellpadding(2);
+        T.setCellspacing(0);
+        T.add(Edit.headerText(iwrb.getLocalizedString("tariffer","Tariffer"),3),1,1);
+        T.add(makeLinkTable(  1),1,2);
+        T.add(MO,1,3);
+        add(T);
 
       }
-      else
-        MO = doMainTable();
-
-      add(MO);
+      catch(Exception S){
+        S.printStackTrace();
+      }
     }
-    else{
-      add("access denied");
-    }
+    else
+      add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
 
-  private ModuleObject doMainTable(){
+
+  private ModuleObject doSomeThing(ModuleInfo modinfo){
+    ModuleObject MO = new Text("failed");
+    if(modinfo.getParameter("pay_date")!=null){
+      String date = modinfo.getParameter("pay_date");
+      String roundName = modinfo.getParameter("round_name");
+      String accountType = modinfo.getParameter("account_type");
+      if(date !=null && date.length() == 10){
+        roundName = roundName == null?"":roundName;
+        accountType = accountType != null?accountType:Account.typeFinancial;
+        idegaTimestamp paydate = new idegaTimestamp(date);
+        add(paydate.getISLDate());
+        MO = doAssess(paydate,roundName,accountType);
+      }
+      else{
+        MO = doMainTable(modinfo);
+      }
+    }
+    return MO;
+  }
+
+  protected ModuleObject makeLinkTable(int menuNr){
+    Table LinkTable = new Table(3,1);
+    int last = 3;
+    LinkTable.setWidth("100%");
+    LinkTable.setCellpadding(2);
+    LinkTable.setCellspacing(1);
+    LinkTable.setColor(Edit.colorDark);
+    LinkTable.setWidth(last,"100%");
+    Link Link1 = new Link(iwrb.getLocalizedString("view","View"));
+    Link1.setFontColor(Edit.colorLight);
+    Link1.addParameter(this.strAction,String.valueOf(this.ACT1));
+    Link Link2 = new Link(iwrb.getLocalizedString("new","New"));
+    Link2.setFontColor(Edit.colorLight);
+    Link2.addParameter(this.strAction,String.valueOf(this.ACT2));
+    if(isAdmin){
+      LinkTable.add(Link1,1,1);
+      LinkTable.add(Link2,2,1);
+    }
+    return LinkTable;
+  }
+
+  private ModuleObject getTableOfAssessments(ModuleInfo modinfo){
+    Table T = new Table();
+    int row = 2;
+    List L = Finder.listOfAssessments();
+    if(L!= null){
+      int len = L.size();
+
+      T.add(Edit.titleText(iwrb.getLocalizedString("assessment_name","Assessment name")),1,1);
+      T.add(Edit.titleText(iwrb.getLocalizedString("assessment_stamp","Timestamp")),2,1);
+      T.add(Edit.titleText(iwrb.getLocalizedString("totals","Total amount")),3,1);
+
+      int col = 1;
+      row = 2;
+      AssessmentRound AR;
+      java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(modinfo.getCurrentLocale());
+      for (int i = 0; i < len; i++) {
+        col = 1;
+        AR = (AssessmentRound) L.get(i);
+        T.add(getRoundLink(AR.getName(),AR.getID()),col++,row);
+        T.add(Edit.formatText(new idegaTimestamp(AR.getRoundStamp()).getLocaleDate(modinfo)),col++,row);
+        T.add(Edit.formatText(nf.format(AR.getTotals())),col++,row);
+        row++;
+      }
+      T.setWidth("100%");
+      T.setCellpadding(2);
+      T.setCellspacing(1);
+      T.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
+      T.setRowColor(1,Edit.colorMiddle);
+      row++;
+    }
+    else
+      T.add(iwrb.getLocalizedString("no_assessments","No assessments"),1,row);
+    return T;
+  }
+
+  private ModuleObject getTableOfAssessmentAccounts(ModuleInfo modinfo){
+    Table T = new Table();
+    String id = modinfo.getParameter("ass_round_id");
+    if(id != null){
+      List L = Finder.listOfAccountsInAssessmentRound(Integer.parseInt(id));
+      if(L!= null){
+        int len = L.size();
+        T.add(Edit.titleText(iwrb.getLocalizedString("account_name","Account name")),1,1);
+        T.add(Edit.titleText(iwrb.getLocalizedString("account_stamp","Last updated")),2,1);
+        T.add(Edit.titleText(iwrb.getLocalizedString("totals","Balance")),3,1);
+
+        int col = 1;
+        int row = 2;
+        Account A;
+        java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(modinfo.getCurrentLocale());
+        for (int i = 0; i < len; i++) {
+          col = 1;
+          A = (Account) L.get(i);
+          T.add(Edit.formatText(A.getName()),col++,row);
+          T.add(Edit.formatText(new idegaTimestamp(A.getLastUpdated()).getLocaleDate(modinfo)),col++,row);
+          T.add(Edit.formatText(nf.format(A.getBalance())),col++,row);
+          row++;
+        }
+        T.setWidth("100%");
+        T.setCellpadding(2);
+        T.setCellspacing(1);
+        T.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
+        T.setRowColor(1,Edit.colorMiddle);
+        row++;
+      }
+      else
+        add("is empty");
+    }
+    return T;
+  }
+
+  private ModuleObject doMainTable(ModuleInfo modinfo){
+    Form F = new Form();
     Table T = new Table();
 
     int iSignedContractCount = ContractFinder.countContracts(Contract.statusSigned);
     int iAccountCount = CampusAccountFinder.countAccounts();
     int row = 2;
-    T.add(iwrb.getLocalizedString("rented_apartments","Rented Apartments"),1,row);
+    T.add(Edit.formatText(iwrb.getLocalizedString("rented_apartments","Rented Apartments")),1,row);
     T.add(String.valueOf(iSignedContractCount),2,row);
     row++;
-    T.add(iwrb.getLocalizedString("number_of_accounts","Number of accounts"),1,row);
+    T.add(Edit.formatText(iwrb.getLocalizedString("number_of_accounts","Number of accounts")),1,row);
     T.add(String.valueOf(iAccountCount),2,row);
     row++;
-    T.add(iwrb.getLocalizedString("date_of_payment","Date of payment"),1,row);
+    T.add(Edit.formatText(iwrb.getLocalizedString("date_of_payment","Date of payment")),1,row);
     T.add(String.valueOf(iAccountCount),2,row);
+    row++;
+    T.add(Edit.formatText(iwrb.getLocalizedString("date_of_payment","Date of payment")),1,row);
 
 
-    Form F = new Form();
+
     DateInput di = new DateInput("pay_date",true);
-    di.setStyle(this.styleAttribute);
+    di.setStyleAttribute("typ",Edit.styleAttribute);
     idegaTimestamp today = idegaTimestamp.RightNow();
     today.addMonths(1);
     di.setDate(new idegaTimestamp(1,today.getMonth(),today.getYear()).getSQLDate());
 
     TextInput rn = new TextInput("round_name");
-    rn.setStyle(this.styleAttribute);
-    SubmitButton sb = new SubmitButton("commit","Commit");
-    sb.setStyle(this.styleAttribute);
-    F.add(di);
-    F.add(rn);
-    F.add(sb);
 
-    T.add(F,1,row);
+    Edit.setStyle(rn);
+    SubmitButton sb = new SubmitButton("commit",iwrb.getLocalizedString( "commit","Commit"));
+    Edit.setStyle(sb);
+
+    DropdownMenu drpAccountTypes = new DropdownMenu("account_type");
+    drpAccountTypes.addMenuElement(Account.typeFinancial,iwrb.getLocalizedString("financial","Financial"));
+    drpAccountTypes.addMenuElement(Account.typePhone,iwrb.getLocalizedString("phone","phone"));
+    Edit.setStyle(drpAccountTypes );
+
+    T.add(di,2,row);
+    row++;
+    T.add(Edit.formatText(iwrb.getLocalizedString("type_of_account","Account type")),1,row);
+    T.add(drpAccountTypes ,2,row);
+    row++;
+    T.add(Edit.formatText(iwrb.getLocalizedString("name_of_round","Assessment name")),1,row);
+    T.add(rn,2,row);
+    row++;
+    T.add(sb,2,row);
     row++;
 
-    T.setHorizontalZebraColored(lightBlue,WhiteColor);
-    T.setRowColor(1,blueColor);
-    T.setRowColor(row,redColor);
-    T.mergeCells(1,1,2,1);
-    T.mergeCells(1,row,2,row);
-    T.setWidth(1,"15");
-    T.add(formatText(" "),1,row);
-    T.setColumnAlignment(1,"left");
-    T.setHeight(row,bottomThickness);
-    T.setWidth("100%");
 
-    return T;
+    T.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
+    T.setRowColor(1,Edit.colorMiddle);
+    T.mergeCells(1,1,2,1);
+    T.setWidth("100%");
+    F.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
+    F.add(T);
+    return F;
   }
 
-  private ModuleObject doAssess(idegaTimestamp paydate,String roundName){
+  private ModuleObject doAssess(idegaTimestamp paydate,String roundName,String accountType){
     Table T = new Table();
     List listOfTariffs = Finder.listOfTariffs();
-    List listOfUsers = CampusAccountFinder.listOfRentingUserAccounts();
+    List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(accountType);
     if(listOfTariffs !=null){
       if(listOfUsers!=null){
         int rlen = listOfUsers.size();
@@ -260,7 +382,11 @@ public class CampusTariffer extends KeyEditor {
           AR.setTotals((float)(totals));
           AR.update();
           t.commit();
-          T.add(iwrb.getLocalizedString("assessment_successful","Assessment was successfull"));
+          T.add(Edit.formatText(iwrb.getLocalizedString("assessment_successful","Assessment was successfull")),1,1);
+          T.add(Edit.formatText(iwrb.getLocalizedString("total_amount","Total amount")),1,2);
+          T.add(Edit.formatText(new java.text.DecimalFormat().format(totals *-1)),2,2);
+          T.add(Edit.formatText(iwrb.getLocalizedString("account_number","Accounts")),1,3);
+          T.add(Edit.formatText(rlen));
         } // Try block
         catch(Exception e) {
           try {
@@ -314,5 +440,27 @@ public class CampusTariffer extends KeyEditor {
     case 'p' : L = CampusAccountFinder.listOfConAccAprtByApartment(iAttributeId); break;
     }
   return L;
+  }
+
+  private Link getRoundLink(String name,int id){
+    Link L = new Link(name);
+    L.addParameter(strAction,ACT4);
+    L.addParameter("ass_round_id",id);
+    return L;
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
+  public void main(ModuleInfo modinfo){
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
+    try{
+    //isStaff = com.idega.core.accesscontrol.business.AccessControl
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    }
+    catch(SQLException sql){ isAdmin = false;}
+    control(modinfo);
   }
 }

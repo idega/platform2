@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinance.java,v 1.6 2001/08/27 11:16:36 laddi Exp $
+ * $Id: CampusFinance.java,v 1.7 2001/08/30 05:43:03 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,12 +36,17 @@ public class CampusFinance extends JModuleObject {
   }
 
   public void main(ModuleInfo modinfo){
+
     Table myTable = new Table(2,2);
+      myTable.setBorderColor("#000000");
       myTable.mergeCells(2,1,2,2);
-      myTable.setWidth(1,"160");
+      myTable.setWidth(1,"130");
+      myTable.setWidth(2,"100%");
       myTable.setCellpadding(3);
       myTable.setWidth("100%");
       myTable.setHeight("100%");
+      myTable.setColumnAlignment(1,"left");
+
       myTable.setBorder(0);
       myTable.setVerticalAlignment(1,1,"top");
       myTable.setVerticalAlignment(2,1,"top");
@@ -49,18 +54,20 @@ public class CampusFinance extends JModuleObject {
 
     IFrame iFrame = new IFrame("menuFrame");
       iFrame.setSrc(CampusFinanceMenu.class);
-      iFrame.setWidth(160);
+      iFrame.setWidth(120);
       iFrame.setHeight(150);
-      iFrame.setBorder(IFrame.FRAMEBORDER_OFF);
+      iFrame.setBorder(IFrame.FRAMEBORDER_ON);
       iFrame.setScrolling(IFrame.SCROLLING_YES);
       iFrame.setStyle("border: 1 solid #000000");
+      //iFrame.setAlignment(IFrame.ALIGN_LEFT);
       myTable.add(iFrame,1,1);
 
     IFrame iFrame2 = new IFrame(FRAME_NAME);
       iFrame2.setWidth("100%");
       iFrame2.setHeight("100%");
-      iFrame2.setBorder(IFrame.FRAMEBORDER_OFF);
+      iFrame2.setBorder(IFrame.FRAMEBORDER_ON);
       iFrame2.setScrolling(IFrame.SCROLLING_YES);
+      iFrame2.setAlignment(IFrame.ALIGN_LEFT);
       iFrame2.setStyle("border: 1 solid #000000");
       myTable.add(iFrame2,2,1);
 

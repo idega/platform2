@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinanceMenu.java,v 1.1 2001/08/27 11:16:36 laddi Exp $
+ * $Id: CampusFinanceMenu.java,v 1.2 2001/08/30 05:43:03 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -44,20 +44,31 @@ public class CampusFinanceMenu extends FrameList{
   }
 
   public void makeLinkTable(){
-    Link Link6 = new Link("Símagjöld","/finance/phone.jsp");
+    Link Link6 = new Link(iwrb.getLocalizedString("phone_tariffs","Telephone"),"/finance/phone.jsp");
       Link6.setFontColor(this.DarkColor);
       Link6.addParameter(this.strAction,String.valueOf(this.ACT6));
       Link6.setTarget("rightFrame");
-    Link Link7 = new Link("Vísitölur","/finance/indexes.jsp");
+    Link Link7 = new Link(iwrb.getLocalizedString("indexes","Indexes"),"/finance/indexes.jsp");
       Link7.setFontColor(this.DarkColor);
       Link7.addParameter(this.strAction,String.valueOf(this.ACT7));
       Link7.setTarget("rightFrame");
 
-      addToList(TariffKeyEditor.class,"Gjaldliðir",CampusFinance.FRAME_NAME);
-      addToList(AccountKeyEditor.class,"Bókhaldsliðir",CampusFinance.FRAME_NAME);
-      addToList(Link7);
-      addToList(CampusTariffEditor.class,"Gjöld",CampusFinance.FRAME_NAME);
-      addToList(CampusTariffer.class,"Álagning",CampusFinance.FRAME_NAME);
-      addToList(Link6);
+      addToList(TariffKeyEditor.class,iwrb.getLocalizedString("tariff_keys","Tariff keys"),CampusFinance.FRAME_NAME);
+      addToList(AccountKeyEditor.class,iwrb.getLocalizedString("account_keys","Account keys"),CampusFinance.FRAME_NAME);
+      //addToList(Link7);
+      addToList(CampusTariffEditor.class,iwrb.getLocalizedString("tariff","Tariffs"),CampusFinance.FRAME_NAME);
+      addToList(CampusTariffer.class,iwrb.getLocalizedString("assessment","Assessment"),CampusFinance.FRAME_NAME);
+     // addToList(Link6);
+    /*
+    addToList(CampusApprover.class,iwrb.getLocalizedString("applications","Applications"),CampusAllocation.FRAME_NAME);
+    addToList(CampusContracts.class,iwrb.getLocalizedString("contracts","Contracts"),CampusAllocation.FRAME_NAME);
+    addToList(RoughOrderForm.class,iwrb.getLocalizedString("roughorder","Rough order"),CampusAllocation.FRAME_NAME);
+    addToList(CampusAllocator.class,iwrb.getLocalizedString("allocate","Allocate"),CampusAllocation.FRAME_NAME);
+    addToList(EmailSetter.class,iwrb.getLocalizedString("emails","Emails"),CampusAllocation.FRAME_NAME);
+    addToList(ContractTextSetter.class,iwrb.getLocalizedString("contracttexts","Contract Texts"),CampusAllocation.FRAME_NAME);
+    addToList(SubjectMaker.class,iwrb.getLocalizedString("subjects","Subjects"),CampusAllocation.FRAME_NAME);
+    addToList(AprtTypePeriodMaker.class,iwrb.getLocalizedString("periods","Periods"),CampusAllocation.FRAME_NAME);
+    addToList(SysPropsSetter.class,iwrb.getLocalizedString("properties","Properties"),CampusAllocation.FRAME_NAME);
+    */
   }
 }

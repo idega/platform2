@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffEditor.java,v 1.8 2001/08/27 11:16:36 laddi Exp $
+ * $Id: CampusTariffEditor.java,v 1.9 2001/08/30 05:43:03 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,17 +9,20 @@
  */
 package is.idegaweb.campus.tariffs;
 
+import is.idegaweb.campus.presentation.Edit;
 import com.idega.block.finance.data.*;
 import com.idega.block.building.data.*;
 import is.idegaweb.campus.entity.TariffIndex;
 import com.idega.block.finance.business.Finder;
 import com.idega.block.building.business.BuildingFinder;
+import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.finance.presentation.KeyEditor;
 import com.idega.data.GenericEntity;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleObject;
+import com.idega.jmodule.object.ModuleObjectContainer;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
@@ -30,13 +33,15 @@ import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import com.idega.jmodule.object.Editor;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 /**
  *
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class CampusTariffEditor extends KeyEditor{
+public class CampusTariffEditor extends ModuleObjectContainer{
 
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4;
@@ -56,12 +61,13 @@ public class CampusTariffEditor extends KeyEditor{
   public static String prefixType = "t";
   public static String prefixApartment = "p";
 
-  public CampusTariffEditor(String sHeader) {
-    super(sHeader);
-  }
+  protected boolean isAdmin = false;
+  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.finance";
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
 
   public CampusTariffEditor() {
-    super();
+
   }
 
   public void setEntities(GenericEntity[] entities){
@@ -70,51 +76,60 @@ public class CampusTariffEditor extends KeyEditor{
 
   protected void control(ModuleInfo modinfo){
     this.getParentPage().setAllMargins(0);
+    if(isAdmin){
     try{
-
+      ModuleObject MO = new Text();
 
       if(modinfo.getParameter("updateindex")!=null){
-        doUpdateIndex(modinfo);
+        MO =doUpdateIndex(modinfo);
       }
       else if(modinfo.getParameter("savetariffs")!=null){
-        doUpdate(modinfo);
+        MO =doUpdate(modinfo);
       }
       else if(modinfo.getParameter(strAction) != null){
         String sAct = modinfo.getParameter(strAction);
         int iAct = Integer.parseInt(sAct);
         switch (iAct) {
-          case ACT1 : doMain(modinfo);        break;
-          case ACT2 : doChange(modinfo,false,1,"1","1");break;
-          case ACT3 : doUpdate(modinfo);      break;
-          case ACT4 : doChange(modinfo,true,1,"1","1"); break;
-          default: doMain(modinfo);           break;
+          case ACT1 : MO =getMain(modinfo);        break;
+          case ACT2 : MO =getChange(modinfo,false,1,"1","1");break;
+          case ACT3 : MO =doUpdate(modinfo);      break;
+          case ACT4 : MO =getChange(modinfo,true,1,"1","1"); break;
+          default: MO =getMain(modinfo);           break;
         }
       }
       else{
-        doMain(modinfo);
+        MO = getMain(modinfo);
+      }
+    Table T = new Table(1,3);
+        T.add(Edit.headerText(iwrb.getLocalizedString("tariff_editor","Tariff editor"),3),1,1);
+        T.add(makeLinkTable(1));
+        T.add(MO);
+        T.setWidth("100%");
+        add(T);
+      }
+      catch(Exception S){
+        S.printStackTrace();
       }
     }
-    catch(Exception S){
-      S.printStackTrace();
-    }
+    else
+      add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
-
   protected ModuleObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(4,1);
     int last = 4;
     LinkTable.setWidth("100%");
     LinkTable.setCellpadding(2);
     LinkTable.setCellspacing(1);
-    LinkTable.setColor(this.DarkColor);
+    LinkTable.setColor(Edit.colorDark);
     LinkTable.setWidth(last,"100%");
-    Link Link1 = new Link("Yfirlit");
-    Link1.setFontColor(this.LightColor);
+    Link Link1 = new Link(iwrb.getLocalizedString("view","View"));
+    Link1.setFontColor(Edit.colorLight);
     Link1.addParameter(this.strAction,String.valueOf(this.ACT1));
-    Link Link2 = new Link("Breyta");
-    Link2.setFontColor(this.LightColor);
+    Link Link2 = new Link(iwrb.getLocalizedString("change","Change"));
+    Link2.setFontColor(Edit.colorLight);
     Link2.addParameter(this.strAction,String.valueOf(this.ACT2));
-    Link Link3 = new Link("Ný");
-    Link3.setFontColor(this.LightColor);
+    Link Link3 = new Link(iwrb.getLocalizedString("new","New"));
+    Link3.setFontColor(Edit.colorLight);
     Link3.addParameter(this.strAction,String.valueOf(this.ACT4));
     if(isAdmin){
       LinkTable.add(Link1,1,1);
@@ -163,7 +178,7 @@ public class CampusTariffEditor extends KeyEditor{
     }
     return mo;
   }
-  protected void doMain(ModuleInfo modinfo){
+  protected ModuleObject getMain(ModuleInfo modinfo){
     idegaTimestamp today = new idegaTimestamp();
     Tariff[] tariffs = Finder.findTariffs();
     List AK = Finder.getAccountKeys();
@@ -177,31 +192,31 @@ public class CampusTariffEditor extends KeyEditor{
     T2.setWidth("100%");
     Table T = new Table(6,count+1);
     T.setWidth("100%");
-    T.setHorizontalZebraColored(LightColor,WhiteColor);
-    T.setRowColor(1,MiddleColor);
+    T.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
+    T.setRowColor(1,Edit.colorMiddle);
     T.setCellpadding(2);
     T.setCellspacing(1) ;
-    T.add(formatText("Nr"),1,1);
-    T.add(formatText("Tenging"),2,1);
-    T.add(formatText("Auðkenni"),3,1);
-    T.add(formatText("Upphæð"),4,1);
-    T.add(formatText("Lýsing"),5,1);
-    T.add(formatText("Bókunarliður"),6,1);
+    T.add(Edit.formatText("Nr"),1,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("connection","Connection")),2,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),3,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("amount","Amount")),4,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),5,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("account_key","Account key")),6,1);
     idegaTimestamp from = this.getDateFrom();
     idegaTimestamp to = this.getDateTo();
     if(isAdmin){
       if(count != 0){
         for (int i = 0;i < count;i++){
-          T.add(formatText( String.valueOf(i+1)),1,i+2);
+          T.add(Edit.formatText( String.valueOf(i+1)),1,i+2);
           String tatt = tariffs[i].getTariffAttribute();
           if(hLodgings.containsKey(tatt))
-            T.add(formatText(((GenericEntity)hLodgings.get(tatt)).getName()),2,i+2);
-          T.add(formatText(tariffs[i].getName()),3,i+2);
-          T.add(formatText(String.valueOf(tariffs[i].getPrice())),4,i+2);
-          T.add(formatText(tariffs[i].getInfo()),5,i+2);
+            T.add(Edit.formatText(((GenericEntity)hLodgings.get(tatt)).getName()),2,i+2);
+          T.add(Edit.formatText(tariffs[i].getName()),3,i+2);
+          T.add(Edit.formatText(String.valueOf(tariffs[i].getPrice())),4,i+2);
+          T.add(Edit.formatText(tariffs[i].getInfo()),5,i+2);
           Integer I = new Integer(tariffs[i].getAccountKeyId());
           if(hAK.containsKey(I))
-            T.add(formatText((String)hAK.get(I)),6,i+2);
+            T.add(Edit.formatText((String)hAK.get(I)),6,i+2);
         }
       }
     }
@@ -213,19 +228,17 @@ public class CampusTariffEditor extends KeyEditor{
     T3.setColumnAlignment(7,"right");
     T3.setCellpadding(0);
     T3.setCellspacing(0);
-    T3.add(formatText("Tímabil:"),1,1);
-    T3.add(formatText(from.getISLDate(".",true)),2,1);
-    T3.add(formatText(" til "),3,1);
-    T3.add(formatText(to.getISLDate(".",true)),4,1);
+    T3.add(Edit.formatText("Tímabil:"),1,1);
+    T3.add(Edit.formatText(from.getISLDate(".",true)),2,1);
+    T3.add(Edit.formatText(" til "),3,1);
+    T3.add(Edit.formatText(to.getISLDate(".",true)),4,1);
     //T2.add(T3,1,1);
     T2.add(T,1,1);
-    this.setBorder(0);
-    this.makeView();
-    this.addHeader(this.makeLinkTable(0));
-    this.addMain(T2);
+    return T2;
+
   }
 
-  private void doUpdateIndex(ModuleInfo modinfo){
+  private ModuleObject doUpdateIndex(ModuleInfo modinfo){
     /** @todo  */
     String index = modinfo.getParameter("te_index");
     String hindex = modinfo.getParameter("te_hindex");
@@ -235,10 +248,10 @@ public class CampusTariffEditor extends KeyEditor{
       float then = (new Double(hindex)).floatValue();
       factor = 1+((now - then)/then);
     }
-    doChange(modinfo,false,factor,index,hindex);
+    return getChange(modinfo,false,factor,index,hindex);
   }
 
-  protected void doChange(ModuleInfo modinfo,boolean ifnew,float factor,String sNewIndex,String sOldIndex){
+  protected ModuleObject getChange(ModuleInfo modinfo,boolean ifnew,float factor,String sNewIndex,String sOldIndex){
     Form myForm = new Form();
     myForm.maintainAllParameters();
     idegaTimestamp today = new idegaTimestamp();
@@ -246,11 +259,18 @@ public class CampusTariffEditor extends KeyEditor{
     List AK = Finder.getAccountKeys();
     TariffIndex[] TI = getTariffIndices();
     Hashtable hash = BuildingFinder.getLodgingsHash();
+    /*
     List BL = BuildingFinder.listOfBuilding();
     List FL= BuildingFinder.listOfFloor();
     List TL = BuildingFinder.listOfApartmentType();
     List CL = BuildingFinder.listOfApartmentCategory();
     List XL = BuildingFinder.listOfComplex();
+    */
+    List BL = BuildingCacher.getBuildings();
+    List FL= BuildingCacher.getFloors();
+    List TL = BuildingCacher.getTypes();
+    List CL = BuildingCacher.getCategories();
+    List XL = BuildingCacher.getComplexes();
 
     String sIndex ,sHindex ;
     if(factor != 1){
@@ -266,10 +286,10 @@ public class CampusTariffEditor extends KeyEditor{
     Table BorderTable = new Table();
     BorderTable.setCellpadding(1);
     BorderTable.setCellspacing(0);
-    BorderTable.setColor(DarkColor);
+    BorderTable.setColor(Edit.colorDark);
     BorderTable.setWidth("100%");
     Table T2 = new Table(1,3);
-    T2.setColor(this.WhiteColor);
+    T2.setColor(Edit.colorWhite);
     T2.setCellpadding(0);
     T2.setCellpadding(0);
     T2.setWidth("100%");
@@ -278,16 +298,16 @@ public class CampusTariffEditor extends KeyEditor{
     T.setCellpadding(2);
     T.setCellspacing(1);
     T.setColumnAlignment(1,"right");
-    T.setHorizontalZebraColored(LightColor,WhiteColor);
-    T.setRowColor(1,MiddleColor);
-    T.add(formatText("Nr"),1,1);
-    T.add(formatText("Tenging"),2,1);
-    T.add(formatText("Auðkenni"),3,1);
-    T.add(formatText("Upphæð"),4,1);
-    T.add(formatText("Lýsing"),5,1);
-    T.add(formatText("Bókunarliður"),6,1);
-    T.add(formatText("Vísitala"),7,1);
-    T.add(formatText("Eyða"),8,1);
+    T.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
+    T.setRowColor(1,Edit.colorMiddle);
+    T.add(Edit.formatText("Nr"),1,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("connection","Connection")),2,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),3,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("amount","Amount")),4,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),5,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("account_key","Account key")),6,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("index","Index")),7,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("delete","Delete")),8,1);
     idegaTimestamp from = this.getDateFrom();
     idegaTimestamp to = this.getDateTo();
     if(count != 0 && tariffs[0]!=null){
@@ -318,7 +338,7 @@ public class CampusTariffEditor extends KeyEditor{
         }
         priceInput = new TextInput("te_priceinput"+i,String.valueOf(iPrice));
         idInput = new HiddenInput("te_idinput"+i,String.valueOf(tariffs[pos].getID()));
-        setStyle(delCheck);
+        Edit.setStyle(delCheck);
         T.add(delCheck,8,i+1);
       }
       else{
@@ -334,14 +354,14 @@ public class CampusTariffEditor extends KeyEditor{
       priceInput.setSize(8);
       infoInput.setSize(30);
 
-      setStyle(nameInput);
-      setStyle(priceInput);
-      setStyle(infoInput);
-      setStyle(drpAtt);
-      setStyle(drpAK);
-      setStyle(indexCheck);
+      Edit.setStyle(nameInput);
+      Edit.setStyle(priceInput);
+      Edit.setStyle(infoInput);
+      Edit.setStyle(drpAtt);
+      Edit.setStyle(drpAK);
+      Edit.setStyle(indexCheck);
 
-      T.add(formatText(rownum),1,i+1);
+      T.add(Edit.formatText(rownum),1,i+1);
       T.add(drpAtt,2,i+1);
       T.add(nameInput,3,i+1);
       T.add(priceInput,4,i+1);
@@ -357,25 +377,25 @@ public class CampusTariffEditor extends KeyEditor{
     T3.setColumnAlignment(7,"right");
     TextInput datefrom = new TextInput("te_datefrom",from.getISLDate(".",true));
     datefrom.setLength(8);
-    setStyle(datefrom);
+    Edit.setStyle(datefrom);
     TextInput dateto = new TextInput("te_dateto",to.getISLDate(".",true));
     dateto.setLength(8);
-    setStyle(dateto);
+    Edit.setStyle(dateto);
     TextInput index = new TextInput("te_index",sIndex);
     HiddenInput hindex = new HiddenInput("te_hindex",sHindex);
     dateto.setLength(8);
-    setStyle(index);
-    SubmitButton update = new SubmitButton("updateindex","Uppfæra");
-    setStyle(update);
-    T3.add(formatText("Tímabil"),1,1);
+    Edit.setStyle(index);
+    SubmitButton update = new SubmitButton("updateindex",iwrb.getLocalizedString("update","Update"));
+    Edit.setStyle(update);
+    T3.add(Edit.formatText(iwrb.getLocalizedString("period","Period")),1,1);
     T3.add(datefrom,3,1);
     T3.add(dateto,4,1);
-    T3.add(formatText("Vísitala"),6,1);
+    T3.add(Edit.formatText(iwrb.getLocalizedString("index","Index")),6,1);
     T3.add(index,7,1);
     T3.add(hindex,7,1);
     T3.add(update,8,1);
-    SubmitButton save = new SubmitButton("savetariffs","Vista");
-    setStyle(save);
+    SubmitButton save = new SubmitButton("savetariffs",iwrb.getLocalizedString("save","Save"));
+    Edit.setStyle(save);
     Table T4 = new Table();
     T4.setAlignment("right");
     T4.add(save);
@@ -386,13 +406,11 @@ public class CampusTariffEditor extends KeyEditor{
     myForm.add(new HiddenInput("te_count", String.valueOf(inputcount)));
     //myForm.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
     myForm.add(BorderTable);
-    this.setBorder(0);
-    this.makeView();
-    this.addHeader(this.makeLinkTable(0));
-    this.addMain(myForm);
+
+    return (myForm);
   }
 
-  protected void doUpdate(ModuleInfo modinfo) {
+  protected ModuleObject doUpdate(ModuleInfo modinfo) {
     int count = Integer.parseInt(modinfo.getParameter("te_count"));
     String sName,sInfo,sDel,sPrice,sAtt,sAK,sTK,sID,sDateFrom,sDateTo,sIndex;
     int ID,Attid,AKid,TKid,Price;
@@ -470,7 +488,7 @@ public class CampusTariffEditor extends KeyEditor{
       }
     }// for loop
 
-   doMain(modinfo);
+   return getMain(modinfo);
   }
 
   private Hashtable getKeys(List AK){
@@ -534,7 +552,7 @@ public class CampusTariffEditor extends KeyEditor{
     int len = hash.size();
     DropdownMenu drp = new DropdownMenu(name);
     drp.addMenuElement(0,"--");
-    drp.addMenuElement("a","Allir");
+    drp.addMenuElement("a",iwrb.getLocalizedString("all","All"));
     GenericEntity G;
     for (Enumeration e = hash.elements() ; e.hasMoreElements() ;) {
       G = (GenericEntity) e.nextElement();
@@ -550,8 +568,9 @@ public class CampusTariffEditor extends KeyEditor{
     Hashtable Bhash = new Hashtable();
     DropdownMenu drp = new DropdownMenu(name);
     drp.addMenuElement(0,"--");
-    drp.addMenuElement("a","Allir");
+    drp.addMenuElement("a",iwrb.getLocalizedString("all","All"));
     if(TypeList != null){
+      drp.addSeparator();
       int len = TypeList.size();
       ApartmentType T;
       for (int i = 0; i < len; i++) {
@@ -560,6 +579,7 @@ public class CampusTariffEditor extends KeyEditor{
       }
     }
     if(CategoryList != null){
+      drp.addSeparator();
       int len = CategoryList.size();
       ApartmentCategory C;
       for (int i = 0; i < len; i++) {
@@ -568,6 +588,7 @@ public class CampusTariffEditor extends KeyEditor{
       }
     }
     if(ComplexList != null){
+      drp.addSeparator();
       int clen = ComplexList.size();
       Complex C;
       for (int i = 0; i < clen; i++) {
@@ -576,6 +597,7 @@ public class CampusTariffEditor extends KeyEditor{
       }
     }
     if(BuildingList != null){
+      drp.addSeparator();
       int clen = BuildingList.size();
       Building B;
       for (int i = 0; i < clen; i++) {
@@ -585,6 +607,7 @@ public class CampusTariffEditor extends KeyEditor{
       }
     }
     if(FloorList != null){
+      drp.addSeparator();
       int len = FloorList.size();
       Floor F;
       for (int i = 0; i < len; i++) {
@@ -644,6 +667,21 @@ public class CampusTariffEditor extends KeyEditor{
     if(ti.length > 0)
       f = ti[0].getIndex();
     return f;
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
+  public void main(ModuleInfo modinfo){
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
+    try{
+    //isStaff = com.idega.core.accesscontrol.business.AccessControl
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    }
+    catch(SQLException sql){ isAdmin = false;}
+    control(modinfo);
   }
 
 }

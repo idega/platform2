@@ -101,6 +101,32 @@ public class Finder  {
     return count;
   }
 
+  public static List listOfAssessments(){
+    try {
+      return EntityFinder.findAllDescendingOrdered(new AssessmentRound(),AssessmentRound.getRoundStampColumnName());
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
+  public static List listOfAccountsInAssessmentRound(int roundid){
+    StringBuffer sql = new StringBuffer("select distinct a.* ");
+    sql.append(" from fin_account a,fin_acc_entry e,fin_assessment_round r ");
+    sql.append(" where a.fin_account_id = e.fin_account_id ");
+    sql.append(" and e.fin_assessment_round_id = r.fin_assessment_round_id ");
+    sql.append(" and r.fin_assessment_round_id = ");
+    sql.append(roundid);
+    try {
+      return EntityFinder.findAll(new Account(),sql.toString());
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return null;
+    }
+
+  }
+
 
 
 }// class AccountKeyEditor

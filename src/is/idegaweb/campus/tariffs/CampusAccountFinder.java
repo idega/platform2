@@ -26,6 +26,15 @@ public class CampusAccountFinder  {
     return null;
    }
   }
+
+  public static List listOfRentingUserAccountsByType(String type){
+   try {
+     return EntityFinder.findAllByColumn(new ContractAccountApartment(),ContractAccountApartment.getApartmentTypeIdColumnName(),type);
+   }
+   catch (SQLException ex) {
+    return null;
+   }
+  }
   public static List listOfConAccAprtByType(int typeId){
     try {
       ContractAccountApartment CAA = new ContractAccountApartment();
