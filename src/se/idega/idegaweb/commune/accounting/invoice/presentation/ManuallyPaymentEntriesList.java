@@ -41,6 +41,7 @@ import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingHome;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.business.PlacementTimes;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
@@ -63,11 +64,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
 import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 /**
- * Last modified: $Date: 2004/02/26 10:51:21 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/01 13:44:32 $ by $Author: staffan $
  *
  * @author <a href="mailto:roar@idega.is">Roar Skullestad</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  */
 public class ManuallyPaymentEntriesList extends AccountingBlock {
 
@@ -345,7 +346,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			pay.setTotalAmountVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
 			pay.setDateCreated(new Date(System.currentTimeMillis()));
 			pay.setPeriod(periode);
-			pay.setStatus('P');
+			pay.setStatus(ConstantStatus.PRELIMINARY);
 			pay.setCreatedBy (getSignature (iwc.getCurrentUser()));
 
 			try {
@@ -408,6 +409,16 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	
 			pay.store();	
 
+			// if check, then create vat record
+			final String ruleSpecType = pay.getRuleSpecType ();
+			if (null != ruleSpecType && ruleSpecType.equals (RegSpecConstant.CHECK)) {
+				try {
+					getInvoiceBusiness (iwc).createVatPaymentRecord
+							(pay, /*placement.getSchoolType ()*/ null,
+							 /*placement.getSchoolYear ()*/ null, pay.getCreatedBy ());
+				} catch (Exception e) {	e.printStackTrace ();	}
+			}
+
 			//Creating paymentDetailRecord ( = InvoiceRecord) if student is given
 			User student = null;
 			try{
@@ -433,15 +444,27 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		}
 	}
 
-	private InvoiceRecord createInvoiceRecord(IWContext iwc, User student, int schoolId, Date periode, PaymentRecord pay) throws IDOLookupException, FinderException, RemoteException, CreateException {
-		SchoolClassMemberHome scmHome = (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
-		SchoolClassMember member = scmHome.findLatestByUserAndSchool(student.getNodeID(), schoolId);
-		PlacementTimes placementTimes = getPlacementTimes(member, new CalendarMonth (periode));
-		Date startDate = null != member	&& null != member.getRegisterDate ()
+	private InvoiceRecord createInvoiceRecord
+		(final IWContext iwc, final User user, final int schoolId,
+		 final Date period, final PaymentRecord paymentRecord)
+		throws IDOLookupException, FinderException, RemoteException,
+					 CreateException {
+		final SchoolClassMemberHome home
+				= (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
+		final SchoolClassMember member
+				= home.findLatestByUserAndSchool (user.getNodeID(), schoolId);
+		final PlacementTimes placementTimes
+				= getPlacementTimes (member, new CalendarMonth (period));
+		final Date startDate = null != member	&& null != member.getRegisterDate ()
 				? new Date (member.getRegisterDate ().getTime ()) : null;
-		Date endDate = null != member && null != member.getRemovedDate ()
+		final Date endDate = null != member && null != member.getRemovedDate ()
 				? new Date (member.getRemovedDate ().getTime ()) : null;
-		return getInvoiceBusiness (iwc).createInvoiceRecord(pay, member, null, placementTimes, startDate, endDate, getSignature (iwc.getCurrentUser ()));
+		final InvoiceRecord result = getInvoiceBusiness (iwc).createInvoiceRecord
+				(paymentRecord, member, null, placementTimes, startDate, endDate,
+				 getSignature (iwc.getCurrentUser ()));
+		result.setProviderId (schoolId);
+		result.store ();
+		return result;
 	}
 
 	private PlacementTimes getPlacementTimes(SchoolClassMember schoolClassMember, CalendarMonth month) {

@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/27 11:10:44 $ by $Author: roar $
+ * Last modified: $Date: 2004/03/01 13:44:32 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.115 $
+ * @version $Revision: 1.116 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -738,9 +738,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 					record.store ();
 					final SchoolClassMember placement = record.getSchoolClassMember ();
 					createVatPaymentRecord
-							(paymentRecord, school, placement.getSchoolType (),
-							 placement.getSchoolYear (), new CalendarMonth (period),
-							 ConstantStatus.PRELIMINARY, createdBySignature);
+							(paymentRecord, placement.getSchoolType (),
+							 placement.getSchoolYear (), createdBySignature);
 			}
 		} catch (Exception e) {
 			e.printStackTrace ();
@@ -749,34 +748,32 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	}
 
 	public PaymentRecord createVatPaymentRecord
-		(final PaymentRecord paymentRecord,
-		 final School school, final SchoolType schoolType,
-		 final SchoolYear schoolYear, final CalendarMonth month, final char status,
-		 final String createdBySignature)
+		(final PaymentRecord paymentRecord, final SchoolType schoolType,
+		 final SchoolYear schoolYear, final String createdBySignature)
 	throws RemoteException, CreateException {
+
 		// get vat regulation
 		final Regulation vatRuleRegulation = paymentRecord.getVATRuleRegulation();
 		if (null == vatRuleRegulation) return null;
-		final RegulationSpecType regSpecType = vatRuleRegulation.getRegSpecType ();
 
-		// get payment header
-		final SchoolCategory schoolCategory = schoolType.getCategory ();
-		final Date startDate = month.getFirstDateOfMonth ();
-		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader
-				(school, schoolCategory, startDate, status);
+		// init some multiply used values
+		final RegulationSpecType regSpecType = vatRuleRegulation.getRegSpecType ();
+		final PaymentHeader paymentHeader = paymentRecord.getPaymentHeader ();
+		final Date period = paymentRecord.getPeriod ();
+		final char status = paymentHeader.getStatus ();
 
 		// get own and double postings
 		final int regSpecTypeId
 				= ((Number) regSpecType.getPrimaryKey ()).intValue ();
-		final Provider provider = new Provider (school);
+		final Provider provider = new Provider (paymentHeader.getSchool ());
 		final int schoolYearId = null == schoolYear ? -1
 				: ((Number) schoolYear.getPrimaryKey ()).intValue ();
 		String ownPosting = "";
 		String doublePosting = "";
 		try {
 			final String [] postings = getPostingBusiness ().getPostingStrings
-					(schoolCategory, schoolType, regSpecTypeId, provider, startDate,
-					 schoolYearId);
+					(paymentHeader.getSchoolCategory (), schoolType, regSpecTypeId,
+					 provider, period, schoolYearId);
 			ownPosting = postings [0];
 			doublePosting = postings [1];
 		} catch (PostingException e) {
@@ -791,7 +788,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			vatPaymentRecord = getPaymentRecordHome ()
 					.findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus
 					(ownPosting, doublePosting, null, vatRuleRegulation.getName (),
-					 new CalendarMonth (startDate),status);
+					 new CalendarMonth (period), status);
 			vatPaymentRecord.setTotalAmount
 					(AccountingUtil.roundAmount (vatPaymentRecord.getTotalAmount ()
 																			 + paymentRecord.getTotalAmountVAT ()));
@@ -803,7 +800,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			vatPaymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
 			vatPaymentRecord.setPaymentHeader (paymentHeader);
 			vatPaymentRecord.setStatus (status);
-			vatPaymentRecord.setPeriod (startDate);
+			vatPaymentRecord.setPeriod (period);
 			vatPaymentRecord.setPaymentText (vatRuleRegulation.getName ());
 			vatPaymentRecord.setDateCreated (now ());
 			vatPaymentRecord.setCreatedBy (createdBySignature);
