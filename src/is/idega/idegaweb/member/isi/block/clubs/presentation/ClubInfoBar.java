@@ -28,10 +28,7 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 
 /**
- * @author jonas
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * @author <a href="mailto:jonas@idega.is>Jonas</a>
  */
 public class ClubInfoBar extends Block {
 	
@@ -61,9 +58,9 @@ public class ClubInfoBar extends Block {
 	}
 	
 	private void addDivisionToMenuBar(CSSMultiLevelMenu menuBar, Group division) {
-		List flocks = new ArrayList(division.getChildGroups());
+		List playerGroups = new ArrayList(division.getChildGroups());
 		
-		Collections.sort(flocks, new Comparator() {
+		Collections.sort(playerGroups, new Comparator() {
 			
 			public int compare(Object arg0, Object arg1) {
 				return _collator.compare( ((Group) arg0).getName(), ((Group) arg1).getName());
@@ -76,7 +73,7 @@ public class ClubInfoBar extends Block {
 		CSSMenu topLevelMenu = menuBar.createCSSMenu(division.getName());
 		menuBar.add(topLevelMenu);
 		
-		Iterator playerGroupIter = flocks.iterator();
+		Iterator playerGroupIter = playerGroups.iterator();
 		while(playerGroupIter.hasNext()) {
 			Group playerGroup = (Group) playerGroupIter.next();
 			Link link = new Link(playerGroup.getName());
