@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.76 2003/11/28 16:20:08 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.77 2003/11/28 16:37:47 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1568,7 +1568,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 				if (match.size() == 1) {
 					Regulation res = (Regulation) match.get(0);
-					postingDetail = getPostingDetailFromRegulation(res, condition, contract, null, period, totalSum);
+					try {
+						postingDetail = getPostingDetailFromRegulation(res, condition, contract, null, period, totalSum);
+					}
+					catch(BruttoIncomeException e) {
+					}
 				}
 				else if (match.size() > 1) {
 					Iterator regIterator = match.iterator();
@@ -1604,7 +1608,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	//		float totalSum,
 	//		ChildCareContract contract) {
 
-	private PostingDetail getPostingDetailFromRegulation(Regulation reg, Collection conditions, ChildCareContract contract, SchoolClassMember placement, Date period, float total_sum) {
+	private PostingDetail getPostingDetailFromRegulation(Regulation reg, Collection conditions, ChildCareContract contract, SchoolClassMember placement, Date period, float total_sum) throws BruttoIncomeException {
 		PostingDetail ret = null;
 		if (reg.getSpecialCalculation() != null) {
 			String type = reg.getSpecialCalculation().getSpecialCalculationType();
@@ -1677,12 +1681,12 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 									}
 								}
 								catch (EJBException e1) {
-									e1.printStackTrace();
+//									e1.printStackTrace();
 									missingIncome = true;
 									break;
 								}
 								catch (FinderException e1) {
-									e1.printStackTrace();
+//									e1.printStackTrace();
 									missingIncome = true;
 									break;
 								}
@@ -1690,10 +1694,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						}
 					}
 					catch (NoCustodianFound e) {
-						e.printStackTrace();
+//						e.printStackTrace();
 					}
 					catch (RemoteException e) {
-						e.printStackTrace();
+//						e.printStackTrace();
 					}
 
 					if (!missingIncome) {
@@ -1707,6 +1711,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							//			ret.setVat(32.0f);
 							//			ret.setVatRegulationID(1);
 						}
+					}
+					else {
+						throw new BruttoIncomeException("reg_exp.no_brutto_income","Brutto income not registered");
 					}
 				}
 			}
@@ -1842,7 +1849,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @param contract
 	 * @return PostingDetail
 	 */
-	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract, Regulation regulation, Date period, Collection condition) {
+	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract, Regulation regulation, Date period, Collection condition) throws BruttoIncomeException {
 		return getPostingDetailFromRegulation(regulation, condition, contract, null, period, totalSum);
 	}
 
@@ -1855,7 +1862,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @param regulation
 	 * @return
 	 */
-	public PostingDetail getPostingDetailForPlacement(float totalSum, SchoolClassMember schoolClassMember, Regulation regulation, Date period, Collection condition) {
+	public PostingDetail getPostingDetailForPlacement(float totalSum, SchoolClassMember schoolClassMember, Regulation regulation, Date period, Collection condition) throws BruttoIncomeException {
 		return getPostingDetailFromRegulation(regulation, condition, null, schoolClassMember, period, totalSum);
 	}
 

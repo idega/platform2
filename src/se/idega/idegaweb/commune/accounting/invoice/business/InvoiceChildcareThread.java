@@ -27,6 +27,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.SortableSibling;
 import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
+import se.idega.idegaweb.commune.accounting.regulations.business.BruttoIncomeException;
 import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
@@ -240,6 +241,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					Iterator regulationIter = regulationArray.iterator();
 					while(regulationIter.hasNext())
 					{
+						try {
 						Regulation regulation = (Regulation)regulationIter.next();
 						postingDetail = regBus.getPostingDetailForContract(
 							totalSum,
@@ -257,6 +259,11 @@ public class InvoiceChildcareThread extends BillingThread{
 							subvention = invoiceRecord;
 						}
 						totalSum += postingDetail.getAmount()*months;
+						}
+						catch (BruttoIncomeException e) {
+							//Who cares!!!
+						}
+						
 					}
 					//Make sure that the sum is not less than 0
 					if(totalSum<0){
