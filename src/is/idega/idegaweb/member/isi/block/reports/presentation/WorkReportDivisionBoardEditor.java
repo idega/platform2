@@ -264,7 +264,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       HOME_PAGE, textEditorConverter,
       PERSONAL_ID, textEditorConverter,
       STREET_NAME, textEditorConverter,
-      POSTAL_CODE_ID, textEditorConverter,
+      POSTAL_CODE_ID, dropDownPostalCodeConverter,
       FIRST_PHONE, textEditorConverter,
       SECOND_PHONE, textEditorConverter,
       FAX, textEditorConverter,
