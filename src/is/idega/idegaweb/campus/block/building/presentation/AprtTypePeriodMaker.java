@@ -188,11 +188,10 @@ public class AprtTypePeriodMaker extends Block{
 
   public List listOfStuff(){
     List L = null;
-    ApartmentTypePeriods ATP = ((is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentTypePeriods.class)).createLegacy();
     try {
-     L = EntityFinder.findAll(ATP);
+     L = EntityFinder.getInstance().findAll(ApartmentTypePeriods.class);
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       ex.printStackTrace();
     }
     return L;
