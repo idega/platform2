@@ -170,7 +170,7 @@ public class AlbumCollectionBusiness {
   }
 
   public static List getAlbums() throws SQLException{
-    return EntityFinder.findAllOrdered(com.idega.block.albumcollection.data.AlbumBMPBean.getStaticInstance(Album.class),com.idega.block.albumcollection.data.AlbumBMPBean._COLUMNNAME_PUBLISHINGDAY);
+    return EntityFinder.findAllDescendingOrdered(com.idega.block.albumcollection.data.AlbumBMPBean.getStaticInstance(Album.class),com.idega.block.albumcollection.data.AlbumBMPBean._COLUMNNAME_PUBLISHINGDAY);
   }
 
   public static void createAlbum(String name, String description,Integer albumType, IWTimestamp publishingDay, int[] authors, int[] performers, int[] categories, Integer frontCoverId) throws SQLException {
@@ -269,7 +269,7 @@ public class AlbumCollectionBusiness {
 
   }
 
-  public static void addTrack(String name, String description, Integer number, Integer albumId, Integer lyricId, Integer lengthInSek, Integer audioID, int[] authors, int[] performers, int[] categories) throws SQLException {
+  public static void addTrack(String name, String description, Integer number, Integer albumId, Integer lyricId, Integer lengthInSek, Integer audioID, boolean audioIsHidden, int[] authors, int[] performers, int[] categories) throws SQLException {
     Track track = ((com.idega.block.albumcollection.data.TrackHome)com.idega.data.IDOLookup.getHomeLegacy(Track.class)).createLegacy();
 
     if( name != null){
@@ -299,6 +299,8 @@ public class AlbumCollectionBusiness {
     if(audioID!=null){
     	track.setTrackID(audioID);
     }
+    
+    track.setAudoTrackHidden(audioIsHidden);
 
     track.insert();
 
@@ -322,7 +324,7 @@ public class AlbumCollectionBusiness {
 
   }
 
-  public static void updateTrack(int trackId, String name, String description, Integer number, Integer albumId, Integer lyricId, Integer lengthInSek, Integer audioID, int[] authors, int[] performers, int[] categories) throws SQLException {
+  public static void updateTrack(int trackId, String name, String description, Integer number, Integer albumId, Integer lyricId, Integer lengthInSek, Integer audioID, boolean audioIsHidden, int[] authors, int[] performers, int[] categories) throws SQLException {
     Track track = ((com.idega.block.albumcollection.data.TrackHome)com.idega.data.IDOLookup.getHomeLegacy(Track.class)).findByPrimaryKeyLegacy(trackId);
 
     if( name != null){
@@ -352,6 +354,8 @@ public class AlbumCollectionBusiness {
 	if(audioID!=null){
 		track.setTrackID(audioID);
 	}
+	
+	track.setAudoTrackHidden(audioIsHidden);
 
     track.update();
 

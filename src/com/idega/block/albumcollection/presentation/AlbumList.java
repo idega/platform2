@@ -230,11 +230,11 @@ public class AlbumList extends Block {
       tb4.setWidth(100);
       tb4.setColumnAlignment(1,"center");
 
-      intiTexts();
+      initTexts();
 
     }
 
-    private void intiTexts(){
+    private void initTexts(){
       tb3.add(AlbumCollectionBusiness.getMainTextClone("titill:"),1,1);
       tb3.add(AlbumCollectionBusiness.getMainTextClone("flytjendur:"),1,2);
       tb3.add(AlbumCollectionBusiness.getMainTextClone("útgáfuár:"),1,3);

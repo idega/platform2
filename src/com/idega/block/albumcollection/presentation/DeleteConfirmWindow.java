@@ -49,7 +49,7 @@ public class DeleteConfirmWindow extends IWAdminWindow {
 
     question = Text.getBreak();
     confirm = new SubmitButton(_fieldNameConfirm,"   Yes   ");
-    close = new CloseButton("   No    ");
+    close = new CloseButton("  Cancel ");
   }
 
   private void delete(IWContext iwc){

@@ -8,12 +8,14 @@ import com.idega.block.albumcollection.data.Author;
 import com.idega.block.albumcollection.data.Performer;
 import com.idega.block.albumcollection.data.Track;
 import com.idega.block.media.presentation.FileChooser;
+import com.idega.core.data.ICFile;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -47,6 +49,8 @@ public class AddTrack extends IWAdminWindow {
   private SelectionBox _fieldAuthors;
   private SelectionBox _fieldPerformers;
   private SelectionBox _fieldCategories;
+  private FileChooser _fieldAudioID;
+  private CheckBox _fieldAudioIsHidden;
 
   private static String _fieldNameAlbumId = AlbumCollectionBusiness._PRM_ALBUM_ID;
   private static String _fieldNameTrackId = AlbumCollectionBusiness._PRM_TRACK_ID;
@@ -58,12 +62,13 @@ public class AddTrack extends IWAdminWindow {
   private static String _fieldNameAuthors = "ac_authors";
   private static String _fieldNamePerformers = "ac_performers";
   private static String _fieldNameCategories = "ac_categories";
-  private static String _fieldAudioID = "ac_audio_id";
+  private static String _fieldNameAudioID = "ac_audio_id";
+  private static String _fieldNameAudioIsHidden = "ac_audio_is_hidden";
 
 
   public AddTrack() {
     super();
-    this.setHeight(440);
+    this.setHeight(460);
     this.setScrollbar(false);
 
     myForm = new Form();
@@ -110,20 +115,36 @@ public class AddTrack extends IWAdminWindow {
       _fieldTrackNumber.setContent(Integer.toString(track.getNumber()));
     }
 
-    _fieldTrackLengthMin = new IntegerInput(_fieldNameTrackLengthMin);
-    _fieldTrackLengthMin.setLength(2);
-    _fieldTrackLengthMin.setMaxlength(2);
+	
+	int lengthMin = 0;
     if(track != null){
-      _fieldTrackLengthMin.setContent(Integer.toString(track.getLength()/60));
+	  lengthMin = track.getLength();
+		lengthMin=((lengthMin<0)?0:lengthMin);
     }
+	_fieldTrackLengthMin = new IntegerInput(_fieldNameTrackLengthMin);
+	_fieldTrackLengthMin.setLength(2);
+	_fieldTrackLengthMin.setMaxlength(2);
+    _fieldTrackLengthMin.setContent(Integer.toString(lengthMin/60));
+    
 
     _fieldTrackLengthSek = new IntegerInput(_fieldNameTrackLengthSek);
     _fieldTrackLengthSek.setLength(2);
     _fieldTrackLengthSek.setMaxlength(2);
-    if(track != null){
-      _fieldTrackLengthSek.setContent(Integer.toString(track.getLength()%60));
-    }
+    _fieldTrackLengthSek.setContent(Integer.toString(lengthMin%60));
 
+
+
+	_fieldAudioID = new FileChooser(_fieldNameAudioID);
+	ICFile audioTrack = track.getTrack();
+	if(audioTrack != null){
+		_fieldAudioID.setSelectedFile(audioTrack);
+	}
+	
+	
+	_fieldAudioIsHidden = new CheckBox(_fieldNameAudioIsHidden,"hide");
+	if(track != null){
+		_fieldAudioIsHidden.setChecked(track.isAudoTrackHidden());
+	}
 
     _fieldDescription = new TextArea(_fieldNameDescription);
     _fieldDescription.setHeight(6);
@@ -177,12 +198,13 @@ public class AddTrack extends IWAdminWindow {
 
   public PresentationObject getElementsOredered(IWContext iwc){
     Table contentTable = new Table();
-    contentTable.setWidth("100%");
+    //contentTable.setWidth("100%");
+	//contentTable.setBorder(1);
     //
-    Table nameTable = new Table(4,3);
+    Table nameTable = new Table(4,4);
     //nameTable.setBorder(1);
     
-    nameTable.setColumnWidth(1,"70");
+    nameTable.setColumnWidth(1,"90");
 	nameTable.setColumnWidth(2,"50");
 	//nameTable.setColumnWidth(3,"70");
 	nameTable.setColumnWidth(4,"170");
@@ -207,9 +229,15 @@ public class AddTrack extends IWAdminWindow {
     nameTable.add(lTable,4,2);
 	
 	nameTable.add(new Text("Lagið:"),1,3);
-	nameTable.add(new FileChooser(_fieldAudioID),2,3);
+	
+	nameTable.add(_fieldAudioID,2,3);
+
+	nameTable.add(new Text("Fela hljóðskrá:"),1,4);
+	
+	nameTable.add(_fieldAudioIsHidden,2,4);
 
     contentTable.add(nameTable,1,1);
+	contentTable.setRowAlignment(1,Table.HORIZONTAL_ALIGN_CENTER);
 
     
     Table t2 = new Table(2,3);
@@ -226,6 +254,7 @@ public class AddTrack extends IWAdminWindow {
     t2.add(addPerformer,2,3);
 
     contentTable.add(t2,1,2);
+	contentTable.setRowAlignment(2,Table.HORIZONTAL_ALIGN_CENTER);
     
     
 	//Description
@@ -238,6 +267,7 @@ public class AddTrack extends IWAdminWindow {
 	descriptionTable.add(this._fieldDescription,1,2);
 	
 	contentTable.add(descriptionTable,1,3);
+	contentTable.setRowAlignment(3,Table.HORIZONTAL_ALIGN_CENTER);
     
     
 
@@ -271,7 +301,8 @@ public class AddTrack extends IWAdminWindow {
     String acLengthMin = iwc.getParameter(_fieldNameTrackLengthMin);
     String acLengthSek = iwc.getParameter(_fieldNameTrackLengthSek);
     
-	String acAudioID = iwc.getParameter(_fieldAudioID);
+	String acAudioID = iwc.getParameter(_fieldNameAudioID);
+	String acAudioIsHidden = iwc.getParameter(_fieldNameAudioIsHidden);
 
     String[] acAuthors = iwc.getParameterValues(_fieldNameAuthors);
     String[] acPerformers = iwc.getParameterValues(_fieldNamePerformers);
@@ -308,6 +339,11 @@ public class AddTrack extends IWAdminWindow {
     	}
     }
     
+	boolean audioIsHidden = false;
+	if(acAudioIsHidden!=null && !acAudioIsHidden.equals("")){
+		audioIsHidden = true;
+	}
+    
     
 
     int[] authorIDs = null;
@@ -338,9 +374,9 @@ public class AddTrack extends IWAdminWindow {
 
 
     if(trackId > -1){
-      AlbumCollectionBusiness.updateTrack(trackId,acName,acDescription,TrackNumber,null,null,trackLength,audioID,authorIDs,performerIDs,null);
+      AlbumCollectionBusiness.updateTrack(trackId,acName,acDescription,TrackNumber,null,null,trackLength,audioID,audioIsHidden,authorIDs,performerIDs,null);
     }else{
-      AlbumCollectionBusiness.addTrack(acName,acDescription,TrackNumber,AlbumId,null,trackLength,audioID,authorIDs,performerIDs,null);
+      AlbumCollectionBusiness.addTrack(acName,acDescription,TrackNumber,AlbumId,null,trackLength,audioID,audioIsHidden,authorIDs,performerIDs,null);
     }
 
   }

@@ -206,7 +206,10 @@ public class AlbumDetails extends Block {
 	public Table getTrackList(IWContext iwc) throws Exception {
 
 		IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-
+		IWBundle iwb = this.getBundle(iwc);
+		IWResourceBundle iwrb = this.getResourceBundle(iwc);
+		
+		
 		Table trackTable = null;
 		int row = 1;
 		int index = 1;
@@ -214,8 +217,20 @@ public class AlbumDetails extends Block {
 		if (albumId != null && !"".equals(albumId)) {
 			List tracks = AlbumCollectionBusiness.getTracks(Integer.parseInt(albumId));
 			if (tracks != null && tracks.size() > 0) {
-
-				trackTable = new Table(9, tracks.size() + 2);
+				int trackTableRows;
+				trackTableRows=tracks.size()+2;
+				int editColumns = 0;
+				int editSubtraction = 0;
+				if (hasEditPermission()){
+					editColumns=2;
+					editSubtraction=16;
+					//trackTableRows=(tracks.size()*2)+2;
+				}
+				//else{
+					//trackTableRows=tracks.size()+2;
+				//}
+				int trackTableColumns = 7;
+				trackTable = new Table(trackTableColumns+editColumns, trackTableRows);
 				//trackTable.setBorder(1);
 				trackTable.setWidth("550");
 				trackTable.setCellspacing(0);
@@ -227,13 +242,15 @@ public class AlbumDetails extends Block {
 
 				trackTable.setWidth(1, "20");
 				trackTable.setWidth(2, "200");
-				trackTable.setWidth(3, "1"); //trackInfo.setWidth(3,"50");
-				trackTable.setWidth(4, "127");
-				trackTable.setWidth(5, "128");
+				trackTable.setWidth(3, "1"); 
+//				trackTable.setWidth(3,"38");
+				trackTable.setWidth(4, Integer.toString(143-editSubtraction));
+				trackTable.setWidth(5, Integer.toString(144-editSubtraction));
 				trackTable.setWidth(6, "16");
 				trackTable.setWidth(7, "16");
-				trackTable.setWidth(8, "16");
-				trackTable.setWidth(9, "16");
+				for(int i=1; i<=editColumns; i++){
+					trackTable.setWidth(trackTableColumns+1, "16");
+				}
 
 				trackTable.setColumnAlignment(1, "center");
 				trackTable.setColumnAlignment(2, "left");
@@ -242,8 +259,8 @@ public class AlbumDetails extends Block {
 				trackTable.setColumnAlignment(5, "left");
 				trackTable.setColumnAlignment(6, "center");
 				trackTable.setColumnAlignment(7, "center");
-				trackTable.setColumnAlignment(8, "center");
-				trackTable.setColumnAlignment(9, "center");
+//				trackTable.setColumnAlignment(8, "center");
+//				trackTable.setColumnAlignment(9, "center");
 
 				//        Table trackInfo = new Table(9,1);
 				//        trackInfo.setCellpadding(1);
@@ -273,12 +290,15 @@ public class AlbumDetails extends Block {
 				//Table info = (Table)trackInfo.clone();
 				//info.add(AlbumCollectionBusiness.getMainTextClone("nr."),1,1);
 				trackTable.add(AlbumCollectionBusiness.getMainTextClone("heiti"), 2, row);
-				//info.add(AlbumCollectionBusiness.getMainTextClone("lengd"),3,1);
+				//trackTable.add(AlbumCollectionBusiness.getMainTextClone("lengd"),3,row);
 				trackTable.add(AlbumCollectionBusiness.getMainTextClone("lag"), 4, row);
 				trackTable.add(AlbumCollectionBusiness.getMainTextClone("texti"), 5, row);
+				//trackTable.add(iwb.getSharedImage("lyric_label.gif", iwrb.getLocalizedString("lyric_label","lyrics")),6,row);
+				//trackTable.add(iwb.getSharedImage("audio_label.gif", iwrb.getLocalizedString("audio_label","audio")),7,row);
 				//trackTable.add(info,1,index);
 				index++;
 				Iterator iter = tracks.iterator();
+				//int tmp = 0;
 				while (iter.hasNext()) {
 					Track item = (Track)iter.next();
 
@@ -294,19 +314,21 @@ public class AlbumDetails extends Block {
 					}
 
 					//Track length
-					//          int length = item.getLength();
-					//          if(length > 0){
-					//            int m = length/60;
-					//            int s = length%60;
-					//            info.add(AlbumCollectionBusiness.getMainTextBoldClone(((m < 10)?TextSoap.addZero(m):Integer.toString(m))+":"+((s<10)?TextSoap.addZero(s):Integer.toString(s))),3,1);
-					//          }
+//			          int length = item.getLength();
+//			          if(length > 0){
+//			            int m = length/60;
+//			            int s = length%60;
+//						trackTable.add(AlbumCollectionBusiness.getMainTextClone(((m < 10)?TextSoap.addZero(m):Integer.toString(m))+":"+((s<10)?TextSoap.addZero(s):Integer.toString(s))),3,row);
+//			          }
 
-					if(item.getTrackID() > -1){
+					if (!item.isAudoTrackHidden() && item.getTrackID() > -1) {
 						Link audioLink = new Link("S");
+						Image audioIcon = null;
+						audioIcon=iwb.getSharedImage("audio.gif", iwrb.getLocalizedString("audio","audio"));
+						audioLink.setImage(audioIcon);
 						audioLink.setFile(item.getTrackID());
-						trackTable.add(audioLink,6,row);
+						trackTable.add(audioLink, 7, row);
 					}
-
 
 					List authors = EntityFinder.findRelated(item, com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
 					if (authors != null) {
@@ -324,18 +346,7 @@ public class AlbumDetails extends Block {
 						trackTable.add(AlbumCollectionBusiness.getMainTextClone(name), 4, row);
 					}
 
-					if (hasEditPermission()) {
-						//info.resize(info.getColumns(),2);
-						Link update = (Link)updateTrackLinkTemplate.clone();
-						update.setObject(core.getSharedImage("edit.gif", "edit track"));
-						update.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID, item.getID());
-						trackTable.add(update, 7, row);
-
-						Link delete = (Link)deleteTrackLinkTemplate.clone();
-						delete.setObject(core.getSharedImage("delete.gif", "delete track"));
-						delete.addParameter(DeleteConfirmWindow._PRM_ID, item.getID());
-						trackTable.add(delete, 9, row);
-					}
+					
 
 					if (item.getLyricId() < 0) {
 
@@ -346,10 +357,12 @@ public class AlbumDetails extends Block {
 						if (hasEditPermission()) {
 
 							Link setLyric = (Link)setLyricLinkTemplate.clone();
-							setLyric.setText("A");
+							Image setLyricIcon = iwb.getSharedImage("write.gif", iwrb.getLocalizedString("set_lyrics","add lyrics"));
+							//setLyric.setText("A");
+							setLyric.setImage(setLyricIcon);
 							setLyric.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID, item.getID());
 
-							trackTable.add(setLyric, 8, row);
+							trackTable.add(setLyric, 6, row);
 						}
 					} else {
 
@@ -360,10 +373,12 @@ public class AlbumDetails extends Block {
 						trackTable.add(trackName, 2, row);
 
 						Link setLyric = (Link)lyricViewerLinkTemplate.clone();
-						setLyric.setText("T");
+						Image textIcon = iwb.getSharedImage("lyrics.gif", iwrb.getLocalizedString("lyrics","lyrics"));
+						//setLyric.setText("T");
+						setLyric.setImage(textIcon);
 						setLyric.addParameter(AlbumCollectionBusiness._PRM_LYRIC_ID, item.getLyricId());
 						setLyric.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID, item.getID());
-						trackTable.add(setLyric, 8, row);
+						trackTable.add(setLyric, 6, row);
 
 						List T_authors = EntityFinder.findRelated(((com.idega.block.albumcollection.data.LyricHome)com.idega.data.IDOLookup.getHomeLegacy(Lyric.class)).findByPrimaryKeyLegacy(item.getLyricId()), com.idega.block.albumcollection.data.AuthorBMPBean.getStaticInstance(Author.class));
 						if (T_authors != null) {
@@ -381,6 +396,21 @@ public class AlbumDetails extends Block {
 							trackTable.add(AlbumCollectionBusiness.getMainTextClone(name2), 5, row);
 						}
 					}
+					
+					if (hasEditPermission()) {
+						//row++;
+						
+						//info.resize(info.getColumns(),2);
+						Link update = (Link)updateTrackLinkTemplate.clone();
+						update.setObject(core.getSharedImage("edit.gif", "edit track"));
+						update.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID, item.getID());
+						trackTable.add(update, trackTableColumns+1, row);
+	
+						Link delete = (Link)deleteTrackLinkTemplate.clone();
+						delete.setObject(core.getSharedImage("delete.gif", "delete track"));
+						delete.addParameter(DeleteConfirmWindow._PRM_ID, item.getID());
+						trackTable.add(delete, trackTableColumns+2, row);
+					}
 
 					//          trackTable.add(info,1,index);
 					index++;
@@ -390,8 +420,9 @@ public class AlbumDetails extends Block {
 		}
 
 		if (hasEditPermission()) {
+			row++;
 			Link addTrackLink = AlbumCollectionBusiness.getMainLinkClone();
-			addTrackLink.setObject(core.getSharedImage("create.gif", "add track"));
+			addTrackLink.setObject(core.getSharedImage("create.gif", iwrb.getLocalizedString("add_track","add track")));
 			//addTrackLink.setFontColor("#EEEEEE");
 			addTrackLink.setBold();
 			addTrackLink.setWindowToOpen(AddTrack.class);

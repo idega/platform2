@@ -7,9 +7,11 @@ public class TrackHomeImpl extends com.idega.data.IDOFactory implements TrackHom
   return Track.class;
  }
 
+
  public Track create() throws javax.ejb.CreateException{
-  return (Track) super.idoCreate();
+  return (Track) super.createIDO();
  }
+
 
  public Track createLegacy(){
 	try{
@@ -21,13 +23,16 @@ public class TrackHomeImpl extends com.idega.data.IDOFactory implements TrackHom
 
  }
 
- public Track findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Track) super.idoFindByPrimaryKey(id);
- }
 
  public Track findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Track) super.idoFindByPrimaryKey(pk);
+  return (Track) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public Track findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (Track) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public Track findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +43,7 @@ public class TrackHomeImpl extends com.idega.data.IDOFactory implements TrackHom
 	}
 
  }
+
 
 
 }
