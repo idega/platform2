@@ -10,6 +10,7 @@ import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
+import com.idega.data.IDOQuery;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.MaxColumn;
 import com.idega.data.query.SelectQuery;
@@ -303,5 +304,12 @@ public class RunBMPBean extends GenericEntity implements Run {
 		query.addCriteria(new MatchCriteria(table, getColumnNameParticipantNumber(), MatchCriteria.LESSEQUAL, max));
 		
 		return idoGetNumberOfRecords(query.toString());
+	}
+	
+	public Collection ejbFindByUserIDandDistanceID(int userID, int distanceID) throws FinderException{
+		IDOQuery query = idoQueryGetSelect();
+		query.appendWhereEquals(getColumnNameUserID(),userID);
+		query.appendAndEquals(getColumnNameRunDistanceGroupID(),distanceID);
+		return super.idoFindPKsByQuery(query);
 	}
 }
