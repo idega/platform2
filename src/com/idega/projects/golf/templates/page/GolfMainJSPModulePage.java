@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.19 2001/07/30 10:35:33 tryggvil Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.20 2001/07/30 10:44:14 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -126,7 +126,11 @@ public class GolfMainJSPModulePage extends MainPage {
   }
 
   protected Link Canon() {
-      Link link = new Link(iwb.getImage("shared/canon_holufholu.jpg"),"/tournament/holeview.jsp?&tournamentID=100&tournamentGroupID=3&tournamentRoundID=232");
+      Window window = new Window("Hola fyrir holu",796,600,"/tournament/holeview.jsp?&tournamentID=100&tournamentGroupID=3&tournamentRoundID=232");
+          window.setMenubar(true);
+          window.setResizable(true);
+
+      Link link = new Link(iwb.getImage("shared/canon_holufholu.jpg"),window);
       return link;
   }
 
