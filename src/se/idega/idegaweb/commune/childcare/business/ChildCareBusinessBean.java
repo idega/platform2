@@ -53,7 +53,10 @@ import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
-//import com.idega.block.contract.data.ContractHome;
+import com.idega.block.contract.data.ContractTag;
+import com.idega.block.contract.data.ContractTagBMPBean;
+import com.idega.block.contract.data.ContractTagHome;
+
 import com.idega.block.pdf.ITextXMLHandler;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
@@ -64,6 +67,7 @@ import com.idega.block.school.business.SchoolComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.business.IBOLookup;
 import com.idega.core.data.Address;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.Phone;
@@ -1355,6 +1359,25 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				terminateContract(application.getContractFileId(), terminationDate.getDate());
 			}
 			
+			ContractTagHome contractHome = (ContractTagHome) IDOLookup.getHome(ContractTag.class);
+			Collection tags = contractHome.findAllByNameAndCategory("care-time", getContractCategory());
+
+			if (tags.isEmpty()){
+				try {
+					ContractTag tag = contractHome.create();
+	
+					tag.setName("care-time");
+					tag.setType(java.lang.Integer.class);
+					tag.setCategoryId(getContractCategory());
+					tag.store();
+				}
+				catch (Exception ex)
+				{
+					ex.printStackTrace();
+				}	
+			}		
+			
+						
 			boolean hasBankId = false;
 			try{
 				hasBankId = new NBSLoginBusinessBean().hasBankLogin(((Integer)application.getOwner().getPrimaryKey()).intValue());
