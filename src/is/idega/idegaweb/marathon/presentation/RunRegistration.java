@@ -309,8 +309,10 @@ public class RunRegistration extends Block {
 		}
 		nationalityField.setWidth(Table.HUNDRED_PERCENT);
 		nationalityField.addMenuElementFirst("-1", iwrb.getLocalizedString("run_reg.select_country", "Select country"));
+		nationalityField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.must_select_nationality", "You must select your nationality"));
 		countryField.setWidth(Table.HUNDRED_PERCENT);
-		nationalityField.addMenuElementFirst("-1", iwrb.getLocalizedString("run_reg.select_nationality", "Select ationality"));
+		countryField.addMenuElementFirst("-1", iwrb.getLocalizedString("run_reg.select_nationality", "Select ationality"));
+		countryField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.must_select_country", "You must select your country"));
 
 		ssnISField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_SSN_IS), STYLENAME_INTERFACE);
 		ssnISField.setAsIcelandicSSNumber(iwrb.getLocalizedString("run_reg.ssn_is_err_msg", "Your ssn is not a valid Icelandic ssn"));
@@ -594,6 +596,7 @@ public class RunRegistration extends Block {
 			t.setHeight(row++, 3);
 			t.add(ownChipField, column, row);
 			t.add(ownChipText, column, row);
+			t.add(" ", column, row);
 			t.add(chipNumberField, column, row++);
 			t.setHeight(row++, 3);
 			t.add(buyChipField, column, row);
@@ -603,7 +606,7 @@ public class RunRegistration extends Block {
 				t.add(String.valueOf((int) buyPrice) + " " + ISK.getSymbol(), column, row++);
 			}
 			else {
-				t.add(EUR.getSymbol() + String.valueOf((int) buyPriceEuro), column, row++);
+				t.add(String.valueOf((int) buyPriceEuro) + " " + EUR.getSymbol(), column, row++);
 			}
 			t.setHeight(row++, 3);
 			t.add(rentChipField, column, row);
@@ -613,7 +616,7 @@ public class RunRegistration extends Block {
 				t.add(String.valueOf((int) rentPrice) + " " + ISK.getSymbol(), column, row++);
 			}
 			else {
-				t.add(EUR.getSymbol() + String.valueOf((int) rentPriceEuro), column, row++);
+				t.add(String.valueOf((int) rentPriceEuro) + " " + EUR.getSymbol(), column, row++);
 			}
 			
 			t.setHeight(row++, 8);
