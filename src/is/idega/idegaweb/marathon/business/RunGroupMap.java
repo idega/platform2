@@ -24,6 +24,6 @@ public class RunGroupMap extends MultivaluedHashMap {
 		}
 		values.add(value);
 		
-		return super.put(key, values);
+		return super.superPut(key, values);
 	}
 }
