@@ -7,6 +7,7 @@ import is.idega.idegaweb.campus.data.AccountEntryReportBMPBean;
 import is.idega.idegaweb.campus.data.EntryReport;
 import is.idega.idegaweb.campus.data.EntryReportBMPBean;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -291,7 +292,7 @@ public class CampusTariffReports extends Finance {
         return T;
     }
 
-    public PresentationObject getAccountResult(IWContext iwc) {
+    public PresentationObject getAccountResultOld(IWContext iwc) {
         Table T = new Table();
         T.setNoWrap();
 
@@ -366,6 +367,152 @@ public class CampusTariffReports extends Finance {
         }
 
         return T;
+    }
+    
+    public PresentationObject getAccountResult(IWContext iwc) {
+        Table T = new Table();
+        T.setNoWrap();
+
+        if (accountReports != null && !accountReports.isEmpty()) {
+            
+            Collection coll = groupReportsByContracts();
+            Map contractMap;
+            int row = 2;
+            int offset = 4;
+            int col = offset;
+            int keySize = distinctKeys.size();
+           
+            T.add(getHeader(localize("name", "Name")), 2, 1);
+            T.add(getHeader(localize("personal_id", "Personal ID")), 3, 1);
+
+            for (Iterator iterator = distinctKeys.iterator(); iterator.hasNext();) {
+                Integer keyId = (Integer) iterator.next();
+                T.add(getHeader((String) keyMap.get(keyId)), col++, 1);
+            }
+            T.add(getHeader(localize("total", "Total")), col++, 1);
+
+            //java.text.DateFormat df =
+            // getShortDateFormat(iwc.getCurrentLocale());
+            GridResult result = new GridResult(keySize,coll.size());
+            int resultRow = 0,resultCol = 0;
+            int ind = 1;
+            for (Iterator iter = coll.iterator(); iter.hasNext();) {
+                resultCol = 0;
+                T.add(getText(String.valueOf(ind++)), 1, row);
+                contractMap = (Map) iter.next();
+                boolean common = false;
+                
+
+                col = offset;
+                // for every distinct account key
+                //int index = 0;
+                for (Iterator iterator = distinctKeys.iterator(); iterator.hasNext();) {
+                    Integer keyId = (Integer) iterator.next();
+                    AccountEntryReport report = (AccountEntryReport) contractMap.get(keyId);
+                    // print common info
+                    if (report != null) {
+                        if (!common) {
+                            T.add(getText(report.getName()), 2, row);
+                            T.add(getText(report.getPersonalID()), 3, row);
+                            common = true;
+                        }
+                        double lineKeyTotal = report.getTotal().doubleValue();
+                        result.add(lineKeyTotal,resultCol,resultRow);
+                        T.add(getAmountText(lineKeyTotal), col, row);
+                    }
+                    resultCol++;
+                    col++;
+
+                }
+                T.add(getAmountText(result.getRowTotal(resultRow).doubleValue()), col, row);
+                resultRow++;
+                row++;
+            }
+            int ii =0;
+            for (int i=0; i < keySize; i++) {
+                ii = offset+i;
+                T.add(getAmountText(result.getColumnTotal(i).doubleValue()), ii, row);
+               
+            }
+            ii++;
+            T.add(getAmountText(result.getTotal().doubleValue()),ii,row);
+
+            T.setVerticalZebraColored(getZebraColor1(), getZebraColor2());
+            T.setRowColor(1, getHeaderColor());
+            T.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_RIGHT);
+            T.setAlignment(3, 1, Table.HORIZONTAL_ALIGN_LEFT);
+            for (int i = offset; i <= keySize + offset; i++) {
+                T.setColumnAlignment(i, Table.HORIZONTAL_ALIGN_RIGHT);
+                T.setAlignment(i, 1, Table.HORIZONTAL_ALIGN_LEFT);
+            }
+            T.setRowColor(row, getHeaderColor());
+        }
+
+        return T;
+    }
+    
+    private class GridResult{
+        private BigDecimal[][] grid;
+        private int rowTotalCol;
+        private int colTotalRow;
+        
+        
+        public GridResult(int columns, int rows){
+            grid = new BigDecimal[columns+1][rows+1];
+            rowTotalCol = columns;
+            colTotalRow = rows;
+        }
+        
+        public void add(float value,int xpos,int ypos){
+            add(new BigDecimal(value),xpos,ypos);
+        }
+        
+        public void add(double value,int xpos,int ypos){
+            add(new BigDecimal(value),xpos,ypos);
+        }
+        
+        public void add(BigDecimal value,int xpos,int ypos){
+            if(grid[xpos][ypos]==null)
+                grid[xpos][ypos] = value;
+            else
+                grid[xpos][ypos] = grid[xpos][ypos].add(value);
+            //update row result
+            if(grid[rowTotalCol][ypos]==null)
+                grid[rowTotalCol][ypos] = value;
+            else
+                grid[rowTotalCol][ypos] =  grid[rowTotalCol][ypos].add(value);
+            // update col result
+            if(grid[xpos][colTotalRow]==null)
+                grid[xpos][colTotalRow] = value;
+            else
+                grid[xpos][colTotalRow] = grid[xpos][colTotalRow].add(value);
+        }
+        
+        public BigDecimal getRowTotal(int row){
+            if(grid[rowTotalCol][row]!=null)
+                return grid[rowTotalCol][row];
+            return new BigDecimal(0);
+        }
+        
+        public BigDecimal getColumnTotal(int column){
+            if(grid[column][colTotalRow]!=null)
+                return grid[column][colTotalRow];
+            return new BigDecimal(0);
+        }
+        
+        public BigDecimal getTotal(){
+            BigDecimal total = new BigDecimal(0);
+            for (int i = 0; i < grid.length-1; i++) {
+                for (int j = 0; j < grid[i].length-1; j++) {
+                    if(grid[i][j]!=null)
+                        total = total.add(grid[i][j]);
+                }
+            }
+            return total;
+        }
+        
+        
+        
     }
    
 
