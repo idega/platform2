@@ -497,15 +497,15 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
             }
             sql.append(" and (");
             if ( (fromStamp != null) && (toStamp == null) ) {
-              sql.append(dateColumn+" like '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"%'");
-//              sql.append(dateColumn+" like '"+fromStamp.toSQLDateString()+"%'");
+//              sql.append(dateColumn+" like '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"%'");
+              sql.append(dateColumn+" like '"+fromStamp.toSQLDateString()+"%'");
             }else if ( (fromStamp != null) && (toStamp != null)) {
               sql.append(" (");
-              sql.append(dateColumn+" >= '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"'");
-//              sql.append(dateColumn+" >= '"+fromStamp.toSQLDateString()+"'");
+//              sql.append(dateColumn+" >= '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"'");
+              sql.append(dateColumn+" >= '"+fromStamp.toSQLDateString()+"'");
               sql.append(" and ");
-              sql.append(dateColumn+" >= '"+TextSoap.findAndCut(toStamp.toSQLDateString(),"-")+"'");
-//              sql.append(dateColumn+" <= '"+toStamp.toSQLDateString()+"')");
+//              sql.append(dateColumn+" >= '"+TextSoap.findAndCut(toStamp.toSQLDateString(),"-")+"'");
+              sql.append(dateColumn+" <= '"+toStamp.toSQLDateString()+"')");
             }
             sql.append(" )");
 
@@ -575,12 +575,15 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     sql.append("b."+getIsValidColumnName()+" = 'Y'");
     if (fromStamp != null && toStamp == null) {
       sql.append(" and ");
-      sql.append("b."+dateColumn+" like '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"%'");
+//      sql.append("b."+dateColumn+" like '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"%'");
+      sql.append("b."+dateColumn+" like '"+fromStamp.toSQLDateString()+"%'");
     }else if (fromStamp != null && toStamp != null) {
       sql.append(" and ");
-      sql.append("b."+dateColumn+" >= '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"'");
+//      sql.append("b."+dateColumn+" >= '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"'");
+      sql.append("b."+dateColumn+" >= '"+fromStamp.toSQLDateString()+"'");
       sql.append(" and ");
-      sql.append("b."+dateColumn+" <= '"+TextSoap.findAndCut(toStamp.toSQLDateString(),"-")+"'");
+//      sql.append("b."+dateColumn+" <= '"+TextSoap.findAndCut(toStamp.toSQLDateString(),"-")+"'");
+      sql.append("b."+dateColumn+" <= '"+toStamp.toSQLDateString()+"'");
     }
     if (bookingTypeIds != null) {
       if (bookingTypeIds.length > 0 ) {
