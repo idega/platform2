@@ -45,7 +45,7 @@ public class PDFTest {
 	public static void main(String[] args) {
     FileOutputStream fileOut = null;
 		try {
-			fileOut = new FileOutputStream("c:\\test.pdf");
+			fileOut = new FileOutputStream("test.pdf");
 		}
 		catch (FileNotFoundException e) {
 		}
@@ -61,18 +61,18 @@ public class PDFTest {
 			Font tagFont = new Font(Font.HELVETICA);
 			tagFont.setSize(12);
 			Font textFont = new Font(Font.HELVETICA);
-			textFont.setSize(10);
+			textFont.setSize(9);
 
-			HeaderFooter footer = new HeaderFooter(new Phrase("idegaWeb Commune", textFont), true);
+			/*HeaderFooter footer = new HeaderFooter(new Phrase("idegaWeb Commune", textFont), true);
 			footer.setBorder(0);
 			footer.setAlignment(Element.ALIGN_CENTER);
-			outerDocument.setFooter(footer);
+			outerDocument.setFooter(footer);*/
 			String title = "Concerning your application for idegaWeb Commune account";
 			Paragraph cTitle = new Paragraph(title, titleFont);
 			// for each contract id
 			int lettersProcessed=0;
-			Image image = Image.getInstance("porto_betalt.gif");
-			image.scaleAbsolute(148f, 60f);
+			Image image = Image.getInstance("porto_betalt.jpg");
+			image.scaleAbsolute(60f, 60f);
 			//outerDocument.setPageCount(messageIDs.length);
 			for (int j = 0; j < 10; j++)
 			{
@@ -80,26 +80,9 @@ public class PDFTest {
 					outerDocument.newPage();
 					String sAddrString = "Þórhallur Bæring Sveinn Hreinn Helgason\nStafnaseli 5\n109 Reykjavík\nIceland";
 
-					Paragraph P0, P1, P2;
-					PdfPTable headerTable = new PdfPTable(3);
-					
-					float headerTableHeightMM = 36f;
-					float headerTableHeightPoints = getPointsFromMM(headerTableHeightMM);
-					
-					headerTable.setWidths(new float[]{1,1,1});
-					headerTable.getDefaultCell().setFixedHeight(headerTableHeightPoints);
-					headerTable.getDefaultCell().setPadding(0);
-					headerTable.setWidthPercentage(100f);
-
-					PdfPCell cell1 = new PdfPCell(new Phrase(""));
-					cell1.setBorder(0);
-					cell1.setNoWrap(true);
+					Paragraph P1, P2, P3, P4, P5, P6, P7, P8, P9;
 					
 					Phrase Ph0 = new Phrase(sAddrString, textFont);
-					PdfPCell cell2 = new PdfPCell(new Phrase(""));
-					cell2.setBorder(0);
-					cell2.setNoWrap(true);
-					
 					BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 					PdfContentByte cb = writer.getDirectContent();
 					PdfTemplate template = cb.createTemplate(124f, 54f);
@@ -120,39 +103,75 @@ public class PDFTest {
 					template.showText("131 81 NACKA");
 					template.endText();
 					
-					PdfPCell cell3 = new PdfPCell(image);
-					cell3.setBorder(0);
-					cell3.setNoWrap(true);
-					cell3.setHorizontalAlignment(cell3.ALIGN_RIGHT);
-					
-					headerTable.addCell(cell1);
-					headerTable.addCell(cell2);
-					headerTable.addCell(cell3);
-										
-					P1 = new Paragraph(new Phrase("This is a message", paragraphFont));
+					P1 = new Paragraph(new Phrase("Hej,"));
 
-					String sBodyText = "This is the message body and since it is a fairly long message the text should automatically break into several lines.  If it does not I will have to rethink this approach somewhat for future references...";
-					Phrase phBodyText = new Phrase(sBodyText, textFont);
-					P2 = new Paragraph(phBodyText);
+					String sBodyText = "Din ansškan om medborgarkonto fšr Nacka24 har blivit godkŠnd. Du har dŠrmed fŒtt tillgŒng till din personliga sida pŒ Nacka24.";
+					P2 = new Paragraph(new Phrase(sBodyText));
+					
+					sBodyText = "AnvŠndarnamn: ";
+					P3 = new Paragraph();
+					P3.add(new Phrase(sBodyText));
+					P3.add(new Phrase("Laddi\n", paragraphFont));
+					P3.add(new Phrase("Lšsenord: "));
+					P3.add(new Phrase("Rapperson", paragraphFont));
+					
+					P4 = new Paragraph(new Phrase("Webbadressen till Nacka24 Šr: http://www.nacka24.nacka.se. Skriv in ditt anvŠndarnamn och lšsenord šverst till hšger i fšnstret. Klicka pŒ Logga in. Min sida, ditt personliga medborgarkonto šppnas."));
+					P5 = new Paragraph(new Phrase("Fšr att du ska fŒ tillgŒng till din personliga sida krŠvs att du anvŠnder en webblŠsare med tillrŠckligt hšg sŠkerhet. WebblŠsaren mŒste ocksŒ ha stšd fšr cookies och i de flesta webblŠsare fungerar det automatiskt. Du ska alltsŒ inte inaktivera funktionen med cookies."));
+					P6 = new Paragraph(new Phrase("Du bšr anvŠnda nŒgon av fšljande webblŠsare:"));
+					P7 = new Paragraph(new Phrase("\t-\tInternet Explorer 5.5 fšr Windows eller senare versioner "));
+					P8 = new Paragraph(new Phrase("\t-\tInternet Explorer 5.1 fšr Mac eller senare versioner"));
+					P9 = new Paragraph(new Phrase("\t-\tNetscape 6.0 eller senare versioner"));
 
 					ColumnText ct = new ColumnText(cb);
-					ct.setSimpleColumn(Ph0,getPointsFromMM((30f+48f)), 755f, getPointsFromMM((120f)), 820f, 15, Element.ALIGN_LEFT);
+					ct.setSimpleColumn(Ph0,getPointsFromMM((30f+48f)), 755f, getPointsFromMM((200f)), 820f, 15, Element.ALIGN_LEFT);
 					ct.go();
 					
-					ColumnText subjectText = new ColumnText(cb);
+					/*ColumnText subjectText = new ColumnText(cb);
 					subjectText.setSimpleColumn(P1, getPointsFromMM(30f), 640f, getPointsFromMM((216f-30f)), 670f, 15, Element.ALIGN_LEFT);
 					subjectText.go();
 					
 					ColumnText bodyText = new ColumnText(cb);
 					bodyText.setSimpleColumn(P2, getPointsFromMM(30f), 100f, getPointsFromMM((216f-30f)), 635f, 15, Element.ALIGN_LEFT);
-					bodyText.go();
+					bodyText.setSimpleColumn(P3, getPointsFromMM(30f), 100f, getPointsFromMM((216f-30f)), 635f, 15, Element.ALIGN_LEFT);
+					bodyText.go();*/
 					
-					cb.addImage(image, 148f, 0, 0, 60f, getPointsFromMM((130f)),755f);
+					cb.addImage(image, 60f, 0, 0, 60f, getPointsFromMM((160f)),755f);
 					cb.addTemplate(template, getPointsFromMM(30f), 761f);
+					
+					Paragraph emptyLine = new Paragraph("\n");
+					
+					outerDocument.add(new Paragraph("\n\n\n\n\n\n"));
+					outerDocument.add(P1);
+					outerDocument.add(emptyLine);
+					outerDocument.add(P2);
+					outerDocument.add(emptyLine);
+					outerDocument.add(P3);
+					outerDocument.add(emptyLine);
+					outerDocument.add(P4);
+					outerDocument.add(emptyLine);
+					outerDocument.add(P5);
+					outerDocument.add(emptyLine);
+					outerDocument.add(P6);
+					//outerDocument.add(emptyLine);
+					outerDocument.add(P7);
+					//outerDocument.add(emptyLine);
+					outerDocument.add(P8);
+					//outerDocument.add(emptyLine);
+					outerDocument.add(P9);
+					outerDocument.add(emptyLine);
+					/*outerDocument.add(new Paragraph("Du kan ladda ner nŒgon av webblŠsarna frŒn fšljande webbsidor."));
+					outerDocument.add(emptyLine);
+					outerDocument.add(new Paragraph("Internet Explorer 5.5 fšr Windows och Internet Explorer 5.1 fšr Mac"));
+					outerDocument.add(new Paragraph("http://www.microsoft.com/downloads"));
+					outerDocument.add(emptyLine);
+					outerDocument.add(new Paragraph("Netscape 6.0"));
+					outerDocument.add(new Paragraph("http://www.netscape.com"));
+					outerDocument.add(emptyLine);*/
+					outerDocument.add(new Paragraph("PŒ Nacka24 under FrŒgor & Svar finns mer hjŠlp om hur du ser vilken version av webblŠsare du har och hur du laddar ner nya versioner. Om du har frŒgor Šr du ocksŒ vŠlkommen att kontakta kundvalsgruppen i Nacka kommun pŒ telefon 08-718 80 00 eller via e-post kundvalsgruppen.bun@nacka.se."));
 
 				}
 				catch(Exception e){
-          e.printStackTrace();
+          			e.printStackTrace();
 				}
 			}
 			outerDocument.close();
