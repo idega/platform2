@@ -13,16 +13,14 @@ import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.io.MediaWritable;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.DownloadLink;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
-import com.idega.presentation.ui.Window;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -318,10 +316,13 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 	}
 	
 	protected Link getPDFLink(boolean showNotYetActive, boolean hasShowNotYetActive) throws RemoteException {
-		Link link = new Link(getBundle().getImage("shared/pdf.gif"));
-		link.setWindow(getFileWindow());
+	  
+		//Link link = new Link(getBundle().getImage("shared/pdf.gif"),iwc.getIWMainApplication().getMediaServletURI());
+		//link.setWindow(getFileWindow());
+	    DownloadLink link = new DownloadLink(getBundle().getImage("shared/pdf.gif"));
 		link.addParameter(ChildCareGroupWriter.PARAMETER_TYPE, ChildCareGroupWriter.PDF);
-		link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareGroupWriter.class));
+		link.setMediaWriterClass(ChildCareGroupWriter.class);
+		//link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareGroupWriter.class));
 		link.addParameter(ChildCareGroupWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
 		link.addParameter(ChildCareGroupWriter.PARAMETER_GROUP_ID, getSession().getGroupID());
 		if (hasShowNotYetActive)
@@ -331,10 +332,12 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 	}
 	
 	protected Link getXSLLink(boolean showNotYetActive, boolean hasShowNotYetActive) throws RemoteException {
-		Link link = new Link(getBundle().getImage("shared/xls.gif"));
-		link.setWindow(getFileWindow());
+	    DownloadLink link = new DownloadLink(getBundle().getImage("shared/xls.gif"));
+	    link.setMediaWriterClass(ChildCareGroupWriter.class);
+		//Link link = new Link(getBundle().getImage("shared/xls.gif"),iwc.getIWMainApplication().getMediaServletURI());
+		//link.setWindow(getFileWindow());
 		link.addParameter(ChildCareGroupWriter.PARAMETER_TYPE, ChildCareGroupWriter.XLS);
-		link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareGroupWriter.class));
+		//link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareGroupWriter.class));
 		link.addParameter(ChildCareGroupWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
 		link.addParameter(ChildCareGroupWriter.PARAMETER_GROUP_ID, getSession().getGroupID());
 		if (hasShowNotYetActive)
@@ -343,6 +346,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		return link;
 	}
 	
+	/*
 	private Window getFileWindow() {
 		Window w = new Window(localize("child_care.group", "Child care group"), getIWApplicationContext().getIWMainApplication().getMediaServletURI());
 		w.setResizable(true);
@@ -350,7 +354,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		w.setHeight(400);
 		w.setWidth(500);
 		return w;
-	}
+	}*/
 
 	protected DropdownMenu getChildCareGroups() throws RemoteException {
 		DropdownMenu menu = getGroups(getSession().getGroupID(), -1);

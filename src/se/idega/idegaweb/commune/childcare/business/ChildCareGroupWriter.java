@@ -27,6 +27,7 @@ import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.io.DownloadWriter;
 import com.idega.io.MediaWritable;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
@@ -54,7 +55,7 @@ import com.lowagie.text.pdf.PdfWriter;
  * @author       <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class ChildCareGroupWriter implements MediaWritable {
+public class ChildCareGroupWriter extends DownloadWriter implements MediaWritable {
 
 	private MemoryFileBuffer buffer = null;
 	private ChildCareBusiness business;
@@ -108,10 +109,13 @@ public class ChildCareGroupWriter implements MediaWritable {
 				String type = req.getParameter(PARAMETER_TYPE);
 				if (type.equals(PDF)) {
 					buffer = writePDF(students);
+					setAsDownload(iwc,"school_class.pdf",buffer.length());
 				}
 				else if (type.equals(XLS)) {
 					buffer = writeXLS(students);
+					setAsDownload(iwc,"school_class.xls",buffer.length());
 				}
+				
 			}
 		}
 		catch (Exception e) {
@@ -122,7 +126,7 @@ public class ChildCareGroupWriter implements MediaWritable {
 	public String getMimeType() {
 		if (buffer != null)
 			return buffer.getMimeType();
-		return "application/pdf";
+		return super.getMimeType();
 	}
 	
 	public void writeTo(OutputStream out) throws IOException {
