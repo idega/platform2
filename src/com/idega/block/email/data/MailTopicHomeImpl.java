@@ -7,9 +7,11 @@ public class MailTopicHomeImpl extends com.idega.data.IDOFactory implements Mail
   return MailTopic.class;
  }
 
+
  public MailTopic create() throws javax.ejb.CreateException{
-  return (MailTopic) super.idoCreate();
+  return (MailTopic) super.createIDO();
  }
+
 
  public MailTopic createLegacy(){
 	try{
@@ -21,13 +23,16 @@ public class MailTopicHomeImpl extends com.idega.data.IDOFactory implements Mail
 
  }
 
- public MailTopic findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (MailTopic) super.idoFindByPrimaryKey(id);
- }
 
  public MailTopic findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (MailTopic) super.idoFindByPrimaryKey(pk);
+  return (MailTopic) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public MailTopic findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (MailTopic) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public MailTopic findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +43,7 @@ public class MailTopicHomeImpl extends com.idega.data.IDOFactory implements Mail
 	}
 
  }
+
 
 
 }

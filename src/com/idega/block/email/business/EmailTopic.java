@@ -102,5 +102,7 @@ public interface EmailTopic{
 
   public int getListId();
 
+  public int getCategoryId();
+
 }
 
