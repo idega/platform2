@@ -9,6 +9,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.user.data.UserBMPBean;
+import com.idega.util.text.Name;
 
 
 
@@ -30,13 +31,17 @@ public class AccountUserBMPBean extends UserBMPBean implements AccountUser{
 		    return super.idoFindPKsBySQL(sql.toString());
 	}
 	
-	public Collection ejbFindBySearch(String first,String middle,String last)throws FinderException{
+	public Collection ejbFindBySearch(String name, String pid)throws FinderException{
 		StringBuffer sql = new StringBuffer("select * from ");
 	    sql.append("ic_user u ");
 	    boolean isfirst = true;
+	    Name nm = new Name(name);
+	    String first = nm.getFirstName();
+	    String middle = nm.getMiddleName();
+	    String last = nm.getLastName();
 	    if(first != null || middle !=null || last !=null){
 	      sql.append(" where ");
-	      if(first !=null && !"".equals(first)){
+	      if(first!=null &&  !"".equals(first)){
 	        if(!isfirst)
 	          sql.append(" and ");
 	        sql.append(" u.first_name like '%");
@@ -44,7 +49,7 @@ public class AccountUserBMPBean extends UserBMPBean implements AccountUser{
 	        sql.append("%' ");
 	        isfirst = false;
 	      }
-	      if(middle !=null && !"".equals(middle)){
+	      if(middle!=null &&  !"".equals(middle)){
 	        if(!isfirst)
 	          sql.append(" and ");
 	        sql.append(" u.middle_name like '%");
@@ -52,11 +57,19 @@ public class AccountUserBMPBean extends UserBMPBean implements AccountUser{
 	        sql.append("%' ");
 	        isfirst = false;
 	      }
-	      if(last !=null && !"".equals(last )){
+	      if(last!=null && !"".equals(last )){
 	        if(!isfirst)
 	          sql.append(" and ");
 	        sql.append(" u.last_name like '%");
 	        sql.append(last);
+	        sql.append("%' ");
+	        isfirst = false;
+	      }
+	      if(pid!=null && !"".equals(pid )){
+	        if(!isfirst)
+	          sql.append(" and ");
+	        sql.append(" u.personal_id like '%");
+	        sql.append(pid);
 	        sql.append("%' ");
 	        isfirst = false;
 	      }

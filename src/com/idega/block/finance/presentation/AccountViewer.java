@@ -190,8 +190,7 @@ public class AccountViewer extends Finance {
 				double b = eAccount.getBalance();
 				
 					b = getFinanceService().getAccountBalance(account.getAccountId());
-					
-					b = b * tax;
+					//b = b * tax;
 				
 				T.add(getAmountText( b), col++, row);
 				row++;

@@ -7,5 +7,6 @@ public interface AccountKeyHome extends com.idega.data.IDOHome
  public AccountKey findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public java.util.Collection findAll()throws javax.ejb.FinderException;
  public java.util.Collection findByCategory(java.lang.Integer p0)throws javax.ejb.FinderException;
+ public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.FinderException;
 
 }

@@ -176,7 +176,7 @@ public class TariffBMPBean extends com.idega.data.GenericEntity implements com.i
   }
   
   public Collection ejbFindByAttribute(String attribute) throws FinderException{
-  		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getColumnAttribute(),attribute));
+  		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEqualsQuoted(getColumnAttribute(),attribute));
   }
 
 }

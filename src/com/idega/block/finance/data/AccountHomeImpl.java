@@ -48,9 +48,9 @@ public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.Finde
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySearch(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,int p5)throws javax.ejb.FinderException{
+public java.util.Collection findBySearch(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,int p5)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AccountBMPBean)entity).ejbFindBySearch(p0,p1,p2,p3,p4,p5);
+	java.util.Collection ids = ((AccountBMPBean)entity).ejbFindBySearch(p0,p1,p2,p3,p5);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

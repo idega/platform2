@@ -27,6 +27,13 @@ public java.util.Collection findByCategory(java.lang.Integer p0)throws javax.ejb
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findBySQL(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((AccountKeyBMPBean)entity).ejbFindBySQL(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public AccountKey findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (AccountKey) super.findByPrimaryKeyIDO(pk);
  }

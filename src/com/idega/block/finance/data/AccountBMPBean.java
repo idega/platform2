@@ -9,6 +9,7 @@ import javax.ejb.FinderException;
 import com.idega.data.CategoryEntityBMPBean;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.util.text.Name;
 
 /**
  * Title:
@@ -186,7 +187,7 @@ public class AccountBMPBean extends CategoryEntityBMPBean implements Account,Fin
     return super.idoFindPKsBySQL("select * from "+getEntityTableName()+" where "+getUserIdColumnName()+" = " +userId +" and "+ getTypeColumnName()+" = '"+type+"'");
   }
 
-  public Collection ejbFindBySearch(String id,String first,String middle,String last,String type,int iCategoryId)throws javax.ejb.FinderException{
+  public Collection ejbFindBySearch(String id,String name,String pid,String type,int iCategoryId)throws javax.ejb.FinderException{
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(com.idega.block.finance.data.AccountBMPBean.getEntityTableName());
     sql.append(" a,ic_user u ");
@@ -195,22 +196,26 @@ public class AccountBMPBean extends CategoryEntityBMPBean implements Account,Fin
     sql.append(com.idega.block.finance.data.AccountBMPBean.getColumnCategoryId());
     sql.append(" = ");
     sql.append(iCategoryId);
-    if(id !=null && !"".equals(id)){
+    if(id!=null && !"".equals(id)){
       sql.append(" and a.name like '%");
       sql.append(id);
       sql.append("%' ");
     }
-    if(first !=null && !"".equals(first )){
+    Name nm = new Name(name);
+    String first = nm.getFirstName();
+    String middle = nm.getMiddleName();
+    String last = nm.getLastName();
+    if(first!=null && !"".equals(first )){
       sql.append(" and u.first_name like '%");
       sql.append(first);
       sql.append("%' ");
     }
-    if(middle !=null && !"".equals(middle)){
+    if(middle!=null &&  !"".equals(middle)){
       sql.append(" and u.middle_name like '%");
       sql.append(middle);
       sql.append("%' ");
     }
-    if(last !=null && !"".equals(last)){
+    if(last!=null &&  !"".equals(last)){
       sql.append(" and u.last_name like '%");
       sql.append(last);
       sql.append("%' ");

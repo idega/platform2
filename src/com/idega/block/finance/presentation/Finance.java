@@ -25,6 +25,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
@@ -939,6 +940,14 @@ public class Finance extends CategoryBlock implements Builderaware {
 	 */
 	public void setCollectionViewSize(int collectionViewSize) {
 		this.collectionViewSize = collectionViewSize;
+	}
+	
+	public DataTable getDataTable(){
+		DataTable T = new DataTable();
+		//T.setHeaderColor(getHeaderColor());
+		T.setTitleColor(getHeaderColor());
+		T.setZebraColors(getZebraColor1(),getZebraColor2());
+		return T;
 	}
 	
 	

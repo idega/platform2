@@ -20,9 +20,9 @@ public java.util.Collection findByAssessmentRound(java.lang.Integer p0)throws ja
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySearch(java.lang.String p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.FinderException{
+public java.util.Collection findBySearch(java.lang.String p0,java.lang.String p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((AccountUserBMPBean)entity).ejbFindBySearch(p0,p1,p2);
+	java.util.Collection ids = ((AccountUserBMPBean)entity).ejbFindBySearch(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

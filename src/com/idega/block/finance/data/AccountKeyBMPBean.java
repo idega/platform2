@@ -63,6 +63,10 @@ public class AccountKeyBMPBean extends CategoryEntityBMPBean implements AccountK
   	return super.idoFindPKsByQuery(super.idoQueryGetSelect());
   }
   
+  public Collection ejbFindBySQL(String sql)throws FinderException{
+  	return super.idoFindPKsBySQL(sql);
+  }
+  
   public Collection ejbFindByCategory(Integer categoryID) throws FinderException{
   	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getColumnCategoryId(),categoryID));
   }

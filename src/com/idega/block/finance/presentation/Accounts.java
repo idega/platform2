@@ -19,8 +19,10 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.util.text.Name;
 
 /**
  * Title:
@@ -100,26 +102,37 @@ public class Accounts extends Finance {
 		T.addTitle(localize("account_search", "Account Search"));
 		// T.addBottom(false);
 		T.add(getHeader(localize("account_id", "Account id")), 1, 1);
-		T.add(getHeader(localize("first_name", "First name")), 1, 2);
-		T.add(getHeader(localize("middle_name", "Middle name")), 1, 3);
-		T.add(getHeader(localize("last_name", "Last name")), 1, 4);
+		T.add(getHeader(localize("name", "Name")), 1, 2);
+		T.add(getHeader(localize("personal_id", "Personal ID")), 1, 3);
+		//T.add(getHeader(localize("first_name", "First name")), 1, 2);
+		//T.add(getHeader(localize("middle_name", "Middle name")), 1, 3);
+		//T.add(getHeader(localize("last_name", "Last name")), 1, 4);
 
 		String id = iwc.getParameter("sf_id");
-		String first = iwc.getParameter("sf_firstname");
-		String middle = iwc.getParameter("sf_middlename");
-		String last = iwc.getParameter("sf_lastname");
+		String name = iwc.getParameter("df_name");
+		String pid = iwc.getParameter("df_pid");
+		//String first = iwc.getParameter("sf_firstname");
+		//String middle = iwc.getParameter("sf_middlename");
+		//String last = iwc.getParameter("sf_lastname");
 
-		TextInput accountid = new TextInput("sf_id");
-		TextInput firstname = new TextInput("sf_firstname");
-		TextInput middlename = new TextInput("sf_middlename");
-		TextInput lastname = new TextInput("sf_lastname");
+		TextInput accountid = getTextInput("sf_id");
+		TextInput nameinput = getTextInput("sf_name");
+		TextInput pidinput = getTextInput("df_pid");
+		//TextInput firstname = getTextInput("sf_firstname");
+		//TextInput middlename = getTextInput("sf_middlename");
+		//TextInput lastname = getTextInput("sf_lastname");
 		String drpsel = iwc.isParameterSet("sf_type") ? iwc.getParameter("sf_type") : "";
 		DropdownMenu drpTypes = getAccountTypes("sf_type", drpsel, null);
 
 		if (id != null)
 			accountid.setContent(id);
-
-		if (first != null)
+		if(name!=null){
+			nameinput.setContent(name);
+		}
+		if(pid!=null){
+			pidinput.setContent(pid);
+		}
+		/*if (first != null)
 			firstname.setContent(first);
 
 		if (middle != null)
@@ -127,22 +140,36 @@ public class Accounts extends Finance {
 
 		if (last != null)
 			lastname.setContent(last);
-
+		*/
+		
 		int len = 20;
 		accountid.setLength(6);
-		firstname.setLength(len);
-		middlename.setLength(len);
-		lastname.setLength(len);
+		nameinput.setLength(40);
+		pidinput.setLength(14);
+		
+		accountid.keepStatusOnAction(true);
+		nameinput.keepStatusOnAction(true);
+		pidinput.keepStatusOnAction(true);
+		//firstname.setLength(len);
+		//middlename.setLength(len);
+		//lastname.setLength(len);
 
 		T.add(accountid, 2, 1);
 		T.add(drpTypes, 2, 1);
-		T.add(firstname, 2, 2);
-		T.add(middlename, 2, 3);
-		T.add(lastname, 2, 4);
+		T.add(nameinput,2,2);
+		T.add(pidinput,2,3);
+		//T.add(firstname, 2, 2);
+		//T.add(middlename, 2, 3);
+		//T.add(lastname, 2, 4);
 
 		T.add(Finance.getCategoryParameter(iCategoryId));
-		SubmitButton search = new SubmitButton(iwrb.getLocalizedImageButton("search", "Search"), "sf_search", "true");
+		SubmitButton search = new SubmitButton(localize("search", "Search"), "sf_search", "true");
+		search = (SubmitButton) setStyle(search,STYLENAME_INTERFACE_BUTTON);
 		T.addButton(search);
+		
+		ResetButton reset = new ResetButton(localize("clear","Clear"));
+		reset = (ResetButton) setStyle(reset,STYLENAME_INTERFACE_BUTTON);
+		T.addButton(reset);
 
 		F.add(T);
 
@@ -157,10 +184,10 @@ public class Accounts extends Finance {
 		T.add(getHeader(localize("middle_name", "Middle name")), 2, 3);
 		T.add(getHeader(localize("last_name", "Last name")), 3, 3);
 
-		TextInput accountid = new TextInput("sf_id");
-		TextInput firstname = new TextInput("sf_firstname");
-		TextInput middlename = new TextInput("sf_middlename");
-		TextInput lastname = new TextInput("sf_lastname");
+		TextInput accountid = getTextInput("sf_id");
+		TextInput firstname = getTextInput("sf_firstname");
+		TextInput middlename = getTextInput("sf_middlename");
+		TextInput lastname = getTextInput("sf_lastname");
 
 		int len = 30;
 		accountid.setLength(len);
@@ -184,7 +211,8 @@ public class Accounts extends Finance {
 	}
 
 	private void performSearch(IWContext iwc, int iCategoryId) {
-		String id = null, first = null, middle = null, last = null, type = null;
+		String id = null,type = null;//, first = null, middle = null, last = null;
+		String pid = null, name = null;
 		// See if we have an account id
 		if (iwc.isParameterSet("sf_type"))
 			type = iwc.getParameter("sf_type");
@@ -194,7 +222,8 @@ public class Accounts extends Finance {
 		if (id != null && !"".equals(id) && id.length() > 0) {
 			try {
 				//accounts = FinanceFinder.getInstance().searchAccounts(id, first, middle, last, type, iCategoryId);
-				accounts = getFinanceService().getAccountHome().findBySearch(id,first,middle,last,type,getFinanceCategoryId().intValue());
+				
+				accounts = getFinanceService().getAccountHome().findBySearch(id,null,null,type,getFinanceCategoryId().intValue());
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			} catch (FinderException e) {
@@ -203,6 +232,14 @@ public class Accounts extends Finance {
 		}
 		// Else we try to lookup by name
 		else {
+			if (iwc.isParameterSet("sf_name")) {
+				name = iwc.getParameter("sf_name");
+				hasSomething = true;
+			}
+			if (iwc.isParameterSet("sf_pid")) {
+				pid = iwc.getParameter("sf_pid");
+				hasSomething = true;
+			}/*
 			if (iwc.isParameterSet("sf_firstname")) {
 				first = iwc.getParameter("sf_firstname");
 				hasSomething = true;
@@ -214,12 +251,14 @@ public class Accounts extends Finance {
 			if (iwc.isParameterSet("sf_lastname")) {
 				last = iwc.getParameter("sf_lastname");
 				hasSomething = true;
-			}
+			}*/
 			if (hasSomething) {
 				try {
-					
-					accounts = getFinanceService().getAccountHome().findBySearch(id,first,middle,last,type,getFinanceCategoryId().intValue());
-					accountUsers = getFinanceService().getAccountUserHome().findBySearch(first,middle,last);
+					Name nm = new Name(name);
+					//accounts = getFinanceService().getAccountHome().findBySearch(id,first,middle,last,type,getFinanceCategoryId().intValue());
+					//accountUsers = getFinanceService().getAccountUserHome().findBySearch(first,middle,last);
+					accounts = getFinanceService().getAccountHome().findBySearch(id,name,pid,type,getFinanceCategoryId().intValue());
+					accountUsers = getFinanceService().getAccountUserHome().findBySearch(name,pid);
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				} catch (FinderException e) {
