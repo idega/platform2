@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathEditor.java,v 1.6 2003/09/29 13:40:34 anders Exp $
+ * $Id: StudyPathEditor.java,v 1.7 2003/10/06 09:32:25 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -34,10 +34,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
 /** 
  * This idegaWeb block that handles study paths for schools.
  * <p>
- * Last modified: $Date: 2003/09/29 13:40:34 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/06 09:32:25 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class StudyPathEditor extends AccountingBlock {
 
@@ -277,7 +277,9 @@ public class StudyPathEditor extends AccountingBlock {
 			Iterator iter = studyPaths.iterator();
 			while (iter.hasNext()) {
 				SchoolStudyPath sp = (SchoolStudyPath) iter.next();
-				list.add(sp.getCode());
+				Link l = getSmallLink(sp.getCode());
+				l.addParameter(PARAMETER_STUDY_PATH_ID, sp.getPrimaryKey().toString());
+				list.add(l);
 				list.add(sp.getDescription());
 
 				Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera denna studieväg")));
