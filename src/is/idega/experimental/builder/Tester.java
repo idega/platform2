@@ -23,14 +23,15 @@ public class Tester extends IWPresentationServlet {
   public void storeBlob() {
     try {
       IBPage page = new IBPage();
-      BlobWrapper wrap = new BlobWrapper(page,"page_value");
+      //BlobWrapper wrap = new BlobWrapper(page,"page_value");
 
-      wrap.setInputStreamForBlobWrite(new FileInputStream("c:\\programming\\source\\idega\\is\\idega\\experimental\\builder\\page2.xml"));
+      //wrap.setInputStreamForBlobWrite(new FileInputStream("c:\\programming\\source\\idega\\is\\idega\\experimental\\builder\\page2.xml"));
+		InputStream stream = new FileInputStream("c:\\programming\\source\\idega\\is\\idega\\experimental\\builder\\page2.xml");
 
 //      page.setID(3);
       page.setName("Test2");
-      page.setPageValue(wrap);
-
+      //page.setPageValue(wrap);
+      page.setPageValue(stream);
       page.insert();
     }
     catch(SQLException e) {
