@@ -44,6 +44,7 @@ public class WorkReportMemberImporter extends WorkReportImporter {
 				if (report != null) {
 					//					add(iwrb.getLocalizedString("WorkReportMemberImporter.import_successful","Importing members completed successfully."));
 					setWorkReportMemberImportReport(report);
+					showReport();
 				}
 				else {
 					add(iwrb.getLocalizedString("WorkReportMemberImporter.import_failed", "Importing members failed!"));
@@ -87,8 +88,11 @@ public class WorkReportMemberImporter extends WorkReportImporter {
 		}
 
 		i++;
-		SubmitButton confirm = new SubmitButton("MEMBER_IMPORT_CONFIRM");
-		SubmitButton reject = new SubmitButton("MEMBER_IMPORT_REJECT");
+		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("workreportimporter.start", "start"));
+		submit.setAsImageButton(true);
+
+		SubmitButton confirm = new SubmitButton(iwrb.getLocalizedString("workreportimporter.confirm", "confirm"),"MEMBER_IMPORT_CONFIRM");
+		SubmitButton reject = new SubmitButton(iwrb.getLocalizedString("workreportimporter.reject", "reject"),"MEMBER_IMPORT_REJECT");
 		t.add(confirm,2,i);
 		t.add(reject,2,i);
 			
