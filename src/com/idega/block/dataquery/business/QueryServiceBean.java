@@ -22,6 +22,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.sql.QuerySQL;
+import com.idega.block.dataquery.data.xml.*;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectBMPBean;

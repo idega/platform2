@@ -13,12 +13,12 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import com.idega.block.dataquery.business.QueryConditionPart;
-import com.idega.block.dataquery.business.QueryEntityPart;
-import com.idega.block.dataquery.business.QueryFieldPart;
-import com.idega.block.dataquery.business.QueryHelper;
-import com.idega.block.dataquery.business.QueryOrderConditionPart;
-import com.idega.block.dataquery.business.QuerySQLPart;
+import com.idega.block.dataquery.data.xml.QueryConditionPart;
+import com.idega.block.dataquery.data.xml.QueryEntityPart;
+import com.idega.block.dataquery.data.xml.QueryFieldPart;
+import com.idega.block.dataquery.data.xml.QueryHelper;
+import com.idega.block.dataquery.data.xml.QueryOrderConditionPart;
+import com.idega.block.dataquery.data.xml.QuerySQLPart;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOEntity;
 import com.idega.util.datastructures.HashMatrix;

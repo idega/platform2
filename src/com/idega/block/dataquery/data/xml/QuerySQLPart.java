@@ -2,7 +2,7 @@
  * Created on Aug 6, 2003
  *
  */
-package com.idega.block.dataquery.business;
+package com.idega.block.dataquery.data.xml;
 
 import java.util.ArrayList;
 import java.util.HashMap;

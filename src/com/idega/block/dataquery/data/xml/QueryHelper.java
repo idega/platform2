@@ -4,7 +4,7 @@
  * To change this generated comment go to 
  * Window>Preferences>Java>Code Generation>Code Template
  */
-package com.idega.block.dataquery.business;
+package com.idega.block.dataquery.data.xml;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.idega.block.dataquery.data.Query;
 import com.idega.block.dataquery.data.sql.QuerySQL;
+import com.idega.block.dataquery.data.xml.*;
 import com.idega.data.GenericEntity;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLDocument;

@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.dataquery.data.xml.*;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;

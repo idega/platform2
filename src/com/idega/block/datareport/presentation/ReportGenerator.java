@@ -27,12 +27,12 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.dataquery.business.QueryConditionPart;
-import com.idega.block.dataquery.business.QueryFieldPart;
-import com.idega.block.dataquery.business.QueryHelper;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.data.Query;
 import com.idega.block.dataquery.data.QueryHome;
+import com.idega.block.dataquery.data.xml.QueryConditionPart;
+import com.idega.block.dataquery.data.xml.QueryFieldPart;
+import com.idega.block.dataquery.data.xml.QueryHelper;
 import com.idega.block.datareport.business.DynamicReportDesign;
 import com.idega.block.datareport.business.JasperReportBusiness;
 import com.idega.block.datareport.data.MethodInvocationXMLFile;

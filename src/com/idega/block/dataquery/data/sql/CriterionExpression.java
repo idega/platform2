@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.idega.block.dataquery.business.QueryConditionPart;
+import com.idega.block.dataquery.data.xml.QueryConditionPart;
 
 /**
  * <p>Title: idegaWeb</p>

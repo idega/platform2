@@ -3,7 +3,7 @@ package com.idega.block.dataquery.data.sql;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.idega.block.dataquery.business.QueryEntityPart;
+import com.idega.block.dataquery.data.xml.QueryEntityPart;
 import com.idega.data.EntityControl;
 import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOEntityDefinition;

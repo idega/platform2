@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.idega.block.dataquery.business.QueryEntityPart;
+import com.idega.block.dataquery.data.xml.QueryEntityPart;
 import com.idega.data.EntityControl;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOCompositePrimaryKeyException;

@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.idega.block.dataquery.business.QuerySQLPart;
+import com.idega.block.dataquery.data.xml.QuerySQLPart;
 import com.idega.util.StringHandler;
 
 /**

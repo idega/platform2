@@ -16,6 +16,7 @@ import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QueryResultCell;
 import com.idega.block.dataquery.data.QueryResultField;
 import com.idega.block.dataquery.data.sql.QuerySQL;
+import com.idega.block.dataquery.data.xml.*;
 import com.idega.business.IBOServiceBean;
 import com.idega.presentation.IWContext;
 import com.idega.util.database.ConnectionBroker;

@@ -13,11 +13,11 @@ import java.util.Map;
 import javax.ejb.FinderException;
 
 import com.idega.block.dataquery.business.QueryGenerationException;
-import com.idega.block.dataquery.business.QueryHelper;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.sql.QuerySQL;
+import com.idega.block.dataquery.data.xml.QueryHelper;
 import com.idega.block.dataquery.presentation.ReportQueryBuilder;
 import com.idega.block.datareport.business.JasperReportBusiness;
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;

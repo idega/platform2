@@ -1,6 +1,6 @@
 package com.idega.block.dataquery.data.sql;
 
-import com.idega.block.dataquery.business.QueryEntityPart;
+import com.idega.block.dataquery.data.xml.QueryEntityPart;
 import com.idega.util.StringHandler;
 
 /**

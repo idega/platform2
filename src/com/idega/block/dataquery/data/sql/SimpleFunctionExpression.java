@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.idega.block.dataquery.business.QueryXMLConstants;
+import com.idega.block.dataquery.data.xml.QueryXMLConstants;
 import com.idega.util.StringHandler;
 
 /**

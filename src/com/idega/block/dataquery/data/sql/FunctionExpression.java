@@ -3,8 +3,8 @@ package com.idega.block.dataquery.data.sql;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.idega.block.dataquery.business.QueryFieldPart;
-import com.idega.block.dataquery.business.QueryXMLConstants;
+import com.idega.block.dataquery.data.xml.QueryFieldPart;
+import com.idega.block.dataquery.data.xml.QueryXMLConstants;
 
 /**
  * <p>Title: idegaWeb</p>

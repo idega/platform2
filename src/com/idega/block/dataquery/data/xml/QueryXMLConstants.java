@@ -4,7 +4,7 @@
  * To change this generated comment go to 
  * Window>Preferences>Java>Code Generation>Code Template
  */
-package com.idega.block.dataquery.business;
+package com.idega.block.dataquery.data.xml;
 
 /**
  * <p>Title: idegaWeb</p>

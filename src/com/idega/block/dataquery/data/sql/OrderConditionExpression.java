@@ -2,7 +2,7 @@ package com.idega.block.dataquery.data.sql;
 
 import java.util.List;
 
-import com.idega.block.dataquery.business.QueryOrderConditionPart;
+import com.idega.block.dataquery.data.xml.QueryOrderConditionPart;
 
 /**
  * <p>Title: idegaWeb</p>
