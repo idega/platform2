@@ -61,6 +61,13 @@ public class CampusServiceBean extends IBOServiceBean implements CampusService {
 		} catch (NumberFormatException e) {
 			
 		}
+		property = bundle.getProperty(CampusSettings.PROPERTY_SEND_EVENT_MAIL,Boolean.toString(true));
+		try {
+			Boolean sendEventMail = Boolean.valueOf(property);
+			settings.setSendEventMail(sendEventMail.booleanValue());
+		} catch (NumberFormatException e) {
+			
+		}
 		
 		return settings;	
 	}
@@ -75,6 +82,7 @@ public class CampusServiceBean extends IBOServiceBean implements CampusService {
 			setBundleProperty(bundle,CampusSettings.PROPERTY_TENANT_GROUP, settings.getTenantGroupID().toString());
 		if(settings.getFinanceCategoryID()!=null)
 			setBundleProperty(bundle,CampusSettings.PROPERTY_FINANCE_CATEGORY,settings.getFinanceCategoryID().toString());
+		setBundleProperty(bundle,CampusSettings.PROPERTY_SEND_EVENT_MAIL,Boolean.toString(settings.getSendEventMail()));
 	}
 	
 	private  void setBundleProperty(IWBundle bundle,String propertyKey,String propertyValue){

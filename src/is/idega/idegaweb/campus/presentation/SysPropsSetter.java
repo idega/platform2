@@ -70,6 +70,10 @@ public class SysPropsSetter extends CampusBlock{
 	    termOfNotice.setLength(4);
 	    TextInput adminEmail = getTextInput("admin_email");
 	    TextInput emailHost = getTextInput("email_host");
+	    DropdownMenu sendEventMails = new DropdownMenu("send_event_mail");
+	    sendEventMails = (DropdownMenu) getStyledInterface(sendEventMails);
+	    sendEventMails.addMenuElement(Boolean.toString(true),localize("boolean.true","Yes"));
+	    sendEventMails.addMenuElement(Boolean.toString(false),localize("boolean.false","No"));
 	    String[] filter2 = {com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticPermissionGroupInstance().getGroupTypeValue()};
 	    DropdownMenu groups = null;
 	    try {
@@ -107,6 +111,8 @@ public class SysPropsSetter extends CampusBlock{
 	      adminEmail.setContent(settings.getAdminEmail());
 	    if(settings.getSmtpServer()!= null)
 	      emailHost.setContent(settings.getSmtpServer());
+	    	
+	    sendEventMails.setSelectedElement(Boolean.toString(settings.getSendEventMail()));    
 	
 	    /*
 	    T.add(Edit.formatText(iwrb.getLocalizedString("contract_years","Contract years")),1,row);
@@ -157,6 +163,11 @@ public class SysPropsSetter extends CampusBlock{
 	    row++;
 	    T.add(getHeader(localize("email_host","Email Host")),1,row);
 	    T.add(emailHost,3,row);
+	    row++;
+	    T.add(getHeader(localize("send_event_mails","Send event mails")),1,row);
+	    T.add(sendEventMails,3,row);
+	    row++;
+	    
 	    SubmitButton save =(SubmitButton)getSubmitButton("cmp_stng_save","true","Save","save");
 	    T.addButton(save);
 	    myForm.add(T);
@@ -176,6 +187,7 @@ public class SysPropsSetter extends CampusBlock{
     String termOfNotice = iwc.getParameter("term_of_notice");
     String financeCategory = iwc.getParameter("finance_category");
     String term = iwc.getParameter("term");
+    String sendEventMails = iwc.getParameter("send_event_mail");
      
     if(settings !=null){
       /*if(contractDate.length() == 10){
@@ -219,6 +231,9 @@ public class SysPropsSetter extends CampusBlock{
       }
       if(!"".equals(financeCategory)){
         settings.setFinanceCategoryID(Integer.valueOf(financeCategory));
+      }
+      if(!"".equals(sendEventMails)){
+        settings.setSendEventMail(Boolean.valueOf(sendEventMails).booleanValue());
       }
      getCampusService(iwc).storeSettings(settings);
 

@@ -17,12 +17,14 @@ public class CampusSettings {
 	protected final static String PROPERTY_ADMIN_EMAIL = "ADMIN_EMAIL";
 	protected final static String PROPERTY_SMTP_SERVER = "SMTP_SERVER";
 	protected final static String PROPERTY_FINANCE_CATEGORY = "FINANCE_CATEGORY";
+	protected final static String PROPERTY_SEND_EVENT_MAIL = "SEND_EVENT_MAIL";
 	
-	public Integer termOfNoticeDays = null;
-	public Integer tenantGroupID = null;
-	public String adminEmail = null;
-	public String smtpServer = null;
-	public Integer financeCategoryID = null;
+	private Integer termOfNoticeDays = null;
+	private Integer tenantGroupID = null;
+	private String adminEmail = null;
+	private String smtpServer = null;
+	private Integer financeCategoryID = null;
+	private Boolean sendEventMail = null;
 	
 	/**
 	 * @return Returns the adminEmail.
@@ -84,5 +86,20 @@ public class CampusSettings {
 	public void setTermOfNoticeDays(Integer termOfNoticeDays) {
 		this.termOfNoticeDays = termOfNoticeDays;
 	}
+	/**
+	 * @return flag for event mails
+	 */
+	public boolean getSendEventMail() {
+		if(sendEventMail==null)
+			return true;
+		return sendEventMail.booleanValue();
+	}
 	
+	
+	/**
+	 * @param sendEventMail The sendEventMail to set.
+	 */
+	public void setSendEventMail(boolean sendEventMail) {
+		this.sendEventMail = Boolean.valueOf(sendEventMail);
+	}
 }

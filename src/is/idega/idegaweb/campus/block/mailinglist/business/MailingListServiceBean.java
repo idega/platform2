@@ -3,6 +3,8 @@ import is.idega.idegaweb.campus.block.mailinglist.data.EmailLetter;
 import is.idega.idegaweb.campus.block.mailinglist.data.EmailLetterHome;
 import is.idega.idegaweb.campus.block.mailinglist.data.MailingList;
 import is.idega.idegaweb.campus.block.mailinglist.data.MailingListHome;
+import is.idega.idegaweb.campus.business.CampusService;
+import is.idega.idegaweb.campus.business.CampusSettings;
 import is.idega.idegaweb.campus.presentation.Campus;
 
 import java.rmi.RemoteException;
@@ -222,10 +224,10 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	 */
 	public boolean processMailEvent( EntityHolder holder, String type) {
 		try {
-			IWApplicationContext iwac = getIWApplicationContext();
-			IWBundle bundle = iwac.getIWMainApplication().getBundle(Campus.CAMPUS_BUNDLE_IDENTIFIER);
-			if (bundle.getProperty("no_mailevents", "false") != null
-				&& bundle.getProperty("no_mailevents").equalsIgnoreCase("true")) {
+			CampusSettings settings = getCampusService().getCampusSettings();
+			boolean sendEventMail = settings.getSendEventMail();
+			
+			if (!sendEventMail) {
 				System.err.println("not sending any mail although requested");
 				return false;
 			}
@@ -620,6 +622,10 @@ public class MailingListServiceBean extends IBOServiceBean implements MailingLis
 	
 	public Collection getEmails(MailingList mlist) throws RemoteException{
 			return mlist.getEmails();
+	}
+	
+	public CampusService getCampusService()throws RemoteException{
+		return (CampusService) getServiceInstance(CampusService.class);
 	}
 
 }

@@ -174,7 +174,7 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
       T.add(getText(applicant.getFullName()),col++,row);
       //T.add(getText(applicant.getLegalResidence()),col++,row);
       T.add(getText(applicant.getMobilePhone()),col++,row);
-      T.add(getText(apartment.getName()),col++,row);
+      T.add(getText(apartment.getName()+" "+apartment.getFloor().getBuilding().getName()),col++,row);
       T.add(getText(df.format(contract.getValidFrom())),col++,row);
       T.add(getText(df.format(contract.getValidTo())),col++,row);
       T.add(getText(getContractService(iwc).getLocalizedStatus(getResourceBundle(),contract.getStatus())),col++,row);
