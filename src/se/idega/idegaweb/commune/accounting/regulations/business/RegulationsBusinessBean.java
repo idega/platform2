@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.124 2004/04/08 20:26:12 laddi Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.125 2004/06/04 14:40:14 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -591,6 +591,42 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 								break;
 							case 7 :
 								if (value.intValue() < 14)
+									match = false;
+								break;
+							case 8 :
+								if (1 > value.intValue() || value.intValue() > 15)
+									match = false;
+								break;
+							case 9 :
+								if (16 > value.intValue() || value.intValue() > 25)
+									match = false;
+								break;
+							case 10 :
+								if (1 > value.intValue())
+									match = false;
+								break;
+							case 11 :
+								if (1 > value.intValue() || value.intValue() > 19)
+									match = false;
+								break;
+							case 12 :
+								if (20 > value.intValue() || value.intValue() > 24)
+									match = false;
+								break;
+							case 13 :
+								if (25 > value.intValue() || value.intValue() > 29)
+									match = false;
+								break;
+							case 14 :
+								if (30 > value.intValue() || value.intValue() > 34)
+									match = false;
+								break;
+							case 15 :
+								if (35 > value.intValue() || value.intValue() > 39)
+									match = false;
+								break;
+							case 16 :
+								if (40 > value.intValue())
 									match = false;
 								break;
 						}
@@ -1286,6 +1322,13 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		arr.add(new Object[] { new Integer(index++), ">=14" });
 		arr.add(new Object[] { new Integer(index++), "1-15" });
 		arr.add(new Object[] { new Integer(index++), "16-25" });
+		arr.add(new Object[] { new Integer(index++), ">=1" });
+		arr.add(new Object[] { new Integer(index++), "1-19" });
+		arr.add(new Object[] { new Integer(index++), "20-24" });
+		arr.add(new Object[] { new Integer(index++), "25-29" });
+		arr.add(new Object[] { new Integer(index++), "30-34" });
+		arr.add(new Object[] { new Integer(index++), "35-39" });
+		arr.add(new Object[] { new Integer(index++), ">=40" });
 
 		return arr;
 	}
