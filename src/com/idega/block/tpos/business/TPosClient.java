@@ -43,6 +43,27 @@ public class TPosClient {
     }
   }
 
+  public String createNewBatch() {
+    _client.setProperty(TPOS3Client.PN_USERID, "IDEGA");
+    _client.setProperty(TPOS3Client.PN_PASSWORD, "TEST");
+    _client.setProperty(TPOS3Client.PN_MERCHANTID, "TST");
+    _client.setProperty(TPOS3Client.PN_LOCATIONID, "BJORG");
+    _client.setProperty(TPOS3Client.PN_POSID, "BJO003001");
+
+    boolean created = _client.sendNewBatchReq();
+    if (!created) {
+      System.err.println("Error no: " + _client.getProperty(TPOS3Client.PN_ERRORNUMBER));
+      System.err.println("Error string : " + _client.getProperty(TPOS3Client.PN_ERRORTEXT));
+
+      return(null);
+    }
+
+    String newBatchNumber = _client.getProperty(TPOS3Client.PN_OPENEDBATCHNR);
+    String oldBatchNumber = _client.getProperty(TPOS3Client.PN_CLOSINGBATCHNR);
+
+    return(newBatchNumber);
+  }
+
   public boolean getCACertifycate() {
     _client.setProperty(TPOS3Client.PN_MERCHANTID, "TST");
     _client.setProperty(TPOS3Client.PN_LOCATIONID, "BJORG");
