@@ -63,7 +63,10 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
     try{
       boolean status = false;
       //ImportFileHandler handler = getHandlerForImportFile(file.getClass().getName());
-      is.idega.idegaweb.member.business.KRImportFileHandlerBean handler = is.idega.idegaweb.member.business.KRImportFileHandlerBean();
+      
+      try{
+      	
+      is.idega.idegaweb.member.business.KRImportFileHandlerBean handler = new is.idega.idegaweb.member.business.KRImportFileHandlerBean();
       handler.setImportFile(file);
       handler.setRootGroup(group);
       
@@ -73,6 +76,12 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
       //((NackaImportFileHandler)handler).setImportRelations(false);
       status = handler.handleRecords();
 
+
+      }
+      catch(Exception e){
+      	e.printStackTrace();
+      	//status=false;	
+      }
       /*Collection col = file.getRecords();
       if( col == null ) return false;
       status = handler.handleRecords(col);*/
