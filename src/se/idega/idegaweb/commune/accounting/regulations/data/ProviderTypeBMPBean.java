@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderTypeBMPBean.java,v 1.8 2003/09/02 10:39:24 anders Exp $
+ * $Id: ProviderTypeBMPBean.java,v 1.9 2003/09/03 08:12:06 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,17 +20,17 @@ import com.idega.data.IDOLookup;
 /**
  * Entity bean for the provider type (childcare, school, e t c).
  * <p>
- * Last modified: $Date: 2003/09/02 10:39:24 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/03 08:12:06 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ProviderTypeBMPBean  extends GenericEntity implements ProviderType {
 
 	private static final String ENTITY_NAME = "cacc_provider_type";
 
 	private static final String COLUMN_PROVIDER_TYPE_ID = "provider_type_id";
-	private static final String COLUMN_TEXT_KEY = "text_key";
+	private static final String COLUMN_LOCALIZATION_KEY = "localization_key";
 
 	private static final String KEY_PREFIX = ENTITY_NAME + ".";
 
@@ -64,7 +64,7 @@ public class ProviderTypeBMPBean  extends GenericEntity implements ProviderType 
 		
 		for (int i = 0; i < data.length; i++) {
 			ProviderType pt = home.create();
-			pt.setTextKey(data[i]);
+			pt.setLocalizationKey(data[i]);
 			pt.store();
 		}
 	}
@@ -74,16 +74,16 @@ public class ProviderTypeBMPBean  extends GenericEntity implements ProviderType 
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_TEXT_KEY, "Text key for this type", true, true, String.class);
+		addAttribute(COLUMN_LOCALIZATION_KEY, "Localization key for this type", true, true, String.class);
 		setAsPrimaryKey(getIDColumnName(), true);
 	}
 	
-	public String getTextKey() {
-		return (String) getStringColumnValue(COLUMN_TEXT_KEY);
+	public String getLocalizationKey() {
+		return getStringColumnValue(COLUMN_LOCALIZATION_KEY);
 	}
 
-	public void setTextKey(String textKey) { 
-		setColumn(COLUMN_TEXT_KEY, textKey); 
+	public void setLocalizationKey(String textKey) { 
+		setColumn(COLUMN_LOCALIZATION_KEY, textKey); 
 	}
 
 	/**

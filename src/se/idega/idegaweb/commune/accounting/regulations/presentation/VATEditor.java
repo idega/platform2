@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.18 2003/09/02 15:05:59 anders Exp $
+ * $Id: VATEditor.java,v 1.19 2003/09/03 08:12:06 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -37,10 +37,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATEditor is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/09/02 15:05:59 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/03 08:12:06 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -419,10 +419,10 @@ public class VATEditor extends AccountingBlock {
 				list.add(vr.getDescription());
 //				list.add(getLink(vr.getDescription(), PARAMETER_VAT_REGULATION_ID, vr.getPrimaryKey().toString()));
 				list.add("" + vr.getVATPercent());
-				String textKey = vr.getPaymentFlowType().getTextKey();
-				list.add(textKey, textKey);
-				textKey = vr.getProviderType().getTextKey();
-				list.add(textKey, textKey);
+				String localizationKey = vr.getPaymentFlowType().getLocalizationKey();
+				list.add(localizationKey, localizationKey);
+				localizationKey = vr.getProviderType().getLocalizationKey();
+				list.add(localizationKey, localizationKey);
 
 				Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera denna momssats")));
 				edit.addParameter(PARAMETER_VAT_REGULATION_ID, vr.getPrimaryKey().toString());
@@ -559,7 +559,7 @@ public class VATEditor extends AccountingBlock {
 				while (iter.hasNext()) {
 					PaymentFlowType pft = (PaymentFlowType) iter.next();
 					menu.addMenuElement("" + (((Integer) pft.getPrimaryKey()).intValue()), 
-							localize(pft.getTextKey(), pft.getTextKey()));
+							localize(pft.getLocalizationKey(), pft.getLocalizationKey()));
 				}
 				if (selectedIndex != -1) {
 					menu.setSelectedElement(selectedIndex);
@@ -583,7 +583,7 @@ public class VATEditor extends AccountingBlock {
 				while (iter.hasNext()) {
 					ProviderType pt = (ProviderType) iter.next();
 					menu.addMenuElement("" + (((Integer) pt.getPrimaryKey()).intValue()), 
-							localize(pt.getTextKey(), pt.getTextKey()));
+							localize(pt.getLocalizationKey(), pt.getLocalizationKey()));
 				}
 				if (selectedIndex != -1) {
 					menu.setSelectedElement(selectedIndex);
