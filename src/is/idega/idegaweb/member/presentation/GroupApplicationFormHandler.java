@@ -19,15 +19,19 @@ import com.idega.util.IWTimestamp;
  */
 public class GroupApplicationFormHandler extends Block {
 
-	private static final String USER_NAME_PARAM = "user_name";
-	private static final String PIN_PARAM = "pin";
-	private static final String PHONE_PARAM = "phone";
-	private static final String ADDRESS_PARAM = "address";
-	private static final String EMAIL_PARAM = "email";
-	private static final String COMMENT_PARAM = "comment";
-	private static final String GROUPS_PARAM = GroupSelectionDoubleBox.selectedGroupsParameterDefaultValue;//hack!
-	private static final String GENDER_PARAM = "gender";
+	public static final String USER_NAME_PARAM = "user_name";
+	public static final String PIN_PARAM = "pin";
+	public static final String PHONE_PARAM = "phone";
+	public static final String PHONE2_PARAM = "phone2";
+	public static final String EMAIL_PARAM = "email";
+	public static final String EMAIL2_PARAM = "email2";
 	
+	public static final String ADDRESS_PARAM = "address";	
+	public static final String COMMENT_PARAM = "comment";
+	public static final String ADMIN_COMMENT_PARAM = "admin_comment";
+	
+	public static final String GROUPS_PARAM = GroupSelectionDoubleBox.selectedGroupsParameterDefaultValue;//hack!
+	public static final String GENDER_PARAM = "gender";
 	
 
 	private Group applicationGroup = null;
@@ -54,16 +58,47 @@ public class GroupApplicationFormHandler extends Block {
 				String pin = iwc.getParameter(PIN_PARAM);
 				String gender = iwc.getParameter(GENDER_PARAM);
 				String email = iwc.getParameter(EMAIL_PARAM);
+				String email2 = iwc.getParameter(EMAIL2_PARAM);
 				String address = iwc.getParameter(ADDRESS_PARAM);
 				String phone = iwc.getParameter(PHONE_PARAM);
+				String phone2 = iwc.getParameter(PHONE2_PARAM);
 				String comment = iwc.getParameter(COMMENT_PARAM);
+				String adminComment = iwc.getParameter(ADMIN_COMMENT_PARAM);
+				
+				//KR hack
+				if(adminComment==null){
+					String paymentType = iwc.getParameter("payment_type");
+					boolean credit = false;
+					String cardNumber = null;
+					
+					if( paymentType!=null ){
+						if( paymentType.equals("C") ){
+							credit = true;
+							cardNumber = iwc.getParameter("credit_card_number");
+						}
+						else if( paymentType.equals("M") ){
+							credit = false;	
+						}						
+					}
+					
+					if( credit && cardNumber!=null ){
+						adminComment = "Vill borga med korti: "+cardNumber;
+					}
+					else if( !credit ){
+						adminComment = "Vill stadgreida";
+					}
+					else {
+						adminComment = "Vill borga med korti en kortanumerid vantar med!";	
+					}
+					
+				}
 
 				
 				String[] groups = iwc.getParameterValues(GROUPS_PARAM);
 				
 				
 				try {
-					biz.createGroupApplication(applicationGroup,name,pin,gender,email,address,phone,comment,groups);
+					biz.createGroupApplication(applicationGroup,name,pin,gender,email,email2,address,phone,phone2,comment,adminComment,groups);
 				
 				} catch (Exception e) {
 					add("Error : Application creation failed!");

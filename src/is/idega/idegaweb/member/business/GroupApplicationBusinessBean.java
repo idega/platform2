@@ -36,7 +36,7 @@ import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.util.IWTimestamp;
-import com.idega.util.ListUtil;
+import com.idega.util.ListUtil; 
 
 
 /**
@@ -50,7 +50,7 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 	private static final String GENDER_FEMALE = "f";
 	 
 	
-	public GroupApplication createGroupApplication(Group applicationGroup, String name, String pin , String gender, String email, String address, String phone, String comment, String[] groupIds) throws RemoteException, FinderException, CreateException ,IDOAddRelationshipException{
+	public GroupApplication createGroupApplication(Group applicationGroup, String name, String pin , String gender, String email, String email2, String address, String phone, String phone2, String comment, String adminComment, String[] groupIds) throws RemoteException, FinderException, CreateException ,IDOAddRelationshipException{
 		UserBusiness userBiz = this.getUserBusiness();
 		EmailHome eHome = userBiz.getEmailHome();
 		AddressHome addressHome = userBiz.getAddressHome();
@@ -70,19 +70,53 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 
 		
 		//email
-		//@todo look for the email first to avoid duplicated
-		if( email!=null){
-			Email uEmail = eHome.create();
-			uEmail.setEmailAddress(email);
-			uEmail.store();
-			user.addEmail(uEmail);
+		//both this and phones is very much a stupid hack in my part. I should have used findMethods etc. or make a useful getOrCreateIfNonExisting...bleh! -Eiki
+		if( email!=null || email2!=null){
+			Collection emails = user.getEmails();		
+			boolean addEmail1 = true;
+			boolean addEmail2 = true;
+					
+			Iterator iter = emails.iterator();
+			//@todo do this with an equals method in a comparator?
+			while (iter.hasNext()) {
+				Email mail = (Email) iter.next();
+				String tempAddress = mail.getEmailAddress();
+				
+				if( tempAddress.equals(email) ) addEmail1 = false;	
+						
+				if( tempAddress.equals(email2) ) addEmail2 = false;	
+				
+			}
+			
+			if( addEmail1 && email != null){
+				Email uEmail = eHome.create();
+				uEmail.setEmailAddress(email);
+				uEmail.store();
+				user.addEmail(uEmail);
+			}
+			
+			if( addEmail2 && email2 != null){
+				Email uEmail = eHome.create();
+				uEmail.setEmailAddress(email2);
+				uEmail.store();
+				user.addEmail(uEmail);
+			}
+			
+
+			
 		}
+		
+		
 		//address
-		//@todo look for the address first to avoid duplicated
-		if( address!=null ){
-			AddressType mainAddress = addressHome.getAddressType1();
-			Address uAddress = addressHome.create();
-			uAddress.setAddressType(mainAddress);
+		if( address!=null ){			
+			Address uAddress = getUserBusiness().getUsersMainAddress(user);
+
+			if( uAddress == null ){		
+				AddressType mainAddress = addressHome.getAddressType1();
+				uAddress = addressHome.create();
+				uAddress.setAddressType(mainAddress);
+			}
+			
 			uAddress.setStreetName(addressBiz.getStreetNameFromAddressString(address));
 			uAddress.setStreetNumber(addressBiz.getStreetNumberFromAddressString(address));
 			uAddress.store();
@@ -91,13 +125,45 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		
 		// phone
 		//@todo look for the phone first to avoid duplicated
-		if( phone!=null ){
-			Phone uPhone = phoneHome.create();
-			uPhone.setNumber(phone);
-			//missing type of phone
-			uPhone.store();
-			user.addPhone(uPhone);
+		if( phone!=null || phone2!=null ){
+			Collection phones = user.getPhones();
+						
+			boolean addPhone1 = true;
+			boolean addPhone2 = true;
+					
+			Iterator iter = phones.iterator();
+			//@todo do this with an equals method in a comparator?
+			while (iter.hasNext()) {
+				Phone tempPhone = (Phone) iter.next();
+				String temp = tempPhone.getNumber();
+				
+				if( temp.equals(phone) ) addPhone1 = false;	
+						
+				if( temp.equals(phone2) ) addPhone2 = false;	
+				
+			}
+  
+			if( addPhone1 && phone != null){
+				Phone uPhone = phoneHome.create();
+				uPhone.setNumber(phone);
+				uPhone.setPhoneTypeId(1);//weeeeee...
+				uPhone.store();
+				user.addPhone(uPhone);
+			}
+			
+			if( addPhone2 && phone2 != null){
+				Phone uPhone = phoneHome.create();
+				uPhone.setNumber(phone2);
+				uPhone.setPhoneTypeId(3);//weeeeee...
+				uPhone.store();
+				user.addPhone(uPhone);
+			}
+			
+			
 		}
+		
+		
+		
 		//groups	
 		List groups = null;
 
@@ -115,17 +181,18 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		
 	
 		
-		return createGroupApplication(applicationGroup, user, status, comment, groups);
+		return createGroupApplication(applicationGroup, user, status, comment,adminComment, groups);
 		
 	}
 	
-	public GroupApplication createGroupApplication(Group applicationGroup, User user, String status, String userComment, List groups) throws RemoteException, CreateException, IDOAddRelationshipException{
+	public GroupApplication createGroupApplication(Group applicationGroup, User user, String status, String userComment, String adminComment, List groups) throws RemoteException, CreateException, IDOAddRelationshipException{
 		
 		GroupApplication appl = getGroupApplicationHome().create();
 		appl.setApplicationGroupId(((Integer)applicationGroup.getPrimaryKey()).intValue());
 		appl.setUserId(((Integer)user.getPrimaryKey()).intValue());
 		appl.setStatus(status);
 		appl.setUserComment(userComment);
+		appl.setAdminComment(adminComment);
 		appl.setCreated(IWTimestamp.getTimestampRightNow());
 		appl.store();
 		
