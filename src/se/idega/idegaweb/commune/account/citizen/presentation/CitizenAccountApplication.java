@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.60 2003/11/06 16:00:20 laddi Exp $
+ * $Id: CitizenAccountApplication.java,v 1.61 2003/11/06 17:37:21 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -60,11 +60,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/11/06 16:00:20 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/06 17:37:21 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.60 $
+ * @version $Revision: 1.61 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -707,40 +707,44 @@ private static int getIntParameter(final IWContext iwc, final String key) {
 }
 
 private static String getSsn(final IWContext iwc, final String key) {
-	final String rawInput = iwc.getParameter(key);
+	String rawInput = iwc.getParameter(key);
 	if (rawInput == null) {
 		return null;
 	}
 	final StringBuffer digitOnlyInput = new StringBuffer();
 	for (int i = 0; i < rawInput.length(); i++) {
-		if (Character.isDigit(rawInput.charAt(i)))
-			digitOnlyInput.append(rawInput.charAt(i));
-		if (i == 8 && Character.isLetter('T'))
-			digitOnlyInput.append(rawInput.charAt(i));
-		if (i == 9 && Character.isLetter('F'))
-			digitOnlyInput.append(rawInput.charAt(i));
+		char number = rawInput.charAt(i);
+		if (Character.isDigit(number))
+			digitOnlyInput.append(number);
+		else {
+			if (Character.isLetter(number) && number == 'T')
+				digitOnlyInput.append(number);
+			if (Character.isLetter(number) && number == 'F')
+				digitOnlyInput.append(number);
+		}
 	}
+	rawInput = digitOnlyInput.toString();
 	final Calendar rightNow = Calendar.getInstance();
 	final int currentYear = rightNow.get(Calendar.YEAR);
-	if (digitOnlyInput.length() == 10) {
-		final int inputYear = new Integer(digitOnlyInput.substring(0, 2)).intValue();
+	if (rawInput.length() == 10) {
+		final int inputYear = new Integer(rawInput.substring(0, 2)).intValue();
 		final int century = inputYear + 2000 > currentYear ? 19 : 20;
-		digitOnlyInput.insert(0, century);
+		rawInput = century + rawInput;
 	}
 	final PIDChecker pidChecker = PIDChecker.getInstance();
 	boolean isTemporary = false;
-	if (digitOnlyInput.toString().indexOf("TF") != -1)
+	if (rawInput.toString().indexOf("TF") != -1)
 		isTemporary = true;
-	if (digitOnlyInput.length() != 12 || !pidChecker.isValid(digitOnlyInput.toString(), isTemporary)) {
+	if (rawInput.length() != 12 || !pidChecker.isValid(rawInput.toString(), isTemporary)) {
 		return null;
 	}
-	final int year = new Integer(digitOnlyInput.substring(0, 4)).intValue();
-	final int month = new Integer(digitOnlyInput.substring(4, 6)).intValue();
-	final int day = new Integer(digitOnlyInput.substring(6, 8)).intValue();
+	final int year = new Integer(rawInput.substring(0, 4)).intValue();
+	final int month = new Integer(rawInput.substring(4, 6)).intValue();
+	final int day = new Integer(rawInput.substring(6, 8)).intValue();
 	if (year < 1880 || year > currentYear || month < 1 || month > 12 || day < 1 || day > 31) {
 		return null;
 	}
-	return digitOnlyInput.toString();
+	return rawInput;
 }
 
 private static boolean isOver18(final String ssn) {
