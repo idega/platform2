@@ -272,10 +272,12 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private User getUser(IWContext iwc){
 		String userPid = iwc.getParameter(PAR_USER_SSN);
 		User user = null;
-		try{
-			user = getUserBusiness(iwc.getApplicationContext()).getUser(userPid);
-		}catch(FinderException ex){
-			ex.printStackTrace(); 
+		if (userPid != null && userPid.length() > 0){
+			try{
+				user = getUserBusiness(iwc.getApplicationContext()).getUser(userPid);
+			}catch(FinderException ex){
+				ex.printStackTrace(); 
+			}
 		}
 		return user;	
 	}
@@ -420,7 +422,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		
 		Form form = new Form();
 		form.maintainParameter(PAR_PK);		
-		form.maintainParameter(PAR_USER_SSN);			
+//		form.maintainParameter(PAR_USER_SSN);			
 		form.maintainParameter(PAR_SEEK_FROM);
 		form.maintainParameter(PAR_SEEK_TO);
 		form.maintainParameter(PAR_SELECTED_PROVIDER);
