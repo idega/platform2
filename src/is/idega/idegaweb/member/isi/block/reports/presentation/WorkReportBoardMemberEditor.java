@@ -6,6 +6,7 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroupHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
+import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
@@ -17,7 +18,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -46,8 +49,12 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.user.data.User;
+import com.idega.util.IWColor;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -68,7 +75,6 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
   
   private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
-  protected static final String NO_LEAGUE_VALUE = "no_league_value";
   
   private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
@@ -111,6 +117,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     FIELD_LIST.add(FAX);
     FIELD_LIST.add(EMAIL);
   }
+  
+  private boolean personalIdnotCorrect = false;
     
   public WorkReportBoardMemberEditor() {
     super();
@@ -262,16 +270,9 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         ex.printStackTrace(System.err);
         throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve league.");
       }
-      // special case: league is null
-      if (league == null) {
-        WorkReportBoardMemberHelper helper = new WorkReportBoardMemberHelper(NO_LEAGUE_VALUE, member);
-        list.add(helper);
-      }
-      else {
-        String leagueName = league.getName();
-        WorkReportBoardMemberHelper helper = new WorkReportBoardMemberHelper(leagueName, member);
-        list.add(helper);
-      }
+      String leagueName = (league == null) ? WorkReportConstants.MAIN_BOARD_GROUP_NAME : league.getName();
+      WorkReportBoardMemberHelper helper = new WorkReportBoardMemberHelper(leagueName, member);
+      list.add(helper);
     }
     // add a value holder for a new entry if desired
     if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
@@ -296,13 +297,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         }
         // sort according to the name of the league 
         String firstLeague = (String) ((WorkReportBoardMemberHelper) first).getColumnValue(LEAGUE);
-        if (NO_LEAGUE_VALUE.equals(firstLeague))  {
-          return -1;
-        }
         String secondLeague = (String) ((WorkReportBoardMemberHelper) second).getColumnValue(LEAGUE);
-        if (NO_LEAGUE_VALUE.equals(secondLeague))  {
-          return 1;
-        }
         int result = firstLeague.compareTo(secondLeague);
         // if the laegues are equal sort according to the status
         if (result == 0)  {
@@ -317,6 +312,14 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         return result;          
       }
     };
+    // get error message
+    if (personalIdnotCorrect) {
+      String message = resourceBundle.getLocalizedString("wr_editor_ssn_not_valid", "The input of the social security number is not valid");
+      Text text = new Text(message);
+      text.setBold();
+      add(text);
+    }
+
     Collections.sort(list, comparator);
     EntityBrowser browser = getEntityBrowser(list, resourceBundle, form);
     // put browser into a table
@@ -326,7 +329,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
       getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
     PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
-    PresentationObject cancelButton = getCancelButton(resourceBundle);
+    PresentationObject cancelButton = getCancelButton(resourceBundle, iwc);
     // add buttons
     Table buttonTable = new Table(3,1);
     buttonTable.add(newEntryButton,1,1);
@@ -358,18 +361,29 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     return button;
   }    
  
-  private PresentationObject getCancelButton(IWResourceBundle resourceBundle)  {
-    String cancelText = resourceBundle.getLocalizedString("wr_board_member_editor_cancel", "Cancel");
-    SubmitButton button = new SubmitButton(cancelText, SUBMIT_CANCEL_KEY, "dummy_value");
-    button.setAsImageButton(true);
-    return button;
-  }     
+  private PresentationObject getCancelButton(IWResourceBundle resourceBundle, IWContext iwc)  {
+     String cancelText = resourceBundle.getLocalizedString("wr_board_member_editor_cancel", "Cancel");
+     Link link = new Link(cancelText);
+     link.addParameter( SUBMIT_CANCEL_KEY, "dummy_value");
+     // add maintain parameters
+     Iterator iteratorList = getParametersToMaintain().iterator();
+     while (iteratorList.hasNext())  {
+      String parameter = (String) iteratorList.next();
+      link.maintainParameter(parameter, iwc);
+    }
+    link.setAsImageButton(true);
+    return link;
+  }    
 
   private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form)  {
     // define converter
     CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
     TextEditorConverter textEditorConverter = new TextEditorConverter(form);
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
+    TextEditorConverter socialSecurityNumberEditorConverter = new TextEditorConverter(form);
+    String message = resourceBundle.getLocalizedString("wr_member_editor_not_a_valid_ssn", "The input is not a valid social security number");
+    socialSecurityNumberEditorConverter.setAsIcelandicSocialSecurityNumber(message);
+    socialSecurityNumberEditorConverter.maintainParameters(this.getParametersToMaintain());
     EntityToPresentationObjectConverter statusDropDownMenuConverter = getConverterForStatus(resourceBundle, form);
     EntityToPresentationObjectConverter leagueDropDownMenuConverter = getConverterForLeague(resourceBundle, form);
     EntityToPresentationObjectConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
@@ -379,8 +393,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       CHECK_BOX, checkBoxConverter,
       LEAGUE, leagueDropDownMenuConverter,
       STATUS, statusDropDownMenuConverter,
-      NAME, textEditorConverter,
-      PERSONAL_ID, textEditorConverter,
+      NAME, null,
+      PERSONAL_ID, socialSecurityNumberEditorConverter,
       STREET_NAME, textEditorConverter,
       POSTAL_CODE_ID, dropDownPostalCodeConverter,
       HOME_PHONE, textEditorConverter,
@@ -400,6 +414,12 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       browser.setEntityToPresentationConverter(column, converter);
     }
     browser.setEntities("dummy_string", entities);
+    // some look settings
+    browser.setCellpadding(2);
+    browser.setCellspacing(0);
+    browser.setBorder(0);
+    browser.setColorForEvenRows(IWColor.getHexColorString(246, 246, 247));
+    browser.setColorForOddRows("#FFFFFF");
     return browser;
   }
   
@@ -453,11 +473,11 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       if (optionMap == null)  {
         optionMap = new TreeMap();
         WorkReportBusiness business = getWorkReportBusiness(iwc);
-        Collection coll = null;
+        SortedSet coll = null;
         try {
-          coll = business.getAllLeagueWorkReportGroupsForYear(getYear());
+          coll = new TreeSet(business.getLeaguesOfWorkReportById(getWorkReportId()));
         }
-        catch (RemoteException ex) {
+        catch (Exception ex) {
           System.err.println(
             "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
               + ex.getMessage());
@@ -472,8 +492,6 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
           optionMap.put(name, display);
           }
         }
-        // add default value: no league (because main board members are not assigned to a league)
-        optionMap.put(NO_LEAGUE_VALUE, resourceBundle.getLocalizedString("wr_board_member_editor_no_league","no league"));
         return optionMap;
       }
     };     
@@ -574,7 +592,15 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       member.setName(value.toString());
     }
     else if (pathShortKey.equals(PERSONAL_ID))  {
-      member.setPersonalId(value.toString());
+      String socialSecurityNumber = value.toString();
+      User user = getUserBySocialSecurityNumber(socialSecurityNumber, workReportBusiness);
+      if (user == null) {
+        personalIdnotCorrect = true;
+        return;
+      }
+      String name = user.getName();
+      member.setName(name);
+      member.setPersonalId(socialSecurityNumber);
     }
     else if (pathShortKey.equals(STREET_NAME))  {
       member.setStreetName(value.toString());
@@ -582,7 +608,12 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     else if(pathShortKey.equals(POSTAL_CODE_ID))  {
       try {
         int postalCode = Integer.parseInt(value.toString());
-        member.setPostalCodeID(postalCode);
+        if (ConverterConstants.NULL_ENTITY_ID.intValue() == postalCode) {
+          member.setPostalCode(null);
+        }
+        else {
+          member.setPostalCodeID(postalCode);
+        }
       }
       catch (NumberFormatException ex)  {
       }
@@ -604,14 +635,6 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       Object previousValue = valueContainer.getPreviousValue();
       String oldWorkGroupName = (previousValue == null) ? null : previousValue.toString();
       String newWorkGroupName = value.toString();
-      if (NO_LEAGUE_VALUE.equals(newWorkGroupName)) {
-        // the entry shall not reference a league, set name to null 
-        newWorkGroupName = null;
-      }
-      if (NO_LEAGUE_VALUE.equals(oldWorkGroupName))  {
-        // the entry did not reference a league, set name to null
-        oldWorkGroupName = null;
-      }
       int year = getYear();
       try {
         workReportBusiness.changeWorkReportGroupOfEntity(getWorkReportId(), oldWorkGroupName, year, newWorkGroupName, year, member);
@@ -625,6 +648,21 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       }
     }
   }
+
+  private User getUserBySocialSecurityNumber(String socialSecurirtyNumber, WorkReportBusiness workReportBusiness)  {
+    User user;
+    try {
+      user = workReportBusiness.getUser(socialSecurirtyNumber);
+    } 
+    catch (FinderException ex) {
+      String message =
+        "[WorkReportAccountEditor]: Can't retrieve user.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      return null;
+    } ;
+    return user;
+  }    
 
 
   /** 

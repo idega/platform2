@@ -148,7 +148,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     leagueCountMap = new TreeMap();
     while (iterator.hasNext())  {
       WorkReportGroup group = (WorkReportGroup) iterator.next();
-      // special case: remove the league that represents the main board
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      // special case: REMOVE the league that represents the main board
+      // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       String groupName = group.getName();
       if (! WorkReportConstants.MAIN_BOARD_GROUP_NAME.equals(groupName))  {
         leagueCountMap.put(groupName, new Integer(0));
@@ -303,7 +305,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     EntityBrowser browser = getEntityBrowser(members, resourceBundle, form, iwc);
     // get error message
     if (personalIdnotCorrect) {
-      String message = resourceBundle.getLocalizedString("wr_account_member_ssn_not_valid", "The input of the social security number is not valid");
+      String message = resourceBundle.getLocalizedString("wr_editor_ssn_not_valid", "The input of the social security number is not valid");
       Text text = new Text(message);
       text.setBold();
       add(text);
