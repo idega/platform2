@@ -488,4 +488,11 @@ public class PhoneFinanceHandler implements FinanceHandler {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see com.idega.block.finance.business.FinanceHandler#getTariffsByUserAndGroup(java.lang.Integer, java.lang.Integer)
+	 */
+	public Collection getTariffsForAccountInGroup(Integer userID, Integer tariffGroupID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

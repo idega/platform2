@@ -1,11 +1,13 @@
 package is.idega.idegaweb.campus.block.finance.presentation;
 
+import is.idega.idegaweb.campus.data.AccountEntriesReportBMPBean;
 import is.idega.idegaweb.campus.data.AccountEntryReport;
 import is.idega.idegaweb.campus.data.AccountEntryReportBMPBean;
 import is.idega.idegaweb.campus.data.EntryReport;
 import is.idega.idegaweb.campus.data.EntryReportBMPBean;
 import is.idega.idegaweb.campus.presentation.Campus;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,13 +53,15 @@ public class CampusTariffReports extends Finance implements Campus{
   private String prmDateTo = "ctr_date_to";
   private String prmBuilding = "ctr_building";
   private String prmAccountKey = "ctr_account_key";
-  private java.sql.Timestamp from = null,to = null;
+  private IWTimestamp from = null,to = null;
   
   Integer building = null,key=null;
 
   private List reports = null;
   private Collection accountReports = null;
+  private Collection accountEntriesReports = null;
   private Collection distinctKeys = null;
+  private Collection keys = null;
   private Map keyMap = null;
 
   public CampusTariffReports() {
@@ -82,6 +86,8 @@ public class CampusTariffReports extends Finance implements Campus{
       setMainPanel(getResult(iwc));
     else if (accountReports!=null)
     	setMainPanel(getAccountResult(iwc));
+    else if(accountEntriesReports!=null)
+    	setMainPanel(getAccountEntriesResult(iwc));
   }
   
 
@@ -89,13 +95,13 @@ public class CampusTariffReports extends Finance implements Campus{
 
     if(iwc.isParameterSet(prmDateFrom)){
       try {
-        from = new IWTimestamp(iwc.getParameter(prmDateFrom)).getTimestamp();
+        from = new IWTimestamp(iwc.getParameter(prmDateFrom));
       }
       catch (Exception ex) {  }
     }
      if(iwc.isParameterSet(prmDateTo)){
       try {
-        to = new IWTimestamp(iwc.getParameter(prmDateTo)).getTimestamp();
+        to = new IWTimestamp(iwc.getParameter(prmDateTo));
       }
       catch (Exception ex) {  }
     }
@@ -104,25 +110,36 @@ public class CampusTariffReports extends Finance implements Campus{
     //reports = CampusAccountFinder.getAccountEntryReport(building,key,from,to);
     //reports = CampusAccountFinder.findAccountEntryReports(building,key,from,to);
     if(!iwc.isParameterSet("bycontract")){
-    	try{
-    		reports = EntryReportBMPBean.findAllBySearch(building,key,from,to);
-    	}
-    	catch(java.sql.SQLException ex){
-    		ex.printStackTrace();
-    	}	
+    	
+        	try{
+        		reports = EntryReportBMPBean.findAllBySearch(building,key,from.getTimestamp(),to.getTimestamp());
+        	}
+        	catch(java.sql.SQLException ex){
+        		ex.printStackTrace();
+        	}	
+        
     }
-    else{
+    
+    else {
+    	if(iwc.isParameterSet("byjoins")) {
+        	try {
+        		keys = AccountEntriesReportBMPBean.getAccountKeys(building,from.getDate(),to.getDate());
+    			accountEntriesReports = AccountEntriesReportBMPBean.findAllBySearch(building,key,from.getDate(),to.getDate(),iwc.isParameterSet("bytariffkey"));
+    		} catch (SQLException e) {
+    			e.printStackTrace();
+    		}}
+    		else{
     	try{
-    		accountReports = AccountEntryReportBMPBean.findAllBySearch(building,key,from,to,iwc.isParameterSet("bytariffkey"));
+    		accountReports = AccountEntryReportBMPBean.findAllBySearch(building,key,from.getTimestamp(),to.getTimestamp(),iwc.isParameterSet("bytariffkey"));
     	}
     	catch(java.sql.SQLException ex){
     		ex.printStackTrace();
-    	}	
+    	}	}
     }
   }
 
   public PresentationObject getSearchForm()throws java.rmi.RemoteException{
-    DataTable T = new DataTable();
+  	DataTable T =getDataTable();
     T.setUseBottom(false);
     T.setUseTop(false);
     T.setTitlesHorizontal(true);
@@ -133,15 +150,15 @@ public class CampusTariffReports extends Finance implements Campus{
     IWTimestamp today = IWTimestamp.RightNow();
     DateInput inpFrom = new DateInput(prmDateFrom,true);
     if(from!=null)
-      inpFrom.setDate(new java.sql.Date(from.getTime()));
+      inpFrom.setDate(from.getDate());
     else
-      inpFrom.setDate(new IWTimestamp(1,today.getMonth(),today.getYear()).getSQLDate());
+      inpFrom.setDate(new IWTimestamp(1,today.getMonth(),today.getYear()).getDate());
     inpFrom.setYearRange(today.getYear()-5,today.getYear()+1);
     DateInput inpTo = new DateInput(prmDateTo,true);
     if(to!=null)
-      inpTo.setDate( new java.sql.Date(to.getTime()));
+      inpTo.setDate( to.getDate());
     else
-      inpTo.setDate(today.getSQLDate());
+      inpTo.setDate(today.getDate());
     inpTo.setYearRange(today.getYear()-5,today.getYear()+1);
 
     T.add(getHeader(iwrb.getLocalizedString("building","Building")),1,1);
@@ -155,12 +172,16 @@ public class CampusTariffReports extends Finance implements Campus{
     
     CheckBox chkByContract = new CheckBox("bycontract","true");
     CheckBox chkByTariffKey = new CheckBox("bytariffkey","true");
+    CheckBox chkByJoinSQL = new CheckBox("byjoins","true");
     chkByContract.keepStatusOnAction();
     chkByTariffKey.keepStatusOnAction();
+    chkByJoinSQL.keepStatusOnAction();
     T.add(chkByContract,1,3);
-    T.add(getSmallHeader(localize("show_by_account","Show by contract")),1,3);
+    T.add(getSmallHeader(localize("show_by_accounts","Show by accounts")),1,3);
     T.add(chkByTariffKey,1,3);
     T.add(getSmallHeader(localize("show_by_tariffkey","Show by tariff key")),1,3);
+    T.add(chkByJoinSQL,1,3);
+    T.add(getSmallHeader(localize("show_by_join_sql","Show by join sql")),1,3);
     T.getContentTable().mergeCells(1,3,4,3);
     
 
@@ -238,15 +259,15 @@ public class CampusTariffReports extends Finance implements Campus{
     	Collection coll = groupReportsByContracts();
     	Map contractMap;
     	int row = 2;
-    	int offset = 3;
+    	int offset = 4;
     	int col = offset;
     	int keySize = distinctKeys.size();
     	double[] total = new double[keySize+1];
     	for (int i = 0; i < total.length; i++) {
 			total[i]  = 0;
 		}
-    	T.add(getHeader(localize("name","Name")),1,1);
-    	T.add(getHeader(localize("personal_id","Personal ID")),2,1);
+    	T.add(getHeader(localize("name","Name")),2,1);
+    	T.add(getHeader(localize("personal_id","Personal ID")),3,1);
     	
     	
     	for (Iterator iterator = distinctKeys.iterator(); iterator.hasNext();) {
@@ -256,7 +277,9 @@ public class CampusTariffReports extends Finance implements Campus{
     	T.add(getHeader(localize("total","Total")),col++,1);
     	
     	java.text.DateFormat df = getShortDateFormat(iwc.getCurrentLocale());
+    	int ind= 1;
     	for (Iterator iter = coll.iterator(); iter.hasNext();) {
+    		T.add(getText(String.valueOf(ind++)),1,row);
     		contractMap  = (Map) iter.next();
     		boolean common =false;
     		double linetotal = 0;
@@ -270,8 +293,8 @@ public class CampusTariffReports extends Finance implements Campus{
 				// print common info
 				if(report!=null){
 					if(!common){
-						T.add(getText(report.getName()),1,row);
-						T.add(getText(report.getPersonalID()),2,row);
+						T.add(getText(report.getName()),2,row);
+						T.add(getText(report.getPersonalID()),3,row);
 						common = true;
 					}
 					double lineKeyTotal =report.getTotal().doubleValue();
@@ -293,8 +316,11 @@ public class CampusTariffReports extends Finance implements Campus{
     
     	 T.setVerticalZebraColored(getZebraColor1(),getZebraColor2());
     	 T.setRowColor(1,getHeaderColor());
+    	 T.setColumnAlignment(3,Table.HORIZONTAL_ALIGN_RIGHT);
+    	 T.setAlignment(3,1,Table.HORIZONTAL_ALIGN_LEFT);
     	 for (int i = offset; i <= keySize+offset ; i++) {
     			T.setColumnAlignment(i,Table.HORIZONTAL_ALIGN_RIGHT);
+    			T.setAlignment(i,1,Table.HORIZONTAL_ALIGN_LEFT);
     	 }
     	 T.setRowColor(row,getHeaderColor());
     }
@@ -312,6 +338,7 @@ public class CampusTariffReports extends Finance implements Campus{
   		for (Iterator iter = accountReports.iterator(); iter.hasNext();) {
 			AccountEntryReport element = (AccountEntryReport) iter.next();
 			Integer accountID = element.getAccountID();
+			
 			if(mapOfIndexByContract.containsKey(accountID)){
 				int index = ((Integer) mapOfIndexByContract.get(accountID)).intValue();
 				Map m = ((Map)  collOfMaps.get(index));
@@ -332,6 +359,64 @@ public class CampusTariffReports extends Finance implements Campus{
 		}
   	
   		return collOfMaps;
+  }
+  
+  public PresentationObject getAccountEntriesResult(IWContext iwc) throws java.rmi.RemoteException{
+  	Table T = new Table();
+  	T.setNoWrap();
+  	if(keys!=null && accountEntriesReports!=null && !accountEntriesReports.isEmpty()){
+  		T.add(getHeader(localize("name","Name")),2,1);
+    	T.add(getHeader(localize("personal_id","Personal ID")),3,1);
+    	int col = 4;
+    	String[] keyIds = new String[keys.size()];
+    	int i = 0;
+    	for (Iterator iter = keys.iterator(); iter.hasNext();) {
+			AccountKey key = (AccountKey) iter.next();
+			T.add(getHeader(key.getName()+"("+key.getInfo()+")"),col++,1);
+			keyIds[i++]  = key.getPrimaryKey().toString();
+		}
+    	T.add(getHeader(localize("line_total","Line total")),col,1);
+  		int row = 2;
+  		double[] columntotal = new double[keyIds.length+1];
+  		double linetotal = 0;
+		double total = 0;
+		double amount=0;
+  		int ind = 1;
+  		for (Iterator iter = accountEntriesReports.iterator(); iter.hasNext();) {
+			AccountEntriesReportBMPBean report = (AccountEntriesReportBMPBean) iter.next();
+			linetotal = 0.0;
+			col = 1;
+			T.add(getText(String.valueOf(ind++)),col++,row);
+			T.add(getText(report.getName()),col++,row);
+			T.add(getText(report.getPersonalID()),col++,row);
+			for (int j = 0; j < keyIds.length; j++) {
+				if(report.getEntries().containsKey(keyIds[j])){
+					amount = ((Float)report.getEntries().get(keyIds[j])).doubleValue();
+					linetotal +=amount;
+					T.add(getAmountText(amount),col,row);
+					columntotal[j] +=amount;
+				}
+				col++;
+			}
+			columntotal[columntotal.length-1]+=linetotal;
+			T.add(getAmountText(linetotal),col,row);
+			
+			row++;
+		}
+  		col = 4;
+  		for (int j = 0; j < columntotal.length; j++) {
+  			
+			T.add(getAmountText(columntotal[j]),col,row);
+			T.setColumnAlignment(col,Table.HORIZONTAL_ALIGN_RIGHT);
+			col++;
+		}
+  	
+  	}
+  	
+  	T.setVerticalZebraColored(getZebraColor1(),getZebraColor2());
+	T.setRowColor(1,getHeaderColor());
+  	
+  	return T;
   }
   
 
