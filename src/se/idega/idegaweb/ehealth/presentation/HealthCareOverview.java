@@ -312,10 +312,10 @@ public class HealthCareOverview extends EHealthBlock {
 			}
 		else{
 			if (i == 1){
-				text1.setText("VÅRDBEGÄRAN 04-05-05");	
+				text1.setText("Vårdbegäran 2004-05-05 Läk mott.besök");	
 			}
 			else if (i == 2){
-				text1.setText("VÅRDBEGÄRAN 03-10-24");
+				text1.setText("Vårdbegäran 2004-06-18 Inskrivning");
 			}
 			
 			else
@@ -355,7 +355,7 @@ public class HealthCareOverview extends EHealthBlock {
 				text1.setText("Besök 2004-05-05");	
 			}
 			else if (i == 2){
-				text1.setText("Besök 2004-06-05");
+				text1.setText("Inskrivning 2004-06-18");
 			}
 			else
 				text1.setText("Besök 03-01-30 14.00-15.00 Gimo VC");
@@ -425,18 +425,32 @@ public class HealthCareOverview extends EHealthBlock {
 		int theRow = 1;
 		
 		ArrayList cases = new ArrayList();
+		if (age != null && age.getYears() >= 70){
+			if (theCase == 1){
+				cases.add("Vårdplats:");
+				cases.add("Journalanteckningar:");
+				cases.add("Remisser och svar:");
+				cases.add("Läkemedel:");
+			}
+			else if (theCase == 2){
+				cases.add("Vårdplats:");
+				cases.add("Journalanteckningar:");
+				cases.add("Remisser och svar:");
+			}
+		}
+		else{
+			if (theCase == 1){
+				cases.add("Vårdplats:");
+				cases.add("Journalanteckningar:");
+				cases.add("Läkemedel:");
+			}
+			else if (theCase == 2){
+				cases.add("Vårdplats:");
+				cases.add("Journalanteckningar:");
+				cases.add("Läkemedel:");
+			}
+		}
 		
-		if (theCase == 1){
-			cases.add("Vårdplats:");
-			cases.add("Journalanteckningar:");
-			cases.add("Remisser och svar:");
-			cases.add("Läkemedel: ");
-		}
-		else if (theCase == 2){
-			cases.add("VÅRDPLATS: Ortopedavd 70 E2");
-			cases.add("AKTIVITET: Operation");
-			cases.add("JOURNALANTECKNINGAR");
-		}
 		
 		Iterator iter = cases.iterator();
 	
