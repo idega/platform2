@@ -29,6 +29,7 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -909,6 +910,33 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 	}
 	
+  public boolean changeWorkReportGroupOfMember(WorkReportGroup oldGroup, WorkReportGroup newGroup, WorkReportMember member)  {
+    TransactionManager manager = com.idega.transaction.IdegaTransactionManager.getInstance();
+    try {
+      manager.begin();
+      if (oldGroup != null) {
+        oldGroup.removeMember(member);
+        oldGroup.store();
+      }
+      if (newGroup != null) {
+        newGroup.addMember(member);
+        newGroup.store();
+      }
+      manager.commit();
+      return true;
+    }
+    catch (Exception ex)  {
+      ex.printStackTrace(System.err);
+      try {
+        manager.rollback();
+      }
+      catch (javax.transaction.SystemException sysEx) {
+        sysEx.printStackTrace(System.err);
+        return false;
+      }
+      return false;
+    }
+  }
 	
 
 }//end of class
