@@ -133,6 +133,7 @@ public abstract class CategoryBlock extends Block implements ICDynamicPageTrigge
 		L.addParameter(CategoryWindow.prmCategoryId, getCategoryId());
 		L.addParameter(CategoryWindow.prmObjInstId, getICObjectInstanceID());
 		L.addParameter(CategoryWindow.prmCategoryType, type);
+		L.addParameter(CategoryWindow.prmBundleIdentifier, getBundleIdentifier());
 		if (getMultible()) {
 			L.addParameter(CategoryWindow.prmMulti, "true");
 		}

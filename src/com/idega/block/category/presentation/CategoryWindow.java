@@ -55,6 +55,7 @@ public class CategoryWindow extends IWAdminWindow {
 	public static final String prmCacheClearKey = "iccat_cache_clear";
 	public static final String prmParentID = "iccat_parent";
 	public final static String prmLocale = "iccat_localedrp";
+	public static final String prmBundleIdentifier = "iccat_bundleIdent";
 	protected static final String actDelete = "iccat_del";
 	protected static final String actSave = "iccat_save";
 	protected static final String actClose = "iccat_close";
@@ -69,6 +70,7 @@ public class CategoryWindow extends IWAdminWindow {
 	protected CategoryService catServ = null;
 	protected int iLocaleId = -1;
 	int iSaveLocaleId = -1;
+	private String bundleIdentifier = null;
 	
 	public CategoryWindow() {
 		setWidth(600);
@@ -364,32 +366,36 @@ public class CategoryWindow extends IWAdminWindow {
 					T.add(new HiddenInput(prmCategoryId, String.valueOf(id)));
 					formAdded = true;
 				}
-				else {
+				else if (id > 0) {
 					Link Li = new Link(formatText(catName));
 					Li.addParameter(prmCategoryId, id);
 					Li.addParameter("edit","true");
 					T.add(Li, 2, row);
 					T.add(formatText(catInfo), 3, row);
-					Link childLink = new Link(core.getImage("/shared/create.gif"));
-					childLink.addParameter(prmParentID,id);
-					deleteLink = new Link(core.getImage("/shared/delete.gif"));
-					deleteLink.addParameter(actDelete, "true");
-					deleteLink.addParameter(prmCategoryId, id);
-					deleteLink.addParameter(actForm, "true");
-					metadataLink = new Link(core.getImage("/shared/edit.gif"));
-					metadataLink.setWindowToOpen(CategoryMetaDataWindow.class);
-					metadataLink.addParameter(CategoryMetaDataWindow.PARAMETER_CATEGORY_ID, id);
-					addParametersToLink(childLink);
-					addParametersToLink(deleteLink);
 					addParametersToLink(Li);
-					if (allowOrdering) {
-						T.add(formatText(Integer.toString(iOrder)), 4, row);					
-					}				
-					T.add(childLink,5,row);
-					T.add(deleteLink, 6, row);
-					T.add(metadataLink, 7, row);
-					
+				} 
+				
+				Link childLink = new Link(core.getImage("/shared/create.gif"));
+				childLink.addParameter(prmParentID,id);
+				deleteLink = new Link(core.getImage("/shared/delete.gif"));
+				deleteLink.addParameter(actDelete, "true");
+				deleteLink.addParameter(prmCategoryId, id);
+				deleteLink.addParameter(actForm, "true");
+				metadataLink = new Link(core.getImage("/shared/edit.gif"));
+				metadataLink.setWindowToOpen(CategoryMetaDataWindow.class);
+				metadataLink.addParameter(CategoryMetaDataWindow.PARAMETER_CATEGORY_ID, id);
+				if (bundleIdentifier != null) {
+					metadataLink.addParameter(prmBundleIdentifier, bundleIdentifier);
 				}
+				addParametersToLink(childLink);
+				addParametersToLink(deleteLink);
+				if (allowOrdering) {
+					T.add(formatText(Integer.toString(iOrder)), 4, row);					
+				}				
+				T.add(childLink,5,row);
+				T.add(deleteLink, 6, row);
+				T.add(metadataLink, 7, row);
+				
 				if (multi) {
 					box = new CheckBox("id_box", String.valueOf(cat.getID()));
 					box.setChecked(coll != null && coll.contains(new Integer(cat.getID())));
@@ -472,6 +478,7 @@ public class CategoryWindow extends IWAdminWindow {
 	public void main(IWContext iwc) throws Exception {
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
+		bundleIdentifier = iwc.getParameter(prmBundleIdentifier);
 		core = iwc.getIWMainApplication().getCoreBundle();
 		catServ = (CategoryService) IBOLookup.getServiceInstance(iwc,CategoryService.class);
 		String title = iwrb.getLocalizedString("ic_category_editor", "Category Editor");

@@ -10,6 +10,8 @@ import javax.ejb.FinderException;
 import com.idega.block.category.business.CategoryService;
 import com.idega.block.category.data.ICCategory;
 import com.idega.business.IBOLookup;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMetaDataConstants;
 import com.idega.idegaweb.IWResourceBundle;
@@ -36,17 +38,23 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 	public static final String PARAMETER_DELETE = "ic_category_delete";
 	public static final String PARAMETER_NAME = "ic_category_name";
 	public static final String PARAMETER_VALUE = "ic_category_value";
+	public static final String PARAMETER_LOCALIZED_NAME = "ic_category_loc_name";
 	public static final String PARAMETER_TYPE = "ic_category_type";
 	public static final String PARAMETER_METADATA = "ic_metadata";
 	public static final String PARAMETER_METADATA_ID = "ic_metadata_id";
+	public static final String PARAMETER_LOCALE_ID = "ic_locale_id";
+	private static final String METADATA = "metadata_";
 	
 	protected IWResourceBundle iwrb;
+	protected IWResourceBundle categoryBlockResourceBundle; 
+	protected String categoryBlockResourceBundleIdentifier; 
 	
 	private ICCategory _category = null;
 	private String _metaData = null;
+	private int localeID = -1;
 
 	public CategoryMetaDataWindow() {
-		setWidth(650);
+		setWidth(750);
 		setHeight(400);
 		setResizable(true);
 		setScrollbar(true);
@@ -54,7 +62,18 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 
 	public void main(IWContext iwc) throws Exception {
 		iwrb = getResourceBundle(iwc);
-
+    if(iwc.isParameterSet(PARAMETER_LOCALE_ID)){
+      localeID = Integer.parseInt(iwc.getParameter(PARAMETER_LOCALE_ID));
+    }
+    else{
+      localeID = ICLocaleBusiness.getLocaleId( iwc.getCurrentLocale());
+    }
+    
+    categoryBlockResourceBundleIdentifier = iwc.getParameter(CategoryWindow.prmBundleIdentifier);
+    if (categoryBlockResourceBundleIdentifier != null) {
+    		categoryBlockResourceBundle = iwc.getApplicationContext().getIWMainApplication().getBundle(categoryBlockResourceBundleIdentifier).getResourceBundle(ICLocaleBusiness.getLocale(localeID));
+		}
+    
 		try {
 			parseAction(iwc);
 		} catch (Exception e) {
@@ -84,6 +103,8 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 		
 		Form form = new Form();
 		form.maintainParameter(PARAMETER_CATEGORY_ID);
+		form.maintainParameter(CategoryWindow.prmBundleIdentifier);
+		form.maintainParameter(PARAMETER_LOCALE_ID);
 		padder.add(form);
 		
 		Table table = new Table();
@@ -93,11 +114,20 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 		form.add(table);
 		int column = 1;
 		int row = 1;
-		
-		
+		DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(PARAMETER_LOCALE_ID);
+    LocaleDrop.setToSubmit();
+    LocaleDrop.setSelectedElement(Integer.toString(localeID));
+
+    table.add(LocaleDrop, 1, row);
+    table.mergeCells(1, row, 4, row);
+    table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_LEFT);
+    ++row;
+    
+		table.setAlignment(column, row, Table.HORIZONTAL_ALIGN_CENTER);
 		table.add(formatText(iwrb.getLocalizedString("delete", "Delete"), true), column++, row);
 		table.add(formatText(iwrb.getLocalizedString("name", "Name"), true), column++, row);
 		table.add(formatText(iwrb.getLocalizedString("value", "Value"), true), column++, row);
+		table.add(formatText(iwrb.getLocalizedString("localized_name", "Localized name"), true), column++, row);
 		table.add(formatText(iwrb.getLocalizedString("type", "Type"), true), column++, row++);
 		
 		CheckBox deleteMetadata;
@@ -107,6 +137,10 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 
 		TextInput metaDataValue = new TextInput(PARAMETER_VALUE);
 		setStyle(metaDataValue);
+		
+		TextInput metaDataLocalizedName = new TextInput(PARAMETER_LOCALIZED_NAME);
+		setStyle(metaDataKey);
+		
 		metaDataValue.setWidth(Table.HUNDRED_PERCENT);
 
 		DropdownMenu metaDataType = getTypesMenu();
@@ -121,10 +155,13 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 				column = 1;
 				String key = (String) iter.next();
 				String value = (String) superMetaData.get(key);
+				String locName = categoryBlockResourceBundle.getLocalizedString(METADATA + key, key);
 				
+				table.setAlignment(column, row, Table.HORIZONTAL_ALIGN_CENTER);
 				table.add(deleteMetadata, column++, row);
 				table.add(formatText(key, false), column++, row);
 				table.add(formatText(value, false), column++, row);
+				table.add(formatText(locName, false), column++, row);
 				if (superMetaDataTypes.containsKey(key))
 					table.add(formatText((String) superMetaDataTypes.get(key), false), column, row);
 				row++;
@@ -137,28 +174,36 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 				column = 1;
 				String key = (String) iter.next();
 				String value = (String) metaData.get(key);
+				String locName = categoryBlockResourceBundle.getLocalizedString(METADATA + key, key);
 				deleteMetadata = new CheckBox(PARAMETER_DELETE, key);
 				
 				if (_metaData != null && _metaData.equals(key)) {
 					column++;
 					metaDataKey.setContent(key);
 					metaDataValue.setContent(value);
-					if (metaDataTypes.containsKey(key))
+					if (metaDataTypes.containsKey(key)) {
 						metaDataType.setSelectedElement((String) metaDataTypes.get(key));
+					}
+					metaDataLocalizedName.setContent(locName);
 
 					table.add(new HiddenInput(PARAMETER_METADATA_ID, _metaData), column, row);
 					table.add(metaDataKey, column++, row);
 					table.add(metaDataValue, column++, row);
+					table.add(metaDataLocalizedName, column++, row);
 					table.add(metaDataType, column, row++);
 				}
 				else {
 					Link link = new Link(formatText(key));
 					link.addParameter(PARAMETER_CATEGORY_ID, _category.getPrimaryKey().toString());
+					link.addParameter(CategoryWindow.prmBundleIdentifier, categoryBlockResourceBundleIdentifier);
+					link.addParameter(PARAMETER_LOCALE_ID, iwc.getParameter(PARAMETER_LOCALE_ID));
 					link.addParameter(PARAMETER_METADATA, key);
 					
+					table.setAlignment(column, row, Table.HORIZONTAL_ALIGN_CENTER);
 					table.add(deleteMetadata, column++, row);
 					table.add(link, column++, row);
 					table.add(formatText(value), column++, row);
+					table.add(formatText(locName), column++, row);
 					if (metaDataTypes.containsKey(key))
 						table.add(formatText((String) metaDataTypes.get(key)), column, row);
 				}
@@ -170,11 +215,12 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 			column = 2;
 			table.add(metaDataKey, column++, row);
 			table.add(metaDataValue, column++, row);
+			table.add(metaDataLocalizedName, column++, row);
 			table.add(metaDataType, column, row++);
 		}
 		
 		row++;
-		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_CENTER);
+		//table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
 		table.mergeCells(1, row, table.getColumns(), row);
 		
 		SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save", "Save"), PARAMETER_SAVE, "true");
@@ -222,12 +268,17 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 	
 		
 		if (iwc.isParameterSet(PARAMETER_SAVE)) {
-			if (iwc.isParameterSet(PARAMETER_NAME) && iwc.isParameterSet(PARAMETER_VALUE) && iwc.isParameterSet(PARAMETER_TYPE)) {
+			String key = iwc.getParameter(PARAMETER_NAME);
+			if (key != null && iwc.isParameterSet(PARAMETER_VALUE) && iwc.isParameterSet(PARAMETER_TYPE)) {
 				if (updateName != null) {
-					_category.renameMetaData(updateName, iwc.getParameter(PARAMETER_NAME));
+					_category.renameMetaData(updateName, key);
 				} else {
-					_category.addMetaData(iwc.getParameter(PARAMETER_NAME), iwc.getParameter(PARAMETER_VALUE), iwc.getParameter(PARAMETER_TYPE));
+					_category.addMetaData(key, iwc.getParameter(PARAMETER_VALUE), iwc.getParameter(PARAMETER_TYPE));
 				}
+			}
+			
+			if (key != null && iwc.isParameterSet(PARAMETER_LOCALIZED_NAME)) {
+				categoryBlockResourceBundle.setLocalizedString(METADATA + key, iwc.getParameter(PARAMETER_LOCALIZED_NAME));
 			}
 			
 			if (iwc.isParameterSet(PARAMETER_DELETE)) {
