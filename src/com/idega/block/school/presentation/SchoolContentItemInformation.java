@@ -3,7 +3,6 @@ package com.idega.block.school.presentation;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.data.IDORelationshipException;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
 
 /**
  * @author gimmi
@@ -25,7 +24,7 @@ public class SchoolContentItemInformation extends SchoolContentItem {
 			debug("LocalizedText not found for School");
 		}
 		
-		Table table = new Table();
+		/*Table table = new Table();
 		table.setCellpaddingAndCellspacing(0);
 		
 		if (lText != null) {
@@ -37,12 +36,12 @@ public class SchoolContentItemInformation extends SchoolContentItem {
 			table.add(getText(lText.getBody()));
 		}
 		
-		setAttributes(table);
+		setAttributes(table);*/
 		
-		return table;		
+		return getText(lText.getBody());		
 	}
 	
-	private void setAttributes(Table table) {
+	/*private void setAttributes(Table table) {
 		if (_width != null) {
 			table.setWidth(_width);
 		}
@@ -61,6 +60,6 @@ public class SchoolContentItemInformation extends SchoolContentItem {
 	
 	public void setShowImages(boolean showImages) {
 		_showImages = showImages;
-	}
+	}*/
 
 }
