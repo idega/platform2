@@ -11,6 +11,7 @@ package is.idega.idegaweb.member.presentation;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.Table;
@@ -34,6 +35,7 @@ public class UserHistoryList extends Page {
 	}
 
 	public Table getGroupTable(IWContext iwc) {
+		IWResourceBundle comUserBundle = iwc.getIWMainApplication().getBundle("com.idega.user").getResourceBundle(iwc);
 		System.out.println("Getting group table ");
 		Collection history = (Collection) iwc.getSessionAttribute(UserHistoryTab.SESSIONADDRESS_USERGROUPS_HISTORY);
 		Collection status = (Collection) iwc.getSessionAttribute(UserHistoryTab.SESSIONADDRESS_USERGROUPS_STATUS);
@@ -49,7 +51,7 @@ public class UserHistoryList extends Page {
 				if (status != null)
 					size += status.size();
 				table = new Table(4, size + 1);
-				table.add("Hópur", 1, row);
+				table.add("Hï¿½pur", 1, row);
 				table.add("Virkni", 2, row);
 				table.add("Upphafsdags.", 3, row);
 				table.add("Lokadags.", 4, row++);
@@ -88,7 +90,8 @@ public class UserHistoryList extends Page {
 								to = new IWTimestamp(stat.getDateTo());
 
 							table.add(stat.getGroup().getName(), 1, row);
-							table.add(stat.getStatus().getStatusKey(), 2, row);
+							String statusStr = comUserBundle.getLocalizedString(stat.getStatus().getStatusKey());
+							table.add(statusStr, 2, row);
 							table.add(from.getDateString("dd-MM-yyyy"), 3, row);
 							if (to != null)
 								table.add(to.getDateString("dd-MM-yyyy"), 4, row);
