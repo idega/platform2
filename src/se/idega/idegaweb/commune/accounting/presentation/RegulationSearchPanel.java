@@ -47,19 +47,18 @@ public class RegulationSearchPanel extends AccountingBlock {
 	private static final String KEY_VALID_DATE = "valid_date";	
 	private static final String KEY_SEARCH = "search";	
 	
-	private static final String PAR_PROVIDER = KEY_PROVIDER; 
+	private static String PAR_PROVIDER = KEY_PROVIDER; 
 	private static final String PAR_PLACING = KEY_PLACING;	
 	private static final String PAR_VALID_DATE = KEY_VALID_DATE; 
 	private static final String PAR_ENTRY_PK = "PAR_ENTRY_PK";
 	
-	private static final String ACTION_SEARCH_REGULATION = "ACTION_SEARCH_REGULATION";
+	public static final String SEARCH_REGULATION = "ACTION_SEARCH_REGULATION";
 	
 	private Regulation _currentRegulation = null;
 	private Collection _searchResult = null;
 	private SchoolCategory _currentSchoolCategory = null;
 	private String[] _currentPosting = null;
-	private static final int SCHOOL_NOT_SET_ID = -1;	
-	private int _currentSchoolId = SCHOOL_NOT_SET_ID;
+	private School _currentSchool = null;
 	private Date _validDate = null;
 	private String _currentPlacing = null;
 	private String _placingErrorMessage = null;
@@ -71,11 +70,16 @@ public class RegulationSearchPanel extends AccountingBlock {
 		super();
 	}
 	
-	//TODO: set currentschool in constructor (parameter)
 	public RegulationSearchPanel(IWContext iwc){
 		super(); 
 		process(iwc);
 	}
+	
+	public RegulationSearchPanel(IWContext iwc, String providerKey){
+		super(); 
+		PAR_PROVIDER = providerKey;
+		process(iwc);
+	}	
 		
 	
 
@@ -106,7 +110,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 	 */
 	public void process(IWContext iwc){
 		if (! processed){
-			boolean searchAction = iwc.getParameter(ACTION_SEARCH_REGULATION) != null;
+			boolean searchAction = iwc.getParameter(SEARCH_REGULATION) != null;
 			
 			//Find selected category, date and provider
 			String vDate = iwc.getParameter(PAR_VALID_DATE);
@@ -115,13 +119,13 @@ public class RegulationSearchPanel extends AccountingBlock {
 				_dateFormatErrorMessage = localize("regulation_search_panel.date_format_error", "Error i dateformat");
 			} else {
 				
-				School currentSchool = null;
+				_currentSchool = null;
 				//First time on this page: PAR_PROVIDER parameter not set
 				if (iwc.getParameter(PAR_PROVIDER) != null){
 					try{
 						SchoolHome schoolHome = (SchoolHome) IDOLookup.getHome(School.class);	
-						_currentSchoolId = new Integer(iwc.getParameter(PAR_PROVIDER)).intValue();
-						currentSchool = schoolHome.findByPrimaryKey("" + _currentSchoolId);
+						int currentSchoolId = new Integer(iwc.getParameter(PAR_PROVIDER)).intValue();
+						_currentSchool = schoolHome.findByPrimaryKey("" + currentSchoolId);
 					}catch(RemoteException ex){
 						ex.printStackTrace();
 					}catch(FinderException ex){ 
@@ -140,7 +144,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 				//regId and _currentRegulation will get a value only after choosing a regulation (by clicking a link)
 				if (regId != null){
 					_currentRegulation = getRegulation(regId);
-					_currentPosting = getPosting(iwc, getCurrentSchoolCategory(iwc), _currentRegulation, new Provider(currentSchool), _validDate);				
+					_currentPosting = getPosting(iwc, getCurrentSchoolCategory(iwc), _currentRegulation, new Provider(_currentSchool), _validDate);				
 				}
 				if (_currentRegulation!= null){
 					_currentPlacing = _currentRegulation.getName();
@@ -377,7 +381,8 @@ public class RegulationSearchPanel extends AccountingBlock {
 		Table table = new Table();
 		int row = 1;
 		
-		addDropDown(table, PAR_PROVIDER, KEY_PROVIDER, providers, "" + _currentSchoolId, "getSchoolName", 1, row++);
+		String currentSchoolId = _currentSchool != null ? "" + _currentSchool.getPrimaryKey() : "0";
+		addDropDown(table, PAR_PROVIDER, KEY_PROVIDER, providers, currentSchoolId, "getSchoolName", 1, row++);
 		if (_placingErrorMessage != null){
 			table.add(getErrorText(_placingErrorMessage), 2, row);
 		}		
@@ -391,7 +396,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 		
 		addField(table, PAR_PLACING, KEY_PLACING, _currentPlacing, 1, row);		
 		addField(table, PAR_VALID_DATE, KEY_VALID_DATE, iwc.getParameter(PAR_VALID_DATE), 3, row);	
-		table.add(getLocalizedButton(ACTION_SEARCH_REGULATION, KEY_SEARCH, "Search"), 5, row++);
+		table.add(getLocalizedButton(SEARCH_REGULATION, KEY_SEARCH, "Search"), 5, row++);
 
 
 		return table;
@@ -424,9 +429,9 @@ public class RegulationSearchPanel extends AccountingBlock {
 		}
 	}		
 	
-	public void setSchoolIdIfNull(int schoolId) {
-		if (_currentSchoolId == SCHOOL_NOT_SET_ID){
-			_currentSchoolId = schoolId;
+	public void setSchoolIfNull(School school) {
+		if (_currentSchool == null){
+			_currentSchool = school;
 		}
 	}		
 		
@@ -434,6 +439,10 @@ public class RegulationSearchPanel extends AccountingBlock {
 
 	public void setError(String placingErrorMessage){
 		_placingErrorMessage = placingErrorMessage;
+	}
+	
+	public School getSchool(){
+		return _currentSchool;
 	}
 	
 
