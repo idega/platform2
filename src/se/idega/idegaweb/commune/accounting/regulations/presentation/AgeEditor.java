@@ -1,5 +1,5 @@
 /*
- * $Id: AgeEditor.java,v 1.4 2003/08/29 08:58:02 anders Exp $
+ * $Id: AgeEditor.java,v 1.5 2003/09/02 13:58:05 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,6 +17,7 @@ import java.rmi.RemoteException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ExceptionWrapper;
+import com.idega.presentation.text.Link;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
@@ -30,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.AgeException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/08/29 08:58:02 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/02 13:58:05 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class AgeEditor extends AccountingBlock {
 
@@ -86,6 +87,8 @@ public class AgeEditor extends AccountingBlock {
 	private final static String KEY_DELETE = KP + "delete";
 	private final static String KEY_DELETE_YES = KP + "delete_yes";
 	private final static String KEY_DELETE_CONFIRM_MESSAGE = KP + "delete_confirm_message";
+	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
+	private final static String KEY_BUTTON_DELETE = KP + "button_delete";	
 
 	/**
 	 * @see com.idega.presentation.Block#main()
@@ -387,7 +390,7 @@ public class AgeEditor extends AccountingBlock {
 			return t;
 		}
 
-		ListTable list = new ListTable(this, 5);
+		ListTable list = new ListTable(this, 7);
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
 		list.setLocalizedHeader(KEY_AGE_FROM, "Ålder från", 2);
 		list.setLocalizedHeader(KEY_AGE_TO, "Ålder till", 3);
@@ -401,8 +404,18 @@ public class AgeEditor extends AccountingBlock {
 				list.add(formatDate(ar.getPeriodFrom(), 4) + " - " + formatDate(ar.getPeriodTo(), 4));
 				list.add(ar.getAgeFrom());
 				list.add(ar.getAgeTo());
-				list.add(getLink(ar.getDescription(), PARAMETER_AGE_REGULATION_ID, ar.getPrimaryKey().toString()));
+				list.add(ar.getDescription());
+//				list.add(getLink(ar.getDescription(), PARAMETER_AGE_REGULATION_ID, ar.getPrimaryKey().toString()));
 				list.add(formatDate(ar.getCutDate(), 4));
+
+				Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera")));
+				edit.addParameter(PARAMETER_AGE_REGULATION_ID, ar.getPrimaryKey().toString());
+				list.add(edit);
+
+				Link delete = new Link(getDeleteIcon(localize(KEY_BUTTON_DELETE, "Ta bort")));
+				delete.addParameter(PARAMETER_DELETE_CONFIRM, "true");
+				delete.addParameter(PARAMETER_AGE_REGULATION_ID, ar.getPrimaryKey().toString());
+				list.add(delete);
 			}
 		}
 
@@ -492,9 +505,9 @@ public class AgeEditor extends AccountingBlock {
 		
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_SAVE, KEY_SAVE, "Spara");
-		if (!isNew) {
-			bp.addLocalizedButton(PARAMETER_DELETE_CONFIRM, KEY_DELETE, "Ta bort");
-		}
+//		if (!isNew) {
+//			bp.addLocalizedButton(PARAMETER_DELETE_CONFIRM, KEY_DELETE, "Ta bort");
+//		}
 		bp.addLocalizedButton(PARAMETER_CANCEL, KEY_CANCEL, "Avbryt");
 		app.setButtonPanel(bp);
 		
