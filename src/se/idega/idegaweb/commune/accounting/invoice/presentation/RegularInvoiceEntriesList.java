@@ -22,7 +22,9 @@ import javax.ejb.EJBLocalObject;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
+import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.business.IBOLookup;
 
 import com.idega.data.IDOEntityDefinition;
@@ -238,16 +240,20 @@ private UserSearcher _userSearcher = null;
 		Collection invoices = new ArrayList();		
 		if (user != null && from != null && to != null){
 
+
 			RegularInvoiceBusiness invoiceBusiness = getRegularInvoiceBusiness(iwc);
 
 			if (user != null){
 				try{
-					invoices = invoiceBusiness.findRegularInvoicesForPeriodeAndUser(from, to, user.getNodeID());
+					SchoolCategory category = getCurrentSchoolCategory(iwc);					
+					invoices = invoiceBusiness.findRegularInvoicesForPeriodeAndUser(from, to, user.getNodeID(), category.getPrimaryKey().toString());
+
 				}catch(FinderException ex){
 					ex.printStackTrace(); 
 				}catch(IDOLookupException ex){
 					ex.printStackTrace(); 
-				}
+				}catch(RemoteException ex){
+					ex.printStackTrace(); 				}
 			}
 		}
 
@@ -340,6 +346,16 @@ private UserSearcher _userSearcher = null;
 		entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
 		entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
 		
+		boolean schoolCategorySet = false;
+		try{
+			entry.setSchoolCategoryId(getCurrentSchoolCategoryId(iwc));		
+			schoolCategorySet = true;
+		}catch(RemoteException ex){
+			ex.printStackTrace();
+		}catch(FinderException ex){
+			ex.printStackTrace();			
+		}		
+		
 		Map errorMessages = new HashMap();
 		
 		if (from == null || to == null){
@@ -353,7 +369,7 @@ private UserSearcher _userSearcher = null;
 		if (! errorMessages.isEmpty()){
 			handleEditAction(iwc, entry, user, errorMessages);					
 			
-		} else {
+		} else if (schoolCategorySet){
 			entry.store();		
 			handleDefaultAction(iwc, user, parseDate(iwc.getParameter(PAR_SEEK_FROM)), parseDate(iwc.getParameter(PAR_SEEK_TO)));					
 		} 
@@ -780,6 +796,10 @@ private UserSearcher _userSearcher = null;
 			public int getSchoolId() {
 				return getIntValue(PAR_PROVIDER);
 			}
+			
+			public String getSchoolCategoryId() {
+				throw new Error("Not implemented");
+			}			
 		
 			public String getOwnPosting() {
 				if (_posting != null && _posting.length >= 1){
@@ -863,6 +883,7 @@ private UserSearcher _userSearcher = null;
 			public void setRegSpecType(RegulationSpecType regType) {}
 			public void setRegSpecTypeId(int regTypeId) {}
 			public void setSchoolId(int schoolId) {}
+			public void setSchoolCategoryId(String schoolCategoryId) {}			
 			public void setAmount(float amount) {}
 			public void setVAT(float vat) {}
 			public void setVatRegulation(VATRegulation vatRegulation) {}
@@ -971,6 +992,19 @@ private UserSearcher _userSearcher = null;
 	protected VATBusiness getVATBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (VATBusiness) IBOLookup.getServiceInstance(iwc, VATBusiness.class);
 	}		
+	
+	public String getCurrentSchoolCategoryId(IWContext iwc) throws RemoteException, FinderException{
+		SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(),	SchoolBusiness.class);
+		String opField = getSession().getOperationalField();
+		return schoolBusiness.getSchoolCategoryHome().findByPrimaryKey(opField).getPrimaryKey().toString();					
+	}
+		
+	public SchoolCategory getCurrentSchoolCategory(IWContext iwc) throws RemoteException, FinderException{
+		SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(),	SchoolBusiness.class);
+		String opField = getSession().getOperationalField();
+		return schoolBusiness.getSchoolCategoryHome().findByPrimaryKey(opField);					
+	}
+		
 	
 	
 
