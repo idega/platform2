@@ -38,7 +38,6 @@ import com.idega.core.data.ICFile;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
-import com.idega.data.IDORemoveException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.user.business.GroupBusiness;

@@ -1,25 +1,32 @@
 package com.idega.block.staff.presentation;
 
 
-import java.sql.*;
-import java.util.*;
-import java.io.*;
-import com.idega.util.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Locale;
+
 import com.idega.block.media.presentation.ImageInserter;
-import com.idega.block.staff.data.*;
-import com.idega.block.staff.business.*;
+import com.idega.block.staff.business.StaffBusiness;
+import com.idega.block.staff.business.StaffFinder;
+import com.idega.block.staff.data.StaffEntity;
+import com.idega.block.staff.data.StaffLocalized;
+import com.idega.block.staff.data.StaffMeta;
 import com.idega.block.text.business.TextFinder;
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.block.login.business.LoginBusiness;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWTimestamp;
 
 public class StaffEditor extends IWAdminWindow{
 

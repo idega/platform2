@@ -1,9 +1,10 @@
 //idega 2000 - Laddi
 package com.idega.block.text.data;
 
-import java.sql.*;
-import com.idega.data.*;
-import com.idega.util.IWTimestamp;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+
+import com.idega.data.IDOLegacyEntity;
 
 /**
  * Title:

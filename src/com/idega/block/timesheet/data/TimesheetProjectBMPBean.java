@@ -1,8 +1,8 @@
 package com.idega.block.timesheet.data;
 
-import com.idega.block.projectmanager.data.Project;
-import com.idega.core.user.data.User;
 import java.sql.SQLException;
+
+import com.idega.core.user.data.User;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:

@@ -1,9 +1,9 @@
 package com.idega.block.school.data;
 
-import com.idega.data.*;
-import java.sql.SQLException;
 import java.util.Collection;
-import javax.ejb.FinderException;
+
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 
 /**
  * Title:

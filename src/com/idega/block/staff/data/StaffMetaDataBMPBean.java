@@ -1,9 +1,6 @@
 package com.idega.block.staff.data;
 
-import com.idega.data.*;
-import com.idega.core.data.*;
-import com.idega.core.user.data.User;
-import java.sql.*;
+import java.sql.SQLException;
 
 
 /**

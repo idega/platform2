@@ -1,6 +1,5 @@
 package com.idega.block.text.data;
 
-import javax.ejb.*;
 
 public interface TxText extends com.idega.data.IDOLegacyEntity
 {

@@ -1,24 +1,28 @@
 package com.idega.block.school.data;
 
-import com.idega.block.text.business.TextBusiness;
-import com.idega.block.text.business.TextFinder;
-import com.idega.block.text.data.LocalizedText;
-import com.idega.block.text.data.LocalizedTextHome;
-import com.idega.block.text.data.TxText;
-import com.idega.block.text.data.TxTextHome;
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICFileHome;
-import com.idega.data.*;
-import com.idega.user.data.Group;
-import com.idega.user.data.GroupHome;
-import com.idega.user.data.User;
-
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
+import com.idega.block.text.business.TextBusiness;
+import com.idega.block.text.business.TextFinder;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.data.TxText;
+import com.idega.block.text.data.TxTextHome;
+import com.idega.core.data.ICFile;
+import com.idega.core.data.ICFileHome;
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOQuery;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
+import com.idega.user.data.User;
 
 /**
  * <p>Title: </p>

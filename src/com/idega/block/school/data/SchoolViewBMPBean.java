@@ -1,8 +1,6 @@
 package com.idega.block.school.data;
 
-import com.idega.data.*;
-import com.idega.user.data.Group;
-import java.util.Collection;
+import com.idega.data.GenericEntity;
 
 
 /**

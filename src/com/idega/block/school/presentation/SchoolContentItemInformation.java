@@ -2,7 +2,6 @@ package com.idega.block.school.presentation;
 
 import java.rmi.RemoteException;
 
-import com.idega.block.school.data.School;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.data.IDORelationshipException;
 import com.idega.presentation.PresentationObject;

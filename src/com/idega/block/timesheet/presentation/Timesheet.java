@@ -1,29 +1,37 @@
 package com.idega.block.timesheet.presentation;
 
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.block.login.business.LoginBusiness;
-import com.idega.core.user.data.User;
-
-import com.idega.block.timesheet.business.*;
-import java.util.GregorianCalendar;
-import com.idega.block.timesheet.data.*;
-import com.idega.data.*;
-import java.io.*;
-import java.sql.Timestamp;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import javax.servlet.http.*;
-import com.idega.util.IWTimestamp;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
-//import com.idega.jmodule.days.data.*;
+import java.sql.Timestamp;
+import java.util.Vector;
+
 import com.idega.block.calendar.data.CalendarEntry;
+import com.idega.block.login.business.LoginBusiness;
+import com.idega.block.timesheet.business.TimesheetService;
+import com.idega.block.timesheet.data.Resource;
+import com.idega.block.timesheet.data.TimesheetEntry;
+import com.idega.block.timesheet.data.TimesheetProject;
+import com.idega.core.user.data.User;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.PrintButton;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
 import com.idega.util.IWCalendar;
-
-import com.idega.util.text.*;
-
-import com.idega.idegaweb.*;
+import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 public class Timesheet extends Block{
     private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.timesheet";

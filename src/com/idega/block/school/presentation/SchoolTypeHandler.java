@@ -1,20 +1,11 @@
 package com.idega.block.school.presentation;
 
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
-import javax.ejb.FinderException;
-
-import com.idega.block.school.data.SchoolType;
-import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.builder.handler.PropertyHandler;
-import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.SelectionBox;
 
 /**
  * @author gimmi

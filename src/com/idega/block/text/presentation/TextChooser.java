@@ -1,12 +1,11 @@
 package com.idega.block.text.presentation;
 
-import com.idega.presentation.IWContext;
-import com.idega.core.data.ICFile;
-import com.idega.presentation.ui.AbstractChooser;
-import com.idega.idegaweb.IWBundle;
+import com.idega.block.text.data.TxText;
 import com.idega.builder.business.BuilderLogic;
-import com.idega.block.text.data.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.ui.AbstractChooser;
 /**
  * Title: com.idega.block.text.presentation.TextChooser
  * Description: The chooser object for localized text

@@ -1,18 +1,16 @@
 package com.idega.block.text.business;
 
-import com.idega.data.EntityFinder;
-import com.idega.block.text.business.TextHelper;
-import com.idega.util.LocaleUtil;
-import com.idega.block.text.data.*;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.data.EntityControl;
-import java.util.List;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
-import com.idega.core.localisation.business.ICLocaleBusiness;
+
+import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.data.TxText;
 import com.idega.core.data.ICObjectInstance;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLegacyEntity;
 
 /**
  * Title:

@@ -2,13 +2,7 @@ package com.idega.block.text.business;
 
 
 
-import com.idega.block.text.data.*;
-
-import java.util.Vector;
-
-import java.util.List;
-
-import java.util.Locale;
+import com.idega.block.text.data.TxText;
 
 
 

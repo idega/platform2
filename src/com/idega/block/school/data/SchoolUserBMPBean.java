@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;

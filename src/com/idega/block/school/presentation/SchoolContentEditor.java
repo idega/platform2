@@ -4,9 +4,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 
 import com.idega.block.boxoffice.presentation.Box;
 import com.idega.block.boxoffice.presentation.BoxCategoryChooser;
@@ -16,16 +14,10 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolBusinessBean;
 import com.idega.block.school.business.SchoolContentBusinessBean;
 import com.idega.block.school.data.School;
-import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.block.text.data.TxText;
 import com.idega.business.IBOLookup;
-import com.idega.core.data.Email;
-import com.idega.core.data.EmailHome;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICFileHome;
-import com.idega.core.data.Phone;
-import com.idega.core.data.PhoneHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
@@ -43,10 +35,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.Group;
-import com.idega.user.data.GroupHome;
-import com.idega.user.data.User;
-import com.idega.user.data.UserHome;
 
 /**
  * @author gimmi

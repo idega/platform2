@@ -1,6 +1,5 @@
 package com.idega.block.staff.data;
 
-import javax.ejb.*;
 
 public interface StaffEntity extends com.idega.data.IDOLegacyEntity
 {

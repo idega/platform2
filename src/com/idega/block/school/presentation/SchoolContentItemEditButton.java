@@ -4,8 +4,6 @@ import java.rmi.RemoteException;
 
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Link;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
 
 /**
  * @author gimmi

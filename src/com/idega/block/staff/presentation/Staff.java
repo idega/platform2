@@ -9,35 +9,31 @@ package com.idega.block.staff.presentation;
  * @version 1.2
  */
 
-import java.util.List;
 import java.util.Collections;
-import java.lang.NumberFormatException;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.Table;
+import java.util.List;
+
+import com.idega.block.IWBlock;
+import com.idega.block.staff.business.StaffBusiness;
+import com.idega.block.staff.business.StaffFinder;
+import com.idega.block.staff.data.StaffInfo;
+import com.idega.block.staff.data.StaffMetaData;
+import com.idega.core.data.Email;
+import com.idega.core.data.GenericGroup;
+import com.idega.core.data.Phone;
+import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.data.User;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
-import com.idega.core.user.presentation.CreateUser;
-import com.idega.core.user.presentation.CreateUserGroup;
-import com.idega.core.user.data.User;
-import com.idega.core.data.GenericGroup;
-import com.idega.core.data.Email;
-import com.idega.block.IWBlock;
-import com.idega.block.staff.data.*;
-import com.idega.block.staff.business.*;
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.core.user.business.UserBusiness;
-import com.idega.core.business.UserGroupBusiness;
-import com.idega.core.data.Phone;
-import com.idega.core.data.PhoneType;
-import com.idega.util.IWTimestamp;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.util.GenericUserComparator;
-import com.idega.util.text.TextStyler;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.StyleConstants;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.util.text.TextStyler;
 
 
 public class Staff extends Block implements IWBlock {

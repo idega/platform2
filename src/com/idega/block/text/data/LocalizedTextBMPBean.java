@@ -1,10 +1,8 @@
 //idega 2000 - Laddi
 package com.idega.block.text.data;
 
-import com.idega.util.text.TextSoap;
-import java.sql.*;
-import com.idega.data.*;
-import com.idega.util.IWTimestamp;
+import java.sql.SQLException;
+
 import com.idega.util.text.TextSoap;
 
 public class LocalizedTextBMPBean extends com.idega.data.GenericEntity implements com.idega.block.text.data.LocalizedText {

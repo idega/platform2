@@ -2,33 +2,26 @@ package com.idega.block.staff.business;
 
 
 
+import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
-
 import java.util.Vector;
 
-import java.util.Iterator;
-
-import java.sql.SQLException;
-
-import com.idega.presentation.IWContext;
-
-import com.idega.block.staff.data.*;
-
-import com.idega.core.user.business.UserBusiness;
-
-import com.idega.core.data.*;
-
-import com.idega.core.user.data.*;
-
-import com.idega.data.*;
-
-import com.idega.util.IWTimestamp;
-
+import com.idega.block.staff.data.StaffEntity;
+import com.idega.block.staff.data.StaffInfo;
+import com.idega.block.staff.data.StaffLocalized;
+import com.idega.block.staff.data.StaffMeta;
+import com.idega.block.staff.data.StaffMetaData;
 import com.idega.core.business.UserGroupBusiness;
-
-import com.idega.core.user.business.UserBusiness;
-
+import com.idega.core.data.Email;
+import com.idega.core.data.GenericGroup;
+import com.idega.core.data.Phone;
 import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.data.User;
+import com.idega.data.EntityFinder;
+import com.idega.presentation.IWContext;
+import com.idega.util.IWTimestamp;
 
 
 

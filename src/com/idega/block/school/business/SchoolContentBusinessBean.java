@@ -1,19 +1,10 @@
 package com.idega.block.school.business;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
 
-import javax.ejb.FinderException;
-
-import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
-import com.idega.user.business.UserBusiness;
-import com.idega.user.data.Group;
-import com.idega.user.data.User;
 import com.idega.idegaweb.IWApplicationContext;
-import com.idega.idegaweb.IWUserContext;
 
 
 public class SchoolContentBusinessBean extends IBOSessionBean implements SchoolContentBusiness {

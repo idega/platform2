@@ -1,14 +1,10 @@
 package com.idega.block.staff.presentation;
 
+import com.idega.core.user.presentation.GeneralUserInfoTab;
+import com.idega.core.user.presentation.UserPhoneTab;
+import com.idega.core.user.presentation.UserPropertyWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.TabbedPropertyPanel;
-import com.idega.presentation.PresentationObject;
-import com.idega.core.user.presentation.UserPropertyWindow;
-import com.idega.core.user.presentation.GeneralUserInfoTab;
-import com.idega.core.user.presentation.UserGroupList;
-import com.idega.block.staff.presentation.StaffInfoTab;
-import com.idega.block.staff.presentation.StaffMetaTab;
-import com.idega.core.user.presentation.UserPhoneTab;
 
 /**
  * Title:        User

@@ -10,7 +10,6 @@ import javax.ejb.FinderException;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
-import com.idega.user.data.UserBMPBean;
 
 
 /**

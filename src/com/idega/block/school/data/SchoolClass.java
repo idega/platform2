@@ -1,6 +1,5 @@
 package com.idega.block.school.data;
 
-import javax.ejb.*;
 
 public interface SchoolClass extends com.idega.data.IDOEntity
 {

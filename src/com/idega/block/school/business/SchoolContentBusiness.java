@@ -1,6 +1,5 @@
 package com.idega.block.school.business;
 
-import javax.ejb.*;
 
 public interface SchoolContentBusiness extends com.idega.business.IBOSession
 {

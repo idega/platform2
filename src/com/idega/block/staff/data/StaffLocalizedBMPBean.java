@@ -4,9 +4,7 @@ package com.idega.block.staff.data;
 
 
 
-import java.sql.*;
-
-import com.idega.data.*;
+import java.sql.SQLException;
 
 
 

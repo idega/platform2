@@ -4,17 +4,12 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.ejb.FinderException;
-
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolContentBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
-import com.idega.block.school.data.SchoolType;
-import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
-import com.idega.data.IDOLookup;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;

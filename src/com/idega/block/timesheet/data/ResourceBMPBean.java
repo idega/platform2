@@ -8,11 +8,9 @@ package com.idega.block.timesheet.data;
 
 //import java.util.*;
 
-import java.sql.*;
+import java.sql.SQLException;
 
-import com.idega.data.*;
-
-import com.idega.block.projectmanager.data.*;
+import com.idega.block.projectmanager.data.Project;
 
 
 

@@ -1,6 +1,5 @@
 package com.idega.block.timesheet.data;
 
-import javax.ejb.*;
 
 public interface ProjectExtra extends com.idega.data.IDOLegacyEntity
 {

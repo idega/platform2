@@ -3,9 +3,7 @@ package com.idega.block.school.data;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
