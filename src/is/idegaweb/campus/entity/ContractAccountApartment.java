@@ -1,5 +1,5 @@
 /*
- * $Id: ContractAccountApartment.java,v 1.2 2001/07/30 09:46:47 aron Exp $
+ * $Id: ContractAccountApartment.java,v 1.3 2001/08/30 06:37:15 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -29,11 +29,44 @@ public class ContractAccountApartment extends GenericEntity {
   "BALANCE",
   "BU_APRT_TYPE_ID";
 */
+
+/*
+ CREATE VIEW "V_CONT_ACCT_APRT" (
+  "CAM_CONTRACT_ID",
+  "IC_USER_ID",
+  "BU_APARTMENT_ID",
+  "FIN_ACCOUNT_ID",
+  "FIN_ACCOUNT_TYPE",
+  "BALANCE",
+  "BU_APRT_TYPE_ID",
+  "BU_APRT_CAT_ID",
+  "BU_FLOOR_ID",
+  "BU_BUILDING_ID",
+  "BU_COMPLEX_ID"
+) AS
+
+
+ select cc.cam_contract_id,cc.ic_user_id,cc.bu_apartment_id,
+fa.fin_account_id,fa.account_type, fa.balance,ba.bu_aprt_type_id , bc.bu_aprt_cat_id,
+bf.bu_floor_id,bb.bu_building_id,bx.bu_complex_id
+from cam_contract cc,fin_account fa,bu_apartment ba,
+bu_floor bf,bu_building bb,bu_complex bx,bu_aprt_cat bc,bu_aprt_type bt
+where cc.ic_user_id = fa.ic_user_id
+and cc.bu_apartment_id = ba.bu_apartment_id
+and ba.bu_floor_id = bf.bu_floor_id
+and bf.bu_building_id = bb.bu_building_id
+and bb.bu_complex_id = bx.bu_complex_id
+and ba.bu_aprt_type_id = bt.bu_aprt_type_id
+and bt.bu_aprt_cat_id = bc.bu_aprt_cat_id
+and cc.status = 'S'
+;
+*/
   public static String getEntityTableName(){return "V_CONT_ACCT_APRT";}
   public static String getContractIdColumnName(){return "CAM_CONTRACT_ID";}
   public static String getUserIdColumnName(){return  "IC_USER_ID";}
   public static String getApartmentIdColumnName(){return "BU_APARTMENT_ID";}
   public static String getAccountIdColumnName(){return "FIN_ACCOUNT_ID";}
+  public static String getAccountTypeColumnName(){return "FIN_ACCOUNT_TYPE";}
   public static String getBalanceColumnName(){return "BALANCE";}
   public static String getApartmentTypeIdColumnName(){return "BU_APRT_TYPE_ID";}
   public static String getApartmentCategoryIdColumnName(){return "BU_APRT_CAT_ID";}
@@ -52,6 +85,7 @@ public class ContractAccountApartment extends GenericEntity {
     addAttribute(getUserIdColumnName(),"User id",true,true,"java.lang.Integer");
     addAttribute(getApartmentIdColumnName(),"Apartment id",true,true,"java.lang.Integer");
     addAttribute(getAccountIdColumnName(),"Account id",true,true,"java.lang.Integer");
+    addAttribute(getAccountTypeColumnName(),"Account type",true,true,"java.lang.String");
     addAttribute(getBalanceColumnName(),"Balance",true,true,"java.lang.Integer");
     addAttribute(getApartmentTypeIdColumnName(),"Apartmenttype id",true,true,"java.lang.Integer");
     addAttribute(getApartmentCategoryIdColumnName(),"Apartmentcategory id",true,true,"java.lang.Integer");
@@ -76,6 +110,9 @@ public class ContractAccountApartment extends GenericEntity {
   }
   public int getAccountId(){
     return getIntColumnValue(getAccountIdColumnName());
+  }
+  public int getAccountType(){
+    return getIntColumnValue(getAccountTypeColumnName());
   }
   public int getBalanceId(){
     return getIntColumnValue(getBalanceColumnName());

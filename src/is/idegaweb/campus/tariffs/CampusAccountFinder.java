@@ -28,10 +28,12 @@ public class CampusAccountFinder  {
   }
 
   public static List listOfRentingUserAccountsByType(String type){
+   String sql = "select * from V_CONT_ACCT_APRT where fin_account_type = '"+type+"'";
    try {
-     return EntityFinder.findAllByColumn(new ContractAccountApartment(),ContractAccountApartment.getApartmentTypeIdColumnName(),type);
+     return EntityFinder.findAll(new ContractAccountApartment(),sql);
    }
    catch (SQLException ex) {
+    ex.printStackTrace();
     return null;
    }
   }

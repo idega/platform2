@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffer.java,v 1.7 2001/08/30 05:43:03 aron Exp $
+ * $Id: CampusTariffer.java,v 1.8 2001/08/30 06:37:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -279,6 +279,7 @@ public class CampusTariffer extends ModuleObjectContainer {
     Table T = new Table();
     List listOfTariffs = Finder.listOfTariffs();
     List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(accountType);
+    System.err.println(accountType);
     if(listOfTariffs !=null){
       if(listOfUsers!=null){
         int rlen = listOfUsers.size();
