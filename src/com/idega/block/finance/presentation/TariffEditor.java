@@ -66,12 +66,12 @@ public class TariffEditor extends Block{
   protected void control(IWContext iwc){
     int iCategoryId = Finance.parseCategoryId(iwc);
     int iGroupId = -1;
-    List groups = FinanceFinder.listOfTariffGroups(iCategoryId);
+    List groups = FinanceFinder.getInstance().getInstance().listOfTariffGroups(iCategoryId);
     TariffGroup group = null;
     if(iwc.isParameterSet(prmGroup))
       iGroupId = Integer.parseInt(iwc.getParameter(prmGroup));
     if(iGroupId > 0 ){
-      group = FinanceFinder.getTariffGroup(iGroupId);
+      group = FinanceFinder.getInstance().getTariffGroup(iGroupId);
     }
     else if(groups !=null){
       group = (TariffGroup) groups.get(0);
@@ -186,7 +186,7 @@ public class TariffEditor extends Block{
     if(group !=null){
       iGroupId = group.getID();
       if(group.getHandlerId() > 0){
-        handler = FinanceFinder.getFinanceHandler(group.getHandlerId());
+        handler = FinanceFinder.getInstance().getFinanceHandler(group.getHandlerId());
         if(handler !=null){
           attributeMap = handler.getAttributeMap();
           List list = handler.listOfAttributes();
@@ -194,8 +194,8 @@ public class TariffEditor extends Block{
         }
       }
     }
-    List tariffs = FinanceFinder.listOfTariffs(iGroupId);
-    List AK = FinanceFinder.listOfAccountKeys(iCategoryId);
+    List tariffs = FinanceFinder.getInstance().listOfTariffs(iGroupId);
+    List AK = FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
 
     Hashtable hAK = getKeys(AK);
 
@@ -266,8 +266,8 @@ public class TariffEditor extends Block{
     myForm.add(Finance.getCategoryParameter(iCategoryId));
     boolean updateIndex = factor;
     idegaTimestamp today = new idegaTimestamp();
-    List tariffs = FinanceFinder.listOfTariffs(group.getID());
-    List AK = FinanceFinder.listOfAccountKeys(iCategoryId);
+    List tariffs = FinanceFinder.getInstance().listOfTariffs(group.getID());
+    List AK = FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
     List indices = Finder.listOfTypeGroupedIndices();
     Map M = Finder.mapOfIndicesByTypes(indices);
     FinanceHandler handler = null;
@@ -278,7 +278,7 @@ public class TariffEditor extends Block{
     if(group !=null){
       ifIndices = group.getUseIndex();
       if(group.getHandlerId() > 0){
-        handler = FinanceFinder.getFinanceHandler(group.getHandlerId());
+        handler = FinanceFinder.getInstance().getFinanceHandler(group.getHandlerId());
         if(handler !=null){
           attributeMap = handler.getAttributeMap();
           List list = handler.listOfAttributes();
@@ -472,8 +472,8 @@ public class TariffEditor extends Block{
     myForm.maintainAllParameters();
     boolean updateIndex = factor;
     idegaTimestamp today = new idegaTimestamp();
-    List tariffs = FinanceFinder.listOfTariffs(group.getID());
-    List AK = FinanceFinder.listOfAccountKeys(iCategoryId);
+    List tariffs = FinanceFinder.getInstance().listOfTariffs(group.getID());
+    List AK = FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
     List indices = Finder.listOfTypeGroupedIndices();
     Map M = Finder.mapOfIndicesByTypes(indices);
     FinanceHandler handler = null;
@@ -484,7 +484,7 @@ public class TariffEditor extends Block{
     if(group !=null){
       ifIndices = group.getUseIndex();
       if(group.getHandlerId() > 0){
-        handler = FinanceFinder.getFinanceHandler(group.getHandlerId());
+        handler = FinanceFinder.getInstance().getFinanceHandler(group.getHandlerId());
         if(handler !=null){
           attributeMap = handler.getAttributeMap();
           List list = handler.listOfAttributes();

@@ -69,7 +69,7 @@ public class Finance extends Block implements IWBlock{
       if(sCategoryId != null)
         iCategoryId = Integer.parseInt(sCategoryId);
       else if(getICObjectInstanceID() > 0){
-        iCategoryId = FinanceFinder.getObjectInstanceCategoryId(getICObjectInstanceID(),true);
+        iCategoryId = FinanceFinder.getInstance().getInstance().getObjectInstanceCategoryId(getICObjectInstanceID(),true);
         if(iCategoryId <= 0 ){
           newobjinst = true;
         }

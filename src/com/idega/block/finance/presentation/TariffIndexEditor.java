@@ -245,7 +245,7 @@ public class TariffIndexEditor extends Block {
       }
 
       if(ID != -1 ){
-        ti = FinanceFinder.getTariffIndex(ID) ;
+        ti = FinanceFinder.getInstance().getTariffIndex(ID) ;
         float oldvalue = ti.getNewValue();
         if( sDel != null && sDel.equalsIgnoreCase("true")){
             FinanceBusiness.deleteTariffIndex(ID);
@@ -278,7 +278,7 @@ public class TariffIndexEditor extends Block {
   private List getIndices(int iCategoryId){
     Vector V = new Vector();
     for (int i = 0; i < TariffIndex.indexType.length(); i++) {
-      TariffIndex ti= FinanceFinder.getTariffIndex(String.valueOf(TariffIndex.indexType.charAt(i)),iCategoryId);
+      TariffIndex ti= FinanceFinder.getInstance().getTariffIndex(String.valueOf(TariffIndex.indexType.charAt(i)),iCategoryId);
       if(ti!= null)
         V.add(ti);
     }

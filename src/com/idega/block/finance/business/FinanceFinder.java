@@ -23,7 +23,16 @@ import com.idega.core.user.data.User;
 
 public class FinanceFinder  {
 
-  public static int getObjectInstanceCategoryId(int iObjectInstanceId,boolean CreateNew){
+  private static FinanceFinder instance;
+
+  public static FinanceFinder getInstance(){
+    if(instance==null){
+        instance = new FinanceFinder();
+    }
+    return instance;
+  }
+
+  public int getObjectInstanceCategoryId(int iObjectInstanceId,boolean CreateNew){
     int id = -1;
     try {
       ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
@@ -38,7 +47,7 @@ public class FinanceFinder  {
     return id;
   }
 
-  public static int getObjectInstanceCategoryId(ICObjectInstance eObjectInstance){
+  public int getObjectInstanceCategoryId(ICObjectInstance eObjectInstance){
     try {
       List L = EntityFinder.findRelated(eObjectInstance ,new FinanceCategory());
       if(L!= null){
@@ -53,7 +62,7 @@ public class FinanceFinder  {
     }
   }
 
-  public static int getObjectInstanceCategoryId(int iObjectInstanceId){
+  public  int getObjectInstanceCategoryId(int iObjectInstanceId){
     try {
       ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
       return getObjectInstanceCategoryId(obj);
@@ -64,7 +73,7 @@ public class FinanceFinder  {
     return -1;
   }
 
-  public static int getObjectInstanceIdFromCategoryId(int iCategoryId){
+  public  int getObjectInstanceIdFromCategoryId(int iCategoryId){
     try {
       FinanceCategory cat = new FinanceCategory(iCategoryId);
       List L = EntityFinder.findRelated( cat,new ICObjectInstance());
@@ -81,7 +90,7 @@ public class FinanceFinder  {
   }
 
 
-  public static FinanceCategory getFinanceCategory(int iCategoryId){
+  public  FinanceCategory getFinanceCategory(int iCategoryId){
     if( iCategoryId > 0){
       try {
           return new FinanceCategory(iCategoryId );
@@ -95,7 +104,7 @@ public class FinanceFinder  {
 
 
 
-  public static List listOfEntityForObjectInstanceId(int instanceid){
+  public  List listOfEntityForObjectInstanceId(int instanceid){
     try {
       ICObjectInstance obj = new ICObjectInstance(instanceid );
       return listOfEntityForObjectInstanceId(obj);
@@ -105,7 +114,7 @@ public class FinanceFinder  {
     }
   }
 
-  public static List listOfEntityForObjectInstanceId( ICObjectInstance obj){
+  public  List listOfEntityForObjectInstanceId( ICObjectInstance obj){
     try {
       List L = EntityFinder.findRelated(obj,new FinanceCategory());
       return L;
@@ -115,7 +124,7 @@ public class FinanceFinder  {
     }
   }
 
-  public static List listOfCategories(){
+  public  List listOfCategories(){
     try {
       return EntityFinder.findAll(new FinanceCategory());
     }
@@ -124,7 +133,7 @@ public class FinanceFinder  {
     return null;
   }
 
-   public static List listOfTariffGroups(){
+   public  List listOfTariffGroups(){
     try {
       return EntityFinder.findAll(new TariffGroup());
     }
@@ -133,7 +142,7 @@ public class FinanceFinder  {
     return null;
   }
 
-  public static List listOfFinanceHandlers(){
+  public  List listOfFinanceHandlers(){
     try {
       return EntityFinder.findAll(new FinanceHandlerInfo());
     }
@@ -142,11 +151,11 @@ public class FinanceFinder  {
     return null;
   }
 
-  public static List listOfAccounts(){
+  public  List listOfAccounts(){
     return null;
   }
 
-  public static List listOfTariffKeys(int iCategoryId){
+  public  List listOfTariffKeys(int iCategoryId){
     try {
       return EntityFinder.findAllByColumn(new TariffKey(),TariffKey.getColumnCategoryId(),iCategoryId);
     }
@@ -156,7 +165,7 @@ public class FinanceFinder  {
   }
 
 
-  public static List listOfPaymentTypes(int iCategoryId){
+  public  List listOfPaymentTypes(int iCategoryId){
     try {
       return EntityFinder.findAllByColumn(new PaymentType(),PaymentType.getColumnCategoryId(),iCategoryId);
     }
@@ -165,7 +174,7 @@ public class FinanceFinder  {
     return null;
   }
 
-  public static List listOfAssessments(int iTariffGroupId){
+  public  List listOfAssessments(int iTariffGroupId){
     try {
       return EntityFinder.findAllByColumn(new AssessmentRound(),AssessmentRound.getColumnTariffGroupId(),iTariffGroupId);
     }
@@ -174,7 +183,7 @@ public class FinanceFinder  {
     return null;
   }
 
-  public static List listOfAssessmentInfo(int iCategory,int iTariffGroupId){
+  public  List listOfAssessmentInfo(int iCategory,int iTariffGroupId){
     try {
       StringBuffer sql = new StringBuffer("select * from ");
       sql.append(RoundInfo.getEntityTableName());
@@ -195,7 +204,7 @@ public class FinanceFinder  {
   }
 
 
-  public static Map mapOfTariffKeys(int iCategoryId){
+  public  Map mapOfTariffKeys(int iCategoryId){
     Hashtable h = new Hashtable();
     List TK = listOfTariffKeys(iCategoryId);
     if(TK != null){
@@ -209,7 +218,7 @@ public class FinanceFinder  {
 
   }
 
-    public static List listOfAccountKeys(int iCategoryId){
+    public  List listOfAccountKeys(int iCategoryId){
 
       try{
        return EntityFinder.findAllByColumn(new AccountKey(),AccountKey.getColumnCategoryId(),iCategoryId);
@@ -220,7 +229,7 @@ public class FinanceFinder  {
       return null;
   }
 
-  public static List listOfTariffs(int iGroupId){
+  public  List listOfTariffs(int iGroupId){
      try{
        return EntityFinder.findAllByColumn(new Tariff(),Tariff.getColumnTariffGroup(),iGroupId);
       }
@@ -230,7 +239,7 @@ public class FinanceFinder  {
       return null;
   }
 
-  public static List listOfTariffsByAttribute(String attribute){
+  public  List listOfTariffsByAttribute(String attribute){
      try{
       List L =  EntityFinder.findAllByColumn(new Tariff(),Tariff.getColumnAttribute(),attribute);
       return L;
@@ -241,7 +250,7 @@ public class FinanceFinder  {
       return null;
   }
 
-  public static List listOfTariffGroups(int iCategoryId){
+  public  List listOfTariffGroups(int iCategoryId){
      try{
        return EntityFinder.findAllByColumn(new TariffGroup(),TariffGroup.getColumnCategoryId(),iCategoryId);
       }
@@ -251,7 +260,7 @@ public class FinanceFinder  {
       return null;
   }
 
-   public static List listOfTariffGroupsWithHandlers(int iCategoryId){
+   public  List listOfTariffGroupsWithHandlers(int iCategoryId){
      try{
         StringBuffer sql = new StringBuffer("select * from ");
         sql.append(TariffGroup.getEntityTableName());
@@ -266,7 +275,7 @@ public class FinanceFinder  {
       return null;
   }
 
-  public static FinanceHandler getFinanceHandler(int iHandlerId){
+  public  FinanceHandler getFinanceHandler(int iHandlerId){
     try {
       FinanceHandlerInfo handler = new FinanceHandlerInfo(iHandlerId);
       if(handler.getClassName()!=null)
@@ -283,7 +292,7 @@ public class FinanceFinder  {
     return null;
   }
 
-  public static TariffGroup getTariffGroup(int iGroupId){
+  public  TariffGroup getTariffGroup(int iGroupId){
     if(iGroupId > 0){
       try {
         return new TariffGroup(iGroupId);
@@ -295,7 +304,7 @@ public class FinanceFinder  {
     return null;
   }
 
-  public static int countAccounts(int iCategory,String type){
+  public  int countAccounts(int iCategory,String type){
     try {
       StringBuffer sql = new StringBuffer("select count(*) from fin_account a");
       sql.append(" where a.");
@@ -314,7 +323,7 @@ public class FinanceFinder  {
     return 0;
   }
 
-  public static List searchAccounts(String id,String first,String middle,String last,String type,int iCategoryId){
+  public  List searchAccounts(String id,String first,String middle,String last,String type,int iCategoryId){
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(Account.getEntityTableName());
     sql.append(" a,ic_user u ");
@@ -359,7 +368,7 @@ public class FinanceFinder  {
 
   }
 
-   public static List searchAccountUsers(String first,String middle,String last){
+   public  List searchAccountUsers(String first,String middle,String last){
     //System.err.println("names: "+first+" ,"+middle+","+last);
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append("ic_user u ");
@@ -402,15 +411,27 @@ public class FinanceFinder  {
 
   }
 
-  public static Account getAccount(int id){
+  public  Account getAccount(int id){
     return (Account)Account.getEntityInstance(Account.class,id);
   }
 
-  public static User getUser(int id){
+  public  AccountInfo getAccountInfo(int id){
+    try {
+      List accountInfo = EntityFinder.getInstance().findAllByColumn(AccountInfo.class,AccountInfo.getColumnAccountId(),id);
+      if(accountInfo !=null && accountInfo.size() >0)
+        return (AccountInfo) accountInfo.get(0);
+    }
+    catch (IDOFinderException ex) {
+
+    }
+    return null;
+  }
+
+  public  User getUser(int id){
     return (User) User.getEntityInstance(User.class,id);
   }
 
-  public static TariffIndex getTariffIndex(int iTariffIndexId){
+  public  TariffIndex getTariffIndex(int iTariffIndexId){
      if(iTariffIndexId > 0){
       try {
         return new TariffIndex(iTariffIndexId);
@@ -422,7 +443,7 @@ public class FinanceFinder  {
     return null;
   }
 
-  public static TariffIndex getTariffIndex(String type,int iCategoryId){
+  public  TariffIndex getTariffIndex(String type,int iCategoryId){
     TariffIndex ti = new TariffIndex();
     try {
       StringBuffer sql = new StringBuffer(" select * from ");
@@ -452,11 +473,11 @@ public class FinanceFinder  {
     return ti;
   }
 
-  public static Collection getKeySortedTariffsByAttribute(String attribute){
+  public  Collection getKeySortedTariffsByAttribute(String attribute){
     Hashtable tar = null;
     Map AccKeyMap = mapOfAccountKeys();
     Map TarKeyMap = mapOfTariffKeys();
-    List tariffs = FinanceFinder.listOfTariffsByAttribute(attribute);
+    List tariffs = this.listOfTariffsByAttribute(attribute);
     if(tariffs != null ){
       tar = new Hashtable();
       java.util.Iterator iter = tariffs.iterator();
@@ -488,7 +509,7 @@ public class FinanceFinder  {
     return null;
   }
 
-  public static Map mapOfAccountKeys(){
+  public  Map mapOfAccountKeys(){
     List L = listOfAccountKeys();
     if(L != null){
       int len = L.size();
@@ -503,7 +524,7 @@ public class FinanceFinder  {
       return null;
   }
 
-  public static Map mapOfTariffKeys(){
+  public  Map mapOfTariffKeys(){
     List L = listOfTariffKeys();
     if(L != null){
       int len = L.size();
@@ -518,7 +539,7 @@ public class FinanceFinder  {
       return null;
   }
 
-   public static List listOfAccountKeys(){
+   public  List listOfAccountKeys(){
     try {
       return EntityFinder.findAll(new AccountKey());
     }
@@ -527,7 +548,7 @@ public class FinanceFinder  {
     }
   }
 
-  public static List listOfTariffKeys(){
+  public  List listOfTariffKeys(){
     try {
       return EntityFinder.findAll(new TariffKey());
     }
@@ -536,7 +557,7 @@ public class FinanceFinder  {
     }
   }
 
-  public static List listOfAssessmentAccountEntries(int iAccountId,int iAssessmentId){
+  public  List listOfAssessmentAccountEntries(int iAccountId,int iAssessmentId){
     try {
       StringBuffer sql = new StringBuffer("select * from ");
       sql.append(AccountEntry.getEntityTableName());
@@ -550,6 +571,88 @@ public class FinanceFinder  {
     }
     return null;
 
+  }
+
+  public List listOfFinanceAccountByUserId(int iUserId){
+    try {
+      EntityFinder.debug = true;
+      List L = EntityFinder.getInstance().findAllByColumn(AccountInfo.class,AccountInfo.getColumnUserId(),iUserId);
+      if(L==null || L.size()==0)
+        L = listOfAccountByUserId(iUserId);
+      return L;
+    }
+    catch (IDOFinderException ex) {
+      ex.printStackTrace();
+    }
+    return null;
+
+  }
+
+   public List listOfAccountByUserId(int iUserId){
+    try {
+      EntityFinder.debug = true;
+      return EntityFinder.getInstance().findAllByColumn(Account.class,Account.getUserIdColumnName(),iUserId);
+    }
+    catch (IDOFinderException ex) {
+      ex.printStackTrace();
+    }
+    return null;
+
+  }
+
+  public List listOfAccountInfoByCategoryId(int iCategoryId){
+    try {
+      return EntityFinder.getInstance().findAllByColumn(AccountInfo.class,AccountInfo.getColumnCategoryId(),iCategoryId);
+    }
+    catch (IDOFinderException ex) {
+      ex.printStackTrace();
+    }
+    return null;
+
+  }
+
+  public List listOfAccountInfo(){
+    try {
+      return EntityFinder.getInstance().findAll(AccountInfo.class);
+    }
+    catch (IDOFinderException ex) {
+      ex.printStackTrace();
+    }
+    return null;
+
+  }
+
+   public List listOfUnBilledPhoneEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
+    StringBuffer sql = new StringBuffer("select * from ");
+    sql.append(AccountPhoneEntry.getEntityTableName());
+    sql.append(" where ");
+    sql.append(AccountPhoneEntry.getColumnNameAccountId());
+    sql.append(" = ");
+    sql.append(iAccountId);
+    if(from !=null){
+      sql.append(" and ");
+      sql.append(AccountPhoneEntry.getColumnNamePhonedStamp());
+      sql.append(" >= '");
+      sql.append(from.getSQLDate());
+      sql.append("'");
+    }
+    if(to != null){
+      sql.append(" and ");
+      sql.append(AccountPhoneEntry.getColumnNamePhonedStamp());
+      sql.append(" <= '");
+      sql.append(to.getSQLDate());
+      sql.append(" 23:59:59'");
+    }
+    sql.append(" and ");
+    sql.append(AccountPhoneEntry.getColumnNameAccountEntryId());
+    sql.append(" is null ");
+    //System.err.println(sql.toString());
+    List A = null;
+    try{
+        A = EntityFinder.findAll(new AccountPhoneEntry(),sql.toString());
+    }
+    catch(Exception e){A=null;}
+    return A;
   }
 
 

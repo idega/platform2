@@ -74,7 +74,7 @@ private IWResourceBundle iwrb;
       if(iwc.isParameterSet(actSave) || iwc.isParameterSet(actSave+".x")){
         groupId = processCategoryForm(iwc,iCategoryId,groupId);
       }
-      addCategoryFields(FinanceFinder.getTariffGroup(groupId),iCategoryId);
+      addCategoryFields(FinanceFinder.getInstance().getTariffGroup(groupId),iCategoryId);
     }
     else
       add("no category ");
@@ -101,12 +101,12 @@ private IWResourceBundle iwrb;
     Link newLink = new Link(core.getImage("/shared/create.gif"));
     newLink.addParameter(prmCategory,-1);
 
-    List L = FinanceFinder.listOfTariffGroups(iCategoryId);
+    List L = FinanceFinder.getInstance().listOfTariffGroups(iCategoryId);
     DropdownMenu groups = new DropdownMenu(L,prmGroup);
     groups.addMenuElementFirst("-1",sGroup);
     groups.setToSubmit();
 
-    List L2 = FinanceFinder.listOfFinanceHandlers();
+    List L2 = FinanceFinder.getInstance().listOfFinanceHandlers();
     DropdownMenu handlers = new DropdownMenu(L2,"fhandler");
     handlers.addMenuElementFirst("-1",sHandlers);
 

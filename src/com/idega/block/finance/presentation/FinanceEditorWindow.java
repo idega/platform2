@@ -122,7 +122,7 @@ private IWResourceBundle iwrb;
         iObjInsId = Integer.parseInt(iwc.getParameter(prmObjInstId ) );
         doView = false;
         if(iObjInsId > 0 && saveInfo != SAVECATEGORY)
-          iCategoryId = FinanceFinder.getObjectInstanceCategoryId(iObjInsId );
+          iCategoryId = FinanceFinder.getInstance().getObjectInstanceCategoryId(iObjInsId );
       }
 
       // Form processing
@@ -131,7 +131,7 @@ private IWResourceBundle iwrb;
       else if(saveInfo == SAVECATEGORY)
         processCategoryForm(iwc,sCategoryId,iObjInsId);
         if(iObjInsId > 0){
-          addCategoryFields(FinanceFinder.getFinanceCategory(iCategoryId),iObjInsId  );
+          addCategoryFields(FinanceFinder.getInstance().getFinanceCategory(iCategoryId),iObjInsId  );
         }
       //doView = false;
       /*
@@ -211,7 +211,7 @@ private IWResourceBundle iwrb;
     newLink.addParameter(prmObjInstId,iObjInst);
     newLink.addParameter(prmFormProcess,"C");
 
-    List L = FinanceFinder.listOfCategories();
+    List L = FinanceFinder.getInstance().listOfCategories();
     DropdownMenu catDrop = new DropdownMenu(L,prmCategory);
     catDrop.addMenuElementFirst("-1",sCategory);
     catDrop.setToSubmit();
@@ -257,7 +257,7 @@ private IWResourceBundle iwrb;
   }
 
   private DropdownMenu drpCategories(String name,String valueIfEmpty,String displayIfEmpty){
-    List L = FinanceFinder.listOfCategories();
+    List L = FinanceFinder.getInstance().listOfCategories();
     if(L != null){
       DropdownMenu drp = new DropdownMenu(L,name);
       return drp;

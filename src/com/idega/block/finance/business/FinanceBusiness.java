@@ -53,7 +53,7 @@ public  class FinanceBusiness {
     }
 
     public static boolean disconnectBlock(int instanceid){
-    List L = FinanceFinder.listOfEntityForObjectInstanceId(instanceid);
+    List L = FinanceFinder.getInstance().listOfEntityForObjectInstanceId(instanceid);
     if(L!= null){
       Iterator I = L.iterator();
       while(I.hasNext()){
@@ -91,7 +91,7 @@ public  class FinanceBusiness {
   }
 
   public static void deleteCategory(int iCategoryId){
-    deleteCategory(iCategoryId ,FinanceFinder.getObjectInstanceIdFromCategoryId(iCategoryId));
+    deleteCategory(iCategoryId ,FinanceFinder.getInstance().getObjectInstanceIdFromCategoryId(iCategoryId));
   }
 
   public static void deleteCategory(int iCategoryId ,int iObjectInstanceId) {

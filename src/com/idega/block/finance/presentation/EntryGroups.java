@@ -73,7 +73,7 @@ public class EntryGroups extends Block {
             case ACT2 : MO = doMainTable(iwc);      break;
             case ACT3 : MO = doSomeThing( iwc);      break;
             case ACT4 : MO = getTableOfAssessmentAccounts( iwc);      break;
-            case ACT5 : MO = doRollback(iwc); break;
+
             default: MO = getTableOfGroups(iwc);           break;
           }
         }
@@ -95,21 +95,7 @@ public class EntryGroups extends Block {
       add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
 
-  private PresentationObject doRollback(IWContext iwc){
-    Table T = new Table();
-    String sRoundId = iwc.getParameter("rollback");
-    if(sRoundId != null){
-      int iRoundId = Integer.parseInt(sRoundId);
-      try{
-        AssessmentBusiness.rollBackAssessment(iRoundId);
-        T.add(iwrb.getLocalizedString("rollbac_success","Rollback was successfull"));
-      }
-      catch(Exception ex){
-        T.add(iwrb.getLocalizedString("rollbac_illegal","Rollback was illegal"));
-      }
-    }
-    return T;
-  }
+
 
   private PresentationObject doSomeThing(IWContext iwc){
     PresentationObject MO = new Text("failed");

@@ -83,7 +83,7 @@ public class TariffKeyEditor extends Block {
 
   protected PresentationObject makeTabTable(int iCategoryId, int iTariffGroupId){
     Table T = new Table();
-    List groups = FinanceFinder.listOfTariffGroups(iCategoryId);
+    List groups = FinanceFinder.getInstance().listOfTariffGroups(iCategoryId);
     return T;
   }
 
@@ -112,7 +112,7 @@ public class TariffKeyEditor extends Block {
 
   protected PresentationObject getMain(IWContext iwc,int iCategoryId){
     Table keyTable = new Table();
-    List keys = FinanceFinder.listOfTariffKeys(iCategoryId);
+    List keys = FinanceFinder.getInstance().listOfTariffKeys(iCategoryId);
     int count = 0;
     if(keys !=null)
       count = keys.size();
@@ -144,7 +144,7 @@ public class TariffKeyEditor extends Block {
     Form myForm = new Form();
     myForm.add(Finance.getCategoryParameter(iCategoryId));
     //myForm.maintainAllParameters();
-    List keys = FinanceFinder.listOfTariffKeys(iCategoryId);
+    List keys = FinanceFinder.getInstance().listOfTariffKeys(iCategoryId);
     int count = 0;
     if(keys !=null)
       count = keys.size();

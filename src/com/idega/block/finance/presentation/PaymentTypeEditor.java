@@ -82,11 +82,7 @@ public class PaymentTypeEditor extends Block {
       add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
 
-  protected PresentationObject makeTabTable(int iCategoryId, int iTariffGroupId){
-    Table T = new Table();
-    List groups = FinanceFinder.listOfTariffGroups(iCategoryId);
-    return T;
-  }
+
 
   protected PresentationObject makeLinkTable(int menuNr,int iCategoryId){
     Table LinkTable = new Table(3,1);
@@ -113,7 +109,7 @@ public class PaymentTypeEditor extends Block {
 
   protected PresentationObject getMain(IWContext iwc,int iCategoryId){
     Table keyTable = new Table();
-    List types = FinanceFinder.listOfPaymentTypes(iCategoryId);
+    List types = FinanceFinder.getInstance().listOfPaymentTypes(iCategoryId);
     int count = 0;
     if(types !=null)
       count = types.size();
@@ -151,7 +147,7 @@ public class PaymentTypeEditor extends Block {
     Form myForm = new Form();
     myForm.add(Finance.getCategoryParameter(iCategoryId));
     //myForm.maintainAllParameters();
-    List keys = FinanceFinder.listOfPaymentTypes(iCategoryId);
+    List keys = FinanceFinder.getInstance().listOfPaymentTypes(iCategoryId);
     int count = 0;
     if(keys !=null)
       count = keys.size();

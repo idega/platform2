@@ -12,7 +12,7 @@ import com.idega.data.*;
  * @version 1.0
  */
 
-public class AccountInfo extends GenericEntity {
+public class AccountInfo extends GenericEntity implements FinanceAccount {
 
   /*
   CREATE VIEW "FIN_ACCOUNT_INFO" (
@@ -51,7 +51,7 @@ as.account_type
 
   }
 
-  public static String getEntityTableName(){ return "FIN_ACCT_INFO";}
+  public static String getEntityTableName(){ return "FIN_ACCOUNT_INFO";}
   public static String getColumnAccountId(){return  "ACCOUNT_ID";}
   public static String getColumnCategoryId(){return  "CAT_ID";}
   public static String getColumnUserId(){ return "USER_ID";}
@@ -101,4 +101,8 @@ as.account_type
   public float getBalance(){
     return getFloatColumnValue(getColumnBalance());
   }
+  public String getAccountName(){
+    return getName();
+  }
+
 }

@@ -55,6 +55,7 @@ public class Accounts extends Block {
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb,core;
+  private int viewerPageId = -1;
 
   public Accounts() {
 
@@ -66,6 +67,10 @@ public class Accounts extends Block {
 
   public String getLocalizedNameValue(){
     return "Accounts";
+  }
+
+  public void setAccountViewerPage(int pageId){
+    viewerPageId = pageId;
   }
 
 
@@ -83,10 +88,13 @@ public class Accounts extends Block {
       T.setCellpadding(0);
       T.setCellspacing(0);
       T.setWidth("100%");
+      /*
       if(iwc.isParameterSet(AccountViewer.prmAccountId)){
         add(new AccountViewer());
       }
-      else if(iwc.isParameterSet(prmNewAccount)){
+      else
+      */
+     if(iwc.isParameterSet(prmNewAccount)){
         int iUserId = Integer.parseInt(iwc.getParameter(prmNewAccount));
         getNewAccountForm(iUserId,iCategoryId);
       }
@@ -210,7 +218,7 @@ public class Accounts extends Block {
     if(iwc.isParameterSet("sf_id"))
       id = iwc.getParameter("sf_id");
     if(!"".equals(id)){
-      accounts = FinanceFinder.searchAccounts(id,first,middle,last,type,iCategoryId);
+      accounts = FinanceFinder.getInstance().searchAccounts(id,first,middle,last,type,iCategoryId);
     }
     // Else we try to lookup by name
     else{
@@ -227,8 +235,8 @@ public class Accounts extends Block {
         hasSomething = true;
       }
       if(hasSomething){
-        accounts = FinanceFinder.searchAccounts(id,first,middle,last,type,iCategoryId);
-        accountUsers = FinanceFinder.searchAccountUsers(first,middle,last);
+        accounts = FinanceFinder.getInstance().searchAccounts(id,first,middle,last,type,iCategoryId);
+        accountUsers = FinanceFinder.getInstance().searchAccountUsers(first,middle,last);
       }
     }
 
@@ -274,9 +282,11 @@ public class Accounts extends Block {
           M.remove(uid);
         }
         else
-          U = FinanceFinder.getUser(uid.intValue());
+          U = FinanceFinder.getInstance().getUser(uid.intValue());
         accountLink = new Link(Edit.formatText(A.getName()));
         accountLink.addParameter(AccountViewer.prmAccountId,A.getID());
+        if(viewerPageId >=0)
+        accountLink.setPage(viewerPageId);
         T.add(accountLink,1,row);
         T.add(Edit.formatText(U.getName()),2,row);
         T.add(Edit.formatText(Float.toString(A.getBalance())),3,row);

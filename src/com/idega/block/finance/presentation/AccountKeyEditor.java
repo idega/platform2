@@ -108,7 +108,7 @@ public class AccountKeyEditor extends Block {
 
   private PresentationObject getMain(IWContext iwc,int iCategoryId){
     Table keyTable = new Table();
-    List keys = FinanceFinder.listOfAccountKeys(iCategoryId);
+    List keys = FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
     if(keys !=null){
       int count = keys.size();
       keyTable = new Table(4,count+1);
@@ -122,7 +122,7 @@ public class AccountKeyEditor extends Block {
       keyTable.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),3,1);
       keyTable.add(Edit.formatText(iwrb.getLocalizedString("account_key","Account key")),4,1);
 
-      java.util.Map hk = FinanceFinder.mapOfTariffKeys(iCategoryId);
+      java.util.Map hk = FinanceFinder.getInstance().mapOfTariffKeys(iCategoryId);
       if(isAdmin){
         if(count > 0){
           AccountKey key;
@@ -144,8 +144,8 @@ public class AccountKeyEditor extends Block {
   private PresentationObject getChange(IWContext iwc,int iCategoryId) throws SQLException{
     Form myForm = new Form();
     myForm.maintainAllParameters();
-    List keys = FinanceFinder.listOfAccountKeys(iCategoryId);
-    List Tkeys = FinanceFinder.listOfTariffKeys(iCategoryId);
+    List keys = FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
+    List Tkeys = FinanceFinder.getInstance().listOfTariffKeys(iCategoryId);
     int count = 0;
     if(keys !=null)
        count = keys.size();

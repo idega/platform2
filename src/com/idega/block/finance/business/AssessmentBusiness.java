@@ -92,6 +92,7 @@ public class AssessmentBusiness  {
     }
   }
   */
+  /*
 
    public static void rollBackAssessment(int AssessmentRoundId) throws Exception{
     EntityBulkUpdater bulk = new EntityBulkUpdater();
@@ -138,8 +139,8 @@ public class AssessmentBusiness  {
 
   public static AssessmentRound assessFinance(idegaTimestamp paydate,String roundName,String accountType,int iCashierId)throws Exception{
 
-    List listOfTariffs = Finder.listOfTariffs();
-    List listOfAccounts = FinanceFinder.listOfAccounts();
+    List listOfTariffs = FinanceFinder.getInstance().listOfTariffs();
+    List listOfAccounts = FinanceFinder.getInstance().listOfAccounts();
     int iAccountCount = 0;
     if(listOfTariffs !=null){
       if(listOfAccounts!=null){
@@ -249,9 +250,9 @@ public class AssessmentBusiness  {
     totals = totals + AE.getPrice();
     System.err.println("price"+AE.getPrice());
     System.err.println("totals after"+totals);
-    */
+    *//*
   }
-
+/*
   private static AccountEntry insertKreditEntry(int iAccountId,int iRoundId,idegaTimestamp itPaydate,float amount,AccountKey key,int iCashierId) throws SQLException{
     AccountEntry AE = new AccountEntry();
     AE.setAccountId(iAccountId);
@@ -267,7 +268,7 @@ public class AssessmentBusiness  {
     AE.insert();
     return AE;
   }
-
+*/
   public static void groupEntriesWithSQL(idegaTimestamp from, idegaTimestamp to) throws Exception{
 
     try{
@@ -436,7 +437,7 @@ public class AssessmentBusiness  {
     }
     return count;
   }
-
+/*
   public static void updateAllAccounts(){
     String sql = "update fin_account f set f.balance = (select sum(price) from fin_acc_entry  f2 where f2.fin_account_id = f.fin_account_id)";
     try {
@@ -447,5 +448,5 @@ public class AssessmentBusiness  {
       ex.printStackTrace();
     }
   }
-
+*/
 }

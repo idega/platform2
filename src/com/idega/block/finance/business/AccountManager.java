@@ -160,53 +160,22 @@ public class AccountManager {
     return A;
   }
 
-  public static List listOfUnBilledPhoneEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
-    StringBuffer sql = new StringBuffer("select * from ");
-    sql.append(AccountPhoneEntry.getEntityTableName());
-    sql.append(" where ");
-    sql.append(AccountPhoneEntry.getColumnNameAccountId());
-    sql.append(" = ");
-    sql.append(iAccountId);
-    if(from !=null){
-      sql.append(" and ");
-      sql.append(AccountPhoneEntry.getColumnNamePhonedStamp());
-      sql.append(" >= '");
-      sql.append(from.getSQLDate());
-      sql.append("'");
-    }
-    if(to != null){
-      sql.append(" and ");
-      sql.append(AccountPhoneEntry.getColumnNamePhonedStamp());
-      sql.append(" <= '");
-      sql.append(to.getSQLDate());
-      sql.append(" 23:59:59'");
-    }
-    sql.append(" and ");
-    sql.append(AccountPhoneEntry.getColumnNameAccountEntryId());
-    sql.append(" is null ");
-    //System.err.println(sql.toString());
-    List A = null;
-    try{
-        A = EntityFinder.findAll(new AccountPhoneEntry(),sql.toString());
-    }
-    catch(Exception e){A=null;}
-    return A;
-  }
+
 
   public static List listOfAccountKeys(){
-   return FinanceFinder.listOfAccountKeys();
+   return FinanceFinder.getInstance().listOfAccountKeys();
   }
 
   public static List listOfTariffKeys(){
-    return FinanceFinder.listOfTariffKeys();
+    return FinanceFinder.getInstance().listOfTariffKeys();
   }
 
   public static Map hashOfAccountKeys(){
-    return FinanceFinder.mapOfAccountKeys();
+    return FinanceFinder.getInstance().mapOfAccountKeys();
   }
 
   public static Map hashOfTariffKeys(){
-    return FinanceFinder.mapOfTariffKeys();
+    return FinanceFinder.getInstance().mapOfTariffKeys();
   }
 
   public static List listOfKeySortedEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){

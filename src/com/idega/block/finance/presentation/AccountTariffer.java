@@ -47,12 +47,12 @@ public class AccountTariffer extends Block {
     if(isAdmin){
       int iCategoryId = Finance.parseCategoryId(iwc);
       int iGroupId = -1;
-      List groups = FinanceFinder.listOfTariffGroups(iCategoryId);
+      List groups = FinanceFinder.getInstance().listOfTariffGroups(iCategoryId);
       TariffGroup group = null;
       if(iwc.isParameterSet(prmGroup))
         iGroupId = Integer.parseInt(iwc.getParameter(prmGroup));
       if(iGroupId > 0 ){
-        group = FinanceFinder.getTariffGroup(iGroupId);
+        group = FinanceFinder.getInstance().getTariffGroup(iGroupId);
       }
       else if(groups !=null){
         group = (TariffGroup) groups.get(0);
@@ -100,13 +100,13 @@ public class AccountTariffer extends Block {
     boolean hasMap = false;
     if(group!=null){
         if(group.getHandlerId() > 0){
-          FinanceHandler handler = FinanceFinder.getFinanceHandler(group.getHandlerId());
+          FinanceHandler handler = FinanceFinder.getInstance().getFinanceHandler(group.getHandlerId());
           map = handler.getAttributeMap();
           if(map !=null)
             hasMap = true;
         }
       }
-    listOfTariffs = FinanceFinder.listOfTariffs(group.getID());
+    listOfTariffs = FinanceFinder.getInstance().listOfTariffs(group.getID());
     //Table T = new Table();
     DataTable T = new DataTable();
     T.setWidth("100%");

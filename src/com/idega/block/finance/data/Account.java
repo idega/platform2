@@ -12,7 +12,7 @@ import com.idega.data.*;
  * @version 1.0
  */
 
-public class Account extends GenericEntity {
+public class Account extends GenericEntity implements FinanceAccount {
 /*
 "FIN_ACCOUNT_ID"	INTEGER NOT NULL,
   "IC_USER_ID"	INTEGER,
@@ -98,7 +98,8 @@ public class Account extends GenericEntity {
     setColumn(getCashierIdColumnName(), cashier_id);
   }
   public float getBalance(){
-    return getFloatColumnValue(getBalanceColumnName());
+    //return getFloatColumnValue(getBalanceColumnName());
+    return 0;
   }
   public void setBalance(Float balance){
     setColumn(getBalanceColumnName(), balance);
@@ -165,5 +166,15 @@ public class Account extends GenericEntity {
   }
   public void setAccountTypeId(int typeId){
     setColumn(getColumnTypeId(),typeId);
+  }
+
+  public String getAccountType(){
+    return getType();
+  }
+  public String getAccountName(){
+    return getName();
+  }
+  public int getAccountId(){
+    return getID();
   }
 }
