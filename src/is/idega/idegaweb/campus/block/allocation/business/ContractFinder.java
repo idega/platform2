@@ -707,4 +707,24 @@ public abstract class ContractFinder {
       return null;
     }
   }
+
+  public static List findAllContractsBySSN(String ssn)throws com.idega.data.IDOFinderException{
+    StringBuffer sql = new StringBuffer("select c.* ");
+    sql.append(" from cam_contract c, app_applicant a where ");
+    sql.append(" c.app_applicant_id = a.app_applicant_id and a.ssn like '");
+    sql.append(ssn);
+    sql.append("'");
+    return EntityFinder.getInstance().findAll(Contract.class,sql.toString());
+  }
+
+  public static List findAllNonContractApplicationsBySSN(String ssn)throws com.idega.data.IDOFinderException{
+    StringBuffer sql = new StringBuffer("select a.* ");
+    sql.append(" from app_applicant a ");
+    sql.append(" where a.app_applicant_id ");
+    sql.append(" not in (select c.app_applicant_id from cam_contract c) ");
+    sql.append(" and ssn like '");
+    sql.append(ssn);
+    sql.append("'");
+    return EntityFinder.getInstance().findAll(Applicant.class,sql.toString());
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.12 2002/07/09 18:41:44 aron Exp $
+ * $Id: ContractBusiness.java,v 1.13 2002/07/09 23:38:49 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -47,6 +47,7 @@ import java.util.Iterator;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.SendMail;
 import com.idega.block.application.data.Application;
+import is.idega.idegaweb.campus.presentation.Campus;
 
 /**
  * Title:
@@ -375,5 +376,19 @@ public  class ContractBusiness {
 
       idegaTimestamp[] stamps = {contractDateFrom,contractDateTo};
       return stamps;
+  }
+
+  public static String getLocalizedStatus(com.idega.idegaweb.IWResourceBundle iwrb,String status){
+    String r = "";
+    char c = status.charAt(0);
+    switch (c) {
+      case 'C': r = iwrb.getLocalizedString("created","Created"); break;
+      case 'P': r = iwrb.getLocalizedString("printed","Printed"); break;
+      case 'S': r = iwrb.getLocalizedString("signed","Signed");   break;
+      case 'R': r = iwrb.getLocalizedString("rejected","Rejected");  break;
+      case 'T': r = iwrb.getLocalizedString("terminated","Terminated");   break;
+      case 'E': r = iwrb.getLocalizedString("ended","Ended");  break;
+    }
+    return r;
   }
 }

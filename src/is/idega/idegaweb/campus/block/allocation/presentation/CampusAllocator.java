@@ -1000,17 +1000,7 @@ public class CampusAllocator extends Block implements Campus{
   }
 
   private String getStatus(String status){
-    String r = "";
-    char c = status.charAt(0);
-    switch (c) {
-      case 'C': r = iwrb.getLocalizedString("created","Created"); break;
-      case 'P': r = iwrb.getLocalizedString("printed","Printed"); break;
-      case 'S': r = iwrb.getLocalizedString("signed","Signed");   break;
-      case 'R': r = iwrb.getLocalizedString("rejected","Rejected");  break;
-      case 'T': r = iwrb.getLocalizedString("terminated","Terminated");   break;
-      case 'E': r = iwrb.getLocalizedString("ended","Ended");  break;
-    }
-    return r;
+    return   ContractBusiness.getLocalizedStatus(iwrb,status);
   }
 
   public Text formatText(String s){

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.10 2002/07/05 10:15:19 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.11 2002/07/09 23:38:50 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -614,5 +614,9 @@ public abstract class CampusApplicationFinder {
       }
     }
     return(eApplication);
+  }
+
+  public static List listOfApplicantsBySSN(String ssn)throws com.idega.data.IDOFinderException{
+    return EntityFinder.getInstance().findAllByColumn(Applicant.class,"ssn",ssn);
   }
 }
