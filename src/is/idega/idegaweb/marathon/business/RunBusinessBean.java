@@ -191,6 +191,21 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		return Integer.parseInt(String.valueOf(user.getPrimaryKey()));
 	}
 	
+	public boolean isRegisteredInRun(int runID, int userID) {
+		try {
+			User user = getUserBiz().getUserHome().findByPrimaryKey(new Integer(userID));
+			
+			return getUserBiz().isMemberOfGroup(runID, user);
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+		catch (FinderException fe) {
+			//User does not exist in database...
+		}
+		return false;
+	}
+	
 	public boolean isRegisteredInRun(int runID, String personalID) {
 		try {
 			User user = getUserBiz().getUserHome().findByPersonalID(personalID);
@@ -501,27 +516,33 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 
 	public void sendMessage(String email, String subject, String body) {
 
-		String mailServer = DEFAULT_SMTP_MAILSERVER;
-		String fromAddress = DEFAULT_MESSAGEBOX_FROM_ADDRESS;
-		String cc = DEFAULT_CC_ADDRESS;
-		try {
-			IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
-			mailServer = iwb.getProperty(PROP_SYSTEM_SMTP_MAILSERVER, DEFAULT_SMTP_MAILSERVER);
-			fromAddress = iwb.getProperty(PROP_MESSAGEBOX_FROM_ADDRESS, DEFAULT_MESSAGEBOX_FROM_ADDRESS);
-			cc = iwb.getProperty(PROP_CC_ADDRESS, DEFAULT_CC_ADDRESS);
-		}
-		catch (Exception e) {
-			System.err.println("MessageBusinessBean: Error getting mail property from bundle");
-			e.printStackTrace();
-		}
-
-		cc = "";
+		boolean sendEmail = true;
+		String sSendEmail = this.getIWMainApplication().getBundle(this.IW_BUNDLE_IDENTIFIER).getProperty(IWMarathonConstants.PROPERTY_SEND_EMAILS);
+		sendEmail = "yes".equalsIgnoreCase(sSendEmail);
 		
-		try {
-			com.idega.util.SendMail.send(fromAddress, email.trim(), cc, "", mailServer, subject, body);
-		}
-		catch (javax.mail.MessagingException me) {
-			System.err.println("Error sending mail to address: " + email + " Message was: " + me.getMessage());
+		if (sendEmail) {
+			String mailServer = DEFAULT_SMTP_MAILSERVER;
+			String fromAddress = DEFAULT_MESSAGEBOX_FROM_ADDRESS;
+			String cc = DEFAULT_CC_ADDRESS;
+			try {
+				IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+				mailServer = iwb.getProperty(PROP_SYSTEM_SMTP_MAILSERVER, DEFAULT_SMTP_MAILSERVER);
+				fromAddress = iwb.getProperty(PROP_MESSAGEBOX_FROM_ADDRESS, DEFAULT_MESSAGEBOX_FROM_ADDRESS);
+				cc = iwb.getProperty(PROP_CC_ADDRESS, DEFAULT_CC_ADDRESS);
+			}
+			catch (Exception e) {
+				System.err.println("MessageBusinessBean: Error getting mail property from bundle");
+				e.printStackTrace();
+			}
+	
+			cc = "";
+			
+			try {
+				com.idega.util.SendMail.send(fromAddress, email.trim(), cc, "", mailServer, subject, body);
+			}
+			catch (javax.mail.MessagingException me) {
+				System.err.println("Error sending mail to address: " + email + " Message was: " + me.getMessage());
+			}
 		}
 	}
 

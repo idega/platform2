@@ -23,6 +23,7 @@ public interface RunBusiness extends com.idega.business.IBOService{
     public Map getYearsMap(Group run) throws RemoteException;
     public List getDistancesMap(Group run, String year) throws RemoteException;
     public Collection getCountries() throws RemoteException;
+  	public boolean isRegisteredInRun(int runID, int userID) throws RemoteException;
   	public boolean isRegisteredInRun(int runID, String personalID) throws RemoteException;
   	public int getAgeFromPersonalID(String personalID) throws RemoteException;
   	public void setParticipantNumber(Run participant);
