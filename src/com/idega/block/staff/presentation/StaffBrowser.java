@@ -102,6 +102,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.staff";
 
 private Table _myTable;
 
+private String _emailWidth;
+private String _workPhoneWidth;
+private String _titleWidth;
+
   public StaffBrowser(){
     setDefaultValues();
   }
@@ -198,13 +202,22 @@ private Table _myTable;
 	phoneText.setFontStyle(_textStyle);
 
 	table.add(userLink,column++,staffRow);
-	if ( _showListTitle )
+	if ( _showListTitle ) {
+      if ( _titleWidth != null )
+        table.setWidth(column,_titleWidth);
 	  table.add(titleText,column++,staffRow);
-	if ( _showListWorkPhone )
+	}
+	if ( _showListWorkPhone ) {
+      if ( _workPhoneWidth != null )
+        table.setWidth(column,_workPhoneWidth);
 	  table.add(phoneText,column++,staffRow);
-	if ( emailLink != null )
+	}
+	if ( emailLink != null ) {
+      if ( _emailWidth != null )
+        table.setWidth(column,_emailWidth);
 	  table.add(emailLink,column++,staffRow);
-
+	}
+	
 	if ( _isAdmin ) {
 	  table.setAlignment(column,staffRow,Table.HORIZONTAL_ALIGN_RIGHT);
 	  table.add(getEditLink(holder.getUserID()),column,staffRow);
@@ -820,4 +833,28 @@ private Table _myTable;
     if( returnString == null ) returnString = "";
     return  cacheStatePrefix+returnString;
   }
+/**
+ * Sets the _emailWidth.
+ * @param _emailWidth The _emailWidth to set
+ */
+public void setEmailWidth(String emailWidth) {
+	this._emailWidth = emailWidth;
+}
+
+/**
+ * Sets the _titleWidth.
+ * @param _titleWidth The _titleWidth to set
+ */
+public void setTitleWidth(String titleWidth) {
+	this._titleWidth = titleWidth;
+}
+
+/**
+ * Sets the _workPhoneWidth.
+ * @param _workPhoneWidth The _workPhoneWidth to set
+ */
+public void setWorkPhoneWidth(String workPhoneWidth) {
+	this._workPhoneWidth = workPhoneWidth;
+}
+
 }
