@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.6 2001/07/16 19:42:43 aron Exp $
+ * $Id: Menu.java,v 1.7 2001/07/16 19:54:26 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -262,7 +262,7 @@ public class Menu extends JModuleObject{
 
   public void main(ModuleInfo modinfo)  {
     try{
-    isAdmin = com.idega.block.login.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
     }
     catch(SQLException sql){ isAdmin = false;}
 
