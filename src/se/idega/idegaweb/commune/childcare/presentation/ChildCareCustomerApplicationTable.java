@@ -37,7 +37,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.36 2003/05/28 11:26:24 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.37 2003/05/28 11:34:57 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -503,15 +503,16 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	private String createPagePhase2(IWContext iwc, Table layoutTbl, Collection applications) throws RemoteException {
 		Table appTable = new ChildCarePlaceOfferTable2(iwc, this, sortApplications(applications, true));
 
-		Link cancelBtn = new Link(localize(CANCEL));
-		cancelBtn.setAsImageButton(true);
-		cancelBtn.setParameter(CCConstants.ACTION, new Integer(CCConstants.ACTION_CANCEL_2).toString());
+		GenericButton cancelBtn = (GenericButton) getStyledInterface(new GenericButton("cancel", localize(CANCEL)));
+		cancelBtn.setPageToOpen(getParentPageID());
+		cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_1);
 
-		SubmitButton submitBtn = new SubmitButton(localize(SUBMIT), CCConstants.ACTION, new Integer(CCConstants.ACTION_SUBMIT_2).toString());
-		submitBtn.setAsImageButton(true);
-		//		submitBtn.setSubmitConfirm(localize(SUBMIT_ALERT_2));
+		SubmitButton submitBtn = (SubmitButton) getStyledInterface(new SubmitButton(localize(SUBMIT)));
+		submitBtn.setValueOnClick(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_1));
 
-		layoutTbl.add(appTable, 1, 2);
+		layoutTbl.add(new HiddenInput(CCConstants.ACTION, "-1"));
+		layoutTbl.add(appTable, 1, 1);
+		layoutTbl.setHeight(2, 12);
 		layoutTbl.add(cancelBtn, 1, 3);
 		layoutTbl.add(submitBtn, 1, 3);
 		layoutTbl.setAlignment(1, 3, "right");
