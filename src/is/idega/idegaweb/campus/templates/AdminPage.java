@@ -1,5 +1,5 @@
 /*
- * $Id: AdminPage.java,v 1.2 2001/11/09 12:17:01 aron Exp $
+ * $Id: AdminPage.java,v 1.3 2001/12/20 14:10:47 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,7 +12,6 @@ package is.idega.idegaweb.campus.templates;
 
 import java.io.*;
 import com.idega.presentation.ui.*;
-import com.idega.jmodule.*;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.data.*;

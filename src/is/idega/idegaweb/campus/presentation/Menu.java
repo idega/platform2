@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.1 2001/11/08 15:53:52 aron Exp $
+ * $Id: Menu.java,v 1.2 2001/12/20 14:10:47 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,7 +16,6 @@ import com.idega.data.genericentity.Member;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
-import com.idega.jmodule.login.business.*;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;

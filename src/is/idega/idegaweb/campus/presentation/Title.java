@@ -6,7 +6,6 @@ import com.idega.data.genericentity.Group;
 import com.idega.data.genericentity.Member;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
-import com.idega.jmodule.login.business.*;
 import java.sql.SQLException;
 import java.io.IOException;
 import com.idega.idegaweb.IWBundle;

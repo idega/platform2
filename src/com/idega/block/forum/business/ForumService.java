@@ -1,7 +1,6 @@
 package com.idega.block.forum.business;
 
 import com.idega.data.*;
-import com.idega.projects.golf.*;
 import com.idega.block.forum.data.*;
 import com.idega.util.*;
 import java.sql.*;
