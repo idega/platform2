@@ -1,5 +1,6 @@
 package is.idega.idegaweb.golf.business;
 
+import is.idega.idegaweb.golf.GolfConstants;
 import is.idega.idegaweb.golf.clubs.presentation.UnionCorrect;
 import is.idega.idegaweb.golf.entity.AddressHome;
 import is.idega.idegaweb.golf.entity.Country;
@@ -11,17 +12,13 @@ import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.entity.ZipCode;
 import is.idega.idegaweb.golf.entity.ZipCodeHome;
-import is.idega.idegaweb.member.util.IWMemberConstants;
-
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
@@ -65,7 +62,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	public synchronized boolean sync() {
 		try {
 			init();
-			Collection unionGroups = userBusiness.getGroupHome().findGroupsByType(IWMemberConstants.GROUP_TYPE_CLUB);
+			Collection unionGroups = userBusiness.getGroupHome().findGroupsByType(GolfConstants.GROUP_TYPE_CLUB);
 			if (unionGroups != null) {
 				Iterator iter = unionGroups.iterator();
 				Collection users;
@@ -220,7 +217,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	}
 	
 	private void synchronizeUnion(User user, Member member) throws RemoteException {
-		Collection coll = userBusiness.getUserGroups(user, new String[]{IWMemberConstants.GROUP_TYPE_CLUB}, true);
+		Collection coll = userBusiness.getUserGroups(user, new String[]{GolfConstants.GROUP_TYPE_CLUB}, true);
 		if (coll != null) {
 			Group group;
 			Union union;

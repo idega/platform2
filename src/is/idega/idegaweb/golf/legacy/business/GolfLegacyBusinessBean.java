@@ -3,6 +3,7 @@
  */
 package is.idega.idegaweb.golf.legacy.business;
 
+import is.idega.idegaweb.golf.GolfConstants;
 import is.idega.idegaweb.golf.block.image.data.ImageEntity;
 import is.idega.idegaweb.golf.entity.FieldImage;
 import is.idega.idegaweb.golf.entity.FieldImageHome;
@@ -12,16 +13,12 @@ import is.idega.idegaweb.golf.entity.TeeImage;
 import is.idega.idegaweb.golf.entity.TeeImageHome;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
-import is.idega.idegaweb.member.util.IWMemberConstants;
-
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -49,13 +46,6 @@ import com.idega.user.util.Converter;
  */
 public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacyBusiness{
 
-	public static final String UNION_TYPE_UNION = "golf_union";
-	public static final String GROUP_TYPE_UNION = IWMemberConstants.GROUP_TYPE_LEAGUE;
-	public static final String UNION_TYPE_CLUB = "golf_club";
-	public static final String GROUP_TYPE_CLUB = IWMemberConstants.GROUP_TYPE_CLUB;
-	public static final String UNION_TYPE_EXTRA_CLUB = "extra_club";
-	
-	public static final String UNION_TYPE_NONE = "none";
 	
 	
 	
@@ -106,12 +96,12 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 				String unionType = union.getUnionType();
 				String groupType = null;
 				
-				if(UNION_TYPE_CLUB.equals(unionType)) {
-					groupType=GROUP_TYPE_CLUB;
-				} else if(UNION_TYPE_EXTRA_CLUB.equals(unionType)) {
-					groupType=GROUP_TYPE_CLUB;
-				} else if(UNION_TYPE_UNION.equals(unionType)) {
-					groupType=GROUP_TYPE_UNION;
+				if(GolfConstants.UNION_TYPE_CLUB.equals(unionType)) {
+					groupType=GolfConstants.GROUP_TYPE_CLUB;
+				} else if(GolfConstants.UNION_TYPE_EXTRA_CLUB.equals(unionType)) {
+					groupType=GolfConstants.GROUP_TYPE_CLUB;
+				} else if (GolfConstants.UNION_TYPE_UNION.equals(unionType)) {
+					groupType= GolfConstants.GROUP_TYPE_UNION;
 				} else {
 					continue;
 				}
