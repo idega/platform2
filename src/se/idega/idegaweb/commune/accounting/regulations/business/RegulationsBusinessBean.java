@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.82 2003/12/03 18:02:10 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.83 2003/12/04 00:15:31 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1640,9 +1640,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				}
 				if (d != null) {
 					ret = new PostingDetail();
-					ret.setAmount(total_sum - d.getAmount());
+					ret.setAmount(d.getAmount()-total_sum);
 					ret.setRuleSpecType(d.getRuleSpecType());
-					ret.setTerm(d.getTerm());
+					ret.setTerm(reg.getName());
 					//				ret.setVat(32.0f);
 					//				ret.setVatRegulationID(1);
 				}
@@ -1665,7 +1665,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					child = placement.getStudent();
 				}
 
-				//				float amount = 0;
 				boolean missingIncome = false;
 				float income = 0;
 				if (child != null) {
