@@ -36,6 +36,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 	public final static String COLUMN_LOCKED_DATE = "locked_date";
 	public final static String COLUMN_READY_DATE = "ready_date";
 	public final static String COLUMN_SUB_GROUP = "sub_group";
+	public final static String COLUMN_GROUP_STRING_ID = "group_string_id";
 
 	public final static String SCHOOL_CLASS_YEAR = "sch_school_class_year";
 	public final static String SCHOOL_CLASS_TEACHER = "sch_school_class_teacher";
@@ -55,6 +56,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 		addAttribute(COLUMN_READY_DATE,"Ready date",true,true,Timestamp.class);
 		addAttribute(COLUMN_LOCKED_DATE,"Ready date",true,true,Timestamp.class,1);
 		addAttribute(COLUMN_SUB_GROUP,"Is a sub group",true,true,Boolean.class);
+		addAttribute(COLUMN_GROUP_STRING_ID,"Valid",true,true,String.class,40);
     
     addManyToManyRelationShip(SchoolYear.class, SCHOOL_CLASS_YEAR);
 		addManyToManyRelationShip(User.class, SCHOOL_CLASS_TEACHER);
@@ -162,6 +164,14 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 	
 	public boolean getIsSubGroup() {
 		return getBooleanColumnValue(COLUMN_SUB_GROUP, false);
+	}
+	
+	public void setGroupStringId(String groupStringId){
+	  this.setColumn(COLUMN_GROUP_STRING_ID, groupStringId);
+	}
+	
+	public String getGroupStringId(){
+	  return getStringColumnValue(COLUMN_GROUP_STRING_ID);
 	}
 	
 	public boolean hasRelationToSchoolYear(SchoolYear schoolYear) {

@@ -9,6 +9,7 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public java.util.Collection findRelatedSchoolYears()throws com.idega.data.IDORelationshipException;
  public java.util.Collection findRelatedStudyPaths()throws com.idega.data.IDORelationshipException;
  public java.util.Collection findRelatedUsers()throws com.idega.data.IDORelationshipException;
+ public java.lang.String getGroupStringId();
  public boolean getIsSubGroup();
  public boolean getLocked();
  public java.sql.Timestamp getLockedDate();
@@ -32,6 +33,7 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public void removeStudyPath(com.idega.block.school.data.SchoolStudyPath p0)throws com.idega.data.IDORemoveRelationshipException;
  public void removeStudyPaths()throws com.idega.data.IDORemoveRelationshipException;
  public void removeTeacher(com.idega.user.data.User p0)throws com.idega.data.IDORemoveRelationshipException;
+ public void setGroupStringId(java.lang.String p0);
  public void setIsSubGroup(boolean p0);
  public void setLocked(boolean p0);
  public void setLockedDate(java.sql.Timestamp p0);
