@@ -293,7 +293,7 @@ public class PublicBooking extends TravelBlock  {
     try {
     	Form form = new Form();
     	form.maintainParameter(PARAMETER_REFERRAL_URL);
-    	if (product.getIsValid() ) {
+    	if (product.getIsValid() && supplier.getIsValid()) {
 	      BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
 	//      TourBookingForm tbf = new TourBookingForm(iwc, product);
 	      CalendarHandler ch  = new CalendarHandler(iwc);
