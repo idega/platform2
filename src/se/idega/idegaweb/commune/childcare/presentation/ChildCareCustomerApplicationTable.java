@@ -37,7 +37,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.43 2003/05/30 13:42:54 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.44 2003/05/30 13:46:55 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -491,10 +491,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(getSmallText(fromDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), 3, row++);
 		}
 	
-	//TODO: (ROAR) Change to "getActive..." !!! getAccepted... is ONLY FOR DEBUG!!!!
-		ChildCareApplication activeApplication = this.getChildCareBusiness(iwc).getAcceptedApplicationsByChild(Integer.parseInt(childId)); 
+		ChildCareApplication activeApplication = this.getChildCareBusiness(iwc).getActiveApplicationByChild(Integer.parseInt(childId)); 
 		
-		if (activeApplication != null ) {
+		if (hasActiveApplication) {
 			ChildCareContractArchive archive = getChildCareBusiness(iwc).getValidContract(((Integer)activeApplication.getPrimaryKey()).intValue());
 			School school = activeApplication.getProvider();
 
