@@ -103,6 +103,10 @@ public class NwNewsBMPBean extends com.idega.data.GenericEntity implements com.i
     return getIntColumnValue(getColumnNameNewsCategoryId());
 
   }
+  
+  public ICCategory getNewsCategory() {
+  	return (ICCategory)getColumnValue(getColumnNameNewsCategoryId());
+  }
 
   public void setNewsCategoryId(Integer news_category_id){
 

@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.127 2004/05/27 20:30:41 gummi Exp $
+ * $Id: NewsReader.java,v 1.128 2004/05/27 22:15:15 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -788,17 +788,23 @@ public class NewsReader extends CategoryBlock implements Builderaware {
   private Text getLinkToCategoryMainViewerPage(Text obj,NwNews news,IWContext iwc){
     Link categoryPageLink = new Link(obj);
     checkFromPage(categoryPageLink);
-    String pageKey = news.getMetaData(METADATAKEY_CATEGORY_MAIN_VIEWER_PAGE);
-    if(pageKey != null) {
-    		try {
-			categoryPageLink.setPage(Integer.parseInt(pageKey));
-		} catch (NumberFormatException e) {
-			System.out.println("NewsReader.getLinkToCategoryMainViewerPage - NumberFormatException parsing pageKey");
-			return obj;
+    
+    try {
+		String pageKey = news.getNewsCategory().getMetaData(METADATAKEY_CATEGORY_MAIN_VIEWER_PAGE);
+		if(pageKey != null) {
+				try {
+				categoryPageLink.setPage(Integer.parseInt(pageKey));
+			} catch (NumberFormatException e) {
+				System.out.println("NewsReader.getLinkToCategoryMainViewerPage - NumberFormatException parsing pageKey");
+				return obj;
+			}
+		} else {
+				return obj;
 		}
-    } else {
-    		return obj;
-    }
+	} catch (NullPointerException e) {
+		e.printStackTrace();
+		return obj;
+	}
     return categoryPageLink;
   }
   
