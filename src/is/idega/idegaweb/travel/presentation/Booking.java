@@ -305,6 +305,7 @@ public class Booking extends TravelManager {
          */
 
       BookingForm bf = super.getServiceHandler(iwc).getBookingForm(iwc, product);
+      bf.setTimestamp(stamp);
 
       int row = 1;
       boolean isDayVisible = false;
@@ -882,7 +883,6 @@ public class Booking extends TravelManager {
 				/** not handled */
 			}
 		}
-	
 	  return stamp;
   }
 
