@@ -16,11 +16,6 @@ public interface UserInfoService extends com.idega.business.IBOService
  public boolean isInvoiceReceiver(com.idega.user.data.User p0) throws java.rmi.RemoteException;
 	int getSiblingOrder(com.idega.user.data.User child,com.idega.util.IWTimestamp startPeriod) throws java.rmi.RemoteException, SiblingOrderException;
 	int getSiblingOrder(com.idega.user.data.User child, java.util.Map siblingOrders,com.idega.util.IWTimestamp startPeriod) throws java.rmi.RemoteException, SiblingOrderException;
-	class SiblingOrderException extends Exception{
-		SiblingOrderException(String s){
-			super(s);
-		}
-	}
 }
 
 

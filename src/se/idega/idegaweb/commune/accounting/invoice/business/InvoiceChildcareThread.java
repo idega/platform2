@@ -474,7 +474,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.EJBError");
 					}
-				} catch (UserInfoService.SiblingOrderException e) {
+				} catch (se.idega.idegaweb.commune.accounting.userinfo.business.SiblingOrderException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
 						errorRelated.append(e.getMessage ());
@@ -835,7 +835,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @return the sibling order for the child connected to the contract
 	 */
 
-	private int getSiblingOrder(ChildCareContract contract, Map siblingOrders) throws EJBException, UserInfoService.SiblingOrderException, IDOLookupException, RemoteException, CreateException{
+	private int getSiblingOrder(ChildCareContract contract, Map siblingOrders) throws EJBException, se.idega.idegaweb.commune.accounting.userinfo.business.SiblingOrderException, IDOLookupException, RemoteException, CreateException{
 			User contractChild = contract.getChild ();	
 			UserInfoService userInfo = (UserInfoService) IBOLookup.getServiceInstance(iwc, UserInfoService.class);
 			return userInfo.getSiblingOrder(contractChild, siblingOrders, startPeriod);
