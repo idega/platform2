@@ -9,6 +9,7 @@ public interface ChildCareQueue extends com.idega.data.IDOEntity,com.idega.block
  public int getChildId();
  public int getChoiceNumber();
  public int getContractId();
+ public java.sql.Date getImportDate();
  public java.lang.String getPriority();
  public int getProviderId();
  public java.lang.String getProviderName();
@@ -18,9 +19,12 @@ public interface ChildCareQueue extends com.idega.data.IDOEntity,com.idega.block
  public java.lang.String getSchoolAreaName();
  public java.sql.Date getStartDate();
  public void initializeAttributes();
+ public boolean isExported();
  public void setChildId(int p0);
  public void setChoiceNumber(int p0);
  public void setContractId(int p0);
+ public void setExported(boolean p0);
+ public void setImportedDate(java.sql.Date p0);
  public void setPriority(java.lang.String p0);
  public void setProviderId(int p0);
  public void setProviderName(java.lang.String p0);
