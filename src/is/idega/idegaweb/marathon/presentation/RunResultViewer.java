@@ -21,11 +21,15 @@ import javax.ejb.FinderException;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -46,22 +50,47 @@ public class RunResultViewer extends Block {
 
 	private static String _groupYear;
 	private static String _groupDistance;
+	
+	private Group distance;
+	private Group year;
+	
 	private Map _runToRunnerMap = null;
 	private Collator _collator;
 	private IWContext _iwc;
+	private IWResourceBundle iwrb;
 	private RunBusiness _runBiz;
 	private GroupBusiness _groupBiz;
 	
-
-	public void main(IWContext iwc) {
+	private Group run;
+	private SelectorUtility util;
+	
+	public void main(IWContext iwc) throws Exception {
 		_iwc = iwc;
+		iwrb = getResourceBundle(iwc);
 		_collator = Collator.getInstance(iwc.getCurrentLocale());
+		util = new SelectorUtility();
+
+		if (run == null) {
+			add("No run set...");
+			return;
+		}
+		
+		_groupYear = iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN_YEAR);
+		if (_groupYear != null) {
+			try {
+				year = getGroupBiz().getGroupByGroupID(Integer.parseInt(_groupYear));
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		_groupDistance = iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE);
 		int groupID = -1;
 		if (_groupDistance != null && !_groupDistance.equals("")) {
 			groupID = Integer.parseInt(_groupDistance);
 		}
-		Group distance = null;
 		try {
 			distance = getGroupBiz().getGroupByGroupID(groupID);
 		} catch (RemoteException e) {
@@ -73,9 +102,10 @@ public class RunResultViewer extends Block {
 		Form form = new Form();
 		Table table = new Table();
 
-		RunDistanceDropdownDouble runDisDropdownField = (RunDistanceDropdownDouble) getStyleObject(new RunDistanceDropdownDouble(), STYLENAME_INTERFACE);
-		runDisDropdownField.getSecondaryDropdown().setToSubmit(true);
-		table.add(runDisDropdownField, 1, 1);
+		form.add(getYearsDropdown());
+		form.add(getDistanceDropdown());
+		form.add(getSortDropdown());
+		form.add(new Break(2));
 		
 		try {
 			List runGroups = new ArrayList(getGroupBiz().getChildGroups(distance));
@@ -102,6 +132,47 @@ public class RunResultViewer extends Block {
 		}
 		form.add(table);
 		add(form);
+	}
+	
+	private DropdownMenu getYearsDropdown() throws RemoteException {
+		DropdownMenu years = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(IWMarathonConstants.GROUP_TYPE_RUN_YEAR), getRunBiz().getYears(run), "getName", iwrb);
+		years.setToSubmit();
+		years.keepStatusOnAction();
+		return years;
+	}
+	
+	private DropdownMenu getDistanceDropdown() throws RemoteException {
+		DropdownMenu distanceMenu = new DropdownMenu(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE);
+		distanceMenu.setToSubmit();
+		distanceMenu.keepStatusOnAction();
+		distanceMenu.addMenuElementFirst("", "");
+		
+		Integer threeKM = new Integer(iwrb.getIWBundleParent().getProperty("3_km_id", "126"));
+		Integer sevenKM = new Integer(iwrb.getIWBundleParent().getProperty("7_km_id", "113"));
+		
+		if (year != null) {
+			List distances = getRunBiz().getDistancesMap(run, year.getName());
+			Iterator iter = distances.iterator();
+			while (iter.hasNext()) {
+				Group distance = (Group) iter.next();
+				if (!distance.getPrimaryKey().equals(threeKM) && !distance.getPrimaryKey().equals(sevenKM)) {
+					distanceMenu.addMenuElement(distance.getPrimaryKey().toString(), iwrb.getLocalizedString(distance.getName(), distance.getName()));
+				}
+			}
+		}
+		
+		return distanceMenu;
+	}
+	
+	private DropdownMenu getSortDropdown() throws RemoteException {
+    DropdownMenu sort = new DropdownMenu(IWMarathonConstants.PARAMETER_SORT_BY);
+    sort.addMenuElement(IWMarathonConstants.PARAMETER_TOTAL,iwrb.getLocalizedString(IWMarathonConstants.RYSDD_TOTAL,"Total result list"));
+    sort.addMenuElement(IWMarathonConstants.PARAMETER_GROUPS,iwrb.getLocalizedString(IWMarathonConstants.RYSDD_GROUPS,"Groups"));
+    sort.addMenuElement(IWMarathonConstants.PARAMETER_GROUPS_COMPETITION,iwrb.getLocalizedString(IWMarathonConstants.RYSDD_GROUPS_COMP,"Group competition"));
+    sort.setToSubmit();
+    sort.keepStatusOnAction();
+    
+    return sort;
 	}
 	
 	/**
