@@ -137,6 +137,21 @@ public class TournamentParticipants extends GolfEntity{
 		return getIntColumnValue("difference");
 	}
 
+        public static com.idega.projects.golf.entity.TournamentParticipants getTournamentParticipants(int member_id,int tournament_id) {
+            com.idega.projects.golf.entity.TournamentParticipants returner = null;
+            try {
+                java.util.List members = com.idega.data.EntityFinder.findAllByColumn(new com.idega.projects.golf.entity.TournamentParticipants(),"member_id",member_id+"","tournament_id",tournament_id+"");
+                if (members != null) {
+                    if (members.size()  > 0) returner = (com.idega.projects.golf.entity.TournamentParticipants) members.get(0);
+                }
+            }
+            catch (SQLException sq) {
+                sq.printStackTrace(System.err);
+            }
+
+            return returner;
+        }
+
         public void insert(){}
         public void update(){}
         public void delete(){}
