@@ -800,6 +800,7 @@ public class Booking extends TravelManager {
       tbf.setTimestamp(stamp);
 
       int returner = tbf.handleInsert(iwc);
+      debug("RETURNER = "+returner);
 
       if (returner == tbf.inquirySent) {
         /** @todo Cleara form eftir að inquiry hefur att ser stad  */

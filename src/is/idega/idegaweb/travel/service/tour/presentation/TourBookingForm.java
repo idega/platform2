@@ -1160,7 +1160,7 @@ public class TourBookingForm extends TravelManager {
 
   public int checkBooking(IWContext iwc, boolean saveBookingIfValid) throws Exception {
     boolean tooMany = false;
-    String sAvailable = iwc.getParameter("available");
+//    String sAvailable = iwc.getParameter("available");
 
     int iMany = 0;
 
@@ -1234,6 +1234,8 @@ public class TourBookingForm extends TravelManager {
       }
     }
 
+//    debug("saveBookingIfValid = "+saveBookingIfValid);
+//    debug("tooMany            = "+tooMany);
 
     if (tooMany) {
       return this.errorTooMany;
@@ -1307,9 +1309,16 @@ public class TourBookingForm extends TravelManager {
   public int handleInsert(IWContext iwc) throws Exception{
     String check = iwc.getParameter(sAction);
     String action = iwc.getParameter(this.BookingAction);
+    //debug("check  = "+check);
+    //debug("action = "+action);
+
+    /** @todo fatta af hverju thetta er herna og hvort megi henda thvi
     if (this._booking == null) {
+      //debug("RANUS 0");
       return 0;
     }
+    */
+
     if (check.equals(this.parameterSaveBooking)) {
       if (action != null) {
         if (action.equals(this.BookingParameter)) {
