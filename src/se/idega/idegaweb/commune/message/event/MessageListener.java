@@ -50,11 +50,9 @@ public class MessageListener implements IWEventListener {
   	User user = iwc.getCurrentUser();
 
   	if (iwc.isParameterSet(PARAM_TO_MSG_BOX)) {
-  		System.out.println("Setting to message box: TRUE");
   		session.setIfUserPreferesMessageInMessageBox(user,true);
   	}
   	else {
-  		System.out.println("Setting to message box: FALSE");
   		session.setIfUserPreferesMessageInMessageBox(user,false);
   	}
   		

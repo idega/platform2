@@ -22,6 +22,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
 import com.idega.user.data.User;
 import com.idega.util.CustomDateFormat;
 
@@ -65,18 +66,20 @@ public class MessageBox extends CommuneBlock {
 	private void viewMessageList(IWContext iwc) throws Exception {
 		Form f = new Form();
 		f.setEventListener(MessageListener.class);
+		f.setWindowToOpen(MessageSubmitWindow.class);
 		
 		int row = 1;
 		Table messageTable = new Table();
+		messageTable.setWidth(getWidth());
 		messageTable.setCellpadding(getCellpadding());
 		messageTable.setCellspacing(getCellspacing());
 		f.add(messageTable);
 
-		messageTable.setWidth(Table.HUNDRED_PERCENT);
 		messageTable.add(getSmallHeader(localize("message.subject", "Subject")), 1, row);
 		messageTable.add(getSmallHeader(localize("message.date", "Date")), 2, row);
 		messageTable.setWidth(3, "12");
 		messageTable.setRowColor(row++, getHeaderColor());
+		boolean hasMessages = false;
 
 		if (iwc.isLoggedOn()) {
 			MessageBusiness messageBusiness = getMessageBusiness(iwc);
@@ -90,7 +93,8 @@ public class MessageBox extends CommuneBlock {
 			boolean isRead = false;
 			DateFormat dateFormat = CustomDateFormat.getDateTimeInstance(iwc.getCurrentLocale());
 
-			if (messages != null) {
+			if (messages != null && !messages.isEmpty()) {
+				hasMessages = true;
 				Vector messageVector = new Vector(messages);
 				Collections.sort(messageVector, new MessageComparator());
 				Iterator iter = messageVector.iterator();
@@ -131,11 +135,10 @@ public class MessageBox extends CommuneBlock {
 			messageTable.mergeCells(1, row, messageTable.getColumns(), row);
 			messageTable.add(settingsTable, 1, row++);
 
-			messageTable.setHeight(row++,5);
-			
 			boolean toMessageBox = messageSession.getIfUserPreferesMessageInMessageBox(user);
 			CheckBox msgBox = getCheckBox(PARAM_TO_MSG_BOX,"true");
 			msgBox.setChecked(toMessageBox);
+			
 			boolean toEmail = messageSession.getIfUserPreferesMessageByEmail(user);
 			CheckBox email = getCheckBox(PARAM_TO_EMAIL,"true");
 			email.setChecked(toEmail);
@@ -145,17 +148,20 @@ public class MessageBox extends CommuneBlock {
 			settingsTable.add(getSmallText(getLocalizedString("message.send_to_message_box", "Send to message box", iwc)), 3, 1);
 			settingsTable.add(getSmallText(getLocalizedString("message.send_to_email", "Send to email", iwc)), 3, 3);
 
+			messageTable.setHeight(row++,5);
+			
 			Table submitTable = new Table(3, 1);
 			submitTable.setCellpaddingAndCellspacing(0);
 			submitTable.setWidth(2, 1, "6");
 			messageTable.mergeCells(1, row, messageTable.getColumns(), row);
-			messageTable.add(submitTable, 1, 5);
+			messageTable.add(submitTable, 1, row);
 
 			SubmitButton deleteButton = (SubmitButton) getButton(new SubmitButton(localize("delete", "Delete"), PARAM_DELETE_MESSAGE, "true"));
 			deleteButton.setToEnableWhenChecked(PARAM_MESSAGE_ID);
 			deleteButton.setDescription(localize("message.delete", "Delete"));
 			deleteButton.setSubmitConfirm(localize("message.messages_to_delete", "Do you really want to delete the selected messages?"));
-			submitTable.add(deleteButton, 1, 1);
+			if (hasMessages)
+				submitTable.add(deleteButton, 1, 1);
 
 			SubmitButton settings = (SubmitButton) getButton(new SubmitButton(localize("save", "Save"), PARAM_SAVE_SETTINGS, "true"));
 			settings.setDescription(localize("message.settings", "Save settings"));
