@@ -13,6 +13,13 @@ public class ChildCareContractHomeImpl extends com.idega.data.IDOFactory impleme
  }
 
 
+public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ChildCareContractBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public ChildCareContract findApplicationByContract(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((ChildCareContractBMPBean)entity).ejbFindApplicationByContract(p0);

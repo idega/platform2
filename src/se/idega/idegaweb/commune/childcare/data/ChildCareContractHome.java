@@ -5,6 +5,7 @@ public interface ChildCareContractHome extends com.idega.data.IDOHome
 {
  public ChildCareContract create() throws javax.ejb.CreateException;
  public ChildCareContract findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+ public java.util.Collection findAll()throws javax.ejb.FinderException;
  public ChildCareContract findApplicationByContract(int p0)throws javax.ejb.FinderException;
  public java.util.Collection findByApplication(int p0)throws javax.ejb.FinderException;
  public java.util.Collection findByChild(int p0)throws javax.ejb.FinderException;

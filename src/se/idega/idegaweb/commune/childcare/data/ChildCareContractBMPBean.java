@@ -17,6 +17,7 @@ import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
 /**
+ * The main class of a childcare contract. Is thought to be an extension of the standard Contract object (com.idega.block.contract.data.Contract).
  * @author laddi
  */
 public class ChildCareContractBMPBean extends GenericEntity implements ChildCareContract {
@@ -315,4 +316,8 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return idoFindPKsByQuery(sql);
 	}
 	
+	public Collection ejbFindAll() throws FinderException {
+		IDOQuery sql = idoQueryGetSelect();
+		return idoFindPKsByQuery(sql);
+	}
 }
