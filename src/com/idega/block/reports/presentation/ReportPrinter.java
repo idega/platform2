@@ -10,6 +10,7 @@ import com.idega.block.reports.business.ReportBusiness;
 import com.idega.block.reports.business.ReportFinder;
 import com.idega.block.reports.data.Report;
 import com.idega.block.reports.data.ReportInfo;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -125,7 +126,7 @@ public class ReportPrinter extends Block implements Reports{
 
       Table T = new Table();
 
-      T.add(getForm(eReport));
+      T.add(getForm(iwc,eReport));
 
       add(T);
 
@@ -137,7 +138,7 @@ public class ReportPrinter extends Block implements Reports{
 
 
 
-  private PresentationObject getForm(Report report){
+  private PresentationObject getForm(IWApplicationContext iwac,Report report){
 
     DataTable T = new DataTable();
 
@@ -233,7 +234,7 @@ public class ReportPrinter extends Block implements Reports{
 
         T.add(box,col++,row);
 
-        T.add(getPrintLink(pdfImage,report.getID(),info.getID()),col++,row);
+        T.add(getPrintLink(iwac,pdfImage,report.getID(),info.getID()),col++,row);
 
         row++;
 
@@ -277,7 +278,7 @@ public class ReportPrinter extends Block implements Reports{
 
         T.add(box,col++,row);
 
-        T.add(getPrintLink(pdfImage,report.getID(),info.getID()),col++,row);
+        T.add(getPrintLink(iwac,pdfImage,report.getID(),info.getID()),col++,row);
 
         row++;
 
@@ -517,9 +518,9 @@ public class ReportPrinter extends Block implements Reports{
 
 
 
-  private Link getPrintLink(Image image,int iReportId,int iReportInfoId){
+  private Link getPrintLink(IWApplicationContext iwac,Image image,int iReportId,int iReportInfoId){
 
-    return Reporter.getPrintLink(image,iReportId,iReportInfoId);
+    return Reporter.getPrintLink(iwac,image,iReportId,iReportInfoId);
 
   }
 

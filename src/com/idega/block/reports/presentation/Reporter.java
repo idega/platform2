@@ -12,6 +12,7 @@ import com.idega.block.reports.business.ReportWriter;
 import com.idega.block.reports.data.Report;
 import com.idega.block.reports.data.ReportInfo;
 import com.idega.core.data.ICCategory;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
@@ -174,11 +175,11 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
   }
 
   private PresentationObject doMain(IWContext iwc){
-    PresentationObject obj = (getCategoryReports(getCategoryId()));
+    PresentationObject obj = (getCategoryReports(iwc,getCategoryId()));
     return obj;
   }
 
-  private PresentationObject getCategoryReports(int iCategoryId){
+  private PresentationObject getCategoryReports(IWApplicationContext iwac,int iCategoryId){
     ICCategory RC = ReportFinder.getCategory(iCategoryId) ;
     String name = RC!=null?RC.getName():"";
     DataTable T = new DataTable();
@@ -217,12 +218,12 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
           col++;
           T.add(Edit.formatText(R.getName()),col++,row);
           T.add(Edit.formatText(R.getInfo()),col++,row);
-          T.add(getPrintTable(repinfos,R.getID()),col++,row);
+          T.add(getPrintTable(iwac,repinfos,R.getID()),col++,row);
           Table def = new Table(3,1);
           def.setCellspacing(2);
-          def.add(getXLSLink(XLS,R.getID()),1,1);
-          def.add(getTXTLink(TXT,R.getID()),2,1);
-          def.add(getPDFLink(PDF,R.getID()),3,1);
+          def.add(getXLSLink(iwac,XLS,R.getID()),1,1);
+          def.add(getTXTLink(iwac,TXT,R.getID()),2,1);
+          def.add(getPDFLink(iwac,PDF,R.getID()),3,1);
           T.add(def,col,row);
 
           col++;
@@ -248,7 +249,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     return T;
   }
 
-  private Table getPrintTable(List repinfos,int reportId){
+  private Table getPrintTable(IWApplicationContext iwac,List repinfos,int reportId){
     Table T = new Table();
     if(repinfos!=null){
       java.util.Iterator iter = repinfos.iterator();
@@ -256,7 +257,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
       int col = 1;
       while(iter.hasNext()){
         info = (ReportInfo) iter.next();
-        T.add(getPrintLink(PDF,reportId,info.getID()),col,1);
+        T.add(getPrintLink(iwac,PDF,reportId,info.getID()),col,1);
         T.add(Edit.formatText(info.getDescription()),col,1);
         T.setColumnAlignment(col,"center");
         col++;
@@ -287,9 +288,9 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     return L;
   }
 
-  public static Link getPrintLink(Image image,int iReportId,int iReportInfoId){
+  public static Link getPrintLink(IWApplicationContext iwac,Image image,int iReportId,int iReportInfoId){
     Link L = new Link( image );
-    L.setWindow(getFileWindow());
+    L.setWindow(getFileWindow(iwac));
     L.addParameter(PRM_REPORTID,iReportId);
     L.addParameter(ReportWriter.prmReportId,iReportId);
     L.addParameter(ReportWriter.prmReportInfoId,iReportInfoId);
@@ -297,9 +298,9 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     return L;
   }
 
-  public static Link getTXTLink(Image image,int iReportId){
+  public static Link getTXTLink(IWApplicationContext iwac,Image image,int iReportId){
     Link L = new Link( image );
-    L.setWindow(getFileWindow());
+    L.setWindow(getFileWindow(iwac));
     L.addParameter(PRM_REPORTID,iReportId);
     L.addParameter(ReportWriter.prmReportId,iReportId);
     L.addParameter(ReportWriter.prmPrintType,ReportWriter.TXT);
@@ -307,9 +308,9 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     return L;
   }
 
- public static Link getPDFLink(Image image,int iReportId){
+ public static Link getPDFLink(IWApplicationContext iwac,Image image,int iReportId){
     Link L = new Link( image );
-    L.setWindow(getFileWindow());
+    L.setWindow(getFileWindow(iwac));
     L.addParameter(PRM_REPORTID,iReportId);
     L.addParameter(ReportWriter.prmReportId,iReportId);
     L.addParameter(ReportWriter.prmPrintType,ReportWriter.PDF);
@@ -317,9 +318,9 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     return L;
   }
 
-  public static Link getXLSLink(Image image,int iReportId){
+  public static Link getXLSLink(IWApplicationContext iwac,Image image,int iReportId){
     Link L = new Link( image );
-    L.setWindow(getFileWindow());
+    L.setWindow(getFileWindow(iwac));
     L.addParameter(PRM_REPORTID,iReportId);
     L.addParameter(ReportWriter.prmReportId,iReportId);
     L.addParameter(ReportWriter.prmPrintType,ReportWriter.XLS);
@@ -327,8 +328,8 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     return L;
   }
 
-  public static Window getFileWindow(){
-    Window w = new Window("Reports","/servlet/MediaServlet");
+  public static Window getFileWindow(IWApplicationContext iwac){
+    Window w = new Window("Reports",iwac.getApplication().getMediaServletURI());
     w.setResizable(true);
     w.setMenubar(true);
     w.setHeight(400);

@@ -11,6 +11,7 @@ import com.idega.block.reports.business.ReportMaker;
 import com.idega.block.reports.business.ReportService;
 import com.idega.block.reports.data.Report;
 import com.idega.business.IWEventListener;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -151,7 +152,7 @@ public class ReportContentViewer extends Block implements Reports,IWEventListene
       iwc.setSessionAttribute(prmContent,v);
       iwc.setSessionAttribute(prmHeaders,headers);
       if(v != null){
-        T.add(this.doHeader(eReport),1,1);
+        T.add(this.doHeader(iwc,eReport),1,1);
         T.add(this.doFooter(listStart,v.size(),eReport.getID()),1,2);
         T.add(this.doView(headers,v,listStart,eReport.getID()),1,3);
         T.add(this.doFooter(listStart,v.size(),eReport.getID()),1,4);
@@ -207,7 +208,7 @@ public class ReportContentViewer extends Block implements Reports,IWEventListene
       iwc.setSessionAttribute(prmLastOrder,sOrder);
 
       if(v != null){
-        T.add(this.doHeader(eReport),1,1);
+        T.add(this.doHeader(iwc,eReport),1,1);
         T.add(this.doFooter(listStart,v.size(),eReport.getID()),1,2);
         T.add(this.doView(headers,v,listStart,eReport.getID()),1,3);
         T.add(this.doFooter(listStart,v.size(),eReport.getID()),1,4);
@@ -220,7 +221,7 @@ public class ReportContentViewer extends Block implements Reports,IWEventListene
     return T;
   }
 
-  private PresentationObject doHeader(Report R){
+  private PresentationObject doHeader(IWApplicationContext iwac,Report R){
     Table T2 = new Table(2,1);
     T2.setWidth("100%");
     T2.setColumnAlignment(1,"left");
@@ -233,9 +234,9 @@ public class ReportContentViewer extends Block implements Reports,IWEventListene
     T2.add(T,1,1);
     Table T3 = new Table(3,1);
 
-    Link XLS = Reporter.getXLSLink(iwb.getImage("/shared/xls.gif"),R.getID());
-    Link PDF = Reporter.getPDFLink(iwb.getImage("/shared/pdf.gif"),R.getID());
-    Link TXT = Reporter.getTXTLink(iwb.getImage("/shared/txt.gif"),R.getID());
+    Link XLS = Reporter.getXLSLink(iwac,iwb.getImage("/shared/xls.gif"),R.getID());
+    Link PDF = Reporter.getPDFLink(iwac,iwb.getImage("/shared/pdf.gif"),R.getID());
+    Link TXT = Reporter.getTXTLink(iwac,iwb.getImage("/shared/txt.gif"),R.getID());
 
     T3.add(XLS,1,1);
     T3.add(PDF,2,1);
