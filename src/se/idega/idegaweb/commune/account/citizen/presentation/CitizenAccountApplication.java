@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.11 2002/11/05 12:03:51 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.12 2002/11/06 07:56:12 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -32,37 +32,42 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_SUBMIT_SIMPLE_FORM = 1;
 	private final static int ACTION_SUBMIT_UNKNOWN_CITIZEN_FORM = 2;
 
-	private final static String PARAM_FIRST_NAME = "caa_first_name";
-	private final static String PARAM_LAST_NAME = "caa_last_name";
-	private final static String PARAM_PID = "caa_pid";
-	private final static String PARAM_BIRTH_YEAR = "caa_birth_year";
-	private final static String PARAM_BIRTH_MONTH = "caa_birth_month";
-	private final static String PARAM_BIRTH_DAY = "caa_birth_day";
-	private final static String PARAM_GENDER = "caa_gender";
-	private final static String PARAM_EMAIL = "caa_email";
-	private final static String PARAM_PHONE_HOME = "caa_phone_home";
-	private final static String PARAM_PHONE_WORK = "caa_phone_work";
-    private final static String PARAM_STREET = "caa_street";
-    private final static String PARAM_ZIP_CODE = "caa_zip_code";
-    private final static String PARAM_CITY = "caa_city";
-
+	private final static String FIRST_NAME_KEY = "caa_first_name";
+    private final static String FIRST_NAME_DEFAULT = "Förnamn";
+	private final static String LAST_NAME_KEY = "caa_last_name";
+    private final static String LAST_NAME_DEFAULT = "Efternamn";
+	private final static String BIRTH_YEAR_KEY = "caa_birth_year";
+	private final static String BIRTH_MONTH_KEY = "caa_birth_month";
+	private final static String BIRTH_DAY_KEY = "caa_birth_day";
+	private final static String GENDER_KEY = "caa_gender";
+    private final static String GENDER_DEFAULT = "Kön";
+	private final static String EMAIL_KEY = "caa_email";
+    private final static String EMAIL_DEFAULT = "E-post";
+	private final static String PHONE_HOME_KEY = "caa_phone_home";
+    private final static String PHONE_HOME_DEFAULT = "Telefon (hem)";
+	private final static String PHONE_WORK_KEY = "caa_phone_work";
+    private final static String PHONE_WORK_DEFAULT = "Telefon (arbete/mobil)";
+    private final static String STREET_KEY = "caa_street";
+    private final static String STREET_DEFAULT = "Gatuadress";
+    private final static String ZIP_CODE_KEY = "caa_zip_code";
+    private final static String ZIP_CODE_DEFAULT = "Postnummer";
+    private final static String CITY_KEY = "caa_city";
+    private final static String CITY_DEFAULT = "Postort";
+    private final static String CIVIL_STATUS_KEY = "caa_civil_status";
+    private final static String CIVIL_STATUS_DEFAULT = "Civilstånd";
     private final static String SSN_KEY = "caa_ssn";
     private final static String SSN_DEFAULT
         = "Personnummer (år/månad/dag - fyra sist siffror)";
+    private final static String CUSTODIAN_KEY = "caa_custodian";
+    private final static String CUSTODIAN_DEFAULT = "Vårdnadshavare";
+    private final static String PID_KEY = "caa_pid";
 
-    private final static String PARAM_CUSTODIAN1_PID = "caa_custodian1_pid";
-    private final static String PARAM_CUSTODIAN1_CIVIL_STATUS
-        = "caa_custodian1_civil_status";
-    private final static String PARAM_CUSTODIAN2_PID = "caa_custodian2_pid";
-    private final static String PARAM_CUSTODIAN2_CIVIL_STATUS
-        = "caa_custodian2_civil_status";
-
-    private final static String CUSTODIAN1_KEY = "caa_custodian1";
-    private final static String CUSTODIAN2_KEY = "caa_custodian2";
-
-	private final static String PARAM_SIMPLE_FORM_SUBMIT = "caa_simpleSubmit";
-	private final static String PARAM_UNKNOWN_CITIZEN_FORM_SUBMIT
+	private final static String SIMPLE_FORM_SUBMIT_KEY = "caa_simpleSubmit";
+	private final static String SIMPLE_FORM_SUBMIT_DEFAULT = "Skicka ansökan";
+	private final static String UNKNOWN_CITIZEN_FORM_SUBMIT_KEY
         = "caa_unknownCitizenSubmit";
+	private final static String UNKNOWN_CITIZEN_FORM_SUBMIT_DEAFULT
+        = "Skicka ansökan";
 
 	private final static String ERROR_PID = "caa_pid_error";
 	private final static String ERROR_PHONE_HOME = "caa_error_phone_home";
@@ -106,35 +111,24 @@ public class CitizenAccountApplication extends CommuneBlock {
 		Table table = createTable ();
         addSimpleInputs (table, iwc);
         int row = 9;
-        addHeader (table, row++, false, PARAM_FIRST_NAME, "Förnamn");
-        addSingleInput (table, row++, iwc, PARAM_FIRST_NAME, 40);
-        addHeader (table, row++, false, PARAM_LAST_NAME, "Efternamn");
-        addSingleInput (table, row++, iwc, PARAM_LAST_NAME, 40);
-        addHeader (table, row++, false, PARAM_STREET, "Gatuadress");
-        addSingleInput (table, row++, iwc, PARAM_STREET, 40);
-        addHeader (table, row++, false, PARAM_ZIP_CODE, "Postnummer");
-        addSingleInput (table, row++, iwc, PARAM_ZIP_CODE, 40);
-        addHeader (table, row++, false, PARAM_CITY, "Postort");
-        addSingleInput (table, row++, iwc, PARAM_CITY, 40);
+        addHeader (table, row++, false, FIRST_NAME_KEY, FIRST_NAME_DEFAULT);
+        addSingleInput (table, row++, iwc, FIRST_NAME_KEY, 40);
+        addHeader (table, row++, false, LAST_NAME_KEY, LAST_NAME_DEFAULT);
+        addSingleInput (table, row++, iwc, LAST_NAME_KEY, 40);
+        addHeader (table, row++, false, STREET_KEY, STREET_DEFAULT);
+        addSingleInput (table, row++, iwc, STREET_KEY, 40);
+        addHeader (table, row++, false, ZIP_CODE_KEY, ZIP_CODE_DEFAULT);
+        addSingleInput (table, row++, iwc, ZIP_CODE_KEY, 40);
+        addHeader (table, row++, false, CITY_KEY, CITY_DEFAULT);
+        addSingleInput (table, row++, iwc, CITY_KEY, 40);
         addGenderDropdownInput (table, row++, iwc);
         row++;
-        final Text custodianHeader1
-                = getLocalizedHeader (CUSTODIAN1_KEY, "Vårdnadshavare 1");
-        table.add (custodianHeader1, 1, row++);
-        addSsnInput (table, row++, iwc, "_custodian1");
-        row++;
-        addHeader (table, row++, false, PARAM_CUSTODIAN1_CIVIL_STATUS, "Civilstånd");
-        addSingleInput (table, row++, iwc, PARAM_CUSTODIAN1_CIVIL_STATUS, 40);
-
-        final Text custodianHeader2
-                = getLocalizedHeader (CUSTODIAN2_KEY, "Vårdnadshavare 2");
-        table.add (custodianHeader2, 1, row++);
-        addSsnInput (table, row++, iwc, "_custodian2");
-        row++;
-        addHeader (table, row++, false, PARAM_CUSTODIAN2_CIVIL_STATUS, "Civilstånd");
-        addSingleInput (table, row++, iwc, PARAM_CUSTODIAN2_CIVIL_STATUS, 40);
-        addSubmitButton (table, row, iwc, PARAM_UNKNOWN_CITIZEN_FORM_SUBMIT,
-                         "Submit application");
+        addCustodianInput (table, row++, iwc, 1);
+        row += 4;
+        addCustodianInput (table, row++, iwc, 2);
+        row += 4;
+        addSubmitButton (table, row, iwc, UNKNOWN_CITIZEN_FORM_SUBMIT_KEY,
+                         UNKNOWN_CITIZEN_FORM_SUBMIT_DEAFULT );
 
 		if (_isError) {
 			if (_errorMsg != null) {
@@ -158,8 +152,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private void viewSimpleApplicationForm(IWContext iwc) {
 		final Table table = createTable ();
         addSimpleInputs (table, iwc);
-        addSubmitButton (table, 9, iwc, PARAM_SIMPLE_FORM_SUBMIT,
-                         "Skicka ansökan");
+        addSubmitButton (table, 9, iwc, SIMPLE_FORM_SUBMIT_KEY,
+                         SIMPLE_FORM_SUBMIT_DEFAULT);
 		final Form accountForm = new Form();
 		if (_isError) {
 			if (_errorMsg != null) {
@@ -181,10 +175,10 @@ public class CitizenAccountApplication extends CommuneBlock {
 	}
 
 	private void submitSimpleForm (final IWContext iwc) {
-		String pidString = iwc.getParameter(PARAM_PID);
-		String phoneHomeString = iwc.getParameter(PARAM_PHONE_HOME);
-		String emailString = iwc.getParameter(PARAM_EMAIL);
-		String phoneWorkString = iwc.getParameter(PARAM_PHONE_WORK);
+		String pidString = iwc.getParameter (PID_KEY);
+		String phoneHomeString = iwc.getParameter (PHONE_HOME_KEY);
+		String emailString = iwc.getParameter (EMAIL_KEY);
+		String phoneWorkString = iwc.getParameter (PHONE_WORK_KEY);
 
 		_errorMsg = null;
 
@@ -247,23 +241,25 @@ public class CitizenAccountApplication extends CommuneBlock {
 	}
 
     private void submitUnknownCitizenForm (final IWContext iwc) {
-		final String name = iwc.getParameter (PARAM_FIRST_NAME) + " "
-                + iwc.getParameter (PARAM_LAST_NAME);
+		final String name = iwc.getParameter (FIRST_NAME_KEY) + " "
+                + iwc.getParameter (LAST_NAME_KEY);
         final int genderId
-                = new Integer (iwc.getParameter (PARAM_GENDER)).intValue ();
-		final String pid = iwc.getParameter (PARAM_PID);
-		final String phoneHome = iwc.getParameter (PARAM_PHONE_HOME);
-		final String email = iwc.getParameter (PARAM_EMAIL);
-		final String phoneWork = iwc.getParameter (PARAM_PHONE_WORK);
-        final String custodian1Pid = iwc.getParameter (PARAM_CUSTODIAN1_PID);
+                = new Integer (iwc.getParameter (GENDER_KEY)).intValue ();
+		final String pid = iwc.getParameter (PID_KEY);
+		final String phoneHome = iwc.getParameter (PHONE_HOME_KEY);
+		final String email = iwc.getParameter (EMAIL_KEY);
+		final String phoneWork = iwc.getParameter (PHONE_WORK_KEY);
         final String custodian1CivilStatus
-                = iwc.getParameter (PARAM_CUSTODIAN1_CIVIL_STATUS);
-        final String custodian2Pid = iwc.getParameter (PARAM_CUSTODIAN2_PID);
+                = iwc.getParameter (getCustodianKey (CIVIL_STATUS_KEY, 1));
+        final String custodian1Pid
+                = iwc.getParameter (getCustodianKey (PID_KEY, 1));
         final String custodian2CivilStatus
-                = iwc.getParameter (PARAM_CUSTODIAN2_CIVIL_STATUS);
-        final String street = iwc.getParameter (PARAM_STREET);
-        final String zipCode = iwc.getParameter (PARAM_ZIP_CODE);
-        final String city = iwc.getParameter (PARAM_CITY);
+                = iwc.getParameter (getCustodianKey (CIVIL_STATUS_KEY, 2));
+        final String custodian2Pid
+                = iwc.getParameter (getCustodianKey (PID_KEY, 2));
+        final String street = iwc.getParameter (STREET_KEY);
+        final String zipCode = iwc.getParameter (ZIP_CODE_KEY);
+        final String city = iwc.getParameter (CITY_KEY);
 
 		_errorMsg = null;
 
@@ -302,11 +298,11 @@ public class CitizenAccountApplication extends CommuneBlock {
             }
             final String ssn = getSsn (iwc);
             final int year = new Integer (iwc.getParameter
-                                          (PARAM_BIRTH_YEAR)).intValue ();
+                                          (BIRTH_YEAR_KEY)).intValue ();
             final int month = new Integer (iwc.getParameter
-                                          (PARAM_BIRTH_MONTH)).intValue ();
+                                          (BIRTH_MONTH_KEY)).intValue ();
             final int day = new Integer (iwc.getParameter
-                                          (PARAM_BIRTH_DAY)).intValue ();
+                                          (BIRTH_DAY_KEY)).intValue ();
             final Calendar birthDate = Calendar.getInstance ();
             birthDate.set (year, month - 1, day);
 			isInserted = business.insertApplication
@@ -335,16 +331,31 @@ public class CitizenAccountApplication extends CommuneBlock {
                                   "Application submitted")));
     }
 
+    private void addCustodianInput
+        (final Table table, final int row,
+         final IWContext iwc, final int custodianId) {
+        final String custodianKey = CUSTODIAN_KEY + "_" + custodianId;
+        final String custodianDefault = CUSTODIAN_DEFAULT + " " + custodianId;
+        final Text custodianHeader = getLocalizedHeader (custodianKey,
+                                                         custodianDefault);
+        table.add (custodianHeader, 1, row);
+        addSsnInput (table, row + 1, iwc, "_" + custodianKey);
+        addHeader (table, row + 3, false, CIVIL_STATUS_KEY,
+                   CIVIL_STATUS_DEFAULT);
+        final String civilStatusKey = getCustodianKey (CIVIL_STATUS_KEY,
+                                                       custodianId);
+        addSingleInput (table, row + 4, iwc, civilStatusKey, 40);
+    }
 
     private void addSimpleInputs (final Table table, final IWContext iwc) {
         addSsnInput (table, 1, iwc, "");
-        addHeader (table, 3, _isEmailError, PARAM_EMAIL, "E-post");
-        addSingleInput (table, 4, iwc, PARAM_EMAIL, 40);
-        addHeader (table, 5, _isPhoneHomeError, PARAM_PHONE_HOME, "Telefon (hem)");
-        addSingleInput (table, 6, iwc, PARAM_PHONE_HOME, 20);
-        addHeader (table, 7, false, PARAM_PHONE_WORK,
-                   "Telefon (jobb/mobil)");
-        addSingleInput (table, 8, iwc, PARAM_PHONE_WORK, 20);
+        addHeader (table, 3, _isEmailError, EMAIL_KEY, EMAIL_DEFAULT);
+        addSingleInput (table, 4, iwc, EMAIL_KEY, 40);
+        addHeader (table, 5, _isPhoneHomeError, PHONE_HOME_KEY,
+                   PHONE_HOME_DEFAULT);
+        addSingleInput (table, 6, iwc, PHONE_HOME_KEY, 20);
+        addHeader (table, 7, false, PHONE_WORK_KEY, PHONE_WORK_DEFAULT);
+        addSingleInput (table, 8, iwc, PHONE_WORK_KEY, 20);
     }
 
     private Table createTable () {
@@ -361,16 +372,16 @@ public class CitizenAccountApplication extends CommuneBlock {
         table.add (getSmallText (subject), 1, row);
         final Calendar rightNow = Calendar.getInstance();
         final int currentYear = rightNow.get (Calendar.YEAR);
-        addDropdownInput (table, row + 1, iwc, PARAM_BIRTH_YEAR + paramPostfix,
+        addDropdownInput (table, row + 1, iwc, BIRTH_YEAR_KEY + paramPostfix,
                           currentYear - 110, currentYear - 18);
         table.add (new Text (" / "), 1, row + 1);
-        addDropdownInput (table, row + 1, iwc, PARAM_BIRTH_MONTH + paramPostfix,
+        addDropdownInput (table, row + 1, iwc, BIRTH_MONTH_KEY + paramPostfix,
                           12, 1);
         table.add (new Text (" / "), 1, row + 1);
-        addDropdownInput (table, row + 1, iwc, PARAM_BIRTH_DAY + paramPostfix,
+        addDropdownInput (table, row + 1, iwc, BIRTH_DAY_KEY + paramPostfix,
                           31, 1);
         table.add (new Text (" - "), 1, row + 1);
-        addSingleInput (table, row + 1, iwc, PARAM_PID + paramPostfix, 4);
+        addSingleInput (table, row + 1, iwc, PID_KEY + paramPostfix, 4);
     }
 
     private void addDropdownInput
@@ -392,7 +403,7 @@ public class CitizenAccountApplication extends CommuneBlock {
                                    
     private void addGenderDropdownInput
         (final Table table, final int row, final IWContext iwc) {
-        final String subject = localize (PARAM_GENDER, "Kön");
+        final String subject = localize (GENDER_KEY, GENDER_DEFAULT);
         final Text text = getSmallText (subject);
         table.add (text, 1, row);
         try {
@@ -400,15 +411,15 @@ public class CitizenAccountApplication extends CommuneBlock {
                     = (CitizenAccountBusiness) IBOLookup.getServiceInstance
                     (iwc, CitizenAccountBusiness.class);
             final Gender [] genders = business.getGenders ();
-            final DropdownMenu dropdown = new DropdownMenu (PARAM_GENDER);
+            final DropdownMenu dropdown = new DropdownMenu (GENDER_KEY);
             for (int i = 0; i < genders.length; i++) {
                 final String nameInDb = genders [i].getName ();
                 final String name = localize ("caa_" + nameInDb, nameInDb);
                 final String id = genders [i].getPrimaryKey ().toString ();
                 dropdown.addMenuElementFirst (id, name);
             }
-            if (iwc.isParameterSet (PARAM_GENDER)) {
-                dropdown.setSelectedElement (iwc.getParameter (PARAM_GENDER));
+            if (iwc.isParameterSet (GENDER_KEY)) {
+                dropdown.setSelectedElement (iwc.getParameter (GENDER_KEY));
             }
             table.add (dropdown, 1, row + 1);
         } catch (RemoteException e) {
@@ -451,13 +462,17 @@ public class CitizenAccountApplication extends CommuneBlock {
     }
 
     private static String getSsn (final IWContext iwc) {
-        final String year = iwc.getParameter (PARAM_BIRTH_YEAR);
-        final String month = iwc.getParameter (PARAM_BIRTH_MONTH);
-        final String day = iwc.getParameter (PARAM_BIRTH_DAY);
-        final String pid = iwc.getParameter (PARAM_PID);
+        final String year = iwc.getParameter (BIRTH_YEAR_KEY);
+        final String month = iwc.getParameter (BIRTH_MONTH_KEY);
+        final String day = iwc.getParameter (BIRTH_DAY_KEY);
+        final String pid = iwc.getParameter (PID_KEY);
         final String ssn = year + (month.length () > 1 ? month : "0" + month)
                 + (day.length () > 1 ? day : "0" + day) + pid;
         return ssn;
+    }
+
+    private String getCustodianKey (final String key, final int custodianId) {
+        return key + "_" + CUSTODIAN_KEY + "_" + custodianId;
     }
     
 	private void addErrorString(String errorString) {
@@ -470,9 +485,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private int parseAction (IWContext iwc) {
 		int action = ACTION_VIEW_FORM;
 
-		if (iwc.isParameterSet(PARAM_SIMPLE_FORM_SUBMIT)) {
+		if (iwc.isParameterSet(SIMPLE_FORM_SUBMIT_KEY)) {
 			action = ACTION_SUBMIT_SIMPLE_FORM;
-		} else if (iwc.isParameterSet (PARAM_UNKNOWN_CITIZEN_FORM_SUBMIT)) {
+		} else if (iwc.isParameterSet (UNKNOWN_CITIZEN_FORM_SUBMIT_KEY)) {
             action = ACTION_SUBMIT_UNKNOWN_CITIZEN_FORM;
         }
 
