@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationSubject.java,v 1.3 2001/06/25 18:06:16 palli Exp $
+ * $Id: ApplicationSubject.java,v 1.4 2001/06/27 14:40:19 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -45,6 +45,10 @@ public class ApplicationSubject extends GenericEntity {
 
   public String getEntityName() {
     return(name_);
+  }
+
+  public String getName() {
+    return(getDescription());
   }
 
   public String getDescriptionColumnName() {
