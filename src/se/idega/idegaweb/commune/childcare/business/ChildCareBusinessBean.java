@@ -1056,6 +1056,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public boolean reactivateApplication(ChildCareApplication application, User user) throws RemoteException {
 		application.setApplicationStatus(getStatusSentIn());
+		application.setRejectionDate(null);
 		changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
 		return true;
 	}
@@ -1117,11 +1118,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			try {
 				t.begin();
 				CaseBusiness caseBiz = (CaseBusiness)getServiceInstance(CaseBusiness.class);
-//				application.setCaseStatus(getCaseStatusInactive());
 				IWTimestamp now = new IWTimestamp();
 				application.setRejectionDate(now.getDate());
-				application.setApplicationStatus('Z');
-//				application.store();
+				application.setApplicationStatus(getStatusRejected());
 				caseBiz.changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
 			
 				String subject = getLocalizedString("child_care.rejected_offer_subject", "A placing offer replied to.");
@@ -1220,7 +1219,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public boolean removeFromQueue(ChildCareApplication application, User user) {
 		try {
-			application.setApplicationStatus(this.getStatusRejected());
+			IWTimestamp removed = new IWTimestamp();
+			application.setApplicationStatus(getStatusRejected());
+			application.setRejectionDate(removed.getDate());
 			changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
 
 			String subject = getLocalizedString("child_care.removed_from_queue_subject", "A child removed from the queue.");
