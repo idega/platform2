@@ -9,6 +9,7 @@
  */
 package se.idega.idegaweb.commune.childcare.data;
 
+import com.idega.block.contract.data.Contract;
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
@@ -49,9 +50,8 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	protected final static String CHECK_ID = "check_id";
 	protected final static String CONTRACT_ID = "contract_id";
 	protected final static String REJECTION_DATE = "rejection_date";
-	
-	private ICFile _file;
-	private BlobWrapper _wrapper;
+	protected final static String PROGNOSIS = "prognosis";
+	protected final static String PRESENTATION = "presentation";
 	
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
@@ -85,11 +85,13 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		addAttribute(CARE_TIME,"",true,true,java.lang.Integer.class);
 		addAttribute(CHOICE_NUMBER,"",true,true,java.lang.Integer.class);
 		addAttribute(REJECTION_DATE,"",true,true,java.sql.Date.class);
+		addAttribute(PROGNOSIS,"",true,true,java.lang.String.class,1000);
+		addAttribute(PRESENTATION,"",true,true,java.lang.String.class,1000);
 		
 		addManyToOneRelationship(PROVIDER_ID,School.class);
 		addManyToOneRelationship(CHILD_ID,User.class);
 		addManyToOneRelationship(CHECK_ID,Check.class);
-		addManyToOneRelationship(CONTRACT_ID,ICFile.class);
+		addManyToOneRelationship(CONTRACT_ID,Contract.class);
 	}
 	
 	public int getProviderId() {
@@ -111,10 +113,6 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public User getChild() {
 		return (User) getColumnValue(CHILD_ID);	
 	}
-	
-//	public boolean getParentsAgree() {
-//		return getBooleanColumnValue(PARENTS_AGREE);	
-//	}
 	
 	public Date getQueueDate() {
 		return (Date)getColumnValue(QUEUE_DATE);	
@@ -142,6 +140,22 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		
 	public Date getRejectionDate() {
 		return (Date)getColumnValue(REJECTION_DATE);	
+	}
+	
+	public int getContractId() {
+		return getIntColumnValue(CONTRACT_ID);	
+	}
+
+	public Contract getContract() {
+		return (Contract)getColumnValue(CONTRACT_ID);	
+	}
+	
+	public String getPrognosis() {
+		return getStringColumnValue(PROGNOSIS);	
+	}
+
+	public String getPresentation() {
+		return getStringColumnValue(PRESENTATION);	
 	}
 	
 	public void setProviderId(int id) {
@@ -192,59 +206,18 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		setColumn(REJECTION_DATE,date);	
 	}
 
-	private int getFileID() {
-		return getIntColumnValue(REJECTION_DATE);
+	public void setContractId(int id) {
+		setColumn(CONTRACT_ID,id);	
 	}
 
-	public ICFile getFile() {
-		int fileID = getFileID();
-		if (fileID != -1) {
-			_file = (ICFile) getColumnValue(REJECTION_DATE);
-		}
-		
-		return _file;
+	public void setPrognosis(String prognosis) {
+		setColumn(PROGNOSIS,prognosis);	
 	}
 
-	public void setFile(ICFile file) {
-//		file.setMimeType(com.idega.core.data.ICMimeTypeBMPBean.IC_MIME_TYPE_XML);
-		setColumn(REJECTION_DATE, file);
-		_file = file;
+	public void setPresentation(String presentation) {
+		setColumn(PRESENTATION,presentation);	
 	}
-
-	public void setPageValue(InputStream stream) {
-		ICFile file = getFile();
-		if (file == null) {
-			file = ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
-			setFile(file);
-		}
-		file.setFileValue(stream);
-	}
-
-	public InputStream getPageValue() {
-		try {
-			ICFile file = getFile();
-			if (file != null) {
-				return (file.getFileValue());
-			}
-		}
-		catch (Exception e) {
-		}
-
-		return null;
-	}
-
-	public OutputStream getPageValueForWrite() {
-		ICFile file = getFile();
-		if (file == null) {
-			file = ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
-			setFile(file);
-		}
-		OutputStream theReturn = file.getFileValueForWrite();
-		_wrapper = (BlobWrapper) file.getColumnValue(com.idega.core.data.ICFileBMPBean.getColumnFileValue());
-
-		return theReturn;
-	}
-
+	
 	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, CaseStatus caseStatus) throws FinderException, RemoteException {
 		return ejbFindAllCasesByProviderStatus(providerId, caseStatus.getStatus());
 	}
