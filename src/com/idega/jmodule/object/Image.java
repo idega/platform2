@@ -302,7 +302,14 @@ private void getHTMLImage(ModuleInfo modinfo){//optimize by writing in pure html
         }
       }
       else{
-        setWidth(maxImageWidth);
+        if ( (width!=null) && (!width.equalsIgnoreCase("")) && (!width.equalsIgnoreCase("-1")) ) {
+          if ( Integer.parseInt(width) > maxImageWidth ) {
+            setWidth(maxImageWidth);
+          }
+        }
+        else {
+          setWidth(maxImageWidth);
+        }
       }
 
       if ( (texti!=null) && (!"".equalsIgnoreCase(texti)) ){
