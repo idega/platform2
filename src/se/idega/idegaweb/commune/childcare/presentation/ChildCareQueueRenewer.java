@@ -15,6 +15,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -110,6 +111,10 @@ public class ChildCareQueueRenewer extends ChildCareBlock {
 		table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
+		
+		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.renew_queue", "Renew queue")));
+		table.setHeight(row++, 8);
+		table.add(button, 1, row);
 		
 		form.add(table);
 		return form;
