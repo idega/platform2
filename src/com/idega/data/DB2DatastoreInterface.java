@@ -76,9 +76,8 @@ public class DB2DatastoreInterface extends DatastoreInterface{
 
 		}
 		else{
-			theReturn = "CLOB";
+			theReturn = "LONGVARCHAR("+maxlength+")";
 		}
-
     }
     else if (javaClassName.equals("java.lang.Boolean")){
       theReturn = "CHAR(1)";
