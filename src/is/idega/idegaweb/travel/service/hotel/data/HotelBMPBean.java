@@ -46,6 +46,9 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
     addAttribute(getNumberOfUnitsColumnName(), "Fjöldi eininga", true, true, Integer.class);
     addAttribute(getColumnNameMaxPerUnit(), "Fjoldi a einingu", true, true, Integer.class);
     addAttribute(getColumnNameRoomTypeId(), "room type", true, true, Integer.class, "one-to-one", RoomType.class);
+    addAttribute(getColumnNameRating(), "rating", true, true, Float.class);
+    addManyToManyRelationShip(RoomType.class);
+    addManyToManyRelationShip(HotelType.class);
   }
 
   public String getEntityName() {
@@ -68,44 +71,112 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
   	setColumn(getColumnNameMaxPerUnit(), maxPerUnit);
   }
   
-  public int getRoomTypeId() {
-  	return getIntColumnValue(getColumnNameRoomTypeId());
+  public Collection getRoomTypes() throws IDORelationshipException {
+  	Collection coll = this.idoGetRelatedEntities(RoomType.class);
+  	if (coll == null || coll.isEmpty()) {
+  		int tmp = getIntColumnValue(getColumnNameRoomTypeId());
+  		log("HotelBMPBean : backwards compatability fix for roomTypes");
+  		if (tmp > 0) {
+  			addRoomTypeId(tmp);
+  			coll = this.idoGetRelatedEntities(RoomType.class);
+  		}
+  	}
+  	return coll;
   }
   
-  public void setRoomTypeId(int roomTypeId) {
-  	setColumn(getColumnNameRoomTypeId(), roomTypeId);	
+  public void setRoomTypeIds(int[] roomTypeIds) throws IDORemoveRelationshipException, IDOAddRelationshipException {
+  	this.idoRemoveFrom(RoomType.class);
+  	if (roomTypeIds != null && roomTypeIds.length > 0) {
+  		for (int i = 0; i < roomTypeIds.length; i++) {
+  			addRoomTypeId(roomTypeIds[i]);
+  		}
+  	}
+  }
+    
+  public void setHotelTypeIds(int[] hotelTypeIds) throws IDOAddRelationshipException, IDORemoveRelationshipException {
+  	this.idoRemoveFrom(HotelType.class);
+  	if (hotelTypeIds != null && hotelTypeIds.length > 0) {
+  		for (int i = 0; i < hotelTypeIds.length; i++) {
+  			addHotelTypeId(new Integer(hotelTypeIds[i]));
+  		}
+  	}
+  }
+  
+  public void addHotelTypeId(Object primaryKey) throws IDOAddRelationshipException {
+  	this.idoAddTo(HotelType.class, primaryKey);
+  }
+  
+  public void addRoomTypeId(int roomTypeId) throws IDOAddRelationshipException {
+  	addRoomTypeId(new Integer(roomTypeId));
+  }
+  
+  public void addRoomTypeId(Object primaryKey) throws IDOAddRelationshipException {
+  	this.idoAddTo(RoomType.class, primaryKey);
+  }
+  
+  public Collection getHotelTypes() throws IDORelationshipException {
+  	return  this.idoGetRelatedEntities(HotelType.class);
+  }
+  
+  public void setRating(float rating) {
+  	setColumn(getColumnNameRating(), rating);
   }
 
+  public float getRating() {
+  	return getFloatColumnValue(getColumnNameRating());
+  }
+  
   public static String getHotelTableName() {return "TB_ACCOMOTATION";}
   public static String getNumberOfUnitsColumnName() {return "NUMBER_OF_UNITS";}
   public static String getColumnNameMaxPerUnit() {return "MAX_PER_UNIT";}
   public static String getColumnNameRoomTypeId() {return "ROOM_TYPE_ID";}
-
+  public static String getColumnNameRating() {return "RATING";}
   public void setPrimaryKey(Object object) {
     super.setPrimaryKey(object);
   }
 
+  /**
+   * Used only for the wait period, will be removed later
+   */
 	public Collection ejbHomeFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] postalCodeId, Object[] supplierId) throws FinderException {
+		return ejbHomeFind(fromStamp, toStamp, roomTypeId, new Object[]{}, postalCodeId, supplierId, -1, -1);
+	}  
+  
+	public Collection ejbHomeFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] hotelTypeId, Object[] postalCodeId, Object[] supplierId, float minRating, float maxRating) throws FinderException {
 		
 		boolean postalCode = (postalCodeId != null && postalCodeId.length > 0); 
 		boolean timeframe = (fromStamp != null && toStamp != null);
 		boolean roomType = (roomTypeId != null && roomTypeId.length > 0);
+		boolean hotelType = ( hotelTypeId != null && hotelTypeId.length > 0);
 		boolean supplier = (supplierId != null && supplierId.length > 0);
 
 		try {		
 			String addressSupplierMiddleTableName = EntityControl.getManyToManyRelationShipTableName(Address.class, Supplier.class);
-	
+			String roomTypeHotelMiddleTableName = EntityControl.getManyToManyRelationShipTableName(RoomType.class, Hotel.class);
+			String hotelTypeHotelMiddleTableName = EntityControl.getManyToManyRelationShipTableName(HotelType.class, Hotel.class);
+			
 			String postalCodeTableName = IDOLookup.getEntityDefinitionForClass(PostalCode.class).getSQLTableName();//  PostalCodeBMPBean.getEntityName();
 			String addressTableName = IDOLookup.getEntityDefinitionForClass(Address.class).getSQLTableName();
 			String serviceTableName = ServiceBMPBean.getServiceTableName();
 			String productTableName = ProductBMPBean.getProductEntityName();
 			String supplierTableName = SupplierBMPBean.getSupplierTableName();
+			String roomTypeTableName = IDOLookup.getEntityDefinitionForClass(RoomType.class).getSQLTableName();
+			String hotelTypeTableName = IDOLookup.getEntityDefinitionForClass(HotelType.class).getSQLTableName();
 	
 			String postalCodeTableIDColumnName = postalCodeTableName+"_id";
 			String addressTableIDColumnName = addressTableName+"_id";
 			String serviceTableIDColumnName = serviceTableName+"_id";
 			String productTableIDColumnName = productTableName+"_id";
 			String supplierTableIDColumnName = supplierTableName+"_id";
+			String roomTypeTableIDColumnName = null;
+			String hotelTypeTableIDColumnName = null;
+			try {
+				roomTypeTableIDColumnName = IDOLookup.getEntityDefinitionForClass(RoomType.class).getPrimaryKeyDefinition().getField().getSQLFieldName();
+				hotelTypeTableIDColumnName = IDOLookup.getEntityDefinitionForClass(HotelType.class).getPrimaryKeyDefinition().getField().getSQLFieldName();
+			} catch (IDOCompositePrimaryKeyException e1) {
+				roomTypeTableIDColumnName = roomTypeTableName+"_id";
+				hotelTypeTableIDColumnName = hotelTypeTableName+"_id";
+			}
 			
 			StringBuffer sql = new StringBuffer();
 			sql.append("select distinct h.* from ").append(getHotelTableName()).append(" h, ")
@@ -115,6 +186,13 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 			if (postalCode || supplier) {
 				sql.append(", ").append(supplierTableName).append(" su");
 			}	
+			if (roomType) {
+				sql.append(", ").append(roomTypeHotelMiddleTableName).append(" rth");
+				//.append(", ").append(roomTypeTableName).append(" rt");
+			}
+			if (hotelType) {
+				sql.append(", ").append(hotelTypeHotelMiddleTableName).append(" hth");
+			}
 
 			if (postalCode) {
 				sql.append(", ").append(addressSupplierMiddleTableName).append(" asm, ")
@@ -155,13 +233,39 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 			}
 			
 			if (roomType) {
-				sql.append(" AND h.").append(getColumnNameRoomTypeId()).append(" in (");
+				sql.append(" AND h.").append(getIDColumnName()).append("= rth.").append(getIDColumnName());
+				//sql.append(" AND rth.").append(getIDColumnName()).append("= rt.").append(roomTypeTableIDColumnName);
+				sql.append(" AND  rth.").append(roomTypeTableIDColumnName).append(" in (");
 				for (int i = 0; i < roomTypeId.length; i++) {
 					if (i != 0) {
 						sql.append(", ");
 					}
 					sql.append(roomTypeId[i]);
-				}			sql.append(")");
+				}			
+				sql.append(") ");
+				
+			}
+
+			if (hotelType) {
+				sql.append(" AND h.").append(getIDColumnName()).append("= hth.").append(getIDColumnName());
+				//sql.append(" AND rth.").append(getIDColumnName()).append("= rt.").append(roomTypeTableIDColumnName);
+				sql.append(" AND  hth.").append(hotelTypeTableIDColumnName).append(" in (");
+				for (int i = 0; i < hotelTypeId.length; i++) {
+					if (i != 0) {
+						sql.append(", ");
+					}
+					sql.append(hotelTypeId[i]);
+				}			
+				sql.append(") ");
+				
+			}
+			
+			if (minRating > -1) {
+				sql.append(" AND h.").append(getColumnNameRating()).append(" >= ").append(minRating);
+			}
+
+			if (maxRating > -1) {
+				sql.append(" AND h.").append(getColumnNameRating()).append(" <= ").append(maxRating);
 			}
 			//sql.append(" order by ").append();
 			
