@@ -44,6 +44,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	private boolean isAdministrator;
 	private ICPage contractsPage;
 	private Boolean _canEdit;
+	private boolean _useSubmitConfirm;
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -352,7 +353,9 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				if (getBusiness().getUserBusiness().hasBankLogin(application.getOwner())) {
 					createContract = (SubmitButton) getButton(new SubmitButton(localize("child_care.create_contract_for_digital_signing","Create contract for BankID")));
 					createContract.setValueOnClick(PARAMETER_CREATE_CONTRACT, ACTION_CREATE_BANKID_CONTRACT);
-					createContract.setSingleSubmitConfirm(localize("child_care.confirm_create_contract", "OK to proceed with creating contract?"));
+					if (_useSubmitConfirm) {
+						createContract.setSingleSubmitConfirm(localize("child_care.confirm_create_contract", "OK to proceed with creating contract?"));
+					}
 					form.setToDisableOnSubmit(createContract, true);
 							
 					disabledCreateContract = (GenericButton) getStyledInterface(new GenericButton("create_contract", localize("child_care.create_contract_for_digital_signing","Create contract for BankID")));
@@ -361,7 +364,9 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				else {
 					createContract = (SubmitButton) getButton(new SubmitButton(localize("child_care.create_contract","Create contract")));
 					createContract.setValueOnClick(PARAMETER_CREATE_CONTRACT, ACTION_CREATE_REGULAR_CONTRACT);
-					createContract.setSingleSubmitConfirm(localize("child_care.confirm_create_contract", "OK to proceed with creating contract?"));
+					if (_useSubmitConfirm) {
+						createContract.setSingleSubmitConfirm(localize("child_care.confirm_create_contract", "OK to proceed with creating contract?"));
+					}
 					form.setToDisableOnSubmit(createContract, true);
 					
 					disabledCreateContract = (GenericButton) getStyledInterface(new GenericButton("create_contract", localize("child_care.create_contract","Create contract")));
@@ -485,6 +490,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	public void setShowParentsAgree(boolean b) {
 		showParentsAgree = b;
 	}
+	
 	/**
 	 * @param b
 	 */
@@ -492,4 +498,10 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		showRecreateContract = b;
 	}
 
+	/**
+	 * @param useSubmitConfirm The useSubmitConfirm to set.
+	 */
+	public void setToUseSubmitConfirm(boolean useSubmitConfirm) {
+		this._useSubmitConfirm = useSubmitConfirm;
+	}
 }
