@@ -1022,4 +1022,8 @@ public class StaffBrowser extends Block implements Builderaware {
 	public void setAllowUserEdit(boolean userEdit) {
 		_allowUserEdit = userEdit;
 	}
+	
+	public void setShowPictureInList(boolean picture){
+		_showPictureInList = picture;
+	}
 }
