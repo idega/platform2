@@ -233,14 +233,33 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	}
 	
 	private void synchronizeUnion(User user, Member member) throws RemoteException {
+		
 		String mainUnion = user.getMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY);
-		//set the user out of clubs if
-		mainUnion = (mainUnion==null || "".equals(mainUnion))?NO_CLUB_ABBR:mainUnion;
+		mainUnion = ("".equals(mainUnion))?null:mainUnion;
 		//todo remove the connection to the club
 		String subUnions = user.getMetaData(MetadataConstants.SUB_CLUBS_GOLF_META_DATA_KEY);
 		subUnions = ("".equals(subUnions))?null:subUnions;
 		
-		//todo optimize this. it now always has to change every unionmemberinfo for each abbreviation!
+		//first we deactivate all sub club union member infos, 
+		//otherwise we will miss the changes when only some of the subclubs are removed
+		try {
+			//deactivate all subclubs member infos
+			unionCorrect.setMemberInactiveInAllSubUnions(member);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		//must be done here because otherwise the wrong sub union will be deactivated
+		//and we will miss a main club change, because the unionmemberinfo will still exist
+		try {
+			unionCorrect.setMemberInactiveInMainUnion(member);
+		}
+		catch (SQLException e) {
+				e.printStackTrace();
+		}
+		
+		
 		if(subUnions!=null){
 			StringTokenizer tokens = new StringTokenizer(subUnions,",");
 			while (tokens.hasMoreTokens()) {
@@ -248,6 +267,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 				Union sub = getUnionFromAbbreviation(subAbbr);
 				if(sub!=null){
 					try {
+						//this will be corrected later but this also activates only the correct unions
 						unionCorrect.setMainUnion(member,sub.getID());
 					}
 					catch (SQLException e) {
@@ -256,19 +276,10 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 				}
 			}
 			
-		}else{
-			//sub club
-			try {
-				//deactivate all subclubs member infos
-				unionCorrect.setMemberInactiveInAllSubUnions(member);
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 
 		//must be done last!
-		if(!NO_CLUB_ABBR.equals(mainUnion)){
+		if(mainUnion!=null){
 			Union main = getUnionFromAbbreviation(mainUnion);
 			if(main!=null){
 				try {
@@ -279,16 +290,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 				}
 			}
 		}
-		else{
-			//does not have a current main club
-			try {
-				unionCorrect.setMemberInactiveInMainUnion(member);
-			}
-			catch (SQLException e) {
-				e.printStackTrace();
-			}
-			
-		}
+		
 	}
 
 	/**
