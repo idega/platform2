@@ -1,5 +1,5 @@
 /*
- * $Id: CurrentResidency.java,v 1.2 2001/06/22 00:18:24 palli Exp $
+ * $Id: CurrentResidency.java,v 1.3 2001/06/25 22:57:18 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,9 +18,9 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class CurrentResidency extends GenericEntity {
-  public static final String name_ = "cam_curr_res";
-  public static final String description_ = "description";
-  public static final String requiresExtraInfo_ = "requires_extra_info";
+  private static final String name_ = "cam_curr_res";
+  private static final String description_ = "description";
+  private static final String requiresExtraInfo_ = "requires_extra_info";
 
   public CurrentResidency() {
     super();
@@ -40,6 +40,14 @@ public class CurrentResidency extends GenericEntity {
 
   public String getEntityName() {
     return(name_);
+  }
+
+  public String getDescriptionColumnName() {
+    return(description_);
+  }
+
+  public String getRequiresExtranInfoColumnName() {
+    return(requiresExtraInfo_);
   }
 
   public String getName() {

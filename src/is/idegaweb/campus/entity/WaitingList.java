@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingList.java,v 1.3 2001/06/21 16:21:18 palli Exp $
+ * $Id: WaitingList.java,v 1.4 2001/06/25 22:57:18 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,12 +18,12 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class WaitingList extends GenericEntity {
-  public static final String name_ = "cam_waiting_list";
-  public static final String complexId_ = "bu_complex_id";
-  public static final String apartmentTypeId_ = "bu_apartment_type_id";
-  public static final String applicantId_ = "app_applicant_id";
-  public static final String waitingListTypeId_ = "app_wl_type_id";
-  public static final String order_ = "ordered";
+  private static final String name_ = "cam_waiting_list";
+  private static final String complexId_ = "bu_complex_id";
+  private static final String apartmentTypeId_ = "bu_apartment_type_id";
+  private static final String applicantId_ = "app_applicant_id";
+  private static final String waitingListTypeId_ = "app_wl_type_id";
+  private static final String order_ = "ordered";
 
   public WaitingList() {
     super();
@@ -44,6 +44,26 @@ public class WaitingList extends GenericEntity {
 
   public String getEntityName() {
     return(name_);
+  }
+
+  public String getComplexIdColumnName() {
+    return(complexId_);
+  }
+
+  public String getApartmentTypeIdColumnName() {
+    return(apartmentTypeId_);
+  }
+
+  public String getApplicantIdColumnName() {
+    return(applicantId_);
+  }
+
+  public String getWaitingListTypeIdColumnName() {
+    return(waitingListTypeId_);
+  }
+
+  public String getOrderColumnName() {
+    return(order_);
   }
 
   public void setComplexId(int id) {

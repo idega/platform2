@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListType.java,v 1.2 2001/06/21 16:21:18 palli Exp $
+ * $Id: WaitingListType.java,v 1.3 2001/06/25 22:57:18 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,8 +18,8 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class WaitingListType extends GenericEntity {
-  public static final String name_ = "cam_wl_type";
-  public static final String description_ = "description";
+  private static final String name_ = "cam_wl_type";
+  private static final String description_ = "description";
 
   public WaitingListType() {
     super();
@@ -37,6 +37,10 @@ public class WaitingListType extends GenericEntity {
 
   public String getEntityName() {
     return(name_);
+  }
+
+  public String getDescriptionColumnName() {
+    return(description_);
   }
 
   public void setDescription(String description) {
