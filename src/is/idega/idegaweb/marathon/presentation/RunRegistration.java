@@ -9,6 +9,7 @@ import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import com.idega.block.text.business.TextFormatter;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -114,11 +116,15 @@ public class RunRegistration extends Block {
 
 	private Text buyChipText;
 
-	private float buyPrice = 2700;
-
 	private Text rentChipText;
 
+	private float buyPrice = 2700;
+
 	private float rentPrice = 300;
+
+	private float buyPriceEuro = 36;
+
+	private float rentPriceEuro = 4;
 
 	private Text groupCompetitionText;
 
@@ -267,10 +273,11 @@ public class RunRegistration extends Block {
 		//step two texts end
 	}
 
-	private void initializeFields(IWContext iwc) {
+	private void initializeFields(IWContext iwc) throws RemoteException {
 		//TODO: remove javascript popups - put red text containing error
 		// messages...
 		iwrb = getResourceBundle(iwc);
+		boolean isIcelandic = iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale());
 
 		//step one fields begin
 		runDisDropdownField = (RunDistanceDropdownDouble) getStyleObject(new RunDistanceDropdownDouble(), STYLENAME_INTERFACE);
@@ -296,22 +303,26 @@ public class RunRegistration extends Block {
 			nationalityField = (DropdownMenu) util.getSelectorFromIDOEntities(nationalityField, countries, "getName");
 			countryField = (DropdownMenu) util.getSelectorFromIDOEntities(countryField, countries, "getName");
 		}
-//		if (iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())) {
-			nationalityField.setSelectedElement("104");
-			countryField.setSelectedElement("104");
-//		}
+		if (isIcelandic) {
+			nationalityField.setSelectedElement(ICLocaleBusiness.getLocaleId(LocaleUtil.getIcelandicLocale()));
+			countryField.setSelectedElement(ICLocaleBusiness.getLocaleId(LocaleUtil.getIcelandicLocale()));
+		}
 		nationalityField.setWidth(Table.HUNDRED_PERCENT);
+		nationalityField.addMenuElementFirst("-1", iwrb.getLocalizedString("run_reg.select_country", "Select country"));
 		countryField.setWidth(Table.HUNDRED_PERCENT);
+		nationalityField.addMenuElementFirst("-1", iwrb.getLocalizedString("run_reg.select_nationality", "Select ationality"));
 
 		ssnISField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_SSN_IS), STYLENAME_INTERFACE);
 		ssnISField.setAsIcelandicSSNumber(iwrb.getLocalizedString("run_reg.ssn_is_err_msg", "Your ssn is not a valid Icelandic ssn"));
 		ssnISField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.ssnIS_not_empty", "ssnIS may not be empty"));
 		ssnISField.setLength(10);
 
+		IWTimestamp stamp = new IWTimestamp();
 		ssnField = (DateInput) getStyleObject(new DateInput(IWMarathonConstants.PARAMETER_SSN), STYLENAME_INTERFACE);
 		//TODO: set the ssnField as either dateInput or set a error check on
 		// the TextInput...
 		ssnField.setAsNotEmpty("Date of birth can not be empty");
+		ssnField.setYearRange(stamp.getYear(), stamp.getYear() - 100);
 
 		genderField = (DropdownMenu) getStyleObject(new DropdownMenu(IWMarathonConstants.PARAMETER_GENDER), STYLENAME_INTERFACE);
 		genderField.addMenuElement(IWMarathonConstants.PARAMETER_FEMALE, iwrb.getLocalizedString(IWMarathonConstants.RR_FEMALE, "Female"));
@@ -319,13 +330,22 @@ public class RunRegistration extends Block {
 
 		addressField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_ADDRESS), STYLENAME_INTERFACE);
 		addressField.setWidth(Table.HUNDRED_PERCENT);
+		if (!isIcelandic) {
+			addressField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.must_provide_address", "You must enter your address."));
+		}
 
 		postalField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_POSTAL), STYLENAME_INTERFACE);
 		postalField.setMaxlength(7);
-		nameField.setLength(7);
+		postalField.setLength(7);
+		if (!isIcelandic) {
+			postalField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.must_provide_postal", "You must enter your postal address."));
+		}
 
 		cityField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_CITY), STYLENAME_INTERFACE);
 		cityField.setWidth(Table.HUNDRED_PERCENT);
+		if (!isIcelandic) {
+			cityField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.must_provide_city", "You must enter your city of living."));
+		}
 
 		telField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_TEL), STYLENAME_INTERFACE);
 		telField.setAsIntegers(iwrb.getLocalizedString("run_reg.tel_err_msg", "Phonenumber must be integers"));
@@ -338,7 +358,10 @@ public class RunRegistration extends Block {
 		emailField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_EMAIL), STYLENAME_INTERFACE);
 		emailField.setAsEmail(iwrb.getLocalizedString("run_reg.email_err_msg", "Not a valid email address"));
 		emailField.setWidth(Table.HUNDRED_PERCENT);
-
+		if (!isIcelandic) {
+			emailField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.must_provide_email", "You must enter your e-mail address."));
+		}
+		
 		tShirtField = (DropdownMenu) getStyleObject(new DropdownMenu(IWMarathonConstants.PARAMETER_TSHIRT), STYLENAME_INTERFACE);
 		small = new SelectOption(iwrb.getLocalizedString("run_reg.small", "Small"), IWMarathonConstants.PARAMETER_TSHIRT_S);
 		medium = new SelectOption(iwrb.getLocalizedString("run_reg.medium", "Medium"), IWMarathonConstants.PARAMETER_TSHIRT_M);
@@ -356,7 +379,8 @@ public class RunRegistration extends Block {
 
 		//step two fields begin
 		ownChipField = (RadioButton) getStyleObject(new RadioButton(IWMarathonConstants.PARAMETER_CHIP, IWMarathonConstants.PARAMETER_OWN_CHIP), STYLENAME_CHECKBOX);
-
+		ownChipField.setMustBeSelected(iwrb.getLocalizedString("run_reg.must_select_chip_option", "You have to select one chip option."));
+		
 		buyChipField = (RadioButton) getStyleObject(new RadioButton(IWMarathonConstants.PARAMETER_CHIP, IWMarathonConstants.PARAMETER_BUY_CHIP), STYLENAME_CHECKBOX);
 
 		rentChipField = (RadioButton) getStyleObject(new RadioButton(IWMarathonConstants.PARAMETER_CHIP, IWMarathonConstants.PARAMETER_RENT_CHIP), STYLENAME_CHECKBOX);
@@ -478,6 +502,15 @@ public class RunRegistration extends Block {
 		t.setHeight(row++, 3);
 		t.add(emailField, column, row++);
 
+		StringBuffer emailValidation = new StringBuffer();
+		emailValidation.append("function isEmailEntered() {").append("\n\t");
+		emailValidation.append("var email = findObj('"+IWMarathonConstants.PARAMETER_EMAIL+"';");
+		emailValidation.append("if (email.value == '') {").append("\n\t\t");
+		emailValidation.append("return confirm('"+iwrb.getLocalizedString("run_reg.continue_without_email", "Are you sure you want to continue without entering an e-mail?")+"');").append("\n\t");
+		emailValidation.append("}").append("\n");
+		emailValidation.append("}");
+		emailField.setOnSubmitFunction("isEmailEntered", emailValidation.toString());
+
 		t.setHeight(row++, 8);
 
 		t.add(telText, column, row++);
@@ -522,25 +555,45 @@ public class RunRegistration extends Block {
 		t.setCellspacing(0);
 		int column = 1;
 		int row = 1;
-		int formRow = -1;
-
+		
 		t.add(iwrb.getLocalizedString("step", "Step") + " 2 " + iwrb.getLocalizedString("of", "of") + " 2", column, row++);
 		t.setHeight(row++, 12);
-
-		formRow = row;
-		t.add(chipText, column, row++);
-		t.setHeight(row++, 3);
-		t.add(ownChipField, column, row);
-		t.add(ownChipText, column, row);
-		t.add(chipNumberField, column, row++);
-		t.setHeight(row++, 3);
-		t.add(buyChipField, column, row);
-		t.add(buyChipText, column, row++);
-		t.setHeight(row++, 3);
-		t.add(rentChipField, column, row);
-		t.add(rentChipText, column, row++);
-
-		t.setHeight(row++, 8);
+		
+		int threeKM = Integer.parseInt(iwrb.getIWBundleParent().getProperty("3_km_id", "126"));
+		int runID = Integer.parseInt(iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN));
+		
+		if (threeKM != runID) {
+			Currency ISK = Currency.getInstance("ISK");
+			Currency EUR = Currency.getInstance("EUR");
+	
+			t.add(chipText, column, row++);
+			t.setHeight(row++, 3);
+			t.add(ownChipField, column, row);
+			t.add(ownChipText, column, row);
+			t.add(chipNumberField, column, row++);
+			t.setHeight(row++, 3);
+			t.add(buyChipField, column, row);
+			t.add(buyChipText, column, row);
+			t.add(" - ", column, row);
+			if (iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())) {
+				t.add(String.valueOf(buyPrice) + " " + ISK.getSymbol(), column, row++);
+			}
+			else {
+				t.add(EUR.getSymbol() + String.valueOf(buyPriceEuro), column, row++);
+			}
+			t.setHeight(row++, 3);
+			t.add(rentChipField, column, row);
+			t.add(rentChipText, column, row);
+			t.add(" - ", column, row);
+			if (iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())) {
+				t.add(String.valueOf(rentPrice) + " " + ISK.getSymbol(), column, row++);
+			}
+			else {
+				t.add(EUR.getSymbol() + String.valueOf(rentPriceEuro), column, row++);
+			}
+			
+			t.setHeight(row++, 8);
+		}
 
 		t.add(groupCompetitionField, column, row);
 		t.add(Text.getNonBrakingSpace(), column, row);
@@ -601,7 +654,7 @@ public class RunRegistration extends Block {
 		f.add(t);
 	}
 
-	private void commitRegistration(IWContext iwc) {
+	private void commitRegistration(IWContext iwc) throws RemoteException {
 		RunBusiness runBiz = getRunBiz(iwc);
 
 		//user info
@@ -645,79 +698,114 @@ public class RunRegistration extends Block {
 
 		int userID = -1;
 		
-		if (agrees) {
-			if (ssnIS != null && !ssnIS.equals("")) {
-				userID = runBiz.saveUser(name, ssnIS, dateOfBirth, gender, address, postal, city, country, tel, mobile, email);
-				
-			}
-			else if (ssn != null && !ssn.equals("")) {
-				userID = runBiz.saveUser(name, ssn, dateOfBirth, gender, address, postal, city, country, tel, mobile, email);
-			}
-	
-			if (userID > 0) {
-				runBiz.saveRun(userID, run, distance, year, nationality, tshirt, chipNumber, groupName, bestTime, goalTime, iwc.getCurrentLocale());
-			}
-	
-			Table t = new Table();
-			t.setCellpadding(0);
-			t.setCellspacing(0);
-			t.setWidth(Table.HUNDRED_PERCENT);
-			int row = 1;
-	
-			String message = iwrb.getLocalizedString("registration_received", "Your registration has been received.");
-			Group runGroup = null;
-			Group distanceGroup = null;
-			try {
-				runGroup = getGroupBusiness(iwc).getGroupByGroupID(Integer.parseInt(run));
-				distanceGroup = getGroupBusiness(iwc).getGroupByGroupID(Integer.parseInt(distance));
-				Object[] args = { name, iwrb.getLocalizedString(runGroup.getName(),runGroup.getName()), iwrb.getLocalizedString(tshirt, tshirt) };
-				message = MessageFormat.format(iwrb.getLocalizedString("registration_received", "Your registration has been received."), args);
-			}
-			catch (RemoteException re) {
-				log(re);
-			}
-			catch (FinderException fe) {
-				log(fe);
-			}
+		Table t = new Table();
+		t.setCellpadding(0);
+		t.setCellspacing(0);
+		t.setWidth(Table.HUNDRED_PERCENT);
+		int row = 1;
+
+		Link backBlue = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.back", "Back")), STYLENAME_BLUE_TEXT);
+		Link backGreen = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
+		backBlue.setAsBackLink();
+		backGreen.setAsBackLink();
+		String message = "";
+		
+		boolean isAlreadyRegistered = getRunBiz(iwc).isRegisteredInRun(Integer.parseInt(run), iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale()) ? ssnIS : ssn);
+		if (!isAlreadyRegistered) {
 			
+			if (agrees) {
+				if (ssnIS != null && !ssnIS.equals("")) {
+					userID = runBiz.saveUser(name, ssnIS, dateOfBirth, gender, address, postal, city, country, tel, mobile, email);
+					
+				}
+				else if (ssn != null && !ssn.equals("")) {
+					userID = runBiz.saveUser(name, ssn, dateOfBirth, gender, address, postal, city, country, tel, mobile, email);
+				}
+		
+				if (userID > 0) {
+					runBiz.saveRun(userID, run, distance, year, nationality, tshirt, chipNumber, groupName, bestTime, goalTime, iwc.getCurrentLocale());
+				}
+		
+				message = iwrb.getLocalizedString("registration_received", "Your registration has been received.");
+				Group runGroup = null;
+				Group distanceGroup = null;
+				try {
+					runGroup = getGroupBusiness(iwc).getGroupByGroupID(Integer.parseInt(run));
+					distanceGroup = getGroupBusiness(iwc).getGroupByGroupID(Integer.parseInt(distance));
+					Object[] args = { name, iwrb.getLocalizedString(runGroup.getName(),runGroup.getName()), iwrb.getLocalizedString(distanceGroup.getName(),distanceGroup.getName()), iwrb.getLocalizedString(tshirt, tshirt) };
+					message = MessageFormat.format(iwrb.getLocalizedString("registration_received", "Your registration has been received."), args);
+				}
+				catch (RemoteException re) {
+					log(re);
+				}
+				catch (FinderException fe) {
+					log(fe);
+				}
+				
+				Table buttonTable = new Table(3, 1);
+				buttonTable.setCellpadding(0);
+				buttonTable.setCellspacing(0);
+				buttonTable.setWidth(2, 1, 12);
+		
+				Link payBlue = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.pay", "Pay fee")), STYLENAME_BLUE_TEXT);
+				Link payGreen = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
+				if (runGroup != null && distanceGroup != null) {
+					String URL = iwrb.getIWBundleParent().getProperty("travelURL_"+runGroup.getName()+"_"+distanceGroup.getName()+"_"+year+"_"+iwc.getCurrentLocale().toString(), "#");
+					if (URL.equals("#")) {
+						showPayment = false;
+					}
+					payBlue.setURL(URL);
+					payBlue.setTarget(Link.TARGET_NEW_WINDOW);
+					payGreen.setURL(URL);
+					payGreen.setTarget(Link.TARGET_NEW_WINDOW);
+				}
+		
+				buttonTable.add(backBlue, 1, 1);
+				buttonTable.add(Text.getNonBrakingSpace(), 1, 1);
+				buttonTable.add(backGreen, 1, 1);
+				if (showPayment) {
+					buttonTable.add(payBlue, 3, 1);
+					buttonTable.add(Text.getNonBrakingSpace(), 3, 1);
+					buttonTable.add(payGreen, 3, 1);
+				}
+	
+				t.setHeight(row++, 12);
+				if (showPayment) {
+					t.add(payBlue, 1, row);
+					t.add(Text.getNonBrakingSpace(), 1, row);
+					t.add(payGreen, 1, row++);
+					t.setHeight(row++, 6);
+				}
+				t.add(TextFormatter.formatText(message), 1, row++);
+				t.setHeight(row++, 8);
+		
+				t.add(buttonTable, 1, row);
+				add(t);
+			}
+			else {
+				message = iwrb.getLocalizedString("run_reg.must_accept_conditions", "You must accept the conditions before you can register.");
+
+				t.setHeight(row++, 12);
+				t.add(TextFormatter.formatText(message), 1, row++);
+				t.setHeight(row++, 8);
+				t.add(backBlue, 1, row);
+				t.add(Text.getNonBrakingSpace(), 1, row);
+				t.add(backGreen, 1, row++);
+			}
+		}
+		else {
+			message = iwrb.getLocalizedString("run_reg.already_registered", "You have already registered for this run.");
+
 			t.setHeight(row++, 12);
 			t.add(TextFormatter.formatText(message), 1, row++);
 			t.setHeight(row++, 8);
-	
-			Table buttonTable = new Table(3, 1);
-			buttonTable.setCellpadding(0);
-			buttonTable.setCellspacing(0);
-			buttonTable.setWidth(2, 1, 12);
-	
-			Link backBlue = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.back", "Back")), STYLENAME_BLUE_TEXT);
-			Link backGreen = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
-	
-			Link payBlue = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.pay", "Pay fee")), STYLENAME_BLUE_TEXT);
-			Link payGreen = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
-			if (runGroup != null && distanceGroup != null) {
-				String URL = iwrb.getIWBundleParent().getProperty("travelURL_"+runGroup.getName()+"_"+distanceGroup.getName()+"_"+year+"_"+iwc.getCurrentLocale().toString(), "#");
-				if (URL.equals("#")) {
-					showPayment = false;
-				}
-				payBlue.setURL(URL);
-				payBlue.setTarget(Link.TARGET_NEW_WINDOW);
-				payGreen.setURL(URL);
-				payGreen.setTarget(Link.TARGET_NEW_WINDOW);
-			}
-	
-			buttonTable.add(backBlue, 1, 1);
-			buttonTable.add(Text.getNonBrakingSpace(), 1, 1);
-			buttonTable.add(backGreen, 1, 1);
-			if (showPayment) {
-				buttonTable.add(payBlue, 3, 1);
-				buttonTable.add(Text.getNonBrakingSpace(), 3, 1);
-				buttonTable.add(payGreen, 3, 1);
-			}
-			t.add(buttonTable, 1, row);
-			add(t);
+			t.add(backBlue, 1, row);
+			t.add(Text.getNonBrakingSpace(), 1, row);
+			t.add(backGreen, 1, row++);
 		}
 	}
-	public void main(IWContext iwc) {
+	
+	public void main(IWContext iwc) throws Exception {
 		f = new Form();
 		initializeTexts(iwc);
 		initializeFields(iwc);
@@ -751,6 +839,14 @@ public class RunRegistration extends Block {
 
 	public void setBuyPrice(float price) {
 		buyPrice = price;
+	}
+
+	public void setRentPriceEuro(float price) {
+		rentPriceEuro = price;
+	}
+
+	public void setBuyPriceEuro(float price) {
+		buyPriceEuro = price;
 	}
 
 	public float getRentPrice() {

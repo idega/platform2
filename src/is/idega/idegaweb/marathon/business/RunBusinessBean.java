@@ -187,6 +187,21 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 		return Integer.parseInt(String.valueOf(user.getPrimaryKey()));
 	}
+	
+	public boolean isRegisteredInRun(int runID, String personalID) {
+		try {
+			User user = getUserBiz().getUserHome().findByPersonalID(personalID);
+			
+			return getUserBiz().isMemberOfGroup(runID, user);
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+		catch (FinderException fe) {
+			//User does not exist in database...
+		}
+		return false;
+	}
 
 	/**
 	 * 
