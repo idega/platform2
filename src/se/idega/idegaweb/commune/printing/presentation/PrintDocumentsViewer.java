@@ -6,7 +6,9 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.business.CommuneCaseBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.PrintMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.presentation.ColumnList;
@@ -14,6 +16,7 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 
+import com.idega.block.process.data.CaseCode;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.location.data.Address;
@@ -926,6 +929,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		}
 		while (iter.hasNext() && count <= ccp) {
 			PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
+			if (!displayMessageToCommuneAdministrator(iwc, msg)) {
+				continue;
+			}
 			printedLetterDocs.add(String.valueOf(count));
 			printedLetterDocs.add(msg.getCreated().toString());
 			//messageList.add("-");
@@ -1097,6 +1103,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		Address addr;
 		while (iter.hasNext() && count <= ccu) {
 			PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
+			if (!displayMessageToCommuneAdministrator(iwc, msg)) {
+				continue;
+			}
 			letterList.add(String.valueOf(count));
 			letterList.add(msg.getCreated().toString());
 			//messageList.add("-");
@@ -1188,6 +1197,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		//String sAddr = "";
 		while (iter.hasNext()) {
 			msg = (PrintMessage) iter.next();
+			if (!displayMessageToCommuneAdministrator(iwc, msg)) {
+				continue;
+			}
 			owner = msg.getOwner();
 			unPrintedNames.add(msg.getCreated().toString());
 			unPrintedNames.add(owner.getName());
@@ -1246,5 +1258,24 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	public void setUserPreferenceIDParameterName(String prm){
 		this.UserIDPreferenceParameterName = prm;
 	}
+	
+	private boolean displayMessageToCommuneAdministrator(IWContext iwc, Message message) {
+		boolean canDisplay = true;
+		try {
+			if (message.getParentCase() == null) {
+				return true;
+			}
+			CaseCode caseCode = message.getCaseCode();
+			CommuneCaseBusiness ccBus = (CommuneCaseBusiness) IBOLookup.getServiceInstance(iwc, CommuneCaseBusiness.class);
+			CaseCode[] codes = ccBus.getProviderCaseCodes();
+			for (int i = 0; i < codes.length && canDisplay; i++) {
+				canDisplay = !codes[i].equals(caseCode);
+			}
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		return canDisplay;
+	}
+	
 	// http://localhost:8080/nacka/index.jsp?prv_let_tp=PASS&prv_pfrm=2003-02-14+08%3A41%3A08&prv_ufrm=2003-02-14+08%3A41%3A08&prv_pto=2003-02-21+08%3A41%3A08&prv_uto=2003-02-21+08%3A41%3A08&iw_language=sv_SE&ib_page=299&idega_session_id=8BEE24A6C87C5C9514E48C3D31503DCA
 }
