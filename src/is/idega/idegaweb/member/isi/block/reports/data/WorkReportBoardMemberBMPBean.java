@@ -23,7 +23,7 @@ import com.idega.user.data.User;
  * Company: Idega Software <br>
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class WorkReportBoardMemberBMPBean extends GenericEntity{
+public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkReportBoardMember {
 	protected final static String ENTITY_NAME = "ISI_WR_BOARD_MEMB";
 	protected final static String COLUMN_NAME_REPORT_ID = "ISI_WORK_REPORT_ID";
 	protected final static String COLUMN_NAME_WORK_REPORT_GROUP = "WR_GROUP_ID";
@@ -154,23 +154,11 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity{
 		setColumn(COLUMN_NAME_USER_ID,userId);
 	}
 	
-	public Collection ejbFindAllWorkReportMembersByWorkReportIdOrderedByMemberName(int reportId) throws FinderException{
+	public Collection ejbFindAllWorkReportBoardMembersByWorkReportIdOrderedByMemberName(int reportId) throws FinderException{
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_NAME);
 	}
 	
-	
-	public Collection ejbFindAllWorkReportBoardMembersByWorkReportId(int reportId) throws FinderException{
-		IDOQuery sql = idoQuery();
-		
-		sql.appendSelectAllFrom(this.getEntityName())
-		.appendWhere()
-		.appendEqualsQuoted(COLUMN_NAME_BOARD_MEMBER,"Y")
-		.appendAndEquals(COLUMN_NAME_REPORT_ID,reportId);
-			
-		return idoFindPKsByQuery(sql);
-	}
-	
-	public Integer ejbFindWorkReportMemberByUserIdAndWorkReportId(int userId, int reportId) throws FinderException{
+	public Integer ejbFindWorkReportBoardMemberByUserIdAndWorkReportId(int userId, int reportId) throws FinderException{
 		IDOQuery sql = idoQuery();
 		
 		sql.appendSelectAllFrom(this.getEntityName())
