@@ -36,15 +36,16 @@ public class ManagerListView extends CommuneBlock {
 	
 	private Table mainTable = null;
 	private int managerPageID = -1;
-	private int groupID;
+	private int groupID=-1;
+	private boolean addHeader=true;
 
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
 	public void main(IWContext iwc)throws Exception {
 		try {
-			int action = parseAction(iwc);
 			initGroupID(iwc);
+			int action = parseAction(iwc);
 			//System.out.println("main: action="+action);
 			switch (action) {
 				case ACTION_VIEW_MANAGER_LIST :
@@ -54,6 +55,7 @@ public class ManagerListView extends CommuneBlock {
 					viewManager(iwc);
 					break;
 				default :
+					viewNoGroup(iwc);
 					break;
 			}
 			super.add(mainTable);
@@ -75,6 +77,16 @@ public class ManagerListView extends CommuneBlock {
 			}
 		}
 	}
+	private int parseAction(IWContext iwc) {
+		int action = -1;
+		if(groupID!=-1){
+			action = ACTION_VIEW_MANAGER_LIST;
+		}
+		if(iwc.isParameterSet(PARAM_MANAGER_ID)){
+		  action = ACTION_VIEW_MANAGER;
+		}
+		return action;
+	}
 	
 	public Object clone(){
 		ManagerListView view = (ManagerListView)super.clone();
@@ -94,20 +106,30 @@ public class ManagerListView extends CommuneBlock {
 		}
 		mainTable.add(po);
 	}
-	private int parseAction(IWContext iwc) {
-		int action = ACTION_VIEW_MANAGER_LIST;
-		if(iwc.isParameterSet(PARAM_MANAGER_ID)){
-		  action = ACTION_VIEW_MANAGER;
-		}
-		return action;
+
+	
+	/**
+	 * Method viewNoGroups.
+	 * @param iwc
+	 */
+	private void viewNoGroup(IWContext iwc) {
+		add(getSmallText(localize("managerlistview.no_group_set", "No group selected")));
 	}
+
 	private void viewManagerList(IWContext iwc) throws Exception {
 		//System.out.println("viewManagerList()");
-		add(getLocalizedHeader("managerlistview.managers", "Managers:"));
-		add(new Break(2));
+		//add(getLocalizedHeader("managerlistview.managers", "Managers:"));
+		Group topGroup = getGroup();
+		if(addHeader){
+			String header = topGroup.getName();
+			add(getHeader(header));
+			add(new Break(2));
+		}
+		
+		
 		//if (iwc.isLoggedOn()) {
 			//Collection users = getCommuneUserBusiness(iwc).getAllCommuneAdministrators();
-			Group topGroup = getGroup();
+			
 			Collection users = getGroupBusiness(iwc).getUsersDirectlyRelated(topGroup);
 			if (users != null & !users.isEmpty()) {
 				Form f = new Form();
@@ -134,9 +156,9 @@ public class ManagerListView extends CommuneBlock {
 							lUserName.addParameter(PARAM_MANAGER_ID,user.getPrimaryKey().toString());
 							messageList.add(userName);
 							Text tEmail = getSmallText("-");
-							add(tEmail);
+							messageList.add(tEmail);
 							Text tPhone = getSmallText("-");
-							add(tPhone);
+							messageList.add(tPhone);
 						} catch (Exception e) {
 							add(e);
 							e.printStackTrace();
@@ -310,6 +332,22 @@ public class ManagerListView extends CommuneBlock {
 
 	protected GroupBusiness getGroupBusiness(IWApplicationContext iwac)throws Exception{
 		return (GroupBusiness)com.idega.business.IBOLookup.getServiceInstance(iwac,GroupBusiness.class);
+	}
+
+	/**
+	 * Returns the addHeader.
+	 * @return boolean
+	 */
+	public boolean getIfAddHeader() {
+		return addHeader;
+	}
+
+	/**
+	 * Sets the addHeader.
+	 * @param addHeader The addHeader to set
+	 */
+	public void setAddHeader(boolean addHeader) {
+		this.addHeader = addHeader;
 	}
 
 }
