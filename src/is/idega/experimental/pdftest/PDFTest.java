@@ -71,12 +71,14 @@ public class PDFTest {
 			Paragraph cTitle = new Paragraph(title, titleFont);
 			// for each contract id
 			int lettersProcessed=0;
+			Image image = Image.getInstance("porto_betalt.gif");
+			image.scaleAbsolute(148f, 60f);
 			//outerDocument.setPageCount(messageIDs.length);
-			for (int j = 0; j < 1; j++)
+			for (int j = 0; j < 10; j++)
 			{
 				try{
 					outerDocument.newPage();
-					String sAddrString = "Þórhallur Helgason\nStafnaseli 5\n109 Reykjavík\nIceland";
+					String sAddrString = "Þórhallur Bæring Sveinn Hreinn Helgason\nStafnaseli 5\n109 Reykjavík\nIceland";
 
 					Paragraph P0, P1, P2;
 					PdfPTable headerTable = new PdfPTable(3);
@@ -118,8 +120,6 @@ public class PDFTest {
 					template.showText("131 81 NACKA");
 					template.endText();
 					
-					Image image = Image.getInstance("porto_betalt.jpg");
-					image.scaleAbsolute(148f, 60f);
 					PdfPCell cell3 = new PdfPCell(image);
 					cell3.setBorder(0);
 					cell3.setNoWrap(true);
@@ -135,20 +135,20 @@ public class PDFTest {
 					Phrase phBodyText = new Phrase(sBodyText, textFont);
 					P2 = new Paragraph(phBodyText);
 
-					Phrase newlines = new Phrase("\n\n\n\n\n\n",textFont);
-
 					ColumnText ct = new ColumnText(cb);
-					ct.setSimpleColumn(Ph0,getPointsFromMM((30f+50f)), 755f, getPointsFromMM((100f+70f)), 820f, 15, Element.ALIGN_LEFT);
+					ct.setSimpleColumn(Ph0,getPointsFromMM((30f+48f)), 755f, getPointsFromMM((120f)), 820f, 15, Element.ALIGN_LEFT);
 					ct.go();
 					
-					cb.addImage(image, 148f, 0, 0, 60f, getPointsFromMM((130f)),755f);
+					ColumnText subjectText = new ColumnText(cb);
+					subjectText.setSimpleColumn(P1, getPointsFromMM(30f), 640f, getPointsFromMM((216f-30f)), 670f, 15, Element.ALIGN_LEFT);
+					subjectText.go();
 					
+					ColumnText bodyText = new ColumnText(cb);
+					bodyText.setSimpleColumn(P2, getPointsFromMM(30f), 100f, getPointsFromMM((216f-30f)), 635f, 15, Element.ALIGN_LEFT);
+					bodyText.go();
+					
+					cb.addImage(image, 148f, 0, 0, 60f, getPointsFromMM((130f)),755f);
 					cb.addTemplate(template, getPointsFromMM(30f), 761f);
-					//outerDocument.add(headerTable);
-					outerDocument.add(newlines);
-					outerDocument.add(P1);
-					outerDocument.add(new Phrase("\n"));
-					outerDocument.add(P2);
 
 				}
 				catch(Exception e){
