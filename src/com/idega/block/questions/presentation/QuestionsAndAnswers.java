@@ -273,11 +273,11 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		if(showMoveButtons){
 			if(previous!=null){
 				T.add(new SubmitButton(iwb.getImage("up.gif",iwrb.getLocalizedString("button_up","Move up")),"move_up"),6,1 );
-				T.add(new HiddenInput("swap_quest_id"+entID,previous.getPrimaryKey().toString()));
+				T.add(new HiddenInput("swap_up_quest_id"+entID,previous.getPrimaryKey().toString()));
 			}
 			if(latter!=null){
 				T.add(new SubmitButton(iwb.getImage("down.gif",iwrb.getLocalizedString("button_down","Move down")),"move_down"),6,1 );
-				T.add(new HiddenInput("swap_quest_id"+entID,latter.getPrimaryKey().toString()));
+				T.add(new HiddenInput("swap_down_quest_id"+entID,latter.getPrimaryKey().toString()));
 			}
 		}
 		if(!isForOneQuestion && isAdmin && showDeletedQuestions){
@@ -349,12 +349,12 @@ public class QuestionsAndAnswers extends CategoryBlock {
 				questionsService.validateQuestion(inv_quest_id);
 			}
 			else if(ent_id>0 && iwc.isParameterSet("move_up.x") ){//&& iwc.getParameter("move_up").equals("true")){
-				int swap_quest_id = Integer.parseInt(iwc.getParameter("swap_quest_id"+entityId));
+				int swap_quest_id = Integer.parseInt(iwc.getParameter("swap_up_quest_id"+entityId));
 				if(swap_quest_id >0)
 					questionsService.swapSequences(ent_id,swap_quest_id);
 			}
 			else if(ent_id>0 && iwc.isParameterSet("move_down.x") ){//&& iwc.getParameter("move_down").equals("true")){
-				int swap_quest_id = Integer.parseInt(iwc.getParameter("swap_quest_id"+entityId));
+				int swap_quest_id = Integer.parseInt(iwc.getParameter("swap_down_quest_id"+entityId));
 				if(swap_quest_id >0)
 					questionsService.swapSequences(ent_id,swap_quest_id);
 			}
