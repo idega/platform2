@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.9 2003/10/06 14:42:41 anders Exp $
+ * $Id: VATBusinessBean.java,v 1.10 2003/10/07 10:55:59 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -16,16 +16,19 @@ import javax.ejb.FinderException;
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
 
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryHome;
+
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/10/06 14:42:41 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/07 10:55:59 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -332,5 +335,19 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 		}
 		
 		return vr;		
+	}
+	
+	/**
+	 * Returns the localization key for the specified operational field.
+	 * @param operationalField the operational field id
+	 */
+	public String getOperationalFieldLocalizationKey(String operationalField) {
+		String localizationKey = "";
+		try {
+			SchoolCategoryHome home = (SchoolCategoryHome) com.idega.data.IDOLookup.getHome(SchoolCategory.class);
+			SchoolCategory sc = home.findByPrimaryKey(operationalField);
+			localizationKey = sc.getLocalizedKey();
+		} catch (Exception e) {}
+		return localizationKey;
 	}
 }

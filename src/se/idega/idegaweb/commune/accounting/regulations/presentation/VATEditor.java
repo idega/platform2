@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.23 2003/10/06 14:42:41 anders Exp $
+ * $Id: VATEditor.java,v 1.24 2003/10/07 10:55:59 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATEditor is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/10/06 14:42:41 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/07 10:55:59 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -84,7 +84,8 @@ public class VATEditor extends AccountingBlock {
 	private final static String KEY_VAT_PERCENT = KP + "vat_percent";
 	private final static String KEY_PAYMENT_FLOW_TYPE = KP + "payment_flow_type";
 	private final static String KEY_PROVIDER_TYPE = KP + "provider_type";
-//	private final static String KEY_MAIN_ACTIVITY = KP + "main_activity";
+	private final static String KEY_OPERATIONAL_FIELD = KP + "operational_field";
+	private final static String KEY_OPERATIONAL_FIELD_MISSING = KP + "operational_field_missing";
 	private final static String KEY_PAYMENT_FLOW_TYPE_HEADER = KP + "payment_flow_type_header";
 	private final static String KEY_PROVIDER_TYPE_HEADER = KP + "provider_type_header";
 	private final static String KEY_SEARCH = KP + "search";
@@ -345,7 +346,7 @@ public class VATEditor extends AccountingBlock {
 			}
 		} catch (RemoteException e) {
 			Table t = new Table();
-			t.add(new ExceptionWrapper(e));
+			t.add(new ExceptionWrapper(e), 1, 1);
 			return t;
 		}
 
@@ -389,7 +390,7 @@ public class VATEditor extends AccountingBlock {
 		Table mainPanel = new Table();
 		mainPanel.setCellpadding(0);
 		mainPanel.setCellspacing(0);
-		mainPanel.add(new HiddenInput(PARAMETER_DELETE_ID, "-1"));
+		mainPanel.add(new HiddenInput(PARAMETER_DELETE_ID, "-1"), 1, 1);
 	
 		if (errorMessage != null) {
 			Table t = new Table();
@@ -438,19 +439,30 @@ public class VATEditor extends AccountingBlock {
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.add(getLocalizedLabel(KEY_PERIOD, "Period"));
-		table.add(getTextInput(PARAMETER_PERIOD_FROM, periodFrom, 60), 2, 1);
-		table.add(getText(" - "), 2, 1);
-		table.add(getTextInput(PARAMETER_PERIOD_TO, periodTo, 60), 2, 1);
-		table.add(getLocalizedLabel(KEY_DESCRIPTION, "Benämning"), 1, 2);
-		table.add(getTextInput(PARAMETER_DESCRIPTION, description, 120), 2, 2);
-		table.add(getLocalizedLabel(KEY_VAT_PERCENT, "Procentsats"), 1, 3);
-		table.add(getTextInput(PARAMETER_VAT_PERCENT, vatPercent, 30), 2, 3);
-		table.add(getText(" %"), 2, 3);
-		table.add(getLocalizedLabel(KEY_PAYMENT_FLOW_TYPE, "Ström"), 1, 4);
-		table.add(getPaymentFlowTypeDropdownMenu(iwc, PARAMETER_PAYMENT_FLOW_TYPE_ID, paymentFlowTypeId), 2, 4);
-		table.add(getLocalizedLabel(KEY_PROVIDER_TYPE, "Anordnartyp"), 1, 5);
-		table.add(getProviderTypeDropdownMenu(iwc, PARAMETER_PROVIDER_TYPE_ID, providerTypeId), 2, 5); 
+		int row = 1;
+		table.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverskamhet"), 1, row);
+		String operationalField = null;
+		try {
+			operationalField = getSession().getOperationalField();
+		} catch (RemoteException e) {}
+		if (operationalField == null) {
+			table.add(getErrorText(localize(KEY_OPERATIONAL_FIELD_MISSING, "Ingen huvudverskamhet vald")), 2, row++);
+		} else {
+			table.add(getText(localizeOperationalField(iwc, operationalField)), 2, row++);
+		}
+		table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, row);
+		table.add(getTextInput(PARAMETER_PERIOD_FROM, periodFrom, 60), 2, row);
+		table.add(getText(" - "), 2, row);
+		table.add(getTextInput(PARAMETER_PERIOD_TO, periodTo, 60), 2, row++);
+		table.add(getLocalizedLabel(KEY_DESCRIPTION, "Benämning"), 1, row);
+		table.add(getTextInput(PARAMETER_DESCRIPTION, description, 120), 2, row++);
+		table.add(getLocalizedLabel(KEY_VAT_PERCENT, "Procentsats"), 1, row);
+		table.add(getTextInput(PARAMETER_VAT_PERCENT, vatPercent, 30), 2, row);
+		table.add(getText(" %"), 2, row++);
+		table.add(getLocalizedLabel(KEY_PAYMENT_FLOW_TYPE, "Ström"), 1, row);
+		table.add(getPaymentFlowTypeDropdownMenu(iwc, PARAMETER_PAYMENT_FLOW_TYPE_ID, paymentFlowTypeId), 2, row++);
+		table.add(getLocalizedLabel(KEY_PROVIDER_TYPE, "Anordnartyp"), 1, row);
+		table.add(getProviderTypeDropdownMenu(iwc, PARAMETER_PROVIDER_TYPE_ID, providerTypeId), 2, row++); 
 
 		Table mainPanel = new Table();
 		mainPanel.setCellpadding(0);
@@ -474,9 +486,6 @@ public class VATEditor extends AccountingBlock {
 		
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_SAVE, KEY_SAVE, "Spara");
-//		if (!isNew) {
-//			bp.addLocalizedButton(PARAMETER_DELETE_CONFIRM, KEY_DELETE, "Ta bort");
-//		}
 		bp.addLocalizedButton(PARAMETER_CANCEL, KEY_CANCEL, "Avbryt");
 		app.setButtonPanel(bp);
 		
@@ -531,6 +540,19 @@ public class VATEditor extends AccountingBlock {
 		return menu;	
 	}
 
+	/*
+	 * Returns a localized string for the specified operational field
+	 */
+	private String localizeOperationalField(IWContext iwc, String operationalField) {
+		String localizedText = "";
+		try {
+			VATBusiness vb = getVATBusiness(iwc);
+			String localizationKey = vb.getOperationalFieldLocalizationKey(operationalField);
+			localizedText = localize(localizationKey, localizationKey);
+		} catch (RemoteException e) {}
+		return localizedText;
+	}
+	
 	/*
 	 * Returns a regulations business object
 	 */
