@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareExportBusinessBean.java,v 1.13 2005/02/16 10:41:21 anders Exp $
+ * $Id: ChildCareExportBusinessBean.java,v 1.14 2005/02/16 12:58:07 anders Exp $
  *
  * Copyright (C) 2005 Idega. All Rights Reserved.
  *
@@ -45,10 +45,10 @@ import com.idega.util.IWTimestamp;
  * The first version of this class implements the business logic for
  * exporting text files for the IST Extens system.
  * <p>
- * Last modified: $Date: 2005/02/16 10:41:21 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/16 12:58:07 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class ChildCareExportBusinessBean extends IBOServiceBean implements ChildCareExportBusiness {
 
@@ -217,7 +217,9 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 				if (contractFromDate != null) {
 					try {
 						log = home.findByPlacementAndDate(placement, contractFromDate);
-					} catch (FinderException e) {}
+					} catch (FinderException e) {
+						log(e);
+					}
 					if (log != null) {
 						placementFromDate = log.getStartDate();
 						group = log.getSchoolClass();
