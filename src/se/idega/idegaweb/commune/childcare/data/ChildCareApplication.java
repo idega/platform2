@@ -15,8 +15,12 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public com.idega.block.contract.data.Contract getContract();
  public int getContractFileId();
  public int getContractId();
+ public java.lang.String getExtraContractMessage();
+ public java.lang.String getExtraContractMessageOther();
  public java.sql.Date getFromDate();
  public boolean getHasDateSet();
+ public boolean getHasExtraContract();
+ public boolean getHasExtraContractOther();
  public boolean getHasPriority();
  public boolean getHasQueuePriority();
  public java.lang.String getMessage();
@@ -43,8 +47,12 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public void setChoiceNumber(int p0);
  public void setContractFileId(int p0);
  public void setContractId(int p0);
+ public void setExtraContractMessage(java.lang.String p0);
+ public void setExtraContractMessageOther(java.lang.String p0);
  public void setFromDate(java.sql.Date p0);
  public void setHasDateSet(boolean p0);
+ public void setHasExtraContract(boolean p0);
+ public void setHasExtraContractOther(boolean p0);
  public void setHasPriority(boolean p0);
  public void setHasQueuePriority(boolean p0);
  public void setMessage(java.lang.String p0);

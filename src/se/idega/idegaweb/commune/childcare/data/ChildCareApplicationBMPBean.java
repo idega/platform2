@@ -57,7 +57,12 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	protected final static String HAS_PRIORITY = "has_priority";
 	protected final static String HAS_DATE_SET = "has_date_set";
 	protected final static String HAS_QUEUE_PRIORITY = "has_queue_priority";
-	protected final static String PRESCHOOL = "preschool";	
+	protected final static String PRESCHOOL = "preschool";
+
+	protected final static String EXTRA_CONTRACT = "extra_contract";
+	protected final static String EXTRA_CONTRACT_MESSAGE = "extra_contract_message";
+	protected final static String EXTRA_CONTRACT_OTHER = "extra_contract_other";
+	protected final static String EXTRA_CONTRACT_OTHER_MESSAGE = "extra_contract_message_other";
 	
 	
 	protected final int SORT_DATE_OF_BIRTH = 1;
@@ -106,6 +111,11 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		addAttribute(HAS_DATE_SET,"",true,true,java.lang.Boolean.class);
 		addAttribute(HAS_QUEUE_PRIORITY,"",true,true,java.lang.Boolean.class);
 		addAttribute(PRESCHOOL,"",true,true,java.lang.String.class);		
+		
+		addAttribute(EXTRA_CONTRACT,"",true,true,java.lang.Boolean.class);
+		addAttribute(EXTRA_CONTRACT_MESSAGE,"",true,true,java.lang.String.class);
+		addAttribute(EXTRA_CONTRACT_OTHER,"",true,true,java.lang.Boolean.class);
+		addAttribute(EXTRA_CONTRACT_OTHER_MESSAGE,"",true,true,java.lang.String.class);
 		
 		addManyToOneRelationship(PROVIDER_ID,School.class);
 		addManyToOneRelationship(CHILD_ID,User.class);
@@ -220,6 +230,22 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return getBooleanColumnValue(HAS_QUEUE_PRIORITY, false);
 	}
   
+	public boolean getHasExtraContract() {
+		return getBooleanColumnValue(EXTRA_CONTRACT, false);
+	}
+	
+	public String getExtraContractMessage() {
+		return getStringColumnValue(EXTRA_CONTRACT_MESSAGE);
+	}
+	
+	public boolean getHasExtraContractOther() {
+		return getBooleanColumnValue(EXTRA_CONTRACT_OTHER, false);
+	}
+	
+	public String getExtraContractMessageOther() {
+		return getStringColumnValue(EXTRA_CONTRACT_OTHER_MESSAGE);
+	}
+	
 	public void setProviderId(int id) {
 		setColumn(PROVIDER_ID,id);
 	}
@@ -321,7 +347,23 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			removeFromColumn(ENTITY_NAME);
 	}
   
-  public Collection ejbFindAll() throws FinderException {
+	public void setHasExtraContract(boolean hasExtraContract) {
+		setColumn(EXTRA_CONTRACT, hasExtraContract);
+	}
+	
+	public void setExtraContractMessage(String message) {
+		setColumn(EXTRA_CONTRACT_MESSAGE, message);
+	}
+	
+	public void setHasExtraContractOther(boolean hasExtraContractOther) {
+		setColumn(EXTRA_CONTRACT_OTHER, hasExtraContractOther);
+	}
+	
+	public void setExtraContractMessageOther(String message) {
+		setColumn(EXTRA_CONTRACT_OTHER_MESSAGE, message);
+	}
+	
+	public Collection ejbFindAll() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 
@@ -842,13 +884,17 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			contract.isSigned();
 	}
 	
-	public Collection ejbFindApplicationsInSchoolAreaByStatus(int schoolAreaID, String[] statuses) throws FinderException {
+	public Collection ejbFindApplicationsInSchoolAreaByStatus(int schoolAreaID, String[] statuses, int choiceNumber) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p, sch_school s");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,"s.sch_school_id");
 		sql.appendAndEquals("s.sch_school_area_id", schoolAreaID);
+		if (choiceNumber != -1) {
+			sql.appendAndEquals(CHOICE_NUMBER, choiceNumber);
+		}
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(statuses);
+		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_DATE+", c."+QUEUE_ORDER);
 		return idoFindPKsByQuery(sql);
 	}
 	
