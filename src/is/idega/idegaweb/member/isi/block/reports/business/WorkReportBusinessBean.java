@@ -288,7 +288,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 	}
 
-	public WorkReportBoardMember createWorkReportBoardMember(int reportID, String personalID) throws CreateException {
+	public WorkReportBoardMember createWorkReportBoardMember(int reportID, String personalID, WorkReportGroup workReportGroup) throws CreateException {
 
 		User user = null;
 		try {
@@ -297,10 +297,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		catch (FinderException e) {
 			return null;
 		}
-		return createWorkReportBoardMember(reportID, user);
+		return createWorkReportBoardMember(reportID, user, workReportGroup);
 	}
 
-	public WorkReportBoardMember createWorkReportBoardMember(int reportID, User user) throws CreateException {
+	public WorkReportBoardMember createWorkReportBoardMember(int reportID, User user, WorkReportGroup workReportGroup) throws CreateException {
 
 		Age age = new Age(user.getDateOfBirth());
 
@@ -311,6 +311,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		member.setAge(age.getYears());
 		member.setDateOfBirth((new IWTimestamp(user.getDateOfBirth())).getTimestamp());
 		member.setUserId(((Integer)user.getPrimaryKey()).intValue());
+    // league
+    if (workReportGroup != null)  {
+      int pk = ((Integer) workReportGroup.getPrimaryKey()).intValue();
+      member.setWorkReportGroupID(pk);
+    }
 
 		if (true)
 			member.setAsMale();
@@ -420,6 +425,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		if (eMail != null) {
 			workReportDivisionBoard.setEmail(eMail);
 		}
+    // league
+    if (league != null) {
+      int pk = ((Integer) league.getPrimaryKey()).intValue();
+      workReportDivisionBoard.setWorKReportGroupID(pk);
+    }
 		workReportDivisionBoard.store();
 		return workReportDivisionBoard;
 	}
@@ -649,7 +659,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					}
 					catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
-						member = createWorkReportBoardMember(workReportId, ssn); //sets basic data
+            //TODO: Palli where is the league?
+						member = createWorkReportBoardMember(workReportId, ssn, null); //sets basic data
 
 						if (streetName != null && !"".equals(streetName)) {
 							member.setStreetName(streetName);
@@ -1881,10 +1892,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       }
       try {
         // create WorkReportBoardMember
-        WorkReportBoardMember  member = createWorkReportBoardMember(workReportId, user);
-        if (league != null) {
-          addWorkReportGroupToEntity(workReportId, league, member);
-        }
+        WorkReportBoardMember  member = createWorkReportBoardMember(workReportId, user, league);
         // add the new one to the existing ones
         if (memberLeagues == null)  {
           memberLeagues = new ArrayList();
