@@ -1,21 +1,36 @@
 package is.idega.idegaweb.travel.presentation;
 
-import java.rmi.*;
-import java.sql.*;
-import java.util.*;
+import is.idega.idegaweb.travel.data.PickupPlace;
+import is.idega.idegaweb.travel.data.PickupPlaceBMPBean;
+import is.idega.idegaweb.travel.data.PickupPlaceHome;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.data.ServiceHome;
 
-import javax.ejb.*;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.core.data.*;
-import com.idega.core.location.data.*;
-import com.idega.data.*;
-import com.idega.idegaweb.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import is.idega.idegaweb.travel.data.*;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
+import com.idega.block.trade.stockroom.business.ProductBusinessBean;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.core.location.data.Address;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDORemoveRelationshipException;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 
 /**
  * Title:        idegaWeb TravelBooking

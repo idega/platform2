@@ -1,15 +1,21 @@
 package com.idega.block.reports.business;
 
-import com.idega.data.EntityFinder;
-import java.util.*;
-import com.idega.block.reports.data.*;
-import com.idega.core.category.business.*;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import com.idega.block.reports.data.Report;
+import com.idega.block.reports.data.ReportCategory;
+import com.idega.block.reports.data.ReportColumnInfo;
+import com.idega.block.reports.data.ReportInfo;
+import com.idega.block.reports.data.ReportItem;
+import com.idega.core.category.business.CategoryFinder;
 import com.idega.core.category.data.ICCategory;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.component.data.ICObjectInstance;
-
-import java.sql.SQLException;
-import com.idega.core.business.*;
+import com.idega.data.EntityFinder;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Rectangle;
 
