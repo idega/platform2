@@ -36,6 +36,7 @@ public class ProductCatalog extends CategoryBlock{
   int productsPerPage = 10;
   int currentPage = 1;
   int orderBy = -1;
+  int _numberOfColumns = 1;
 
   IWResourceBundle iwrb;
   private IWBundle bundle;
@@ -117,10 +118,10 @@ public class ProductCatalog extends CategoryBlock{
       String sCurrentPage = iwc.getParameter(this._VIEW_PAGE);
       String sOrderBy = iwc.getParameter(this._ORDER_BY);
       if (sCurrentPage != null) {
-        this.currentPage = Integer.parseInt(sCurrentPage);
+	this.currentPage = Integer.parseInt(sCurrentPage);
       }
       if (sOrderBy != null) {
-        this.orderBy = Integer.parseInt(sOrderBy);
+	this.orderBy = Integer.parseInt(sOrderBy);
       }
     }catch (NumberFormatException n) {}
 
@@ -130,34 +131,34 @@ public class ProductCatalog extends CategoryBlock{
   private void catalog(IWContext iwc) {
     try {
       Link createLink = ProductEditorWindow.getEditorLink(-1);
-        createLink.setImage(iCreate);
-        createLink.addParameter(ProductEditorWindow.PRODUCT_CATALOG_OBJECT_INSTANCE_ID, getICObjectInstanceID());
+	createLink.setImage(iCreate);
+	createLink.addParameter(ProductEditorWindow.PRODUCT_CATALOG_OBJECT_INSTANCE_ID, getICObjectInstanceID());
       Link detachLink = getCategoryLink(ProductCategory.CATEGORY_TYPE_PRODUCT);
-        detachLink.setImage(iDetach);
+	detachLink.setImage(iDetach);
 
       if (hasEditPermission()) {
-        add(createLink);
-        add(detachLink);
+	add(createLink);
+	add(detachLink);
       }
 
       layout = (AbstractProductCatalogLayout) this._layoutClass.newInstance();
 
       List productCategories = new Vector();
       try {
-        productCategories = (List) getCategories();
-        if (productCategories == null) {
-          productCategories = new Vector();
-        }
+	productCategories = (List) getCategories();
+	if (productCategories == null) {
+	  productCategories = new Vector();
+	}
       }catch (Exception e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
 
       Table table = new Table();
-        table.setCellpadding(0);
-        table.setCellspacing(0);
-        if (_width != null) {
-          table.setWidth(_width);
-        }
+	table.setCellpadding(0);
+	table.setCellspacing(0);
+	if (_width != null) {
+	  table.setWidth(_width);
+	}
       PresentationObject po = layout.getCatalog(this, iwc, productCategories);
 
       table.add(po);
@@ -174,53 +175,53 @@ public class ProductCatalog extends CategoryBlock{
 
   Table getPagesTable(int pages, List parameters) {
       Table pagesTable = new Table(pages+2, 1);
-        pagesTable.setCellpadding(2);
-        pagesTable.setCellspacing(2);
+	pagesTable.setCellpadding(2);
+	pagesTable.setCellspacing(2);
 
       if (parameters == null) parameters = new Vector();
       Parameter parameter;
 
       Text pageText;
       if (currentPage > 1) {
-        pageText = getText(iwrb.getLocalizedString("travel.previous","Previous"));
-        Link prevLink = new Link(pageText);
-          prevLink.addParameter(_VIEW_PAGE, currentPage -1);
-          for (int l = 0; l < parameters.size(); l++) {
-            parameter = (Parameter) parameters.get(l);
-            prevLink.addParameter(parameter);
-          }
+	pageText = getText(iwrb.getLocalizedString("travel.previous","Previous"));
+	Link prevLink = new Link(pageText);
+	  prevLink.addParameter(_VIEW_PAGE, currentPage -1);
+	  for (int l = 0; l < parameters.size(); l++) {
+	    parameter = (Parameter) parameters.get(l);
+	    prevLink.addParameter(parameter);
+	  }
 
-        pagesTable.add(prevLink, 1, 1);
+	pagesTable.add(prevLink, 1, 1);
       }
 
       Link pageLink;
       for (int i = 1; i <= pages; i++) {
-        if (i == currentPage) {
-          pageText = getText(Integer.toString(i));
-          pageText.setBold(true);
-        }else {
-          pageText = getText(Integer.toString(i));
-        }
-        pageLink = new Link(pageText);
-          pageLink.addParameter(_VIEW_PAGE, i);
-          for (int l = 0; l < parameters.size(); l++) {
-            parameter = (Parameter) parameters.get(l);
-            pageLink.addParameter(parameter);
-          }
+	if (i == currentPage) {
+	  pageText = getText(Integer.toString(i));
+	  pageText.setBold(true);
+	}else {
+	  pageText = getText(Integer.toString(i));
+	}
+	pageLink = new Link(pageText);
+	  pageLink.addParameter(_VIEW_PAGE, i);
+	  for (int l = 0; l < parameters.size(); l++) {
+	    parameter = (Parameter) parameters.get(l);
+	    pageLink.addParameter(parameter);
+	  }
 
 
-        pagesTable.add(pageLink, i+1, 1);
+	pagesTable.add(pageLink, i+1, 1);
       }
 
       if (currentPage < pages) {
-        pageText = getText(iwrb.getLocalizedString("travel.next","Next"));
-        Link nextLink = new Link(pageText);
-          nextLink.addParameter(_VIEW_PAGE, currentPage + 1);
-          for (int l = 0; l < parameters.size(); l++) {
-            parameter = (Parameter) parameters.get(l);
-            nextLink.addParameter(parameter);
-          }
-        pagesTable.add(nextLink, pages + 2, 1);
+	pageText = getText(iwrb.getLocalizedString("travel.next","Next"));
+	Link nextLink = new Link(pageText);
+	  nextLink.addParameter(_VIEW_PAGE, currentPage + 1);
+	  for (int l = 0; l < parameters.size(); l++) {
+	    parameter = (Parameter) parameters.get(l);
+	    nextLink.addParameter(parameter);
+	  }
+	pagesTable.add(nextLink, pages + 2, 1);
       }
 
       return pagesTable;
@@ -319,6 +320,10 @@ public class ProductCatalog extends CategoryBlock{
     }
   }
 
+  public void setNumberOfColumns(int numberOfColumns) {
+    this._numberOfColumns = numberOfColumns;
+  }
+
   public void setOrderBy(int orderProductsBy) {
     this._orderProductsBy = orderProductsBy;
   }
@@ -376,9 +381,9 @@ public class ProductCatalog extends CategoryBlock{
     if (_productIsLink) {
       productLink = getNameLink(product, nameText, _useAnchor);
       if (productLink != null) {
-        return productLink;
+	return productLink;
       }else {
-        return nameText;
+	return nameText;
       }
     }else {
       return nameText;
@@ -389,16 +394,16 @@ public class ProductCatalog extends CategoryBlock{
     Link productLink;
     if (_productIsLink) {
       if (useAnchor) {
-        productLink = new AnchorLink(nameText, getAnchorString(product.getID()));
+	productLink = new AnchorLink(nameText, getAnchorString(product.getID()));
       }else {
-        productLink = new Link(nameText);
+	productLink = new Link(nameText);
       }
 
       productLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
       if (_productLinkPage != null) {
-        productLink.setPage(_productLinkPage);
+	productLink.setPage(_productLinkPage);
       }else if (this._windowString != null) {
-        productLink.setWindowToOpenScript(_windowString);
+	productLink.setWindowToOpenScript(_windowString);
       }
       return productLink;
     }else{
@@ -425,10 +430,10 @@ public class ProductCatalog extends CategoryBlock{
     String sProductId = iwc.getParameter(ProductBusiness.PRODUCT_ID);
     if (sProductId != null) {
       try {
-        Product product = ProductBusiness.getProduct(Integer.parseInt(sProductId));
-        return product;
+	Product product = ProductBusiness.getProduct(Integer.parseInt(sProductId));
+	return product;
       }catch (Exception e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
     return null;

@@ -1,5 +1,5 @@
 /*
- *  $Id: ProductCatalogLayoutHandler.java,v 1.2 2002/03/10 20:38:27 gimmi Exp $
+ *  $Id: ProductCatalogLayoutHandler.java,v 1.3 2002/04/03 11:52:01 laddi Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,14 +8,12 @@
  *
  */
 package com.idega.block.trade.stockroom.business;
+import com.idega.block.trade.stockroom.presentation.*;
 import java.util.List;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.builder.handler.PropertyHandler;
-import com.idega.block.trade.stockroom.presentation.ProductCatalogLayoutProductList;
-import com.idega.block.trade.stockroom.presentation.ProductCatalogLayoutSingleFile;
-import com.idega.block.trade.stockroom.presentation.ProductCatalogLayoutExpandedList;
 
 /**
  *@author     <a href="tryggvi@idega.is">Tryggvi Larusson</a>
@@ -46,6 +44,7 @@ public class ProductCatalogLayoutHandler implements PropertyHandler {
   menu.addMenuElement( ProductCatalogLayoutSingleFile.class.getName(), "Single file" );
   menu.addMenuElement( ProductCatalogLayoutProductList.class.getName(), "Product list" );
   menu.addMenuElement( ProductCatalogLayoutExpandedList.class.getName(), "Expanded list" );
+  menu.addMenuElement( ProductCatalogLayoutMultibleColumns.class.getName(), "Column list" );
   menu.setSelectedElement( value );
   return ( menu );
  }
