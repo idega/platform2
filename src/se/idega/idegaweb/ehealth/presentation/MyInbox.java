@@ -62,11 +62,12 @@ public class MyInbox extends EHealthBlock {
 	private String keyReply4U2 = prefix + "repl4U2";
 	private String keyReply5U2 = prefix + "repl5U2";
 	
-	private String keyReply1A1 = prefix + "repl1A1";
-	private String keyReply2A1 = prefix + "repl2A1";
-	private String keyReply3A1 = prefix + "repl3A1";
-	private String keyReply4A1 = prefix + "repl4A1";
-	private String keyReply5A1 = prefix + "repl5A1";
+	private String keyMessage1U1 = prefix + "mess1U1";
+	private String keyMessage3U1 = prefix + "mess3U1";
+	private String keyMessage5U1 = prefix + "mess5U1";
+	
+	private String keyMessage2U2 = prefix + "mess2U2";
+	private String keyMessage4U2 = prefix + "mess4U2";
 	
 	private int userID = -1;
 	private User user;
@@ -129,11 +130,11 @@ public class MyInbox extends EHealthBlock {
 		
 		ArrayList info = new ArrayList();
 		if (user !=null && user.getGroupID() == 142 ) {
-			info.add(localize(keyReply1A1, "Reply"));
-			info.add(localize(keyReply2A1, "Reply"));
-			info.add(localize(keyReply3A1, "Reply"));
-			info.add(localize(keyReply4A1, "Reply"));
-			info.add(localize(keyReply5A1, "Reply"));
+			info.add(localize(keyMessage1U1, "Message"));
+			info.add(localize(keyMessage2U2, "Message"));
+			info.add(localize(keyMessage3U1, "Message"));
+			info.add(localize(keyMessage4U2, "Message"));
+			info.add(localize(keyMessage5U1, "Message"));
 			
 		}
 		else if (age != null && age.getYears() >= 70){
