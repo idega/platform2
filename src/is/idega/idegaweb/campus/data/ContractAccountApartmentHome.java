@@ -6,7 +6,9 @@ public interface ContractAccountApartmentHome extends com.idega.data.IDOHome
  public ContractAccountApartment create() throws javax.ejb.CreateException;
  public ContractAccountApartment findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public java.util.Collection findAll()throws javax.ejb.FinderException;
- public ContractAccountApartment findByAccount(java.lang.Integer p0)throws javax.ejb.FinderException;
+ public java.util.Collection findByAccount(java.lang.Integer p0)throws javax.ejb.FinderException;
+ public ContractAccountApartment findByAccountAndRented(java.lang.Integer p0,boolean p1)throws javax.ejb.FinderException;
+ public java.util.Collection findByAccountAndStatus(java.lang.Integer p0,java.lang.String p1)throws javax.ejb.FinderException;
  public java.util.Collection findByApartment(java.lang.Integer p0)throws javax.ejb.FinderException;
  public java.util.Collection findByAssessmentRound(java.lang.Integer p0)throws javax.ejb.FinderException;
  public java.util.Collection findByType(java.lang.String p0)throws javax.ejb.FinderException;

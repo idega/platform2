@@ -20,11 +20,25 @@ public java.util.Collection findAll()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public ContractAccountApartment findByAccount(java.lang.Integer p0)throws javax.ejb.FinderException{
+public java.util.Collection findByAccount(java.lang.Integer p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((ContractAccountApartmentBMPBean)entity).ejbFindByAccount(p0);
+	java.util.Collection ids = ((ContractAccountApartmentBMPBean)entity).ejbFindByAccount(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public ContractAccountApartment findByAccountAndRented(java.lang.Integer p0,boolean p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ContractAccountApartmentBMPBean)entity).ejbFindByAccountAndRented(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
+}
+
+public java.util.Collection findByAccountAndStatus(java.lang.Integer p0,java.lang.String p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ContractAccountApartmentBMPBean)entity).ejbFindByAccountAndStatus(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
 public java.util.Collection findByApartment(java.lang.Integer p0)throws javax.ejb.FinderException{

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractAccountApartmentBMPBean.java,v 1.5 2004/03/31 00:56:22 aron Exp $
+ * $Id: ContractAccountApartmentBMPBean.java,v 1.6 2004/04/03 13:06:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -276,8 +276,16 @@ public class ContractAccountApartmentBMPBean extends GenericEntity implements Co
 		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApartmentIdColumnName(),apartmentID));
 	}
 	
-	public Object ejbFindByAccount(Integer accountID)throws FinderException{
-		return super.idoFindOnePKByQuery(super.idoQueryGetSelect().appendWhereEquals(getAccountIdColumnName(),accountID));
+	public Collection ejbFindByAccount(Integer accountID)throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getAccountIdColumnName(),accountID));
+	}
+	
+	public Collection ejbFindByAccountAndStatus(Integer accountID,String status)throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getAccountIdColumnName(),accountID).appendAndEquals(getColumnStatus(),status));
+	}
+	
+	public Object ejbFindByAccountAndRented(Integer accountID,boolean rented)throws FinderException{
+		return super.idoFindOnePKByQuery(super.idoQueryGetSelect().appendWhereEquals(getAccountIdColumnName(),accountID).appendAndEquals(getColumnRented(),rented));
 	}
 	
 	public Object ejbFindByUser(Integer userID)throws FinderException{

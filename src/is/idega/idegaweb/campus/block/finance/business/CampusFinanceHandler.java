@@ -462,7 +462,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 		try {
 			Collection tariffs = ((TariffHome) IDOLookup.getHome(Tariff.class)).findByTariffGroup(tariffGroupID);
 			ContractAccountApartment account = ((ContractAccountApartmentHome) IDOLookup
-					.getHome(ContractAccountApartment.class)).findByAccount(accountID);
+					.getHome(ContractAccountApartment.class)).findByAccountAndRented(accountID,true);
 			for (Iterator iter = tariffs.iterator(); iter.hasNext();) {
 				Tariff tariff = (Tariff) iter.next();
 				String attribute = tariff.getTariffAttribute();

@@ -61,7 +61,7 @@ public class CampusAccountTariffer extends AccountTariffer {
 		T.setTitlesVertical(true);
 		if(getAccountId()!=null){
 		try {
-			ContractAccountApartment caa =getContractAccountApartmentHome().findByAccount(getAccountId());
+			ContractAccountApartment caa =getContractAccountApartmentHome().findByAccountAndRented(getAccountId(),true);
 			T.add(getHeader(localize("apartment","Apartment")),1,1);
 			Apartment apartment = getApartmentHome().findByPrimaryKey(caa.getApartmentId());
 			Building building = getBuildingHome().findByPrimaryKey(caa.getBuildingId());
