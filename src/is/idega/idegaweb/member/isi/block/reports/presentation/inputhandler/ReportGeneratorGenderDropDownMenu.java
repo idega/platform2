@@ -9,7 +9,7 @@ import com.idega.business.InputHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.SelectionBox;
 import com.idega.util.IWTimestamp;
 /**
  * A presentation object for dynamic reports to genders. Both,male or female. both is default.

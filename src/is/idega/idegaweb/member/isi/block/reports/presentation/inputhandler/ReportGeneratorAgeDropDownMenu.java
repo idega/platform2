@@ -3,6 +3,7 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import com.idega.business.InputHandler;
 import com.idega.idegaweb.IWResourceBundle;
@@ -20,6 +21,8 @@ public class ReportGeneratorAgeDropDownMenu extends DropdownMenu implements Inpu
 	private static final int youngest = 1;
 
 	private static final int oldest = 123;
+	
+	private List _allAges = new ArrayList();
 
 	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	
@@ -31,7 +34,9 @@ public class ReportGeneratorAgeDropDownMenu extends DropdownMenu implements Inpu
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		addMenuElement(" ",iwrb.getLocalizedString("AgeDropdownmenu.all_ages", "All ages"));
 		for (int i = youngest; i <= oldest; i++) {
-			addMenuElement(i, Integer.toString(i));
+			String age = Integer.toString(i);
+			addMenuElement(i, age);
+			_allAges.add(age);
 		}
 		
 		setSelectedElement(" ");
@@ -60,16 +65,21 @@ public class ReportGeneratorAgeDropDownMenu extends DropdownMenu implements Inpu
 		Collection ages = null;
 		if (values != null && values.length > 0) {
 			ages = new ArrayList();
-			
-			for(int i=0; i<values.length; i++) {
-				int age = Integer.parseInt(values[i]);
+			if(values.length==1 && values[0].equals(" ")) {
+				ages = _allAges;
+			} else {
+				for(int i=0; i<values.length; i++) {
+					int age = Integer.parseInt(values[i]);
+					
+					IWTimestamp stamp = IWTimestamp.RightNow();
 				
-				IWTimestamp stamp = IWTimestamp.RightNow();
-				
-				stamp.addYears(-age);
+					stamp.addYears(-age);
 								
-				ages.add(stamp.toString());
+					ages.add(stamp.toString());
+				}
 			}
+		} else {
+			ages = _allAges;
 		}
 		return ages;
 	}
