@@ -6,8 +6,15 @@
  */
 package se.idega.block.pki.presentation;
 
+import se.idega.block.pki.business.NBSLoginBusinessBean;
+import se.idega.block.pki.data.NBSSignedEntity;
+import se.nexus.nbs.sdk.HttpMessage;
 import se.nexus.nbs.sdk.NBSException;
-
+import se.nexus.nbs.sdk.NBSMessageHttp;
+import se.nexus.nbs.sdk.NBSMessageResult;
+import se.nexus.nbs.sdk.NBSServerHttp;
+import se.nexus.nbs.sdk.NBSSignResult;
+import se.nexus.nbs.sdk.servlet.ServletUtil;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBPage;
@@ -16,16 +23,6 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.text.Text;
-import java.io.File;
-
-import se.idega.block.pki.data.NBSSignedEntity;
-import se.nexus.nbs.sdk.HttpMessage;
-import se.nexus.nbs.sdk.NBSMessageHttp;
-import se.nexus.nbs.sdk.NBSMessageResult;
-import se.nexus.nbs.sdk.NBSServerFactory;
-import se.nexus.nbs.sdk.NBSServerHttp;
-import se.nexus.nbs.sdk.NBSSignResult;
-import se.nexus.nbs.sdk.servlet.ServletUtil;
 
 
 /**
@@ -39,17 +36,9 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.block.pki";	
 	
-	
-	/** Names for objects stored in the servlet context or session. */
-	private final static String 
-		SERVER_FACTORY = "se.idega.block.pki.ServerFactory",
-		SERVER = "se.idega.block.pki.Server",
-		SERVLET_URI = "se.nexus.cbt.ServletURI";
 	public final static String INIT_DONE = "se.idega.block.pki.INIT_DONE";
 				
 	public final static String NBS_SIGNED_ENTITY = "se.idega.block.pki.business.NBS_SIGNED_ENTITY";
-	
-	private final static String BIDT_SDK_PATH_PROPERTY = "bidt_sdk_path";	
 	
 	
 	public String getBundleIdentifier() {
@@ -219,57 +208,8 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	 * Gets the BidtServer instance.
 	 */
 	private NBSServerHttp getNBSServer(IWContext iwc) throws NBSException {
-		System.out.println("getNBSServer()");
-		
-		NBSServerFactory serverGenerator = getServerGenerator(iwc);
-
-		// If created, the server should be in the session.
-		NBSServerHttp server = (NBSServerHttp) iwc.getSession().getAttribute(SERVER);
-
-		// If not created, create it now.
-		if (server == null)
-		{
-			System.out.println("Creating new server");
-			// Create a server and save it in the session.
-			server = (NBSServerHttp) serverGenerator.getInstance("Http");
-			iwc.getSession().setAttribute(SERVER, server);
-			
-		} else {
-			// In case of a replicated session environment
-			serverGenerator.updateInstance(server);
-		}
-		String servletUri = (String) (iwc.getServletContext().getAttribute(SERVLET_URI));
-	
-		server.setActionUrl(servletUri);
-		
-		System.out.println("getNBSServer returning");	
-		return server;
-	}	
-	
-	public NBSServerFactory getServerGenerator(IWContext iwc) throws NBSException{
-		System.out.println("getServerGenerator()");
-//		iwc.getApplicationContext().removeApplicationAttribute(SERVER_FACTORY); //TODO Roar - Temporary
-		
-		NBSServerFactory serverGenerator = (NBSServerFactory) iwc.getApplicationContext().getApplicationAttribute(SERVER_FACTORY);
-		if (serverGenerator == null){
-			File configFile = new File(getConfigFilePath(iwc));		
-			System.out.println("configFile: "+ configFile);	
-			serverGenerator = new NBSServerFactory();
-			serverGenerator.init(configFile);
-			iwc.getApplicationContext().setApplicationAttribute(SERVER_FACTORY, serverGenerator);			
-		}
-		
-		return serverGenerator;
+		return new NBSLoginBusinessBean().getNBSServer(iwc);
 	}
-	
-
-	private String getConfigFilePath(IWContext iwc){
-
-		System.out.println("getConfigFilePath()");
-		String path = getBundle(iwc).getProperty(BIDT_SDK_PATH_PROPERTY);
-		return path != null ? path : "bidt_sdk.properties";
-	}
-	
 
 	protected void forwardToIBPage(IWContext iwc,Page fromPage,IBPage pageTo){
 		StringBuffer URL = new StringBuffer();

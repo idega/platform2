@@ -7,23 +7,21 @@
 package se.idega.block.pki.business;
 
 import java.io.File;
-import java.util.Enumeration;
 
 import se.nexus.nbs.sdk.HttpMessage;
 import se.nexus.nbs.sdk.NBSAuthResult;
 import se.nexus.nbs.sdk.NBSException;
-import se.nexus.nbs.sdk.NBSMessageHttp;
-import se.nexus.nbs.sdk.NBSMessageResult;
 import se.nexus.nbs.sdk.NBSResult;
 import se.nexus.nbs.sdk.NBSServerFactory;
 import se.nexus.nbs.sdk.NBSServerHttp;
 import se.nexus.nbs.sdk.servlet.ServletUtil;
 
-import com.idega.builder.business.BuilderLogic;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginCreateException;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 import com.idega.util.StringHandler;
@@ -35,7 +33,9 @@ import com.idega.util.StringHandler;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class NBSLoginBusinessBean extends LoginBusinessBean {
-
+	
+	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.block.pki";	
+	private final static String BIDT_SDK_PATH_PROPERTY = "bidt_sdk_path";	
 	public final static String PKI_LOGIN_TYPE = "se-pki-nexus";
 	public final static String PKI_NBSEXCEPTION = "se-pki-nexus-nbsexception";
 	public final static String PKI_EXCEPTION = "se-pki-nexus-exception";
@@ -45,7 +45,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 	public final static String IWEX_USER_HAS_NO_ACCOUNT = "IWEX_USER_HAS_NO_ACCOUNT";
 
 	/** Names for objects stored in the servlet context or session. */
-	private final static String SERVER_FACTORY = "se.idega.block.pki.ServerFactory", SERVER = "se.idega.block.pki.Server", SERVLET_URI = "se.nexus.cbt.ServletURI", INIT_DONE = "se.idega.block.pki.INIT_DONE";
+	private final static String SERVER_FACTORY = "se.idega.block.pki.ServerFactory", SERVER = "se.idega.block.pki.Server", SERVLET_URI = "se.nexus.cbt.ServletURI";
 	
 	/**
 	 * 
@@ -64,8 +64,6 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 		//NBSLoginBusinessBean.removeException(iwc);
 		NBSResult result = null;
 
-		// Get the action.
-		String action = iwc.getParameter("action");
 
 		try {
 
@@ -87,7 +85,6 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 			result = server.handleMessage(httpReq);
 
 			// Interpret the result.
-			String info = null;
 			int type = result.getType();
 			switch (type) {
 				case (NBSResult.TYPE_AUTH) :
@@ -166,7 +163,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 
 		NBSServerFactory serverGenerator = (NBSServerFactory)iwc.getApplicationContext().getApplicationAttribute(SERVER_FACTORY);
 		if (serverGenerator == null) {
-			File configFile = new File(getConfigFilePath());
+			File configFile = new File(getConfigFilePath(iwc));
 			//System.out.println("configFile: "+ configFile);	
 			serverGenerator = new NBSServerFactory();
 			serverGenerator.init(configFile);
@@ -237,10 +234,16 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 		return loginSuccessful;
 	}
 
-	private String getConfigFilePath() {
-		//TODO move property-file under bundle
-		return "C:/idega/webs/nacka/WEB-INF/bidt_sdk.properties";
+	private String getConfigFilePath(IWApplicationContext iwac){
+		IWBundle iwb = getBundle(iwac);
+		String path = iwb.getProperty(BIDT_SDK_PATH_PROPERTY);
+		return path != null ? path : iwb.getPropertiesRealPath()+File.separator+"bidt_sdk.properties";
 	}
+	
+	private IWBundle getBundle(IWApplicationContext iwac){
+			return iwac.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+	}
+	
 
 	private void carryOnNBSException(IWContext iwc, NBSException e) {
 		iwc.setSessionAttribute(PKI_NBSEXCEPTION, e);
