@@ -17,6 +17,7 @@ import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
+import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoiceHome;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
@@ -265,6 +266,12 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 				hasSchoolPlacement = getSchoolBusiness().hasActivePlacement(application.getChildId(), providerId, getSchoolBusiness().getCategoryElementarySchool());
 			} catch (RemoteException e) {}
 			if (hasSchoolPlacement && (application.getApplicationStatus() == getStatusSentIn())) {
+				PlacementHelper helper = getPlacementHelper((Integer) application.getPrimaryKey());
+				java.util.Date earliestDate = helper.getEarliestPlacementDate();
+				Date date = null;
+				if (earliestDate != null) {
+					date = new Date(earliestDate.getTime());
+				}
 				if (!application.getHasDateSet()) {
 					SchoolClassMember placement = null;
 					try {
@@ -272,8 +279,22 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 						placement = home.findNotTerminatedByStudentSchoolAndCategory(application.getChildId(), providerId, getSchoolBusiness().getCategoryElementarySchool());
 					} catch (Exception e) {}
 					if (placement != null) {
-						application.setFromDate(new Date(placement.getRegisterDate().getTime()));
+						Date placementDate = new Date(placement.getRegisterDate().getTime());
+						if (placementDate.getTime() > date.getTime()) {
+							date = placementDate;
+						}
 					}
+				} else {
+					if (application.getFromDate().getTime() > date.getTime()) {
+						date = application.getFromDate();
+					}
+				}
+				if (date != null) {
+					application.setFromDate(date);
+					application.setHasDateSet(true);
+					application.store();
+				} else {
+					continue;
 				}
 				if (!hasActivePlacementNotWithProvider(application.getChildId(), providerId)) {
 					if (assignContractToApplication(((Integer) application.getPrimaryKey()).intValue(), -1, null, null, -1, user, locale, true)) {
