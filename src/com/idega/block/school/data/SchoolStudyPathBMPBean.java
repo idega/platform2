@@ -183,6 +183,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		query.appendWhereEquals(COLUMN_SCHOOL_TYPE, schoolTypeId);
 		query.append(" AND (").append(COLUMN_IS_VALID).append(" is null");
 		query.append(" OR ").append(COLUMN_IS_VALID).append(" = 'Y')");
+		query.appendOrderBy(COLUMN_CODE);
 		return idoFindPKsByQuery(query);
 	}
 
