@@ -1,5 +1,7 @@
 package com.idega.block.boxoffice.presentation;
 
+import java.text.DecimalFormat;
+
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.boxoffice.business.BoxBusiness;
 import com.idega.block.boxoffice.business.BoxFinder;
@@ -445,8 +447,11 @@ public class Box extends Block implements Builderaware {
 						
 						if (_showFileSize) {
 							ICFile file = links[b].getFile();
-							;
-							Text fileSize = new Text(file.getFileSize().toString());
+							
+							double size = (double) file.getFileSize().intValue() / (double) 1024;
+							DecimalFormat format = new DecimalFormat("0.0 KB");
+							
+							Text fileSize = new Text(format.format(size));
 							fileSize.setStyle(_name);
 							table.setWidth(column++, linkRow, 12);
 							table.setAlignment(column, linkRow, Table.HORIZONTAL_ALIGN_RIGHT);
