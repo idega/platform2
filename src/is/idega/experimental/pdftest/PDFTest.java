@@ -25,6 +25,7 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.ColumnText;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
@@ -76,6 +77,7 @@ public class PDFTest {
 			for (int j = 0; j < 1; j++)
 			{
 				try{
+					outerDocument.newPage();
 					String sAddrString = "Þórhallur Helgason\nStafnaseli 5\n109 Reykjavík\nIceland";
 
 					Paragraph P0, P1, P2;
@@ -94,7 +96,7 @@ public class PDFTest {
 					cell1.setNoWrap(true);
 					
 					Phrase Ph0 = new Phrase(sAddrString, textFont);
-					PdfPCell cell2 = new PdfPCell(Ph0);
+					PdfPCell cell2 = new PdfPCell(new Phrase(""));
 					cell2.setBorder(0);
 					cell2.setNoWrap(true);
 					
@@ -117,7 +119,7 @@ public class PDFTest {
 					template.setTextMatrix(5f, 30f);
 					template.showText("131 81 NACKA");
 					template.endText();
-
+					
 					Image image = Image.getInstance("porto_betalt.jpg");
 					image.scaleAbsolute(148f, 60f);
 					PdfPCell cell3 = new PdfPCell(image);
@@ -131,15 +133,22 @@ public class PDFTest {
 										
 					P1 = new Paragraph(new Phrase("This is a message", paragraphFont));
 
-					String sBodyText = "This is the message body";
+					String sBodyText = "This is the message body and since it is a fairly long message the text should automatically break into several lines.  If it does not I will have to rethink this approach somewhat for future references...";
 					Phrase phBodyText = new Phrase(sBodyText, textFont);
 					P2 = new Paragraph(phBodyText);
 
 					Phrase newlines = new Phrase("\n\n\n\n\n\n",textFont);
 
-					outerDocument.newPage();
+					ColumnText ct = new ColumnText(cb);
+					ct.setSimpleColumn(getPointsFromMM((30f+50f)), 755f, getPointsFromMM((100f+70f)), 815f, 15, Element.ALIGN_LEFT);
+					ct.addText(Ph0);
+					//ct.addText(P2);
+					ct.go();
+					
+					cb.addImage(image, 148f, 0, 0, 60f, getPointsFromMM((130f)),755f);
+					
 					cb.addTemplate(template, getPointsFromMM(30f), 755f);
-					outerDocument.add(headerTable);
+					//outerDocument.add(headerTable);
 					outerDocument.add(newlines);
 					outerDocument.add(P1);
 					outerDocument.add(new Phrase("\n"));
@@ -160,7 +169,7 @@ public class PDFTest {
 
 	protected static Document getLetterDocumentTemplate(){
 			  //Margins defined in millimeters:
-		float headFootMarginsMM = 7.0f;
+		float headFootMarginsMM = 9.0f;
 		float leftRightMarginsMM = 30.0f;
 		
 		//Margins defined in points:
