@@ -114,6 +114,7 @@ public class ChildCareQueueRenewer extends ChildCareBlock {
 		table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 		
 		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.renew_queue", "Renew queue")));
+		button.setSingleSubmitConfirm(localize("child_care.renew_queue_confirmation", "Are you sure you want to renew your queue options with these values?"));
 		table.setHeight(row++, 8);
 		table.add(button, 1, row);
 		
