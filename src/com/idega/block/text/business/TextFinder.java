@@ -129,6 +129,21 @@ public class TextFinder {
     }
   }
 
+  public static String[] getLocalizedString(GenericEntity entity, int iLocaleID) {
+    String[] locString = new String[3];
+
+    if ( entity != null ) {
+      LocalizedText locText = TextFinder.getLocalizedText(entity,iLocaleID);
+      if ( locText != null ) {
+        locString[0] = locText.getHeadline();
+        locString[1] = locText.getBody();
+        locString[2] = locText.getTitle();
+      }
+    }
+
+    return locString;
+  }
+
   public static LocalizedText getLocalizedText(int iTxTextId,int iLocaleId){
     TxText T = getText(iTxTextId);
     LocalizedText LTX = null;

@@ -2,7 +2,6 @@ package com.idega.block.calendar.presentation;
 
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
-import java.sql.SQLException;
 import java.util.*;
 import java.text.DateFormatSymbols;
 import java.util.Hashtable;
@@ -10,6 +9,7 @@ import java.util.Enumeration;
 import com.idega.presentation.text.*;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
+import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.util.text.*;
 import com.idega.util.*;
 import com.idega.util.idegaTimestamp;
@@ -23,6 +23,7 @@ private idegaCalendar cal = new idegaCalendar();
 private boolean useNextAndPreviousLinks = true;
 private boolean daysAreLinks = false;
 private boolean showNameOfDays = true;
+private boolean _highlight = false;
 
 private String textColor = "#999966";
 private String highlightedText = "#660000";
@@ -34,9 +35,12 @@ private String bodyColor = "#FFFFFF";
 private String inactiveCellColor = bodyColor;
 private String backgroundColor = "#FFFFFF";
 private String todayColor = headerColor;
+private String selectedColor = "#CCCCCC";
 private String URL;
 
 private int width = 110;
+private Link _link;
+private String _target;
 
 private Hashtable dayColors = null;
 private Hashtable dayFontColors = null;
@@ -53,22 +57,16 @@ public SmallCalendar(idegaTimestamp timestamp) {
     stamp = timestamp;
 }
 
+public SmallCalendar(int year,int month) {
+  initialize();
+  stamp = new idegaTimestamp();
+  stamp.setMonth(month);
+  stamp.setYear(year);
+}
+
   public void main(IWContext iwc){
     if (stamp == null) {
-      String month = iwc.getParameter("month");
-      String year = iwc.getParameter("year");
-      if(month != null && year != null){
-        try {
-          int iMonth = Integer.parseInt(month);
-          int iYear = Integer.parseInt(year);
-          stamp = new idegaTimestamp( 1,iMonth,iYear);
-        }
-        catch (Exception ex) {
-          stamp = new idegaTimestamp();
-        }
-      }
-      else
-        stamp = new idegaTimestamp();
+      stamp = CalendarBusiness.getTimestamp(iwc);
     }
     make(iwc);
   }
@@ -76,6 +74,7 @@ public SmallCalendar(idegaTimestamp timestamp) {
   public void make(IWContext iwc){
     int thismonth =  today.getMonth();
     int stampmonth = stamp.getMonth();
+
     boolean shadow = (thismonth == stampmonth)?true:false;
         if (shadow) shadow = (today.getYear() == stamp.getYear()) ?true:false;
     int daycount = cal.getLengthOfMonth(stamp.getMonth(),stamp.getYear());
@@ -177,14 +176,26 @@ public SmallCalendar(idegaTimestamp timestamp) {
       }
       t.setFontStyle("font-face: Arial, Helvetica, sans-serif; color: "+dayColor+"; font-size: 10px; text-decoration: none;");
       T.setAlignment(xpos,ypos,"center");
+
       if ((n == today.getDay() && shadow) && (!todayColor.equals("")))
         T.setColor(xpos,ypos,todayColor);
 
+      if ( _highlight ) {
+        if ( n == stamp.getDay() && month == stamp.getMonth() && year == stamp.getYear() ) {
+          T.setColor(xpos,ypos,selectedColor);
+        }
+      }
+      else {
+        if ( n == stamp.getDay() ) {
+          T.setColor(xpos,ypos,selectedColor);
+        }
+      }
+
       if (daysAreLinks) {
         theLink = new Link(t);
-          theLink.addParameter("day",n);
-          theLink.addParameter("month",stamp.getMonth());
-          theLink.addParameter("year",stamp.getYear());
+          theLink.addParameter(CalendarBusiness.PARAMETER_DAY,n);
+          theLink.addParameter(CalendarBusiness.PARAMETER_MONTH,stamp.getMonth());
+          theLink.addParameter(CalendarBusiness.PARAMETER_YEAR,stamp.getYear());
           theLink.setFontColor(textColor);
           theLink.setFontSize(1);
         T.add(theLink,xpos,ypos);
@@ -220,24 +231,26 @@ public SmallCalendar(idegaTimestamp timestamp) {
 
   public void addNextMonthPrm(Link L,idegaTimestamp idts){
     if(idts.getMonth() == 12){
-      L.addParameter("month",String.valueOf(1));
-      L.addParameter("year",String.valueOf(idts.getYear()+1));
+      L.addParameter(CalendarBusiness.PARAMETER_MONTH,String.valueOf(1));
+      L.addParameter(CalendarBusiness.PARAMETER_YEAR,String.valueOf(idts.getYear()+1));
     }
     else{
-      L.addParameter("month",String.valueOf(idts.getMonth()+1));
-      L.addParameter("year",String.valueOf(idts.getYear()));
+      L.addParameter(CalendarBusiness.PARAMETER_MONTH,String.valueOf(idts.getMonth()+1));
+      L.addParameter(CalendarBusiness.PARAMETER_YEAR,String.valueOf(idts.getYear()));
     }
+    L.addParameter(CalendarBusiness.PARAMETER_DAY,String.valueOf(idts.getDay()));
   }
 
   public void addLastMonthPrm(Link L,idegaTimestamp idts){
     if(idts.getMonth() == 1){
-      L.addParameter("month",String.valueOf(12));
-      L.addParameter("year",String.valueOf(idts.getYear()-1));
+      L.addParameter(CalendarBusiness.PARAMETER_MONTH,String.valueOf(12));
+      L.addParameter(CalendarBusiness.PARAMETER_YEAR,String.valueOf(idts.getYear()-1));
     }
     else{
-      L.addParameter("month",String.valueOf(idts.getMonth()-1));
-      L.addParameter("year",String.valueOf(idts.getYear()));
+      L.addParameter(CalendarBusiness.PARAMETER_MONTH,String.valueOf(idts.getMonth()-1));
+      L.addParameter(CalendarBusiness.PARAMETER_YEAR,String.valueOf(idts.getYear()));
     }
+    L.addParameter(CalendarBusiness.PARAMETER_DAY,String.valueOf(idts.getDay()));
   }
 
   public idegaTimestamp nextMonth(idegaTimestamp idts){
@@ -294,6 +307,10 @@ public SmallCalendar(idegaTimestamp timestamp) {
 
   public void setTextColor(String color) {
       this.textColor = color;
+  }
+
+  public void setOnlySelectedHighlighted(boolean highlight) {
+      this._highlight = highlight;
   }
 
   public void setHighlightedTextColor(String color) {
@@ -422,26 +439,49 @@ public SmallCalendar(idegaTimestamp timestamp) {
   }
 
   private int[] getXYPos(int year, int month, int day) {
-      int startingX = 1;
-      int startingY = 1;
-      if (showNameOfDays) {
-          ++startingY;
+    int startingX = 1;
+    int startingY = 1;
+    if (showNameOfDays) {
+        ++startingY;
+    }
+
+    int daynr = cal.getDayOfWeek(year,month,1);
+
+    int x = ((daynr-1) + day ) % 7;
+    int y = (((daynr-1) + day ) / 7) +1;
+        if (x == 0) {
+            x=7;
+            --y;
+        }
+
+    x += (startingX -1);
+    y += (startingY -1);
+
+    int[] returner = {x,y};
+    return returner;
+  }
+
+  private String getTarget(){
+    return _target;
+  }
+
+  public void setTarget(String target){
+    _target = target;
+  }
+
+  private Link getLink(){
+    if(_link==null){
+      _link=new Link();
+      if(getTarget()!=null){
+        _link.setTarget(getTarget());
       }
+    }
 
-      int daynr = cal.getDayOfWeek(year,month,1);
+    return _link;
+  }
 
-      int x = ((daynr-1) + day ) % 7;
-      int y = (((daynr-1) + day ) / 7) +1;
-          if (x == 0) {
-              x=7;
-              --y;
-          }
-
-      x += (startingX -1);
-      y += (startingY -1);
-
-      int[] returner = {x,y};
-      return returner;
+  public void setLink(Link link){
+    _link = link;
   }
 
   public synchronized Object clone() {
