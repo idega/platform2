@@ -6,9 +6,7 @@ package com.idega.block.category.presentation;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.Map;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.category.business.CategoryService;
 import com.idega.block.category.data.ICCategory;
 import com.idega.business.IBOLookup;
@@ -24,6 +22,7 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
@@ -39,6 +38,7 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 	public static final String PARAMETER_VALUE = "ic_category_value";
 	public static final String PARAMETER_TYPE = "ic_category_type";
 	public static final String PARAMETER_METADATA = "ic_metadata";
+	public static final String PARAMETER_METADATA_ID = "ic_metadata_id";
 	
 	protected IWResourceBundle iwrb;
 	
@@ -53,9 +53,15 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		parseAction(iwc);
-		
 		iwrb = getResourceBundle(iwc);
+
+		try {
+			parseAction(iwc);
+		} catch (Exception e) {
+			e.printStackTrace();
+			add(iwrb.getLocalizedString("category.update_failed", "Update failed"));
+		}
+		
 		
 		String title = iwrb.getLocalizedString("ic_category_metadata_editor", "Category Metadata Editor");
 		setTitle(title);
@@ -85,9 +91,11 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setWidth(3, Table.HUNDRED_PERCENT);
 		form.add(table);
-		int column = 2;
+		int column = 1;
 		int row = 1;
 		
+		
+		table.add(formatText(iwrb.getLocalizedString("delete", "Delete"), true), column++, row);
 		table.add(formatText(iwrb.getLocalizedString("name", "Name"), true), column++, row);
 		table.add(formatText(iwrb.getLocalizedString("value", "Value"), true), column++, row);
 		table.add(formatText(iwrb.getLocalizedString("type", "Type"), true), column++, row++);
@@ -138,6 +146,7 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 					if (metaDataTypes.containsKey(key))
 						metaDataType.setSelectedElement((String) metaDataTypes.get(key));
 
+					table.add(new HiddenInput(PARAMETER_METADATA_ID, _metaData), column, row);
 					table.add(metaDataKey, column++, row);
 					table.add(metaDataValue, column++, row);
 					table.add(metaDataType, column, row++);
@@ -165,6 +174,7 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 		}
 		
 		row++;
+		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_CENTER);
 		table.mergeCells(1, row, table.getColumns(), row);
 		
 		SubmitButton save = new SubmitButton(iwrb.getLocalizedString("save", "Save"), PARAMETER_SAVE, "true");
@@ -202,12 +212,22 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 			}
 		}
 		
-		if (iwc.isParameterSet(PARAMETER_METADATA))
+		String updateName = null;
+		if (iwc.isParameterSet(PARAMETER_METADATA)) {
 			_metaData = iwc.getParameter(PARAMETER_METADATA);
+		}
+		if (iwc.isParameterSet(PARAMETER_METADATA_ID)) {
+			updateName = iwc.getParameter(PARAMETER_METADATA_ID);
+		}
+	
 		
 		if (iwc.isParameterSet(PARAMETER_SAVE)) {
 			if (iwc.isParameterSet(PARAMETER_NAME) && iwc.isParameterSet(PARAMETER_VALUE) && iwc.isParameterSet(PARAMETER_TYPE)) {
-				_category.addMetaData(iwc.getParameter(PARAMETER_NAME), iwc.getParameter(PARAMETER_VALUE), iwc.getParameter(PARAMETER_TYPE));
+				if (updateName != null) {
+					_category.renameMetaData(updateName, iwc.getParameter(PARAMETER_NAME));
+				} else {
+					_category.addMetaData(iwc.getParameter(PARAMETER_NAME), iwc.getParameter(PARAMETER_VALUE), iwc.getParameter(PARAMETER_TYPE));
+				}
 			}
 			
 			if (iwc.isParameterSet(PARAMETER_DELETE)) {
