@@ -14,6 +14,7 @@ import com.idega.core.data.Phone;
 import com.idega.core.data.PostalCode;
 import com.idega.data.*;
 import com.idega.idegaweb.*;
+import com.idega.presentation.IWContext;
 import com.idega.user.business.*;
 import com.idega.user.data.*;
 import com.idega.util.IWTimestamp;
@@ -554,8 +555,16 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			ex.printStackTrace();
 			return false;
 		}
+    // try to get the current user
+    User currentUser;
+    try {
+      currentUser = IWContext.getInstance().getCurrentUser();
+    }
+    catch (Exception ex)  {
+      currentUser = null;
+    }
 
-		rootGroup.removeUser(user);
+		rootGroup.removeUser(user,currentUser);
 		
 		rootSpecialGroup.addGroup(user);
 
@@ -600,9 +609,16 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			ex.printStackTrace();
 			return false;
 		}
-
-		rootSpecialGroup.removeUser(user);
-		
+    
+    // try to get the current user
+    User currentUser;
+    try {
+      currentUser = IWContext.getInstance().getCurrentUser();
+    }
+    catch (Exception ex)  {
+      currentUser = null;
+    }
+		rootSpecialGroup.removeUser(user,currentUser);
 		rootGroup.addGroup(user);
 		
 		
@@ -659,9 +675,16 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			ex.printStackTrace();
 			return false;
 		}
-
-		rootSpecialGroup.removeUser(user);
-		rootGroup.removeUser(user);
+    // try to get the current user
+    User currentUser;
+    try {
+      currentUser = IWContext.getInstance().getCurrentUser();
+    }
+    catch (Exception ex)  {
+      currentUser = null;
+    }
+		rootSpecialGroup.removeUser(user, currentUser);
+		rootGroup.removeUser(user, currentUser);
 		
 		rootProtectedGroup.addGroup(user);
 		
