@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberComparatorForSweden.java,v 1.2 2005/03/31 07:00:58 laddi Exp $
+ * $Id: SchoolClassMemberComparatorForSweden.java,v 1.3 2005/03/31 09:48:36 laddi Exp $
  * Created on Oct 21, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
  * This Comparator is used to change the behaviour of the 
  * SchoolClassMemberComparator.
  * 
- *  Last modified: $Date: 2005/03/31 07:00:58 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/03/31 09:48:36 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SchoolClassMemberComparatorForSweden{
 	
@@ -34,6 +34,7 @@ public class SchoolClassMemberComparatorForSweden{
 	  public static final int ADDRESS_SORT = SchoolClassMemberComparator.ADDRESS_SORT;
 	  public static final int PERSONAL_ID_SORT = SchoolClassMemberComparator.PERSONAL_ID_SORT;
 	  public static final int LANGUAGE_SORT = SchoolClassMemberComparator.LANGUAGE_SORT;
+	  public static final int AGE_SORT = SchoolClassMemberComparator.AGE_SORT;
 	
 	 static public Comparator getComparatorSortBy(int sortBy, Locale locale, UserBusiness business, Map students) {
 	  	return getComparator(sortBy, locale, business, students);

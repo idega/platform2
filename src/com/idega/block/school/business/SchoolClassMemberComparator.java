@@ -14,6 +14,7 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.User;
+import com.idega.util.Age;
 import com.idega.util.LocaleUtil;
 
 /**
@@ -31,6 +32,7 @@ public class SchoolClassMemberComparator implements Comparator {
   public static final int ADDRESS_SORT = 3;
   public static final int PERSONAL_ID_SORT = 4;
   public static final int LANGUAGE_SORT = 5;
+  public static final int AGE_SORT = 6;
   
   private Locale locale;
   private UserBusiness business;
@@ -92,6 +94,9 @@ public class SchoolClassMemberComparator implements Comparator {
 					break;
 				case PERSONAL_ID_SORT :
 					result = personalIDSort(o1,o2);
+					break;
+				case AGE_SORT :
+					result = ageSort(o1,o2);
 					break;
 			}
     }
@@ -171,7 +176,12 @@ public class SchoolClassMemberComparator implements Comparator {
 		}
 		
 		if (result == 0){
-			result = lastNameSort(o1,o2);
+			if (locale.equals(LocaleUtil.getIcelandicLocale())) {
+				result = firstNameSort(o1,o2);
+			}
+			else {
+				result = lastNameSort(o1,o2);
+			}
 		}
 		return result;
 	}	
@@ -220,6 +230,22 @@ public class SchoolClassMemberComparator implements Comparator {
 		return result;
 	}	
 	
+	public int ageSort(Object o1, Object o2) {
+		User p1 = (User) students.get(new Integer(((SchoolClassMember)o1).getClassMemberId()));
+		User p2 = (User) students.get(new Integer(((SchoolClassMember)o2).getClassMemberId()));
+		
+		Age age1 = new Age(p1.getDateOfBirth());
+		Age age2 = new Age(p2.getDateOfBirth());
+		
+		int result = age1.getYears() - age2.getYears();
+
+		if (result == 0){
+		  result = firstNameSort(o1, o2);
+		}
+
+		return result;
+	}	
+
 	private boolean isGenderIDFemale(int genderID) {
 		if (femaleID < 0) {
 			try {
