@@ -119,7 +119,8 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 			
 			sql.append(" where ")
 			.append(" h.").append(getIDColumnName()).append(" = s.").append(serviceTableIDColumnName)
-			.append(" AND s.").append(serviceTableIDColumnName).append(" = p.").append(productTableIDColumnName);
+			.append(" AND s.").append(serviceTableIDColumnName).append(" = p.").append(productTableIDColumnName)
+			.append(" AND p.").append(ProductBMPBean.getColumnNameIsValid()).append(" = 'Y'");
 			
 			if (postalCode) {
 				sql.append(" AND asm.").append(supplierTableIDColumnName).append(" = su.").append(supplierTableIDColumnName)
