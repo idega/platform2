@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.9 2003/05/26 16:35:16 laddi Exp $
+ * $Id: ContractBusiness.java,v 1.10 2003/05/28 00:28:46 roar Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.ejb.FinderException;
 
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractCategory;
@@ -134,8 +136,27 @@ public class ContractBusiness
 			ex.printStackTrace();
 		}
 	}
+	
+	public static ContractCategory findCategory(int catId){
+		ContractCategory cat = null;
+		try
+		{
+			cat =
+				((com.idega.block.contract.data.ContractCategoryHome) com.idega.data.IDOLookup.getHomeLegacy(ContractCategory.class))
+					.findByPrimaryKey(catId);
+				
+		}catch(FinderException ex){
+			ex.printStackTrace();
+		}
+		
+		return cat;
+		
+	}
+	
 	public static int saveCategory(int iCategoryId, int iObjectInstanceId, String Name, String info)
 	{
+
+		
 		int id = -1;
 		try
 		{
@@ -455,6 +476,15 @@ public class ContractBusiness
 		}
 		return false;
 	}
+	
+	public static int createAndPrintContract(int userID, int iCategoryId){
+		IWTimestamp today = IWTimestamp.RightNow();
+		IWTimestamp tomorrow = IWTimestamp.RightNow().getNextDay();
+		int theReturn = createContract(userID,iCategoryId,today,tomorrow,"C",(Map)null);
+		ContractWriter.writePDF(theReturn,iCategoryId,"ContractX.PDF");
+		return theReturn;
+	}
+	
 	public static int createContract(int userID, int iCategoryId, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, Map map)
 	{
 		try
@@ -477,6 +507,7 @@ public class ContractBusiness
 				}
 			}
 			C.insert();
+//			ContractWriter.writeText(C.getID(), iCategoryId);
 			
 			return C.getID();
 		}
@@ -487,8 +518,38 @@ public class ContractBusiness
 		
 		return -1;
 	}	
+	
 	public static int createContract(int iCategoryId, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, Map map)
 	{
 		return createContract(-1, iCategoryId, ValFrom, ValTo, sStatus, map);
 	}	
+	
+	public static int createContract(int userId, int iCategoryId, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, String text)
+	{
+		try
+		{
+			Contract C = ((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
+			C.setStatus(sStatus);
+			C.setText(text);
+			C.setValidFrom(ValFrom.getSQLDate());
+			C.setUserId(userId);
+
+			if (ValTo != null)
+				C.setValidTo(ValTo.getSQLDate());
+			C.setCategoryId(iCategoryId);
+			Iterator it = null;
+
+			C.insert();
+//			ContractWriter.writeText(C.getID(), iCategoryId);
+			
+			return C.getID();
+		}
+		catch (SQLException ex)
+		{
+			ex.printStackTrace();
+		}
+		
+		return -1;
+	}	
 }
+	
