@@ -8,13 +8,14 @@ import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 
 import java.text.DecimalFormat;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Page;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -34,7 +35,7 @@ import com.idega.presentation.ui.util.SelectorUtility;
  * Company: Idega Software <br>
  * @author birna
  */
-public class RunRegistration extends Page{
+public class RunRegistration extends Block{
   
   private static final String PARAMETER_ACTION = "prm_action";
   
@@ -42,6 +43,12 @@ public class RunRegistration extends Page{
   private static final int ACTION_STEP_TWO = 2;
   private static final int ACTION_STEP_THREE = 3;
   private static final int ACTION_SAVE = 4;
+  
+  private static final String STYLENAME_HEADING = "headingText"; 
+  private static final String STYLENAME_GREEN_TEXT = "greenText"; 
+  private static final String STYLENAME_BLUE_TEXT = "blueText"; 
+  private static final String STYLENAME_INTERFACE = "interface"; 
+  private static final String STYLENAME_CHECKBOX = "checkbox"; 
   
   private Text redStar;
   private Text infoRedStarText;
@@ -111,15 +118,31 @@ public class RunRegistration extends Page{
   private TextInput goalTimeField;
   
   private BackButton backButton;
+  private Link backGreen;
+  private Link backBlue;
   
   private Form f;
+  private IWResourceBundle iwrb;
   
   public RunRegistration() {
     super();
   }
   
+  public Map getStyleNames() {
+  		Map map = new HashMap();
+  		map.put(STYLENAME_HEADING, "");
+  		map.put(STYLENAME_GREEN_TEXT, "");
+  		map.put(STYLENAME_GREEN_TEXT+":hover", "");
+  		map.put(STYLENAME_BLUE_TEXT, "");
+  		map.put(STYLENAME_BLUE_TEXT+":hover", "");
+  		map.put(STYLENAME_INTERFACE, "");
+  		map.put(STYLENAME_CHECKBOX, "");
+
+  		return map;
+  }
+  
   private void initializeTexts(IWContext iwc) {
-    IWResourceBundle iwrb = getResourceBundle(iwc);
+    iwrb = getResourceBundle(iwc);
     redStar = new Text("*");
     redStar.setFontColor("#ff0000");
     infoRedStarText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_INFO_RED_STAR,"These fields must be filled out"));
@@ -157,7 +180,7 @@ public class RunRegistration extends Page{
   
   private void initializeFields(IWContext iwc) {
     //TODO: remove javascript popups - put red text containing error messages... 
-    IWResourceBundle iwrb = getResourceBundle(iwc);
+    iwrb = getResourceBundle(iwc);
     
     //step one fields begin
     runDisDropdownField = new RunDistanceDropdownDouble();
@@ -249,9 +272,14 @@ public class RunRegistration extends Page{
     goalTimeField = new TextInput(IWMarathonConstants.PARAMETER_GOAL_TIME);
     
     stepTwoButton = new SubmitButton(iwrb.getLocalizedString("run_reg.submit_step_two","Next step"));
+    
     //step two fields end
     
     backButton = new BackButton(iwrb.getLocalizedString("run_reg.back","Back to previous step"));
+    backGreen = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.submit_step_two","Next step")), STYLENAME_GREEN_TEXT);
+    backGreen.setAsBackLink();
+    backBlue = getStyleLink(new Link("&gt;&gt;"), STYLENAME_BLUE_TEXT);
+    backBlue.setAsBackLink();
   }
   
   private void stepOne(IWContext iwc) {
@@ -360,12 +388,18 @@ public class RunRegistration extends Page{
     tShirtTable.add(tShirtText,1,1);
     tShirtTable.add(tShirtField,1,2);
     
-    Table buttonTable = new Table();
+    Table buttonTable = new Table(3, 1);
     buttonTable.setCellpadding(0);
     buttonTable.setCellspacing(0);
     buttonTable.setWidth(Table.HUNDRED_PERCENT);
     buttonTable.setAlignment(1,1,Table.HORIZONTAL_ALIGN_RIGHT);
-    buttonTable.add(stepOneButton,1,1);
+    Link stepTwoGreen = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.submit_step_one","Next step")), STYLENAME_GREEN_TEXT);
+    stepTwoGreen.setToFormSubmit(f);
+    Link stepTwoBlue = getStyleLink(new Link("&gt;&gt;"), STYLENAME_BLUE_TEXT);
+    stepTwoGreen.setToFormSubmit(f);
+    
+    buttonTable.add(stepTwoGreen,1,1);
+    buttonTable.add(stepTwoBlue,3,1);
     
     t.mergeCells(1,1,2,1);
     t.mergeCells(1,2,2,2);
@@ -419,10 +453,8 @@ public class RunRegistration extends Page{
       chipTable.add(String.valueOf(new DecimalFormat("##.##").format(getRentPrice())),1,4);
     }
     else {
-      float eurBuy = CurrencyBusiness.convertCurrency("ISK","EUR",getBuyPrice());
-      chipTable.add(new DecimalFormat("##.##").format(eurBuy),1,3);
-      float eurRent = CurrencyBusiness.convertCurrency("ISK","EUR",getRentPrice());
-      chipTable.add(new DecimalFormat("##.##").format(eurRent),1,4);
+      chipTable.add(String.valueOf(new DecimalFormat("##.##").format(getBuyPrice())),1,3);
+      chipTable.add(String.valueOf(new DecimalFormat("##.##").format(getRentPrice())),1,4);
     }
     
     Table groupCompTable = new Table();
@@ -450,13 +482,23 @@ public class RunRegistration extends Page{
     goalTimeTable.add(goalTimeText,1,1);
     goalTimeTable.add(goalTimeField,1,2);
     
-    Table buttonTable = new Table();
+    Table buttonTable = new Table(7, 1);
     buttonTable.setCellpadding(0);
     buttonTable.setCellspacing(0);
+    buttonTable.setWidth(2, 1, 3);
+    buttonTable.setWidth(4, 1, 12);
+    buttonTable.setWidth(6, 1, 3);
     buttonTable.setWidth(Table.HUNDRED_PERCENT);
     buttonTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
-    buttonTable.add(backButton,1,1);
-    buttonTable.add(stepTwoButton,2,1);
+    Link finishGreen = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.submit_step_two","Next step")), STYLENAME_GREEN_TEXT);
+    finishGreen.setToFormSubmit(f);
+    Link finishBlue = getStyleLink(new Link("&gt;&gt;"), STYLENAME_BLUE_TEXT);
+    finishBlue.setToFormSubmit(f);
+    
+    buttonTable.add(backGreen,1,1);
+    buttonTable.add(backBlue,3,1);
+    buttonTable.add(finishGreen,5,1);
+    buttonTable.add(finishBlue,7,1);
     
     t.mergeCells(1,1,2,1);
     t.add(infoTable,1,1);
@@ -475,6 +517,7 @@ public class RunRegistration extends Page{
     f.maintainAllParameters();
     f.add(t);
   }
+  
   private void commitRegistration(IWContext iwc) {
     RunBusiness runBiz = getRunBiz(iwc);
     
