@@ -99,6 +99,8 @@ public class ProductCatalog extends CategoryBlock{
     this._currentLocale = iwc.getCurrentLocale();
     this._currentLocaleId = ICLocaleBusiness.getLocaleId(_currentLocale);
     this._hasEditPermission = this.hasEditPermission();
+    if ( iwc.isInPreviewMode() )
+      this._hasEditPermission = false;
 
     IWBundle  coreBundle = iwc.getApplication().getCoreBundle();
     iCreate = coreBundle.getImage("shared/create.gif");
