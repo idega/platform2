@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReport.java,v 1.8 2004/12/14 07:46:35 laddi Exp $ Created on
+ * $Id: MeetingReport.java,v 1.9 2004/12/20 10:47:30 anna Exp $ Created on
  * 24.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -14,8 +14,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
 import se.agura.applications.meeting.fee.data.MeetingFeeFormula;
+import se.agura.applications.meeting.fee.data.MeetingFeeInfo;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -27,8 +29,10 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.user.app.UserApplication;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -37,13 +41,15 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 24.11.2004 13:46:01 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class MeetingReport extends MeetingFeeBlock {
 
 	private static final String PARAMETER_HOURS = "meet_hours";
 
 	private static final String PARAMETER_MINUTES = "meet_minutes";
+	
+	private static final String ACTION_SHOW_REPORT = "show_report";
 	
 	public void present(IWContext iwc) {
 		String action = iwc.getParameter(PARAMETER_ACTION);
@@ -53,6 +59,9 @@ public class MeetingReport extends MeetingFeeBlock {
 
 		if (action.equals(ACTION_NEXT)) {
 			add(formPageTwo(iwc));
+		}
+		if(action.equals(ACTION_SHOW_REPORT)) {
+			add(formPageThree(iwc));
 		}
 		else if (action.equals(ACTION_SAVE)) {
 			save(iwc);
@@ -110,7 +119,29 @@ public class MeetingReport extends MeetingFeeBlock {
 			log(re);
 		}
 		form.add(new Break());
+		form.add(getBackButton());
 		form.add(getCalculateButton());
+		form.add(getShowReportButton());
+		
+		form.maintainParameter(PARAMETER_MEETING_FEE_CONGREGATION);
+		form.maintainParameter(PARAMETER_MEETING_FEE_MEETING_LOCATION);
+		form.maintainParameter(PARAMETER_MEETING_FEE_DATE);
+		form.maintainParameter(PARAMETER_MEETING_FEE_COMMENT);
+		form.maintainParameter(PARAMETER_MEETING_FEE_PARTICIPANTS);
+		return form;
+	}
+	
+	private Form formPageThree(IWContext iwc) {
+		Form form = new Form();
+		try {
+			form.add(pageThreeMeetingReport(iwc));
+		}
+		catch(RemoteException re) {
+			log(re);
+		}
+		form.add(new Break());
+		form.add(form);
+		form.add(getBackButton());
 		form.add(getSaveButton());
 		
 		form.maintainParameter(PARAMETER_MEETING_FEE_CONGREGATION);
@@ -118,6 +149,7 @@ public class MeetingReport extends MeetingFeeBlock {
 		form.maintainParameter(PARAMETER_MEETING_FEE_DATE);
 		form.maintainParameter(PARAMETER_MEETING_FEE_COMMENT);
 		form.maintainParameter(PARAMETER_MEETING_FEE_PARTICIPANTS);
+		
 		return form;
 	}
 
@@ -132,6 +164,8 @@ public class MeetingReport extends MeetingFeeBlock {
 		RadioButton meetingPlaceIn = (RadioButton) getRadioButton(new RadioButton(PARAMETER_MEETING_FEE_MEETING_LOCATION, Boolean.TRUE.toString()));
 		meetingPlaceIn.setMustBeSelected(getResourceBundle().getLocalizedString("meeting.fee.place_not_empty", "Meeting place can not be empty"));
 		RadioButton meetingPlaceOut = (RadioButton) getRadioButton(new RadioButton(PARAMETER_MEETING_FEE_MEETING_LOCATION, Boolean.FALSE.toString()));
+		IWTimestamp stamp = new IWTimestamp();
+		DateInput meetingDateInput = (DateInput) getInput(new DateInput(PARAMETER_MEETING_FEE_DATE));
 		DropdownMenu participantsMenu = getParticipantsMenu(iwc, iwc.getCurrentUser());
 		TextArea comment = new TextArea(PARAMETER_MEETING_FEE_COMMENT);
 		comment.setWidth(Table.HUNDRED_PERCENT);
@@ -154,8 +188,8 @@ public class MeetingReport extends MeetingFeeBlock {
 		table.setHeight(row++, 12);
 
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.date_of_meeting", "Date of meeting")), 1, row);
-		DateInput meetingDateInput = (DateInput) getInput(new DateInput(PARAMETER_MEETING_FEE_DATE));
 		meetingDateInput.setAsNotEmpty(getResourceBundle().getLocalizedString("meeting.fee.date_not_empty", "This field may not be empty"));
+		meetingDateInput.setLatestPossibleDate(stamp.getDate(), getResourceBundle().getLocalizedString("meeting.fee.meeting_date_forward_in_time", "Meeting date can not be forward in time."));
 		table.add(meetingDateInput, 2, row++);
 		table.setHeight(row++, 12);
 		
@@ -180,6 +214,8 @@ public class MeetingReport extends MeetingFeeBlock {
 		}
 		
 		table.setWidth(1, iHeaderColumnWidth);
+		//ﬂessi lína hér fyrir ne›an lagar vonandi ﬂa› a› dropdown og takkinn liggja á réttum stö›um
+		table.setWidth(1, row, Table.HUNDRED_PERCENT);
 		table.setCellpaddingLeft(1, 0);
 
 		return table;
@@ -245,15 +281,94 @@ public class MeetingReport extends MeetingFeeBlock {
 
 		return table;
 	}
+	
+	private Table pageThreeMeetingReport(IWContext iwc) throws RemoteException{
+		Table table = new Table();
+		table.setWidth(iWidth);
+		table.setCellpadding(iCellpadding);
+		table.setCellspacing(0);
+		int row = 1;
+	
+		String concregation = iwc.getParameter(PARAMETER_MEETING_FEE_CONGREGATION);
+		String userName = iwc.getCurrentUser().getName();
+		String location = iwc.getParameter(PARAMETER_MEETING_FEE_MEETING_LOCATION);
+		IWTimestamp meetingDate = new IWTimestamp(iwc.getParameter(PARAMETER_MEETING_FEE_DATE));
+		String comment = iwc.getParameter(PARAMETER_MEETING_FEE_COMMENT);
+		
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.assignment_from","Assignment from")),1,row);
+		table.add(getText(concregation), 2, row++);
+		table.setHeight(row++, 12);
+		
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.speaker","Speaker")),1,row);
+		table.add(getText(userName), 2, row++); 
+		table.setHeight(row++, 12);
+		
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.meeting_location","Meeting location")), 1, row);
+		table.add(getText(location), 2, row++);
+		table.setHeight(row++, 12);
+		
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.meeting_date","Meeting date")), 1, row);
+		table.add(getText(meetingDate.getLocaleDate(iwc.getCurrentLocale())), 2, row++); 
+		table.setHeight(row++, 12);
+		
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.comment","Comment")), 1, row);
+		table.add(getText(comment), 2, row++);
+		table.setHeight(row++, 12);
+		
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants","Participants")),1,row++);
+		table.setHeight(row++, 3);
+		
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants.last_name","Last name")),1, row);
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants.first_name","First name")),2,row);
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants.personal_number","Personal number")),3, row);
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants.hours","Hours")), 4,row);
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants.minutes","Minutes")), 5, row);
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants.sum","Sum")), 6, row++);
+		
+		String[] participants = iwc.getParameterValues(PARAMETER_PARTICIPANT_USER_ID);
+		String[] hours = new String[participants.length];
+		String[] minutes = new String[participants.length];
+		
+		int groupID = Integer.parseInt(iwc.getParameter(PARAMETER_MEETING_FEE_PARTICIPANTS));
+		Collection users = getUserBusiness(iwc).getUsersInGroup(groupID);
+		Iterator iter = users.iterator();		
+		
+		while (iter.hasNext()) {
+			int i = 0;
+		
+			User user = (User) iter.next();
+			String lastName = user.getLastName();
+			String firstName = user.getFirstName();
+			String pId = PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale());
+			String hour = hours[i];
+			String minute = minutes[i];
+			
+			table.add(new HiddenInput(PARAMETER_PARTICIPANT_USER_ID, user.getPrimaryKey().toString()), 1, row);
+			table.add(getText(lastName), 1, row);
+			table.add(getText(firstName), 2, row);
+			table.add(getText(pId), 3, row);
+			table.add(hour, 4, row);
+			table.add(minute, 5, row);
+
+			table.add(getAmount(iwc, user), 6, row++);
+		}
+
+		table.setCellpaddingLeft(1, 0);
+		
+		return table;
+	}
+	
+	private SubmitButton getShowReportButton() {
+		SubmitButton showReportButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.show_report", "Next"), PARAMETER_ACTION, ACTION_NEXT));
+		showReportButton.setToolTip(getResourceBundle().getLocalizedString("meeting.fee.show_report.tooltip","shows your report"));
+		return showReportButton;
+	}
 
 	private GenericButton getNewGroupButton() {
 		GenericButton newGroupButton = getButton(new GenericButton("new_group", getResourceBundle().getLocalizedString("meeting.fee.edit_groups", "Edit groups")));
 		newGroupButton.setWindowToOpen(UserApplication.class);
 		return newGroupButton;
 	}
-
-	// Laddi - ﬂa› vantar takka sem gerir Clear á tíma- og mínútudropdown-in!
-	// Hvernig geri ég hann?
 
 	private DropdownMenu getHoursDropdown(IWContext iwc, User user, int maxHours) {
 		DropdownMenu menu = (DropdownMenu) getInput(new DropdownMenu(PARAMETER_HOURS + "_" + user.getPrimaryKey()));

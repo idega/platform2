@@ -1,5 +1,5 @@
 /*
- * $Id: VacationApprover.java,v 1.8 2004/12/17 08:59:27 laddi Exp $ Created on
+ * $Id: VacationApprover.java,v 1.9 2004/12/20 10:47:01 anna Exp $ Created on
  * 18.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,12 +11,9 @@ package se.agura.applications.vacation.presentation;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import se.agura.applications.vacation.data.VacationRequest;
 import se.agura.applications.vacation.data.VacationType;
-
 import com.idega.business.IBORuntimeException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -37,7 +34,7 @@ import com.idega.user.data.User;
  * Last modified: 18.11.2004 10:21:40 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class VacationApprover extends VacationBlock {
 
@@ -244,7 +241,20 @@ public class VacationApprover extends VacationBlock {
 			form.add(logs);
 			form.add(new Break());
 		}
+		//birtir uppl‡singar um sendanda umsóknar -ac
+		VacationRequest application = null;
+		try {
+			application = getBusiness(iwc).getVacationRequest(iwc.getParameter(PARAMETER_PRIMARY_KEY_VAC));
+		}
+		catch (FinderException fe) {
+			log(fe);
+		}
 		
+		User user = application.getOwner();
+		
+		form.add(getPersonInfo(iwc, user)); 
+		form.add(new Break());
+		//hinga›
 		form.add(showVacationRequest(iwc, vacation));
 		form.add(new Break());
 		form.add(handleRequest(iwc));
