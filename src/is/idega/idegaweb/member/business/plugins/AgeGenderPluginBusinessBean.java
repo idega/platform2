@@ -386,7 +386,8 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
       ex.printStackTrace(System.err);
       return null;
     }
-    GregorianCalendar calendar = new GregorianCalendar(0, month, date);
+    // month is zero-based
+    GregorianCalendar calendar = new GregorianCalendar(0, month - 1, date);
     return calendar;
   }   
 
