@@ -18,11 +18,13 @@ public interface WorkReportDivisionBoard extends com.idega.data.IDOEntity
  public java.lang.String getSecondPhone();
  public java.lang.String getStreetName();
  public int getWorkReportGroupID();
+ public boolean hasNationalLeague();
  public void initializeAttributes();
  public void setEmail(java.lang.String p0);
  public void setFax(java.lang.String p0);
  public void setFirstPhone(java.lang.String p0);
  public void setGroupId(int p0);
+ public void setHasNationalLeague(boolean p0);
  public void setHomePage(java.lang.String p0);
  public void setLeague(int p0);
  public void setNumberOfCompetitors(int p0);

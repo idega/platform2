@@ -39,6 +39,7 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
 	protected final static String COLUMN_NAME_SECOND_PHONE = "SECOND_PHONE";
 	protected final static String COLUMN_NAME_FAX = "FAX";
 	protected final static String COLUMN_NAME_EMAIL = "EMAIL";
+    protected final static String COLUMN_NAME_HAS_NATIONAL_LEAGUE = "HAS_NATIONAL_LEAGUE";
 
 	protected final static String COLUMN_NAME_NUMBER_OF_PLAYERS = "TOTAL_PLAYERS";
 	protected final static String COLUMN_NAME_NUMBER_OF_COMPETITORS = "TOTAL_COMPETITORS";
@@ -62,7 +63,8 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
 		addAttribute(COLUMN_NAME_NUMBER_OF_PLAYERS, "Total sum of players", true, true, Integer.class);
 		addAttribute(COLUMN_NAME_NUMBER_OF_COMPETITORS, "Total sum of competitors", true, true, Integer.class);
 		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP_ID, "Work report group id", true, true, Integer.class, "many-to-one", WorkReportGroup.class);
-	}
+        addAttribute(COLUMN_NAME_HAS_NATIONAL_LEAGUE, "has national league", true, true, Boolean.class);	
+  }
 
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -185,6 +187,14 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
 	public int getWorkReportGroupID() {
 		return getIntColumnValue(COLUMN_NAME_WORK_REPORT_GROUP_ID);
 	}
+  
+    public void setHasNationalLeague(boolean aBoolean)  {
+      setColumn(COLUMN_NAME_HAS_NATIONAL_LEAGUE, aBoolean);
+    }
+    
+    public boolean hasNationalLeague()  {
+      return getBooleanColumnValue(COLUMN_NAME_HAS_NATIONAL_LEAGUE, false);
+    }
 
 	public Collection ejbFindAllWorkReportDivisionBoardByWorkReportId(int reportId) throws FinderException {
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID, reportId);
