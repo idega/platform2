@@ -918,7 +918,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public int ejbHomeGetPositionInQueue(Date queueDate, int providerID, String applicationStatus) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count("+CHILD_ID+") from ").append(ENTITY_NAME);
-		sql.appendAndEquals(PROVIDER_ID,providerID);
+		sql.appendWhereEquals(PROVIDER_ID,providerID);
 		sql.appendAndEqualsQuoted(APPLICATION_STATUS,applicationStatus);
 		sql.appendAnd().append(QUEUE_DATE).appendLessThanSign().append(queueDate);
 		return idoGetNumberOfRecords(sql);
@@ -939,7 +939,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public int ejbHomeGetPositionInQueueByDate(int queueOrder, Date queueDate, int providerID, String applicationStatus) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count("+CHILD_ID+") from ").append(ENTITY_NAME);
-		sql.appendAndEquals(PROVIDER_ID,providerID);
+		sql.appendWhereEquals(PROVIDER_ID,providerID);
 		sql.appendAndEqualsQuoted(APPLICATION_STATUS,applicationStatus);
 		sql.appendAndEquals(QUEUE_DATE, queueDate);
 		sql.appendAnd().append(QUEUE_ORDER).appendLessThanOrEqualsSign().append(queueOrder);
