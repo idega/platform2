@@ -98,8 +98,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         //faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
         faceLabel = new ImageLabel(getImage(getCodeBase(),"face_in.gif"));
         System.out.println("CODEBASE = "+getCodeBase());
-        //logoLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"idegalogo.gif"));
-        alertSound = getAudioClip(getCodeBase(),"notify.wav");
+        logoLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"idegalogo.gif"));
+        //alertSound = getAudioClip(getCodeBase(),"notify.wav");
 
       }
       catch (Exception ex) {
@@ -158,29 +158,37 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
       if( messageDialog == null ) { //create a new dialog
 
-        if( logoLabel != null ) messageDialog = new MessageDialog(FRAME_NAME,aMessage,logoLabel);
-        else messageDialog = new MessageDialog(FRAME_NAME,aMessage);
-
-
-        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-        messageDialog.setLocation((d.width - messageDialog.getSize().width) / 2, (d.height - messageDialog.getSize().height) / 2);
-        messageDialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
-        messageDialog.addActionListener(this);
-        messageDialog.setAudioClip(alertSound);
-
-        dialogs.put(Integer.toString(aMessage.getId()),messageDialog);
+        messageDialog = createAMessageDialog(false,aMessage);
 
         messageDialog.addMessage(aMessage);
         messageDialog.setVisible(true);
 
       }
       else {
-        messageDialog.setVisible(true);
         messageDialog.addMessage(aMessage);
+        messageDialog.setVisible(true);
       }
 
     }
   }
+
+  private MessageDialog createAMessageDialog(boolean newId, Message aMessage){
+    MessageDialog messageDialog;
+    if( logoLabel != null ) messageDialog = new MessageDialog(FRAME_NAME,aMessage,logoLabel);
+    else messageDialog = new MessageDialog(FRAME_NAME,aMessage);
+
+    Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+    messageDialog.setLocation((d.width - messageDialog.getSize().width) / 2, (d.height - messageDialog.getSize().height) / 2);
+    messageDialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
+    messageDialog.addActionListener(this);
+    if( alertSound!=null ) messageDialog.setAudioClip(alertSound);
+
+    if( newId ) dialogs.put(Integer.toString(messageDialog.hashCode()),messageDialog);
+    else dialogs.put(Integer.toString(aMessage.getId()),messageDialog);
+
+    return messageDialog;
+  }
+
 
   private void getMessagesFromDialog(MessageDialog dialog){//gets called on and iw-send event action
     if( packetToServlet == null ){
@@ -361,16 +369,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       msg.setSenderName(name);
       msg.setRecipientName(userName);
 
-      MessageDialog dialog;
-
-      if( logoLabel!= null)
-        dialog = new MessageDialog(FRAME_NAME,msg,logoLabel);
-      else
-        dialog = new MessageDialog(FRAME_NAME,msg);
-
-      dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
-      dialogs.put(Integer.toString(dialog.hashCode()),dialog);
-      dialog.addActionListener(this);
+      MessageDialog dialog = createAMessageDialog(true,msg);
 
       SingleLineItem item = new SingleLineItem(this);
       item.setId(sendToId);
