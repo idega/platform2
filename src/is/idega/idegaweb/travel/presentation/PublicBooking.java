@@ -28,6 +28,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
+import com.idega.core.localisation.business.LocaleSwitcher;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
@@ -81,6 +82,12 @@ public class PublicBooking extends TravelBlock  {
   }
 
   public void main(IWContext iwc)throws Exception {
+    if (iwc.isParameterSet(LocaleSwitcher.languageParameterString)) {
+  			//String lang = iwc.getParameter(LocaleSwitcher.languageParameterString);
+  			LocaleSwitcher ls = new LocaleSwitcher();
+  			ls.actionPerformed(iwc);
+    }
+    System.out.println("Locale in use = "+iwc.getCurrentLocale().toString());
   		super.main(iwc);
     init(iwc);
 
@@ -100,7 +107,6 @@ public class PublicBooking extends TravelBlock  {
 			tmpUrl = (String) iwc.getSessionAttribute(PARAMETER_REFERRAL_URL);
 			if (tmpUrl == null) {
 				tmpUrl = iwc.getReferer();
-				System.out.println("URI : "+iwc.getRequest().getServerName());
 				if (tmpUrl != null && (tmpUrl.indexOf(iwc.getRequest().getServerName()) > -1)) {
 					return null;
 				} 
@@ -112,7 +118,6 @@ public class PublicBooking extends TravelBlock  {
 
 
   private void init(IWContext iwc) throws RemoteException{
-  	System.out.println("ReferalUrl = "+getRefererUrl(iwc));
     bundle = getBundle(iwc);
     iwrb = bundle.getResourceBundle(iwc.getCurrentLocale());
     super.getParentPage().setExpiryDate("Tue, 20 Aug 1996 14:25:27 GMT");
@@ -314,6 +319,7 @@ public class PublicBooking extends TravelBlock  {
 	        if (action == null || action.equals("")) {
 	            form = bf.getPublicBookingForm(iwc, product);
 	            form.maintainParameter(this.parameterProductId);
+	            form.maintainParameter(BookingForm.PARAMETER_REFERENCE_NUMBER);
 	//            form.setOnSubmit("this.form."+BookingForm.sAction+".value = \""+BookingForm.parameterSaveBooking+"\"");
 	//            form.addParameter(BookingForm.sAction,BookingForm.parameterSaveBooking);
 	        }else if (action.equals(BookingForm.parameterSaveBooking)) {
@@ -416,6 +422,14 @@ public class PublicBooking extends TravelBlock  {
         if (bookingId == BookingForm.inquirySent) {
           inquirySent = true;
           tm.commit();
+        } else if (bookingId == BookingForm.errorFieldsEmpty) {
+        		List list = bf.errorFields;
+        		display.addToText(iwrb.getLocalizedString("travel.fields_must_be_filled", "The following fields must be filled")+Text.BREAK);
+        		Iterator iter = list.iterator();
+        		while (iter.hasNext()) {
+        			display.addToText(" "+iter.next().toString()+Text.BREAK);
+        		}
+        		success = false;
         }else {
           gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
           gBooking.setRefererUrl(getRefererUrl(iwc));

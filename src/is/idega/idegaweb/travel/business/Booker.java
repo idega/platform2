@@ -10,8 +10,8 @@ import javax.ejb.FinderException;
 public interface Booker extends com.idega.business.IBOService
 {
  public void addCacheKeyToInvalidateOnSave(String key);
- public int Book(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,com.idega.util.IWTimestamp p7,int p8,int p9,java.lang.String p10,int p11,int p12,int p13,int p14,java.lang.String p15, String code)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
- public int BookBySupplier(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,com.idega.util.IWTimestamp p7,int p8,java.lang.String p9,int p10,int p11,int p12,int p13,java.lang.String p14, String code)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
+ public int Book(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,com.idega.util.IWTimestamp p7,int p8,int p9,java.lang.String p10,int p11,int p12,int p13,int p14,java.lang.String p15, String code, String referenceNumber)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
+ public int BookBySupplier(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,com.idega.util.IWTimestamp p7,int p8,java.lang.String p9,int p10,int p11,int p12,int p13,java.lang.String p14, String code, String referenceNumber)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
  public is.idega.idegaweb.travel.interfaces.Booking[] collectionToBookingsArray(java.util.Collection p0) throws java.rmi.RemoteException;
  public boolean deleteBooking(is.idega.idegaweb.travel.interfaces.Booking p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean deleteBooking(int p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
@@ -62,5 +62,5 @@ public interface Booker extends com.idega.business.IBOService
  public java.lang.Object getServiceType(int p0) throws java.rmi.RemoteException;
  public void removeBookingPriceApplication(is.idega.idegaweb.travel.interfaces.Booking p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean setPickup(int p0,int p1,java.lang.String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int updateBooking(int p0,int p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,com.idega.util.IWTimestamp p8,int p9,java.lang.String p10,int p11,int p12,int p13,int p14,java.lang.String p15, String p16)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
+ public int updateBooking(int p0,int p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,com.idega.util.IWTimestamp p8,int p9,java.lang.String p10,int p11,int p12,int p13,int p14,java.lang.String p15, String p16, String referenceNumber)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
 }

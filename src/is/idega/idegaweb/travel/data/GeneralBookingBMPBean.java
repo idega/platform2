@@ -258,7 +258,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   }
 
   public String getReferenceNumber() {
-    return getStringColumnValue(getReferenceNumberColumnName());
+  	return getStringColumnValue(getReferenceNumberColumnName());
   }
 
   public int getUserId() {
@@ -326,21 +326,30 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
 	}
 
   public void store() {
-    CypherText cyph = new CypherText();
-    String key = cyph.getKey(8);
+  	
+  		String refNum = getReferenceNumber();
+  		if (refNum == null) {
+	    CypherText cyph = new CypherText();
+	    refNum = cyph.getKey(8);
+	
+	    try {
+	      Collection bookingIds = this.idoFindAllIDsByColumnBySQL(getReferenceNumberColumnName(), refNum);
+	
+	      while (bookingIds.size() > 0) {
+	      	refNum = cyph.getKey(8);
+	        bookingIds = this.idoFindAllIDsByColumnBySQL(getReferenceNumberColumnName(), refNum);
+	      }
+	      System.out.println("RefNumber generated = "+refNum);
+	    }catch (FinderException fe) {
+	    throw new IDOStoreException(fe.getMessage());
+	    }
+  		}
+  		else {
+    		System.out.println("RefNumber set to = "+refNum);
+  		}
 
-    try {
-      Collection bookingIds = this.idoFindAllIDsByColumnBySQL(getReferenceNumberColumnName(), key);
-
-      while (bookingIds.size() > 0) {
-        key = cyph.getKey(8);
-        bookingIds = this.idoFindAllIDsByColumnBySQL(getReferenceNumberColumnName(), key);
-      }
-      setReferenceNumber(key);
-      super.store();
-    }catch (FinderException fe) {
-    throw new IDOStoreException(fe.getMessage());
-    }
+	  setReferenceNumber(refNum);
+  		super.store();
   }
 
   public static String getBookingTableName(){return "TB_BOOKING";}

@@ -62,19 +62,19 @@ public class BookerBean extends IBOServiceBean implements Booker{
   public BookerBean() {
   }
 
-  public  int BookBySupplier(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment, String code) throws RemoteException, CreateException {
-    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType, userId, ownerId, addressId, comment, code);
+  public  int BookBySupplier(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment, String code, String referenceNumber) throws RemoteException, CreateException {
+    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType, userId, ownerId, addressId, comment, code, referenceNumber);
   }
 
-  public  int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment, String code) throws RemoteException, CreateException {
-    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode, paymentType, userId, ownerId, addressId, comment, code);
+  public  int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment, String code, String referenceNumber) throws RemoteException, CreateException {
+    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode, paymentType, userId, ownerId, addressId, comment, code, referenceNumber);
   }
 
-  public  int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment, String code) throws RemoteException, CreateException {
-    return Book(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode, paymentType, userId, ownerId, addressId, comment, code);
+  public  int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment, String code, String referenceNumber) throws RemoteException, CreateException {
+    return Book(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode, paymentType, userId, ownerId, addressId, comment, code, referenceNumber);
   }
 
-  private int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, int bookingType, String postalCode, int paymentTypeId, int userId, int ownerId, int addressId, String comment, String code) throws RemoteException, CreateException {
+  private int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, int bookingType, String postalCode, int paymentTypeId, int userId, int ownerId, int addressId, String comment, String code, String referenceNumber) throws RemoteException, CreateException {
     GeneralBooking booking = null;
     int returner = bookingId;
     address = TextSoap.findAndReplace(address, "'", "´");
@@ -103,6 +103,9 @@ public class BookerBean extends IBOServiceBean implements Booker{
           booking.setTotalCount(totalCount);
           booking.setUserId(userId);
           booking.setOwnerId(ownerId);
+          if (referenceNumber != null) {
+          		booking.setReferenceNumber(referenceNumber);
+          }
           if (comment == null) {
             booking.setComment("");
           }else {
@@ -132,6 +135,9 @@ public class BookerBean extends IBOServiceBean implements Booker{
           booking.setTotalCount(totalCount);
           booking.setUserId(userId);
           booking.setOwnerId(ownerId);
+          if (referenceNumber != null) {
+        			booking.setReferenceNumber(referenceNumber);
+          }
           if (comment == null) {
             booking.setComment("");
           }else {
