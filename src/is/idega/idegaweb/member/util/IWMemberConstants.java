@@ -14,10 +14,13 @@ public class IWMemberConstants extends ICUserConstants{
 	
 	public static final String GROUP_RELATION_TYPE_PARENT = "GROUP_PARENT";
 	
-	public static final String META_DATA_CLUB_LEAGUE_CONNECTION = "CLUBINFO_CONN";
 	public static final String META_DATA_DIVISION_LEAGUE_CONNECTION ="CLUBDIV_CONN";
-	
 	public static final String META_DATA_DIVISION_BOARD = "CLUBDIV_BOARD";
+	public static final String META_DATA_DIVISION_NUMBER ="CLUBDIV_NUMBER";
+	public static final String META_DATA_DIVISION_SSN = "CLUBDIV_SSN";
+	public static final String META_DATA_DIVISION_FOUNDED = "CLUBDIV_FOUNDED";
+	
+	public static final String META_DATA_CLUB_LEAGUE_CONNECTION = "CLUBINFO_CONN";
 	public static final String META_DATA_CLUB_USING_SYSTEM = "CLUBINFO_SYSTEM";
 	public static final String META_DATA_CLUB_OPERATION = "CLUBINFO_OPERATION";
 	public static final String META_DATA_CLUB_STATUS = "CLUBINFO_STATUS";
