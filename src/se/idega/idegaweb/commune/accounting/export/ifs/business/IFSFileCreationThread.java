@@ -49,6 +49,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness;
 import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
@@ -78,10 +79,9 @@ public class IFSFileCreationThread extends Thread {
 	protected Locale _currentLocale = null;
 	protected IWApplicationContext _iwac = null;
 	protected NumberFormat numberFormat = null;
+	protected String deviationString = "";
 	
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.accounting";
-
-	//private float EXTRA_PAYMENT_PERCENTAGE = 0.06f;
 	
 /*	private final static String FILE_TYPE_PREFIX = "n24_ifs";
 	private final static String FILE_TYPE_HVD = "hvd";
@@ -328,9 +328,7 @@ public class IFSFileCreationThread extends Thread {
 		catch (FinderException e3) {
 			e3.printStackTrace();
 		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
+
 		if (phInCommune != null && !phInCommune.isEmpty()) {
 			Collection rec = null;
 			try {
@@ -1261,8 +1259,8 @@ public class IFSFileCreationThread extends Thread {
 
 	private void createDeviationFileExcel(Collection data, String fileName, String headerText) throws IOException, FinderException {
 		if (data != null && !data.isEmpty()) {
-			int[] columnWidths = { 30, 15, 15 };
-			String[] columnNames = { "Fakturaperiod", "Fakturmottagars personnummer", "Belopp" };
+			int[] columnWidths = { 15, 25, 15, 25 };
+			String[] columnNames = { "Fakturaperiod", "Fakturmottagars personnummer", "Belopp", "Avvikelse orsak" };
 			HSSFWorkbook wb = createExcelWorkBook(columnWidths, columnNames, headerText);
 			HSSFSheet sheet = wb.getSheet("Excel");
 			HSSFCellStyle styleAlignRight = wb.createCellStyle(); 
@@ -1277,8 +1275,7 @@ public class IFSFileCreationThread extends Thread {
 			while (it.hasNext()) {
 				
 				InvoiceHeader iHead = (InvoiceHeader) it.next();	
-				ArrayList iRecs = new ArrayList(((InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class)).findByInvoiceHeader(iHead));
-				//Collections.sort(iRecs, new InvoiceComparator());
+				ArrayList iRecs = new ArrayList(((InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class)).findByInvoiceHeader(iHead));				
 				if (!iRecs.isEmpty()) {
 					Iterator irIt = iRecs.iterator();
 				
@@ -1286,14 +1283,21 @@ public class IFSFileCreationThread extends Thread {
 						InvoiceRecord iRec = (InvoiceRecord) irIt.next();				
 						recordAmount = AccountingUtil.roundAmount(iRec.getAmount());
 						if (recordAmount >= 0) {
-						totalAmount += recordAmount;
-						row = sheet.createRow(rowNumber++);					
-						row.createCell(cellNumber++).setCellValue(iHead.getPeriod().toString());
-						row.createCell(cellNumber++).setCellValue(iHead.getCustodian().getPersonalID());
-						cell = row.createCell(cellNumber);
-						cell.setCellValue(getNumberFormat().format(recordAmount));
-						cell.setCellStyle(styleAlignRight);
-						cellNumber = 0;
+							if (hasInvoiceHeaderDeviations(iHead) || hasInvoiceRecordDeviations(iRec)) {
+								totalAmount += recordAmount;
+								row = sheet.createRow(rowNumber++);
+								row.createCell(cellNumber++).setCellValue(iHead.getPeriod().toString());
+								if (iHead.getCustodian()!=null)
+									row.createCell(cellNumber++).setCellValue(iHead.getCustodian().getPersonalID());
+								else
+									cellNumber++;
+								cell = row.createCell(cellNumber++);
+								cell.setCellValue(getNumberFormat().format(recordAmount));
+								cell.setCellStyle(styleAlignRight);
+								row.createCell(cellNumber++).setCellValue(getDeviationString());
+								cellNumber = 0;
+								setDeviationString("");
+							}
 						}
 					}
 				}
@@ -1305,7 +1309,47 @@ public class IFSFileCreationThread extends Thread {
 			saveExcelWorkBook(fileName, wb);
 		}		
 	}
-	
+
+	private boolean hasInvoiceHeaderDeviations(InvoiceHeader iHead) {
+		if (iHead.getCustodian() == null) {
+			setDeviationString("Saknas fakturamottagare");
+			return true;
+		}		
+		else if (iHead.getCustodian().getAddresses().size() == 0) {
+			setDeviationString("Saknas faktura adress");
+			return true;
+		}
+		return false;
+	}
+
+	private boolean hasInvoiceRecordDeviations(InvoiceRecord iRec) {		
+		if (hasNoCheck(iRec)) {
+			setDeviationString("Saknas check");
+			return true;
+		}
+
+		try {
+			PostingBusiness pb = getIFSBusiness().getPostingBusiness();
+			IWTimestamp now = IWTimestamp.RightNow();
+			pb.validateString(iRec.getOwnPosting(), now.getDate());
+		}
+		catch(PostingException e) {
+			e.printStackTrace();
+			setDeviationString("Posting failed");
+			return true;
+		}
+		catch(RemoteException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private boolean hasNoCheck(InvoiceRecord iRec) {
+		return iRec.getChildCareContract() == null 
+		|| iRec.getChildCareContract().getApplication() == null 
+		|| iRec.getChildCareContract().getApplication().getCheck()==null;
+	}
+
 	private void createPaymentFilesExcel(Collection data, String fileName, String headerText, boolean doublePosting) throws IOException {
 		if (data != null && !data.isEmpty()) {
 			int[] columnWidths = { 11, 7, 6, 7, 10, 8, 7, 7, 7, 10, 35 };
@@ -1430,15 +1474,12 @@ public class IFSFileCreationThread extends Thread {
 			Iterator it = paymentHeaders.iterator();
 			boolean firstRecord;
 			float recordAmount;
-			//float discountAmount;
 			float totalHeaderAmount = 0;
 			float totalAmount = 0;
 			School school = null;
 			while (it.hasNext()) {
-				PaymentHeader pHead = (PaymentHeader) it.next();
-				
-				ArrayList pRecs = new ArrayList(((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeader(pHead));
-				//Collections.sort(pRecs, new PaymentComparator());
+				PaymentHeader pHead = (PaymentHeader) it.next();				
+				Collection pRecs = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeader(pHead);
 				if (!pRecs.isEmpty()) {
 					Iterator irIt = pRecs.iterator();
 					firstRecord = true;
@@ -1452,14 +1493,10 @@ public class IFSFileCreationThread extends Thread {
 							row = sheet.createRow(rowNumber++);
 						row.createCell(cellNumber++).setCellValue(iRec.getPaymentText());
 						recordAmount = AccountingUtil.roundAmount(iRec.getTotalAmount());
-						//discountAmount = AccountingUtil.roundAmount(recordAmount * EXTRA_PAYMENT_PERCENTAGE);
-						totalHeaderAmount = totalHeaderAmount + recordAmount;// + discountAmount;
+						totalHeaderAmount = totalHeaderAmount + recordAmount;
 						cell = row.createCell(cellNumber--);
 						cell.setCellValue(getNumberFormat().format(recordAmount));
-						cell.setCellStyle((styleAlignRight));
-						//row = sheet.createRow(rowNumber++);
-						//row.createCell(cellNumber++).setCellValue("Extraersättning 6% på totalt utbetalt checkbelopp");
-						//row.createCell(cellNumber--).setCellValue(discountAmount);						
+						cell.setCellStyle((styleAlignRight));						
 						if (!irIt.hasNext()) {
 							row = sheet.createRow(rowNumber++);
 							cellNumber--;
@@ -1579,5 +1616,13 @@ public class IFSFileCreationThread extends Thread {
 	
 	private NumberFormat getNumberFormat() {
 		return numberFormat;
+	}
+
+	private String getDeviationString() {
+		return deviationString;
+	}
+
+	private void setDeviationString(String _deviationString) {
+		deviationString = _deviationString;
 	}
 }
