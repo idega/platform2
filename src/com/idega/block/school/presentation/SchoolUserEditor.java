@@ -30,6 +30,8 @@ import com.idega.core.contact.data.EmailHome;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.contact.data.PhoneHome;
 import com.idega.core.contact.data.PhoneType;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -1356,17 +1358,36 @@ public class SchoolUserEditor extends Block {
 		String category = getSchoolUserBusiness(iwc).getSchoolCategory(school);
 		Group priGroup = null;
 		try {
-			if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getElementarySchoolSchoolCategory()))
-				priGroup = getSchoolBusiness(iwc).getRootSchoolAdministratorGroup();
-			else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getChildCareSchoolCategory()))
-				priGroup = getSchoolBusiness(iwc).getRootProviderAdministratorGroup();
-			else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory()))
-				if (iUserType == SchoolUserBMPBean.USER_TYPE_HEADMASTER)
-					priGroup = getSchoolBusiness(iwc).getRootHighSchoolAdministratorGroup();
-				else
-					priGroup = getSchoolBusiness(iwc).getRootProviderAdministratorGroup();					
-			if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryMusicSchool().getCategory()))
-				priGroup = getSchoolBusiness(iwc).getRootMusicSchoolAdministratorGroup();
+			int homeCommuneId = -1;
+			try {
+				homeCommuneId = ((Integer) getCommuneHome().findDefaultCommune().getPrimaryKey()).intValue();
+			} catch (Exception e) {}
+			
+			if (school.getCommuneId() == homeCommuneId) {
+				if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getElementarySchoolSchoolCategory()))
+					priGroup = getSchoolBusiness(iwc).getRootSchoolAdministratorGroup();
+				else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getChildCareSchoolCategory()))
+					priGroup = getSchoolBusiness(iwc).getRootProviderAdministratorGroup();
+				else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory()))
+					if (iUserType == SchoolUserBMPBean.USER_TYPE_HEADMASTER)
+						priGroup = getSchoolBusiness(iwc).getRootHighSchoolAdministratorGroup();
+					else
+						priGroup = getSchoolBusiness(iwc).getRootProviderAdministratorGroup();					
+				if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryMusicSchool().getCategory()))
+					priGroup = getSchoolBusiness(iwc).getRootMusicSchoolAdministratorGroup();
+			} else {
+				if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getElementarySchoolSchoolCategory()))
+					priGroup = getSchoolBusiness(iwc).getRootSchoolOtherCommuneAdministratorGroup();
+				else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getChildCareSchoolCategory()))
+					priGroup = getSchoolBusiness(iwc).getRootProviderOtherCommuneAdministratorGroup();
+				else if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getHighSchoolSchoolCategory()))
+					if (iUserType == SchoolUserBMPBean.USER_TYPE_HEADMASTER)
+						priGroup = getSchoolBusiness(iwc).getRootHighSchoolOtherCommuneAdministratorGroup();
+					else
+						priGroup = getSchoolBusiness(iwc).getRootProviderOtherCommuneAdministratorGroup();					
+				if (category.equalsIgnoreCase(getSchoolUserBusiness(iwc).getSchoolBusiness().getCategoryMusicSchool().getCategory()))
+					priGroup = getSchoolBusiness(iwc).getRootMusicSchoolAdministratorGroup();
+			}
 		}
 		catch (CreateException e1) {
 			e1.printStackTrace();
@@ -1690,6 +1711,10 @@ public class SchoolUserEditor extends Block {
 
 	protected SchoolHome getSchoolHome() throws RemoteException {
 		return (SchoolHome) IDOLookup.getHome(School.class);
+	}
+
+	protected CommuneHome getCommuneHome() throws RemoteException {
+		return (CommuneHome) IDOLookup.getHome(Commune.class);
 	}
 
 	public Table getSchoolUsersTable(IWContext iwc, School school, boolean addSubmitButton) throws RemoteException {
