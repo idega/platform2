@@ -79,11 +79,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/16 14:05:28 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/16 16:09:41 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.76 $
+ * @version $Revision: 1.77 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -297,6 +297,41 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	
 	private void generateCheckAmountListPdf (final IWContext context)
 		throws RemoteException, DocumentException, FinderException {
+			final String schoolCategory = getSession().getOperationalField ();
+			final Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
+			PaymentRecord [] records = new PaymentRecord [0];
+			if (null != schoolCategory && null != providerId) {
+				final InvoiceBusiness business = getInvoiceBusiness (context);
+				final Date startPeriod
+						= getPeriodParameter (context, START_PERIOD_KEY);
+				final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
+				records = business.getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
+						(schoolCategory, providerId, new Date (startPeriod.getTime ()),
+						 new Date (endPeriod.getTime ()));
+			}
+		final int docId = createCheckAmountListFile(context, records);
+
+		// create link		
+		final Link viewLink
+				= new Link("Öppna checkbeloppslista i Acrobat Reader");
+		viewLink.setFile (docId);
+		viewLink.setTarget ("letter_window_" + docId);
+
+		final Table htmlTable = createTable (1);
+		htmlTable.add (viewLink, 1, 1);
+		htmlTable.setHeight (2, 12);
+		addCancelButton (htmlTable, 1, 3, ACTION_SHOW_PAYMENT);
+		final Form form = new Form ();
+		form.maintainParameter (PROVIDER_KEY);
+		form.setOnSubmit("return checkInfoForm()");
+		form.add (htmlTable);
+		final Table formTable = createTable (1);
+		formTable.add (form, 1, 1);
+		add (createMainTable (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT,
+													formTable));
+	}
+	
+	private int createCheckAmountListFile(final IWContext context, PaymentRecord[] records) throws DocumentException, RemoteException, FinderException {
 		final Document document = new Document
 				(PageSize.A4, mmToPoints (20), mmToPoints (20),
 				 mmToPoints (20), mmToPoints (20));
@@ -307,18 +342,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				(PdfWriter.HideMenubar | PdfWriter.PageLayoutOneColumn |
 				 PdfWriter.PageModeUseNone | PdfWriter.FitWindow
 				 | PdfWriter.CenterWindow);
-		final String schoolCategory = getSession().getOperationalField ();
-		final Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
-		PaymentRecord [] records = new PaymentRecord [0];
-		if (null != schoolCategory && null != providerId) {
-			final InvoiceBusiness business = getInvoiceBusiness (context);
-			final Date startPeriod
-					= getPeriodParameter (context, START_PERIOD_KEY);
-			final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
-			records = business.getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
-					(schoolCategory, providerId, new Date (startPeriod.getTime ()),
-					 new Date (endPeriod.getTime ()));
-		}
 		final String title = localize
 				(CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT);
 		document.addTitle (title);
@@ -372,32 +395,15 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				= getPostingPdfTable (context, records, lightBlue, false);
 		outerTable.addCell (doublePostingTable);
 		document.add (outerTable);        
+
 		// close and store document
 		document.close ();
-
-		// create link		
 		final int docId = getInvoiceBusiness (context).generatePdf
 				(localize (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
 				 buffer);
-		final Link viewLink
-				= new Link("Öppna checkbeloppslista i Acrobat Reader");
-		viewLink.setFile (docId);
-		viewLink.setTarget ("letter_window_" + docId);
-
-		final Table htmlTable = createTable (1);
-		htmlTable.add (viewLink, 1, 1);
-		htmlTable.setHeight (2, 12);
-		addCancelButton (htmlTable, 1, 3, ACTION_SHOW_PAYMENT);
-		final Form form = new Form ();
-		form.maintainParameter (PROVIDER_KEY);
-		form.setOnSubmit("return checkInfoForm()");
-		form.add (htmlTable);
-		final Table formTable = createTable (1);
-		formTable.add (form, 1, 1);
-		add (createMainTable (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT,
-													formTable));
+		return docId;
 	}
-	
+
 	private PdfPTable getPostingPdfTable
 		(final IWContext context, final PaymentRecord [] records,
 		 final Color lightBlue, final boolean isOwnPosting)
