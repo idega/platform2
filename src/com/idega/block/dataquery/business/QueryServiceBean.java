@@ -416,18 +416,32 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		// get user query, get xml data
 		XMLData data = null;
 		UserQuery userQuery = queryHelper.getUserQuery();
-		if (userQuery !=null  && overwriteQuery) {
+		QuerySequence root = (userQuery == null) ? null : userQuery.getRoot();
+		if (userQuery !=null  && overwriteQuery && root.getParentNode() == null ) {
+			// query isn't used by some derived queries
 			name = modifyNameIfNameAlreadyExistsIgnoreUserQuery(userQuery,name, group);
-			// case: query is modified and should be overwritten
 			data = XMLData.getInstanceForFile(userQuery.getSource());
 			// update user query and data
 			// store old name before updating
 			String oldName = userQuery.getName();
 			updateQueryData(name, userQuery, data, queryHelper, group, isPrivate);
-			// do we have to create a new query sequence?
 			if (!oldName.equals(name)) {
-				createQuerySequence(name, userQuery, queryHelper);
+				root.setName(name);
+				root.store();
 			}
+		}
+		else if (userQuery !=null  && overwriteQuery) {
+			// query is used by some derived queries
+			Integer oldUserQuery = (Integer) userQuery.getPrimaryKey();
+			User currentUser = iwuc.getCurrentUser();
+			removeUserQuery(oldUserQuery, currentUser);
+			name = modifyNameIfNameAlreadyExistsIgnoreUserQuery(userQuery,name, group);
+			userQuery = getUserQueryHome().create();
+			// store to be sure that the primary key is set !
+			data = XMLData.getInstanceWithoutExistingFile();
+			// update user query and data
+			updateQueryData(name, userQuery, data, queryHelper, group, isPrivate);
+			createQuerySequence(name, userQuery, queryHelper);
 		}
 		else {
 			// case: brand new query
