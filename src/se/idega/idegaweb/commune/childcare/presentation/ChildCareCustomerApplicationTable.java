@@ -37,7 +37,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.40 2003/05/28 15:44:18 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.41 2003/05/28 18:33:27 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -345,10 +345,6 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		application.setApplicationStatus(childCarebusiness.getStatusRejected());
 		application.setStatus(STATUS_TYST);
 		deletedApps.add(application);
-	}
-
-	private String getAcceptedMessage(IWContext iwc, ChildCareApplication application) throws RemoteException {
-		return localize(CCConstants.TEXT_OFFER_ACCEPTED_MESSAGE) + "<br><br>" + getHeader(localize(CCConstants.TEXT_DETAILS) + ":") + "<br>" + localize(CCConstants.TEXT_CUSTOMER) + ": " + iwc.getCurrentUser().getName() + "<br>" + localize(CCConstants.TEXT_CHILD) + ": " + application.getChild().getName() + " (" + application.getChild().getPersonalID() + ") " + "<br>" + localize(CCConstants.TEXT_FROM) + ": " + application.getFromDate();
 	}
 
 	/**
