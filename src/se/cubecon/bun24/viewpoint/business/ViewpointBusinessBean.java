@@ -12,10 +12,10 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
 /**
- * Last modified: $Date: 2003/05/26 07:46:57 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/26 08:01:14 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class ViewpointBusinessBean extends CaseBusinessBean
     implements ViewpointBusiness {
@@ -59,9 +59,7 @@ public class ViewpointBusinessBean extends CaseBusinessBean
         final String messageSubject
                 = getLocalizedString (CONFIRMSUBJECT_KEY,
                                       CONFIRMSUBJECT_DEFAULT);
-		final MessageBusiness messageBusiness
-                = (MessageBusiness) IBOLookup.getServiceInstance
-                (getIWApplicationContext(), MessageBusiness.class);
+		final MessageBusiness messageBusiness = getMessageBusiness ();
 		final Message message = messageBusiness.createUserMessage
                 (viewpoint.getUserId ().intValue (), messageSubject,
                  messageBody);
@@ -97,6 +95,8 @@ public class ViewpointBusinessBean extends CaseBusinessBean
         final String messageSubject
                 = getLocalizedString (CONFIRMSUBJECT_KEY,
                                       CONFIRMSUBJECT_DEFAULT);
+		final MessageBusiness messageBusiness = getMessageBusiness ();
+        messageBusiness.sendMessage (userEmail, messageSubject, messageBody);
     }
 
     public Viewpoint [] findUnhandledViewpointsInGroups
@@ -146,9 +146,7 @@ public class ViewpointBusinessBean extends CaseBusinessBean
                 + (questionLine.length () > 400
                    ? (questionLine.substring (0, 397) + "...")
                    : questionLine) + "\n";
-        final MessageBusiness messageBusiness = (MessageBusiness)
-                IBOLookup.getServiceInstance (getIWApplicationContext(),
-                                              MessageBusiness.class);
+        final MessageBusiness messageBusiness = getMessageBusiness ();
         final Integer userId = viewpoint.getUserId ();
         final String email = viewpoint.getUserEmail ();
         final String subject = "Re: " + viewpoint.getSubject ();
@@ -176,6 +174,11 @@ public class ViewpointBusinessBean extends CaseBusinessBean
 
     private ViewpointHome getViewpointHome () throws RemoteException {
         return (ViewpointHome) IDOLookup.getHome (Viewpoint.class);
+    }
+
+    private MessageBusiness getMessageBusiness () throws RemoteException {
+        return (MessageBusiness) IBOLookup.getServiceInstance
+                (getIWApplicationContext(), MessageBusiness.class);
     }
 
     public TopCategory [] findAllTopCategories () throws RemoteException,
