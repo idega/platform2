@@ -20,31 +20,31 @@ import com.idega.util.IWTimestamp;
  * @author Joakim
  */
 public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord {
-	private static final String ENTITY_NAME = "cacc_invoice_record";
+	public static final String ENTITY_NAME = "cacc_invoice_record";
 
-	private static final String COLUMN_INVOICE_HEADER = "invoice_header";
-	private static final String COLUMN_PAYMENT_RECORD_ID = "payment_record_id";
-	private static final String COLUMN_PROVIDER_ID = "provider_id";
-	private static final String COLUMN_CONTRACT_ID = "contract_id";
-	private static final String COLUMN_INVOICE_TEXT = "invoice_text";
-	private static final String COLUMN_RULE_TEXT = "rule_text";
-	private static final String COLUMN_DAYS = "days";
-	private static final String COLUMN_PERIOD_START_CHECK = "period_start_check";
-	private static final String COLUMN_PERIOD_END_CHECK = "period_end_check";
-	private static final String COLUMN_PERIOD_START_PLACEMENT = "period_start_placement";
-	private static final String COLUMN_PERIOD_END_PLACEMENT = "period_end_placement";
-	private static final String COLUMN_DATE_CREATED = "date_created";
-	private static final String COLUMN_CREATED_BY = "created_by";
-	private static final String COLUMN_DATE_CHANGED = "date_changed";
-	private static final String COLUMN_CHANGED_BY = "changed_by";
-	private static final String COLUMN_AMOUNT = "amount";
-	private static final String COLUMN_AMOUNT_VAT = "amount_vat";
-	private static final String COLUMN_NOTES = "notes";
-	private static final String COLUMN_ORDER_ID = "order_id";
-	private static final String COLUMN_RULE_SPEC_TYPE = "rule_spec_type";
-	private static final String COLUMN_OWN_POSTING = "own_posting";
-	private static final String COLUMN_DOUBLE_POSTING = "double_posting";
-	private static final String COLUMN_VAT_TYPE = "vat_type";
+	public static final String COLUMN_INVOICE_HEADER = "invoice_header";
+	public static final String COLUMN_PAYMENT_RECORD_ID = "payment_record_id";
+	public static final String COLUMN_PROVIDER_ID = "provider_id";
+	public static final String COLUMN_CONTRACT_ID = "contract_id";
+	public static final String COLUMN_INVOICE_TEXT = "invoice_text";
+	public static final String COLUMN_RULE_TEXT = "rule_text";
+	public static final String COLUMN_DAYS = "days";
+	public static final String COLUMN_PERIOD_START_CHECK = "period_start_check";
+	public static final String COLUMN_PERIOD_END_CHECK = "period_end_check";
+	public static final String COLUMN_PERIOD_START_PLACEMENT = "period_start_placement";
+	public static final String COLUMN_PERIOD_END_PLACEMENT = "period_end_placement";
+	public static final String COLUMN_DATE_CREATED = "date_created";
+	public static final String COLUMN_CREATED_BY = "created_by";
+	public static final String COLUMN_DATE_CHANGED = "date_changed";
+	public static final String COLUMN_CHANGED_BY = "changed_by";
+	public static final String COLUMN_AMOUNT = "amount";
+	public static final String COLUMN_AMOUNT_VAT = "amount_vat";
+	public static final String COLUMN_NOTES = "notes";
+	public static final String COLUMN_ORDER_ID = "order_id";
+	public static final String COLUMN_RULE_SPEC_TYPE = "rule_spec_type";
+	public static final String COLUMN_OWN_POSTING = "own_posting";
+	public static final String COLUMN_DOUBLE_POSTING = "double_posting";
+	public static final String COLUMN_VAT_TYPE = "vat_type";
 
 	public String getEntityName() {
 		return ENTITY_NAME;

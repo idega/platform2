@@ -34,10 +34,10 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/10/28 15:20:20 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/29 13:22:27 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness{
@@ -168,6 +168,26 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
                 : (InvoiceHeader []) collection.toArray (new InvoiceHeader [0]);
     }
 
+    /**
+     * Retreives an array of all InvoiceRecords connected to this InvoiceHeader
+     * An empty list is returned if no invoice header was found.
+     *
+     * @param header the header to find records connected to
+     * @return array of invoice records
+     */
+    public InvoiceRecord [] getInvoiceRecordsByInvoiceHeader
+        (final InvoiceHeader header) {
+        Collection collection = null;
+        try {
+            collection = getInvoiceRecordHome ().findByInvoiceHeader (header);
+        } catch (RemoteException exception) {
+            exception.printStackTrace ();
+        } catch (FinderException exception) {
+            // no problem, return empty array
+        }
+        return null == collection ? new InvoiceRecord [0]
+                : (InvoiceRecord []) collection.toArray (new InvoiceRecord [0]);
+    }
 
 	protected PaymentHeaderHome getPaymentHeaderHome() throws RemoteException
 	{
@@ -179,14 +199,13 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
 	}
 	
-	protected InvoiceHeaderHome getInvoiceHeaderHome() throws RemoteException
+	public InvoiceHeaderHome getInvoiceHeaderHome() throws RemoteException
 	{
 		return (InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class);
 	}
 	
-	protected InvoiceRecordHome getInvoiceRecordHome() throws RemoteException
+	public InvoiceRecordHome getInvoiceRecordHome() throws RemoteException
 	{
 		return (InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class);
-	}
-	
+	}	
 }

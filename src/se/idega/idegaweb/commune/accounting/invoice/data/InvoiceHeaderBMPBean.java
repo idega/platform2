@@ -9,7 +9,9 @@ import com.idega.block.school.data.SchoolCategory;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
+import com.idega.user.data.UserBMPBean;
 import com.idega.util.IWTimestamp;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean;
 
 /**
  * The databean for the invoice header. The invoice header holds all the 
@@ -175,14 +177,30 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		final IDOQuery sql = idoQuery ();
         final String H_ = "h."; // sql alias for invoice header
         final String U_ = "u."; // sql alias for user
+        final String R_ = "r."; // sql alias for invoice record
+        final String C_ = "c."; // sql alias for contract
+        final String userId = user.getPrimaryKey ().toString ();
         sql.appendSelectAllFrom (getTableName () + " h")
-                .append (',' + com.idega.user.data.UserBMPBean.TABLE_NAME
-                         + " u")
+                .append (',' + InvoiceRecordBMPBean.ENTITY_NAME + " r")
+                .append (',' + ChildCareContractBMPBean.ENTITY_NAME + " c")
+                .append (',' + UserBMPBean.TABLE_NAME + " u")
                 .appendWhere ()
-                .appendEquals (H_ + COLUMN_CUSTODIAN_ID,
-                               user.getPrimaryKey ().toString ())
-                .appendAndEquals (H_ + COLUMN_CUSTODIAN_ID,
-                                  U_ + User.FIELD_USER_ID)
+                .appendLeftParenthesis ()
+                .appendLeftParenthesis ()
+                .appendEquals (H_ + COLUMN_CUSTODIAN_ID, userId)
+                .appendRightParenthesis ()
+                .appendOr ()
+                .appendLeftParenthesis ()
+                .appendEquals (H_ + ENTITY_NAME + "_id",
+                               R_ + InvoiceRecordBMPBean.COLUMN_INVOICE_HEADER)
+                .appendAndEquals
+                (R_ + InvoiceRecordBMPBean.COLUMN_CONTRACT_ID,
+                 C_ + ChildCareContractBMPBean.COLUMN_CONTRACT_ID)
+                .appendAndEquals (C_ + ChildCareContractBMPBean.COLUMN_CHILD_ID,
+                                  userId)
+                .appendRightParenthesis ()
+                .appendRightParenthesis ()
+                .appendAndEquals (userId, U_ + User.FIELD_USER_ID)
                 .appendOrderBy (U_ + User.FIELD_PERSONAL_ID);
 		return idoFindPKsBySQL(sql.toString());		
     }

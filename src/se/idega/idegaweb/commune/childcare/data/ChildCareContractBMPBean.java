@@ -22,7 +22,7 @@ import com.idega.user.data.User;
  */
 public class ChildCareContractBMPBean extends GenericEntity implements ChildCareContract {
 
-	private static final String ENTITY_NAME = "comm_childcare_archive";
+	public static final String ENTITY_NAME = "comm_childcare_archive";
 	
 	public static final String COLUMN_CHILD_ID = "child_id";
 	public static final String COLUMN_APPLICATION_ID = "application_id";
