@@ -1526,7 +1526,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		leagueString.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_LEAGUE_INFO, "League"), currentLocale);
 		reportCollection.addField(leagueString);
 	
-		ReportableField womenUnderAgeLimit = new ReportableField("womenUnderAgeLimit", Integer.class);
+		ReportableField womenUnderAgeLimit = new ReportableField("womenUnderAge", Integer.class);
 		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
 		reportCollection.addField(womenUnderAgeLimit);
 	
@@ -1534,7 +1534,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
 		reportCollection.addField(womenOverOrEqualAgeLimit);
 	
-		ReportableField menUnderAgeLimit = new ReportableField("menUnderAgeLimit", Integer.class);
+		ReportableField menUnderAgeLimit = new ReportableField("menUnderAge", Integer.class);
 		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
 		reportCollection.addField(menUnderAgeLimit);
 	
