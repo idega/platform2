@@ -126,9 +126,12 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		while(entIter.hasNext()) {
 			CalendarEntry entry = (CalendarEntry) entIter.next();
 			AttendanceEntity attendance = getAttendanceByUserIDandEntry(userID,entry);
-			if(attendance.getAttendanceMark() != null && !attendance.getAttendanceMark().equals("")) {
-				list.add(attendance);
+			if(attendance != null) {
+				if(attendance.getAttendanceMark() != null && !attendance.getAttendanceMark().equals("")) {
+					list.add(attendance);
+				}
 			}
+			
 		}
 		System.out.println("list: " + list.toString());
 		return list;
