@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.22 2001/09/24 21:46:50 eiki Exp $
+ * $Id: Table.java,v 1.23 2001/09/24 22:35:50 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -166,6 +166,10 @@ public class Table extends ModuleObjectContainer {
 
   public void setBackgroundImage(Image backgroundImage){
     this.setAttribute("background",backgroundImage.getURL());
+  }
+
+  public void setBackgroundImageURL(String backgroundImageURL){
+    this.setAttribute("background",backgroundImageURL);
   }
 
   public void setVerticalAlignment(int xpos, int ypos, String alignment){
