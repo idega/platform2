@@ -3849,7 +3849,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			                  ((double) (notDone>0?notDone:(done!=0?done:1)))
 			                ) * 100.0 
 			                  * (((done!=0 && notDone!=0) && (done>=notDone))?1.0:-1.0);*/
-			double change = ((notDone==0)?1.0:((double)done)/((double)(done+notDone)))*100.0;
+			double change = (done==0)?0.0:((double)done)/((double)(done+notDone))*100.0;
 			regData.addData(percentReportsDone, format.format(change));
 			
 			int mThisYear = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
