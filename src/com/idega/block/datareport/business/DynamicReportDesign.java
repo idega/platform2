@@ -51,7 +51,7 @@ public class DynamicReportDesign {
 	private int _columnsXCoordinateForColumnHeader = 0;
 	private int _columnsXCoordinateForDetail = 0;
 	private int _detailHeight = 12;
-	private int _columnHeaderHeight = 16;
+	private int _columnHeaderHeight = 20;
 	
 	private int _reportTitleHeight = 40;
 	
