@@ -11,6 +11,7 @@ import com.idega.jmodule.object.textObject.Link;
 import com.idega.jmodule.news.presentation.NewsReader;
 import java.util.Vector;
 import java.sql.SQLException;
+import com.idega.projects.golf.HandicapOverview;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.text.presentation.TextReader;
 
@@ -40,6 +41,7 @@ public class GolferPage extends Page{
   public final String fakeSideMenuNewsParameterValue = "fakeSideMenuNewsParameterValue";
   public final String fakeSideMenuProfileParameterValue = "fakeSideMenuProfileParameterValue";
 
+  private int memberId = 3152;
 
   //It would be smart to override this String to create possible diffrent sidemenus for different users.
   public String sideMenuAttributeName = "sideMenuAttributeName";
@@ -260,12 +262,12 @@ public class GolferPage extends Page{
     Table topTable = new Table(7,1);
     topTable.setHeight("101");
 
-    Image iInfo = iwrb.getImage("/golferpage/information.gif");
-    Image iRecord = iwrb.getImage("/golferpage/record.gif");
-    Image iInterviews = iwrb.getImage("/golferpage/interviews.gif");
-    Image iStatistics = iwrb.getImage("/golferpage/statistics.gif");
-    Image iPictures = iwrb.getImage("/golferpage/pictures.gif");
-    Image iHome = iwrb.getImage("/golferpage/home.gif");
+    Image iInfo = iwrb.getImage("/golferpage/navbar_01.gif");
+    Image iRecord = iwrb.getImage("/golferpage/navbar_02.gif");
+    Image iInterviews = iwrb.getImage("/golferpage/navbar_03.gif");
+    Image iStatistics = iwrb.getImage("/golferpage/navbar_04.gif");
+    Image iPictures = iwrb.getImage("/golferpage/navbar_05.gif");
+    Image iHome = iwrb.getImage("/golferpage/navbar_06.gif");
     Image iMenuBackground = iwb.getImage("/shared/menuBackground.gif");
 
     Link lInfo = new Link(iInfo);
@@ -357,12 +359,20 @@ public class GolferPage extends Page{
       else if (chosenParameterValue.equals(sHomeParameterValue)) {
         setHomeView(modinfo);
       }
+
+      if (chosenParameterValue.equals(sStatisticsParameterValue)) {
+        this.setStyleSheetURL("/style/StatisticsView.css");
+      }
+      else{
+        this.setStyleSheetURL("/style/idega.css");
+      }
     }
     //temporarily!!
     else if (modinfo.isParameterSet(fakeSideMenuParameterName)) {
       setHomeView(modinfo);
     }
     else{
+      this.setStyleSheetURL("/style/StatisticsView.css");
       setHomeView(modinfo);
     }
     getSideMenuViewType(modinfo);
@@ -548,7 +558,10 @@ public class GolferPage extends Page{
     setTopPicture(false);
     Image iStatisticsLogo = iwrb.getImage("/golferpage/tolfraedi.gif");
     this.addLeftLogo(iStatisticsLogo);
-/*    TextReader statisticText = new TextReader(759);
+    /*HandicapOverview hOverview = new HandicapOverview(memberId);
+    add(hOverview);*/
+
+    /*    TextReader statisticText = new TextReader(759);
     add(statisticText);*/
   }
 
