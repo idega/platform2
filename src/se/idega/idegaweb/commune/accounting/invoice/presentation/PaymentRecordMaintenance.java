@@ -23,7 +23,9 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
@@ -38,11 +40,11 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/12 15:56:32 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/13 12:36:49 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -96,8 +98,13 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String STATUS_DEFAULT = "Status";
     private static final String STATUS_KEY = PREFIX + "status";
     private static final String TOTAL_AMOUNT_DEFAULT = "Totalbelopp";
+    private static final String TOTAL_AMOUNT_INDIVIDUALS_DEFAULT = "Totalt antal individer";
+    private static final String TOTAL_AMOUNT_INDIVIDUALS_KEY = PREFIX + "total_amount_individuals";
     private static final String TOTAL_AMOUNT_KEY = PREFIX + "total_amount";
-
+    private static final String TOTAL_AMOUNT_PLACEMENTS_DEFAULT = "Totalt antal placeringar";
+    private static final String TOTAL_AMOUNT_PLACEMENTS_KEY = PREFIX + "total_amount_placements";
+    private static final String TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT = "Totalbelopp, exklusive moms";
+    private static final String TOTAL_AMOUNT_VAT_EXCLUDED_KEY = PREFIX + "total_amount_vat_excluded";
 
     private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_PAYMENT = 0,
@@ -149,6 +156,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         final PaymentHeaderHome headerHome = business.getPaymentHeaderHome ();
         final SchoolCategoryHome categoryHome
                 = schoolBusiness.getSchoolCategoryHome ();
+        final InvoiceRecordHome home = business.getInvoiceRecordHome ();
         
         // get data objects
         final Integer recordId
@@ -160,6 +168,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                 = categoryHome.findByPrimaryKey (header.getSchoolCategoryID ());
         final School school = schoolBusiness.getSchool
                 (new Integer (header.getSchoolID ()));
+        final Collection invoiceRecords
+                = home.findByPaymentRecord (record);
         
         // render
         final Table table = createTable (2);
@@ -180,10 +190,13 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
         addSmallText (table, col++, row++,
                       getFormattedPeriod (record.getPeriod ()));
-        col = 1;
         table.mergeCells (1, row, table.getColumns (), row);
         table.add (getDetailedPaymentRecordListTable
-                   (context, record, business), 1, row++);
+                   (context, record, invoiceRecords), 1, row++);
+        table.setHeight (row++, 12);
+        table.mergeCells (1, row, table.getColumns (), row);
+        table.add (getDetailedPaymentRecordSummaryTable
+                   (context, invoiceRecords), 1, row++);
 
         // add to form
         final Form form = new Form ();
@@ -194,16 +207,16 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         add (createMainTable (localize (DETAILED_PAYMENT_RECORDS_KEY,
                                         DETAILED_PAYMENT_RECORDS_DEFAULT),
                               outerTable));
+        
     }
 
     private Table getDetailedPaymentRecordListTable
         (final IWContext context, final PaymentRecord paymentRecord,
-         final InvoiceBusiness business)
+         final Collection invoiceRecords)
     throws RemoteException, javax.ejb.FinderException {
         // set up header row
         final String [][] columnNames =
-                {{ STATUS_KEY, STATUS_DEFAULT },
-                 { SSN_KEY, SSN_DEFAULT },
+                {{ SSN_KEY, SSN_DEFAULT },
                  { NAME_KEY, NAME_DEFAULT },
                  { CHECK_PERIOD_KEY, CHECK_PERIOD_DEFAULT },
                  { DAYS_KEY, DAYS_DEFAULT },
@@ -222,11 +235,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         }
         row++;
 
-        // get detailed records
-        final InvoiceRecordHome home = business.getInvoiceRecordHome ();
-        final Collection invoiceRecords
-                = home.findByPaymentRecord (paymentRecord);
-
         //render
         final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
                 .getServiceInstance (context, SchoolBusiness.class);
@@ -241,12 +249,50 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         return table;
     }
 
-    private String getFormattedPeriod (Date date) {
-        return null != date ? periodFormatter.format (date) : "";
-    }
+    private Table getDetailedPaymentRecordSummaryTable
+        (final IWContext context, final Collection invoiceRecords)
+    throws RemoteException, javax.ejb.FinderException {
+        final Set placements = new HashSet ();
+        final Set individuals = new HashSet ();
+        long totalAmountVatExcluded = 0;
+        // get home object
+        final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
+                .getServiceInstance (context, SchoolBusiness.class);
+        final SchoolClassMemberHome home
+                = schoolBusiness.getSchoolClassMemberHome ();
 
-    private String getFormattedDate (Date date) {
-        return null != date ? dateFormatter.format (date) : "";
+        // count values for summary
+        for (Iterator i = invoiceRecords.iterator (); i.hasNext ();) {
+            final InvoiceRecord invoiceRecord = (InvoiceRecord) i.next ();
+            final Integer placementId
+                    = new Integer (invoiceRecord.getSchoolClassMemberId ());
+            final SchoolClassMember placement
+                    = home.findByPrimaryKey (placementId);
+            final User user = placement.getStudent ();
+            placements.add (placementId);
+            individuals.add (user.getPrimaryKey ());
+            totalAmountVatExcluded += (long) invoiceRecord.getAmount ();
+        }
+
+        // render
+        final Table table = createTable (3);
+        table.setColumnWidth (3, "50%");
+        int row = 2; int col = 1;
+        addSmallHeader (table, col++, row, TOTAL_AMOUNT_PLACEMENTS_KEY,
+                        TOTAL_AMOUNT_PLACEMENTS_DEFAULT, ":");
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+        addSmallText (table, col++, row++, placements.size () + "");
+        col = 1;
+        addSmallHeader (table, col++, row, TOTAL_AMOUNT_INDIVIDUALS_KEY,
+                        TOTAL_AMOUNT_INDIVIDUALS_DEFAULT, ":");
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+        addSmallText (table, col++, row++, individuals.size () + "");
+        col = 1;
+        addSmallHeader (table, col++, row, TOTAL_AMOUNT_VAT_EXCLUDED_KEY,
+                        TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT, ":");
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+        addSmallText (table, col++, row++, totalAmountVatExcluded + "");
+        return table;
     }
 
 	private void showDetailedPaymentRecordOnARow
@@ -273,7 +319,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		int col = 1;
 		table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
                            : getZebraColor2 ());
-		addSmallText (table, col++, row, "");
 		addSmallText (table, col++, row, ssn);
 		addSmallText (table, col++, row, userName);
 		addSmallText (table, col++, row, checkPeriod);
@@ -285,15 +330,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addSmallText (table, col++, row, dateChanged);
 		addSmallText (table, col++, row, changedBy);
 	}
-
-    private String formatSsn (final String ssn) {
-        return null == ssn || 12 != ssn.length () ? ssn
-                : ssn.substring (2, 8) + '-' + ssn.substring (8, 12);
-    }
-
-    private static String getUserName (final User user) {
-        return user.getLastName () + ", " + user.getFirstName ();
-    }
 
     private void showPayment (final IWContext context) throws RemoteException {
         final Table table = createTable (3);
@@ -394,6 +430,14 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         table.add (editLink, col++, row);
 	}
 
+    private String getFormattedPeriod (Date date) {
+        return null != date ? periodFormatter.format (date) : "";
+    }
+
+    private String getFormattedDate (Date date) {
+        return null != date ? dateFormatter.format (date) : "";
+    }
+
     private Image getEditIcon () {
         return getEditIcon (localize (EDIT_ROW_KEY, EDIT_ROW_DEFAULT));
     }
@@ -408,6 +452,15 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             link.addParameter (parameters [i][0], parameters [i][1]);
         }
         return link;
+    }
+
+    private String formatSsn (final String ssn) {
+        return null == ssn || 12 != ssn.length () ? ssn
+                : ssn.substring (2, 8) + '-' + ssn.substring (8, 12);
+    }
+
+    private static String getUserName (final User user) {
+        return user.getLastName () + ", " + user.getFirstName ();
     }
 
     private Link createSmallLink (final String displayText,
