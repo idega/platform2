@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModule.java,v 1.7 2001/05/03 16:29:25 palli Exp $
+ * $Id: GolfMainJSPModule.java,v 1.8 2001/05/10 14:26:24 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -468,7 +468,7 @@ public class GolfMainJSPModule extends MainSideJSPModule {
 
         protected Table Right() throws SQLException,IOException{
 	        //getModuleInfo().getSession().setAttribute("union_id","3");
-          Table rightTable = new Table(1,8);
+          Table rightTable = new Table(1,10);
           rightTable.setWidth("" + RIGHTWIDTH);
 //          rightTable.setHeight("100%");
           rightTable.setCellpadding(0);
@@ -482,6 +482,8 @@ public class GolfMainJSPModule extends MainSideJSPModule {
           rightTable.setVerticalAlignment(1,6,"top");
           rightTable.setVerticalAlignment(1,7,"top");
           rightTable.setVerticalAlignment(1,8,"top");
+          rightTable.setVerticalAlignment(1,9,"top");
+          rightTable.setVerticalAlignment(1,10,"top");
 
           rightTable.setColumnAlignment(1, "center");
 
@@ -509,11 +511,64 @@ public class GolfMainJSPModule extends MainSideJSPModule {
 
           rightTable.add( getGSIAssociates(),1,5);
           rightTable.add(getGolfLinks(),1,7);
+          rightTable.add(getYellowLine(),1,9);
 	  //rightTable.add(new PollVoter("/poll/results.jsp"),1,7);
 
           return rightTable;
         }
 
+
+      private Form getYellowLine() {
+
+        Form myForm = new Form("http://www.gulalinan.is/leit.asp","get");
+          myForm.setAttribute("target","_blank");
+          myForm.setName("Search");
+
+        Table myTable = new Table(1,3);
+          myTable.setWidth(120);
+          myTable.setHeight(70);
+          myTable.setCellpadding(0);
+          myTable.setCellspacing(0);
+
+        Image rammiUppi = new Image("http://www.gulalinan.is/gulleit/img/lg120/rammi_uppi120.gif","",120,6);
+          myTable.add(rammiUppi,1,1);
+        Image rammiNidri = new Image("http://www.gulalinan.is/gulleit/img/lg120/rammi_nidri120.gif","",120,8);
+          myTable.add(rammiNidri,1,3);
+
+        Table innerTable = new Table(1,3);
+          innerTable.setWidth(120);
+          innerTable.setHeight("100%");
+          innerTable.setCellpadding(0);
+          innerTable.setCellspacing(0);
+          innerTable.setAlignment(1,1,"center");
+          innerTable.setAlignment(1,2,"center");
+          innerTable.setAlignment(1,3,"right");
+          innerTable.setBackgroundImage(new Image("http://www.gulalinan.is/gulleit/img/lg120/bakgrunnurx120.gif"));
+
+        Image searchImage = new Image("http://www.gulalinan.is/gulleit/img/lg120/gulalinanlogo.gif","",67,12);
+        Link yellowLink = new Link(searchImage,"http://www.gulalinan.is");
+          yellowLink.setTarget("_blank");
+
+        TextInput textInput = new TextInput("kwd");
+          textInput.setLength(12);
+
+        HiddenInput hidden = new HiddenInput("ac","ks");
+
+        Image submitImage = new Image("http://www.gulalinan.is/gulleit/img/lg120/leita.gif","Leita",39,13);
+        SubmitButton submit = new SubmitButton(submitImage,"image1");
+          submit.setAttribute("hspace","5");
+
+        innerTable.add(yellowLink,1,1);
+        innerTable.add(textInput,1,2);
+        innerTable.add(submit,1,3);
+
+        myTable.add(innerTable,1,2);
+        myForm.add(myTable);
+        myForm.add(hidden);
+
+        return myForm;
+
+      }
 
 
       protected Table golfHeader(){
