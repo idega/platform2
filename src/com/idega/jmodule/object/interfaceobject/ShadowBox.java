@@ -10,64 +10,62 @@ import com.idega.jmodule.object.*;
 import javax.servlet.http.*;
 import java.util.*;
 
-public class ShadowBox extends JModuleObject {
+public class ShadowBox extends ModuleObjectContainer {
 
-private String boxWidth = "100";
-private String boxHeight = "100";
-private String horizontalAlignment = "left";
-private String verticalAlignment = "top";
-private Table contentTable;
+private String boxWidth;
+private String boxHeight;
+private String horizontalAlignment;
+private String verticalAlignment;
 private Table myTable;
 
 public ShadowBox(){
 	myTable = new Table(3,3);
-	contentTable = new Table(1,1);
-	super.add(contentTable);
-
+  setDefaultValues();
+  initialize();
+	super.add(myTable);
 }
 
-	public void main(ModuleInfo modinfo) throws IOException {
-
-		drawTables();
+	public void main(ModuleInfo modinfo) {
 	}
 
-	private void drawTables() throws IOException {
+	private void setDefaultValues() {
+    boxWidth = "100";
+    boxHeight = "100";
+    horizontalAlignment = "left";
+    verticalAlignment = "top";
+	}
 
-		contentTable.setCellpadding(0);
-		contentTable.setCellspacing(0);
-		contentTable.setColor("#FFFFFF");
-		contentTable.setWidth(boxWidth);
-		contentTable.setHeight(boxHeight);
+  private void initialize() {
+		try {
+      myTable.setBorder(0);
+      myTable.setWidth(boxWidth);
+      myTable.setHeight(boxHeight);
+      myTable.setCellpadding(0);
+      myTable.setCellspacing(0);
+      myTable.setColor(2,2,"FFFFFF");
+      myTable.setAlignment("center");
+      myTable.setWidth(2,2,"100%");
+      myTable.setHeight(3,"9");
+      myTable.setHeight(1,"9");
 
-		myTable.setBorder(0);
-		myTable.setWidth("100%");
-		myTable.setHeight("100%");
-		myTable.setCellpadding(0);
-		myTable.setCellspacing(0);
-		myTable.setColor(2,2,"FFFFFF");
-		myTable.setAlignment("center");
-		myTable.setWidth(2,2,"100%");
-		myTable.setHeight(3,"9");
-		myTable.setHeight(1,"9");
+      myTable.setAlignment(2,2,horizontalAlignment);
+      myTable.setVerticalAlignment(2,2,verticalAlignment);
 
-		myTable.setAlignment(2,2,horizontalAlignment);
-		myTable.setVerticalAlignment(2,2,verticalAlignment);
+      myTable.add(new Image("/pics/jmodules/shadowBox/boxHorntoppV.gif"),1,1);
+      myTable.setBackgroundImage(2,1,new Image("/pics/jmodules/shadowBox/boxTopphlid.gif"));
+      myTable.addText("",2,1);
+      myTable.add(new Image("/pics/jmodules/shadowBox/boxHorntoppH.gif"),3,1);
 
-		myTable.add(new Image("/pics/jmodules/shadowBox/boxHorntoppV.gif"),1,1);
-		myTable.setBackgroundImage(2,1,new Image("/pics/jmodules/shadowBox/boxTopphlid.gif"));
-		myTable.addText("",2,1);
-		myTable.add(new Image("/pics/jmodules/shadowBox/boxHorntoppH.gif"),3,1);
+      myTable.setBackgroundImage(1,2,new Image("/pics/jmodules/shadowBox/boxVhlid.gif"));
+      myTable.setColor(3,2,"#FFFFFF");
 
-		myTable.setBackgroundImage(1,2,new Image("/pics/jmodules/shadowBox/boxVhlid.gif"));
-		myTable.setBackgroundImage(3,2,new Image("/pics/jmodules/shadowBox/boxHhlid.gif"));
-
-		myTable.add(new Image("/pics/jmodules/shadowBox/boxHornbotnV.gif"),1,3);
-		myTable.setBackgroundImage(2,3,new Image("/pics/jmodules/shadowBox/boxBotnhlid.gif"));
-		myTable.addText("",2,3);
-		myTable.add(new Image("/pics/jmodules/shadowBox/boxHornbotnH.gif"),3,3);
-
-		contentTable.add(myTable,1,1);
-
+      myTable.add(new Image("/pics/jmodules/shadowBox/boxHornbotnV.gif"),1,3);
+      myTable.setColor(2,3,"#FFFFFF");
+      myTable.addText("",2,3);
+      myTable.add(new Image("/pics/jmodules/shadowBox/boxHornbotnH.gif"),3,3);
+		}
+    catch (Exception e) {
+    }
 	}
 
 	public void add(ModuleObject objectToAdd){
