@@ -3587,11 +3587,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(address);
 		
 		ReportableField postalCode = new ReportableField(FIELD_NAME_POSTALCODE, String.class);
-		postalCode.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_POSTALCODE, "Multi Division Players"), currentLocale);
+		postalCode.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_POSTALCODE, "Postal Code"), currentLocale);
 		reportCollection.addField(postalCode);
 		
 		ReportableField email = new ReportableField(FIELD_NAME_EMAIL, String.class);
-		email.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Single Division Players"), currentLocale);
+		email.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Email"), currentLocale);
 		reportCollection.addField(email);
 		
 		
