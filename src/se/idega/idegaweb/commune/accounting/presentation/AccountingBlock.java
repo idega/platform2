@@ -318,6 +318,20 @@ public abstract class AccountingBlock extends CommuneBlock {
 		return dateString;
 	}
 	
+	/**
+	 * Formats a float to two decimals and the current Locale's decimal symbol
+	 * @param amount
+	 * @return
+	 */
+	public String formatCurrency(float amount){
+		NumberFormat currenyFormat = NumberFormat.getInstance();
+		currenyFormat.setMinimumFractionDigits(2);
+		currenyFormat.setMaximumFractionDigits(2);
+		currenyFormat.setGroupingUsed(true);
+		return currenyFormat.format(amount);
+	}
+		
+	
 	/*
 	 * Returns a java.sqlDate object if s has valid date format.
 	 */
