@@ -385,7 +385,16 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 			report.setRegionalUnionGroupId((Integer)regionalUnion.getPrimaryKey());
 			report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
-			report.setRegionalUnionAbbreviation(regionalUnion.getAbbrevation());
+			
+			String abbr=regionalUnion.getAbbrevation();
+			if (abbr==null){
+				abbr = regionalUnion.getShortName();
+				if(abbr==null){
+					abbr = regionalUnion.getName();
+				}
+			}
+			
+			report.setRegionalUnionAbbreviation(abbr);
 			report.setRegionalUnionName(regionalUnion.getName());
 		
 		}
@@ -1153,11 +1162,14 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	
 					
 					wGroup.setName(group.getName());
-	                String shortName = group.getShortName();
+	                String shortName = group.getAbbrevation();//abbrevation is better, change by eiki
 	                // should not happen but happens....
 	                // shortName must be set!
 	                if (shortName == null)  {
-	                  shortName = group.getName();
+	                  shortName = group.getShortName();
+	                  if(shortName==null){
+	                  	shortName=group.getName()+"-NS";
+	                  }
 	                }
 					wGroup.setShortName(shortName);
 					wGroup.setNumber(group.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
