@@ -388,6 +388,13 @@ public class TourOverview extends AbstractServiceOverview {
 
       nameTextBold.setText(getProductBusiness(iwc).getProductNameWithNumber(product, true, iwc.getCurrentLocaleId()));
       supplierTextBold.setText(supplier.getName());
+		  Address a = supplier.getAddress();
+		  if (a != null) {
+		  		supplierTextBold.addToText(", "+a.getStreetName());
+		  		if (a.getStreetNumber() != null) {
+		  			supplierTextBold.addToText(" "+a.getStreetNumber());
+		  		}
+		  }
       departureFromTextBold.setText(depAddress.getName());
       departureTimeTextBold.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
 

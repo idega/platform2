@@ -279,6 +279,13 @@ public class CarRentalOverview extends AbstractServiceOverview {
 	
 		  nameTextBold.setText(getProductBusiness(iwc).getProductNameWithNumber(product, true, iwc.getCurrentLocaleId()));
 		  supplierTextBold.setText(supplier.getName());
+		  Address a = supplier.getAddress();
+		  if (a != null) {
+		  		supplierTextBold.addToText(", "+a.getStreetName());
+		  		if (a.getStreetNumber() != null) {
+		  			supplierTextBold.addToText(" "+a.getStreetNumber());
+		  		}
+		  }
 	
 		  IWCalendar cal = new IWCalendar();
 		  Locale locale = tsm.getLocale();

@@ -379,7 +379,15 @@ public class FishingOverview extends AbstractServiceOverview {
 
       nameTextBold.setText(getProductBusiness(iwc).getProductNameWithNumber(product, true, iwc.getCurrentLocaleId()));
       supplierTextBold.setText(supplier.getName());
-      departureFromTextBold.setText(depAddress.getName());
+		  Address a = supplier.getAddress();
+		  if (a != null) {
+		  		supplierTextBold.addToText(", "+a.getStreetName());
+		  		if (a.getStreetNumber() != null) {
+		  			supplierTextBold.addToText(" "+a.getStreetNumber());
+		  		}
+		  }
+
+		  departureFromTextBold.setText(depAddress.getName());
       departureTimeTextBold.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
 
       String[] dayOfWeekName = new String[8];
