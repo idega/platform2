@@ -40,8 +40,8 @@ public class ViewpointForm extends CommuneBlock {
 
     public final static String ANSWER_KEY = "viewpoint.answer";
     public final static String ANSWER_DEFAULT = "Svar till medborgare";
-    public final static String CATEGORY_KEY = "viewpoint.category";
-    public final static String CATEGORY_DEFAULT = "Kategori";
+    public final static String APPLIES_KEY = "viewpoint.applies";
+    public final static String APPLIES_DEFAULT = "Avser";
     public final static String CONFIRMANSWERSENT_KEY
         = "viewpoint.confirmAnswerSent";
     public final static String CONFIRMANSWERSENT_DEFAULT
@@ -187,7 +187,7 @@ public class ViewpointForm extends CommuneBlock {
 		table.setCellspacing (0);
 		table.setCellpadding (14);
 		table.setColor (getBackgroundColor());
-        table.add (getLocalizedHeader (CATEGORY_KEY, CATEGORY_DEFAULT), 1,
+        table.add (getLocalizedHeader (APPLIES_KEY, APPLIES_DEFAULT), 1,
                    row);
 		table.add(new Break(), 1, row);
         table.add (new Text (viewpoint.getCategory ()), 1, row++);
@@ -285,7 +285,7 @@ public class ViewpointForm extends CommuneBlock {
 		table.setCellspacing (0);
 		table.setCellpadding (14);
 		table.setColor (getBackgroundColor());
-        table.add (getLocalizedHeader (CATEGORY_KEY, CATEGORY_DEFAULT), 1, row);
+        table.add (getLocalizedHeader (APPLIES_KEY, APPLIES_DEFAULT), 1, row);
 		table.add(new Break(), 1, row);
         table.add (new Text (viewpoint.getCategory ()), 1, row++);
         table.add (getLocalizedHeader (FROMCITIZEN_KEY, FROMCITIZEN_DEFAULT), 1,

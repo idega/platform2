@@ -17,6 +17,16 @@ import se.idega.idegaweb.commune.message.data.Message;
  */
 public class ViewpointBusinessBean extends CaseBusinessBean
     implements ViewpointBusiness {
+
+    public final static String ANSWER_KEY = "viewpoint.answer";
+    public final static String ANSWER_DEFAULT = "Svar till medborgare";
+    public final static String APPLIES_KEY = "viewpoint.applies";
+    public final static String APPLIES_DEFAULT = "Avser";
+    public final static String ORIGINALVIEWPOINT_KEY
+        = "viewpoint.originalViewpoint";
+    public final static String ORIGINALVIEWPOINT_DEFAULT
+        = "Ursprunglig synpunkt";
+
     public void createViewpoint (final User user, final String subject,
                           final String message, final String category,
                           final int handlerGroupId)
@@ -56,15 +66,14 @@ public class ViewpointBusinessBean extends CaseBusinessBean
         final Viewpoint viewpoint = findViewpoint (viewpointId);
 
         // 2. send answer message to citizen
-        final String categoryLine = getLocalizedString ("viewpoint.category",
-                                                        "Avser").toUpperCase ()
-                + ": " + viewpoint.getCategory ();
-        final String answerLine = getLocalizedString ("viewpoint.answer",
-                                                      "Svar").toUpperCase ()
-                + ": " + answer;
+        final String categoryLine = getLocalizedString
+                (APPLIES_KEY, APPLIES_DEFAULT).toUpperCase () + ": "
+                + viewpoint.getCategory ();
+        final String answerLine = getLocalizedString
+                (ANSWER_KEY, ANSWER_DEFAULT).toUpperCase () + ": " + answer;
         final String questionLine = "---- " + getLocalizedString
-                ("viewpoint.originalViewpoint",
-                 "Ursprunglig synpunkt").toUpperCase () + " ----\n\n"
+                (ORIGINALVIEWPOINT_KEY,
+                 ORIGINALVIEWPOINT_DEFAULT).toUpperCase () + " ----\n\n"
                 + viewpoint.getMessage ();
         final String messageBody = categoryLine + "\n\n" + answerLine + "\n\n"
                 + questionLine + "\n";
