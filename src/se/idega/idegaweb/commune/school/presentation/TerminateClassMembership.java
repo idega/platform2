@@ -25,10 +25,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/11/24 07:45:07 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/03 15:41:40 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -227,7 +227,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
      * @exception RemoteException if exception happens in lower layer
      */
     private Table getUserSearchFormTable (final IWContext context)
-        throws RemoteException {
+        throws RemoteException, FinderException {
         // set up searcher
         final UserSearcher searcher = createSearcher ();
         fillSearcherWithStudents (context, searcher);
@@ -285,21 +285,28 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
             final SchoolCommuneBusiness communeBusiness
                     = (SchoolCommuneBusiness) IBOLookup.getServiceInstance
                     (context, SchoolCommuneBusiness.class);
+            final SchoolBusiness schoolBusiness
+                    = communeBusiness.getSchoolBusiness ();
+            final SchoolClassMemberHome memberHome
+                    = schoolBusiness.getSchoolClassMemberHome ();
             final int schoolId = getSchoolID ();
-            for (Iterator i = usersFound.iterator (); i.hasNext ();) {
-                final User user = (User) i.next ();
-                final SchoolClassMember student
-                        = getCurrentSchoolClassMembership (communeBusiness,
-                                                           user, schoolId);
-                if (null != student && null == student.getRemovedDate ()) {
+            try {
+                final Collection members = memberHome
+                        .findAllBySchoolAndUsersWithSchoolYearAndNotRemoved
+                        (schoolId, usersFound);
+                for (Iterator i = members.iterator (); i.hasNext ();) {
+                    final SchoolClassMember student
+                            = (SchoolClassMember) i.next ();
                     if (MAX_FOUND_USERS <= students.size ()) {
                         // too many students found
                         displayRedText (TOOMANYSTUDENTSFOUND_KEY,
                                         TOOMANYSTUDENTSFOUND_DEFAULT);
                         throw new FinderException ();
                     }
-                    students.add (user);
+                    students.add (student.getStudent ());
                 }
+            } catch (FinderException e) {
+                // no problem, nu students found
             }
             if (!usersFound.isEmpty () && students.isEmpty ()) {
                 displayRedText (NOUSERFOUND_KEY, NOUSERFOUND_DEFAULT);
@@ -330,14 +337,22 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
      * @exception RemoteException if exception happens in lower layer
      */
     private Table getStudentTable
-        (final IWContext context, final User user) throws RemoteException {
+        (final IWContext context, final User user) throws RemoteException,
+                                                          FinderException {
 
         final SchoolCommuneBusiness communeBusiness
                 = (SchoolCommuneBusiness) IBOLookup.getServiceInstance
                 (context, SchoolCommuneBusiness.class);
-        final SchoolClassMember student = getCurrentSchoolClassMembership
-                (communeBusiness, user, getSchoolID ());
-
+        final SchoolBusiness schoolBusiness
+                = communeBusiness.getSchoolBusiness ();
+        final SchoolClassMemberHome memberHome
+                = schoolBusiness.getSchoolClassMemberHome ();
+        final int schoolId = getSchoolID ();
+        final Collection members = memberHome
+                .findAllBySchoolAndUsersWithSchoolYearAndNotRemoved
+                (schoolId, java.util.Collections.singleton (user));
+        final SchoolClassMember student
+                = (SchoolClassMember) members.iterator ().next ();
         // store student in session
         final HttpSession session = context.getSession ();
         session.setAttribute (MEMBER_KEY, student);

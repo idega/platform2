@@ -17,6 +17,7 @@ import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDOEntity;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.User;
@@ -27,8 +28,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/30 22:03:19 $ by $Author: staffan $
- * @version $Revision: 1.77 $
+ * Last modified: $Date: 2003/12/03 15:41:54 $ by $Author: staffan $
+ * @version $Revision: 1.78 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -288,6 +289,36 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 
 		return super.idoFindPKsBySQL(sql.toString());
 	}
+
+    public java.util.Collection ejbFindAllBySchoolAndUsersWithSchoolYearAndNotRemoved (int schoolId, java.util.Collection users) throws javax.ejb.FinderException {
+		IDOQuery sql = idoQuery ();
+        sql.appendSelect ().append ("m.*").appendFrom ().append
+                (getEntityName () + " m");
+        if (0 < schoolId) {
+            sql.append (", " + SchoolClassBMPBean.SCHOOLCLASS + " c");
+        }
+        sql.appendWhereIsNull ("m." + REMOVED_DATE);
+        sql.appendAnd ().append ("m." + SCHOOL_YEAR + " is not null");
+        if (0 < schoolId) {
+            sql.appendAndEquals ("c." + SchoolClassBMPBean.SCHOOLCLASS + "_id",
+                                 "m." + SCHOOLCLASS);
+            sql.appendAndEquals ("c." + SchoolClassBMPBean.SCHOOL, schoolId);
+        }
+        if (null != users && 0 < users.size ()) {
+            sql.appendAnd ().appendLeftParenthesis ();
+            boolean isFirst = true;
+            for (Iterator i = users.iterator (); i.hasNext ();) {
+                if (isFirst) {
+                    sql.appendEquals ("m." + MEMBER, (IDOEntity) i.next ());
+                    isFirst = false;
+                } else {
+                    sql.appendOrEquals ("m." + MEMBER, (IDOEntity) i.next ());
+                }
+            }
+            sql.appendRightParenthesis ();
+        }
+		return idoFindPKsBySQL (sql.toString());
+    }
 
 	public Collection ejbFindByStudentAndSchoolAndTypes(int studentID, int schoolID, Collection schoolTypes) throws FinderException {
 		IDOQuery sql = idoQuery();

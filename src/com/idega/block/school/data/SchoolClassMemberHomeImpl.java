@@ -12,6 +12,13 @@ public class SchoolClassMemberHomeImpl extends com.idega.data.IDOFactory impleme
   return (SchoolClassMember) super.createIDO();
  }
 
+public java.util.Collection findAllBySchoolAndUsersWithSchoolYearAndNotRemoved (int schoolId, java.util.Collection usersFound) throws javax.ejb.FinderException {
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllBySchoolAndUsersWithSchoolYearAndNotRemoved(schoolId,usersFound);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllByUserAndPeriodAndSchoolCategory(com.idega.user.data.User child, java.sql.Date period, com.idega.block.school.data.SchoolCategory category)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllByUserAndPeriodAndSchoolCategory(child, period, category);
