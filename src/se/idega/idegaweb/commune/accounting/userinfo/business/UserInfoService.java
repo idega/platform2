@@ -3,6 +3,10 @@ package se.idega.idegaweb.commune.accounting.userinfo.business;
 
 public interface UserInfoService extends com.idega.business.IBOService
 {
- public se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome createBruttoIncome(java.lang.Integer userID,java.lang.Float incomeAmount,java.util.Date validFrom,Integer creatorID)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome createBruttoIncome(java.lang.Integer p0,java.lang.Float p1,java.util.Date p2,java.lang.Integer p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.accounting.userinfo.data.InvoiceReceiver createInvoiceReceiver(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome getBruttoIncomeHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.accounting.userinfo.data.InvoiceReceiverHome getInvoiceReceiverHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public boolean isInvoiceReceiver(int p0) throws java.rmi.RemoteException;
+ public boolean isInvoiceReceiver(com.idega.user.data.User p0) throws java.rmi.RemoteException;
 }
