@@ -1,5 +1,5 @@
 /*
- * $Id: Application.java,v 1.7 2001/10/09 23:05:18 aron Exp $
+ * $Id: Application.java,v 1.8 2001/11/08 15:57:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,10 +28,12 @@ public class Application extends GenericEntity {
   private static final String status_ = "status";
   private static final String statusChanged_ = "status_changed";
 
+
   public static final String statusSubmitted = "S";
   public static final String statusApproved = "A";
   public static final String statusRejected = "R";
   public static final String statusSigned = "C";
+	public static final String statusGarbage = "G";
 
   public Application() {
     super();
@@ -117,7 +119,8 @@ public class Application extends GenericEntity {
     if ((status.equalsIgnoreCase(statusSubmitted)) ||
         (status.equalsIgnoreCase(statusApproved)) ||
         (status.equalsIgnoreCase(statusSigned)) ||
-        (status.equalsIgnoreCase(statusRejected))){
+        (status.equalsIgnoreCase(statusRejected))||
+        (status.equalsIgnoreCase(statusGarbage))){
       setColumn(status_,status);
       setStatusChanged(idegaTimestamp.getTimestampRightNow());
     }
