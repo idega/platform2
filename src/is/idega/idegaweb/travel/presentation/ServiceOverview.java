@@ -190,7 +190,7 @@ public class ServiceOverview extends TravelManager {
         is.idega.idegaweb.travel.presentation.ServiceViewer sv = new is.idega.idegaweb.travel.presentation.ServiceViewer();
           sv.setSupplier(supplier);
           sv.setZebraColors("#FFFFFF","#CCCCCC");
-        table.add(sv);
+//        table.add(sv);
 
         for (int i = 0; i < products.length; i++) {
           try {
