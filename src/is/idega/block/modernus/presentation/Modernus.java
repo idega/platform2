@@ -1,12 +1,12 @@
 /*
- * $Id: Modernus.java,v 1.1 2004/09/17 15:13:00 thomas Exp $
+ * $Id$
  *
  * Copyright (C) 2000-2003 Idega Software. All Rights Reserved.
  *
  * This software is the proprietary information of Idega Software.
  * Use is subject to license terms.
  */
-package is.idega.idegaweb.golf.presentation;
+package is.idega.block.modernus.presentation;
 
 import java.net.URLEncoder;
 

@@ -3,8 +3,8 @@
  */
 package is.idega.idegaweb.golf.clubs.presentation;
 
+import is.idega.block.modernus.presentation.Modernus;
 import is.idega.idegaweb.golf.entity.Union;
-import is.idega.idegaweb.golf.presentation.Modernus;
 
 import java.sql.SQLException;
 import java.util.Vector;
