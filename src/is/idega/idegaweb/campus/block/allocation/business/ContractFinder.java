@@ -215,7 +215,7 @@ public abstract class ContractFinder {
   public static List listOfApplicantContracts(int iApplicantId){
     try {
       Contract C = new Contract();
-      return EntityFinder.findAllByColumn(C,C.getApplicantIdColumnName(),iApplicantId);
+      return EntityFinder.findAllByColumn(C,Contract.getApplicantIdColumnName(),iApplicantId);
     }
     catch(SQLException e){
       return(null);
