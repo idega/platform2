@@ -27,9 +27,9 @@ public java.util.Collection findByInvoiceHeader(se.idega.idegaweb.commune.accoun
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findByPaymentRecords(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord [] p0)throws javax.ejb.FinderException{
+public java.util.Collection findByMonthAndCategory(com.idega.util.CalendarMonth p0,java.lang.String p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((InvoiceRecordBMPBean)entity).ejbFindByPaymentRecords(p0);
+	java.util.Collection ids = ((InvoiceRecordBMPBean)entity).ejbFindByMonthAndCategory(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -48,14 +48,21 @@ public java.util.Collection findByPaymentRecordOrderedByStudentName(se.idega.ide
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findByPaymentRecords(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord[] p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((InvoiceRecordBMPBean)entity).ejbFindByPaymentRecords(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public InvoiceRecord findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (InvoiceRecord) super.findByPrimaryKeyIDO(pk);
  }
 
 
-	public int getIndividualCountByPaymentRecords (se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord [] paymentRecords)throws com.idega.data.IDOException{
+public int getIndividualCountByPaymentRecords(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord[] p0)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((InvoiceRecordBMPBean)entity).ejbHomeGetIndividualCountByPaymentRecords(paymentRecords);
+	int theReturn = ((InvoiceRecordBMPBean)entity).ejbHomeGetIndividualCountByPaymentRecords(p0);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
