@@ -2099,7 +2099,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
         // mark the sucessfull creation
         workReport.setCreationFromDatabaseDone(true);
         workReport.store();
-        tm.commit();
+        //tm.commit();
+        tm.rollback();
         return true;
       }
       else {
@@ -2256,8 +2257,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   
   private void updateWorkReportData(int workReportId) throws FinderException, IDOException{
     Collection members;
-    members =
-      getAllWorkReportMembersForWorkReportId(workReportId);
+    members = getAllWorkReportMembersForWorkReportId(workReportId);
     // create map: member as key, leagues as value 
     Map leagueCountMap = new HashMap();
     int playersCount = 0;
@@ -2302,7 +2302,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       WorkReportGroup workReportGroup = board.getLeague();
       String leagueName = workReportGroup.getName();
       Integer number = (Integer) leagueCountMap.get(leagueName);
-      board.setNumberOfPlayers(number.intValue());
+      if (number == null) {
+        board.setNumberOfPlayers(0);  
+      }
+      else {
+        board.setNumberOfPlayers(number.intValue());
+      }
       board.store();
     }
   }
@@ -2433,11 +2438,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     int year = getWorkReportById(workReportId).getYearOfReport().intValue();
     // get the ADA work report group 
     WorkReportGroup adaGroup = findWorkReportGroupByNameAndYear(WorkReportConstants.MAIN_BOARD_GROUP_NAME, year); 
-    // get an array with the user representive group as the only element
-    
-    String userGroupRepresentive = groupBusiness.getUserGroupRepresentativeHome().getGroupType();
-    ArrayList groupTypes = new ArrayList();
-    groupTypes.add(userGroupRepresentive);
 
     // get the first level under the club
     Collection childGroups;
@@ -2455,27 +2455,18 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     Iterator childGroupsFirstLevelIterator = childGroups.iterator();
     while (childGroupsFirstLevelIterator.hasNext()) {
       Group childGroup = (Group) childGroupsFirstLevelIterator.next();
-      Integer childGroupId = (Integer) childGroup.getPrimaryKey();
       WorkReportGroup workReportGroup = null;
       String groupType = childGroup.getGroupType();
       if (IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(groupType)) {
-        try {
-          workReportGroup = getWorkReportGroupHome().findWorkReportGroupByGroupIdAndYear(childGroupId.intValue(),year);
-        }
-        catch (FinderException ex) {
-          String message =
-            "[WorkReportBusiness]: Can't find WorkReportGroup.";
-          System.err.println(message + " Message is: " + ex.getMessage());
-          ex.printStackTrace(System.err);
-          workReportGroup = null;
-        }
+        workReportGroup = getLeagueFromClubDivision(childGroup, year);
       }
+      Collection users;
       // iterate over all children
-      childGroups = groupBusiness.getChildGroupsRecursiveResultFiltered(childGroup, groupTypes , false);
-      Iterator childGroupsIterator = childGroups.iterator();
-      while (childGroupsIterator.hasNext()) {
-        Group child = (Group) childGroupsIterator.next();
-        Integer userPrimaryKey = (Integer) child.getPrimaryKey();
+      users = groupBusiness.getUsersFromGroupRecursive(childGroup);
+      Iterator userIterator = users.iterator();
+      while (userIterator.hasNext()) {
+        User user = (User) userIterator.next();
+        Integer userPrimaryKey = (Integer) user.getPrimaryKey();
         WorkReportMember existingMember = (WorkReportMember) idExistingMember.get(userPrimaryKey);
         if (existingMember == null)  {
           try {
