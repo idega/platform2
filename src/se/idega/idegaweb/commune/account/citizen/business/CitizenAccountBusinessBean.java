@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.55 2003/10/03 01:53:10 tryggvil Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.56 2003/10/22 10:00:29 gimmi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -55,11 +55,14 @@ import com.idega.core.location.business.AddressBusiness;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.AddressHome;
 import com.idega.core.location.data.AddressType;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.CountryHome;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
@@ -69,11 +72,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2003/10/03 01:53:10 $ by $Author: tryggvil $
+ * Last modified: $Date: 2003/10/22 10:00:29 $ by $Author: gimmi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.55 $
+ * @version $Revision: 1.56 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
@@ -251,13 +254,18 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return (Integer) (movingTo == null ? null : movingTo.getPrimaryKey());
 	}
 
-	public Integer insertPutChildren(final Integer applicationId, final String currentKommun) throws RemoteException, CreateException {
+	public Integer insertPutChildren(final Integer applicationId, final String currentCommuneID) throws RemoteException, CreateException {
 		CitizenApplicantPutChildren putChildren = null;
 		try {
 			final CitizenApplicantPutChildrenHome citizenApplicantPutChildrenHome = (CitizenApplicantPutChildrenHome) IDOLookup.getHome(CitizenApplicantPutChildren.class);
 			putChildren = citizenApplicantPutChildrenHome.create();
 			putChildren.setApplicationId(applicationId.intValue());
-			putChildren.setCurrentKommun(currentKommun);
+			try {
+				putChildren.setCurrentCommuneID(Integer.parseInt(currentCommuneID));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			//putChildren.setCurrentKommun(currentKommun);
 			putChildren.store();
 		}
 		catch (Exception e) {
@@ -271,6 +279,11 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	public CitizenApplicantPutChildren findCitizenApplicantPutChildren(final int applicationId) throws RemoteException, FinderException {
 		CitizenApplicantPutChildrenHome home = (CitizenApplicantPutChildrenHome) IDOLookup.getHome(CitizenApplicantPutChildren.class);
 		return home.findByApplicationId(applicationId);
+	}
+
+	public Commune findCommuneByCommunePK(Object communePK) throws FinderException, IDOLookupException {
+		CommuneHome comm = (CommuneHome) IDOLookup.getHome(Commune.class);
+		return comm.findByPrimaryKey(communePK);
 	}
 
 	public CitizenApplicantChildren[] findCitizenApplicantChildren(final int applicationId) throws RemoteException, FinderException {
