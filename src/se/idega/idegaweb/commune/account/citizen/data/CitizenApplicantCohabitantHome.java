@@ -6,14 +6,14 @@ import java.util.Collection;
 import javax.ejb.*;
 
 /**
- * Last modified: $Date: 2002/11/15 08:34:29 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/22 12:58:04 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface CitizenApplicantCohabitantHome extends IDOHome {
     public CitizenApplicantCohabitant create() throws CreateException,
                                                        RemoteException;
-    public Collection findByApplicationId (int applicantId)
+    public CitizenApplicantCohabitant findByApplicationId (int applicantId)
         throws FinderException, RemoteException;
 }

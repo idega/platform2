@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.30 2002/11/20 14:24:02 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.31 2002/11/22 12:58:04 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -352,39 +352,77 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
         final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist
                 (firstName, "", lastName, ssn, gender, timestamp);
                  
-	try {
-		 Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
-		 email.setEmailAddress(applicant.getEmail());
-		 email.store();
-		 user.addEmail(email);
-	} catch (Exception e) {
-		throw new CreateException(e.getMessage());
-	}
-     
-	try {
-		if (applicant.getPhoneHome() != null) {
-		 Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
-		 phone.setNumber(applicant.getPhoneHome());
-		 phone.setPhoneTypeId(PhoneBMPBean.getHomeNumberID());
-		 phone.store();
-		 user.addPhone(phone);
-		}
-	} catch (Exception e) {
-		throw new CreateException(e.getMessage());
-	}
-     
-	try {
-		if (applicant.getPhoneWork() != null) {
-		 Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
-		 phone.setNumber(applicant.getPhoneWork());
-		 phone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
-		 phone.store();
-		 user.addPhone(phone);
-		}
-	} catch (Exception e) {
-		throw new CreateException(e.getMessage());
-	}
-     
+        try {
+            Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
+            email.setEmailAddress(applicant.getEmail());
+            email.store();
+            user.addEmail(email);
+            
+            if (applicant.getPhoneHome() != null) {
+                Phone phone
+                        = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
+                phone.setNumber(applicant.getPhoneHome());
+                phone.setPhoneTypeId(PhoneBMPBean.getHomeNumberID());
+                phone.store();
+                user.addPhone(phone);
+            }
+            
+            if (applicant.getPhoneWork() != null) {
+                Phone phone
+                        = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
+                phone.setNumber(applicant.getPhoneWork());
+                phone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
+                phone.store();
+                user.addPhone(phone);
+            }
+
+            if (applicant.hasCohabitant ()) {
+                final CitizenApplicantCohabitantHome home
+                        = (CitizenApplicantCohabitantHome)
+                        IDOLookup.getHome(CitizenApplicantCohabitant.class);
+                final CitizenApplicantCohabitant cohabitant
+                        = home.findByApplicationId (applicationID);
+                final String cohabitantSsn = cohabitant.getSsn ();
+                final Gender cohabitantGender = pidChecker.isFemale (ssn)
+                        ? genderHome.getFemaleGender ()
+                        : genderHome.getMaleGender ();
+                final Date cohabitantBirth
+                        = pidChecker.getDateFromPersonalID (ssn);
+                final IWTimestamp cohabitantTimestamp = cohabitantBirth != null
+                        ? new IWTimestamp (cohabitantBirth.getTime ()) : null;
+                final User cohabitantUser
+                        = userBusiness.createCitizenByPersonalIDIfDoesNotExist
+                        (cohabitant.getFirstName (), "",
+                         cohabitant.getLastName (), cohabitantSsn,
+                         cohabitantGender, cohabitantTimestamp);
+            }
+            if (applicant.getChildrenCount () > 0) {
+                final CitizenApplicantChildrenHome home
+                        = (CitizenApplicantChildrenHome)
+                        IDOLookup.getHome(CitizenApplicantChildren.class);
+                final CitizenApplicantChildren [] children
+                        = home.findByApplicationId (applicationID);
+                for (int i = 0; i < children.length; i++) {
+                    final String childrenSsn = children [i].getSsn ();
+                    final Gender childrenGender = pidChecker.isFemale (ssn)
+                            ? genderHome.getFemaleGender ()
+                            : genderHome.getMaleGender ();
+                    final Date childrenBirth
+                            = pidChecker.getDateFromPersonalID (ssn);
+                    final IWTimestamp childrenTimestamp = childrenBirth != null
+                            ? new IWTimestamp (childrenBirth.getTime ()) : null;
+                    final User childrenUser = userBusiness
+                            .createCitizenByPersonalIDIfDoesNotExist
+                            (children [i].getFirstName (), "",
+                             children [i].getLastName (), childrenSsn,
+                             childrenGender, childrenTimestamp);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace ();
+            throw new CreateException(e.getMessage());
+        }
+
 		applicant.setOwner (user);
         applicant.store ();
 		super.acceptApplication (applicationID, performer);
@@ -435,7 +473,6 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	 */
 	protected User createCitizenForApplication (AccountApplication theCase)
         throws CreateException, RemoteException {
-
         final CitizenAccount applicant = (CitizenAccount) theCase;
         final String name = applicant.getApplicantName();
         final int spaceIndex = name != null ? name.indexOf(" ") : -1;
@@ -461,6 +498,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
         final CommuneUserBusiness userBusiness = getUserBusiness ();
         final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist
                 (firstName, "", lastName, ssn, gender, timestamp);
+
         return user;        
 	}
 	

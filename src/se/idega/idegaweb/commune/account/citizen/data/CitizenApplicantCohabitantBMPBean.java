@@ -1,12 +1,15 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
 import com.idega.data.GenericEntity;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2002/11/20 11:50:59 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/22 12:58:04 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class CitizenApplicantCohabitantBMPBean extends GenericEntity
     implements CitizenApplicantCohabitant {
@@ -92,5 +95,13 @@ public class CitizenApplicantCohabitantBMPBean extends GenericEntity
     
     public void setPhoneWork (final String phoneWork) {
         setColumn (COLUMN_PHONE_WORK, phoneWork);
+    }
+
+
+    public Collection ejbFindByApplicationId (final int applicationId)
+        throws FinderException {
+        final String sql = "select * from " + ENTITY_NAME
+                + " where " + COLUMN_APPLICATION_ID + " = " + applicationId;
+        return idoFindIDsBySQL (sql);
     }
 }

@@ -2,12 +2,13 @@ package se.idega.idegaweb.commune.account.citizen.data;
 
 import com.idega.data.IDOEntity;
 import java.rmi.RemoteException;
+import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2002/11/20 11:50:59 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/22 12:58:04 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface CitizenApplicantCohabitant extends IDOEntity {
     int getApplicationId () throws RemoteException;

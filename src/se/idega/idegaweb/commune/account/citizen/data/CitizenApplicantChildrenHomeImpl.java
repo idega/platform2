@@ -1,15 +1,15 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
-import com.idega.data.IDOFactory;
+import com.idega.data.*;
 import java.rmi.RemoteException;
 import java.util.*;
 import javax.ejb.*;
 
 /**
- * Last modified: $Date: 2002/11/15 08:34:29 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/22 12:58:04 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CitizenApplicantChildrenHomeImpl extends IDOFactory
     implements CitizenApplicantChildrenHome {
@@ -22,7 +22,14 @@ public class CitizenApplicantChildrenHomeImpl extends IDOFactory
         return (CitizenApplicantChildren) super.createIDO();
     }
 
-    public Collection findByApplicationId (int applicationId) {
-        throw new UnsupportedOperationException ();
+    public CitizenApplicantChildren [] findByApplicationId
+        (final int applicationId) throws FinderException, RemoteException {
+        final IDOEntity entity = idoCheckOutPooledEntity();
+        final Collection ids = ((CitizenApplicantChildrenBMPBean) entity)
+                .ejbFindByApplicationId(applicationId);
+        idoCheckInPooledEntity (entity);
+        final Collection childrens = getEntityCollectionForPrimaryKeys (ids);
+        return (CitizenApplicantChildren []) childrens.toArray
+                (new CitizenApplicantChildren [0]);
     }
 }
