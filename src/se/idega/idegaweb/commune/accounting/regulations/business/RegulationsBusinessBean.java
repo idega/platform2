@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.93 2003/12/10 22:37:11 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.94 2003/12/10 22:56:39 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1772,6 +1772,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						}
 					}
 					catch (Exception e) {
+						e.printStackTrace();
 						throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
 					}
 				}
