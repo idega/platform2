@@ -170,7 +170,7 @@ public class WorkReportOverViewCloseView extends Block {
   private PresentationObject getContent(IWContext iwc, IWResourceBundle resourceBundle, Form form) throws RemoteException {
   	  
   	String workReportId = iwc.getParameter(CLOSE_VIEW_WORK_REPORT_ID);
-    Collection divisions =  getWorkReportBusiness(iwc).getAllWorkReportDivisionBoardForWorkReportId(Integer.parseInt(workReportId));
+    Collection divisions =  getWorkReportBusiness(iwc).getAllWorkReportDivisionBoardForWorkReportIdAndYear(Integer.parseInt(workReportId),getYear());
    
     EntityBrowser browser = getEntityBrowser(divisions, resourceBundle, form);
     
