@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareQueueBMPBean.java,v 1.5 2003/04/23 13:15:58 joakim Exp $
+ * $Id: ChildCareQueueBMPBean.java,v 1.6 2003/04/24 08:20:39 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -161,7 +161,7 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	}
 	
 	public boolean isExported() {
-		return getBooleanColumnValue(EXPORTED);
+		return getBooleanColumnValue(EXPORTED, false);
 	}
 	
 
