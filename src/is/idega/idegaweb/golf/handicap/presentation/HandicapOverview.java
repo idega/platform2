@@ -592,4 +592,18 @@ public class HandicapOverview extends GolfBlock {
 			throw new IBORuntimeException(ile);
 		}
 	}
+	
+	/**
+	 * @param fieldPage The fieldPage to set.
+	 */
+	public void setFieldPage(ICPage fieldPage) {
+		this.iFieldPage = fieldPage;
+	}
+	
+	/**
+	 * @param tournamentPage The tournamentPage to set.
+	 */
+	public void setTournamentPage(ICPage tournamentPage) {
+		this.iTournamentPage = tournamentPage;
+	}
 }
