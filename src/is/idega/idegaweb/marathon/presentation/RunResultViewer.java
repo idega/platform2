@@ -36,6 +36,8 @@ import com.idega.util.IWColor;
  */
 public class RunResultViewer extends Block {
 
+	private static final String STYLENAME_INTERFACE = "interface";
+
 	private static final int COLUMN_COUNT = 7;
 	private static final String HEADLINE_BACKGROUND_COLOR = "454545";
 	private static final String HEADLINE_COLOR = "FFFFFF";
@@ -67,6 +69,11 @@ public class RunResultViewer extends Block {
 			e.printStackTrace();
 		}
 		Table table = new Table();
+
+		RunDistanceDropdownDouble runDisDropdownField = (RunDistanceDropdownDouble) getStyleObject(new RunDistanceDropdownDouble(), STYLENAME_INTERFACE);
+		runDisDropdownField.getSecondaryDropdown().setToSubmit(true);
+		table.add(runDisDropdownField, 1, 1);
+		
 		try {
 			List runGroups = new ArrayList(getGroupBiz().getChildGroups(distance));
 			sortRunnerGroups(runGroups);
