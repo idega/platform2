@@ -1038,12 +1038,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		//Store work-report division thingie........ HOW!!!???!!!		
 		Iterator it = leaguesMap.keySet().iterator();
 		while (it.hasNext()) {
-			Integer id = (Integer)it.next();
-			Integer val = (Integer)divPlayerCount.get(id);
+			Integer key = (Integer)it.next();
+			WorkReportGroup league = (WorkReportGroup)leaguesMap.get(key);
+			Integer wrGroupId = (Integer) league.getPrimaryKey();
+			Integer val = (Integer)divPlayerCount.get(key);
 
 			WorkReportDivisionBoard board = null;
 			try {
-				board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, id.intValue());
+				board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, wrGroupId.intValue());
 			}
 			catch (FinderException e) {
 				e.printStackTrace();
@@ -1057,7 +1059,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			}
 
 			board.setReportId(workReportId);
-			board.setWorKReportGroupID(id.intValue());
+			board.setWorKReportGroupID(wrGroupId.intValue());
 			if (val != null)
 				board.setNumberOfPlayers(val.intValue());
 			else

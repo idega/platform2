@@ -194,7 +194,14 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		return idoFindIDsBySQL(sql.toString());
 	}
 	
+	/**
+	 * If age is less than 0 it returns null
+	 * @param age
+	 * @param year
+	 * @return
+	 */
 	private IWTimestamp getYearlyAgeBorderIWTimestamp(int age, int year){
+		if(age<0) return null;
 		IWTimestamp stamp = new IWTimestamp(31,12,year-1);//work reports are for the year before
 		stamp.addYears(-age);
 		
@@ -205,6 +212,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	
 	private int getCountOfPlayersEqualOrOlderThanAgeAndByGenderWorkReportAndWorkReportGroup(int age,String gender, WorkReport report,WorkReportGroup league) {
 		IDOQuery sql = idoQuery();
+		
 		IWTimestamp stamp = getYearlyAgeBorderIWTimestamp(age,report.getYearOfReport().intValue());
 		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
 		String IDColumnName = getIDColumnName();
@@ -219,11 +227,13 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 			.appendAnd();
 		}
 		
-		sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
-		.appendLessThanOrEqualsSign()
-		.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote()
-		.appendAnd()
-		.append("memb.")
+		if(stamp!=null){
+			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
+			.appendLessThanOrEqualsSign()
+			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote()
+			.appendAnd();
+		}
+		sql.append("memb.")
 		.append(IDColumnName)
 		.appendEqualSign()
 		.append("middle.")
@@ -259,7 +269,8 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender)
 			.appendAnd();
 		}
-		if(age>=0){
+		
+		if(stamp!=null){
 			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
 			.appendGreaterThanSign()
 			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote()
@@ -300,7 +311,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender)
 			.appendAnd();
 		}
-		if(age>=0){
+		if(stamp!=null){
 			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
 			.appendGreaterThanSign()
 			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote();
@@ -328,7 +339,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender)
 			.appendAnd();
 		}
-		if(age>=0){
+		if(stamp!=null){
 			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
 			.appendLessThanOrEqualsSign()
 			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote();
