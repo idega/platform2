@@ -218,7 +218,7 @@ public class NewMemberWindow extends IWAdminWindow {
 						stat = sHome.findByPrimaryKey(new Integer(sStat));
 					}
 					group.addGroup(user);
-					if (stat != null && (!usb.setUserGroupStatus(user.getID(), ((Integer) group.getPrimaryKey()).intValue(), ((Integer) stat.getPrimaryKey()).intValue()))) {
+					if (stat != null && (!usb.setUserGroupStatus(((Integer)user.getPrimaryKey()).intValue(), ((Integer) group.getPrimaryKey()).intValue(), ((Integer) stat.getPrimaryKey()).intValue()))) {
 						failedInserts.add(user);
 						errorFree = false;
 					}
