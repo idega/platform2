@@ -34,17 +34,6 @@ public class Messenger extends Block {
   }
 
   public void main(IWContext iwc){
-    iwb = getBundle(iwc);
-    iwrb = getResourceBundle(iwc);
-//test delete this
-    add(iwb.getImageButton("Snilld!!"));
-
-    add(iwrb.getLocalizedImageButton("repps","Eiki er snilli"));
-
-    add(new com.idega.presentation.text.Link(iwrb.getLocalizedImageButton("repps","Eiki er snilli"),"http://www.slashdot.org"));
-
-
-
 
     if( com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc) ){
       if(messenger==null){
