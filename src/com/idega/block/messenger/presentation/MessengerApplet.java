@@ -362,7 +362,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   }
 
-  public void cycle(){
+  public synchronized void cycle(){
     URLConnection conn = getURLConnection();
     // send the Packet object to the servlet using serialization
     sendPacket(conn);
