@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/05 10:22:36 $ by $Author: goranb $
- * @version $Revision: 1.62 $
+ * Last modified: $Date: 2003/11/06 10:02:26 $ by $Author: laddi $
+ * @version $Revision: 1.63 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -666,8 +666,15 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	}
 
 	public Collection ejbFindBySchool(int schoolID, int schoolClassID, Date date) throws FinderException {
+		return ejbFindBySchool(schoolID, schoolClassID, null, date);
+	}
+	
+	public Collection ejbFindBySchool(int schoolID, int schoolClassID, String schoolCategory, Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl, ic_user u").appendWhere().append(" cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAndEquals("u.ic_user_id", "mb." + this.MEMBER).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl, sch_school_type t, ic_user u").appendWhere().append(" cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAndEquals("u.ic_user_id", "mb." + this.MEMBER).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendAndEquals("mb." + SCHOOL_TYPE, "t.sch_school_type_id");
+		if (schoolCategory != null)
+			sql.appendAndEqualsQuoted("t.school_category", schoolCategory);
 		if (schoolClassID != -1)
 			sql.appendAndEquals("mb." + SCHOOLCLASS, schoolClassID);
 		//sql.appendAnd().appendLeftParenthesis().append(REGISTER_DATE).appendLessThanOrEqualsSign().append(date)
@@ -678,8 +685,15 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	}
 
 	public Collection ejbFindBySchool(int schoolID, int schoolClassID, Date date, boolean showNotYetActive) throws FinderException {
+		return ejbFindBySchool(schoolID, schoolClassID, null, date, showNotYetActive);
+	}
+	
+	public Collection ejbFindBySchool(int schoolID, int schoolClassID, String schoolCategory, Date date, boolean showNotYetActive) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl, ic_user u").appendWhere().append(" cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAndEquals("u.ic_user_id", "mb." + this.MEMBER).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl, sch_school_type t, ic_user u").appendWhere().append(" cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAndEquals("u.ic_user_id", "mb." + this.MEMBER).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendAndEquals("mb." + SCHOOL_TYPE, "t.sch_school_type_id");
+		if (schoolCategory != null)
+			sql.appendAndEqualsQuoted("t.school_category", schoolCategory);
 		if (schoolClassID != -1)
 			sql.appendAndEquals("mb." + SCHOOLCLASS, schoolClassID);
 		if (showNotYetActive) {

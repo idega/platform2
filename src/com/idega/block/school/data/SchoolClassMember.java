@@ -3,7 +3,6 @@ package com.idega.block.school.data;
 
 public interface SchoolClassMember extends com.idega.data.IDOEntity
 {
-	
 	public final static String FIELD_SCHOOLCLASSMEMBERID = "sch_class_member_id";
 	public final static String FIELD_SCHOOLCLASSMEMBER = "sch_class_member";
 	public final static String FIELD_MEMBER = "ic_user_id";
