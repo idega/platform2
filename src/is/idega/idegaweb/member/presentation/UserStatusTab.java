@@ -18,6 +18,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.SelectDropdown;
 import com.idega.presentation.ui.SelectOption;
+import com.idega.user.data.Group;
 import com.idega.user.data.Status;
 import com.idega.user.presentation.UserTab;
 
@@ -83,12 +84,12 @@ public class UserStatusTab extends UserTab {
 	 */
 	public void initializeFieldValues() {
 		fieldValues = new Hashtable();
-		fieldValues.put(_inactiveFieldName, new Boolean(false));
+		fieldValues.put(_inactiveFieldName, Boolean.FALSE);
 		fieldValues.put(_groupFieldName, "");
 		fieldValues.put(_statusFieldName, "");
-		fieldValues.put(_parent1StatusFieldName, new Boolean(false));	
-		fieldValues.put(_parent2StatusFieldName, new Boolean(false));	
-		fieldValues.put(_parent3StatusFieldName, new Boolean(false));	
+		fieldValues.put(_parent1StatusFieldName, Boolean.FALSE);	
+		fieldValues.put(_parent2StatusFieldName, Boolean.FALSE);	
+		fieldValues.put(_parent3StatusFieldName, Boolean.FALSE);	
 	}
 
 	/* (non-Javadoc)
@@ -108,7 +109,13 @@ public class UserStatusTab extends UserTab {
 	 */
 	public void initializeFields() {
 		_inactiveField = new CheckBox(_inactiveFieldName);
-		_groupField = new Text(Integer.toString(getGroupID()));
+		
+		Group selectedGroup = this.getGroup();
+		if(selectedGroup!=null){
+			_groupField = new Text(selectedGroup.getName());
+		}
+		else _groupField = new Text("No selected group");
+		
 		_parent1StatusField = new CheckBox(_parent1StatusFieldName);
 		_parent2StatusField = new CheckBox(_parent2StatusFieldName);
 		_parent3StatusField = new CheckBox(_parent3StatusFieldName);
