@@ -24,6 +24,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.util.SelectorUtility;
+import com.idega.user.data.User;
 
 /**
  * @author laddi
@@ -311,6 +312,18 @@ public class ChildCareBlock extends CommuneBlock {
 		try {
 			SelectorUtility util = new SelectorUtility();
 			DropdownMenu menu = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(name), getBusiness().getCareTimes(), "getLocalizedKey", getResourceBundle());
+			
+			return (DropdownMenu) getStyledInterface(menu);
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
+	protected DropdownMenu getCareTimeMenu(String name, User child)  {
+		try {
+			SelectorUtility util = new SelectorUtility();
+			DropdownMenu menu = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(name), getBusiness().getCareTimes(child), "getLocalizedKey", getResourceBundle());
 			
 			return (DropdownMenu) getStyledInterface(menu);
 		}
