@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.9 2003/10/03 15:50:26 kjell Exp $
+ * $Id: RegulationList.java,v 1.10 2003/10/10 11:57:47 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.9 2003/10/03 15:50:26 kjell Exp $
+ * $Id: RegulationList.java,v 1.10 2003/10/10 11:57:47 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class RegulationList extends AccountingBlock {
 
@@ -85,6 +85,8 @@ public class RegulationList extends AccountingBlock {
 	private final static String PARAM_SEARCH = "param_button_search";
 	public final static String PARAM_SELECTOR_OPERATION = "param_sel_operation";
 	public final static String PARAM_SELECTOR_PAYMENT_FLOW_TYPE = "param_sel_payment_flow_type";
+	public final static String PARAM_RETURN_FROM_DATE = "return_from_date";
+	public final static String PARAM_RETURN_TO_DATE = "return_to_date";
 	private final static String PARAM_SELECTOR_SORT_BY = "param_sel_sort_by";
 	private final static String PARAM_FROM = "param_from";
 	private final static String PARAM_TO = "param_to";
@@ -176,15 +178,25 @@ public class RegulationList extends AccountingBlock {
 		if (iwc.isParameterSet(PARAM_FROM)) {
 			_currentFromDate = parseDate(iwc.getParameter(PARAM_FROM));
 		} else {
-			_currentFromDate = parseDate("2001-01-01");
+			_currentFromDate = iwc.isParameterSet(PARAM_RETURN_FROM_DATE) ? 
+					parseDate(iwc.getParameter(PARAM_RETURN_FROM_DATE)) : new Date(System.currentTimeMillis());
 		}
 		
 		if (iwc.isParameterSet(PARAM_TO)) {
 			_currentToDate = parseDate(iwc.getParameter(PARAM_TO));
 		} else {
-			_currentToDate = parseDate("2009-01-01");
+			_currentToDate = iwc.isParameterSet(PARAM_RETURN_TO_DATE) ? 
+					parseDate(iwc.getParameter(PARAM_RETURN_TO_DATE)) : parseDate("9999-12-31");
 		}
-
+		if(_currentToDate == null) {
+			_currentToDate = parseDate("9999-12-31");
+		}
+		if(_currentFromDate == null) {
+			_currentFromDate = new Date(System.currentTimeMillis());
+		}
+		_currentFromDate = parseDate(formatDate(_currentFromDate, 4));
+		_currentToDate = parseDate(formatDate(_currentToDate, 4));
+		
 		app.setLocalizedTitle(KEY_HEADER, "Regelverk");
 		app.setSearchPanel(getSearchPanel(iwc));
 		app.setMainPanel(getRegulationTable(iwc));
@@ -206,7 +218,7 @@ public class RegulationList extends AccountingBlock {
 
 		RegulationsBusiness rBiz;
 		ListTable list = new ListTable(this, 9);
-
+		
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
 		list.setLocalizedHeader(KEY_NAME, "Benämning", 2);
 		list.setLocalizedHeader(KEY_AMOUNT, "Styck-belopp/mån", 3);
@@ -216,6 +228,10 @@ public class RegulationList extends AccountingBlock {
 		list.setLocalizedHeader(KEY_LIST_EDIT, "Redigera", 7);
 		list.setLocalizedHeader(KEY_LIST_COPY, "Kopiera", 8);
 		list.setLocalizedHeader(KEY_LIST_DELETE, "Ta bort", 9);
+		String tod = iwc.isParameterSet(PARAM_TO) ? 
+				iwc.getParameter(PARAM_TO) : iwc.getParameter(PARAM_RETURN_TO_DATE);  
+		String fromd = iwc.isParameterSet(PARAM_FROM) ? 
+				iwc.getParameter(PARAM_FROM) : iwc.getParameter(PARAM_RETURN_FROM_DATE);  
 		
 		try {
 			rBiz = getRegulationBusiness(iwc);
@@ -227,7 +243,8 @@ public class RegulationList extends AccountingBlock {
 					Regulation r = (Regulation) iter.next();
 					Link link = getLink(formatDate(r.getPeriodFrom(), 4) + "-" + formatDate(r.getPeriodTo(), 4),
 										 PARAM_EDIT_ID, r.getPrimaryKey().toString());
-					
+					link.addParameter(PARAM_RETURN_FROM_DATE, fromd);
+					link.addParameter(PARAM_RETURN_TO_DATE, tod);
 					link.setPage(_editPage);
 					list.add(link);
 
@@ -257,12 +274,16 @@ public class RegulationList extends AccountingBlock {
 					}
 					Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera")));
 					edit.addParameter(PARAM_EDIT_ID, r.getPrimaryKey().toString());
+					edit.addParameter(PARAM_RETURN_FROM_DATE, fromd);
+					edit.addParameter(PARAM_RETURN_TO_DATE, tod);
 					edit.setPage(_editPage);
 					list.add(edit);
 
 					Link copy = new Link(getCopyIcon(localize(KEY_BUTTON_COPY, "Kopiera")));
 					copy.addParameter(PARAM_EDIT_ID, r.getPrimaryKey().toString());
 					copy.addParameter(PARAM_MODE_COPY, "1");
+					copy.addParameter(PARAM_RETURN_FROM_DATE, fromd);
+					copy.addParameter(PARAM_RETURN_TO_DATE, tod);
 					copy.setPage(_editPage);
 					list.add(copy);
 
@@ -276,7 +297,8 @@ public class RegulationList extends AccountingBlock {
 		} catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}	
-		
+		list.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_RIGHT);
+		list.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_RIGHT);
 		return list;
 	}
 	
@@ -310,8 +332,8 @@ public class RegulationList extends AccountingBlock {
 		Table table = new Table();
 		table.setCellpadding("0");
 		table.setCellspacing("0");
-		TextInput fromDate = getTextInput(param_from, formatDate(date_from, 10),  80, 10);
-		TextInput toDate = getTextInput(param_to, formatDate(date_to, 10),  80, 10);
+		TextInput fromDate = getTextInput(param_from, formatDate(date_from, 4),  40, 10);
+		TextInput toDate = getTextInput(param_to, formatDate(date_to, 4),  40, 10);
 		fromDate.setLength(10);
 		toDate.setLength(10);
 		table.add(fromDate, 1, 1);

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.13 2003/10/07 09:56:01 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.14 2003/10/10 11:57:47 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -44,10 +44,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.13 2003/10/07 09:56:01 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.14 2003/10/10 11:57:47 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -276,7 +276,14 @@ public class RegulationListEditor extends AccountingBlock {
 		app.setSearchPanel(topPanel);
 		app.setMainPanel(regulationForm);
 		app.setButtonPanel(bottomPanel);
+		if(iwc.isParameterSet(RegulationList.PARAM_RETURN_FROM_DATE)) {
+			app.addHiddenInput(RegulationList.PARAM_RETURN_FROM_DATE, iwc.getParameter(RegulationList.PARAM_RETURN_FROM_DATE));
+		}
+		if(iwc.isParameterSet(RegulationList.PARAM_RETURN_TO_DATE)) {
+			app.addHiddenInput(RegulationList.PARAM_RETURN_TO_DATE, iwc.getParameter(RegulationList.PARAM_RETURN_TO_DATE));
+		}
 		add(app);		
+
 		if (error.length() != 0) {
 			add(getSmallErrorText(error));
 		}
@@ -728,12 +735,15 @@ public class RegulationListEditor extends AccountingBlock {
 	}
 
 	private void closeMe(IWContext iwc) {
-
 		String backUrl = BuilderLogic.getInstance().getIBPageURL(iwc, ((Integer)_responsePage.getPrimaryKey()).intValue());
 		backUrl += 	"&" + RegulationList.PARAM_SELECTOR_OPERATION + "=" + 
 						iwc.getParameter(PARAM_SELECTOR_MAIN_OPERATION) +
 					"&"	+ RegulationList.PARAM_SELECTOR_PAYMENT_FLOW_TYPE + "=" + 
-						iwc.getParameter(PARAM_SELECTOR_PAYMENT_FLOW_TYPE);
+						iwc.getParameter(PARAM_SELECTOR_PAYMENT_FLOW_TYPE)+
+					"&"	+ RegulationList.PARAM_RETURN_FROM_DATE + "=" + 
+						iwc.getParameter(RegulationList.PARAM_RETURN_FROM_DATE)+
+					"&"	+ RegulationList.PARAM_RETURN_TO_DATE + "=" + 
+						iwc.getParameter(RegulationList.PARAM_RETURN_TO_DATE);
 		getParentPage().setToRedirect(backUrl);
 	}
 
