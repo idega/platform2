@@ -74,7 +74,6 @@ public class TariffAssessments extends Finance {
       int iGroupId = -1;
       //List groups = FinanceFinder.getInstance().listOfTariffGroupsWithHandlers(iCategoryId);
       List groups = FinanceFinder.getInstance().listOfTariffGroups(iCategoryId);
-      System.out.println("groups.size() = " + groups.size());
       TariffGroup group = null;
       if(iwc.isParameterSet(prmGroup))
         iGroupId = Integer.parseInt(iwc.getParameter(prmGroup));
