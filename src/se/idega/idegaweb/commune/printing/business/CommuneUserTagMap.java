@@ -2,6 +2,7 @@
 package se.idega.idegaweb.commune.printing.business;
 
 import java.rmi.RemoteException;
+import java.text.DateFormat;
 import java.util.HashMap;
 
 import com.idega.business.IBOLookup;
@@ -25,6 +26,7 @@ public class CommuneUserTagMap extends HashMap {
     
     public CommuneUserTagMap(IWApplicationContext iwac,User user) {
         super();
+        DateFormat df = DateFormat.getDateInstance(DateFormat.LONG,iwac.getApplicationSettings().getDefaultLocale());
         UserBusiness ub = getUserBusiness(iwac);
         
         XmlPeer peer = new XmlPeer(ElementTags.ITEXT, CommuneUserTags.USERLETTER);
@@ -56,7 +58,7 @@ public class CommuneUserTagMap extends HashMap {
         
         if(user.getDateOfBirth()!=null){
         	peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.BIRTHDATE);
-        	peer.setContent(user.getDateOfBirth().toString());
+        	peer.setContent(df.format(user.getDateOfBirth()));
         	put(peer.getAlias(), peer);        
         }
                
@@ -68,6 +70,7 @@ public class CommuneUserTagMap extends HashMap {
         	
         	peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.STREETADDRESS);
         	peer.setContent(ub.getUsersMainAddress(user).getStreetAddress());
+        	
         	put(peer.getAlias(), peer);
         	
         	peer = new XmlPeer(ElementTags.CHUNK, CommuneUserTags.POSTALADDRESS);
