@@ -2661,6 +2661,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			t.begin();
 			ChildCareApplication application = getChildCareApplication(applicationID);
 			application.setApplicationStatus(getStatusSentIn());
+			application.setOfferValidUntil(null);
 			changeCaseStatus(application, getCaseStatusOpen().getStatus(), performer);
 
 			Collection contracts = getContractsByApplication(applicationID);
