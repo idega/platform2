@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.2 2002/07/22 10:36:12 palli Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.3 2002/07/22 15:30:29 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -10,11 +10,14 @@
 package se.idega.idegaweb.commune.account.citizen.business;
 
 import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.process.data.Case;
+import com.idega.block.process.data.CaseHome;
 import com.idega.core.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.user.data.UserHome;
 import com.idega.user.data.User;
 
+import se.idega.idegaweb.commune.account.business.AccountApplicationBusinessBean;
 import se.idega.idegaweb.commune.account.citizen.data.AdminListOfApplications;
 import se.idega.idegaweb.commune.account.citizen.data.CitizenAccount;
 import se.idega.idegaweb.commune.account.citizen.data.CitizenAccountHome;
@@ -25,13 +28,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class CitizenAccountBusinessBean extends CaseBusinessBean implements CitizenAccountBusiness {
+public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness {
 	public boolean insertApplication(User user, String pid, String email, String phoneHome, String phoneWork) {
 		try {
 			CitizenAccount application = ((CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class)).create();
@@ -111,5 +115,23 @@ public class CitizenAccountBusinessBean extends CaseBusinessBean implements Citi
 		}
 
 		return li;
+	}
+	
+	public CitizenAccount getAccount(int id) throws RemoteException, FinderException {
+		CitizenAccountHome home = (CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class);
+		
+		return (CitizenAccount)home.findByPrimaryKeyIDO(new Integer(id));				
+	}	
+	
+	protected Class getCaseEntityClass() {
+		return CitizenAccount.class;			
+	}
+	
+	public void acceptApplication(int applicationID, User performer) throws RemoteException, CreateException, FinderException {
+		super.acceptApplication(applicationID,performer);
+	}
+	
+	public void rejectApplication(int applicationID, User performer, String reasonDescription) throws RemoteException, CreateException, FinderException { 
+		super.rejectApplication(applicationID,performer,reasonDescription);		
 	}
 }
