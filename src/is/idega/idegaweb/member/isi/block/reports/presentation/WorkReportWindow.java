@@ -1,9 +1,9 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
+import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.rmi.RemoteException;
 import java.util.List;
 
 import com.idega.idegaweb.IWApplicationContext;
@@ -14,12 +14,8 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.LinkContainer;
 import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.CloseButton;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.Group;
 import com.idega.user.data.User;
 /**
  * This window is used to work with a clubs work reports.
@@ -33,6 +29,7 @@ public class WorkReportWindow extends IWAdminWindow {
 	private MemberUserBusiness memBiz;
 	private GroupBusiness groupBiz;
 	private UserBusiness userBiz;
+	private String userType = null;
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	
@@ -73,6 +70,11 @@ public class WorkReportWindow extends IWAdminWindow {
 		iwrb = getResourceBundle(iwc);
 		memBiz = getMemberUserBusiness(iwc);
 		
+		//sets the type of user making or viewing the reports. union staff, regional union staff, league staff, federation staff or club staff
+		setUserType(iwc);
+		
+		
+		
 		setTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"));
 		String action = iwc.getParameter(ACTION);
 			
@@ -94,7 +96,8 @@ public class WorkReportWindow extends IWAdminWindow {
 		
 		if(action!=null){
 			
-		
+			//depending on the user type set the currect stuff
+			
 			if( action.equals(ACTION_WORK_ON_REPORT) ){
 				table.add(new WorkReportSelector(),2,1);	
 			}
@@ -133,15 +136,67 @@ public class WorkReportWindow extends IWAdminWindow {
 			}
 			else if (action.equals(ACTION_CREATE_REPORTS)) {
 				table.add(new WorkReportZipper(),2,1);	
-			}	
+			}
+			
+
+			
 			
 			
 		}
 	}
 	
 		
-	private Table getMenuTable(IWContext iwc) {
+	//searches the current users top nodes to figure out who he is. 
+	//TODO Eiki CHANGE TO ROLES
+	private void setUserType(IWContext iwc) {
+		User user = iwc.getCurrentUser();
+		
+		try {
+			List club = getMemberUserBusiness(iwc).getClubListForUserFromTopNodes(user,iwc);//should only be one
+			if( !club.isEmpty() ){
+				userType = WorkReportConstants.WR_USER_TYPE_CLUB;
+				return;
+			}
+			
+			List federation = getMemberUserBusiness(iwc).getFederationListForUserFromTopNodes(user,iwc);//should only be one
+			if( !federation.isEmpty() ){
+				userType = WorkReportConstants.WR_USER_TYPE_FEDERATION;
+				return;
+			}
+			
+			List regional = getMemberUserBusiness(iwc).getRegionalUnionListForUserFromTopNodes(user,iwc);//should only be one
+			if( !regional.isEmpty() ){
+				userType = WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION;
+				return;
+			}
+			
+			List union = getMemberUserBusiness(iwc).getUnionListForUserFromTopNodes(user,iwc);//should only be one
+			if( !union.isEmpty() ){
+				userType = WorkReportConstants.WR_USER_TYPE_UNION;
+				return;
+			}
+			
+			List leagues = getMemberUserBusiness(iwc).getLeaguesListForUserFromTopNodes(user,iwc); //should only be one
+			if( !leagues.isEmpty() ){
+				userType = WorkReportConstants.WR_USER_TYPE_LEAGUE;
+				return;
+			}
+		
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+			
+	}
 	
+	private String getUserType() {
+		return userType;
+	}
+
+
+	private Table getMenuTable(IWContext iwc) {
+		String type = getUserType();
+		
 		Table menu = new Table(1,13);
 		//menu.setWidth(Table.HUNDRED_PERCENT);
 		
@@ -155,10 +210,14 @@ public class WorkReportWindow extends IWAdminWindow {
 		Lists editList = new Lists();
 		
 		//B.2
-		LinkContainer editMemberList = new LinkContainer();
-		editMemberList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_members","Edit member list")));
-		editMemberList.addParameter(ACTION,ACTION_EDIT_MEMBER_LIST);
-		editList.add(editMemberList);
+		
+		if( !WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_LEAGUE.equals(type) ){
+			LinkContainer editMemberList = new LinkContainer();
+			editMemberList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_members","Edit member list")));
+			editMemberList.addParameter(ACTION,ACTION_EDIT_MEMBER_LIST);
+			editList.add(editMemberList);
+		}
+		
 		//B.3
 		editList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_account","Edit account info")));
 		//B.4
@@ -230,20 +289,36 @@ public class WorkReportWindow extends IWAdminWindow {
 		getReports.addParameter(ACTION,ACTION_GET_REPORTS);
 		reportslist.add(getReports);
 		
-		//add to window
-		menu.add(operations,1,1);
-		menu.add(createReports,1,2);
-		menu.add(reportslist,1,2);
-		menu.add(uploadReport,1,4);
-		menu.add(uploadList,1,5);
-		menu.add(workOnReport,1,6);
-		menu.add(editList,1,7);
-		menu.add(reportsOverview,1,9);
-		menu.add(sendReport,1,10);
-		menu.add(closeReport,1,11);
-		menu.add(statistics,1,12);
-		menu.add(statsList,1,13);
+
 		
+		if(type!=null){
+			//add to window
+			menu.add(operations,1,1);
+			menu.add(createReports,1,2);
+			menu.add(reportslist,1,2);
+			menu.add(uploadReport,1,4);
+			menu.add(uploadList,1,5);
+			menu.add(workOnReport,1,6);
+			menu.add(editList,1,7);
+			
+	//insert ugly hax
+			
+			if( WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) ){
+				menu.add(reportsOverview,1,8);	
+			}
+			
+			menu.add(sendReport,1,9);
+			
+			if( WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) ){
+				menu.add(closeReport,1,10);	
+			}
+	
+			if( !WorkReportConstants.WR_USER_TYPE_CLUB.equals(type) ){
+				menu.add(statistics,1,12);
+				menu.add(statsList,1,13);
+			}
+		
+		}
 		return menu;	
 	}
 	
