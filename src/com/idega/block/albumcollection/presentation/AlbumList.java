@@ -67,7 +67,6 @@ public class AlbumList extends Block {
 
     if(albumList != null){
       contentTable = new Table(1,albumList.size()*2+1);
-      contentTable.setAlignment("center");
       contentTable.setHeight(1,"30");
       Map albumTypes = AlbumCollectionBusiness.getAlbumTypeNames();
       int index = 2;
@@ -189,7 +188,6 @@ public class AlbumList extends Block {
       this.setColor(1,1,AlbumCollection._COLOR_BRIGHT);
       this.setWidth(550);
       this.setHeight(110);
-      this.setAlignment("center");
 
       tb = new Table(2,1);
       tb.setAlignment(1,1,"right");

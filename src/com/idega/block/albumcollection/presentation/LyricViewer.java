@@ -60,7 +60,6 @@ public class LyricViewer extends Block {
     frameTable.setColor(AlbumCollection._COLOR_BRIGHTEST);
     frameTable.setColor(1,1,AlbumCollection._COLOR_BRIGHT);
     frameTable.setWidth("550");
-    frameTable.setAlignment("center");
     frameTable.setAlignment(1,1,"center");
     //frameTable.setBorder(1);
 

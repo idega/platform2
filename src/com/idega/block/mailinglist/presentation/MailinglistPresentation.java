@@ -108,12 +108,16 @@ public class MailinglistPresentation extends Block {
     table.setCellpadding(0);
     table.setCellspacing(0);
     table.setColor("#CEDFD0");
-    table.setAlignment("center");
     table.setWidth("20%");
     table.mergeCells(1,4,2,4);
-
+    
+    Table layoutTable = new Table(1, 1);
+    layoutTable.setCellpaddingAndCellspacing(0);
+    layoutTable.setWidth(Table.HUNDRED_PERCENT);
+    layoutTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_CENTER);
     add(form);
-    form.add(table);
+    form.add(layoutTable);
+    layoutTable.add(table, 1, 1);
     table.add("Póstlistar", 1, 1);
     table.add("Email", 1, 2);
     table.add(selctionBox, 2, 1);

@@ -32,7 +32,6 @@ public class ReceiptWindow extends Window {
       Table table = new Table();
         table.setWidth("100%");
         table.add(r);
-        table.setAlignment("center");
         table.setAlignment(1, 1, "center");
       add(table);
     }
