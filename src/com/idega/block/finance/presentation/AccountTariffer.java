@@ -266,6 +266,7 @@ public class AccountTariffer extends Finance {
         T.add(textFormat.format(tariff.getName()),col++,row);
         T.add(textFormat.format(Float.toString(tariff.getPrice())),col++,row);
         IntegerInput QtyInput= new IntegerInput(prmQuantity);
+        QtyInput.setLength(5);
         T.add(QtyInput,col,row);
         T.add(new HiddenInput(prmTariffIds,tariff.getPrimaryKey().toString()));
         row++;
