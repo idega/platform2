@@ -20,6 +20,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -60,7 +61,12 @@ public abstract class TourSearch extends AbstractSearchForm {
 		boolean defined = hasDefinedProduct();
 		
 		if (!defined) {
-			bf.addAreaCodeInput(null);
+			try {
+				bf.addAreaCodeInput(null, engine.getCountries());
+			}
+			catch (IDORelationshipException e1) {
+				e1.printStackTrace();
+			}
 			bf.addSupplierNameInput();
 		}
 		

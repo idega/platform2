@@ -17,6 +17,7 @@ import javax.ejb.FinderException;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -164,7 +165,12 @@ public class HotelSearch extends AbstractSearchForm {
 		}
 
 		if (!defined) {
-			bf.addAreaCodeInput(null);
+			try {
+				bf.addAreaCodeInput(null, engine.getCountries());
+			}
+			catch (IDORelationshipException e1) {
+				e1.printStackTrace();
+			}
 			bf.addSupplierNameInput();
 		}
 		IWTimestamp now = IWTimestamp.RightNow();

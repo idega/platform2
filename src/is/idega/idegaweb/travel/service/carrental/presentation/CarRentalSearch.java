@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -59,7 +60,12 @@ public class CarRentalSearch extends AbstractSearchForm {
 		boolean defined = hasDefinedProduct();
 		
 		if (!defined) {
-			bf.addAreaCodeInput(null);
+			try {
+				bf.addAreaCodeInput(null, engine.getCountries());
+			}
+			catch (IDORelationshipException e1) {
+				e1.printStackTrace();
+			}
 			bf.addSupplierNameInput();
 		}
 		

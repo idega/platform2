@@ -56,6 +56,7 @@ import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
+import com.idega.core.location.data.Country;
 import com.idega.core.location.data.PostalCode;
 import com.idega.core.location.data.PostalCodeHome;
 import com.idega.data.IDOException;
@@ -79,6 +80,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.LocationInput;
 import com.idega.presentation.ui.ResultOutput;
 import com.idega.presentation.ui.SelectPanel;
 import com.idega.presentation.ui.SelectionBox;
@@ -2127,14 +2129,30 @@ public abstract class BookingForm extends TravelManager{
 		addInputLine(new String[] {iwrb.getLocalizedString("travel.search.supp_name","Supplier name")+Text.NON_BREAKING_SPACE+"("+iwrb.getLocalizedString("travel.not_required", "Not required")+")"}, new PresentationObject[] {suppName});
 	}
 
-	public void addAreaCodeInput(Product product) {
+	public void addAreaCodeInput(Product product, Collection countries) {
 		try {
-			DropdownMenu menu = getPostalCodeDropdown(iwrb);
-			try {
-				if (product != null) {
-					menu.setSelectedElement(product.getSupplier().getAddress().getPostalCode().getPrimaryKey().toString());
-				}
-			} catch (Exception e) {}
+			boolean isIcelandOnly = false;
+			if (countries == null || countries.isEmpty()) {
+				isIcelandOnly = true;
+			} else if (countries.size() == 1) {
+				Country country = (Country) countries.iterator().next();
+				isIcelandOnly = "is_IS".equals(country.getIsoAbbreviation());
+			}
+			
+			InterfaceObject menu;
+			if (isIcelandOnly) {
+				menu = getPostalCodeDropdown(iwrb);
+				try {
+					if (product != null) {
+						((DropdownMenu)menu).setSelectedElement(product.getSupplier().getAddress().getPostalCode().getPrimaryKey().toString());
+					}
+				} catch (Exception e) {}
+			} else {
+				menu = new LocationInput("bf_coun", "bf_citn", AbstractSearchForm.PARAMETER_POSTAL_CODE_NAME);
+				((LocationInput) menu).setAvailableCountries(countries);
+				((LocationInput) menu).setSeparator(Text.BREAK+Text.NON_BREAKING_SPACE+Text.BREAK);
+			}
+			
 			
 			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.location","Location")}, new PresentationObject[]{menu}, false, true);
 		} catch (Exception e) {
