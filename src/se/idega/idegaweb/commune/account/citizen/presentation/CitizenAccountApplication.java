@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.19 2002/11/13 12:45:30 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.20 2002/11/13 13:52:12 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -36,16 +36,18 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_SUBMIT_UNKNOWN_CITIZEN_FORM_2 = 3;
 
  
+    private final static String COHABITANT_KEY = "caa_cohabitant";
+    private final static String COHABITANT_DEFAULT = "Sammanboende";
     private final static String APPLICATION_REASON_DEFAULT = "Orsak till ansökan om medborgarkonto?";
     private final static String APPLICATION_REASON_KEY = "caa_application_reason";
+    private final static String CHILDREN_DEFAULT = "Barn i familjen";
+    private final static String CHILDREN_KEY = "caa_children";
     private final static String CHILDREN_COUNT_DEFAULT = "Antal barn i familjen?";
     private final static String CHILDREN_COUNT_KEY = "caa_children_count";
     private final static String CITY_DEFAULT = "Postort";
     private final static String CITY_KEY = "caa_city";
     private final static String CIVIL_STATUS_DEFAULT = "Civilstånd";
     private final static String CIVIL_STATUS_KEY = "caa_civil_status";
-    private final static String CUSTODIAN_DEFAULT = "Vårdnadshavare";
-    private final static String CUSTODIAN_KEY = "caa_custodian";
     private final static String EMAIL_DEFAULT = "E-post";
     private final static String EMAIL_KEY = "caa_email";
     private final static String FIRST_NAME_DEFAULT = "Förnamn";
@@ -64,7 +66,7 @@ public class CitizenAccountApplication extends CommuneBlock {
     private final static String PHONE_HOME_KEY = "caa_phone_home";
     private final static String PHONE_WORK_DEFAULT = "Telefon (arbete/mobil)";
     private final static String PHONE_WORK_KEY = "caa_phone_work";
-    private final static String PUT_CHILDREN_IN_NACKA_DEFAULT = "Jag vill placera barn i barnomsorg/skola i Nacka kommun";
+    private final static String PUT_CHILDREN_IN_NACKA_DEFAULT = "Jag vill ha plats för mitt barn i en skola i Nacka kommun";
     private final static String PUT_CHILDREN_IN_NACKA_KEY = "caa_put_children_in_nacka";
     private final static String SSN_DEFAULT = "Personnummer";
     private final static String SSN_KEY = "caa_ssn";
@@ -215,8 +217,10 @@ public class CitizenAccountApplication extends CommuneBlock {
         addHeader (this, table, 2, row++, CITY_KEY, CITY_DEFAULT);
         addSingleInput (this, table, 1, row, iwc, ZIP_CODE_KEY, 40);
         addSingleInput (this, table, 2, row++, iwc, CITY_KEY, 40);
-        addGenderDropdownInput (this, table, row++, iwc);
-        row++;
+        addGenderDropdownInput (this, table, row, iwc);
+        addHeader (this, table, 2, row++, CIVIL_STATUS_KEY,
+                   CIVIL_STATUS_DEFAULT);
+        addSingleInput (this, table, 2, row++, iwc, CIVIL_STATUS_KEY, 20);
         table.mergeCells (1, row, 2, row);
         addHeader (this, table, 1, row++, HAS_COHABITANT_KEY,
                    HAS_COHABITANT_DEFAULT);
@@ -272,6 +276,7 @@ public class CitizenAccountApplication extends CommuneBlock {
         stringParameterNames.add (STREET_KEY);
         stringParameterNames.add (ZIP_CODE_KEY);
         stringParameterNames.add (CITY_KEY);
+        stringParameterNames.add (CIVIL_STATUS_KEY);
         stringParameterNames.add (HAS_COHABITANT_KEY);
         stringParameterNames.add (APPLICATION_REASON_KEY);
         final Collection ssnParameterNames = new HashSet ();
@@ -285,6 +290,8 @@ public class CitizenAccountApplication extends CommuneBlock {
                     (getResourceBundle (), iwc, mandatoryParametersNames,
                      stringParameterNames, ssnParameterNames,
                      integerParameters);
+
+            /*
             final String ssn = parameters.get (SSN_KEY).toString ();
             final String email = parameters.get (EMAIL_KEY).toString ();
             final String phoneHome
@@ -308,6 +315,7 @@ public class CitizenAccountApplication extends CommuneBlock {
             final int childrenCount = childrenCountAsInteger.intValue ();
             final String applicationReason
                     = parameters.get (APPLICATION_REASON_KEY).toString ();
+            */
             viewUnknownCitizenApplicationForm2 (iwc);
 
         } catch (final Exception e) {
@@ -321,7 +329,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 	private void viewUnknownCitizenApplicationForm2 (final IWContext iwc) {
 		final Form form = new Form();
-        final Table table = createTable (this);
         copyParameterToHidden (iwc, form, SSN_KEY);
         copyParameterToHidden (iwc, form, EMAIL_KEY);
         copyParameterToHidden (iwc, form, PHONE_WORK_KEY);
@@ -335,7 +342,75 @@ public class CitizenAccountApplication extends CommuneBlock {
         copyParameterToHidden (iwc, form, HAS_COHABITANT_KEY);
         copyParameterToHidden (iwc, form, CHILDREN_COUNT_KEY);
         copyParameterToHidden (iwc, form, APPLICATION_REASON_KEY);
-        addSubmitButton (this, table, 2, iwc,
+
+        final Table table = createTable (this);
+        int row = 1;
+        if (iwc.getParameter (HAS_COHABITANT_KEY).equals (YES_KEY)) {
+            // applicant has cohabitant
+            final Text cohabitantHeader
+                    = getLocalizedHeader (COHABITANT_KEY, COHABITANT_DEFAULT);
+            table.mergeCells (1, row, 2, row);
+            table.add (cohabitantHeader, 1, row++);
+            addHeader (this, table, 1, row, FIRST_NAME_KEY, FIRST_NAME_DEFAULT);
+            addHeader (this, table, 2, row++, LAST_NAME_KEY, LAST_NAME_DEFAULT);
+            addSingleInput (this, table, 1, row, iwc,
+                            FIRST_NAME_KEY + COHABITANT_KEY, 40);
+            addSingleInput (this, table, 2, row++, iwc,
+                            LAST_NAME_KEY + COHABITANT_KEY, 40);
+            addHeader (this, table, 1, row, SSN_KEY, SSN_DEFAULT);
+            addHeader (this, table, 2, row++, CIVIL_STATUS_KEY,
+                       CIVIL_STATUS_DEFAULT);
+            addSingleInput (this, table, 1, row, iwc, SSN_KEY + COHABITANT_KEY,
+                            12);
+            addSingleInput (this, table, 2, row++, iwc,
+                            CIVIL_STATUS_KEY + COHABITANT_KEY, 40);
+            addHeader (this, table, 1, row++, PHONE_WORK_KEY,
+                       PHONE_WORK_DEFAULT);
+            addSingleInput (this, table, 1, row++, iwc,
+                            PHONE_WORK_KEY + COHABITANT_KEY, 40);
+        }
+
+        final int childrenCount = getIntParameter (iwc, CHILDREN_COUNT_KEY);
+        if (childrenCount > 0) {
+            // applicant has children
+            final Text childrenHeader
+                    = getLocalizedHeader (CHILDREN_KEY, CHILDREN_DEFAULT);
+            table.mergeCells (1, row, 2, row);
+            table.add (childrenHeader, 1, row++);
+            for (int i = 0; i < childrenCount; i++) {
+                addHeader (this, table, 1, row, FIRST_NAME_KEY,
+                           FIRST_NAME_DEFAULT);
+                addHeader (this, table, 2, row++, LAST_NAME_KEY,
+                           LAST_NAME_DEFAULT);
+                addSingleInput (this, table, 1, row, iwc,
+                                FIRST_NAME_KEY + CHILDREN_KEY + i, 40);
+                addSingleInput (this, table, 2, row++, iwc,
+                                LAST_NAME_KEY + CHILDREN_KEY + i, 40);
+                addHeader (this, table, 1, row++, SSN_KEY, SSN_DEFAULT);
+                addSingleInput (this, table, 1, row++, iwc,
+                                SSN_KEY + CHILDREN_KEY + i, 12);
+            }
+        }
+
+        final String applicationReason
+                = iwc.getParameter (APPLICATION_REASON_KEY);
+        if (applicationReason.equals (MOVING_TO_NACKA_KEY)) {
+            // applicant is moving to Nacka
+            final Text movingToNackaHeader
+                    = getLocalizedHeader (MOVING_TO_NACKA_KEY,
+                                          MOVING_TO_NACKA_DEFAULT);
+            table.mergeCells (1, row, 2, row);
+            table.add (movingToNackaHeader, 1, row++);
+        } else if (applicationReason.equals (PUT_CHILDREN_IN_NACKA_KEY)) {
+            // applicant wnats to put children in Nacka
+            final Text putChildrenInNackaHeader
+                    = getLocalizedHeader (PUT_CHILDREN_IN_NACKA_KEY,
+                                          PUT_CHILDREN_IN_NACKA_DEFAULT);
+            table.mergeCells (1, row, 2, row);
+            table.add (putChildrenInNackaHeader, 1, row++);
+        }
+
+        addSubmitButton (this, table, row + 1, iwc,
                          UNKNOWN_CITIZEN_FORM_2_SUBMIT_KEY,
                          UNKNOWN_CITIZEN_FORM_2_SUBMIT_DEAFULT );
 		form.add (table);
@@ -541,11 +616,6 @@ public class CitizenAccountApplication extends CommuneBlock {
             return null;
         }
         return digitOnlyInput.toString ();
-    }
-    
-    private static String getCustodianKey (final String key,
-                                           final int custodianId) {
-        return key + "_" + CUSTODIAN_KEY + "_" + custodianId;
     }
     
 	private static int parseAction (final IWContext iwc) {
