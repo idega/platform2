@@ -278,6 +278,20 @@ public class News extends ModuleObjectContainer implements IWBlock{
     headLine = setHeadlineAttributes(headLine);
     newsBody = setTextAttributes(newsBody);
     T.add(newsInfo,1,1);
+    if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
+      try{
+      Table imageTable = new Table(1, 2);
+      Image newsImage = new Image(news.getImageId());
+      newsImage.setAlignment("right");
+      //imageTable.setAlignment("right");
+      //imageTable.setVerticalAlignment("top");
+      //imageTable.add(newsImage, 1, 1);
+      T.add(newsImage,1,3);
+      }
+      catch(SQLException ex){
+        ex.printStackTrace();
+      }
+    }
     T.add(newsBody,1,3);
 
     //  add news

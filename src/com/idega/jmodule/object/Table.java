@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.26 2001/09/25 03:51:43 eiki Exp $
+ * $Id: Table.java,v 1.27 2001/09/26 22:23:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -187,14 +187,20 @@ public class Table extends ModuleObjectContainer {
  *
  */
   private String getImageUrl(Image image){
-    StringBuffer URIBuffer;
-    URIBuffer = new StringBuffer(IWMainApplication.MEDIA_SERVLET_URL);
-    URIBuffer.append(image.getImageID());
-    URIBuffer.append("image?");
-    URIBuffer.append("image_id");
-    URIBuffer.append("=");
-    URIBuffer.append(image.getImageID());
-    return URIBuffer.toString();
+
+    if(image.getURL()!=null ){
+      return image.getURL();
+    }
+    else{
+      StringBuffer URIBuffer = new StringBuffer(IWMainApplication.MEDIA_SERVLET_URL);
+      URIBuffer.append(image.getImageID());
+      URIBuffer.append("image?");
+      URIBuffer.append("image_id");
+      URIBuffer.append("=");
+      URIBuffer.append(image.getImageID());
+      return URIBuffer.toString();
+    }
+
   }
 
   public void setBackgroundImageURL(String backgroundImageURL){

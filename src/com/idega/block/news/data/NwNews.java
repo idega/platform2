@@ -27,7 +27,7 @@ public class NwNews extends GenericEntity{
     addAttribute(getColumnNameAuthor(), "Author", true, true, String.class);
     addAttribute(getColumnNameSource(), "Source", true, true, String.class);
     addAttribute(getColumnNameDaysShown(), "Days shown", true, true, Integer.class);
-    addAttribute(getColumnNameUpdated(), "Headline", true, true, java.sql.Timestamp.class);
+    addAttribute(getColumnNameUpdated(), "Updated", true, true, java.sql.Timestamp.class);
     addManyToManyRelationShip(com.idega.block.text.data.LocalizedText.class,"NW_NEWS_TX_LOCALIZED_TEXT");
   }
   public String getEntityName(){

@@ -44,7 +44,7 @@ private static String prmLocale = "nwep.locale";
 private static String prmLocalizedTextId = "nwep.loctextid";
 public static String prmObjInstId = "nwep.icobjinstid";
 public static String prmAttribute = "nwep.attribute";
-private static String prmUseImage = "nwep.useimage";
+private static String prmUseImage = "insertImage";//nwep.useimage
 public  static String prmDelete = "nwep.txdeleteid";
 private static String prmImageId = "nwep.imageid";
 public static String prmNwNewsId = "nwep.nwnewsid";
@@ -130,18 +130,21 @@ private IWResourceBundle iwrb;
       else if(modinfo.getParameter(prmObjInstId)!= null){
         iObjInsId = Integer.parseInt(modinfo.getParameter(prmObjInstId ) );
         doView = false;
-        iCategoryId = NewsFinder.getObjectInstanceCategoryId(iObjInsId );
+        if(iObjInsId > 0)
+          iCategoryId = NewsFinder.getObjectInstanceCategoryId(iObjInsId );
         addCategoryFields(NewsFinder.getNewsCategory(iCategoryId),iObjInsId  );
       }
       // end of News initialization
 
       // Form processing
-      if(modinfo.getParameter(prmFormProcess)!=null)
+      if(modinfo.getParameter(prmFormProcess)!=null){
         if(modinfo.getParameter(prmFormProcess).equals("Y"))
           processForm(modinfo,sNewsId,sLocTextId, sCategoryId);
         else if(modinfo.getParameter(prmFormProcess).equals("C"))
           processCategoryForm(modinfo,sCategoryId,iObjInsId);
 
+        doView = false;
+      }
       if(doView)
         doViewNews(sNewsId,sAttribute,chosenLocale,iLocaleId,iCategoryId );
     }
@@ -321,7 +324,7 @@ private IWResourceBundle iwrb;
 
     ImageInserter imageInsert = new ImageInserter();
     imageInsert.setImSessionImageName(prmImageId);
-    imageInsert.setSelected(false);
+    imageInsert.setSelected(nwNews.getIncludeImage());
     imageInsert.setWindowClassToOpen(com.idega.jmodule.image.presentation.SimpleChooserWindow.class);
 
     SubmitButton save = new SubmitButton(iwrb.getImage("save.gif"),actSave);
@@ -344,6 +347,7 @@ private IWResourceBundle iwrb;
       if ( nwNews.getText() != null ) {
         taBody.setContent(nwNews.getText());
       }
+
     }
 
     if( hasNwNews ){
@@ -354,10 +358,8 @@ private IWResourceBundle iwrb;
       tiSource.setContent(nwNews.getSource());
       //drpCategories.setSelectedElement(String.valueOf(nwNews.getNewsCategoryId()));
       drpDaysShown.setSelectedElement(String.valueOf(nwNews.getDaysShown()));
-
-      if ( nwNews.getIncludeImage()) {
+      if(nwNews.getImageId() != -1){
         imageInsert.setImageId(nwNews.getImageId());
-        imageInsert.setSelected(true);
       }
       addHiddenInput(new HiddenInput(prmNwNewsId,Integer.toString(nwNews.getID())));
       addHiddenInput(new HiddenInput(prmCategory ,String.valueOf(nwNews.getNewsCategoryId())));
@@ -381,7 +383,7 @@ private IWResourceBundle iwrb;
     addHiddenInput( new HiddenInput (prmFormProcess,"Y"));
   }
 
-   private void confirmDelete(String sNewsId,int iObjInsId ) throws IOException,SQLException {
+  private void confirmDelete(String sNewsId,int iObjInsId ) throws IOException,SQLException {
     int iNewsId = Integer.parseInt(sNewsId);
     NwNews nwNews = NewsFinder.getNews(iNewsId);
 

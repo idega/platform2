@@ -219,10 +219,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       breyta.addParameter(TextEditorWindow.prmTextId,iTextId);
     T.add(breyta,1,1);
 
-    Link delete = new Link(iwrb.getImage("delete.gif"));
-      delete.setWindowToOpen(TextEditorWindow.class);
-      delete.addParameter(TextEditorWindow.prmDelete,iTextId);
-       if ( enableDelete ) {
+      if ( enableDelete ) {
+        Link delete = new Link(iwrb.getImage("delete.gif"));
+        delete.setWindowToOpen(TextEditorWindow.class);
+        delete.addParameter(TextEditorWindow.prmDelete,iTextId);
         T.add(delete,3,1);
       }
     }
