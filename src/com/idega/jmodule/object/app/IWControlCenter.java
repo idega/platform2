@@ -37,7 +37,7 @@ public class IWControlCenter extends ModuleObjectContainer {
 
   public void main(ModuleInfo modinfo){
 
-    Table outerWindow = new Table(1,2);
+    /*Table outerWindow = new Table(1,2);
     outerWindow.setWidth(windowWidth);
     outerWindow.setHeight(windowHeight);
     outerWindow.setAlignment("center");
@@ -58,13 +58,16 @@ public class IWControlCenter extends ModuleObjectContainer {
     Text headerText = new Text("idegaWeb ApplicationSuite");
     headerText.setFontSize(1);
     headerText.setFontColor("black");
-    header.add(headerText);
+    header.add(headerText);*/
 
     Table body = new Table();
-    outerWindow.add(body,1,2);
+    //outerWindow.add(body,1,2);
+    add(body);
     body.setWidth("100%");
-    body.setHeight(windowHeight-headerHeight);
-    body.setColor(bodyColor);
+    //body.setHeight(windowHeight-headerHeight);
+    //body.setHeight("100%");
+    body.setCellpadding(4);
+    //body.setColor(bodyColor);
 
 
     List icoList = IWApplication.getApplictionICObjects();
@@ -87,6 +90,9 @@ public class IWControlCenter extends ModuleObjectContainer {
         body.add(icon,x,y);
         if(x==1){
           x=2;
+        }
+        else if(x==2){
+          x=3;
         }
         else{
           x=1;
