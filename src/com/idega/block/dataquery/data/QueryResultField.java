@@ -1,7 +1,9 @@
 package com.idega.block.dataquery.data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.idega.xml.XMLElement;
@@ -25,11 +27,46 @@ public class QueryResultField {
   public static final String TYPE = "type";
   public static final String DISPLAY = "display"; 
   
-  private Object id;
-  
   private Map nameValue = new HashMap();
-    
-  public QueryResultField(Object id) {
+  
+  // set default values
+  { nameValue.put(ENTITY,"");
+    nameValue.put(COLUMN,"");
+    nameValue.put(TYPE,"");
+    nameValue.put(DISPLAY,"");
+  }
+
+  private String id;
+     
+  public static List getInstancesForELement(XMLElement element) {
+    List fields = new ArrayList();
+    List children = element.getChildren(FIELD);
+    Iterator iterator = children.iterator();
+    while (iterator.hasNext())  {
+      XMLElement child = (XMLElement) iterator.next();
+      QueryResultField field = QueryResultField.getInstanceForElement(child);
+      fields.add(field);
+    }
+    return fields;
+  }
+      
+  private static QueryResultField getInstanceForElement(XMLElement element) {
+    String id = QueryResultField.getChildTextTrim(element, ID);
+    if (id.length() == 0) {
+      return null;
+    }
+    QueryResultField instance = new QueryResultField(id);
+    Iterator iterator = instance.nameValue.entrySet().iterator();
+    while (iterator.hasNext())  {
+      Map.Entry entry = (Map.Entry) iterator.next();
+      String name = (String) entry.getKey();
+      String value = QueryResultField.getChildTextTrim(element, name);
+      entry.setValue(value);
+    }
+    return instance;
+  }
+  
+  public QueryResultField(String id) {
     this.id = id;
   }    
   
@@ -41,7 +78,7 @@ public class QueryResultField {
     return (String) nameValue.get(name);
   }
   
-  public Object getId() {
+  public String getId() {
     return id;
   }
 
@@ -62,5 +99,13 @@ public class QueryResultField {
     value = (value == null) ? "" : value;
     child.addContent(value);
     parent.addContent(child);
+  }
+  
+  private static String getChildTextTrim(XMLElement element, String name)  {
+    XMLElement child = element.getChild(name);
+    if (child == null) {
+      return "";
+    }
+    return child.getText().trim();
   }
 }

@@ -39,7 +39,7 @@ public class QueryToSQLBridge {
         // String columnClass = metadata.getColumnClassName(i);
         String columnName = metadata.getColumnName(i);
         // store into QueryResultField
-        QueryResultField field = new QueryResultField(new Integer(i));
+        QueryResultField field = new QueryResultField(Integer.toString(i));
         // field.setValue(QueryResultField.TYPE, columnClass);
         field.setValue(QueryResultField.COLUMN, columnName);
         queryResult.addField(field);
@@ -49,8 +49,8 @@ public class QueryToSQLBridge {
         for (i=1 ; i <= numberOfColumns; i++)  {
           String columnValue = resultSet.getString(i);
           // store into QueryResultCell
-          Integer numberRow = new Integer(numberOfRow++);
-          Integer fieldId = new Integer(i);  
+          String numberRow = Integer.toString(numberOfRow++);
+          String fieldId = Integer.toString(i);  
           QueryResultCell cell = new QueryResultCell(numberRow, fieldId, columnValue);
           queryResult.addCell(cell);
         }
