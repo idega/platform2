@@ -5,6 +5,7 @@
 package se.idega.idegaweb.commune.accounting.presentation;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
@@ -16,11 +17,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
-import com.sun.jimi.core.encoder.jpg.util;
 
 /**
  * AccountingBlock a super class of all blocks in the accounting framework
@@ -132,7 +133,20 @@ public class AccountingBlock extends CommuneBlock {
 		ti.setSize(width);
 		return ti;
 	}
-		
+	
+	/**
+	 * Returns a formatted link.
+	 * @param text the link text
+	 * @param parameter the form parameter
+	 * @param value the parameter value
+	 * @author anders
+	 */
+	protected Link getLink(String text, String parameter, String value) {
+		Link l = getSmallLink(text);
+		l.addParameter(parameter, value);
+		return l;
+	}
+
 	/**
 	 * Returns a formatted and localized button.
 	 * @param parameter the form parameter
@@ -207,8 +221,8 @@ public class AccountingBlock extends CommuneBlock {
 	
 	/**
 	 * Formats the specified java.sql.Date object into a string.
-	 * The length can be 4, 6 or 8 characters resulting in the
-	 * formats yyMM, yyMMdd or yyyyMMdd.
+	 * The length can be 4, 6, 8 or 10 characters resulting in the
+	 * formats yyMM, yyMMdd, yyyyMMdd, yyyy-MM-dd.
 	 * @param date the date object to format
 	 * @param length the length of the formatted date
 	 * @return the formatted string
@@ -227,6 +241,8 @@ public class AccountingBlock extends CommuneBlock {
 			formatter = new SimpleDateFormat ("yyMMdd"); 
 		} else if (length == 8) {
 			formatter = new SimpleDateFormat ("yyyyMMdd"); 
+		} else if (length == 10) {
+			formatter = new SimpleDateFormat ("yyyy-MM-dd"); 
 		}
 
 		String dateString = "";
@@ -237,6 +253,20 @@ public class AccountingBlock extends CommuneBlock {
 		}
 		
 		return dateString;
+	}
+
+	
+	/**
+	 * Formats the specified java.sql.Timestamp object into a string.
+	 * The length can be 4, 6, 8 or 10 characters resulting in the
+	 * formats yyMM, yyMMdd, yyyyMMdd, yyyy-MM-dd.
+	 * @param timestamp the timestamp object to format
+	 * @param length the length of the formatted date
+	 * @return the formatted string
+	 * @author anders 
+	 */
+	protected String formatDate(Timestamp timestamp, int length) {
+		return formatDate(new Date(timestamp.getTime()), length);
 	}
 	
 	/**
