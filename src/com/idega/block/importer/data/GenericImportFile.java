@@ -175,7 +175,7 @@ public class GenericImportFile implements ImportFile{
 	
 	
 	
-	  protected File getFile(){
+	  public File getFile(){
 	    return file;
 	  }
 

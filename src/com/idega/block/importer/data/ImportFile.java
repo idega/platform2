@@ -17,6 +17,8 @@ public interface ImportFile{
  * @param emptyValueString
  */
   public void setEmptyValueString(String emptyValueString);
+  public File getFile();
+  
   //public Object getRecordAtIndex(int index);
  // public boolean parse();
 }

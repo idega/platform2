@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.importer.business.ImportBusiness;
 import com.idega.block.importer.data.ImportFileClass;
 import com.idega.block.importer.data.ImportFileRecord;
@@ -14,6 +16,8 @@ import com.idega.block.media.business.MediaConstants;
 import com.idega.block.media.presentation.MediaChooserWindow;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.ICFile;
+import com.idega.core.data.ICFileHome;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.UploadFile;
 import com.idega.presentation.IWContext;
@@ -341,10 +345,32 @@ public class Importer extends Window {
 						else {
 							fileTable.add(new Text(iwrb.getLocalizedString("importer.not.imported", "Not imported")), 5, row);
 						}
-						if (!file.isLeaf()) {
-							fileTable.add(new Text("Temp: has report!"), 6, row);
+						String reportFilename = file.getName();
+						int i = reportFilename.indexOf('_');
+						if(i>0)
+						{
+							reportFilename = reportFilename.substring(i+1);
 						}
-						fileTable.add(new CheckBox(IMPORT_FILE_IDS, ((Integer) file.getPrimaryKey()).toString()), 7, row);
+						i = reportFilename.lastIndexOf('.');
+						if(i>0)
+						{
+							reportFilename = reportFilename.substring(0,i);
+						}
+						reportFilename = reportFilename+".report";
+
+						ICFile reportFile = null;
+						ICFileHome fileHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
+						try {
+							reportFile = fileHome.findByFileName(reportFilename);
+							System.out.println("Reports folder found");
+							//Todo need to get the path to the cached file instead
+//							fileTable.add(new Link("report",reportFile.getName()),6,row);
+							fileTable.add(new Text(reportFile.getName() + " available"),6,row);
+						} catch (FinderException e) {
+//							fileTable.add(new Text("-"),6,row);
+						}
+
+						fileTable.add(new CheckBox(IMPORT_FILE_IDS, ((Integer)file.getPrimaryKey()).toString() ),7,row);
 					}
 					row++;
 				}
