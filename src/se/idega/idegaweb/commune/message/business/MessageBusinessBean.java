@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.30 2003/01/12 23:56:29 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.31 2003/02/14 08:55:25 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -50,11 +50,12 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 
   private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 	public static final String MESSAGE_PROPERTIES = "message_properties";
+	public static final String MAIL_PROPERTIES = "mail_properties";
 	private String TYPE_USER_MESSAGE = "SYMEDAN";
 	private String TYPE_SYSTEM_PRINT_MAIL_MESSAGE = "SYMEBRV";
 	private String TYPE_SYSTEM_PRINT_ARCHIVATION_MESSAGE = "SYMEARK";
 
-	private static String DEFAULT_SMTP_MAILSERVER="mail.idega.is";
+	private static String DEFAULT_SMTP_MAILSERVER="mail.agurait.com";
 	private static String PROP_SYSTEM_SMTP_MAILSERVER="messagebox_smtp_mailserver";
 	private static String PROP_MESSAGEBOX_FROM_ADDRESS="messagebox_from_mailaddress";
 	private static String DEFAULT_MESSAGEBOX_FROM_ADDRESS="messagebox@idega.com";
@@ -178,7 +179,12 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 				
 				if ( sendEmail ) {
 					if (canSendEmail)
-						sendMessage(mail.getEmailAddress(),subject,body);
+						try {
+							sendMessage(mail.getEmailAddress(),subject,body);
+						}
+						catch (Exception e) {
+							System.err.println("Couldn't send message to user via e-mail.");
+						}
 				}
 				else {
 					createPrintedLetterMessage(user, subject, body);
@@ -439,7 +445,11 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 
 	public void sendMessage(String email, String subject, String body) {
 
-		String mailServer = DEFAULT_SMTP_MAILSERVER;
+		String mailServer = getIWApplicationContext().getSystemProperties().getProperties(MAIL_PROPERTIES).getProperty("mail_server");
+		if (mailServer == null) {
+			mailServer = DEFAULT_SMTP_MAILSERVER;
+		}
+		
 		String fromAddress = DEFAULT_MESSAGEBOX_FROM_ADDRESS;
 		try{
 			IWBundle iwb = getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
