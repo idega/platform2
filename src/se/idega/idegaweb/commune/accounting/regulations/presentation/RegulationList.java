@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.18 2004/02/03 08:30:27 staffan Exp $
+ * $Id: RegulationList.java,v 1.19 2004/02/18 19:56:00 aron Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.18 2004/02/03 08:30:27 staffan Exp $
+ * $Id: RegulationList.java,v 1.19 2004/02/18 19:56:00 aron Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class RegulationList extends AccountingBlock {
 
@@ -383,19 +383,33 @@ public class RegulationList extends AccountingBlock {
 	}
 
 	private void setupDefaultDates(IWContext iwc) { 
+		
+		Date sessionFromDate = null;
+		Date sessionToDate = null;
+		try {
+			sessionFromDate = (Date) getSession().getUserContext().getSessionAttribute(PARAM_FROM);
+			sessionToDate = (Date) getSession().getUserContext().getSessionAttribute(PARAM_TO);
+		} catch (Exception e) {}
 	
 		if (iwc.isParameterSet(PARAM_FROM)) {
 			_currentFromDate = parseDate(iwc.getParameter(PARAM_FROM));
+		} else if (iwc.isParameterSet(PARAM_RETURN_FROM_DATE)) {
+			_currentFromDate = parseDate(iwc.getParameter(PARAM_RETURN_FROM_DATE));
+		}
+		else if (sessionFromDate != null) {
+			_currentFromDate = sessionFromDate;				
 		} else {
-			_currentFromDate = iwc.isParameterSet(PARAM_RETURN_FROM_DATE) ? 
-					parseDate(iwc.getParameter(PARAM_RETURN_FROM_DATE)) : getFlattenedTodaysDate();
+			_currentFromDate = getFlattenedTodaysDate();
 		}
 			
 		if (iwc.isParameterSet(PARAM_TO)) {
 			_currentToDate = parseDate(iwc.getParameter(PARAM_TO));
+		} else if (iwc.isParameterSet(PARAM_RETURN_TO_DATE)) {
+			_currentToDate = parseDate(iwc.getParameter(PARAM_RETURN_TO_DATE));
+		}else if (sessionToDate != null) {
+			_currentToDate = sessionToDate;				
 		} else {
-			_currentToDate = iwc.isParameterSet(PARAM_RETURN_TO_DATE) ? 
-					parseDate(iwc.getParameter(PARAM_RETURN_TO_DATE)) : parseDate("9999-12-31");
+			_currentToDate = parseDate("9999-12-31");
 		}
 			
 		if(_currentToDate == null) {
@@ -406,6 +420,10 @@ public class RegulationList extends AccountingBlock {
 		}
 		_currentFromDate = parseDate(formatDate(_currentFromDate, 4));
 		_currentToDate = parseDate(formatDate(_currentToDate, 4));
+		try {
+			getSession().getUserContext().setSessionAttribute(PARAM_FROM, _currentFromDate);
+			getSession().getUserContext().setSessionAttribute(PARAM_TO, _currentToDate);
+		} catch (Exception e) {}
 	}
 
 
