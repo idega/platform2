@@ -33,20 +33,26 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public final static String COLUMN_LOCKED = "locked";
   public final static String SCHOOL = "school_id";
 
+	public final static String SCHOOL_CLASS_YEAR = "sch_school_class_year";
+	public final static String SCHOOL_CLASS_TEACHER = "sch_school_class_teacher";
+
 	public final static String VALID = "Y";
 	public final static String INVALID = "N";
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addManyToOneRelationship(SCHOOL,"School",School.class);
-	addManyToOneRelationship(SCHOOLYEAR,"Schoolyear",SchoolYear.class);
-	addManyToOneRelationship(SCHOOLTYPE,"Schoolytype",SchoolType.class);
+		addManyToOneRelationship(SCHOOLYEAR,"Schoolyear",SchoolYear.class);
+		addManyToOneRelationship(SCHOOLTYPE,"Schoolytype",SchoolType.class);
     addAttribute(TEACHER,"Teacher",true,true,Integer.class);
     addManyToOneRelationship(SEASON,"Season",SchoolSeason.class);
     addAttribute(NAME,"Name",true,true,String.class);
     addAttribute(COLUMN_VALID,"Valid",true,true,String.class,1);
     addAttribute(COLUMN_READY,"Ready",true,true,String.class,1);
     addAttribute(COLUMN_LOCKED,"Ready",true,true,String.class,1);
+    
+    addManyToManyRelationShip(SchoolYear.class, SCHOOL_CLASS_YEAR);
+		addManyToManyRelationShip(User.class, SCHOOL_CLASS_TEACHER);
   }
   public String getEntityName() {
     return SCHOOLCLASS;
@@ -177,6 +183,15 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   	return super.idoFindPKsBySQL("select * from "+this.getEntityName()+" where "+SCHOOL+" = "+String.valueOf(schoolID)+" and "+SCHOOLYEAR+" = "+String.valueOf(schoolYearID)+" and ("+COLUMN_VALID+" = '"+VALID+"' or "+COLUMN_VALID+" is null)");
   }
 
+	public Collection ejbFindBySchoolAndInYear(int schoolID, int schoolYearID)throws FinderException ,RemoteException{
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom().append("s.*").appendFrom().append(this.getEntityName() + " s, ").append("sch_school_year y, ").append(SCHOOL_CLASS_YEAR + "sy");
+		query.appendWhereEquals(SCHOOL, schoolID).appendAndEquals("s."+getIDColumnName(), "sy."+getIDColumnName()).appendAndEquals("sy.sch_school_year_id", "y.sch_school_year_id");
+		query.appendAndEquals("y.sch_school_year_id", schoolYearID);
+		query.appendAnd().appendLeftParenthesis().appendEqualsQuoted(COLUMN_VALID, "Y").appendOr().append(COLUMN_VALID).appendIsNull().appendRightParenthesis();
+		return idoFindPKsByQuery(query);
+	}
+
   public Collection ejbFindBySchoolAndSeasonAndYear(School school, SchoolSeason schoolSeason,SchoolYear schoolYear)throws FinderException ,RemoteException{
   	return ejbFindBySchoolAndSeasonAndYear(((Integer)school.getPrimaryKey()).intValue(),((Integer)schoolSeason.getPrimaryKey()).intValue(),((Integer)schoolYear.getPrimaryKey()).intValue());
   }
@@ -185,6 +200,15 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   	return super.idoFindPKsBySQL("select * from "+this.getEntityName()+" where "+SCHOOL+" = "+String.valueOf(schoolID)+" and "+SEASON+" = "+String.valueOf(schoolSeasonID)+" and "+SCHOOLYEAR+" = "+schoolYearID+" and ("+COLUMN_VALID+" = '"+VALID+"' or "+COLUMN_VALID+" is null)");
   }
   
+	public Collection ejbFindBySchoolAndSeasonAndInYear(int schoolID, int schoolSeasonID, int schoolYearID)throws FinderException ,RemoteException{
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom().append("s.*").appendFrom().append(this.getEntityName() + " s, ").append("sch_school_year y, ").append(SCHOOL_CLASS_YEAR + "sy");
+		query.appendWhereEquals(SCHOOL, schoolID).appendAndEquals("s."+getIDColumnName(), "sy."+getIDColumnName()).appendAndEquals("sy.sch_school_year_id", "y.sch_school_year_id");
+		query.appendAndEquals("y.sch_school_year_id", schoolYearID).appendAndEquals(SEASON, schoolSeasonID);
+		query.appendAnd().appendLeftParenthesis().appendEqualsQuoted(COLUMN_VALID, "Y").appendOr().append(COLUMN_VALID).appendIsNull().appendRightParenthesis();
+		return idoFindPKsByQuery(query);
+	}
+
   public Collection ejbFindBySeasonAndYear(SchoolSeason schoolSeason,SchoolYear schoolYear)throws FinderException ,RemoteException{
 	return ejbFindBySeasonAndYear(((Integer)schoolSeason.getPrimaryKey()).intValue(),((Integer)schoolYear.getPrimaryKey()).intValue());
   }
