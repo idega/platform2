@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.14 2001/07/25 17:15:56 tryggvil Exp $
+ * $Id: Page.java,v 1.15 2001/08/16 10:33:36 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -305,36 +305,62 @@ public class Page extends ModuleObjectContainer {
     }
   }
 
+  protected boolean isChildOfOtherPage(){
+    boolean isInsideOtherPage = false;
+    ModuleObject parent = getParentObject();
+    if(parent!=null){
+      if(parent instanceof Page){
+        if(parent instanceof FrameSet){
+          return false;
+        }
+        else{
+          return true;
+        }
+      }
+      else{
+        return true;
+      }
+    }
+    else{
+      return false;
+    }
+  }
+
   public void print(ModuleInfo modinfo) throws Exception {
     initVariables(modinfo);
     setDefaultAttributes(modinfo);
 
+    boolean isInsideOtherPage = this.isChildOfOtherPage();
+
+
     if (getLanguage().equals("HTML")) {
       //StringBuffer buf= new StringBuffer();
       //buf.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/REC-html40/loose.dtd\">\n<html>");
-      println(getStartTag());
-      if(zeroWait) {
-        this.setDoPrint(false);
-      }
-      println("\n<head>");
-      if (getAssociatedScript() != null) {
-        getAssociatedScript().print(modinfo);
-      }
-      //println("\n<meta http-equiv=\"content-type\" content=\"text/html; charset=iso-8859-1\">\n<meta name=\"generator\" content=\"idega arachnea 1.2\">\n<meta name=\"author\" content=\"idega.is\">\n<meta name=\"copyright\" content=\"idega.is\">\n");
-      //if (getRedirectInfo() != null) {
-      //  println("<meta http-equiv=\"refresh\" content=\""+getRedirectInfo()+"\">");
-      //}
 
-      println(getMetaInformation(modinfo));
-      println("<title>"+getTitle()+"</title>");
-      if (addStyleSheet) {
-        println("<link rel=\"stylesheet\" href=\""+styleSheetURL+"\" type=\"text/css\">\n");
-      }
-      else {
-        println("<STYLE TYPE=\"text/css\">\n<!--\n	A:link {color:"+linkColor+"; text-decoration:"+textDecoration+";}\n	A:visited {color:"+visitedColor+"; text-decoration:"+textDecoration+";}\n	A:hover {color:"+hoverColor+"; text-decoration:"+textDecoration+";}\n	body {  font-family: "+ pageStyleFont +"; font-size: "+pageStyleFontSize+"; font-style: "+pageStyleFontStyle+ ";}\n   -->\n</STYLE>");
-     }
-      println("</head>\n<body  "+getAttributeString()+" >\n");
+      if(!isInsideOtherPage){
+        println(getStartTag());
+        if(zeroWait) {
+          this.setDoPrint(false);
+        }
+        println("\n<head>");
+        if (getAssociatedScript() != null) {
+          getAssociatedScript().print(modinfo);
+        }
+        //println("\n<meta http-equiv=\"content-type\" content=\"text/html; charset=iso-8859-1\">\n<meta name=\"generator\" content=\"idega arachnea 1.2\">\n<meta name=\"author\" content=\"idega.is\">\n<meta name=\"copyright\" content=\"idega.is\">\n");
+        //if (getRedirectInfo() != null) {
+        //  println("<meta http-equiv=\"refresh\" content=\""+getRedirectInfo()+"\">");
+        //}
 
+        println(getMetaInformation(modinfo));
+        println("<title>"+getTitle()+"</title>");
+        if (addStyleSheet) {
+          println("<link rel=\"stylesheet\" href=\""+styleSheetURL+"\" type=\"text/css\">\n");
+        }
+        else {
+          println("<STYLE TYPE=\"text/css\">\n<!--\n	A:link {color:"+linkColor+"; text-decoration:"+textDecoration+";}\n	A:visited {color:"+visitedColor+"; text-decoration:"+textDecoration+";}\n	A:hover {color:"+hoverColor+"; text-decoration:"+textDecoration+";}\n	body {  font-family: "+ pageStyleFont +"; font-size: "+pageStyleFontSize+"; font-style: "+pageStyleFontStyle+ ";}\n   -->\n</STYLE>");
+        }
+        println("</head>\n<body  "+getAttributeString()+" >\n");
+      }
       //Catch all exceptions that are thrown in print functions of objects stored inside
       try {
         super.print(modinfo);
@@ -347,8 +373,10 @@ public class Page extends ModuleObjectContainer {
         println("</pre>");
       }
 
-      println("\n</body>");
-      println(getEndTag());
+      if(!isInsideOtherPage){
+        println("\n</body>");
+        println(getEndTag());
+      }
         //}
     }
     else if (getLanguage().equals("WML")) {
@@ -401,22 +429,22 @@ public class Page extends ModuleObjectContainer {
    * Used to find the Page object to be printed in top of the current page
    */
   public static Page getPage(ModuleInfo modinfo){
-      String frameKey = modinfo.getParameter(IW_FRAME_STORAGE_PARMETER);
+      /*String frameKey = modinfo.getParameter(IW_FRAME_STORAGE_PARMETER);
 
       if(frameKey!=null){
 
         Page page = getPage(getFrameStorageInfo(modinfo),modinfo);
         return page;
         //return getPageFromSession(modinfo,frameKey);
-      }
+      }*/
 
-      else{
+      //else{
       /**
        * Inside a top level page:
        */
        Page page =  (Page) IWCoreServlet.retrieveObject(IW_PAGE_KEY);
        return page;
-      }
+      //}
 
 
       /*Page page = (Page)retrieveObject("idega_page");
@@ -511,6 +539,7 @@ public class Page extends ModuleObjectContainer {
     return !modinfo.isParameterSet(IW_FRAME_STORAGE_PARMETER);
   }
 
+  /*
   protected void setFrameProperty(String propertyName,String propertyValue){
     if(frameProperties ==null){
       frameProperties = new Hashtable();
@@ -554,6 +583,7 @@ public class Page extends ModuleObjectContainer {
     }
     return returnString.toString();
   }
+  */
 
   public void setTemplate(boolean isTemlpate){
     this.isTemplate=isTemplate;

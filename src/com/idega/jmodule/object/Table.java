@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.12 2001/07/25 17:15:56 tryggvil Exp $
+ * $Id: Table.java,v 1.13 2001/08/16 10:34:04 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,10 @@ import com.idega.util.IWColor;
 *@version 1.2
 */
 public class Table extends ModuleObjectContainer {
+
+  private static Image transparentcell;
+  private static final String IW_BUNDLE_IDENTIFIER="com.idega.core";
+
   private ModuleObjectContainer theObjects[][];
   private int cols = 0;
   private int rows = 0;
@@ -1131,5 +1135,12 @@ public boolean isEmpty(int x, int y){
 
   public void setResizable(boolean resizable){
     this.isResizable=resizable;
+  }
+
+  public static Image getTransparentCell(ModuleInfo modinfo){
+    if(transparentcell==null){
+      transparentcell = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getImage("transparentcell.gif");
+    }
+    return transparentcell;
   }
 }

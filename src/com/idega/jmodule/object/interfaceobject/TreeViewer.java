@@ -44,7 +44,7 @@ private int tableColumns=10;
 private int tableRows=1;
 private String nodeActionParameter=NODE_ACTION_NODE_SELECTED;
 private boolean usesOnClick=false;
-
+private Link linesLink;
 
 private TreeViewer(ICTreeNode startNode){
   this.startNode=startNode;
@@ -126,7 +126,8 @@ private ModuleObject getTreeLines(ICTreeNode node,boolean nodeOpen, int[] parent
   else{
     if(nodeOpen){
       Image image = bundle.getImage(TREEVIEW_PREFIX+TREEVIEW_MINUS+typeOfNode+GIF_SUFFIX);
-      Link link = new Link(image);
+      Link link = getLinesLinkCloned();
+      link.setModuleObject(image);
       link.setToMaintainGlobalParameters();
       link.addParameter(NODE_ACTION_CLOSE_PARAMETER,Integer.toString(node.getNodeID()));
       addParametersToLink(link,parentarray);
@@ -134,7 +135,8 @@ private ModuleObject getTreeLines(ICTreeNode node,boolean nodeOpen, int[] parent
     }
     else{
       Image image = bundle.getImage(TREEVIEW_PREFIX+TREEVIEW_PLUS+typeOfNode+GIF_SUFFIX);
-      Link link = new Link(image);
+      Link link = getLinesLinkCloned();
+      link.setModuleObject(image);
       link.setToMaintainGlobalParameters();
       link.addParameter(NODE_ACTION_OPEN_PARAMETER,Integer.toString(node.getNodeID()));
       addParametersToLink(link,parentarray);
@@ -330,5 +332,22 @@ public void setToUseOnClick(String NodeNameParameterName,String NodeIDParameterN
 public void setOnClick(String action){
    this.getAssociatedScript().addToFunction(ONCLICK_FUNCTION_NAME,action);
 }
+
+public void setToMaintainParameter(String parameterName,ModuleInfo modinfo){
+  Link link = getLinesLink();
+  link.maintainParameter(parameterName,modinfo);
+}
+
+private Link getLinesLink(){
+  if(linesLink==null){
+    linesLink=new Link();
+  }
+  return linesLink;
+}
+
+private Link getLinesLinkCloned(){
+  return (Link)getLinesLink().clone();
+}
+
 
 }

@@ -150,12 +150,12 @@ public void main(ModuleInfo modinfo){
   if (usingControlParameter){
     if(!parameterName.equals(emptyString)){
       if(this.defaultImage==null){
-        this.getParentForm().setControlParameter(parameterName,"");
+        this.getParentForm().setControlParameter(parameterName,emptyString);
         this.setOnClick("this.form."+parameterName+".value='"+parameterValue+"'");
       }
       else{
         Form form = getParentForm();
-        form.setControlParameter(parameterName,"");
+        form.setControlParameter(parameterName,emptyString);
         Parameter par = form.getControlParameter();
         if(par!=null){
           this.setOnClick("this.form."+par.getID()+".value='"+parameterValue+"'");

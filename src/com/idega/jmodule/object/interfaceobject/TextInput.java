@@ -34,9 +34,11 @@ private String emailErrorMessage;
 private String notEmptyErrorMessage;
 private String icelandicSSNumberErrorMessage;
 
+private static final String untitled="untitled";
+
 
 public TextInput(){
-	this("untitled");
+	this(untitled);
 }
 
 public TextInput(String name){

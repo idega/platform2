@@ -37,6 +37,8 @@ private Form formToSubmit;
 private Class windowClass;
 private boolean maintainAllGlobalParameters = false;
 
+private static final String TARGET_ATTRIBUTE = "target";
+
 public Link(){
   this("");
 }
@@ -207,14 +209,15 @@ public String getAttributeString(ModuleInfo modinfo){
 public void main(ModuleInfo modinfo)throws Exception{
   if(ObjectType.equals("Window")){
 
-    if(myWindow.getURL(modinfo).indexOf(IWMainApplication.windowOpenerURL)!=-1){
-      String sessionParameterName=com.idega.servlet.WindowOpener.storeWindow(modinfo,myWindow);
-      addParameter(sessionStorageName,sessionParameterName);
+    if(myWindow!=null){
+      if(myWindow.getURL(modinfo).indexOf(IWMainApplication.windowOpenerURL)!=-1){
+        String sessionParameterName=com.idega.servlet.WindowOpener.storeWindow(modinfo,myWindow);
+        addParameter(sessionStorageName,sessionParameterName);
+      }
+      //String sessionParameterName=this.getID();
+      //addParameter(sessionStorageName,sessionParameterName);
+      //modinfo.setSessionAttribute(sessionParameterName,myWindow);
     }
-    //String sessionParameterName=this.getID();
-    //addParameter(sessionStorageName,sessionParameterName);
-    //modinfo.setSessionAttribute(sessionParameterName,myWindow);
-
   }
   /*if(link!=null){
     link.main(modinfo);
@@ -318,7 +321,11 @@ public String getOnClick(){
 }
 
 public void setTarget(String target){
-	setAttribute("target",target);
+	setAttribute(TARGET_ATTRIBUTE,target);
+}
+
+public String getTarget(){
+  return getAttribute(TARGET_ATTRIBUTE);
 }
 
 public void setFontSize(String s){
@@ -409,6 +416,10 @@ public ModuleObject getObject(){
 }
 
 
+private boolean isLinkOpeningOnSamePage(){
+  return !isAttributeSet(TARGET_ATTRIBUTE);
+}
+
   public synchronized Object clone() {
     Link linkObj = null;
     try {
@@ -468,6 +479,11 @@ public void setToMaintainGlobalParameters(){
 protected String getParameterString(ModuleInfo modinfo,String URL){
         if(maintainAllGlobalParameters){
           addTheMaintainedParameters(modinfo);
+        }
+        else{
+          if(this.isLinkOpeningOnSamePage()){
+            addTheMaintainedParameters(modinfo);
+          }
         }
 
         if (URL == null){
@@ -588,13 +604,13 @@ public void print(ModuleInfo modinfo)throws Exception{
 
 		if (getLanguage().equals("HTML")){
 				if (ObjectType.equals("Window")){
-                                        setURL("#");
                                         if(windowClass==null){
 					  setOnClick(myWindow.getCallingScriptString(modinfo,myWindow.getURL(modinfo)+getParameterString(modinfo,myWindow.getURL(modinfo))));
 			                }
                                         else{
-                                          setOnClick(Window.getCallingScriptString(windowClass,getURL()+getParameterString(modinfo,getURL()),false));
+                                          setOnClick(Window.getCallingScriptString(windowClass,getURL()+getParameterString(modinfo,getURL()),true));
                                         }
+                                        setURL("#");
                                         print("<a "+getAttributeString()+" >");
                                         if (obj == null){
 					  Text myText = new Text(myWindow.getName());
@@ -723,6 +739,7 @@ public void print(ModuleInfo modinfo)throws Exception{
     ObjectType="Window";
     this.windowClass=windowClass;
     setURL(IWMainApplication.windowOpenerURL);
+    //this.setOnClick(Window.getCallingScriptString(windowClass,true));
     addParameter(Page.IW_FRAME_CLASS_PARAMETER,windowClass.getName());
   }
 
