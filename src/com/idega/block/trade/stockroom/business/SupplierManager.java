@@ -202,7 +202,6 @@ public class SupplierManager {
   public static SupplierStaffGroup getSupplierStaffGroup(Supplier supplier) throws SQLException {
     String name = supplier.getName()+"_"+supplier.getID();
     SupplierStaffGroup sGroup = null;
-    System.err.println("trying ... "+name);
     List listi = EntityFinder.findAllByColumn((SupplierStaffGroup) com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean.getStaticInstance(SupplierStaffGroup.class), com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean.getNameColumnName(), name);
     if (listi != null) {
       if (listi.size() > 0) {
@@ -210,15 +209,11 @@ public class SupplierManager {
       }
     }
     if (listi == null) {
-      System.err.println("trying ... "+supplier.getName());
       listi = EntityFinder.findAllByColumn((SupplierStaffGroup) com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean.getStaticInstance(SupplierStaffGroup.class), com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean.getNameColumnName(), supplier.getName());
       if (listi != null)
       if (listi.size() > 0) {
         sGroup = (SupplierStaffGroup) listi.get(listi.size()-1);
       }
-    }
-    if (sGroup == null) {
-      System.err.println("supplierStaffGroup == null");
     }
     return sGroup;
   }
