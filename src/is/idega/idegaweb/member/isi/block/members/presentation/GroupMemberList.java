@@ -79,13 +79,12 @@ public class GroupMemberList extends Block {
 		
 		Table table = new Table();
 		table.setNoWrap();
-		table.setColumnWidth(1, "80");
-		table.setColumnWidth(2, "80");
-		if(showGroup) {
-			table.setColumnWidth(3, "100");
-			table.setColumnWidth(4, "50");
+		if(_cellSpacing!=null) {
+			table.setCellspacing(_cellSpacing);
 		}
-		table.setCellspacing(0);
+		if(_cellPadding!=null) {
+			table.setCellpadding(_cellPadding);
+		}
 		Iterator userIter; //group.getChildren();
 		try {
 			userIter = getGroupBusiness(iwc).getUsers(group).iterator();
@@ -359,9 +358,20 @@ public class GroupMemberList extends Block {
 		return IW_BUNDLE_IDENTIFIER;
 	}
 	
+	public void setCellPadding(String value) {
+		_cellPadding = value;
+	}
+	
+	public void setCellSpacing(String value) {
+		_cellSpacing = value;
+	}
+	
 	private String _currentColor = null;
 	private String _color1 = "lightgray";
 	private String _color2 = "white";
+	
+	private String _cellSpacing = null;
+	private String _cellPadding = null;
 	
 	private GroupBusiness _groupBiz = null;
 }
