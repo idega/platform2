@@ -85,25 +85,25 @@ public class PageCounter extends Block {
       while (iter.hasNext()) {
         ReferrerStatistics item = (ReferrerStatistics) referers.get((String)iter.next());
         refs.add(item.getReferrerUrl(),1,++y);
-        refs.add(String.valueOf(item.getSessions()),1,y);
+        refs.add(String.valueOf(item.getSessions()),2,y);
       }
     }
     add(refs);
 
-
+    addBreak();
     //agents
     Table agents = new Table();
     int y2 = 1;
     agents.add("User agents",1,y2);
     agents.add("Count",2,y2);
 
-    Hashtable ua = (Hashtable) TrackerBusiness.getReferers();
+    Hashtable ua = (Hashtable) TrackerBusiness.getUserAgents();
     if( ua != null ){
       Iterator iter = ua.keySet().iterator();
       while (iter.hasNext()) {
         UserAgentStatistics item = (UserAgentStatistics) ua.get((String)iter.next());
         agents.add(item.getUserAgent(),1,++y2);
-        agents.add(String.valueOf(item.getSessions()),1,y2);
+        agents.add(String.valueOf(item.getSessions()),2,y2);
       }
     }
     add(agents);

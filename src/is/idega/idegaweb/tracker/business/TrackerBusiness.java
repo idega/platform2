@@ -44,6 +44,7 @@ public class TrackerBusiness {
   private static Map agents;
   private static Map pageSessions;
   private static Map pageHits;
+  private static Map sessions;
 
   private static int totalHits = 0;
   private static int totalSessions = 0;
@@ -86,9 +87,7 @@ public class TrackerBusiness {
     if( notWritingToDB ){
       init(iwc);
       handlePageStats(iwc);
-      //handleDomainStats(iwc);
-      handleReferrerStats(iwc);
-      handleUserAgentStats(iwc);
+      handleSessionsRelated(iwc);
     }
   }
 
@@ -112,7 +111,7 @@ public class TrackerBusiness {
         pageLog = new ArrayList();
         //session stuff
         totalSessions++;
-        incrementPageSessions(sPageId);
+        incrementPageSessions(sPageId);/**@todo only counts once!**/
       }
 
       pageLog.add(page);
@@ -199,6 +198,17 @@ public class TrackerBusiness {
     Integer sessions = (Integer) pageSessions.get(String.valueOf(getCurrentPageId(iwc)));
     if( sessions == null ) return 0;
     else return sessions.intValue();
+  }
+
+
+  private static void handleSessionsRelated(IWContext iwc){
+    if( sessions == null ){ sessions = new Hashtable(); }
+    String sId = iwc.getSessionId();
+    if( sessions.get(sId)==null ){
+      handleReferrerStats(iwc);
+      handleUserAgentStats(iwc);
+    }
+    sessions.put(sId,sId);
   }
 
   public static int getTotalHits(){
