@@ -10,7 +10,7 @@ import com.idega.util.*;
 import com.idega.util.text.TextSoap;
 import com.idega.data.*;
 import com.idega.block.building.business.BuildingFinder;
-import com.idega.data.genericentity.Address;
+//import com.idega.data.genericentity.Address;
 import com.idega.block.building.data.*;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
