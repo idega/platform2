@@ -14,9 +14,11 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -85,7 +87,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private int _applicationID = -1;
 	private int _pageID;
 
-	private SubmitButton close;
+	private CloseButton close;
 	private Form form;
 
 	/**
@@ -168,7 +170,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		contentTable.setHeight(Table.HUNDRED_PERCENT);
 		table.add(contentTable, 2, 4);
 
-		close = (SubmitButton) getStyledInterface(new SubmitButton(localize("close_window", "Close"), PARAMETER_ACTION, String.valueOf(ACTION_CLOSE)));
+		close = (CloseButton) getStyledInterface(new CloseButton(localize("close_window", "Close")));
+		//close.setPageToOpen(getParentPageID());
+		//close.addParameterToPage(PARAMETER_ACTION, ACTION_CLOSE);
 
 		switch (_method) {
 			case METHOD_GRANT_PRIORITY :
