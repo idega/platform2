@@ -1220,7 +1220,7 @@ public class ReportQueryBuilder extends Block {
 				if (part.hasMoreThanOnePattern()) {
 					Collection patternColl = part.getPatterns();
 					if (fieldInputHandler != null) {
-						String[] patternArray = (String[]) patternColl.toArray();
+						String[] patternArray = (String[]) patternColl.toArray(new String[0]);
 						Object resultingObjects = null;
 						String display = null;
 						try {
