@@ -1,4 +1,4 @@
-//idega 2000-2001 - Tryggvi Larusson - Grímur Jónsson
+//idega 2000-2001 - Tryggvi Larusson - Grímur Jónsson - Þórhallur Helgason
 /*
 *Copyright 2000-2001 idega.is All Rights Reserved.
 * $id$
@@ -21,10 +21,11 @@ import com.idega.data.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.util.*;
 import com.idega.jmodule.login.business.AccessControl;
+import com.idega.projects.golf.presentation.TournamentBox;
 import com.idega.data.SimpleQuerier;
 
 /**
-*@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>,<a href="mailto:gimmi@idega.is">Grímur Jónsson</a>
+*@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>,<a href="mailto:gimmi@idega.is">Grímur Jónsson</a>,<a href="mailto:laddi@idega.is">Þórhallur Helgason</a>
 */
 
 public class TournamentController{
@@ -58,6 +59,27 @@ public class TournamentController{
       return tourns;
     }
 
+    public static Tournament[] getTournaments(idegaTimestamp stamp) throws Exception{
+      idegaTimestamp next = new idegaTimestamp(stamp.RightNow());
+          next.addDays(1);
+
+      Tournament tournament = new Tournament();
+      Tournament[] tourns = (Tournament[])tournament.findAll("select * from tournament where start_time>= '"+stamp.toSQLDateString()+"' AND start_time<'"+next.toSQLDateString()+"' order by start_time");
+       return tourns;
+    }
+
+    public static Tournament[] getTournamentToday() throws Exception{
+        return TournamentController.getTournaments(idegaTimestamp.RightNow());
+    }
+
+    public static Tournament[] getLastClosedTournaments(int number) throws Exception {
+      Tournament tournament = new Tournament();
+      idegaTimestamp stamp = idegaTimestamp.RightNow();
+      Tournament[] tourns = (Tournament[])tournament.findAll("select * from tournament where closed = 'Y' and closed_date<'"+stamp.toSQLString()+"' order by closed_date desc",number);
+      return tourns;
+    }
+
+
     public static boolean isTournamentRegistrable(Tournament tournament){
       boolean finished = tournament.isTournamentFinished();
       boolean ongoing = tournament.isTournamentOngoing();
@@ -76,6 +98,26 @@ public class TournamentController{
               modinfo.removeApplicationAttribute(myString);
           }
       }
+      TournamentController.removeTournamentBoxApplication(modinfo);
+
+
+    }
+
+    public static void removeTournamentBoxApplication(ModuleInfo modinfo) {
+        modinfo.removeApplicationAttribute("tournament_box");
+    }
+
+    public static TournamentBox getTournamentBox(ModuleInfo modinfo) {
+      TournamentBox tBox = (TournamentBox) modinfo.getApplicationAttribute("tournament_box");
+      if (tBox == null) {
+          System.err.println("TournamentBox IS NULL");
+          tBox = new TournamentBox();
+          modinfo.setApplicationAttribute("tournament_box",tBox);
+      }
+      else {
+          System.err.println("TournamentBox is NOT null");
+      }
+      return tBox;
     }
 
 
@@ -703,6 +745,7 @@ public static int registerMember(com.idega.projects.golf.entity.Member member, T
     int returner = 0;
             try {
                 member.addTo(theTournament,"TOURNAMENT_GROUP_ID",tournament_group_id,"UNION_ID",""+member.getMainUnionID() );
+                theTournament.setPosition(member,-1);
                 TournamentController.createScorecardForMember(member,theTournament,tournament_group_id);
                 returner = 0;
             }
@@ -761,7 +804,7 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
     Field field = tournament.getField();
     Handicap handicapper;
     float handicap;
-    float playingHandicap;
+    float playingHandicap = -100;
     float CR = 0;
     int slope = 0;
     float maxHandicap = 36;
@@ -798,6 +841,7 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
 
             if (playingHandicap > maxHandicap) {
                 handicap = Handicap.getHandicapForScorecard(tournament.getID(), tTGroup.getTeeColorId(),maxHandicap);
+                playingHandicap = maxHandicap;
             }
         }catch (IOException io) {
             io.printStackTrace(System.err);
@@ -806,10 +850,20 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
             }
         }
 
-        modifier = tType.getModifier();
-        if (modifier != -1) {
-          handicap = handicap * tType.getModifier();
-        }
+		try {
+			modifier = tType.getModifier();
+			if (modifier != -1) {
+				if (playingHandicap != -100) {
+				  float modified = (float) playingHandicap * tType.getModifier();
+				  playingHandicap = Math.round(modified);
+				  handicap = Handicap.getHandicapForScorecard(tournament.getID(), tTGroup.getTeeColorId(),playingHandicap);
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+
 
         scorecard = new Scorecard();
           scorecard.setMemberId(member.getID());
