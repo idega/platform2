@@ -930,6 +930,7 @@ public class PublicBooking extends Block  {
           gBooking.setCreditcardAuthorizationNumber(heimild);
           gBooking.store();
 
+          debug("commiting");
           tm.commit();
           success = true;
         }
@@ -937,9 +938,12 @@ public class PublicBooking extends Block  {
       }catch(com.idega.block.tpos.business.TPosException e) {
         debug("TPosException caught");
         display.addToText(" ( "+e.getMessage()+" )");
-        e.printStackTrace(System.err);
+        //e.printStackTrace(System.err);
+          debug("setting valid = false");
         gBooking.setIsValid(false);
+          debug("store");
         gBooking.store();
+          debug("store ... done");
         gBooking = null;
         success = false;
       }catch (Exception e) {
@@ -951,6 +955,13 @@ public class PublicBooking extends Block  {
         }catch (javax.transaction.SystemException se) {
           se.printStackTrace(System.err);
         }
+      }
+
+      debug("success = "+success);
+      if (gBooking == null) {
+        debug("gBooking == null");
+      }else {
+        debug("gBooking != null");
       }
 
       if (success && gBooking != null) {
