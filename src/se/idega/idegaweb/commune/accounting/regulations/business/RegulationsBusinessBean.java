@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.118 2004/02/10 17:27:25 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.119 2004/02/13 14:11:14 staffan Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -72,6 +72,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -1690,9 +1691,43 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (child != null) {
 					try {
 						//get the family
+						Collection adults = getUserInfoService().getCustodiansAndTheirPartnersAtSameAddress (child);
+						
+						/////////// temporary for checking the new algorithm ///////////
 						Collection cust = getMemberFamilyLogic().getCustodiansFor(child);
-						if (cust != null && !cust.isEmpty()) {
-							Iterator it = cust.iterator();
+						try {
+							Collection onlyInCollection1 = new java.util.HashSet (adults);
+							onlyInCollection1.removeAll (cust);
+							Collection onlyInCollection2 = new java.util.HashSet (cust);
+							onlyInCollection2.removeAll (adults);
+							if (!onlyInCollection1.isEmpty ()
+									|| !onlyInCollection2.isEmpty ()) {
+								final StringBuffer out = new StringBuffer ();
+								out.append ("### ");
+								final UserBusiness userBusiness = getUserBusiness ();
+								out.append ("child=(" + child.getPersonalID () + " " + userBusiness.getUsersMainAddress(child).getPrimaryKey () + ")");
+								out.append (" adults={");
+								for (Iterator i = adults.iterator (); i.hasNext ();) {
+									final User adult = (User) i.next ();
+									out.append (" (" + adult.getPersonalID () + " " + userBusiness.getUsersMainAddress(adult).getPrimaryKey () + ")");
+								}
+								out.append ("} cust={");
+								for (Iterator i = cust.iterator (); i.hasNext ();) {
+									final User adult = (User) i.next ();
+									out.append (" (" + adult.getPersonalID () + " " + userBusiness.getUsersMainAddress(adult).getPrimaryKey () + ")");
+								}
+								System.err.println (out.toString ());
+							}
+						}	catch (Exception e) {
+							System.err.println ("### child=(" + child + "), adults={"
+																	+ adults + "}, cust={" + cust + "} "
+																	+ e.getMessage ());
+							e.printStackTrace ();
+						}
+						////////////////////////////////////////////////////////////////
+						
+						if (adults != null && !adults.isEmpty()) {
+							Iterator it = adults.iterator();
 							while (it.hasNext()) {
 								User custodian = (User) it.next();
 								try {
@@ -1994,6 +2029,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			replace = s.substring(dot + 1);
 		}
 		return replace;
+	}
+
+	protected UserBusiness getUserBusiness() throws RemoteException {
+		return (UserBusiness) getServiceInstance(UserBusiness.class);
 	}
 
 	protected RegularInvoiceBusiness getRegularInvoiceBusiness() throws RemoteException {

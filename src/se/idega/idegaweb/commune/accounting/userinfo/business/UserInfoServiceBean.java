@@ -13,7 +13,7 @@ import is.idega.idegaweb.member.business.NoSpouseFound;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -280,30 +280,11 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		//the realtionships seem to be a bit unreliable
 		sortedSiblings.add(new SortableSibling(child));
 
-		//Gather up a collection of the parents and their cohabitants
-		Collection parents;		//Collection parents only hold the biological parents
-		MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);
+		Collection adults;
 		try {
-			parents = familyLogic.getCustodiansFor(child);
+			adults = getCustodiansAndTheirPartners(child);
 		} catch (NoCustodianFound e1) {
 			throw new SiblingOrderException("No custodians found for the child.");
-		}
-		//Adults hold all the adults that could be living on the same address
-		Collection adults = new ArrayList(parents);
-		Iterator parentIter = parents.iterator();
-		//Itterate through parents
-		while(parentIter.hasNext()){
-			User parent = (User)parentIter.next();
-			try {
-				adults.add(familyLogic.getCohabitantFor(parent));
-			} catch (NoCohabitantFound e) {
-				// no problem, custodian don't need to have cohabitant
-			}
-			try {
-				adults.add(familyLogic.getSpouseFor(parent));
-			} catch (NoSpouseFound e) {
-				// no problem, custodian don't need to have spouse
-			}
 		}
 
 		//Loop through all adults
@@ -312,7 +293,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 			User adult = (User)adultIter.next();
 			Iterator siblingsIter;
 			try {
-				siblingsIter = familyLogic.getChildrenInCustodyOf (adult).iterator();
+				siblingsIter = getMemberFamilyLogic ().getChildrenInCustodyOf (adult).iterator();
 				//Itterate through their kids
 				while(siblingsIter.hasNext())
 				{
@@ -360,6 +341,46 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		throw new SiblingOrderException("Could not find the sibling order.");
 	}
 
+	public Collection getCustodiansAndTheirPartners(User child) throws RemoteException, NoCustodianFound {
+		//Gather up a collection of the parents and their cohabitants
+		Collection parents = getMemberFamilyLogic ().getCustodiansFor(child);
+
+		//Adults hold all the adults that could be living on the same address
+		Collection adults = new HashSet(parents);
+		Iterator parentIter = parents.iterator();
+		//Itterate through parents
+		while(parentIter.hasNext()){
+			User parent = (User)parentIter.next();
+			try {
+				adults.add(getMemberFamilyLogic ().getCohabitantFor(parent));
+			} catch (NoCohabitantFound e) {
+				// no problem, custodian don't need to have cohabitant
+			}
+			try {
+				adults.add(getMemberFamilyLogic ().getSpouseFor(parent));
+			} catch (NoSpouseFound e) {
+				// no problem, custodian don't need to have spouse
+			}
+		}
+		return adults;
+	}
+
+	public Collection getCustodiansAndTheirPartnersAtSameAddress(User child) throws RemoteException, NoCustodianFound {
+		Collection adults = getCustodiansAndTheirPartners (child);
+		Collection result = new HashSet ();
+		final Address childAddress = getUserBusiness ().getUsersMainAddress (child);
+		for (Iterator i = adults.iterator (); i.hasNext ();) {
+			final User adult = (User) i.next ();
+			final Address adultAddress
+					= getUserBusiness ().getUsersMainAddress(adult);
+			if (null != childAddress && null != adultAddress
+					&& isEqual (childAddress, adultAddress)) {
+				result.add (adult);
+			}
+		}
+		return result;
+	}
+
 	/**
 	 * Compares two addresses on street name, the number part of street number,
 	 * postal code and country. Address.isEqualTo compares the whole number part,
@@ -386,7 +407,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 						.equals	(startingNumberPart (address2.getStreetNumber ()))) {
 					// they have same starting number
 					if (address1.getPostalCode ().equals (address2.getPostalCode ())) {
-						// they have sam postal code
+						// they have same postal code
 						if (address1.getCountryId () == address2.getCountryId ()) {
 							// they have same country id
 							return true;
@@ -402,5 +423,13 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 
 	private static String startingNumberPart (final String string) {
 		return (string != null ? string : "").trim ().split ("\\D", 2) [0];
+	}
+
+	protected UserBusiness getUserBusiness() throws RemoteException {
+		return (UserBusiness) getServiceInstance(UserBusiness.class);
+	}
+
+	protected MemberFamilyLogic getMemberFamilyLogic() throws RemoteException {
+		return (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
 	}
 }

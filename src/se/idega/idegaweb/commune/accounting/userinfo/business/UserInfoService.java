@@ -1,7 +1,9 @@
 package se.idega.idegaweb.commune.accounting.userinfo.business;
 
-import com.idega.user.data.User;
+import java.rmi.RemoteException;
 
+import com.idega.user.data.User;
+import is.idega.idegaweb.member.business.NoCustodianFound;
 import se.idega.idegaweb.commune.accounting.userinfo.data.HouseHoldFamily;
 
 
@@ -16,6 +18,8 @@ public interface UserInfoService extends com.idega.business.IBOService
  public boolean isInvoiceReceiver(com.idega.user.data.User p0) throws java.rmi.RemoteException;
 	int getSiblingOrder(com.idega.user.data.User child,com.idega.util.TimePeriod period) throws java.rmi.RemoteException, SiblingOrderException;
 	int getSiblingOrder(com.idega.user.data.User child, java.util.Map siblingOrders,com.idega.util.TimePeriod period) throws java.rmi.RemoteException, SiblingOrderException;
+	java.util.Collection getCustodiansAndTheirPartners(User child) throws RemoteException, NoCustodianFound;
+	java.util.Collection getCustodiansAndTheirPartnersAtSameAddress(User child) throws RemoteException, NoCustodianFound;
 }
 
 
