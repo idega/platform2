@@ -96,7 +96,7 @@ public class HighSchoolContentItemLinks extends SchoolContentItem {
 				++row;
 				table.add(getText(zipCode), 1, row);
 				if (zipArea != null) {
-					table.add(getText(", "+zipArea), 1, row);
+					table.add(getText(" "+zipArea), 1, row);
 				}
 			}else {
 				if (zipArea != null) {
