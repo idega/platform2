@@ -49,11 +49,17 @@ public class ClientManager implements PacketManager{
 
   public void clientCheckOut(String sessionId){//debug here is the place if you want to store offline messages
     System.out.println("ClientManager:LOGGIN OFF USER : "+this.getClientName(sessionId)+" sessionid "+sessionId);
-    User user = (User) ClientManager.clients.get(sessionId);
-    ClientManager.reverseClients.remove(Integer.toString(user.getID()));
-    ClientManager.clients.remove(sessionId);
-    user = null;
+    try{
+      User user = (User) ClientManager.clients.get(sessionId);
+      ClientManager.reverseClients.remove(Integer.toString(user.getID()));
+      ClientManager.clients.remove(sessionId);
+      user = null;
+    }
+    catch(Exception e){
+      e.printStackTrace();
+    }
     version++;
+
   }
 
   public synchronized static String getClientName(String sessionId){
