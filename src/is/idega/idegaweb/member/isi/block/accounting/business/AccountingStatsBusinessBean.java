@@ -171,7 +171,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 //then for each division get its financeRecords and
 		 //create a row and insert into an ordered map
 		 //then iterate the map and insert into the final report collection.
-		 //getGroupBusiness().getpar
 		
 		 String[] types = { FinanceEntryBMPBean.TYPE_ASSESSMENT, FinanceEntryBMPBean.TYPE_MANUAL};
 		 Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
@@ -302,7 +301,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//then for each division get its financeRecords and
 		//create a row and insert into an ordered map
 		//then iterate the map and insert into the final report collection.
-		//getGroupBusiness().getpar
 	
 		String[] types = {FinanceEntryBMPBean.TYPE_PAYMENT };
 		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
@@ -436,7 +434,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//then for each division get its financeRecords and
 		//create a row and insert into an ordered map
 		//then iterate the map and insert into the final report collection.
-		//getGroupBusiness().getpar
 		
 		String[] types = { FinanceEntryBMPBean.TYPE_ASSESSMENT, FinanceEntryBMPBean.TYPE_MANUAL};
 		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
@@ -571,7 +568,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//then for each division get its financeRecords and
 		//create a row and insert into an ordered map
 		//then iterate the map and insert into the final report collection.
-		//getGroupBusiness().getpar
 		
 		String[] types = null;
 		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
@@ -581,7 +577,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		Iterator iter = finEntries.iterator();
 		while (iter.hasNext()) {
 			FinanceEntry financeEntry = (FinanceEntry) iter.next();
-			//try {
+
 			Group division = financeEntry.getDivision();
 			Group group = financeEntry.getGroup();
 			User user = financeEntry.getUser();
@@ -591,10 +587,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			Iterator phIt =	phones.iterator();
 			if (phIt.hasNext())
 				phone = (String) phIt.next();
-			System.out.println(phones);
-			if (phones !=null)
-			System.out.println(phones.size());
-			System.out.println(phone);
+	
 			String personalID = user.getPersonalID();
 			if (personalID != null && personalID.length() == 10) {
 				personalID = personalID.substring(0,6)+"-"+personalID.substring(6,10);
@@ -617,10 +610,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 				statsForDivision = new Vector();
 			statsForDivision.add(data);
 			financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
-			//}
-			//catch (Exception e) {
-			//	e.printStackTrace();
-			//}
 		} 
 		// iterate through the ordered map and ordered lists and add to the final collection
 		Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
@@ -715,7 +704,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//then for each division get its financeRecords and
 		//create a row and insert into an ordered map
 		//then iterate the map and insert into the final report collection.
-		//getGroupBusiness().getpar
 		
 		String[] types = { FinanceEntryBMPBean.TYPE_ASSESSMENT, FinanceEntryBMPBean.TYPE_MANUAL};
 		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
@@ -850,7 +838,6 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//then for each division get its financeRecords and
 		//create a row and insert into an ordered map
 		//then iterate the map and insert into the final report collection.
-		//getGroupBusiness().getpar
 		
 		String[] types = { FinanceEntryBMPBean.TYPE_ASSESSMENT, FinanceEntryBMPBean.TYPE_MANUAL};
 		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
