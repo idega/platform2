@@ -139,7 +139,9 @@ public class RunResultViewer extends Block {
 			table.mergeCells(1, row, table.getColumns(), row);
 			
 			table.add(getYearsDropdown(), 1, row);
+			table.add(Text.getNonBrakingSpace(), 1, row);
 			table.add(getDistanceDropdown(), 1, row);
+			table.add(Text.getNonBrakingSpace(), 1, row);
 			table.add(getSortDropdown(), 1, row++);
 			table.setHeight(row++, 12);
 	
