@@ -15,6 +15,7 @@ import com.idega.block.trade.stockroom.business.StockroomBusiness;
 import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.SupplyPool;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.data.IDOFinderException;
@@ -274,6 +275,9 @@ public interface TravelStockroomBusiness extends StockroomBusiness {
 	 */
 	public Collection getProductsSharingPool(Product product) throws RemoteException;
 
+	public void invalidateMaxDayCache(Collection products) throws RemoteException;
+	public void invalidateMaxDayCache(SupplyPool supplyPool) throws RemoteException;
+	
 	/**
 	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getMaxBookings
 	 */

@@ -1404,16 +1404,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 					GeneralBooking booking = getBooker().getGeneralBookingHome().findByPrimaryKey(new Integer(event.getID()));
 					Product product = booking.getService().getProduct();
 					Collection products = this.getProductsSharingPool(product);
-					maxDaysMap.remove( (Integer) product.getPrimaryKey());
-					System.out.println("[ServiceSearchBusinessBean] Invalidating max days cache for product = "+product.getPrimaryKey());
-					if (products != null) {
-						Iterator iter = products.iterator();
-						while (iter.hasNext()) {
-							product = (Product) iter.next();
-							maxDaysMap.remove( (Integer) product.getPrimaryKey());
-							System.out.println("[ServiceSearchBusinessBean] Invalidating max days cache for product = "+product.getPrimaryKey());
-						}
-					}
+					invalidateMaxDayCache(products);
 				}
 				catch (RemoteException e) {
 					e.printStackTrace();
@@ -1424,6 +1415,29 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 			}
 		}
 	}
+
+	public void invalidateMaxDayCache(SupplyPool supplyPool) throws RemoteException {
+		try {
+			Collection products = getProductBusiness().getProductHome().findBySupplyPool(supplyPool);
+			invalidateMaxDayCache(products);
+		} catch (FinderException e) {
+			// ignored
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void invalidateMaxDayCache(Collection products) throws RemoteException {
+		if (products != null) {
+			Iterator iter = products.iterator();
+			while (iter.hasNext()) {
+				Product product = (Product) iter.next();
+				maxDaysMap.remove( (Integer) product.getPrimaryKey());
+				System.out.println("[ServiceSearchBusinessBean] Invalidating max days cache for product = "+product.getPrimaryKey());
+			}
+		}
+	}
+
 	/*
 	 * override me please
 	 */
