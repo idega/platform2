@@ -35,14 +35,14 @@ public SubmitButton(){
 }
 
 public SubmitButton(Image defaultImage){
-	this(defaultImage,"");
+	this(defaultImage,"default");
 	setName(getDefaultName());
   this.parameterName=getDefaultName();
 }
 
 public SubmitButton(Image defaultImage, String name){
-	this(defaultImage,name,"Submit");
-
+	this(name,"default");
+	this.defaultImage = defaultImage;
 }
 
 public SubmitButton(Image defaultImage, String name, String value){
