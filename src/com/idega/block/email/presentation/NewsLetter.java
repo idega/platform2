@@ -2,7 +2,6 @@ package com.idega.block.email.presentation;
 
 import java.util.Collection;
 import java.util.Iterator;
-
 import com.idega.block.category.presentation.CategoryBlock;
 import com.idega.block.email.business.EmailTopic;
 import com.idega.block.email.business.MailBusiness;
@@ -15,6 +14,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -59,6 +59,7 @@ public class NewsLetter extends CategoryBlock {
 
   private int viewType = DROP;
   private String _inputStyle = "";
+  private String _checkFontStyle = "";
   private int _inputLength = 0;
   private boolean _submitBelow = false;
   private boolean _submitBelowTopics = false;
@@ -261,7 +262,9 @@ public class NewsLetter extends CategoryBlock {
 					EmailTopic tpc = (EmailTopic) iter.next();
 					chk = new CheckBox("nl_list",String.valueOf(tpc.getListId()));
 					T.add(chk, 1, row);
-					T.add(tpc.getName(),2,row);
+					Text tpcName = new Text(tpc.getName());
+					tpcName.setFontStyle(_checkFontStyle);
+					T.add(tpcName,2,row);
 					row++;
 	      }
       else if(iter.hasNext()){
@@ -483,6 +486,13 @@ public class NewsLetter extends CategoryBlock {
 	 */
 	public void setSubmitBelowTopics(boolean submitBelowTopics) {
 		_submitBelowTopics = submitBelowTopics;
+	}
+	/**
+	 * Sets the font style of the text displayd with each checkbox
+	 * @param style
+	 */
+	public void setCheckBoxFont(String style) {
+		_checkFontStyle = style;
 	}
 
 }
