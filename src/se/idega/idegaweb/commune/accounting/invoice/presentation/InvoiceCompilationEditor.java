@@ -29,10 +29,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/03 14:39:12 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/03 20:14:57 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -47,8 +47,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String AMOUNT_KEY = PREFIX + "amount";
     private static final String CREATION_DATE_DEFAULT = "Skapandedag";
     private static final String CREATION_DATE_KEY = PREFIX + "creation_date";
+    private static final String DELETE_INVOICE_COMPILATION_DEFAULT = "Ta bort fakturaunderlag";
+    private static final String DELETE_INVOICE_COMPILATION_KEY = PREFIX + "delete_invoice_compilation";
     private static final String DOUBLE_POSTING_DEFAULT = "Motkontering";
     private static final String DOUBLE_POSTING_KEY = PREFIX + "double_posting";
+    private static final String EDIT_INVOICE_COMPILATION_DEFAULT = "Ändra fakturaunderlag";
+    private static final String EDIT_INVOICE_COMPILATION_KEY = PREFIX + "edit_invoice_compilation";
     private static final String FIRST_NAME_DEFAULT = "Förnamn";
     private static final String FIRST_NAME_KEY = PREFIX + "first_name";
     private static final String FROM_PERIOD_KEY = PREFIX + "from_period";
@@ -97,13 +101,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String USERSEARCHER_FIRSTNAME_KEY = "usrch_search_fname" + PREFIX;
     private static final String USERSEARCHER_LASTNAME_KEY = "usrch_search_lname" + PREFIX;
     private static final String USERSEARCHER_PERSONALID_KEY = "usrch_search_pid" + PREFIX;
-
-
-  private static final String ACTION_KEY = PREFIX + "action_key";
+    
+    private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
             ACTION_SHOW_COMPILATION_LIST = 1,
             ACTION_NEW_INVOICE_RECORD = 2,
-            ACTION_REMOVE_INVOICE_RECORD = 3;
+            ACTION_REMOVE_INVOICE_RECORD = 3,
+            ACTION_DELETE_COMPILATION = 4;
 
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
@@ -278,7 +282,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final String [][] columnNames =
                 {{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
                  { INVOICE_RECEIVER_KEY, INVOICE_RECEIVER_DEFAULT },
-                 { TOTAL_AMOUNT_KEY, TOTAL_AMOUNT_DEFAULT }};
+                 { TOTAL_AMOUNT_KEY, TOTAL_AMOUNT_DEFAULT }, {"", ""},
+                 {"", ""}};
         final Table table = createTable (columnNames.length);
         table.setColumns (columnNames.length);
         int row = 1;
@@ -326,6 +331,23 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		table.add (periodLink, col++, row);
 		table.add (getUserName (custodian), col++, row);
 		table.add (totalAmount + "", col++, row);
+        Link editLink = new Link
+                (getEditIcon (localize (EDIT_INVOICE_COMPILATION_KEY,
+                                        EDIT_INVOICE_COMPILATION_DEFAULT)));
+        editLink.addParameter (ACTION_KEY, ACTION_SHOW_COMPILATION);
+		editLink.addParameter (INVOICE_COMPILATION_KEY,
+                               header.getPrimaryKey ().toString ());        
+        table.add (editLink, col++, row);
+        if ('P' == status) {
+            Link deleteLink = new Link
+                    (getDeleteIcon (localize
+                                    (DELETE_INVOICE_COMPILATION_KEY,
+                                     DELETE_INVOICE_COMPILATION_DEFAULT)));
+            deleteLink.addParameter (ACTION_KEY, ACTION_DELETE_COMPILATION);
+            deleteLink.addParameter (INVOICE_COMPILATION_KEY,
+                                     header.getPrimaryKey ().toString ());
+            table.add (deleteLink, col++, row);
+        }
 	}
 
     private Table getInvoiceRecordListTable
