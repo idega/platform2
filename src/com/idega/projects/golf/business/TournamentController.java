@@ -527,13 +527,15 @@ public class TournamentController{
         List members;
         com.idega.jmodule.object.Image rusl = new com.idega.jmodule.object.Image("/pics/icons/trash.gif","Skrá úr móti");
         Link remove;
-//        StartingtimeFieldConfig[] fieldConf = (StartingtimeFieldConfig[])(new StartingtimeFieldConfig()).findAllByColumn("tournament_id",""+tournament.getID() );
         Text tooMany = new Text("Ekki pláss");
             tooMany.setFontColor("RED");
 
 
+        Union union;
+        int union_id;
+        String abbrevation = "'";
 
-        //if (fieldConf.length > 0) {
+
             idegaTimestamp startHour = new idegaTimestamp(tournamentRound.getRoundDate());
             idegaTimestamp endHour = new idegaTimestamp(tournamentRound.getRoundEndDate());
                 endHour.addMinutes(1);
@@ -561,6 +563,18 @@ public class TournamentController{
                         tempMember = (com.idega.projects.golf.entity.Member) members.get(i);
                         if (i != 0) table.add(tooMany,1,row);
                         table.add(tempMember.getSocialSecurityNumber(),2,row);
+
+                        union_id = tournament.getTournamentMemberUnionId(tempMember);
+
+                        if (union_id != -1) {
+                          union = new Union(union_id);
+                          abbrevation = union.getAbbrevation();
+                        }else {
+                          abbrevation = "-";
+                        }
+
+                        table.add(abbrevation,4,row);
+
                         table.add(tempMember.getName() ,3,row);
                         table.add(handicapFormat.format(tempMember.getHandicap()),5,row);
                         if (!viewOnly) {
