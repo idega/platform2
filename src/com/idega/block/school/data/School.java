@@ -10,6 +10,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public void addSchoolYear(com.idega.block.school.data.SchoolYear p0)throws com.idega.data.IDOAddRelationshipException;
  public void addSchoolYears(int[] p0);
  public void addSchoolYearsRemoveOther(int[] p0);
+ public void addStudyPath(SchoolStudyPath studyPath) throws com.idega.data.IDOAddRelationshipException;
  public java.util.Collection findRelatedSchoolTypes()throws com.idega.data.IDORelationshipException;
  public java.util.Collection findRelatedSchoolYears()throws com.idega.data.IDORelationshipException;
  public java.util.Collection findRelatedSchoolYearsSortedByName()throws com.idega.data.IDOException;
@@ -52,10 +53,13 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public java.lang.String getSchoolWebPage();
  public java.lang.String getSchoolZipArea();
  public java.lang.String getSchoolZipCode();
+ public java.util.Collection getStudyPaths() throws com.idega.data.IDORelationshipException;
  public java.sql.Date getTerminationDate();
  public void initializeAttributes();
+ public void removeAllStudyPaths() throws com.idega.data.IDORemoveRelationshipException;
  public void removeFromClass(java.lang.Class p0)throws com.idega.data.IDORemoveRelationshipException;
  public void removeImages()throws com.idega.data.IDORelationshipException;
+ public void removeStudyPath(SchoolStudyPath studyPath) throws com.idega.data.IDORemoveRelationshipException;
  public void setActivity(java.lang.String p0);
  public void setAssistantHeadmasterGroupId(int p0);
  public void setCentralizedAdministration(boolean p0);

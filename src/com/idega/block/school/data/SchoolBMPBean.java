@@ -128,6 +128,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		this.addAttribute(CENTRALIZED_ADMINISTRATION, "has provider centralized administration", true, true, Boolean.class);
 		addAttribute(INVISIBLE_FOR_CITIZEN, "Do not show this provider for citizens", true, true, Boolean.class);
 		this.addMetaDataRelationship();
+		this.addManyToManyRelationShip(SchoolStudyPath.class, "sch_school_study_path");
 	}
 	public String getEntityName() {
 		return SCHOOL;
@@ -871,5 +872,21 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	
 	public void removeFromClass(Class entityInterfaceClass) throws IDORemoveRelationshipException {
 		this.idoRemoveFrom(entityInterfaceClass);	
+	}
+
+	public void addStudyPath(SchoolStudyPath studyPath) throws IDOAddRelationshipException {
+		this.idoAddTo(studyPath);
+	}
+	
+	public void removeStudyPath(SchoolStudyPath studyPath) throws IDORemoveRelationshipException {
+		this.idoRemoveFrom(studyPath);
+	}
+	
+	public Collection getStudyPaths() throws IDORelationshipException {
+		return this.idoGetRelatedEntities(SchoolStudyPath.class);
+	}
+	
+	public void removeAllStudyPaths() throws IDORemoveRelationshipException {
+		this.idoRemoveFrom(SchoolStudyPath.class);
 	}
 }
