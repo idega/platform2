@@ -1,7 +1,5 @@
 package com.idega.block.filter.presentation;
 
-import com.idega.core.accesscontrol.business.NotLoggedOnException;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
 
