@@ -257,7 +257,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 
 	public Collection ejbFindBySchoolAndSeasonAndYears(int schoolID, int schoolSeasonID, String[] schoolYearIDs)throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelect().append("s.*").appendFrom().append(this.getEntityName() + " s, ").append("sch_school_year y, ").append(SCHOOL_CLASS_YEAR + " sy");
+		query.appendSelect().append("distinct s.*").appendFrom().append(this.getEntityName() + " s, ").append("sch_school_year y, ").append(SCHOOL_CLASS_YEAR + " sy");
 		query.appendWhereEquals(SCHOOL, schoolID).appendAndEquals("s."+getIDColumnName(), "sy."+getIDColumnName()).appendAndEquals("sy.sch_school_year_id", "y.sch_school_year_id");
 		query.appendAnd().append("y.sch_school_year_id").appendInArray(schoolYearIDs);
 		if (schoolSeasonID != -1) {
