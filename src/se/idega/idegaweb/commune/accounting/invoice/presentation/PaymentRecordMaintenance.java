@@ -64,11 +64,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/03 07:35:22 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/03 09:59:12 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -76,7 +76,7 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  */
 public class PaymentRecordMaintenance extends AccountingBlock {
     public static final String PREFIX = "cacc_payrec_";
-
+    
     private static final String CHECK_AMOUNT_LIST_DEFAULT = "Checkbeloppslista";
     private static final String CHECK_AMOUNT_LIST_KEY = PREFIX + "check_amount_list";
     private static final String ADJUSTED_SIGNATURE_KEY = PREFIX + "adjusted_signature";
@@ -129,6 +129,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String PAYMENT_HEADER_KEY = PREFIX + "payment_header";
     private static final String PAYMENT_RECORD_DEFAULT = "Utbetalningspost";
     private static final String PAYMENT_RECORD_KEY = PREFIX + "payment_record";
+    private static final String PAYMENT_RECORDS_KEY = PREFIX + "payment_records";
     private static final String PAYMENT_RECORD_UPDATED_DEFAULT = "Utbetalninsraden är nu uppdaterad";
     private static final String PAYMENT_RECORD_UPDATED_KEY = PREFIX + "payment_record_updated";
     private static final String PAYMENT_TEXT_KEY = PREFIX + "payment_text";
@@ -154,7 +155,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String SCHOOL_YEAR_KEY = PREFIX + "school_year";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_KEY = PREFIX + "search";
-    private static final String SIGNATURE_DEFAULT = "Sigantur";
+    private static final String SIGNATURE_DEFAULT = "Signatur";
     private static final String SIGNATURE_KEY = PREFIX + "signature";
     private static final String SSN_DEFAULT = "Personnummer";
     private static final String SSN_KEY = PREFIX + "ssn";
@@ -177,7 +178,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String VAT_AMOUNT_KEY = PREFIX + "vat_amount";
     private static final String VAT_RULE_DEFAULT = "Momstyp";
     private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
-
+    
     private static final String ACTION_KEY = PREFIX + "action_key";
     private static final String LAST_ACTION_KEY = PREFIX + "last_action_key";
 	private static final int ACTION_SHOW_PAYMENT = 0,
@@ -186,7 +187,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             ACTION_SHOW_RECORD = 3,
             ACTION_SAVE_RECORD = 4,
             ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF = 5;
-
+    
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
     private static final SimpleDateFormat dateFormatter
@@ -201,10 +202,10 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	 * @param context session data like user info etc.
 	 */
 	public void init (final IWContext context) {
-
+        
 		try {
             int actionId = ACTION_SHOW_PAYMENT;
-
+            
             try {
                 actionId = Integer.parseInt (context.getParameter (ACTION_KEY));
             } catch (final Exception dummy) {
@@ -246,7 +247,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             logUnexpectedException (context, exception);
 		}
 	}
-
+    
     private void addPhrase (final PdfPTable table, final String string) {
         table.addCell (new Phrase (new Chunk (null != string ? string : "",
                                               SANSSERIF_FONT)));
@@ -255,7 +256,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private static float mmToPoints (final float mm) {
 		return mm*72/25.4f;
 	}
-
+    
 	private void generateCheckAmountListPdf (final IWContext context)
         throws RemoteException, FinderException, DocumentException {
         final Document document = new Document
@@ -268,9 +269,18 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                 (PdfWriter.HideMenubar | PdfWriter.PageLayoutOneColumn |
                  PdfWriter.PageModeUseNone | PdfWriter.FitWindow
                  | PdfWriter.CenterWindow);
+        final PaymentRecord [] records = (PaymentRecord [])
+                context.getSessionAttribute (PAYMENT_RECORDS_KEY);
+        final Integer providerId
+                = (Integer) context.getSessionAttribute (PROVIDER_KEY);
+        final String schoolCategoryId
+                = (String) context.getSessionAttribute (MAIN_ACTIVITY_KEY);
+        final Date startPeriod
+                = (Date) context.getSessionAttribute (START_PERIOD_KEY);
+        final Date endPeriod
+                = (Date) context.getSessionAttribute (END_PERIOD_KEY);
         final String title = localize
-                (CHECK_AMOUNT_LIST_KEY,
-                 CHECK_AMOUNT_LIST_DEFAULT) + " " + 1;
+                (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT);
         document.addTitle (title);
         document.addCreationDate ();
         document.open ();
@@ -279,7 +289,19 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         final PdfPTable outerTable = new PdfPTable (1);
         outerTable.setWidthPercentage (100f);
         outerTable.getDefaultCell ().setBorder (0);
-        addPhrase (outerTable, title);
+        addPhrase (outerTable, title + "\n\n");
+        final PdfPTable headerTable
+                = new PdfPTable (new float [] { 2.0f, 3.0f });
+        headerTable.getDefaultCell ().setBorder (0);
+        addPhrase (headerTable,
+                   localize (MAIN_ACTIVITY_KEY, MAIN_ACTIVITY_DEFAULT) + ": ");
+        addPhrase (headerTable, getSchoolCategoryName (context,
+                                                       schoolCategoryId));
+        addPhrase (headerTable, localize (PROVIDER_KEY, PROVIDER_DEFAULT)
+                   + ": ");
+        addPhrase (headerTable, getSchoolBusiness (context).getSchool
+                   (providerId).getName ());
+        outerTable.addCell (headerTable);
         addPhrase (outerTable, "\n");
         final String [][] columnNames =
                 {{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
@@ -288,7 +310,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                  { TOTAL_AMOUNT_KEY, TOTAL_AMOUNT_DEFAULT },
                  { NOTE_KEY, NOTE_DEFAULT }};
         final PdfPTable table = new PdfPTable
-                (new float [] { 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f });
+                (new float [] { 1.0f, 1.0f, 5.0f, 1.5f, 1.5f, 3.0f });
 		table.setWidthPercentage (100f);
         table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
         table.getDefaultCell ().setBorder (0);
@@ -297,8 +319,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                                         columnNames [i][1]));
         }
         table.setHeaderRows (1);  // this is the end of the table header
-        final PaymentRecord [] records = (PaymentRecord [])
-                context.getSessionAttribute (PAYMENT_HEADER_KEY);
         final Color lightBlue = new Color (0xf4f4f4);
         for (int i = 0; i < records.length; i++) {
             table.getDefaultCell ().setBackgroundColor (i % 2 == 0 ? Color.white
@@ -318,11 +338,49 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             addPhrase (table, record.getNotes ());
         }
         outerTable.addCell (table);
+        addPhrase (outerTable, "\n");
+        final PdfPTable summaryTable = new PdfPTable (3);
+        summaryTable.getDefaultCell ().setBorder (0);
+        final Integer totalAmountPlacements = (Integer)
+                context.getSessionAttribute (TOTAL_AMOUNT_PLACEMENTS_KEY);
+        final Integer totalAmountIndividuals = (Integer)
+                context.getSessionAttribute (TOTAL_AMOUNT_INDIVIDUALS_KEY);
+        final Long totalAmountVatExcluded = (Long)
+                context.getSessionAttribute (TOTAL_AMOUNT_VAT_EXCLUDED_KEY);
+        final Long totalAmountVat = (Long) context.getSessionAttribute
+                (TOTAL_AMOUNT_VAT_KEY);
+        addPhrase (summaryTable,
+                   localize (TOTAL_AMOUNT_PLACEMENTS_KEY,
+                             TOTAL_AMOUNT_PLACEMENTS_DEFAULT) + ": ");
+        summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
+        addPhrase (summaryTable, totalAmountPlacements + "");
+        summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
+        addPhrase (summaryTable, "");
+        addPhrase (summaryTable,
+                   localize (TOTAL_AMOUNT_INDIVIDUALS_KEY,
+                             TOTAL_AMOUNT_INDIVIDUALS_DEFAULT) + ": ");
+        summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
+        addPhrase (summaryTable, totalAmountIndividuals + "");
+        summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
+        addPhrase (summaryTable, "");
+        addPhrase (summaryTable,
+                   localize (TOTAL_AMOUNT_VAT_EXCLUDED_KEY,
+                             TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT) + ": ");
+        summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
+        addPhrase (summaryTable, totalAmountVatExcluded + "");
+        summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
+        addPhrase (summaryTable, "");
+        addPhrase (summaryTable,
+                   localize (TOTAL_AMOUNT_VAT_KEY, TOTAL_AMOUNT_VAT_DEFAULT)
+                   + ": ");
+        summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
+        addPhrase (summaryTable, totalAmountVat + "");
+        outerTable.addCell (summaryTable);
         document.add (outerTable);        
-
+        
         // close and store document
         document.close ();
-
+        
         final int docId = getInvoiceBusiness (context).generatePdf
                 (localize (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
                  buffer);
@@ -333,7 +391,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         add (createMainTable (CHECK_AMOUNT_LIST_KEY,
                               CHECK_AMOUNT_LIST_DEFAULT, viewLink));
     }
-
+    
     private void saveRecord (final IWContext context)
         throws RemoteException, FinderException {
         // get updated values
@@ -344,7 +402,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         final Integer pieceAmount = getIntegerParameter (context,
                                                          PIECE_AMOUNT_KEY);
         final Integer vatAmount = getIntegerParameter (context, VAT_AMOUNT_KEY);
-
+        
         final Date period = getPeriodParameter (context, PERIOD_KEY);
         final String doublePosting = getPostingString (context,
                                                        DOUBLE_POSTING_KEY);
@@ -355,7 +413,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                 = context.getParameter (REGULATION_SPEC_TYPE_KEY);
         final Integer vatRule = getIntegerParameter (context, VAT_RULE_KEY);
         final PaymentRecord record = getPaymentRecord (context);
-
+        
         // set updated values
         if (null != amount) record.setTotalAmount (amount.floatValue ());
         if (null != placementCount) record.setPlacements
@@ -373,10 +431,10 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         if (null != note) record.setNotes (note);
         record.setRuleSpecType (regulationSpecType);
         record.setVATType (vatRule.intValue ());
-
+        
         // store updated record
         record.store ();
-
+        
         //render
         final String [][] parameters =
                 {{ACTION_KEY, ACTION_SHOW_PAYMENT + "" },
@@ -387,7 +445,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         add (createMainTable (EDIT_PAYMENT_RECORD_KEY,
                               EDIT_PAYMENT_RECORD_DEFAULT, table));        
     }
-
+    
     private void showEditRecordForm (final IWContext context)
         throws RemoteException, FinderException {
         final PaymentRecord record = getPaymentRecord (context);
@@ -409,7 +467,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addSmallText (map, STATUS_KEY, record.getStatus () + "");
         addSmallText (map, TRANSACTION_DATE_KEY, record.getDateTransaction ());
         addStyledInput (map, VAT_AMOUNT_KEY, record.getTotalAmountVAT ());
-
+        
         final InvoiceBusiness business = getInvoiceBusiness (context);
         final DropdownMenu regulationSpecTypeDropdown = getLocalizedDropdown
                 (business.getAllRegulationSpecTypes ());
@@ -448,14 +506,14 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                         + record.getPrimaryKey ());
             log (e);
         }
-
+        
         map.put (HEADER_KEY,
                  getSmallHeader (localize (EDIT_PAYMENT_RECORD_KEY,
                                            EDIT_PAYMENT_RECORD_DEFAULT)));
         map.put (ACTION_KEY, getSubmitButton (ACTION_SAVE_RECORD,
                                               SAVE_EDITS_KEY,
                                               SAVE_EDITS_DEFAULT));
-
+        
         renderRecordDetailsOrForm (context, map);
     }
     
@@ -491,9 +549,9 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             final VATRule rule = business.getVatRule (record.getVATType ());
             final String ruleName = rule.getVATRule ();
             map.put (VAT_RULE_KEY, getSmallText (localize (ruleName,
-                                                              ruleName)));
+                                                           ruleName)));
         }
-
+        
         try {
             final PaymentHeader header = getPaymentHeader (context);
             final School school = header.getSchool ();
@@ -511,23 +569,30 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                         + record.getPrimaryKey ());
             log (e);
         }
-
+        
         map.put (HEADER_KEY, getSmallHeader
                  (localize (PAYMENT_RECORD_KEY, PAYMENT_RECORD_DEFAULT)));
-
+        
         renderRecordDetailsOrForm (context, map);
     }
     
+    private SchoolCategory getSchoolCategory
+        (final IWContext context, final String schoolCategoryId)
+    throws RemoteException, FinderException {
+        final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
+        final SchoolCategoryHome categoryHome
+                = schoolBusiness.getSchoolCategoryHome ();
+        return categoryHome.findByPrimaryKey (schoolCategoryId);
+    }
+
     private void showRecordDetails (final IWContext context)
         throws RemoteException, FinderException {
         // get business objects
         final InvoiceBusiness business = getInvoiceBusiness (context);
         final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
-
+        
         // get home objects
         final PaymentHeaderHome headerHome = business.getPaymentHeaderHome ();
-        final SchoolCategoryHome categoryHome
-                = schoolBusiness.getSchoolCategoryHome ();
         final InvoiceRecordHome home = business.getInvoiceRecordHome ();
         
         // get data objects
@@ -535,7 +600,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         final PaymentHeader header = headerHome.findByPrimaryKey
                 (new Integer (record.getPaymentHeader ()));
         final SchoolCategory category
-                = categoryHome.findByPrimaryKey (header.getSchoolCategoryID ());
+                = getSchoolCategory (context, header.getSchoolCategoryID ());
         final School school = schoolBusiness.getSchool
                 (new Integer (header.getSchoolID ()));
         final Collection invoiceRecords
@@ -568,7 +633,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         table.mergeCells (1, row, table.getColumns (), row);
         table.add (getDetailedPaymentRecordSummaryTable
                    (context, invoiceRecords), 1, row++);
-
+        
         // add to form
         final Form form = new Form ();
         form.setOnSubmit("return checkInfoForm()");
@@ -580,7 +645,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                               outerTable));
         
     }
-
+    
     private void showPayment (final IWContext context)
         throws RemoteException, FinderException {
         final Table table = createTable (3);
@@ -589,35 +654,37 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addOperationalFieldDropdown (context, table, row++);
         addProviderDropdown (context, table, row++);
         addPeriodForm (table, row);
-        table.setAlignment (table.getColumns (), row,
-                            Table.HORIZONTAL_ALIGN_RIGHT);
+        final int columnCount = table.getColumns ();
+        table.setAlignment (columnCount, row, Table.HORIZONTAL_ALIGN_RIGHT);
         table.add (getSubmitButton (ACTION_SHOW_PAYMENT + "",
                                     SEARCH_KEY, SEARCH_DEFAULT),
-                   table.getColumns (), row++);
+                   columnCount, row++);
         final String schoolCategory = getSession().getOperationalField ();
-        final String providerId = context.getParameter (PROVIDER_KEY);
-        if (null != schoolCategory && null != providerId
-            && 0 < providerId.length ()) {
-            table.setAlignment (table.getColumns (), 2,
-                                Table.HORIZONTAL_ALIGN_RIGHT);
-        table.add (getSubmitButton (ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF + "",
-                                    CHECK_AMOUNT_LIST_KEY,
-                                    CHECK_AMOUNT_LIST_DEFAULT),
-                   table.getColumns (), 2);
-            final Date startPeriod = getPeriodParameter (context,
-                                                         START_PERIOD_KEY);
+        final Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
+        if (null != schoolCategory && null != providerId) {
+            final Date startPeriod
+                    = getPeriodParameter (context, START_PERIOD_KEY);
             final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
             final InvoiceBusiness business = getInvoiceBusiness (context);
             final PaymentRecord [] records = business
                     .getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
-                    (schoolCategory, new Integer (providerId),
+                    (schoolCategory, providerId,
                      new java.sql.Date (startPeriod.getTime ()),
                      new java.sql.Date (endPeriod.getTime ()));
-            context.setSessionAttribute (PAYMENT_HEADER_KEY, records);
-            table.mergeCells (1, row, table.getColumns (), row);
+            table.setAlignment (columnCount, 2, Table.HORIZONTAL_ALIGN_RIGHT);
+            table.add (getSubmitButton
+                       (ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF + "",
+                        CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
+                       columnCount, 2);
+            context.setSessionAttribute (PAYMENT_RECORDS_KEY, records);
+            context.setSessionAttribute (PROVIDER_KEY, providerId);
+            context.setSessionAttribute (MAIN_ACTIVITY_KEY, schoolCategory);
+            context.setSessionAttribute (START_PERIOD_KEY, startPeriod);
+            context.setSessionAttribute (END_PERIOD_KEY, endPeriod);
+            table.mergeCells (1, row, columnCount, row);
             if (0 < records.length) {
                 table.add (getPaymentRecordListTable (records), 1, row++);
-                table.mergeCells (1, row, table.getColumns (), row);
+                table.mergeCells (1, row, columnCount, row);
                 table.add (getPaymentSummaryTable (context, records, business),
                            1, row++);
             } else {
@@ -634,7 +701,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
              (localize (PAYMENT_HEADER_KEY, PAYMENT_HEADER_DEFAULT),
               outerTable));
     }
-
+   
     private Table getDetailedPaymentRecordListTable
         (final IWContext context, final Collection invoiceRecords)
         throws RemoteException, FinderException {
@@ -658,7 +725,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                             columnNames [i][1]);
         }
         row++;
-
+        
         //render
         final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
         final SchoolClassMemberHome memberHome
@@ -671,7 +738,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         
         return table;
     }
-
+    
     private Table getDetailedPaymentRecordSummaryTable
         (final IWContext context, final Collection invoiceRecords)
         throws RemoteException, FinderException {
@@ -682,7 +749,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
         final SchoolClassMemberHome home
                 = schoolBusiness.getSchoolClassMemberHome ();
-
+        
         // count values for summary
         for (Iterator i = invoiceRecords.iterator (); i.hasNext ();) {
             final InvoiceRecord invoiceRecord = (InvoiceRecord) i.next ();
@@ -695,7 +762,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             individuals.add (user.getPrimaryKey ());
             totalAmountVatExcluded += (long) invoiceRecord.getAmount ();
         }
-
+        
         // render
         final Table table = createTable (3);
         table.setColumnWidth (3, "50%");
@@ -716,7 +783,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addSmallText (table, col++, row++, totalAmountVatExcluded + "");
         return table;
     }
-
+    
 	private void showDetailedPaymentRecordOnARow
         (final Table table, final int row, final InvoiceRecord record,
          final SchoolClassMemberHome home) throws FinderException {
@@ -736,7 +803,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         final User user = member.getStudent ();
         final String ssn = formatSsn (user.getPersonalID ());
         final String userName = getUserName (user);
-
+        
 		int col = 1;
 		table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
                            : getZebraColor2 ());
@@ -751,7 +818,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addSmallText (table, col++, row, dateChanged);
 		addSmallText (table, col++, row, changedBy);
 	}
-
+    
     private Table getPaymentSummaryTable
         (final IWContext context, final PaymentRecord [] records,
          final InvoiceBusiness business)
@@ -761,13 +828,13 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         final SchoolClassMemberHome placementHome
                 = schoolBusiness.getSchoolClassMemberHome ();
         final InvoiceRecordHome home = business.getInvoiceRecordHome ();
-
+        
         // initialize conters
         int placementCount = 0;
         final Set individuals = new HashSet ();
         long totalAmountVatExcluded = 0;
         long totalAmountVat = 0;
-
+        
         // count values for summary
         for (int i = 0; i < records.length; i++) {
             placementCount += records [i].getPlacements ();
@@ -785,7 +852,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                 individuals.add (user.getPrimaryKey ());
             }
         }
-
+        
         // render
         final Table table = createTable (3);
         table.setColumnWidth (3, "50%");
@@ -809,9 +876,17 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                         TOTAL_AMOUNT_VAT_DEFAULT, ":");
         table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
         addSmallText (table, col++, row++, totalAmountVat + "");
+        context.setSessionAttribute (TOTAL_AMOUNT_PLACEMENTS_KEY,
+                                     new Integer (placementCount));
+        context.setSessionAttribute (TOTAL_AMOUNT_INDIVIDUALS_KEY,
+                                     new Integer (individuals.size ()));
+        context.setSessionAttribute (TOTAL_AMOUNT_VAT_EXCLUDED_KEY,
+                                     new Long (totalAmountVatExcluded));
+        context.setSessionAttribute (TOTAL_AMOUNT_VAT_KEY,
+                                     new Long (totalAmountVat));
         return table;
     }
-
+    
     private Table getPaymentRecordListTable (final PaymentRecord [] records) {
         // set up header row
         final String [][] columnNames =
@@ -830,7 +905,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                             columnNames [i][1]);
         }
         row++;
-
+        
         // show each payment record in a row
         for (int i = 0; i < records.length; i++) {
 			showPaymentRecordOnARow (table, row++, records [i]);
@@ -838,13 +913,13 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         
         return table;
     }
-
+    
     private static boolean isManualRecord (final PaymentRecord record) {
         final String autoSignature = BillingThread.getBathRunSignatureKey ();
         final String createdBy = record.getCreatedBy ();
         return null == createdBy || !createdBy.equals (autoSignature);
     }
-
+    
     private Text getSmallSignature (final String string) {
         final StringBuffer result = new StringBuffer ();
         final String autoSignature = BillingThread.getBathRunSignatureKey ();
@@ -857,7 +932,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         }
         return getSmallText (result.toString ());
     }
-
+    
 	private void showPaymentRecordOnARow
         (final Table table, final int row, final PaymentRecord record) {
         final String recordId = record.getPrimaryKey () + "";
@@ -895,7 +970,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addSmallText (table, col++, row, note);
         table.add (editLink, col++, row);
 	}
-
+    
     private PaymentRecord getPaymentRecord (final IWContext context)
         throws RemoteException, FinderException {
         final InvoiceBusiness business = getInvoiceBusiness (context);
@@ -920,7 +995,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         throws RemoteException, FinderException  {
         //final PaymentRecord record = getPaymentRecord (context);
         final PaymentHeader header = getPaymentHeader (context);
-
+        
         // render form/details
         final Table table = createTable (4);
         setColumnWidthsEqual (table);
@@ -1055,7 +1130,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         add (createMainTable (presentationObjects.get (HEADER_KEY) + "",
                               outerTable));
     }
-
+    
 	private String getPostingString (final IWContext context,
                                      final String postingKey)
         throws RemoteException {
@@ -1074,7 +1149,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         }
         return result.toString ();
 	}
-
+    
 	private ListTable getPostingParameterForm
         (final IWContext context, final String key, final String value)
         throws RemoteException {
@@ -1098,7 +1173,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         }       
 		return postingInputs;
 	}
-
+    
     private String getSignature (final User user) {
         if (null == user) return "";
         final String firstName = user.getFirstName ();
@@ -1106,7 +1181,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         return (firstName != null ? firstName + " " : "")
                 + (lastName != null ? lastName : "");
     }
-
+    
     private Table getConfirmTable (final String key, final String defaultString,
                                    final String [][] parameters) {
         final Table table = createTable (1);
@@ -1127,11 +1202,11 @@ public class PaymentRecordMaintenance extends AccountingBlock {
      * @return Table to add to output
 	 */
     private Table createMainTable
-                (final String headerKey, final String headerDefault,
-                 final PresentationObject content) throws RemoteException {
+        (final String headerKey, final String headerDefault,
+         final PresentationObject content) throws RemoteException {
         return createMainTable (localize (headerKey, headerDefault), content);
     }
-
+    
     private void addPresentation
         (final Table table, final java.util.Map map, final String key,
          final int col, final int row) {
@@ -1140,24 +1215,24 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             table.add (object, col, row);
         }
     }
-
+    
     private String getFormattedPeriod (Date date) {
         return null != date ? periodFormatter.format (date) : "";
     }
-
+    
     private String getFormattedDate (Date date) {
         return null != date ? dateFormatter.format (date) : "";
     }
-
+    
     private Image getEditIcon () {
         return getEditIcon (localize (EDIT_PAYMENT_RECORD_KEY,
                                       EDIT_PAYMENT_RECORD_DEFAULT));
     }
-
+    
     private Image getDeleteIcon () {
         return getDeleteIcon (localize (DELETE_ROW_KEY, DELETE_ROW_DEFAULT));
     }
-
+    
     private static Link addParametersToLink (final Link link,
                                              final String [][] parameters) {
         for (int i = 0; i < parameters.length; i++) {
@@ -1165,60 +1240,60 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         }
         return link;
     }
-
+    
     private String formatSsn (final String ssn) {
         return null == ssn || 12 != ssn.length () ? ssn
                 : ssn.substring (2, 8) + '-' + ssn.substring (8, 12);
     }
-
+    
     private static String getUserName (final User user) {
         return user.getLastName () + ", " + user.getFirstName ();
     }
-
+    
     private Link createSmallLink (final String displayText,
                                   final String [][] parameters) {
         final Link link = getSmallLink (displayText);
         addParametersToLink (link, parameters);
         return link;
     }
-
+    
     private static Link createIconLink (final Image icon,
                                         final String [][] parameters) {
         final Link link = new Link (icon);
         addParametersToLink (link, parameters);
         return link;
     }        
-
+    
     private void addSmallText (final Table table, final int col, final int row,
                                final String key, String value) {
         table.add (getSmallText (localize (key, value)), col, row);
     }
-
+    
     private void addSmallText (final Table table, final int col, final int row,
                                final String string) {
         table.add (getSmallText (null == string || string.equals (null + "")
                                  ? "" : string), col, row);
     }
-
+    
     private void addSmallHeader (final Table table, final int col,
                                  final int row, final String key,
                                  final String defaultString) {
         addSmallHeader (table, col, row, key, defaultString, "");
     }
-
+    
     private SubmitButton getSubmitButton (final int action, final String key,
                                           final String defaultName) {
         return (SubmitButton) getButton (new SubmitButton
                                          (localize (key, defaultName),
                                           ACTION_KEY, action + ""));
     }
-
+    
     private void setIconColumnWidth (final Table table) {
         final int columnCount = table.getColumns ();
         table.setColumnWidth (columnCount - 1, getEditIcon ().getWidth ());
         table.setColumnWidth (columnCount, getDeleteIcon ().getWidth ());
     }
-
+    
     /**
      * Returns a date from a parameter string of type "YYMM". The date
      * represents the first day of that month. If the input string is unparsable
@@ -1244,7 +1319,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             return null;
         }
     }
-
+    
 	/**
 	 * Returns a styled table with content placed properly
 	 *
@@ -1264,7 +1339,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         mainTable.add (content, 1, row++);
         return mainTable;
     }
-
+    
     private DropdownMenu getLocalizedDropdown (final VATRule [] rules) {
         final DropdownMenu dropdown = (DropdownMenu)
                 getStyledInterface (new DropdownMenu (VAT_RULE_KEY));
@@ -1276,7 +1351,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         }
         return dropdown;
     }
-
+    
     private DropdownMenu getLocalizedDropdown
         (final RegulationSpecType [] types) {
         final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
@@ -1289,7 +1364,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         }
         return dropdown;
     }
-
+    
     private void addPeriodForm (final Table table, final int row) {
         int col = 1;
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
@@ -1300,15 +1375,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         table.add (getStyledInput (END_PERIOD_KEY, getFormattedPeriod
                                    (now)), col, row);
     }
-
+    
     private String getSchoolCategoryName (final IWContext context,
-                                          final PaymentHeader header) {
+                                          final String schoolCategoryId) {
         try {
-            final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
-            final SchoolCategoryHome categoryHome
-                    = schoolBusiness.getSchoolCategoryHome ();
-            final SchoolCategory category = categoryHome.findByPrimaryKey
-                    (header.getSchoolCategoryID ());
+            final SchoolCategory category
+                    = getSchoolCategory (context, schoolCategoryId);
             return localize (category.getLocalizedKey (), category.getName ());
         } catch (Exception dummy) {
             return "";
@@ -1346,13 +1418,13 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             table.add (providerDropdown, col++, row);
         }
     }
-
+    
     private void addSmallText (final Table table, final String string,
                                final int col, final int row) {
         table.add (getSmallText (null != string && !string.equals (null + "")
                                  ? string : ""), col, row);
     }
-
+    
     private void addOperationalFieldDropdown
         (final IWContext context, final Table table, final int row)
         throws RemoteException {
@@ -1371,7 +1443,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         }
         table.add (dropdown, col++, row);
     }
-
+    
     private void addOperationalFieldRow
         (final Table table, final IWContext context, final PaymentHeader header,
          final int row) throws RemoteException {
@@ -1379,14 +1451,14 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addSmallHeader (table, col++, row, MAIN_ACTIVITY_KEY,
                         MAIN_ACTIVITY_DEFAULT, ":");
         table.mergeCells (col, row, table.getColumns () - 1, row);
-        addSmallText (table, getSchoolCategoryName (context, header), col++,
-                      row);
+        addSmallText (table, getSchoolCategoryName
+                      (context, header.getSchoolCategoryID ()), col++, row);
         final String schoolCategory = header.getSchoolCategoryID ();
         if (null != schoolCategory && 0 < schoolCategory.length ()) {
             getSession ().setOperationalField (schoolCategory);
         }
     }
-
+    
     private Table createTable (final int columnCount) {
         final Table table = new Table();
         table.setCellpadding (getCellpadding ());
@@ -1395,7 +1467,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         table.setColumns (columnCount);
         return table;
     }
-
+    
     private void logUnexpectedException (final IWContext context,
                                          final Exception exception) {
         final StringBuffer message = new StringBuffer ();
@@ -1414,7 +1486,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         logWarning (sw.toString ());
         add ("Det inträffade ett fel. Försök igen senare.");
     }
-
+    
 	private ListTable getPostingListTable (final IWContext context,
                                            final String postingString) 
         throws RemoteException {
@@ -1432,11 +1504,11 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         }       
 		return result;
 	}
-
+    
     private int min (final int a, final int b) {
         return a < b ? a : b;
     }
-
+    
     private PostingField [] getCurrentPostingFields (final IWContext context)
         throws RemoteException {
         final PostingBusiness business = getPostingBusiness (context);
@@ -1446,42 +1518,42 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         return fields != null ? (PostingField []) fields.toArray (array)
                 : array;
     }
-
+    
     private void addStyledInput (final java.util.Map map, final String key,
                                  final String value) {
         final TextInput input = getStyledInput
                 (key, null != value && !value.equals (null + "") ? value : "");
         map.put (key, input);
     }
-
+    
     private void addStyledInput (final java.util.Map map, final String key,
                                  final float number) {
         addStyledInput (map, key, ((long) number) + "");
     }
-
+    
     private void addSmallText (final java.util.Map map, final String key,
                                final String value) {
         map.put (key, getSmallText (null != value && !value.equals (null + "")
                                     ? value : ""));
     }
-
+    
     private void addSmallText (final java.util.Map map, final String key,
                                final long value) {
         map.put (key, getSmallText (-1 != value ? value + "" : "0"));
     }
-
+    
     private void addSmallText (final java.util.Map map, final String key,
                                final Date date) {
         map.put (key, getSmallText (null != date ? dateFormatter.format (date)
                                     : ""));
     }
-
+    
     private void addSmallPeriodText (final java.util.Map map, final String key,
                                      final Date date) {
         map.put (key, getSmallText (null != date ? periodFormatter.format (date)
                                     : ""));
     }
-
+    
     private static Integer getIntegerParameter (final IWContext context,
                                                 final String key) {
         final String rawString = context.getParameter (key);
@@ -1493,7 +1565,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             return null;
         }
     }
-
+    
     private static void setColumnWidthsEqual (final Table table) {
         final int columnCount = table.getColumns ();
         final int percentageInt = 100 / columnCount;
@@ -1502,7 +1574,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             table.setColumnWidth (i, percentageString);
         }
     }
-
+    
     private TextInput getStyledInput (final String key, final String value) {
         final TextInput input = (TextInput) getStyledInterface
                 (new TextInput (key));
@@ -1512,21 +1584,21 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         }
         return input;
     }
-
+    
     private void addSmallHeader
         (final Table table, final int col, final int row, final String key,
          final String defaultString, final String suffix) {
         final String localizedString = localize (key, defaultString) + suffix;
         table.add (getSmallHeader (localizedString), col, row);
     }
-
+    
     private SubmitButton getSubmitButton (final String action, final String key,
                                           final String defaultName) {
         return (SubmitButton) getButton (new SubmitButton
                                          (localize (key, defaultName),
                                           ACTION_KEY, action));
     }
-
+    
     private Integer getSchoolId (final IWContext context)
         throws RemoteException {
         try {
@@ -1539,25 +1611,25 @@ public class PaymentRecordMaintenance extends AccountingBlock {
             return null;
         }
     }
-
+    
 	private SchoolCommuneSession getSchoolCommuneSession
         (final IWContext context) throws RemoteException {
 		return (SchoolCommuneSession) IBOLookup.getServiceInstance
                 (context, SchoolCommuneSession.class);	
 	}
-
+    
 	private SchoolBusiness getSchoolBusiness
         (final IWContext context) throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance
                 (context, SchoolBusiness.class);	
 	}
-
+    
 	private PostingBusiness getPostingBusiness
         (final IWContext context) throws RemoteException {
 		return (PostingBusiness) IBOLookup.getServiceInstance
                 (context, PostingBusiness.class);	
 	}
-
+    
 	private InvoiceBusiness getInvoiceBusiness
         (final IWContext context) throws RemoteException {
 		return (InvoiceBusiness) IBOLookup.getServiceInstance
