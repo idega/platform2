@@ -285,6 +285,7 @@ public class GolferPage extends Page{
     Link lStatistics = new Link(iStatistics);
     Link lPictures = new Link(iPictures);
     Link lHome = new Link(iHome);
+
     /*lHome.addParameter("text_id","753");
     lHome.addParameter("module_object","com.idega.jmodule.text.presentation.TextReader");*/
     topTable.setBackgroundImage(iMenuBackground);
@@ -294,11 +295,16 @@ public class GolferPage extends Page{
     topTable.setCellspacing(0);
 
     topTable.add(lInfo,1,1);
-    topTable.add(lRecord,2,1);
+    /*topTable.add(lRecord,2,1);
     topTable.add(lInterviews,3,1);
     topTable.add(lStatistics,4,1);
-    topTable.add(lPictures,5,1);
+    topTable.add(lPictures,5,1);*/
     topTable.add(lHome,6,1);
+
+    topTable.add(iRecord,2,1);
+    topTable.add(iInterviews,3,1);
+    topTable.add(iStatistics,4,1);
+    topTable.add(iPictures,5,1);
 
     topTable.setWidth(1,1,"20");
     topTable.setWidth(2,1,"20");
@@ -318,10 +324,10 @@ public class GolferPage extends Page{
     topTable.setCellspacing(0);
 
     lInfo.addParameter(sTopMenuParameterName, sInfoParameterValue);
-    lRecord.addParameter(sTopMenuParameterName, sRecordParameterValue);
-    lInterviews.addParameter(sTopMenuParameterName, sInterviewsParameterValue);
-    lStatistics.addParameter(sTopMenuParameterName, sStatisticsParameterValue);
-    lPictures.addParameter(sTopMenuParameterName, sPicturesParameterValue);
+    //lRecord.addParameter(sTopMenuParameterName, sRecordParameterValue);
+    //lInterviews.addParameter(sTopMenuParameterName, sInterviewsParameterValue);
+    //lStatistics.addParameter(sTopMenuParameterName, sStatisticsParameterValue);
+    //lPictures.addParameter(sTopMenuParameterName, sPicturesParameterValue);
     lHome.addParameter(sTopMenuParameterName, sHomeParameterValue);
 
     topTable.setWidth("100%");
@@ -548,8 +554,8 @@ public class GolferPage extends Page{
   public void setRecordView(){
     Image iRecordLogo = iwrb.getImage("/golferpage/ferill.gif");
     this.addLeftLogo(iRecordLogo);
-    /*HandicapOverview hOverview = new HandicapOverview(memberId);
-    add(hOverview);*/
+    HandicapOverview hOverview = new HandicapOverview(memberId);
+    add(hOverview);
     /*TextReader recordText = new TextReader(756);
     add(recordText);*/
   }
