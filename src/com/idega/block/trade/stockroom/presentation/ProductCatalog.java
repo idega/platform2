@@ -432,18 +432,22 @@ public class ProductCatalog extends CategoryBlock{
 
       if ( _addCategoryID ) {
 	try {
-	  List list;
 	  if ( productCategories != null && productCategories.size() > 0 && _useParameterCategory ) {
-	    list = productCategories;
+	    List list = productCategories;
+	    if ( list != null ) {
+	      Iterator iter = list.iterator();
+	      while (iter.hasNext()) {
+		productLink.addParameter(CATEGORY_ID,((ICCategory)iter.next()).getID());
+	      }
+	    }
 	  }
 	  else {
-	    list = ProductBusiness.getProductCategories(product);
-	  }
-
-	  if ( list != null ) {
-	    Iterator iter = list.iterator();
-	    while (iter.hasNext()) {
-	      productLink.addParameter(CATEGORY_ID,((ProductCategory)iter.next()).getID());
+	    List list = ProductBusiness.getProductCategories(product);
+	    if ( list != null ) {
+	      Iterator iter = list.iterator();
+	      while (iter.hasNext()) {
+		productLink.addParameter(CATEGORY_ID,((ProductCategory)iter.next()).getID());
+	      }
 	    }
 	  }
 	}
