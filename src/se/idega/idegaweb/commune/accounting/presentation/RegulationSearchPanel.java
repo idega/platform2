@@ -52,28 +52,33 @@ public class RegulationSearchPanel extends AccountingBlock {
 	private static final String PAR_VALID_DATE = KEY_VALID_DATE; 
 	private static final String PAR_ENTRY_PK = "PAR_ENTRY_PK";
 	
-		
-	//Force the request to be processed at once.
-	private RegulationSearchPanel(){
-		super();
-	}
-	public RegulationSearchPanel(IWContext iwc){
-		super(); 
-		process(iwc);
-	}
-		
-	
 	private static final String ACTION_SEARCH_REGULATION = "ACTION_SEARCH_REGULATION";
 	
 	private Regulation _currentRegulation = null;
 	private Collection _searchResult = null;
 	private SchoolCategory _currentSchoolCategory = null;
 	private String[] _currentPosting = null;
-	private int _currentSchoolId = 0;
+	private static final int SCHOOL_NOT_SET_ID = -1;	
+	private int _currentSchoolId = SCHOOL_NOT_SET_ID;
 	private Date _validDate = null;
 	private String _currentPlacing = null;
 	private String _placingErrorMessage = null;
 	private String _dateFormatErrorMessage = null;
+	
+		
+	//Force the request to be processed at once.
+	private RegulationSearchPanel(){
+		super();
+	}
+	
+	//TODO: set currentschool in constructor (parameter)
+	public RegulationSearchPanel(IWContext iwc){
+		super(); 
+		process(iwc);
+	}
+		
+	
+
 
 
 	/* (non-Javadoc)
@@ -109,18 +114,19 @@ public class RegulationSearchPanel extends AccountingBlock {
 			if (vDate != null && vDate.length() > 0 && _validDate == null){
 				_dateFormatErrorMessage = localize("regulation_search_panel.date_format_error", "Error i dateformat");
 			} else {
+				
 				School currentSchool = null;
-				try{
-
-					SchoolHome schoolHome = (SchoolHome) IDOLookup.getHome(School.class);	
-					if (iwc.getParameter(PAR_PROVIDER) != null){
+				//First time on this page: PAR_PROVIDER parameter not set
+				if (iwc.getParameter(PAR_PROVIDER) != null){
+					try{
+						SchoolHome schoolHome = (SchoolHome) IDOLookup.getHome(School.class);	
 						_currentSchoolId = new Integer(iwc.getParameter(PAR_PROVIDER)).intValue();
+						currentSchool = schoolHome.findByPrimaryKey("" + _currentSchoolId);
+					}catch(RemoteException ex){
+						ex.printStackTrace();
+					}catch(FinderException ex){ 
+						ex.printStackTrace();
 					}
-					currentSchool = schoolHome.findByPrimaryKey("" + _currentSchoolId);
-				}catch(RemoteException ex){
-					ex.printStackTrace();
-				}catch(FinderException ex){ 
-					ex.printStackTrace();
 				}
 				
 					
@@ -131,6 +137,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 						
 				//Lookup regulation and postings
 				String regId = iwc.getParameter(PAR_ENTRY_PK);
+				//regId and _currentRegulation will get a value only after choosing a regulation (by clicking a link)
 				if (regId != null){
 					_currentRegulation = getRegulation(regId);
 					_currentPosting = getPosting(iwc, getCurrentSchoolCategory(iwc), _currentRegulation, new Provider(currentSchool), _validDate);				
@@ -418,7 +425,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 	}		
 	
 	public void setSchoolIdIfNull(int schoolId) {
-		if (_currentSchoolId == 0){
+		if (_currentSchoolId == SCHOOL_NOT_SET_ID){
 			_currentSchoolId = schoolId;
 		}
 	}		
