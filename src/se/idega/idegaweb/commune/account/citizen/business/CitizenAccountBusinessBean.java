@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.50 2003/04/02 16:12:22 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.51 2003/04/10 12:51:48 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -66,11 +66,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2003/04/02 16:12:22 $ by $Author: laddi $
+ * Last modified: $Date: 2003/04/10 12:51:48 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.50 $
+ * @version $Revision: 1.51 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
   implements CitizenAccountBusiness, AccountBusiness 
@@ -581,6 +581,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                                  children [i].getLastName (), childrenSsn,
                                  childrenGender, childrenTimestamp);
                         familyLogic.setAsParentFor (user, childrenUser);
+                        familyLogic.setAsCustodianFor(user, childrenUser);
                         if (homePhone != null) {
                             childrenUser.addPhone (homePhone);
                         }
