@@ -1709,6 +1709,7 @@ public class TourBookingForm extends TravelManager {
 
             }
           }
+      debug("SaveSan 5.1 : "+lbookingId);
           bookingIds[i] = lbookingId;
         }
 
@@ -1718,6 +1719,7 @@ public class TourBookingForm extends TravelManager {
          */
         for (int o = 0; o < bookingIds.length; o++) {
           try {
+      debug("SaveSan 5.3."+o);
             GeneralBooking gBook = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingIds[o]));
             gBook.removeFromAllResellers();
             //gBook.removeFrom(Reseller.class);
@@ -1728,14 +1730,17 @@ public class TourBookingForm extends TravelManager {
         /**
          * adding booking to reseller if resellerUser is chosen from dropdown...
          */
+      debug("SaveSan 6");
         int resId = -7;
         try {
+      debug("SaveSan 6.0.1");
           if (!sUserId.equals("-1")) {
             User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(sUserId));
             Reseller res = ResellerManager.getReseller(user);
             if (res != null) {
               resId = res.getID();
               for (int i = 0; i < bookingIds.length; i++) {
+      debug("SaveSan 6."+i);
                 try {
                   res.addTo(GeneralBooking.class, bookingIds[i]);
                 }catch (SQLException sql) {debug(sql.getMessage());}
@@ -1746,9 +1751,12 @@ public class TourBookingForm extends TravelManager {
           sql.printStackTrace(System.err);
         }
 
+      debug("SaveSan 7");
         if (_reseller != null) {
+      debug("SaveSan 7.0.1");
           if (_resellerId != resId) {
             for (int i = 0; i < bookingIds.length; i++) {
+      debug("SaveSan 7."+i);
               try {
                 _reseller.addTo(GeneralBooking.class, bookingIds[i]);
               }catch (SQLException sql) {debug(sql.getMessage());}
@@ -1756,7 +1764,7 @@ public class TourBookingForm extends TravelManager {
           }
         }
 
-      debug("SaveSan 6");
+      debug("SaveSan 9");
         returner = lbookingId;
 
         for (int k = 0; k < bookingIds.length; k++) {
