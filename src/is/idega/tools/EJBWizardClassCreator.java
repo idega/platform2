@@ -189,8 +189,17 @@ public class EJBWizardClassCreator {
           codeString+=";\n";
         }
 
+      // -- create methods --
+      String[] methods=this.introspector.getCreateMethods();
+      for (int i=0; i<methods.length; i++)
+      {
+        String methodString = methods[i];
+        codeString += " " + getMethodSignatureWithAddedThrowsClause(methodString);
+      }
+
+
       // -- finder methods --
-      String[] methods=this.introspector.getFinderMethods();
+      methods=this.introspector.getFinderMethods();
       for (int i=0; i<methods.length; i++)
       {
         String methodString = methods[i];
@@ -278,8 +287,16 @@ public class EJBWizardClassCreator {
           codeString+="\n }\n\n";
         }
 
+        //Createmethod implementations
+        String[] methods = introspector.getCreateMethodImplementations();
+        for (int i = 0; i < methods.length; i++) {
+          codeString += methods[i];
+          codeString += "\n";
+        }
+
+
         //FinderMethod implementations
-        String[] methods = introspector.getFinderMethodImplementations();
+        methods = introspector.getFinderMethodImplementations();
         for (int i = 0; i < methods.length; i++) {
           codeString += methods[i];
           codeString += "\n";

@@ -27,6 +27,7 @@ public class ClassIntrospector {
   private static String EJB_START = "ejb";
   private static String EJB_FIND_START = "ejbFind";
   private static String EJB_HOME_START = "ejbHome";
+  private static String EJB_CREATE_START = "ejbCreate";
 
   private static String GET_NAME_OF_MIDDLE_TABLE = "getNameOfMiddleTable";
   private boolean convertGenericEntityToIDOLegacyEntity=true;
@@ -115,12 +116,31 @@ public class ClassIntrospector {
     String[] returningMethods = new String[length];
     for (int i = 0; i < length; i++) {
       Method method = methods[i];
-      String methodString = finderMethodStrings[i]+"{\n";
-      methodString += "\tcom.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();\n";
-      methodString += "\tjava.util.Collection ids = (("+getEntityBeanName()+")entity)."+method.getName()+"("+getParametersInForMethod(method)+");\n";
-      methodString += "\tthis.idoCheckInPooledEntity(entity);\n";
-      methodString += "\treturn this.getEntityCollectionForPrimaryKeys(ids);\n";
-      methodString += "}\n";
+      String methodString = null;
+      if(method.getReturnType().equals(java.util.Collection.class)){
+        methodString = finderMethodStrings[i]+"{\n";
+        methodString += "\tcom.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();\n";
+        methodString += "\tjava.util.Collection ids = (("+getEntityBeanName()+")entity)."+method.getName()+"("+getParametersInForMethod(method)+");\n";
+        methodString += "\tthis.idoCheckInPooledEntity(entity);\n";
+        methodString += "\treturn this.getEntityCollectionForPrimaryKeys(ids);\n";
+        methodString += "}\n";
+      }
+      else if(method.getReturnType().equals(java.util.Set.class)){
+        methodString = finderMethodStrings[i]+"{\n";
+        methodString += "\tcom.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();\n";
+        methodString += "\tjava.util.Set ids = (("+getEntityBeanName()+")entity)."+method.getName()+"("+getParametersInForMethod(method)+");\n";
+        methodString += "\tthis.idoCheckInPooledEntity(entity);\n";
+        methodString += "\treturn this.getEntitySetForPrimaryKeys(ids);\n";
+        methodString += "}\n";
+      }
+      else{
+        methodString = finderMethodStrings[i]+"{\n";
+        methodString += "\tcom.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();\n";
+        methodString += "\tObject pk = (("+getEntityBeanName()+")entity)."+method.getName()+"("+getParametersInForMethod(method)+");\n";
+        methodString += "\tthis.idoCheckInPooledEntity(entity);\n";
+        methodString += "\treturn this.findByPrimaryKey(pk);\n";
+        methodString += "}\n";
+      }
       returningMethods[i]=methodString;
     }
     return returningMethods;
@@ -149,6 +169,34 @@ public class ClassIntrospector {
     return getMethodsStringsFromMethodArray(getHomeMethodsArray());
   }
 
+
+  public String[] getCreateMethodImplementations(){
+    String[] finderMethodStrings = this.getCreateMethods();
+    Method[] methods = this.getCreateMethodsArray();
+    int length = methods.length;
+    String[] returningMethods = new String[length];
+    for (int i = 0; i < length; i++) {
+      Method method = methods[i];
+      String methodString = finderMethodStrings[i]+"{\n";
+      methodString += "\tcom.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();\n";
+      methodString += "\tObject pk = (("+getEntityBeanName()+")entity)."+method.getName()+"("+getParametersInForMethod(method)+");\n";
+      methodString += "\tthis.idoCheckInPooledEntity(entity);\n";
+      methodString += "\ttry{\n\t\treturn this.findByPrimaryKey(pk);\n\t}\n";
+      methodString += "\tcatch(javax.ejb.FinderException fe){\n\t\tthrow new com.idega.data.IDOCreateException(fe);\n\t}\n";
+      methodString += "}\n";
+
+      returningMethods[i]=methodString;
+    }
+    return returningMethods;
+  }
+
+  public String[] getCreateMethods(){
+    return getMethodsStringsFromMethodArray(getCreateMethodsArray());
+  }
+
+
+
+
   public String[] getMethodsStringsFromMethodArray(Method[] methods){
 
     //Method[] methods=getVisibleMethods();
@@ -156,7 +204,7 @@ public class ClassIntrospector {
     for (int i = 0; i < methods.length; i++) {
       Method thisMethod = methods[i];
       Class returnTypeClass = thisMethod.getReturnType();
-      String returnType = this.getClassParameterToString(returnTypeClass);
+
 
       /*if(returnTypeClass.isArray()){
         //returnType=returnTypeClass.getComponentType().getName()+"[]";
@@ -172,14 +220,21 @@ public class ClassIntrospector {
         returnType=returnTypeClass.getName();
       }
       */
+      String returnType = this.getClassParameterToString(returnTypeClass);
+
       String realMethodName = thisMethod.getName();
       String methodName = realMethodName;
       if(realMethodName.startsWith(this.EJB_FIND_START)){
         methodName = "find"+realMethodName.substring(EJB_FIND_START.length());
+        returnType = this.getReturnTypeTranslated(returnTypeClass);
       }
       else if(realMethodName.startsWith(this.EJB_HOME_START)){
         String firstChar = realMethodName.substring(EJB_HOME_START.length(),EJB_HOME_START.length()+1);
         methodName = firstChar.toLowerCase()+realMethodName.substring(EJB_HOME_START.length()+1,realMethodName.length());
+      }
+      else if(realMethodName.startsWith(this.EJB_CREATE_START)){
+        methodName = "create"+realMethodName.substring(EJB_CREATE_START.length());
+        returnType = this.getReturnTypeTranslated(returnTypeClass);
       }
       Class[] parameters=thisMethod.getParameterTypes();
       Class[] exceptions=thisMethod.getExceptionTypes();
@@ -323,6 +378,11 @@ public class ClassIntrospector {
     return this.getMethodsStartingWith(this.EJB_HOME_START);
   }
 
+  private Method[] getCreateMethodsArray(){
+    return this.getMethodsStartingWith(this.EJB_CREATE_START);
+  }
+
+
   private Method[] getMethodsStartingWith(String startingString){
     MethodDescriptor[] descr =info.getMethodDescriptors();
     Method[] methods = null;
@@ -361,4 +421,18 @@ public class ClassIntrospector {
     return theReturn;
   }
 
+  /**
+   * Returns the Class translated to the right type for finders and creator functions (translated PK class to Entity Class)
+   */
+  private String getReturnTypeTranslated(Class returnTypeClass){
+    if(returnTypeClass.equals(java.util.Collection.class)){
+      return returnTypeClass.getName();
+    }
+    else if(returnTypeClass.equals(java.util.Collection.class)){
+      return returnTypeClass.getName();
+    }
+    else{
+      return this.shortName;
+    }
+  }
 }
