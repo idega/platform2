@@ -160,8 +160,11 @@ public class CategoryWindow extends IWAdminWindow {
 					try{
 						iCategoryId =catServ.storeCategory(	iCategoryId,sName,	sDesc,Integer.parseInt(sOrder),	iObjectInstanceId,sType,	multi).getID();
 						catServ.storeCategoryTranslation(iCategoryId,sName,sDesc,iSaveLocaleId);
-					if(parent>0 && iCategoryId >0)
-						catServ.storeCategoryToParent(iCategoryId,parent);
+						
+						if(parent>0 && iCategoryId >0)
+							catServ.storeCategoryToParent(iCategoryId,parent);
+
+						postSave(iwc, iCategoryId);
 					}
 					catch(java.rmi.RemoteException ex){
 						ex.printStackTrace();
@@ -179,6 +182,7 @@ public class CategoryWindow extends IWAdminWindow {
 					if (iCategoryId > 0)
 						catServ.updateCategory(iCategoryId,	sName,sDesc,	Integer.parseInt(sOrder),iObjectInstanceId,iSaveLocaleId);
 						catServ.storeRelatedCategories(iObjectInstanceId, savedids);
+						postSave(iwc, iCategoryId);
 				}
 			}
 		}
@@ -197,6 +201,11 @@ public class CategoryWindow extends IWAdminWindow {
 			}
 		}
 	}
+	
+	protected void postSave(IWContext iwc, int iCategoryId) throws RemoteException{
+		
+	}
+
 	protected void getCategoryFields(IWContext iwc, int iCategoryId) throws RemoteException{
 		int parent = iwc.isParameterSet(prmParentID)?Integer.parseInt(iwc.getParameter(prmParentID)):-1;
 		
