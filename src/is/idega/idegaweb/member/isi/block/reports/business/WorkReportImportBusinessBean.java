@@ -742,6 +742,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				board.setEmail(email);
 				board.setWorKReportGroupID(((Integer)group.getPrimaryKey()).intValue());
 				board.setReportId(workReportId);
+				if (champ != null && !"".equals(champ.trim()))
+					board.setHasNationalLeague(true);
+				else
+					board.setHasNationalLeague(false);
 				board.store();
 			}
 			i++;
@@ -1014,7 +1018,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			else {
 				double d = myCell.getNumericCellValue();
 				if (((int)d) != 0)
-					cell = Double.toString((int)d);
+					cell = Integer.toString((int)d);
 				cell = TextSoap.findAndCut(cell, "-");
 				cell = TextSoap.findAndCut(cell, ".");
 

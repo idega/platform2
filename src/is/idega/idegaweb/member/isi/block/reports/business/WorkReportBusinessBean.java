@@ -728,6 +728,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 			
 			records = getWorkReportDivisionBoardHome().findAllWorkReportDivisionBoardByWorkReportId(reportId);
+			System.out.println("!!!!!!!!!!records == " + records.size());
 			iter = records.iterator();
 
 			while (iter.hasNext()) {
