@@ -138,7 +138,8 @@ public class AssessmentBusiness  {
 
         if(from !=null){
 
-          sql.append(" and ").append(dateColummn).append(" >= ").append(from.getSQLDate());
+          sql.append(" and ").append(dateColummn).append(" >= '").append(from.getSQLDate());
+          sql.append(" 00:00:00' ");
 
         }
 
@@ -161,14 +162,14 @@ public class AssessmentBusiness  {
         String sMinSql = "select min("+ae.getIDColumnName()+") from "+com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName()+where;
 
         String sMaxSql = "select max("+ae.getIDColumnName()+") from "+com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName()+where;
+/*
+        System.err.println(sql.toString());
 
-        //System.err.println(sql.toString());
+        System.err.println(sMinSql);
 
-        //System.err.println(sMinSql);
+        System.err.println(sMaxSql);
 
-        //System.err.println(sMaxSql);
-
-
+*/
 
         SimpleQuerier.execute(sql.toString());
 
@@ -176,21 +177,18 @@ public class AssessmentBusiness  {
 
         String[] ma = SimpleQuerier.executeStringQuery(sMaxSql);
 
-        if(mi!=null && mi.length > 0){
-
+        if(mi!=null && mi.length > 0 && mi[0]!=null){
           EG.setEntryIdFrom(new Integer(mi[0]).intValue());
 
         }
 
-        if(ma!=null && ma.length > 0){
-
+        if(ma!=null && ma.length > 0 && mi[0]!=null
+        ){
           EG.setEntryIdTo(new Integer(ma[0]).intValue());
 
         }
 
         EG.update();
-
-
 
       }
 
@@ -215,17 +213,8 @@ public class AssessmentBusiness  {
         ex.printStackTrace();
 
       }
-
-
-
       e.printStackTrace();
-
     }
-
-
-
-
-
   }
 
 
@@ -233,59 +222,30 @@ public class AssessmentBusiness  {
   public static void groupEntries(idegaTimestamp from,
 
                                   idegaTimestamp to) throws Exception{
-
     List L = Finder.listOfFinanceEntriesWithoutGroup(from,to);
-
     if(L!=null){
-
       int min = 0,max = 0;
-
       EntryGroup EG = null;
-
       try {
-
         EG = ((com.idega.block.finance.data.EntryGroupHome)com.idega.data.IDOLookup.getHomeLegacy(EntryGroup.class)).createLegacy();
-
         EG.setGroupDate(idegaTimestamp.RightNow().getSQLDate());
-
         EG.insert();
-
         int gid = EG.getID();
-
         //System.err.println(" gid "+gid);
-
       }
-
       catch (Exception ex) {
-
         ex.printStackTrace();
-
         try {
-
           EG.delete();
-
         }
-
         catch (SQLException ex2) {
-
           ex2.printStackTrace();
-
           EG = null;
-
         }
-
-
-
       }
-
-
 
       if(EG !=null){
-
         javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
-
-
-
         try{
 
           t.begin();

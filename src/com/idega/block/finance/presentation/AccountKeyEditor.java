@@ -242,7 +242,7 @@ public class AccountKeyEditor extends Block {
 
       keyTable.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),3,1);
 
-      keyTable.add(Edit.formatText(iwrb.getLocalizedString("account_key","Account key")),4,1);
+      keyTable.add(Edit.formatText(iwrb.getLocalizedString("tariff_key","Tariff key")),4,1);
 
 
 

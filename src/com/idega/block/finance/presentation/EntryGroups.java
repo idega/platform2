@@ -114,8 +114,6 @@ public class EntryGroups extends Block {
 
    protected void control(IWContext iwc){
 
-
-
    if(isAdmin){
 
       try{
