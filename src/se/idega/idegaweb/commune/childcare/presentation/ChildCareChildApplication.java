@@ -137,7 +137,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		}
 	}
 
-	private void viewForm(IWContext iwc) {
+	private void viewForm(IWContext iwc) throws RemoteException {
 		boolean hasOffers = false;
 		boolean hasPendingApplications = false;
 		if (child != null) {
@@ -210,6 +210,10 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		boolean done = false;
 		try {
 			int numberOfApplications = hasActivePlacement ? 4 : 5;
+			if (getBusiness().getAcceptedApplicationsByChild(getSession().getChildID()) != null) {
+				numberOfApplications--;
+			}
+
 			int[] providers = new int[numberOfApplications];
 			String[] dates = new String[numberOfApplications];
 			Date[] queueDates = new Date[numberOfApplications];
@@ -272,7 +276,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			add(new Text(localize(APPLICATION_FAILURE, "Failed to submit application")));
 	}
 	
-	private Table getInputTable(IWContext iwc) {
+	private Table getInputTable(IWContext iwc) throws RemoteException {
 		Table inputTable = new Table();
 		inputTable.setCellspacing(0);
 		inputTable.setCellpadding(2);
@@ -293,6 +297,9 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		ChildCareApplication application = null;
 		int areaID = -1;
 		int numberOfApplications = hasActivePlacement ? 4 : 5;
+		if (getBusiness().getAcceptedApplicationsByChild(getSession().getChildID()) != null) {
+			numberOfApplications--;
+		}
 		for (int i = 1; i < (numberOfApplications + 1); i++) {
 			try {
 				application = getBusiness().getNonActiveApplication(getSession().getChildID(), i);
