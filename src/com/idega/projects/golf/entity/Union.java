@@ -278,6 +278,17 @@ public List getAllActiveMembers(){
   return theReturn;
 }
 
+public List getAllInActiveMembers(){
+  List theReturn=null;
+  try{
+    theReturn = EntityFinder.findAll(new Member(),"select member.* from member m, union_member_info umi where m.member_id = umi.member_id and umi.member_status = 'I' and umi.membership_type = 'main'");
+  }
+  catch(Exception ex){
+    ex.printStackTrace(System.err);
+  }
+  return theReturn;
+}
+
 public List getGroups(String group_type){
   List theReturn=null;
   try{
