@@ -290,9 +290,9 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
       ProductPrice[] prices = {};
       try {
         String sql = getSQLQuery(productId, timeframeId, addressId,  countAsPersonStatus, currencyId, visibility, key);
-        if (key != null) {
-        	System.out.println("[ProductPriceBMPBean]\n"+sql);
-        }
+        //if (key != null) {
+        	//System.out.println("[ProductPriceBMPBean]\n"+sql);
+        //}
         prices = (ProductPrice[]) (com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class)).findAll(sql);
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
