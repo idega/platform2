@@ -334,7 +334,7 @@ public class QueryResultViewer extends Block {
 	  		InputHandler inputHandler = getInputHandler(inputHandlerClass);
 	  		PresentationObject input = null;
 	  		if (inputHandler == null) {
-	  			String value = object.toString();
+	  			String value = (object instanceof List) ? ((String)  ((List) object).get(0)) : object.toString();
 	  			input = new TextInput(key, value);
 	  		} 
 	  		else if (object instanceof Collection) {
@@ -542,13 +542,8 @@ public class QueryResultViewer extends Block {
 			String key = (String) iterator.next();
 			if (iwc.isParameterSet(key))	{
 				String[] values = iwc.getParameterValues(key);
-				if (values.length > 1) {
-					// change to collection-based API
-					result.put(key, Arrays.asList(values));
-				}
-				else {
-					result.put(key, values[0]);
-				}
+				// change to collection-based API
+				result.put(key, Arrays.asList(values));
 			}
 			else {
 				result.put(key, "");
