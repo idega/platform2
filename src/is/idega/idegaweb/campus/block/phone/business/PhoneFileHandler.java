@@ -133,11 +133,11 @@ public class PhoneFileHandler {
 	}
 
 	public void process3(File PhoneFile) throws java.rmi.RemoteException,FinderException {
-		Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(null);
+	//	Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(null);
 		Map M2 = PhoneFinder.mapOfAccountsWithPhoneNumber();
 		DateFormat  df = DateFormat.getDateInstance(DateFormat.SHORT,new Locale("is","IS"));
 		// If we can assess something
-		if (M != null && M2 != null) {
+		if (/*M != null &&*/ M2 != null) {
 			try {
 				long phonetime = -1;
 				long from = -1;
@@ -173,7 +173,7 @@ public class PhoneFileHandler {
 					AccountPhoneEntryHome apeHome = (AccountPhoneEntryHome) IDOLookup.getHome(AccountPhoneEntry.class);
 					AccountPhoneHome accountPhoneHome = (AccountPhoneHome) IDOLookup.getHome(AccountPhone.class);
 					boolean foundAccount = false;
-					int listsize;
+//					int listsize;
 					boolean cont = false;
 					while ((line = lin.readLine()) != null) { 
 						//&& count != 0){
@@ -222,12 +222,19 @@ public class PhoneFileHandler {
 									phoneNumbers.put(number, new Integer(1));
 									numberCount++;
 								}
-								accountList = accountPhoneHome.findByPhoneNumber(number); 
+								
+								IWTimestamp phonedStamp = new IWTimestamp(ape.getPhonedStamp());
+								phonedStamp.setHour(0);
+								phonedStamp.setMinute(0);
+								phonedStamp.setSecond(0);
+								phonedStamp.setMilliSecond(0);
+								
+								accountList = accountPhoneHome.findByPhoneNumberAndPhonedDate(number, phonedStamp.getDate()); 
 								//if (M.containsKey(number)) {
 								if(!accountList.isEmpty()){
 									//accountList = (List) M.get(number);
 									if (accountList != null) {
-										listsize = accountList.size();
+									//	listsize = accountList.size();
 										for (Iterator iter = accountList.iterator(); iter.hasNext(); ) {
 											 ap = (AccountPhone) iter.next();
 											from = ap.getValidFrom().getTime();
@@ -241,11 +248,6 @@ public class PhoneFileHandler {
 //											returnTime = ap.getReturnTime()!=null?ap.getReturnTime().getTime():to;
 											
 											if(from <= phonetime && phonetime <= to){
-												
-											//System.err.println("YES Contract "+ap.getAccountId().toString()+"\t del:"+df.format( new Date(deliverTime))+" ret:"+df.format(new Date(returnTime))+" phoned:"+new Timestamp(phonetime).toString()+" number:"+number);
-											//if( phonetime >= from && phonetime <= to){
-//											if (phonetime <= to) {
-												//System.err.println("ape "+ape.getSubNumber()+" account "+ap.getAccountId().intValue());
 												ape.setAccountId(ap.getAccountId());
 												ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusRead);
 												if (M2.containsKey(ap.getAccountId())) {
