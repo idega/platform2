@@ -1,53 +1,291 @@
 package is.idega.idegaweb.travel.business;
 
+import is.idega.idegaweb.travel.data.Contract;
+import is.idega.idegaweb.travel.data.ResellerDayHome;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.data.ServiceDayHome;
+import java.rmi.RemoteException;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
+import javax.ejb.FinderException;
+import com.idega.block.trade.stockroom.business.StockroomBusiness;
+import com.idega.block.trade.stockroom.data.PriceCategory;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.data.IDOFinderException;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.presentation.IWContext;
+import com.idega.util.IWTimestamp;
+import com.idega.util.datastructures.HashtableDoubleKeyed;
 
 
-public interface TravelStockroomBusiness extends com.idega.block.trade.stockroom.business.StockroomBusiness
-{
- public void addSupplies(int p0,float p1) throws java.rmi.RemoteException;
- public int createPriceCategory(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,int p5)throws java.lang.Exception, java.rmi.RemoteException;
- public int createPriceCategory(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,int p5,int p6)throws java.lang.Exception, java.rmi.RemoteException;
- public int createService(int p0,java.lang.Integer p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,boolean p5,int[] p6,java.sql.Timestamp p7,java.sql.Timestamp p8,int p9)throws java.lang.Exception, java.rmi.RemoteException;
- public void depleteSupplies(int p0,float p1) throws java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Timeframe fixTimeframe(com.idega.block.trade.stockroom.data.Timeframe p0,com.idega.util.IWTimestamp p1) throws java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Timeframe fixTimeframe(com.idega.block.trade.stockroom.data.Timeframe p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2) throws java.rmi.RemoteException;
- public int getCurrencyIdForIceland() throws java.rmi.RemoteException;
- public java.util.List getDepartureDays(com.idega.presentation.IWContext p0,com.idega.block.trade.stockroom.data.Product p1,com.idega.util.IWTimestamp p2,com.idega.util.IWTimestamp p3,boolean p4)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getDepartureDays(com.idega.presentation.IWContext p0,com.idega.block.trade.stockroom.data.Product p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getDepartureDays(com.idega.presentation.IWContext p0,com.idega.block.trade.stockroom.data.Product p1,boolean p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.List getDepartureDays(com.idega.presentation.IWContext p0,com.idega.block.trade.stockroom.data.Product p1,com.idega.util.IWTimestamp p2,com.idega.util.IWTimestamp p3)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public boolean getIfDay(com.idega.presentation.IWContext p0,is.idega.idegaweb.travel.data.Contract p1,com.idega.block.trade.stockroom.data.Product p2,com.idega.util.IWTimestamp p3)throws is.idega.idegaweb.travel.business.ServiceNotFoundException,is.idega.idegaweb.travel.business.TimeframeNotFoundException,java.sql.SQLException,java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean getIfDay(com.idega.presentation.IWContext p0,com.idega.block.trade.stockroom.data.Product p1,com.idega.block.trade.stockroom.data.Timeframe[] p2,com.idega.util.IWTimestamp p3)throws is.idega.idegaweb.travel.business.ServiceNotFoundException,is.idega.idegaweb.travel.business.TimeframeNotFoundException,java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean getIfDay(com.idega.presentation.IWContext p0,com.idega.block.trade.stockroom.data.Product p1,com.idega.block.trade.stockroom.data.Timeframe[] p2,com.idega.util.IWTimestamp p3,boolean p4,boolean p5)throws is.idega.idegaweb.travel.business.ServiceNotFoundException,is.idega.idegaweb.travel.business.TimeframeNotFoundException,java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean getIfDay(com.idega.presentation.IWContext p0,com.idega.block.trade.stockroom.data.Product p1,com.idega.util.IWTimestamp p2)throws is.idega.idegaweb.travel.business.ServiceNotFoundException,is.idega.idegaweb.travel.business.TimeframeNotFoundException,java.sql.SQLException,java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean getIfDay(com.idega.presentation.IWContext p0,int p1,int p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean getIfExpired(is.idega.idegaweb.travel.data.Contract p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getMaxBookings(com.idega.block.trade.stockroom.data.Product p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public int getMinBookings(com.idega.block.trade.stockroom.data.Product p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.PriceCategory[] getMiscellaneousServices(int p0) throws java.rmi.RemoteException;
- public is.idega.idegaweb.travel.business.TravelStockroomBusinessBean getNewInstance(com.idega.idegaweb.IWApplicationContext p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.PriceCategory[] getPriceCategories(int p0) throws java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.PriceCategory[] getPriceCategories(java.lang.String p0) throws java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Product[] getProducts(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Product[] getProducts(com.idega.block.trade.stockroom.data.Reseller p0) throws java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Product[] getProducts(int p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Product[] getProducts(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.util.datastructures.HashtableDoubleKeyed getResellerDayHashtable(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;
- public is.idega.idegaweb.travel.data.ResellerDayHome getResellerDayHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public is.idega.idegaweb.travel.data.Service getService(com.idega.block.trade.stockroom.data.Product p0)throws is.idega.idegaweb.travel.business.ServiceNotFoundException,java.rmi.RemoteException, java.rmi.RemoteException;
- public is.idega.idegaweb.travel.data.ServiceDayHome getServiceDayHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public float getSupplyStatus(int p0)throws java.sql.SQLException, java.rmi.RemoteException;
- public float getSupplyStatus(int p0,java.sql.Date p1)throws java.sql.SQLException, java.rmi.RemoteException;
- public com.idega.block.trade.stockroom.data.Timeframe getTimeframe(com.idega.block.trade.stockroom.data.Product p0)throws java.rmi.RemoteException,is.idega.idegaweb.travel.business.ServiceNotFoundException,is.idega.idegaweb.travel.business.TimeframeNotFoundException, java.rmi.RemoteException;
- public java.util.Collection getTravelAddressIdsFromRefill(com.idega.block.trade.stockroom.data.Product p0,com.idega.block.trade.stockroom.data.TravelAddress p1)throws java.rmi.RemoteException,com.idega.data.IDOFinderException, java.rmi.RemoteException;
- public java.util.Collection getTravelAddressIdsFromRefill(com.idega.block.trade.stockroom.data.Product p0,int p1)throws java.rmi.RemoteException,com.idega.data.IDOFinderException,javax.ejb.FinderException, java.rmi.RemoteException;
- public boolean isWithinTimeframe(com.idega.block.trade.stockroom.data.Timeframe p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public void removeDepartureDaysApplication(com.idega.idegaweb.IWApplicationContext p0,com.idega.block.trade.stockroom.data.Product p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public void removeResellerHashtables(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;
- public void removeServiceDayHashtable(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;
- public void setSupplyStatus(int p0,float p1,int p2)throws java.sql.SQLException, java.rmi.RemoteException;
- public void setTimeframe(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,boolean p3)throws java.sql.SQLException, java.rmi.RemoteException;
- public void setTimeframe(com.idega.util.IWTimestamp p0,com.idega.util.IWTimestamp p1,boolean p2)throws java.sql.SQLException, java.rmi.RemoteException;
- public int updateService(int p0,int p1,java.lang.Integer p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,boolean p6,int[] p7,java.sql.Timestamp p8,java.sql.Timestamp p9,int p10)throws java.lang.Exception, java.rmi.RemoteException;
+/**
+ * @author gimmi
+ */
+public interface TravelStockroomBusiness extends StockroomBusiness {
 
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getNewInstance
+	 */
+	public TravelStockroomBusinessBean getNewInstance(IWApplicationContext iwac) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#addSupplies
+	 */
+	public void addSupplies(int product_id, float amount) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#depleteSupplies
+	 */
+	public void depleteSupplies(int product_id, float amount) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#setSupplyStatus
+	 */
+	public void setSupplyStatus(int productId, float status, int period) throws SQLException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getSupplyStatus
+	 */
+	public float getSupplyStatus(int productId) throws SQLException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getSupplyStatus
+	 */
+	public float getSupplyStatus(int productId, Date date) throws SQLException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#createPriceCategory
+	 */
+	public int createPriceCategory(int supplierId, String name, String description, String type, String extraInfo,
+			int visibility) throws Exception, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#createPriceCategory
+	 */
+	public int createPriceCategory(int supplierId, String name, String description, String type, String extraInfo,
+			int visibility, int parentId) throws Exception, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#createService
+	 */
+	public int createService(int supplierId, Integer fileId, String serviceName, String number,
+			String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival,
+			int discountTypeId) throws Exception, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#updateService
+	 */
+	public int updateService(int serviceId, int supplierId, Integer fileId, String serviceName, String number,
+			String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival,
+			int discountTypeId) throws Exception, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#setTimeframe
+	 */
+	public void setTimeframe(IWTimestamp from, IWTimestamp to, boolean yearly) throws SQLException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#setTimeframe
+	 */
+	public void setTimeframe(int timeframeId, IWTimestamp from, IWTimestamp to, boolean yearly) throws SQLException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getProducts
+	 */
+	public Product[] getProducts(Reseller reseller) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getProducts
+	 */
+	public Product[] getProducts(int supplierId) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getProducts
+	 */
+	public Product[] getProducts(int supplierId, IWTimestamp stamp) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getProducts
+	 */
+	public Product[] getProducts(int supplierId, IWTimestamp from, IWTimestamp to) throws FinderException,
+			RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getService
+	 */
+	public Service getService(Product product) throws ServiceNotFoundException, RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getTimeframe
+	 */
+	public Timeframe getTimeframe(Product product) throws RemoteException, ServiceNotFoundException,
+			TimeframeNotFoundException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getPriceCategories
+	 */
+	public PriceCategory[] getPriceCategories(int supplierId) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getPriceCategories
+	 */
+	public PriceCategory[] getPriceCategories(String key) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getMiscellaneousServices
+	 */
+	public PriceCategory[] getMiscellaneousServices(int supplierId) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getIfDay
+	 */
+	public boolean getIfDay(IWContext iwc, int productId, int dayOfWeek) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getIfDay
+	 */
+	public boolean getIfDay(IWContext iwc, Product product, IWTimestamp stamp) throws ServiceNotFoundException,
+			TimeframeNotFoundException, SQLException, RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getIfDay
+	 */
+	public boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, IWTimestamp stamp)
+			throws ServiceNotFoundException, TimeframeNotFoundException, RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getIfDay
+	 */
+	public boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, IWTimestamp stamp,
+			boolean includePast, boolean fixTimeframe) throws ServiceNotFoundException, TimeframeNotFoundException,
+			RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#fixTimeframe
+	 */
+	public Timeframe fixTimeframe(Timeframe frame, IWTimestamp stamp) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#fixTimeframe
+	 */
+	public Timeframe fixTimeframe(Timeframe frame, IWTimestamp from, IWTimestamp to) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getResellerDayHashtable
+	 */
+	public HashtableDoubleKeyed getResellerDayHashtable(IWContext iwc) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#removeResellerHashtables
+	 */
+	public void removeResellerHashtables(IWContext iwc) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#removeServiceDayHashtable
+	 */
+	public void removeServiceDayHashtable(IWContext iwc) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getIfExpired
+	 */
+	public boolean getIfExpired(Contract contract, IWTimestamp stamp) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getIfDay
+	 */
+	public boolean getIfDay(IWContext iwc, Contract contract, Product product, IWTimestamp stamp)
+			throws ServiceNotFoundException, TimeframeNotFoundException, SQLException, RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getCurrencyIdForIceland
+	 */
+	public int getCurrencyIdForIceland() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getDepartureDays
+	 */
+	public List getDepartureDays(IWContext iwc, Product product) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getDepartureDays
+	 */
+	public List getDepartureDays(IWContext iwc, Product product, boolean showPast) throws RemoteException,
+			FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getDepartureDays
+	 */
+	public List getDepartureDays(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to)
+			throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getDepartureDays
+	 */
+	public List getDepartureDays(IWContext iwc, Product product, IWTimestamp fromStamp, IWTimestamp toStamp,
+			boolean showPast) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getWeekDays
+	 */
+	public int[] getWeekDays(Product product) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#isWithinTimeframe
+	 */
+	public boolean isWithinTimeframe(Timeframe timeframe, IWTimestamp stamp) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getServiceDayHome
+	 */
+	public ServiceDayHome getServiceDayHome() throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getResellerDayHome
+	 */
+	public ResellerDayHome getResellerDayHome() throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getTravelAddressIdsFromRefill
+	 */
+	public Collection getTravelAddressIdsFromRefill(Product product, int tAddressId) throws RemoteException,
+			IDOFinderException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getTravelAddressIdsFromRefill
+	 */
+	public Collection getTravelAddressIdsFromRefill(Product product, TravelAddress tAddress) throws RemoteException,
+			IDOFinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#removeDepartureDaysApplication
+	 */
+	public void removeDepartureDaysApplication(IWApplicationContext iwac, Product product) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getProductsSharingPool
+	 */
+	public Collection getProductsSharingPool(Product product) throws RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getMaxBookings
+	 */
+	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#getMinBookings
+	 */
+	public int getMinBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.travel.business.TravelStockroomBusinessBean#supportsSupplyPool
+	 */
+	public boolean supportsSupplyPool() throws java.rmi.RemoteException;
 }

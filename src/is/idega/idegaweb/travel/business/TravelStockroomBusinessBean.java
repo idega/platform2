@@ -1250,17 +1250,53 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     }
   }
 
+  /**
+   * returns the other products, Null if this is the only one, or if this one is not using a pool
+   * @param product
+   * @return
+ * @throws RemoteException
+   */
+  public Collection getProductsSharingPool(Product product) throws RemoteException {
+		try {
+			if (supportsSupplyPool()) {
+				SupplyPool pool = ((SupplyPoolHome) IDOLookup.getHome(SupplyPool.class)).findByProduct(product);
+				Collection products = getProductBusiness().getProductHome().findBySupplyPool(pool);
+				products.remove(product);
+				return products;
+			} else {
+				return null;
+			}
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (IDORelationshipException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return null;
+  }
+  
 	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException{
 		try {
 			if (stamp != null) {
-				try {
-					SupplyPool pool = ((SupplyPoolHome) IDOLookup.getHome(SupplyPool.class)).findByProduct(product);
-					SupplyPoolDay pDay = 	((SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class)).findByPrimaryKey(new SupplyPoolDayPK(pool.getPrimaryKey(), new Integer(stamp.getDayOfWeek())));
-					return pDay.getMax();
-				} catch (FinderException fe) {
-					//fe.printStackTrace();
-				} catch (Exception e) {
-					e.printStackTrace();
+				if (supportsSupplyPool()) {
+					try {
+						SupplyPool pool = ((SupplyPoolHome) IDOLookup.getHome(SupplyPool.class)).findByProduct(product);
+						SupplyPoolDay pDay = 	((SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class)).findByPrimaryKey(new SupplyPoolDayPK(pool.getPrimaryKey(), new Integer(stamp.getDayOfWeek())));
+						int max = pDay.getMax();
+
+						int iBookingExtra = getBooker().getBookingsTotalCountByOthersInPool(product, stamp);
+						max -= iBookingExtra;
+						
+						return max;
+					} catch (FinderException fe) {
+						//fe.printStackTrace();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				
 			  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
@@ -1281,14 +1317,17 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 	public int getMinBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException{
 		try {
 			if (stamp != null) {
-				try {
-					SupplyPool pool = ((SupplyPoolHome) IDOLookup.getHome(SupplyPool.class)).findByProduct(product);
-					SupplyPoolDay pDay = 	((SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class)).findByPrimaryKey(new SupplyPoolDayPK(pool.getPrimaryKey(), new Integer(stamp.getDayOfWeek())));
-					return pDay.getMin();
-				} catch (FinderException fe) {
-					//fe.printStackTrace();
-				} catch (Exception e) {
-					e.printStackTrace();
+				
+				if (supportsSupplyPool()) {
+					try {
+						SupplyPool pool = ((SupplyPoolHome) IDOLookup.getHome(SupplyPool.class)).findByProduct(product);
+						SupplyPoolDay pDay = 	((SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class)).findByPrimaryKey(new SupplyPoolDayPK(pool.getPrimaryKey(), new Integer(stamp.getDayOfWeek())));
+						return pDay.getMin();
+					} catch (FinderException fe) {
+						//fe.printStackTrace();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			
 				ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
@@ -1305,9 +1344,20 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 		}
 	}
 
-
+	/*
+	 * override me please
+	 */
+	public boolean supportsSupplyPool() {
+		System.out.println("DOES NOT Support Supply Pool");
+		return false;
+	}
+	
   private ProductBusiness getProductBusiness() throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
+  }
+
+  private Booker getBooker() throws RemoteException {
+    return (Booker) IBOLookup.getServiceInstance(getIWApplicationContext(), Booker.class);
   }
 
   private StockroomBusiness getStockroomBusiness() throws RemoteException {

@@ -1,8 +1,12 @@
 package is.idega.idegaweb.travel.business;
 
+import com.idega.business.IBOHome;
 
-public interface TravelStockroomBusinessHome extends com.idega.business.IBOHome
-{
- public TravelStockroomBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 
+/**
+ * @author gimmi
+ */
+public interface TravelStockroomBusinessHome extends IBOHome {
+
+	public TravelStockroomBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 }
