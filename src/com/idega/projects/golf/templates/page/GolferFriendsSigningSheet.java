@@ -3,6 +3,7 @@ package com.idega.projects.golf.templates.page;
 import com.idega.jmodule.object.JModuleObject;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleInfo;
+import com.idega.jmodule.object.textObject.Link;
 import com.idega.jmodule.object.Image;
 import com.idega.jmodule.object.interfaceobject.Form;
 import com.idega.jmodule.object.interfaceobject.SubmitButton;
@@ -13,6 +14,7 @@ import com.idega.jmodule.object.interfaceobject.CheckBox;
 import com.idega.jmodule.object.interfaceobject.RadioButton;
 import com.idega.jmodule.object.interfaceobject.DropdownMenu;
 import com.idega.jmodule.object.interfaceobject.Parameter;
+import com.idega.jmodule.object.interfaceobject.Window;
 import com.idega.jmodule.text.presentation.TextReader;
 import com.idega.jmodule.object.Script;
 import com.idega.jmodule.object.interfaceobject.DateInput;
@@ -20,6 +22,7 @@ import com.idega.projects.golf.business.GolferFriendsDataBusiness;
 import java.sql.Date;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import java.sql.SQLException;
 
 /**
  * Title:        idegaWeb Classes
@@ -32,41 +35,43 @@ import com.idega.idegaweb.IWResourceBundle;
 
 public class GolferFriendsSigningSheet extends JModuleObject {
 
-  public final String nameInputName = "nameInputName";
-  public final String sSNumberInputName = "sSNumberInputName";
-  public final String anotherAmountInputName = "anotherAmountInputName";
-  public final String anotherDurationInputName = "anotherDurationInputName";
-  public final String cretidCardTypeInputName = "cretidCardTypeInputName";
-  public final String creditCardNumberInputName = "creditCardNumberInputName";
-  public final String creditCardExpDateInputName = "creditCardExpDateInputName";
+  public static final String nameInputName = "nameInputName";
+  public static final String sSNumberInputName = "sSNumberInputName";
+  public static final String anotherAmountInputName = "anotherAmountInputName";
+  public static final String anotherDurationInputName = "anotherDurationInputName";
+  public static final String cretidCardTypeInputName = "cretidCardTypeInputName";
+  public static final String creditCardNumberInputName = "creditCardNumberInputName";
+  public static final String creditCardExpDateInputName = "creditCardExpDateInputName";
 
-  public final String billingNameSSNInputName = "billingNameSSNInputName";
-  public final String appearNameInputName = "appearNameInputName";
-  public final String billingNameInputName = "billingNameInputName";
+  public static final String billingNameSSNInputName = "billingNameSSNInputName";
+  public static final String appearNameInputName = "appearNameInputName";
+  public static final String billingNameInputName = "billingNameInputName";
 
-  public final String amountRadioButtonName = "amountRadioButtonName";
-  public final String durationRadioButtonName = "durationRadioButtonName";
+  public static final String amountRadioButtonName = "amountRadioButtonName";
+  public static final String durationRadioButtonName = "durationRadioButtonName";
 
-  public final String amountButtonValue1 = "amountButtonValue1";
-  public final String amountButtonValue2 = "amountButtonValue2";
-  public final String amountButtonValue3 = "amountButtonValue3";
-  public final String amountButtonValue4 = "amountButtonValue4";
-  public final String amountButtonValue5 = "amountButtonValue5";
-  public final String durationButtonValue1 = "durationButtonValue1";
-  public final String durationButtonValue2 = "durationButtonValue2";
-  public final String durationButtonValue3 = "durationButtonValue3";
-  public final String durationButtonValue4 = "durationButtonValue4";
-  public final String durationButtonValue5 = "durationButtonValue5";
-  public final String yesOrNoButtonName = "yesOrNoButtonName";
-  public final String noValue = "noValue";
-  public final String yesValue = "yesValue";
+  public static final String viewSignedFormsWindowName = "viewSignedFormsWindowName";
+
+  public static final String amountButtonValue1 = "amountButtonValue1";
+  public static final String amountButtonValue2 = "amountButtonValue2";
+  public static final String amountButtonValue3 = "amountButtonValue3";
+  public static final String amountButtonValue4 = "amountButtonValue4";
+  public static final String amountButtonValue5 = "amountButtonValue5";
+  public static final String durationButtonValue1 = "durationButtonValue1";
+  public static final String durationButtonValue2 = "durationButtonValue2";
+  public static final String durationButtonValue3 = "durationButtonValue3";
+  public static final String durationButtonValue4 = "durationButtonValue4";
+  public static final String durationButtonValue5 = "durationButtonValue5";
+  public static final String yesOrNoButtonName = "yesOrNoButtonName";
+  public static final String noValue = "noValue";
+  public static final String yesValue = "yesValue";
   public String submitButtonName;
   public String submitButtonValue;
   public String controlParameterValue;
-  public final String hiddenInputName = "hiddenInputName";
-  public final String cardTypeMenuName = "cardTypeMenuName";
-  public final String billCheckBoxName = "billCheckBoxName";
-  public final String expDateInputName = "expDateInputName";
+  public static final String hiddenInputName = "hiddenInputName";
+  public static final String cardTypeMenuName = "cardTypeMenuName";
+  public static final String billCheckBoxName = "billCheckBoxName";
+  public static final String golferParamterName = "golferParamterName";
 
   public String fullGolferName = "";
 
@@ -78,7 +83,7 @@ public class GolferFriendsSigningSheet extends JModuleObject {
   protected Script script;
 
   protected String golferName;
-
+  protected boolean isAdmin;
 
   public final String adressAreaName = "adressAreaName";
   public final String billingAdressAreaName = "billingAdressAreaName";
@@ -292,7 +297,7 @@ public class GolferFriendsSigningSheet extends JModuleObject {
     Image submitImage = new Image();
     submitImage = iwrb.getImage("/golferpage/register.gif");
 
-    DateInput expDateInput = new DateInput(expDateInputName);
+    DateInput expDateInput = new DateInput(creditCardExpDateInputName);
     expDateInput.keepStatusOnAction();
     expDateInput.setNoDayView();
     expDateInput.setToCurrentDate();
@@ -439,6 +444,17 @@ public class GolferFriendsSigningSheet extends JModuleObject {
 
     Table dummyTable7 = new Table(1,1);
     dummyTable7.add(submitButton,1,1);
+    if (isAdmin){
+      Window viewSignedFormsWindow = new Window( viewSignedFormsWindowName, "/golfers/viewFriendsData.jsp");
+      viewSignedFormsWindow.setResizable(true);
+      viewSignedFormsWindow.setHeight(500);
+      Text text = new Text("Skoða Skráningartöflu");
+
+     // Image linkImage = new Image(iwrb.getImage());
+      Link viewFormButton = new Link( text, viewSignedFormsWindow);
+//      viewFormButton.addParameter( golferParamterName, fullGolferName);
+      dummyTable7.add(viewFormButton,1,1);
+    }
     dummyTable7.setCellpadding(5);
     mainTable.add(dummyTable7,2,30);
     mainTable.add(hiddenInput,1,1);
@@ -557,53 +573,63 @@ public class GolferFriendsSigningSheet extends JModuleObject {
     String[] parameterValues;
     parameterValues = modinfo.getParameterValues(submitButtonName);
 
-    if (parameterValues.length<2){
-//      drawSigningForm();
-      //Possible changes possible here hence. what window to get when submitted the form.
+    if (parameterValues.length == 1){
+      //Changes possible here, hence. what window to get when submitted the form.
+      if (parameterValues[0].equalsIgnoreCase(submitButtonValue)){
+        String name;
+        String sSNumber;
+        String email;
+        String adress;
+        String cardType;
+        String cardNumber;
+        String cardExpDate;
+        boolean nameAppearance;
+        String paymentDuration;
+        String paymentAmount;
 
-      String name;
-      String sSNumber;
-      String email;
-      String adress;
-      String cardType;
-      String cardNumber;
-      String cardExpDate;
-      boolean nameAppearance;
-      String paymentDuration;
-      String paymentAmount;
+        String billingName;
+        String billingNameSSN;
+        String appearName;
+        String billingAdress;
 
-      String billingName;
-      String billingNameSSN;
-      String appearName;
-      String billingAdress;
+        name = modinfo.getParameter(nameInputName);
+        sSNumber = modinfo.getParameter(sSNumberInputName);
+        adress = modinfo.getParameter(adressAreaName);
+        email = "";  //temporarily
+        cardType = modinfo.getParameter(cardTypeMenuName);
+        cardNumber = modinfo.getParameter(creditCardNumberInputName);
+        cardExpDate = modinfo.getParameter(creditCardExpDateInputName);
+        nameAppearance = (modinfo.getParameter(yesOrNoButtonName) == yesValue);
+        paymentDuration = getPaymentDuration(modinfo);
+        paymentAmount = getPaymentAmount(modinfo);
+        billingName = modinfo.getParameter(billingNameInputName);
+        billingNameSSN = modinfo.getParameter(billingNameSSNInputName);
+        appearName = modinfo.getParameter(appearNameInputName);
+        billingAdress = modinfo.getParameter(billingAdressAreaName);
 
-      name = modinfo.getParameter(nameInputName);
-      sSNumber = modinfo.getParameter(sSNumberInputName);
-      adress = modinfo.getParameter(adressAreaName);
-      email = "";  //temporarily
-      cardType = modinfo.getParameter(cardTypeMenuName);
-      cardNumber = modinfo.getParameter(creditCardNumberInputName);
-      cardExpDate = modinfo.getParameter(creditCardExpDateInputName);
-      nameAppearance = (modinfo.getParameter(yesOrNoButtonName) == yesValue);
-      paymentDuration = getPaymentDuration(modinfo);
-      paymentAmount = getPaymentAmount(modinfo);
-      billingName = modinfo.getParameter(billingNameInputName);
-      billingNameSSN = modinfo.getParameter(billingNameSSNInputName);
-      appearName = modinfo.getParameter(appearNameInputName);
-      billingAdress = modinfo.getParameter(billingAdressAreaName);
+        System.err.println("Virði billingAdress er "+billingAdress+" !!!!!!!!!!!!!");
+        System.err.println("Virði name er "+name+" !!!!!!!!!!!!!");
+        System.err.println("Virði sSNumber er "+sSNumber+" !!!!!!!!!!!!!");
+        System.err.println("Virði adress er "+adress+" !!!!!!!!!!!!!");
+        System.err.println("Virði cardType er "+cardType+" !!!!!!!!!!!!!");
+        System.err.println("Virði cardNumber er "+cardNumber+" !!!!!!!!!!!!!");
+        System.err.println("Virði cardExpDate er "+cardExpDate+" !!!!!!!!!!!!!");
 
-      try {
-        GolferFriendsDataBusiness.insertFriendsData(name, sSNumber, email, adress, cardType, cardNumber, cardExpDate,
-          nameAppearance, paymentAmount, paymentDuration, billingAdress, billingName, billingNameSSN, appearName, fullGolferName);
+        try {
+          GolferFriendsDataBusiness.insertFriendsData(name, sSNumber, email, adress,
+           cardType, cardNumber, cardExpDate, nameAppearance, paymentAmount,
+           paymentDuration, billingAdress, billingName, billingNameSSN, appearName,
+           fullGolferName);
+        }
+        catch (Exception ex) {
+
+        }
+
+        Table table = new Table(1,1);
+        table.setAlignment(1,1,"center");
+        table.add(" Þú hefur verið skráður ");
+        add(table);
       }
-      catch (Exception ex) {
-
-      }
-
-      Table table = new Table(1,1);
-      table.setAlignment("center");
-      table.add(" Þú hefur verið skráður ");
-      add(table);
     }
     else{
       //not submitted here
@@ -612,7 +638,16 @@ public class GolferFriendsSigningSheet extends JModuleObject {
     }
   }
 
+  public boolean isAdmin(){
+    return isAdmin;
+  }
+
   public void main(ModuleInfo modinfo) {
+
+    try {
+      isAdmin =  com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+    }
+    catch(SQLException E) {    }
 
     iwrb = getResourceBundle(modinfo);
     iwb = getBundle(modinfo);
