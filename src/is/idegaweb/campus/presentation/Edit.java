@@ -35,17 +35,26 @@ public class Edit {
   public static Text formatText(String text){
     return getText(text,false,colorTextFont,textFontSize);
   }
+  public static Text formatText(String text,int size){
+    return getText(text,true,colorTextFont,size);
+  }
   public static Text formatText(int i){
     return formatText(String.valueOf(i));
   }
   public static Text titleText(String text){
     return getText(text,true,colorTitleFont,titleFontSize);
   }
+  public static Text titleText(String text,int size){
+    return getText(text,true,colorTitleFont,size);
+  }
   public static Text titleText(int i){
     return titleText(String.valueOf(i));
   }
   public static Text headerText(String text){
     return getText(text,true,colorHeaderFont,headerFontSize);
+  }
+   public static Text headerText(String text,int size){
+    return getText(text,true,colorHeaderFont,size);
   }
   public static Text headerText(int i){
     return headerText(String.valueOf(i));

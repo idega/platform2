@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.12 2001/08/27 15:17:49 aron Exp $
+ * $Id: Tabber.java,v 1.13 2001/08/30 04:07:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,10 @@ import java.sql.SQLException;
 import java.io.IOException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import is.idegaweb.campus.allocation.CampusAllocation;
+import is.idegaweb.campus.tariffs.CampusFinance;
+import is.idegaweb.campus.templates.CampusPage;
+import com.idega.idegaweb.IWMainApplication;
 
 /**
  *
