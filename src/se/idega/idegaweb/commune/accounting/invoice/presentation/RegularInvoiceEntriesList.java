@@ -59,7 +59,7 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusi
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 /**
@@ -71,9 +71,11 @@ import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 public class RegularInvoiceEntriesList extends AccountingBlock {
 
 	//Keys to error Map
-	private Object ERROR_PLACING_EMPTY = "error_placing_empty";
-	private Object ERROR_DATE_FORMAT = "error_date_form";
-	private Object ERROR_DATE_PERIODE_NEGATIVE = "error_date_periode_negative";
+	private String ERROR_PLACING_EMPTY = "error_placing_empty";
+	private String ERROR_DATE_FORMAT = "error_date_form";
+	private String ERROR_DATE_PERIODE_NEGATIVE = "error_date_periode_negative";
+	private String ERROR_AMOUNT_EMPTY = "error_amount_empty";
+	private String ERROR_OWNPOSTING_EMPTY = "error_ownposting_empty";
 
 	private String LOCALIZER_PREFIX = "regular_invoice_entries_list.";
 	
@@ -90,6 +92,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private static final String KEY_EDIT_TOOLTIP = "edit";	
 	private static final String KEY_DELETE_TOOLTIP = "delete";		
 	private static final String KEY_NOTE = "note";
+	private static final String KEY_EDIT = "edit";
+	private static final String KEY_DELETE = "delete";
 
 	private static final String KEY_OWN_POSTING = "own_posting";
 	private static final String KEY_PERIODE = "periode";
@@ -102,7 +106,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private static final String KEY_SSN = "ssn";	
 	private static final String KEY_TO = "to";
 	private static final String KEY_VAT_PR_MONTH = "vat_pr_month";
-	private static final String KEY_VAT_TYPE = "vattype";
+	private static final String KEY_VAT_RULE = "vatrule";
 	private static final String KEY_NAME = "name";	
 	private static final String KEY_PROVIDER = "provider";
 	
@@ -120,11 +124,13 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private static final String PAR_USER_SSN = "selected_user_pid"; 
 	private static final String PAR_OWN_POSTING = KEY_OWN_POSTING;	
 	private static final String PAR_VAT_PR_MONTH = KEY_VAT_PR_MONTH;
-	private static final String PAR_VAT_TYPE = KEY_VAT_TYPE;
+	private static final String PAR_VAT_RULE = KEY_VAT_RULE;
 	private static final String PAR_PROVIDER = KEY_PROVIDER; 	
 	
 	private static final String PAR_PK = "pk";	
 	private static final String PAR_DELETE_PK = "delete_pk";
+	
+	private static final int MIN_LEFT_COLUMN_WIDTH = 150;
 	
 
 
@@ -132,20 +138,18 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		ACTION_SHOW = 0, 
 		ACTION_NEW = 1, 
 		ACTION_DELETE = 2, 
-		ACTION_CANCEL = 3,
-		ACTION_EDIT = 4, 
-		ACTION_SEARCH_INVOICE = 5,
-		ACTION_SEARCH_REGULATION = 6,
-		ACTION_SAVE = 7,
-		ACTION_CANCEL_NEW_EDIT = 8,
-		ACTION_OPFIELD_DETAILSCREEN = 9,
-		ACTION_OPFIELD_MAINSCREEN = 10;
+		ACTION_EDIT = 3, 
+		ACTION_SEARCH_INVOICE = 4,
+		ACTION_SEARCH_REGULATION = 5,
+		ACTION_SAVE = 6,
+		ACTION_CANCEL_NEW_EDIT = 7,
+		ACTION_OPFIELD_DETAILSCREEN = 8,
+		ACTION_OPFIELD_MAINSCREEN = 9;
 			
 	private static final String PAR = "PARAMETER_";
 	private static final String 
 		PAR_NEW = PAR + ACTION_NEW, 
 		PAR_DELETE = PAR + ACTION_DELETE, 
-		PAR_CANCEL = PAR + ACTION_CANCEL,
 		PAR_EDIT = PAR + ACTION_EDIT, 
 		PAR_SEARCH_INVOICE = PAR + ACTION_SEARCH_INVOICE,
 		PAR_SAVE = PAR + ACTION_SAVE,
@@ -201,9 +205,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 				case ACTION_DELETE:
 					handleDeleteAction(iwc);
 					handleDefaultAction(iwc, user, fromDate, toDate);
-					break;
-				case ACTION_CANCEL:
-					// TODO implement
 					break;
 				case ACTION_SEARCH_INVOICE:	
 					handleDefaultAction(iwc, user, fromDate, toDate, (seekFromEmpty && seekToEmpty) ? localize(LOCALIZER_PREFIX + "date_empty", "No date present") : null);						
@@ -343,7 +344,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		}
 		entry.setRegSpecTypeId(new Integer(iwc.getParameter(PAR_REGULATION_TYPE)).intValue());
 		entry.setUser(user);
-		entry.setVatRegulationId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
+		entry.setVatRuleId(new Integer(iwc.getParameter(PAR_VAT_RULE)).intValue());
 		entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
 		entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
 		
@@ -361,11 +362,20 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		
 		if (from == null || to == null){
 			errorMessages.put(ERROR_DATE_FORMAT, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));
-		}else if (to.before(from)){
+		} else if (to.before(from)){
 			errorMessages.put(ERROR_DATE_PERIODE_NEGATIVE, localize(LOCALIZER_PREFIX + "negative_periode", "Neagtive periode"));
-		} else if (entry.getPlacing() == null || entry.getPlacing().length() == 0){
+		} 
+		if (entry.getPlacing() == null || entry.getPlacing().length() == 0){
 			errorMessages.put(ERROR_PLACING_EMPTY, localize(LOCALIZER_PREFIX + "placing_null", "Placing must be given a value"));
 		} 
+		if (entry.getAmount() == 0){
+			errorMessages.put(ERROR_AMOUNT_EMPTY, localize(LOCALIZER_PREFIX + "amount_null", "Amount must be given a value"));
+		}
+		
+		//TODO: uncomment this code
+//		if (entry.getOwnPosting() == null || entry.getOwnPosting().length() == 0){
+//			errorMessages.put(ERROR_OWNPOSTING_EMPTY, localize(LOCALIZER_PREFIX + "own_posting_null", "Own posting must be given a value"));
+//		}
 		
 		if (! errorMessages.isEmpty()){
 			handleEditAction(iwc, entry, user, errorMessages);					
@@ -438,7 +448,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		Collection regTypes = new ArrayList(), vatTypes = new ArrayList();
 		try {
 			regTypes = getRegulationsBusiness(iwc.getApplicationContext()).findAllRegulationSpecTypes();
-			vatTypes = getVATBusiness(iwc.getApplicationContext()).findAllVATRegulations();				
+			vatTypes = getRegulationsBusiness(iwc.getApplicationContext()).findAllVATRules();
 		} catch (RegulationException e1) {
 			e1.printStackTrace();
 		} catch (RemoteException e1) {
@@ -495,7 +505,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		
 			ButtonPanel bp = new ButtonPanel(this);
 			bp.addLocalizedButton(PAR_NEW, KEY_NEW, "New");
-			bp.addLocalizedButton(PAR_CANCEL, KEY_CANCEL, "Cancel");
 			t2.add(bp, 1, row++);
 
 			form.add(new HiddenInput(PAR_DELETE_PK, "-1"));
@@ -525,7 +534,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		ofm.maintainParameter(PAR_SEEK_TO);
 	
 		inner.add(ofm, 2, 1);
-		inner.add(new HiddenInput(actionCommand, " ")); //to make it return to the right page
+		inner.setColumnWidth(1, "" + MIN_LEFT_COLUMN_WIDTH);
+		inner.add(new HiddenInput(actionCommand, " "), 3, 1); //to make it return to the right page
 		return inner;
 	}	
 	
@@ -573,13 +583,16 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 
 		Table formTable = new Table();
 		formTable.add(getLocalizedLabel("KEY_PERIODE", "Periode"), 1, 2);
-		TextInput from = getTextInput(PAR_SEEK_FROM, "");
+
+		String today = formatDate(new Date(System.currentTimeMillis()), 4); 
+
+		TextInput from = getTextInput(PAR_SEEK_FROM, today);
 		from.setLength(4);
 		if (fromDate != null){
 			from.setContent(formatDate(fromDate, 4));	
 		}	
 		
-		TextInput to = getTextInput(PAR_SEEK_TO, "");
+		TextInput to = getTextInput(PAR_SEEK_TO, today);
 		to.setLength(4);
 		if (toDate != null){
 			to.setContent(formatDate(toDate, 4));	
@@ -608,15 +621,15 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		list.setLocalizedHeader(KEY_PLACING, "Placing", 2);
 		list.setLocalizedHeader(KEY_AMOUNT, "Amount", 3);
 		list.setLocalizedHeader(KEY_NOTE, "Note", 4);
-		list.setHeader(" ",  5);
-		list.setHeader(" ",  6);
+		list.setLocalizedHeader(KEY_EDIT, "Edit",  5);
+		list.setLocalizedHeader(KEY_DELETE, "Delete",  6);
 		
 		try {
 			if (invoices != null) {
 				Iterator i = invoices.iterator();
 				while (i.hasNext()) {
 					RegularInvoiceEntry entry = (RegularInvoiceEntry) i.next();
-					list.add(getText(""+entry.getFrom() + " - " + entry.getTo()));
+					list.add(getText(formatDate(entry.getFrom(), 4) + " - " + formatDate(entry.getTo(), 4)));
 					
 					Link link = getLink(entry.getPlacing(), PAR_PK, "" + entry.getPrimaryKey());
 					link.setParameter(PAR_EDIT, " ");
@@ -625,7 +638,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 					link.setParameter(PAR_USER_SSN, user.getPersonalID());
 					list.add(link);
 					
-					list.add(getText(""+entry.getAmount()));
+					
+					list.add(getText(formatCurrency(entry.getAmount())));
 					list.add(getText(entry.getNote()));
 
 					Link edit = new Link(getEditIcon(localize(KEY_EDIT_TOOLTIP, "Edit")));
@@ -650,14 +664,19 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			super.add(new ExceptionWrapper(e, this));
 		}	
 		list.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_RIGHT);
-		list.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_RIGHT);
+		list.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
+		list.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 		return list;
 	}
+	
+
 	
 	private Table getDetailPanel(IWContext iwc, User user, RegularInvoiceEntry entry, Collection regTypes, Collection vatTypes, Map errorMessages){
 				
 		final int EMPTY_ROW_HEIGHT = 8;
 		Table table = new Table();
+//		table.setCellpadding(0);
+//		table.setCellspacing(0);
 		int row = 1;
 		table.mergeCells(1,1,3,1);
 		table.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN, user), 1, row++);
@@ -670,6 +689,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 				
 		RegulationSearchPanel searchPanel = new RegulationSearchPanel(iwc);
+		
+		searchPanel.setLeftColumnMinWidth(MIN_LEFT_COLUMN_WIDTH);
 		
 		searchPanel.maintainParameter(new String[]{PAR_USER_SSN, PAR_FROM, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_SEEK_FROM, PAR_SEEK_TO, PAR_PK});
 		if (errorMessages.get(ERROR_PLACING_EMPTY) != null) {
@@ -713,22 +734,36 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		
 		addField(table, KEY_DAY_CREATED, formatDate(entry.getCreatedDate(), 6), 1, row);
-		addField(table, KEY_SIGNATURE, entry.getCreatedName(), 4, row++);
+		addField(table, KEY_SIGNATURE, entry.getCreatedName(), 3, row++);
 		addField(table, KEY_DAY_REGULATED, formatDate(entry.getEditDate(), 6), 1, row);
-		addField(table, KEY_SIGNATURE, entry.getEditName(), 4, row++);
+		addField(table, KEY_SIGNATURE, entry.getEditName(), 3, row++);
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
+		if (errorMessages.get(ERROR_AMOUNT_EMPTY) != null) {
+			table.add(getErrorText((String) errorMessages.get(ERROR_AMOUNT_EMPTY)), 2, row++);			
+		}
 		addFloatField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, "" + entry.getAmount(), 1, row++);
-		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+entry.getVAT(), 1, row++);
+		//Vat is curremntly set to 0
+		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+0, 1, row++);
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
-		addField(table, PAR_REMARK, KEY_REMARK, entry.getNote(), 1, row++);
+		table.add(getLocalizedLabel(KEY_REMARK, KEY_REMARK), 1, row);
+		table.mergeCells(2, row, 10, row);
+		table.add(getTextInput(PAR_REMARK, entry.getNote(), 300), 2, row);
+		
+
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
 		addDropDown(table, PAR_REGULATION_TYPE, KEY_REGULATION_TYPE, regTypes, entry.getRegSpecTypeId(), "getRegSpecType", 1, row++);
+		addDropDownLocalized(table, PAR_VAT_RULE, KEY_VAT_RULE, vatTypes, entry.getVatRuleId(),  "getVATRule", 1, row++);
+
+		if (errorMessages.get(ERROR_OWNPOSTING_EMPTY) != null) {
+			table.add(getErrorText((String) errorMessages.get(ERROR_OWNPOSTING_EMPTY)), 2, row++);			
+		}
+		
 		table.mergeCells(1, row, 10, row);
 		PostingBlock postingBlock = new PostingBlock(entry.getOwnPosting(), entry.getDoublePosting());
 		if (entry.getOwnPosting() == null && entry.getDoublePosting() == null){
@@ -739,14 +774,16 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			}
 		}
 		table.add(postingBlock, 1, row++);
-		addDropDown(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, entry.getVatRegulationId(),  "getDescription", 1, row++);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 				
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PAR_SAVE, KEY_SAVE, "Save");
-		bp.addLocalizedButton(PAR_CANCEL_NEW_EDIT, KEY_CANCEL, "Delete"); 
+		bp.addLocalizedButton(PAR_CANCEL_NEW_EDIT, KEY_CANCEL, "Cancel"); 
+		table.mergeCells(1, row, 10, row);
 		table.add(bp, 1, row);
+		
+		table.setColumnWidth(1, "" + MIN_LEFT_COLUMN_WIDTH);
 		
 		return table;
 	}
@@ -834,12 +871,12 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 				return _reg != null ? _reg.getVATEligible().floatValue() : getFloatValue(PAR_VAT_PR_MONTH);
 			}
 		
-			public VATRegulation getVatRegulation() {
+			public VATRule getVatRule() {
 				return null;
 			}
 		
-			public int getVatRegulationId() {
-				return getIntValue(PAR_VAT_TYPE);
+			public int getVatRuleId() {
+				return getIntValue(PAR_VAT_RULE);
 			}
 		
 			public String getNote() {
@@ -847,11 +884,11 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			}
 		
 			public Date getCreatedDate() {
-				return null;
+				return new Date(System.currentTimeMillis());
 			}
 		
 			public String getCreatedName() {
-				return null;
+				return "";
 			}
 		
 			public Date getEditDate() {
@@ -859,7 +896,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			}
 		
 			public String getEditName() {
-				return null;
+				return "";
 			}
 			
 			String getValue(String parameter){
@@ -896,8 +933,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			public void setSchoolCategoryId(String schoolCategoryId) {}			
 			public void setAmount(float amount) {}
 			public void setVAT(float vat) {}
-			public void setVatRegulation(VATRegulation vatRegulation) {}
-			public void setVatRegulationId(int vatRegId) {}
+			public void setVatRule(VATRule vatRule) {}
+			public void setVatRuleId(int vatRuleId) {}
 			public void setNote(String note) {}
 			public void setOwnPosting(String ownPosting) {}
 			public void setDoublePosting(String doublePosting) {}
@@ -932,6 +969,12 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		dropDown.setSelectedElement(selected);
 		return addWidget(table, key, dropDown, col, row);		
 	}
+	
+	private Table addDropDownLocalized(Table table, String parameter, String key, Collection options, int selected, String method, int col, int row) {
+		DropdownMenu dropDown = getDropdownMenuLocalized(parameter, options, method);
+		dropDown.setSelectedElement(selected);
+		return addWidget(table, key, dropDown, col, row);		
+	}	
 
 
 	
@@ -945,10 +988,24 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	 * @param row
 	 * @return
 	 */
-	private Table addField(Table table, String parameter, String key, String value, int col, int row){
-		return addWidget(table, key, getTextInput(parameter, value), col, row);
-	}
+//	private Table addField(Table table, String parameter, String key, String value, int col, int row){
+//		return addWidget(table, key, getTextInput(parameter, value), col, row);
+//	}
 	
+	/**
+	 * Adds a label and a TextInput to a table
+	 * @param table
+	 * @param key is used both as localization key for the label and default label value
+	 * @param value
+	 * @param parameter
+	 * @param col
+	 * @param row
+	 * @return
+	 */
+//	private Table addField(Table table, String parameter, String key, String value, int col, int row, int width){
+//		return addWidget(table, key, getTextInput(parameter, value, width), col, row);
+//	}
+		
 	/**
 	 * Adds a label and a TextInput to a table
 	 * @param table
