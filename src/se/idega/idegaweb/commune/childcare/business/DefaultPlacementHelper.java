@@ -1,5 +1,5 @@
 /*
- * $Id: DefaultPlacementHelper.java,v 1.6 2004/10/14 10:53:12 thomas Exp $
+ * $Id: DefaultPlacementHelper.java,v 1.7 2004/10/14 11:42:33 thomas Exp $
  * Created on 5.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,18 +11,18 @@ package se.idega.idegaweb.commune.childcare.business;
 
 import java.util.Date;
 
+import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.idegaweb.IWResourceMessage;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/14 10:53:12 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/14 11:42:33 $ by $Author: thomas $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class DefaultPlacementHelper implements PlacementHelper{
 

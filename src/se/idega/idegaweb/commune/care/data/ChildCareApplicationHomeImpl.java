@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationHomeImpl.java,v 1.1 2004/10/07 14:08:09 thomas Exp $
+ * $Id: ChildCareApplicationHomeImpl.java,v 1.1 2004/10/14 11:42:34 thomas Exp $
  * Created on 6.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -7,7 +7,7 @@
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
  */
-package se.idega.idegaweb.commune.childcare.data;
+package se.idega.idegaweb.commune.care.data;
 
 import java.sql.Date;
 import java.util.Collection;
@@ -23,7 +23,7 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/07 14:08:09 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/14 11:42:34 $ by $Author: thomas $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
  * @version $Revision: 1.1 $

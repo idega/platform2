@@ -1,12 +1,12 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 
 /**
  * This class is used to sort ChildCareApplication object according to their
  * choice number and granted status.
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ComparableApp.java,v 1.8 2004/10/14 10:23:41 thomas Exp $
+ * @version $Id: ComparableApp.java,v 1.9 2004/10/14 11:42:34 thomas Exp $
  * @since 12.2.2003 
  */
 class ComparableApp implements Comparable {

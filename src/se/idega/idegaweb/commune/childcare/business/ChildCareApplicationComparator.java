@@ -5,7 +5,7 @@ package se.idega.idegaweb.commune.childcare.business;
 
 import java.util.Comparator;
 
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 
 import com.idega.user.data.User;
 import com.idega.util.Age;
