@@ -1,4 +1,4 @@
-/* $Id: ControlListWriter.java,v 1.5 2003/12/19 01:35:47 kjell Exp $
+/* $Id: ControlListWriter.java,v 1.6 2004/01/11 21:54:18 kjell Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -51,7 +51,7 @@ import com.lowagie.text.pdf.PdfWriter;
 /** 
  * PDF and XLS Writer for the Control List
  * <p>
- * $Id: ControlListWriter.java,v 1.5 2003/12/19 01:35:47 kjell Exp $
+ * $Id: ControlListWriter.java,v 1.6 2004/01/11 21:54:18 kjell Exp $
  *
  * @author Kelly
  */
@@ -153,6 +153,10 @@ public class ControlListWriter extends AccountingBlock implements MediaWritable 
 			
 			int cellRow = 1;
 			Iterator iter = data.iterator();
+			int sum1 = 0;
+			int sum2 = 0;
+			int sum3 = 0;
+			int sum4 = 0;
 			while (iter.hasNext()) {
 				row = sheet.createRow((short)cellRow);
 				Object[] obj = (Object[]) iter.next();
@@ -161,8 +165,39 @@ public class ControlListWriter extends AccountingBlock implements MediaWritable 
 				row.createCell((short)2).setCellValue((String)(obj[3]));
 				row.createCell((short)3).setCellValue((String)(obj[4]));
 				row.createCell((short)4).setCellValue((String)(obj[5]));
+				String value = (String)(obj[2]);
+				if (value.length() > 0 && cellRow > 1) {
+					sum1 += Integer.parseInt((String)(obj[2]));
+				}
+				value = (String)(obj[3]);
+				if (value.length() > 0 && cellRow > 1) {
+					sum2 += Integer.parseInt((String)(obj[3]));
+				}
+				value = (String)(obj[4]);
+				if (value.length() > 0 && cellRow > 1) {
+					sum3 += Integer.parseInt((String)(obj[4]));
+				}
+				value = (String)(obj[5]);
+				if (value.length() > 0 && cellRow > 1) {
+					sum4 += Integer.parseInt((String)(obj[5]));
+				}
 				cellRow++;
 			}
+
+			row = sheet.createRow((short)cellRow);
+			row.createCell((short)0).setCellValue(" ");
+			row.createCell((short)1).setCellValue(" ");
+			row.createCell((short)2).setCellValue(" ");
+			row.createCell((short)3).setCellValue(" ");
+			row.createCell((short)4).setCellValue(" ");
+
+			row = sheet.createRow((short)cellRow);
+			row.createCell((short)0).setCellValue((localize(ControlList.KEY_TALLY, "Total")));
+			row.createCell((short)1).setCellValue((""+sum1));
+			row.createCell((short)2).setCellValue((""+sum2));
+			row.createCell((short)3).setCellValue((""+sum3));
+			row.createCell((short)4).setCellValue((""+sum4));
+
 			wb.write(mos);
 		}
 		buffer.setMimeType("application/x-msexcel");

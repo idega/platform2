@@ -1,4 +1,4 @@
-/* $Id: ControlList.java,v 1.8 2004/01/08 12:38:36 staffan Exp $
+/* $Id: ControlList.java,v 1.9 2004/01/11 21:58:33 kjell Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -43,7 +43,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.ControlListExceptio
  * Amount paid this period
  * The list can also be presented as an Excel sheet
  * 
- * $Id: ControlList.java,v 1.8 2004/01/08 12:38:36 staffan Exp $ 
+ * $Id: ControlList.java,v 1.9 2004/01/11 21:58:33 kjell Exp $ 
  * <p>
  *
  * @author <a href="http://www.lindman.se">Kelly Lindman</a>
@@ -57,6 +57,7 @@ public class ControlList extends AccountingBlock {
 		
 	public final static String KEY_HEADER_OPERATION =  KEY_PREFIX + "header_operation";
 	public final static String KEY_TITLE = KEY_PREFIX + "title";
+	public final static String KEY_TALLY = KEY_PREFIX + "tally";
 	public final static String KEY_COMPARE_PERIOD = KEY_PREFIX + "compare_period";
 	public final static String KEY_WITH_PERIOD = KEY_PREFIX + "with_period";
 	public final static String KEY_SEARCH = KEY_PREFIX + "search";
@@ -159,7 +160,11 @@ public class ControlList extends AccountingBlock {
 		}
 				
 		Iterator iter = collection.iterator();
-		
+		int sum1 = 0;
+		int sum2 = 0;
+		int sum3 = 0;
+		int sum4 = 0;
+		int row = 1;
 		while (iter.hasNext()) {
 			Object[] obj = (Object[]) iter.next();
 			
@@ -168,7 +173,36 @@ public class ControlList extends AccountingBlock {
 			list.add(getSmallText((String)(obj[3])));
 			list.add(getSmallText((String)(obj[4])));
 			list.add(getSmallText((String)(obj[5])));
+
+			String value = (String)(obj[2]);
+			if (value.length() > 0 && row > 1) {
+				sum1 += Integer.parseInt((String)(obj[2]));
+			}
+			value = (String)(obj[3]);
+			if (value.length() > 0 && row > 1) {
+				sum2 += Integer.parseInt((String)(obj[3]));
+			}
+			value = (String)(obj[4]);
+			if (value.length() > 0 && row > 1) {
+				sum3 += Integer.parseInt((String)(obj[4]));
+			}
+			value = (String)(obj[5]);
+			if (value.length() > 0 && row > 1) {
+				sum4 += Integer.parseInt((String)(obj[5]));
+			}
+			row++;
 		}
+		list.add(getSmallText(" "));
+		list.add(getSmallText(" "));
+		list.add(getSmallText(" "));
+		list.add(getSmallText(" "));
+		list.add(getSmallText(" "));
+
+		list.add(getSmallText(localize(KEY_TALLY, "Total")));
+		list.add(getSmallText(""+sum1));
+		list.add(getSmallText(""+sum2));
+		list.add(getSmallText(""+sum3));
+		list.add(getSmallText(""+sum4));
 		return list;
 	}
 
