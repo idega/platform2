@@ -649,6 +649,7 @@ private Table _myTable;
     _textStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;";
     _headlineStyle = "font-face: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 8pt;color: #000000;";
     _headlineStyle = "font-face: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 10pt;color: #000000;";
+    _divisionStyle = "font-face: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 10pt;color: #000000;";
 
     _showAge = true;
     //_showGender = true;
