@@ -332,7 +332,9 @@ public class PublicBooking extends Block  {
           timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
         pTable.add(timeframeTextBold,2,pRow);
 
-
+        if (prices.length == 0) {
+          ++pRow;
+        }
         for (int j = 0; j < prices.length; j++) {
           currency = new Currency(prices[j].getCurrencyId());
           nameOfCategory = getText(prices[j].getPriceCategory().getName());
@@ -347,15 +349,9 @@ public class PublicBooking extends Block  {
 
           pTable.add(nameOfCategory,3,pRow);
           pTable.add(priceText,4,pRow);
-          if (j%2 == 1) {
-            pTable.setColor(2,pRow,"#F1F1F1");
-            pTable.setColor(3,pRow,"#F1F1F1");
-            pTable.setColor(4,pRow,"#F1F1F1");
-            pTable.setColor(5,pRow,"#F1F1F1");
-          }
-
           ++pRow;
         }
+
       }
 
       pTable.setColumnAlignment(1,"left");
@@ -363,6 +359,7 @@ public class PublicBooking extends Block  {
       pTable.setColumnAlignment(3,"left");
       pTable.setColumnAlignment(4,"right");
       pTable.setColumnAlignment(5,"left");
+      pTable.setHorizontalZebraColored("#FFFFFF","#F1F1F1");
 
       table.add(pTable,2,4);
       table.setAlignment(2,4,"right");

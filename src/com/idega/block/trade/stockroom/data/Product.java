@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.data;
 
+import java.util.Collections;
 import com.idega.data.*;
 import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
@@ -10,7 +11,8 @@ import com.idega.util.idegaTimestamp;
 import com.idega.block.text.business.*;
 import com.idega.block.text.data.TxText;
 import com.idega.block.trade.stockroom.data.Timeframe;
-
+import com.idega.block.trade.stockroom.business.TimeframeComparator;
+import com.idega.data.EntityFinder;
 
 /**
  * Title:        IW Trade
@@ -193,7 +195,18 @@ public class Product extends GenericEntity {
   }
 
   public Timeframe[] getTimeframes() throws SQLException  {
-    return (Timeframe[]) this.findRelated(Timeframe.getStaticInstance(Timeframe.class));
+    return getTimeframesOrdered(TimeframeComparator.FROMDATE);
+  }
+
+  private Timeframe[] getTimeframesOrdered(int orderBy) throws SQLException  {
+    if (orderBy != -1) {
+      List tFrames = EntityFinder.findRelated(this, Timeframe.getStaticInstance(Timeframe.class));
+      TimeframeComparator comparator = new TimeframeComparator(TimeframeComparator.FROMDATE);
+      Collections.sort(tFrames,comparator);
+      return (Timeframe[]) tFrames.toArray(new Timeframe[]{});
+    }else {
+      return (Timeframe[]) this.findRelated(Timeframe.getStaticInstance(Timeframe.class));
+    }
   }
 
   public Timeframe getTimeframe() throws SQLException{

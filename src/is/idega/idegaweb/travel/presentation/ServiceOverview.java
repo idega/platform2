@@ -485,6 +485,9 @@ public class ServiceOverview extends TravelManager {
           contentTable.add(timeframeTxt,3,contRow);
           contentTable.setRowColor(contRow, super.GRAY);
 
+          if (prices.length == 0) {
+            ++contRow;
+          }
           for (int j = 0; j < prices.length; j++) {
             currency = new Currency(prices[j].getCurrencyId());
             nameOfCategory = (Text) theText.clone();
