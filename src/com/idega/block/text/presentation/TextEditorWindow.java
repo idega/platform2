@@ -49,6 +49,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
   private final static String prmHeadline = "txep_headline";
   private final static String prmBody = "txep_body";
   public final static String imageAttributeKey = "txre_im_prop";
+  public boolean debugParameter = false;
 
   private String prmUsedTextId = prmTextId;
   //debug
@@ -90,6 +91,9 @@ public class TextEditorWindow extends AbstractChooserWindow{
 
 
   private void control(IWContext iwc)throws Exception{
+    if(debugParameter)
+      debugParameters(iwc);
+
     //Checks if the Window is being usen by the TextChooser
     //if chooserParameterName is null it is not being used by TextChooser
     String chooserParameterName = super.getSelectionParameter(iwc);
