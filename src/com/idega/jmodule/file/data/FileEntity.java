@@ -2,6 +2,7 @@ package com.idega.jmodule.file.data;
 
 import java.sql.*;
 import com.idega.data.*;
+import com.idega.data.BlobWrapper;
 
 
 public class FileEntity extends GenericEntity{
@@ -17,7 +18,7 @@ public class FileEntity extends GenericEntity{
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
 		addAttribute("content_type","týpa",true,true,"java.lang.String");
-		addAttribute("file_value","Skra",false,false,"java.sql.Blob");
+		addAttribute("file_value","Skra",false,false,"com.idega.data.BlobWrapper");
 		addAttribute("file_name","nafn skjals",true,true,"java.lang.String");
 		addAttribute("date_added","sett inn",true,true,"java.sql.Timestamp");
 		addAttribute("from_file","frá skrá",true,true,"java.lang.Boolean");
@@ -35,11 +36,11 @@ public class FileEntity extends GenericEntity{
 		setColumn("content_type", contentType);
 	}
 
-	public Blob getFileValue(){
-		return (Blob) getColumnValue("file_value");
+	public BlobWrapper getFileValue(){
+		return (BlobWrapper) getColumnValue("file_value");
 	}
 
-	public void setFileValue(Blob fileValue){
+	public void setFileValue(BlobWrapper fileValue){
 		setColumn("file_value", fileValue);
 	}
 
