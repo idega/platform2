@@ -133,6 +133,7 @@ public class CareLinkSearchPatient extends EHealthBlock {
 		searcher.setUniqueIdentifier(searchIdentifier);
 		searcher.setBundleIdentifer(this.getBundleIdentifier());
 		searcher.maintainParameter(new Parameter(PARAMETER_METHOD,String.valueOf(METHOD_LOGIN)));
+		searcher.setShowMiddleNameInSearch(false);
 		searcher.setSkipResultsForOneFound(false);
 		searcher.setLegalNonDigitPIDLetters("TFtf");
 		table.add(searcher,1,1);
