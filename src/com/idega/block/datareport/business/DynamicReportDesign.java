@@ -137,7 +137,6 @@ public class DynamicReportDesign {
 				tElement.setVerticalAlignmentAsTop();
 				tElement.setLineSpacingAsSingle();
 					Font tElementFont = new Font();
-					tElementFont.setIsUnderline(true);
 					tElementFont.setFontSize(16);
 					tElementFont.setIsBold(true);
 				tElement.addContent(tElementFont);
@@ -286,9 +285,8 @@ public class DynamicReportDesign {
 			tElement.setVerticalAlignmentAsTop();
 			tElement.setLineSpacingAsSingle();
 				Font tElementFont = new Font();
-				tElementFont.setIsUnderline(true);
 				tElementFont.setIsBold(true);
-				tElementFont.setFontSize(9);
+				tElementFont.setFontSize(10);
 			tElement.addContent(tElementFont);
 		tField.addContent(tElement);
 			TextFieldExpression tfExpression = new TextFieldExpression();
@@ -319,7 +317,7 @@ public class DynamicReportDesign {
 			tElement.setVerticalAlignmentAsTop();
 			tElement.setLineSpacingAsSingle();
 				Font tElementFont = new Font();
-				tElementFont.setFontSize(8);
+				tElementFont.setFontSize(10);
 			tElement.addContent(tElementFont);
 		tField.addContent(tElement);
 			TextFieldExpression tfExpression = new TextFieldExpression();
@@ -346,7 +344,7 @@ public class DynamicReportDesign {
 		}
 	}
 	
-	private void addParameterToPageHeader(String prmName, int prmWidth, Class classType,boolean underline){
+	private void addParameterToPageHeader(String prmName, int prmWidth, Class classType,boolean underline, boolean bold){
 		_designDoc.addParameter(prmName,String.class);
 		
 		TextField tField = new TextField();
@@ -368,7 +366,8 @@ public class DynamicReportDesign {
 			tElement.setLineSpacingAsSingle();
 					Font tElementFont = new Font();
 					tElementFont.setIsUnderline(underline);
-					tElementFont.setFontSize(9);
+					tElementFont.setIsBold(bold);
+					tElementFont.setFontSize(10);
 			tElement.addContent(tElementFont);
 		tField.addContent(tElement);
 			TextFieldExpression tfExpression = new TextFieldExpression();
@@ -384,8 +383,8 @@ public class DynamicReportDesign {
 	public void addHeaderParameter(String prmLableName, int prmLableWidth, String prmValueName, Class prmValueClass, int prmValueWidth){
 		checkHeaderBoundaries(prmLableWidth,prmValueWidth);
 		
-		addParameterToPageHeader(prmLableName,prmLableWidth, String.class,true);
-		addParameterToPageHeader(prmValueName,prmValueWidth, prmValueClass,false);
+		addParameterToPageHeader(prmLableName,prmLableWidth, String.class,false, true);
+		addParameterToPageHeader(prmValueName,prmValueWidth, prmValueClass,false, true);
 		_headerParametersXCoordinate += _extraspaceBetweenParameterGroupsInHeader;
 	}
 	
