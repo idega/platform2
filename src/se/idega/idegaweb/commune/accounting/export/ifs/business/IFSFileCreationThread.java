@@ -283,7 +283,7 @@ public class IFSFileCreationThread extends Thread {
 				StringBuffer fileName4 = new StringBuffer(folder);
 				fileName4.append("n24_attestlista_lev_gym_");
 				StringBuffer fileName7 = new StringBuffer(folder);
-				fileName7.append("n24_kommun_bom_");
+				fileName7.append("n24_kommun_gym_");
 				fileName1.append(now.getDateString("yyMMdd_HHmm"));
 				fileName2.append(now.getDateString("yyMMdd_HHmm"));
 				fileName4.append(now.getDateString("yyMMdd_HHmm"));
