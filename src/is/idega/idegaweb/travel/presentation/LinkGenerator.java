@@ -22,9 +22,9 @@ public class LinkGenerator extends TravelWindow {
 	public static final String PROPERTY_REFUNDER_PAGE_ID = "refunder_form_page_id";
 	public static final String PROPERTY_CVC_EXPLANATION_PAGE = "cvc_explanation_page";
   public static String parameterProductId = "linkGeneratorProductId";
-  private static String http = "http";
+  //private static String http = "http";
   private static Class defaultClass = PublicBooking.class;
-  //private static String http = "https";
+  private static String http = "https";
 
   public LinkGenerator() {
     super.setWidth(600);
