@@ -51,6 +51,10 @@ public class ProjectFilter extends Block implements IFrameContainer{
     return PFcontent;
   }
 
+  public String getBundleIdentifier(){
+    return ProjectBusiness.IW_PROJECT_IDENTIFIER;
+  }
+
   public void configIFrameContent(){
     if(UseIFrame){
       //if(!UseIFrameLastValue){
@@ -220,6 +224,9 @@ public class ProjectFilter extends Block implements IFrameContainer{
       this.setAddLinkBefore(true);
     }
 
+    public String getBundleIdentifier(){
+      return ProjectBusiness.IW_PROJECT_IDENTIFIER;
+    }
 
     public void setOwnerInstance(PresentationObject obj){
       ownerInstance = obj;

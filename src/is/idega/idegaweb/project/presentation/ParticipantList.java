@@ -11,6 +11,7 @@ import com.idega.presentation.IWContext;
 import com.idega.data.GenericEntity;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.Image;
 import com.idega.core.user.data.User;
 import com.idega.block.staff.business.StaffFinder;
 import com.idega.block.staff.business.StaffHolder;
@@ -25,6 +26,9 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.block.staff.presentation.StaffPropertyWindow;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -49,6 +53,10 @@ public class ParticipantList extends AbstractContentList {
     super();
   }
 
+
+  public String getBundleIdentifier(){
+    return ProjectBusiness.IW_PROJECT_IDENTIFIER;
+  }
 
 
   public synchronized Object clone(){
@@ -78,9 +86,8 @@ public class ParticipantList extends AbstractContentList {
     groupId = id;
   }
 
-
-  private Link getAddAndRemoveGroupLink(IWContext iwc) throws Exception{
-    Link addLink = new Link("  Add/Remove group  ");
+  private Link getAddAndRemoveGroupLink(IWContext iwc, IWResourceBundle iwrb) throws Exception{
+    Link addLink = new Link(iwrb.getLocalizedString("add_remove_group","Add/Remove group"));
     addLink.setFontFace(Text.FONT_FACE_ARIAL);
     addLink.setFontSize(Text.FONT_SIZE_7_HTML_1);
     addLink.setBold();
@@ -89,8 +96,8 @@ public class ParticipantList extends AbstractContentList {
     return addLink;
   }
 
-  private Link getAddAndRemoveUserLink(IWContext iwc) throws Exception{
-    Link addLink = new Link("  Add/Remove user  ");
+  private Link getAddAndRemoveUserLink(IWContext iwc, IWResourceBundle iwrb) throws Exception{
+    Link addLink = new Link(iwrb.getLocalizedString("add_remove_user","Add/Remove user"));
     addLink.setFontFace(Text.FONT_FACE_ARIAL);
     addLink.setFontSize(Text.FONT_SIZE_7_HTML_1);
     addLink.setBold();
@@ -99,16 +106,58 @@ public class ParticipantList extends AbstractContentList {
     return addLink;
   }
 
+  private Link getAddAndRemoveGroupLinkIcon(IWContext iwc, IWBundle iwb) throws Exception{
+    Image icon = iwb.getImage("add_remove_group.gif");
+    Link addLink = null;
+    if(icon != null){
+      addLink = new Link(icon);
+      addLink.setWindowToOpen(ParticipantList.GroupGroupSetter.class);
+      addLink.addParameter(GroupGroupSetter.PARAMETER_GROUP_ID,this.getGroupId(iwc));
+    }
+    return addLink;
+  }
+
+  private Link getAddAndRemoveUserLinkIcon(IWContext iwc, IWBundle iwb) throws Exception{
+    Image icon = iwb.getImage("add_remove_user.gif");
+    Link addLink = null;
+    if(icon != null){
+      addLink = new Link(icon);
+      addLink.setWindowToOpen(ParticipantList.UserGroupSetter.class);
+      addLink.addParameter(GroupGroupSetter.PARAMETER_GROUP_ID,this.getGroupId(iwc));
+    }
+    return addLink;
+  }
+
 
   public void main(IWContext iwc) throws Exception {
     Text tBreak = (Text)Text.getBreak().clone();
     tBreak.setFontSize(Text.FONT_SIZE_7_HTML_1);
     this.addAtBeginning(tBreak);
+
+    IWBundle iwb = this.getBundle(iwc);
+    IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
+
     //this.addAtBeginning(new Text(this.getGroupName(),true,false,true));
     super.main(iwc);
-    this.add(getAddAndRemoveGroupLink(iwc));
-    this.add(Text.getNonBrakingSpace(5));
-    this.add(getAddAndRemoveUserLink(iwc));
+    if(iwc.hasEditPermission(this)){
+      Table table = new Table(8,1);
+      table.setHorizontalAlignment("left");
+      table.setCellpadding(0);
+      table.setCellpadding(0);
+
+      table.setWidth(1,"6");
+      table.setWidth(3,"6");
+      table.setWidth(5,"12");
+      table.setWidth(7,"6");
+
+      table.add(getAddAndRemoveGroupLinkIcon(iwc, iwb),2,1);
+      table.add(getAddAndRemoveGroupLink(iwc, iwrb),4,1);
+
+      table.add(getAddAndRemoveUserLinkIcon(iwc, iwb),6,1);
+      table.add(getAddAndRemoveUserLink(iwc, iwrb),8,1);
+
+      this.add(table);
+    }
   }
 
 
@@ -203,14 +252,22 @@ public class ParticipantList extends AbstractContentList {
       }
     } else {
         Text text = new Text("");
-        text.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        text.setFontFace(Text.FONT_FACE_ARIAL);
 
         StaffHolder staffHolder = (StaffHolder)item;
 
         switch (colIndex) {
           case 2:
-            text.setText(staffHolder.getName());
+            /**
+             * @todo change accesscontrol
+             */
+            boolean staffHolderIsSuperAdmin = iwc.getAccessController().getAdministratorUser().getID() == staffHolder.getUserID();
+            if(iwc.isSuperAdmin() && !staffHolderIsSuperAdmin){  //tmp
+              text = new Link(staffHolder.getName());
+              ((Link)text).setWindowToOpen(StaffPropertyWindow.class);
+              ((Link)text).addParameter(StaffPropertyWindow.PARAMETERSTRING_USER_ID, staffHolder.getUserID());
+            } else {
+              text.setText(staffHolder.getName());
+            }
             break;
           case 4:
             text.setText("");
@@ -225,12 +282,14 @@ public class ParticipantList extends AbstractContentList {
             break;
           case 10:
             if(staffHolder.getEmail() != null){
-            text.setText(staffHolder.getEmail());
+              text.setText(staffHolder.getEmail());
             }
             break;
           default:
             return null;
         }
+        text.setFontSize(Text.FONT_SIZE_7_HTML_1);
+        text.setFontFace(Text.FONT_FACE_ARIAL);
         return text;
     }
     return null;

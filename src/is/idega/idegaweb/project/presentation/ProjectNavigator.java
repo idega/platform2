@@ -63,6 +63,10 @@ public class ProjectNavigator extends Block implements IFrameContainer{
     return PFcontent;
   }
 
+  public String getBundleIdentifier(){
+    return ProjectBusiness.IW_PROJECT_IDENTIFIER;
+  }
+
   public void configIFrameContent(){
     if(UseIFrame){
       //if(!UseIFrameLastValue){
@@ -221,6 +225,10 @@ public class ProjectNavigator extends Block implements IFrameContainer{
 
     public ProjectNavigatorContent() {
       super();
+    }
+
+    public String getBundleIdentifier(){
+      return ProjectBusiness.IW_PROJECT_IDENTIFIER;
     }
 
     public void initDefaultState(){
