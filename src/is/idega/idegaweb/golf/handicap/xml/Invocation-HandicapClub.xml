@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE invoke >
+
+<invoke>
+
+	<method_description name="getClubReport">
+
+		<class_description class="is.idega.idegaweb.golf.handicap.business.HandicapReport" default_display_name="HandicapReport" type="IBOSessionBean" />
+	
+		<input>
+		
+			<class_description class="is.idega.idegaweb.golf.entity.Union" default_display_name="Club" name="club">
+				<localized_name name="Klúbbur" locale="is_IS"/>
+				<class_handler class="is.idega.idegaweb.golf.handicap.presentation.handler.ClubHandler" />
+			</class_description>
+		
+			<class_description class="java.lang.String" default_display_name="Gender" name="gender">
+				<localized_name name="Kyn" locale="is_IS"/>
+				<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.GenderDropDownMenu" />
+			</class_description>
+		
+			<class_description class="java.lang.Integer" default_display_name="Birthyear from" name="birthyear_from">
+				<localized_name name="Fæðingarár frá" locale="is_IS"/>
+				<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.BirthYearDropDownMenu" />
+			</class_description>
+		
+			<class_description class="java.lang.Integer" default_display_name="Birthyear to" name="birthyear_to">
+				<localized_name name="Fæðingarár til" locale="is_IS"/>
+				<class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.BirthYearDropDownMenu" />
+			</class_description>
+		
+			<class_description class="java.lang.Float" default_display_name="Handicap from" name="handicap_from">
+				<localized_name name="Forgjöf frá" locale="is_IS"/>
+				<class_handler class="is.idega.idegaweb.golf.handicap.presentation.handler.HandicapHandler" />
+			</class_description>
+		
+			<class_description class="java.lang.Float" default_display_name="Handicap to" name="handicap_to">
+				<localized_name name="Forgjöf til" locale="is_IS"/>
+				<class_handler class="is.idega.idegaweb.golf.handicap.presentation.handler.HandicapHandler" />
+			</class_description>
+		
+		</input>
+	
+		<output>
+		
+			<class_description class="com.idega.block.datareport.util.ReportableCollection" default_display_name="" />
+		
+		</output>
+
+	</method_description>
+
+</invoke>
