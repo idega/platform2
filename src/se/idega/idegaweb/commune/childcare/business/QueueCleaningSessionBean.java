@@ -1,5 +1,5 @@
 /*
- * $Id: QueueCleaningSessionBean.java,v 1.3 2004/12/14 12:23:18 laddi Exp $
+ * $Id: QueueCleaningSessionBean.java,v 1.4 2005/02/04 09:09:04 laddi Exp $
  * Created on 25.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- * Last modified: $Date: 2004/12/14 12:23:18 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/04 09:09:04 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class QueueCleaningSessionBean extends IBOSessionBean implements QueueCleaningSession {
 
@@ -41,7 +41,8 @@ public class QueueCleaningSessionBean extends IBOSessionBean implements QueueCle
 		IWPropertyList properties = getIWApplicationContext().getSystemProperties().getProperties(ChildCareConstants.PROPERTIES_CHILD_CARE);
 		int monthsInQueue = Integer.parseInt(properties.getProperty(ChildCareConstants.PROPERTY_MAX_MONTHS_IN_QUEUE, "6"));
 		int daysToReply = Integer.parseInt(properties.getProperty(ChildCareConstants.PROPERTY_DAYS_TO_REPLY, "30"));
-
+		boolean cleanWithoutPlacements = new Boolean(properties.getProperty(ChildCareConstants.PROPERTY_CLEAN_WITHOUT_PLACEMENT, "false")).booleanValue();
+		
 		IWTimestamp beforeDate = new IWTimestamp();
 		beforeDate.addMonths(-monthsInQueue);
 
@@ -63,7 +64,7 @@ public class QueueCleaningSessionBean extends IBOSessionBean implements QueueCle
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
 				ChildCareApplication application = (ChildCareApplication) iter.next();
-				if (!service.hasOutstandingOffers(application.getChildId(), application.getCode()) && service.hasActiveApplications(application.getChildId(), application.getCaseCode().getCode(), stamp.getDate())) {
+				if (!service.hasOutstandingOffers(application.getChildId(), application.getCode()) && (cleanWithoutPlacements ? true : service.hasActiveApplications(application.getChildId(), application.getCaseCode().getCode(), stamp.getDate()))) {
 					application.setLastReplyDate(lastReplyDate.getDate());
 					service.changeCaseStatus(application, service.getCaseStatusPending().getStatus(), performer);
 
