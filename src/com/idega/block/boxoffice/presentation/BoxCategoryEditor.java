@@ -108,10 +108,10 @@ public BoxCategoryEditor(){
       }
     }
 
-    if ( iwc.getApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID) != null ) {
+    if ( iwc.getSessionAttribute(BoxBusiness.PARAMETER_CATEGORY_ID) != null ) {
       try {
-        _boxCategoryID = Integer.parseInt((String)iwc.getApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID));
-        iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID);
+        _boxCategoryID = Integer.parseInt((String)iwc.getSessionAttribute(BoxBusiness.PARAMETER_CATEGORY_ID));
+        iwc.removeSessionAttribute(BoxBusiness.PARAMETER_CATEGORY_ID);
       }
       catch (NumberFormatException e) {
         _boxCategoryID = -1;
@@ -186,7 +186,7 @@ public BoxCategoryEditor(){
     }
     if ( localeString != null ) {
       boxCategoryID = BoxBusiness.saveCategory(_userID,_boxCategoryID,categoryName,Integer.parseInt(localeString));
-      iwc.setApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID,Integer.toString(boxCategoryID));
+      iwc.setSessionAttribute(BoxBusiness.PARAMETER_CATEGORY_ID,Integer.toString(boxCategoryID));
     }
   }
 

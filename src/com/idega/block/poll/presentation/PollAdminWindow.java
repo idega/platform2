@@ -100,15 +100,15 @@ public PollAdminWindow(){
     if ( iwc.getParameter(prmID) != null ) {
       try {
         _pollID = Integer.parseInt(iwc.getParameter(prmID));
-        iwc.setApplicationAttribute(prmID,Integer.toString(_pollID));
+        iwc.setSessionAttribute(prmID,Integer.toString(_pollID));
       }
       catch (NumberFormatException e) {
         _pollID = -1;
       }
     }
-    else if ( (String) iwc.getApplicationAttribute(prmID) != null ) {
+    else if ( (String) iwc.getSessionAttribute(prmID) != null ) {
       try {
-        _pollID = Integer.parseInt((String) iwc.getApplicationAttribute(prmID));
+        _pollID = Integer.parseInt((String) iwc.getSessionAttribute(prmID));
       }
       catch (NumberFormatException e) {
         _pollID = -1;
@@ -118,15 +118,15 @@ public PollAdminWindow(){
     if ( iwc.getParameter(prmObjInstId) != null ) {
       try {
         _newObjInst = Integer.parseInt(iwc.getParameter(prmObjInstId));
-        iwc.setApplicationAttribute(prmObjInstId,new Integer(_newObjInst));
+        iwc.setSessionAttribute(prmObjInstId,new Integer(_newObjInst));
       }
       catch (NumberFormatException e) {
         _newObjInst = -1;
       }
     }
-    else if ( (Integer) iwc.getApplicationAttribute(prmObjInstId) != null ) {
+    else if ( (Integer) iwc.getSessionAttribute(prmObjInstId) != null ) {
       try {
-        _newObjInst = ((Integer) iwc.getApplicationAttribute(prmObjInstId)).intValue();
+        _newObjInst = ((Integer) iwc.getSessionAttribute(prmObjInstId)).intValue();
       }
       catch (NumberFormatException e) {
         _newObjInst = -1;
@@ -135,10 +135,10 @@ public PollAdminWindow(){
 
     if ( iwc.getParameter(prmAttribute) != null ) {
       _newWithAttribute = iwc.getParameter(prmAttribute);
-      iwc.setApplicationAttribute(prmAttribute,_newWithAttribute);
+      iwc.setSessionAttribute(prmAttribute,_newWithAttribute);
     }
-    else if ( (String) iwc.getApplicationAttribute(prmAttribute) != null ) {
-      _newWithAttribute = (String) iwc.getApplicationAttribute(prmAttribute);
+    else if ( (String) iwc.getSessionAttribute(prmAttribute) != null ) {
+      _newWithAttribute = (String) iwc.getSessionAttribute(prmAttribute);
     }
 
     DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(PollAdminWindow.prmLocale);
@@ -164,7 +164,7 @@ public PollAdminWindow(){
 
     addLeft(pollTable,false);
 
-    String pollQuestionID = (String) iwc.getApplicationAttribute(PollQuestionChooser.prmQuestions);
+    String pollQuestionID = (String) iwc.getSessionAttribute(PollQuestionChooser.prmQuestions);
     if ( pollQuestionID != null ) {
       //iwc.removeApplicationAttribute(PollQuestionChooser.prmQuestions);
       try {
@@ -199,7 +199,7 @@ public PollAdminWindow(){
           PollEntity poll = PollFinder.getPoll(_newWithAttribute);
           if ( poll != null ) {
             _pollID = poll.getID();
-            iwc.setApplicationAttribute(prmID,Integer.toString(_pollID));
+            iwc.setSessionAttribute(prmID,Integer.toString(_pollID));
             try {
               _pollQuestionID = poll.getPollQuestionID();
             }
@@ -312,18 +312,18 @@ public PollAdminWindow(){
   }
 
   private void savePoll(IWContext iwc) {
-    iwc.removeApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION);
-    iwc.removeApplicationAttribute(prmID);
-    iwc.removeApplicationAttribute(PollQuestionChooser.prmQuestions);
+    iwc.removeSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION);
+    iwc.removeSessionAttribute(prmID);
+    iwc.removeSessionAttribute(PollQuestionChooser.prmQuestions);
     PollBusiness.savePoll(_pollID,_pollQuestionID,_newObjInst,_newWithAttribute);
     setParentToReload();
     close();
   }
 
   private void closePoll(IWContext iwc) {
-    iwc.removeApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION);
-    iwc.removeApplicationAttribute(prmID);
-    iwc.removeApplicationAttribute(PollQuestionChooser.prmQuestions);
+    iwc.removeSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION);
+    iwc.removeSessionAttribute(prmID);
+    iwc.removeSessionAttribute(PollQuestionChooser.prmQuestions);
     close();
   }
 

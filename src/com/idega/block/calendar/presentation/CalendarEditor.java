@@ -130,14 +130,14 @@ public CalendarEditor(){
       }
     }
 
-    if ( _entryID == -1 && iwc.getApplicationAttribute(CalendarBusiness.PARAMETER_ENTRY_ID) != null ) {
+    if ( _entryID == -1 && iwc.getSessionAttribute(CalendarBusiness.PARAMETER_ENTRY_ID) != null ) {
       try {
-        _entryID = Integer.parseInt((String)iwc.getApplicationAttribute(CalendarBusiness.PARAMETER_ENTRY_ID));
+        _entryID = Integer.parseInt((String)iwc.getSessionAttribute(CalendarBusiness.PARAMETER_ENTRY_ID));
       }
       catch (NumberFormatException e) {
         _entryID = -1;
       }
-      iwc.removeApplicationAttribute(CalendarBusiness.PARAMETER_ENTRY_ID);
+      iwc.removeSessionAttribute(CalendarBusiness.PARAMETER_ENTRY_ID);
     }
 
     if ( _entryID != -1 ) {
@@ -206,7 +206,7 @@ public CalendarEditor(){
     String entryType = iwc.getParameter(CalendarBusiness.PARAMETER_TYPE_ID);
 
     int entryID = CalendarBusiness.saveEntry(_entryID,_userID,_groupID,localeID,entryHeadline,entryBody,entryDate,entryType);
-    iwc.setApplicationAttribute(CalendarBusiness.PARAMETER_ENTRY_ID,Integer.toString(entryID));
+    iwc.setSessionAttribute(CalendarBusiness.PARAMETER_ENTRY_ID,Integer.toString(entryID));
   }
 
   private void deleteEntry(IWContext iwc) {

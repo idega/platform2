@@ -142,9 +142,9 @@ public BoxEditorWindow(){
       saveBoxLink(iwc,iLocaleId,false);
     }
 
-    if ( (Integer) iwc.getApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID) != null ) {
+    if ( (Integer) iwc.getSessionAttribute(BoxBusiness.PARAMETER_LINK_ID) != null ) {
       try {
-        _linkID = ((Integer) iwc.getApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID)).intValue();
+        _linkID = ((Integer) iwc.getSessionAttribute(BoxBusiness.PARAMETER_LINK_ID)).intValue();
       }
       catch (NumberFormatException e) {
         _linkID = -1;
@@ -352,7 +352,7 @@ public BoxEditorWindow(){
         e.printStackTrace(System.err);
       }
 
-      iwc.setApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID,new Integer(linkID));
+      iwc.setSessionAttribute(BoxBusiness.PARAMETER_LINK_ID,new Integer(linkID));
     }
   }
 

@@ -236,8 +236,7 @@ public BannerEditorWindow(){
     ImageInserter image = new ImageInserter(BannerBusiness.PARAMETER_FILE_ID);
       image.setWindowClassToOpen(com.idega.block.media.presentation.SimpleChooserWindow.class);
       image.setHasUseBox(false);
-    if ( _update )
-      addRight(_iwrb.getLocalizedString("new_image","New image")+":",image,true,false);
+    addRight(_iwrb.getLocalizedString("new_image","New image")+":",image,true,false);
 
     if ( ad != null ) {
       ICFile[] files = BannerFinder.getFilesInAd(ad);

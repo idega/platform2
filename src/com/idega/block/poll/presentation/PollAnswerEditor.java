@@ -73,15 +73,15 @@ public PollAnswerEditor(){
     if ( iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION) != null ) {
       try {
         pollQuestionID = Integer.parseInt(iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION));
-        iwc.setApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestionID));
+        iwc.setSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestionID));
       }
       catch (NumberFormatException e) {
         pollQuestionID = -1;
       }
     }
-    else if ( (String) iwc.getApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION) != null ) {
+    else if ( (String) iwc.getSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION) != null ) {
       try {
-        pollQuestionID = Integer.parseInt((String) iwc.getApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION));
+        pollQuestionID = Integer.parseInt((String) iwc.getSessionAttribute(PollBusiness._PARAMETER_POLL_QUESTION));
       }
       catch (NumberFormatException e) {
         pollQuestionID = -1;
@@ -91,7 +91,7 @@ public PollAnswerEditor(){
     if ( iwc.getParameter(PollBusiness._PARAMETER_POLL_ANSWER) != null ) {
       try {
         pollAnswerID = Integer.parseInt(iwc.getParameter(PollBusiness._PARAMETER_POLL_ANSWER));
-        iwc.setApplicationAttribute(PollBusiness._PARAMETER_POLL_ANSWER,Integer.toString(pollAnswerID));
+        iwc.setSessionAttribute(PollBusiness._PARAMETER_POLL_ANSWER,Integer.toString(pollAnswerID));
       }
       catch (NumberFormatException e) {
         pollAnswerID = -1;
@@ -102,9 +102,9 @@ public PollAnswerEditor(){
       savePollAnswer(iwc,iLocaleId);
     }*/
 
-    if ( (String) iwc.getApplicationAttribute(PollBusiness._PARAMETER_POLL_ANSWER) != null ) {
+    if ( (String) iwc.getSessionAttribute(PollBusiness._PARAMETER_POLL_ANSWER) != null ) {
       try {
-        pollAnswerID = Integer.parseInt((String) iwc.getApplicationAttribute(PollBusiness._PARAMETER_POLL_ANSWER));
+        pollAnswerID = Integer.parseInt((String) iwc.getSessionAttribute(PollBusiness._PARAMETER_POLL_ANSWER));
       }
       catch (NumberFormatException e) {
         pollAnswerID = -1;
@@ -156,7 +156,7 @@ public PollAnswerEditor(){
   }
 
   private void closePollAnswer(IWContext iwc) {
-    iwc.removeApplicationAttribute(PollBusiness._PARAMETER_POLL_ANSWER);
+    iwc.removeSessionAttribute(PollBusiness._PARAMETER_POLL_ANSWER);
     setParentToReload();
     close();
   }
@@ -173,7 +173,7 @@ public PollAnswerEditor(){
       pollAnswerID = PollBusiness.savePollAnswer(pollQuestionID,pollAnswerID,pollAnswerString,Integer.parseInt(localeString));
     }
 
-    iwc.setApplicationAttribute(PollBusiness._PARAMETER_POLL_ANSWER,Integer.toString(pollAnswerID));
+    iwc.setSessionAttribute(PollBusiness._PARAMETER_POLL_ANSWER,Integer.toString(pollAnswerID));
   }
 
   private void deletePollQuestion() {
