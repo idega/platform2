@@ -1,6 +1,5 @@
 package com.idega.block.school.data;
 
-import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;

@@ -3,8 +3,6 @@ package se.idega.idegaweb.commune.business;
 import java.util.Collection;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
-
 import com.idega.business.IBOServiceBean;
 import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.CommuneHome;

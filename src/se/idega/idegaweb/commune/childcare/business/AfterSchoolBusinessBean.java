@@ -18,12 +18,10 @@ import javax.transaction.UserTransaction;
 
 import se.idega.idegaweb.commune.childcare.data.AfterSchoolChoice;
 import se.idega.idegaweb.commune.childcare.data.AfterSchoolChoiceHome;
-import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.SchoolSeason;
-import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOLookup;

@@ -14,7 +14,6 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.resource.business.ResourceBusiness;
 import se.idega.idegaweb.commune.accounting.resource.data.Resource;
@@ -35,8 +34,8 @@ import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolYear;
 import com.idega.business.IBOLookup;
-import com.idega.core.location.data.Address;
 import com.idega.core.contact.data.Phone;
+import com.idega.core.location.data.Address;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
