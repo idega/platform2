@@ -15,6 +15,7 @@ import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.entity.Startingtime;
 import is.idega.idegaweb.golf.entity.StartingtimeView;
 import is.idega.idegaweb.golf.entity.Tee;
+import is.idega.idegaweb.golf.entity.TeeHome;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentGroup;
 import is.idega.idegaweb.golf.entity.TournamentGroupHome;
@@ -842,10 +843,10 @@ public class TournamentController {
 		float modifier = 1;
 
 		try {
-			Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumn("field_id", field.getID() + "", "tee_color_id", tTGroup.getTeeColorId() + "", "hole_number", "1");
-			if (tee.length > 0) {
-				CR = tee[0].getCourseRating();
-				slope = tee[0].getSlope();
+			Tee tee = ((TeeHome) IDOLookup.getHomeLegacy(Tee.class)).findByFieldAndTeeColorAndHoleNumber(field.getID(), tTGroup.getTeeColorId(), 1);
+			if (tee != null) {
+				CR = tee.getCourseRating();
+				slope = tee.getSlope();
 			}
 		}
 		catch (Exception e) {

@@ -12,8 +12,8 @@ public interface Tee extends com.idega.data.IDOLegacyEntity
  public int getSlope();
  public int getTeeColorID();
  public int getTeeLength();
- public void setCourseRating(java.lang.String p0);
  public void setCourseRating(float p0);
+ public void setCourseRating(java.lang.String p0);
  public void setFieldID(int p0);
  public void setHandicap(float p0);
  public void setHandicap(java.lang.String p0);

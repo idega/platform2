@@ -128,4 +128,18 @@ public class TeeBMPBean extends GenericEntity implements Tee{
 		return this.idoFindIDsBySQL(query.toString());		
 	}
 
+	public Integer ejbFindByFieldAndTeeColorAndHoleNumber(int fieldID, int teeColorID, int holeNumber) throws FinderException {
+		Table table = new Table(this);
+		Column colFieldID = new Column(table, "field_id");
+		Column colTeeColorID = new Column(table, "tee_color_id");
+		Column colHoleNumber = new Column(table, "hole_number");
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(colFieldID, MatchCriteria.EQUALS, fieldID));
+		query.addCriteria(new MatchCriteria(colTeeColorID, MatchCriteria.EQUALS, teeColorID));
+		query.addCriteria(new MatchCriteria(colHoleNumber, MatchCriteria.EQUALS, holeNumber));
+		
+		return (Integer) this.idoFindOnePKBySQL(query.toString());		
+	}
 }

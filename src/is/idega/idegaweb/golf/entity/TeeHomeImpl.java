@@ -31,6 +31,13 @@ public java.util.Collection findByFieldAndHoleNumber(int p0,int p1)throws javax.
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public Tee findByFieldAndTeeColorAndHoleNumber(int p0,int p1,int p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((TeeBMPBean)entity).ejbFindByFieldAndTeeColorAndHoleNumber(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public Tee findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (Tee) super.findByPrimaryKeyIDO(pk);
  }

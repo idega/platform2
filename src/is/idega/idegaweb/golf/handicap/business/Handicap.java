@@ -1,19 +1,20 @@
 package is.idega.idegaweb.golf.handicap.business;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Vector;
-
-import javax.ejb.FinderException;
-
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.entity.ScorecardHome;
 import is.idega.idegaweb.golf.entity.Stroke;
 import is.idega.idegaweb.golf.entity.Tee;
+import is.idega.idegaweb.golf.entity.TeeHome;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Vector;
+
+import javax.ejb.FinderException;
 
 import com.idega.data.IDOLookup;
 import com.idega.util.text.TextSoap;
@@ -121,10 +122,10 @@ public class Handicap {
 			int slope = 113;
 			int field_par = field.getFieldPar();
 
-			Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumn("field_id", field.getID() + "", "tee_color_id", tee_color_id + "");
-			if (tee.length > 0) {
-				course_rating = tee[0].getCourseRating();
-				slope = tee[0].getSlope();
+			Tee tee = ((TeeHome) IDOLookup.getHomeLegacy(Tee.class)).findByFieldAndTeeColorAndHoleNumber(field.getID(), tee_color_id, 1);
+			if (tee != null) {
+				course_rating = tee.getCourseRating();
+				slope = tee.getSlope();
 			}
 
 			float handicap = (float) ((max_handicap - (course_rating - field_par)) * 113) / slope;

@@ -9,5 +9,6 @@ public interface TeeHome extends com.idega.data.IDOHome
  public Tee findByPrimaryKey(int id) throws javax.ejb.FinderException;
  public Tee findByPrimaryKeyLegacy(int id) throws java.sql.SQLException;
  public java.util.Collection findByFieldAndHoleNumber(int p0,int p1)throws javax.ejb.FinderException;
+ public Tee findByFieldAndTeeColorAndHoleNumber(int p0,int p1,int p2)throws javax.ejb.FinderException;
 
 }
