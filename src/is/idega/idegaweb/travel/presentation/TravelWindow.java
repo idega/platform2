@@ -3,11 +3,11 @@ package is.idega.idegaweb.travel.presentation;
 import is.idega.idegaweb.travel.business.Booker;
 import is.idega.idegaweb.travel.business.TravelSessionManager;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
-
+import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import java.rmi.RemoteException;
-
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
@@ -199,7 +199,19 @@ public class TravelWindow extends Window {
 		this.headerImage = image;
 	}
 
-
+	protected ServiceHandler getServiceHandler(IWApplicationContext iwac) throws RemoteException {
+		return (ServiceHandler) IBOLookup.getServiceInstance(iwac, ServiceHandler.class);
+	}
+	
+	protected TravelStockroomBusiness getBusiness(IWApplicationContext iwac, Product product) {
+		try {
+			return getServiceHandler(iwac).getServiceBusiness(product);
+		}
+		catch (Exception e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	
   protected Booker getBooker(IWApplicationContext iwac) throws RemoteException{
     return (Booker) IBOLookup.getServiceInstance(iwac, Booker.class);
   }
