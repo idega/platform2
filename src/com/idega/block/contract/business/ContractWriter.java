@@ -47,6 +47,7 @@ public class ContractWriter
 	public final static String contract_starts = "Valid from";
 	public final static String contract_ends = "Valid to";
 	public final static String today = "Today";
+	
 	public static int writePDF(int[] ids, int iCategoryId, String fileName, Font titleFont, Font paragraphFont, Font tagFont, Font textFont)
 	{
 		StringBuffer dbContractText = new StringBuffer(); //Stored in the database and used for signing
@@ -173,6 +174,92 @@ public class ContractWriter
 		}
 		return id;
 	}
+	
+	
+	public static void writeText(int[] ids, int iCategoryId)
+	{
+		StringBuffer dbContractText = new StringBuffer(); //Stored in the database and used for signing
+		boolean bEntity = false;
+		int id = -1;
+		if (ids != null && ids.length > 0)
+		{
+			bEntity = true;
+		}
+		try
+		{
+			ContractCategory ct = ContractFinder.getContractCategory(iCategoryId);
+			List L = listOfTexts(iCategoryId);
+			String title = "";
+			if (ct != null) {
+				title = ct.getName() + " \n\n";
+			}
+			dbContractText.append(title);			
+				
+			// for each contract id
+			for (int j = 0; j < ids.length; j++)
+			{
+				bEntity = ids[j] > 0;
+				//System.err.println("inside chapter : "+ids[j]);
+				Hashtable H = getHashTags(iCategoryId, ids[j]);
+				if (L != null)
+				{
+					int len = L.size();
+					for (int i = 0; i < len; i++)
+					{
+						ContractText CT = (ContractText) L.get(i);
+						dbContractText.append(CT.getName());	
+												
+						String sText = CT.getText();
+						if (bEntity && CT.getUseTags())
+						{
+							dbContractText.append(detagParagraph(H, sText));								
+						}
+						else
+						{
+							dbContractText.append(sText);							
+						}
+
+					}
+					if (bEntity)
+					{
+						try
+						{
+							Contract eContract =
+								(
+									(com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(
+										Contract.class)).findByPrimaryKeyLegacy(
+									ids[j]);
+							if (eContract.getStatus().equalsIgnoreCase(com.idega.block.contract.data.ContractBMPBean.statusCreated))
+							{
+								eContract.setStatusPrinted();
+								eContract.update();
+							}
+						}
+						catch (SQLException ex)
+						{
+							ex.printStackTrace();
+						}
+					}
+				}
+
+			}
+			if (ids.length == 1 && ids[0] > 0)
+			{
+				Contract C =
+					((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(
+						ids[0]);
+				C.setText(dbContractText.toString());
+				C.store();
+			}
+		}
+		catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
+
+	}
+	
+		
 	public static int writeTestPDF(int iCategoryId, String fileName, Font titleFont, Font paragraphFont, Font tagFont, Font textFont)
 	{
 		return writePDF(new int[0], iCategoryId, fileName, titleFont, paragraphFont, tagFont, textFont);
