@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.11 2003/09/29 10:47:03 anders Exp $
+ * $Id: ProviderEditor.java,v 1.12 2003/09/30 09:17:53 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -59,10 +59,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/29 10:47:03 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/30 09:17:53 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -843,11 +843,16 @@ public class ProviderEditor extends AccountingBlock {
 				Iterator iter = c.iterator();
 				while (iter.hasNext()) {
 					Country country = (Country) iter.next();
-					String id = country.getPrimaryKey().toString();
-					menu.addMenuElement(id, country.getName());
+					int id = ((Integer) country.getPrimaryKey()).intValue();
+					String name = country.getName();
+					if (name.length() > 2) {
+						menu.addMenuElement(id, country.getName());
+					}
 				}
 				if (selectedId > 0) {
 					menu.setSelectedElement(selectedId);
+				} else {
+					menu.setSelectedElement(187);					
 				}
 			}		
 		} catch (Exception e) {
