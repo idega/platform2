@@ -1933,7 +1933,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				member.setRemovedDate(endDate.getTimestamp());
 				member.store();
 				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
-				getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), schoolclassID, schooltypeID, fromDate.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue());	
+				member = getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), schoolclassID, schooltypeID, fromDate.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue());
+				archive.setSchoolClassMember(member);
+				archive.store();
 			}
 			transaction.commit();
 			
