@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/10/09 12:22:09 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/09 12:46:24 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -192,7 +192,8 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
         throws RemoteException {
         // set up searcher
         final UserSearcher searcher = createSearcher ();
-        fillSearcherWithStudents (context, searcher);
+        final int usersFoundCount
+                = fillSearcherWithStudents (context, searcher);
 
         // output result
         final Table table = new Table ();
@@ -201,9 +202,9 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
         searchForm.add (searcher);
         table.add (searchForm, 1, 1);
 
-        final User foundUser = searcher.getUser ();
-        if (null != foundUser) {
+        if (usersFoundCount == 1) {
             // exactly one user found - display user and termination form
+            final User foundUser = searcher.getUser ();
             final Table terminateTable = new Table ();
             terminateTable.add (getStudentTable (context, foundUser), 1, 2);
             terminateTable.add (getSubmitButton
@@ -222,9 +223,10 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
      *
 	 * @param context session data
 	 * @param searcher to use for searching
+     * @return number of users found
      * @exception RemoteException if exception happens in lower layer
      */
-    private void fillSearcherWithStudents (final IWContext context,
+    private int fillSearcherWithStudents (final IWContext context,
                                            final UserSearcher searcher)
         throws RemoteException {
         final Collection students = new ArrayList ();
@@ -265,6 +267,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
             // Collection 'students' will have the right members anyway
         }
         searcher.setUsersFound (students);
+        return students.size ();
     }
 
     /**
@@ -423,10 +426,11 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
     private SchoolClassMember getCurrentSchoolClassMembership
         (final SchoolCommuneBusiness communeBusiness, final User user,
          final int schoolId) throws RemoteException {
-        return 0 <= schoolId
-                ? communeBusiness.getCurrentSchoolClassMembership (user,
-                                                                   schoolId)
-                : communeBusiness.getCurrentSchoolClassMembership (user);
+        return null == user ? null
+                : (0 <= schoolId
+                   ? communeBusiness.getCurrentSchoolClassMembership (user,
+                                                                      schoolId)
+                   : communeBusiness.getCurrentSchoolClassMembership (user));
     }
 
     private SubmitButton getSubmitButton (final String action, final String key,
