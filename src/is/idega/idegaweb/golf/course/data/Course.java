@@ -7,6 +7,7 @@ public interface Course extends com.idega.data.IDOEntity
  public int getClubID();
  public java.lang.String getCourseName();
  public java.lang.String getCourseType();
+ public java.lang.String getIDColumnName();
  public boolean getIsValid();
  public int getNumberOfHoles();
  public void initializeAttributes();

@@ -28,7 +28,14 @@ public class TeeBMPBean extends GenericEntity implements Tee {
 	public static final String COLUMN_VALID_TO = "valid_to";
 	public static final String COLUMN_GENDER_ID = "gender_id";
 	public static final String COLUMN_COURSE_ID = CourseBMPBean.COLUMN_COURSE_ID;
-	public static final String COLUMN_TEE_COLOR_ID = TeeBMPBean.COLUMN_TEE_COLOR_ID;
+	public static final String COLUMN_TEE_COLOR_ID = TeeColorBMPBean.COLUMN_TEE_COLOR_ID;
+
+	/* (non-Javadoc)
+	 * @see com.idega.data.GenericEntity#getIDColumnName()
+	 */
+	public String getIDColumnName() {
+		return COLUMN_TEE_ID;
+	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -148,10 +155,29 @@ public class TeeBMPBean extends GenericEntity implements Tee {
 		return idoFindPKsByQuery(query);
 	}
 
-	public Integer ejbFindAllByCourse(Object coursePrimaryKey, Object teeColorPrimaryKey, Object genderPrimaryKey) throws FinderException {
+	public Integer ejbFindTeeByCourse(Object coursePrimaryKey, Object teeColorPrimaryKey, Object genderPrimaryKey) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, coursePrimaryKey).appendAndIsNull(COLUMN_VALID_TO);
 		query.appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorPrimaryKey).appendAndEquals(COLUMN_GENDER_ID, genderPrimaryKey);
+		return (Integer) idoFindOnePKByQuery(query);
+	}
+	
+	public Collection ejbFindAllByCourseAndDate(Object coursePrimaryKey, Date date) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, coursePrimaryKey);
+		query.appendAnd().append(COLUMN_VALID_FROM).appendGreaterThanOrEqualsSign().append(date);
+		query.appendAnd().appendLeftParenthesis().append(COLUMN_VALID_TO).appendLessThanOrEqualsSign().append(date);
+		query.appendOr().append(COLUMN_VALID_TO).appendIsNull().appendRightParenthesis();
+		return idoFindPKsByQuery(query);
+	}
+
+	public Integer ejbFindTeeByCourseAndDate(Object coursePrimaryKey, Object teeColorPrimaryKey, Object genderPrimaryKey, Date date) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COURSE_ID, coursePrimaryKey).appendAndIsNull(COLUMN_VALID_TO);
+		query.appendAndEquals(COLUMN_TEE_COLOR_ID, teeColorPrimaryKey).appendAndEquals(COLUMN_GENDER_ID, genderPrimaryKey);
+		query.appendAnd().append(COLUMN_VALID_FROM).appendGreaterThanOrEqualsSign().append(date);
+		query.appendAnd().appendLeftParenthesis().append(COLUMN_VALID_TO).appendLessThanOrEqualsSign().append(date);
+		query.appendOr().append(COLUMN_VALID_TO).appendIsNull().appendRightParenthesis();
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 }

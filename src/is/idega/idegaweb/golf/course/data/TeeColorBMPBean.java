@@ -29,6 +29,13 @@ public class TeeColorBMPBean extends GenericEntity implements TeeColor {
 	public static final String TEE_COLOR_RED = "RED";
 
 	/* (non-Javadoc)
+	 * @see com.idega.data.GenericEntity#getIDColumnName()
+	 */
+	public String getIDColumnName() {
+		return COLUMN_TEE_COLOR_ID;
+	}
+
+	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
 	 */
 	public String getEntityName() {
@@ -51,7 +58,7 @@ public class TeeColorBMPBean extends GenericEntity implements TeeColor {
 	 * @see com.idega.data.GenericEntity#insertStartData()
 	 */
 	public void insertStartData() throws Exception {
-		TeeColorHome teeColorHome = (TeeColorHome) IDOLookup.getHome(TeeColorHome.class);
+		TeeColorHome teeColorHome = (TeeColorHome) IDOLookup.getHome(TeeColor.class);
 
 		final String [][] startData = {
 			{ "WHITE", "#FFFFFF", "tee_color.white" },

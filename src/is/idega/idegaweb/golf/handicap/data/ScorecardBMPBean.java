@@ -35,6 +35,13 @@ public class ScorecardBMPBean extends GenericEntity implements Scorecard {
 	public static final String COLUMN_IS_CORRECTION = "is_correction";
 
 	/* (non-Javadoc)
+	 * @see com.idega.data.GenericEntity#getIDColumnName()
+	 */
+	public String getIDColumnName() {
+		return COLUMN_SCORECARD_ID;
+	}
+
+	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
 	 */
 	public String getEntityName() {

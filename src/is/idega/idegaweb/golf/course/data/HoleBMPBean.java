@@ -30,6 +30,13 @@ public class HoleBMPBean extends GenericEntity implements Hole {
 	public static final String COLUMN_TEE_COLOR_ID = TeeColorBMPBean.COLUMN_TEE_COLOR_ID;
 
 	/* (non-Javadoc)
+	 * @see com.idega.data.GenericEntity#getIDColumnName()
+	 */
+	public String getIDColumnName() {
+		return COLUMN_HOLE_ID;
+	}
+
+	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
 	 */
 	public String getEntityName() {

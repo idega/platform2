@@ -18,7 +18,7 @@ import com.idega.data.IDOQuery;
  */
 public class StrokesBMPBean extends GenericEntity implements Strokes {
 
-	public static final String ENTITY_NAME = "golf_scorecard";
+	public static final String ENTITY_NAME = "golf_strokes";
 
 	public static final String COLUMN_STROKES_ID = "strokes_id";
 	public static final String COLUMN_SCORECARD_ID = ScorecardBMPBean.COLUMN_SCORECARD_ID;
@@ -28,6 +28,13 @@ public class StrokesBMPBean extends GenericEntity implements Strokes {
 	public static final String COLUMN_PUTTS = "putts";
 	public static final String COLUMN_GREEN_IN_REGULATION = "green_in_regulation";
 	public static final String COLUMN_HIT_FAIRWAY = "hit_fairway";
+
+	/* (non-Javadoc)
+	 * @see com.idega.data.GenericEntity#getIDColumnName()
+	 */
+	public String getIDColumnName() {
+		return COLUMN_STROKES_ID;
+	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -51,6 +58,7 @@ public class StrokesBMPBean extends GenericEntity implements Strokes {
 		
 		addManyToOneRelationship(COLUMN_SCORECARD_ID, Scorecard.class);
 		addManyToOneRelationship(COLUMN_HOLE_ID, Hole.class);
+		setAsPrimaryKey(COLUMN_HOLE_ID, true);
 		
 		setNullable(COLUMN_SCORECARD_ID, false);
 		setNullable(COLUMN_HOLE_ID, false);
@@ -137,5 +145,20 @@ public class StrokesBMPBean extends GenericEntity implements Strokes {
 		query.appendWhereEquals("s." + COLUMN_HOLE_ID, "h." + COLUMN_HOLE_ID).appendAndEquals(COLUMN_SCORECARD_ID, scorecardPrimaryKey).appendOrderBy("h." + HoleBMPBean.COLUMN_NUMBER);
 		
 		return idoFindPKsByQuery(query);
+	}
+	
+	public Integer ejbFindStrokesByScorecardAndHole(Object scorecardPrimaryKey, Object holePrimaryKey) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCORECARD_ID, scorecardPrimaryKey).appendAndEquals(COLUMN_HOLE_ID, holePrimaryKey);
+		
+		return (Integer) idoFindOnePKByQuery(query);
+	}
+
+	public Integer ejbFindStrokesByScorecardAndHoleNumber(Object scorecardPrimaryKey, int holeNumber) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelect().append("s.*").appendFrom().append(getEntityName()).append(" s,").append(HoleBMPBean.ENTITY_NAME).append(" h");
+		query.appendWhereEquals("s." + COLUMN_HOLE_ID, "h." + COLUMN_HOLE_ID).appendAndEquals(COLUMN_SCORECARD_ID, scorecardPrimaryKey).appendAndEquals("h."+HoleBMPBean.COLUMN_NUMBER, holeNumber);
+		
+		return (Integer) idoFindOnePKByQuery(query);
 	}
 }

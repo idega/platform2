@@ -26,6 +26,13 @@ public class CourseBMPBean extends GenericEntity implements Course {
 	public static final String COLUMN_CLUB_ID = "club_id";
 	
 	/* (non-Javadoc)
+	 * @see com.idega.data.GenericEntity#getIDColumnName()
+	 */
+	public String getIDColumnName() {
+		return COLUMN_COURSE_ID;
+	}
+
+	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
 	 */
 	public String getEntityName() {
@@ -99,21 +106,21 @@ public class CourseBMPBean extends GenericEntity implements Course {
 	//Find methods
 	public Collection ejbFindAllCourses() throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this);
+		query.appendSelectAllFrom(this).appendOrderBy(COLUMN_NAME);
 
 		return this.idoFindPKsByQuery(query);
 	}
 
 	public Collection ejbFindCoursesByClub(Object clubPrimaryKey) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CLUB_ID, clubPrimaryKey);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CLUB_ID, clubPrimaryKey).appendOrderBy(COLUMN_NAME);
 
 		return this.idoFindPKsByQuery(query);
 	}
 
 	public Collection ejbFindCoursesByType(String type) throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_TYPE, type);
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_TYPE, type).appendOrderBy(COLUMN_NAME);
 
 		return this.idoFindPKsByQuery(query);
 	}

@@ -8,6 +8,7 @@ public interface Tee extends com.idega.data.IDOEntity
  public float getCourseRating();
  public com.idega.user.data.Gender getGender();
  public int getGenderID();
+ public java.lang.String getIDColumnName();
  public int getPar();
  public int getSlope();
  public is.idega.idegaweb.golf.course.data.TeeColor getTeeColor();
