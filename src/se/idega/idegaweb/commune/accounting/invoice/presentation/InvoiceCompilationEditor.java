@@ -30,10 +30,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/10 08:42:24 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/10 10:57:58 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -232,6 +232,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                      + "<li>egen och motkontering i fler fält"
                      + "<li>klicka på faktureringsrad och se detaljer"
                      + "<li>se faktureringsunderlag i pdf"
+                     + "<li>efter skapa ny faktura => ny record form"
                      + "<li>tillåt inte negativt taxbelopp mm"
                      + "<li>namn etc i sökrutorna om man hittar exakt en"
                      + "<li>sök på huvudverksamhet - bara barnomsorg"
@@ -294,17 +295,32 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                               CREATE_INVOICE_RECORD_DEFAULT, table));
     }
 
+    private InvoiceHeader getInvoiceHeader (final IWContext context)
+        throws RemoteException, FinderException {
+        final InvoiceBusiness business = (InvoiceBusiness)
+                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
+        int headerId;
+        try {
+            headerId = Integer.parseInt (context.getParameter
+                                         (INVOICE_COMPILATION_KEY));
+        } catch (NumberFormatException e) {
+            final int recordId = Integer.parseInt (context.getParameter
+                                                   (INVOICE_RECORD_KEY));
+            final InvoiceRecordHome recordHome
+                    = business.getInvoiceRecordHome ();
+            final InvoiceRecord record = recordHome.findByPrimaryKey
+                    (new Integer (recordId));
+            headerId = record.getInvoiceHeader ();
+        }
+        final InvoiceHeaderHome headerHome = business.getInvoiceHeaderHome ();
+        return headerHome.findByPrimaryKey (new Integer (headerId));
+    }
+
     private void showRecordDetails (final IWContext context)
         throws RemoteException, FinderException {
 
         // get info from invoice header
-        final int headerId = Integer.parseInt (context.getParameter
-                                               (INVOICE_COMPILATION_KEY));
-        final InvoiceBusiness business = (InvoiceBusiness)
-                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
-        final InvoiceHeaderHome home = business.getInvoiceHeaderHome ();
-        final InvoiceHeader header
-                = home.findByPrimaryKey (new Integer (headerId));
+        final InvoiceHeader header = getInvoiceHeader (context);
         final UserBusiness userBusiness = (UserBusiness)
                 IBOLookup.getServiceInstance (context, UserBusiness.class);
         final UserHome userHome = userBusiness.getUserHome ();
@@ -313,7 +329,17 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
 
         // get displayable objects for record data/inputs
-        final Map presentationObjects = getNewRecordInputsMap (context);
+        final int actionId
+                = Integer.parseInt (context.getParameter (ACTION_KEY));
+        Map presentationObjects;
+        switch (actionId) {
+            case ACTION_SHOW_NEW_RECORD_FORM:
+                presentationObjects = getNewRecordInputsMap (context);
+                break;
+
+            default:
+                presentationObjects = getRecordDetailsMap (context);
+        }
 
         // render form/details
         final Table table = createTable (4);
@@ -328,7 +354,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         col = 1; row++;
         addSmallHeader (table, col++, row, INVOICE_TEXT_KEY,
                         INVOICE_TEXT_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get (INVOICE_TEXT_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get
+                   (INVOICE_TEXT_KEY), col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, PLACMENT_KEY, PLACMENT_DEFAULT, ":");
         addSmallText(table, localize (CHECK_FAMILY_CHILDCARE_40H_KEY,
@@ -339,69 +366,86 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         col = 1; row++;
         addSmallHeader (table, col++, row, NUMBER_OF_DAYS_KEY,
                         NUMBER_OF_DAYS_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get (NUMBER_OF_DAYS_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get
+                   (NUMBER_OF_DAYS_KEY), col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, CHECK_PERIOD_KEY,
                         CHECK_PERIOD_DEFAULT, ":");
         addSmallHeader (table, col, row, START_PERIOD_KEY,
                         START_PERIOD_DEFAULT);
-        table.add ((PresentationObject) presentationObjects.get (CHECK_START_PERIOD_KEY), col++,
+        table.add ((PresentationObject) presentationObjects.get
+                   (CHECK_START_PERIOD_KEY), col++,
                    row);
         addSmallHeader (table, col, row, END_PERIOD_KEY, END_PERIOD_DEFAULT);
-        table.add ((PresentationObject) presentationObjects.get (CHECK_END_PERIOD_KEY), col++,
+        table.add ((PresentationObject) presentationObjects.get
+                   (CHECK_END_PERIOD_KEY), col++,
                    row);
         col = 1; row++;
         addSmallHeader (table, col++, row, PLACEMENT_PERIOD_KEY,
                         PLACEMENT_PERIOD_DEFAULT, ":");
         addSmallHeader (table, col, row, START_PERIOD_KEY,
                         START_PERIOD_DEFAULT);
-        table.add ((PresentationObject) presentationObjects.get (PLACEMENT_START_PERIOD_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get
+                   (PLACEMENT_START_PERIOD_KEY), col++, row);
         addSmallHeader (table, col, row, END_PERIOD_KEY, END_PERIOD_DEFAULT);
-        table.add ((PresentationObject) presentationObjects.get (PLACEMENT_END_PERIOD_KEY), col++,
+        table.add ((PresentationObject) presentationObjects.get
+                   (PLACEMENT_END_PERIOD_KEY), col++,
                    row);
         col = 1; row++;
         addSmallHeader (table, col++, row, DATE_CREATED_KEY,
                         DATE_CREATED_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get (DATE_CREATED_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get
+                   (DATE_CREATED_KEY), col++, row);
         addSmallHeader (table, col++, row, SIGNATURE_KEY, SIGNATURE_DEFAULT,
                         ":");
-        table.add ((PresentationObject) presentationObjects.get (CREATED_SIGNATURE_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get
+                   (CREATED_SIGNATURE_KEY), col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, DATE_ADJUSTED_KEY,
                         DATE_ADJUSTED_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get (DATE_ADJUSTED_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get
+                   (DATE_ADJUSTED_KEY), col++, row);
         addSmallHeader (table, col++, row, SIGNATURE_KEY, SIGNATURE_DEFAULT,
                         ":");
-        table.add ((PresentationObject) presentationObjects.get (ADJUSTED_SIGNATURE_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get
+                   (ADJUSTED_SIGNATURE_KEY), col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, AMOUNT_KEY, AMOUNT_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get (AMOUNT_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get (AMOUNT_KEY),
+                   col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, VAT_AMOUNT_KEY, VAT_AMOUNT_DEFAULT,
                         ":");
-        table.add ((PresentationObject) presentationObjects.get (VAT_AMOUNT_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get
+                   (VAT_AMOUNT_KEY), col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, NOTE_KEY, NOTE_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get (NOTE_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get (NOTE_KEY),
+                   col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, REGULATION_SPEC_TYPE_KEY,
                         REGULATION_SPEC_TYPE_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get (REGULATION_SPEC_TYPE_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get
+                   (REGULATION_SPEC_TYPE_KEY), col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, OWN_POSTING_KEY, OWN_POSTING_DEFAULT,
                         ":");
-        table.add ((PresentationObject) presentationObjects.get (OWN_POSTING_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get
+                   (OWN_POSTING_KEY), col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, DOUBLE_POSTING_KEY,
                         DOUBLE_POSTING_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get (DOUBLE_POSTING_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get
+                   (DOUBLE_POSTING_KEY), col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, VAT_RULE_KEY, VAT_RULE_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get (VAT_RULE_KEY), col++, row);
+        table.add ((PresentationObject) presentationObjects.get (VAT_RULE_KEY),
+                   col++, row);
         col = 1; row++;
         table.setHeight (row++, 12);
         table.mergeCells (col, row, table.getColumns (), row);
-        table.add ((PresentationObject) presentationObjects.get (ACTION_KEY), 1, row++);
+        table.add ((PresentationObject) presentationObjects.get (ACTION_KEY), 1,
+                   row++);
         final Form form = new Form ();
         form.maintainParameter (INVOICE_COMPILATION_KEY);
         form.setOnSubmit("return checkInfoForm()");
@@ -412,7 +456,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                               CREATE_INVOICE_RECORD_DEFAULT,  outerTable));
     }
 
-    final Map getNewRecordInputsMap (final IWContext context)
+    private Map getNewRecordInputsMap (final IWContext context)
         throws RemoteException {
         final Map result = new HashMap ();
         final String nowPeriod = periodFormatter.format (new Date ());
@@ -457,6 +501,62 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return result;
     }
 
+    private Map getRecordDetailsMap (final IWContext context)
+        throws RemoteException, FinderException {
+        final InvoiceBusiness business = (InvoiceBusiness)
+                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
+        final int recordId = Integer.parseInt (context.getParameter
+                                               (INVOICE_RECORD_KEY));
+        final InvoiceRecordHome home = business.getInvoiceRecordHome ();
+        final InvoiceRecord record
+                = home.findByPrimaryKey (new Integer (recordId));
+
+        final Map result = new HashMap ();
+        addSmallText (result, AMOUNT_KEY, ((long) record.getAmount ()) + "");
+        addSmallText (result, VAT_AMOUNT_KEY, ((long) record.getAmountVAT ())
+                      + "");
+        addSmallText (result, ADJUSTED_SIGNATURE_KEY, record.getChangedBy ());
+        addSmallText (result, CREATED_SIGNATURE_KEY, record.getCreatedBy ());
+        addSmallDateText (result, DATE_ADJUSTED_KEY, record.getDateChanged ());
+        addSmallDateText (result, DATE_CREATED_KEY, record.getDateCreated ());
+        addSmallText (result, NUMBER_OF_DAYS_KEY, record.getDays () + "");
+        addSmallText (result, DOUBLE_POSTING_KEY, record.getDoublePosting ());
+        addSmallText (result, INVOICE_TEXT_KEY, record.getInvoiceText ());
+        addSmallText (result, NOTE_KEY, record.getNotes ());
+        addSmallText (result, OWN_POSTING_KEY, record.getOwnPosting ());
+        addSmallPeriodText (result, CHECK_END_PERIOD_KEY,
+                            record.getPeriodEndCheck ());
+        addSmallPeriodText (result, PLACEMENT_START_PERIOD_KEY,
+                            record.getPeriodEndPlacement ());
+        addSmallPeriodText (result, CHECK_START_PERIOD_KEY,
+                            record.getPeriodStartCheck ());
+        addSmallPeriodText (result, PLACEMENT_END_PERIOD_KEY,
+                            record.getPeriodStartPlacement ());
+        final String ruleSpecType = record.getRuleSpecType ();
+        addSmallText (result, REGULATION_SPEC_TYPE_KEY,
+                      localize (ruleSpecType, ruleSpecType));
+        addSmallText (result, VAT_RULE_KEY, record.getVATType () + "");
+        result.put (ACTION_KEY, getConfirmTable ("Tillbaka", "Tillbaka", new String [0][0]));
+        return result;
+    }
+
+    private void addSmallText (final Map map, final String key,
+                               final String value) {
+        map.put (key, getSmallText (null != value ? value : ""));
+    }
+
+    private void addSmallDateText (final Map map, final String key,
+                                     final Date date) {
+        map.put (key, getSmallText (null != date ? dateFormatter.format (date)
+                                    : ""));
+    }
+
+    private void addSmallPeriodText (final Map map, final String key,
+                                     final Date date) {
+        map.put (key, getSmallText (null != date ? periodFormatter.format (date)
+                                    : ""));
+    }
+
     /**
      * Shows a list of invoice compilations and a search form.
 	 *
@@ -475,21 +575,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST + "",
                                     SEARCH_KEY, SEARCH_DEFAULT),
                    table.getColumns (), row++);
-
-        /// temporary code to create table ///
-        try {
-            final InvoiceBusiness business = (InvoiceBusiness)
-                    IBOLookup.getServiceInstance (context,
-                                                  InvoiceBusiness.class);
-            final InvoiceRecordHome home = business.getInvoiceRecordHome ();
-            final InvoiceRecord record
-                    = home.findByPrimaryKey (new Integer (0));
-        } catch (FinderException dummy) {
-            // table created
-        }
-        
-        /// end temporary code ///
-
 
         if (null != searcher.getUser ()) {
             // exactly one user found - display users invoice compilation list
@@ -1040,7 +1125,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private void addSmallText (final Table table, final String string,
                                final int col, final int row) {
-        table.add (getSmallText (string), col, row);
+        table.add (getSmallText (null != string ? string : ""), col, row);
     }
 
     private void addSmallHeader (final Table table, final int col,
