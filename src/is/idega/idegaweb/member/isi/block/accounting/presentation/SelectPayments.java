@@ -130,7 +130,7 @@ public class SelectPayments extends CashierSubWindowTemplate {
             try {
                 if (getClub() != null) {
                     entries = getAccountingBusiness(iwc)
-                            .findAllOpenAssessmentEntriesByUserGroupAndDivision(
+                            .findAllPaymentEntriesByUserGroupAndDivision(
                                     getClub(), getDivision(), getUser());
                 }
             } catch (RemoteException e) {

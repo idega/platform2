@@ -99,7 +99,7 @@ public class UserPaymentHistory extends CashierSubWindowTemplate {
             try {
                 if (getClub() != null && getUser() != null) {
                     entries = getAccountingBusiness(iwc)
-                            .findAllPaymentEntriesByUserGroupAndDivision(
+                            .findAllOpenAssessmentEntriesByUserGroupAndDivision(
                                     getClub(), getDivision(), getUser());
                 }
             } catch (RemoteException e) {
