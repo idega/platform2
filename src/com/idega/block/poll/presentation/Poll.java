@@ -264,6 +264,7 @@ private int _layout = RADIO_BUTTON_VIEW;
 
   private Table getLinkView(IWContext iwc,LocalizedText locText,PollQuestion pollQuestion) {
     Image olderPollsImage = _iwrb.getImage("older_polls.gif");
+    System.out.println(_questionAlignment);
     Table pollTable = new Table();
       pollTable.setCellpadding(3);
       pollTable.setCellspacing(0);
@@ -278,6 +279,9 @@ private int _layout = RADIO_BUTTON_VIEW;
       Table questionTable = new Table(3,1);
         questionTable.setCellpadding(0);
         questionTable.setCellspacing(0);
+        questionTable.setAlignment(_questionAlignment);
+        questionTable.setVerticalAlignment(1,1,"top");
+      _questionImage.setVerticalSpacing(2);
       questionTable.add(_questionImage,1,1);
       questionTable.setWidth(2,1,"4");
       questionTable.add(question,3,1);
@@ -320,7 +324,9 @@ private int _layout = RADIO_BUTTON_VIEW;
                 imageTable.setCellspacing(0);
                 imageTable.setCellpadding(0);
 
+              _linkImage.setVerticalSpacing(3);
               imageTable.add(_linkImage,1,1);
+              imageTable.setVerticalAlignment(1,1,"top");
               imageTable.setWidth(2,"3");
               imageTable.add(answerLink,3,1);
               answerTable.add(imageTable,1,row);
@@ -371,7 +377,9 @@ private int _layout = RADIO_BUTTON_VIEW;
                   imageTable.setCellspacing(0);
                   imageTable.setCellpadding(0);
 
+                _linkImage.setVerticalSpacing(3);
                 imageTable.add(_linkImage,1,1);
+                imageTable.setVerticalAlignment(1,1,"top");
                 imageTable.setWidth(2,"3");
                 imageTable.add(answerText,3,1);
                 answerTable.add(imageTable,1,row);
