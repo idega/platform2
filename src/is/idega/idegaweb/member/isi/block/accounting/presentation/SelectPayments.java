@@ -10,6 +10,7 @@ package is.idega.idegaweb.member.isi.block.accounting.presentation;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
 
 import java.rmi.RemoteException;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -21,6 +22,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.business.UserBusiness;
@@ -103,11 +105,34 @@ public class SelectPayments extends CashierSubWindowTemplate {
 		paymentTable.add(labelAmount, 5, row);
 		paymentTable.add(labelRemaining, 6, row++);
 		
+		NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
+		nf.setMaximumFractionDigits(0);
+		
 		if (entries != null && !entries.isEmpty()) {
 		    Iterator it = entries.iterator();
 		    while (it.hasNext()) {
 		        FinanceEntry entry = (FinanceEntry) it.next();
-		    }
+				CheckBox addToBaset = new CheckBox(LABEL_ADD_TO_BASKET, entry.getPrimaryKey().toString());
+				paymentTable.add(addToBaset, 1, row);
+				if (entry.getClub() != null) {
+				    paymentTable.add(entry.getClub().getName(), 2, row);
+				}
+				if (entry.getDivision() != null) {
+				    paymentTable.add(entry.getDivision().getName(), 3, row);
+				}
+				paymentTable.add(entry.getInfo(), 4, row);
+				paymentTable.add(nf.format(entry.getAmount()), 5, row);
+				paymentTable.add(nf.format(entry.getAmount() - entry.getAmountEqualized()), 6, row);
+				
+				row++;
+			}
+			
+			SubmitButton moveToBasket = new SubmitButton(iwrb.getLocalizedString(ACTION_ADD_TO_BASKET, "Add to basket"), ACTION_ADD_TO_BASKET, "add_to_basket");
+			moveToBasket.setToEnableWhenChecked(LABEL_ADD_TO_BASKET);
+			paymentTable.add(addToBasket, 6, row);
+			paymentTable.setAlignment(6, row, "RIGHT");
+    
+		    
 		}
 		
 		f.add(inputTable);
