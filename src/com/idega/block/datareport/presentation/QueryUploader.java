@@ -105,9 +105,12 @@ public class QueryUploader extends Block {
 			return;
 		}
 		if (iwc.isParameterSet(KEY_QUERY_UPLOAD_IS_SUBMITTED)) {
-			String queryToBeReplacedId = iwc.getParameter(KEY_CHOSEN_QUERY);
+			Object queryToBeReplacedId = iwc.getParameter(KEY_CHOSEN_QUERY);
 			if (VALUE_DO_NOT_REPLACE_A_QUERY.equals(queryToBeReplacedId)) {
 				queryToBeReplacedId = null;
+			}
+			else {
+				queryToBeReplacedId = new Integer((String)queryToBeReplacedId);
 			}
 			UploadFile uploadFile = iwc.getUploadedFile();
 			ICFile icFile = MediaBusiness.saveMediaToDBUploadFolder(uploadFile,iwc);
@@ -115,7 +118,7 @@ public class QueryUploader extends Block {
 			String permission = iwc.getParameter(KEY_PERMISSION);
 			boolean isPrivate = PRIVATE.equals(permission);
 			QueryService queryService = (QueryService) IBOLookup.getServiceInstance(iwc, QueryService.class);
-			UserQuery userQuery = queryService.storeQuery(name, icFile, isPrivate, new Integer(queryToBeReplacedId), iwc);
+			UserQuery userQuery = queryService.storeQuery(name, icFile, isPrivate, queryToBeReplacedId, iwc);
 			userQueryId = ((Integer) userQuery.getPrimaryKey()).intValue();
 		}
 	}
