@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareQueueBMPBean.java,v 1.8 2003/04/28 16:44:19 joakim Exp $
+ * $Id: ChildCareQueueBMPBean.java,v 1.9 2003/04/30 12:56:45 joakim Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -217,6 +217,13 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	public Integer ejbFindQueueByChildAndChoiceNumber(int childID, int choiceNumber) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(CHOICE_NUMBER, choiceNumber).appendAndEquals(CHILD_ID,childID);
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
+	public Integer ejbFindQueueByChildChoiceNumberAndQueueType(int childID, int choiceNumber, int queueType) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(CHOICE_NUMBER, choiceNumber).
+		appendAndEquals(CHILD_ID,childID).appendAndEquals(QUEUE_TYPE,queueType);
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 	
