@@ -3,7 +3,7 @@ package is.idega.travel.presentation;
 import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.text.Text;
+import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
@@ -11,6 +11,11 @@ import com.idega.core.data.*;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.block.trade.stockroom.business.*;
 import is.idega.travel.business.TravelStockroomBusiness;
+import com.idega.core.accesscontrol.data.PermissionGroup;
+import com.idega.core.business.UserGroupBusiness;
+import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.user.data.User;
 import java.sql.SQLException;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import java.util.*;
@@ -34,6 +39,13 @@ public class InitialData extends TravelManager {
 
   private Supplier supplier;
   String tableBackgroundColor = "#FFFFFF";
+
+  public static String sAction = "admin_action";
+  public static String parameterEdit = "edit";
+  public static String parameterNew = "new";
+  public static String parameterInvalidate = "invalidate";
+  public static String parameterChoose = "InitialDataChooseSupplier";
+
 
   public InitialData() {
   }
@@ -71,7 +83,7 @@ public class InitialData extends TravelManager {
 
   public void displayForm(IWContext iwc) throws SQLException {
 
-      String action = iwc.getParameter("admin_action");
+      String action = iwc.getParameter(this.sAction);
         if (action == null) action = "";
 
       Form form = new Form();
@@ -89,14 +101,14 @@ public class InitialData extends TravelManager {
             if (action.equals("")) {
               sb.add(selectSupplier(iwc));
             }
-            else if (action.equals("new")) {
+            else if (action.equals(this.parameterNew)) {
               sb.add(getSupplierCreation(-1));
             }
-            else if (action.equals("edit")) {
-              sb.add(getSupplierCreation(Integer.parseInt(iwc.getParameter("SR_SUPPLIER"))));
+            else if (action.equals(this.parameterEdit)) {
+              sb.add(getSupplierCreation(Integer.parseInt(iwc.getParameter(Supplier.getSupplierTableName()))));
             }
-            else if (action.equals("invalidate")) {
-              String supplier_id = iwc.getParameter("SR_SUPPLIER");
+            else if (action.equals(this.parameterInvalidate)) {
+              String supplier_id = iwc.getParameter(Supplier.getSupplierTableName());
               if (supplier_id != null)
               try {
                 SupplierManager.invalidateSupplier(new Supplier(Integer.parseInt(supplier_id)));
@@ -118,28 +130,94 @@ public class InitialData extends TravelManager {
 
   public Table selectSupplier(IWContext iwc) throws SQLException {
       Table table = new Table();
-        table.setBorder(1);
+        table.setBorder(0);
+        table.setWidth("80%");
+
+      int row=1;
+
+      Link editLink = new Link(iwrb.getImage("buttons/change.gif"));
+        editLink.addParameter(this.sAction, this.parameterEdit);
+
+      Link deleteLink = new Link(iwrb.getImage("buttons/delete.gif"));
+        deleteLink.addParameter(this.sAction, this.parameterInvalidate);
+
+      Link chooseLink = new Link("T - use");
+        chooseLink.addParameter(this.sAction, this.parameterChoose);
+
+      Link loginEdit = new Link("t - Change login");
+        loginEdit.setWindowToOpen(LoginChanger.class);
+
 
       Text suppText = (Text) theBoldText.clone();
         suppText.setText(iwrb.getLocalizedString("travel.suppliers","Suppliers"));
+      Text suppLogin = (Text) theBoldText.clone();
+        suppLogin.setText(iwrb.getLocalizedString("travel.user_name","User name"));
+      Text suppPass = (Text) theBoldText.clone();
+        suppPass.setText(iwrb.getLocalizedString("travel.password","Password"));
 
-      DropdownMenu suppliers = new DropdownMenu(Supplier.getValidSuppliers());
 
+      Text suppNameText;
+      Text suppLoginText;
+      Text suppPassText;
+      Link link;
+
+      PermissionGroup pGroup;
+      List users;
+      User user;
+      LoginTable logTable;
+
+      table.add(suppText,1,row);
+      table.add(suppLogin,2,row);
+
+      Supplier[] supps = Supplier.getValidSuppliers();
+      for (int i = 0; i < supps.length; i++) {
+        ++row;
+
+        link = (Link) editLink.clone();
+          link.addParameter(Supplier.getSupplierTableName(),supps[i].getID());
+        table.add(link,4,row);
+        link = (Link) chooseLink.clone();
+          link.addParameter(Supplier.getSupplierTableName(),supps[i].getID());
+        table.add(link,4,row);
+        link = (Link) deleteLink.clone();
+          link.addParameter(Supplier.getSupplierTableName(),supps[i].getID());
+        table.add(link,4,row);
+        table.setAlignment(4,row,"right");
+
+        suppNameText = (Text) theText.clone();
+          suppNameText.setText(supps[i].getName());
+
+        table.add(suppNameText,1,row);
+
+
+        pGroup = SupplierManager.getPermissionGroup(supps[i]);
+        users = UserGroupBusiness.getUsersContained(pGroup);
+        if (users != null) {
+          for (int j = 0; j < users.size(); j++) {
+            if (j > 0) ++row;
+
+            table.setRowColor(row,super.backgroundColor);
+
+            user = (User) users.get(j);
+            logTable = LoginDBHandler.findUserLogin(user.getID());
+            suppLoginText = (Text) theText.clone();
+            suppLoginText.setText(logTable.getUserLogin());
+            suppPassText = (Text) theText.clone();
+            suppPassText.setText(logTable.getUserPassword());
+
+            table.add(suppLoginText,2,row);
+            table.mergeCells(2,row,3,row);
+          }
+
+        }
+
+
+      }
+
+      ++row;
       SubmitButton newSupplier = new SubmitButton("new","admin_action","new");
-      SubmitButton editSuppliers = new SubmitButton("edit","admin_action","edit");
-      SubmitButton invalidSuppliers = new SubmitButton("invalidate","admin_action","invalidate");
-
-
-      table.add(suppText,1,1);
-      table.add(suppliers,1,2 );
-      table.mergeCells(1,1,2,1);
-      table.mergeCells(1,2,2,2);
-
-      table.add(newSupplier,1,3);
-      table.add(editSuppliers,2,3);
-      table.add(invalidSuppliers,1,4);
-      table.mergeCells(1,4,2,4);
-
+      table.add(newSupplier,1,row);
+      table.add(loginEdit,1,row);
 
       return table;
   }
@@ -217,7 +295,6 @@ public class InitialData extends TravelManager {
           name.setContent(supplier.getName());
           description.setContent(supplier.getDescription());
 
-
           Address addr = supplier.getAddress();
           if (addr != null) {
             String namer = addr.getStreetName();
@@ -249,10 +326,7 @@ public class InitialData extends TravelManager {
           if (eEmail != null) {
             email.setContent(eEmail.getEmailAddress());
           }
-
       }
-
-
 
       SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),"supplier_action","create");
       BackButton back = new BackButton("Til baka");
@@ -381,8 +455,7 @@ public class InitialData extends TravelManager {
                       Supplier supplier = suppMan.createSupplier(name, userName, passOne, description, addressIds, phoneIds, emailIds);
 
 
-      //                  tm.commit();
-                      add(iwrb.getLocalizedString("travel.supplier_created","Supplier was created"));
+                      this.displayForm(iwc);
                   }else {
                       add("TEMP - PASSWORD not the same");
 

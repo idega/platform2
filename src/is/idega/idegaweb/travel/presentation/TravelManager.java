@@ -22,6 +22,8 @@ public class TravelManager extends Block {
     private Supplier supplier;
     private Reseller reseller;
 
+    private boolean oldLogin = false;
+
     protected Text theText = new Text();
     protected Text theBoldText = new Text();
     protected Text smallText = new Text();
@@ -134,8 +136,9 @@ public class TravelManager extends Block {
               lInitialData.addParameter(this.sAction,this.parameterInitialData);
             table.add(lInitialData,1,1);
 
-            Link lHome = new Link("heim","/index.jsp");
-            table.add(lHome,2,1);
+            Link lUpdatePassword = new Link("update password");
+              lUpdatePassword.setWindowToOpen(LoginChanger.class);
+            table.add(lUpdatePassword,1,1);
         }else if (supplier != null) {
 
             Link lDesign = new Link(iDesign,ServiceDesigner.class);
@@ -164,8 +167,9 @@ public class TravelManager extends Block {
             table.add(lContracts,1,1);
             table.add(lInitialData,1,1);
 
-            Link lHome = new Link("heim","/index.jsp");
-            table.add(lHome,2,1);
+            Link lUpdatePassword = new Link("update password");
+              lUpdatePassword.setWindowToOpen(LoginChanger.class);
+            table.add(lUpdatePassword,1,1);
         }
         else if (reseller!= null) {
 
@@ -176,15 +180,17 @@ public class TravelManager extends Block {
               lOverview.addParameter(this.sAction,this.parameterBookingOverview);
             table.add(lOverview,1,1);
 
-            Link lHome = new Link("heim","/index.jsp");
-            table.add(lHome,2,1);
+            Link lUpdatePassword = new Link("update password");
+              lUpdatePassword.setWindowToOpen(LoginChanger.class);
+            table.add(lUpdatePassword,1,1);
         }
-        /*else {
-            Link lBooking = new Link(iBooking,Booking.class);
-              lBooking.addParameter(this.sAction,"lBooking");
-            table.add(lBooking,1,1);
-        }*/
 
+        Link lHome = new Link("heim","/index.jsp");
+        table.add(lHome,2,1);
+
+        if (oldLogin) {
+          this.add(iwrb.getLocalizedString("travel.no_permission","No permission"));
+        }
         super.add(table);
     }
 
@@ -196,6 +202,10 @@ public class TravelManager extends Block {
         try {
             int supplierId = TravelStockroomBusiness.getUserSupplierId(iwc);
             supplier = new Supplier(supplierId);
+            if (!supplier.getIsValid()) {
+              supplier = null;
+              oldLogin = true;
+            }
         }
         catch (Exception e) {
         }
@@ -203,6 +213,10 @@ public class TravelManager extends Block {
         try {
             int resellerId = TravelStockroomBusiness.getUserResellerId(iwc);
             reseller = new Reseller(resellerId);
+            if (!reseller.getIsValid()) {
+              reseller = null;
+              oldLogin = true;
+            }
         }
         catch (Exception e) {
         }

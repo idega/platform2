@@ -776,7 +776,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         if (id == null || id.length == 0) {
             curr = new com.idega.block.trade.data.Currency();
             curr.setCurrencyName(iceKr);
-            curr.setCurrencyAbbreviation("IKr");
+            curr.setCurrencyAbbreviation("ISK");
             curr.insert();
             returner = curr.getID();
         } else if (id.length > 0) {

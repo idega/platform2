@@ -8,6 +8,7 @@ import com.idega.core.user.data.User;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.data.*;
 import com.idega.util.idegaTimestamp;
+import com.idega.data.EntityFinder;
 import java.util.*;
 import java.sql.*;
 
@@ -24,6 +25,7 @@ import java.sql.*;
 public class SupplierManager {
 
   public static String PRICE_CATEGORY_FULL_PRICE_DEFAULT_NAME = "default full price";
+  public static String SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION = "Supplier administator group";
 
   public SupplierManager(){
   }
@@ -59,7 +61,7 @@ public class SupplierManager {
     int[] userIDs = {user.getID()};
 
     AccessControl ac = new AccessControl();
-    int permissionGroupID = ac.createPermissionGroup(name+" - admins", "Supplier administator group", "", userIDs ,null);
+    int permissionGroupID = ac.createPermissionGroup(name+" - admins", SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION, "", userIDs ,null);
 
     //sGroup.addTo(PermissionGroup.class, permissionGroupID);
 
@@ -90,6 +92,20 @@ public class SupplierManager {
     pCategory.insert();
 
     return supp;
+  }
+
+  public static PermissionGroup getPermissionGroup(Supplier supplier) {
+    PermissionGroup pGroup = null;
+    try {
+      List list = EntityFinder.findAllByColumn((PermissionGroup) PermissionGroup.getStaticInstance(PermissionGroup.class),PermissionGroup.getNameColumnName(),supplier.getName()+" - admins",PermissionGroup.getGroupDescriptionColumnName(),SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION, PermissionGroup.getGroupTypeColumnName(),"permission");
+      if (list != null) {
+        pGroup = (PermissionGroup) list.get(0);
+      }
+
+    }catch (Exception e) {
+      e.printStackTrace();
+    }
+    return pGroup;
   }
 
   public static void invalidateSupplier(Supplier supplier) throws SQLException {

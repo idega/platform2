@@ -389,7 +389,7 @@ public class Booking extends TravelManager {
       String colorForInquery = super.YELLOW;
       String colorForToday = "#71CBFB";
 
-      Table table = new Table(4,5);
+      Table table = new Table(4,6);
           table.setBorder(0);
           table.setColor(super.backgroundColor);
           table.setAlignment("center");
@@ -546,8 +546,36 @@ public class Booking extends TravelManager {
         tfnfe.printStackTrace(System.err);
       }
 
+      Table legend = new Table();
+        legend.setBorder(0);
+        legend.setCellpadding(0);
+        legend.setCellspacing(2);
+
+        Text avail = (Text) theText.clone();
+          avail.setText(iwrb.getLocalizedString("travel.colorForAvailableDay","Available"));
+        Text inq = (Text) theText.clone();
+          inq.setText(iwrb.getLocalizedString("travel.colorForInquiry","Inquiry"));
+        Text today = (Text) theText.clone();
+          today.setText(iwrb.getLocalizedString("travel.today","Today"));
+
+        legend.add(avail,1,1);
+        legend.setColor(3,1,colorForAvailableDay);
+        legend.setWidth(3,1,"18");
+        legend.setHeight(1,"14");
+        legend.add(inq,1,2);
+        legend.setColor(3,2,colorForInquery);
+        legend.setWidth(3,2,"18");
+        legend.setHeight(2,"14");
+        legend.add(today,1,3);
+        legend.setColor(3,3,colorForToday);
+        legend.setWidth(3,3,"18");
+        legend.setHeight(3,"14");
+      table.setAlignment(1,6,"center");
+
       table.mergeCells(1,5,4,5);
       table.add(sm,1,5);
+      table.mergeCells(1,6,4,6);
+      table.add(legend,1,6);
 
       return table;
   }
