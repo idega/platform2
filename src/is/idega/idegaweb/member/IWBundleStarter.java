@@ -1,16 +1,16 @@
 package is.idega.idegaweb.member;
 
 import is.idega.idegaweb.member.block.importer.business.PinLookupToGroupImportHandler;
-import is.idega.idegaweb.member.presentation.ClubMemberExchangeWindow;
+import is.idega.idegaweb.member.presentation.ClubMemberExchangeWindowPlugin;
 import is.idega.idegaweb.member.presentation.UpdateClubDivisionTemplate;
 import is.idega.idegaweb.member.presentation.UserFamilyTab;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.repository.data.ImplementorRepository;
-import com.idega.user.handler.UserPinLookupToGroupImportHandler;
-import com.idega.user.presentation.FamilyTab;
-import com.idega.user.presentation.UserClubMemberExchangeWindow;
-import com.idega.user.presentation.UserUpdateClubDivisionTemplate;
+import com.idega.user.app.ToolbarElement;
+import com.idega.user.handler.plugin.UserPinLookupToGroupImportHandler;
+import com.idega.user.plugin.FamilyTab;
+import com.idega.user.plugin.UserUpdateClubDivisionTemplate;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -29,7 +29,7 @@ public class IWBundleStarter implements IWBundleStartable {
 		repository.addImplementor(FamilyTab.class, UserFamilyTab.class);
 		repository.addImplementor(UserPinLookupToGroupImportHandler.class,PinLookupToGroupImportHandler.class);
 		repository.addImplementor(UserUpdateClubDivisionTemplate.class, UpdateClubDivisionTemplate.class);
-		repository.addImplementor(UserClubMemberExchangeWindow.class, ClubMemberExchangeWindow.class);
+		repository.addImplementor(ToolbarElement.class, ClubMemberExchangeWindowPlugin.class);
 	}
 	
 	public void stop(IWBundle starterBundle) {
