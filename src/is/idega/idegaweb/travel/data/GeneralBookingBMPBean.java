@@ -753,10 +753,13 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
         buff.append(" AND ");
         buff.append(getTotalCountColumnName()+" = '"+booking.getTotalCount()+"'");
 				buff.append(" AND ");
-				buff.append(getBookingCodeColumnName()+"= '"+booking.getCode()+"'");
+				if (booking.getCode() == null) {
+					buff.append(getBookingCodeColumnName()+" is null");
+				} else {
+					buff.append(getBookingCodeColumnName()+" = '"+booking.getCode()+"'");
+				}
 				buff.append(" ORDER BY "+getBookingDateColumnName());
       //coll = this.idoFindPKsBySQL(buff.toString());
-      
       return this.idoFindPKsBySQL(buff.toString());
       /*if (coll != null && !coll.isEmpty()) {
 				System.out.println(coll.size()+" generalBookingPks found");
