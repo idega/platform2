@@ -148,7 +148,11 @@ public class Voucher extends TravelManager {
 
         Table centerHeader = new Table();
           centerHeader.add(getBigText(_iwrb.getLocalizedString("travel.voucher","Voucher")),1,1);
-          centerHeader.add(getText(_supplier.getName()),1,2);
+          if (_reseller != null) {
+            centerHeader.add(getText(_reseller.getName()),1,2);
+          }else {
+            centerHeader.add(getText(_supplier.getName()),1,2);
+          }
           centerHeader.setAlignment(1,1,"center");
           centerHeader.setAlignment(1,2,"center");
         table.add(centerHeader,2,1);
@@ -171,19 +175,19 @@ public class Voucher extends TravelManager {
         List emails = null;
         String name = "";
 
-        if (_reseller != null) {
-          name = _reseller.getName();
-          address = _reseller.getAddress();
-          hPhone = _reseller.getHomePhone();
-          fPhone = _reseller.getFaxPhone();
-          emails = _reseller.getEmails();
-        }else {
+        //if (_reseller != null) {
+          //name = _reseller.getName();
+          //address = _reseller.getAddress();
+          //hPhone = _reseller.getHomePhone();
+          //fPhone = _reseller.getFaxPhone();
+          //emails = _reseller.getEmails();
+        //}else {
           name = _supplier.getName();
           address = _supplier.getAddress();
           hPhone = _supplier.getHomePhone();
           fPhone = _supplier.getFaxPhone();
           emails = _supplier.getEmails();
-        }
+        //}
 
         table.add(getText(_iwrb.getLocalizedString("travel.to_lg","TO")+" : "),1,2);
         table.add(getText(name),1,2);

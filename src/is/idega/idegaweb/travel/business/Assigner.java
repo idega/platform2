@@ -72,10 +72,12 @@ public class Assigner {
     int returner = 0;
     Contract[] contracts = getContracts(product);
     Connection conn= null;
+    int temp;
     try {
       conn = ConnectionBroker.getConnection();
       for (int i = 0; i < contracts.length; i++) {
-        returner += getNumberOfAssignedSeatsByContract(product.getID(), contracts[i].getResellerId(), stamp, contracts[i], conn);
+        temp = getNumberOfAssignedSeatsByContract(product.getID(), contracts[i].getResellerId(), stamp, contracts[i], conn);
+        returner += temp;
       }
     }
     finally {

@@ -420,7 +420,9 @@ public class BookingOverview extends TravelManager {
                             iAssigned = Assigner.getNumberOfAssignedSeats(product, tempStamp);
 
                             int resellerBookings = Booker.getNumberOfBookingsByResellers(service.getID(), tempStamp);
-                            iAssigned = iAssigned - resellerBookings;
+                            if (iAssigned != 0) {
+                              iAssigned = iAssigned - resellerBookings;
+                            }
 
                             iInquery = Inquirer.getInqueredSeats(service.getID(), tempStamp, true);//getInqueredSeats(service.getID() ,tempStamp, true);
                             //iInquery = Inquirer.getInqueredSeats(service.getID() ,tempStamp, true);

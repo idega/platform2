@@ -589,6 +589,15 @@ public class Booker {
   public static List getMultibleBookings(GeneralBooking booking) {
     List list = new Vector();
     try {
+      int numberOfDays = 1;
+      try {
+        numberOfDays = new Tour(booking.getServiceID()).getNumberOfDays();
+        if (numberOfDays < 1){
+          numberOfDays = 1;
+        }
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+      }
 
       StringBuffer buff = new StringBuffer();
         buff.append("SELECT * FROM "+booking.getBookingTableName());
@@ -624,14 +633,84 @@ public class Booker {
         buff.append(booking.getTotalCountColumnName()+" = '"+booking.getTotalCount()+"'");
         buff.append(" ORDER BY "+booking.getBookingDateColumnName());
       list = EntityFinder.findAll(booking, buff.toString());
+
+      if (list.size() < 2) {
+        return list;
+      }else {
+        int myIndex = list.indexOf(booking);
+        list = cleanList(list, booking, myIndex, numberOfDays);
+      }
+
+
+
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
     return list;
   }
 
+  private static List cleanList(List list, Booking booking, int mainIndex, int numberOfDays) {
+    Booking book;
+    int betw = 1;
+    int index = mainIndex;
+    boolean cont = true;
+
+
+    if (mainIndex == 0) {
+      while (cont) {
+        ++index;
+        book = (Booking) list.get(index);
+        betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(booking.getBookingDate()), new idegaTimestamp(book.getBookingDate()));
+        if (betw != numberOfDays) {
+          list = list.subList(mainIndex, index-1);
+          cont = false;
+        }
+        if (index == list.size()-1) cont = false;
+      }
+    }else if (mainIndex == list.size() -1) {
+      while (cont) {
+        --index;
+        book = (Booking) list.get(index);
+        betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), new idegaTimestamp(booking.getBookingDate()));
+        if (betw != numberOfDays) {
+          list = list.subList(index+1, mainIndex);
+          cont = false;
+        }
+        if (index == 0) cont = false;
+      }
+    }else {
+      while (cont) {
+        --index;
+        book = (Booking) list.get(index);
+        betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(book.getBookingDate()), new idegaTimestamp(booking.getBookingDate()));
+        if (betw != numberOfDays) {
+          list = list.subList(index+1, list.size()+1);
+          cont = false;
+        }
+
+        if (index == 0) cont = false;
+      }
+
+      index = mainIndex;
+      cont = true;
+
+      while (cont) {
+        ++index;
+        book = (Booking) list.get(index);
+        betw = idegaTimestamp.getDaysBetween(new idegaTimestamp(booking.getBookingDate()), new idegaTimestamp(book.getBookingDate()));
+        if (betw != numberOfDays) {
+          list = list.subList(mainIndex, index-1);
+          cont = false;
+        }
+        if (index == list.size()-1) cont = false;
+      }
+    }
+
+    return list;
+  }
+
   /**
-   * returns int[] int[0] is number of current booking, int[1] is total bookings number
+   * returns int[], int[0] is number of current booking, int[1] is total bookings number
    */
   public static int[] getMultipleBookingNumber(GeneralBooking booking) {
     List list = getMultibleBookings(booking);

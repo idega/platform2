@@ -1324,7 +1324,7 @@ public class TourBookingForm extends TravelManager {
 
   }
 
-  public int saveBooking(IWContext iwc) {
+  public int saveBooking(IWContext iwc) throws SQLException {
       String surname = iwc.getParameter("surname");
       String lastname = iwc.getParameter("lastname");
       String address = iwc.getParameter("address");
@@ -1477,7 +1477,9 @@ public class TourBookingForm extends TravelManager {
          */
         for (int o = 0; o < bookingIds.length; o++) {
           try {
-            ((Reseller)Reseller.getStaticInstance(Reseller.class)).removeFrom(GeneralBooking.class, bookingIds[o]);
+            GeneralBooking gBook = new GeneralBooking(bookingIds[o]);
+            debug("detaching booking from reseller");
+            gBook.removeFrom(Reseller.class);
           }catch (SQLException sql) {debug(sql.getMessage());}
         }
 
@@ -1532,7 +1534,11 @@ public class TourBookingForm extends TravelManager {
               ProductPrice price;
               boolean done = false;
               BookingEntry[] entries = TourBooker.getBookingEntries(new TourBooking(iBookingId));
-                if (entries == null) entries = new BookingEntry[]{};
+              for (int i = 0; i < entries.length; i++) {
+                entries[i].delete();
+              }
+              //if (entries == null)
+              entries = new BookingEntry[]{};
               for (int i = 0; i < pPrices.length; i++) {
                 done = false;
                 for (int j = 0; j < entries.length; j++) {
@@ -1543,7 +1549,7 @@ public class TourBookingForm extends TravelManager {
                     break;
                   }
                 }
-                if (!done) {
+                if (!done && manys[i] != 0) {
                   bEntry = new BookingEntry();
                     bEntry.setProductPriceId(pPrices[i].getID());
                     bEntry.setBookingId(bookingIds[k]);
@@ -1559,8 +1565,6 @@ public class TourBookingForm extends TravelManager {
 
       }catch (NumberFormatException n) {
         n.printStackTrace(System.err);
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
       }
 
       return returner;
