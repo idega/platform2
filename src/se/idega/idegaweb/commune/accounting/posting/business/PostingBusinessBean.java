@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.28 2003/10/09 13:19:08 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.29 2003/10/09 14:45:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -604,7 +604,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			PostingFieldHome pfHome = getPostingFieldHome();
 			PostingString ps = psHome.findPostingStringByDate(date); 
 			int psID = Integer.parseInt(ps.getPrimaryKey().toString());
-			PostingField pf = (PostingField) pfHome.findFieldByPostingStringAndFieldNo(psID, fieldNo);
+			PostingField pf = pfHome.findFieldByPostingStringAndFieldNo(psID, fieldNo);
 			return pf.getLen();				
 		} catch (RemoteException e) {
 			return 0;
