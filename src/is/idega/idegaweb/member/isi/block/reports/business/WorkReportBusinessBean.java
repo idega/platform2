@@ -48,6 +48,10 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.mail.MessagingException;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
@@ -71,6 +75,7 @@ import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.transaction.IdegaTransactionManager;
 import com.idega.user.business.GroupBusiness;
@@ -2009,46 +2014,61 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
    */
   public boolean changeWorkReportGroupOfEntity(int workReportID, WorkReportGroup oldGroup, WorkReportGroup newGroup, IDOEntity entity)  {
     TransactionManager manager = com.idega.transaction.IdegaTransactionManager.getInstance();
-    try {
-      manager.begin();
-      // add work report group to work report 
-      if (newGroup != null) {
-        Collection coll = getLeaguesOfWorkReportById(workReportID);
-        Integer pk = (Integer) newGroup.getPrimaryKey();
-        Iterator iteratorLeagues = coll.iterator();
-        boolean doesNotExist = true;
-        while (iteratorLeagues.hasNext() && doesNotExist) {
-          WorkReportGroup group = (WorkReportGroup) iteratorLeagues.next();
-          Integer pkGroup = (Integer) group.getPrimaryKey();
-          doesNotExist = ! (pk.equals(pkGroup));
-        }
-        if (doesNotExist)  {
-          WorkReport workReport = getWorkReportById(workReportID);
-          workReport.addLeague(newGroup);
-        }
-      }
-      if (oldGroup != null) {
-        oldGroup.removeEntity(entity);
-        oldGroup.store();
-      }
-      if (newGroup != null) {
-        newGroup.addEntity(entity);
-        newGroup.store();
-      }
-      manager.commit();
-      return true;
-    }
-    catch (Exception ex)  {
-      ex.printStackTrace(System.err);
+    
       try {
-        manager.rollback();
+				manager.begin();
+			
+      // add work report group to work report 
+	      if (newGroup != null) {
+	       
+	      
+	        WorkReport workReport = getWorkReportById(workReportID);
+	        try {
+						workReport.addLeague(newGroup);
+					}
+					catch (IDORelationshipException e) {
+						System.err.println("Error adding relation to workreportgroup, maybe relation is already there");
+					}
+					
+					try {
+							 newGroup.addEntity(entity);
+						 }
+						 catch (IDOAddRelationshipException e) {
+							 System.err.println("Error adding relation to workreportgroup, maybe relation is already there");
+						 //	e.printStackTrace();
+						 }
+	        
+	      }
+      
+	      if (oldGroup != null) {
+	      	
+	        try {
+						oldGroup.removeEntity(entity);
+					}
+					catch (IDORemoveRelationshipException e) {
+						e.printStackTrace();
+						System.err.println("Error removing relation to workreportgroup, maybe there was no relation");
+					}
+	       
+	      }
+      
+
+      	manager.commit();
       }
-      catch (javax.transaction.SystemException sysEx) {
-        sysEx.printStackTrace(System.err);
-        return false;
-      }
-      return false;
-    }
+			catch (Exception ex) {
+				ex.printStackTrace(System.err);
+						 try {
+							 manager.rollback();
+						 }
+						 catch (javax.transaction.SystemException sysEx) {
+							 sysEx.printStackTrace(System.err);
+							 return false;
+						 }
+						 return false;
+			}
+						
+      return true;
+
   }
   
    /**
