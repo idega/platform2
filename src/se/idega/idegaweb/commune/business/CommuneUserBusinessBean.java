@@ -651,5 +651,14 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public MemberFamilyLogic getMemberFamilyLogic() throws RemoteException {
 		return (MemberFamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);
 	}
+	
+	public int getRootAdministratorGroupID() throws RemoteException {
+		String ROOT_COMMUNE_ADMINISTRATORS_GROUP = "commune_administrators_group_id";
+		IWBundle bundle = getCommuneBundle();
+		String groupId = bundle.getProperty(ROOT_COMMUNE_ADMINISTRATORS_GROUP);
+		if (groupId != null)
+			return Integer.parseInt(groupId);
+		return -1;
+	}
 
 }

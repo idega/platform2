@@ -67,4 +67,5 @@ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 	public boolean moveCitizenFromCommune(User user) throws RemoteException;
 	
 		public boolean moveCitizenToCommune(User user) throws RemoteException;
+	public int getRootAdministratorGroupID() throws RemoteException;
 }
