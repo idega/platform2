@@ -18,6 +18,7 @@ import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
+import com.idega.presentation.texteditor.TextEditor;
 
 /** @todo Henda við tækifæri... */
 import com.idega.block.trade.stockroom.data.*;
@@ -181,12 +182,15 @@ public class ProductEditorWindow extends IWAdminWindow {
   private void simpleForm(IWContext iwc) {
     TextInput number = new TextInput(PAR_NUMBER);
     TextInput name = new TextInput(PAR_NAME);
-    TextArea description = new TextArea(PAR_DESCRIPTION);
+    //TextArea description = new TextArea(PAR_DESCRIPTION);
+    TextEditor description = new TextEditor();
+    description.setInputName(PAR_DESCRIPTION);
+
     TextArea teaser = new TextArea(PAR_TEASER);
     TextInput price = new TextInput(PAR_PRICE);
       name.setSize(67);
-      description.setWidth(70);
-      description.setHeight(15);
+      //description.setWidth(70);
+      //description.setHeight(15);
       teaser.setWidth(70);
       teaser.setHeight(4);
 
