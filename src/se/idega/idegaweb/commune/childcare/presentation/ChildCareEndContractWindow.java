@@ -113,18 +113,18 @@ public class ChildCareEndContractWindow extends Window {
 		
 		getChildCareBusiness(iwc).sendMessageToParents(
 			application, 
-			"Begäran om uppsägning av kontrakt gjord", 
-			"Du har skickat en begäran om uppsägning av kontrakt för " +
-			child.getName() + " " +  child.getPersonalID() + 
-			" fr.o.m. "+ iwc.getParameter(FROM_DATE) + ".");
+			style.localize("ccecw_encon_par1", "Begäran om uppsägning av kontrakt gjord"), 
+			style.localize("ccecw_encon_par2", "Du har skickat en begäran om uppsägning av kontrakt för") + " " +
+			child.getName() + " " +  child.getPersonalID() + " " +
+			style.localize("ccecw_encon_par3", "fr.o.m.")+ " " + iwc.getParameter(FROM_DATE) + ".");
 		
 		
 		getChildCareBusiness(iwc).sendMessageToProvider(
 			application,
-			"Uppsägning av kontrakt",
-			owner.getName() + " har begärt uppsägning av kontrakt för " +
-			child.getName() + " " +  child.getPersonalID() + 
-			". Kontraktet ska upphöra fr.o.m. " + iwc.getParameter(FROM_DATE) + ".",
+			style.localize("ccecw_encon_prov1", "Uppsägning av kontrakt"),
+			owner.getName() + " " + style.localize("ccecw_encon_prov2", "har begärt uppsägning av kontrakt för") + " " +
+			child.getName() + " " +  child.getPersonalID() + ". " + 
+			style.localize("ccecw_encon_prov3", "Kontraktet ska upphöra fr.o.m.") + " " + iwc.getParameter(FROM_DATE) + ".",
 			application.getOwner());	
 	}
 		

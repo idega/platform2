@@ -37,13 +37,13 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.39 2003/05/28 14:41:50 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.40 2003/05/28 15:44:18 roar Exp $
  * @since 12.2.2003 
  */
 
 public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
-	private final static String[] SUBMIT = { "ccot_submit", "Next" }, CANCEL = { "ccot_cancel", "Cancel" }, SUBMIT_ALERT_2 = { "ccot_alert_2", "Do you want to commit your choice? This can not be undone afterwards." }, NO_PLACEMENT = { "ccot_no_placement", "Detta barn har ingen placering" }, PLACED_AT = { "ccot_placed_at", "Placerad hos" }, PERSONAL_ID = { "ccot_personal_id", "Personal id" }, NAME = { "ccot_name", "Name" }, REQUEST_SUBJECT = { "ccot_request_subject", "Request for information" }, REQUEST_MESSAGE = { "ccot_request_message", "Requesting information..." }, REQUEST_CONFIRM = { "ccot_request_sent_confirm", "Your request has been sent." }, NO_APPLICATION = { "ccot_no_application", "No application found" }, NEW_CARETIME = { "ccot_new_caretime", "New caretime" }, END_CARETIME = { "ccot_end_caretime", "Avsluta kontrakt" };
+	private final static String[] SUBMIT = { "ccot_submit", "Next" }, CANCEL = { "ccot_cancel", "Cancel" }, SUBMIT_ALERT_2 = { "ccot_alert_2", "Do you want to commit your choice? This can not be undone afterwards." }, NO_PLACEMENT = { "ccot_no_placement", "Detta barn har ingen placering" }, PLACED_AT = { "ccot_placed_at", "Placerad hos" }, PERSONAL_ID = { "ccot_personal_id", "Personal id" }, NAME = { "ccot_name", "Name" }, REQUEST_CONFIRM = { "ccot_request_sent_confirm", "Your request has been sent." }, NO_APPLICATION = { "ccot_no_application", "No application found" }, NEW_CARETIME = { "ccot_new_caretime", "New caretime" }, END_CARETIME = { "ccot_end_caretime", "Avsluta kontrakt" }, REQUEST_SUBJECT = { "ccot_request_subject", "Request for queue information" }, REQUEST_MESSAGE1 = { "ccot_request_message1", "Parents of" }, REQUEST_MESSAGE2 = 	{ "ccot_request_message2", "are requesting queue information." };
 
 	public final static int PAGE_1 = 1;
 	public final static int PAGE_2 = 2;
@@ -82,12 +82,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			case CCConstants.ACTION_SUBMIT_1 :
 				handleAcceptStatus(iwc, getAcceptedStatus(iwc));
 				applications = findApplications(iwc);
-				//if (getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc))) {
-					//form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
-				//}
-				//else {
+				if (getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc))) {
+					form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
+				}
+				else {
 					form.setOnSubmit(createPagePhase2(iwc, layoutTbl, applications));
-				//}
+				}
 				break;
 
 			case CCConstants.ACTION_SUBMIT_2 :
@@ -107,8 +107,18 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 			case CCConstants.ACTION_REQUEST_INFO :
 				ChildCareApplication application = getChildCareBusiness(iwc).getApplicationByPrimaryKey(iwc.getParameter(CCConstants.APPID));
-				getChildCareBusiness(iwc).sendMessageToProvider(application, localize(REQUEST_SUBJECT), localize(REQUEST_MESSAGE), application.getOwner());
-
+				getChildCareBusiness(iwc).sendMessageToProvider(
+					application,
+					localize(REQUEST_SUBJECT),
+					localize(REQUEST_MESSAGE1)
+						+ " "
+						+ application.getChild().getName()
+						+ ", "
+						+ application.getChild().getPersonalID()
+						+ " "
+						+ localize(REQUEST_MESSAGE2),
+					application.getOwner());
+				
 				iwc.setSessionAttribute(REQ_BUTTON + application.getNodeID(), new Boolean(true));
 				createRequestInfoConfirmPage(layoutTbl);
 				break;
@@ -211,17 +221,62 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 			if (status.isDefined()) {
 				ChildCareApplication application = childCarebusiness.getApplicationByPrimaryKey(status._appid);
+				User child = application.getChild();
+				String subject =
+					localize(
+						"ccot_offer_answer_subject",
+						"Svar på erbjudande om plats");				
 
 				if (status.equals(CCConstants.YES)) {
-					getChildCareBusiness(iwc).parentsAgree(Integer.valueOf(status._appid).intValue(), application.getOwner(), localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT), getAcceptedMessage(iwc, application));
+					getChildCareBusiness(iwc).parentsAgree(Integer.valueOf(status._appid).intValue(), application.getOwner(),
+					subject,
+					localize("ccot_accept_msg1", "Vårdnadshavare för")
+						+ child.getName()
+						+ ", "
+						+ child.getPersonalID()
+						+ " "
+						+ localize(
+							"ccot_accept_msg2",
+							"tackar ja till erbjudandet om platsen hos")
+						+ " "
+						+ application.getProvider().getName());
+						
 					acceptedChoiceNumber = application.getChoiceNumber();
 				}
 				else if (status.equals(CCConstants.NO_NEW_DATE)) {
 					getChildCareBusiness(iwc).rejectOfferWithNewDate(Integer.valueOf(status._appid).intValue(), application.getOwner(), status._date);
+					getChildCareBusiness(iwc).sendMessageToProvider(
+											application,
+											subject,
+											localize("ccot_new_date_msg1", "Vårdnadshavare för")
+												+ " "
+												+ child.getName()
+												+ ", "
+												+ child.getPersonalID()
+												+ " "
+												+ localize(
+													"ccot_new_date_msg2",
+													"vill flytta fram det önskade placeringsdatumet til")
+												+ status._date,
+											application.getOwner());					
 				}
 				else if (status.equals(CCConstants.NO)) {
 					getChildCareBusiness(iwc).rejectOffer(Integer.valueOf(status._appid).intValue(), application.getOwner());
 					addDeletedAppToSession(iwc, application);
+					getChildCareBusiness(iwc).sendMessageToProvider(
+						application,
+						subject,
+						localize("ccot_reject_msg1", "Vårdnadshavare för")
+							+ " "
+							+ child.getName()
+							+ ", "
+							+ child.getPersonalID()
+							+ " "
+							+ localize(
+								"ccot_reject_msg1",
+								"tackar nej till erbjudandet om platsen hos")
+							+ application.getProvider().getName(),
+						application.getOwner());					
 				}
 			}
 		}
