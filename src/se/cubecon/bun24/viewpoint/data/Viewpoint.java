@@ -1,16 +1,17 @@
 package se.cubecon.bun24.viewpoint.data;
 
+import java.util.Date;
+
 import com.idega.block.process.data.Case;
 import com.idega.data.IDOEntity;
-import com.idega.user.data.*;
-import javax.ejb.FinderException;
-import java.util.*;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
 
 /**
- * Last modified: $Date: 2003/11/10 19:01:39 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/10 19:01:56 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public interface Viewpoint extends IDOEntity, Case {
     String CASE_CODE_KEY = "SYMESYN";
