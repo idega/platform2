@@ -378,7 +378,7 @@ public class PhoneFileHandler {
                     for (int i = 0; i < listsize; i++) {
                       ap = (AccountPhone) accountList.get(i);
                       if(ape.getPhonedStamp().getTime() <= ap.getValidTo().getTime()){
-                        System.err.println("ape "+ape.getSubNumber()+" account "+ap.getAccountId().intValue());
+                        //System.err.println("ape "+ape.getSubNumber()+" account "+ap.getAccountId().intValue());
                         ape.setAccountId(ap.getAccountId());
                         ape.setStatus(ape.statusRead);
                         if(M2.containsKey(ap.getAccountId())){
