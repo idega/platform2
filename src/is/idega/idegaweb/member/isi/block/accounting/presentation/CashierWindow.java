@@ -226,7 +226,7 @@ public class CashierWindow extends StyledIWAdminWindow {
      * of the CashierWindow in it. Returns the Table object.
      */
     private Table getMenuTable(IWContext iwc) {
-        Table menu = new Table(2, 21);
+        Table menu = new Table(2, 24);
         menu.setWidth(Table.HUNDRED_PERCENT);
         menu.setCellpadding(3);
         menu.setCellspacing(0);
