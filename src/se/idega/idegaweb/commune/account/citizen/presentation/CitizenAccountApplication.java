@@ -24,10 +24,14 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.util.PIDChecker;
 
+import com.idega.core.accesscontrol.data.LoginTableHome;
+import com.idega.core.accesscontrol.data.LoginTable;
+
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.core.location.business.CommuneBusiness;
 import com.idega.core.location.data.Commune;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -42,7 +46,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-//import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
@@ -52,11 +55,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/03/03 09:09:21 $ by $Author: anders $
+ * Last modified: $Date: 2004/03/31 08:23:43 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.66 $
+ * @version $Revision: 1.67 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -122,6 +125,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String TEXT_APPLICATION_SUBMITTED_KEY = "caa_app_submitted";
 	private final static String UNKNOWN_CITIZEN_DEFAULT = "Du finns inte registrerad som medborgare i kommunen. Du har ändå" + " möjlighet att registrera dig för ett användarkonto om du har" + " planerat att flytta till kommunen eller vill att ditt barn ska gå i" + " skolan i kommunen. Följ instruktionerna nedan.";
 	private final static String UNKNOWN_CITIZEN_KEY = "caa_unknown_citizen";
+	private final static String GOTO_FORGOT_PASSWORD_DEFAULT = "Klicka på länken \"Jag har glömt mitt användarnamn eller lösenord\"";
+	private final static String GOTO_FORGOT_PASSWORD_KEY = "caa_goto_forgot_password_key";
 	private final static String USER_ALLREADY_HAS_A_LOGIN_DEFAULT = "Du har redan ett konto";
 	private final static String USER_ALLREADY_HAS_A_LOGIN_KEY = "caa_user_allready_has_a_login";
 	final static String YES_DEFAULT = "Ja";
@@ -200,6 +205,15 @@ public class CitizenAccountApplication extends CommuneBlock {
 			final String phoneWork = parameters.get(PHONE_WORK_KEY).toString();
 			final CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
 			final User user = business.getUser(ssn);
+			final Collection logins = new ArrayList ();
+			try {
+				logins.addAll (getLoginTableHome ().findLoginsForUser (user));
+			} catch (Exception e) {
+				// no problem, no login found
+			}
+			if (user != null && !logins.isEmpty()) {
+				throw new UserHasLoginException ();
+			}
 			if (user == null || !citizenLivesInNacka(iwc, user)) {
 				// unknown or not-living-in-nacka user applies
 				final Text text = new Text(localize(UNKNOWN_CITIZEN_KEY, UNKNOWN_CITIZEN_DEFAULT));
@@ -232,7 +246,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 			}
 		}
 		catch (UserHasLoginException uhle) {
-			final Text text = new Text(localize(USER_ALLREADY_HAS_A_LOGIN_KEY, USER_ALLREADY_HAS_A_LOGIN_DEFAULT), true, false, false);
+			final Text text = new Text(localize(USER_ALLREADY_HAS_A_LOGIN_KEY, USER_ALLREADY_HAS_A_LOGIN_DEFAULT) + ". " + localize(GOTO_FORGOT_PASSWORD_KEY, GOTO_FORGOT_PASSWORD_DEFAULT) + '.', true, false, false);
 			text.setFontColor(COLOR_RED);
 			add(text);
 			add(Text.getBreak());
@@ -903,5 +917,14 @@ private DropdownMenu getCommuneDropdownMenu(IWContext iwc, String parameter, Str
 
 	protected CommuneBusiness getCommuneBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (CommuneBusiness) IBOLookup.getServiceInstance(iwac, CommuneBusiness.class);
+	}
+
+	private static LoginTableHome getLoginTableHome () {
+		try {
+			return (LoginTableHome) IDOLookup.getHome (LoginTable.class);
+		} catch (Exception e) {
+			e.printStackTrace ();
+			return null;
+		}
 	}
 }
