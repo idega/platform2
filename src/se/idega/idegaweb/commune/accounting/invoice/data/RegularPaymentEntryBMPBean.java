@@ -106,6 +106,12 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 		return (User) getColumnValue(COLUMN_USER_ID);
 	}
 
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry#getUserId()
+	 */
+	public int getUserId() {
+		return getIntColumnValue(COLUMN_USER_ID);
+	}
 
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getSchool()
@@ -287,4 +293,32 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 	public void setDoublePosting(String doublePosting) {
 		setColumn(COLUMN_DOUBLE_POSTING, doublePosting);
 	}
+
+
+	/**
+	 * @param from
+	 * @param to
+	 * @param provider
+	 * @return
+	 */
+	public Collection ejbFindByPeriodeAndProvider(Date from, Date to, School provider) throws FinderException {
+		return idoFindPKsByQuery(idoQuery() 
+		.appendSelectAllFrom(this)
+		.appendWhereEquals(COLUMN_SCHOOL_ID, provider.getPrimaryKey())
+		.appendAnd()
+		.append(COLUMN_FROM)
+		.appendLessThanOrEqualsSign()
+		.append(to)
+		.appendAnd()
+		.appendLeftParenthesis()
+		.append(COLUMN_TO)
+		.appendGreaterThanOrEqualsSign()
+		.append(from)
+//		.appendOr()
+//		.append(COLUMN_TO)
+//		.appendIsNull()
+		.appendRightParenthesis());
+	}
+
+
 }
