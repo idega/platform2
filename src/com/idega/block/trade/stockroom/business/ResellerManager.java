@@ -374,9 +374,9 @@ public class ResellerManager {
       }
 
       StringBuffer buff = new StringBuffer();
-        buff.append("SELECT * FROM "+reseller.getResellerTableName());
+        buff.append("SELECT * FROM "+Reseller.getResellerTableName());
         buff.append(" WHERE ");
-        buff.append(reseller.getColumnNameIsValid()+" = 'Y'");
+        buff.append(Reseller.getColumnNameIsValid()+" = 'Y'");
         if (exclude.length > 0) {
           buff.append(" AND ");
           buff.append(reseller.getIDColumnName()+" not in (");
@@ -448,13 +448,13 @@ public class ResellerManager {
       Contract contract = (Contract) Contract.getStaticInstance(Contract.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT distinct(s.*) FROM "+supplier.getSupplierTableName()+" s, "+contract.getContractTableName() +" c, "+product.getEntityName()+" p");
+        buffer.append("SELECT distinct(s.*) FROM "+Supplier.getSupplierTableName()+" s, "+Contract.getContractTableName() +" c, "+product.getEntityName()+" p");
         buffer.append(" WHERE ");
-        buffer.append("c."+contract.getColumnNameResellerId()+" = "+resellerId);
+        buffer.append("c."+Contract.getColumnNameResellerId()+" = "+resellerId);
         buffer.append(" AND ");
-        buffer.append("c."+contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
+        buffer.append("c."+Contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
         buffer.append(" AND ");
-        buffer.append("p."+product.getColumnNameSupplierId()+" = s."+supplier.getIDColumnName());
+        buffer.append("p."+Product.getColumnNameSupplierId()+" = s."+supplier.getIDColumnName());
         if (orderBy != null && !orderBy.equals("")) {
         buffer.append(" ORDER BY s."+orderBy);
         }
@@ -503,18 +503,18 @@ public class ResellerManager {
       Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT distinct(p.*) FROM  "+contract.getContractTableName() +" c");
+        buffer.append("SELECT distinct(p.*) FROM  "+Contract.getContractTableName() +" c");
         buffer.append(", "+product.getEntityName()+" p");
         if (ownerResellerId != -1) {
           buffer.append(", "+reseller.getTreeRelationshipTableName(reseller)+" r");
         }
         buffer.append(" WHERE ");
-        buffer.append("c."+contract.getColumnNameResellerId()+" = "+contractedResellerId);
+        buffer.append("c."+Contract.getColumnNameResellerId()+" = "+contractedResellerId);
         buffer.append(" AND ");
-        buffer.append("c."+contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
+        buffer.append("c."+Contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
         if (supplierId != -1) {
           buffer.append(" AND ");
-          buffer.append("p."+product.getColumnNameSupplierId()+" = "+supplierId);
+          buffer.append("p."+Product.getColumnNameSupplierId()+" = "+supplierId);
         }else if (ownerResellerId != -1) {
           buffer.append(" AND ");
           buffer.append("r."+reseller.getTreeRelationshipChildColumnName(reseller)+"="+contractedResellerId);
@@ -544,19 +544,19 @@ public class ResellerManager {
       Contract contract = (Contract) Contract.getStaticInstance(Contract.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT distinct(c.*) FROM  "+contract.getContractTableName() +" c");
+        buffer.append("SELECT distinct(c.*) FROM  "+Contract.getContractTableName() +" c");
         if (supplierId != -1) {
           buffer.append(", "+product.getEntityName()+" p");
         }
         buffer.append(" WHERE ");
-        buffer.append("c."+contract.getColumnNameResellerId()+" = "+resellerId);
+        buffer.append("c."+Contract.getColumnNameResellerId()+" = "+resellerId);
         buffer.append(" AND ");
-        buffer.append("c."+contract.getColumnNameServiceId()+" = "+productId);
+        buffer.append("c."+Contract.getColumnNameServiceId()+" = "+productId);
         if (supplierId != -1) {
           buffer.append(" AND ");
-          buffer.append("p."+product.getIDColumnName()+" = c."+contract.getColumnNameServiceId());
+          buffer.append("p."+product.getIDColumnName()+" = c."+Contract.getColumnNameServiceId());
           buffer.append(" AND ");
-          buffer.append("p."+product.getColumnNameSupplierId()+" = "+supplierId);
+          buffer.append("p."+Product.getColumnNameSupplierId()+" = "+supplierId);
         }
 
       String[] resuls = SimpleQuerier.executeStringQuery(buffer.toString());

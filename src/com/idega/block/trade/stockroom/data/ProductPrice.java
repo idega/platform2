@@ -167,7 +167,7 @@ public class ProductPrice extends GenericEntity{
 
         String ptmTable = EntityControl.getManyToManyRelationShipTableName(ProductPrice.class, Timeframe.class);
         String pamTable = EntityControl.getManyToManyRelationShipTableName(ProductPrice.class, TravelAddress.class);
-        String pTable = price.getProductPriceTableName();
+        String pTable = getProductPriceTableName();
         String cTable = category.getEntityName();
 
         StringBuffer SQLQuery = new StringBuffer();
@@ -200,7 +200,7 @@ public class ProductPrice extends GenericEntity{
             SQLQuery.append(" AND ");
             SQLQuery.append(cTable+"."+PriceCategory.getColumnNameNetbookingCategory()+" = 'Y'");
           }
-          SQLQuery.append(" ORDER BY "+pTable+"."+price.getColumnNamePriceType()+","+cTable+"."+category.getColumnNameName());
+          SQLQuery.append(" ORDER BY "+pTable+"."+ProductPrice.getColumnNamePriceType()+","+cTable+"."+PriceCategory.getColumnNameName());
 
         prices = (ProductPrice[]) (ProductPrice.getStaticInstance(ProductPrice.class)).findAll(SQLQuery.toString());
       }catch (SQLException sql) {

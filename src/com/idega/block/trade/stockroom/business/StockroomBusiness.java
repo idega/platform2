@@ -84,10 +84,10 @@ public class StockroomBusiness /* implements SupplyManager */ {
     StringBuffer buffer = new StringBuffer();
       buffer.append("SELECT * FROM "+ProductPrice.getProductPriceTableName());
       buffer.append(" WHERE ");
-      buffer.append(pPrice.getColumnNameProductId() +" = "+product.getID());
+      buffer.append(ProductPrice.getColumnNameProductId() +" = "+product.getID());
       buffer.append(" AND ");
-      buffer.append(pPrice.getColumnNamePriceCategoryId() +" is null");
-      buffer.append(" ORDER BY "+pPrice.getColumnNamePriceDate()+" DESC");
+      buffer.append(ProductPrice.getColumnNamePriceCategoryId() +" is null");
+      buffer.append(" ORDER BY "+ProductPrice.getColumnNamePriceDate()+" DESC");
 
     try {
 //      EntityFinder.debug = true;
