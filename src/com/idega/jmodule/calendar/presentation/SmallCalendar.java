@@ -43,6 +43,37 @@ public class SmallCalendar extends JModuleObject{
       stamp = timestamp;
   }
 
+  public synchronized Object clone() {
+    SmallCalendar obj = null;
+    try {
+      obj = (SmallCalendar)super.clone();
+      if (this.today != null) {
+        obj.today = new idegaTimestamp(today);
+      }
+      if (this.stamp != null) {
+        obj.stamp = new idegaTimestamp(stamp);
+      }
+
+      obj.cal = this.cal;
+
+      obj.useNextAndPreviousLinks = this.useNextAndPreviousLinks;
+      obj.daysAreLinks = this.daysAreLinks;
+      obj.showNameOfDays = this.showNameOfDays;
+
+      obj.textColor = this.textColor;
+      obj.headerTextColor = this.headerTextColor;
+      obj.headerColor = this.headerColor;
+      obj.bodyColor = this.bodyColor;
+      obj.inactiveCellColor = this.inactiveCellColor;
+      obj.backgroundColor = this.backgroundColor;
+      obj.todayColor = this.todayColor;
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
+  }
+
   public void make(ModuleInfo modinfo){
     int thismonth =  today.getMonth();
     int stampmonth = stamp.getMonth();
