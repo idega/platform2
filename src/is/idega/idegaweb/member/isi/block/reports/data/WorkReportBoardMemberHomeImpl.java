@@ -34,6 +34,13 @@ public WorkReportBoardMember findWorkReportBoardMemberByUserIdAndWorkReportId(in
 	return this.findByPrimaryKey(pk);
 }
 
+public WorkReportBoardMember findWorkReportBoardMemberByUserIdAndWorkReportIdAndLeagueId(int p0,int p1,int p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((WorkReportBoardMemberBMPBean)entity).ejbFindWorkReportBoardMemberByUserIdAndWorkReportIdAndLeagueId(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public WorkReportBoardMember findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (WorkReportBoardMember) super.findByPrimaryKeyIDO(pk);
  }

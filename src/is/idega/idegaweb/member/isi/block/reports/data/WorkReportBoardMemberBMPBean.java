@@ -178,6 +178,19 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 		return (Integer) idoFindOnePKByQuery(sql);
 		
 	}
+
+	public Integer ejbFindWorkReportBoardMemberByUserIdAndWorkReportIdAndLeagueId(int userId, int reportId, int leagueId) throws FinderException{
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getEntityName())
+		.appendWhere()
+		.append(COLUMN_NAME_USER_ID).appendEqualSign().append(userId)
+		.appendAndEquals(COLUMN_NAME_REPORT_ID,reportId)
+		.appendAndEquals(COLUMN_NAME_WORK_REPORT_GROUP_ID,leagueId);
+	
+		return (Integer) idoFindOnePKByQuery(sql);
+		
+	}
 	
 	public WorkReportGroup getLeague() throws IDOException {
 		return (WorkReportGroup) getColumnValue(COLUMN_NAME_WORK_REPORT_GROUP_ID);

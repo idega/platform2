@@ -696,14 +696,16 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					//the user must already exist in the database
 					User user = getUser(ssn);
 					try {
-						member = membHome.findWorkReportBoardMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(), workReportId);
-						member.store();
+//						member = membHome.findWorkReportBoardMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(), workReportId);
+						member = membHome.findWorkReportBoardMemberByUserIdAndWorkReportIdAndLeagueId(((Integer)user.getPrimaryKey()).intValue(), workReportId, ((Integer)group.getPrimaryKey()).intValue());
+//						member.store();
 					}
 					catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
 						member = getWorkReportBusiness().createWorkReportBoardMember(workReportId, ssn, group); //sets basic data
 						member.setPersonalId(ssn);
 						member.setReportId(workReportId);
+						
 
 						if (streetName != null && !"".equals(streetName)) {
 							member.setStreetName(streetName);
@@ -734,6 +736,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 
 						if (email != null && !"".equals(email.trim())) {
 							member.setEmail(email);
+						}
+						
+						
+						/**
+						 * @TODO Palli is this ok?
+						 */
+						if (status != null && !"".equals(status.trim())) {
+							member.setStatus(status);
 						}
 
 						member.store();

@@ -8,6 +8,7 @@ public interface WorkReportBoardMemberHome extends com.idega.data.IDOHome
  public java.util.Collection findAllWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(int p0,int p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllWorkReportBoardMembersByWorkReportIdOrderedByMemberName(int p0)throws javax.ejb.FinderException;
  public WorkReportBoardMember findWorkReportBoardMemberByUserIdAndWorkReportId(int p0,int p1)throws javax.ejb.FinderException;
+ public WorkReportBoardMember findWorkReportBoardMemberByUserIdAndWorkReportIdAndLeagueId(int p0,int p1,int p2)throws javax.ejb.FinderException;
  public java.lang.String getFemaleGenderString();
  public java.lang.String getMaleGenderString();
 
