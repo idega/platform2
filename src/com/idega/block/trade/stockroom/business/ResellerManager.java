@@ -7,6 +7,7 @@ import com.idega.core.user.data.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.core.accesscontrol.business.*;
 import com.idega.core.data.*;
+import com.idega.core.accesscontrol.data.*;
 import com.idega.data.*;
 import com.idega.util.CypherText;
 import com.idega.data.SimpleQuerier;
@@ -24,6 +25,9 @@ import is.idega.idegaweb.travel.data.Contract;
  */
 
 public class ResellerManager {
+
+  private static String permissionGroupNameExtention = " - admins";
+  private static String permissionGroupDescription = "Reseller administator group";
 
   public ResellerManager() {
   }
@@ -112,8 +116,10 @@ public class ResellerManager {
 
       int[] userIDs = {user.getID()};
 
+
       AccessControl ac = new AccessControl();
-      int permissionGroupID = ac.createPermissionGroup(name+" - admins", "Reseller administator group", "", userIDs ,null);
+      int permissionGroupID = ac.createPermissionGroup(name+permissionGroupNameExtention, permissionGroupDescription, "", userIDs ,null);
+
 
       //sGroup.addTo(PermissionGroup.class, permissionGroupID);
 
@@ -273,14 +279,63 @@ public class ResellerManager {
     return suppliers;
   }
 
-  public static Iterator getResellers(Reseller reseller) {
-    return getResellers(reseller, "");
+  public static Iterator getResellerChilds(Reseller reseller) {
+    return getResellerChilds(reseller, "");
   }
 
-  public static Iterator getResellers(Reseller reseller, String orderBy) {
+  public static Iterator getResellerChilds(Reseller reseller, String orderBy) {
     Iterator iter = reseller.getChildren(orderBy);
-    if (iter == null) iter = com.idega.util.ListUtil.getEmptyList().iterator();
+    if (iter != null) {
+    /*  List listi = new Vector();
+      Reseller tempReseller;
+      while (iter.hasNext()) {
+        tempReseller = (Reseller) iter.next();
+        if ((tempReseller.getID() != reseller.getID()) && (tempReseller.getID() != reseller.getParent().getID())) {
+          listi.add(tempReseller);
+        }
+      }
+      iter = listi.iterator();*/
+    }else if (iter == null) {
+      iter = com.idega.util.ListUtil.getEmptyList().iterator();
+    }
     return iter;
+  }
+
+  public static List getResellersAvailable(Reseller reseller) throws SQLException {
+    return getResellersAvailable(reseller, null);
+  }
+  public static List getResellersAvailable(Reseller reseller, String orderBy) throws SQLException {
+    List list = null;
+    if (reseller != null) {
+      list = new Vector();
+      int[] exclude = new int[0];
+      if (reseller.getParent() != null) {
+        exclude = new int[] {reseller.getID(), reseller.getParent().getID()};
+      }else {
+        exclude = new int[] {reseller.getID()};
+      }
+
+      StringBuffer buff = new StringBuffer();
+        buff.append("SELECT * FROM "+reseller.getResellerTableName());
+        buff.append(" WHERE ");
+        buff.append(reseller.getColumnNameIsValid()+" = 'Y'");
+        if (exclude.length > 0) {
+          buff.append(" AND ");
+          buff.append(reseller.getIDColumnName()+" not in (");
+          for (int i = 0; i < exclude.length; i++) {
+            if (i != 0)
+              buff.append(", ");
+            buff.append(exclude[i]);
+          }
+          buff.append(") ");
+        }
+        if (orderBy != null && !orderBy.equals("")) {
+          buff.append(" ORDER BY "+orderBy);
+        }
+
+      list = EntityFinder.findAll(reseller, buff.toString());
+    }
+    return list;
   }
 
   public static Iterator getResellers(Supplier supplier) {
@@ -358,12 +413,10 @@ public class ResellerManager {
   }
 
   public static Product[] getProductsWithContracts(Reseller reseller, String orderBy) {
-    Reseller parent = (Reseller) reseller.getParentEntity();
+    Reseller parent = (Reseller) reseller.getParent();
     if (parent == null) {
-      System.err.println("parent == null : "+reseller.getID());
       return getProductsWithContracts(-1, reseller.getID(),-1, orderBy);
     }else {
-      System.err.println("parent != null : "+reseller.getID());
       return getProductsWithContracts(parent, orderBy);
     }
   }
@@ -421,6 +474,10 @@ public class ResellerManager {
     return products;
   }
 
+  public static boolean isActiveContract(int resellerId, int productId) {
+    return isActiveContract(-1, resellerId, productId);
+  }
+
   public static boolean isActiveContract(int supplierId, int resellerId, int productId) {
     boolean returner = false;
 
@@ -429,15 +486,20 @@ public class ResellerManager {
       Contract contract = (Contract) Contract.getStaticInstance(Contract.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT distinct(c.*) FROM  "+contract.getContractTableName() +" c, "+product.getEntityName()+" p");
+        buffer.append("SELECT distinct(c.*) FROM  "+contract.getContractTableName() +" c");
+        if (supplierId != -1) {
+          buffer.append(", "+product.getEntityName()+" p");
+        }
         buffer.append(" WHERE ");
         buffer.append("c."+contract.getColumnNameResellerId()+" = "+resellerId);
         buffer.append(" AND ");
-        buffer.append("c."+contract.getColumnNameServiceId()+" = p."+product.getIDColumnName());
-        buffer.append(" AND ");
-        buffer.append("p."+product.getColumnNameSupplierId()+" = "+supplierId);
-        buffer.append(" AND ");
-        buffer.append("p."+product.getIDColumnName()+" = "+productId);
+        buffer.append("c."+contract.getColumnNameServiceId()+" = "+productId);
+        if (supplierId != -1) {
+          buffer.append(" AND ");
+          buffer.append("p."+product.getIDColumnName()+" = c."+contract.getColumnNameServiceId());
+          buffer.append(" AND ");
+          buffer.append("p."+product.getColumnNameSupplierId()+" = "+supplierId);
+        }
 
       String[] resuls = SimpleQuerier.executeStringQuery(buffer.toString());
       if (resuls != null && resuls.length > 0) {
@@ -453,5 +515,42 @@ public class ResellerManager {
 
     return returner;
   }
+
+  public static PermissionGroup getPermissionGroup(Reseller reseller) throws SQLException{
+    String name = reseller.getName() + permissionGroupNameExtention;
+    String description = permissionGroupDescription;
+
+    PermissionGroup pGroup = null;
+    List listi = EntityFinder.findAllByColumn((PermissionGroup) PermissionGroup.getStaticInstance(PermissionGroup.class), PermissionGroup.getNameColumnName(), name, PermissionGroup.getGroupDescriptionColumnName(), description  );
+    if (listi != null) {
+      if (listi.size() > 0) {
+        pGroup = (PermissionGroup) listi.get(listi.size()-1);
+      }
+    }
+
+    return pGroup;
+  }
+
+  public static ResellerStaffGroup getResellerStaffGroup(Reseller reseller) throws SQLException {
+    String name = reseller.getName();
+    ResellerStaffGroup sGroup = null;
+
+    List listi = EntityFinder.findAllByColumn((ResellerStaffGroup) ResellerStaffGroup.getStaticInstance(ResellerStaffGroup.class), ResellerStaffGroup.getNameColumnName(), name);
+    if (listi != null) {
+      if (listi.size() > 0) {
+        sGroup = (ResellerStaffGroup) listi.get(listi.size()-1);
+      }
+    }
+
+    return sGroup;
+  }
+
+  public static void addUser(Reseller reseller, User user) throws SQLException{
+    PermissionGroup pGroup = getPermissionGroup(reseller);
+    ResellerStaffGroup sGroup = getResellerStaffGroup(reseller);
+    pGroup.addUser(user);
+    sGroup.addUser(user);
+  }
+
 
 }

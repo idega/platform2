@@ -14,6 +14,7 @@ import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.business.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.trade.data.Currency;
+import com.idega.data.*;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -123,7 +124,7 @@ public class Contracts extends TravelManager {
     if (supplier != null) {
      returner = ResellerManager.getResellers(supplier,Reseller.getColumnNameName());
     } else if (reseller != null) {
-     returner = ResellerManager.getResellers(reseller,Reseller.getColumnNameName());
+     returner = ResellerManager.getResellerChilds(reseller,Reseller.getColumnNameName());
     }
     return returner;
   }
@@ -143,7 +144,14 @@ public class Contracts extends TravelManager {
         linkTable.setWidth("90%");
       Link newReseller = new Link(iwrb.getImage("buttons/newreseller.gif"));
         newReseller.addParameter(this.sAction,this.parameterNewReseller);
+
+      if (reseller != null) {
+        if (reseller.getParent() == null) {
+          linkTable.add(newReseller,1,1);
+        }
+      }else if (supplier != null) {
         linkTable.add(newReseller,1,1);
+      }
 
         linkTable.add(Text.NON_BREAKING_SPACE);
 
@@ -210,28 +218,51 @@ public class Contracts extends TravelManager {
         }
       //}else
        if (reseller != null) {
-        ++row;
-        table.setRowColor(row, super.backgroundColor);
-        Text suppName = (Text) theText.clone();
-          suppName.setBold();
-          suppName.setText(iwrb.getLocalizedString("travel.supplier","Supplier"));
-        table.add(suppName, 1,row);
+        if (reseller.getParent() == null) {
+          ++row;
+          table.setRowColor(row, super.backgroundColor);
+          Text suppName = (Text) theText.clone();
+            suppName.setBold();
+            suppName.setText(iwrb.getLocalizedString("travel.supplier","Supplier"));
+          table.add(suppName, 1,row);
 
-        for (int i = 0; i < suppliers.length; i++) {
-            ++row;
-            resName = (Text) theText.clone();
-              resName.setFontColor(super.BLACK);
-              resName.setText(suppliers[i].getName());
-            assign = new Link(iwrb.getImage("buttons/closer.gif"));
-              assign.addParameter(this.sAction,this.parameterViewProducts);
-              assign.addParameter(this.parameterSupplierId,suppliers[i].getID());
+          for (int i = 0; i < suppliers.length; i++) {
+              ++row;
+              resName = (Text) theText.clone();
+                resName.setFontColor(super.BLACK);
+                resName.setText(suppliers[i].getName());
+              assign = new Link(iwrb.getImage("buttons/closer.gif"));
+                assign.addParameter(this.sAction,this.parameterViewProducts);
+                assign.addParameter(this.parameterSupplierId,suppliers[i].getID());
 
-            table.add(resName,1,row);
-            table.add(assign,3,row);
-            table.setRowColor(row,theColor);
-            table.setAlignment(3,row,"right");
+              table.add(resName,1,row);
+              table.add(assign,3,row);
+              table.setRowColor(row,theColor);
+              table.setAlignment(3,row,"right");
+          }
+        }else {
+          ++row;
+          Reseller parent = (Reseller) reseller.getParent();
+          table.setRowColor(row, super.backgroundColor);
+          Text suppName = (Text) theText.clone();
+            suppName.setBold();
+            suppName.setText(iwrb.getLocalizedString("travel.Reseller","Reseller"));
+          table.add(suppName, 1,row);
 
+          ++row;
+          resName = (Text) theText.clone();
+            resName.setFontColor(super.BLACK);
+            resName.setText(parent.getName());
+          assign = new Link(iwrb.getImage("buttons/closer.gif"));
+            assign.addParameter(this.sAction,this.parameterAssignReseller);
+            assign.addParameter(this.parameterResellerId,parent.getID());
+
+          table.add(resName,1,row);
+          table.add(assign,3,row);
+          table.setRowColor(row,theColor);
+          table.setAlignment(3,row,"right");
         }
+
       }
 
       add(form);
@@ -635,7 +666,7 @@ public class Contracts extends TravelManager {
       products = ResellerManager.getProductsWithContracts(reseller, Product.getColumnNameProductName());
       //products = tsb.getProducts(Integer.parseInt(supplier_id));
     }
-    System.err.println("products.length = "+products.length);
+//    System.err.println("products.length = "+products.length);
 
     int[] serviceDays;
     int row = 1;
@@ -655,17 +686,19 @@ public class Contracts extends TravelManager {
 
     Link closerLook = new Link(iwrb.getImage("buttons/closer.gif"));
       closerLook.addParameter(this.sAction, this.parameterAssignReseller);
-      if (supplier != null) {
+      if (tReseller != null) {
         closerLook.addParameter(this.parameterResellerId , tReseller.getID());
-      }else if (reseller != null) {
+      }
+      if (reseller != null) {
         closerLook.addParameter(this.parameterSupplierId, supplier_id);
       }
 
     Link closeLook = new Link(iwrb.getImage("buttons/close.gif"));
       closeLook.addParameter(this.sAction, this.parameterAssignReseller);
-      if (supplier != null) {
+      if (tReseller != null) {
         closeLook.addParameter(this.parameterResellerId , tReseller.getID());
-      }else if (reseller != null) {
+      }
+      if (reseller != null) {
         closeLook.addParameter(this.parameterSupplierId, supplier_id);
       }
     Link temp;
@@ -684,8 +717,9 @@ public class Contracts extends TravelManager {
         table.add(pName,1,row);
 //        table.mergeCells(1,row,3,row);
 
-          if (supplier != null) {
-            if (ResellerManager.isActiveContract(supplier.getID() , tReseller.getID(), products[i].getID())) {
+//          if (supplier != null) {
+            if (ResellerManager.isActiveContract( tReseller.getID(), products[i].getID())) {
+//            if (ResellerManager.isActiveContract(supplier.getID() , tReseller.getID(), products[i].getID())) {
               pIsActive = (Text) theBoldText.clone();
                 pIsActive.setFontColor(BLACK);
                 pIsActive.setText(iwrb.getLocalizedString("travel.active_contract","Active contract"));
@@ -696,7 +730,7 @@ public class Contracts extends TravelManager {
             }else {
               table.mergeCells(1,row,3,row);
             }
-          }
+//          }
 
         if (products[i].getID() == productId) {
 //          table.mergeCells(1,row,3,row);
@@ -852,13 +886,26 @@ public class Contracts extends TravelManager {
       addTxt.setFontColor(super.WHITE);
 
     try {
-      Reseller[] tResellers = (Reseller[]) (Reseller.getStaticInstance(Reseller.class)).findAllOrdered(Reseller.getColumnNameName());
+//      Reseller[] tResellers = (Reseller[]) (Reseller.getStaticInstance(Reseller.class)).findAllOrdered(Reseller.getColumnNameName());
+      List tResellers = null;
+      if (reseller != null) tResellers = ResellerManager.getResellersAvailable(reseller, Reseller.getColumnNameName());
+      if (supplier != null) tResellers = EntityFinder.findAllOrdered(Reseller.getStaticInstance(Reseller.class),Reseller.getColumnNameName());
+
+      if (tResellers == null) tResellers = com.idega.util.ListUtil.getEmptyList();
       Iterator itResellers = this.getResellers();
       List myResellers = new Vector();
+      Reseller tReseller;
       while (itResellers.hasNext()) {
-        myResellers.add((Reseller) itResellers.next());
+        tReseller = (Reseller) itResellers.next();
+        myResellers.add(tReseller);
       }
+      if (reseller != null) {
+        myResellers.remove(reseller);
 
+        if (reseller.getParent() != null) {
+          myResellers.remove((Reseller) reseller.getParent());
+        }
+      }
       /*int[] resellerIds = new int[myResellers.size()];
       for (int i = 0; i < resellerIds.length; i++) {
         resellerIds[i] = ((Reseller) myResellers.get(i)).getID();
@@ -877,14 +924,16 @@ public class Contracts extends TravelManager {
       int resId;
 
       Reseller tempReseller;
+      Reseller useReseller;
 
-      for (int i = 0; i < tResellers.length; i++) {
-        resId = tResellers[i].getID();
+      for (int i = 0; i < tResellers.size(); i++) {
+        useReseller = (Reseller) tResellers.get(i);
+        resId = useReseller.getID();
         ++row;
 
         nameText = (Text) nameTxt.clone();
           nameText.setFontColor(super.BLACK);
-          nameText.setText(tResellers[i].getName());
+          nameText.setText(useReseller.getName());
         box = new CheckBox(this.parameterCheckBox+"_"+resId);
 
         for (int j = 0 ; j < myResellers.size() ; j++) {
@@ -898,7 +947,7 @@ public class Contracts extends TravelManager {
         }*/
 
         table.setRowColor(row, super.GRAY);
-        table.add(new HiddenInput(this.parameterResellerId,Integer.toString(tResellers[i].getID())));
+        table.add(new HiddenInput(this.parameterResellerId,Integer.toString(useReseller.getID())));
         table.add(nameText,1,row);
         table.add(box,2,row);
         table.setAlignment(2,row,"right");
@@ -967,11 +1016,16 @@ public class Contracts extends TravelManager {
     Reseller tReseller = null;
     if (supplier != null) {
       if (sResellerId != null) resellerId = Integer.parseInt(sResellerId);
-      resellerId = Integer.parseInt(sResellerId);
+      //resellerId = Integer.parseInt(sResellerId);
       tReseller = new Reseller(resellerId);
     }else if (reseller != null) {
-      resellerId = reseller.getID();
-      tReseller = reseller;
+      if (sResellerId != null) {
+        resellerId = Integer.parseInt(sResellerId);
+        tReseller = new Reseller(resellerId);
+      }else {
+        resellerId = reseller.getID();
+        tReseller = reseller;
+      }
     }
 
     Contract contract = null;
@@ -1183,7 +1237,7 @@ public class Contracts extends TravelManager {
 
             ++infoRow;
             //table.setRowColor(row, theColor);
-            if (supplier != null) {
+            if (supplier != null || ( (tReseller != null && reseller != null) && tReseller.getParent().getID() == this.reseller.getID())) {
               if (contract != null) {
                 SubmitButton deleter = new SubmitButton(iwrb.getImage("buttons/delete.gif"), this.sAction, this.paramaterDeleteContract);
                 infoTable.add(deleter,4,infoRow);

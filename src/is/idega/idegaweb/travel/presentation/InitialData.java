@@ -51,6 +51,7 @@ public class InitialData extends TravelManager {
   private static String parameterViewHotelPickup = "parameteViewHotelPickup";
   private static String parameterViewPriceCategories = "parameteViewPriceCategories";
   private static String parameterCreditCardRefund = "parameterCreditcardRefund";
+  private static String parameterUsers = "parameterUsers";
 
   private String parameterResellerId = "contractResellerId";
   private String parameterUpdateReseller = "contractUpdateReseller";
@@ -108,6 +109,7 @@ public class InitialData extends TravelManager {
         menu.addMenuElement(this.parameterViewHotelPickup, iwrb.getLocalizedString("travel.hotel_pickup_places","Hotel pick-up places"));
         menu.addMenuElement(this.parameterViewPriceCategories, iwrb.getLocalizedString("travel.price_categories","Price categories"));
         menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.refunds","Refunds"));
+        menu.addMenuElement(this.parameterUsers, iwrb.getLocalizedString("travel.users","Users"));
       menu.setToSubmit();
 
       String selected = iwc.getParameter(this.supplierView);
@@ -158,12 +160,21 @@ public class InitialData extends TravelManager {
                 e.printStackTrace(System.err);
                 form = new Form();
               }
+            }else if (selected.equals(this.parameterUsers)) {
+              try {
+                Users users = new Users(iwc);
+                form = users.handleInsert(iwc);
+              }catch (Exception e) {
+                e.printStackTrace(System.err);
+                form = new Form();
+              }
             }else {form = new Form();
             }
 
-
+            if (form != null) {
             form.maintainParameter(this.supplierView);
             add(form);
+            }
         }else if (reseller != null) {
           System.err.println(action +" = "+ this.parameterUpdateReseller);
             if (action.equals(this.parameterUpdateReseller)) {
