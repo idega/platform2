@@ -13,10 +13,11 @@ import com.idega.presentation.IWContext;
  */
 public class WorkReportBoardImporter extends WorkReportImporter {
 	
-
+	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportboardimporter.step_name";
 
 	protected WorkReportBoardImporter() {
 		super();
+		setStepNameLocalizedKey(STEP_NAME_LOCALIZATION_KEY);
 	}
 	
 	
@@ -33,6 +34,10 @@ public class WorkReportBoardImporter extends WorkReportImporter {
 				add(iwrb.getLocalizedString("WorkReportBoardImporter.import_failed","Importing board account failed!"));
 			}
 		}
+	}
+	
+	protected String getCurrentStepNameLocalizedKey(){
+		return STEP_NAME_LOCALIZATION_KEY;
 	}
 
 }

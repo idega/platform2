@@ -31,6 +31,14 @@ import com.idega.presentation.ui.TextInput;
 public class WorkReportMemberEditor extends WorkReportSelector {
 
 	private static final String PARAMETER_SAVE = "param_save";
+	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportmembereditor.step_name";
+	/**
+	 * 
+	 */
+	public WorkReportMemberEditor() {
+		super();
+		setStepNameLocalizedKey(STEP_NAME_LOCALIZATION_KEY);
+	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)

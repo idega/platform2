@@ -5,7 +5,9 @@ import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import javax.ejb.FinderException;
 
@@ -13,7 +15,9 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
@@ -21,7 +25,9 @@ import com.idega.presentation.ui.SubmitButton;
 /**
  * Description: A generic block that forces the user to select a club to work with. Once the club is selected it maintance it's id in memory.<br>
  * If you extend it, you must call this objects main(iwc) method before your own and if you are using a form in your block you should do a <br>
- * yourForm.maintainParameters(getParamsToMaintain()) and use this.addToParamsToMaintain(string param) in your constructor if you need subclasses of your own class to work correctly.
+ * yourForm.maintainParameters(getParamsToMaintain()) and use this.addToParamsToMaintain(string param) in your constructor if you need subclasses of your own class to work correctly.<br>
+ * To display your "step" of a wizard created extending this class you should call the method setStepNameLocalizedKey(String stepInWizardNameLocalizedKey) with a localizable key in your constructor.<br>
+ * Example: 1. Select regional union 2. Select club 3. "Do my stuff" (gotten from iwrb.getLocalizedString(stepInWizardNameLocalizedKey,stepInWizardNameLocalizedKey) ).
  * Copyright: Idega Software 2003 <br>
  * Company: Idega Software <br>
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
@@ -34,12 +40,15 @@ public class ClubSelector extends Block {
 	protected IWResourceBundle iwrb;
 	
 	protected List paramsToMaintain = null;
+	protected List steps = null;
+	
+	boolean isCurrentStep = true;
 	
 	protected static final String PARAM_CLUB_ID = "iwme_club_sel_cl_id";
 	protected static final String PARAM_REGION_UNION_ID = "iwme_club_sel_ru_id";	
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
-	
+	private static final String STEP_NAME_LOCALIZATION_KEY = "clubselector.step_name";
 	/**
 	 * @return
 	 */
@@ -67,6 +76,7 @@ public class ClubSelector extends Block {
 		this.setToDebugParameters(true);
 		addToParametersToMaintainList(PARAM_CLUB_ID);
 		addToParametersToMaintainList(WorkReportWindow.ACTION);
+		setStepNameLocalizedKey(STEP_NAME_LOCALIZATION_KEY);
 	}
 
 	/**
@@ -103,6 +113,8 @@ public class ClubSelector extends Block {
 	public void main(IWContext iwc) throws Exception {
 		reportBiz = getWorkReportBusiness(iwc);
 		iwrb = getResourceBundle(iwc);
+		//add breadcrumbs
+		addStepsTable(iwc);
 		
 		if(iwc.isParameterSet(PARAM_CLUB_ID)){
 			clubId = Integer.parseInt(iwc.getParameter(PARAM_CLUB_ID));
@@ -117,6 +129,24 @@ public class ClubSelector extends Block {
 						
 			addClubSelectionForm();
 		}
+	}
+	
+	protected void addStepsTable(IWContext iwc){
+		if(steps!=null && !steps.isEmpty()){
+			Table stepTable = new Table();
+			
+			Iterator iter = steps.iterator();
+			int column = 1;
+			
+			while (iter.hasNext()) {
+				String key = (String) iter.next();
+				stepTable.add(new Text(column+". "+iwrb.getLocalizedString(key,key),true,false,false),column++,1);		
+			}
+			
+			add(stepTable);
+		}
+		
+		
 	}
 
 	protected void addClubSelectionForm() throws RemoteException {
@@ -171,7 +201,7 @@ public class ClubSelector extends Block {
 		add(clubSelectorForm);
 	}
 
-	public WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
+	protected WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
 		if (reportBiz == null) {
 			try {
 				reportBiz = (WorkReportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportBusiness.class);
@@ -188,6 +218,43 @@ public class ClubSelector extends Block {
 	public String getBundleIdentifier(){
 		return this.IW_BUNDLE_IDENTIFIER;
 	}
+	
+	protected void setStepNameLocalizedKey(String stepInWizardNameLocalizedKey){
+		if(steps==null){
+			steps = new Vector();//to keep the order
+		}
+		
+		steps.add(stepInWizardNameLocalizedKey);
+	}
+	
+	protected List getSteps(){
+		return steps;
+	}
+	
+
+	protected boolean isCurrentStep(){
+
+		return isCurrentStep;
+	}
+	
+	//Breadcrumbs class
+	protected class StepViewer extends Block{
+		private List steps;
+		
+		protected StepViewer(List steps){
+			this.steps = steps;	
+		}
+		
+		
+		public void main(IWContext iwc){
+			
+		}
+		
+		
+	}
+	
+	
+	
 	
 	
 }

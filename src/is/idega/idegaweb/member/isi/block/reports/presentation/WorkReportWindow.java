@@ -54,6 +54,7 @@ public class WorkReportWindow extends IWAdminWindow {
 	protected static final String ACTION_STATISTICS ="iwme_wr_act_b12";
 	protected static final String ACTION_CREATE_REPORTS ="iwme_wr_act_b13";
 	
+	
 	private IWResourceBundle iwrb;
 
 
@@ -62,6 +63,7 @@ public class WorkReportWindow extends IWAdminWindow {
 		setWidth(600);	
 		setResizable(true);
 		setScrollbar(true);
+		
 	}
 	
 	

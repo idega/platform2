@@ -19,6 +19,8 @@ public class WorkReportImporter extends WorkReportSelector {
 	
 	protected static final String PARAM_FILE_ID = "wr_im_f_id";
 	protected static final String PARAM_UPLOADING = "wr_im_f_upl";
+	
+	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportimporter.step_name";
 	protected int workReportFileId = -1;
 	
 	/**
@@ -38,6 +40,7 @@ public class WorkReportImporter extends WorkReportSelector {
 	protected WorkReportImporter() {
 		super();
 		this.addToParametersToMaintainList(PARAM_FILE_ID);
+		setStepNameLocalizedKey(STEP_NAME_LOCALIZATION_KEY);
 	}
 	
 	
@@ -76,5 +79,9 @@ public class WorkReportImporter extends WorkReportSelector {
 		}
 	
 		add(uploadForm);
+	}
+	
+	protected String getCurrentStepNameLocalizedKey(){
+		return STEP_NAME_LOCALIZATION_KEY;
 	}
 }

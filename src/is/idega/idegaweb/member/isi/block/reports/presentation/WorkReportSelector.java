@@ -32,6 +32,8 @@ public class WorkReportSelector extends ClubSelector {
 	protected static final String PARAM_WORK_REPORT_ID = "iwme_wr_sel_wr_id";
 	protected static final String PARAM_WORK_YEAR = "iwme_wr_sel_year";
 	
+	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportselector.step_name";
+	
 	
 	/**
 	 * @return the work reports id. -1 if no report selected
@@ -65,6 +67,7 @@ public class WorkReportSelector extends ClubSelector {
 		super();
 		addToParametersToMaintainList(PARAM_WORK_REPORT_ID);
 		addToParametersToMaintainList(PARAM_WORK_YEAR);
+		setStepNameLocalizedKey(STEP_NAME_LOCALIZATION_KEY);
 	}
 	
 	
@@ -81,6 +84,7 @@ public class WorkReportSelector extends ClubSelector {
 				workReportId = reportBiz.getOrCreateWorkReportIdForClubIdByYear(getClubId(),year.getYear());
 			}
 			else{
+				
 				addWorkReportSelectionForm();
 			}
 		}

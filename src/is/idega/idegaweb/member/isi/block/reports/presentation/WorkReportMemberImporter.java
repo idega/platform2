@@ -17,10 +17,11 @@ import com.idega.presentation.IWContext;
  */
 public class WorkReportMemberImporter extends WorkReportImporter {
 	
-
+	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportmemberimporter.step_name";
 
 	protected WorkReportMemberImporter() {
 		super();
+		setStepNameLocalizedKey(STEP_NAME_LOCALIZATION_KEY);
 	}
 	
 	

@@ -84,6 +84,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public int getOrCreateWorkReportIdForClubIdByYear(int clubId, int year ) throws RemoteException{
 		WorkReport report = null;
 		
+		createOrUpdateLeagueWorkReportGroupsForYear(year);
+		
 		try {
 			report = getWorkReportHome().findWorkReportByClubIdAndYearOfReport(clubId,year);
 		}
