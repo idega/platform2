@@ -66,6 +66,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolUser;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -180,7 +181,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public ChildCareApplication getNonActiveApplication(int childID, int choiceNumber) throws RemoteException {
+	public ChildCareApplication getNonActiveApplication(int childID, int choiceNumber) {
 		try {
 			String[] caseStatus = {getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus()};
 			return getChildCareApplicationHome().findApplicationByChildAndChoiceNumberInStatus(childID, choiceNumber, caseStatus);
@@ -1430,7 +1431,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
-	public boolean reactivateApplication(int applicationID, User user) throws RemoteException {
+	public boolean reactivateApplication(int applicationID, User user) {
 		try {
 			ChildCareApplication appl = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 
@@ -1442,7 +1443,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
-	public boolean reactivateApplication(ChildCareApplication application, User user) throws RemoteException {
+	public boolean reactivateApplication(ChildCareApplication application, User user) {
 		if (application.getApplicationStatus() == getStatusNotAnswered()) {
 			application.setApplicationStatus(getStatusSentIn());
 			application.setRejectionDate(null);
@@ -1794,7 +1795,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public Collection getAcceptedApplicationsByProvider(int providerID) throws RemoteException {
+	public Collection getAcceptedApplicationsByProvider(int providerID) {
 		try {
 			String[] caseStatus = {getCaseStatusReady().getStatus(), getCaseStatusCancelled().getStatus()};
 			return getChildCareApplicationHome().findApplicationsByProviderAndStatus(providerID, caseStatus);
@@ -1832,7 +1833,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public void parentsAgree(int applicationID, User user, String subject, String message) throws RemoteException {
+	public void parentsAgree(int applicationID, User user, String subject, String message) {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			parentsAgree(application, user, subject, message);
@@ -1842,7 +1843,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public void parentsAgree(ChildCareApplication application, User user, String subject, String message) throws RemoteException {
+	public void parentsAgree(ChildCareApplication application, User user, String subject, String message) {
 		application.setApplicationStatus(this.getStatusParentsAccept());
 		changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
 		sendMessageToProvider(application, subject, message);
@@ -2120,11 +2121,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public int getNumberOfApplicationsForChildNotInactive(int childID) throws RemoteException {
+	public int getNumberOfApplicationsForChildNotInactive(int childID) {
 		return getNumberOfApplicationsForChildNotInactive(childID, null);
 	}
 
-	public int getNumberOfApplicationsForChildNotInactive(int childID, String caseCode) throws RemoteException {
+	public int getNumberOfApplicationsForChildNotInactive(int childID, String caseCode) {
 		try {
 			String[] caseStatus = {getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusDenied().getStatus()};
 			return getChildCareApplicationHome().getNumberOfApplicationsForChildNotInStatus(childID, caseStatus, caseCode);
@@ -2134,7 +2135,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean hasOutstandingOffers(int childID, String caseCode) throws RemoteException {
+	public boolean hasOutstandingOffers(int childID, String caseCode) {
 		int numberOfOffers = getNumberOfApplicationsForChildByStatus(childID, getCaseStatusGranted().getStatus(), caseCode);
 		if (numberOfOffers > 0)
 			return true;
@@ -2251,6 +2252,39 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			throw new RuntimeException(e.getMessage());
 		}
 		throw new ClassCastException("Case with casecode: " + caseCode + " cannot be converted to a schoolchoice");
+	}
+	
+	public Collection getPreSchoolTypes() {
+		ArrayList l = new ArrayList();
+		try {
+			SchoolTypeHome home = getSchoolBusiness().getSchoolTypeHome();
+			l.add(home.findByTypeKey("sch_type.school_type_forskola"));
+			l.add(home.findByTypeKey("sch_type.school_type_allman_forskola"));
+		}
+		catch (Exception e) {}
+		return l;
+	}
+	
+	public Collection getFamilyDayCareTypes() {
+		ArrayList l = new ArrayList();
+		try {
+			SchoolTypeHome home = getSchoolBusiness().getSchoolTypeHome();
+			l.add(home.findByTypeKey("sch_type.school_type_familjedaghem"));
+			l.add(home.findByTypeKey("sch_type.school_type_familjedaghem_allman_forskola"));
+		}
+		catch (Exception e) {}
+		return l;
+	}
+	
+	public Collection getFamilyAfterSchoolTypes() {
+		ArrayList l = new ArrayList();
+		try {
+			SchoolTypeHome home = getSchoolBusiness().getSchoolTypeHome();
+			l.add(home.findByTypeKey("sch_type.school_type_fam_fritids6"));
+			l.add(home.findByTypeKey("sch_type.school_type_fam_fritids7-9"));
+		}
+		catch (Exception e) {}
+		return l;
 	}
 
 	protected HashMap getTagMap(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean isChange) throws RemoteException {
@@ -2412,7 +2446,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		getMessageBusiness().sendMessageToCommuneAdministrators(application, message, body);
 	}
 
-	public boolean hasBeenPlacedWithOtherProvider(int childID, int providerID) throws RemoteException {
+	public boolean hasBeenPlacedWithOtherProvider(int childID, int providerID) {
 		try {
 			String caseStatus[] = {getCaseStatusReady().getStatus()};
 			int applications = getChildCareApplicationHome().getNumberOfPlacedApplications(childID, providerID, caseStatus);
@@ -2735,6 +2769,25 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
+	public int getQueueTotalByProvider(int providerID, Date from, Date to) {
+		try {
+			String[] caseStatus = {getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
+			return getChildCareApplicationHome().getQueueSizeNotInStatus(providerID, caseStatus, from, to);
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+
+	public int getQueueByProvider(int providerID, Date from, Date to) {
+		try {
+			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, getCaseStatusOpenString(), from, to);
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+
 	public int getQueueTotalByProviderWithinMonths(int providerID, int months) {
 		try {
 			IWTimestamp to = IWTimestamp.RightNow();
@@ -2748,7 +2801,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public int getQueueTotalByArea(int areaID) throws RemoteException {
+	public int getQueueTotalByArea(int areaID) {
 		try {
 
 			String[] caseStatus = {getCaseStatusDeleted().getStatus(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString()};
@@ -3184,7 +3237,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean hasUnansweredOffers(int childID, String caseCode) throws RemoteException {
+	public boolean hasUnansweredOffers(int childID, String caseCode) {
 		try {
 			int numberOfOffers = getChildCareApplicationHome().getNumberOfApplicationsForChild(childID, getCaseStatusGranted().getStatus(), caseCode);
 			if (numberOfOffers > 0)
@@ -3258,7 +3311,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public Collection getCaseLogNewContracts(Timestamp fromDate, Timestamp toDate) throws RemoteException {
+	public Collection getCaseLogNewContracts(Timestamp fromDate, Timestamp toDate){
 		try {
 			return getCaseLogsByCaseAndDatesAndStatusChange(CASE_CODE_KEY, fromDate, toDate, getCaseStatusContract().toString(), getCaseStatusReady().toString());
 		}
@@ -3267,7 +3320,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public Collection getCaseLogAlteredContracts(Timestamp fromDate, Timestamp toDate) throws RemoteException {
+	public Collection getCaseLogAlteredContracts(Timestamp fromDate, Timestamp toDate) {
 		try {
 			return getCaseLogsByCaseAndDatesAndStatusChange(CASE_CODE_KEY, fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusReady().toString());
 		}
@@ -3276,7 +3329,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public Collection getCaseLogTerminatedContracts(Timestamp fromDate, Timestamp toDate) throws RemoteException {
+	public Collection getCaseLogTerminatedContracts(Timestamp fromDate, Timestamp toDate) {
 		try {
 			return getCaseLogsByCaseAndDatesAndStatusChange(CASE_CODE_KEY, fromDate, toDate, getCaseStatusReady().toString(), getCaseStatusCancelled().toString());
 		}
