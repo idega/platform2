@@ -18,8 +18,6 @@ import com.idega.data.*;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.util.*;
-import com.sun.rsasign.b;
-
 import is.idega.idegaweb.travel.business.*;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.service.presentation.*;
