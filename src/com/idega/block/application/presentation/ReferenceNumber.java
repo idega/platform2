@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.13 2002/02/27 16:10:11 aron Exp $
+ * $Id: ReferenceNumber.java,v 1.14 2002/02/27 18:45:51 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -236,7 +236,7 @@ public class ReferenceNumber extends Block {
     myForm_.setEventListener(ReferenceNumberHandler.class.getName());
     myForm_.add(new HiddenInput("cam_fact_view","50"));
     myForm_.setMethod("post");
-    myForm_.maintainAllParameters();
+    //myForm_.maintainAllParameters();
   }
 
   public void setVertical() {

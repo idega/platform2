@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.6 2002/02/27 13:54:58 palli Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.7 2002/02/27 18:42:14 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -99,18 +99,19 @@ public class CampusReferenceNumberInfoHelper {
         if (contract == null)
           return(null);
 
+
         User user = new User(contract.getUserId().intValue());
+        l.add(new Integer(user.getID()));
         LoginTable login = LoginDBHandler.getUserLogin(user.getID());
 
         java.sql.Timestamp t = login.getLastChanged();
-        if (t != null)
-          return(null);
+        if (t == null){
+          String passwd = LoginCreator.createPasswd(8);
+          LoginDBHandler.updateLogin(user.getID(),login.getUserLogin(),passwd);
 
-        String passwd = LoginCreator.createPasswd(8);
-        LoginDBHandler.updateLogin(user.getID(),login.getUserLogin(),passwd);
-
-        l.add(login.getUserLogin());
-        l.add(passwd);
+          l.add(login.getUserLogin());
+          l.add(passwd);
+        }
       }
     }
     catch(SQLException e) {
