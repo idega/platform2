@@ -50,7 +50,7 @@ public class NBSLoggedOnInfo extends LoggedOnInfo {
 	/**
 	 * @return
 	 */
-	private NBSAuthResult getNbsAuthResult() {
+	public NBSAuthResult getNbsAuthResult() {
 		return _nbsAuthResult;
 	}
 
