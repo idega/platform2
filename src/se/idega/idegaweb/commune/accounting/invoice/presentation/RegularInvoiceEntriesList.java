@@ -38,6 +38,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 
@@ -45,7 +46,6 @@ import com.idega.user.data.User;
 import se.idega.idegaweb.commune.accounting.invoice.business.RegularInvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntryHome;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
@@ -108,7 +108,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private static final String PAR_REMARK = KEY_REMARK;
 	private static final String PAR_TO = KEY_TO;
 	private static final String PAR_SEEK_TO = "SEEK_" + KEY_TO;	
-	private static final String PAR_USER_SSN = "usrch_search_pid"; //Constant used in UserSearcher...
+	private static final String PAR_USER_SSN = "selected_user_pid"; //Constant used in UserSearcher...
 	private static final String PAR_OWN_POSTING = KEY_OWN_POSTING;	
 	private static final String PAR_VAT_PR_MONTH = KEY_VAT_PR_MONTH;
 	private static final String PAR_VAT_TYPE = KEY_VAT_TYPE;
@@ -118,7 +118,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private static final String PAR_DELETE_PK = "delete_pk";
 	
 
-	private UserSearcher searcher = null;
 
 	private static final int 
 		ACTION_SHOW = 0, 
@@ -145,11 +144,15 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		PAR_OPFIELD_DETAILSCREEN = PAR + ACTION_OPFIELD_DETAILSCREEN,
 		PAR_OPFIELD_MAINSCREEN = PAR + ACTION_OPFIELD_MAINSCREEN;
 
+private UserSearcher _userSearcher = null;
 	
 	public void init(final IWContext iwc) {
 		
 
-		User user = getUser(iwc);
+//		User user = getUser(iwc);
+		_userSearcher = getUserSearcherForm(iwc);
+		User user = _userSearcher.getUser();
+
 
 		String dateFormatErrorMessage = null;	
 
@@ -390,7 +393,9 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		if (entry != null){
 			form.add(new HiddenInput(PAR_PK, ""+entry.getPrimaryKey()));
 		}
-		form.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));	
+		if (user != null){
+			form.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));	
+		}
 		form.maintainParameter(PAR_SEEK_FROM);
 		form.maintainParameter(PAR_SEEK_TO);
 		
@@ -416,72 +421,128 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private Table getEntryListPage(Collection entries, User user, Date fromDate, Date toDate, String errorMessage){
 		
 		Table t1 = new Table();
+		
 		t1.setCellpadding(getCellpadding());
 		t1.setCellspacing(getCellspacing());
 		
-		int row = 1;
-		t1.add(getOperationalFieldPanel(PAR_OPFIELD_MAINSCREEN), 1, row++); //PAR_CANCEL make it stay on the first screen (list)
+
+		t1.add(getOperationalFieldPanel(PAR_OPFIELD_MAINSCREEN, user), 1, 1); //PAR_CANCEL make it stay on the first screen (list)
 		
-		addSearchForm(t1, user, row++);
+		
+		
+		
+		Form form = new Form();			
+		Table t2 = new Table();
+		int row = 1;
+		UserSearcher searcher = _userSearcher;
+		//getUserSearcherForm(iwc, user);
+	
+		
+		t2.add(searcher, 1, row++);
+//		user = searcher.getUser();
 		if (user != null){
 	
-			addPeriodeForm(t1, user, fromDate, toDate, errorMessage, row);
+//			Table t2 = new Table();				
+
+			addPeriodeForm(t2, fromDate, toDate, errorMessage, row++);
 				
-			Table t2 = new Table();				
-			t2.add(getInvoiceList(entries, user, fromDate, toDate), 1, 1);
+			t2.add(getInvoiceList(entries, user, fromDate, toDate), 1, row++);
 		
 			ButtonPanel bp = new ButtonPanel(this);
 			bp.addLocalizedButton(PAR_NEW, KEY_NEW, "New");
 			bp.addLocalizedButton(PAR_CANCEL, KEY_CANCEL, "Cancel");
-			t2.add(bp, 1, 2);
+			t2.add(bp, 1, row++);
 
-			Form form = new Form();		
-			form.maintainAllParameters();
-			form.add(t2);		
+	
+////			form.maintainAllParameters();
+//			form.maintainParameter(PAR_USER_SSN);
+
 			form.add(new HiddenInput(PAR_DELETE_PK, "-1"));
-			t1.add(form, 1, row++);	
+//			t2.add(form, 1, row++);	
 		}
+		
+//		form.maintainParameter(_userSearcher.getUniqueUserParameterName(""));	
+		if (user != null){
+			form.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));
+		}
+//		form.maintainParameter(PAR_USER_SSN);
+//		if (user != null) {
+//			formTable.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));		
+//		}
+		
+		form.add(t2);		
+		t1.add(form, 1, 2);
 
 		return t1;		
 	}
 	
 
-	private Table getOperationalFieldPanel(String actionCommand) {
+	private Table getOperationalFieldPanel(String actionCommand, User user) {
 		
 		Table inner = new Table();
 
 		inner.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverksamhet"), 1, 1);
 		OperationalFieldsMenu ofm = new OperationalFieldsMenu();
+		if (user != null){
+			ofm.setParameter(PAR_USER_SSN, user.getPersonalID());
+		}
+//		ofm.maintainParameter(PAR_USER_SSN);		
+		ofm.maintainParameter(PAR_SEEK_FROM);
+		ofm.maintainParameter(PAR_SEEK_TO);
 	
 		inner.add(ofm, 2, 1);
 		inner.add(new HiddenInput(actionCommand, " ")); //to make it return to the right page
 		return inner;
 	}	
 	
-	private int addSearchForm(Table table, User user, int row){
-		
-		searcher = new UserSearcher();
+	private UserSearcher getUserSearcherForm(IWContext iwc){
+	
+		UserSearcher searcher = new UserSearcher();
 		searcher.setPersonalIDLength(15);
 		searcher.setFirstNameLength(25);
 		searcher.setLastNameLength(25);
 		searcher.setShowMiddleNameInSearch(false);
-		searcher.setOwnFormContainer(true);
+		searcher.setOwnFormContainer(false);
 		searcher.setUniqueIdentifier("");
+		searcher.setBelongsToParent(true);
 		searcher.setConstrainToUniqueSearch(false);
-	
-		if (user != null){
-			searcher.setUser(user);
-		}
-
-		table.add(searcher, 1, row++);
 		
-		return row + 1;
+		searcher.setTextFontStyle(getTextFontStyle());
+
+		if (iwc.getParameter(PAR_SEEK_FROM) != null){
+			searcher.maintainParameter(new Parameter(PAR_SEEK_FROM, iwc.getParameter(PAR_SEEK_FROM)));		
+		}
+		if (iwc.getParameter(PAR_SEEK_TO) != null){
+			searcher.maintainParameter(new Parameter(PAR_SEEK_TO, iwc.getParameter(PAR_SEEK_TO)));		
+		}
+		
+		searcher.setToFormSubmit(true);	
+		
+		try{
+			searcher.process(iwc);	
+			if (searcher.getUser() == null && ! searcher.isHasManyUsers() && ! searcher.isClearedButtonPushed(iwc)){
+				searcher.setUser(getUser(iwc));
+			}			
+		} catch (FinderException ex){
+			
+			ex.printStackTrace();
+		} catch (RemoteException ex){
+			ex.printStackTrace();			
+		}
+	
+		
+
+
+
+//		table.add(searcher, 1, row);
+		
+		return searcher;
 	}
 	
 
-	private int addPeriodeForm(Table table, User user, Date fromDate, Date toDate, String errorMessage, int row){
+	private int addPeriodeForm(Table table, Date fromDate, Date toDate, String errorMessage, int row){
 			
-		Form form = new Form();
+//		Form form = new Form();
 
 		Table formTable = new Table();
 		formTable.add(getLocalizedLabel("KEY_PERIODE", "Periode"), 1, 2);
@@ -509,12 +570,10 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		formTable.add(to, 2, 2);			
 
 		formTable.add(getLocalizedButton(PAR_SEARCH_INVOICE, KEY_SEARCH, "Search"), 10, 2);
-		if (user != null) {
-			formTable.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));		
-		}
 
-		form.add(formTable);
-		table.add(form, 1, row++);
+
+//		form.add(formTable);
+		table.add(formTable, 1, row++);
 		return row;	
 	}	
 	
@@ -579,7 +638,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		Table table = new Table();
 		int row = 1;
 		table.mergeCells(1,1,3,1);
-		table.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN), 1, row++);
+		table.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN, user), 1, row++);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 				
@@ -591,6 +650,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		RegulationSearchPanel searchPanel = new RegulationSearchPanel(iwc);
 		
 		searchPanel.maintainParameter(new String[]{PAR_USER_SSN, PAR_FROM, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_SEEK_FROM, PAR_SEEK_TO, PAR_PK});
+//		searchPanel.maintainParameter(new String[]{PAR_FROM, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_SEEK_FROM, PAR_SEEK_TO, PAR_PK});
 		searchPanel.setPlacingIfNull(entry.getPlacing());
 		searchPanel.setSchoolIdIfNull(entry.getSchoolId());
 		
@@ -646,7 +706,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		if (entry.getOwnPosting() == null && entry.getDoublePosting() == null){
 			try{
 				postingBlock.generateStrings(iwc);
-			}catch(PostingParametersException ex){
+			}catch(Exception ex){
 				ex.printStackTrace();
 			}
 		}
