@@ -1168,7 +1168,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	                if (shortName == null)  {
 	                  shortName = group.getShortName();
 	                  if(shortName==null){
-	                  	shortName=group.getName()+"-NS";
+	                  	shortName=group.getName();
 	                  }
 	                }
 					wGroup.setShortName(shortName);
