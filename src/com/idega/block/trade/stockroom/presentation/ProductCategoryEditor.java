@@ -1,24 +1,35 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
+
+import com.idega.block.presentation.CategoryWindow;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductCategory;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.business.IBOLookup;
 import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.core.localisation.presentation.*;
-
-import java.rmi.*;
-import java.util.*;
-
-import javax.transaction.*;
-
-import com.idega.block.presentation.*;
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.business.*;
-import com.idega.data.*;
-import com.idega.development.presentation.*;
-import com.idega.idegaweb.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.transaction.*;
+import com.idega.core.localisation.presentation.LocalePresentationUtil;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWConstants;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SelectionDoubleBox;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.transaction.IdegaTransactionManager;
 
 /**
  * Title:        idegaWeb TravelBooking

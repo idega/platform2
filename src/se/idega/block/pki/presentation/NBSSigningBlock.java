@@ -154,14 +154,14 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	}
 	
 	public static void main(String[] args){
-		String page = "This   string\n"+
+		/*String page = "This   string\n"+
 			"\n"+
 			"is\n"+
 			"made just for the purpose of testing the breakString\n"+
 			"method. This method is supposed to break a looooooooong\n"+
 			"string into lines of max length specified by a parameter. If\n"+
 			"the String cotains linebreaks, this should be taken into\n"+
-			"account.";
+			"account.";*/
 //		System.out.println(breakString(page, 60));
 		
 	}

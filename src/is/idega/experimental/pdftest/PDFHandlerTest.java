@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import com.idega.io.FileSaver;
-import com.idega.io.ITextXMLHandler;
+import com.idega.block.pdf.ITextXMLHandler;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
