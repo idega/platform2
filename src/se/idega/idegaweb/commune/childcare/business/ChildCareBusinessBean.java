@@ -248,8 +248,22 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			t.begin();
 			ChildCareApplication appl = null;
 			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
+			User child = getUserBusiness().getUser(childId);
+			IWTimestamp now;
+			
+			try {
+				IWTimestamp dateOfBirth = new IWTimestamp(child.getDateOfBirth());
+				now = new IWTimestamp();
+				int days = IWTimestamp.getDaysBetween(dateOfBirth, now);
+				if (days < 90) {
+					dateOfBirth.addMonths(3);
+					now = new IWTimestamp(dateOfBirth);
+				}
+			}
+			catch (NullPointerException e) {
+				now = new IWTimestamp();
+			}
 
-			IWTimestamp now = new IWTimestamp();
 			IWTimestamp stamp = new IWTimestamp();
 			for (int i = 0; i < provider.length; i++) {
 				int providerID = provider[i];
