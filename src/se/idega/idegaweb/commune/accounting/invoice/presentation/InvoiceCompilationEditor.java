@@ -86,10 +86,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/14 08:19:29 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/15 09:23:49 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.115 $
+ * @version $Revision: 1.116 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1819,9 +1819,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		}
 		final String recordId = record.getPrimaryKey ().toString ();
 		final boolean isManualRecord = isManualRecord (record);
+		//final String [][] editLinkParameters = getRecordLinkParameters
+		//(isManualRecord ? ACTION_SHOW_EDIT_RECORD_FORM
+		//: ACTION_SHOW_RECORD_DETAILS, recordId);
 		final String [][] editLinkParameters = getRecordLinkParameters
-				(isManualRecord ? ACTION_SHOW_EDIT_RECORD_FORM
-				 : ACTION_SHOW_RECORD_DETAILS, recordId);
+				(ACTION_SHOW_EDIT_RECORD_FORM, recordId);
 		final Link textLink = createSmallLink (record.getInvoiceText (),
 																					 editLinkParameters);
 		table.add (textLink, col++, row);
@@ -1834,13 +1836,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final Link editLink = createIconLink (getEditIcon (),
 																					editLinkParameters);
 		table.add (editLink, col++, row);
-		if (isManualRecord) {
-			final String [][] deleteLinkParamaters = getRecordLinkParameters
-					(ACTION_DELETE_RECORD,  recordId);
-			final Link deleteLink = createIconLink (getDeleteIcon (),
-																							deleteLinkParamaters);
-			table.add (deleteLink, col++, row);
-		}
+		//if (isManualRecord) {
+		final String [][] deleteLinkParamaters = getRecordLinkParameters
+				(ACTION_DELETE_RECORD,  recordId);
+		final Link deleteLink = createIconLink (getDeleteIcon (),
+																						deleteLinkParamaters);
+		table.add (deleteLink, col++, row);
+		//}
 	}
 	
 	private String getProviderName (final SchoolClassMember placement) {
@@ -2023,12 +2025,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	}
 	
 	private static boolean isManualRecord (final InvoiceRecord record) {
-		return true;
-		/* temporary application ordered by lotta - will be replaced by below soon
 		final String autoSignature = BillingThread.getBatchRunSignatureKey ();
 		final String createdBy = record.getCreatedBy ();
 		return null == createdBy || !createdBy.equals (autoSignature);
-		*/
 	}
 	
 	private Text getSmallSignature (final String string) {

@@ -53,6 +53,7 @@ import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.business.PaymentSummary;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
@@ -70,16 +71,15 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
-
 /**
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/15 07:48:22 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/15 09:23:49 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.71 $
+ * @version $Revision: 1.72 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -487,12 +487,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		final PdfPTable summaryTable
 				= new PdfPTable (new float [] { 7.0f, 3.6f, 3.0f });
 		summaryTable.getDefaultCell ().setBorder (0);
-		final PaymentSummary summary = new PaymentSummary (context, records);
+		final PaymentSummary summary = new PaymentSummary (records, getSchoolBusiness (context), getInvoiceBusiness (context));
 		addPhrase (summaryTable,
 							 localize (TOTAL_AMOUNT_PLACEMENTS_KEY,
 												 TOTAL_AMOUNT_PLACEMENTS_DEFAULT) + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
-		addPhrase (summaryTable, integerFormatter.format (summary.placementCount));
+		addPhrase (summaryTable, integerFormatter.format (summary.getPlacementCount ()));
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (summaryTable, "");
 		addPhrase (summaryTable,
@@ -500,7 +500,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 												 TOTAL_AMOUNT_INDIVIDUALS_DEFAULT) + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
 		addPhrase (summaryTable, integerFormatter.format
-							 (summary.individuals.size ()));
+							 (summary.getIndividualsCount ()));
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (summaryTable, "");
 		addPhrase (summaryTable,
@@ -508,14 +508,14 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 												 TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT) + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
 		addPhrase (summaryTable, getFormattedAmount
-							 (summary.totalAmountVatExcluded));
+							 (summary.getTotalAmountVatExcluded ()));
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (summaryTable, "");
 		addPhrase (summaryTable,
 							 localize (TOTAL_AMOUNT_VAT_KEY, TOTAL_AMOUNT_VAT_DEFAULT)
 							 + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
-		addPhrase (summaryTable, getFormattedAmount (summary.totalAmountVat));
+		addPhrase (summaryTable, getFormattedAmount (summary.getTotalAmountVat ()));
 		addPhrase (summaryTable, "");
 		return summaryTable;
 	}
@@ -995,57 +995,10 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addSmallText (table, col++, row, changedBy);
 	}
 
-	private class PaymentSummary {
-		int placementCount = 0;
-		Set individuals = new HashSet ();
-		long totalAmountVatExcluded = 0;
-		long totalAmountVat = 0;
-
-		PaymentSummary (final IWContext context, final PaymentRecord [] records)
-			throws RemoteException, FinderException {
-			// get home objects
-			final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
-			final SchoolClassMemberHome placementHome
-					= schoolBusiness.getSchoolClassMemberHome ();
-			final InvoiceRecordHome home
-					= getInvoiceBusiness (context).getInvoiceRecordHome ();
-
-			for (int i = 0; i < records.length; i++) {
-				final PaymentRecord paymentRecord = records [i];
-				placementCount += paymentRecord.getPlacements ();
-				final String ruleSpecType = paymentRecord.getRuleSpecType ();
-				final long amountVat = roundAmount (paymentRecord.getTotalAmountVAT ());
-				final long amountExcl = roundAmount (paymentRecord.getTotalAmount ());
-				if (null != ruleSpecType
-						&& ruleSpecType.equals("cacc_reg_spec_type.moms")) {
-					totalAmountVat += amountExcl;
-				} else {
-					totalAmountVatExcluded += amountExcl;
-				}
-				final Collection invoiceRecords
-						= home.findByPaymentRecord (paymentRecord);
-				for (Iterator j = invoiceRecords.iterator (); j.hasNext ();) {
-					final InvoiceRecord invoiceRecord = (InvoiceRecord) j.next ();
-					try {
-						final Integer placementId = new Integer
-								(invoiceRecord.getSchoolClassMemberId ());
-						final SchoolClassMember placement
-								= placementHome.findByPrimaryKey (placementId);
-						final User user = placement.getStudent ();
-						individuals.add (user.getPrimaryKey ());
-					} catch (Exception e) {
-						e.printStackTrace ();
-					}
-				}
-			}		
-		}
-	}
-	
 	private Table getPaymentSummaryTable (final IWContext context,
 																				final PaymentRecord [] records)
 		throws RemoteException, FinderException {
-		final PaymentSummary summary
-				= new PaymentSummary (context, records);
+		final PaymentSummary summary = new PaymentSummary (records, getSchoolBusiness (context), getInvoiceBusiness (context));
 
 		// render
 		final Table table = createTable (3);
@@ -1055,25 +1008,25 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 										TOTAL_AMOUNT_PLACEMENTS_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		addSmallText (table, col++, row++,
-									integerFormatter.format (summary.placementCount));
+									integerFormatter.format (summary.getPlacementCount ()));
 		col = 1;
 		addSmallHeader (table, col++, row, TOTAL_AMOUNT_INDIVIDUALS_KEY,
 										TOTAL_AMOUNT_INDIVIDUALS_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		addSmallText (table, col++, row++,
-									integerFormatter.format (summary.individuals.size ()));
+									integerFormatter.format (summary.getIndividualsCount ()));
 		col = 1;
 		addSmallHeader (table, col++, row, TOTAL_AMOUNT_VAT_EXCLUDED_KEY,
 										TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		addSmallText (table, col++, row++,
-									getFormattedAmount (summary.totalAmountVatExcluded));
+									getFormattedAmount (summary.getTotalAmountVatExcluded ()));
 		col = 1;
 		addSmallHeader (table, col++, row, TOTAL_AMOUNT_VAT_KEY,
 										TOTAL_AMOUNT_VAT_DEFAULT, ":");
 		table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		addSmallText (table, col++, row++, 
-									getFormattedAmount (summary.totalAmountVat));
+									getFormattedAmount (summary.getTotalAmountVat ()));
 		return table;
 	}
 	
@@ -1107,12 +1060,9 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	}
 	
 	private static boolean isManualRecord (final PaymentRecord record) {
-		return true;
-		/* temporary application ordered by lotta - will be replaced by below soon
 		final String autoSignature = BillingThread.getBatchRunSignatureKey ();
 		final String createdBy = record.getCreatedBy ();
 		return null == createdBy || !createdBy.equals (autoSignature);
-		*/
 	}
 	
 	private Text getSmallSignature (final String string) {
@@ -1141,8 +1091,9 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				&& regSpecType.equals ("cacc_reg_spec_type.check");
 		final boolean isFlowInAndOut
 				= hasCurrentSchoolCategoryFlowInAndFlowOut (context);
-		final boolean isRecordEditAllowed = isManualRecord (record)
-				&& !(isFlowInAndOut && isCheck) && !userIsSchoolManager;
+		final boolean isRecordEditAllowed = !userIsSchoolManager;
+		//final boolean isRecordEditAllowed = isManualRecord (record)
+		//&& !(isFlowInAndOut && isCheck) && !userIsSchoolManager;
 		final String [][] showRecordLinkParameters = isRecordEditAllowed
 				? new String [][] {{ ACTION_KEY,
 														 ACTION_SHOW_EDIT_RECORD_FORM + "" },
