@@ -671,7 +671,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_5_1.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_1_reportname", "League and reg.uni."), false));
 		b12_5_1.addParameter(ACTION, ACTION_STATISTICS);
 		b12_5_1.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.1.xml");
-		//b12_5_1.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.1.xml");
+		b12_5_1.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.1.xml");
 		b12_5_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_1_reportname");
 		b12_5_1.setStyleClass(styledLink);
 
@@ -683,7 +683,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_5_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_2_reportname", "Clubs split"), false));
 		b12_5_2.addParameter(ACTION, ACTION_STATISTICS);
 		b12_5_2.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.2.xml");
-		//b12_5_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.2.xml");
+		b12_5_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.2.xml");
 		b12_5_2.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_2_reportname");
 		b12_5_2.setStyleClass(styledLink);
 
@@ -694,7 +694,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_5_3.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_5_3_reportname", "Clubs comparison"), false));
 		b12_5_3.addParameter(ACTION, ACTION_STATISTICS);
 		b12_5_3.addParameter(STATS_INVOCATION_NAME_FROM_BUNDLE,"Invocation-B12.5.3.xml");
-		//b12_5_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.2.xml");
+		b12_5_3.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.5.3.xml");
 		b12_5_3.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_5_3_reportname");
 		b12_5_3.setStyleClass(styledLink);
 
