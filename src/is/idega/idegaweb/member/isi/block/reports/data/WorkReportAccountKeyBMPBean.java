@@ -129,6 +129,24 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 	
+	public Collection ejbFindIncomeAccountKeysWithoutSubKeys() throws FinderException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getEntityName());
+		sql.append(" where ");
+		sql.append(COLUMN_NAME_KEY_TYPE);
+		sql.append(" = '");
+		sql.append(INCOME_SHEET);
+		sql.append("' and ");
+		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
+		sql.append(" = '");
+		sql.append(DEBET).append('\'');
+		sql.append(" AND ").append(COLUMN_NAME_PARENT_KEY_NUMBER).append(" is null");
+		
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+	
+
+	
 	public Collection ejbFindExpensesAccountKeys() throws FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");
 		sql.append(getEntityName());
@@ -140,6 +158,22 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
 		sql.append(" = '");
 		sql.append(CREDIT).append('\'');
+		
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+	
+	public Collection ejbFindExpensesAccountKeysWithoutSubKeys() throws FinderException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getEntityName());
+		sql.append(" where ");
+		sql.append(COLUMN_NAME_KEY_TYPE);
+		sql.append(" = '");
+		sql.append(INCOME_SHEET);
+		sql.append("' and ");
+		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
+		sql.append(" = '");
+		sql.append(CREDIT).append('\'');
+		sql.append(" AND ").append(COLUMN_NAME_PARENT_KEY_NUMBER).append(" is null");
 		
 		return super.idoFindPKsBySQL(sql.toString());
 	}
@@ -158,6 +192,24 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		
 		return super.idoFindPKsBySQL(sql.toString());
 	}
+	
+	public Collection ejbFindAssetAccountKeysWithoutSubKeys() throws FinderException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getEntityName());
+		sql.append(" where ");
+		sql.append(COLUMN_NAME_KEY_TYPE);
+		sql.append(" = '");
+		sql.append(BALANCE_SHEET);
+		sql.append("' and ");
+		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
+		sql.append(" = '");
+		sql.append(DEBET).append('\'');
+		sql.append(" AND ").append(COLUMN_NAME_PARENT_KEY_NUMBER).append(" is null");
+		
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+	
+
 
 	public Collection ejbFindDeptAccountKeys() throws FinderException {
 		StringBuffer sql = new StringBuffer("select * from ");
@@ -173,4 +225,21 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		
 		return super.idoFindPKsBySQL(sql.toString());
 	}	
+	
+	public Collection ejbFindDeptAccountKeysWithoutSubKeys() throws FinderException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getEntityName());
+		sql.append(" where ");
+		sql.append(COLUMN_NAME_KEY_TYPE);
+		sql.append(" = '");
+		sql.append(BALANCE_SHEET);
+		sql.append("' and ");
+		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
+		sql.append(" = '");
+		sql.append(CREDIT).append('\'');
+		sql.append(" AND ").append(COLUMN_NAME_PARENT_KEY_NUMBER).append(" is null");
+		
+		return super.idoFindPKsBySQL(sql.toString());
+	}	
+	
 }

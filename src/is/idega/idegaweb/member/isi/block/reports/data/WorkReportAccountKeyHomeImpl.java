@@ -34,9 +34,23 @@ public java.util.Collection findAssetAccountKeys()throws javax.ejb.FinderExcepti
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAssetAccountKeysWithoutSubKeys()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WorkReportAccountKeyBMPBean)entity).ejbFindAssetAccountKeysWithoutSubKeys();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findDeptAccountKeys()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((WorkReportAccountKeyBMPBean)entity).ejbFindDeptAccountKeys();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findDeptAccountKeysWithoutSubKeys()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WorkReportAccountKeyBMPBean)entity).ejbFindDeptAccountKeysWithoutSubKeys();
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -48,9 +62,23 @@ public java.util.Collection findExpensesAccountKeys()throws javax.ejb.FinderExce
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findExpensesAccountKeysWithoutSubKeys()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WorkReportAccountKeyBMPBean)entity).ejbFindExpensesAccountKeysWithoutSubKeys();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findIncomeAccountKeys()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((WorkReportAccountKeyBMPBean)entity).ejbFindIncomeAccountKeys();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findIncomeAccountKeysWithoutSubKeys()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WorkReportAccountKeyBMPBean)entity).ejbFindIncomeAccountKeysWithoutSubKeys();
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

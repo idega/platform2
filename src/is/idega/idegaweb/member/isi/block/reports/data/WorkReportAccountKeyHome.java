@@ -8,9 +8,13 @@ public interface WorkReportAccountKeyHome extends com.idega.data.IDOHome
  public WorkReportAccountKey findAccountKeyByName(java.lang.String p0)throws javax.ejb.FinderException;
  public WorkReportAccountKey findAccountKeyByNumber(java.lang.String p0)throws javax.ejb.FinderException;
  public java.util.Collection findAssetAccountKeys()throws javax.ejb.FinderException;
+ public java.util.Collection findAssetAccountKeysWithoutSubKeys()throws javax.ejb.FinderException;
  public java.util.Collection findDeptAccountKeys()throws javax.ejb.FinderException;
+ public java.util.Collection findDeptAccountKeysWithoutSubKeys()throws javax.ejb.FinderException;
  public java.util.Collection findExpensesAccountKeys()throws javax.ejb.FinderException;
+ public java.util.Collection findExpensesAccountKeysWithoutSubKeys()throws javax.ejb.FinderException;
  public java.util.Collection findIncomeAccountKeys()throws javax.ejb.FinderException;
+ public java.util.Collection findIncomeAccountKeysWithoutSubKeys()throws javax.ejb.FinderException;
  public java.lang.String getCreditTypeString();
  public java.lang.String getDebetTypeString();
 
