@@ -209,7 +209,7 @@ public class RunResultViewer extends Block {
 					num++;
 					
 					if (!runIter.hasNext()) {
-						table.setHeight(row, 2);
+						table.setHeight(row++, 2);
 					}
 				}
 			}
