@@ -53,6 +53,7 @@ public class PublicBooking extends Block  {
   Supplier supplier;
   int productId = -1;
 
+	private String PARAMETER_REFERRAL_URL = "pb_spm_ru";
   private IWTimestamp stamp;
   private String parameterProductId = LinkGenerator.parameterProductId;
   private DecimalFormat df = new DecimalFormat("0.00");
@@ -81,7 +82,21 @@ public class PublicBooking extends Block  {
     return IW_BUNDLE_IDENTIFIER;
   }
 
+	public String getRefererUrl(IWContext iwc) {
+		String tmpUrl = iwc.getParameter(PARAMETER_REFERRAL_URL);
+		if (tmpUrl == null){
+			tmpUrl = (String) iwc.getSessionAttribute(PARAMETER_REFERRAL_URL);
+			if (tmpUrl == null) {
+				tmpUrl = iwc.getReferer();
+			}
+		}
+		iwc.setSessionAttribute(PARAMETER_REFERRAL_URL, tmpUrl);
+		return tmpUrl;
+	}
+
+
   private void init(IWContext iwc) throws RemoteException{
+  	System.out.println("ReferalUrl = "+getRefererUrl(iwc));
     bundle = getBundle(iwc);
     iwrb = bundle.getResourceBundle(iwc.getCurrentLocale());
     super.getParentPage().setExpiryDate("Tue, 20 Aug 1996 14:25:27 GMT");
@@ -234,6 +249,7 @@ public class PublicBooking extends Block  {
         ch.showInquiries(false);
         ch.sm.T.setBorder(0);
         ch.sm.T.setCellspacing(2);
+        ch.addParameterToLink(PARAMETER_REFERRAL_URL, getRefererUrl(iwc));
       table.add(ch.getCalendarTable(iwc),1,1);
 
     }catch (Exception e) {
@@ -262,7 +278,7 @@ public class PublicBooking extends Block  {
 //      legalDay = getTravelStockroomBusiness(iwc).getIfDay(iwc, product, stamp);
 
       Form form = new Form();
-
+				form.maintainParameter(PARAMETER_REFERRAL_URL);
 
       if (legalDay && !fullyBooked) {
         String action = iwc.getParameter(BookingForm.sAction);
@@ -354,6 +370,8 @@ public class PublicBooking extends Block  {
 //        TourBookingForm tbf = new TourBookingForm(iwc,product);
         int bookingId = bf.saveBooking(iwc); // WAS handleInsert(iwc), changed 14.10.2002, because Booking has already been checked, and verified
         gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+        gBooking.setRefererUrl(getRefererUrl(iwc));
+        gBooking.store();
 
         if (bookingId == BookingForm.inquirySent) {
           inquirySent = true;
