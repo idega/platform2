@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareExportBusinessBean.java,v 1.7 2005/02/15 10:23:11 anders Exp $
+ * $Id: ChildCareExportBusinessBean.java,v 1.8 2005/02/15 13:45:12 anders Exp $
  *
  * Copyright (C) 2005 Idega. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import com.idega.util.IWTimestamp;
  * The first version of this class implements the business logic for
  * exporting text files for the IST Extens system.
  * <p>
- * Last modified: $Date: 2005/02/15 10:23:11 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/15 13:45:12 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ChildCareExportBusinessBean extends IBOServiceBean implements ChildCareExportBusiness {
 
@@ -87,7 +87,7 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 		try {
 			transaction.begin();
 
-			fileName = storePlacementExportFileTimestamp(userId);
+			fileName = storePlacementExportFileTimestamp(userId, to);
 			String text = getPlacementFileContent(to);
 			writeFile(text, fileName);
 			
@@ -552,11 +552,12 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 	 * The created timestamp is set to current time.
 	 * The file type is set to IST Extens placement export file.
 	 * @param userId the id for the user who created the export file
+	 * @param to the latest date for placement to be included in the export
 	 * @return the file name for the export file
 	 * @throws ChildCareExportException
 	 */
-	public String storePlacementExportFileTimestamp(int userId) throws ChildCareExportException {
-		return storeExportFileTimestamp(userId, FILE_TYPE_PLACEMENT, null, null);		
+	public String storePlacementExportFileTimestamp(int userId, Date to) throws ChildCareExportException {
+		return storeExportFileTimestamp(userId, FILE_TYPE_PLACEMENT, null, to);		
 	}
 
 	/**
