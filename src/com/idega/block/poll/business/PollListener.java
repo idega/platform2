@@ -1,6 +1,6 @@
 package com.idega.block.poll.business;
 
-import com.idega.business.IWEventListener;
+import com.idega.event.IWPageEventListener;
 import com.idega.presentation.IWContext;
 
 /**
@@ -12,7 +12,7 @@ import com.idega.presentation.IWContext;
  * @version 1.0
  */
 
-public class PollListener implements IWEventListener{
+public class PollListener implements IWPageEventListener{
 
   public PollListener() {
   }

@@ -23,12 +23,12 @@ import is.idega.idegaweb.golf.entity.Member;
 import com.idega.jmodule.login.data.*;
 
 import com.idega.data.genericentity.Group;
+import com.idega.event.IWPageEventListener;
 
 import java.sql.*;
 
 import java.io.*;
 
-import com.idega.business.IWEventListener;
 
 import com.idega.idegaweb.IWException;
 
@@ -54,7 +54,7 @@ import com.idega.idegaweb.IWException;
 
 
 
-public class LoginBusiness implements IWEventListener{
+public class LoginBusiness implements IWPageEventListener{
 
 
 

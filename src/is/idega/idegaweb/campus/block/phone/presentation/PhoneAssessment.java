@@ -6,7 +6,7 @@ import is.idega.idegaweb.campus.block.phone.business.*;
 import is.idega.idegaweb.campus.block.phone.data.CampusPhone;
 import is.idega.idegaweb.campus.block.phone.data.PhoneFileInfo;
 import com.idega.data.EntityFinder;
-import com.idega.business.IWEventListener;
+import com.idega.event.IWPageEventListener;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.Table;

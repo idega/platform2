@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberHandler.java,v 1.10 2003/08/07 15:34:40 aron Exp $
+ * $Id: ReferenceNumberHandler.java,v 1.11 2003/10/03 12:40:11 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,7 +12,7 @@ package com.idega.block.application.business;
 import com.idega.block.application.presentation.ReferenceNumber;
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWApplicationContext;
-import com.idega.business.IWEventListener;
+import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.util.CypherText;
@@ -22,7 +22,7 @@ import com.idega.util.CypherText;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class ReferenceNumberHandler implements IWEventListener {
+public class ReferenceNumberHandler implements IWPageEventListener {
   private static final String referenceNumber_ = "referenceNumber";
   private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.application";
 

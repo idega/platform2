@@ -6,14 +6,14 @@ import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareAdmin;
 
 import com.idega.business.IBOLookup;
-import com.idega.business.IWEventListener;
+import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 
 /**
  * @author laddi
  */
-public class ChildCareEventListener implements IWEventListener {
+public class ChildCareEventListener implements IWPageEventListener {
 
 	/**
 	 * @see com.idega.business.IWEventListener#actionPerformed(com.idega.presentation.IWContext)

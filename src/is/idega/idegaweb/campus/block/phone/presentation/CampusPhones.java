@@ -4,7 +4,6 @@ package is.idega.idegaweb.campus.block.phone.presentation;
 import is.idega.idegaweb.campus.presentation.Edit;
 import is.idega.idegaweb.campus.block.phone.business.PhoneFinder;
 import is.idega.idegaweb.campus.block.phone.data.CampusPhone;
-import com.idega.business.IWEventListener;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.Table;
@@ -15,6 +14,7 @@ import com.idega.block.building.data.*;
 import com.idega.block.building.business.*;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.EntityFinder;
+import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -36,7 +36,7 @@ import java.sql.SQLException;
  * @version 1.1
  */
 
-public class CampusPhones extends Block implements IWEventListener{
+public class CampusPhones extends Block implements IWPageEventListener{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";

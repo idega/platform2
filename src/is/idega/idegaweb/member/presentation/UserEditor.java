@@ -20,7 +20,6 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import com.idega.business.IBOLookup;
-import com.idega.business.IWEventListener;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.CountryHome;
@@ -35,6 +34,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.IDOStoreException;
+import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -1175,7 +1175,7 @@ public class UserEditor extends Block {
 	public void setUserID(Integer integer) {
 		userID = integer;
 	}
-	public void addDeceasedListener(IWEventListener listener) {
+	public void addDeceasedListener(IWPageEventListener listener) {
 	}
 	protected Map getRelations(User user) throws FinderException, RemoteException {
 		Map map = new Hashtable();

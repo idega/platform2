@@ -10,7 +10,7 @@ import com.idega.block.reports.business.ReportContentComparator;
 import com.idega.block.reports.business.ReportMaker;
 import com.idega.block.reports.business.ReportService;
 import com.idega.block.reports.data.Report;
-import com.idega.business.IWEventListener;
+import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -22,7 +22,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 
 
-public class ReportContentViewer extends Block implements Reports,IWEventListener{
+public class ReportContentViewer extends Block implements Reports,IWPageEventListener{
 
   private final String sAction = "rcv_action";
   private String sActPrm = "";

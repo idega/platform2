@@ -1,6 +1,6 @@
 package is.idega.idegaweb.project.business;
 
-import com.idega.business.GenericState;
+import com.idega.event.GenericState;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 

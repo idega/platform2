@@ -11,13 +11,13 @@ import is.idega.idegaweb.project.business.ProjectBusiness;
 import is.idega.idegaweb.project.business.ProjectNavigatorState;
 import is.idega.idegaweb.project.data.IPProject;
 import com.idega.data.IDOLegacyEntity;
+import com.idega.event.GenericState;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.presentation.ui.IFrame;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.presentation.IFrameContainer;
 import com.idega.presentation.IFrameContent;
-import com.idega.business.GenericState;
 import com.idega.core.accesscontrol.business.AccessController;
 
 

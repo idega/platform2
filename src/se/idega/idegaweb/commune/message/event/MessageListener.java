@@ -3,14 +3,14 @@ package se.idega.idegaweb.commune.message.event;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.business.MessageSession;
 
-import com.idega.business.IWEventListener;
+import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 
 /**
  * @author Laddi
 */
-public class MessageListener implements IWEventListener {
+public class MessageListener implements IWPageEventListener {
 
   public final static String PARAM_MESSAGE_ID = "msg_id";
   public final static String PARAM_TO_MSG_BOX = "msg_to_msg_box";

@@ -5,7 +5,7 @@ package se.idega.idegaweb.commune.accounting.presentation;
 
 import java.rmi.RemoteException;
 
-import com.idega.business.IWEventListener;
+import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
@@ -14,7 +14,7 @@ import com.idega.presentation.ui.Form;
 /**
  * @author laddi
  */
-public class OperationalFieldsMenu extends AccountingBlock implements IWEventListener {
+public class OperationalFieldsMenu extends AccountingBlock implements IWPageEventListener {
 
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)

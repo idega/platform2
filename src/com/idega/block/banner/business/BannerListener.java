@@ -1,8 +1,7 @@
 package com.idega.block.banner.business;
 
-import com.idega.business.IWEventListener;
 import com.idega.presentation.IWContext;
-import com.idega.block.banner.business.BannerBusiness;
+import com.idega.event.IWPageEventListener;
 
 /**
  * Title:        Poll vote handling
@@ -13,7 +12,7 @@ import com.idega.block.banner.business.BannerBusiness;
  * @version 1.0
  */
 
-public class BannerListener implements IWEventListener{
+public class BannerListener implements IWPageEventListener{
 
   public BannerListener() {
   }
