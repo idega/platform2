@@ -84,10 +84,10 @@ public class UserHistoryList extends Page {
 							if (rel.getTerminationDate() != null)
 								to = new IWTimestamp(rel.getTerminationDate());
 							doneBy = rel.getCreatedBy();
-							eventList.addEvent(new EventListEntry(from.getDate(),typeAddedToGroup,getGroupName(rel.getGroup()),doneBy!=null?doneBy.getName():"",rel.getPrimaryKey().toString()));
+							eventList.addEvent(new EventListEntry(from.getDate(),typeAddedToGroup,getGroupName(rel.getGroup()),doneBy!=null?doneBy.getName():"",""));//rel.getPrimaryKey().toString()));
 							if(to!=null){
 							    doneBy = rel.getPassiveBy();
-							    eventList.addEvent(new EventListEntry(to.getDate(),typeRemovedFromGroup,getGroupName(rel.getGroup()),doneBy!=null?doneBy.getName():"",rel.getPrimaryKey().toString()));
+							    eventList.addEvent(new EventListEntry(to.getDate(),typeRemovedFromGroup,getGroupName(rel.getGroup()),doneBy!=null?doneBy.getName():"",""));//rel.getPrimaryKey().toString()));
 							}
 							
 							/*
