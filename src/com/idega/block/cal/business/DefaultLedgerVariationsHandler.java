@@ -24,12 +24,11 @@ public class DefaultLedgerVariationsHandler implements LedgerVariationsHandler{
 		return null;
 	}
 	
-	public void saveLedger(IWContext iwc, Page parentPage, int groupID, String coachName, int coachGroupID, String date) {
+	public void saveLedger(IWContext iwc, Page parentPage, String name, int groupID, String coachName, int coachGroupID, String date) {
 		CalBusiness calBiz = getCalBusiness(iwc);
 		
 		GroupBusiness grBiz =getGroupBusiness(iwc);
 		Group g = null;
-		String name = null;
 		try {
 			g = grBiz.getGroupByGroupID(groupID);
 			
@@ -38,10 +37,13 @@ public class DefaultLedgerVariationsHandler implements LedgerVariationsHandler{
 		}
 		
 		if(g != null) {
-			name = g.getName();
+			if(name == null || name.equals("")) {
+				name = g.getName();
+			}
+			
 		}
 		
-		calBiz.createNewLedger(name + "_ledger",groupID,coachName,date,coachGroupID);	
+		calBiz.createNewLedger(name,groupID,coachName,date,coachGroupID);	
 	}
 	public Collection getParentGroupRelation(IWContext iwc, User user) {
 		Collection parents =null;
