@@ -43,6 +43,9 @@ public class ChildCareEventListener implements IWEventListener {
 			if (iwc.isParameterSet(session.getParameterGroupID()))
 				session.setGroupID(Integer.parseInt(iwc.getParameter(session.getParameterGroupID())));
 				
+			if (iwc.isParameterSet(session.getParameterCheckID()))
+				session.setCheckID(Integer.parseInt(iwc.getParameter(session.getParameterCheckID())));
+				
 			if (session.getSortBy() == ChildCareAdmin.SORT_ALL) {
 				session.setSortBy(-1);
 				session.setFromTimestamp(null);

@@ -16,12 +16,14 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
@@ -44,8 +46,11 @@ import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
+import com.idega.block.school.business.SchoolAreaComparator;
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.business.SchoolComparator;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.data.Address;
 import com.idega.core.data.Phone;
@@ -98,6 +103,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
+	public ChildCareApplication getApplication(int childID, int choiceNumber) throws RemoteException {
+		try {
+			return getChildCareApplicationHome().findApplicationByChildAndChoiceNumber(childID, choiceNumber);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+	
 	public boolean hasApplications(int childID) throws RemoteException {
 		try {
 			int applications = getChildCareApplicationHome().getNumberOfApplicationsForChild(childID);
@@ -131,6 +145,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public boolean insertApplications(User user, int provider[], String date, int checkId, int childId, String subject, String message, boolean freetimeApplication) {
+		String[] dates = new String[provider.length];
+		for (int a = 0; a < dates.length; a++) {
+			dates[a] = date;
+		}
+		return insertApplications(user, provider, dates, checkId, childId, subject, message, freetimeApplication);
+	}
+	
+	public boolean insertApplications(User user, int provider[], String[] dates, int checkId, int childId, String subject, String message, boolean freetimeApplication) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 
 		try {
@@ -141,33 +163,39 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			IWTimestamp now = new IWTimestamp();
 			IWTimestamp stamp = new IWTimestamp();
 			for (int i = 0; i < provider.length; i++) {
-				try {
-					appl = getChildCareApplicationHome().findApplicationByChildAndChoiceNumber(childId, i + 1);
-				} catch (FinderException fe) {
-					appl = getChildCareApplicationHome().create();
-				}
-
-				if (user != null)
-					appl.setOwner(user);
-				appl.setProviderId(provider[i]);
-				IWTimestamp fromDate = new IWTimestamp(date);
-				appl.setFromDate(fromDate.getDate());
-				appl.setChildId(childId);
-				appl.setQueueDate(now.getDate());
-				appl.setMethod(1);
-				appl.setChoiceNumber(i + 1);
-				stamp.addSeconds((1 - ((i + 1) * 1)));
-				appl.setCreated(stamp.getTimestamp());
-				appl.setQueueOrder(((Integer)appl.getPrimaryKey()).intValue());
-				appl.setApplicationStatus(getStatusSentIn());
-				if (checkId != -1)
-					appl.setCheckId(checkId);
-				if (freetimeApplication)
-					caseBiz.changeCaseStatus(appl, getCaseStatusInactive().getStatus(), user);
-				else {
-					caseBiz.changeCaseStatus(appl, getCaseStatusOpen().getStatus(), user);
-					sendMessageToParents(appl, subject, message);
-					updateQueue(appl);
+				int providerID = provider[i];
+				if (providerID != -1) {
+					try {
+						appl = getChildCareApplicationHome().findApplicationByChildAndChoiceNumber(childId, i + 1);
+					}
+					catch (FinderException fe) {
+						appl = getChildCareApplicationHome().create();
+					}
+	
+					IWTimestamp fromDate = new IWTimestamp(dates[i]);
+					if (canChangeApplication(appl, providerID, fromDate)) {
+						if (user != null)
+							appl.setOwner(user);
+						appl.setProviderId(providerID);
+						appl.setFromDate(fromDate.getDate());
+						appl.setChildId(childId);
+						appl.setQueueDate(now.getDate());
+						appl.setMethod(1);
+						appl.setChoiceNumber(i + 1);
+						stamp.addSeconds((1 - ((i + 1) * 1)));
+						appl.setCreated(stamp.getTimestamp());
+						appl.setQueueOrder(((Integer)appl.getPrimaryKey()).intValue());
+						appl.setApplicationStatus(getStatusSentIn());
+						if (checkId != -1)
+							appl.setCheckId(checkId);
+						if (freetimeApplication)
+							caseBiz.changeCaseStatus(appl, getCaseStatusInactive().getStatus(), user);
+						else {
+							caseBiz.changeCaseStatus(appl, getCaseStatusOpen().getStatus(), user);
+							sendMessageToParents(appl, subject, message);
+							updateQueue(appl);
+						}
+					}
 				}
 			}
 
@@ -184,18 +212,33 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}*/
 
 			t.commit();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			try {
 				t.rollback();
-			} catch (SystemException ex) {
+			}
+			catch (SystemException ex) {
 				ex.printStackTrace();
 			}
-
 			return false;
 		}
-
 		return true;
+	}
+	
+	private boolean canChangeApplication(ChildCareApplication application, int newProviderID, IWTimestamp newFromDate) {
+		int oldProviderID = application.getProviderId();
+		IWTimestamp oldFromDate = new IWTimestamp();
+		if (application.getFromDate() != null)
+			oldFromDate = new IWTimestamp(application.getFromDate());
+		
+		if (oldProviderID != newProviderID)
+			return true;
+		else {
+			if (!oldFromDate.equals(newFromDate))
+				return true;
+			return false;
+		}
 	}
 	
 	public void changePlacingDate(int applicationID, Date placingDate) throws RemoteException {
@@ -1449,5 +1492,30 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return 0;
 		}
 	}
-
+	
+	public Map getProviderAreaMap(Collection schoolAreas, Locale locale) throws RemoteException {
+		Map areaMap = new HashMap();
+		if (schoolAreas != null) {
+			List areas = new ArrayList(schoolAreas);
+			Collections.sort(areas, new SchoolAreaComparator(locale));
+			
+			Collection schoolTypes = getSchoolBusiness().findAllSchoolTypesInCategory("CHILDCARE");
+			Iterator iter = areas.iterator();
+			while (iter.hasNext()) {
+				Map providerMap = new HashMap();
+				SchoolArea area = (SchoolArea) iter.next();
+				List providers = new ArrayList(getSchoolBusiness().findAllSchoolsByAreaAndTypes(((Integer)area.getPrimaryKey()).intValue(), schoolTypes));
+				Collections.sort(providers, new SchoolComparator(locale));
+				if (providers != null) {
+					Iterator iterator = providers.iterator();
+					while (iterator.hasNext()) {
+						School provider = (School) iterator.next();
+						providerMap.put(provider.getPrimaryKey().toString(), provider.getSchoolName());
+					}
+				}
+				areaMap.put(area, providerMap);
+			}
+		}
+		return areaMap;
+	}
 }
