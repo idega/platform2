@@ -12,6 +12,9 @@ package se.idega.idegaweb.ehealth.presentation;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import se.idega.util.PIDChecker;
+
+import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
@@ -22,6 +25,8 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.Form;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
 import com.idega.util.Age;
 
 
@@ -59,29 +64,36 @@ public class HealthCareOverview extends EHealthBlock {
 	private String keySet2Text4U2 = prefix + "h_care_o_set2_text_4U2";
 	private String keySet2Text5U2 = prefix + "h_care_o_set2_text_5U2";
 	
-	//private int userID = -1;
-	//private User user;
+	private int userID = -1;
+	private User user;
 	IWContext _iwc = null;
 	private Image imageCircleD = null;
 	private Image imageCircleU = null;
 	private Image imageBgVert = null;
+	private Image imageBgVertOut = null;
 	
 	Age age = null;
 	
 	public void main(IWContext iwc) throws Exception {
 		_iwc = iwc;
 		
-		//userID = iwc.getUserId();
-		
-	/*	if (userID > 0) {
+		userID = iwc.getUserId();	
+	
+		if (userID > 0) {
 			user = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userID);
 		}
-	*/
+	
 		imageCircleD = getBundle(iwc).getImage("circleDown.gif");
 		imageCircleU = getBundle(iwc).getImage("circleUp.gif");
 		imageBgVert = getBundle(iwc).getImage("bgbeigeVert.gif");
+		imageBgVertOut = getBundle(iwc).getImage("bgbeigeVert1.gif");
 		
 	//	add(getOverviewForm(iwc));
+		if (user != null && user.getDateOfBirth() != null)
+			age = new Age(user.getDateOfBirth());
+		else if (user != null && user.getPersonalID() != null)
+			age = new Age(PIDChecker.getInstance().getDateFromPersonalID(user.getPersonalID()));
+		
 		add(getOverviewForm());
 		
 	
@@ -165,8 +177,8 @@ public class HealthCareOverview extends EHealthBlock {
 		layerOut.setVisibility("visible");
 		layerOut.setOverflow("scroll");
 		layerOut.setPositionType("absolute");
-		layerOut.setWidth("400");
-		layerOut.setHeight("150");
+		layerOut.setWidth("280");
+		layerOut.setHeight("170");
 		layerOut.setMarkupAttribute("class", "ehealth_div");
 		
 		
@@ -174,8 +186,8 @@ public class HealthCareOverview extends EHealthBlock {
 		layer.setVisibility("hidden");
 		layer.setOverflow("hidden");
 		layer.setPositionType("absolute");
-		layer.setWidth("350");
-		layer.setHeight("150");
+		layer.setWidth("250");
+		layer.setHeight("145");
 		layer.setMarkupAttribute("class", "ehealth_div_no_border");
 		
 		
@@ -217,10 +229,13 @@ public class HealthCareOverview extends EHealthBlock {
 		Layer layersNav = new Layer(Layer.DIV);
 		layersNav.setOverflow("scroll");
 		layersNav.setPositionType("relative");
-		layersNav.setWidth("300");
-		layersNav.setHeight("500");
-		
+		layersNav.setWidth("320");
+		layersNav.setHeight("400");
+				
 		layersNav.setMarkupAttribute("class", "ehealth_div_no_border");
+		//layersNav.setMarkupAttribute("class", "ehealth_div");
+	
+		layersNav.setBackgroundImage(imageBgVertOut);
 		
 		Table table = new Table(3, 20);
 		table.setNoWrap();
@@ -228,29 +243,30 @@ public class HealthCareOverview extends EHealthBlock {
 		table.setCellspacing(0);
 		table.setBorder(0);	
 		
-		table.setWidth("250");
-		//table.setHeight(50);
+		table.setWidth("280");
+		table.setHeight("350");
 		
 		int row = 1;
 		int i = 1;
-		
-		
-		for (i = 1; i <= 2; i++){
-		
+				
+		for (i = 1; i <= 4; i++){		
 			table.mergeCells(2, row, 3, row);
+			if (i <= 2){
 			table.add(getLayer1(i), 2, row);
 			table.setHeight(1, row, "16");
 			table.setHeight(2, row, "16");
 			table.setWidth(1, row, "16");
 			table.setWidth(2, row, "16");
 			table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-			table.add(imageCircleD, 1, row++);			
-			table.setBackgroundImage(1, row, imageBgVert);
+			table.add(imageCircleD, 1, row++);
+			}
+			//table.setBackgroundImage(1, row, imageBgVert);
 			table.setHeight(2, row, "16");
 			table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 			table.add(getLayer2(i), 2, row++);
 			table.setBackgroundImage(1, row, imageBgVert);
 			table.setHeight(1, row, "20");
+			table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 			table.add(getLayer3(i), 2, row++);			
 			table.setHeight(1, row, "10");
 			table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
@@ -278,19 +294,33 @@ public class HealthCareOverview extends EHealthBlock {
 		layerInfo.setWidth("190");
 		
 		layerInfo.setID("lay" + i + "_1");
-		layerInfo.setMarkupAttribute("class", "ehealth_div_top");
+		//layerInfo.setMarkupAttribute("class", "ehealth_div_top");
+		layerInfo.setStyleClass("ehealth_div_top");
 		Link text1 = new Link();
 		text1.setNoURL();
 		text1.setID("text" + i + "_1");
-		if (i == 1){
-			text1.setText("VÅRDBEGÄRAN 04-05-05");	
+		if (age != null && age.getYears() >= 70){
+			if (i == 1){
+				text1.setText("VÅRDBEGÄRAN 2004-05-05 Läk mott.besök");	
+			}
+			else if (i == 2){
+				text1.setText("Vårdbegäran 2004-06-05 Läk mott.besök");
+			}
+			
+			else
+				text1.setText("");
+			}
+		else{
+			if (i == 1){
+				text1.setText("VÅRDBEGÄRAN 04-05-05");	
+			}
+			else if (i == 2){
+				text1.setText("VÅRDBEGÄRAN 03-10-24");
+			}
+			
+			else
+				text1.setText("");
 		}
-		else if (i == 2){
-			text1.setText("VÅRDBEGÄRAN 03-10-24");
-		}
-		
-		else
-			text1.setText("Lorum ispum dolor sit amet");
 		
 		text1.setOnClick("javascript:showHideLayer("+ i +", 1);return false;");
 		
@@ -305,18 +335,32 @@ public class HealthCareOverview extends EHealthBlock {
 		layerInfo.setPositionType("relative");
 		layerInfo.setHeight("25");
 		layerInfo.setID("lay" + i + "_2");
-		layerInfo.setMarkupAttribute("class", "ehealth_div_no_border");
+		//layerInfo.setMarkupAttribute("class", "ehealth_div_no_border");
+		layerInfo.setStyleClass("ehealth_div_top");
 		Link text1 = new Link();
 		text1.setNoURL();
 		text1.setID("text" + i + "_2");
-		if (i == 1){
-			text1.setText("Besök 04-04-30  10.00-11.00");	
+		if (age != null && age.getYears() >= 70){
+			if (i == 1){
+				text1.setText("Besök 2004-05-05");	
+			}
+			else if (i == 2){
+				text1.setText("Besök 2004-06-05");
+			}
+			else
+				text1.setText("Besök 03-01-30 14.00-15.00 Gimo VC");
 		}
-		else if (i == 2){
-			text1.setText("Inskrivning 03-10-22 - 03-10-24");
+		else {
+			if (i == 1){
+				text1.setText("Besök 2004-05-05");	
+			}
+			else if (i == 2){
+				text1.setText("Besök 2004-06-05");
+			}
+			else
+				text1.setText("Besök 03-01-30 14.00-15.00 Gimo VC");
 		}
-		else
-			text1.setText("Besök 03-01-30 14.00-15.00 Gimo VC");
+		
 		
 		text1.setOnClick("javascript:showHideLayer("+ i +", 2);return false;");
 		layerInfo.add(imageCircleU);
@@ -330,9 +374,10 @@ public class HealthCareOverview extends EHealthBlock {
 		layerInfo.setVisibility("hidden");
 		layerInfo.setPositionType("relative");
 		layerInfo.setHeight("20");
-		layerInfo.setWidth("300");
+		layerInfo.setWidth("260");
 		layerInfo.setID("lay" + i + "_3");
-		layerInfo.setStyleClass("ehealth_div_no_border");
+		//layerInfo.setStyleClass("ehealth_div_no_border");
+		layerInfo.setStyleClass("ehealth_row_outer_div");
 		//layerInfo.setLeftPosition("10");
 		layerInfo.setTopPosition("0");
 		layerInfo.add(getInfoLayer(i));	
@@ -348,7 +393,7 @@ public class HealthCareOverview extends EHealthBlock {
 		
 		layerInfo.setWidth("270");
 		layerInfo.setHeight("100");
-		layerInfo.setStyleClass("ehealth_row_div");
+		layerInfo.setStyleClass("ehealth_row_outer_div");
 	
 		Table tableInfo = new Table(1, 10);
 		tableInfo.setNoWrap();
@@ -382,8 +427,10 @@ public class HealthCareOverview extends EHealthBlock {
 		ArrayList cases = new ArrayList();
 		
 		if (theCase == 1){
-			cases.add("VÅRDPLATS: Akademigruppen Klas Löv ");
-			cases.add("JOURNALANTECKNINGAR");	
+			cases.add("Vårdplats:");
+			cases.add("Journalanteckningar:");
+			cases.add("Remisser och svar:");
+			cases.add("Läkemedel: ");
 		}
 		else if (theCase == 2){
 			cases.add("VÅRDPLATS: Ortopedavd 70 E2");
