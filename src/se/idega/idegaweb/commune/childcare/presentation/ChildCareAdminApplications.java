@@ -19,6 +19,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 
 /**
@@ -34,7 +35,7 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 	 */
 	public void init(IWContext iwc) throws Exception {
 		Table applicationTable = new Table();
-		applicationTable.setWidth(Table.HUNDRED_PERCENT);
+		applicationTable.setWidth(getWidth());
 		applicationTable.setCellpadding(getCellpadding());
 		applicationTable.setCellspacing(getCellspacing());
 		applicationTable.setColumns(5);
@@ -46,7 +47,9 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 		applicationTable.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.address","Address"), column++, row);
-		applicationTable.add(getLocalizedSmallHeader("child_care.phone","Phone"), column++, row++);
+		applicationTable.add(getLocalizedSmallHeader("child_care.phone","Phone"), column, row++);
+		applicationTable.add(getLocalizedSmallHeader("child_care.queue_date","Queue date"), column, row++);
+		applicationTable.add(getLocalizedSmallHeader("child_care.placement_date","Placement date"), column++, row++);
 		
 		Collection applications = getApplicationCollection();
 		if (applications != null && !applications.isEmpty()) {
@@ -57,6 +60,8 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 			Link link;
 			Link viewContract;
 			boolean hasContract = false;
+			IWTimestamp queueDate;
+			IWTimestamp placementDate;
 			
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
@@ -65,6 +70,18 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 				child = application.getChild();
 				address = getBusiness().getUserBusiness().getUsersMainAddress(child);
 				phone = getBusiness().getUserBusiness().getChildHomePhone(child);
+				if (application.getQueueDate() != null) {
+					queueDate = new IWTimestamp(application.getQueueDate());
+				}
+				else {
+					queueDate = null;
+				}
+				if (application.getFromDate() != null) {
+					placementDate = new IWTimestamp(application.getFromDate());
+				}
+				else {
+					placementDate = null;
+				}
 				
 				if (application.getApplicationStatus() == getBusiness().getStatusContract()) {
 					hasContract = true;
@@ -93,6 +110,14 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 					applicationTable.add(getSmallText("-"), column++, row);
 				if (phone != null)
 					applicationTable.add(getSmallText(phone.getNumber()), column++, row);
+				else
+					applicationTable.add(getSmallText("-"), column++, row);
+				if (queueDate != null)
+					applicationTable.add(getSmallText(queueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+				else
+					applicationTable.add(getSmallText("-"), column++, row);
+				if (placementDate != null)
+					applicationTable.add(getSmallText(placementDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 				else
 					applicationTable.add(getSmallText("-"), column++, row);
 				if (hasContract) {
