@@ -183,9 +183,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 
 			report.setGroupType(club.getGroupType());
-			report.setGroupName((club.getName() != null) ? club.getName() : club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME));
+			report.setGroupName(club.getName());
 			report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
-			report.setGroupShortName(club.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME));
+			report.setGroupShortName(club.getShortName());
+			
+			
 			//tegund felags?
 			//IWMemberConstants.META_DATA_CLUB_TYPE
 	
@@ -204,7 +206,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	
 				report.setRegionalUnionGroupId((Integer)regionalUnion.getPrimaryKey());
 				report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
-				report.setRegionalUnionAbbreviation(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_ABRV));
+				report.setRegionalUnionAbbreviation(regionalUnion.getAbbrevation());
 	
 			}
 			catch (NoRegionalUnionFoundException e3) {
@@ -803,7 +805,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 				wGroup.setGroupId(groupId);
 				wGroup.setName(group.getName());
-				wGroup.setShortName(group.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME));
+				wGroup.setShortName(group.getShortName());
 				wGroup.setNumber(group.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
 				wGroup.setGroupType(group.getGroupType());
 				wGroup.setYearOfReport(year);
