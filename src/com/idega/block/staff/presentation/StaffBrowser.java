@@ -373,7 +373,7 @@ public class StaffBrowser extends Block implements Builderaware {
 				titleText.setText(holder.getTitle());
 			titleText.setFontStyle(_textStyle);
 
-			if (_showTitle) {
+			if (_showTitle && holder.getTitle() != null) {
 				textTable.add(title, column, tableRow);
 				textTable.add(titleText, column + 1, tableRow);
 				tableRow++;
@@ -386,7 +386,7 @@ public class StaffBrowser extends Block implements Builderaware {
 				workPhoneText.setText(holder.getWorkPhone());
 			workPhoneText.setFontStyle(_textStyle);
 
-			if (_showWorkPhone) {
+			if (_showWorkPhone && holder.getWorkPhone() != null) {
 				textTable.add(workPhone, column, tableRow);
 				textTable.add(workPhoneText, column + 1, tableRow);
 				tableRow++;
@@ -399,7 +399,7 @@ public class StaffBrowser extends Block implements Builderaware {
 				mobilePhoneText.setText(holder.getMobilePhone());
 			mobilePhoneText.setFontStyle(_textStyle);
 
-			if (_showMobilePhone) {
+			if (_showMobilePhone && holder.getMobilePhone() != null) {
 				textTable.add(mobilePhone, column, tableRow);
 				textTable.add(mobilePhoneText, column + 1, tableRow);
 				tableRow++;
@@ -415,7 +415,7 @@ public class StaffBrowser extends Block implements Builderaware {
 			if (holder.getEmail() != null)
 				mailLink.setURL("mailto:" + holder.getEmail());
 
-			if (_showEmail) {
+			if (_showEmail && holder.getEmail() != null) {
 				textTable.add(mail, column, tableRow);
 				textTable.add(mailLink, column + 1, tableRow);
 				tableRow++;
@@ -428,7 +428,7 @@ public class StaffBrowser extends Block implements Builderaware {
 				areaText.setText(holder.getArea());
 			areaText.setFontStyle(_textStyle);
 
-			if (_showArea) {
+			if (_showArea && holder.getArea() != null) {
 				textTable.add(area, column, tableRow);
 				textTable.add(areaText, column + 1, tableRow);
 				tableRow++;
@@ -441,7 +441,7 @@ public class StaffBrowser extends Block implements Builderaware {
 				beganWorkText.setText(holder.getBeganWork().getLocaleDate(iwc));
 			beganWorkText.setFontStyle(_textStyle);
 
-			if (_showBeganWork) {
+			if (_showBeganWork && holder.getBeganWork() != null) {
 				textTable.add(beganWork, column, tableRow);
 				textTable.add(beganWorkText, column + 1, tableRow);
 				tableRow++;
@@ -454,7 +454,7 @@ public class StaffBrowser extends Block implements Builderaware {
 				educationText.setText(holder.getEducation());
 			educationText.setFontStyle(_textStyle);
 
-			if (_showEducation) {
+			if (_showEducation && holder.getEducation() != null) {
 				textTable.add(education, column, tableRow);
 				textTable.add(educationText, column + 1, tableRow);
 				tableRow++;
