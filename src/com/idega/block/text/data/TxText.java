@@ -27,7 +27,7 @@ public class TxText extends GenericEntity{
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
     addAttribute(getColumnNameHeadline(), "Headline", true, true, java.lang.String.class);
-    addAttribute(getColumnNameUserId(),"User",true,true, java.lang.String.class,"many-to_one",com.idega.core.user.data.User.class);
+    addAttribute(getColumnNameUserId(),"User",true,true, java.lang.Integer.class,"many-to-one",com.idega.core.user.data.User.class);
     addAttribute(getColumnNameTitle(), "Title", true, true, java.lang.String.class);
     addAttribute(getColumnNameBody(), "Body", true, true, java.lang.String.class,30000);
     addAttribute(getColumnNameCreated(), "Created", true, true, java.sql.Timestamp.class);
@@ -35,8 +35,9 @@ public class TxText extends GenericEntity{
     addAttribute(getColumnNameIncludeImage(), "Include image", true, true, java.lang.Boolean.class,1);
     addAttribute(getColumnNameImageId(), "image_id", true, true, java.lang.Integer.class);
     addAttribute(getColumnNameAttribute(), "attribute", true, true, java.lang.String.class);
-    this.addManyToManyRelationShip(LocalizedText.class,"TX_TEXT_TX_LOCALIZED_TEXT");
+
     this.addManyToManyRelationShip(com.idega.core.data.ICObjectInstance.class,"TX_TEXT_IC_OBJECT_INSTANCE");
+    this.addManyToManyRelationShip(LocalizedText.class,"TX_TEXT_TX_LOCALIZED_TEXT");
   }
 
 
