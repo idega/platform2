@@ -151,8 +151,9 @@ public class TournamentResultsDetailed extends Block {
 
 	private void getMemberScore(ResultsCollector r, int row, int position) {
 		try {
-			int column = 2;
+			int extraColumnsOnTheLeftSide = 1;
 			int strokeValue = 0;
+			int holeNumberValue = -1;
 			int parValue = 0;
 			int outScore = 0;
 			int inScore = 0;
@@ -192,17 +193,25 @@ public class TournamentResultsDetailed extends Block {
 			myTable.add(seeScores, 1, row);
 
 			Vector strokes = r.getStrokes();
+			Vector holeNumber = r.getHoleNumber();
 			Vector pars = r.getPar();
 
 			if (strokes != null) {
 				int strokeSize = strokes.size();
 				for (int b = 0; b < strokeSize; b++) {
 					strokeValue = ((Double) strokes.elementAt(b)).intValue();
+					
 
 					if (strokeValue > 0) {
 
+						holeNumberValue = ((Integer) holeNumber.elementAt(b)).intValue();
 						parValue = ((Integer) pars.elementAt(b)).intValue();
-
+						int column = extraColumnsOnTheLeftSide+holeNumberValue;
+						if(holeNumberValue>9){
+							column++;
+						}
+						
+						
 						difference += strokeValue - parValue;
 						totalStrokes += strokeValue;
 
@@ -218,26 +227,23 @@ public class TournamentResultsDetailed extends Block {
 
 						myTable.add(stroke, column, row);
 						myTable.add(differ, column, row + 1);
-						column++;
 
-						if (b + 1 == 9) {
+						if (holeNumberValue == 9) {
 							outScore = totalStrokes;
 							Text outValueText = (Text) blackText.clone();
 							outValueText.setText(Integer.toString(outScore));
 							outValueText.setFontColor(getColor(outScore, outValue));
-							myTable.add(outValueText, column, row);
-							myTable.add(differ, column, row + 1);
-							column++;
+							myTable.add(outValueText, column+1, row);
+							myTable.add(differ, column+1, row + 1);
 						}
 
-						if (b + 1 == 18) {
+						if (holeNumberValue == 18) {
 							inScore = totalStrokes - outScore;
 							Text inValueText = (Text) blackText.clone();
 							inValueText.setText(Integer.toString(inScore));
 							inValueText.setFontColor(getColor(inScore, inValue));
-							myTable.add(inValueText, column, row);
-							myTable.add(differ, column, row + 1);
-							column++;
+							myTable.add(inValueText, column+1, row);
+							myTable.add(differ, column+1, row + 1);
 						}
 
 					}

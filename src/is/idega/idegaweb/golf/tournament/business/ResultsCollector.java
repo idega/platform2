@@ -12,6 +12,7 @@ public class ResultsCollector {
   public static final int TOTALPOINTS = 3;
 
   private Vector strokes_ = null;
+  private Vector holeNumber_ = null;
   private Vector points_ = null;
   private Vector par_ = null;
   private Vector roundScore_ = null;
@@ -55,8 +56,9 @@ public class ResultsCollector {
     resultType_ = resultType;
   }
 
-  public void setStrokes(Vector strokes) {
-    strokes_ = strokes;
+  public void setStrokes(Vector holeNumber, Vector strokes) {
+    holeNumber_ = holeNumber;
+  	strokes_ = strokes;
   }
 
   public void setPoints(Vector points) {
@@ -93,10 +95,13 @@ public class ResultsCollector {
     return position;
   }
 
-  public void addStroke(double stroke) {
-    if (strokes_ == null)
+  public void addStroke(int holeNumber, double stroke) {
+  	if(holeNumber_==null)
+  	  holeNumber_ = new Vector();
+  	if (strokes_ == null)
       strokes_ = new Vector();
-
+    
+    holeNumber_.add(new Integer(holeNumber));
     strokes_.add(new Double(stroke));
   }
 
@@ -326,7 +331,7 @@ public class ResultsCollector {
     int size = 0;
     int roundTotal = 0;
 
-    if ( strokes_ != null ) {
+    if ( points_ != null ) {
       size = points_.size();
       hole_ = size;
     }
@@ -460,6 +465,10 @@ public class ResultsCollector {
 
   public Vector getStrokes() {
     return strokes_;
+  }
+  
+  public Vector getHoleNumber(){
+  	return holeNumber_;
   }
 
   public Vector getPoints() {
