@@ -27,7 +27,7 @@ public class GenericImportFile implements ImportFile{
 	  private File file;
 	  private String recordDilimiter = "\n";
 	  private String valueSeparator = ";";
-	  private String ignoreIfFoundValue = " ";
+	  private String emptyValueString = " ";
 	  private FileReader fr;
 	  private BufferedReader br;
 	  private boolean addNewLineAfterRecord = false;
@@ -221,11 +221,11 @@ public class GenericImportFile implements ImportFile{
 	 * Method getValueAtIndexFromRecordString. Uses the valueSeparator and a stringtokenizer to read and return a value at a selected index.
 	 * @param index The index starts at 1
 	 * @param recordString
-	 * @return The value at the selected index or null.
+	 * @return The value at the selected index. Remember if the value was empty the returned value will be getEmptyValueString().
 	 */
 	public String getValueAtIndexFromRecordString(int index , String recordString){		
 		int i = 1;
-		recordString = TextSoap.findAndReplace(recordString,valueSeparator+valueSeparator,valueSeparator+ignoreIfFoundValue+valueSeparator);
+		recordString = TextSoap.findAndReplace(recordString,valueSeparator+valueSeparator,valueSeparator+emptyValueString+valueSeparator);
 		StringTokenizer tokens = new StringTokenizer(recordString,valueSeparator);
 		String value = null;
 		while( tokens.hasMoreTokens() && i<=index ){
@@ -246,7 +246,7 @@ public class GenericImportFile implements ImportFile{
 	 */
 	public ArrayList getValuesFromRecordString(String recordString){	
 		ArrayList values = null;	
-		recordString = TextSoap.findAndReplace(recordString,valueSeparator+valueSeparator,valueSeparator+ignoreIfFoundValue+valueSeparator);
+		recordString = TextSoap.findAndReplace(recordString,valueSeparator+valueSeparator,valueSeparator+emptyValueString+valueSeparator);
 		StringTokenizer tokens = new StringTokenizer(recordString,valueSeparator);
 		String value = null;
 		while( tokens.hasMoreTokens() ){
@@ -264,16 +264,12 @@ public class GenericImportFile implements ImportFile{
 	 * Returns the ignoreIfFoundValue.
 	 * @return String
 	 */
-	public String getIgnoreIfFoundValue() {
-		return ignoreIfFoundValue;
+	public String getEmptyValueString() {
+		return emptyValueString;
 	}
 
-	/**
-	 * Sets the ignoreIfFoundValue. When calling getValueAtIndexFromRecordString if this string is found the method will return null.
-	 * @param ignoreIfFoundValue The ignoreIfFoundValue to set
-	 */
-	public void setIgnoreIfFoundValue(String ignoreIfFoundValue) {
-		this.ignoreIfFoundValue = ignoreIfFoundValue;
+	public void setEmptyValueString(String emptyValueString) {
+		this.emptyValueString = emptyValueString;
 	}
 
 }
