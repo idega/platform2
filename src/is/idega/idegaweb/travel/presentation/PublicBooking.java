@@ -802,9 +802,9 @@ public class PublicBooking extends Block  {
         display.addToText(" ( "+e.getErrorNumber()+" )");
       }
       catch (Exception e) {
-        success = true;
-        debug("error : success er on");
-        display.addToText("error : success er on");
+        //success = true;
+        //debug("error : success er on");
+        //display.addToText("error : success er on");
         e.printStackTrace(System.err);
       }
 
