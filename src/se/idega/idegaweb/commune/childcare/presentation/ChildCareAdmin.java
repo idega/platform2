@@ -47,26 +47,24 @@ public class ChildCareAdmin extends ChildCareBlock {
 		if (applications != null && !applications.isEmpty()) {
 			ChildCareApplication application;
 			User child;
-			Address address;
 			IWCalendar queueDate;
 			IWCalendar placementDate;
 			Link link;
-			int queue = start++;
 			
 			Table applicationTable = new Table();
 			applicationTable.setWidth(Table.HUNDRED_PERCENT);
 			applicationTable.setCellpadding(getCellpadding());
 			applicationTable.setCellspacing(getCellspacing());
-			applicationTable.setColumns(7);
+			applicationTable.setColumns(6);
 			applicationTable.setRowColor(1, getHeaderColor());
 			table.add(applicationTable, 1, 3);
 			int row = 1;
 			int column = 1;
 			int queueOrder = -1;
+			int netOrder = -1;
 			
 			applicationTable.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 			applicationTable.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
-			applicationTable.add(getLocalizedSmallHeader("child_care.address","Address"), column++, row);
 			applicationTable.add(getLocalizedSmallHeader("child_care.queue_date","Queue date"), column++, row);
 			applicationTable.add(getLocalizedSmallHeader("child_care.placement_date","Placement date"), column++, row);
 			applicationTable.add(getLocalizedSmallHeader("child_care.order","Order"), column++, row);
@@ -77,10 +75,13 @@ public class ChildCareAdmin extends ChildCareBlock {
 				column = 1;
 				application = (ChildCareApplication) iter.next();
 				child = application.getChild();
-				address = getBusiness().getUserBusiness().getUsersMainAddress(child);
 				queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getCreated());
 				placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getFromDate());
 				queueOrder = getBusiness().getNumberInQueue(application);
+				if (application.getCaseStatus().getStatus().equalsIgnoreCase(getBusiness().getCaseStatusOpen().getStatus()))
+					netOrder = getBusiness().getNumberInQueueByStatus(application);
+				else
+					netOrder = -1;
 				
 				if (row % 2 == 0)
 					applicationTable.setRowColor(row, getZebraColor1());
@@ -96,19 +97,22 @@ public class ChildCareAdmin extends ChildCareBlock {
 
 				applicationTable.add(link, column++, row);
 				applicationTable.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
-				if (address != null)
-					applicationTable.add(getSmallText(address.getStreetAddress()), column, row);
-				column++;
 				applicationTable.add(getSmallText(queueDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
 				applicationTable.add(getSmallText(placementDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
-				applicationTable.add(getSmallText(String.valueOf(queue++)), column++, row);
+				if (netOrder != -1)
+					applicationTable.add(getSmallText(String.valueOf(netOrder)), column++, row);
+				else 
+					applicationTable.add(getSmallText("-"), column++, row);
 				if (queueOrder != -1)
 					applicationTable.add(getSmallText("("+String.valueOf(queueOrder)+")"), column, row++);
 				else 
 					applicationTable.add(getSmallText("-"), column, row++);
 			}
+			applicationTable.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
+			applicationTable.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
+			applicationTable.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
+			applicationTable.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 			applicationTable.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
-			applicationTable.setColumnAlignment(7, Table.HORIZONTAL_ALIGN_CENTER);
 		}
 	}
 }

@@ -55,6 +55,8 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	protected final static String PRESENTATION = "presentation";
 	protected final static String MESSAGE = "message";
 	protected final static String QUEUE_ORDER = "queue_order";
+	protected final static String APPLICATION_STATUS = "application_status";
+	protected final static String HAS_PRIORITY = "has_priority";
 	
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
@@ -92,6 +94,8 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		addAttribute(PRESENTATION,"",true,true,java.lang.String.class,1000);
 		addAttribute(MESSAGE,"",true,true,java.lang.String.class,1000);
 		addAttribute(QUEUE_ORDER,"",true,true,java.lang.Integer.class);
+		addAttribute(APPLICATION_STATUS,"",true,true,java.lang.String.class,1);
+		addAttribute(HAS_PRIORITY,"",true,true,java.lang.Boolean.class);
 		
 		addManyToOneRelationship(PROVIDER_ID,School.class);
 		addManyToOneRelationship(CHILD_ID,User.class);
@@ -176,6 +180,18 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return getIntColumnValue(QUEUE_ORDER);	
 	}
 	
+	public char getApplicationStatus() {
+		String status = this.getStringColumnValue(APPLICATION_STATUS);
+		if (status != null)
+			return status.charAt(0);
+		else
+			return 'A';
+	}
+	
+	public boolean getHasPriority() {
+		return getBooleanColumnValue(HAS_PRIORITY, false);
+	}
+  
 	public void setProviderId(int id) {
 		setColumn(PROVIDER_ID,id);
 	}
@@ -248,6 +264,14 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		setColumn(QUEUE_ORDER,order);	
 	}
 	
+	public void setApplicationStatus(char status) {
+		setColumn(MESSAGE,String.valueOf(status));	
+	}
+	
+	public void setHasPriority(boolean hasPriority) {
+		setColumn(HAS_PRIORITY, hasPriority);
+	}
+  
 	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, CaseStatus caseStatus) throws FinderException {
 		try {
 			return ejbFindAllCasesByProviderStatus(providerId, caseStatus.getStatus());
@@ -290,6 +314,19 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
 		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendOrderBy("c."+QUEUE_ORDER);
+
+		return (Collection)super.idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
+	}	
+	
+	public Collection ejbFindAllCasesByProviderAndNotInStatus(int providerId, String[] caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
+		if (caseStatus != null)
+			sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_ORDER);
 
 		return (Collection)super.idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
@@ -376,6 +413,17 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public int ejbHomeGetPositionInQueue(int queueOrder, int providerID) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectCountFrom(this).appendWhereEquals(PROVIDER_ID, providerID);
+		sql.appendAnd().append(QUEUE_ORDER).appendLessThanOrEqualsSign().append(queueOrder);
+		return idoGetNumberOfRecords(sql);
+	}
+
+	public int ejbHomeGetPositionInQueue(int queueOrder, int providerID, String caseStatus) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
+		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().append(QUEUE_ORDER).appendLessThanOrEqualsSign().append(queueOrder);
 		return idoGetNumberOfRecords(sql);
 	}

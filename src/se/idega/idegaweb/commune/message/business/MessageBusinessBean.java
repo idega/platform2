@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.36 2003/03/06 10:27:29 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.37 2003/03/13 13:09:07 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -613,13 +613,17 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 	
 	public void sendMessageToCommuneAdministrators(String subject, String body) throws RemoteException {
+		sendMessageToCommuneAdministrators(null, subject, body);
+	}
+	
+	public void sendMessageToCommuneAdministrators(Case theCase, String subject, String body) throws RemoteException {
 		try {
 			Collection administrators = getCommuneUserBusiness().getAllCommuneAdministrators();
 			if (!administrators.isEmpty()) {
 				Iterator iterator = administrators.iterator();
 				while (iterator.hasNext()) {
 					User administrator = (User) iterator.next();
-					createUserMessage(administrator,subject,body);
+					createUserMessage(theCase,administrator,subject,body,false);
 				}
 			}
 		}

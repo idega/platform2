@@ -158,7 +158,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		return table;
 	}
 	
-	protected Table getButtonTable(boolean showAllButtons) {
+	protected Table getButtonTable(boolean showAllButtons) throws RemoteException {
 		Table table = new Table(7,1);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -171,11 +171,25 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		table.add(back, 1, 1);
 		
 		if (showAllButtons) {
+			int numberInQueue = getBusiness().getNumberInQueueByStatus(application);
+			boolean hasPriority = application.getHasPriority();
+			char status = application.getApplicationStatus();
+
 			GenericButton offer = getButton("offer", localize("child_care.offer_placing","Offer placing"), ChildCareAdminWindow.METHOD_OFFER);
-			table.add(offer, 3, 1);
-			
+			GenericButton priority = getButton("priority", localize("child_care.grant_priority","Grant priority"), ChildCareAdminWindow.METHOD_GRANT_PRIORITY);
 			GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
-			table.add(changeDate, 5, 1);
+
+			if (status == getBusiness().getStatusSentIn()) {
+				if (numberInQueue == 1 || hasPriority) {
+					table.add(offer, 3, 1);
+					table.add(changeDate, 5, 1);
+				}
+				else
+					table.add(priority, 3, 1);
+			}
+			else if (status == getBusiness().getStatusAccepted()) {
+			}
+			
 		}
 		
 		return table;

@@ -110,7 +110,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 		}		
 	}
 
-	private void control(IWContext iwc, int action) {
+	private void control(IWContext iwc, int action) throws RemoteException {
 		if ((action == ACTION_YES) || (action == ACTION_NO)) {
 			boolean done = changeApplication(iwc,action);
 			if (!done)
@@ -319,7 +319,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 		return false;	
 	}
 	
-	private boolean changeApplication(IWContext iwc, int action) {
+	private boolean changeApplication(IWContext iwc, int action) throws RemoteException {
 		if (action == ACTION_NO) {
 			String id = iwc.getParameter(PARAM_ID);
 			if (id != null) {

@@ -60,4 +60,5 @@ public interface MessageBusiness extends CaseBusiness
  public void flagMessageWithStatus(User performer,Message message,String status)throws RemoteException;  
  public Message createUserMessage(Case parentCase, User user, String subject, String body, boolean sendLetter);
  public Message createUserMessage(User user, String subject, String body, boolean sendLetter);
+ public void sendMessageToCommuneAdministrators(Case theCase, String subject, String body) throws RemoteException;
 }

@@ -4,6 +4,7 @@ import javax.ejb.*;
 
 public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega.block.process.data.Case
 {
+ public char getApplicationStatus();
  public int getCareTime();
  public java.lang.String getCaseCodeDescription();
  public java.lang.String getCaseCodeKey();
@@ -16,6 +17,7 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public int getContractFileId();
  public int getContractId();
  public java.sql.Date getFromDate();
+ public boolean getHasPriority();
  public java.lang.String getMessage();
  public int getMethod();
  public java.lang.String getPresentation();
@@ -26,6 +28,7 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public int getQueueOrder();
  public java.sql.Date getRejectionDate();
  public void initializeAttributes();
+ public void setApplicationStatus(char p0);
  public void setCareTime(int p0);
  public void setCheck(se.idega.idegaweb.commune.childcare.check.data.Check p0);
  public void setCheckId(int p0);
@@ -35,6 +38,7 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public void setContractFileId(int p0);
  public void setContractId(int p0);
  public void setFromDate(java.sql.Date p0);
+ public void setHasPriority(boolean p0);
  public void setMessage(java.lang.String p0);
  public void setMethod(int p0);
  public void setPresentation(java.lang.String p0);

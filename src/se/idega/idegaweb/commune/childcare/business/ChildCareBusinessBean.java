@@ -60,6 +60,11 @@ import com.lowagie.text.Font;
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness {
 
 	private final static String CASE_CODE_KEY = "MBANBOP";
+	private final static char STATUS_SENT_IN = 'A';
+	private final static char STATUS_ACCEPTED = 'B';
+	private final static char STATUS_PARENTS_ACCEPT = 'C';
+	private final static char STATUS_CONTRACT = 'D';
+	private final static char STATUS_READY = 'E';
 
 	private ChildCareApplicationHome getChildCareApplicationHome() throws RemoteException {
 		return (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
@@ -96,6 +101,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				stamp.addSeconds((1 - ((i + 1) * 1)));
 				appl.setCreated(stamp.getTimestamp());
 				appl.setQueueOrder(((Integer)appl.getPrimaryKey()).intValue());
+				appl.setApplicationStatus(getStatusSentIn());
 				if (checkId != -1)
 					appl.setCheckId(checkId);
 				if (freetimeApplication)
@@ -263,11 +269,24 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
+	public int getNumberInQueueByStatus(ChildCareApplication application) {
+		try {
+			return getChildCareApplicationHome().getPositionInQueue(application.getQueueOrder(), application.getProviderId(), application.getCaseStatus().getStatus());
+		}
+		catch (RemoteException e) {
+			return -1;
+		}
+		catch (IDOException e) {
+			return -1;
+		}
+	}
+
 	public Collection getUnhandledApplicationsByProvider(int providerId, int numberOfEntries, int startingEntry) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusReady().getStatus() };
 
-			return home.findAllCasesByProviderAndStatus(providerId, getCaseStatusOpen().getPrimaryKey().toString(), numberOfEntries, startingEntry);
+			return home.findAllCasesByProviderAndNotInStatus(providerId, caseStatus, numberOfEntries, startingEntry);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			return null;
@@ -353,16 +372,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			caseBiz.changeCaseStatus(application, getCaseStatusDenied().getStatus(), user);
 			sendMessageToParents(application, subject, message);
 
-			if (application.getChildCount() != 0) {
-				Iterator it = application.getChildren();
-				if (it.hasNext()) {
-					Case proc = (Case) it.next();
-					caseBiz.changeCaseStatus(proc, getCaseStatusOpen().getStatus(), user);
-					ChildCareApplication child = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).findByPrimaryKey(proc.getPrimaryKey());
-					sendMessageToParents(child, newSubject, newBody);
-				}
-			}
-
 			t.commit();
 
 			return true;
@@ -397,7 +406,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			t.begin();
 			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
-			caseBiz.changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
+			application.setApplicationStatus(getStatusAccepted());
+			caseBiz.changeCaseStatus(application, getCaseStatusGranted().getStatus(), user);
 
 			sendMessageToParents(application, subject, message);
 
@@ -429,6 +439,35 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			e.printStackTrace();
 		}
 		catch (FinderException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+	
+	public boolean removeFromQueue(int applicationId, User user) {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			ChildCareApplication appl = (ChildCareApplication) home.findByPrimaryKey(new Integer(applicationId));
+
+			return removeFromQueue(appl, user);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+	
+	public boolean removeFromQueue(ChildCareApplication application, User user) {
+		try {
+			changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
+			return true;
+		}
+		catch (RemoteException e) {
 			e.printStackTrace();
 		}
 
@@ -729,6 +768,21 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	/*public String getBundleIdentifier() {
 		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
 	}*/
+	
+	public void setAsPriorityApplication(int applicationID, String message, String body) throws RemoteException {
+		try {
+			setAsPriorityApplication(getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID)), message, body);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setAsPriorityApplication(ChildCareApplication application, String message, String body) throws RemoteException {
+		application.setHasPriority(true);
+		application.store();
+		getMessageBusiness().sendMessageToCommuneAdministrators(application, message, body);
+	}
 
 	public String getLocalizedCaseDescription(Case theCase, Locale locale) throws RemoteException {
 		ChildCareApplication choice = getChildCareApplicationInstance(theCase);
@@ -749,4 +803,39 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public SchoolBusiness getSchoolBusiness() throws RemoteException {
 		return (SchoolBusiness) this.getServiceInstance(SchoolBusiness.class);
 	}
+	/**
+	 * @return char
+	 */
+	public char getStatusAccepted() {
+		return STATUS_ACCEPTED;
+	}
+
+	/**
+	 * @return char
+	 */
+	public char getStatusContract() {
+		return STATUS_CONTRACT;
+	}
+
+	/**
+	 * @return char
+	 */
+	public char getStatusParentsAccept() {
+		return STATUS_PARENTS_ACCEPT;
+	}
+
+	/**
+	 * @return char
+	 */
+	public char getStatusReady() {
+		return STATUS_READY;
+	}
+
+	/**
+	 * @return char
+	 */
+	public char getStatusSentIn() {
+		return STATUS_SENT_IN;
+	}
+
 }
