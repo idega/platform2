@@ -2,7 +2,6 @@ package com.idega.jmodule.image.presentation;
 
 import java.sql.*;
 import java.util.*;
-import java.io.*;
 import com.idega.util.*;
 import com.idega.jmodule.object.textObject.*;
 import	com.idega.jmodule.object.*;
@@ -10,17 +9,17 @@ import	com.idega.jmodule.object.interfaceobject.*;
 import	com.idega.jmodule.image.data.*;
 import	com.idega.data.*;
 import com.idega.util.text.*;
-import javax.servlet.http.HttpServletRequest;
+
 
 
 public class ImageTree extends JModuleObject{
 
 private String width = "100%";
 private boolean showAll = true;
+private boolean refresh = false;
 
 public Table getTreeTable(ModuleInfo modinfo) throws SQLException {
 
-    HttpServletRequest request = modinfo.getRequest();
     ImageCatagory[] catagory = (ImageCatagory[]) (new ImageCatagory()).findAll("Select * from image_catagory where parent_id = -1");
     ImageEntity[] images;
     //Debug
@@ -62,14 +61,14 @@ public Table getTreeTable(ModuleInfo modinfo) throws SQLException {
 
 
     if (items.size() > 0) {
-      String open_cat = request.getParameter("open_catagory_id");
+      String openCat = modinfo.getParameter("open_catagory_id");
 /*      Link remove = new Link("remove application");
         remove.setFontColor("black");
         remove.addParameter("image_tree_action","remove_applications");
         add(remove);
 */
-      if (open_cat == null) { open_cat = "-3";}
-        Table isTable = (Table) modinfo.getServletContext().getAttribute("image_tree_table"+open_cat);
+      if (openCat == null) { openCat = "-3";}
+        Table isTable = (Table) modinfo.getServletContext().getAttribute("image_tree_table"+openCat);
         //debug
         //Table isTable = null;
        if (isTable != null) {
@@ -97,7 +96,6 @@ public void setShowAll(boolean showAll){
 }
 
 public Table writeTable(Vector items,ModuleInfo modinfo) throws SQLException {
-HttpServletRequest request = modinfo.getRequest();
   Table table = new Table();
     table.setBorder(0);
     table.setWidth(getWidth());
@@ -107,18 +105,18 @@ HttpServletRequest request = modinfo.getRequest();
 
   Text more = new Text("+");
     more.setFontColor("#FFFFFF");
-  String URI = request.getRequestURI();
-  String image_id = request.getParameter("image_id");
-  String open_cat = request.getParameter("open_catagory_id");
-    if (open_cat == null) { open_cat = "-3";}
-  String open_img = request.getParameter("open_image_id");
-    if (open_img == null) { open_img = "-3";}
+  String URI = modinfo.getRequestURI();
+  String imageId = modinfo.getParameter("image_id");
+  String openCat = modinfo.getParameter("open_catagory_id");
+    if (openCat == null) { openCat = "-3";}
+  String openImg = modinfo.getParameter("open_image_id");
+    if (openImg == null) { openImg = "-3";}
 
   Link openLink;
   Link idLink;
-  String color_0 = "/pics/jmodules/image/myndamodule/menubar/yfirfl1.gif";
-  String color_1 = "/pics/jmodules/image/myndamodule/menubar/undirfl1.gif";
-  String color_2 = "/pics/jmodules/image/myndamodule/menubar/undirfl2.gif";
+  String color0 = "/pics/jmodules/image/myndamodule/menubar/yfirfl1.gif";
+  String color1 = "/pics/jmodules/image/myndamodule/menubar/undirfl1.gif";
+  String color2 = "/pics/jmodules/image/myndamodule/menubar/undirfl2.gif";
   int depth = 10;
 
   Text text;
@@ -130,7 +128,7 @@ HttpServletRequest request = modinfo.getRequest();
   int id;
   int spe;
   int row = 0;
-  int pre_cat_id = -1;
+  int preCatId = -1;
 
   for (int i = 0 ; i < items.size() ; i++) {
       intArr = (Integer[]) items.elementAt(i);
@@ -140,7 +138,7 @@ HttpServletRequest request = modinfo.getRequest();
       if (spe == 1) {
         ++row;
         catagory = new ImageCatagory(id);
-        pre_cat_id = id;
+        preCatId = id;
 
         table.mergeCells(1,row,depth,row);
 
@@ -156,7 +154,7 @@ HttpServletRequest request = modinfo.getRequest();
         idLink.setBold();
         idLink.setAttribute("style","text-decoration:none");
 
-        if (!open_cat.equals(Integer.toString(id))) {
+        if (!openCat.equals(Integer.toString(id))) {
           openLink.addParameter("open_catagory_id",""+id);
         }
         else {
@@ -170,10 +168,10 @@ HttpServletRequest request = modinfo.getRequest();
         }
         table.addText("&nbsp;",pos,row);
         table.add(idLink,pos,row);
-        table.setBackgroundImage(pos,row,new Image(color_0));
+        table.setBackgroundImage(pos,row,new Image(color0));
       }
 
-      if (open_cat.equals(Integer.toString(pre_cat_id)))
+      if (openCat.equals(Integer.toString(preCatId)))
       if (spe == 2) {
         ++row;
         image = new ImageEntity(id);
@@ -188,30 +186,30 @@ HttpServletRequest request = modinfo.getRequest();
         idLink = new Link(text,URI);
         idLink.setFontColor("#FFFFFF");
         idLink.setAttribute("style","text-decoration:none");
-        if (pre_cat_id != -1 ) {
+        if (preCatId != -1 ) {
 //          openLink.addParameter("open_catagory_id",""+pre_cat_id);
-          idLink.addParameter("open_catagory_id",""+pre_cat_id);
+          idLink.addParameter("open_catagory_id",""+preCatId);
         }
 //        openLink.addParameter("open_image_id",""+id);
         table.mergeCells(pos,row,depth,row);
         table.setHeight(row,"21");
 
         if ( pos == 2 ) {
-          table.setBackgroundImage(pos,row,new Image(color_1));
-          table.setBackgroundImage(1,row,new Image(color_1));
+          table.setBackgroundImage(pos,row,new Image(color1));
+          table.setBackgroundImage(1,row,new Image(color1));
           table.addText("",1,row);
         }
         else {
-          table.setBackgroundImage(pos,row,new Image(color_2));
+          table.setBackgroundImage(pos,row,new Image(color2));
           for ( int a = 1; a < pos; a++ ) {
-            table.setBackgroundImage(a,row,new Image(color_2));
+            table.setBackgroundImage(a,row,new Image(color2));
             table.addText("",a,row);
           }
         }
 
   //      table.add(openLink,pos,row);
 
-          idLink.addParameter("image_id",""+id);
+          idLink.addParameter("imageId",""+id);
 
         table.add(idLink, pos,row);
       }
@@ -219,7 +217,7 @@ HttpServletRequest request = modinfo.getRequest();
 
   }
 
-  modinfo.getServletContext().setAttribute("image_tree_table"+open_cat,table);
+  modinfo.getServletContext().setAttribute("image_tree_table"+openCat,table);
 
   return table;
 //  add(table);
@@ -227,11 +225,11 @@ HttpServletRequest request = modinfo.getRequest();
 
 
 
-    private void findNodes(Vector vector,int id, int position,GenericEntity entity, GenericEntity[] options, int special_value) throws SQLException{
+    private void findNodes(Vector vector,int id, int position,GenericEntity entity, GenericEntity[] options, int specialValue) throws SQLException{
         Integer[] intArray = new Integer[3];
           intArray[0] = new Integer(id);
           intArray[1] = new Integer(position);
-          intArray[2] = new Integer(special_value);
+          intArray[2] = new Integer(specialValue);
 
         vector.addElement(intArray);
 
@@ -242,7 +240,7 @@ HttpServletRequest request = modinfo.getRequest();
           if (options.length > 0) {
             ++position;
             for (i = 0 ; i < options.length ; i++) {
-              findNodes(vector,options[i].getID(), position,entity,options, special_value);
+              findNodes(vector,options[i].getID(), position,entity,options, specialValue);
             }
           }
         }
@@ -254,14 +252,12 @@ HttpServletRequest request = modinfo.getRequest();
         findNodes(vector,id,position,entity,new GenericEntity[1],0);
     }
 
-    private void findNodes(Vector vector,int id, int position,GenericEntity entity, int special_value) throws SQLException{
-        findNodes(vector,id,position,entity,new GenericEntity[1], special_value);
+    private void findNodes(Vector vector,int id, int position,GenericEntity entity, int specialValue) throws SQLException{
+        findNodes(vector,id,position,entity,new GenericEntity[1], specialValue);
     }
 
 
 private void removeApplications(ModuleInfo modinfo) throws SQLException{
-    HttpServletRequest request = modinfo.getRequest();
-
     Table table;
     Vector vector;
     String test;
@@ -275,13 +271,13 @@ private void removeApplications(ModuleInfo modinfo) throws SQLException{
       modinfo.getServletContext().removeAttribute("image_tree_vector");
     }
 
-    test = (String) request.getSession().getAttribute("image_tree_catagory_id");
+    test = (String) modinfo.getSessionAttribute("image_tree_catagory_id");
     if (test != null) {
-      request.getSession().removeAttribute("image_tree_catagory_id");
+      modinfo.removeSessionAttribute("image_tree_catagory_id");
     }
-    test = (String) request.getSession().getAttribute("image_tree_image_id");
+    test = (String) modinfo.getSessionAttribute("image_tree_image_id");
     if (test != null) {
-      request.getSession().removeAttribute("image_tree_image_id");
+      modinfo.removeSessionAttribute("image_tree_image_id");
     }
 
 
@@ -300,39 +296,31 @@ private void removeApplications(ModuleInfo modinfo) throws SQLException{
     }
 
 
-public void deleteModule(ModuleInfo modinfo) {
-
-    try {
-      removeApplications(modinfo);
-    }
-    catch (Exception E) {
-      E.printStackTrace();
-    }
-
+public void refresh(ModuleInfo modinfo) throws Exception{
+  removeApplications(modinfo);
 }
 
 public void main(ModuleInfo modinfo)throws Exception{
-
   //this.isAdmin=this.isAdministrator(modinfo);
-
   //setSpokenLanguage(modinfo);
-  HttpServletRequest request = modinfo.getRequest();
 
-  String temp_image_id = request.getParameter("image_id");
-  String temp_catagory_id = request.getParameter("catagory_id");
-  String image_id = null;
-  String catagory_id = null;
+  if( refresh ) refresh(modinfo);
 
-  if (temp_image_id != null) {
-     request.getSession().setAttribute("image_tree_image_id",temp_image_id);
-     request.getSession().removeAttribute("image_tree_catagory_id");
+  String tempImageId = modinfo.getParameter("image_id");
+  String tempCatagoryId = modinfo.getParameter("catagory_id");
+  String imageId = null;
+  String catagoryId = null;
+
+  if (tempImageId != null) {
+     modinfo.setSessionAttribute("image_tree_image_id",tempImageId);
+     modinfo.removeSessionAttribute("image_tree_catagory_id");
   }
-  if (temp_catagory_id != null) {
-     request.getSession().setAttribute("image_tree_catagory_id",temp_catagory_id);
-     request.getSession().removeAttribute("image_tree_image_id");
+  if (tempCatagoryId != null) {
+     modinfo.setSessionAttribute("image_tree_catagory_id",tempCatagoryId);
+     modinfo.removeSessionAttribute("image_tree_image_id");
   }
-     image_id = (String) request.getSession().getAttribute("image_tree_image_id");
-     catagory_id = (String) request.getSession().getAttribute("image_tree_catagory_id");
+     imageId = (String) modinfo.getSessionAttribute("image_tree_image_id");
+     catagoryId = (String) modinfo.getSessionAttribute("image_tree_catagory_id");
 
   add(getTreeTable(modinfo));
 
