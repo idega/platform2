@@ -319,6 +319,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     WorkReportGroupHome home = getWorkReportGroupHome();
     while (iterator.hasNext())  {
       Group group = (Group) iterator.next();
+      if (group != null) {
       String groupType = group.getGroupType();
       if (IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(groupType)) {
         int groupPk = ( (Integer) group.getPrimaryKey()).intValue();
@@ -333,6 +334,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
           System.err.println(message + " Message is: " + ex.getMessage());
           ex.printStackTrace(System.err);
         }
+      }
       }
     }  
       
