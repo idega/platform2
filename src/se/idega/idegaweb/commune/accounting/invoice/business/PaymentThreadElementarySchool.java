@@ -35,13 +35,8 @@ public class PaymentThreadElementarySchool extends PaymentThreadSchool{
 				createBatchRunLogger(category);
 				//Create all the billing info derrived from the contracts
 				contracts();
-				System.out.println("Done with Contracts loop");
 				//Create all the billing info derrived from the regular payments
 				regularPayment();
-				System.out.println("Done with Payment loop");
-				//VAT
-				//calcVAT();
-				System.out.println("Done with VAT loop");
 			}else{
 				createNewErrorMessage("invoice.severeError","invoice.Posts_with_status_L_or_H_already_exist");
 			}

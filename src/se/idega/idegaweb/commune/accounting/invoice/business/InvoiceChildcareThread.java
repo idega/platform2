@@ -568,6 +568,9 @@ public class InvoiceChildcareThread extends BillingThread{
 					createNewErrorMessage("invoice.severeError","invoice.NoContractsFound");
 				}
 //				errorRelated.logToConsoleCompact();
+				if(!running){
+					return;
+				}
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -693,6 +696,9 @@ public class InvoiceChildcareThread extends BillingThread{
 					} catch (CreateException e) {
 						e.printStackTrace();
 						createNewErrorMessage(errorRelated,"invoice.DBSetupProblemCreateException");
+					}
+					if(!running){
+						return;
 					}
 				}
 			} catch (RemoteException e) {
@@ -862,6 +868,9 @@ public class InvoiceChildcareThread extends BillingThread{
 				} catch (CreateException e) {
 					createNewErrorMessage(regularPaymentEntry.toString(), "regularPayment.Create");
 					e.printStackTrace();
+				}
+				if(!running){
+					return;
 				}
 			}
 		}catch (FinderException e) {

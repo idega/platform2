@@ -496,6 +496,9 @@ public abstract class BillingThread extends Thread{
 
 	protected void batchRunLoggerDone(){
 		if(batchRunLogger!=null){
+			if(!running){
+				createNewErrorMessage("invoice.Batchrun","invoice.Run_terminated_by_user");
+			}
 			batchRunLogger.setEnd(IWTimestamp.getTimestampRightNow());
 			batchRunLogger.store();
 		}

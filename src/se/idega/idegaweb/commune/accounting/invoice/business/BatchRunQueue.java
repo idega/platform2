@@ -55,10 +55,11 @@ public class BatchRunQueue {
 	}
 
 	/**
+	 * Removes a batch from the queue according to the String parameter sent in
 	 * 
 	 * @param s
 	 */
-	public static void removeBatchRunFromQueue(String s){
+	public static String removeBatchRunFromQueue(String s){
 		boolean running = true;
 		Iterator iter = queue.iterator();
 		while(iter.hasNext()){
@@ -70,16 +71,17 @@ public class BatchRunQueue {
 						runningThread.terminate();
 //						queue.remove(batchRunObject);
 						runningThread = null;
-						return;
+						return "batchlist.Terminating_a_running_batch._It_will_take_a_few_seconds_before_it_is_terminated";
 					}
 				}else{
 					System.out.println("Removing queue object "+s);
 					queue.remove(batchRunObject);
-					return;
+					return "batchlist.Removed_batch_from_queue.";
 				}
 			}
 			running = false;
 		}
+		return null;
 	}
 	
 	/**
