@@ -15,6 +15,11 @@ delete from PROC_CASE;
 commit;
 remark Done removing cases.
 
+remark Removing print documents
+delete from COMM_PRINT_DOCUMENTS;
+commit;
+remark Done removing print documents.
+
 remark Removing all citizen emails...
 delete from ic_user_email where ic_user_id in (select related_ic_group_id from ic_group_relation where ic_group_id=3);
 delete from ic_email where ic_email_id not in (select ic_email_id from ic_user_email);
