@@ -11,16 +11,17 @@ import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOCompositePrimaryKeyException;
+import com.idega.data.IDOEntity;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOEntityField;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
-import com.idega.data.IDOEntity;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.User;
+import com.idega.user.data.UserBMPBean;
 
 /**
  * <p>Title: </p>
@@ -28,8 +29,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/03/01 14:52:38 $ by $Author: goranb $
- * @version $Revision: 1.97 $
+ * Last modified: $Date: 2004/03/02 10:34:48 $ by $Author: staffan $
+ * @version $Revision: 1.98 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -811,49 +812,79 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	}
 	
 	public Collection ejbFindAllCurrentInvoiceCompensationBySchoolTypeAndSchools
-        (final String operationalField,Collection schools) throws FinderException {
+		(final String operationalField, final Collection schools)
+		throws FinderException {
 		final IDOQuery sql = idoQuery ();
 		final String M_ = "m."; // sql alias for school Class member
 		final String T_ = "t."; // sql alias for school type
 		final String U_ = "u."; // sql alias for user
+		final String C_ = "c."; // sql alias for school class
+		
+		// SELECT m.sch_class_member_id FROM sch_class_member m, sch_school_type t,
+		// IC_USER u, SCH_SCHOOL_CLASS c 
 		
 		sql.appendSelect ().append (M_ + SCHOOLCLASSMEMBERID);
-		sql.appendFrom ( new String [] {getTableName(),
-																		SchoolTypeBMPBean.SCHOOLTYPE,
-																		com.idega.user.data.UserBMPBean.TABLE_NAME},
-										 new String []	{"m", "t", "u"});
+		sql.appendFrom
+				( new String []
+					{getTableName(), SchoolTypeBMPBean.SCHOOLTYPE,
+					 UserBMPBean.TABLE_NAME, SchoolClassBMPBean.SCHOOLCLASS},
+					new String []	{"m", "t", "u", "c"});
+		
+		// WHERE m.ic_user_id=u.IC_USER_ID
+		// AND m.sch_school_type_id=t.sch_school_type_id
+		// AND t.school_category='...'
+		// AND m.sch_school_class_id=c.SCH_SCHOOL_CLASS_id 
 		
 		sql.appendWhereEquals (M_ + MEMBER, U_ + User.FIELD_USER_ID);
-		sql.appendAndIsNull (M_ + REMOVED_DATE);
 		sql.appendAndEquals (M_ + SCHOOL_TYPE,
 												 T_ + SchoolTypeBMPBean.SCHOOLTYPE + "_id");
 		sql.appendAndEqualsQuoted (T_ + SchoolTypeBMPBean.SCHOOLCATEGORY,
 															 operationalField);
+		sql.appendAndEquals (M_ + SCHOOLCLASS,
+												 C_ + SchoolClassBMPBean.SCHOOLCLASS + "_id");
 		
-		sql.appendAnd ().appendLeftParenthesis ();
-		final Collection intervalTypes = ejbHomeGetInvoiceIntervalTypes ();		
-		sql.append (M_ + INVOICE_INTERVAL).append (" in ").appendLeftParenthesis ();
-		sql.appendCommaDelimitedWithinSingleQuotes (intervalTypes);
-		sql.appendRightParenthesis ();
+		// AND ((c.sch_school_season_id IS NULL  AND m.removed_date IS NULL )
+		// OR c.sch_school_season_id in
+		//  (SELECT sch_school_season_id FROM sch_school_season 
+		//   WHERE season_start in
+		//    (SELECT  max (season_start) FROM 
+		//    (SELECT * FROM sch_school_season WHERE season_start< '<today>' ))))
 		
-		sql.appendOr ();
-		
-		sql.append (M_ + SCHOOLCLASSMEMBERID).append (" in ");
+		sql.appendAnd ().appendLeftParenthesis().appendLeftParenthesis();
+		sql.append (C_ + SchoolClassBMPBean.SEASON).appendIsNull ();
+		sql.appendAndIsNull (M_ + REMOVED_DATE);
+		sql.appendRightParenthesis ().appendOr ();
+		sql.append (C_ + SchoolClassBMPBean.SEASON).append (" in ");
 		sql.appendLeftParenthesis ();
-		final String C_ = "c."; // sql alias for school Class
-		final String M2_ = "m2."; // sql alias for school Class member
-		sql.appendSelect ().append (M2_ + SCHOOLCLASSMEMBERID);
-		sql.appendFrom ( new String [] {getTableName(),
-																		SchoolClassBMPBean.SCHOOLCLASS},
-										 new String []	{"m2", "c"});
-		sql.appendWhereEquals (M2_ + SCHOOLCLASS,
-													 C_ + SchoolClassBMPBean.SCHOOLCLASS + "_id");
-		sql.appendAnd ();
+		sql.appendSelect ().append (SchoolSeasonBMPBean.SCHOOLSEASON + "_id");
+		sql.appendFrom ().append (SchoolSeasonBMPBean.SCHOOLSEASON);
+		sql.appendWhere (SchoolSeasonBMPBean.START + " in ");
+		sql.appendLeftParenthesis ();
+		sql.appendSelect ().append (" max ").appendLeftParenthesis ();
+		sql.append (SchoolSeasonBMPBean.START).appendRightParenthesis ();
+		sql.appendFrom ().appendLeftParenthesis ();
+		sql.appendSelectAllFrom (SchoolSeasonBMPBean.SCHOOLSEASON);
+		sql.appendWhere (SchoolSeasonBMPBean.START).appendLessThanSign();
+		sql.append (new Date (System.currentTimeMillis()));
+		sql.appendRightParenthesis ().appendRightParenthesis ();
+		sql.appendRightParenthesis ().appendRightParenthesis ();
+
+		// AND (m.invoice_int in (...) 
+		// OR c.school_id in (...))
+
+		sql.appendAnd ().appendLeftParenthesis();
+		sql.append (M_ + INVOICE_INTERVAL).append (" in ").appendLeftParenthesis ();
+		sql.appendCommaDelimitedWithinSingleQuotes
+				(ejbHomeGetInvoiceIntervalTypes ());
+		sql.appendRightParenthesis ().appendOr ();
 		sql.append(C_ + SchoolClassBMPBean.SCHOOL).append(" in ");
 		sql.appendLeftParenthesis().appendCommaDelimited (schools);
-		sql.appendRightParenthesis ();
 		sql.appendRightParenthesis ().appendRightParenthesis ();
+
+		// ORDER BY u.PERSONAL_ID
+
 		sql.appendOrderBy (U_ + User.FIELD_PERSONAL_ID);
+
 		return idoFindPKsBySQL(sql.toString());		
 	}
 

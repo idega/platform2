@@ -27,6 +27,7 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 	public static final String CATEGORY_HIGH_SCHOOL = "HIGH_SCHOOL";
 	public static final String CATEGORY_COLLEGE = "COLLEGE";
 	public static final String CATEGORY_UNIVERSITY = "UNIVERSITY";
+	public static final String CATEGORY_PREFIX = "school_category.";
 	
 	/* (non-Javadoc)
 	 * @see com.idega.data.IDOEntityBean#getPrimaryKeyClass()
@@ -53,7 +54,7 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 			category = categoryHome.create();
 			category.setCategory(categories[i]);
 			category.setName(names[i]);
-			category.setLocalizedKey("school_category."+categories[i]);
+			category.setLocalizedKey(CATEGORY_PREFIX + categories[i]);
 			category.store();
 		}
 	}
