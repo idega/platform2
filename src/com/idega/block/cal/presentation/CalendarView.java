@@ -732,8 +732,6 @@ public class CalendarView extends Block{
 			else {
 				timeStamp = IWTimestamp.RightNow();
 			}
-			 
-
 		}	
 		/*
 		 * view is set to the current view
@@ -747,7 +745,7 @@ public class CalendarView extends Block{
 		CalendarEntryCreator creator = new CalendarEntryCreator();
 		String save = iwc.getParameter(creator.saveButtonParameterName);
 		if(save != null) {			
-			creator.saveEntry(iwc,parentPage);	
+			creator.saveEntry(iwc,parentPage);
 		}
 		
 		action = iwc.getParameter(ACTION);
@@ -827,7 +825,6 @@ public class CalendarView extends Block{
 			table.add(newLedgerLink,3,1);
 			table.setHeight(3,3,"200");
 			table.add(creator,3,3);	
-						
 		}	
 		else {
 			table.setWidth(500);

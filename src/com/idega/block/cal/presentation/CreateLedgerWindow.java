@@ -12,6 +12,7 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
@@ -149,7 +150,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	 * @param iwc - the context
 	 * @throws Exception
 	 */
-	public void saveLedger(IWContext iwc,int groupID,String coachName,int coachGroupID) throws Exception{
+	public void saveLedger(IWContext iwc,Page parentPage, int groupID,String coachName,int coachGroupID) throws Exception{
 		String bClass = null;
 		try {
 			bClass = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS);
@@ -174,7 +175,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 
 		String date = iwc.getParameter(dateFieldParameterName);
 		
-		ledgerVariationsHandler.saveLedger(iwc,groupID,coachName,coachGroupID,date);		
+		ledgerVariationsHandler.saveLedger(iwc,parentPage,groupID,coachName,coachGroupID,date);		
 	}
 	
 	public void main(IWContext iwc) throws Exception {
@@ -203,17 +204,13 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		
 		lineUp(iwc);
 		add(form,iwc);
-
+		Page parentPage = getParentPage();
 		String save = iwc.getParameter("submit");
 		if(save != null && !save.equals("")) {
-			saveLedger(iwc,groupID.intValue(),coach,coachGroupID.intValue());
+			saveLedger(iwc,parentPage,groupID.intValue(),coach,coachGroupID.intValue());	
+//			close();
+//			setOnLoad("window.opener.parent.location.reload()");
 			
-//			Link l = new Link();
-//			l.setWindowToOpen(CalendarWindow.class);
-//			String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
-//			setOnLoad(script);
-			close();
-			setOnLoad("window.opener.parent.location.reload()");
 		}		
 	}
 	

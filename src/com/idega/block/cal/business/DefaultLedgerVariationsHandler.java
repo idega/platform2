@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -23,7 +24,7 @@ public class DefaultLedgerVariationsHandler implements LedgerVariationsHandler{
 		return null;
 	}
 	
-	public void saveLedger(IWContext iwc, int groupID, String coachName, int coachGroupID, String date) {
+	public void saveLedger(IWContext iwc, Page parentPage, int groupID, String coachName, int coachGroupID, String date) {
 		CalBusiness calBiz = getCalBusiness(iwc);
 		
 		GroupBusiness grBiz =getGroupBusiness(iwc);

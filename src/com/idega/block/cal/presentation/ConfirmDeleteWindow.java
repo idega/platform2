@@ -72,8 +72,7 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
         l.addParameter(PRM_DELETE_ID, "");
         l.addParameter(PRM_DELETED,"yes");
         close();
-//        setOnLoad("window.opener.parent.location.reload()");
-        
+        setOnLoad("window.opener.close()"); 
         String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
         setOnLoad(script);
                 

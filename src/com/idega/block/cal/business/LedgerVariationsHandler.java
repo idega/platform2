@@ -6,6 +6,7 @@ package com.idega.block.cal.business;
 import java.util.Collection;
 
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.user.data.User;
 
 /**
@@ -17,7 +18,7 @@ import com.idega.user.data.User;
 public interface LedgerVariationsHandler{
 	
 	public String getParentGroupName(Collection parentGroups);
-	public void saveLedger(IWContext iwc, int groupID, String coachName, int coachGroupID, String date);
+	public void saveLedger(IWContext iwc, Page parentPage, int groupID, String coachName, int coachGroupID, String date);
 	public Collection getParentGroupRelation(IWContext iwc, User user);
 	public String getParentKey();
 

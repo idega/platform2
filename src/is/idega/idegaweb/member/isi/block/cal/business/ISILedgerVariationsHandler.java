@@ -13,7 +13,10 @@ import java.util.Iterator;
 import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.business.LedgerVariationsHandler;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupRelation;
@@ -25,7 +28,7 @@ import com.idega.user.data.User;
  * Company: Idega Software <br>
  * @author <a href="mailto:birna@idega.is">Birna Iris Jonsdottir</a>
  */
-public class ISILedgerVariationsHandler implements LedgerVariationsHandler{
+public class ISILedgerVariationsHandler extends PresentationObject implements LedgerVariationsHandler{
 	
 	public String getParentGroupName(Collection parentGroups) {
 			
@@ -40,7 +43,8 @@ public class ISILedgerVariationsHandler implements LedgerVariationsHandler{
 		return null;
 	}
 	
-	public void saveLedger(IWContext iwc, int groupID, String coachName, int coachGroupID, String date) {
+	public void saveLedger(IWContext iwc, Page parentPage, int groupID, String coachName, int coachGroupID, String date) {
+		IWResourceBundle iwrb = getResourceBundle(iwc);
 		CalBusiness calBiz = getCalBusiness(iwc);		
 		GroupBusiness grBiz =getGroupBusiness(iwc);
 		Collection playerGroups = null;
@@ -70,13 +74,20 @@ public class ISILedgerVariationsHandler implements LedgerVariationsHandler{
 						name = group.getName();
 						Integer grID = (Integer) group.getPrimaryKey();
 						calBiz.createNewLedger(name + "_ledger",grID.intValue(),coachName,date,coachGroupID);
-					}			
+					}
+					parentPage.close();
+					parentPage.setOnLoad("window.opener.parent.location.reload()");
 				}
 			}			
 			else if(g.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER)){			 
 				name = g.getName();
 				calBiz.createNewLedger(name + "_ledger",groupID,coachName,date,coachGroupID);
+				parentPage.close();
+				parentPage.setOnLoad("window.opener.parent.location.reload()");				
 			}	
+			else {
+				parentPage.setAlertOnLoad(iwrb.getLocalizedString("ledgerwindow.choose_div_or_group_errormessage","The chosen group is neither division nor players group!"));
+			}
 		}		
 	}
 	
