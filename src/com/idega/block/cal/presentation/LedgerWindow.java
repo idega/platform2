@@ -765,15 +765,26 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		while (iterator.hasNext()) {
 			String userIDString = (String) iterator.next();
 			int userID = Integer.parseInt(userIDString);
-			
+			User user = null;
+			try{
+				user = getUserBusiness(iwc).getUser(userID);
+			}catch(RemoteException rme) {
+				
+			}
 			try {
 				getCalendarBusiness(iwc).deleteUserFromLedger(userID,ledID,iwc);
+				if(user.getMetaData(NEW_USER_IN_LEDGER) != null && 
+						!user.getMetaData(NEW_USER_IN_LEDGER).equals("") &&
+						!user.getMetaData(NEW_USER_IN_LEDGER).equals("-1")) {
+					user.setMetaData(NEW_USER_IN_LEDGER,"-1");
+					user.store();
+				}
 			}
 			catch (Exception e) {
 				System.err.println("[BasicUserOverview] user with id " + userID + " could not be removed" + e.getMessage());
 				e.printStackTrace(System.err);
 				notRemovedUsers.add(userIDString);
-			}		
+			}
 		}
 		return notRemovedUsers;
 	}
@@ -828,8 +839,6 @@ public class LedgerWindow extends StyledIWAdminWindow{
 			close();
 		}
 		
-		lineUp(iwc);
-		
 		String deleteUsers = iwc.getParameter(DELETE_USERS_KEY);
 		if(deleteUsers != null) {
 			String[] userIds;
@@ -837,8 +846,9 @@ public class LedgerWindow extends StyledIWAdminWindow{
 			if(userIds != null) {
 				removeUsersFromLedger(Arrays.asList(userIds),ledgerID.intValue(),iwc);
 			}
-			
 		}
+		
+		lineUp(iwc);
 
 		String save = iwc.getParameter(saveButtonParameterName);
 		if(save != null) {
