@@ -38,10 +38,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		
-		if (this.getWorkReportId() == -1) {
-			add("Nothing found...");
-		}
-		else {
+		if (this.getWorkReportId() != -1){
 			parseAction(iwc);
 			printForm(iwc);
 		}
@@ -51,7 +48,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 	private void printForm(IWContext iwc) {
 		try {
 			WorkReportBusiness wBiz = getWorkReportBusiness(iwc);
-			Collection members = wBiz.getWorkReportMemberHome().findAllWorkReportMembersByWorkReportIdOrderedByMemberName(getWorkReportId());
+			Collection members = wBiz.getAllWorkReportMembersForWorkReportId(getWorkReportId());
 			Collection leagues = wBiz.getAllWorkReportGroupsForYearAndType( wBiz.getWorkReportById(getWorkReportId()).getYearOfReport().intValue(),IWMemberConstants.GROUP_TYPE_LEAGUE);
 			
 			Form form = new Form();
@@ -62,7 +59,6 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 			
 			int row = 1;
 			int column = 1;
-			
 			
 			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_name","Name"),true,false,false) , column++, row);
 			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_personal_id","Personal ID"),true,false,false), column++, row);
@@ -141,8 +137,6 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 			table.add(new SubmitButton("Submit", PARAMETER_SAVE, "true"), column, row);
 
 			add(form);
-		}
-		catch (FinderException fe) {
 		}
 		catch (RemoteException re) {
 		}

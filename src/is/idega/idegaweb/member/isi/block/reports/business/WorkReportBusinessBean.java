@@ -328,14 +328,18 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 								HSSFCell leagueCell = row.getCell((short)j);
 								
 								if(leagueCell !=null){
-									WorkReportGroup league = (WorkReportGroup) leaguesMap.get(leagueCell.getStringCellValue());
-									if(league!=null){
-										try {
-											league.addMember(member);
-										}
-										catch (IDOAddRelationshipException e5) {
-											e5.printStackTrace();
-											throw new WorkReportImportException("workreportimportexception.database_error_could_not_add_member_to_group");
+									String check = leagueCell.getStringCellValue();
+									boolean isChecked = (check!=null && !"".equals(check) && "X".equals(check.toUpperCase()) );
+									if(isChecked){
+										WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(j));
+										if(league!=null){
+											try {
+												league.addMember(member);
+											}
+											catch (IDOAddRelationshipException e5) {
+												e5.printStackTrace();
+												throw new WorkReportImportException("workreportimportexception.database_error_could_not_add_member_to_group");
+											}
 										}
 									}
 								}
@@ -717,7 +721,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					}
 					
 					if( group!=null ){
-						leagues.put(leagueName,group);
+						leagues.put(new Integer(j),group);
 					}
 				}
 				
@@ -781,6 +785,34 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 		
 		return null;
+	}
+	
+	/**
+	 * Gets all the WorkReportMembers for the supplied WorkReport id
+	 * @param workReportId
+	 * @return a collection of WorkReportMember or an empty list
+	 */
+	public Collection getAllWorkReportMembersForWorkReportId(int workReportId){
+		try {
+			return getWorkReportMemberHome().findAllWorkReportMembersByWorkReportIdOrderedByMemberName(workReportId);
+		}
+		catch (FinderException e) {
+			return ListUtil.getEmptyList();
+		}
+	}
+	
+	/**
+	 * Gets all the WorkReportMembers that are board members for the supplied WorkReport id
+	 * @param workReportId
+	 * @return a collection of WorkReportMember or an empty list
+	 */
+	public Collection getAllWorkReportBoardMembersForWorkReportId(int workReportId){
+		try {
+			return getWorkReportMemberHome().findAllWorkReportBoardMembersByWorkReportId(workReportId);
+		}
+		catch (FinderException e) {
+			return ListUtil.getEmptyList();
+		}
 	}
 	
 	
