@@ -1,7 +1,8 @@
 package se.idega.idegaweb.commune.childcare.business;
 
+import com.idega.block.process.business.CaseBusiness;
 
-public interface ChildCareBusiness extends com.idega.business.IBOService
+public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBusiness
 {
 	public final static char STATUS_SENT_IN = 'A';
 	public final static char STATUS_PRIORITY = 'B';
