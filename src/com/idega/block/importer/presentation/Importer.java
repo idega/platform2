@@ -9,7 +9,9 @@ import com.idega.block.importer.business.ImportBusiness;
 import com.idega.block.importer.data.ImportFile;
 import com.idega.block.importer.data.ImportFileClass;
 import com.idega.block.importer.data.ImportHandler;
+import com.idega.block.media.business.MediaBusiness;
 import com.idega.business.IBOLookup;
+import com.idega.core.data.ICFile;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -36,10 +38,11 @@ import com.idega.user.data.Group;
  */
 
 public class Importer extends Window {
-  String folderPath;
-  boolean selectFiles,importFiles,selectFolder = false;
-  IWResourceBundle iwrb;
-      Group group= null;
+  private String folderPath;
+  private ICFile importFolder;  
+  private boolean usingLocalFileSystem,selectFiles,importFiles,selectFileSystemFolder = false;
+  private IWResourceBundle iwrb;
+  private Group group = null;
 
   private static final String ACTION_PARAMETER = "im_ac"; //action
   private static final String SELECT_FILES = "im_sf"; //select files action
@@ -54,15 +57,33 @@ public class Importer extends Window {
 
   public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.importer";
 
+
+
   public Importer() {
   }
 
+
+/**
+ * Method setFolderPath. Use this set method if you want to select files from the local filesystem.
+ * @param path
+ */
   public void setFolderPath(String path){
     this.folderPath = path;
+    usingLocalFileSystem = true;
   }
 
   public String getFolderPath(){
     return this.folderPath;
+  }
+  
+/**
+ * Method setImportFolder. Use this method if you want use the idegaWeb filesystem.
+ * @param folder
+ */
+  public void setImportFolder(ICFile folder){
+  	this.importFolder = folder;	
+  	usingLocalFileSystem = false;
+  	    
   }
 
   private void parseAction(IWContext iwc){
@@ -77,7 +98,7 @@ public class Importer extends Window {
         selectFiles = true;
       }
       else if(  iwc.getParameter(ACTION_PARAMETER).equals(SELECT_NEW_FOLDER) ){
-        selectFolder = true;
+        selectFileSystemFolder = true;
       }
     }
     else{
@@ -155,7 +176,7 @@ public class Importer extends Window {
       }
 
     }
-    else if( selectFolder ){
+    else if( selectFileSystemFolder ){
       Form form = new Form();
       form.add(new HiddenInput(this.ACTION_PARAMETER,this.SELECT_FILES));
       String path = getFolderPath();
@@ -192,6 +213,7 @@ public class Importer extends Window {
         	success = getImportBusiness(iwc).importRecords(handler,fileClass,values[i]);
         }
         
+        //MediaBusiness.getCachedFileInfo(icfileid,iwc)
         
         String status = (success)? iwrb.getLocalizedString("importer.success","finished!") : iwrb.getLocalizedString("importer.failure","failed!!");
         Text fileStatus = new Text(values[i]+" : "+status);
