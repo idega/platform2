@@ -17,6 +17,9 @@ public class ImageBrowser extends JModuleObject{
 private String width="100%";
 private boolean showAll = false;
 private boolean refresh = false;
+private ImageTree tree = new ImageTree();
+private ImageViewer viewer = new ImageViewer();
+
 
   public void main(ModuleInfo modinfo)throws Exception{
     add(getBrowserTable(modinfo));
@@ -36,6 +39,14 @@ private boolean refresh = false;
 
   public void refresh(){
     this.refresh=true;
+  }
+
+  public ImageViewer getImageViewer(){
+    return this.viewer;
+  }
+
+  public ImageTree getImageTree(){
+    return this.tree;
   }
 
   private Form getBrowserTable(ModuleInfo modinfo) throws SQLException {
@@ -76,22 +87,21 @@ private boolean refresh = false;
       imageTable.setHeight(1,2,"23");
       imageTable.setVerticalAlignment(1,1,"top");
       imageTable.setVerticalAlignment(1,2,"bottom");
+      imageTable.setVerticalAlignment(3,1,"top");
+
       imageTable.add(tileTable,1,2);
 
-    ImageTree tree = new ImageTree();
+
       tree.setWidth("150");
       tree.setShowAll(showAll);
       if ( refresh ) {
-        tree.deleteModule(modinfo);
+        tree.refresh();
+        viewer.refresh();
       }
 
     imageTable.add(tree,1,1);
 
     if ( mode.equalsIgnoreCase("image") ) {
-      ImageViewer viewer = new ImageViewer();
-      if ( refresh ) {
-        viewer.refresh(true);
-      }
       viewer.limitImageWidth(true);
       viewer.setNumberOfDisplayedImages(9);
       viewer.setHeaderFooterColor("#336699");

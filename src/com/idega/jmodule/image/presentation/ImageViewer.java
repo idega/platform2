@@ -134,8 +134,7 @@ public void main(ModuleInfo modinfo)throws Exception{
 
 */
   if( refresh ){
-    modinfo.getSession().removeAttribute("image_previous_catagory_id");
-    modinfo.getSession().removeAttribute("image_entities");
+    refresh(modinfo);
   }
 
   view = new Image("/pics/jmodules/image/"+language+"/view.gif","View all sizes");
@@ -538,10 +537,14 @@ public void setCutImage(String imageName){
   cut = new Image(imageName);
 }
 
-public void refresh(boolean refresh){
-  this.refresh = refresh;
+public void refresh(){
+  this.refresh = true;
 }
 
+public void refresh(ModuleInfo modinfo){
+  modinfo.removeSessionAttribute("image_previous_catagory_id");
+  modinfo.removeSessionAttribute("image_entities");
+}
 
 public void setCallingModule(String callingModule){
   this.callingModule = callingModule;

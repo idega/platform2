@@ -10,7 +10,7 @@ private boolean refresh = false;
 private boolean showAll = true;
 
   public void main(ModuleInfo modinfo)throws Exception{
-    String sRefresh = modinfo.getRequest().getParameter("refresh");
+    String sRefresh = modinfo.getParameter("refresh");
     ImageBrowser browser = new ImageBrowser();
     browser.setShowAll(showAll);
 

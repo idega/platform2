@@ -209,7 +209,7 @@ public Table writeTable(Vector items,ModuleInfo modinfo) throws SQLException {
 
   //      table.add(openLink,pos,row);
 
-          idLink.addParameter("imageId",""+id);
+          idLink.addParameter("image_id",""+id);
 
         table.add(idLink, pos,row);
       }
@@ -298,6 +298,10 @@ private void removeApplications(ModuleInfo modinfo) throws SQLException{
 
 public void refresh(ModuleInfo modinfo) throws Exception{
   removeApplications(modinfo);
+}
+
+public void refresh(){
+  this.refresh=true;
 }
 
 public void main(ModuleInfo modinfo)throws Exception{
