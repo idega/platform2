@@ -25,6 +25,7 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
+import se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
@@ -284,6 +285,7 @@ public class HouseHoldViewer extends AccountingBlock {
 	}
 
 	public void presentateChildren(IWContext iwc) {
+		
 		Table T = new Table();
 		Text tChildren = getHeader(localize("household.children","Children"));
 		//add(tChildren);
@@ -329,9 +331,9 @@ public class HouseHoldViewer extends AccountingBlock {
 				else{
 					table.skip();
 				}
-				Age age = getCalculatedAge(child);
-				if (age != null) {
-					table.add(getText(String.valueOf(age.getYears())));
+				int age = getCalculatedAge(iwc,child);
+				if (age >0) {
+					table.add(getText(String.valueOf(age)));
 				}
 				else{
 					table.skip();
@@ -525,10 +527,21 @@ public class HouseHoldViewer extends AccountingBlock {
 	}
 
 	// TODO do some clever calculation
-	private Age getCalculatedAge(User user) {
-		if (user.getDateOfBirth() != null)
-			return new Age(user.getDateOfBirth());
-		return null;
+	private int getCalculatedAge(IWContext iwc,User user) {
+		
+		try {
+			if(user.getDateOfBirth()!=null)
+				return  getAgeService(iwc).getChildAge(user.getPersonalID(),user.getDateOfBirth());
+			else
+				return getAgeService(iwc).getChildAge(user.getPersonalID());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		if(user.getDateOfBirth()!=null)
+			return new Age(user.getDateOfBirth()).getYears();
+		else
+			return 0;
 	}
 
 	// TODO get sibling order from database somehow
@@ -545,6 +558,10 @@ public class HouseHoldViewer extends AccountingBlock {
 
 	private CommuneUserBusiness getUserService(IWContext iwc) throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
+	}
+	
+	private AgeBusiness getAgeService(IWContext iwc) throws RemoteException {
+		return (AgeBusiness) IBOLookup.getServiceInstance(iwc, AgeBusiness.class);
 	}
 
 	private BruttoIncomeHome getBruttoIncomeHome() throws RemoteException {
