@@ -20,8 +20,8 @@ public class Font extends XMLElement {
 	
 //	reportFont NMTOKEN #IMPLIED
 //	fontName CDATA #IMPLIED
-//	size NMTOKEN #IMPLIED
-//	isBold (true | false) #IMPLIED
+	private static final String ATTRIBUTE_SIZE = "size"; // NMTOKEN #IMPLIED
+	private static final String ATTRIBUTE_IS_BOLD = "isBold"; // (true | false) #IMPLIED
 //	isItalic (true | false) #IMPLIED
 	private static final String ATTRIBUTE_IS_UNDERLINE = "isUnderline"; // (true | false) #IMPLIED
 //	isStrikeThrough (true | false) #IMPLIED
@@ -36,6 +36,14 @@ public class Font extends XMLElement {
 	
 	public void setIsUnderline(boolean value){
 		this.setAttribute(ATTRIBUTE_IS_UNDERLINE, String.valueOf(value));
+	}
+	
+	public void setIsBold(boolean value){
+		this.setAttribute(ATTRIBUTE_IS_BOLD, String.valueOf(value));
+	}
+	
+	public void setFontSize(int size){
+		this.setAttribute(ATTRIBUTE_SIZE,String.valueOf(size));
 	}
 
 }

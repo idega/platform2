@@ -103,7 +103,10 @@ public class ReportGenerator extends Block {
 	HashMap _parameterMap = new HashMap();
 	private BusyBar _busy = null;
 	
+	private String _prmLablePrefix = "label_";
+	
 	private String _reportName = "Report";
+	private String PRM_REPORT_NAME = "report_name";
 	
 	/**
 	 *	
@@ -149,8 +152,15 @@ public class ReportGenerator extends Block {
 	}
 	
 	private void generateLayout(IWContext iwc) throws IOException, JRException{
-		
-		DynamicReportDesign designTemplate = new DynamicReportDesign(_reportName);
+		int columnWidth = 100;
+		int prmLableWidth = 95;
+		int prmValueWidth = 55;
+		String tmpName = iwc.getParameter(getParameterName(PRM_REPORT_NAME));
+		if(tmpName != null){
+			_reportName = tmpName;
+		}
+				
+		DynamicReportDesign designTemplate = new DynamicReportDesign("GeneratedReport");
 		boolean isMethodInvocation = false;
 		if(_queryPK == null && _methodInvacationPK != null){
 			isMethodInvocation=true;
@@ -160,9 +170,39 @@ public class ReportGenerator extends Block {
 			
 		}
 		
+		if(_dynamicFields != null && _dynamicFields.size() > 0){
+			if(_queryPK != null){
+				Iterator iter = _dynamicFields.iterator();
+				while (iter.hasNext()) {
+					ReportableField element = (ReportableField)iter.next();
+					String prmName =element.getName();
+					designTemplate.addHeaderParameter(_prmLablePrefix+prmName,prmLableWidth,prmName,String.class,prmValueWidth);
+				}
+			} else {
+				Iterator iter = _dynamicFields.iterator();
+				while (iter.hasNext()) {
+					ClassDescription element = (ClassDescription)iter.next();
+					String prmName =element.getName();
+					designTemplate.addHeaderParameter(_prmLablePrefix+prmName,prmLableWidth,prmName,String.class,prmValueWidth);
+				}
+			}
+			
+
+		}
+		
+		
 		if(_allFields != null && _allFields.size() > 0){
 			//System.out.println("ReportGenerator.");
-			int columnWidth = 555/_allFields.size();
+			
+			
+			//TMP
+			//TODO get columnspacing (15) and it to columnsWidth;
+			int columnsWidth = columnWidth*_allFields.size()+15*(_allFields.size()-1);
+			//TMP
+			//TODO get page Margins (20) and add them to pageWidth;
+			designTemplate.setPageWidth(columnsWidth+20+20);
+			designTemplate.setColumnWidth(columnsWidth);
+			
 			//
 			Locale currentLocale = iwc.getCurrentLocale();
 			Iterator iter = _allFields.iterator();
@@ -188,9 +228,7 @@ public class ReportGenerator extends Block {
 						e.printStackTrace();
 					}
 				}
-			}
-			
-			
+			}	
 		}
 		
 		designTemplate.close();
@@ -198,6 +236,7 @@ public class ReportGenerator extends Block {
 	}
 	
 	private void generateDataSource(IWContext iwc) throws XMLException, Exception{
+		Locale currentLocale = iwc.getCurrentLocale();
 		if(_queryPK != null){
 			QueryService service = (QueryService)(IBOLookup.getServiceInstance(iwc,QueryService.class));
 			_dataSource = service.generateQueryResult(_queryPK);
@@ -232,7 +271,14 @@ public class ReportGenerator extends Block {
 							ClassDescription clDesc = (ClassDescription)iterator.next();
 							Class prmClassType = clDesc.getClassObject();
 							paramTypes[index] = prmClassType;
-							Object obj = getParameterObject(iwc,iwc.getParameter(getParameterName(clDesc.getName())),prmClassType);
+							String prm = iwc.getParameter(getParameterName(clDesc.getName()));
+							Object obj = getParameterObject(iwc,prm,prmClassType);
+							
+							
+							_parameterMap.put(_prmLablePrefix+clDesc.getName(),clDesc.getLocalizedName(currentLocale)+":");
+							_parameterMap.put(clDesc.getName(),prm);
+							
+							
 							
 //							switch (index) {
 //								case 0:
@@ -286,7 +332,7 @@ public class ReportGenerator extends Block {
 			
 			
 			
-			_parameterMap.put(DynamicReportDesign.PRM_REPORT_NAME,"Test Report");
+			_parameterMap.put(DynamicReportDesign.PRM_REPORT_NAME,_reportName);
 			JasperPrint print = business.getReport(_dataSource,_parameterMap,_design);
 			_reportFilePath = business.getExcelReport(print,_reportName);
 			//business.getPdfReport(print,_reportName);
@@ -407,8 +453,8 @@ public class ReportGenerator extends Block {
 		int row = 0;
 		
 		row++;
-		_fieldTable.add(getFieldLabel(iwrb.getLocalizedString("choose_report_name","report_name"))+":",1,row);
-		_fieldTable.add(getFieldInputObject("report_name",null,String.class),2,row);
+		_fieldTable.add(getFieldLabel(iwrb.getLocalizedString("choose_report_name","Report name"))+":",1,row);
+		_fieldTable.add(getFieldInputObject(PRM_REPORT_NAME,null,String.class),2,row);
 
 		//TODO Let Reportable field and ClassDescription impliment the same interface (IDODynamicReportableField) to decrease code duplications
 		if(_queryPK != null){
@@ -451,10 +497,11 @@ public class ReportGenerator extends Block {
 		_fieldTable.mergeCells(1,row,2,row);
 		_fieldTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
 		
+		generateButton.setOnClick("this.form.submit()");
 		_busy.addDisabledObject(generateButton);
 		_busy.addBusyObject(generateButton);
 	 	_busy.setBusyBarUrl(coreBundle.getImage("loading.gif").getURL());
-		_fieldTable.add(generateButton,1,++row);
+		_fieldTable.add(_busy,1,++row);
 		_fieldTable.mergeCells(1,row,2,row);
 		_fieldTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
 

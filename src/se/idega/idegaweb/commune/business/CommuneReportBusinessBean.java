@@ -27,6 +27,8 @@ import com.idega.block.datareport.util.ReportableField;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOService;
 import com.idega.business.IBOSessionBean;
+import com.idega.core.data.Address;
+import com.idega.core.data.AddressHome;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -86,6 +88,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		//initializing fields
 		IDOEntityDefinition userDef = IDOLookup.getEntityDefinitionForClass(User.class);
 		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
+		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
 		
 		
@@ -108,6 +111,14 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		childFirstName.setLocalizedName("FirstName",currentLocale);
 		reportData.addField(childFirstName);
 		
+		ReportableField childAddress = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+		childAddress.setValueClass(String.class);
+		childAddress.setCustomMadeFieldName("child_address");
+		//TMP
+		childAddress.setLocalizedName("Address",currentLocale);
+		reportData.addField(childAddress);
+
+		
 		ReportableField childGroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
 		childGroupInvitationDate.setValueClass(String.class);
 		childGroupInvitationDate.setCustomMadeFieldName("child_gr_initiation_date");
@@ -121,26 +132,33 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		ReportableField parent1PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
 		parent1PersonalID.setCustomMadeFieldName("parent1_ssn");
 		//TMP - localization
-		parent1PersonalID.setLocalizedName("Personal ID",currentLocale);
+		parent1PersonalID.setLocalizedName("Parent1 Personal ID",currentLocale);
 		reportData.addField(parent1PersonalID);
 		
 		ReportableField parent1LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
 		parent1LastName.setCustomMadeFieldName("parent1_last_name");
 		//TMP
-		parent1LastName.setLocalizedName("LastName",currentLocale);
+		parent1LastName.setLocalizedName("Parent1 LastName",currentLocale);
 		reportData.addField(parent1LastName);
 
 		ReportableField parent1FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
 		parent1FirstName.setCustomMadeFieldName("parent1_first_name");
 		//TMP
-		parent1FirstName.setLocalizedName("FirstName",currentLocale);
+		parent1FirstName.setLocalizedName("Parent1 FirstName",currentLocale);
 		reportData.addField(parent1FirstName);
+		
+		ReportableField parent1Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+		parent1Address.setValueClass(String.class);
+		parent1Address.setCustomMadeFieldName("parent1_address");
+		//TMP
+		parent1Address.setLocalizedName("Parent1 Address",currentLocale);
+		reportData.addField(parent1Address);
 		
 		ReportableField parent1GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
 		parent1GroupInvitationDate.setValueClass(String.class);
 		parent1GroupInvitationDate.setCustomMadeFieldName("parent1_gr_initiation_date");
 		//TMP
-		parent1GroupInvitationDate.setLocalizedName("Invitiation date",currentLocale);
+		parent1GroupInvitationDate.setLocalizedName("Parent1 Invitiation date",currentLocale);
 		reportData.addField(parent1GroupInvitationDate);
 		
 		
@@ -148,26 +166,33 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		ReportableField parent2PersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
 		parent2PersonalID.setCustomMadeFieldName("parent2_ssn");
 		//TMP - localization
-		parent2PersonalID.setLocalizedName("Personal ID",currentLocale);
+		parent2PersonalID.setLocalizedName("Parent2 Personal ID",currentLocale);
 		reportData.addField(parent2PersonalID);
 		
 		ReportableField parent2LastName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_LAST_NAME));
 		parent2LastName.setCustomMadeFieldName("parent2_last_name");
 		//TMP
-		parent2LastName.setLocalizedName("LastName",currentLocale);
+		parent2LastName.setLocalizedName("Parent2 LastName",currentLocale);
 		reportData.addField(parent2LastName);
 
 		ReportableField parent2FirstName = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_FIRST_NAME));
 		parent2FirstName.setCustomMadeFieldName("parent2_first_name");
 		//TMP
-		parent2FirstName.setLocalizedName("FirstName",currentLocale);
+		parent2FirstName.setLocalizedName("Parent2 FirstName",currentLocale);
 		reportData.addField(parent2FirstName);
+		
+		ReportableField parent2Address = new ReportableField(addrDef.findFieldByUniqueName(Address.FIELD_STREET_NAME));
+		parent2Address.setValueClass(String.class);
+		parent2Address.setCustomMadeFieldName("parent2_address");
+		//TMP
+		parent2Address.setLocalizedName("Parent2 Address",currentLocale);
+		reportData.addField(parent2Address);
 		
 		ReportableField parent2GroupInvitationDate = new ReportableField(grRelDef.findFieldByUniqueName(GroupRelation.FIELD_INITIATION_DATE));
 		parent2GroupInvitationDate.setValueClass(String.class);
 		parent2GroupInvitationDate.setCustomMadeFieldName("parent2_gr_initiation_date");
 		//TMP
-		parent2GroupInvitationDate.setLocalizedName("Invitiation date",currentLocale);
+		parent2GroupInvitationDate.setLocalizedName("Parent2 Invitiation date",currentLocale);
 		reportData.addField(parent2GroupInvitationDate);
 		
 		
@@ -185,6 +210,12 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 			data.addData(childLastName,child.getLastName());
 			data.addData(childFirstName,child.getFirstName());
 			reportData.add(data);
+			
+			Address childAddressEntiy = _communeUserService.getUsersMainAddress(child);
+			if(childAddressEntiy!=null){
+				String childAddressString = childAddressEntiy.getStreetName()+" "+childAddressEntiy.getStreetNumber();
+				data.addData(childAddress,childAddressString);
+			}
 			
 			Collection coll = gRelationHome.findGroupsRelationshipsContaining(communeGroup,child);
 			Iterator iterator = coll.iterator();
@@ -209,12 +240,16 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					User parent = (User)pIter.next();
 					ReportableData pData = new ReportableData();
 				
-					//ChildData
 					data.addData(parent1PersonalID,parent.getPersonalID());
 					data.addData(parent1LastName,parent.getLastName());
 					data.addData(parent1FirstName,parent.getFirstName());
 					reportData.add(pData);
 				
+					Address parent1AddressEntiy = _communeUserService.getUsersMainAddress(child);
+					if(childAddressEntiy!=null){
+						String parent1AddressString = parent1AddressEntiy.getStreetName()+" "+parent1AddressEntiy.getStreetNumber();
+						data.addData(parent1Address,parent1AddressString);
+					}			
 					Collection pColl = gRelationHome.findGroupsRelationshipsContaining(communeGroup,parent);
 					Iterator pIterator = pColl.iterator();
 					if(pIterator.hasNext()){
@@ -235,12 +270,17 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					User parent = (User)pIter.next();
 					ReportableData pData = new ReportableData();
 				
-					//ChildData
 					data.addData(parent2PersonalID,parent.getPersonalID());
 					data.addData(parent2LastName,parent.getLastName());
 					data.addData(parent2FirstName,parent.getFirstName());
 					reportData.add(pData);
 				
+					Address parent2AddressEntiy = _communeUserService.getUsersMainAddress(child);
+					if(childAddressEntiy!=null){
+						String parent2AddressString = parent2AddressEntiy.getStreetName()+" "+parent2AddressEntiy.getStreetNumber();
+						data.addData(parent2Address,parent2AddressString);
+					}
+								
 					Collection pColl = gRelationHome.findGroupsRelationshipsContaining(communeGroup,parent);
 					Iterator pIterator = pColl.iterator();
 					if(pIterator.hasNext()){
