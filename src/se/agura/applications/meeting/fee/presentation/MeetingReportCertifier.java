@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReportCertifier.java,v 1.5 2005/01/24 14:24:44 anna Exp $
+ * $Id: MeetingReportCertifier.java,v 1.6 2005/02/08 14:01:10 anna Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -33,7 +33,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 25.11.2004 09:13:11 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class MeetingReportCertifier extends MeetingFeeBlock {
 	
@@ -50,7 +50,7 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 				getBusiness(iwc).rejectApplication(getMeetingFee(iwc), iwc.getCurrentUser());
 				showMessage(getResourceBundle().getLocalizedString("meeting.fee.application_rejected", "Application has been rejected."));
 			}
-			else if(action.equals(ACTION_SEND)) {
+			else if(action.equals(ACTION_NEXT)) {
 				getBusiness(iwc).acceptApplication(getMeetingFee(iwc), iwc.getCurrentUser());
 				showMessage(getResourceBundle().getLocalizedString("meeting.fee.application_accepted", "Application has been accepted."));
 			}
