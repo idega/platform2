@@ -4120,6 +4120,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 									length = 5;
 									break;
 							}
+							if (hasActivePlacement(childID)) {
+								length = 4;
+							}
 							if (choices.size() < length)
 								length = choices.size();
 
@@ -4861,9 +4864,23 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return vector;
 
 	}
+	
+	private SchoolClassMemberLog getLatestPlacementLogByContract(ChildCareContract contract) {
+		try {
+			return getSchoolBusiness().getSchoolClassMemberLogHome().findLatestLogByUser(contract.getSchoolClassMember());
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
 
 	public PlacementHelper getPlacementHelper(Integer applicationID) {
 		ChildCareApplication application = getApplication(applicationID.intValue());
+		ChildCareContract contract = getLatestContractByApplication(applicationID.intValue());
+		SchoolClassMemberLog log = getLatestPlacementLogByContract(contract);
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
 		String className = bundle.getProperty(PLACEMENT_HELPER, DefaultPlacementHelper.class.getName());
 		PlacementHelper helper = null;
@@ -4879,7 +4896,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			helper = new DefaultPlacementHelper();
 		}
 		helper.setApplication(application);
-		helper.setContract(getLatestContractByApplication(applicationID.intValue()));
+		helper.setContract(contract);
+		helper.setPlacementLog(log);
 		return helper;
 	}
 
