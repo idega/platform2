@@ -27,7 +27,8 @@ public interface RegulationsBusiness extends com.idega.business.IBOService
  public java.util.Collection findAllVATRules() throws java.rmi.RemoteException;
  public java.lang.Object findConditionByRegulationAndIndex(java.lang.Integer p0,java.lang.Integer p1)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.regulations.data.Regulation findRegulation(int p0) throws java.rmi.RemoteException;
- public java.lang.Object findRegulationSpecType(int p0) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType  findRegulationSpecType(int p0) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType  findRegulationSpecType(String name) throws java.rmi.RemoteException;
  public java.util.Collection findRegulationsByPeriod(java.sql.Date p0,java.sql.Date p1,java.lang.String p2,int p3,int p4) throws java.rmi.RemoteException;
  public java.util.Collection findRegulationsByPeriod(java.sql.Date p0,java.sql.Date p1) throws java.rmi.RemoteException;
  public java.util.Collection getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(java.lang.String p0,java.lang.String p1,java.sql.Date p2,java.lang.String p3,java.lang.String p4,java.util.Collection p5) throws java.rmi.RemoteException;

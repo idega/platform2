@@ -149,7 +149,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	 * @throws FinderException
 	 * @throws IDOException
 	 */
-	public int ejbHomeGetProviderCountForSchoolCategoryAndPeriod(String schoolCategoryID, Date period) throws FinderException, IDOException {
+	public int ejbHomeGetProviderCountForSchoolCategoryAndPeriod(String schoolCategoryID, Date period) throws IDOException {
 		IWTimestamp start = new IWTimestamp(period);
 		start.setAsDate();
 		start.setDay(1);
@@ -172,7 +172,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	 * @throws FinderException
 	 * @throws IDOException
 	 */
-	public int ejbHomeGetPlacementCountForSchoolAndPeriod(int schoolID, Date period) throws FinderException, IDOException {
+	public int ejbHomeGetPlacementCountForSchoolAndPeriod(int schoolID, Date period) throws IDOException {
 		IWTimestamp start = new IWTimestamp(period);
 		start.setAsDate();
 		start.setDay(1);
@@ -247,7 +247,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	 * @throws EJBException
 	 * @throws FinderException
 	 */
-	public Collection ejbFindByStatusAndSchoolId(char status, int schoolID) throws IDOLookupException, EJBException, FinderException {
+	public Collection ejbFindByStatusAndSchoolId(char status, int schoolID) throws EJBException, FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhereEqualsWithSingleQuotes(COLUMN_STATUS, String.valueOf(status));
@@ -310,7 +310,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	 * @throws EJBException
 	 * @throws FinderException
 	 */
-	public Collection ejbFindBySchoolCategoryAndPeriod(String sc, Date period) throws IDOLookupException, EJBException, FinderException {
+	public Collection ejbFindBySchoolCategoryAndPeriod(String sc, Date period) throws EJBException, FinderException {
 		IWTimestamp start = new IWTimestamp(period);
 		start.setAsDate();
 		start.setDay(1);

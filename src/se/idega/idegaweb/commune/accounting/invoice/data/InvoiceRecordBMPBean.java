@@ -326,7 +326,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	 * @throws FinderException
 	 * @throws IDOException
 	 */
-	public int ejbHomeGetPlacementCountForSchoolCategoryAndPeriod(String schoolCategoryID, Date period) throws FinderException, IDOException {
+	public int ejbHomeGetPlacementCountForSchoolCategoryAndPeriod(String schoolCategoryID, Date period) throws IDOException {
 		IWTimestamp start = new IWTimestamp(period);
 		start.setAsDate();
 		start.setDay(1);

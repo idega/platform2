@@ -1,11 +1,13 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
+import com.idega.user.data.User;
+import java.sql.Date;
 
 public interface InvoiceBusiness extends com.idega.business.IBOService
 {
     int generatePdf (String title, com.idega.io.MemoryFileBuffer buffer) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader createInvoiceHeader(java.lang.String p0,com.idega.user.data.User p1,int p2,java.sql.Date p5)throws javax.ejb.CreateException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord createInvoiceRecord(com.idega.user.data.User createdBy, Integer amount, java.sql.Date checkStartPeriod, java.sql.Date checkEndPeriod, String doublePosting, Integer invoiceHeaderId, String invoiceText, String invoiceText2, String note, Integer numberOfDays, String ownPosting, java.sql.Date placementStartPeriod, java.sql.Date placementEndPeriod, Integer providerId, Integer regSpecTypeId, Integer vatAmount, Integer vatRule, String ruleText, Integer placementId)throws javax.ejb.CreateException, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord createInvoiceRecord(User createdBy, Integer invoiceHeaderId, Integer placementId, Integer providerId, String ruleText, String invoiceText, String invoiceText2, String note, Date placementStartPeriod, Date placementEndPeriod, Date checkStartPeriod, Date checkEndPeriod, Integer amount, Integer vatAmount, Integer numberOfDays, Integer regSpecTypeId, Integer vatRule, String ownPosting, String doublePosting, Integer pieceAmount, String ownPaymentPosting, String doublePaymentPosting)throws javax.ejb.CreateException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType[] getAllRegulationSpecTypes()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.regulations.data.VATRule[] getAllVatRules()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.accounting.regulations.data.VATRule getVatRule(int primaryKey)throws java.rmi.RemoteException, java.rmi.RemoteException;

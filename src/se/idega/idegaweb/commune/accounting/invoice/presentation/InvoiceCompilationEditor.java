@@ -85,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/19 22:03:38 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/22 13:11:26 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.91 $
+ * @version $Revision: 1.92 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -125,6 +125,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String DELETE_ROW_KEY = PREFIX + "delete_invoice_compilation";
     private static final String DOUBLE_POSTING_DEFAULT = "Motkontering";
     private static final String DOUBLE_POSTING_KEY = PREFIX + "double_posting";
+    private static final String DOUBLE_PAYMENT_POSTING_KEY = PREFIX + "double_payment_posting";
     private static final String EDIT_INVOICE_RECORD_DEFAULT = "Ändra fakturarad";
     private static final String EDIT_INVOICE_RECORD_KEY = PREFIX + "edit_invoice_record";
     private static final String EDIT_ROW_DEFAULT = "Ändra rad";
@@ -177,10 +178,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String NUMBER_OF_DAYS_KEY = PREFIX + "number_of_days";
     private static final String OWN_POSTING_DEFAULT = "Egen kontering";
     private static final String OWN_POSTING_KEY = PREFIX + "own_posting";
+    private static final String OWN_PAYMENT_POSTING_KEY = PREFIX + "own_payment_posting";
     private static final String PDF_DEFAULT = "PDF";
     private static final String PDF_KEY = PREFIX + "pdf";
     private static final String PERIOD_DEFAULT = "Period";
     private static final String PERIOD_KEY = PREFIX + "period";
+    private static final String PIECE_AMOUNT_KEY = PREFIX + "piece_amount";
     private static final String PLACEMENT_DEFAULT = "Placering";
     private static final String PLACEMENT_END_PERIOD_KEY = PREFIX + "placement_end_period";
     private static final String PLACEMENT_KEY = PREFIX + "placement";
@@ -257,64 +260,64 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	 * @param context session data like user info etc.
 	 */
 	public void init (final IWContext context) {
-		try {
-            final int actionId = getActionId (context);
-
-			switch (actionId) {
-				case ACTION_SHOW_COMPILATION:
-					showCompilation (context);
-					break;
-
-                case ACTION_DELETE_COMPILATION:
-                    deleteCompilation (context);
-                    break;
-
-                case ACTION_DELETE_RECORD:
-                    deleteRecord (context);
-                    break;
-
-                case ACTION_SHOW_NEW_COMPILATION_FORM:
-                    showNewCompilationForm (context);
-                    break;
-
-                case ACTION_NEW_COMPILATION:
-                    newCompilation (context);
-                    break;
-
-                case ACTION_SHOW_RECORD_DETAILS:
-                    showRecordDetails (context);
-                    break;
-
-                case ACTION_SHOW_EDIT_RECORD_FORM:
-                    showEditRecordForm (context);
-                    break;
-
-                case ACTION_SHOW_NEW_RECORD_FORM:
-                case ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT:
-                    showNewRecordForm (context);
-                    break;
-
-                case ACTION_SAVE_RECORD:
-                    saveRecord (context);
-                    break;
-
-                case ACTION_NEW_RECORD:
-                    newRecord (context);
-                    break;
-
-                case ACTION_GENERATE_COMPILATION_PDF:
-                    generateCompilationPdf (context);
-                    break;
-
-                default:
-                    showCompilationList (context);
-					break;					
-			}
-		} catch (Exception exception) {
-            logUnexpectedException (context, exception);
-		}
+				try {
+					final int actionId = getActionId (context);
+					
+					switch (actionId) {
+						case ACTION_SHOW_COMPILATION:
+							showCompilation (context);
+							break;
+							
+						case ACTION_DELETE_COMPILATION:
+							deleteCompilation (context);
+							break;
+							
+						case ACTION_DELETE_RECORD:
+							deleteRecord (context);
+							break;
+							
+						case ACTION_SHOW_NEW_COMPILATION_FORM:
+							showNewCompilationForm (context);
+							break;
+							
+						case ACTION_NEW_COMPILATION:
+							newCompilation (context);
+							break;
+							
+						case ACTION_SHOW_RECORD_DETAILS:
+							showRecordDetails (context);
+							break;
+							
+						case ACTION_SHOW_EDIT_RECORD_FORM:
+							showEditRecordForm (context);
+							break;
+							
+						case ACTION_SHOW_NEW_RECORD_FORM:
+						case ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT:
+							showNewRecordForm (context);
+							break;
+							
+						case ACTION_SAVE_RECORD:
+							saveRecord (context);
+							break;
+							
+						case ACTION_NEW_RECORD:
+							newRecord (context);
+							break;
+							
+						case ACTION_GENERATE_COMPILATION_PDF:
+							generateCompilationPdf (context);
+							break;
+							
+						default:
+							showCompilationList (context);
+							break;					
+					}
+				} catch (Exception exception) {
+					logUnexpectedException (context, exception);
+				}
 	}
-
+	
     private int getActionId (final IWContext context) {
         int actionId = ACTION_SHOW_COMPILATION_LIST;
         
@@ -443,17 +446,36 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final Integer vatAmount = getIntegerParameter (context, VAT_AMOUNT_KEY);
         final Integer vatRule = getIntegerParameter (context, VAT_RULE_KEY);
         final String ruleText = context.getParameter (RULE_TEXT_KEY);
+				final Integer pieceAmount
+						= getIntegerParameter (context, PIECE_AMOUNT_KEY);
+        final String ownPaymentPosting
+						= context.getParameter (OWN_PAYMENT_POSTING_KEY);
+        final String doublePaymentPosting
+						= context.getParameter (DOUBLE_PAYMENT_POSTING_KEY);
         final InvoiceBusiness business = getInvoiceBusiness (context);
         business.createInvoiceRecord
-                (currentUser, amount,
-                 new java.sql.Date (checkStartPeriod.getTime ()),
-                 new java.sql.Date (checkEndPeriod.getTime ()), doublePosting,
-                 invoiceCompilation, invoiceText, invoiceText2, note,
-								 numberOfDays, ownPosting,
+                (currentUser,
+                 invoiceCompilation,
+                 placementId,
+                 providerId,
+								 ruleText,
+								 invoiceText,
+								 invoiceText2,
+								 note,
                  new java.sql.Date (placementStartPeriod.getTime ()),
                  new java.sql.Date (placementEndPeriod.getTime ()),
-                 providerId, regulationSpecTypeId, vatAmount, vatRule, ruleText,
-                 placementId);
+                 new java.sql.Date (checkStartPeriod.getTime ()),
+                 new java.sql.Date (checkEndPeriod.getTime ()),
+								 amount,
+								 vatAmount,
+								 numberOfDays,
+								 regulationSpecTypeId,
+								 vatRule,
+								 ownPosting,
+								 doublePosting,
+								 pieceAmount,
+								 ownPaymentPosting,
+								 doublePaymentPosting);
         final String [][] parameters =
                 {{ACTION_KEY, ACTION_SHOW_COMPILATION + "" },
                 { INVOICE_COMPILATION_KEY, invoiceCompilation + "" }};
@@ -947,7 +969,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
          final InvoiceHeader header, final InvoiceBusiness business,
 				 final Provider provider, final Regulation regulation,
 				 final SchoolClassMember placement)
-		throws FinderException, EJBException, RemoteException {
+		throws EJBException, RemoteException {
 		final String regulationName = regulation.getName ();
 		final RegulationSpecType regSpecType = regulation.getRegSpecType ();
 		final Integer regSpecTypeId
@@ -969,6 +991,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 																											invoiceText1 + ""));
 		inputs.put (INVOICE_TEXT2_KEY, getStyledWideInput (INVOICE_TEXT2_KEY,
 																											 invoiceText2 + ""));
+		inputs.put (PIECE_AMOUNT_KEY, new HiddenInput
+								(PIECE_AMOUNT_KEY, regulation.getAmount () + ""));
 		inputs.put (AMOUNT_KEY, getStyledInput
 		            (AMOUNT_KEY, regulation.getAmount () + ""));
 		inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
@@ -976,22 +1000,50 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		            (business.getAllRegulationSpecTypes (), regSpecType));
 		inputs.put (VAT_RULE_KEY,  getLocalizedDropdown
 		            (business.getAllVatRules (), vatRule));
+		String [] paymentPostings = null;
 		try {
-		    final String [] postings = postingBusiness.getPostingStrings
-		            (category, schoolType, regSpecTypeId.intValue (),
-		             provider, header.getPeriod ());	
-		    final PresentationObject ownPostingForm = getPostingParameterForm
-                    (context, OWN_POSTING_KEY, postings [0]);
-		    inputs.put (OWN_POSTING_KEY, ownPostingForm);
-		    final PresentationObject doublePostingForm = getPostingParameterForm
-                    (context, DOUBLE_POSTING_KEY, postings [1]);
-		    inputs.put (DOUBLE_POSTING_KEY, doublePostingForm);
+			paymentPostings = postingBusiness.getPostingStrings
+					(category, schoolType, regSpecTypeId.intValue (), provider,
+					 header.getPeriod ());
+			inputs.put (OWN_PAYMENT_POSTING_KEY, new HiddenInput
+									(OWN_PAYMENT_POSTING_KEY, paymentPostings [0]));
+			inputs.put (DOUBLE_PAYMENT_POSTING_KEY, new HiddenInput
+									(DOUBLE_PAYMENT_POSTING_KEY, paymentPostings [1]));
 		} catch (PostingException e) {
 		    e.printStackTrace ();
-		    inputs.put (OWN_POSTING_KEY, getPostingParameterForm
-		                (context, OWN_POSTING_KEY));
-		    inputs.put (DOUBLE_POSTING_KEY, getPostingParameterForm
-		                (context, DOUBLE_POSTING_KEY));
+		}
+		final String regSpecTypeName = regSpecType.getRegSpecType ();
+		addPostingsToNewRecordForm(context, inputs, header, provider, category, regulationsBusiness, schoolType, postingBusiness, paymentPostings, regSpecTypeName);
+	}
+
+	private void addPostingsToNewRecordForm(final IWContext context, final java.util.Map inputs, final InvoiceHeader header, final Provider provider, final SchoolCategory category, final RegulationsBusiness regulationsBusiness, final SchoolType schoolType, final PostingBusiness postingBusiness, String[] paymentPostings, final String regSpecTypeName) throws RemoteException {
+		String [] invoicePostings = paymentPostings;
+		try {
+			if (regSpecTypeName.equals ("cacc_reg_spec_type.check")) {
+				final RegulationSpecType invoiceRegSpecType
+						= regulationsBusiness.findRegulationSpecType
+						("cacc_reg_spec_type.checktaxa");
+				final int invoiceRegSpecTypeId
+						= ((Integer) invoiceRegSpecType.getPrimaryKey ()).intValue ();
+				invoicePostings = postingBusiness.getPostingStrings
+						(category, schoolType, invoiceRegSpecTypeId, provider,
+						 header.getPeriod ());
+			}
+		} catch (Exception e) {
+			e.printStackTrace ();
+		}
+		if (null != invoicePostings) {
+			final PresentationObject ownPostingForm = getPostingParameterForm
+					(context, OWN_POSTING_KEY, invoicePostings [0]);
+			inputs.put (OWN_POSTING_KEY, ownPostingForm);
+			final PresentationObject doublePostingForm = getPostingParameterForm
+					(context, DOUBLE_POSTING_KEY, invoicePostings [1]);
+			inputs.put (DOUBLE_POSTING_KEY, doublePostingForm);
+		}	else {
+			inputs.put (OWN_POSTING_KEY, getPostingParameterForm
+									(context, OWN_POSTING_KEY));
+			inputs.put (DOUBLE_POSTING_KEY, getPostingParameterForm
+									(context, DOUBLE_POSTING_KEY));
 		}
 	}
 
@@ -1275,6 +1327,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             col = 1; row++;
         }
         addSmallHeader (table, col++, row, AMOUNT_KEY, AMOUNT_DEFAULT, ":");
+        addPresentation (table, presentationObjects, PIECE_AMOUNT_KEY, col,
+												 row);
         addPresentation (table, presentationObjects, AMOUNT_KEY, col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, VAT_AMOUNT_KEY, VAT_AMOUNT_DEFAULT,
@@ -1300,11 +1354,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         col = 1; row++;
         table.mergeCells (col, row, table.getColumns (), row);
         addPresentation (table, presentationObjects, OWN_POSTING_KEY, col, row);
+        addPresentation (table, presentationObjects, OWN_PAYMENT_POSTING_KEY,
+												 col, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, DOUBLE_POSTING_KEY,
                         DOUBLE_POSTING_DEFAULT, ":");
         col = 1; row++;
         table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, DOUBLE_PAYMENT_POSTING_KEY,
+												 col, row);
         addPresentation (table, presentationObjects, DOUBLE_POSTING_KEY, col,
                          row);
         col = 1; row++;

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.100 2003/12/17 17:53:31 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.101 2003/12/22 13:11:26 staffan Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -979,10 +979,23 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType#
 	 * @author Kelly
 	 */
-	public Object findRegulationSpecType(int id) {
+	public RegulationSpecType findRegulationSpecType(int id) {
 		try {
 			RegulationSpecTypeHome home = getRegulationSpecTypeHome();
 			return home.findRegulationSpecType(id);
+		}
+		catch (RemoteException e) {
+			return null;
+		}
+		catch (FinderException e) {
+			return null;
+		}
+	}
+
+	public RegulationSpecType findRegulationSpecType (final String name) {
+		try {
+			final RegulationSpecTypeHome home = getRegulationSpecTypeHome ();
+			return home.findByRegulationSpecType (name);
 		}
 		catch (RemoteException e) {
 			return null;

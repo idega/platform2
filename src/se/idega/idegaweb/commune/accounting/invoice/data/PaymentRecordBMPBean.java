@@ -324,7 +324,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @return
 	 * @throws FinderException
 	 */
-	public int ejbHomeGetCountForMonthAndStatusLH(CalendarMonth month) throws FinderException, IDOException {
+	public int ejbHomeGetCountForMonthAndStatusLH(CalendarMonth month) throws IDOException {
 		Date start = month.getFirstDateOfMonth();
 		Date end = month.getLastDateOfMonth();
 		IDOQuery sql = idoQuery();
@@ -343,7 +343,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @return
 	 * @throws FinderException
 	 */
-	public int ejbHomeGetCountForMonthCategoryAndStatusLH(CalendarMonth month, String category) throws FinderException, IDOException {
+	public int ejbHomeGetCountForMonthCategoryAndStatusLH(CalendarMonth month, String category) throws IDOException {
 		/*IWTimestamp start = new IWTimestamp(month);
 		start.setAsDate();
 		start.setDay(1);
@@ -372,7 +372,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @throws FinderException
 	 * @throws IDOException
 	 */
-	public int ejbHomeGetPlacementCountForSchoolCategoryAndMonth(String schoolCategoryID, CalendarMonth month) throws FinderException, IDOException {
+	public int ejbHomeGetPlacementCountForSchoolCategoryAndMonth(String schoolCategoryID, CalendarMonth month) throws IDOException {
 		/*IWTimestamp start = new IWTimestamp(period);
 		start.setAsDate();
 		start.setDay(1);
@@ -399,7 +399,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @throws FinderException
 	 * @throws IDOException
 	 */
-	public int ejbHomeGetTotAmountForSchoolCategoryAndPeriod(String schoolCategoryID, Date period) throws FinderException, IDOException {
+	public int ejbHomeGetTotAmountForSchoolCategoryAndPeriod(String schoolCategoryID, Date period) throws IDOException {
 		IWTimestamp start = new IWTimestamp(period);
 		start.setAsDate();
 		start.setDay(1);
@@ -425,7 +425,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @throws FinderException
 	 * @throws IDOException
 	 */
-	public int ejbHomeGetTotAmountForProviderAndPeriod(int providerID, Date period) throws FinderException, IDOException {
+	public int ejbHomeGetTotAmountForProviderAndPeriod(int providerID, Date period) throws IDOException {
 		IWTimestamp start = new IWTimestamp(period);
 		start.setAsDate();
 		start.setDay(1);

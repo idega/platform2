@@ -52,11 +52,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/12/22 12:20:36 $ by $Author: joakim $
+ * Last modified: $Date: 2003/12/22 13:11:26 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.68 $
+ * @version $Revision: 1.69 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -399,85 +399,106 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	}
 	
 	public InvoiceRecord createInvoiceRecord
-		(final User createdBy, final Integer amount,
-		 final Date checkStartPeriod, final Date checkEndPeriod,
-		 final String doublePosting, final Integer invoiceHeaderId,
-		 final String invoiceText, final String invoiceText2, final String note,
-		 final Integer numberOfDays, final String ownPosting,
-		 final Date placementStartPeriod, final Date placementEndPeriod,
-		 final Integer providerId, final Integer regSpecTypeId,
-		 final Integer vatAmount, final Integer vatRule, final String ruleText,
-		 final Integer placementId)
-		throws CreateException {
-		try {
-			final InvoiceRecord record = getInvoiceRecordHome ().create ();
-			if (null != createdBy) {
-				final String createdBySignature
-						= createdBy.getFirstName ()
-						+ " " + createdBy.getLastName ();
-				record.setCreatedBy (createdBySignature);
-			}
-			record.setDateCreated (new Date (new java.util.Date ().getTime()));
-			if (null != amount) record.setAmount (amount.floatValue ());
-			if (null != vatAmount) record.setAmountVAT
-																 (vatAmount.floatValue ());
-			if (null != numberOfDays) record.setDays (numberOfDays.intValue ());
-			record.setDoublePosting (doublePosting);
-			if (null != invoiceHeaderId) record.setInvoiceHeader
-																			 (invoiceHeaderId.intValue ());
-			record.setInvoiceText
-					(null != invoiceText && 0 < invoiceText.length ()
-					 ? invoiceText : ruleText);
-			record.setInvoiceText2
-					(null != invoiceText2 && 0 < invoiceText2.length ()
-					 ? invoiceText2 : "");
-			record.setRuleText (ruleText);
-			record.setNotes (note);
-			record.setOwnPosting (ownPosting);
-			if (null != checkEndPeriod) record.setPeriodEndCheck
-																			(checkEndPeriod);
-			if (null != placementEndPeriod) record.setPeriodEndPlacement
-																					(placementEndPeriod);
-			if (null != checkStartPeriod) record.setPeriodStartCheck
-																				(checkStartPeriod);
-			if (null != placementStartPeriod) record.setPeriodStartPlacement
-																						(placementStartPeriod);
-			if (null != regSpecTypeId) {
-				record.setRegSpecTypeId (regSpecTypeId.intValue ());
-			}
-			if (null != vatRule)  record.setVATType (vatRule.intValue ());
-			if (null != providerId) record.setProviderId
-																	(providerId.intValue ());
-			if (null != placementId) record.setSchoolClassMemberId
-																	 (placementId.intValue ());
-			record.store ();
-			try {
-				final RegulationSpecType regSpecType
-						= getRegulationSpecTypeHome ().findByPrimaryKey
-						(regSpecTypeId);
-				final String regSpecTypeName = regSpecType.getRegSpecType ();
-				if (regSpecTypeName.equals ("cacc_reg_spec_type.check")) {
-					connectToPayment (record);
-				}
-			} catch (Exception e) {
-				e.printStackTrace ();
-			}
-			return record;
-		} catch (RemoteException e) {
-			e.printStackTrace ();
-			throw new CreateException (e.getMessage ());
+		(final User createdBy,
+		 final Integer invoiceHeaderId,
+		 final Integer placementId,
+		 final Integer providerId,
+		 final String ruleText,
+		 final String invoiceText,
+		 final String invoiceText2,
+		 final String note,
+		 final Date placementStartPeriod,
+		 final Date placementEndPeriod,	 
+		 final Date checkStartPeriod,
+		 final Date checkEndPeriod,
+		 final Integer amount,
+		 final Integer vatAmount,
+		 final Integer numberOfDays,
+		 final Integer regSpecTypeId,
+		 final Integer vatRule,
+		 final String ownPosting,
+		 final String doublePosting,
+		 final Integer pieceAmount,
+		 final String ownPaymentPosting,
+		 final String doublePaymentPosting)
+		throws CreateException, RemoteException {
+		final InvoiceRecord record = getInvoiceRecordHome ().create ();
+		final String createdBySignature = null != createdBy
+				? createdBy.getFirstName ()	+ " " + createdBy.getLastName () : "";
+		record.setCreatedBy (createdBySignature);
+		final Date now = new Date (new java.util.Date ().getTime());
+		record.setDateCreated (now);
+		if (null != amount) record.setAmount (amount.floatValue ());
+		if (null != vatAmount) record.setAmountVAT (vatAmount.floatValue ());
+		if (null != numberOfDays) record.setDays (numberOfDays.intValue ());
+		record.setDoublePosting (doublePosting);
+		if (null != invoiceHeaderId) record.setInvoiceHeader
+																		 (invoiceHeaderId.intValue ());
+		record.setInvoiceText (null != invoiceText && 0 < invoiceText.length ()
+				 ? invoiceText : ruleText);
+		record.setInvoiceText2(null != invoiceText2 && 0 < invoiceText2.length ()
+				 ? invoiceText2 : "");
+		record.setRuleText (ruleText);
+		record.setNotes (note);
+		record.setOwnPosting (ownPosting);
+		if (null != checkEndPeriod) record.setPeriodEndCheck(checkEndPeriod);
+		if (null != placementEndPeriod) record.setPeriodEndPlacement
+																				(placementEndPeriod);
+		if (null != checkStartPeriod) record.setPeriodStartCheck
+																			(checkStartPeriod);
+		if (null != placementStartPeriod) record.setPeriodStartPlacement
+																					(placementStartPeriod);
+		if (null != regSpecTypeId) {
+			record.setRegSpecTypeId (regSpecTypeId.intValue ());
 		}
+		if (null != vatRule)  record.setVATType (vatRule.intValue ());
+		if (null != providerId) record.setProviderId(providerId.intValue ());
+		if (null != placementId) {
+			record.setSchoolClassMemberId (placementId.intValue ());
+			record.setSchoolType (record.getSchoolClassMember ().getSchoolType ());
+		}
+		record.store ();
+		try {
+			final RegulationSpecType regSpecType
+					= getRegulationSpecTypeHome ().findByPrimaryKey
+					(regSpecTypeId);
+			final String regSpecTypeName = regSpecType.getRegSpecType ();
+			if (regSpecTypeName.equals ("cacc_reg_spec_type.check")) {
+				final InvoiceHeader header = record.getInvoiceHeader ();
+				final School school = record.getProvider ();
+				final SchoolCategory schoolCategory = header.getSchoolCategory ();
+				final Date period = header.getPeriod ();
+					final PaymentRecord paymentRecord
+							= createPaymentRecord
+							(school, schoolCategory, period, createdBySignature, now,
+							 ruleText, amount.intValue (), pieceAmount.intValue (),
+							 vatRule.intValue (), ownPaymentPosting, doublePaymentPosting,
+							 regSpecTypeName);
+					record.setPaymentRecord (paymentRecord);
+					record.store ();
+			}
+		} catch (Exception e) {
+			e.printStackTrace ();
+		}
+		return record;
 	}
-	
-	private void connectToPayment (final InvoiceRecord invoiceRecord)
-	throws RemoteException, CreateException {
-		final InvoiceHeader invoiceHeader = invoiceRecord.getInvoiceHeader ();
-		final SchoolCategory schoolCategory = invoiceHeader.getSchoolCategory ();
-		final School school = invoiceRecord.getProvider ();
-		final Date period = invoiceHeader.getPeriod ();
+
+	private PaymentRecord createPaymentRecord
+		(final School school,
+		 final SchoolCategory schoolCategory,
+		 final Date period,
+		 final String createdBy,
+		 final Date dateCreated,
+		 final String ruleText,
+		 final float totalAmount,
+		 final float pieceAmount,
+		 final int vatType,
+		 final String ownPosting,
+		 final String doublePosting,
+		 final String regSpecTypeName) throws RemoteException, CreateException {
 		final char status = 'P';
 		PaymentHeader paymentHeader;
-		PaymentHeaderHome paymentHeaderHome = getPaymentHeaderHome ();
+		final PaymentHeaderHome paymentHeaderHome = getPaymentHeaderHome ();
 		try {
 			paymentHeader	= paymentHeaderHome
 					.findBySchoolCategoryAndSchoolAndPeriodAndStatus
@@ -490,41 +511,22 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			paymentHeader.setStatus (status);
 			paymentHeader.store ();
 		}
-		final String ownPosting = invoiceRecord.getOwnPosting ();
-		final String doublePosting = invoiceRecord.getDoublePosting ();
-		final String regSpecTypeName
-				= invoiceRecord.getRegSpecType ().getRegSpecType ();
-		final String ruleText = invoiceRecord.getRuleText ();
-		final float amount = invoiceRecord.getAmount ();
-		final float amountVat = invoiceRecord.getAmountVAT ();
-		PaymentRecord paymentRecord;
-		PaymentRecordHome paymentRecordHome = getPaymentRecordHome ();
-		try {
-			paymentRecord = paymentRecordHome
-					.findByPaymentHeaderAndPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth
-					(paymentHeader, ownPosting, doublePosting, regSpecTypeName, ruleText,
-					 new CalendarMonth (period));
-			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount () + amount);
-			paymentRecord.setTotalAmountVAT (paymentRecord.getTotalAmountVAT ()
-																			 + amountVat);
-			paymentRecord.setPlacements (paymentRecord.getPlacements () + 1);
-		} catch (FinderException e) {
-			paymentRecord = paymentRecordHome.create ();
-			paymentRecord.setCreatedBy (invoiceRecord.getCreatedBy ());
-			paymentRecord.setDateCreated (invoiceRecord.getDateCreated ());
-			paymentRecord.setVATType (invoiceRecord.getVATType ());
-			paymentRecord.setDoublePosting (doublePosting);
-			paymentRecord.setOwnPosting (ownPosting);
-			paymentRecord.setPaymentHeader (paymentHeader);
-			paymentRecord.setPaymentText (ruleText);
-			paymentRecord.setPeriod (period);
-			paymentRecord.setRuleSpecType (regSpecTypeName);
-			paymentRecord.setStatus (status);
-			paymentRecord.setTotalAmount (amount);
-			paymentRecord.setTotalAmountVAT (amountVat);
-		}
-		invoiceRecord.setPaymentRecord (paymentRecord);
+		final PaymentRecord paymentRecord = getPaymentRecordHome ().create ();
+		paymentRecord.setCreatedBy (createdBy);
+		paymentRecord.setDateCreated (dateCreated);
+		paymentRecord.setPaymentHeader (paymentHeader);
+		paymentRecord.setPaymentText (ruleText);
+		paymentRecord.setStatus (status);
+		paymentRecord.setPeriod (period);
+		paymentRecord.setTotalAmount (totalAmount);
+		paymentRecord.setPieceAmount (pieceAmount);
+		paymentRecord.setVATType (vatType);
+		paymentRecord.setOwnPosting (ownPosting);
+		paymentRecord.setDoublePosting (doublePosting);
+		paymentRecord.setRuleSpecType (regSpecTypeName);
+		paymentRecord.setPlacements (1);
 		paymentRecord.store ();
+		return paymentRecord;
 	}	
 
 	public SchoolClassMember [] getSchoolClassMembers

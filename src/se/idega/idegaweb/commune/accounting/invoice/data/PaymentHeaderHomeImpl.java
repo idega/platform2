@@ -20,7 +20,7 @@ public java.util.Collection findBySchoolAndSchoolCategoryPKAndStatus(java.lang.O
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findBySchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws com.idega.data.IDOLookupException,javax.ejb.EJBException,javax.ejb.FinderException{
+public java.util.Collection findBySchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws javax.ejb.EJBException,javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((PaymentHeaderBMPBean)entity).ejbFindBySchoolCategoryAndPeriod(p0,p1);
 	this.idoCheckInPooledEntity(entity);
@@ -70,7 +70,7 @@ public java.util.Collection findBySchoolCategoryStatusOutsideCommuneOrWithoutCom
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findByStatusAndSchoolId(char p0,int p1)throws com.idega.data.IDOLookupException,javax.ejb.EJBException,javax.ejb.FinderException{
+public java.util.Collection findByStatusAndSchoolId(char p0,int p1)throws javax.ejb.EJBException,javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((PaymentHeaderBMPBean)entity).ejbFindByStatusAndSchoolId(p0,p1);
 	this.idoCheckInPooledEntity(entity);
@@ -82,14 +82,14 @@ public java.util.Collection findByStatusAndSchoolId(char p0,int p1)throws com.id
  }
 
 
-public int getPlacementCountForSchoolAndPeriod(int p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
+public int getPlacementCountForSchoolAndPeriod(int p0,java.sql.Date p1)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((PaymentHeaderBMPBean)entity).ejbHomeGetPlacementCountForSchoolAndPeriod(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
 
-public int getProviderCountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws javax.ejb.FinderException,com.idega.data.IDOException{
+public int getProviderCountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((PaymentHeaderBMPBean)entity).ejbHomeGetProviderCountForSchoolCategoryAndPeriod(p0,p1);
 	this.idoCheckInPooledEntity(entity);
