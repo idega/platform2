@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.72 2004/07/15 11:30:51 aron Exp $
+ * $Id: CampusAllocator.java,v 1.73 2004/07/19 11:44:08 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -127,6 +127,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	}
 	
 	protected void control(IWContext iwc) throws RemoteException, FinderException {
+		
 		campusService = getCampusService(iwc);
 		dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, iwc.getCurrentLocale());
 		
@@ -158,11 +159,14 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		
 		Table Frame = new Table();
 		Frame.add(getHomeLink(), 1, 1);
+		Frame.add(Text.getNonBrakingSpace(),1,1);
+		Frame.mergeCells(1, 1, 3, 1);
 		int row = 2;
 		if (isAdmin) {
-			if (typeID!=null && complexID!=null && typeID.intValue() > 0 && complexID.intValue() > 0) {
+			if (apartmentType!=null && complex!=null ) {
+				Frame.add(getHeader(complex.getName()+" : "+apartmentType.getName()),1,1);
 				// Allocate apartment to an applicant
-				if (iwc.getParameter(PRM_ALLOCATE) != null) {
+				if (iwc.isParameterSet(PRM_ALLOCATE) ) {
 					Integer applicantID = Integer.valueOf(iwc.getParameter(PRM_ALLOCATE));
 					Integer waitinglistID = new Integer(-1);
 					if (iwc.isParameterSet("wl_id"))
@@ -173,7 +177,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					Frame.add(getApplicantInfo(iwc, applicantID), 1, row);
 				}
 				// Change allocation
-				else if (iwc.getParameter("change") != null) {
+				else if (iwc.isParameterSet("change") ) {
 					Integer contractID = Integer.valueOf(iwc.getParameter("change"));
 					Integer applicantID = Integer.valueOf(iwc.getParameter("applicant"));
 					Integer waitinglistID = new Integer(-1);
@@ -186,7 +190,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					Frame.add(getColorButtonInfo(), 1, row);
 				}
 				// show all contracts for apartment
-				else if (iwc.getParameter("view_aprtmnt") != null) {
+				else if (iwc.isParameterSet("view_aprtmnt") ) {
 					Integer apartmentID = Integer.valueOf(iwc.getParameter("view_aprtmnt"));
 					Integer contractID = Integer.valueOf(iwc.getParameter("contract"));
 					Integer applicantID = Integer.valueOf(iwc.getParameter("applicant"));
@@ -195,9 +199,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					Frame.add(getContractsForm(iwc, apartmentID, applicantID, contractID, from, null), 3, row);
 				}
 				// save allocation
-				else if (
-					iwc.getParameter("save_allocation") != null
-						&& iwc.getParameter("save_allocation").equals("true")) {
+				else if (iwc.isParameterSet("save_allocation")	) {
 					String msg = saveAllocation(iwc);
 					//System.err.println(msg);
 					Text Te = getText(msg);
@@ -210,7 +212,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					Frame.add(getColorButtonInfo(), 1, row);
 				}
 				// delete allocation
-				else if (iwc.getParameter("delete_allocation") != null) {
+				else if (iwc.isParameterSet("delete_allocation") ) {
 					deleteAllocation(iwc);
 					Frame.add(getWaitingList(iwc, new Integer(-1)), 1, row);
 					row++;
@@ -912,7 +914,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		else
 			T.addTitle(localize("contract_dates", "Contract dates"));
 		int row = 1;
-		SubmitButton save = new SubmitButton(getResourceBundle().getLocalizedImageButton("save", "Save"), "save_allocation", "true");
+		SubmitButton save = (SubmitButton)getSubmitButton( "save_allocation", "true", "Save","save");
 		setStyle(save);
 		DateInput dateFrom = new DateInput("contract_date_from", true);
 		DateInput dateTo = new DateInput("contract_date_to", true);
@@ -921,6 +923,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		dateFrom.setYearRange(year - 2, year + 5);
 		dateTo.setYearRange(year - 2, year + 5);
 		dateFrom.setDate((java.sql.Date) validPeriod.getFrom());
+		//dateFrom.setEarliestPossibleDate(validPeriod.getFrom(),localize("warning.earliest_allocation_date","You can't allocate earlier !"));
 		dateTo.setDate((java.sql.Date) validPeriod.getTo());
 		dateFrom.setStyleAttribute("style", styleAttribute);
 		dateTo.setStyleAttribute("style", styleAttribute);
@@ -939,8 +942,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		T.add(dateTo, 3, row);
 		row++;
 		if (contract != null) {
-			SubmitButton delete =
-				new SubmitButton(getResourceBundle().getLocalizedImageButton("delete", "Delete"), "delete_allocation", "true");
+			SubmitButton delete = (SubmitButton) getSubmitButton("delete_allocation", "true", "Delete","delete" );
 			setStyle(delete);
 			//T.add(delete, 1, row);
 			T.addButton(delete);
@@ -1361,9 +1363,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 							contract = (Contract) newApplicantContracts.get(applicantID);
 							Integer contractID = (Integer) contract.getPrimaryKey();
 							if (contractID.intValue() == conID.intValue()) {
-								TempColor = TextFontColor;
-								TextFontColor = "FF0000";
-								redColorSet = true;
+								colorMap.put(new Integer(row),"#FFFFFF");
 							}
 							IWTimestamp allocated = null, accepted = null;
 							boolean isOnTime = true;
