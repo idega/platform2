@@ -27,7 +27,7 @@ import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 
 
-import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookup; 
 import com.idega.core.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
@@ -44,6 +44,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -55,7 +56,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.3 2003/03/23 11:42:25 laddi Exp $
+ * @version $Id: EventList.java,v 1.4 2003/03/24 17:10:57 roar Exp $
  * @since 17.3.2003 
  */
 
@@ -93,6 +94,9 @@ public class EventList extends CommuneBlock {
   private final static String PRM_CURSOR_U = "prv_crs_u";
   
   private final static String PRM_PRINT_SELECTED = "prv_pr_sel";
+  
+  private final static String PRM_SSN = "prv_ssn";
+  private final static String PRM_MSGID ="prv_msgid";
   
   
   private boolean isBulkType = false;
@@ -133,7 +137,7 @@ public class EventList extends CommuneBlock {
 		case ACTION_VIEW_MESSAGE_LIST:
 		  viewMessages(iwc);
 		  break;
-/*RS		  
+/*		  
 		case ACTION_PRINT_UNPRINTED_MESSAGES:
 		  printAllUnPrintedMessages(iwc);
 		  viewMessages(iwc);
@@ -142,14 +146,16 @@ public class EventList extends CommuneBlock {
 		  printMessage(iwc);
 		  viewMessages(iwc);
 			break;
+			
 		case ACTION_VIEW_UNPRINTED:    
 			addUnPrintedNameList(iwc);
 		break;
+*/				
 		case ACTION_PRINT_SELECTED:
 			printSelected(iwc);
 			viewMessages(iwc);
 		break;
-RS*/
+
 		default:
 		  break;
 	  }
@@ -399,6 +405,29 @@ RS*/
   
   }
   
+  private PresentationObject getSearchForm(){
+  	
+	Table T = new Table();
+	TextInput ssn = new TextInput(PRM_SSN);
+	ssn = (TextInput) getStyledInterface(ssn);
+	TextInput msgid = new TextInput(PRM_MSGID);
+	msgid = (TextInput) getStyledInterface(msgid);
+	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch","Fetch"));
+	search = (SubmitButton)getButton(search);
+
+	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.ssn","SSN:")),1,1);
+	T.add(ssn,2,1);
+	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.msgid","Message ID:")),3,1);
+	T.add(msgid,4,1);
+	//T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.count","Count")),5,1);
+	T.add(getCountDrop(PRM_U_COUNT,count_u),6,1);
+	T.add(search,7,1);
+	T.setTopLine(true);
+	T.setBottomLine(true);
+	T.setHeight(25);
+	return T;  	  
+  }
+  
   private PresentationObject getPrintButton(){
 	Table T = new Table();
 	T.setAlignment(T.HORIZONTAL_ALIGN_RIGHT);
@@ -527,7 +556,8 @@ RS*/
 			}
   }
   
-  private void addMessagesList(IWContext iwc)throws Exception{
+
+private void addMessagesList(IWContext iwc)throws Exception{
 	Form uForm = new Form();
 /*RS	Form pForm = new Form(); RS*/
 	
@@ -538,6 +568,8 @@ RS*/
 	add(uForm);
     //add(pForm);
 	ColumnList unPrintedLetterDocs = new ColumnList(6);
+	String searchSsn = iwc.getParameter(PRM_SSN);
+	String searchMsgId = iwc.getParameter(PRM_MSGID);
 	
 	
 	
@@ -547,10 +579,13 @@ RS*/
 	int childCareId = getChildCareSession(iwc).getChildCareID();
 	uForm.add(new Text("ChildcareId:" + childCareId));
 	//Collection unprintedLetters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType,uFrom,uTo);
-	Collection unprintedLetters = getPrintedLetter(iwc).findLetterByChildcare(childCareId);
+	Collection unprintedLetters = getPrintedLetter(iwc).findLetterByChildcare(childCareId, searchSsn, searchMsgId);
+	
+	System.out.println("### ok1");
 	
 /*RS	uT.add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"),1,urow++);  RS*/
-	uT.add(getUnPrintedDatesForm(iwc),1,urow++);
+//	uT.add(getUnPrintedDatesForm(iwc),1,urow++);
+	uT.add(getSearchForm(), 1, urow++);
 	uT.add(unPrintedLetterDocs,1,urow++);
 	uT.add(getPrintButton(),1,urow++);
 	uT.add(getCursorLinks(iwc,unprintedLetters.size(),cursor_u,PRM_CURSOR_U,count_u),1,urow++);
@@ -558,8 +593,8 @@ RS*/
   
 		unPrintedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 		unPrintedLetterDocs.setBackroundColor("#e0e0e0");
-		unPrintedLetterDocs.setHeader(localize("printdoc.subject","Subject"),1);
-		unPrintedLetterDocs.setHeader("#",2);
+		unPrintedLetterDocs.setHeader(localize("printdoc.event","Event"),1);
+		unPrintedLetterDocs.setHeader("No",2);
 		unPrintedLetterDocs.setHeader(localize("printdoc.receiver","Receiver"),3);
 		unPrintedLetterDocs.setHeader(localize("printdoc.ssn","SSN"),4);
 		unPrintedLetterDocs.setHeader(localize("printdoc.created_date","Message created"),5);
@@ -587,7 +622,7 @@ RS*/
 			PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
 
 			unPrintedLetterDocs.add(msg.getSubject());
-			unPrintedLetterDocs.add(String.valueOf(msg.getHandlerId())); 
+			unPrintedLetterDocs.add(String.valueOf(msg.getNodeID())); 
 
 /*RS		PrintedLetterDocs.add(String.valueOf(count)); RS*/
 			//messageList.add("-");
@@ -601,7 +636,7 @@ RS*/
 				uForm.addParameter(PARAM_LETTER_TYPE,currentType);
 				unPrintedLetterDocs.add(box);
 /*RS
- 			}
+// 			}
 			
 			else{
 				Link printLink = new Link(localize("printdoc.print","Print"));
@@ -760,9 +795,9 @@ private ChildCareApplicationHome getChildCareApplication(IWContext iwc) {
 	}
 }
 
-private PrintedLetterMessageHome getPrintedLetter(IWContext iwc) {
+private PrintedLetterMessageHome getPrintedLetter(IWContext iwc) { 
 	try {
-		return (PrintedLetterMessageHome) IDOLookup.getHome(PrintedLetterMessageHome.class);
+		return (PrintedLetterMessageHome) IDOLookup.getHome(PrintedLetterMessage.class);
 	}
 	catch (RemoteException e) { 
 		return null;
