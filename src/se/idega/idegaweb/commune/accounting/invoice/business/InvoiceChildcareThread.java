@@ -40,6 +40,8 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstan
 import se.idega.idegaweb.commune.accounting.regulations.business.TooManyRegulationsException;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
+import se.idega.idegaweb.commune.accounting.regulations.data.ProviderTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
@@ -57,6 +59,8 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -72,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/02/09 10:03:23 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/09 13:02:33 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.119 $
+ * @version $Revision: 1.120 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -223,7 +227,6 @@ public class InvoiceChildcareThread extends BillingThread{
 		long totalSum;
 		InvoiceRecord invoiceRecord, subventionToReduce;
 		int highestOrderNr;
-		School school;
 		
 		try {
 			if (hasPlacements()) {
@@ -234,16 +237,24 @@ public class InvoiceChildcareThread extends BillingThread{
 			log.info("# of contracts = "+contractArray.size());
 			Iterator contractIter = contractArray.iterator();
 			errorOrder = 0;
-			
+			final Commune	homeCommune = getCommuneHome ().findDefaultCommune ();
+			final ProviderType communeProviderType
+					= getProviderTypeHome ().findCommuneType ();
 			//Loop through all contracts
 			while(contractIter.hasNext())
 			{
 				try{
 					contract = (ChildCareContract)contractIter.next();
 					errorRelated = new ErrorLogger();
-					errorRelated.append("ChildcareContract "+contract.getPrimaryKey());
-					errorRelated.append("Contract Start "+contract.getValidFromDate()+"; Contract End "+(null == contract.getTerminatedDate() ? "-" : ""+contract.getTerminatedDate()));
-					
+					try {
+						errorRelated.append("ChildcareContract "+contract.getPrimaryKey());
+						errorRelated.append("Contract Start "+contract.getValidFromDate()+"; Contract End "+(null == contract.getTerminatedDate() ? "-" : ""+contract.getTerminatedDate()));
+						errorRelated.append("Child "+contract.getChild().getName());
+						errorRelated.append("Child P# "+contract.getChild().getPersonalID());
+					} catch (NullPointerException e) {
+						e.printStackTrace ();
+					}
+
 					//Moved up for better logging
 					//Get all the parameters needed to select the correct contract
 					SchoolClassMember schoolClassMember = contract.getSchoolClassMember();
@@ -254,7 +265,6 @@ public class InvoiceChildcareThread extends BillingThread{
 						errorRelated.append("Placement id in contract "+ contract.getSchoolClassMemberId ());
 						throw new NoSchoolClassMemberException("");
 					}
-					errorRelated.append("Child "+contract.getChild().getName());
 					SchoolType schoolType = schoolClassMember.getSchoolType();
 					String childcareType = null;
 					try {
@@ -263,15 +273,21 @@ public class InvoiceChildcareThread extends BillingThread{
 						throw new NoSchoolTypeException("");
 					}
 					errorRelated.append("SchoolType "+schoolType.getName());
-					errorRelated.append("Child P# "+contract.getChild().getPersonalID());
-					
+
+					// check if this is either inside commune or private childcare
+					final School school = contract.getApplication ().getProvider ();
+					errorRelated.append("School "+school.getName(),1);
+					final Provider provider = new Provider (school);
+					final ProviderType providerType = provider.getProviderType ();
+					final Commune commune = school.getCommune ();
+					if (providerType.equals (communeProviderType)
+							&& !commune.equals (homeCommune)) {
+						throw new CommuneChildcareOutsideHomeCommuneException ();
+					}
 					
 					// **Fetch invoice receiver
 					//					custodian = contract.getApplication().getOwner();
 					custodian = getInvoiceReceiver(contract);
-					//**Fetch the reference at the provider
-					school = contract.getApplication ().getProvider ();
-					errorRelated.append("School "+school.getName(),1);
 					// **Get or create the invoice header
 					InvoiceHeader invoiceHeader;
 					try{
@@ -333,7 +349,6 @@ public class InvoiceChildcareThread extends BillingThread{
 						throw new RegulationException("reg_exp_no_results","No regulations found.");
 					}
 					
-					Provider provider = new Provider(((Integer) school.getPrimaryKey()).intValue());
 					RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECK);
 					errorRelated.append("Regel Spec Typ "+regSpecType);
 					
@@ -470,6 +485,10 @@ public class InvoiceChildcareThread extends BillingThread{
 					}
 					createRegularInvoiceForChild(child,schoolClassMember,custodian,invoiceHeader,placementTimes,totalSum);
 					
+				}catch (CommuneChildcareOutsideHomeCommuneException e1) {
+					e1.printStackTrace();
+					errorRelated.append(e1);
+					createNewErrorMessage(errorRelated,"invoice.CommuneChildcareOutsideHomeCommune");
 				}catch (NoSchoolClassMemberException e1) {
 					e1.printStackTrace();
 					errorRelated.append(e1);
@@ -876,5 +895,13 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.store();
 		
 		return invoiceRecord;
+	}
+
+	private CommuneHome getCommuneHome() throws RemoteException {
+		return (CommuneHome) IDOLookup.getHome (Commune.class);
+	}
+
+	private ProviderTypeHome getProviderTypeHome() throws RemoteException {
+		return (ProviderTypeHome) IDOLookup.getHome (ProviderType.class);
 	}
 }
