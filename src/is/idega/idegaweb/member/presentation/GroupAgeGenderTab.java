@@ -357,7 +357,6 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initFieldContents()
 	 */
 	public void initFieldContents() {
-
     // get group by group id
     Group group;
     try {

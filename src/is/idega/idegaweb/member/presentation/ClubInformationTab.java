@@ -6,9 +6,13 @@
  */
 package is.idega.idegaweb.member.presentation;
 
+import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 
+import java.rmi.RemoteException;
 import java.util.Hashtable;
+
+import javax.ejb.FinderException;
 
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
@@ -19,6 +23,7 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
 import com.idega.user.presentation.UserGroupTab;
 import com.idega.util.IWTimestamp;
 
@@ -30,7 +35,7 @@ import com.idega.util.IWTimestamp;
  */
 public class ClubInformationTab extends UserGroupTab {
 	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
-	
+
 	private TextInput _numberField;
 	private TextInput _ssnField;
 	private TextInput _abbreviationField;
@@ -41,12 +46,12 @@ public class ClubInformationTab extends UserGroupTab {
 	private CheckBox _memberUMFIField;
 	private TextInput _makeField;
 	private TextInput _connectionToSpecialField;
-	private CheckBox _belongsToUMFIField;
+	//	private CheckBox _belongsToUMFIField;
 	private TextInput _regionalUnionField;
 	private TextInput _statusField;
 	private CheckBox _premierLeagueField;
 	private CheckBox _inOperationField;
-//	private Image _clubLogoField;
+	//	private Image _clubLogoField;
 	private CheckBox _usingMemberSystemField;
 
 	private Text _numberText;
@@ -59,12 +64,12 @@ public class ClubInformationTab extends UserGroupTab {
 	private Text _memberUMFIText;
 	private Text _makeText;
 	private Text _connectionToSpecialText;
-	private Text _belongsToUMFIText;
+	//	private Text _belongsToUMFIText;
 	private Text _regionalUnionText;
 	private Text _statusText;
 	private Text _premierLeagueText;
 	private Text _inOperationText;
-//	private Text _clubLogoText;
+	//	private Text _clubLogoText;
 	private Text _usingMemberSystemText;
 
 	private String _numberFieldName;
@@ -77,12 +82,12 @@ public class ClubInformationTab extends UserGroupTab {
 	private String _memberUMFIFieldName;
 	private String _makeFieldName;
 	private String _connectionToSpecialFieldName;
-	private String _belongsToUMFIFieldName;
+	//	private String _belongsToUMFIFieldName;
 	private String _regionalUnionFieldName;
 	private String _statusFieldName;
 	private String _premierLeagueFieldName;
 	private String _inOperationFieldName;
-//	private String _clubLogoFieldName;
+	//	private String _clubLogoFieldName;
 	private String _usingMemberSystemFieldName;
 
 	public ClubInformationTab() {
@@ -112,12 +117,12 @@ public class ClubInformationTab extends UserGroupTab {
 		_memberUMFIFieldName = "memberOfUMFI";
 		_makeFieldName = "make";
 		_connectionToSpecialFieldName = "special";
-		_belongsToUMFIFieldName = "belongs";
+		//		_belongsToUMFIFieldName = "belongs";
 		_regionalUnionFieldName = "regional";
 		_statusFieldName = "status";
 		_premierLeagueFieldName = "premier";
 		_inOperationFieldName = "operation";
-//		_clubLogoFieldName = "logo";
+		//		_clubLogoFieldName = "logo";
 		_usingMemberSystemFieldName = "usingSystem";
 	}
 
@@ -136,12 +141,12 @@ public class ClubInformationTab extends UserGroupTab {
 		fieldValues.put(_memberUMFIFieldName, new Boolean(false));
 		fieldValues.put(_makeFieldName, "");
 		fieldValues.put(_connectionToSpecialFieldName, "");
-		fieldValues.put(_belongsToUMFIFieldName, new Boolean(false));
+		//		fieldValues.put(_belongsToUMFIFieldName, new Boolean(false));
 		fieldValues.put(_regionalUnionFieldName, "");
 		fieldValues.put(_statusFieldName, "");
 		fieldValues.put(_premierLeagueFieldName, new Boolean(false));
 		fieldValues.put(_inOperationFieldName, new Boolean(false));
-//		fieldValues.put(_clubLogoFieldName, new Integer(-1));
+		//		fieldValues.put(_clubLogoFieldName, new Integer(-1));
 		fieldValues.put(_usingMemberSystemFieldName, new Boolean(false));
 	}
 
@@ -159,12 +164,12 @@ public class ClubInformationTab extends UserGroupTab {
 		_memberUMFIField.setChecked(((Boolean) fieldValues.get(_memberUMFIFieldName)).booleanValue());
 		_makeField.setContent((String) fieldValues.get(_makeFieldName));
 		_connectionToSpecialField.setContent((String) fieldValues.get(_connectionToSpecialFieldName));
-		_belongsToUMFIField.setChecked(((Boolean) fieldValues.get(_belongsToUMFIFieldName)).booleanValue());
+		//		_belongsToUMFIField.setChecked(((Boolean) fieldValues.get(_belongsToUMFIFieldName)).booleanValue());
 		_regionalUnionField.setContent((String) fieldValues.get(_regionalUnionFieldName));
 		_statusField.setContent((String) fieldValues.get(_statusFieldName));
 		_premierLeagueField.setChecked(((Boolean) fieldValues.get(_premierLeagueFieldName)).booleanValue());
 		_inOperationField.setChecked(((Boolean) fieldValues.get(_inOperationFieldName)).booleanValue());
-//		_clubLogoField.setImageID(-1);
+		//		_clubLogoField.setImageID(-1);
 		_usingMemberSystemField.setChecked(((Boolean) fieldValues.get(_usingMemberSystemFieldName)).booleanValue());
 	}
 
@@ -183,12 +188,12 @@ public class ClubInformationTab extends UserGroupTab {
 		_memberUMFIField = new CheckBox(_memberUMFIFieldName);
 		_makeField = new TextInput(_makeFieldName);
 		_connectionToSpecialField = new TextInput(_connectionToSpecialFieldName);
-		_belongsToUMFIField = new CheckBox(_belongsToUMFIFieldName);
+		//		_belongsToUMFIField = new CheckBox(_belongsToUMFIFieldName);
 		_regionalUnionField = new TextInput(_regionalUnionFieldName);
 		_statusField = new TextInput(_statusFieldName);
 		_premierLeagueField = new CheckBox(_premierLeagueFieldName);
 		_inOperationField = new CheckBox(_inOperationFieldName);
-//		_clubLogoField = new Image(_clubLogoFieldName);
+		//		_clubLogoField = new Image(_clubLogoFieldName);
 		_usingMemberSystemField = new CheckBox(_usingMemberSystemFieldName);
 	}
 
@@ -196,69 +201,69 @@ public class ClubInformationTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeTexts()
 	 */
 	public void initializeTexts() {
-		IWContext iwc = //getEventIWContext();
-		IWContext.getInstance();
+			IWContext iwc = //getEventIWContext();
+	IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		
-		_numberText = new Text(iwrb.getLocalizedString(_numberFieldName,"Number") + ":");
-		_ssnText = new Text(iwrb.getLocalizedString(_ssnFieldName,"SSN") + ":");
-		_abrvText = new Text(iwrb.getLocalizedString(_abrvFieldName,"Abbreviation") + ":");
-		_shortNameText = new Text(iwrb.getLocalizedString(_shortNameFieldName,"Short name") + ":");
-		_nameText = new Text(iwrb.getLocalizedString(_nameFieldName,"Long name") + ":");
-		_foundedText = new Text(iwrb.getLocalizedString(_foundedFieldName,"Founded") + ":");
-		_typeText = new Text(iwrb.getLocalizedString(_typeFieldName,"Type") + ":");
-		_memberUMFIText = new Text(iwrb.getLocalizedString(_belongsToUMFIFieldName,"UMFI membership") + ":");
-		_makeText = new Text(iwrb.getLocalizedString(_makeFieldName,"Make") + ":");
-		_connectionToSpecialText = new Text(iwrb.getLocalizedString(_connectionToSpecialFieldName,"Connection to special") + ":");
-		_belongsToUMFIText = new Text(iwrb.getLocalizedString(_belongsToUMFIFieldName,"Belongs to") + ":");
-		_regionalUnionText = new Text(iwrb.getLocalizedString(_regionalUnionFieldName,"Regional union") + ":");
-		_statusText = new Text(iwrb.getLocalizedString(_statusFieldName,"Status") + ":");
-		_premierLeagueText = new Text(iwrb.getLocalizedString(_premierLeagueFieldName,"Premier league") + ":");
-		_inOperationText = new Text(iwrb.getLocalizedString(_inOperationFieldName,"In operation") + ":");
-//		_clubLogoText = new Text("Merki:");
-		_usingMemberSystemText = new Text(iwrb.getLocalizedString(_usingMemberSystemFieldName,"In member system") + ":");
+
+		_numberText = new Text(iwrb.getLocalizedString(_numberFieldName, "Number") + ":");
+		_ssnText = new Text(iwrb.getLocalizedString(_ssnFieldName, "SSN") + ":");
+		_abrvText = new Text(iwrb.getLocalizedString(_abrvFieldName, "Abbreviation") + ":");
+		_shortNameText = new Text(iwrb.getLocalizedString(_shortNameFieldName, "Short name") + ":");
+		_nameText = new Text(iwrb.getLocalizedString(_nameFieldName, "Long name") + ":");
+		_foundedText = new Text(iwrb.getLocalizedString(_foundedFieldName, "Founded") + ":");
+		_typeText = new Text(iwrb.getLocalizedString(_typeFieldName, "Type") + ":");
+		_memberUMFIText = new Text(iwrb.getLocalizedString(_memberUMFIFieldName, "UMFI membership") + ":");
+		_makeText = new Text(iwrb.getLocalizedString(_makeFieldName, "Make") + ":");
+		_connectionToSpecialText = new Text(iwrb.getLocalizedString(_connectionToSpecialFieldName, "Connection to special") + ":");
+		//		_belongsToUMFIText = new Text(iwrb.getLocalizedString(_belongsToUMFIFieldName,"Belongs to") + ":");
+		_regionalUnionText = new Text(iwrb.getLocalizedString(_regionalUnionFieldName, "Regional union") + ":");
+		_statusText = new Text(iwrb.getLocalizedString(_statusFieldName, "Status") + ":");
+		_premierLeagueText = new Text(iwrb.getLocalizedString(_premierLeagueFieldName, "Premier league") + ":");
+		_inOperationText = new Text(iwrb.getLocalizedString(_inOperationFieldName, "In operation") + ":");
+		//		_clubLogoText = new Text("Merki:");
+		_usingMemberSystemText = new Text(iwrb.getLocalizedString(_usingMemberSystemFieldName, "In member system") + ":");
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
 	 */
 	public void lineUpFields() {
-		Table t = new Table(2,16);
-		t.add(_numberText,1,1);
-		t.add(_numberField,2,1);
-		t.add(_ssnText,1,2);
-		t.add(_ssnField,2,2);
-		t.add(_abrvText,1,3);
-		t.add(_abbreviationField,2,3);
-		t.add(_shortNameText,1,4);
-		t.add(_shortNameField,2,4);
-		t.add(_nameText,1,5);
-		t.add(_nameField,2,5);
-		t.add(_foundedText,1,6);
-		t.add(_foundedField,2,6);
-		t.add(_typeText,1,7);
-		t.add(_typeField,2,7);
-		t.add(_memberUMFIText,1,8);
-		t.add(_memberUMFIField,2,8);
-		t.add(_makeText,1,9);
-		t.add(_makeField,2,9);
-		t.add(_connectionToSpecialText,1,10);
-		t.add(_connectionToSpecialField,2,10);
-		t.add(_belongsToUMFIText,1,11);
-		t.add(_belongsToUMFIField,2,11);
-		t.add(_regionalUnionText,1,12);
-		t.add(_regionalUnionField,2,12);
-		t.add(_statusText,1,13);
-		t.add(_statusField,2,13);
-		t.add(_premierLeagueText,1,14);
-		t.add(_premierLeagueField,2,14);
-		t.add(_inOperationText,1,15);
-		t.add(_inOperationField,2,15);
-//		t.add(_clubLogoText,1,16);
-//		t.add(_clubLogoField,2,16);
-		t.add(_usingMemberSystemText,1,16);
-		t.add(_usingMemberSystemField,2,16);
-		
+		Table t = new Table(2, 16);
+		t.add(_numberText, 1, 1);
+		t.add(_numberField, 2, 1);
+		t.add(_ssnText, 1, 2);
+		t.add(_ssnField, 2, 2);
+		t.add(_abrvText, 1, 3);
+		t.add(_abbreviationField, 2, 3);
+		t.add(_shortNameText, 1, 4);
+		t.add(_shortNameField, 2, 4);
+		t.add(_nameText, 1, 5);
+		t.add(_nameField, 2, 5);
+		t.add(_foundedText, 1, 6);
+		t.add(_foundedField, 2, 6);
+		t.add(_typeText, 1, 7);
+		t.add(_typeField, 2, 7);
+		t.add(_memberUMFIText, 1, 8);
+		t.add(_memberUMFIField, 2, 8);
+		t.add(_makeText, 1, 9);
+		t.add(_makeField, 2, 9);
+		t.add(_connectionToSpecialText, 1, 10);
+		t.add(_connectionToSpecialField, 2, 10);
+		//		t.add(_belongsToUMFIText,1,11);
+		//		t.add(_belongsToUMFIField,2,11);
+		t.add(_regionalUnionText, 1, 12);
+		t.add(_regionalUnionField, 2, 12);
+		t.add(_statusText, 1, 13);
+		t.add(_statusField, 2, 13);
+		t.add(_premierLeagueText, 1, 14);
+		t.add(_premierLeagueField, 2, 14);
+		t.add(_inOperationText, 1, 15);
+		t.add(_inOperationField, 2, 15);
+		//		t.add(_clubLogoText,1,16);
+		//		t.add(_clubLogoField,2,16);
+		t.add(_usingMemberSystemText, 1, 16);
+		t.add(_usingMemberSystemField, 2, 16);
+
 		add(t);
 	}
 
@@ -277,30 +282,62 @@ public class ClubInformationTab extends UserGroupTab {
 			String member = iwc.getParameter(_memberUMFIFieldName);
 			String make = iwc.getParameter(_makeFieldName);
 			String connection = iwc.getParameter(_connectionToSpecialFieldName);
-			String belongs = iwc.getParameter(_belongsToUMFIFieldName);
+			//			String belongs = iwc.getParameter(_belongsToUMFIFieldName);
 			String regional = iwc.getParameter(_regionalUnionFieldName);
 			String status = iwc.getParameter(_statusFieldName);
 			String premier = iwc.getParameter(_premierLeagueFieldName);
 			String inOperation = iwc.getParameter(_inOperationFieldName);
 			String using = iwc.getParameter(_usingMemberSystemFieldName);
 
-			fieldValues.put(_numberFieldName, number);
-			fieldValues.put(_ssnFieldName, ssn);
-			fieldValues.put(_abrvFieldName, abrv);
-			fieldValues.put(_shortNameFieldName, shortName);
-			fieldValues.put(_nameFieldName, name);
-			fieldValues.put(_foundedFieldName, founded);
-			fieldValues.put(_typeFieldName, type);
+			if (number != null)
+				fieldValues.put(_numberFieldName, number);
+			else
+				fieldValues.put(_numberFieldName, "");
+			if (ssn != null)
+				fieldValues.put(_ssnFieldName, ssn);
+			else
+				fieldValues.put(_ssnFieldName, "");
+			if (abrv != null)
+				fieldValues.put(_abrvFieldName, abrv);
+			else
+				fieldValues.put(_abrvFieldName, "");
+			if (shortName != null)
+				fieldValues.put(_shortNameFieldName, shortName);
+			else
+				fieldValues.put(_shortNameFieldName, "");
+			if (name != null)
+				fieldValues.put(_nameFieldName, name);
+			else
+				fieldValues.put(_nameFieldName, "");
+			if (founded != null)
+				fieldValues.put(_foundedFieldName, founded);
+			else
+				fieldValues.put(_foundedFieldName, "");
+			if (type != null)
+				fieldValues.put(_typeFieldName, type);
+			else
+				fieldValues.put(_typeFieldName, "");
 			fieldValues.put(_memberUMFIFieldName, new Boolean(member != null));
-			fieldValues.put(_makeFieldName, make);
-			fieldValues.put(_connectionToSpecialFieldName, connection);
-			fieldValues.put(_belongsToUMFIFieldName, new Boolean(belongs != null));
-			fieldValues.put(_regionalUnionFieldName, regional);
-			fieldValues.put(_statusFieldName, status);
+			if (make != null)
+				fieldValues.put(_makeFieldName, make);
+			else
+				fieldValues.put(_makeFieldName, "");
+			if (connection != null)
+				fieldValues.put(_connectionToSpecialFieldName, connection);
+			else
+				fieldValues.put(_connectionToSpecialFieldName, "");
+			if (regional != null)
+				fieldValues.put(_regionalUnionFieldName, regional);
+			else
+				fieldValues.put(_regionalUnionFieldName, "");
+			if (status != null)
+				fieldValues.put(_statusFieldName, status);
+			else
+				fieldValues.put(_statusFieldName, "");
 			fieldValues.put(_premierLeagueFieldName, new Boolean(premier != null));
 			fieldValues.put(_inOperationFieldName, new Boolean(inOperation != null));
 			fieldValues.put(_usingMemberSystemFieldName, new Boolean(using != null));
-			
+
 			updateFieldsDisplayStatus();
 		}
 
@@ -311,6 +348,59 @@ public class ClubInformationTab extends UserGroupTab {
 	 * @see com.idega.util.datastructures.Collectable#store(com.idega.presentation.IWContext)
 	 */
 	public boolean store(IWContext iwc) {
+		Group group;
+		try {
+			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+			// get corressponding service bean
+			ClubInformationPluginBusiness ageGenderPluginBusiness = getClubInformationPluginBusiness(iwc);
+
+			String number = (String) fieldValues.get(_numberFieldName);
+			String ssn = (String) fieldValues.get(_ssnFieldName);
+			String abrv = (String) fieldValues.get(_abrvFieldName);
+			String shortName = (String) fieldValues.get(_shortNameFieldName);
+			String name = (String) fieldValues.get(_nameFieldName);
+			String founded = (String) fieldValues.get(_foundedFieldName);
+			String type = (String) fieldValues.get(_typeFieldName);
+			Boolean memberUMFI = (Boolean) fieldValues.get(_memberUMFIFieldName);
+			String make = (String) fieldValues.get(_makeFieldName);
+			String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
+			//			fieldValues.put(_belongsToUMFIFieldName, new Boolean(belongs != null));
+			String regional = (String) fieldValues.get(_regionalUnionFieldName);
+			String status = (String) fieldValues.get(_statusFieldName);
+			Boolean premier = (Boolean) fieldValues.get(_premierLeagueFieldName);
+			Boolean inOperation = (Boolean) fieldValues.get(_inOperationFieldName);
+			Boolean usingSystem = (Boolean) fieldValues.get(_usingMemberSystemFieldName);
+
+			group.setMetaData("CLUBINFO_NUMBER", number);
+			group.setMetaData("CLUBINFO_SSN", ssn);
+			group.setMetaData("CLUBINFO_ABRV", abrv);
+			group.setMetaData("CLUBINFO_SHORT", shortName);
+			group.setMetaData("CLUBINFO_NAME", name);
+			group.setMetaData("CLUBINFO_FOUNDED", founded);
+			group.setMetaData("CLUBINFO_TYPE", type);
+			if (memberUMFI != null)
+				group.setMetaData("CLUBINFO_MEMBER", memberUMFI.toString());
+			group.setMetaData("CLUBINFO_MAKE", make);
+			group.setMetaData("CLUBINFO_CONN", connection);
+			group.setMetaData("CLUBINFO_REGIONAL", regional);
+			group.setMetaData("CLUBINFO_STATUS", status);
+			if (premier != null)
+				group.setMetaData("CLUBINFO_PREMIER", premier.toString());
+			if (inOperation != null)
+				group.setMetaData("CLUBINFO_OPERATION", inOperation.toString());
+			if (usingSystem != null)
+				group.setMetaData("CLUBINFO_SYSTEM", usingSystem.toString());
+
+			group.store();
+		}
+		catch (RemoteException e) {
+			e.printStackTrace(System.err);
+			return false;
+		}
+		catch (FinderException e) {
+			e.printStackTrace(System.err);
+			return false;
+		}
 		return true;
 	}
 
@@ -318,18 +408,74 @@ public class ClubInformationTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initFieldContents()
 	 */
 	public void initFieldContents() {
+		Group group;
+		try {
+			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
+
+			String number = group.getMetaData("CLUBINFO_NUMBER");
+			String ssn = group.getMetaData("CLUBINFO_SSN");
+			String abrv = group.getMetaData("CLUBINFO_ABRV");
+			String shortName = group.getMetaData("CLUBINFO_SHORT");
+			String name = group.getMetaData("CLUBINFO_NAME");
+			String founded = group.getMetaData("CLUBINFO_FOUNDED");
+			String type = group.getMetaData("CLUBINFO_TYPE");
+			String member = group.getMetaData("CLUBINFO_MEMBER");
+			String make = group.getMetaData("CLUBINFO_MAKE");
+			String connection = group.getMetaData("CLUBINFO_CONN");
+			String regional = group.getMetaData("CLUBINFO_REGIONAL");
+			String status = group.getMetaData("CLUBINFO_STATUS");
+			String premier = group.getMetaData("CLUBINFO_PREMIER");
+			String inOperation = group.getMetaData("CLUBINFO_OPERATION");
+			String using = group.getMetaData("CLUBINFO_SYSTEM");
+
+			if (number != null)
+				fieldValues.put(_numberFieldName, number);
+			if (ssn != null)
+				fieldValues.put(_ssnFieldName, ssn);
+			if (abrv != null)
+				fieldValues.put(_abrvFieldName, abrv);
+			if (shortName != null)
+				fieldValues.put(_shortNameFieldName, shortName);
+			if (name != null)
+				fieldValues.put(_nameFieldName, name);
+			if (founded != null)
+				fieldValues.put(_foundedFieldName, founded);
+			if (type != null)
+				fieldValues.put(_typeFieldName, type);
+			fieldValues.put(_memberUMFIFieldName, new Boolean(member != null));
+			if (make != null)
+				fieldValues.put(_makeFieldName, make);
+			if (connection != null)
+				fieldValues.put(_connectionToSpecialFieldName, connection);
+			//			fieldValues.put(_belongsToUMFIFieldName, new Boolean(belongs != null));
+			if (regional != null)
+				fieldValues.put(_regionalUnionFieldName, regional);
+			if (status != null)
+				fieldValues.put(_statusFieldName, status);
+			fieldValues.put(_premierLeagueFieldName, new Boolean(premier != null));
+			fieldValues.put(_inOperationFieldName, new Boolean(inOperation != null));
+			fieldValues.put(_usingMemberSystemFieldName, new Boolean(using != null));
+			
+			updateFieldsDisplayStatus();
+		}
+		catch (RemoteException e) {
+			e.printStackTrace(System.err);
+		}
+		catch (FinderException e) {
+			e.printStackTrace(System.err);
+		}
 	}
-	
-	public ClubInformationPluginBusiness getClubInformationPluginBusiness(IWApplicationContext iwc){
+
+	public ClubInformationPluginBusiness getClubInformationPluginBusiness(IWApplicationContext iwc) {
 		ClubInformationPluginBusiness business = null;
-		if(business == null){
-			try{
-				business = (ClubInformationPluginBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,ClubInformationPluginBusiness.class);
+		if (business == null) {
+			try {
+				business = (ClubInformationPluginBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, ClubInformationPluginBusiness.class);
 			}
-			catch(java.rmi.RemoteException rme){
+			catch (java.rmi.RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
 		return business;
-	}	
+	}
 }
