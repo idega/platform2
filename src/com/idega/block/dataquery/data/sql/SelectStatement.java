@@ -108,7 +108,9 @@ public class SelectStatement implements DynamicExpression {
     Iterator where = whereClauses.iterator();
     while (where.hasNext()) {
       DynamicExpression clause = (DynamicExpression) where.next();
-      clause.setIdentifierValueMap(identifierValueMap);
+      if (clause.isDynamic()) {
+      	clause.setIdentifierValueMap(identifierValueMap);
+      }
       expression.append(spacing).append(clause.toSQLString());
       spacing = and;
     }
