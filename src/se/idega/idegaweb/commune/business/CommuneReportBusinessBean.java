@@ -233,18 +233,13 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 			reportData.add(data);
 			
 			Address childAddressEntiy = _communeUserService.getUsersMainAddress(child);
-			if(childAddressEntiy!=null){
-				String stName = childAddressEntiy.getStreetName();
-				String number = childAddressEntiy.getStreetNumber();
-				String postalCode = _iwrb.getLocalizedString("CommuneReportBusiness.not_available","N/A");
-				PostalCode pCodeObj = childAddressEntiy.getPostalCode();
-				if(pCodeObj!=null){
-					postalCode = pCodeObj.getPostalCode();
-				}
-				String city = childAddressEntiy.getCity();
-				String childAddressString = stName+((number==null)?"":(" "+number));
-				data.addData(childAddress,childAddressString+", "+postalCode+" "+city);
+
+			String childAddressString = this.getAddressString(childAddressEntiy,_iwrb);
+			if(childAddressString != null){
+				data.addData(childAddress,childAddressString);
 			}
+				
+
 			
 			Collection coll = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,child,GroupRelation.STATUS_ACTIVE);
 			Iterator iterator = coll.iterator();
@@ -274,17 +269,9 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					reportData.add(pData);
 				
 					Address parent1AddressEntiy = _communeUserService.getUsersMainAddress(child);
-					if(parent1AddressEntiy!=null) {
-						String stName = parent1AddressEntiy.getStreetName();
-						String number = parent1AddressEntiy.getStreetNumber();
-						String postalCode = _iwrb.getLocalizedString("CommuneReportBusiness.not_available","N/A");
-						PostalCode pCodeObj = parent1AddressEntiy.getPostalCode();
-						if(pCodeObj!=null){
-							postalCode = pCodeObj.getPostalCode();
-						}
-						String city = parent1AddressEntiy.getCity();
-						String parent1AddressString = stName+((number==null)?"":(" "+number));
-						data.addData(parent1Address,parent1AddressString+", "+postalCode+" "+city);
+					String parent1AddressString = this.getAddressString(parent1AddressEntiy,_iwrb);
+					if(parent1AddressString!=null) {
+						data.addData(parent1Address,parent1AddressString);
 					}
 								
 					Collection pColl = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,parent,GroupRelation.STATUS_ACTIVE);
@@ -312,17 +299,9 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					reportData.add(pData);
 				
 					Address parent2AddressEntiy = _communeUserService.getUsersMainAddress(child);
-					if(parent2AddressEntiy!=null){
-						String stName = parent2AddressEntiy.getStreetName();
-						String number = parent2AddressEntiy.getStreetNumber();
-						String postalCode = _iwrb.getLocalizedString("CommuneReportBusiness.not_available","N/A");
-						PostalCode pCodeObj = parent2AddressEntiy.getPostalCode();
-						if(pCodeObj!=null){
-							postalCode = pCodeObj.getPostalCode();
-						}
-						String city = parent2AddressEntiy.getCity();
-						String parent2AddressString = stName+((number==null)?"":(" "+number));
-						data.addData(parent2Address,parent2AddressString+", "+postalCode+" "+city);
+					String parent2AddressString = this.getAddressString(parent2AddressEntiy,_iwrb);
+					if(parent2AddressString!=null) {
+						data.addData(parent2Address,parent2AddressString);
 					}
 								
 					Collection pColl = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,parent,GroupRelation.STATUS_ACTIVE);
@@ -588,17 +567,9 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 				reportData.add(data);
 				
 				Address childAddressEntiy = _communeUserService.getUsersMainAddress(child);
-				if(childAddressEntiy!=null){
-					String stName = childAddressEntiy.getStreetName();
-					String number = childAddressEntiy.getStreetNumber();
-					String postalCode = _iwrb.getLocalizedString("CommuneReportBusiness.not_available","N/A");
-					PostalCode pCodeObj = childAddressEntiy.getPostalCode();
-					if(pCodeObj!=null){
-						postalCode = pCodeObj.getPostalCode();
-					}
-					String city = childAddressEntiy.getCity();
-					String childAddressString = stName+((number==null)?"":(" "+number));
-					data.addData(childAddress,childAddressString+", "+postalCode+" "+city);
+				String childAddressString = this.getAddressString(childAddressEntiy,_iwrb);
+				if(childAddressString != null){
+					data.addData(childAddress,childAddressString);
 				}
 
 				
@@ -630,18 +601,11 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 						reportData.add(pData);
 					
 						Address parent1AddressEntiy = _communeUserService.getUsersMainAddress(child);
-						if(parent1AddressEntiy!=null) {
-							String stName = parent1AddressEntiy.getStreetName();
-							String number = parent1AddressEntiy.getStreetNumber();
-							String postalCode = _iwrb.getLocalizedString("CommuneReportBusiness.not_available","N/A");
-							PostalCode pCodeObj = parent1AddressEntiy.getPostalCode();
-							if(pCodeObj!=null){
-								postalCode = pCodeObj.getPostalCode();
-							}							
-							String city = parent1AddressEntiy.getCity();
-							String parent1AddressString = stName+((number==null)?"":(" "+number));
-							data.addData(parent1Address,parent1AddressString+", "+postalCode+" "+city);
-						}			
+						String parent1AddressString = this.getAddressString(parent1AddressEntiy,_iwrb);
+						if(parent1AddressString!=null) {
+							data.addData(parent1Address,parent1AddressString);
+						}
+
 						Collection pColl = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,parent,GroupRelation.STATUS_ACTIVE);
 						Iterator pIterator = pColl.iterator();
 						if(pIterator.hasNext()){
@@ -667,18 +631,11 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 						reportData.add(pData);
 					
 						Address parent2AddressEntiy = _communeUserService.getUsersMainAddress(child);
-						if(parent2AddressEntiy!=null){
-							String stName = parent2AddressEntiy.getStreetName();
-							String number = parent2AddressEntiy.getStreetNumber();
-							String postalCode = _iwrb.getLocalizedString("CommuneReportBusiness.not_available","N/A");
-							PostalCode pCodeObj = parent2AddressEntiy.getPostalCode();
-							if(pCodeObj!=null){
-								postalCode = pCodeObj.getPostalCode();
-							}
-							String city = parent2AddressEntiy.getCity();
-							String parent2AddressString = stName+((number==null)?"":(" "+number));
-							data.addData(parent2Address,parent2AddressString+", "+postalCode+" "+city);
+						String parent2AddressString = this.getAddressString(parent2AddressEntiy,_iwrb);
+						if(parent2AddressString!=null) {
+							data.addData(parent2Address,parent2AddressString);
 						}
+
 									
 						Collection pColl = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,parent,GroupRelation.STATUS_ACTIVE);
 						Iterator pIterator = pColl.iterator();
@@ -899,6 +856,27 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	
 	private UserStatusBusiness getUserStatusService() throws RemoteException {
 		return (UserStatusBusiness)getServiceInstance(UserStatusBusiness.class);
+	}
+	
+	private String getAddressString(Address addressEntiy, IWResourceBundle iwrb ){
+		if(addressEntiy!=null){
+			String stName = addressEntiy.getStreetName();
+			String number = addressEntiy.getStreetNumber();
+			String postalCode = iwrb.getLocalizedString("CommuneReportBusiness.not_available","N/A");
+			PostalCode pCodeObj = addressEntiy.getPostalCode();
+			String city = addressEntiy.getCity();
+			if(pCodeObj!=null){
+				postalCode = pCodeObj.getPostalCode();
+			} else if(city == null){
+				String childAddressString = stName+((number==null)?"":(" "+number));
+				return childAddressString;	
+			}
+			
+			String childAddressString = stName+((number==null)?"":(" "+number));
+			return childAddressString+", "+postalCode+" "+city;	
+									
+		}
+		return "";
 	}
 	
 
