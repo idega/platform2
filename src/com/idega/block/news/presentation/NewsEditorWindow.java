@@ -506,6 +506,7 @@ private IWResourceBundle iwrb;
       
     TimestampInput newsDate = new TimestampInput(prmNewsDate,true);
     	newsDate.setTimestamp(now.getTimestamp());
+    	newsDate.setYearRange(now.getYear()-4,now.getYear()+2);
 
     List L = NewsFinder.listOfLocales();
     DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(prmLocale);
