@@ -43,8 +43,10 @@ public class SchoolTypeEditor extends Block {
 	public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
 	
 	private static final String PARAMETER_IS_FREETIME_TYPE = "sch_type_freetime";
+	private static final String PARAMETER_IS_FAMILY_FREETIME_TYPE = "sch_type_family_freetime";
 	private static final String PARAMETER_MAX_AGE = "sch_type_max_age";
-
+	private static final String PARAMETER_ORDER = "sch_type_order";
+	
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
@@ -55,7 +57,7 @@ public class SchoolTypeEditor extends Block {
 		Form F = new Form();
 
 		if (iwc.isParameterSet("sch_save_type")) {
-			saveArea(iwc);
+			saveType(iwc);
 			F.add(getListTable(null));
 		}
 		else
@@ -90,7 +92,7 @@ public class SchoolTypeEditor extends Block {
 		return getInputTable(sbBean.getSchoolType(new Integer(id)));
 	}
 
-	private void saveArea(IWContext iwc) throws java.rmi.RemoteException {
+	private void saveType(IWContext iwc) throws java.rmi.RemoteException {
 		if (iwc.isParameterSet("sch_save_type")) {
 			String id = iwc.getParameter("sch_school_type_id");
 			String name = iwc.getParameter("sch_type_name");
@@ -112,8 +114,21 @@ public class SchoolTypeEditor extends Block {
 			boolean isFreetimeType = false;
 			if (iwc.isParameterSet(PARAMETER_IS_FREETIME_TYPE))
 				isFreetimeType = true;
+			boolean isFamilyFreetimeType = false;
+			if (iwc.isParameterSet(PARAMETER_IS_FAMILY_FREETIME_TYPE))
+				isFamilyFreetimeType = true;
 
-			sbBean.storeSchoolType(aid, name, info, cat, locKey, maxAge, isFreetimeType);
+			int order = -1;
+			if (iwc.isParameterSet(PARAMETER_ORDER)) {
+				try {
+					order = Integer.parseInt(iwc.getParameter(PARAMETER_ORDER));
+				}
+				catch (NumberFormatException e) {
+					order = -1;
+				}
+			}
+			
+			sbBean.storeSchoolType(aid, name, info, cat, locKey, maxAge, isFreetimeType, isFamilyFreetimeType, order);
 		}
 	}
 
@@ -167,7 +182,9 @@ public class SchoolTypeEditor extends Block {
 		T.add(tFormat.format(iwrb.getLocalizedString("maxage", "Max school age")), 1, 5);
 		T.add(tFormat.format(iwrb.getLocalizedString("localization_key", "Key")), 1, 6);
 		T.add(tFormat.format(iwrb.getLocalizedString("is_freetime_type", "Is freetime type")), 1, 7);
-
+		T.add(tFormat.format(iwrb.getLocalizedString("is_family_freetime_type", "Is family freetime type")), 1, 8);
+		T.add(tFormat.format(iwrb.getLocalizedString("order", "order")), 1, 9);
+		
 		SelectorUtility util = new SelectorUtility();
 		DropdownMenu drpCategory = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu("sch_type_cat"), sbBean.getSchoolCategories(), "getLocalizedKey", iwrb);
 
@@ -177,7 +194,10 @@ public class SchoolTypeEditor extends Block {
 		inputAge.setLength(4);
 		TextArea inputInfo = new TextArea("sch_type_info");
 		CheckBox isFreetime = new CheckBox(PARAMETER_IS_FREETIME_TYPE);
-
+		CheckBox isFamilyFreetime = new CheckBox(PARAMETER_IS_FAMILY_FREETIME_TYPE);
+		TextInput inputOrder = new TextInput(PARAMETER_ORDER);
+		inputOrder.setLength(4);
+		
 		int typeId = -1;
 		if (type != null) {
 			try {
@@ -198,6 +218,9 @@ public class SchoolTypeEditor extends Block {
 				if (key != null)
 					inputKey.setContent(key);
 				isFreetime.setChecked(type.getIsFreetimeType());
+				isFamilyFreetime.setChecked(type.getIsFamilyFreetimeType());
+				if (type.getOrder() != -1)
+					inputOrder.setContent(String.valueOf(type.getOrder()));
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
@@ -210,13 +233,19 @@ public class SchoolTypeEditor extends Block {
 		T.add(inputAge, 3, 5);
 		T.add(inputKey, 3, 6);
 		T.add(isFreetime, 3, 7);
-		T.add(new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "sch_save_type", "true"), 3, 8);
+		T.add(isFamilyFreetime, 3, 8);
+		T.add(inputOrder, 3, 9);
+		
+		T.setHeight(10, 6);
+		
+		T.mergeCells(1, 11, 3, 11);
+		T.add(new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), "sch_save_type", "true"), 1, 11);
 		Link cancel = new Link(iwrb.getLocalizedImageButton("cancel", "Cancel"));
-		T.add(cancel, 3, 9);
+		T.add(cancel, 1, 11);
 		if (typeId > 0) {
 			Link delete = new Link(iwrb.getLocalizedImageButton("delete", "Delete"));
 			delete.addParameter("sch_delete_type", typeId);
-			T.add(delete, 3, 10);
+			T.add(delete, 1, 11);
 		}
 
 		return T;
