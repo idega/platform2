@@ -97,26 +97,33 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 		//variables
 		String statusId = null;
 		String name = null;
-		String PIN = (String) userProperties.get(PIN_COLUMN);
+		String PIN = null;
+		
+		try{
+			PIN = (String) userProperties.get(PIN_COLUMN);
+		}
+		catch (IndexOutOfBoundsException e4) {
+			return false;
+		}
 		
 		if (PIN == null){
 			return false;
 		}
 		
-		try{
-			name = (String) userProperties.get(NAME_COLUMN);
-		}
-		catch (IndexOutOfBoundsException e4) {
-			e4.printStackTrace();
-		}
+//		try{
+//			name = (String) userProperties.get(NAME_COLUMN);
+//		}
+//		catch (IndexOutOfBoundsException e4) {
+//			e4.printStackTrace();
+//		}
 		
-		try {
+//		try {
+		if(userProperties.size() > STATUS_COLUMN) {
 			statusId = (String) userProperties.get(STATUS_COLUMN);
 		}
-		catch (IndexOutOfBoundsException e4) {
-			e4.printStackTrace();
-		}
-		
+//		catch (IndexOutOfBoundsException e4) {
+//			e4.printStackTrace();
+//		}
 
 		try {
 			user = userBiz.getUser(PIN);
@@ -138,12 +145,10 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 			}
 		}
 		
-		
-		if (name != null){
-			user.setFullName(name);
-			user.store();
-		}
-		
+//		if (name != null){
+//			user.setFullName(name);
+//			user.store();
+//		}
 		
 		if (statusId != null) {
 			int statusNumber = Integer.parseInt(statusId);
@@ -193,9 +198,6 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 			}
 		}
 
-
-		
-		
 		user = null;
 		return true;
 	}
