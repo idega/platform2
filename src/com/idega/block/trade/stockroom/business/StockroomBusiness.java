@@ -289,15 +289,15 @@ public class StockroomBusiness /* implements SupplyManager */ {
     throw new RuntimeException("Does not belong to any reseller");
   }
 
-  public static int updateProduct(int productId, int supplierId, Integer fileId, String productName, String productDescription, boolean isValid, int discountTypeId) throws Exception{
-    return createProduct(productId,supplierId, fileId, productName, productDescription, isValid, discountTypeId);
+  public static int updateProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int discountTypeId) throws Exception{
+    return createProduct(productId,supplierId, fileId, productName, number, productDescription, isValid, discountTypeId);
   }
 
-  public static int createProduct(int supplierId, Integer fileId, String productName, String productDescription, boolean isValid, int discountTypeId) throws Exception{
-    return createProduct(-1,supplierId, fileId, productName, productDescription, isValid, discountTypeId);
+  public static int createProduct(int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int discountTypeId) throws Exception{
+    return createProduct(-1,supplierId, fileId, productName, number, productDescription, isValid, discountTypeId);
   }
 
-  private static int createProduct(int productId, int supplierId, Integer fileId, String productName, String productDescription, boolean isValid, int discountTypeId) throws Exception{
+  private static int createProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int discountTypeId) throws Exception{
     Product product= null;
     if (productId == -1) {
       product = new Product();
@@ -309,18 +309,24 @@ public class StockroomBusiness /* implements SupplyManager */ {
     if(fileId != null){
       product.setFileId(fileId);
     }
-    product.setProductName(productName);
-    product.setProdcutDescription(productDescription);
     product.setIsValid(isValid);
     if (discountTypeId != -1) {
       product.setDiscountTypeId(discountTypeId);
     }
+    if (number == null) number = "";
+    product.setNumber(number);
+
 
     if (productId == -1) {
       product.insert();
     }else {
       product.update();
     }
+
+    ProductBusiness.setProductName(product, productName);
+    ProductBusiness.setProductDescription(product, productDescription);
+//    product.setProductName(productName);
+//    product.setProdcutDescription(productDescription);
 
     return product.getID();
 

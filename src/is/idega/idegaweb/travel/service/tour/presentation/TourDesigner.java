@@ -8,6 +8,7 @@ import com.idega.util.idegaTimestamp;
 import com.idega.idegaweb.*;
 import is.idega.idegaweb.travel.business.*;
 import com.idega.block.trade.stockroom.data.*;
+import com.idega.block.trade.stockroom.business.*;
 import java.sql.SQLException;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.core.data.Address;
@@ -61,7 +62,7 @@ public class TourDesigner extends TravelManager {
       product = new Product(tourId);
       service = new Service(tourId);
       tour = new Tour(tourId);
-      timeframe = service.getTimeframe();
+      timeframe = product.getTimeframe();
 
       arrAddress = TourBusiness.getArrivalAddress(service);
       depAddress = TourBusiness.getDepartureAddress(service);
@@ -100,11 +101,16 @@ public class TourDesigner extends TravelManager {
 
       TextInput name = new TextInput("name_of_trip");
           name.setSize(40);
-          name.keepStatusOnAction();
+          //name.keepStatusOnAction();
       TextArea description = new TextArea("description");
           description.setWidth(50);
           description.setHeight(12);
-          description.keepStatusOnAction();
+          //description.keepStatusOnAction();
+      TextInput number = new TextInput("number");
+          number.setSize(20);
+          number.keepStatusOnAction();
+      DropdownMenu locales = ProductBusiness.getLocaleDropDown(iwc);
+
       DateInput active_from = new DateInput("active_from");
           active_from.setDate(stamp.getSQLDate());
          active_from.keepStatusOnAction();
@@ -197,6 +203,13 @@ public class TourDesigner extends TravelManager {
       table.add(name,2,row);
 
       ++row;
+      Text numberText = (Text) theBoldText.clone();
+        numberText.setText(iwrb.getLocalizedString("travel.number","Number"));
+      table.add(numberText,1,row);
+      table.add(number,2, row);
+
+
+      ++row;
 
       Text descText = (Text) theBoldText.clone();
           descText.setText(iwrb.getLocalizedString("travel.description","Description"));
@@ -209,11 +222,16 @@ public class TourDesigner extends TravelManager {
       table.setVerticalAlignment(2,row,"top");
 
       ++row;
+      table.add(locales, 2, row);
+      ++row;
 
       ImageInserter imageInserter = new ImageInserter("design_image_id");
+      String imageId = iwc.getParameter("design_image_id");
       if (service != null) {
           Product product = service.getProduct();
-          if (product.getFileId() != -1) {
+          if (imageId != null) {
+            imageInserter = new ImageInserter(Integer.parseInt(imageId), "design_image_id");
+          }else if (product.getFileId() != -1) {
             imageInserter = new ImageInserter(product.getFileId(), "design_image_id");
           }
       }
@@ -413,7 +431,8 @@ public class TourDesigner extends TravelManager {
           table.add(par2);
 
           name.setContent(service.getName());
-          description.setContent(service.getDescription());
+          number.setContent(product.getNumber());
+          description.setContent(ProductBusiness.getProductDescription(product, iwc));
           active_from.setDate(new idegaTimestamp(timeframe.getFrom()).getSQLDate());
           active_to.setDate(new idegaTimestamp(timeframe.getTo()).getSQLDate());
           active_yearly.setSelected(timeframe.getIfYearly());
@@ -475,6 +494,7 @@ public class TourDesigner extends TravelManager {
 
 
       String name = iwc.getParameter("name_of_trip");
+      String number = iwc.getParameter("number");
       String description = iwc.getParameter("description");
         if (description == null) description = "";
       String imageId = iwc.getParameter("design_image_id");
@@ -630,11 +650,11 @@ public class TourDesigner extends TravelManager {
 
         if (tourId == -1) {
             tb.setTimeframe(activeFromStamp, activeToStamp, yearly);
-            serviceId = tb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, iEstSeats, iDiscountType);
+            serviceId = tb.createTourService(supplier.getID(),iImageId,name, number,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, iEstSeats, iDiscountType);
         } else {
             String timeframeId = iwc.getParameter(this.parameterTimeframeId);
             tb.setTimeframe(Integer.parseInt(timeframeId), activeFromStamp, activeToStamp, yearly);
-            serviceId = tb.updateTourService(tourId,supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, Integer.parseInt(estSeats), Integer.parseInt(discountType));
+            serviceId = tb.updateTourService(tourId,supplier.getID(),iImageId,name,number, description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats, iMinNumberOfSeats, iNumberOfDays, fKilometers, Integer.parseInt(estSeats), Integer.parseInt(discountType));
         }
 
         /**

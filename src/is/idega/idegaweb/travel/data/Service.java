@@ -68,8 +68,6 @@ public class Service extends GenericEntity{
 
     this.addManyToManyRelationShip(Address.class, "TB_SERVICE_IC_ADDRESS");
 
-    this.addManyToManyRelationShip(Timeframe.class ,"TB_SERVICE_TIMEFRAME");
-
   }
 
 
@@ -173,32 +171,6 @@ public class Service extends GenericEntity{
   }
 
 
-
-  public Timeframe[] getTimeframes() throws SQLException  {
-
-    return (Timeframe[]) this.findRelated(Timeframe.getStaticInstance(Timeframe.class));
-
-  }
-
-
-
-  public Timeframe getTimeframe() throws SQLException{
-
-    Timeframe[] temp = getTimeframes();
-
-    if (temp.length > 0) {
-
-      return temp[temp.length -1];
-
-    }
-
-    else {
-
-      return null;
-
-    }
-
-  }
 
 
 

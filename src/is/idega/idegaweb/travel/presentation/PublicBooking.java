@@ -91,8 +91,8 @@ public class PublicBooking extends Block  {
         if (!product.getIsValid()) {
           throw new SQLException("Product not valid");
         }
-        service = new Service(productId);
-        timeframe = service.getTimeframe();
+//        service = new Service(productId);
+        timeframe = product.getTimeframe();
         supplier = new Supplier(product.getSupplierId());
 
       }catch (SQLException s) {

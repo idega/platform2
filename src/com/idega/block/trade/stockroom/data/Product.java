@@ -2,8 +2,11 @@ package com.idega.block.trade.stockroom.data;
 
 import com.idega.data.*;
 import com.idega.core.data.*;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
 import java.sql.SQLException;
 import java.util.List;
+import com.idega.block.text.business.*;
+import is.idega.idegaweb.travel.data.Timeframe;
 
 
 /**
@@ -33,13 +36,14 @@ public class Product extends GenericEntity {
     this.addAttribute(getIDColumnName());
     this.addAttribute(getColumnNameSupplierId(),"Birgi",true,true,Integer.class,"many_to_one",Supplier.class);
     this.addAttribute(getColumnNameFileId(),"Fylgiskjal(mynd)",true,true,Integer.class,"many_to_one",ICFile.class);
-    this.addAttribute(getColumnNameProductName(),"Nafn vöru",true,true,String.class,255);
-    this.addAttribute(getColumnNameProductDescription(),"Lýsing vöru",true,true,String.class,510);
     this.addAttribute(getColumnNameIsValid(),"í notkun",true,true,Boolean.class);
-    addAttribute(getDiscountTypeIdColumnName(), "discount type", true, true, Integer.class);
-//    this.addManyToManyRelationShip(PriceCategory.class,"SR_PRODUCT_PRICE_CATEGORY");
+    this.addAttribute(getDiscountTypeIdColumnName(), "discount type", true, true, Integer.class);
+    this.addAttribute(getColumnNameNumber(), "númer", true, true, String.class);
+
     this.addManyToManyRelationShip(ProductCategory.class,"SR_PRODUCT_PRODUCT_CATEGORY");
     this.setNullable(getColumnNameFileId(), true);
+    this.addManyToManyRelationShip(com.idega.block.text.data.LocalizedText.class, "SR_PRODUCT_LOCALIZED_TEXT");
+    this.addManyToManyRelationShip(Timeframe.class ,"SR_PRODUCT_TIMEFRAME");
   }
 
   public void delete() throws SQLException {
@@ -74,6 +78,7 @@ public class Product extends GenericEntity {
   public static String getColumnNameProductDescription(){return "PRODUCT_DESCRIPTION";}
   public static String getColumnNameIsValid(){return "IS_VALID";}
   public static String getDiscountTypeIdColumnName() {return "DISCOUNT_TYPE_ID";}
+  public static String getColumnNameNumber() {return "PRODUCT_NUMBER";}
 
 
   /* Setters */
@@ -94,14 +99,14 @@ public class Product extends GenericEntity {
     this.setColumn(getColumnNameFileId(),id);
   }
 
-  public void setProductName(String name){
+/*  public void setProductName(String name){
     this.setColumn(getColumnNameProductName(),name);
   }
 
   public void setProdcutDescription(String description){
     this.setColumn(getColumnNameProductDescription(),description);
   }
-
+*/
   public void setIsValid(boolean valid){
     this.setColumn(getColumnNameIsValid(),valid);
   }
@@ -110,10 +115,11 @@ public class Product extends GenericEntity {
     setColumn(getDiscountTypeIdColumnName(), discountTypeId);
   }
 
+  public void setNumber(String number) {
+    setColumn(getColumnNameNumber(), number);
+  }
 
   /* Getters */
-
-
   public int getSupplierId(){
     return this.getIntColumnValue(getColumnNameSupplierId());
   }
@@ -122,25 +128,57 @@ public class Product extends GenericEntity {
     return this.getIntColumnValue(getColumnNameFileId());
   }
 
+  /**
+   * @depricated
+   */
   public String getProductName(){
-    return this.getStringColumnValue(getColumnNameProductName());
+    return ProductBusiness.getProductName(this);
+//    return this.getStringColumnValue(getColumnNameProductName());
   }
 
+  /**
+   * @depricated
+   */
   public String getProdcutDescription(){
-    return this.getStringColumnValue(getColumnNameProductDescription());
+    return ProductBusiness.getProductDescription(this);
+//    return this.getStringColumnValue(getColumnNameProductDescription());
   }
 
   public boolean getIsValid(){
     return this.getBooleanColumnValue(getColumnNameIsValid());
   }
 
+  /**
+   * @depricated
+   */
   public String getName() {
-    return this.getProductName();
+    return this.getNumber() + " " +this.getProductName();
+//    return "Ekki nota";
   }
 
   public int getDiscountTypeId() {
     return getIntColumnValue(getDiscountTypeIdColumnName());
   }
+
+  public String getNumber() {
+    return getStringColumnValue(getColumnNameNumber());
+  }
+
+
+  public Timeframe[] getTimeframes() throws SQLException  {
+    return (Timeframe[]) this.findRelated(Timeframe.getStaticInstance(Timeframe.class));
+  }
+
+  public Timeframe getTimeframe() throws SQLException{
+    Timeframe[] temp = getTimeframes();
+    if (temp.length > 0) {
+      return temp[temp.length -1];
+    }
+    else {
+      return null;
+    }
+  }
+
 }
 
 

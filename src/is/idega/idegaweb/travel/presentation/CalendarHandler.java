@@ -102,7 +102,7 @@ public class CalendarHandler extends TravelManager {
     if (_service != null) {
       try {
         if (_timeframe == null) {
-          _timeframe = _service.getTimeframe();
+          _timeframe = _product.getTimeframe();
         }
         if (new idegaTimestamp(_timeframe.getFrom()).isLaterThan(_fromStamp)) {
           _fromStamp = new idegaTimestamp(_timeframe.getFrom());
@@ -484,7 +484,7 @@ public class CalendarHandler extends TravelManager {
     try {
       _supplier = new Supplier(product.getSupplierId());
       _service = TravelStockroomBusiness.getService(product);
-      _timeframe = _service.getTimeframe();
+      _timeframe = product.getTimeframe();
       try {
         _tour = new Tour(_productId);
       }catch (SQLException sql) {}
