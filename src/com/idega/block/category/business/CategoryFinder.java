@@ -10,6 +10,6 @@ package com.idega.block.category.business;
  * @version    1.1
  */
 
-public class CategoryFinder extends com.idega.core.business.CategoryBusiness{
+public class CategoryFinder extends com.idega.core.business.CategoryFinder{
 
 }
