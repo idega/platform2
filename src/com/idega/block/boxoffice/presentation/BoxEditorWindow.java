@@ -9,8 +9,8 @@ import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.boxoffice.business.BoxBusiness;
 import com.idega.block.boxoffice.business.BoxFinder;
 import com.idega.block.boxoffice.data.BoxLink;
+import com.idega.block.media.presentation.FileChooser;
 import com.idega.block.text.business.TextFinder;
-import com.idega.builder.presentation.IBFileChooser;
 import com.idega.builder.presentation.IBPageChooser;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -279,7 +279,7 @@ public BoxEditorWindow(){
      * @todo File uploading
      */
 
-    IBFileChooser fileChooser = new IBFileChooser(BoxBusiness.PARAMETER_FILE_ID,STYLE);
+    FileChooser fileChooser = new FileChooser(BoxBusiness.PARAMETER_FILE_ID,STYLE);
     if ( link != null && _update ) {
       if ( link.getFileID() != -1 )
         fileChooser.setSelectedFile(BoxFinder.getFile(link.getFileID()));
