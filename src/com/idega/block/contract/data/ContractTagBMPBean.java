@@ -1,6 +1,6 @@
 /*
 
- * $Id: ContractTagBMPBean.java,v 1.2 2003/04/03 07:24:44 laddi Exp $
+ * $Id: ContractTagBMPBean.java,v 1.3 2003/06/10 17:05:32 roar Exp $
 
  *
 
@@ -21,6 +21,9 @@ package com.idega.block.contract.data;
 
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 
 
@@ -160,6 +163,10 @@ public class ContractTagBMPBean extends com.idega.data.GenericEntity implements 
 
 	}
 
+	public Collection ejbFindAllByCategory(int catID) throws FinderException {
+		return super.idoFindPKsByQuery(
+			idoQueryGetSelect().appendWhereEquals(this.getColumnNameCategoryId(), catID));
+	}
 
 
 }
