@@ -101,6 +101,8 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
 					}
 					else {
 						nameLink = new Link(productCatalog.getText(product.getProductName(productCatalog._currentLocaleId)));
+						if (productCatalog._productLinkPage != null)
+							nameLink.setPage(productCatalog._productLinkPage);
 						nameLink.setBold();
 					}
 					nameLink.addParameter(getProductBusiness(iwc).getProductIdParameter(), product.getID());
