@@ -90,7 +90,7 @@ public void setSpecialAttributes(String name,Map attributes){
 
       ApartmentType room = new ApartmentType(apartmenttypeid);
 
-      Table roomTable = new Table(1,5);
+      Table roomTable = new Table(1,6);
         roomTable.setWidth("400");
         roomTable.setHeight("100%");
         roomTable.setBorder(0);
@@ -123,7 +123,8 @@ public void setSpecialAttributes(String name,Map attributes){
 
       roomTable.add(topTable,1,1);
       roomTable.add(getApartmentTable(room, iwc),1,3);
-      roomTable.add(getAllApartmentTypes(room),1,4);
+      roomTable.add(getBuildingApartmentTypes(room),1,4);
+      roomTable.add(getCategoryApartmentTypes(room),1,4);
       roomTable.add(iwrb_.getImage("/room/bottom.gif","",400,66),1,5);
 
       add(roomTable);
@@ -293,7 +294,7 @@ public void setSpecialAttributes(String name,Map attributes){
       return T;
     }
 
-    private Form getAllApartmentTypes(ApartmentType type) throws SQLException {
+    private Form getBuildingApartmentTypes(ApartmentType type) throws SQLException {
 
       int id = BuildingFinder.getComplexIdFromTypeId(type.getID());
       ApartmentType[] types = BuildingFinder.findApartmentTypesInComplex(id);
@@ -301,6 +302,39 @@ public void setSpecialAttributes(String name,Map attributes){
       Form roomForm = new Form();
 
       Text appartmentText = getBoldText(iwrb_.getLocalizedString("other_apartments","Other apartments in building")+": ");
+
+      Table formTable = new Table(1,1);
+        formTable.setCellpadding(0);
+        formTable.setCellspacing(0);
+        formTable.setWidth("90%");
+        formTable.setAlignment("center");
+        formTable.setAlignment(1,1,"right");
+
+      DropdownMenu roomTypes = new DropdownMenu("type_id");
+        roomTypes.setToSubmit();
+        roomTypes.keepStatusOnAction();
+        for ( int a = 0; a < types.length; a++ ) {
+         roomTypes.addMenuElement(types[a].getID(),types[a].getName());
+        }
+        roomTypes.setSelectedElement(String.valueOf(type.getID()));
+        roomTypes.setAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
+
+      formTable.add(appartmentText,1,1);
+      formTable.add(roomTypes,1,1);
+      roomForm.add(formTable);
+
+      return roomForm;
+
+    }
+
+     private Form getCategoryApartmentTypes(ApartmentType type) throws SQLException {
+
+      int id = BuildingFinder.getComplexIdFromTypeId(type.getID());
+      ApartmentType[] types = BuildingFinder.findApartmentTypesForCategory(id);
+
+      Form roomForm = new Form();
+
+      Text appartmentText = getBoldText(iwrb_.getLocalizedString("category_apartments","Other apartments in category")+": ");
 
       Table formTable = new Table(1,1);
         formTable.setCellpadding(0);

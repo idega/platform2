@@ -176,6 +176,17 @@ public class BuildingFinder {
     return L;
   }
 
+  public static ApartmentType[] findApartmentTypesInCategory(int iCategoryId){
+    ApartmentType[] rt = new ApartmentType[0];
+    try {
+      rt = (ApartmentType[]) new ApartmentType().findAllByColumn(ApartmentType.getApartmentCategoryIdColumnName(),iCategoryId);
+    }
+    catch (Exception ex) {
+
+    }
+    return rt;
+  }
+
   public static ApartmentType[] findApartmentTypesInComplex(int iComplexId){
     ApartmentType[] rt = new ApartmentType[0];
     /*
