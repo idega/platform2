@@ -98,7 +98,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	private static final String PAR_OWN_POSTING = KEY_OWN_POSTING;	
 	private static final String PAR_VAT_PR_MONTH = KEY_VAT_PR_MONTH;
 	private static final String PAR_VAT_TYPE = KEY_VAT_TYPE;
-	private static final String PAR_SELECTED_PROVIDER = "selected_provider";	
+	public static final String PAR_SELECTED_PROVIDER = "selected_provider";	
 	private static final String PAR_NUMBER_OF_ITEMS  = KEY_NUMBER_OF_ITEMS;
 	private static final String PAR_AMOUNT_PR_ITEM = KEY_AMOUNT_PR_ITEM;
 	private static final String PAR_SCH_TYPE = KEY_SCH_TYPE;

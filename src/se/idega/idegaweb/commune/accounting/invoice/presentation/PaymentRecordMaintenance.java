@@ -19,6 +19,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -70,11 +71,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/30 12:33:40 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/30 13:54:20 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.48 $
+ * @version $Revision: 1.49 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -489,8 +490,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		// count values for summary
 		for (int i = 0; i < records.length; i++) {
 			placementCount += records [i].getPlacements ();
-			totalAmountVatExcluded += records [i].getTotalAmount ();
-			totalAmountVat += records [i].getTotalAmountVAT ();
+			totalAmountVatExcluded += roundAmount (records [i].getTotalAmount ());
+			totalAmountVat += roundAmount (records [i].getTotalAmountVAT ());
 			final Collection invoiceRecords
 					= home.findByPaymentRecord (records [i]);
 			for (Iterator j = invoiceRecords.iterator (); j.hasNext ();) {
@@ -856,15 +857,20 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				table.setHeight (row++, 12);
 				table.mergeCells (1, row, columnCount, row);
 				final ButtonPanel buttonPanel = new ButtonPanel (this);
+				table.add (buttonPanel, 1, row);
 				if (null != providerAuthorizationPage) {
 					buttonPanel.addLocalizedButton
 							("no_param", PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT,
 							 providerAuthorizationPage);
 				}
 				if (null != createPaymentPage) {
-					buttonPanel.addLocalizedButton
-							("no_param", NEW_KEY, NEW_DEFAULT, createPaymentPage);
-					table.add (buttonPanel, 1, row);
+					final GenericButton button = new GenericButton
+							("no_param", localize(NEW_KEY, NEW_DEFAULT));
+					button.setPageToOpen(createPaymentPage);
+					button.addParameterToPage
+							(ManuallyPaymentEntriesList.PAR_SELECTED_PROVIDER,
+							 providerId + "");
+					buttonPanel.addButton(button);
 				}
 				//table.add (getSubmitButton (0, REMOVE_KEY, REMOVE_DEFAULT), 1, row);
 			} else {
@@ -1028,8 +1034,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		// count values for summary
 		for (int i = 0; i < records.length; i++) {
 			placementCount += records [i].getPlacements ();
-			totalAmountVatExcluded += records [i].getTotalAmount ();
-			totalAmountVat += records [i].getTotalAmountVAT ();
+			totalAmountVatExcluded += roundAmount (records [i].getTotalAmount ());
+			totalAmountVat += roundAmount (records [i].getTotalAmountVAT ());
 			final Collection invoiceRecords
 					= home.findByPaymentRecord (records [i]);
 			for (Iterator j = invoiceRecords.iterator (); j.hasNext ();) {
