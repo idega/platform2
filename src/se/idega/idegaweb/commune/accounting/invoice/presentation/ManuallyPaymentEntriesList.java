@@ -37,6 +37,7 @@ import se.idega.idegaweb.commune.accounting.presentation.RegulationSearchPanel;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
@@ -51,6 +52,7 @@ import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -657,8 +659,9 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			table.add(getErrorText((String) errorMessages.get(ERROR_AMOUNT_ITEM_NULL)), 2, row++);	
 		}			
 		addIntField(table, PAR_AMOUNT_TOTAL, KEY_AMOUNT_TOTAL, ""+amount, 1, row++);
+		
 		//Vat is currently set to 0
-		addIntField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, "0", 1, row++);
+		addIntField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+getVAT(iwc, PAR_VAT_PR_MONTH, reg), 1, row++);
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		table.mergeCells(2, row, 10, row);
 		addField(table, PAR_REMARK, KEY_REMARK, getValue(iwc, PAR_REMARK), 1, row++, 300);
@@ -756,7 +759,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		return table;
 	}
 
-	public Regulation getVatRuleRegulation(IWContext iwc, String parameter, Regulation reg) {
+	private Regulation getVatRuleRegulation(IWContext iwc, String parameter, Regulation reg) {
 		if (reg != null){
 			return reg.getVATRuleRegulation();
 		} else {
@@ -773,7 +776,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		}
 	}
 			
-	public int getVatRuleRegulationId(IWContext iwc, String parameter, Regulation reg) {
+	private int getVatRuleRegulationId(IWContext iwc, String parameter, Regulation reg) {
 		if (reg != null){
 			Regulation r = getVatRuleRegulation(iwc, parameter, reg);
 			if (r != null){
@@ -785,6 +788,25 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			return getIntValue(iwc, parameter, -1);
 		}
 	}
+	
+	private long getVAT(IWContext iwc, String parameter, Regulation reg) {
+		float ret = 0;
+		if (reg != null){
+			try{
+				VATBusiness vb = getVATBusiness(iwc);
+				ret = vb.getVATPercentForRegulation(reg);
+			}catch(IBOLookupException ex){
+				ex.printStackTrace();
+			}catch(VATException ex){
+				ex.printStackTrace();
+			}catch(RemoteException ex){
+				ex.printStackTrace();						
+			}					
+		} else {
+			ret = getFloatValue(iwc, parameter);
+		}
+		return AccountingUtil.roundAmount(ret);
+	}	
 
 	/**
 	 * 

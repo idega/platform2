@@ -36,6 +36,7 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.presentation.RegulationSearchPanel;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
@@ -48,6 +49,7 @@ import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -860,7 +862,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		}
 		
 		addIntField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, ""+AccountingUtil.roundAmount(entry.getAmount()), 1, row++);
-		//Vat is currently set to 0
+
 		addIntField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+AccountingUtil.roundAmount(entry.getVAT()), 1, row++);
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
@@ -1046,7 +1048,21 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			}
 		
 			public float getVAT() {
-				return _reg != null ? _reg.getVATEligible().floatValue() : getFloatValue(PAR_VAT_PR_MONTH);
+				if (_reg != null){
+					try{
+						VATBusiness vb = (VATBusiness) IBOLookup.getServiceInstance(_iwc, VATBusiness.class);
+						return vb.getVATPercentForRegulation(_reg);
+					}catch(IBOLookupException ex){
+						ex.printStackTrace();
+					}catch(VATException ex){
+						ex.printStackTrace();
+					}catch(RemoteException ex){
+						ex.printStackTrace();						
+					}					
+				} else {
+					return getFloatValue(PAR_VAT_PR_MONTH);
+				}
+				return 0;
 			}
 		
 			public Regulation getVatRuleRegulation() {
