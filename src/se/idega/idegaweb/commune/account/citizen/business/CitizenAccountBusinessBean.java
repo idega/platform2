@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.62 2004/03/03 08:45:46 anders Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.63 2004/03/03 09:48:51 anders Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -72,11 +72,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2004/03/03 08:45:46 $ by $Author: anders $
+ * Last modified: $Date: 2004/03/03 09:48:51 $ by $Author: anders $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.62 $
+ * @version $Revision: 1.63 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
@@ -425,6 +425,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 					applicationReason.equals(CitizenAccount.MOVING_TO_NACKA_KEY));
 			final User user = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(firstName, "", lastName, ssn, gender, timestamp) : userBusiness.createOrUpdateCitizenByPersonalID(firstName, "", lastName, ssn, gender, timestamp);
 			Integer communeId = null;
+			boolean isSweden = true;
 			try {
 				final CitizenApplicantPutChildrenHome putChildrenHome
 						= (CitizenApplicantPutChildrenHome) IDOLookup.getHome
@@ -434,6 +435,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				communeId = new Integer (putChildren.getCurrentCommuneId ());
 			} catch (Exception e) {
 				// no problem, there's no home commune set
+				isSweden = false;
 			}
 			final String streetName = applicant.getStreet();
 			final String postalCode = applicant.getZipCode();
@@ -447,7 +449,9 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				address = addressHome.create();
 				final AddressType mainAddressType = addressHome.getAddressType1();
 				address.setAddressType(mainAddressType);
-				address.setCountry(sweden);
+				if (isSweden) {
+					address.setCountry(sweden);
+				}
 				address.setPostalCode(code);
 				address.setProvince(postalName);
 				address.setCity(postalName);
