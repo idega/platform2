@@ -783,8 +783,18 @@ public class GolfMainJSPModule extends MainSideJSPModule{
           return com.idega.jmodule.login.business.AccessControl.isClubAdmin(getModuleInfo());
         }
 
-        public boolean isClubWorker(){
-          return com.idega.jmodule.login.business.AccessControl.isClubWorker(getModuleInfo());
+        public boolean isClubWorker() {
+          boolean ret;
+
+          try {
+            ret = com.idega.jmodule.login.business.AccessControl.isClubWorker(getModuleInfo());
+          }
+          catch(java.sql.SQLException e) {
+            e.printStackTrace();
+            ret = false;
+          }
+
+          return(ret);
         }
 
         public boolean isUser() {
