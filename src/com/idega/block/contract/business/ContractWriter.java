@@ -49,6 +49,7 @@ public class ContractWriter
 	public final static String today = "Today";
 	public static int writePDF(int[] ids, int iCategoryId, String fileName, Font titleFont, Font paragraphFont, Font tagFont, Font textFont)
 	{
+		StringBuffer dbContractText = new StringBuffer(); //Stored in the database and used for signing
 		boolean bEntity = false;
 		int id = -1;
 		if (ids != null && ids.length > 0)
@@ -73,9 +74,12 @@ public class ContractWriter
 			ContractCategory ct = ContractFinder.getContractCategory(iCategoryId);
 			List L = listOfTexts(iCategoryId);
 			String title = "";
-			if (ct != null)
+			if (ct != null) {
 				title = ct.getName() + " \n\n";
+			}
 			Paragraph cTitle = new Paragraph(title, titleFont);
+			dbContractText.append(title);			
+				
 			// for each contract id
 			for (int j = 0; j < ids.length; j++)
 			{
@@ -95,17 +99,22 @@ public class ContractWriter
 					{
 						ContractText CT = (ContractText) L.get(i);
 						P = new Paragraph(new Phrase(CT.getName(), paragraphFont));
+						dbContractText.append(CT.getName());	
+												
 						subSection = chapter.addSection(P, 0);
 						String sText = CT.getText();
 						if (bEntity && CT.getUseTags())
 						{
 							phrase = detagParagraph(H, sText, textFont, tagFont);
+							dbContractText.append(detagParagraph(H, sText));								
 						}
 						else
 						{
 							phrase = new Phrase(sText, textFont);
+							dbContractText.append(sText);							
 						}
 						P2 = new Paragraph(phrase);
+
 						subSection.add(P2);
 					}
 					if (bEntity)
@@ -146,6 +155,8 @@ public class ContractWriter
 				file.insert();
 				file.addTo(C);
 				id = file.getID();
+				C.setText(dbContractText.toString());
+				C.store();
 			}
 			try
 			{
@@ -194,6 +205,27 @@ public class ContractWriter
 		}
 		return phrase;
 	}
+	
+	private static String detagParagraph(Map H, String sParagraph)
+	{
+		StringBuffer sb = new StringBuffer();
+		StringTokenizer ST = new StringTokenizer(sParagraph, "[]");
+		while (ST.hasMoreTokens())
+		{
+			String token = ST.nextToken();
+			if (H.containsKey(token))
+			{
+				String value = (String) H.get(token);
+				sb.append(value);
+			}
+			else
+			{
+				sb.append(token);
+			}
+		}
+		return sb.toString();
+	}	
+	
 	private static Hashtable getHashTags(int iCategoryId, int iContractId)
 	{
 		try
