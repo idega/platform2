@@ -226,9 +226,10 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
      // if( isfirstRun ){
         packetToServlet = new Packet();
 
-        packetToServlet.addProperty(new Property("client_id",sessionId));
-        packetToServlet.addProperty(new Property("user_id",userId));
-        packetToServlet.addProperty(new Property("userlist_version","0"));
+        packetToServlet.addProperty(new Property(SESSION_ID,sessionId));
+        packetToServlet.addProperty(new Property(USER_ID,userId));
+        /**@todo: send the latest version*/
+        packetToServlet.addProperty(new Property(USER_LIST_VERSION,"0"));
 
 
 
