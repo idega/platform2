@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.65 2003/11/17 12:15:15 roar Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.66 2003/11/21 14:56:50 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1564,7 +1564,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		boolean match = false;
 		while (i.hasNext() && !match) {
 			Condition regCond = (Condition) i.next();
-			if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_RESOURCE)) {
+			if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_OPERATION)) {
 				int id = regCond.getIntervalID();
 				try {
 					return getSchoolTypeHome().findByPrimaryKey(new Integer(id));
