@@ -118,7 +118,7 @@ public class UpdateHandicap {
                     }
 
                     if ( stroke2.length == 9 ) {
-                            heildarpunktar *= 2;
+                            heildarpunktar += 18;
                     }
 
                     scorecard[m].setTotalPoints(heildarpunktar);

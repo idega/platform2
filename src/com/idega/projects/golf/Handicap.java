@@ -177,7 +177,7 @@ private double grunn;
       }
 
       if ( strokes.size() == 9 ) {
-        heildarpunktar *= 2;
+        heildarpunktar += 18;
       }
 
       sc.setTotalPoints(heildarpunktar);
