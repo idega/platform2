@@ -13,6 +13,13 @@ public class ChildCareExportTimeHomeImpl extends com.idega.data.IDOFactory imple
  }
 
 
+public ChildCareExportTime findByFileName(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ChildCareExportTimeBMPBean)entity).ejbFindByFileName(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public ChildCareExportTime findLatest(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((ChildCareExportTimeBMPBean)entity).ejbFindLatest(p0);

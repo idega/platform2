@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareExportTimeBMPBean.java,v 1.1 2005/01/12 13:11:53 anders Exp $
+ * $Id: ChildCareExportTimeBMPBean.java,v 1.2 2005/02/14 19:31:50 anders Exp $
  *
  * Copyright (C) 2005 Idega. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package se.idega.idegaweb.commune.childcare.export.data;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 import javax.ejb.FinderException;
@@ -27,10 +28,10 @@ import com.idega.user.data.User;
  * Each time a new file with childcare placements is created,
  * a record of this type is added.
  * <p>
- * Last modified: $Date: 2005/01/12 13:11:53 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/14 19:31:50 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ChildCareExportTimeBMPBean extends GenericEntity implements ChildCareExportTime {
 
@@ -41,6 +42,8 @@ public class ChildCareExportTimeBMPBean extends GenericEntity implements ChildCa
 	private static final String COLUMN_USER_ID = "user_id";
 	private static final String COLUMN_FILE_NAME = "file_name";
 	private static final String COLUMN_FILE_TYPE = "file_type";
+	private static final String COLUMN_FROM_DATE = "from_date";
+	private static final String COLUMN_TO_DATE = "to_date";
 	
 	/**
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -66,6 +69,8 @@ public class ChildCareExportTimeBMPBean extends GenericEntity implements ChildCa
 		addManyToOneRelationship(COLUMN_USER_ID, User.class);
 		addAttribute(COLUMN_FILE_NAME, "Name of the export file", java.lang.String.class);
 		addAttribute(COLUMN_FILE_TYPE, "Type of the export file (1 = placements, 2 = taxekat)", java.lang.Integer.class);
+		addAttribute(COLUMN_FROM_DATE, "From date for exported placemenents", java.sql.Date.class);
+		addAttribute(COLUMN_TO_DATE, "To date for exported placemenents", java.sql.Date.class);
 	}
 
 	/**
@@ -106,6 +111,20 @@ public class ChildCareExportTimeBMPBean extends GenericEntity implements ChildCa
 	}
 
 	/**
+	 * Returns the from date for exported placements.
+	 */
+	public Date getFromDate() {
+		return getDateColumnValue(COLUMN_FROM_DATE);	
+	}
+
+	/**
+	 * Returns the to date for exported placements.
+	 */
+	public Date getToDate() {
+		return getDateColumnValue(COLUMN_TO_DATE);	
+	}
+
+	/**
 	 * Sets the timestamp for when the export file was created.
 	 * @param created the timestamp to set
 	 */
@@ -140,6 +159,22 @@ public class ChildCareExportTimeBMPBean extends GenericEntity implements ChildCa
 	}
 
 	/**
+	 * Sets the from date for exported placements.
+	 * @param from the from date to set
+	 */
+	public void setFromDate(Date from) { 
+		setColumn(COLUMN_FROM_DATE, from); 
+	}
+
+	/**
+	 * Sets the to date for exported placements.
+	 * @param to the to date to set
+	 */
+	public void setToDate(Date to) { 
+		setColumn(COLUMN_TO_DATE, to); 
+	}
+
+	/**
 	 * Finds the most recent export file entry for the specified file type.
 	 * 1 = child care placement export file for the IST Extens system.
 	 * 2 = child care time 'taxekategori' change export file for the IST Extens system.
@@ -153,6 +188,20 @@ public class ChildCareExportTimeBMPBean extends GenericEntity implements ChildCa
 		query.addColumn(new WildCardColumn());
 		query.addCriteria(new MatchCriteria(table, COLUMN_FILE_TYPE, MatchCriteria.EQUALS, fileType));
 		query.addOrder(new Order(new Column(table, COLUMN_CREATED), false));
+		return (Integer) idoFindOnePKByQuery(query);
+	}
+
+	/**
+	 * Finds the first export file entry for the specified file name.
+	 * @param fileName the name of the export file
+	 * @return the primary key for the entry found
+	 * @throws FinderException
+	 */
+	public Integer ejbFindByFileName(String fileName) throws FinderException {
+		Table table = new Table(this);
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		query.addCriteria(new MatchCriteria(table, COLUMN_FILE_NAME, MatchCriteria.EQUALS, fileName));
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 }
