@@ -210,6 +210,63 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 
 	
 	
+	private int getCountOfPlayersOfEqualAgeAndByGenderWorkReportAndWorkReportGroup(int age,String gender, WorkReport report,WorkReportGroup league) {
+		IDOQuery sql = idoQuery();
+		int year = report.getYearOfReport().intValue();
+		
+		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
+		String IDColumnName = getIDColumnName();
+		
+		sql.appendSelectCountFrom(this.getEntityName()).append(" memb, ")
+		.append(getNameOfMiddleTable(this,league)).append(" middle ")
+		.appendWhere()
+		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
+		
+		if(gender!=null){
+			sql.appendAnd();
+			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender);
+		}
+		
+		if(age>0){
+			IWTimestamp fromstamp = new IWTimestamp(1,1,year-1);//work reports are for the year before
+			fromstamp.addYears(-age);
+			IWTimestamp toStamp = new IWTimestamp(31,12,year-1);//work reports are for the year before
+			toStamp.addYears(-age);
+			
+			sql.appendAnd();
+			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
+			.appendGreaterThanOrEqualsSign()
+			.appendSingleQuote().append(fromstamp.toSQLString()).appendSingleQuote();
+			sql.appendAnd();
+			
+			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
+			.appendLessThanOrEqualsSign()
+			.appendSingleQuote().append(toStamp.toSQLString()).appendSingleQuote();
+		}
+		
+		sql.appendAnd();
+		
+		sql.append("memb.")
+		.append(IDColumnName)
+		.appendEqualSign()
+		.append("middle.")
+		.append(IDColumnName)
+		.appendAnd()
+		.append("middle.")
+		.append(leagueIDColumnName)
+		.appendEqualSign()
+		.append(league.getPrimaryKey());
+		
+
+		try {
+			return idoGetNumberOfRecords(sql);
+		}
+		catch (IDOException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
 	private int getCountOfPlayersEqualOrOlderThanAgeAndByGenderWorkReportAndWorkReportGroup(int age,String gender, WorkReport report,WorkReportGroup league) {
 		IDOQuery sql = idoQuery();
 		
@@ -531,6 +588,24 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	public int ejbHomeGetCountOfFemalePlayersByWorkReport(WorkReport report) {
 		return getCountOfPlayersEqualOrOlderThanAgeAndByGenderAndWorkReport(-1,FEMALE,report);
 	}
+	
+	//equal
+	public int ejbHomeGetCountOfPlayersOfEqualAgeAndByWorkReportAndWorkReportGroup(int age, String genderMorF, WorkReport report,WorkReportGroup league) {
+		return getCountOfPlayersOfEqualAgeAndByGenderWorkReportAndWorkReportGroup(age,genderMorF,report,league);
+	}
+	
+	public int ejbHomeGetCountOfPlayersOfEqualAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getCountOfPlayersOfEqualAgeAndByGenderWorkReportAndWorkReportGroup(age,null,report,league);
+	}
+
+	public int ejbHomeGetCountOfMalePlayersOfEqualAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getCountOfPlayersOfEqualAgeAndByGenderWorkReportAndWorkReportGroup(age,MALE,report,league);
+	}
+
+	public int ejbHomeGetCountOfFemalePlayersOfEqualAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getCountOfPlayersOfEqualAgeAndByGenderWorkReportAndWorkReportGroup(age,FEMALE,report,league);
+	}
+	
 	
 	//equal or older
 	public int ejbHomeGetCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {

@@ -872,12 +872,17 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	 * NOT FINISHED
 	 */
 	public ReportableCollection getCostPerPlayerStatisticsForLeaguesByYearAgeGenderAndLeaguesFiltering(final Integer year,Integer age,String gender, Collection leaguesFilter)throws RemoteException {
-	
+		
 		//initialize stuff
 		int selectedAge = (age!=null)?age.intValue():-1;
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		boolean ageAndOrGenderCompare = false;
+		
+		if(selectedAge>0 || gender!=null){
+			ageAndOrGenderCompare = true;
+		}
 		
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
@@ -907,6 +912,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		ReportableField totalCost = new ReportableField("totalCost", Integer.class);
 		totalCost.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.totalCost","Total cost"), currentLocale);
 		reportCollection.addField(totalCost);
+		
+		ReportableField ageAndGenderCount = new ReportableField("ageAndGenderCount", Integer.class);
+		reportCollection.addField(ageAndGenderCount);
 		
 		
 		//Real data stuff
@@ -948,7 +956,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						leagueStatsData.addData(leagueString, leagueIdentifier);
 						leagueStatsData.addData(totalCountOfPlayersForLeague, new Integer(0));
 						leagueStatsData.addData(costPerPlayers, new Integer(0));
-						leagueStatsData.addData(totalCost,new Integer(0));	
+						leagueStatsData.addData(totalCost,new Integer(0));
+						leagueStatsData.addData(ageAndGenderCount,new Integer(0));
+						
 					}
 					
 					
@@ -957,6 +967,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					
 					int totalPlayerCount = 0;
 					int cost = 0;
+					
+					int playerCountByAgeAndGender = 0;
+					if(ageAndOrGenderCompare){	
+						playerCountByAgeAndGender = getWorkReportBusiness().getCountOfPlayersOfEqualAgeAndGenderByWorkReportAndWorkReportGroup(selectedAge,gender,report,league);
+						leagueStatsData = addToIntegerCount(ageAndGenderCount,leagueStatsData,playerCountByAgeAndGender);
+					}
+					
 					totalPlayerCount = getWorkReportBusiness().getCountOfPlayersByWorkReportAndWorkReportGroup(report, league);
 					leagueStatsData = addToIntegerCount(totalCountOfPlayersForLeague, leagueStatsData, totalPlayerCount);
 					cost = getWorkReportBusiness().getWorkReportExpensesByWorkReportIdAndWorkReportGroupId(((Integer)report.getPrimaryKey()).intValue(),((Integer)league.getPrimaryKey()).intValue());
@@ -982,14 +999,20 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		Iterator data = reportCollection.iterator();
 		while (data.hasNext()) {
 			ReportableData row = (ReportableData) data.next();
+			Integer totalAgeAndGenderCount = (Integer)row.getFieldValue(ageAndGenderCount);
 			Integer totalCostForleague = (Integer)row.getFieldValue(totalCost);
 			Integer totalCountOfPlayers = (Integer)row.getFieldValue(totalCountOfPlayersForLeague);
-			if(totalCountOfPlayers.intValue()!=0){
-				Integer costPerPlayer = new Integer(totalCostForleague.intValue()/totalCountOfPlayers.intValue());
-				row.addData(costPerPlayers,costPerPlayer);
+			Integer costPerPlayer = new Integer(0);
+			
+			if(totalAgeAndGenderCount.intValue()>0){
+				costPerPlayer = new Integer( (totalCostForleague.intValue()*totalAgeAndGenderCount.intValue())/ (totalCountOfPlayers.intValue()*totalCountOfPlayers.intValue()));
+			}
+			else if(totalCountOfPlayers.intValue()!=0){
+				costPerPlayer = new Integer(totalCostForleague.intValue()/totalCountOfPlayers.intValue());
+				
 			}
 			
-			
+			row.addData(costPerPlayers,costPerPlayer);
 			
 		}
 		

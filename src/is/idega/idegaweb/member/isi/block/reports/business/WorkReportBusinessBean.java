@@ -161,6 +161,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return getWorkReportMemberHome().getCountOfPlayersByWorkReportAndWorkReportGroup(report,league);
 	}
 	
+	
+	
 	public int getCountOfMalePlayersByWorkReportAndWorkReportGroup(WorkReport report,WorkReportGroup league) {
 		return getWorkReportMemberHome().getCountOfMalePlayersByWorkReportAndWorkReportGroup(report,league);
 	}
@@ -193,6 +195,25 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return getWorkReportMemberHome().getCountOfFemalePlayersByWorkReport(report);
 	}
 		
+	//equal
+	
+	//just saving time
+	public int getCountOfPlayersOfEqualAgeAndGenderByWorkReportAndWorkReportGroup(int age, String genderMorF, WorkReport report,WorkReportGroup league) {
+		return getWorkReportMemberHome().getCountOfPlayersOfEqualAgeAndByWorkReportAndWorkReportGroup(age,genderMorF,report,league);
+	}
+	
+	public int getCountOfPlayersOfEqualAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getWorkReportMemberHome().getCountOfPlayersOfEqualAgeAndByWorkReportAndWorkReportGroup(age,report,league);
+	}
+
+	public int getCountOfMalePlayersOfEqualAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getWorkReportMemberHome().getCountOfMalePlayersOfEqualAgeAndByWorkReportAndWorkReportGroup(age,report,league);
+	}
+	
+	public int getCountOfFemalePlayersOfEqualAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getWorkReportMemberHome().getCountOfFemalePlayersOfEqualAgeAndByWorkReportAndWorkReportGroup(age,report,league);
+	}
+	
 	
 	//equal or older
 	public int getCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
