@@ -77,6 +77,7 @@ public class AprtTypePeriodMaker extends Block{
     Form F = new Form();
     DataTable T = new DataTable();
     T.addTitle(iwrb.getLocalizedString("apartment_periods","Apartment periods"));
+    T.setTitlesVertical(false);
     List Types = BuildingCacher.getTypes();
     Hashtable ht = hashOfStuff();
     if(Types != null){

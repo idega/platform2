@@ -62,7 +62,6 @@ public class ContractSignWindow extends Window{
   */
 
   public ContractSignWindow() {
-    //keepFocus();
     setResizable(true);
   }
 
@@ -71,7 +70,6 @@ public class ContractSignWindow extends Window{
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
     if(isAdmin){
-      //add(iwrb.getLocalizedString("manual","Instructions"));
       if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
       SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
       }
@@ -84,8 +82,6 @@ public class ContractSignWindow extends Window{
     }
     else
       add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
-
-    //add(String.valueOf(iSubjectId));
   }
 
   public String getBundleIdentifier(){
@@ -159,9 +155,11 @@ public class ContractSignWindow extends Window{
       T.add(Edit.formatText(to.getLocaleDate(iwc)),2,row);
       row++;
       boolean canSign = true;
+      int con_id = -1;
       if(listOfContracts != null){
         Contract C = (Contract) listOfContracts.get(0);
-        if(C.getID() != eContract.getID())
+        con_id = C.getID();
+        if(con_id != eContract.getID())
           canSign = false;
       }
       if(canSign ){
@@ -231,15 +229,16 @@ public class ContractSignWindow extends Window{
 
         }
         else{
-        T.add(Edit.formatText(iwrb.getLocalizedString("syspropserror","System property error")),2,row++);
+        T.add(Edit.formatText(iwrb.getLocalizedString("sys_props_error","System property error")),2,row++);
         T.add(Edit.formatText(iwrb.getLocalizedString("no_default_group","No default group")),2,row++);
         }
       }
       else{
         row++;
-        Text msg = Edit.formatText(iwrb.getLocalizedString("contractconflict","Apartment is still in rent"));
+        Text msg = Edit.formatText(iwrb.getLocalizedString("contract_conflict","Apartment is still in rent"));
         msg.setFontColor("#FF0000");
-        T.add(msg,2,row++);
+        T.add(msg,2,row);
+        T.add(CampusContracts.getReSignLink(iwb.getImage("/scissors.gif"),con_id),2,row);
       }
 
       Form F = new Form();

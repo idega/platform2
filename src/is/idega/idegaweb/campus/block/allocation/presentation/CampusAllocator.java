@@ -139,27 +139,32 @@ public class CampusAllocator extends Block{
     if(isAdmin){
       if(iTypeId > 0 && iComplexId > 0){
 
+        // Allocate apartment to an applicant
         if(iwc.getParameter("allocate")!=null){
           int applicantId = Integer.parseInt(iwc.getParameter("allocate"));
           Frame.add( getApartmentsForm(iTypeId,iComplexId,applicantId,-1),3,row );
           Frame.add( getApplicantInfo(applicantId,iwc),1,row);
         }
+        // Change allocation
         else if(iwc.getParameter("change")!=null){
           int iContractId = Integer.parseInt(iwc.getParameter("change"));
           int applicantId = Integer.parseInt(iwc.getParameter("applicant"));
+          Frame.add( getWaitingList(iTypeId,iComplexId,iContractId),1,row );
           Frame.add( getApartmentsForm(iTypeId,iComplexId,applicantId,iContractId),3,row );
           //Frame.add( getContractTable(iContractId),3,1 );
-          Frame.add( getWaitingList(iTypeId,iComplexId,iContractId),1,row );
+
         }
+        // show all contracts for apartment
         else if(iwc.getParameter("view_aprtmnt")!=null){
           int iApartmentId = Integer.parseInt(iwc.getParameter("view_aprtmnt"));
           int iContractId = Integer.parseInt(iwc.getParameter("contract"));
           int iApplicantId = Integer.parseInt(iwc.getParameter("applicant"));
           idegaTimestamp from = new idegaTimestamp(iwc.getParameter("from"));
+          Frame.add( getApplicantInfo(iApplicantId,iwc),1,row );
           Frame.add( getContractsForm(iApartmentId,iApplicantId,iContractId,from),3,row );
           //Frame.add( getContractTable(iContractId),3,1 );
-          Frame.add( getApplicantInfo(iApplicantId,iwc),1,row );
         }
+        // save allocation
         else if(iwc.getParameter("save_allocation")!=null){
           if(saveAllocation(iwc))
             System.err.println("vistadist");
@@ -167,14 +172,17 @@ public class CampusAllocator extends Block{
              System.err.println("vistadist ekki");
           Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,row );
         }
+        // delete allocation
         else if(iwc.getParameter("delete_allocation")!=null){
           deleteAllocation(iwc);
           Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,row );
         }
+        // get Waitinglist for this type and complex
         else
           Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,row );
 
       }
+      // get type and complex list
       else
         Frame.add(getCategoryLists(),1,row);
 
@@ -328,6 +336,7 @@ public class CampusAllocator extends Block{
   }
 
   private PresentationObject getWaitingList(int aprtTypeId,int cmplxId,int ContractId){
+    Image registerImage = iwb.getImage("/pen.gif",iwrb.getLocalizedString("sign","Sign"));
     DataTable Frame = new DataTable();
     Frame.addTitle(iwrb.getLocalizedString("applicants","Applicants"));
     Frame.setTitlesHorizontal(true);
@@ -345,20 +354,24 @@ public class CampusAllocator extends Block{
     Frame.add(formatText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col++,row);
     Frame.add(formatText(iwrb.getLocalizedString("phone","Phone")),col++,row);
     if(ifLong)
-      Frame.add(formatText(iwrb.getLocalizedString("application","Application")),col++,row);
+      Frame.add(registerImage,col++,row);
+      //Frame.add(formatText(iwrb.getLocalizedString("application","Application")),col++,row);
 
     List L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId,cmplxId);
     Hashtable HT = ContractFinder.hashOfApplicantsContracts();
     boolean bcontracts = false;
+    Contract C;
     if(HT !=null)
       bcontracts = true;
     if(L!=null){
       int len = L.size();
       row = 2;
       String TempColor = "#000000";
+      int con_id = -1;
       boolean redColorSet = false;
       for (int i = 0; i < len; i++) {
         col = 1;
+        con_id = -1;
         WaitingList WL = (WaitingList)L.get(i);
         try{
 
@@ -367,7 +380,7 @@ public class CampusAllocator extends Block{
           Frame.add(formatText(WL.getOrder().intValue()),col++,row);
 
           if(bcontracts && HT.containsKey(new Integer(A.getID()))){
-            Contract C = (Contract) HT.get(new Integer(A.getID()));
+            C = (Contract) HT.get(new Integer(A.getID()));
             if(C.getID() == ContractId){
               TempColor = TextFontColor;
               TextFontColor = "FF0000";
@@ -375,6 +388,7 @@ public class CampusAllocator extends Block{
             }
             //Frame.add(formatText(getApartmentString(C)),4,i+1);
             Frame.add(getChangeLink(C.getID(),C.getApplicantId().intValue()),col++,row);
+            con_id = C.getID();
           }
           else{
             Frame.add(getAllocateLink(A.getID()),col++,row);
@@ -383,11 +397,12 @@ public class CampusAllocator extends Block{
           Frame.add(formatText(A.getSSN()),col++,row);
           Frame.add(formatText(A.getResidence()),col++,row);
           if(ifLong)
-          Frame.add(formatText(A.getLegalResidence()),col++,row);
+            Frame.add(formatText(A.getLegalResidence()),col++,row);
           Frame.add(formatText(A.getMobilePhone()),col++,row);
           Frame.add(formatText(A.getResidencePhone()),col++,row);
-          if(ifLong)
-          Frame.add(getPDFLink(iwb.getImage("print.gif"),A.getID()),col,row);
+          if(ifLong && con_id > 0)
+            Frame.add(CampusContracts.getSignedLink(registerImage,con_id),col,row);
+            //Frame.add(getPDFLink(iwb.getImage("print.gif"),A.getID()),col,row);
 
           if(redColorSet)
             TextFontColor = TempColor;
@@ -511,9 +526,9 @@ public class CampusAllocator extends Block{
     Frame.add(Header,1,1);
     */
     if(C!=null)
-      Frame.add(getContractMakingTable(C,ATP,applicant_id,null,C.getApartmentId().intValue() ));
-
-    Frame.add(getFreeApartments(AT,CX,applicant_id ,C),1,3);
+      Frame.add(getContractMakingTable(C,ATP,applicant_id,null,C.getApartmentId().intValue()), 1,1);
+    else
+      Frame.add(getFreeApartments(AT,CX,applicant_id ,C),1,1);
     myForm.add(Frame);
     return myForm;
   }

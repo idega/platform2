@@ -429,21 +429,21 @@ public class CampusContracts extends Block{
 
 
 
-  public Link getSignedLink(PresentationObject MO,int contractId){
+  public static Link getSignedLink(PresentationObject MO,int contractId){
     Link L = new Link(MO);
     L.setWindowToOpen(ContractSignWindow.class);
     L.addParameter("signed_id",contractId);
     return L;
   }
 
-   public Link getReSignLink(PresentationObject MO,int contractId){
+   public static Link getReSignLink(PresentationObject MO,int contractId){
     Link L = new Link(MO);
     L.setWindowToOpen(ContractReSignWindow.class);
     L.addParameter("contract_id",contractId);
     return L;
   }
 
-   public Link getKeyLink(PresentationObject MO,int contractId){
+   public static Link getKeyLink(PresentationObject MO,int contractId){
     Link L = new Link(MO);
     L.setWindowToOpen(ContractKeyWindow.class);
     L.addParameter(ContractKeyWindow.prmContractId,contractId);
@@ -452,7 +452,7 @@ public class CampusContracts extends Block{
 
   public Link getPDFLink(PresentationObject MO,int contractId){
     Link L = new Link(MO);
-		L.setWindowToOpen(ContractFilerWindow.class);
+    L.setWindowToOpen(ContractFilerWindow.class);
     L.addParameter(ContractFiler.prmOneId,contractId);
     return L;
   }
