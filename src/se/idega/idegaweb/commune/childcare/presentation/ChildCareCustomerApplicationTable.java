@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.61 2004/01/12 09:22:13 gimmi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.62 2004/01/27 18:02:34 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -88,10 +88,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		layoutTbl.setCellspacing(0);
 		layoutTbl.setWidth(getWidth());
 
+		int action = parseAction(iwc);
 		Collection applications = findApplications(iwc);
 		ChildCareApplication application = null;
 		
-		switch (parseAction(iwc)) {
+		switch (action) {
 			case CCConstants.ACTION_SUBMIT_1 :
 				boolean forwardToEndPage = handleAcceptStatus(iwc, getAcceptedStatus(iwc));
 				applications = findApplications(iwc);
