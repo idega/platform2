@@ -65,8 +65,10 @@ private IWBundle iwb;
 private IWBundle iwcb;
 private IWResourceBundle iwrb;
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
+public final static String CACHE_KEY="tx_text";
 
   public TextReader(){
+    setCacheable(getCacheKey(), 999999999);//cache indefinately
   }
 
   public TextReader(String sAttribute){
@@ -374,6 +376,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
   public String getBundleIdentifier(){
   return IW_BUNDLE_IDENTIFIER;
+  }
+
+  public String getCacheKey(){
+    return CACHE_KEY;
   }
 
   public synchronized Object clone() {
