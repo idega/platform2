@@ -49,7 +49,10 @@ public class UnionMemberInfo extends GolfEntity {
         addAttribute("price_catalogue_id","Gjaldskrá",true,true,"java.lang.Integer");
     }
 
-
+    public void setDefaultValues(){
+      setColumn("card_id",1);
+      setColumn("payment_type_id",1);
+    }
 
     public String getEntityName() {
       return "union_member_info";
