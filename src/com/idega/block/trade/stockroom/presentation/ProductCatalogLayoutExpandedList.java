@@ -77,7 +77,11 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
         table.add(productCatalog.getAnchor(product.getID()), 1,row);
       }
 
-      nameLink = new Link(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)));
+      if (productCatalog._useAnchor) {
+        nameLink = new AnchorLink(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)), productCatalog.getAnchorString(product.getID()));
+      }else {
+        nameLink = new Link(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)));
+      }
       nameLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
 
       table.add(nameLink, 1,row);
@@ -151,7 +155,7 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
       table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
       String viewerIm = productCatalog.iwrb.getLocalizedString("more","more");
 
-      Link po = productCatalog.getNameLink(product, productCatalog.getText(productCatalog.iwrb.getLocalizedString("more","more")));
+      Link po = productCatalog.getNameLink(product, productCatalog.getText(productCatalog.iwrb.getLocalizedString("more","more")), false);
       table.add(po, 1, row);
     }
 

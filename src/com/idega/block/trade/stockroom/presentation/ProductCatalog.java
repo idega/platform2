@@ -343,8 +343,16 @@ public class ProductCatalog extends CategoryBlock{
       nameText = getText(displayString);
     }
     Link productLink;
+
+    /**
+     * @todo Fix LINK to handle popup anchor....
+     */
+     if (this._windowString != null) {
+      _useAnchor = false;
+     }
+
     if (_productIsLink) {
-      productLink = getNameLink(product, nameText);
+      productLink = getNameLink(product, nameText, _useAnchor);
       if (productLink != null) {
         return productLink;
       }else {
@@ -355,12 +363,14 @@ public class ProductCatalog extends CategoryBlock{
     }
   }
 
-  Link getNameLink(Product product, Text nameText) {
+  Link getNameLink(Product product, Text nameText, boolean useAnchor) {
     Link productLink;
     if (_productIsLink) {
-      if (_useAnchor) {
+      if (useAnchor) {
+        debug("getting anchorLink");
         productLink = new AnchorLink(nameText, getAnchorString(product.getID()));
       }else {
+        debug("getting normal");
         productLink = new Link(nameText);
       }
 
