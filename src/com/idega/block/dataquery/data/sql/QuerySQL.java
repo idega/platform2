@@ -14,6 +14,7 @@ import com.idega.block.dataquery.business.QueryConditionPart;
 import com.idega.block.dataquery.business.QueryEntityPart;
 import com.idega.block.dataquery.business.QueryFieldPart;
 import com.idega.block.dataquery.business.QueryHelper;
+import com.idega.block.dataquery.business.QuerySQLPart;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOEntity;
 import com.idega.util.datastructures.HashMatrix;
@@ -33,6 +34,9 @@ public class QuerySQL implements DynamicExpression {
   private final String ALIAS_PREFIX = "A_";
   
   private String name;
+  
+  // only used if the query contains direct sql
+  private String sqlStatement;
   
   
   // tablename : path : number
@@ -137,15 +141,19 @@ public class QuerySQL implements DynamicExpression {
   }
   
   public boolean isDynamic()	{
-  	boolean isDynamic = ((DynamicExpression) query).isDynamic();
-  	if (isDynamic && hasPreviousQuery())	{
+  	//TODO: thi: temporary solution
+  	boolean isDynamic = (query == null) ? false : query.isDynamic();
+  	if (isDynamic) {
+			return true;
+  	}
+  	if (hasPreviousQuery())	{
   		return previousQuery().isDynamic();
   	}
-  	return isDynamic;
+  	return false;
   }
   
   public Map getIdentifierValueMap()	{
-  	Map myMap = ((DynamicExpression) query).getIdentifierValueMap();
+  	Map myMap = (query == null) ? new HashMap() : query.getIdentifierValueMap();
   	if (hasPreviousQuery()) 	{
   		myMap.putAll(previousQuery().getIdentifierValueMap());
   	}
@@ -153,7 +161,7 @@ public class QuerySQL implements DynamicExpression {
   }
   
   public Map getIdentifierDescriptionMap()	{
-  	Map myMap =((DynamicExpression) query).getIdentifierDescriptionMap();
+  	Map myMap = (query == null) ? new HashMap() : query.getIdentifierDescriptionMap();
   	if (hasPreviousQuery()) {
   		myMap.putAll(previousQuery().getIdentifierDescriptionMap());
   	}
@@ -161,7 +169,9 @@ public class QuerySQL implements DynamicExpression {
   }
   
   public void setIdentifierValueMap(Map identifierValueMap) {
-  	((DynamicExpression) query).setIdentifierValueMap(identifierValueMap);
+  	if (query != null) {
+  		query.setIdentifierValueMap(identifierValueMap);
+  	}
   	if (hasPreviousQuery())	{
   		previousQuery().setIdentifierValueMap(identifierValueMap);
   	}
@@ -171,7 +181,7 @@ public class QuerySQL implements DynamicExpression {
    * Returns the corresponding sql statement
    */
   public String toSQLString() {
-  	return query.toSQLString();
+  	return (query == null) ? sqlStatement : query.toSQLString();
   }
   	
   public List getDisplayNames() {
@@ -236,6 +246,14 @@ public class QuerySQL implements DynamicExpression {
     
       
   private SelectStatement createQuery(QueryHelper queryHelper) throws IOException {
+  	
+  	// direct sql 
+  	QuerySQLPart querySQLPart = queryHelper.getSQL();
+  	if (querySQLPart != null)	{
+  		sqlStatement = querySQLPart.getStatement();
+  		return null;
+  	}
+  	
     
     SelectStatement query = new SelectStatement();
     // prepare everything
