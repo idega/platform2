@@ -263,7 +263,8 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		
 
 		PaymentRecord pay = null;
-		InvoiceRecord inv = null;
+		InvoiceRecord details = null;
+		boolean isInvoiceRecordCreated = false;
 				
 		if (errorMessages.isEmpty()){
 			PaymentHeader payhdr = null;
@@ -317,7 +318,6 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			}
 	
 			//Creating paymentHeader if not found
-			
 			if (payhdr == null){
 				try{
 					payhdr = getPaymentHeaderHome().create();
@@ -360,9 +360,12 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 				try{
 					SchoolClassMemberHome scmHome = (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
 					SchoolClassMember member = scmHome.findLatestByUserAndSchool(student.getNodeID(), schoolId);
-					inv = getInvoiceRecordHome().create();		
-					inv.setSchoolClassMember(member);
-					inv.setPaymentRecord(pay);				
+					details = getInvoiceRecordHome().create();		
+					details.setSchoolClassMember(member);
+					details.setPaymentRecord(pay);				
+					details.setCreatedBy (getSignature (iwc.getCurrentUser ()));
+					details.setDateCreated (new Date (new java.util.Date ().getTime()));
+					isInvoiceRecordCreated = true;
 				}catch(RemoteException ex){
 					ex.printStackTrace();
 				}catch(FinderException ex){
@@ -462,15 +465,12 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			}	
 		}// END: if(errorMessages.isEmpty())
 
-	
 		if (! errorMessages.isEmpty()){
 			handleEditAction(iwc, errorMessages);	
 		}else{		
 	
 			pay.store();	
-			if (inv != null){	
-				inv.store();		
-			}
+			if (isInvoiceRecordCreated)	details.store ();
 
 			if (getResponsePage () != null){
 				iwc.forwardToIBPage(getParentPage(), getResponsePage ());
@@ -478,11 +478,12 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		}
 	}
 
-	private String getSignature (final User user) {
-		if (null == user) return "not logged on user";
+	private static String getSignature (final User user) {
+		if (null == user) return "not logged in user";
 		final String firstName = user.getFirstName ();
 		final String lastName = user.getLastName ();
-		return (firstName != null ? firstName + " " : "") + (lastName != null ? lastName : "");
+		return (firstName != null ? firstName + " " : "")
+				+ (lastName != null ? lastName : "");
 	}
 	
 	private void checkNotNull(IWContext iwc, String par, Map errorMessages, String errorPar, String errorMsg){
