@@ -798,6 +798,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 
 		DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
+		if(archive.getEmploymentTypeId()>0)
+			employmentTypes.setSelectedElement(archive.getEmploymentTypeId());
 		employmentTypes.setAsNotEmpty(localize("child_care.must_select_employment_type","You must select employment type."), "-1");
 		employmentTypes = (DropdownMenu) getStyledInterface(employmentTypes);
 		
