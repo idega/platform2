@@ -6,6 +6,7 @@ package is.idega.idegaweb.golf.presentation;
 import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
+import is.idega.idegaweb.golf.tournament.business.TournamentBusiness;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,6 +14,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWPropertyList;
@@ -806,6 +810,14 @@ public abstract class GolfBlock extends Block {
 		return hasParentToReloadURL;
 	}
 	
+	public TournamentBusiness getTournamentBusiness(IWContext iwc) {
+		try {
+			return (TournamentBusiness) IBOLookup.getServiceInstance(iwc, TournamentBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
 	
 	/**
 	 * Style related methods begin
