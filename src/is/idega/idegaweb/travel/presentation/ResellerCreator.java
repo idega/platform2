@@ -307,16 +307,19 @@ public class ResellerCreator extends TravelManager {
       table.add(submit,2,row);
       table.setRowColor(row,super.GRAY);
 
-      add(Text.getBreak());
-      add(form);
 
 
       if (resellerId != -1) {
-        add(Text.getBreak());
-        Form list = getSupplierList(resellerId);
-          form.addParameter(this.parameterResellerId, resellerId);
-        add(list);
+        form.add(Text.getBreak());
+        Table list = getSupplierList(resellerId);
+//          form.addParameter(this.parameterResellerId, resellerId);
+				//++row;
+				//table.mergeCells(1, row, 2, row);
+        form.add(list);
       }
+
+      add(Text.getBreak());
+      add(form);
 
   }
 
@@ -605,7 +608,7 @@ public class ResellerCreator extends TravelManager {
     Supplier[] allSuppsArr = (Supplier[]) sHome.createLegacy().findAll("select * from "+SupplierBMPBean.getSupplierTableName()+" where "+SupplierBMPBean.getColumnNameIsValid()+" = 'Y' order by "+SupplierBMPBean.getColumnNameName());
     Supplier[] resSuppsArr = ResellerManager.getSuppliers(resellerId, SupplierBMPBean.getColumnNameName());
     Supplier supp;
-
+    
     List allSupps = getList(allSuppsArr);
     List resSupps = getList(resSuppsArr);
     allSupps.removeAll(resSupps);
@@ -667,15 +670,15 @@ public class ResellerCreator extends TravelManager {
   }
 
 
-  private Form getSupplierList(int resellerId) throws SQLException{
+  private Table getSupplierList(int resellerId) throws SQLException{
     Supplier[] supps = ResellerManager.getSuppliers(resellerId);
 
-    Form form = new Form();
-      form.addParameter(this.parameterResellerId, resellerId);
+//    Form form = new Form();
+//      form.addParameter(this.parameterResellerId, resellerId);
     Table table = getTable();
     table.setWidth(this.tableWidth);
     int row = 1;
-    form.add(table);
+//    form.add(table);
 
 
     table.add(getHeaderText(iwrb.getLocalizedString("travel.suppliers","Suppliers")), 1, row);
@@ -700,7 +703,8 @@ public class ResellerCreator extends TravelManager {
 //    table.setAlignment(2, row, "right");
 //   table.add(update, 2, row);
 
-    return form;
+//    return form;
+		return table;
   }
 
 

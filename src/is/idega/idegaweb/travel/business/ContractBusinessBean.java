@@ -38,8 +38,10 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
       Supplier supplier = (Supplier) com.idega.block.trade.stockroom.data.SupplierBMPBean.getStaticInstance(Supplier.class);
       Contract contract = (Contract) is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class);
 
-      StringBuffer buffer = new StringBuffer();
+       StringBuffer buffer = new StringBuffer();
         buffer.append("SELECT distinct(s.*) FROM "+com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()+" s, "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName() +" c, "+ProductBMPBean.getProductEntityName()+" p");
+//       StringBuffer buffer = new StringBuffer();
+//        buffer.append("SELECT s.* FROM "+com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()+" s, "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName() +" c, "+ProductBMPBean.getProductEntityName()+" p");
         buffer.append(" WHERE ");
         buffer.append("c."+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId()+" = "+resellerId);
         buffer.append(" AND ");
@@ -48,7 +50,7 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
         buffer.append("p."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameSupplierId()+" = s."+supplier.getIDColumnName());
         if (orderBy != null && !orderBy.equals("")) {
         buffer.append(" ORDER BY s."+orderBy);
-        }
+        }        
 
       suppliers = (Supplier[]) supplier.findAll(buffer.toString());
     }catch (SQLException sql) {
@@ -69,6 +71,7 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
 
       StringBuffer buffer = new StringBuffer();
         buffer.append("SELECT distinct(p.*) FROM  "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName() +" c");
+//        buffer.append("SELECT p.* FROM  "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName() +" c");
         buffer.append(", "+ProductBMPBean.getProductEntityName()+" p");
         if (ownerResellerId != -1) {
           buffer.append(", "+reseller.getTreeRelationshipTableName(reseller)+" r");
