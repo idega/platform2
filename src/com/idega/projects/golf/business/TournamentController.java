@@ -457,6 +457,7 @@ public class TournamentController{
             form.add(new HiddenInput("viewOnly",""+viewOnly));
 
 
+
         Table table = new Table();
             if (useBorder) {
                 table.setBorder(5);
@@ -467,6 +468,7 @@ public class TournamentController{
         form.add(table);
         int row = 1;
 
+        int numberOfMember = TournamentController.getMembersInTournament(tournament).length;
 
         TournamentRound[] tourRounds = tournament.getTournamentRounds();
 
@@ -517,6 +519,7 @@ public class TournamentController{
             table.add("Forgjöf",5,row);
 
         java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
+        java.text.DecimalFormat handicapFormat = new java.text.DecimalFormat("0.0");
         Field field = tournament.getField();
         List members;
         com.idega.jmodule.object.Image rusl = new com.idega.jmodule.object.Image("/pics/icons/trash.gif","Skrá úr móti");
@@ -556,7 +559,7 @@ public class TournamentController{
                         if (i != 0) table.add(tooMany,1,row);
                         table.add(tempMember.getSocialSecurityNumber(),2,row);
                         table.add(tempMember.getName() ,3,row);
-                        table.add(Float.toString(tempMember.getHandicap()),5,row);
+                        table.add(handicapFormat.format(tempMember.getHandicap()),5,row);
                         if (!viewOnly) {
                             remove = new Link(rusl);
                                 remove.addParameter("sub_action","removeMemberFromTournament");
@@ -581,19 +584,23 @@ public class TournamentController{
 
                     ++row;
                 }
-                //table.setHeight(row,"20");
-                table.mergeCells(1,row,6,row);
                 startHour.addMinutes(minutesBetween);
+                if (endHour.isLaterThan(startHour) ) {
+                    table.mergeCells(1,row,6,row);
+                }
             }
 
 
-      //            SubmitButton submitButton = new SubmitButton("Vista","sub_action","saveDirectRegistration");
+            table.mergeCells(1,row,3,row);
+            table.add(numberOfMember + " meðlimir skráðir í mótið",1,row);
+
+            table.mergeCells(4,row,6,row);
             if (!viewOnly) {
                 SubmitButton submitButton = new SubmitButton(new com.idega.jmodule.object.Image("/pics/formtakks/vista.gif",""));
-                table.add(new HiddenInput("sub_action","saveDirectRegistration"),1,row);
-                table.add(submitButton,1,row);
-                table.add(new HiddenInput("number_of_groups",""+groupCounter),1,row);
-                table.setAlignment(1,row,"right");
+                table.add(new HiddenInput("sub_action","saveDirectRegistration"),4,row);
+                table.add(submitButton,4,row);
+                table.add(new HiddenInput("number_of_groups",""+groupCounter),4,row);
+                table.setAlignment(4,row,"right");
             }
 
         //}
