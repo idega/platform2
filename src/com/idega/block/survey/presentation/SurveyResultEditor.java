@@ -11,6 +11,7 @@ import javax.ejb.FinderException;
 import com.idega.block.survey.business.SurveyBusiness;
 import com.idega.block.survey.business.SurveyBusinessBean;
 import com.idega.block.survey.data.SurveyAnswer;
+import com.idega.block.survey.data.SurveyAnswerHome;
 import com.idega.block.survey.data.SurveyEntity;
 import com.idega.block.survey.data.SurveyParticipant;
 import com.idega.block.survey.data.SurveyQuestion;
@@ -68,9 +69,12 @@ public class SurveyResultEditor extends Block {
 	private SurveyStatus _status;
 	private Collection _allStatuses;
 	private Collection _questions;
+	private SurveyReplyHome _repHome;
+	private SurveyAnswerHome _ansHome;
 	
 	private String messageTextStyle;// = "font-weight: bold;";
 	private String messageTextHighlightStyle ;//= "font-weight: bold;color: #FF0000;";
+	private long startMilli = 0;
 	
 	private String style_submitbutton = "font-family:arial; font-size:8pt; color:#000000; text-align: center; border: 1 solid #000000;";
 	
@@ -309,12 +313,15 @@ public class SurveyResultEditor extends Block {
 		
 		if (_questions != null && !_questions.isEmpty()) {
 			try {
+				startMilli = System.currentTimeMillis();
+				log("[SurveyResultEditor] Starting to create survey report...");
 				Iterator iter = _questions.iterator();
 				SurveyQuestion question;
 				while (iter.hasNext()) {
 					question = (SurveyQuestion) iter.next();
 					row = displayQuestion(question, table, row);
 				}
+				log("[SurveyResultEditor] Total Time : "+((System.currentTimeMillis() - startMilli) / 1000)+"s");
 			} catch (IDOLookupException e) {
 				e.printStackTrace();
 			} 
@@ -346,18 +353,17 @@ public class SurveyResultEditor extends Block {
 	
 	private int displayQuestion(SurveyQuestion question, Table table, int row) throws RemoteException {
 		try {
-			Collection answers = _sBusiness.getAnswerHome().findQuestionsAnswer(question);
+			Collection answers = getAnswerHome().findQuestionsAnswer(question);
 			String questionName = question.getQuestion(_icLocale);
-			SurveyReplyHome repHome = (SurveyReplyHome) IDOLookup.getHome(SurveyReply.class);
-			Collection replys = repHome.findByQuestion(question);
+			Collection replys = getReplyHome().findByQuestion(question);
+			
 			int column = 1;
 			int[] totals;
 			table.add(questionName, column, row);
 			boolean choiceAnswer = SurveyBusinessBean.ANSWERTYPE_TEXTAREA != question.getAnswerType();
 			boolean isCheckBox = SurveyBusinessBean.ANSWERTYPE_MULTI_CHOICE == question.getAnswerType();
-			
 			Object[] answersIds = new Object[]{};
-			if (answers != null && !answers.isEmpty()) {
+			if (answers != null) {
 				Iterator iter = answers.iterator();
 				answersIds = new Object[answers.size()+2]; // 0 and 1 are not used
 				SurveyAnswer answer;
@@ -368,17 +374,18 @@ public class SurveyResultEditor extends Block {
 					
 				}
 			}
-
-			if (replys != null && !replys.isEmpty()) {
+			
+			if (replys != null) {
 				Iterator iter = replys.iterator();
 				SurveyReply reply;
+				Object primaryKey;
 				String lastParticipant = "";
 				String participant = "";
 				totals = new int[answersIds.length];
 				while (iter.hasNext()) {
 					reply = (SurveyReply) iter.next();
-					participant = reply.getParticipantKey();
 					if (isCheckBox) {
+						participant = reply.getParticipantKey();
 						if (participant == null || !participant.equals(lastParticipant)) {
 							++row;
 							lastParticipant = participant;
@@ -386,22 +393,29 @@ public class SurveyResultEditor extends Block {
 					} else {
 						++row;
 					}
+					primaryKey = reply.getSurveyAnswer().getPrimaryKey();
 					for (int i = 2; i < answersIds.length; i++) {
-						if (answersIds[i].equals(reply.getSurveyAnswer().getPrimaryKey())) {
+						if (answersIds[i].equals(primaryKey)) {
 							if (choiceAnswer) {
 								totals[i] += 1;
-								table.add(getText("X"), i, row);
+								//table.add(getText("X"), i, row);
+								table.add("X", i, row);
+								break;
 							} else {
+								//table.add(reply.getAnswer(), i, row);
 								table.add(reply.getAnswer(), i, row);
+								break;
 							}
 						}
 					}
 				}
 				if (choiceAnswer) {
 					++row;
-					table.add(getText(_iwrb.getLocalizedString("totals", "Totals")), 1, row);
+					//table.add(getText(_iwrb.getLocalizedString("totals", "Totals")), 1, row);
+					table.add("Totals", 1, row);
 					for (int i = 2; i < answersIds.length; i++) {
-						table.add(getText(Integer.toString( totals[i] )), i, row);
+						//table.add(getText(Integer.toString( totals[i] )), i, row);
+						table.add(Integer.toString( totals[i] ), i, row);
 					}
 				}
 			}
@@ -447,5 +461,17 @@ public class SurveyResultEditor extends Block {
 		messageTextHighlightStyle = style;
 	}
 
-
+	protected SurveyReplyHome getReplyHome() throws IDOLookupException {
+		if (_repHome == null) {
+			_repHome = (SurveyReplyHome) IDOLookup.getHome(SurveyReply.class);
+		}
+		return _repHome;
+	}
+	
+	protected SurveyAnswerHome getAnswerHome() throws IDOLookupException {
+		if (_ansHome == null) {
+			_ansHome = (SurveyAnswerHome) IDOLookup.getHome(SurveyAnswer.class);
+		}
+		return _ansHome;
+	}
 }
