@@ -250,11 +250,10 @@ public abstract class BillingThread extends Thread{
 					e.printStackTrace();
 				}
 				catch (PostingException e) {
-					
-//					errorRelated.append(getLocalizedString("billingthread_category","Category")+": "+category);
-//					errorRelated.append(getLocalizedString("billingthread_school_type","School Type")+":"+sType);
-//					errorRelated.append(getLocalizedString("billingthread_provider","Provider")+":"+provider);
-//					errorRelated.append(getLocalizedString("billingthread_period","Period")+":"+startPeriod.getDate());
+					errorRelated.append(getLocalizedString("billingthread_category","Category")+": "+category);
+					errorRelated.append(getLocalizedString("billingthread_school_type","School Type")+":"+sType);
+					errorRelated.append(getLocalizedString("billingthread_provider","Provider")+":"+provider);
+					errorRelated.append(getLocalizedString("billingthread_period","Period")+":"+startPeriod.getDate());
 					errorRelated.append(getLocalizedString("invoice.schoolyear","Schoolyear")+":"+sYear.getName());
 					createNewErrorMessage(errorRelated,getLocalizedString("invoice.PostingException","PostingException"));
 					e.printStackTrace();

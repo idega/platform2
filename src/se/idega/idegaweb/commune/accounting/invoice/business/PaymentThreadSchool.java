@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/04/02 12:14:10 $ by $Author: joakim $
+ * Last modified: $Date: 2004/04/06 15:20:41 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.133 $
+ * @version $Revision: 1.134 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -602,8 +602,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			try {
 				Regulation regulation = (Regulation) i.next();
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, calculationDate, conditions, placementTimes);
-				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-//				RegulationSpecType regSpecType = regulation.getRegSpecType();
+//				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
+				RegulationSpecType regSpecType = regulation.getRegSpecType();
 				errorRelated.append("RegSpecType from regulation "+regulation.getRegSpecType(),1);
 				errorRelated.append("RegSpecType from posting detail"+(getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey(),1);
 				if(!regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(
@@ -629,7 +629,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], 
 							placementTimes.getMonths(), school);
 //					errorRelated.append("created payment info for fritidsklubb:" + schoolClassMember.getStudent().getName());
-					createVATPaymentRecord(record,postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+//					createVATPaymentRecord(record,postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+					createVATPaymentRecord(record,postingDetail,placementTimes.getMonths(),school,schoolType,schoolYear);
 					createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 				} catch (FinderException e1) {
 					e1.printStackTrace();
