@@ -74,7 +74,7 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements Sup
 
 		addIndex("IDX_SUPP_1", new String[]{getIDColumnName(), getColumnNameIsValid()});
 		addIndex("IDX_SUPP_2", new String[]{getColumnNameIsValid()});
-		addIndex("IDX_SUPP_3", new String[]{COLUMN_SUPPLIER_MANAGER_ID});
+		addIndex("IDX_SUPP_4", new String[]{COLUMN_SUPPLIER_MANAGER_ID, getColumnNameIsValid()});
 	}
 
 	public void insertStartData() throws Exception {
