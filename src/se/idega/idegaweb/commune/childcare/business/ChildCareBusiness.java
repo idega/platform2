@@ -649,6 +649,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	public ChildCareApplication getApplicationByPrimaryKey(String key) throws java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#deleteOffer
+	 */
+	public void deleteOffer(int applicationID, User performer) throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#redeemApplication
 	 */
 	public boolean redeemApplication(String applicationId, User performer) throws java.rmi.RemoteException;

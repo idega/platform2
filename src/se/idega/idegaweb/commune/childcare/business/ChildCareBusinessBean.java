@@ -2655,6 +2655,27 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 	}
 
+	public void deleteOffer(int applicationID, User performer) {
+		UserTransaction t = getSessionContext().getUserTransaction();
+		try {
+			t.begin();
+			ChildCareApplication application = getChildCareApplication(applicationID);
+			application.setStatus(String.valueOf(getStatusSentIn()));
+			Collection contracts = getContractsByApplication(applicationID);
+			Iterator iter = contracts.iterator();
+			while (iter.hasNext()) {
+				removeContract((ChildCareContract) iter.next(), performer);
+			}
+			application.store();
+			t.commit();
+		} catch (Exception e) {
+			log(e);
+			try {
+				t.rollback();
+			} catch (SystemException se) {}
+		}
+	}
+	
 	public boolean redeemApplication(String applicationId, User performer) {
 		ChildCareApplication appl = getApplicationByPrimaryKey(applicationId);
 		if (appl == null)
