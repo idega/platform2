@@ -69,7 +69,7 @@ public class IdegaClient extends Applet implements Runnable{
     try {
       sessionId = this.getParameter(SESSION_ID, "noId");
       userId = this.getParameter(USER_ID, "-1");
-      servletURL = this.getParameter(SERVLET_URL, "/servlet/ClientServer");
+      servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
     }
     catch(Exception e) {
       e.printStackTrace();
