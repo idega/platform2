@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.9 2003/11/17 12:11:50 roar Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.10 2003/11/20 17:00:13 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean
  * <p>
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.9 2003/11/17 12:11:50 roar Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.10 2003/11/20 17:00:13 joakim Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class CommuneBelongingTypeBMPBean extends GenericEntity implements CommuneBelongingType {
 	
@@ -49,7 +49,7 @@ public class CommuneBelongingTypeBMPBean extends GenericEntity implements Commun
 		final String [] data = { HOME_COMMUNE, NO_HOME_COMMUNE };
 		for (int i = 0; i < data.length; i++) {
 			CommuneBelongingType cbType = home.create();
-			cbType.setCommuneBelongingType(ENTITY_NAME + "." + data[i]);
+			cbType.setCommuneBelongingType(data[i]);
 			cbType.store();
 		}
 	}
@@ -90,13 +90,13 @@ public class CommuneBelongingTypeBMPBean extends GenericEntity implements Commun
 	
 	public Object ejbFindHomeCommune() throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COMMUNE_BELONGING_TYPE, HOME_COMMUNE);
+		sql.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_COMMUNE_BELONGING_TYPE, ENTITY_NAME + "." + HOME_COMMUNE);
 		return idoFindOnePKByQuery(sql);		
 	}
 	
 	public Object ejbFindNoHomeCommune() throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COMMUNE_BELONGING_TYPE, NO_HOME_COMMUNE);
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COMMUNE_BELONGING_TYPE, ENTITY_NAME + "." + NO_HOME_COMMUNE);
 		return idoFindOnePKByQuery(sql);		
 	}	
 
