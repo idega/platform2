@@ -8,7 +8,7 @@ import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.user.data.User;
-import is.idega.idegaweb.member.presentation.UserEditor;
+import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -22,17 +22,17 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/10/03 01:53:10 $ by $Author: tryggvil $
+ * Last modified: $Date: 2003/10/08 13:32:58 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
  */
-public class TerminateClassMembership extends UserEditor {
+public class TerminateClassMembership extends CommuneBlock {
     private static final String PREFIX = "TermClassMemb_";
-
+    
     private static final String ADDRESS_DEFAULT = "Adress";
     private static final String ADDRESS_KEY = PREFIX + "address";
     private static final String BACK_DEFAULT = "Tillbaka";
@@ -43,10 +43,6 @@ public class TerminateClassMembership extends UserEditor {
         = PREFIX + "currentMembership";
     private static final String ISTERMINATED_DEFAULT = " har avslutats";
     private static final String ISTERMINATED_KEY = PREFIX + "isTerminated";
-    private static final String NOCURRENTMEMBERSHIP_DEFAULT
-        = "Personen har inte någon aktuell placering";
-    private static final String NOCURRENTMEMBERSHIP_KEY
-        = PREFIX + "noCurrentMembership";
     private static final String NOTES_DEFAULT = "Kommentar";
     private static final String NOTES_KEY = PREFIX + "notes";
     public static final String MEMBER_KEY = PREFIX + "member";
@@ -71,23 +67,11 @@ public class TerminateClassMembership extends UserEditor {
         = "Felaktigt datumformat";
     private static final String WRONGDATEFORMAT_KEY
         = PREFIX + "wrongDateFormat";
-
-    private static final String ACTION_KEY = PREFIX + "action";
     private static final String ACTION_TERMINATE_KEY
         = PREFIX + "terminateMembership";
-
+    
     private static final SimpleDateFormat shortDateFormatter
         = new SimpleDateFormat ("yyyyMMdd");
-
-	public TerminateClassMembership () {
-		super();
-		setShowMiddleNameInSearch (false);
-        setShowUserRelations (false);
-		setLastNameLength (14);
-		setFirstNameLength (14);
-		setPersonalIDLength (12);
-		setBundleIdentifer (CommuneBlock.IW_BUNDLE_IDENTIFIER);
-	}
 
 	/**
 	 * Main is the event handler of InvoiceByCompensationForm.
@@ -95,14 +79,11 @@ public class TerminateClassMembership extends UserEditor {
 	 * @param context session data like user info etc.
 	 */
 	public void main(final IWContext context) {
-
         try {
-            if (context.isParameterSet (ACTION_KEY)
-                && ACTION_TERMINATE_KEY.equals (context.getParameter
-                                               (ACTION_KEY))) {
+            if (context.isParameterSet (ACTION_TERMINATE_KEY)) {
                 terminateMembership (context);
             } else {
-                super.main (context);
+                showTerminateForm (context);
             }
         } catch (final Exception exception) {
             System.err.println ("Exception caught in " + getClass ().getName ()
@@ -157,14 +138,100 @@ public class TerminateClassMembership extends UserEditor {
         add (table);
     }
 
-	/**
-	 * Output info about current school class membership for this user
+    /**
+     * Shows a form where the user can enter ssn, first name and/or last name
+     * and then after first search, click on one of possibly more than one name
+     * in the search result.
 	 *
 	 * @param context session data
-     * @exception RemoteException if something fails in business layer
-	 */
-	protected void presentateUserInfo (final IWContext context)
+     * @exception RemoteException if exception happens in lower layer
+     */
+    private void showTerminateForm (final IWContext context)
         throws RemoteException {
+        // 1. set up searcher
+        final UserSearcher searcher = new UserSearcher ();
+        searcher.setOwnFormContainer (false);
+        searcher.setShowMiddleNameInSearch (false);
+        searcher.setLastNameLength (14);
+        searcher.setFirstNameLength (14);
+        searcher.setPersonalIDLength (12);
+
+        // 2. do search
+        final Collection students = getStudents (context, searcher);
+        searcher.setUsersFound (students);
+
+        // 3. output result
+        final Table table = new Table ();
+        final User foundUser = searcher.getUser ();
+        final Form searchForm = new Form();
+        searchForm.setOnSubmit("return checkInfoForm()");
+        searchForm.add (searcher);
+        table.add (searchForm, 1, 1);
+        if (null != foundUser) {
+            final Table terminateTable = new Table ();
+            terminateTable.add (getStudentTable (context, foundUser), 1, 2);
+            terminateTable.add (getSubmitButton
+                                (ACTION_TERMINATE_KEY, TERMINATEMEMBERSHIP_KEY,
+                                 TERMINATEMEMBERSHIP_DEFAULT), 1, 3);
+            final Form terminateForm = new Form ();
+            terminateForm.add (terminateTable);
+            table.add (terminateForm, 1, 1);
+        }
+        add (table);
+    }
+
+    /**
+     * Retreives students that are currently members of a school class
+     *
+	 * @param context session data
+	 * @param searcher to use for searching
+     * @return filled or empty collection of students - never 'null'
+     * @exception RemoteException if exception happens in lower layer
+     */
+    private Collection getStudents (final IWContext context,
+                                    final UserSearcher searcher)
+        throws RemoteException {
+        final Collection students = new ArrayList ();
+        try {
+            // 1. start with a raw search
+            searcher.process (context);
+            final Collection usersFound = searcher.getUsersFound ();
+            if (null == usersFound) {
+                throw new FinderException ();
+            }
+            
+            // 2. filter out students that are placed and that the logged on
+            // user is authorized to see
+            final SchoolCommuneBusiness communeBusiness
+                    = (SchoolCommuneBusiness) IBOLookup.getServiceInstance
+                    (context, SchoolCommuneBusiness.class);
+            for (Iterator i = usersFound.iterator (); i.hasNext ();) {
+                final User user = (User) i.next ();
+                final SchoolClassMember student
+                        = communeBusiness.getCurrentSchoolClassMembership
+                        (user);
+                if (null != student && null != student.getRemovedDate()) {
+                    students.add (user);
+                }
+            }
+        } catch (FinderException e) {
+            e.printStackTrace ();
+            // no students found
+        }
+        return students;
+    }
+
+
+    /**
+     * Creates a table with address, school name etc. for this student
+     *
+	 * @param context session data
+	 * @param user the student
+     * @return filled or empty collection of students - never 'null'
+     * @exception RemoteException if exception happens in lower layer
+     */
+    private Table getStudentTable
+        (final IWContext context, final User user) throws RemoteException {
 
         // get business objects
         final SchoolCommuneBusiness communeBusiness = (SchoolCommuneBusiness)
@@ -177,63 +244,21 @@ public class TerminateClassMembership extends UserEditor {
         final HttpSession session = context.getSession ();
         session.setAttribute (MEMBER_KEY, student);
 
-        if (null != student) {
-            addToMainPart (getMembershipFormTable (student, communeBusiness));
-        } else {
-            // no active membership found
-            addToMainPart (new Text (localize (NOCURRENTMEMBERSHIP_KEY,
-                                               NOCURRENTMEMBERSHIP_DEFAULT)));
-        }
-	}
-	
-    protected void presentateUserGroup (IWContext dummy) {
-        // nothing
-    }
-
-    protected void presentateUserRelations(IWContext dummy) {
-        // nothing
-    }
-
-    protected void presentateButtonClose(IWContext dummy) {
-        // nothing
-    }
-
-	protected void presentateButtonRegister (IWContext dummy) {
-        // nothing
-    }
-
-	/**
-	 * Implementation of polymorf method for stating teh action in a button
-	 *
-	 * @param context session data
-	 */
-    protected void presentateButtonSave (IWContext context) {
-        if (null != context.getSession ().getAttribute (MEMBER_KEY)) {
-            addButton (getButton (new SubmitButton
-                                  (localize (TERMINATEMEMBERSHIP_KEY,
-                                             TERMINATEMEMBERSHIP_DEFAULT),
-                                   ACTION_KEY, ACTION_TERMINATE_KEY)));
-        }
-    }
-
-    private Table getMembershipFormTable
-        (final SchoolClassMember student,
-         final SchoolCommuneBusiness communeBusiness) throws RemoteException {
-
         // create interface objects
         final Text addressHeader = new Text (localize (ADDRESS_KEY,
-                                                       ADDRESS_DEFAULT) + ":");
+                                                       ADDRESS_DEFAULT) + ':');
         addressHeader.setBold ();
         final Text address = new Text (getAddressStringFromUser (user));
         final Text memberHeader = new Text
-                (localize (CURRENTMEMBERSHIP_KEY, CURRENTMEMBERSHIP_DEFAULT));
+                (localize (CURRENTMEMBERSHIP_KEY, CURRENTMEMBERSHIP_DEFAULT)
+                 + ':');
         memberHeader.setBold ();
         final Text member = new Text
                 (null != student
                  ? getMembershipString (student, communeBusiness)
                  : "ej placerad");
         final Text terminationDateHeader = new Text
-                (localize (TERMINATIONDATE_KEY, TERMINATIONDATE_DEFAULT) + ":");
+                (localize (TERMINATIONDATE_KEY, TERMINATIONDATE_DEFAULT) + ':');
         terminationDateHeader.setBold ();
         final TextInput terminationDateInput
                 = (TextInput) getStyledInterface (new TextInput
@@ -351,24 +376,14 @@ public class TerminateClassMembership extends UserEditor {
         return calendar.getTime ();
     }
 
-	private String localize (final String textKey, final String defaultText) {
-		return (iwrb == null) ? defaultText
-                : iwrb.getLocalizedString (textKey, defaultText);
-	}
+    private SubmitButton getSubmitButton (final String action, final String key,
+                                          final String defaultName) {
+        return (SubmitButton) getButton (new SubmitButton
+                                         (action, getLocalizedString
+                                          (key, defaultName)));
+    }
 
-	private GenericButton getButton (final GenericButton button) {
-		button.setHeight ("20");
-		return (GenericButton) setStyle
-                (button, CommuneBlock.STYLENAME_INTERFACE_BUTTON);
-	}
-		
-	public Link getSmallLink (final String link) {
-		return getStyleLink (new Link (link),
-                             CommuneBlock.STYLENAME_SMALL_LINK);
-	}
-
-    private InterfaceObject getStyledInterface (final InterfaceObject obj) {
-		return (InterfaceObject) setStyle (obj,
-                                           CommuneBlock.STYLENAME_INTERFACE);
+	private String getLocalizedString(final String key, final String value) {
+		return getResourceBundle().getLocalizedString(key, value);
 	}
 }
