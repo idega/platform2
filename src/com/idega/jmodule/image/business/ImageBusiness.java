@@ -41,7 +41,7 @@ private static Properties getBundleProperties( HttpServlet servlet ) throws File
   return prop;
 }
 
-private static void saveImageToCatagories(int imageId, String[] categoryId)throws SQLException {
+public static void saveImageToCatagories(int imageId, String[] categoryId)throws SQLException {
 //debug eiki parent id?? fix this
   ImageEntity image = new ImageEntity(imageId);
   image.setParentId(-1);
@@ -58,6 +58,7 @@ private static void saveImageToCatagories(int imageId, String[] categoryId)throw
     }
   }
 }
+
 
 
 
