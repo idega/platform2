@@ -43,12 +43,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
   }
 
   protected void control(IWContext iwc){
-		java.util.Enumeration E = iwc.getParameterNames();
-		while(E.hasMoreElements()){
-			String key = (String) E.nextElement();
-		  System.err.println(key+" "+iwc.getParameter(key));
-		}
-		System.err.println();
+
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
 		int iCategoryId = -1;

@@ -509,7 +509,7 @@ private IWResourceBundle iwrb;
 					row++;
 				}
 			}
-			Link generator = new Link("generate");
+			Link generator = new Link(iwrb.getLocalizedImageButton("generate","Generate"));
 			generator.setWindowToOpen(ContractFilerWindow.class);
 			generator.addParameter(ContractFilerWindow.prmCategoryId,iCategoryId);
 			generator.addParameter(ContractFilerWindow.prmContractId,eContract.getID());
@@ -524,7 +524,7 @@ private IWResourceBundle iwrb;
 		  addLeft(sStatus,status,true);
 		addLeft(sFields,T,true,false);
 
-		SubmitButton save = new SubmitButton(iwrb.getImage("save.gif"),actSave);
+		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),actSave);
     addSubmitButton(save);
     addHiddenInput( new HiddenInput (prmFormProcess,"Y"));
   }
