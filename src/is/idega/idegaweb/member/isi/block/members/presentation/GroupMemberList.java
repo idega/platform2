@@ -129,19 +129,13 @@ public class GroupMemberList extends Block {
 					table.add(groupNames, column++, row);
 					// adding email and mobile phone
 					PresentationObject emails = getEmailLinkList(user);
-					if(emails!=null && emails.getChildCount()>0) {
-						System.out.println("Emails displayd for user " + name);
+					if(emails!=null) {
 						table.add(emails, column, row);
-					} else {
-						System.out.println("Emails not displayd for user " + name);
 					}
 					column++;
 					String phone = getMobilePhone(user);
 					if(phone!=null) {
-						System.out.println("Mobile phone displayd for user " + name);
 						table.add(phone, column, row);
-					} else {
-						System.out.println("Mobile phone not displayd for user " + name);
 					}
 					column++;
 				}
@@ -199,7 +193,6 @@ public class GroupMemberList extends Block {
 				}
 				Email email = (Email) emailIter.next();
 				String address = (String) email.getEmailAddress();
-				System.out.println("Adding email " + address + " for user " + user.getName());
 				Link link = new Link(address);
 				link.setURL("mailto:" + address);
 				link.setSessionId(false);
