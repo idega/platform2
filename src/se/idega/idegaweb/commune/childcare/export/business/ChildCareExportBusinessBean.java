@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareExportBusinessBean.java,v 1.12 2005/02/16 09:35:03 anders Exp $
+ * $Id: ChildCareExportBusinessBean.java,v 1.13 2005/02/16 10:41:21 anders Exp $
  *
  * Copyright (C) 2005 Idega. All Rights Reserved.
  *
@@ -45,10 +45,10 @@ import com.idega.util.IWTimestamp;
  * The first version of this class implements the business logic for
  * exporting text files for the IST Extens system.
  * <p>
- * Last modified: $Date: 2005/02/16 09:35:03 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/16 10:41:21 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class ChildCareExportBusinessBean extends IBOServiceBean implements ChildCareExportBusiness {
 
@@ -253,6 +253,7 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 							if (placementFromDate.compareTo(validFromDate) > 0) {
 								validFromDate = log.getStartDate();
 							}
+							group = log.getSchoolClass();
 						}
 					}
 					s += getTaxekatLine(user, school, group, schoolType, placementFromDate, contract.getCareTime(), validFromDate, terminatedDate);
@@ -274,7 +275,21 @@ public class ChildCareExportBusinessBean extends IBOServiceBean implements Child
 							continue;
 						}
 						if (isLogInInterval(l, from, to) && isLogInContract(l, contract)) {
-							s += getTaxekatLine(user, school, l.getSchoolClass(), schoolType, l.getStartDate(), contract.getCareTime(), l.getStartDate(), l.getEndDate());
+							Date validFromDate = contract.getValidFromDate();
+							if (l.getStartDate().compareTo(validFromDate) > 0) {
+								validFromDate = l.getStartDate();
+							}
+							Date terminatedDate = contract.getTerminatedDate();
+							if (l.getEndDate() != null) {
+								if (terminatedDate == null) {
+									terminatedDate = l.getEndDate();
+								} else {
+									if (terminatedDate.compareTo(l.getEndDate()) > 0) {
+										terminatedDate = l.getEndDate();
+									}
+								}
+							}
+							s += getTaxekatLine(user, school, l.getSchoolClass(), schoolType, l.getStartDate(), contract.getCareTime(), validFromDate, terminatedDate);
 							s += "\r\n";						
 						}
 					}
