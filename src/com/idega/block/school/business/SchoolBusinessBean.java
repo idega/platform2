@@ -454,7 +454,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	 *	Used for user who have admin rights, not only headmasters... 
 	 */
 	public void addHeadmaster(School school, User user) throws RemoteException, FinderException{
-		GroupBusiness gBus = (GroupBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), Group.class);
+		GroupBusiness gBus = (GroupBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), GroupBusiness.class);
 		Group schoolGroup = gBus.getGroupHome().findByPrimaryKey(new Integer(school.getHeadmasterGroupId()));
 		schoolGroup.addGroup(user);
 		//getUserBusiness().getGroupBusiness().addUser(school.getHeadmasterGroupId(), user);
