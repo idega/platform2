@@ -1735,7 +1735,7 @@ public class HotelBookingForm extends BookingForm {
 //			}
 		}
 	
-		if (max > 0) {
+		if (max != UNLIMITED_AVAILABILITY) {
 	    List addresses;
 	    try {
 	      addresses = product.getDepartureAddresses(false);

@@ -820,7 +820,7 @@ public class Booking extends TravelManager {
 						//iBookingExtra = getBooker(iwc).getBookingsTotalCountByOthersInPool(product, this.stamp);
 
 						if (supplier != null) {
-							if (iCount > 0) {
+							if (iCount != BookingForm.UNLIMITED_AVAILABILITY) {
 								countTextBold.setText(Integer.toString(iCount));
 							}
 							bookedTextBold.setText(Integer.toString(iBooked));
@@ -830,7 +830,7 @@ public class Booking extends TravelManager {
 							inqTextBold.setText(Integer.toString(iInquery));
 						}
 
-						if (iCount > 0) {
+						if (iCount != BookingForm.UNLIMITED_AVAILABILITY) {
 							iAvailable = iCount - iBooked - iBookingExtra;
 							available = iAvailable;
 							availableTextBold.setText(Integer.toString(iAvailable));

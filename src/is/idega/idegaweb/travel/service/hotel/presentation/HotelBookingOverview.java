@@ -17,6 +17,7 @@ import is.idega.idegaweb.travel.service.hotel.business.HotelBusiness;
 import is.idega.idegaweb.travel.service.hotel.data.Hotel;
 import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
 import is.idega.idegaweb.travel.service.presentation.AbstractBookingOverview;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -245,7 +246,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
               table.add(inqTextBold,5,row);
               table.add(bookedTextBold,6,row);
 //              table.add(guestsTextBold, 7, row);
-              if (iCount > 0) {
+              if (iCount != BookingForm.UNLIMITED_AVAILABILITY) {
                 table.add(countTextBold,3,row);
                 table.add(availableTextBold,7,row);
               }
