@@ -33,7 +33,7 @@ public class NewsBundleStarter implements IWBundleStartable{
   public void start(){
     System.err.println("News bundle starter: starting");
 
-    /*
+
     boolean hasField = false;
     if(!testNews()){
       System.err.println("News bundle starter: Adding category reference to news ");
@@ -48,7 +48,7 @@ public class NewsBundleStarter implements IWBundleStartable{
         System.err.println("News bundle starter: Moving news to new categories ");
         moveDataToCategory(map);
       }
-    }*/
+    }
   }
 
   private Map makeICCategories(){

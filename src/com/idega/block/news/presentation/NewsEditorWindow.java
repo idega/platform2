@@ -116,7 +116,7 @@ private IWResourceBundle iwrb;
 
   private void control(IWContext iwc)throws Exception{
     init();
-    debugParameters(iwc);
+    //debugParameters(iwc);
     boolean doView = true;
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
 
