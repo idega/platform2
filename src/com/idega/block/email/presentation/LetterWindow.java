@@ -118,7 +118,7 @@ public class LetterWindow extends IWAdminWindow {
 					tpc = (EmailTopic) iter.next();
 					if(defaultTopic == null)
 						defaultTopic = tpc;
-					drp.addMenuElement(tpc.toString(), tpc.getName());
+					drp.addMenuElement(tpc.getIdentifier().toString(), tpc.getName());
 				}
 				if(topic>0)
 					drp.setSelectedElement(topic);
@@ -127,7 +127,7 @@ public class LetterWindow extends IWAdminWindow {
 			else if (iter.hasNext()) {
 				 tpc = (EmailTopic) iter.next();
 				defaultTopic = tpc;
-				T.add(new HiddenInput("topic_id", tpc.toString()), 2, row++);
+				T.add(new HiddenInput("topic_id",tpc.getIdentifier().toString()), 2, row++);
 			}
 		}
 		

@@ -55,4 +55,6 @@ public interface EmailLetter {
 	 * @return    The created value
 	 */
 	public java.sql.Timestamp getCreated();
+	
+	public Integer getIdentifier();
 }

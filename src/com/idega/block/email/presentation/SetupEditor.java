@@ -538,7 +538,7 @@ public class SetupEditor extends Block {
   			welcomes = MailFinder.getInstance().getEmailLetters(topicID,MailLetter.TYPE_SUBSCRIPTION);
   			if(welcomes!=null && !welcomes.isEmpty()){
   				welcome = (MailLetter) welcomes.iterator().next();
-  				T.add(getWelcomeLetterLink(welcome.getIdentifier().intValue()),topicID,welcome.getSubject()),5,row);
+  				T.add(getWelcomeLetterLink(welcome.getIdentifier().intValue(),topicID,welcome.getSubject()),5,row);
   				//T.add(tf.format(welcome.getSubject()),5,row);
   			}
   			else{

@@ -106,7 +106,7 @@ public class NewsLetterArchive extends CategoryBlock {
 		if (topics != null && !topics.isEmpty()) {
 			T.add(getTopics(), 1, row++);
 			if (topic < 0)
-				topic = Integer.parseInt(((EmailTopic) topics.iterator().next()).toString());
+				topic =(((EmailTopic) topics.iterator().next()).getIdentifier().intValue());
 		}
 
 		if (theLetter != null)
@@ -146,11 +146,11 @@ public class NewsLetterArchive extends CategoryBlock {
 			int row = 2;
 			while (iter.hasNext()) {
 				tpc = (EmailTopic) iter.next();
-				int id = Integer.parseInt(tpc.toString());
+				int id = tpc.getIdentifier().intValue();
 				if (letter > 0) {
 					if (topic == id) {
 						link = getStyleLink(tpc.getName(), SN_TOPIC);
-						link.addParameter(prmTopic, tpc.toString());
+						link.addParameter(prmTopic, tpc.getIdentifier().toString());
 						T.add(link, 1, row++);
 						if (letters != null && letters.size() > 0) {
 							Iterator iter2 = letters.iterator();
@@ -158,7 +158,7 @@ public class NewsLetterArchive extends CategoryBlock {
 							//Link subject;
 							while (iter2.hasNext()) {
 								let = (EmailLetter) iter2.next();
-								int lid = Integer.parseInt(let.toString());
+								int lid = let.getIdentifier().intValue();
 								if (lid == letter)
 									theLetter = let;
 							}
@@ -167,7 +167,7 @@ public class NewsLetterArchive extends CategoryBlock {
 				} else {
 
 					link = getStyleLink(tpc.getName(), SN_TOPIC);
-					link.addParameter(prmTopic, tpc.toString());
+					link.addParameter(prmTopic,tpc.getIdentifier().toString());
 
 					T.add(link, 1, row++);
 					if (topic > 0 && topic == id) {
@@ -183,12 +183,12 @@ public class NewsLetterArchive extends CategoryBlock {
 							Link subject;
 							while (iter2.hasNext()) {
 								let = (EmailLetter) iter2.next();
-								int lid = Integer.parseInt(let.toString());
+								int lid = let.getIdentifier().intValue();
 								if (lid == letter)
 									theLetter = let;
 								subject = getStyleLink(let.getSubject(), SN_SUBJ);
 								subject.addParameter(prmTopic, String.valueOf(topic));
-								subject.addParameter(prmLetter, String.valueOf(let.toString()));
+								subject.addParameter(prmLetter, let.getIdentifier().toString());
 								T.add(subject, 2, row);
 								//T.add(getStyleText(let.getFromName(),SN_FROM),2,row);
 								row++;
@@ -243,12 +243,12 @@ public class NewsLetterArchive extends CategoryBlock {
 			Link link;
 			while (iter.hasNext()) {
 				let = (EmailLetter) iter.next();
-				int id = Integer.parseInt(let.toString());
+				int id = let.getIdentifier().intValue();
 				if (id == letter)
 					theLetter = let;
 				link = getStyleLink(let.getSubject(), SN_SUBJ);
 				link.addParameter(prmTopic, String.valueOf(topic));
-				link.addParameter(prmLetter, String.valueOf(let.toString()));
+				link.addParameter(prmLetter, String.valueOf(let.getIdentifier().toString()));
 				T.add(link, 1, row);
 				//T.add(getStyleText(let.getFromName(),SN_FROM),2,row);
 				row++;

@@ -15,4 +15,5 @@ public interface MailLetter extends com.idega.data.IDOLegacyEntity,com.idega.blo
  public void setFromName(java.lang.String p0);
  public void setSubject(java.lang.String p0);
  public void setType(int p0);
+ public Integer getIdentifier();
 }

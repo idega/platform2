@@ -383,5 +383,12 @@ public class MailLetterBMPBean extends com.idega.data.GenericEntity implements c
 
 
 
+	/* (non-Javadoc)
+	 * @see com.idega.block.email.data.MailLetter#getIdentifier()
+	 */
+	public Integer getIdentifier() {
+		return (Integer) getPrimaryKey();
+	}
+
 }
 

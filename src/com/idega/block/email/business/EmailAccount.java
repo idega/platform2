@@ -133,6 +133,8 @@ public interface EmailAccount {
    */
 
   public java.sql.Timestamp getCreated();
+  
+  public Integer getIdentifier();
 
 }
 

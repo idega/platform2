@@ -431,5 +431,12 @@ public class MailAccountBMPBean extends com.idega.data.GenericEntity implements 
 
 
 
+	/* (non-Javadoc)
+	 * @see com.idega.block.email.business.EmailAccount#getIdentifier()
+	 */
+	public Integer getIdentifier() {
+		return (Integer) getPrimaryKey();
+	}
+
 }
 
