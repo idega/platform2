@@ -2494,7 +2494,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			String cName = report.getGroupName();
 			System.out.print("Processing club " + cName);
 			
-			boolean showClub = showClubType(report, type) && showClubStatus(report, type);
+			boolean showClub = showClubType(report, type) && showClubStatus(report, status);
 			if(!showClub) {
 				System.out.println(" (skipped)");
 				continue;
