@@ -393,12 +393,12 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		}
 
 		RegularPaymentEntry entry = null;
+		if (iwc.getParameter(PAR_PK) != null){
+			entry = getRegularPaymentEntry(iwc.getParameter(PAR_PK));
+		}
+
+	
 		if (errorMessages.isEmpty()){
-			
-			if (iwc.getParameter(PAR_PK) != null){
-				entry = getRegularPaymentEntry(iwc.getParameter(PAR_PK));
-			}
-			
 			if (entry == null){
 				try{
 					entry = getRegularPaymentEntryHome().create();
@@ -413,7 +413,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			} else{
 				entry.setEditDate(new Date(new java.util.Date().getTime()));
 				entry.setEditSign(iwc.getCurrentUser().getName());
-			}
+			}			
 	
 			long amountMonth = 0;
 			try{
@@ -516,6 +516,11 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 			
 	private void handleEditAction(IWContext iwc, RegularPaymentEntry entry, Map errorMessages){
+		
+		if (entry == null){ //may happen if user was not logged in and tried to save
+			entry = getNotStoredEntry(iwc);
+		}
+		
 		Table t1 = new Table();
 		
 		t1.setCellpadding(getCellpadding());
@@ -531,7 +536,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		}	
 		
 		Form form = new Form();
-		if (entry.getPrimaryKey() != null){
+		if (entry != null && entry.getPrimaryKey() != null){
 			form.maintainParameter(PAR_PK);		
 		}
 		form.maintainParameter(PAR_USER_SSN);			
@@ -727,7 +732,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 					link.setParameter(PAR_SELECTED_PROVIDER, school.getPrimaryKey().toString());
 					list.add(link);
 					
-					list.add(getText(formatCurrency(entry.getAmount())));
+					list.add(getText(""+AccountingUtil.roundAmount(entry.getAmount())));
 					list.add(getText(entry.getNote()));
 
 					Link edit = new Link(getEditIcon(localize(KEY_EDIT_TOOLTIP, "Edit")));
@@ -887,7 +892,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		
 		table.mergeCells(1, row, 10, row);
 		PostingBlock postingBlock = null;
-		if (entry.getOwnPosting() != null && entry.getOwnPosting().length() != 0){
+		if (entry.getOwnPosting() != null && entry.getOwnPosting().trim().length() != 0){
 			postingBlock = new PostingBlock(entry.getOwnPosting(), entry.getDoublePosting());
 		} else {
 			postingBlock = new PostingBlock(); 
@@ -944,7 +949,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	}
 
 	private RegularPaymentEntry getEmptyEntry() {
-		return getNotStoredEntry(null);		
+		return getNotStoredEntry(null, null, null);		
 	}
 	
 	private RegularPaymentEntry getNotStoredEntry(IWContext iwc) {
