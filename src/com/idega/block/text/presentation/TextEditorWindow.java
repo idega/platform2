@@ -36,7 +36,9 @@ public class TextEditorWindow extends IWAdminWindow{
   public  static String prmObjInstId = "txep.icobjinstid";
   private static String prmHeadline = "txep.headline";
   private static String prmBody = "txep.body";
-  private static String prmImageId = "txep.imageid";
+  //debug
+  //private static String prmImageId = "txep.imageid";
+  private static String prmImageId = "image_id";
   private static String prmTxTextId = "txep.txtextid";
   private static String prmLocalizedTextId = "txep.loctextid";
   private static String prmUseImage = "txep.useimage";
