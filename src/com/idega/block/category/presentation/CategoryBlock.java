@@ -3,16 +3,15 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
 import com.idega.block.category.business.CategoryBusiness;
 import com.idega.block.category.business.CategoryFinder;
 import com.idega.block.category.business.CategoryService;
 import com.idega.block.category.data.ICCategory;
 import com.idega.block.category.data.ICCategoryHome;
-import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
-import com.idega.builder.dynamicpagetrigger.util.DPTInheritable;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.core.builder.business.ICDynamicPageTriggerCopySession;
+import com.idega.core.builder.business.ICDynamicPageTriggerInheritable;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -25,7 +24,7 @@ import com.idega.presentation.text.Link;
  * @author       <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 2.0
  */
-public abstract class CategoryBlock extends Block implements DPTInheritable {
+public abstract class CategoryBlock extends Block implements ICDynamicPageTriggerInheritable {
 	private ICCategory icCategory;
 	private int icCategoryId = -1;
 	private int[] icCategoryIds = new int[0];
@@ -182,7 +181,7 @@ public abstract class CategoryBlock extends Block implements DPTInheritable {
 		return (ICCategoryHome) IDOLookup.getHome(ICCategory.class);
 	}
 	
-	public boolean copyICObjectInstance(String pageKey,int newInstanceID,DPTCopySession copySession) {
+	public boolean copyICObjectInstance(String pageKey,int newInstanceID, ICDynamicPageTriggerCopySession copySession) {
 		CategoryFinder finder = CategoryFinder.getInstance();
 		List categories = finder.listOfCategoryForObjectInstanceId(getICObjectInstanceID());
 		if(categories != null) {
@@ -200,8 +199,7 @@ public abstract class CategoryBlock extends Block implements DPTInheritable {
 							copySession.setNewValue(CategoryBlock.class,category,newCategory);
 							service.storeCategoryToParent(newCategory.getID(),category.getID());
 							catIDs[catIDIndex++] = newCategory.getID();
-							Object rPK = copySession.getRootPagePrimaryKey();
-							if(rPK != null) {
+							if(copySession.hasRootPage()) {
 								newCategory.addMetaData(METADATAKEY_CATEGORY_MAIN_VIEWER_PAGE,pageKey);
 								newCategory.store();
 							}

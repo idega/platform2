@@ -1,17 +1,16 @@
 package com.idega.block.documents.presentation;
 
 import java.rmi.RemoteException;
-
 import com.idega.block.category.business.FolderBlockBusiness;
 import com.idega.block.category.data.InformationCategory;
 import com.idega.block.category.data.InformationFolder;
 import com.idega.block.category.presentation.FolderBlock;
 import com.idega.block.documents.business.DocBusiness;
 import com.idega.block.documents.data.DocLink;
-import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
-import com.idega.builder.dynamicpagetrigger.util.DPTInheritable;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.core.builder.business.ICDynamicPageTriggerCopySession;
+import com.idega.core.builder.business.ICDynamicPageTriggerInheritable;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -33,7 +32,7 @@ import com.idega.util.text.TextStyler;
  *@created    15. mars 2002
  *@version    1.0
  */
-public class Doc extends FolderBlock implements Builderaware,DPTInheritable {
+public class Doc extends FolderBlock implements Builderaware, ICDynamicPageTriggerInheritable {
 
 	private int _folderID = -1;
 	private int _catID = -1;
@@ -966,7 +965,7 @@ public class Doc extends FolderBlock implements Builderaware,DPTInheritable {
 		return "doc_documents";
 	}
 	
-	public boolean copyICObjectInstance(String pageKey,int newInstanceID, DPTCopySession copySession) {
+	public boolean copyICObjectInstance(String pageKey,int newInstanceID, ICDynamicPageTriggerCopySession copySession) {
 		try {
 			return ((FolderBlockBusiness)IBOLookup.getServiceInstance(getIWApplicationContext(),FolderBlockBusiness.class)).copyCategoryAttachments(this.getBlockInstanceID(), newInstanceID);
 		} catch (IBOLookupException e) {

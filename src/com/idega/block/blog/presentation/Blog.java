@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-
 import com.idega.block.blog.BlogBundle;
 import com.idega.block.blog.business.BlogFinder;
 import com.idega.block.blog.business.BlogFormatter;
@@ -23,9 +22,10 @@ import com.idega.block.text.business.TextFormatter;
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.builder.dynamicpagetrigger.business.DPTCopySession;
-import com.idega.builder.dynamicpagetrigger.util.DPTInheritable;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.core.builder.business.ICDynamicPageTriggerCopySession;
+import com.idega.core.builder.business.ICDynamicPageTriggerInheritable;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
@@ -52,7 +52,7 @@ import com.idega.util.text.TextSoap;
  * @version 1.5b
  */
 
-public class Blog extends FolderBlock implements Builderaware,DPTInheritable {
+public class Blog extends FolderBlock implements Builderaware, ICDynamicPageTriggerInheritable {
 	private final static String IW_BUNDLE_IDENTIFIER = BlogBundle.IW_BUNDLE_IDENTIFIER;
 	public final static String CACHE_KEY = BlogBundle.CACHE_KEY;
 	private boolean hasEdit = false, hasAdd = false, hasInfo = false;
@@ -1288,7 +1288,7 @@ public class Blog extends FolderBlock implements Builderaware,DPTInheritable {
 		}
 	}
 	
-	public boolean copyICObjectInstance(String pageKey,int newInstanceID, DPTCopySession copySession) {
+	public boolean copyICObjectInstance(String pageKey,int newInstanceID, ICDynamicPageTriggerCopySession copySession) {
 		try {
 			return ((FolderBlockBusiness)IBOLookup.getServiceInstance(getIWApplicationContext(),FolderBlockBusiness.class)).copyCategoryAttachments(this.getBlockInstanceID(), newInstanceID);
 		} catch (IBOLookupException e) {
