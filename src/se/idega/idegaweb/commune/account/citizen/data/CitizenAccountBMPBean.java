@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.5 2002/10/31 15:13:02 staffan Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.6 2002/11/01 10:51:00 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,27 +9,24 @@
  */
 package se.idega.idegaweb.commune.account.citizen.data;
 
-import com.idega.user.data.User;
-import com.idega.block.process.data.AbstractCaseBMPBean;
-import com.idega.block.process.data.Case;
-import com.idega.block.process.data.CaseStatus;
-
+import com.idega.block.process.data.*;
 import java.rmi.RemoteException;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class CitizenAccountBMPBean extends AbstractCaseBMPBean implements CitizenAccount, Case, AccountApplication {
+public class CitizenAccountBMPBean extends AbstractCaseBMPBean
+    implements CitizenAccount, Case, AccountApplication {
 	private final static String ENTITY_NAME = "comm_cit_acc";
 	private final static String CASE_CODE_KEY = "MBANSKO";
-	private final static String CASE_CODE_KEY_DESC = "Request for citizen account";
+	private final static String CASE_CODE_KEY_DESC
+        = "Request for citizen account";
 
+	protected final static String NAME = "name";
 	protected final static String EMAIL = "email";
 	protected final static String PHONE_HOME = "phone_home";
 	protected final static String PHONE_WORK = "phone_work";
@@ -46,6 +43,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean implements Citize
 
 	public void initializeAttributes() {
 		addAttribute (getIDColumnName());
+		addAttribute (NAME, "Name", true, true, String.class, 40);
 		addAttribute (EMAIL, "E-mail", true, true, String.class, 40);
 		addAttribute (PHONE_HOME, "Home phone", true, true, String.class, 20);
 		addAttribute (PHONE_WORK, "Work phone", true, true, String.class, 20);
@@ -75,20 +73,78 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean implements Citize
 		return CASE_CODE_KEY_DESC;
 	}
 
+
+    // get methods for bean properties
+
+	public String getApplicantName () {
+		return getStringColumnValue (NAME);
+	}
+
+	public String getEmail () {
+		return getStringColumnValue (EMAIL);
+	}
+
+	public String getPhoneHome () {
+		return getStringColumnValue (PHONE_HOME);
+	}
+
+	public String getPhoneWork () {
+		return getStringColumnValue (PHONE_WORK);
+	}
+
+	public String getPID () {
+		return getStringColumnValue (PID);
+	}
+
+    public String getCustodian1Pid () {
+        return getStringColumnValue (CUSTODIAN1_PID);
+    }
+
+    public String getCustodian1CivilStatus () {
+        return getStringColumnValue (CUSTODIAN1_CIVIL_STATUS);
+    }
+
+    public String getCustodian2Pid () {
+        return getStringColumnValue (CUSTODIAN2_PID);
+    }
+
+    public String getCustodian2CivilStatus () {
+        return getStringColumnValue (CUSTODIAN2_CIVIL_STATUS);
+    }
+
+    public String getStreet () {
+        return getStringColumnValue (STREET);
+    }
+
+    public String getZipCode () {
+        return getStringColumnValue (ZIP_CODE);
+    }
+
+    public String getCity () {
+        return getStringColumnValue (CITY);
+    }
+
+
+    // set methods for bean properties
+
+	public void setApplicantName (String name) {
+		setColumn (NAME, name);
+	}
+
 	public void setEmail(String email) {
-		setColumn(EMAIL, email);
+		setColumn (EMAIL, email);
 	}
 
 	public void setPhoneHome(String phone) {
-		setColumn(PHONE_HOME, phone);
+		setColumn (PHONE_HOME, phone);
 	}
 
 	public void setPhoneWork(String phone) {
-		setColumn(PHONE_WORK, phone);
+		setColumn (PHONE_WORK, phone);
 	}
 
 	public void setPID(String pid) {
-		setColumn(PID, pid);
+		setColumn (PID, pid);
 	}
 
     public void setCustodian1Pid (final String pid) throws RemoteException {
@@ -121,55 +177,21 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean implements Citize
         setColumn (CITY, city);
     }
     
-	public String getEmail() {
-		return getStringColumnValue(EMAIL);
-	}
-
-	public String getPhoneHome() {
-		return getStringColumnValue(PHONE_HOME);
-	}
-
-	public String getPhoneWork() {
-		return getStringColumnValue(PHONE_WORK);
-	}
-
-	public String getPID() {
-		return getStringColumnValue(PID);
-	}
-
 	/**
-	 * Finds all cases for all users with the specified caseStatus and the associated caseCode
+	 * Finds all cases for all users with the specified caseStatus and the
+     * associated caseCode
 	 */
-	public Collection ejbFindAllCasesByStatus(CaseStatus caseStatus) throws FinderException, RemoteException {
+	public Collection ejbFindAllCasesByStatus(CaseStatus caseStatus)
+        throws FinderException, RemoteException {
 		return super.ejbFindAllCasesByStatus(caseStatus.getStatus());
 	}
 	
 	/**
-	 * Finds all cases for all users with the specified caseStatus and the associated caseCode
+	 * Finds all cases for all users with the specified caseStatus and the
+     * associated caseCode
 	 */
-	public Collection ejbFindAllCasesByStatus(String caseStatus) throws FinderException, RemoteException {
+	public Collection ejbFindAllCasesByStatus(String caseStatus)
+        throws FinderException, RemoteException {
 		return super.ejbFindAllCasesByStatus(caseStatus);
-	}
-	
-	/**
-	 * @see se.idega.idegaweb.commune.account.data.AccountApplication#getApplicantName()
-	 */
-	public String getApplicantName() throws RemoteException {
-		User owner = this.getOwner();
-		if (owner != null)
-			return owner.getName();
-		else
-			return null;
-	}
-
-	/**
-	 * @see se.idega.idegaweb.commune.account.data.AccountApplication#setApplicantName(String)
-	 */
-	public void setApplicantName(String name) throws RemoteException {
-		User owner = this.getOwner();
-		if (owner != null) {
-			owner.setName(name);
-			owner.store();
-		}		
 	}
 }

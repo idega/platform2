@@ -7,13 +7,21 @@ import javax.ejb.*;
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 
 public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
-    String getApplicantName ()throws RemoteException;
     String getCaseCodeDescription () throws RemoteException;
     String getCaseCodeKey () throws RemoteException;
+
+    String getApplicantName () throws RemoteException;
     String getEmail () throws RemoteException;
     String getPID () throws RemoteException;
     String getPhoneHome () throws RemoteException;
     String getPhoneWork () throws RemoteException;
+    String getCustodian1Pid () throws RemoteException;
+    String getCustodian1CivilStatus () throws RemoteException;
+    String getCustodian2Pid () throws RemoteException;
+    String getCustodian2CivilStatus () throws RemoteException;
+    String getStreet () throws RemoteException;
+    String getZipCode () throws RemoteException;
+    String getCity () throws RemoteException;
 
     void setApplicantName (String name)throws RemoteException;
     void setEmail (String email) throws RemoteException;

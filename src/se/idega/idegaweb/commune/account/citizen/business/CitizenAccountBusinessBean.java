@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.13 2002/10/31 15:13:02 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.14 2002/11/01 10:51:00 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -147,7 +147,14 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				AdminListOfApplications apps = new AdminListOfApplications();
 				apps.setPID(account.getPID());
 				apps.setId(((Integer) account.getPrimaryKey()).toString());
-				if (user != null) {
+				if (user == null) {
+                    // There's no user with this pid in the system
+                    apps.setName (account.getApplicantName ());
+                    apps.setAddress (account.getStreet () + "; "
+                                     + account.getZipCode () + " "
+                                     + account.getCity ());
+                } else {
+                    // User is allready with this pid in the system
 					apps.setName(user.getName());
 					Collection addresses = user.getAddresses();
 					Iterator it2 = addresses.iterator();

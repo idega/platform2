@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.4 2002/08/13 21:21:43 tryggvil Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.5 2002/11/01 10:51:00 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,32 +9,19 @@
  */
 package se.idega.idegaweb.commune.account.citizen.presentation;
 
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
-import se.idega.idegaweb.commune.account.citizen.data.AdminListOfApplications;
-import se.idega.idegaweb.commune.account.citizen.data.CitizenAccount;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
 import com.idega.business.IBOLookup;
 import com.idega.core.data.Address;
-import com.idega.presentation.ExceptionWrapper;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DataTable;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextArea;
-import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.user.Converter;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
-
-import com.idega.user.Converter;
+import java.rmi.RemoteException;
+import java.util.*;
+import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
+import se.idega.idegaweb.commune.account.citizen.data.*;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 /**
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
@@ -55,15 +42,23 @@ public class CitizenAccountAdmin extends CommuneBlock {
 	private final static String PARAM_MESSAGE = "caa_adm_message";
 	private final static String PARAM_NOT_CITIZEN = "caa_adm_not_citizen";
 
+    private final static String PARAM_APPLICANT_NAME = "caa_applicant_name";
+    private final static String PARAM_CUSTODIAN1_PID = "caa_custodian1_pid";
+    private final static String PARAM_CUSTODIAN1_CIVIL_STATUS
+        = "caa_custodian1_civil_status";
+    private final static String PARAM_CUSTODIAN2_PID = "caa_custodian2_pid";
+    private final static String PARAM_CUSTODIAN2_CIVIL_STATUS
+        = "caa_custodian2_civil_status";
+    private final static String PARAM_STREET = "caa_street";
+    private final static String PARAM_ZIP_CODE = "caa_zip_code";
+    private final static String PARAM_CITY = "caa_city";
+
+
 	private final static String PARAM_FORM_APPROVE = "caa_adm_approve";
 	private final static String PARAM_FORM_REJECT = "caa_adm_reject";
 	private final static String PARAM_FORM_DETAILS = "caa_adm_details";
 	private final static String PARAM_FORM_CANCEL = "caa_adm_cancel";
 	private final static String PARAM_FORM_LIST = "caa_adm_list";
-
-	public CitizenAccountAdmin() {
-
-	}
 
 	public void main(IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
@@ -122,9 +117,9 @@ public class CitizenAccountAdmin extends CommuneBlock {
 
 		int row = 1;
 		int col = 1;
-		data.add(getHeader(localize(PARAM_NAME, "Name")), col++, row);
-		data.add(getHeader(localize(PARAM_PID, "PID")), col++, row);
-		data.add(getHeader(localize(PARAM_ADDRESS, "Address")), col, row++);
+		data.add(getHeader(localize(PARAM_NAME, "Namn")), col++, row);
+		data.add(getHeader(localize(PARAM_PID, "Personnummer")), col++, row);
+		data.add(getHeader(localize(PARAM_ADDRESS, "Adress")), col, row++);
 
 		List applications = null;
 		try {
@@ -152,9 +147,7 @@ public class CitizenAccountAdmin extends CommuneBlock {
 		add(form);
 	}
 
-	private void viewDetails(IWContext iwc) {
-		String id = iwc.getParameter(PARAM_FORM_DETAILS);
-
+	private void viewDetails (IWContext iwc) {
 		Form form = new Form();
 		DataTable data = new DataTable();
 		data.setUseTitles(false);
@@ -165,66 +158,83 @@ public class CitizenAccountAdmin extends CommuneBlock {
 
 		int row = 1;
 		int col = 1;
-		data.add(getHeader(localize(PARAM_NAME, "Name")), col, row++);
-		data.add(getHeader(localize(PARAM_PID, "PID")), col, row++);
-		data.add(getHeader(localize(PARAM_ADDRESS, "Address")), col, row++);
-		data.add(getHeader(localize(PARAM_EMAIL, "E-mail")), col, row++);
-		data.add(getHeader(localize(PARAM_PHONE_HOME, "Phone home")), col, row++);
-		data.add(getHeader(localize(PARAM_PHONE_WORK, "Phone work/mobile")), col, row++);
-		data.add(getHeader(localize(PARAM_NOT_CITIZEN, "Not citizen")), col, row++);
+		data.add(getHeader(localize(PARAM_NAME, "Namn")), col, row++);
+		data.add(getHeader(localize(PARAM_PID, "Personnummer")), col, row++);
+		data.add(getHeader(localize(PARAM_EMAIL, "E-post")), col, row++);
+		data.add(getHeader(localize(PARAM_PHONE_HOME, "Telefon (hem)")),
+                 col, row++);
+		data.add(getHeader(localize(PARAM_PHONE_WORK,
+                                    "Telefon (arbete/mobil)")), col, row++);
+        data.add (getHeader (localize (PARAM_ADDRESS, "Adress")), col, row++);
+        data.add (getHeader ("Vårdnadshavare 1: "
+                             + localize (PARAM_CUSTODIAN1_PID, "Personnummer")),
+                  col, row++);
+        data.add (getHeader ("Vårdnadshavare 1: "
+                             + localize (PARAM_CUSTODIAN1_CIVIL_STATUS,
+                                         "Civilstånd")), col, row++);
+        data.add (getHeader ("Vårdnadshavare 2: "
+                             + localize (PARAM_CUSTODIAN2_PID, "Personnummer")),
+                  col, row++);
+        data.add (getHeader ("Vårdnadshavare 2: "
+                             + localize (PARAM_CUSTODIAN2_CIVIL_STATUS,
+                                         "Civilstånd")), col, row++);
+
+		data.add(getHeader(localize(PARAM_NOT_CITIZEN, "Not citizen")), col,
+                 row++);
 		data.add(getHeader(localize(PARAM_MESSAGE, "Message")), col++, row);
 
-		try {
-			CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
-			CitizenAccount acc = (CitizenAccount) business.getAccount(new Integer(id).intValue());
-			User user = acc.getOwner();
+        try {
+            final CitizenAccountBusiness business
+                    = (CitizenAccountBusiness) IBOLookup.getServiceInstance
+                    (iwc, CitizenAccountBusiness.class);
+            final String idAsString = iwc.getParameter(PARAM_FORM_DETAILS);
+            final int id = new Integer(idAsString).intValue();
+            final CitizenAccount applicant
+                    = (CitizenAccount) business.getAccount (id);
+            row = 1;
+            data.add (getText (applicant.getApplicantName ()), col,  row++);
+            final String pid = PersonalIDFormatter.format
+                    (applicant.getPID(),
+                     iwc.getApplication().getSettings().getApplicationLocale());
+            data.add (getText(pid), col, row++);
+            final String email = applicant.getEmail ();
+            data.add (new Link (email, "mailto:" + email), col, row++);
+            data.add (getText (applicant.getPhoneHome ()), col, row++);
+            data.add (getText (applicant.getPhoneWork ()), col, row++);
+            final String address = applicant.getStreet () + "; "
+                    + applicant.getZipCode () + " " + applicant.getCity ();
+            data.add (getText (address), col, row++);
+            data.add (getText (applicant.getCustodian1Pid ()), col, row++);
+            data.add (getText (applicant.getCustodian1CivilStatus ()), col,
+                      row++);
+            data.add (getText (applicant.getCustodian2Pid ()), col, row++);
+            data.add (getText (applicant.getCustodian2CivilStatus ()), col,
+                      row++);
+            data.add(new CheckBox(PARAM_NOT_CITIZEN), col, row++);
+            TextArea area = new TextArea(PARAM_MESSAGE);
+            area.setHeight(7);
+            area.setWidth(40);
+            data.add(area, col, row);
 
-			row = 1;
-			if (user != null)
-				data.add(getText(user.getName()), col, row++);
-			else
-				row++;
-			String personalID = PersonalIDFormatter.format(acc.getPID(),iwc.getApplication().getSettings().getApplicationLocale());
-			data.add(getText(personalID), col, row++);
-			if (user != null) {
-				Collection addresses = user.getAddresses();
-				Iterator it2 = addresses.iterator();
-				Address address = null;
-				if (it2.hasNext())
-					address = (Address) it2.next();
-				if (address != null) {
-					StringBuffer fullAddress = new StringBuffer(address.getStreetName());
-					fullAddress.append(" ");
-					fullAddress.append(address.getStreetNumber());
-					data.add(getText(fullAddress.toString()), col, row++);
-				}
-			}
-			else
-				row++;
-			data.add(new Link(acc.getEmail(), "mailto:" + acc.getEmail()), col, row++);
-			data.add(getText(acc.getPhoneHome()), col, row++);
-			data.add(getText(acc.getPhoneWork()), col, row++);
-			data.add(new CheckBox(PARAM_NOT_CITIZEN), col, row++);
-			TextArea area = new TextArea(PARAM_MESSAGE);
-			area.setHeight(7);
-			area.setWidth(40);
-			data.add(area, col, row);
-
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		SubmitButton approve = new SubmitButton(localize(PARAM_FORM_APPROVE, "Approve"), PARAM_FORM_APPROVE, id);
-		approve.setAsImageButton(true);
-		SubmitButton reject = new SubmitButton(localize(PARAM_FORM_REJECT, "Reject"), PARAM_FORM_REJECT, id);
-		reject.setAsImageButton(true);
-		SubmitButton cancel = new SubmitButton(localize(PARAM_FORM_CANCEL, "Cancel"), PARAM_FORM_CANCEL, id);
-		cancel.setAsImageButton(true);
-
-		data.addButton(approve);
-		data.addButton(reject);
-		data.addButton(cancel);
+            SubmitButton approve = new SubmitButton
+                    (localize(PARAM_FORM_APPROVE, "Godkänn"),
+                     PARAM_FORM_APPROVE, idAsString);
+            approve.setAsImageButton(true);
+            SubmitButton reject = new SubmitButton
+                    (localize(PARAM_FORM_REJECT, "Avslå"), PARAM_FORM_REJECT,
+                     idAsString);
+            reject.setAsImageButton(true);
+            SubmitButton cancel = new SubmitButton
+                    (localize(PARAM_FORM_CANCEL, "Avbryt"), PARAM_FORM_CANCEL,
+                     idAsString);
+            cancel.setAsImageButton(true);
+            
+            data.addButton(approve);
+            data.addButton(reject);
+            data.addButton(cancel);
+        } catch (final Exception e) {
+            e.printStackTrace ();
+        }
 
 		form.add(data);
 		add(form);

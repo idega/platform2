@@ -1,5 +1,5 @@
 /*
- * $Id: AdminListOfApplications.java,v 1.1 2002/07/22 10:36:38 palli Exp $
+ * $Id: AdminListOfApplications.java,v 1.2 2002/11/01 10:51:00 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
