@@ -37,7 +37,7 @@ public class CreditCardPropertiesSetter extends TravelWindow {
 	
 	public CreditCardPropertiesSetter() {
     super.setWidth(300);
-    super.setHeight(200);
+    super.setHeight(250);
     super.setTitle("idegaWeb Travel");
     super.setStatus(true);
 	}
@@ -98,7 +98,7 @@ public class CreditCardPropertiesSetter extends TravelWindow {
 //  		headerText.setFontColor(TravelManager.WHITE);
 //  		headerText.setBold();
   		
-  		Text authText = getText(iwrb.getLocalizedString("ccps.set_authorization_on", "Set authorization on product?"));
+  		Text authText = getText(iwrb.getLocalizedString("ccps.use_delayed_transaction", "Use delayed transaction"));
   		BooleanInput authOn = new BooleanInput(prmIsAuthOn);
   		authOn.setSelected(product.getAuthorizationCheck());
   		SubmitButton save = new SubmitButton(iwrb.getImage("/buttons/save.gif"), ACTION, ACTION_SAVE);
@@ -120,6 +120,8 @@ public class CreditCardPropertiesSetter extends TravelWindow {
   		table.add(close,1,3);
   		table.add(save,2,3);
   		
+  		table.mergeCells(1, 5, 2, 5);
+  		table.add(iwrb.getLocalizedString("ccps.delayed_transaction_eplained", "Delayed transaction: \nIf this is set to TRUE then the actual transaction does not happen until you \"accept\" the booking."), 1, 5);
   		form.add(table);
   		
   		return form;
