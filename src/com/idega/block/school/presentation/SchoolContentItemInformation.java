@@ -62,7 +62,7 @@ public class SchoolContentItemInformation extends SchoolContentItem {
 		_height = height;	
 	}
 	
-	public void showImages(boolean showImages) {
+	public void setShowImages(boolean showImages) {
 		_showImages = showImages;
 	}
 
