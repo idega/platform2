@@ -369,12 +369,12 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
    public boolean isCohabitantOf(User personToCheck,User relatedPerson) throws RemoteException {
 	 if ( this.hasPersonGotCohabitant(personToCheck) ) {
 	   try{
-				 User spouse = this.getSpouseFor(personToCheck);
-				 if( spouse.equals(relatedPerson) ) {
+				 User cohabitant = this.getCohabitantFor(personToCheck);
+				 if( cohabitant.equals(relatedPerson) ) {
 				   return true;
 				 }
 	   }
-	   catch (NoSpouseFound nsf) {
+	   catch (NoCohabitantFound nsf) {
 	   }
 	 }
 	 return false;
