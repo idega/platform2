@@ -1,5 +1,7 @@
 package is.idega.idegaweb.member.isi.block.reports.business;
 
+import java.util.Collection;
+
 
 public interface WorkReportBusiness extends com.idega.business.IBOService,is.idega.idegaweb.member.business.MemberUserBusiness
 {
@@ -65,4 +67,6 @@ public interface WorkReportBusiness extends com.idega.business.IBOService,is.ide
  public void setWorkReportOpenToDateWithDateString(java.lang.String p0) throws java.rmi.RemoteException;
  public boolean unSendWorkReport(int p0) throws java.rmi.RemoteException;
  public void updateWorkReportData(int p0)throws javax.ejb.FinderException,com.idega.data.IDOException,java.rmi.RemoteException, java.rmi.RemoteException;
+
+public Collection getWorkReportsByYearRegionalUnionsClubsAndLeaguesFiltering(int i, Collection regionalUnionsFilter, Collection clubsFilter, Collection leaguesFilter);
 }

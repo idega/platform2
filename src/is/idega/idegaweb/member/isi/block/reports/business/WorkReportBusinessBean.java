@@ -3829,6 +3829,14 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return workReportClubAccountRecordHome;
 	}
   
-      
+	public Collection getWorkReportsByYearRegionalUnionsClubsAndLeaguesFiltering(int year, Collection regionalUnionsFilter, Collection clubsFilter, Collection leaguesFilter){
+		//try {
+			return null;//getWorkReportHome().findAllWorkReportsByYearRegionalUnionsClubsAndLeaguesFilteringOrderedByRegionalUnionNameAndClubName(year,regionalUnionsFilter,clubsFilter, leaguesFilter);
+		//}
+		//catch (FinderException e) {
+		//	return ListUtil.getEmptyList();
+		//}
+		
+	}
 
 } //end of class
