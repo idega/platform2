@@ -85,11 +85,12 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
     super.setPrimaryKey(object);
   }
 
-	public Collection ejbHomeFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] postalCodeId) throws FinderException {
+	public Collection ejbHomeFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] postalCodeId, Object[] supplierId) throws FinderException {
 		
 		boolean postalCode = (postalCodeId != null && postalCodeId.length > 0); 
 		boolean timeframe = (fromStamp != null && toStamp != null);
 		boolean roomType = (roomTypeId != null && roomTypeId.length > 0);
+		boolean supplier = (supplierId != null && supplierId.length > 0);
 
 		try {		
 			String addressSupplierMiddleTableName = EntityControl.getManyToManyRelationShipTableName(Address.class, Supplier.class);
@@ -110,10 +111,14 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 			sql.append("select distinct h.* from ").append(getHotelTableName()).append(" h, ")
 			.append(serviceTableName).append(" s, ")
 			.append(productTableName).append(" p");
+			
+			if (postalCode || supplier) {
+				sql.append(", ").append(supplierTableName).append(" su");
+			}	
+
 			if (postalCode) {
 				sql.append(", ").append(addressSupplierMiddleTableName).append(" asm, ")
 				.append(addressTableName).append(" a, ")
-				.append(supplierTableName).append(" su, ")
 				.append(postalCodeTableName).append(" pc ");
 			}
 			
@@ -122,6 +127,17 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 			.append(" AND s.").append(serviceTableIDColumnName).append(" = p.").append(productTableIDColumnName)
 			.append(" AND p.").append(ProductBMPBean.getColumnNameIsValid()).append(" = 'Y'");
 			
+			if (supplier) {
+				sql.append(" AND su.").append(supplierTableIDColumnName).append(" in (");
+				for (int i = 0; i < supplierId.length; i++) {
+					if (i != 0) {
+						sql.append(", ");
+					}
+					sql.append(supplierId[i].toString());
+				}
+				sql.append(")");
+			}
+
 			if (postalCode) {
 				sql.append(" AND asm.").append(supplierTableIDColumnName).append(" = su.").append(supplierTableIDColumnName)
 				.append(" AND asm.").append(addressTableIDColumnName).append(" = a.").append(addressTableIDColumnName)
@@ -148,7 +164,6 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 				}			sql.append(")");
 			}
 			//sql.append(" order by ").append();
-			
 			
 			//System.out.println(sql.toString());
 			return this.idoFindPKsBySQL(sql.toString());
