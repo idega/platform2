@@ -1,5 +1,5 @@
 /*
- * $Id: BatchDeadlineBMPBean.java,v 1.1 2004/11/01 17:00:25 aron Exp $
+ * $Id: BatchDeadlineBMPBean.java,v 1.2 2005/02/17 11:10:18 anders Exp $
  * Created on 1.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -28,10 +28,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/01 17:00:25 $ by $Author: aron $
+ *  Last modified: $Date: 2005/02/17 11:10:18 $ by $Author: anders $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class BatchDeadlineBMPBean extends GenericEntity  implements BatchDeadline{
     
@@ -87,7 +87,9 @@ public class BatchDeadlineBMPBean extends GenericEntity  implements BatchDeadlin
      * @see com.idega.data.GenericEntity#store()
      */
     public void store() throws IDOStoreException {
-        setCreated(IWTimestamp.RightNow().getTimestamp());
+    		if (getCreated() == null) {
+    			setCreated(IWTimestamp.RightNow().getTimestamp());
+    		}
         if(isCurrent()){
 	        try {
 	            BatchDeadlineHome bdHome = (BatchDeadlineHome)IDOLookup.getHome(BatchDeadline.class);
