@@ -272,9 +272,8 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 	}
 
 	public boolean isInUMFI() {
-		return getBooleanColumnValue(COLUMN_NAME_CLUB_TYPE, false);
+		return getBooleanColumnValue(COLUMN_NAME_IS_IN_UMFI, false);
 	}
-	
 
 	public void setAsSent(boolean sent) {
 		setColumn(COLUMN_NAME_SENT, sent);
