@@ -33,12 +33,12 @@ public class SchoolDropDownMenu extends DropdownMenu implements InputHandler {
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle rb = this.getResourceBundle(iwc);
 
-		addMenuElement("-1", rb.getLocalizedString("child_care.all_areas", "All areas"));
-		Collection areas = getSchoolBusiness(iwc).findAllSchools();
-		Iterator iter = areas.iterator();
+		addMenuElement("-1", rb.getLocalizedString("child_care.all_providers", "All providers"));
+		Collection schools = getSchoolBusiness(iwc).findAllSchools();
+		Iterator iter = schools.iterator();
 		while (iter.hasNext()) {
-			School area = (School) iter.next();
-			addMenuElement(area.getPrimaryKey().toString(), area.getSchoolName());
+			School school = (School) iter.next();
+			addMenuElement(school.getPrimaryKey().toString(), school.getSchoolName());
 		}
 	}
 	
