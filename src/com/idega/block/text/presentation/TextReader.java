@@ -119,6 +119,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     if(txText != null){
       iTextId = txText.getID();
       ch = ContentFinder.getContentHelper(txText.getContentId(),iLocaleId);
+			if(ch!=null)
       locText = ch.getLocalizedText();
       //locText = TextFinder.getLocalizedText(txText.getID(),iLocaleId);
       hasId = true;
