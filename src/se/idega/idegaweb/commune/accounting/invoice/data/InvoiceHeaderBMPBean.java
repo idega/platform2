@@ -4,6 +4,7 @@ import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClassMemberBMPBean;
 import com.idega.block.school.data.SchoolTypeBMPBean;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 import com.idega.user.data.UserBMPBean;
@@ -161,6 +162,17 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		IDOQuery query = idoQueryFindByMonth(month);
 		query.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, (String)schoolCategory.getPrimaryKey());
 		return idoFindPKsByQuery(query);
+	}
+	
+	public int ejbHomeGetNumberOfInvoicesForSchoolCategoryAndMonth(String schoolCategoryID, CalendarMonth month) throws IDOException {
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getLastDateOfMonth();
+		IDOQuery query = idoQuery();
+		query.appendSelectCountFrom(this);
+		query.appendWhere(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
+		query.appendAnd().append(COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
+		query.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, schoolCategoryID);
+		return idoGetNumberOfRecords(query);
 	}
 
     /**

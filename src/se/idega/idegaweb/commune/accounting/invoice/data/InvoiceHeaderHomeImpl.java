@@ -67,5 +67,12 @@ public java.util.Collection findByStatusAndCategory(java.lang.String p0,java.lan
  }
 
 
+public int getNumberOfInvoicesForSchoolCategoryAndMonth(java.lang.String p0,com.idega.util.CalendarMonth p1)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((InvoiceHeaderBMPBean)entity).ejbHomeGetNumberOfInvoicesForSchoolCategoryAndMonth(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 
 }

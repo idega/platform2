@@ -12,5 +12,6 @@ public interface InvoiceHeaderHome extends com.idega.data.IDOHome
  public java.util.Collection findByMonth(com.idega.util.CalendarMonth p0)throws javax.ejb.FinderException;
  public java.util.Collection findByMonthAndSchoolCategory(com.idega.util.CalendarMonth p0,com.idega.block.school.data.SchoolCategory p1)throws javax.ejb.FinderException;
  public java.util.Collection findByStatusAndCategory(java.lang.String p0,java.lang.String p1)throws javax.ejb.FinderException;
+ public int getNumberOfInvoicesForSchoolCategoryAndMonth(java.lang.String p0,com.idega.util.CalendarMonth p1)throws com.idega.data.IDOException;
 
 }
