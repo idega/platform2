@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.24 2003/10/03 01:52:42 tryggvil Exp $
+ * $Id: ContractBusiness.java,v 1.25 2003/12/17 12:46:03 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package is.idega.idegaweb.campus.block.allocation.business;
 
 import is.idega.idegaweb.campus.presentation.SysPropsSetter;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.data.SystemProperties;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
@@ -20,15 +21,20 @@ import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
 import com.idega.block.building.data.Apartment;
 
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Iterator;
 import com.idega.core.user.data.User;
+import com.idega.core.user.data.UserHome;
 import com.idega.block.application.data.*;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.core.contact.data.Email;
@@ -45,6 +51,9 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.idegaweb.IWApplicationContext;
 import java.util.List;
 import java.util.Iterator;
+
+import javax.ejb.FinderException;
+
 import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
 import com.idega.block.application.data.Application;
@@ -286,7 +295,7 @@ public  class ContractBusiness {
 
   public static boolean makeNewContract(IWApplicationContext iwc,User eUser,Applicant eApplicant,int iApartmentId,IWTimestamp from,IWTimestamp to){
 
-      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
+      Contract eContract = ((ContractHome)IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
       eContract.setApartmentId(iApartmentId);
       eContract.setApplicantId(eApplicant.getID());
       eContract.setUserId(eUser.getID());
@@ -306,11 +315,30 @@ public  class ContractBusiness {
   public static User makeNewUser(Applicant A,String[] emails){
     UserBusiness ub = new UserBusiness();
     try{
-    User u = ub.insertUser(A.getFirstName(),A.getMiddleName(),A.getLastName(),A.getFirstName(),"",null,null,null);
-    if(emails !=null && emails.length >0)
-      ub.addNewUserEmail(u.getID(),emails[0]);
+    	User user = null;
+    
+    	String ssn = A.getSSN();
+    	if(ssn!=null){
+    		try {
+				user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(ssn);
+			}
+			catch (IDOLookupException e) {
+				e.printStackTrace();
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+    	}
+    	else{
+    		user = ub.insertUser(A.getFirstName(),A.getMiddleName(),A.getLastName(),A.getFirstName(),"",null,null,null,A.getSSN());
+    	}
+    	if(user!=null && emails !=null && emails.length >0)
+    		ub.addNewUserEmail(user.getID(),emails[0]);
 
-    return u;
+    	return user;
     }
     catch(SQLException ex){
       ex.printStackTrace();
