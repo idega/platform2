@@ -50,29 +50,47 @@ public class PIDChecker {
 	 * @return true if the ssn is valid, false otherwise.
 	 */
 	public boolean isValid(String personalID) {
+		return isValid(personalID, false);
+	}
+
+	/**
+	 * A method to check if a Swedish social security number is valid.
+	 * 
+	 * @param ssn A string representation of the ssn. Can be of the form
+	 *            [XX]XXXXXX[-]XXXX
+	 * @return true if the ssn is valid, false otherwise.
+	 */
+	public boolean isValid(String personalID, boolean allowTemporary) {
 		personalID = trimSSN(personalID);
 
 		if (personalID.length() != 10)
 			return false;
 
-		int values[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		int sum = 0;
-		for (int i = 0; i < 10; i++) {
-			values[i] = personalID.charAt(i) - '0';
-
-			if (i % 2 == 0) {
-				values[i] *= 2;
-				if (values[i] > 9)
-					values[i] -= 9;
+		if (!allowTemporary) {
+			int values[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+			int sum = 0;
+			for (int i = 0; i < 10; i++) {
+				values[i] = personalID.charAt(i) - '0';
+	
+				if (i % 2 == 0) {
+					values[i] *= 2;
+					if (values[i] > 9)
+						values[i] -= 9;
+				}
+	
+				sum += values[i];
 			}
-
-			sum += values[i];
+	
+			if (sum % 10 == 0)
+				return true;
+			else
+				return false;
 		}
-
-		if (sum % 10 == 0)
-			return true;
-		else
+		else {
+			if (personalID.indexOf("TF") != -1)
+				return true;
 			return false;
+		}
 	}
 
 	/**
