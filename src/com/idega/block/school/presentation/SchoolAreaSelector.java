@@ -2,6 +2,7 @@ package com.idega.block.school.presentation;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 import com.idega.block.school.business.SchoolBusiness;
@@ -117,7 +118,7 @@ private void drawNoSchoolAreaList(IWContext iwc) throws RemoteException {
 			
 			Collection collSchools = sb.getHomeCommuneSchools(coll);
 			Iterator iter = collSchools.iterator(); //collSchools = collection with all schools for a specific category and the home commune
-			
+			Hashtable hash = new Hashtable();
 			while (iter.hasNext()) {
 				++row;		
 				table.setWidth(col, row, _spaceBetween);
@@ -126,8 +127,14 @@ private void drawNoSchoolAreaList(IWContext iwc) throws RemoteException {
 									
 				if (coll != null) {
 						school = (School) iter.next();
-						iSchoolId = ((Integer) school.getPrimaryKey()).intValue();
-						table.add(getExpandedLink(school.getName(), Integer.toString(school.getSchoolAreaId()), Integer.toString(iSchoolId)), col, row);
+						String pk = school.getPrimaryKey().toString();
+						//System.err.println("checking school "+pk.toString());
+						boolean invisibleForCitizen = false;
+						invisibleForCitizen = school.getInvisibleForCitizen();
+						if (!hash.containsKey(pk) && !invisibleForCitizen) {
+							iSchoolId = ((Integer) school.getPrimaryKey()).intValue();
+							table.add(getExpandedLink(school.getName(), Integer.toString(school.getSchoolAreaId()), Integer.toString(iSchoolId)), col, row);
+						}
 	
 				}
 		  }
@@ -156,7 +163,7 @@ private void drawNoSchoolAreaList(IWContext iwc) throws RemoteException {
 
 			int row = 0;
 			int col = 1;
-			
+			Hashtable hash = new Hashtable();
 			Iterator iter = coll.iterator();	
 			while (iter.hasNext()) {
 				++row;		
@@ -181,11 +188,17 @@ private void drawNoSchoolAreaList(IWContext iwc) throws RemoteException {
 								++row;
 								school = (School) sIter.next();
 								iSchoolId = ((Integer) school.getPrimaryKey()).intValue();
-								if (iSchoolId == _schoolId) {
-									table.add(getExpandedText(indent+school.getName(), true), col, row);
-								}else {
-									table.add(getExpandedText(indent, false), col, row);
-									table.add(getExpandedLink(school.getName(), Integer.toString(iAreaId), Integer.toString(iSchoolId)), col, row);
+								String pk = school.getPrimaryKey().toString();
+								//System.err.println("checking school "+pk.toString());
+								boolean invisibleForCitizen = false;
+								invisibleForCitizen = school.getInvisibleForCitizen();
+								if (!hash.containsKey(pk) && !invisibleForCitizen) {
+									if (iSchoolId == _schoolId) {
+										table.add(getExpandedText(indent+school.getName(), true), col, row);
+									}else {
+										table.add(getExpandedText(indent, false), col, row);
+										table.add(getExpandedLink(school.getName(), Integer.toString(iAreaId), Integer.toString(iSchoolId)), col, row);
+									}
 								}
 //								table.add(getText(school.getName(), false), col, row);
 							}	
