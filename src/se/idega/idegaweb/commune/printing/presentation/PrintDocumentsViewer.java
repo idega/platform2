@@ -297,8 +297,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
   	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_to","To:")),3,1);
   	T.add(to,4,1);
   	T.add(search,5,1);
-  	T.add(new HiddenInput(PRM_STAMP_U_FROM,uFrom.toString()));
-  	T.add(new HiddenInput(PRM_STAMP_U_TO,uTo.toString()));
+  	T.add(new HiddenInput(PRM_STAMP_P_FROM,pFrom.toString()));
+  	T.add(new HiddenInput(PRM_STAMP_P_TO,pTo.toString()));
   	T.add(new HiddenInput(PARAM_LETTER_TYPE,this.currentType));
   	F.add(T);
   	add(F);
@@ -341,7 +341,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			addPrintedDatesForm(iwc);
 			add(printedLetterDocs);
 			
-			printedLetterDocs.setHeader(localize("printdoc.date","Date"),1);
+			printedLetterDocs.setHeader(localize("printdoc.printed_date","Printing date"),1);
 			printedLetterDocs.setHeader(localize("printdoc.n_o_docs","Number of documents"),2);
 			printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 			
@@ -370,7 +370,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
   	Collection unprintedLetters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType,uFrom,uTo);
 		unPrintedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 		unPrintedLetterDocs.setBackroundColor("#e0e0e0");
-		unPrintedLetterDocs.setHeader(localize("printdoc.date","Date"),1);
+		unPrintedLetterDocs.setHeader(localize("printdoc.created_date","Message created"),1);
 		unPrintedLetterDocs.setHeader(localize("printdoc.receiver","Receiver"),2);
 		unPrintedLetterDocs.setHeader(localize("printdoc.file","File"),3);
 
@@ -401,7 +401,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 			printedLetterDocs.setBackroundColor("#e0e0e0");
 			//messageList.setHeader(localize("printdoc.name","Name"),1);
-			printedLetterDocs.setHeader(localize("printdoc.date","Date"),1);
+			printedLetterDocs.setHeader(localize("printdoc.created_date","Message created"),1);
 			printedLetterDocs.setHeader(localize("printdoc.receiver","Receiver"),2);
 			printedLetterDocs.setHeader(localize("printdoc.file","File"),3);
 		Collection printedLetters = getMessageBusiness(iwc).getPrintedLetterMessagesByType(currentType,pFrom,pTo);
