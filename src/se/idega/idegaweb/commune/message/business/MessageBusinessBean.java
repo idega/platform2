@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.38 2003/03/26 11:29:39 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.39 2003/03/26 16:11:41 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -479,7 +479,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		Message message = home.create();
 		message.setOwner(receiver);
 		if (sender != null)
-			message.setSender(((Integer)sender.getPrimaryKey()).intValue());
+			message.setSender(sender);
 		message.setSubject(subject);
 		message.setBody(body);
 		if (parentCase != null)

@@ -139,11 +139,11 @@ public class MessageViewer extends CommuneBlock {
 
 		table.add(getSmallText(TextFormatter.formatText(msg.getBody(),2,Table.HUNDRED_PERCENT)),2,row++);
 
-		if (msg.getSender() != -1) {
+		if (msg.getSenderID() != -1) {
 			SubmitButton reply = (SubmitButton) getStyledInterface(new SubmitButton(localize("message.Reply", "Reply"), PARAMETER_METHOD, String.valueOf(METHOD_REPLY_MESSAGE)));
 			table.add(reply, 1, row);
 			table.add(Text.NON_BREAKING_SPACE, 1, row);
-			form.addParameter(PARAMETER_SENDER_ID, msg.getSender());
+			form.addParameter(PARAMETER_SENDER_ID, msg.getSenderID());
 		}
 
 		table.add(close,1,row);
@@ -180,7 +180,7 @@ public class MessageViewer extends CommuneBlock {
 		body.setWidth(Table.HUNDRED_PERCENT);
 		body.setRows(7);
 		
-		User sender = getUserBusiness(iwc).getUser(_senderID);
+		User sender = msg.getSender();
 		IWTimestamp stamp = new IWTimestamp(msg.getCreated());
 		
 		Object[] arguments = { sender.getNameLastFirst(true), stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT) };

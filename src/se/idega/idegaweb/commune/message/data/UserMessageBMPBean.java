@@ -69,13 +69,21 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
     return this.getStringColumnValue(COLUMN_BODY);
   }
 
-  public int getSender(){
+  public int getSenderID(){
     return this.getIntColumnValue(COLUMN_SENDER);
   }
 
-  public void setSender(int userID){
+  public void setSenderID(int userID){
     this.setColumn(COLUMN_SENDER,userID);
   }
+
+	public User getSender(){
+		return (User) getColumnValue(COLUMN_SENDER);
+	}
+
+	public void setSender(User user){
+		this.setColumn(COLUMN_SENDER,user.getPrimaryKey());
+	}
 
   public Collection ejbFindMessages(User user)throws FinderException,java.rmi.RemoteException{
     return super.ejbFindAllCasesByUser(user);

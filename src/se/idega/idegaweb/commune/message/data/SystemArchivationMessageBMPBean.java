@@ -126,13 +126,10 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 			this.setColumn(COLUMN_BULK_DATA, fileID);
 		}
 	
-	public int getSender(){
-		return -1;
-	}
-
-	public void setSender(int userID){
-		//does nothing...
-	}
+	public User getSender() { throw new UnsupportedOperationException(); }
+	public void setSender(User sender){ throw new UnsupportedOperationException(); }
+	public int getSenderID() { throw new UnsupportedOperationException(); }
+	public void setSenderID(int senderID){ throw new UnsupportedOperationException(); }
 
 	public String getSenderName()
 	{
