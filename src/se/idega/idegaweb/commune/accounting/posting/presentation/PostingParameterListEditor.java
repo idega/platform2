@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.16 2003/09/02 23:40:22 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.17 2003/09/04 13:53:38 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -43,10 +43,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.16 2003/09/02 23:40:22 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.17 2003/09/04 13:53:38 laddi Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -479,7 +479,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private DropdownMenu companyTypeSelector(IWContext iwc, String name, int refIndex) throws Exception {
 			DropdownMenu menu = (DropdownMenu) getStyledInterface(
 					getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllCompanyTypes(), 
-					"getLocalizationKey"));
+					"getLocalizedKey"));
 		menu.addMenuElementFirst("0", localize(KEY_COMPANY_TYPE_HEADER_TWO, "Ingen"));
 		menu.addMenuElementFirst("0", localize(KEY_COMPANY_TYPE_HEADER_ONE, "Välj Bolagstyp"));
 		menu.setSelectedElement(refIndex);

@@ -7,7 +7,7 @@ public interface PostingParameters extends com.idega.data.IDOEntity
  public java.sql.Timestamp getChangedDate();
  public java.lang.String getChangedSign();
  public se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType getCommuneBelonging()throws javax.ejb.FinderException;
- public se.idega.idegaweb.commune.accounting.regulations.data.CompanyType getCompanyType()throws javax.ejb.FinderException;
+ public com.idega.block.school.data.SchoolManagementType getCompanyType()throws javax.ejb.FinderException;
  public java.lang.String getDoublePostingString();
  public java.sql.Date getPeriodeFrom();
  public java.sql.Date getPeriodeTo();
@@ -18,7 +18,7 @@ public interface PostingParameters extends com.idega.data.IDOEntity
  public void setChangedDate(java.sql.Timestamp p0);
  public void setChangedSign(java.lang.String p0);
  public void setCommuneBelonging(int p0);
- public void setCompanyType(int p0);
+ public void setCompanyType(String p0);
  public void setDoublePostingString(java.lang.String p0);
  public void setPeriodeFrom(java.sql.Date p0);
  public void setPeriodeTo(java.sql.Date p0);

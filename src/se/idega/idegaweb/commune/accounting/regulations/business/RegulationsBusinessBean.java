@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.12 2003/09/03 23:31:34 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.13 2003/09/04 13:53:38 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,6 +18,8 @@ import javax.ejb.RemoveException;
 import javax.ejb.CreateException;
 
 
+import com.idega.block.school.data.SchoolManagementType;
+import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolType;
 
@@ -25,8 +27,6 @@ import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
-import se.idega.idegaweb.commune.accounting.regulations.data.CompanyTypeHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowTypeHome;
@@ -46,7 +46,6 @@ import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationT
 
 
 
-import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
 
 /**
  * @author Kjell Lindman
@@ -106,8 +105,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 */
 	public Collection findAllCompanyTypes() {
 		try {
-			CompanyTypeHome home = getCompanyTypeHome();
-			return home.findAllCompanyTypes();				
+			SchoolManagementTypeHome home = getSchoolManagementTypeHome();
+			return home.findAllManagementTypes();				
 		} catch (RemoteException e) {
 			return null;
 		} catch (FinderException e) {
@@ -340,12 +339,12 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		return (SchoolTypeHome) com.idega.data.IDOLookup.getHome(SchoolType.class);
 	}
 
-	protected CommuneBelongingTypeHome getCommuneBelongingTypeHome() throws RemoteException {
-		return (CommuneBelongingTypeHome) com.idega.data.IDOLookup.getHome(CommuneBelongingType.class);
+	protected SchoolManagementTypeHome getSchoolManagementTypeHome() throws RemoteException {
+		return (SchoolManagementTypeHome) com.idega.data.IDOLookup.getHome(SchoolManagementType.class);
 	}
 
-	protected CompanyTypeHome getCompanyTypeHome() throws RemoteException {
-		return (CompanyTypeHome) com.idega.data.IDOLookup.getHome(CompanyType.class);
+	protected CommuneBelongingTypeHome getCommuneBelongingTypeHome() throws RemoteException {
+		return (CommuneBelongingTypeHome) com.idega.data.IDOLookup.getHome(CommuneBelongingType.class);
 	}
 
 	protected RegulationSpecTypeHome getRegulationSpecTypeHome() throws RemoteException {

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.16 2003/09/02 23:39:37 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.17 2003/09/04 13:53:38 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -210,7 +210,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			PostingParameters pp = null;
 			int parm1 = 0;
 			int parm2 = 0;
-			int parm3 = 0;
+			String parm3 = null;
 			int parm4 = 0;
 			
 
@@ -233,7 +233,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 
 				parm1 = Integer.parseInt(activityID);
 				parm2 = Integer.parseInt(regSpecTypeID);
-				parm3 = Integer.parseInt(companyTypeID);
+				parm3 = companyTypeID;
 				parm4 = Integer.parseInt(communeBelongingID);
 
 				if(searchPP(
@@ -288,7 +288,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @author Kjell
 	 */
 	private boolean searchPP(Date from, Date to, String ownPosting, String doublePosting, 
-								int code1, int code2, int code3, int code4) {
+								int code1, int code2, String code3, int code4) {
 	
 		try {
 			int match;
@@ -339,10 +339,10 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 					eq++;
 				}
 				if(pp.getCompanyType() == null) {
-					if(code3 == 0) {
+					if(code3 == null) {
 						eq++;
 					}
-				} else if (Integer.parseInt(pp.getCompanyType().getPrimaryKey().toString()) == code3) {
+				} else if (pp.getCompanyType().getPrimaryKey().toString() == code3) {
 					eq++;
 				}	
 				if(pp.getCommuneBelonging() == null) {

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.15 2003/09/02 23:40:22 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.16 2003/09/04 13:53:38 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.15 2003/09/02 23:40:22 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.16 2003/09/04 13:53:38 laddi Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -243,8 +243,8 @@ public class PostingParameterList extends AccountingBlock {
 					if(p.getCompanyType() == null) {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					} else {
-						list.add(p.getCompanyType().getLocalizationKey(), 
-								p.getCompanyType().getLocalizationKey());
+						list.add(p.getCompanyType().getLocalizedKey(), 
+								p.getCompanyType().getLocalizedKey());
 					}
 					if(p.getCommuneBelonging() == null) {
 						list.add(KEY_DEFAULT_BLANK, "");					

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.11 2003/09/02 23:39:53 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.12 2003/09/04 13:53:38 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,9 +17,9 @@ import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
+import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
 
 /**
@@ -38,10 +38,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTyp
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.11 2003/09/02 23:39:53 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.12 2003/09/04 13:53:38 laddi Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -54,7 +54,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 
 	private static final String COLUMN_ACTIVITY_ID = "activity_id";
 	private static final String COLUMN_REG_SPEC_TYPE_ID = "reg_spec_type_id";
-	private static final String COLUMN_COMPANY_TYPE_ID = "company_type_id";
+	private static final String COLUMN_COMPANY_TYPE = "company_type_id";
 	private static final String COLUMN_COMMUNE_BELONGING_ID = "commune_belonging_id";
 	
 	private static final String COLUMN_OWN_POSTING_STRING = "own_posting_string";
@@ -95,8 +95,8 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		addAttribute(COLUMN_REG_SPEC_TYPE_ID, "Regelspecificationstyp", true, true, 
 						Integer.class, "many-to-one", RegulationSpecType.class);
 						
-		addAttribute(COLUMN_COMPANY_TYPE_ID, "Bolagstyp", true, true, 
-						Integer.class, "many-to-one", CompanyType.class);
+		addAttribute(COLUMN_COMPANY_TYPE, "Bolagstyp", true, true, 
+						String.class, "many-to-one", SchoolManagementType.class);
 		
 		addAttribute(COLUMN_COMMUNE_BELONGING_ID, "Kommuntillhörighet", true, true, 
 						Integer.class, "many-to-one", CommuneBelongingType.class);
@@ -107,7 +107,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		
 		setNullable (COLUMN_ACTIVITY_ID, true);
 		setNullable (COLUMN_REG_SPEC_TYPE_ID, true);
-		setNullable (COLUMN_COMPANY_TYPE_ID, true);
+		setNullable (COLUMN_COMPANY_TYPE, true);
 		setNullable (COLUMN_COMMUNE_BELONGING_ID, true);
 	}
 	
@@ -150,8 +150,8 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		setColumn(COLUMN_REG_SPEC_TYPE_ID, id); 
 	}
 	
-	public void setCompanyType(int id) { 
-		setColumn(COLUMN_COMPANY_TYPE_ID, id); 
+	public void setCompanyType(String id) { 
+		setColumn(COLUMN_COMPANY_TYPE, id); 
 	}
 	
 	public void setCommuneBelonging(int id) { 
@@ -174,8 +174,8 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		return (RegulationSpecType) getColumnValue(COLUMN_REG_SPEC_TYPE_ID);
 	}
 	
-	public CompanyType getCompanyType() {
-		return (CompanyType) getColumnValue(COLUMN_COMPANY_TYPE_ID);
+	public SchoolManagementType getCompanyType() {
+		return (SchoolManagementType) getColumnValue(COLUMN_COMPANY_TYPE);
 	}
 
 	public CommuneBelongingType getCommuneBelonging() {
@@ -216,7 +216,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_ACTIVITY_ID, act);
 		sql.appendEquals(COLUMN_REG_SPEC_TYPE_ID, reg);
-		sql.appendEquals(COLUMN_COMPANY_TYPE_ID, comt);
+		sql.appendEquals(COLUMN_COMPANY_TYPE, comt);
 		sql.appendEquals(COLUMN_COMMUNE_BELONGING_ID, comb);
 		return idoFindOnePKByQuery(sql);
 	}
