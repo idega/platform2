@@ -1,11 +1,5 @@
 package com.idega.block.timesheet.business;
-import java.sql.SQLException;
-import java.util.Enumeration;
-import com.idega.block.timesheet.data.TimesheetProject;
-import com.idega.block.timesheet.data.TimesheetProjectHome;
-import com.idega.data.IDOLookup;
-import com.idega.presentation.IWContext;
-import com.idega.util.text.TextSoap;
+
 public class TimesheetBusiness {
 	private String table_width;
 	private String table_height;
