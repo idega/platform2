@@ -143,14 +143,18 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					email = getBusiness().getUserBusiness().getEmail(parent);
 					phone = getBusiness().getUserBusiness().getHomePhone(parent);
 					try {
-						phoneMobile = getBusiness().getUserBusiness().getUsersMobilePhone(parent);
-						phoneWork = getBusiness().getUserBusiness().getUsersWorkPhone(parent);	
+						phoneMobile = getBusiness().getUserBusiness().getUsersMobilePhone(parent);	
 					}
 					catch (NoPhoneFoundException e){
 						log(e);
 					}
 					
-					
+					try{
+						phoneWork = getBusiness().getUserBusiness().getUsersWorkPhone(parent);
+					}
+					catch (NoPhoneFoundException e){
+						log(e);
+					}
 					table.add(getSmallText(parent.getNameLastFirst(true)), 3, row);
 					table.add(getSmallText(" - "), 3, row);
 					table.add(getSmallText(PersonalIDFormatter.format(parent.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
