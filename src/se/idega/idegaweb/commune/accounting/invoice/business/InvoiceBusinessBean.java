@@ -52,6 +52,7 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
@@ -64,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/19 14:05:27 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/25 13:44:26 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.112 $
+ * @version $Revision: 1.113 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -603,6 +604,49 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		final String lastName = user.getLastName ();
 		return (firstName != null ? firstName + " " : "")
 				+ (lastName != null ? lastName : "");
+	}
+
+	public InvoiceRecord createInvoiceRecord
+		(final PaymentRecord paymentRecord, final SchoolClassMember placement,
+		 final PostingDetail postingDetail, PlacementTimes checkPeriod,
+		 final Date startPlacementDate, final Date endPlacementDate,
+		 final String createdBySignature)	throws RemoteException, CreateException {
+		final InvoiceRecord result = getInvoiceRecordHome ().create ();
+		result.setAmount(AccountingUtil.roundAmount(checkPeriod.getMonths () * postingDetail.getAmount ()));
+		result.setCreatedBy (createdBySignature);
+		result.setDateCreated (new Date (System.currentTimeMillis ()));
+		result.setDays (checkPeriod.getDays ());
+		if (null != paymentRecord) {
+			result.setPaymentRecord (paymentRecord);
+		}
+		if (null != postingDetail) {
+			result.setInvoiceText(postingDetail.getTerm());
+			result.setRuleText(postingDetail.getTerm());
+			result.setOrderId(postingDetail.getOrderID());
+		}
+		result.setPeriodStartCheck (checkPeriod.getFirstCheckDay ().getDate ());
+		result.setPeriodEndCheck (checkPeriod.getLastCheckDay ().getDate ());
+		if (null != placement) {
+			result.setSchoolClassMember (placement);
+			final SchoolType schoolType = placement.getSchoolType ();
+			if (null != schoolType) result.setSchoolType (schoolType);
+		}
+		if (null != startPlacementDate) {
+			result.setPeriodStartPlacement (startPlacementDate);
+		}
+		if (null != endPlacementDate) {
+			result.setPeriodEndPlacement (endPlacementDate);
+		}
+		try {
+			final RegulationSpecType regSpecType
+					= getRegulationSpecTypeHome ().findByRegulationSpecType
+					(postingDetail.getRuleSpecType ());
+			result.setRegSpecType (regSpecType);
+		} catch (Exception e) {
+			e.printStackTrace ();
+		}
+		result.store ();
+		return result;
 	}
 	
 	public InvoiceRecord createInvoiceRecord

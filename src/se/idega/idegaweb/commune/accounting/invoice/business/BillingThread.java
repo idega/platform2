@@ -328,42 +328,9 @@ public abstract class BillingThread extends Thread{
 		 final PostingDetail postingDetail, PlacementTimes checkPeriod,
 		 final Date startPlacementDate, final Date endPlacementDate)
 		throws RemoteException, CreateException {
-		final InvoiceRecord result = getInvoiceRecordHome ().create ();
-		result.setAmount(AccountingUtil.roundAmount(checkPeriod.getMonths () * postingDetail.getAmount ()));
-		result.setCreatedBy (BATCH_TEXT);
-		result.setDateCreated (new Date (System.currentTimeMillis ()));
-		result.setDays (checkPeriod.getDays ());
-		if (null != paymentRecord) {
-			result.setPaymentRecord (paymentRecord);
-		}
-		if (null != postingDetail) {
-			result.setInvoiceText(postingDetail.getTerm());
-			result.setRuleText(postingDetail.getTerm());
-			result.setOrderId(postingDetail.getOrderID());
-		}
-		result.setPeriodStartCheck (checkPeriod.getFirstCheckDay ().getDate ());
-		result.setPeriodEndCheck (checkPeriod.getLastCheckDay ().getDate ());
-		if (null != placement) {
-			result.setSchoolClassMember (placement);
-			final SchoolType schoolType = placement.getSchoolType ();
-			if (null != schoolType) result.setSchoolType (schoolType);
-		}
-		if (null != startPlacementDate) {
-			result.setPeriodStartPlacement (startPlacementDate);
-		}
-		if (null != endPlacementDate) {
-			result.setPeriodEndPlacement (endPlacementDate);
-		}
-		try {
-			final RegulationSpecType regSpecType
-					= getRegulationSpecTypeHome ().findByRegulationSpecType
-					(postingDetail.getRuleSpecType ());
-			result.setRegSpecType (regSpecType);
-		} catch (Exception e) {
-			e.printStackTrace ();
-		}
-		result.store ();
-		return result;
+		return getInvoiceBusiness ().createInvoiceRecord
+				(paymentRecord, placement, postingDetail, checkPeriod,
+				 startPlacementDate, endPlacementDate, BATCH_TEXT);
 	}
     
 	/**
@@ -572,6 +539,10 @@ public abstract class BillingThread extends Thread{
 
 	protected PostingBusiness getPostingBusiness() throws RemoteException {
 		return (PostingBusiness) IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
+	}
+
+	protected InvoiceBusiness getInvoiceBusiness() throws RemoteException {
+		return (InvoiceBusiness) IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
 	}
 
 	protected InvoiceHeaderHome getInvoiceHeaderHome() throws RemoteException {
