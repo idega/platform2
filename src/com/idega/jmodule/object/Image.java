@@ -330,7 +330,9 @@ private void getHTMLImage(ModuleInfo modinfo){//optimize by writing in pure html
     getImage(modinfo);
 
     //if( (image!=null) && (image.getID()!=-1) ){//begin debug
-
+  /**@todo : remove temporary backward compatability when no longer needed
+   *
+   */
     if( ((image!=null) && (image.getID()!=-1)) || ((image2!=null) && (image2.getID()!=-1)) ){//begin debug
 
       String texti;
