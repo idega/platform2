@@ -34,6 +34,8 @@ public class FamilyConnector extends Window {
 	public static final String _PARAM_ACTION = "action";
 	public static final String _PARAM_TYPE = "type";
 	public static final String _PARAM_METHOD = "method";
+	
+	private static final String FAMILY_RELATION_CUSTODIAN_AND_PARENT = "fam_rel_cust_par";
 
 	public static final int _METHOD_ATTACH = 1;
 	public static final int _METHOD_DETACH = 2;
@@ -151,6 +153,14 @@ public class FamilyConnector extends Window {
 						else if (relationType.equals(logic.getSiblingRelationType())) {
 							logic.setAsSiblingFor(relatedUser, user);
 						}
+						else if (relationType.equals(logic.getCustodianRelationType())) {
+							logic.setAsCustodianFor(relatedUser, user);
+						}
+						else if( relationType.equals(FAMILY_RELATION_CUSTODIAN_AND_PARENT)){
+							logic.setAsParentFor(relatedUser, user);
+							logic.setAsCustodianFor(relatedUser, user);
+						}
+						
 					}
 					catch (FinderException fe) {
 						fe.printStackTrace(System.err);
@@ -177,6 +187,13 @@ public class FamilyConnector extends Window {
 						else if (relationType.equals(logic.getSiblingRelationType())) {
 							logic.removeAsSiblingFor(relatedUser, user);
 						}
+						else if (relationType.equals(logic.getCustodianRelationType())) {
+							logic.removeAsCustodianFor(relatedUser, user);
+						}
+						else if( relationType.equals(FAMILY_RELATION_CUSTODIAN_AND_PARENT)){
+							logic.removeAsParentFor(relatedUser, user);
+							logic.removeAsCustodianFor(relatedUser, user);
+						}
 					}
 					catch (NumberFormatException nfe) {
 					}
@@ -198,6 +215,8 @@ public class FamilyConnector extends Window {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		menu.addMenuElement(getMemberFamilyLogic(iwc).getChildRelationType(), iwrb.getLocalizedString("usr_fam_win_child","Child"));
 		menu.addMenuElement(getMemberFamilyLogic(iwc).getParentRelationType(), iwrb.getLocalizedString("usr_fam_win_parent","Parent"));
+		menu.addMenuElement(getMemberFamilyLogic(iwc).getCustodianRelationType(), iwrb.getLocalizedString("usr_fam_win_custodian","Custodian"));
+		menu.addMenuElement(FAMILY_RELATION_CUSTODIAN_AND_PARENT, iwrb.getLocalizedString("usr_fam_win_custodian_and_parent","Custodian and parent"));
 		menu.addMenuElement(getMemberFamilyLogic(iwc).getSiblingRelationType(), iwrb.getLocalizedString("usr_fam_win_sibling","Sibling"));
 		menu.addMenuElement(getMemberFamilyLogic(iwc).getSpouseRelationType(), iwrb.getLocalizedString("usr_fam_win_spouse","Spouse"));
 		return menu;
