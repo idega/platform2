@@ -130,7 +130,7 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
 		 query.addCriteria(idoCriteriaForUser(user));
 		 query.addCriteria(idoCriteriaForStatus(status));
 		 query.addOrder(idoOrderByCreationDate(false));
-		 return (Collection) super.idoFindPKsByQuery(query, numberOfEntries, startingEntry);
+		 return super.idoFindPKsByQuery(query, numberOfEntries, startingEntry);
 	 }
 	 public java.util.Collection ejbFindMessages(com.idega.user.data.Group group, String[] status, int numberOfEntries, int startingEntry)throws javax.ejb.FinderException{
 	     return super.ejbFindAllCasesByGroupAndStatusArray(group,status,numberOfEntries,startingEntry);
@@ -141,7 +141,7 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
 		 query.addCriteria(idoCriteriaForStatus(status));
 		 query.addCriteria(idoCriteriaForGroup(groups));
 		 query.addOrder(idoOrderByCreationDate(false));
-	     return (Collection) super.idoFindPKsByQuery(query, numberOfEntries, startingEntry);
+	     return super.idoFindPKsByQuery(query, numberOfEntries, startingEntry);
 	     //return super.ejbFindAllCasesByUserAndGroupsAndStatusArray(user,groups,status,numberOfEntries,startingEntry);
 	 }
 	 public int ejbHomeGetNumberOfMessages(com.idega.user.data.User user, String[] status) throws IDOException{
