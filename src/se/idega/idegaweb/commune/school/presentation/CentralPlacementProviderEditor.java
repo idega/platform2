@@ -44,7 +44,7 @@ public class CentralPlacementProviderEditor extends Window {
 			+ "font-size:10px;font-family:Verdana,Arial,Helvetica;font-weight:normal;";
 	
 	public CentralPlacementProviderEditor() {
-		this.setWidth(800);
+		this.setWidth(750);
 		this.setHeight(400);
 		this.setScrollbar(true);
 		this.setResizable(true);	
