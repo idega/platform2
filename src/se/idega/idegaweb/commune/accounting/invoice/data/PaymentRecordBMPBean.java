@@ -202,22 +202,23 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	}
 	
 	public Collection ejbFindByPaymentHeaders (final Collection headers)
-        throws FinderException {
+		throws FinderException {
 		final IDOQuery sql = idoQuery ();
 		sql.appendSelectAllFrom (this);
-        boolean isFirstHeader = true;
-        for (Iterator i = headers.iterator (); i.hasNext ();) {
-            final PaymentHeader header = (PaymentHeader) i.next ();
-            if (isFirstHeader) {
-                sql.appendWhereEquals (COLUMN_PAYMENT_HEADER,
-                                       header.getPrimaryKey());
-                isFirstHeader = false;
-            } else {
-                sql.appendOrEquals (COLUMN_PAYMENT_HEADER,
-                                    header.getPrimaryKey());
-            }
-        }
-        return idoFindPKsByQuery (sql);
+		boolean isFirstHeader = true;
+		for (Iterator i = headers.iterator (); i.hasNext ();) {
+			final PaymentHeader header = (PaymentHeader) i.next ();
+			if (isFirstHeader) {
+				sql.appendWhereEquals (COLUMN_PAYMENT_HEADER,
+															 header.getPrimaryKey());
+				isFirstHeader = false;
+			} else {
+				sql.appendOrEquals (COLUMN_PAYMENT_HEADER,
+														header.getPrimaryKey());
+			}
+		}
+		sql.appendOrderBy (COLUMN_ORDER_ID);
+		return idoFindPKsByQuery (sql);
 	}
 	
 	
