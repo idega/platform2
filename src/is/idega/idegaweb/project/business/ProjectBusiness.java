@@ -364,6 +364,7 @@ public class ProjectBusiness {
 
       PageTreeNode rootPage = new PageTreeNode(pageLink.getPageId(),iwc);
       Vector v = new Vector();
+      //System.out.println("collecting subpages");
       this.collectSubpages(v,rootPage);
 
 
@@ -384,6 +385,9 @@ public class ProjectBusiness {
       while (setIter.hasNext()) {
         PageTreeNode item = (PageTreeNode)setIter.next();
         pages.add(Integer.toString(item.getNodeID()));
+        System.out.println("----------------------------------");
+        System.out.println("getInstanceIdsOnPage("+item.getNodeID()+")");
+        //BuilderLogic.getInstance().getIBXMLPage(item.getNodeID())
         Set set = logic.getInstanceIdsOnPage(item.getNodeID());
 
         if(set != null){
@@ -433,13 +437,18 @@ public class ProjectBusiness {
 
         //Instances
         List permissions = AccessControl.getGroupsPermissionsForInstances(oldGroup,s);
-        //System.err.println("Permissions: "+permissions);
+        System.err.println("oldGroup: "+oldGroup.getID());
+        System.err.println("newGroup: "+newGroup.getID());
+        System.err.println("s: "+s);
+        System.err.println("Permissions: "+permissions);
         if(permissions != null){
           Iterator permissionIter = permissions.iterator();
           while (permissionIter.hasNext()) {
             ICPermission item = (ICPermission)permissionIter.next();
+            System.out.print(item.getID()+", ");
             AccessControl.replicatePermissionForNewGroup(item, newGroup);
           }
+          System.out.println();
         }
 
       }
