@@ -491,6 +491,38 @@ public class FamilyLogicBean extends IBOServiceBean implements FamilyLogic{
   }
 
 
+
+  public void removeAsChildFor(User personToSet,User parent, User performer)throws RemoveException,RemoteException{
+    personToSet.removeRelation(convertUserToGroup(parent),RELATION_TYPE_GROUP_CHILD, performer);
+    parent.removeRelation(convertUserToGroup(personToSet),RELATION_TYPE_GROUP_PARENT);
+  }
+
+  public void removeAsParentFor(User parent,User child, User performer)throws RemoveException,RemoteException{
+    child.removeRelation(convertUserToGroup(parent),RELATION_TYPE_GROUP_CHILD, performer);
+    parent.removeRelation(convertUserToGroup(child),RELATION_TYPE_GROUP_PARENT);
+  }
+  
+	public void removeAsCustodianFor(User custodian,User child, User performer)throws RemoveException,RemoteException{
+		child.removeRelation(convertUserToGroup(custodian),RELATION_TYPE_GROUP_CHILD, performer);
+		custodian.removeRelation(convertUserToGroup(child),RELATION_TYPE_GROUP_CUSTODIAN);
+	}
+
+  public void removeAsSpouseFor(User personToSet,User relatedPerson, User performer)throws RemoveException,RemoteException{
+    personToSet.removeRelation(convertUserToGroup(relatedPerson),RELATION_TYPE_GROUP_SPOUSE, performer);
+    relatedPerson.removeRelation(convertUserToGroup(personToSet),RELATION_TYPE_GROUP_SPOUSE);
+  }
+  
+  public void removeAsCohabitantFor(User personToSet,User relatedPerson, User performer)throws RemoveException,RemoteException{
+	 personToSet.removeRelation(convertUserToGroup(relatedPerson),RELATION_TYPE_GROUP_COHABITANT, performer);
+	 relatedPerson.removeRelation(convertUserToGroup(personToSet),RELATION_TYPE_GROUP_COHABITANT);
+   }
+
+  public void removeAsSiblingFor(User personToSet,User relatedPerson, User performer)throws RemoveException,RemoteException{
+    personToSet.removeRelation(convertUserToGroup(relatedPerson),RELATION_TYPE_GROUP_SIBLING, performer);
+    relatedPerson.removeRelation(convertUserToGroup(personToSet),RELATION_TYPE_GROUP_SIBLING);
+  }
+
+
 	/**
 	 * Returns the RELATION_TYPE_GROUP_CHILD.
 	 * @return String
