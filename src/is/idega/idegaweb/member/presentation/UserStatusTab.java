@@ -147,6 +147,7 @@ public class UserStatusTab extends UserTab {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		_inactiveText = new Text(iwrb.getLocalizedString(_inactiveFieldName, "In-active") + ":");
+		_groupText = new Text(iwrb.getLocalizedString(_groupFieldName, "Group") + ":");
 		_statusText = new Text(iwrb.getLocalizedString(_statusFieldName, "Status") + ":");
 		_parent1StatusText = new Text(iwrb.getLocalizedString(_parent1StatusFieldName, "Parent status1") + ":");
 		_parent2StatusText = new Text(iwrb.getLocalizedString(_parent2StatusFieldName, "Parent status2") + ":");
@@ -182,7 +183,7 @@ public class UserStatusTab extends UserTab {
 	public boolean collect(IWContext iwc) {
 		if (iwc != null) {
 			String inactive = iwc.getParameter(_inactiveFieldName);
-			String status[] = iwc.getParameterValues(_statusFieldName);
+			String status = iwc.getParameter(_statusFieldName);
 			String parent1Status = iwc.getParameter(_parent1StatusFieldName);
 			String parent2Status = iwc.getParameter(_parent2StatusFieldName);
 			String parent3Status = iwc.getParameter(_parent3StatusFieldName);
@@ -191,7 +192,7 @@ public class UserStatusTab extends UserTab {
 				fieldValues.put(_statusFieldName,status);
 			}
 			else {		
-				fieldValues.put(_statusFieldName,new String[1]);
+				fieldValues.put(_statusFieldName,"");
 			}
 			
 			fieldValues.put(_parent1StatusFieldName,new Boolean(parent1Status != null));
