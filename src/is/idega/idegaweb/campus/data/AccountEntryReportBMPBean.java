@@ -375,7 +375,7 @@ public String getName(){
 		name.append(getFirstName()).append(" ");
 	if(getMiddleName()!=null)
 		name.append(getMiddleName()).append(" ");
-	if(getLastName()!=null);
+	if(getLastName()!=null)
 		name.append(getLastName());
 	return name.toString().trim();
 }
