@@ -127,8 +127,9 @@ public class Reporter extends Editor{
       T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
       T.add(deleteButtton,5,len+2);
       Form form = new Form();
-      form.add(T);
       form.add( new Link("New","/reports/reportedit.jsp"));
+      form.add(T);
+
 
 
       addMain(form);
