@@ -23,6 +23,9 @@ public class ClassIntrospector {
   //private static String DELETE="delete";
   private static String UPDATE="update";
   private static String INSERT="insert";
+  private static String DELETE="delete";
+  private static String REMOVE="remove";
+  private static String SET_DEFAULT_VALUES="setDefaultValues";
   private static String INSERT_START_DATA = "insertStartData";
   private static String EJB_START = "ejb";
   private static String EJB_FIND_START = "ejbFind";
@@ -74,6 +77,9 @@ public class ClassIntrospector {
         if(methodName.equals(this.INITIALIZE_ATTRIBUTES)){
           //v.add(m);
         }
+        if(methodName.equals(this.SET_DEFAULT_VALUES)){
+          //v.add(m);
+        }
         else if(methodName.equals(this.INSERT_START_DATA)){
           //v.add(m);
         }
@@ -83,10 +89,13 @@ public class ClassIntrospector {
         else if(methodName.equals(this.UPDATE)){
           //v.add(m);
         }
-        //else if(methodName.equals(this.DELETE)){
+        else if(methodName.equals(this.DELETE)){
           //v.add(m);
-        //}
+        }
         else if(methodName.equals(this.INSERT)){
+          //v.add(m);
+        }
+        else if(methodName.equals(this.REMOVE)){
           //v.add(m);
         }
         else if(methodName.equals(this.GET_NAME_OF_MIDDLE_TABLE)){
