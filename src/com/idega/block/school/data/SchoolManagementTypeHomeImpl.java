@@ -20,9 +20,44 @@ public java.util.Collection findAllManagementTypes()throws javax.ejb.FinderExcep
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public SchoolManagementType findCooperativeManagementType()throws javax.ejb.FinderException{
+public SchoolManagementType findCommuneManagementType()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((SchoolManagementTypeBMPBean)entity).ejbFindCooperativeManagementType();
+	Object pk = ((SchoolManagementTypeBMPBean)entity).ejbFindCommuneManagementType();
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
+public SchoolManagementType findCompanyManagementType()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolManagementTypeBMPBean)entity).ejbFindCompanyManagementType();
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
+public SchoolManagementType findCooperativeCommuneEmployerLiabilityManagementType()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolManagementTypeBMPBean)entity).ejbFindCooperativeCommuneEmployerLiabilityManagementType();
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
+public SchoolManagementType findCountyCouncilManagementType()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolManagementTypeBMPBean)entity).ejbFindCountyCouncilManagementType();
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
+public SchoolManagementType findFoundationManagementType()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolManagementTypeBMPBean)entity).ejbFindFoundationManagementType();
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
+public SchoolManagementType findGovernmentManagementType()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolManagementTypeBMPBean)entity).ejbFindGovernmentManagementType();
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }
@@ -37,13 +72,6 @@ public SchoolManagementType findManagementType(java.lang.String p0)throws javax.
 public SchoolManagementType findPrivateManagementType()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((SchoolManagementTypeBMPBean)entity).ejbFindPrivateManagementType();
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
-
-public SchoolManagementType findPublicManagementType()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((SchoolManagementTypeBMPBean)entity).ejbFindPublicManagementType();
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }

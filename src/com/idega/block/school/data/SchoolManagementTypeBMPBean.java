@@ -22,9 +22,13 @@ public class SchoolManagementTypeBMPBean extends GenericEntity implements School
 	public static final String COLUMN_NAME = "management_type_name";
 	public static final String COLUMN_LOCALIZED_KEY = "localized_key";
 	
-	public static final String TYPE_PUBLIC = "PUBLIC";
+	public static final String TYPE_COMMUNE = "COMMUNE";
 	public static final String TYPE_PRIVATE = "PRIVATE";
-	public static final String TYPE_COOPERATIVE = "COOPERATIVE";
+	public static final String TYPE_COMPANY = "COMPANY";
+	public static final String TYPE_GOVERNMENT = "GOVERNMENT";
+	public static final String TYPE_FOUNDATION = "FOUNDATION";
+	public static final String TYPE_COUNTY_COUNCIL = "COUNTY_COUNCIL";
+	public static final String TYPE_COOPERATIVE_COMMUNE_EMPLOYER_LIABILITY = "COOPERATIVE_COMMUNE_EMPLOYER_LIABILITY";
 	
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -51,9 +55,26 @@ public class SchoolManagementTypeBMPBean extends GenericEntity implements School
 	 * @see com.idega.data.GenericEntity#insertStartData()
 	 */
 	public void insertStartData() throws Exception {
-		String[] types = { TYPE_PUBLIC, TYPE_PRIVATE, TYPE_COOPERATIVE };
-		String[] names = { "commune", "company", "trade_company", "foundation", "other" };
-		// Kommunal, AB, HB, Stiftelse, Annan bolagsform
+
+		String[] types = {
+				TYPE_COMMUNE,
+				TYPE_PRIVATE,
+				TYPE_COMPANY,
+				TYPE_GOVERNMENT,
+				TYPE_FOUNDATION,
+				TYPE_COUNTY_COUNCIL,
+				TYPE_COOPERATIVE_COMMUNE_EMPLOYER_LIABILITY
+		};
+		
+		String[] names = {
+				"Commune",
+				"Private",
+				"Company",
+				"Government",
+				"Foundation",
+				"County council",
+				"Cooperative with commune employer liability"
+		};
 		
 		SchoolManagementTypeHome typeHome = (SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class);
 		SchoolManagementType type;
@@ -118,23 +139,57 @@ public class SchoolManagementTypeBMPBean extends GenericEntity implements School
 		
 		return (Integer) idoFindOnePKByQuery(query);
 	}
-	
+
+	/*
+					TYPE_COMMUNE,
+					TYPE_PRIVATE,
+					TYPE_COMPANY,
+					TYPE_GOVERNMENT,
+					TYPE_FOUNDATION,
+					TYPE_COUNTY_COUNCIL,
+					TYPE_COOPERATIVE_COMMUNE_EMPLOYER_LIABILITY
+	 * 
+	 */	
+
+	public String ejbFindCommuneManagementType() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_MANAGEMENT_TYPE, TYPE_COMMUNE);
+		return (String) idoFindOnePKByQuery(query);
+	}
+
 	public String ejbFindPrivateManagementType() throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_MANAGEMENT_TYPE, TYPE_PRIVATE);
 		return (String) idoFindOnePKByQuery(query);
 	}
 	
-	public Integer ejbFindPublicManagementType() throws FinderException {
+	public Integer ejbFindCompanyManagementType() throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, TYPE_PUBLIC);
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, TYPE_COMPANY);
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 	
-	public Integer ejbFindCooperativeManagementType() throws FinderException {
+	public Integer ejbFindGovernmentManagementType() throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, TYPE_COOPERATIVE);
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, TYPE_GOVERNMENT);
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 	
+	public Integer ejbFindFoundationManagementType() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, TYPE_FOUNDATION);
+		return (Integer) idoFindOnePKByQuery(query);
+	}
+	
+	public Integer ejbFindCountyCouncilManagementType() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, TYPE_COUNTY_COUNCIL);
+		return (Integer) idoFindOnePKByQuery(query);
+	}
+	
+	public Integer ejbFindCooperativeCommuneEmployerLiabilityManagementType() throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, TYPE_COOPERATIVE_COMMUNE_EMPLOYER_LIABILITY);
+		return (Integer) idoFindOnePKByQuery(query);
+	}
 }
