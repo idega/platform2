@@ -1,5 +1,5 @@
 /*
- * $Id: SpecialCalculationTypeBMPBean.java,v 1.3 2003/09/08 08:10:07 laddi Exp $
+ * $Id: SpecialCalculationTypeBMPBean.java,v 1.4 2003/10/04 23:59:12 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.data.IDOLookup;
  * Holds special calculation types ("Subventionerad", "Syskon", "Maxtaxa", "Låginkomst". "Allmän förskola") 
  * 
  * <p>
- * $Id: SpecialCalculationTypeBMPBean.java,v 1.3 2003/09/08 08:10:07 laddi Exp $
+ * $Id: SpecialCalculationTypeBMPBean.java,v 1.4 2003/10/04 23:59:12 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SpecialCalculationTypeBMPBean extends GenericEntity implements SpecialCalculationType {
 	
@@ -42,7 +42,7 @@ public class SpecialCalculationTypeBMPBean extends GenericEntity implements Spec
 
 		SpecialCalculationTypeHome home
 				= (SpecialCalculationTypeHome) IDOLookup.getHome(SpecialCalculationType.class);
-		final String [] data = { "subv", "syskon", "maxtaxa", "laginkomst", "allm_forskola" };
+		final String [] data = { "blank", "subv", "syskon", "maxtaxa", "laginkomst", "allm_forskola" };
 		for (int i = 0; i < data.length; i++) {
 			SpecialCalculationType sc = home.create();
 			sc.setSpecialCalculationType(ENTITY_NAME + "." + data[i]);
