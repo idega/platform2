@@ -47,6 +47,10 @@ public class ServiceViewer extends Window {
   public static final String IW_TRAVEL_SERVICE_ID = "iw_tr_serv_id";
   public static final String IW_TRAVEL_SUPPLIER_ID = "iw_tr_suppl_id";
 
+  private static final String IW_TRAVEL_ADD_BUY_BUTTON = "iw_tr_add_buy_button";
+  private static final String IW_TRAVEL_ADD_MORE_BUTTON = "iw_tr_add_more_button";
+
+
   private IWBundle iwb;
   private IWResourceBundle iwrb;
 
@@ -59,8 +63,8 @@ public class ServiceViewer extends Window {
 
   private idegaTimestamp dateFrom,dateTo;
   private String width,height,color1,color2;
-  private int windowWidth = 600;
-  private int windowHeight = 480;
+  private int windowWidth = 700;
+  private int windowHeight = 500;
   private Link link;
   private Text text;
   private Text boldText;
@@ -68,12 +72,25 @@ public class ServiceViewer extends Window {
   private boolean showMoreButton = true;
   private boolean listView = false;
 
+  private String sService = null;
+  private String sSupplier = null;
+
+
 
   private void init(IWContext iwc) {
     iwb = this.getBundle(iwc);
     iwrb = this.getResourceBundle(iwc);
+
+    sService = iwc.getParameter(IW_TRAVEL_SERVICE_ID);
+    sSupplier = iwc.getParameter(IW_TRAVEL_SUPPLIER_ID);
+
     super.setWidth(windowWidth);
     super.setHeight(windowHeight);
+
+    if( sService!=null ){
+      if( iwc.getSessionAttribute(IW_TRAVEL_ADD_MORE_BUTTON+sService)!=null ) showMoreButton = true;
+      if( iwc.getSessionAttribute(IW_TRAVEL_ADD_BUY_BUTTON+sService)!=null ) showBuyButton = true;
+    }
 
     tsb = TravelStockroomBusiness.getNewInstance();
     cal = new idegaCalendar();
@@ -101,9 +118,6 @@ public class ServiceViewer extends Window {
   }
 
  private void handleEvents(IWContext iwc) throws Exception {
-    String sService = iwc.getParameter(IW_TRAVEL_SERVICE_ID);
-    String sSupplier= iwc.getParameter(IW_TRAVEL_SUPPLIER_ID);
-
     if( sService!=null ){//single views
       try {
         service = new Service(Integer.parseInt(sService));
@@ -222,6 +236,7 @@ public class ServiceViewer extends Window {
         Product prod = (Product) iter.next();
         try{
           serv = tsb.getService(prod);
+
           /**
            * @todo Laga fyrir multi timeframes...
            */
@@ -252,18 +267,18 @@ public class ServiceViewer extends Window {
           content.add(price,++x,y);
         //Info and buy buttons
           if( showMoreButton){
-            ServiceViewer viewer = new ServiceViewer();
-            viewer.showBuyButton(showBuyButton);
-            viewer.showMoreButton(showMoreButton);
-            Link more = new Link(viewer);
-            more.setText(iwrb.getLocalizedString("travel.more.button","more"));
-            //more.setWindowToOpen(ServiceViewer.class);
+            iwc.setSessionAttribute(IW_TRAVEL_ADD_MORE_BUTTON+prod.getID(),String.valueOf(showMoreButton));
+
+            Link more = new Link(iwrb.getLocalizedString("travel.more.button","more"));
+            more.setWindowToOpen(ServiceViewer.class);
             more.addParameter(IW_TRAVEL_SERVICE_ID,prod.getID());
             more.setAsImageButton(true);
             content.add(more,++x,y);
           }
 
           if( showBuyButton){
+            iwc.setSessionAttribute(IW_TRAVEL_ADD_BUY_BUTTON+prod.getID(),String.valueOf(showBuyButton));
+
             Link buy = LinkGenerator.getLink(iwc,prod.getID());
             buy.setText(iwrb.getLocalizedString("travel.buy.button","buy"));
             buy.setAsImageButton(true);
