@@ -143,17 +143,25 @@ public class ClubInformationTab extends UserGroupTab {
 		// fieldValues.get(_typeFieldName));
 		_memberUMFIField.setChecked(((Boolean) fieldValues.get(_memberUMFIFieldName)).booleanValue());
 		String make = (String) fieldValues.get(_makeFieldName);
-		_connectionToSpecialField.setDisabled(false);
 		String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
 		_connectionToSpecialField.setSelectedElement(connection);
 		_makeField.removeElements();
-		if (connection != null && !connection.equals("") && make == IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB) {
-			_connectionToSpecialField.setDisabled(true);
+		if (connection != null && !connection.equals("") && make.equals(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB)) {
+			_connectionToSpecialField.setDisabled(false);
+			_connectionToSpecialField.setOnChange("alert('" + iwrb.getLocalizedString("clubinformationtab.cannot_change_msg", "You can not change this field!") + "')");
+			_connectionToSpecialField.setToSubmit();
 			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB, iwrb.getLocalizedString(
 					"clubinformationtab.single_division_club", "Single division"));
-		} else {
-//			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB, iwrb.getLocalizedString(
-//					"clubinformationtab.empty", "Empty"));
+		} else  {
+			if(make.equals(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB) || make.equals(IWMemberConstants.META_DATA_CLUB_STATUS_NO_MEMBERS_CLUB)) {
+				_connectionToSpecialField.setDisabled(true);
+			} else {
+				_connectionToSpecialField.setDisabled(false);
+			}
+			
+			_makeField.addMenuElement("-1",iwrb.getLocalizedString("clubinformationtab.choose_make", "Choose type..."));
+	//		_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB, iwrb.getLocalizedString(
+	//				"clubinformationtab.empty", "Empty"));
 			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB, iwrb.getLocalizedString(
 					"clubinformationtab.multi_division_club", "Multi divisional"));
 			_makeField.addMenuElement(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB, iwrb.getLocalizedString(
@@ -185,9 +193,6 @@ public class ClubInformationTab extends UserGroupTab {
 		_memberUMFIField = new CheckBox(_memberUMFIFieldName);
 		_makeField = new DropdownMenu(_makeFieldName);
 		_connectionToSpecialField = new DropdownMenu(_connectionToSpecialFieldName);
-		_connectionToSpecialField.setOnClick("var index = document.tab_form.cit_special.selectedIndex;");
-		String js = "if (!confirm('"+iwrb.getLocalizedString("clubinformationtab.reg_union_warning_change","Are you sure you want to change the Regional Union?")+"')) document.tab_form.cit_special.selectedIndex = index;";
-		_connectionToSpecialField.setOnChange(js);
 		_regionalUnionField = new Text();
 		_statusField = new DropdownMenu(_statusFieldName);
 		_inOperationField = new CheckBox(_inOperationFieldName);
@@ -212,7 +217,7 @@ public class ClubInformationTab extends UserGroupTab {
 					return collator.compare(((Group) arg0).getName(), ((Group) arg1).getName());
 				}				
 			});
-			_connectionToSpecialField.addMenuElement("-1",iwrb.getLocalizedString("clubinformationtab.choose_reg_un","Choose a regional union"));
+			_connectionToSpecialField.addMenuElement("-1",iwrb.getLocalizedString("clubinformationtab.choose_reg_un","Choose a regional union..."));
 		
 			Iterator it = special.iterator();
 			while (it.hasNext()) {
