@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.19 2003/11/30 23:17:18 palli Exp $
+ * $Id: RegulationBMPBean.java,v 1.20 2003/12/01 01:51:14 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.19 2003/11/30 23:17:18 palli Exp $
+ * $Id: RegulationBMPBean.java,v 1.20 2003/12/01 01:51:14 joakim Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -398,7 +398,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		IDOQuery sql = idoQuery();
 		sql.append("select r.* from ");
 		sql.append(ENTITY_NAME);
-		sql.append("r ");
+		sql.append(" r ");
 		if (regSpecTypeID != -1 || mainRuleId != -1) {
 			sql.append(", cacc_reg_spec_type t ");
 		}
