@@ -13,12 +13,13 @@ import java.sql.SQLException;
 import java.util.Locale;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICObjectInstance;
+
 /**
  * Title:
  * Description:
  * Copyright:    Copyright (c) 2001
- * Company:
- * @author
+ * Company:      idega.is
+ * @author 2000 - idega team - <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
  * @version 1.0
  */
 
