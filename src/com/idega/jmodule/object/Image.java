@@ -10,10 +10,10 @@ import java.sql.*;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.block.media.data.ImageEntity;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.util.caching.Cache;
 import com.idega.block.media.servlet.MediaServlet;
+import com.idega.block.media.data.ImageEntity;
 
 
 /**
@@ -34,8 +34,11 @@ private String align;
 
 private int imageId = -1;
 private ImageEntity image;
+private com.idega.jmodule.image.data.ImageEntity image2;
+
 private int maxImageWidth = 140;
 
+private boolean usesOldImageTables = false;
 
 
 public Image(){
@@ -117,18 +120,34 @@ private void getImage(ModuleInfo modinfo) throws SQLException{
 
   //**@todo: remove this when no longer needed
   String mmProp = iwma.getSettings().getProperty(MediaServlet.USES_OLD_TABLES);
-  if(mmProp!=null) idName = "image_id";
+  if(mmProp!=null) {
+    usesOldImageTables = true;
+    idName = "image_id";
+  }
 
   if( useCaching ){
     Cache cachedImage = (Cache) IWCacheManager.getInstance(iwma).getCachedBlobObject("com.idega.block.media.data.ImageEntity",imageId,iwma);
     if( cachedImage != null ){
-      image = (ImageEntity) cachedImage.getEntity();
+      //debug
+      if( usesOldImageTables ){
+        image2 = (com.idega.jmodule.image.data.ImageEntity) cachedImage.getEntity();
+      }
+      else{
+        image = (ImageEntity) cachedImage.getEntity();
+      }
       setURL(cachedImage.getVirtualPathToFile());
     }
   }
 
-  if(image==null){//if something went wrong or we are not using caching
-    image = new ImageEntity(imageId);
+  //if(image==null){//if something went wrong or we are not using caching
+  if(image==null&&image2==null){//if something went wrong or we are not using caching
+    if( usesOldImageTables ){
+      image2 = new com.idega.jmodule.image.data.ImageEntity(imageId);
+    }
+    else{
+      image = new ImageEntity(imageId);
+    }
+
     StringBuffer URIBuffer;
     URIBuffer = new StringBuffer(IWMainApplication.MEDIA_SERVLET_URL);
     URIBuffer.append(imageId);
@@ -310,15 +329,32 @@ private void getHTMLImage(ModuleInfo modinfo){//optimize by writing in pure html
 
     getImage(modinfo);
 
-    if( (image!=null) && (image.getID()!=-1) ){//begin debug
-      String texti = image.getDescription();
-      String link = image.getLink();
-      String name = image.getName();
+    //if( (image!=null) && (image.getID()!=-1) ){//begin debug
+
+    if( ((image!=null) && (image.getID()!=-1)) || ((image2!=null) && (image2.getID()!=-1)) ){//begin debug
+
+      String texti;
+      String link;
+      String name;
+      String width;
+      String height;
+
+      if( usesOldImageTables ){
+        texti = image2.getText();
+        link = image2.getLink();
+        name = image2.getName();
+        width = image2.getWidth();
+        height = image2.getHeight();
+      }
+      else{
+        texti = image.getDescription();
+        link = image.getLink();
+        name = image.getName();
+        width = image.getWidth();
+        height = image.getHeight();
+      }
+
       if( name != null ) setName(name);
-
-
-      String width = image.getWidth();
-      String height = image.getHeight();
 
       if(!limitImageWidth){
         if( (width!=null) && (!width.equalsIgnoreCase("")) && (!width.equalsIgnoreCase("-1")) ) {
