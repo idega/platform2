@@ -1573,7 +1573,6 @@ public class HotelBookingForm extends BookingForm {
 
 
   public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany) throws Exception {
-		System.out.println("checking booking...");
     boolean tooMany = false;
 
     int iMany = 0;
@@ -1657,7 +1656,8 @@ public class HotelBookingForm extends BookingForm {
 //		    iAvailable = totalRooms - heildarbokanir;
 //		    System.out.println("iAvail = totalRooms - heildarbokanir ....."+iAvailable+" = "+totalRooms+" - "+heildarbokanir);
 		    iAvailable = totalRooms - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, null );
-			  if (iAvailable <= 0 ) {
+		    if (iMany > iAvailable) {
+//			  if (iAvailable <= 0 ) {
 		    	tooMany = true;
 		    	errorDays.add(fromStamp);
 		    }
