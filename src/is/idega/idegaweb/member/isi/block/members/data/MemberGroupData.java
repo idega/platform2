@@ -34,6 +34,10 @@ public class MemberGroupData {
 		StringBuffer buf = new StringBuffer();
 		while(iter.hasNext()) {
 			Group group = (Group) iter.next();
+			if(group==null) {
+				System.out.println("a parent group was null!!");
+				continue;
+			}
 			String memberInfo = processGroup(group);
 			if(memberInfo!=null && memberInfo.length()>0) {
 				_memberInfo.add(memberInfo);
@@ -64,7 +68,10 @@ public class MemberGroupData {
 	 * group itself)
 	 */
 	private boolean processGroup(Group group, StringBuffer buf, boolean isFirstGroup) {
+		if(group == null) return false;
 		String type = group.getGroupType();
+		
+		System.out.println("Checking group " + group.getName() + "-" + group.getPrimaryKey());
 		
 		boolean isFinalGroup = IWMemberConstants.GROUP_TYPE_CLUB.equals(type) ||
 		                       IWMemberConstants.GROUP_TYPE_LEAGUE.equals(type) ||
