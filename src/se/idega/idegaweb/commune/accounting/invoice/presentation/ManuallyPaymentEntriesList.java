@@ -83,7 +83,8 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	private String ERROR_PERIODE_NULL = "error_periode_null";
 	private String ERROR_AMOUNT_FORMAT = "error_amount_format";
 	private String ERROR_CHECK = "error_check";
-
+	private String ERROR_NO_USER_SESSION = "error_no_user_session";
+	
 	private String LOCALIZER_PREFIX = "regular_payment_entries_list.";
 	
 	private static final String KEY_OPERATIONAL_FIELD = "operational_field";
@@ -243,7 +244,11 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	
 	private void handleSaveAction(IWContext iwc /*, School school*/){
 		Map errorMessages = new HashMap();
-		
+
+		if (iwc.getCurrentUser() == null){
+			errorMessages.put(ERROR_NO_USER_SESSION, localize(ERROR_NO_USER_SESSION, "Not logged in."));
+		}
+				
 		checkNotNull(iwc, PAR_AMOUNT_TOTAL, errorMessages, ERROR_AMOUNT_TOTAL_NULL, "Amount must be set");
 		checkNotNull(iwc, PAR_AMOUNT_PR_ITEM, errorMessages, ERROR_AMOUNT_ITEM_NULL, "Amount must be set");
 		checkNotNull(iwc, RegulationSearchPanel.PAR_VALID_DATE, errorMessages, ERROR_PERIODE_NULL, "Periode must be set");
@@ -573,7 +578,9 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		Table table = new Table();
 		int row = 1;
 
-		
+		if (errorMessages.get(ERROR_NO_USER_SESSION) != null){
+			table.add(getErrorText((String) errorMessages.get(ERROR_NO_USER_SESSION)), 1, row++);			
+		}			
 		if (errorMessages.get(ERROR_CHECK) != null) {
 			table.add(getErrorText((String) errorMessages.get(ERROR_CHECK)), 2, row++);	
 		}			
