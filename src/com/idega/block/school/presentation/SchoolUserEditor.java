@@ -110,7 +110,7 @@ public class SchoolUserEditor extends Block {
   		while ( iter.hasNext() ) {
   			++row;
   			try {
-					school = getSchoolHome().findByPrimaryKey(iter.next());
+					school = (School)(iter.next());
 	  			link = getLink(_tFormat.format(_iwrb.getLocalizedString("school.edit","edit"),TextFormat.NORMAL), ACTION_VIEW_SCHOOL, false);
 	  			link.addParameter(this.PARAMETER_SCHOOL_ID, school.getPrimaryKey().toString());
 	  			table.add(link, 1, row);
