@@ -98,12 +98,13 @@ public class MessengerApplet extends Applet implements Runnable{
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
 
       if(!listenerStarted){
+        System.out.println("starting listener");
         listener = new MessageListener(this);
-        listener.start();
+        //listener.start();
         listenerStarted = true;
       }
 
-      //listener.addMessageDialog(dialog);
+      listener.addMessageDialog(dialog);
 
       SingleLineItem test = new SingleLineItem(this);
       test.setWindowToOpen(dialog);
@@ -183,11 +184,11 @@ public class MessengerApplet extends Applet implements Runnable{
 
           if(!listenerStarted){
             listener = new MessageListener(this);
-            listener.start();
+            //listener.start();
             listenerStarted = true;
           }
 
-          //debug listener.addMessageDialog(messageDialog);
+          listener.addMessageDialog(messageDialog);
 
 
         }
