@@ -1,5 +1,5 @@
 /*
- * $Id: Application.java,v 1.8 2001/11/08 15:57:16 aron Exp $
+ * $Id: Application.java,v 1.9 2001/12/11 14:12:56 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,7 +33,7 @@ public class Application extends GenericEntity {
   public static final String statusApproved = "A";
   public static final String statusRejected = "R";
   public static final String statusSigned = "C";
-	public static final String statusGarbage = "G";
+  public static final String statusGarbage = "G";
 
   public Application() {
     super();

@@ -57,6 +57,7 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
   }
 
   protected void control(IWContext iwc){
+  /*
     java.util.Enumeration E = iwc.getParameterNames();
     System.err.println();
     while(E.hasMoreElements()){
@@ -64,7 +65,7 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
       System.err.println("prm : "+ prm +" = "+iwc.getParameter(prm));
     }
     System.err.println();
-
+*/
 
     outerTable = new Table(1,2);
       outerTable.setCellpadding(0);
@@ -87,7 +88,7 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
        iwc.removeSessionAttribute("dr_id");
     }
 
-    System.err.println("Entity id " + eId);
+    //System.err.println("Entity id " + eId);
 
     if(iwc.getParameter(prmSave)!=null || iwc.getParameter(prmSave+".x")!=null){
       if(iwc.getParameter("bm_choice")!=null){
@@ -340,7 +341,7 @@ public class BuildingEditor extends com.idega.presentation.PresentationObjectCon
     try { typeid = Integer.parseInt(sType);  }
     catch (NumberFormatException ex) { typeid = -1;  }
 
-    System.err.println("id is "+id);
+    //System.err.println("id is "+id);
 
     String slname = sName;
     /*

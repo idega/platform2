@@ -235,7 +235,7 @@ public ApartmentTypeViewer(int apartmenttypeid){
         linksTable.setBackgroundImage(1,1,iwb_.getImage("/shared/room/line.gif"));
         linksTable.setBackgroundImage(1,3,iwb_.getImage("/shared/room/line.gif"));
 
-        Link applyLink = new Link(iwrb_.getImage("/room/apply.gif"),"");
+        //Link applyLink = new Link(iwrb_.getImage("/room/apply.gif"));
         PrintButton print = new PrintButton(iwrb_.getImage("/room/print.gif"));
         CloseButton close = new CloseButton(iwrb_.getImage("/room/close.gif"));
 

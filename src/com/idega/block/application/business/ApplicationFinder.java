@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.11 2001/08/10 09:13:41 aron Exp $
+ * $Id: ApplicationFinder.java,v 1.12 2001/12/11 14:12:56 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -204,7 +204,6 @@ public class ApplicationFinder {
     return B;
   }
 
-
   public static List listOfSubject() {
     try {
       ApplicationSubject AS = new ApplicationSubject();
@@ -214,6 +213,16 @@ public class ApplicationFinder {
       e.printStackTrace();
       return(null);
     }
+  }
+
+  public static List listOfSubjectInfo(){
+    try {
+      return EntityFinder.findAll(new ApplicationSubjectInfo());
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+    return null;
   }
 
   public static List listOfNonExpiredSubjects() {

@@ -31,7 +31,7 @@ public class ContractCategory extends GenericEntity{
     addAttribute(getIDColumnName());
     addAttribute(getColumnNameName(), "Name", true, true, String.class);
     addAttribute(getColumnNameDescription(), "Description", true, true, String.class);
-		addAttribute(getColumnNameCreated(),"created",true,true,java.sql.Date.class);
+		addAttribute(getColumnNameCreated(),"Created",true,true,java.sql.Date.class);
 		addAttribute(getValidColumnName(), "Valid", true, true, Boolean.class);
     addManyToManyRelationShip(com.idega.core.data.ICObjectInstance.class);
   }
