@@ -116,7 +116,9 @@ public class CriteriaExpression implements DynamicExpression {
 			else {
 				replace = booleanExpression.substring(index, ++index);
 			}
-			buffer.append(replace);
+			if (replace != null) {
+				buffer.append(replace);
+			}
 		}
 		return buffer.toString();
 	}
