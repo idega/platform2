@@ -136,7 +136,7 @@ public class Importer extends Window {
 		  fileTable.add(this.getImportHandlers(iwc),2,files.length+2);
 
 		  fileTable.add(iwrb.getLocalizedString("importer.select.import.file.type","Select file type") ,1,files.length+3);
-		  fileTable.add(this.getImportHandlers(iwc),2,files.length+3);
+		  fileTable.add(this.getImportFileClasses(iwc),2,files.length+3);
 
 
           fileTable.add(new SubmitButton(),2,files.length+4);
@@ -160,12 +160,12 @@ public class Importer extends Window {
       form.add(new HiddenInput(this.ACTION_PARAMETER,this.SELECT_FILES));
       String path = getFolderPath();
       if( path == null ){
-       path = iwc.getApplication().getApplicationRealPath();
+       path = iwc.getApplication().getApplicationRealPath()+"import";
       }
       form.add(new TextInput(NEW_FOLDER_PATH,path) );
       form.add(new SubmitButton());
       add(form);
-      add( new BackButton(iwrb.getLocalizedString("importer.try.again","Try again")) );
+      add( new BackButton(iwrb.getLocalizedString("importer.try.again","Try again")) ); 
 
 
     }
