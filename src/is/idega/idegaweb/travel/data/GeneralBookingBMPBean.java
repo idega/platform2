@@ -1,19 +1,19 @@
 package is.idega.idegaweb.travel.data;
 
-import java.util.*;
-import is.idega.idegaweb.travel.service.tour.data.*;
-import com.idega.block.trade.stockroom.business.ProductBusiness;
-import com.idega.presentation.IWContext;
-import com.idega.business.IBOLookup;
-import javax.ejb.FinderException;
-import com.idega.util.IWTimestamp;
-import java.rmi.RemoteException;
-import is.idega.idegaweb.travel.interfaces.Booking;
+import java.rmi.*;
 import java.sql.*;
-import com.idega.util.CypherText;
-import com.idega.data.*;
-import com.idega.core.data.*;
+import java.util.*;
+
+import javax.ejb.*;
+
+import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
+import com.idega.business.*;
+import com.idega.core.data.*;
+import com.idega.data.*;
+import com.idega.presentation.*;
+import com.idega.util.*;
+import is.idega.idegaweb.travel.interfaces.*;
 
 /**
  * Title:        IW Travel
@@ -513,7 +513,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     Collection returner = null;
 
     if (serviceIds.length == 0) {
-      return null;
+      return new Vector();
     }
     StringBuffer sql = new StringBuffer();
 
