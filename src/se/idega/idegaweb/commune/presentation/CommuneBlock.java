@@ -385,6 +385,17 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}
 
 	/**
+	 * Returns a question icon with the tooltip specified.
+	 * @param toolTip	The tooltip to display on mouse over.
+	 * @return Image	The question icon.
+	 */
+	protected Image getQuestionIcon(String toolTip) {
+		Image questionImage = iwb.getImage("shared/question.gif", 12, 12);
+		questionImage.setToolTip(toolTip);
+		return questionImage;
+	}
+
+	/**
 	 * Returns the default various icon with the tooltip specified.  May be used for various
 	 * purposes (handle, go, whatever...)
 	 * @param toolTip	The tooltip to display on mouse over.
