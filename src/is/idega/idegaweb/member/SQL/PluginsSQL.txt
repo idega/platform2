@@ -25,11 +25,14 @@ insert into ic_group_type_ic_user_plugin values(3,'iwme_club')
 insert into ic_group_type_ic_user_plugin values(2,'iwme_club')
 insert into ic_group_type_ic_user_plugin values(1,'iwme_club')
 
+//age and gender
 insert into ic_group_type_ic_user_plugin values(4,'iwme_club_player')
+insert into ic_group_type_ic_user_plugin values(4,'general')
+insert into ic_group_type_ic_user_plugin values(4,'iwme_club_practice_player')
 
 insert into ic_group_type_ic_user_plugin values(1,'iwme_regional_union')
 insert into ic_group_type_ic_user_plugin values(2,'iwme_regional_union')
 
 insert into ic_group_type_ic_user_plugin values(1,'iwme_league')
 insert into ic_group_type_ic_user_plugin values(2,'iwme_league')
- 
+
