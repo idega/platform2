@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/11 17:34:44 $ by $Author: laddi $
- * @version $Revision: 1.65 $
+ * Last modified: $Date: 2003/11/11 17:40:02 $ by $Author: laddi $
+ * @version $Revision: 1.66 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -250,12 +250,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 
 	public Collection ejbFindByStudentAndTypes(int studentID, Collection schoolTypes) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelect().append(" m.* ").appendFrom().append(getEntityName()).append(" m, sch_school s, sch_school_sch_school_type st, sch_school_class c");
-		sql.appendWhere().append("m." + MEMBER).appendEqualSign().append(studentID);
-		sql.appendAndEquals("m." + SCHOOLCLASS, "c.sch_school_class_id");
-		sql.appendAndEquals("c.school_id", "s.sch_school_id");
-		sql.appendAndEquals("s.sch_school_id", "st.sch_school_id");
-		sql.appendAnd().append("st.sch_school_type_id").appendIn().appendLeftParenthesis();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(MEMBER, studentID);
+		sql.appendAnd().append(SCHOOL_TYPE).appendIn().appendLeftParenthesis();
 		sql.appendCommaDelimited(schoolTypes);
 		sql.appendRightParenthesis();
 
@@ -353,36 +350,19 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 																					throws FinderException {
 		IDOQuery sql = idoQuery();
 		
-		sql.appendSelectAllFrom(this.getTableName() + " mb" + ", " 
-													+ SchoolClassBMPBean.SCHOOLCLASS + " cl")
+		sql.appendSelectAllFrom(this.getTableName())
 		
 		.appendWhere()
-		.append(" mb." + MEMBER)
+		.append(MEMBER)
 		.appendEqualSign()
 		.append(user.getPrimaryKey())
 		
 		.appendAnd()
-		.append("(cl." + SchoolClassBMPBean.COLUMN_VALID)
-		.appendEqualSign()
-		.appendWithinSingleQuotes("Y")
-		
-		.appendOr()
-		.append("cl." + SchoolClassBMPBean.COLUMN_VALID)
-		.append(" is null)")
-		
-		.appendAnd()
-		.append(" mb." + SCHOOLCLASS)
-		.appendEqualSign()
-		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
-
-		.appendAnd()
-		.append("cl." + SchoolClassBMPBean.SCHOOLTYPE)
+		.append(SCHOOL_TYPE)
 		.appendEqualSign()
 		.append(type.getPrimaryKey());		
 		
 		sql.appendOrderBy(REGISTER_DATE + " desc");
-		
-		System.out.println("*** SQL ***: " + sql.toString());
 		
 		return (Integer)this.idoFindOnePKBySQL(sql.toString());
 	}
@@ -415,7 +395,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
 
 		.appendAnd()
-		.append("cl." + SchoolClassBMPBean.SCHOOLTYPE)
+		.append("mb." + SCHOOL_TYPE)
 		.appendEqualSign()
 		.append("tp." + SchoolTypeBMPBean.SCHOOLTYPE + "_id")
 		
