@@ -83,6 +83,7 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
 
 	private String _width;
 	private IBPage _page;
+	private IBPage _threadPage;
 	private Image _threadImage;
 
 	protected String _topicName;
@@ -482,7 +483,7 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
 		tree.setTreePadding(2);
 		tree.setTextStyle(_textStyle);
 		tree.setLinkStyleName(_threadName);
-		tree.setLinkPage(_page);
+		tree.setLinkPage(getThreadPage());
 		tree.setObjectInstanceID(_objectID);
 		tree.setThreadImage(_threadImage);
 		tree.setResourceBundle(_iwrb);
@@ -924,6 +925,27 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
 	 */
 	public void setReplyWidth(String replyWidth) {
 		_replyWidth = replyWidth;
+	}
+
+	/**
+	 * @return
+	 */
+	public IBPage getPage() {
+		return _page;
+	}
+
+	/**
+	 * @return
+	 */
+	public IBPage getThreadPage() {
+		return _threadPage;
+	}
+
+	/**
+	 * @param page
+	 */
+	public void setThreadPage(IBPage page) {
+		_threadPage = page;
 	}
 
 } // Class Forum
