@@ -20,6 +20,13 @@ public java.util.Collection findAllRegulationSpecTypes()throws javax.ejb.FinderE
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public RegulationSpecType findByRegulationSpecType(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((RegulationSpecTypeBMPBean)entity).ejbFindByRegulationSpecType(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public RegulationSpecType findRegulationSpecType(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((RegulationSpecTypeBMPBean)entity).ejbFindRegulationSpecType(p0);

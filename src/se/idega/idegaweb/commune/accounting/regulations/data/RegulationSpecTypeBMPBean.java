@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecTypeBMPBean.java,v 1.12 2003/10/05 00:12:16 kjell Exp $
+ * $Id: RegulationSpecTypeBMPBean.java,v 1.13 2003/10/08 16:41:31 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.data.IDOLookup;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.MainRuleBMPBean#
  * <p>
  * 
- * $Id: RegulationSpecTypeBMPBean.java,v 1.12 2003/10/05 00:12:16 kjell Exp $
+ * $Id: RegulationSpecTypeBMPBean.java,v 1.13 2003/10/08 16:41:31 joakim Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class RegulationSpecTypeBMPBean extends GenericEntity implements RegulationSpecType {
 	
@@ -97,6 +97,12 @@ public class RegulationSpecTypeBMPBean extends GenericEntity implements Regulati
 	public Object ejbFindRegulationSpecType(int id) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(getIDColumnName(), id);
+		return idoFindOnePKByQuery(sql);
+	}
+	
+	public Object ejbFindByRegulationSpecType(String s) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEqualsWithSingleQuotes(COLUMN_REG_SPEC_TYPE, s);
 		return idoFindOnePKByQuery(sql);
 	}
 }
