@@ -7,6 +7,7 @@ package is.idega.idegaweb.campus.block.finance.business;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntry;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntryBMPBean;
 import is.idega.idegaweb.campus.data.ApartmentAccountEntryHome;
+import is.idega.idegaweb.campus.data.BatchContractBMPBean;
 
 import java.rmi.RemoteException;
 import java.util.Date;
@@ -51,24 +52,30 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
 	/* (non-Javadoc)
 	 * @see com.idega.block.finance.business.AssessmentBusiness#rollBackAssessment(int)
 	 */
-	public boolean rollBackAssessment(int iAssessmentRoundId) {
+	public boolean rollBackAssessment(Integer assessmentRoundId) {
 		StringBuffer sql = new StringBuffer("delete from ");
 		sql.append(AccountEntryBMPBean.getEntityTableName());
 		sql.append(" where ").append(com.idega.block.finance.data.AccountEntryBMPBean.getRoundIdColumnName());
-		sql.append(" = ").append(iAssessmentRoundId);
+		sql.append(" = ").append(assessmentRoundId);
 		
 		StringBuffer sql2 = new StringBuffer("delete from ").append( ApartmentAccountEntryBMPBean.ENTITY_NAME)
 		.append(" where ").append(ApartmentAccountEntryBMPBean.COLUMN_ENTRY_ID)
-		.append(" in (select e.fin_acc_entry_id from  FIN_ACC_ENTRY e where FIN_ASSESSMENT_ROUND_ID =").append(iAssessmentRoundId);
+		.append(" in (select e.fin_acc_entry_id from  FIN_ACC_ENTRY e where FIN_ASSESSMENT_ROUND_ID =").append(assessmentRoundId).append(" )");
 		
+		StringBuffer sql3 = new StringBuffer("delete from ");
+		sql3.append(BatchContractBMPBean.ENTITY_NAME);
+		sql3.append(" where ").append(BatchContractBMPBean.COLUMN_BATCH_ID);
+		sql3.append(" = ").append(assessmentRoundId);
 		
 		System.err.println(sql.toString());
 		System.err.println(sql2.toString());
+		System.err.println(sql3.toString());
 		javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
 		try {
 			t.begin();
 			AssessmentRound AR = ((AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class))
-					.findByPrimaryKey(new Integer(iAssessmentRoundId));
+					.findByPrimaryKey(assessmentRoundId);
+			SimpleQuerier.execute(sql3.toString());
 			SimpleQuerier.execute(sql2.toString());
 			SimpleQuerier.execute(sql.toString());
 			AR.delete();
