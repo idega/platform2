@@ -1,6 +1,7 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
 import java.rmi.RemoteException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,6 +9,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -87,8 +89,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   
   private List specialFieldList;
   private Map specialFieldColorMap;
-  
   private boolean editable = true;
+  
+  // this number format is shared by the converters
+  NumberFormat currencyNumberFormat = null;
   
   { 
     specialFieldList = new ArrayList();
@@ -1006,6 +1010,18 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
   
   }
+  
+  private NumberFormat getCurrencyNumberFormat(IWContext iwc) {
+    if (currencyNumberFormat == null) {
+      Locale locale = iwc.getCurrentLocale();
+      currencyNumberFormat = NumberFormat.getCurrencyInstance(locale);
+      // !!!!!!
+      // do not show any digits after the decimal point
+      // !!!!!!
+      currencyNumberFormat.setMaximumFractionDigits(0);
+    }
+    return currencyNumberFormat;       
+  }
   /**
    * 
    */
@@ -1019,13 +1035,26 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       setAsFloat(message);
     }
     
-    protected Object getValue(
+    protected Object getValueForInput(
         Object entity,
         EntityPath path,
         EntityBrowser browser,
         IWContext iwc)  {
       String name = path.getShortKey();
-      return ((EntityRepresentation) entity).getColumnValue(name);
+      Float floatValue = (Float) ((EntityRepresentation) entity).getColumnValue(name);
+      return Integer.toString(floatValue.intValue());
+   }
+    
+    protected Object getValueForLink (
+        Object entity,
+        EntityPath path,
+        EntityBrowser browser,
+        IWContext iwc)  {
+      String name = path.getShortKey();
+      Float floatValue =  (Float) ((EntityRepresentation) entity).getColumnValue(name);
+      NumberFormat numberFormat = getCurrencyNumberFormat(iwc);
+      String resultString = numberFormat.format(floatValue.doubleValue());
+      return resultString;      
     } 
     
   }       
@@ -1044,9 +1073,18 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         EntityPath path,
         EntityBrowser browser,
         IWContext iwc) {
+      String resultString;
       String name = path.getShortKey();
-      String value = ((EntityRepresentation) entity).getColumnValue(name).toString();
-      Text text =  new Text(value);
+      Object value = ((EntityRepresentation) entity).getColumnValue(name);
+      if ( LEAGUE_NAME.equals(name))  {
+        resultString = value.toString();
+      }
+      else {
+        Float floatValue = (Float) value;
+        NumberFormat numberFormat = getCurrencyNumberFormat(iwc);
+        resultString = numberFormat.format(floatValue.doubleValue());
+      }
+      Text text =  new Text(resultString);
       text.setBold();
       return text;
     }
