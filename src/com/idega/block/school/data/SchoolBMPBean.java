@@ -68,11 +68,11 @@ public class SchoolBMPBean extends GenericEntity implements School {
 		this.addAttribute(HEADMASTER, "Headmaster", true, true, Integer.class, this.MANY_TO_ONE, Group.class);
 		/** Gimmi 4-5 Nov 2002 */
 		this.addAttribute(FAX, "fax", true, true, String.class, 20);
-		this.addAttribute(WEB_PAGE, "web_page", true, true, String.class, 50);
+		this.addAttribute(WEB_PAGE, "web_page", true, true, String.class, 500);
 		this.addAttribute(MANAGEMENT_TYPE, "management_type", true, true, Integer.class);
 		this.addAttribute(HEADMASTER_USER_ID, "headmaster user id", true, true, Integer.class, this.MANY_TO_ONE, User.class);
 		this.addAttribute(ASSISTANT_HEADMASTER_GROUP_ID, "assistant headmaster group id", true, true, Integer.class, this.MANY_TO_ONE, Group.class);
-		this.addAttribute(MAP_URL, "url to map", true, true, String.class);
+		this.addAttribute(MAP_URL, "url to map", true, true, String.class,500);
 
 		this.addManyToManyRelationShip(SchoolType.class);
 		this.addManyToManyRelationShip(SchoolYear.class);
