@@ -1,7 +1,12 @@
 package com.idega.block.school.data;
 
-import com.idega.data.*;
+import java.rmi.RemoteException;
 import java.sql.Date;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 
 /**
  * <p>Title: </p>
@@ -69,8 +74,14 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason{
     this.setColumn(DUE_DATE,due);
   }
 
-  public java.util.Collection ejbFindAllSchoolSeasons()throws javax.ejb.FinderException{
+  public java.util.Collection ejbFindAllSchoolSeasons()throws FinderException{
     return super.idoFindAllIDsBySQL();
+  }
+
+  public java.util.Collection ejbFindAllPreviousSchoolSeasons(SchoolSeason schoolSeason)throws FinderException, RemoteException {
+    IDOQuery sql = new IDOQuery();
+    sql.appendSelectAllFrom(this.getEntityName()).appendWhere().append(START).append("<").appendWithinSingleQuotes(schoolSeason.getSchoolSeasonStart().toString()).appendOrderBy(START);
+    return super.idoFindPKsBySQL(sql.toString());
   }
 
 

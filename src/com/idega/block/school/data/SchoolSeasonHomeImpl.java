@@ -13,6 +13,13 @@ public class SchoolSeasonHomeImpl extends com.idega.data.IDOFactory implements S
  }
 
 
+public java.util.Collection findAllPreviousSchoolSeasons(com.idega.block.school.data.SchoolSeason p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolSeasonBMPBean)entity).ejbFindAllPreviousSchoolSeasons(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllSchoolSeasons()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolSeasonBMPBean)entity).ejbFindAllSchoolSeasons();

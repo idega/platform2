@@ -49,6 +49,17 @@ public class SchoolSeasonBusinessBean extends IBOServiceBean implements SchoolSe
       return new java.util.Vector();
     }
   }
+  
+  public Collection findAllPreviousSchoolSeasons(SchoolSeason schoolSeason) {
+  	try{
+     SchoolSeasonHome shome = (SchoolSeasonHome) IDOLookup.getHome(SchoolSeason.class);
+      return shome.findAllPreviousSchoolSeasons(schoolSeason);
+    }
+    catch(Exception ex){
+      ex.printStackTrace();
+      return new java.util.Vector();
+    }
+  }
 
   public void storeSchoolSeason(int id,String name,Date start,Date end,Date due_date) throws java.rmi.RemoteException{
 
