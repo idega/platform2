@@ -90,7 +90,7 @@ public class PageCounter extends Block {
     }
     add(refs);
 
-addBreak();
+
     //agents
     Table agents = new Table();
     int y2 = 1;
