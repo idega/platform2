@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderTypeBMPBean.java,v 1.1 2003/08/18 14:45:16 anders Exp $
+ * $Id: ProviderTypeBMPBean.java,v 1.2 2003/08/19 10:35:09 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -15,28 +15,51 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDOLookup;
 
 /**
  * Entity bean for the provider type (childcare, school, e t c).
  * <p>
- * Last modified: $Date: 2003/08/18 14:45:16 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/19 10:35:09 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class ProviderTypeBMPBean  extends GenericEntity implements PaymentFlowType {
+public class ProviderTypeBMPBean  extends GenericEntity implements ProviderType {
 
-	private static final String ENTITY_NAME = "cacc_payment_flow_type";
+	private static final String ENTITY_NAME = "cacc_provider_type";
 
 	private static final String COLUMN_TEXT_KEY = "text_key";
+
+	private static final String KEY_PREFIX = ENTITY_NAME + ".";
 
 	/**
 	 * @see com.idega.data.GenericEntity#getEntityName()
 	 */
 	public String getEntityName() {
 		return ENTITY_NAME;
+	}
+
+	/**
+	 * @see com.idega.data.GenericEntity#insertStartData()
+	 */
+	public void insertStartData () throws Exception {
+		super.insertStartData ();
+        
+		System.out.println ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
+
+		ProviderTypeHome home = (ProviderTypeHome) IDOLookup.getHome(ActivityType.class);
+		final String [] data = {
+				KEY_PREFIX + "preschool", 
+				KEY_PREFIX + "school"
+		};
+		
+		for (int i = 0; i < data.length; i++) {
+			ProviderType pt = home.create();
+			pt.setTextKey(data[i]);
+			pt.store();
+		}
 	}
 
 	/**

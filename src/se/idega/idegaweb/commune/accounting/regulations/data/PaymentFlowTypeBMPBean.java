@@ -1,5 +1,5 @@
 /*
- * $Id: PaymentFlowTypeBMPBean.java,v 1.1 2003/08/18 14:45:16 anders Exp $
+ * $Id: PaymentFlowTypeBMPBean.java,v 1.2 2003/08/19 10:35:09 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -15,16 +15,16 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDOLookup;
 
 /**
  * Entity bean for the payment flow type (in, out, e t c).
  * <p>
- * Last modified: $Date: 2003/08/18 14:45:16 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/19 10:35:09 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PaymentFlowTypeBMPBean  extends GenericEntity implements PaymentFlowType {
 
@@ -32,11 +32,34 @@ public class PaymentFlowTypeBMPBean  extends GenericEntity implements PaymentFlo
 
 	private static final String COLUMN_TEXT_KEY = "text_key";
 
+	private static final String KEY_PREFIX = ENTITY_NAME + ".";
+
 	/**
 	 * @see com.idega.data.GenericEntity#getEntityName()
 	 */
 	public String getEntityName() {
 		return ENTITY_NAME;
+	}
+
+	/**
+	 * @see com.idega.data.GenericEntity#insertStartData()
+	 */
+	public void insertStartData () throws Exception {
+		super.insertStartData ();
+        
+		System.out.println ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
+
+		PaymentFlowTypeHome home = (PaymentFlowTypeHome) IDOLookup.getHome(ActivityType.class);
+		final String [] data = {
+				KEY_PREFIX + "in", 
+				KEY_PREFIX + "out"
+		};
+		
+		for (int i = 0; i < data.length; i++) {
+			PaymentFlowType pft = home.create();
+			pft.setTextKey(data[i]);
+			pft.store();
+		}
 	}
 
 	/**
