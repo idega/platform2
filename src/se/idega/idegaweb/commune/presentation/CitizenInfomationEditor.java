@@ -22,7 +22,7 @@ import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
-
+  
 /**
  * @author Gimmi - idega
  */
@@ -124,12 +124,17 @@ public class CitizenInfomationEditor extends CommuneBlock {
 				
 			}
 			/** New Emails */
-			String sEmail = iwc.getParameter(PARAMETER_EMAIL);
-			if (sEmail != null && !sEmail.equals("")) {
-				email = emailHome.create();
-				email.setEmailAddress(sEmail);
-				email.store();
-				user.addEmail(email);
+			// Prevent multiple emails...
+			if (user.getEmails() != null && user.getEmails().size() > 0)
+			{}else{
+				String sEmail = iwc.getParameter(PARAMETER_EMAIL);
+				if (sEmail != null && !sEmail.equals("")) {
+					email = emailHome.create();
+					email.setEmailAddress(sEmail);
+					email.store();
+					user.addEmail(email);
+				}
+				
 			}
 			return true;	
 		} catch (Exception e) {
@@ -146,7 +151,7 @@ public class CitizenInfomationEditor extends CommuneBlock {
 		form.add(table);
 		int row = 1;
 
-		Text tEmail = super.getSmallText(getResourceBundle().getLocalizedString("email","Email")+":");
+		Text tEmail = super.getSmallText(getResourceBundle().getLocalizedString("email","...Email")+":..");
 
 		Text tLogin = super.getSmallText(getResourceBundle().getLocalizedString("login","Login")+":");
 		TextInput tiLogin = (TextInput) super.getStyledInterface(new TextInput(PARAMETER_LOGIN));
@@ -154,14 +159,14 @@ public class CitizenInfomationEditor extends CommuneBlock {
 		Text tCurrentPassword = super.getSmallText(getResourceBundle().getLocalizedString("current_password","Current password")+":");
 		PasswordInput tiCurrentPassword = (PasswordInput) super.getStyledInterface(new PasswordInput(PARAMETER_CURRENT_PASSWORD));
 		
-		Text tNewPassword = super.getSmallText(getResourceBundle().getLocalizedString("new_password","New password")+":");
+//		Text tNewPassword = super.getSmallText(getResourceBundle().getLocalizedString("new_password","New password")+":");
+		Text tNewPassword = getSmallText(localize("new_password", "New password") + ":");
 		PasswordInput tiNewPassword = (PasswordInput) super.getStyledInterface(new PasswordInput(PARAMETER_NEW_PASSWORD));
 
 		Text tNewPasswordAgain = super.getSmallText(getResourceBundle().getLocalizedString("repeat_password","Repeat password")+":");
 		PasswordInput tiNewPasswordAgain = (PasswordInput) super.getStyledInterface(new PasswordInput(PARAMETER_NEW_PASSWORD_AGAIN));
 
 		SubmitButton update = (SubmitButton) super.getStyledInterface(new SubmitButton(getResourceBundle().getLocalizedString("update","Update"), ACTION_PARAMETER, ACTION_UPDATE));
-
 
 
 		Collection emails = user.getEmails();
@@ -222,6 +227,8 @@ public class CitizenInfomationEditor extends CommuneBlock {
 		table.add(update, 2, row);
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
 
+		table.add(new Text("test"), 1, ++row);
+		
 		add(form);
 	}
 
