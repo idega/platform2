@@ -341,7 +341,7 @@ private Table resultTable;
        }
       }
       else {
-        if ( this.tournamentGroupID != -1 ) {
+        if ( !championship ) {
           TournamentResults tournResults = new TournamentResults(tournamentID,sortBy,tournamentGroupID,tournamentRounds,gender);
               tournResults.sortBy(orderBy);
 
