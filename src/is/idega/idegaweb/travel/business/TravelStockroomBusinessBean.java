@@ -559,48 +559,52 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
   public boolean getIfDay(IWContext iwc, Contract contract, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, SQLException, RemoteException {
       boolean isDay = false;
-      String key1 = ( (Integer) contract.getPrimaryKey()).toString();
-      String key2 = stamp.toSQLDateString();
+      if (contract != null) {
+        String key1 = ( (Integer) contract.getPrimaryKey()).toString();
+        String key2 = stamp.toSQLDateString();
 
-      int dayOfWeek = stamp.getDayOfWeek();
-      boolean isValidWeekDay = false;
-      boolean isValidServiceDay = false;
+        int dayOfWeek = stamp.getDayOfWeek();
+        boolean isValidWeekDay = false;
+        boolean isValidServiceDay = false;
 
 
-      isValidServiceDay = getIfDay(iwc,product,product.getTimeframes(), stamp);
+        isValidServiceDay = getIfDay(iwc,product,product.getTimeframes(), stamp);
 
-      if (isValidServiceDay) {
-        HashtableDoubleKeyed resellerDayOfWeekHash = getResellerDayHashtable(iwc);
-        Object object = resellerDayOfWeekHash.get(key1, key2);
-        if (object == null) {
-            isValidWeekDay = getResellerDayHome().getIfDay(contract.getResellerId(),contract.getServiceId() , dayOfWeek);
-            resellerDayOfWeekHash.put(key1, key2, new Boolean(isValidWeekDay));
-        }else {
-          isValidWeekDay = ((Boolean) object).booleanValue();
+        if (isValidServiceDay) {
+          HashtableDoubleKeyed resellerDayOfWeekHash = getResellerDayHashtable(iwc);
+          Object object = resellerDayOfWeekHash.get(key1, key2);
+          if (object == null) {
+              isValidWeekDay = getResellerDayHome().getIfDay(contract.getResellerId(),contract.getServiceId() , dayOfWeek);
+              resellerDayOfWeekHash.put(key1, key2, new Boolean(isValidWeekDay));
+          }else {
+            isValidWeekDay = ((Boolean) object).booleanValue();
+          }
         }
-      }
 
 
-      HashtableDoubleKeyed resellerDayHash = getResellerDayHashtable(iwc);
-      Object obj = resellerDayHash.get(key1, key2);
-      if (obj == null) {
-        if (isValidWeekDay) {
-          idegaTimestamp from = new idegaTimestamp(contract.getFrom());
-          idegaTimestamp to = new idegaTimestamp(contract.getTo());
-          if (stamp.isLaterThan(from) && to.isLaterThan(stamp)  ) {
-            isDay = true;
-            resellerDayHash.put(key1, key2, new Boolean(true));
-          }else if (stamp.toSQLDateString().equals(from.toSQLDateString()) || stamp.toSQLDateString().equals(to.toSQLDateString())) {
-            isDay = true;
-            resellerDayHash.put(key1, key2, new Boolean(true));
+        HashtableDoubleKeyed resellerDayHash = getResellerDayHashtable(iwc);
+        Object obj = resellerDayHash.get(key1, key2);
+        if (obj == null) {
+          if (isValidWeekDay) {
+            idegaTimestamp from = new idegaTimestamp(contract.getFrom());
+            idegaTimestamp to = new idegaTimestamp(contract.getTo());
+            if (stamp.isLaterThan(from) && to.isLaterThan(stamp)  ) {
+              isDay = true;
+              resellerDayHash.put(key1, key2, new Boolean(true));
+            }else if (stamp.toSQLDateString().equals(from.toSQLDateString()) || stamp.toSQLDateString().equals(to.toSQLDateString())) {
+              isDay = true;
+              resellerDayHash.put(key1, key2, new Boolean(true));
+            }else {
+              resellerDayHash.put(key1, key2, new Boolean(false));
+            }
           }else {
             resellerDayHash.put(key1, key2, new Boolean(false));
           }
         }else {
-          resellerDayHash.put(key1, key2, new Boolean(false));
+          isDay = ((Boolean) obj).booleanValue();
         }
       }else {
-        isDay = ((Boolean) obj).booleanValue();
+        System.err.println("TravelStockroomBusinessBean : getIfDay(iwc, contract, product, stamp) - Contract er null");
       }
 
       return isDay;

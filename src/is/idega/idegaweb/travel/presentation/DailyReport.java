@@ -49,6 +49,7 @@ public class DailyReport extends TravelManager implements Report{
   private String parameterBookingReportType ="dailyBookingReportType";
   private String parameterHotelPickupPlaceReport ="dailyHotelPickupPlaceReport";
   private String parameterUserReport ="dailyUserReport";
+  private String sessionParameterToggleCloser = "sessDailyToggler";
 
   private boolean viewAllProducts = false;
   private boolean hotelPickupReport = false;
@@ -87,11 +88,6 @@ public class DailyReport extends TravelManager implements Report{
       Table theTable = new Table();
           theTable.setBorder(0);
           theTable.setWidth("100%");
-          if (closerLook) {
-            theTable.add(new HiddenInput(this.parameterToggleCloser , this.parameterYes));
-          }else {
-            theTable.add(new HiddenInput(this.parameterToggleCloser , this.parameterNo));
-          }
 
       Table table = new Table();
         table.setWidth("100%");
@@ -649,9 +645,9 @@ public class DailyReport extends TravelManager implements Report{
 
       SubmitButton open = null;
       if (this.closerLook) {
-        open = new SubmitButton(iwrb.getImage("buttons/close.gif"),this.sAction, this.parameterNo);
+        open = new SubmitButton(iwrb.getImage("buttons/close.gif"),this.parameterToggleCloser, this.parameterNo);
       }else {
-        open = new SubmitButton(iwrb.getImage("buttons/closer.gif"),this.sAction, this.parameterYes);
+        open = new SubmitButton(iwrb.getImage("buttons/closer.gif"),this.parameterToggleCloser, this.parameterYes);
       }
 
       theTable.setAlignment(1,8,"right");
@@ -697,10 +693,36 @@ public class DailyReport extends TravelManager implements Report{
   }
 
   public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp) throws RemoteException, FinderException {
+    handleInsert(iwc);
     if (products.size() == 1) {
       return getBookingTable(iwc, (Product) products.get(0), stamp);
     }else {
       return getDailyReportSimple(iwc, products, stamp);
+    }
+  }
+
+  private void handleInsert(IWContext iwc) throws RemoteException {
+    String toggler = iwc.getParameter(this.parameterToggleCloser);
+    Boolean sessionToggler = (Boolean) iwc.getSessionAttribute(this.sessionParameterToggleCloser);
+
+    if (toggler != null && !toggler.equals("")) {
+      if (toggler.equals(this.parameterNo)) {
+        this.closerLook = false;
+      }else if (toggler.equals(this.parameterYes)) {
+        this.closerLook = true;
+      }
+      iwc.setSessionAttribute(this.sessionParameterToggleCloser, new Boolean(closerLook));
+    }else if (sessionToggler != null) {
+      if (sessionToggler.booleanValue()) {
+        this.closerLook = true;
+      }else {
+        this.closerLook = false;
+      }
+    }
+
+    String action = iwc.getParameter(this.sAction);
+    if (action != null && action.equals(this.parameterUpdate)) {
+      this.update(iwc);
     }
   }
 

@@ -110,7 +110,9 @@ public class BookingOverview extends TravelManager {
           _productId = Integer.parseInt(productId);
           iwc.setSessionAttribute("TB_BOOKING_PRODUCT_ID",productId);
         }
-        if (productId != null && !productId.equals("-1") && !productId.equals(parameterViewAll)) {
+        if (productId != null && _productId != -1 && !productId.equals(parameterViewAll)) {
+          //System.err.println(" productId = "+productId);
+          //System.err.println("_productId = "+_productId);
           product = ProductBusiness.getProduct(_productId);
           service = getTravelStockroomBusiness(iwc).getService(product);
           tour = getTourBusiness(iwc).getTour(product);
@@ -186,29 +188,27 @@ public class BookingOverview extends TravelManager {
 
   // BUSINESS
   public idegaTimestamp getFromIdegaTimestamp(IWContext iwc) {
-      idegaTimestamp stamp = null;
-      String from_time = iwc.getParameter("active_from");
-      if (from_time!= null) {
-          stamp = new idegaTimestamp(from_time);
-      }
-      else {
-          stamp = idegaTimestamp.RightNow();
-      }
-      return stamp;
+    idegaTimestamp stamp = null;
+    String from_time = iwc.getParameter("active_from");
+    if (from_time!= null) {
+      stamp = new idegaTimestamp(from_time);
+    } else {
+      stamp = idegaTimestamp.RightNow();
+    }
+    return stamp;
   }
 
   // BUSINESS
   public idegaTimestamp getToIdegaTimestamp(IWContext iwc) {
-      idegaTimestamp stamp = null;
-      String from_time = iwc.getParameter("active_to");
-      if (from_time!= null) {
-          stamp = new idegaTimestamp(from_time);
-      }
-      else {
-          stamp = idegaTimestamp.RightNow();
-          stamp.addDays(15);
-      }
-      return stamp;
+    idegaTimestamp stamp = null;
+    String from_time = iwc.getParameter("active_to");
+    if (from_time!= null) {
+      stamp = new idegaTimestamp(from_time);
+    } else {
+      stamp = idegaTimestamp.RightNow();
+      stamp.addDays(15);
+    }
+    return stamp;
   }
 
 
@@ -216,8 +216,6 @@ public class BookingOverview extends TravelManager {
       Table topTable = new Table(5,2);
         topTable.setBorder(0);
         topTable.setWidth("90%");
-
-
 
       Text tframeText = (Text) theText.clone();
           tframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
@@ -330,7 +328,7 @@ public class BookingOverview extends TravelManager {
           Text assignedText = (Text) theText.clone();
               assignedText.setText(iwrb.getLocalizedString("travel.assigned_small_sm","assigned"));
           Text inqText = (Text) theText.clone();
-              inqText.setText(iwrb.getLocalizedString("travel.inqueries_small_sm","inq."));
+              inqText.setText(iwrb.getLocalizedString("travel.inqueries_sm","inquiries"));
           Text bookedText = (Text) theText.clone();
               bookedText.setText(iwrb.getLocalizedString("travel.booked_sm","booked"));
           Text availableText = (Text) theText.clone();
@@ -477,10 +475,10 @@ public class BookingOverview extends TravelManager {
                             bookedTextBold.setFontColor(super.BLACK);
                             availableTextBold.setFontColor(super.BLACK);
 
-                          Link btnNanar = new Link(iwrb.getImage("/buttons/closer.gif"));
+                          Link btnNanar = new Link(iwrb.getImage("buttons/closer.gif"));
                             btnNanar.addParameter(closerLookDateParameter,tempStamp.toSQLDateString());
                             btnNanar.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterProductId, prod.getID());
-                          Link btnBook = new Link(iwrb.getImage("/buttons/book.gif"), is.idega.idegaweb.travel.presentation.Booking.class);
+                          Link btnBook = new Link(iwrb.getImage("buttons/book.gif"), is.idega.idegaweb.travel.presentation.Booking.class);
                             btnBook.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterProductId, prod.getID());
                             btnBook.addParameter("year",tempStamp.getYear());
                             btnBook.addParameter("month",tempStamp.getMonth());
@@ -494,7 +492,7 @@ public class BookingOverview extends TravelManager {
                             table.add(countTextBold,3,row);
                             table.add(availableTextBold,7,row);
                           }
-
+/*
                           table.setColor(1,row,theColor);
                           table.setColor(2,row,theColor);
                           table.setColor(3,row,theColor);
@@ -502,7 +500,7 @@ public class BookingOverview extends TravelManager {
                           table.setColor(5,row,theColor);
                           table.setColor(6,row,theColor);
                           table.setColor(7,row,theColor);
-
+*/
                           table.add(btnNanar,8,row);
                           if (supplier != null) {
                             table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,8,row);
@@ -512,6 +510,9 @@ public class BookingOverview extends TravelManager {
                               table.add(btnBook,8,row);
                           }
                           table.setRowColor(row,theColor);
+                          if (iInquery > 0) {
+                            table.setColor(5,row,super.YELLOW);
+                          }
                           ++row;
                           upALine = true;
                       }
@@ -751,7 +752,9 @@ public class BookingOverview extends TravelManager {
             table.add(Temail,2,row);
             table.setAlignment(3,row,"left");
             table.add(Tbooked,5,row);
-            table.setRowColor(row, super.GRAY);
+
+            table.setRowColor(row, super.YELLOW);
+//            table.setRowColor(row, super.GRAY);
 
             link = (Link) answerLink.clone();
             table.add(link, 9, row);
