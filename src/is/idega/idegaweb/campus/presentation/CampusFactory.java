@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFactory.java,v 1.9 2002/01/08 13:10:40 aron Exp $
+ * $Id: CampusFactory.java,v 1.10 2002/01/10 01:17:58 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -102,7 +102,7 @@ public class CampusFactory extends Block implements Campus {
    *
    */
   private PresentationObject getPresentationObject(int ContentView) {
-    PresentationObject obj = new Text();
+    PresentationObject obj = new CampusHome();
     switch (ContentView) {
       case HOME :
         obj = new CampusHome();
