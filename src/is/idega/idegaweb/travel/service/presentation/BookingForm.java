@@ -97,6 +97,15 @@ public abstract class BookingForm extends TravelManager{
       }
 
     }
+    String sBookingId = iwc.getParameter(this.parameterBookingId);
+    if (sBookingId != null) {
+    	try {
+        int bookingId = Integer.parseInt(sBookingId);
+        _booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+    	}catch (FinderException fe) {
+    		/** not handled */	
+    	}
+    }  
     setTimestamp(iwc);
   }
 
@@ -1839,20 +1848,28 @@ public abstract class BookingForm extends TravelManager{
   }
 
   protected void setTimestamp(IWContext iwc) {
-    String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
-    String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
-    String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
-    
-	  _stamp = new IWTimestamp(IWTimestamp.RightNow());
-	  if (year != null) {
-	  	_stamp.setYear(Integer.parseInt(year));	
-	  }
-    if (month != null) {
-    	_stamp.setMonth(Integer.parseInt(month));	
-    }
-    if (day != null) {
-    	_stamp.setDay(Integer.parseInt(day));	
-    }
+  	if (_booking == null) {
+	    String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
+	    String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
+	    String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
+	    
+		  _stamp = new IWTimestamp(IWTimestamp.RightNow());
+		  if (year != null) {
+		  	_stamp.setYear(Integer.parseInt(year));	
+		  }
+	    if (month != null) {
+	    	_stamp.setMonth(Integer.parseInt(month));	
+	    }
+	    if (day != null) {
+	    	_stamp.setDay(Integer.parseInt(day));	
+	    }
+  	}else {
+  		try {
+	  		setTimestamp(new IWTimestamp(_booking.getBookingDate()));	
+  		}catch (RemoteException r) {
+  			/** Not handled */	
+  		}
+  	}
     
     /*
     if (day != null && month != null && year != null) {
