@@ -55,10 +55,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/12 19:08:34 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/13 16:22:53 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.38 $
+ * @version $Revision: 1.39 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -91,6 +91,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String DELETE_ROW_KEY = PREFIX + "delete_invoice_compilation";
     private static final String DOUBLE_POSTING_DEFAULT = "Motkontering";
     private static final String DOUBLE_POSTING_KEY = PREFIX + "double_posting";
+    private static final String EDIT_INVOICE_RECORD_DEFAULT = "Ändra fakturarad";
+    private static final String EDIT_INVOICE_RECORD_KEY = PREFIX + "edit_invoice_record";
     private static final String EDIT_ROW_DEFAULT = "Ändra rad";
     private static final String EDIT_ROW_KEY = PREFIX + "edit_row";
     private static final String END_PERIOD_DEFAULT = "T o m ";
@@ -153,6 +155,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String REMARK_DEFAULT = "Anmärkning";
     private static final String REMARK_KEY = PREFIX + "remark";
     private static final String RULE_TEXT_KEY = PREFIX + "rule_text";
+    private static final String SAVE_INVOICE_RECORD_DEFAULT = "Spara fakturarad";
+    private static final String SAVE_INVOICE_RECORD_KEY = PREFIX + "save_invoice_record";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sök efter fakturamottagare";
     private static final String SEARCH_INVOICE_RECEIVER_KEY = PREFIX + "search_invoice_receiver";
@@ -544,6 +548,63 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return result;
     }
 
+    private Map getEditRecordInputsMap (final IWContext context)
+        throws RemoteException, FinderException {
+        final InvoiceBusiness business = (InvoiceBusiness)
+                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
+        final int recordId = Integer.parseInt (context.getParameter
+                                               (INVOICE_RECORD_KEY));
+        final InvoiceRecordHome home = business.getInvoiceRecordHome ();
+        final InvoiceRecord record
+                = home.findByPrimaryKey (new Integer (recordId));
+
+        final Map result = new HashMap ();
+        result.put (INVOICE_TEXT_KEY, getStyledInput
+                    (INVOICE_TEXT_KEY, record.getInvoiceText ()));
+        result.put (NUMBER_OF_DAYS_KEY, getStyledInput
+                    (NUMBER_OF_DAYS_KEY, record.getDays () + ""));
+        result.put (CHECK_START_PERIOD_KEY, getStyledInput
+                    (CHECK_START_PERIOD_KEY, getFormattedPeriod
+                     (record.getPeriodStartCheck ())));
+        result.put (CHECK_END_PERIOD_KEY, getStyledInput
+                    (CHECK_END_PERIOD_KEY, getFormattedPeriod
+                     (record.getPeriodEndCheck ())));
+        result.put (PLACEMENT_START_PERIOD_KEY, getStyledInput
+                    (PLACEMENT_START_PERIOD_KEY, getFormattedPeriod
+                     (record.getPeriodStartPlacement ())));
+        result.put (PLACEMENT_END_PERIOD_KEY, getStyledInput
+                    (PLACEMENT_END_PERIOD_KEY, getFormattedPeriod
+                     (record.getPeriodEndPlacement ())));
+        result.put (DATE_CREATED_KEY, getSmallText
+                    (dateFormatter.format (record.getDateCreated ())));
+        result.put (CREATED_SIGNATURE_KEY, getSmallText
+                    (record.getCreatedBy ()));
+        result.put (DATE_ADJUSTED_KEY, new Text (""));
+        result.put (ADJUSTED_SIGNATURE_KEY, new Text (""));
+
+        result.put (AMOUNT_KEY, getStyledInput
+                    (AMOUNT_KEY, ((long) record.getAmount ()) +""));
+        result.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY,
+                    ((long) record.getAmountVAT ()) + ""));
+        result.put (NOTE_KEY, getStyledInput (NOTE_KEY));
+        result.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
+                    (business.getAllRegulationSpecTypes ()));
+        result.put (OWN_POSTING_KEY, getPostingParameterForm (context,
+                                                              OWN_POSTING_KEY));
+        result.put (DOUBLE_POSTING_KEY, getPostingParameterForm
+                    (context, DOUBLE_POSTING_KEY));
+        result.put (VAT_RULE_KEY,  getLocalizedDropdown
+                    (business.getAllVatRules ()));
+        result.put (ACTION_KEY, getSubmitButton
+                    (ACTION_SAVE_RECORD + "", SAVE_INVOICE_RECORD_KEY,
+                     SAVE_INVOICE_RECORD_DEFAULT));
+        result.put (HEADER_KEY, localize (EDIT_INVOICE_RECORD_KEY,
+                                          EDIT_INVOICE_RECORD_DEFAULT));
+        result.put (RULE_TEXT_KEY, getSmallText (""));
+        result.put (PROVIDER_KEY, getSmallText (""));
+        return result;
+    }
+
     private Map getRecordDetailsMap (final IWContext context)
         throws RemoteException, FinderException {
         final InvoiceBusiness business = (InvoiceBusiness)
@@ -578,14 +639,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addSmallText (result, NOTE_KEY, record.getNotes ());
         result.put (OWN_POSTING_KEY,
                     getPostingListTable (context, record.getOwnPosting ()));
+        addSmallPeriodText (result, CHECK_START_PERIOD_KEY,
+                            record.getPeriodStartCheck ());
         addSmallPeriodText (result, CHECK_END_PERIOD_KEY,
                             record.getPeriodEndCheck ());
         addSmallPeriodText (result, PLACEMENT_START_PERIOD_KEY,
-                            record.getPeriodEndPlacement ());
-        addSmallPeriodText (result, CHECK_START_PERIOD_KEY,
-                            record.getPeriodStartCheck ());
-        addSmallPeriodText (result, PLACEMENT_END_PERIOD_KEY,
                             record.getPeriodStartPlacement ());
+        addSmallPeriodText (result, PLACEMENT_END_PERIOD_KEY,
+                            record.getPeriodEndPlacement ());
         final String ruleSpecType = record.getRuleSpecType ();
         addSmallText (result, REGULATION_SPEC_TYPE_KEY,
                       localize (ruleSpecType, ruleSpecType));
@@ -606,7 +667,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private void addSmallText (final Map map, final String key,
                                final String value) {
-        map.put (key, getSmallText (null != value ? value : ""));
+        map.put (key, getSmallText (null != value && !value.equals (null + "")
+                                    ? value : ""));
     }
 
     private void addSmallText (final Map map, final String key,
@@ -641,6 +703,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addUserSearcherForm (table, row++, context, searcher);
         table.mergeCells (2, row, table.getColumns () - 1, row);
         addPeriodForm (table, row);
+        table.setAlignment (table.getColumns (), row,
+                            Table.HORIZONTAL_ALIGN_RIGHT);
         table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST + "",
                                     SEARCH_KEY, SEARCH_DEFAULT),
                    table.getColumns (), row++);
@@ -1272,6 +1336,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.add (new Text (" - "), col, row);
         table.add (getStyledInput (END_PERIOD_KEY, periodFormatter.format
                                    (now)), col, row);
+    }
+
+    private String getFormattedPeriod (final Date date) {
+        return date == null ? "" : periodFormatter.format (date);
     }
 
     private TextInput getStyledInput (final String key) {
