@@ -486,7 +486,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
 
-		String message = MessageFormat.format(localize("child_care.reject_application_message", "We have rejection your application for {0} for a placing in our childcare.\n\nRegards,\n{1}\n{2}\n{3}"), getArguments(iwc));
+		String message = MessageFormat.format(localize("child_care.reject_application_message", "We have rejected your application for {0} for a placing in {5}.\n\nRegards,\n{1}\n{2}\n{3}"), getArguments(iwc));
 		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_REJECT_MESSAGE, message));
 		textArea.setWidth(Table.HUNDRED_PERCENT);
 		textArea.setRows(7);
@@ -1625,7 +1625,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			workphone = "";
 		}
 
-		Object[] arguments = { child.getNameLastFirst(true), user.getName(), email, workphone, new IWTimestamp(application.getFromDate()).getLocaleDate(iwc.getCurrentLocale()) };
+		Object[] arguments = { child.getNameLastFirst(true), user.getName(), email, workphone, new IWTimestamp(application.getFromDate()).getLocaleDate(iwc.getCurrentLocale()), application.getProvider().getName() };
 		return arguments;
 	}
 }
