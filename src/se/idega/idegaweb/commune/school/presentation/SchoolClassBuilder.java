@@ -51,10 +51,7 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 			getBusiness().getSchoolClassBusiness().storeSchoolClass(getSession().getSchoolClassID(), name, getSchoolID(), getSchoolSeasonID(), getSchoolYearID(), -1);
 		}	
 		else if (action == ACTION_DELETE) {
-			if (getBusiness().getSchoolClassBusiness().getNumberOfStudentsInClass(getSession().getSchoolClassID()) == 0)
-				getBusiness().getSchoolClassBusiness().removeSchoolClass(getSession().getSchoolClassID());
-			else
-				getParentPage().setAlertOnLoad(localize("school.class_not_empty","Class is not empty! Remove all students from class before deleting."));
+			getBusiness().getSchoolClassBusiness().invalidateSchoolClass(getSession().getSchoolClassID());
 		}	
 	}
 	
