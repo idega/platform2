@@ -11,6 +11,8 @@ import javax.ejb.RemoveException;
 import com.idega.block.login.presentation.LoginEditor;
 import com.idega.block.login.presentation.LoginEditorWindow;
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.business.SchoolUserBusiness;
+import com.idega.block.school.business.SchoolUserBusinessBean;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.business.IBOLookup;
@@ -29,6 +31,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
@@ -36,6 +39,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.idega.user.presentation.UserChooser;
 import com.idega.util.text.TextFormat;
 
 /**
@@ -57,7 +61,8 @@ public class SchoolUserEditor extends Block {
 	private String PARAMETER_SCHOOL_USER_TELEPHONE = "sue_utf";
 	private String PARAMETER_SCHOOL_USER_EMAIL = "sue_uem";
 	private String PARAMETER_SCHOOL_USER_ID = "sue_uid";
-
+	private String PARAMETER_SCHOOL_USER_TYPE = "sue_sut";
+/*
 	private String PARAMETER_SCHOOL_HEADMASTER_NAME = "sue_hn";
 	private String PARAMETER_SCHOOL_HEADMASTER_TELEPHONE = "sue_htf";
 	private String PARAMETER_SCHOOL_HEADMASTER_EMAIL = "sue_hem";
@@ -67,7 +72,7 @@ public class SchoolUserEditor extends Block {
 	private String PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_TELEPHONE = "sue_ahtf";
 	private String PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_EMAIL = "sue_ahem";
 	private String PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_ID = "sue_ahid";
-	
+	*/
 	private Text TEXT_NORMAL;
 	private Text TEXT_TITLE;
 	private String INPUT_STYLE;
@@ -156,55 +161,74 @@ public class SchoolUserEditor extends Block {
 
 			contTable.add(getTextTitle(_iwrb.getLocalizedString("school.headmaster","Headmaster")), 1, 1);
 
-			int headmasterId = school.getHeadmasterUserId();
-			if (headmasterId > 0) {
-				User user = uHome.findByPrimaryKey(new Integer(headmasterId));
-				Table table = new Table();
-				table.add(getTextNormal(_iwrb.getLocalizedString("school.name","Name")), 1, 1);
-				table.add(getTextNormal(_iwrb.getLocalizedString("school.email","Email")), 2, 1);
-				table.add(getTextNormal(_iwrb.getLocalizedString("school.phone","Phone")), 3, 1);
-
-				this.insertUserIntoTable(table, 2, user, 1);
-				contTable.add(table, 1, 2);
-			}else {
-				contTable.add(getUserForm(1), 1, 2);	
-			}
-
-			/** Attention !!! **/
-			int assistantHeadmasterId = -1;
-/*			
-			contTable.add(_tFormat.format(_iwrb.getLocalizedString("school.assistant_headmaster","Assistant headmaster"), TextFormat.TITLE), 1, 3);
-				int assistantHeadmasterId = _school.getAssistantHeadmasterUserId();
-			if (assistantHeadmasterId > 0) {
-				User user = uHome.findByPrimaryKey(new Integer(assistantHeadmasterId));
-				Table table = new Table();
-				insertUserIntoTable(table, 1, user, 2);
-				contTable.add(table, 1, 4);
-			}else {
-				contTable.add(getUserForm(2), 1, 4);	
-			}		
-*/			
-			contTable.add(getTextTitle(_iwrb.getLocalizedString("school.other_users","Other Users")), 1, 5);
-			/** Populated User field */
-			Collection users = getUserBusiness(iwc).getGroupBusiness().getUsers(school.getHeadmasterGroupId());
+			Collection users = getSchoolUserBusiness(iwc).getHeadmasters(school);
 			if (users != null && users.size() > 0) {
 				Iterator iter = users.iterator();
 				Table table = new Table();
 				int row = 1;
 				while (iter.hasNext()) {
-					User hm = (User) iter.next();
+					User hm = uHome.findByPrimaryKey(iter.next());
 					int userId = ((Integer) hm.getPrimaryKey()).intValue();
-					if (userId != headmasterId && userId != assistantHeadmasterId) {
-						row = insertUserIntoTable(table, row, hm, 3);
-					}
+						row = insertUserIntoTable(table, row, hm);
+				}
+				contTable.add(table, 1, 2);
+			}
+
+			contTable.add(_tFormat.format(_iwrb.getLocalizedString("school.assistant_headmaster","Assistant headmaster"), TextFormat.TITLE), 1, 3);
+			users = getSchoolUserBusiness(iwc).getAssistantHeadmasters(school);
+			if (users != null && users.size() > 0) {
+				Iterator iter = users.iterator();
+				Table table = new Table();
+				int row = 1;
+				while (iter.hasNext()) {
+					User hm = uHome.findByPrimaryKey(iter.next());
+					int userId = ((Integer) hm.getPrimaryKey()).intValue();
+						row = insertUserIntoTable(table, row, hm);
+				}
+				contTable.add(table, 1, 4);
+			}
+
+			contTable.add(getTextTitle(_iwrb.getLocalizedString("school.other_users","Other Users")), 1, 5);
+			users = getSchoolUserBusiness(iwc).getWebAdmins(school);
+			if (users != null && users.size() > 0) {
+				Iterator iter = users.iterator();
+				Table table = new Table();
+				int row = 1;
+				while (iter.hasNext()) {
+					User hm = uHome.findByPrimaryKey(iter.next());
+					int userId = ((Integer) hm.getPrimaryKey()).intValue();
+						row = insertUserIntoTable(table, row, hm);
 				}
 				contTable.add(table, 1, 5);
 			}
+				
+			contTable.add(getTextTitle(_iwrb.getLocalizedString("school.teachers","Teachers")), 1, 6);
+			users = getSchoolUserBusiness(iwc).getTeachers(school);
+			if (users != null && users.size() > 0) {
+				Iterator iter = users.iterator();
+				Table table = new Table();
+				int row = 1;
+				while (iter.hasNext()) {
+					User hm = uHome.findByPrimaryKey(iter.next());
+					int userId = ((Integer) hm.getPrimaryKey()).intValue();
+						row = insertUserIntoTable(table, row, hm);
+				}
+				contTable.add(table, 1, 7);
+			}
+			
+			/** ATH SETJA USERA I GROUPUR, SEM HAEGT ER AD SETJA IB_PAGE_ID A.... EKKI GLEYMA THESSU */
+			/** VIRKAR !!! HURRA */ 
+			String rui = iwc.getParameter("repp_user_id");
+			contTable.add("rui : " +rui , 1, 7);
+			UserChooser uc = new UserChooser("repp_user_id");
+			uc.setValidUserPks(users);
+			contTable.add(uc, 1, 7);
+
 			
 			/** Empty User field */
-			Table table = this.getUserForm(3);
+			Table table = this.getUserForm();
 
-			contTable.add(table, 1, 6);
+			contTable.add(table, 1, 8);
 
 			if (addSubmitButton) {
 				SubmitButton update = new SubmitButton(_iwrb.getLocalizedImageButton("school.save","Save"), PARAMETER_ACTION, ACTION_UPDATE);
@@ -221,26 +245,12 @@ public class SchoolUserEditor extends Block {
 
 
 
-	private int insertUserIntoTable(Table table, int row, User hm, int userType) throws RemoteException {
+	private int insertUserIntoTable(Table table, int row, User hm) throws RemoteException {
 		String sname = PARAMETER_SCHOOL_USER_NAME;
 		String semail = PARAMETER_SCHOOL_USER_EMAIL;
 		String sphone = PARAMETER_SCHOOL_USER_TELEPHONE;
 		String sid = PARAMETER_SCHOOL_USER_ID;
-		
-		switch (userType) {
-			case 1 :
-				sname = PARAMETER_SCHOOL_HEADMASTER_NAME;
-				semail = PARAMETER_SCHOOL_HEADMASTER_EMAIL;
-				sphone = PARAMETER_SCHOOL_HEADMASTER_TELEPHONE;
-				sid = PARAMETER_SCHOOL_HEADMASTER_ID;
-				break;
-			case 2 : 
-				sname = PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_NAME;
-				semail = PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_EMAIL;
-				sphone = PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_TELEPHONE;
-				sid = PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_ID;
-				break;	
-		}
+
 		Collection emails;
 		Collection phones;
 		int uRow;
@@ -318,26 +328,11 @@ public class SchoolUserEditor extends Block {
 
 	/**
 	 * Returns a UserForm	 * @param userType 1 = Headmaster, 2 = Assistant Headmaster, 3 = User	 * @return Table	 */
-	private Table getUserForm(int userType) {
+	private Table getUserForm() {
 		String name = PARAMETER_SCHOOL_USER_NAME;
 		String email = PARAMETER_SCHOOL_USER_EMAIL;
 		String phone = PARAMETER_SCHOOL_USER_TELEPHONE;
 		String id = PARAMETER_SCHOOL_USER_ID;
-		
-		switch (userType) {
-			case 1 :
-				name = PARAMETER_SCHOOL_HEADMASTER_NAME;
-				email = PARAMETER_SCHOOL_HEADMASTER_EMAIL;
-				phone = PARAMETER_SCHOOL_HEADMASTER_TELEPHONE;
-				id = PARAMETER_SCHOOL_HEADMASTER_ID;
-				break;
-			case 2 : 
-				name = PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_NAME;
-				email = PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_EMAIL;
-				phone = PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_TELEPHONE;
-				id = PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_ID;
-				break;	
-		}
 		
 		Table table = new Table();
 		int row = 1;
@@ -346,9 +341,14 @@ public class SchoolUserEditor extends Block {
 		Text tName = getTextNormal(_iwrb.getLocalizedString("school.name","Name"));
 		Text tEmail = getTextNormal(_iwrb.getLocalizedString("school.email","E-mail"));
 		Text tPhone = getTextNormal(_iwrb.getLocalizedString("school.phone","Phone"));
+		Text tType = getTextNormal(_iwrb.getLocalizedString("school.type","Type"));
 		
 		
-		
+		DropdownMenu pType = new DropdownMenu(PARAMETER_SCHOOL_USER_TYPE);
+			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_HEADMASTER , _iwrb.getLocalizedString("headmaster","Headmaster"));
+			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_ASSISTANT_HEADMASTER , _iwrb.getLocalizedString("assistant_headmaster","Assistant headmaster"));
+			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_WEB_ADMIN, _iwrb.getLocalizedString("web_administrator","Web administrator"));
+			pType.addMenuElement(SchoolUserBusinessBean.USER_TYPE_TEACHER , _iwrb.getLocalizedString("teacher","Teacher"));
 		TextInput pName = new TextInput(name);
 		TextInput pEmail = new TextInput(email);
 		TextInput pPhone = new TextInput(phone);
@@ -356,44 +356,27 @@ public class SchoolUserEditor extends Block {
 		this.setTextInputStyle(pEmail);
 		this.setTextInputStyle(pPhone);
 		
-		table.add(tName, 1, 1);
-		table.add(tEmail, 2, 1);
-		table.add(tPhone, 3, 1);
+		table.add(tType, 1, 1);
+		table.add(tName, 2, 1);
+		table.add(tEmail, 3, 1);
+		table.add(tPhone, 4, 1);
 		
-		table.add(pName, 1, 2);
-		table.add(pEmail, 2, 2);
-		table.add(pPhone, 3, 2);
+		table.add(pType, 1, 2);
+		table.add(pName, 2, 2);
+		table.add(pEmail, 3, 2);
+		table.add(pPhone, 4, 2);
 		return table;
 	}
 
 
 	public boolean updateUsers(IWContext iwc, School school) throws RemoteException {
-		
-		return ( updateUsers(iwc, 1, school) && updateUsers(iwc, 3, school) );
-//		return ( updateUsers(iwc, 1) && updateUsers(iwc, 2) && updateUsers(iwc, 3) );
-			
-	}
-
-	private boolean updateUsers(IWContext iwc, int userType, School school) throws RemoteException {
 		String sname = PARAMETER_SCHOOL_USER_NAME;
 		String semail = PARAMETER_SCHOOL_USER_EMAIL;
 		String sphone = PARAMETER_SCHOOL_USER_TELEPHONE;
 		String sid = PARAMETER_SCHOOL_USER_ID;
 		
-		switch (userType) {
-			case 1 :
-				sname = PARAMETER_SCHOOL_HEADMASTER_NAME;
-				semail = PARAMETER_SCHOOL_HEADMASTER_EMAIL;
-				sphone = PARAMETER_SCHOOL_HEADMASTER_TELEPHONE;
-				sid = PARAMETER_SCHOOL_HEADMASTER_ID;
-				break;
-			case 2 : 
-				sname = PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_NAME;
-				semail = PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_EMAIL;
-				sphone = PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_TELEPHONE;
-				sid = PARAMETER_SCHOOL_ASSISTANT_HEADMASTER_ID;
-				break;	
-		}
+		String sUserType = iwc.getParameter(PARAMETER_SCHOOL_USER_TYPE);
+		int iUserType = Integer.parseInt(sUserType);
 
 		/** Updateing headmasters */
 		try {
@@ -408,18 +391,23 @@ public class SchoolUserEditor extends Block {
 					user = userHome.findByPrimaryKey(new Integer(hIds[i]));
 					
 					if (name.equals("")) {
-						System.out.println("tying to remove user / or NOT");
-						school.getHeadmasterGroup().removeUser(user);
+//						System.out.println("tying to remove user / or NOT");
+//						school.getHeadmasterGroup().removeUser(user);
+						try {
+							getSchoolUserBusiness(iwc).removeUser(school, user);
+						} catch (RemoveException e) {
+							e.printStackTrace(System.err);
+						}
 //						getUserBusiness(iwc).deleteUser((new Integer(hIds[i])).intValue());
 					}else {
 						getUserBusiness(iwc).updateUser(user, name, "", "", null, null, null, null, null, (Integer) priGroup.getPrimaryKey());
-
+/*
 						try {
 							getSchoolBusiness(iwc).addHeadmaster(school, user);
 						} catch (Exception e) {
 							debug("User already in headmasterGroup");
 						}
-						
+	*/					
 						Collection emails = user.getEmails();
 						Collection phones =	user.getPhones();
 						
@@ -488,7 +476,8 @@ public class SchoolUserEditor extends Block {
 			if (headmaster != null && !headmaster.equals("")) {
 				Group priGroup = getSchoolBusiness(iwc).getRootSchoolAdministratorGroup();
 				User user = getUserBusiness(iwc).createUser(headmaster, "","", ((Integer)priGroup.getPrimaryKey()).intValue());
-				getSchoolBusiness(iwc).addHeadmaster(school, user);
+//				getSchoolUserBusiness(iwc).addWebAdmin(school, user);
+//				getSchoolBusiness(iwc).addHeadmaster(school, user);
 				
 				if (hmEmail != null && !hmEmail.equals("")) {
 					Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
@@ -504,19 +493,23 @@ public class SchoolUserEditor extends Block {
 					user.addPhone(phone);
 				}
 //				getSchoolBusiness(iwc).addSchoolAdministrator(user);
-				
-				if (userType ==1) {
-					school.setHeadmasterUserId( ((Integer)user.getPrimaryKey()).intValue());
-						school.getHeadmasterGroup().removeUser(user);
+
+				getSchoolUserBusiness(iwc).addUser(school, user, iUserType);				
+/*				if (userType ==1) {
+					getSchoolUserBusiness(iwc).addHeadmaster(school, user);
+//					school.setHeadmasterUserId( ((Integer)user.getPrimaryKey()).intValue());
+//						school.getHeadmasterGroup().removeUser(user);
 //					getSchoolBusiness(iwc).addHeadmaster(school, user);
-					school.store();
-				}/*else if (userType == 2) {
-					_school.setAssistantHeadmasterUserId( ((Integer)user.getPrimaryKey()).intValue());
-					_school.store();
+//					school.store();
+				}else if (userType == 2) {
+					getSchoolUserBusiness(iwc).addAssistantHeadmaster(school, user);
+//					_school.setAssistantHeadmasterUserId( ((Integer)user.getPrimaryKey()).intValue());
+//					_school.store();
 				}else if (userType ==3) {
-					getSchoolBusiness(iwc).addHeadmaster(school, user);
-				}*/
-				
+					getSchoolUserBusiness(iwc).addWebAdmin(school, user);
+//					getSchoolBusiness(iwc).addHeadmaster(school, user);
+				}
+	*/			
 			}
 			
 			return true;
@@ -601,6 +594,10 @@ public class SchoolUserEditor extends Block {
 			add(mainForm(iwc));
 		}
 		
+	}
+
+	private SchoolUserBusiness getSchoolUserBusiness(IWContext iwc) throws RemoteException {
+		return (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
 	}
 	
 }
