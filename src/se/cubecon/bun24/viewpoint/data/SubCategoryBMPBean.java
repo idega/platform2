@@ -4,7 +4,7 @@ import com.idega.data.*;
 import java.util.*;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
-import com.idega.user.data.Group;
+import com.idega.user.data.*;
 
 /**
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
@@ -83,6 +83,9 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
            final String groupName = startData [i][2];
            final Integer topCategoryId
                    = (Integer) topCategoriesMap.get (topCategoryName);
+           if (!groupsMap.containsKey (groupName)) {
+               addGroupToDatabaseAndMap (groupName, groupsMap);
+           }
            final Integer handlerGroupId = (Integer) groupsMap.get (groupName);
            if (topCategoryId != null && handlerGroupId != null) {
                final SubCategory subCategory = subCategoryHome.create ();
@@ -131,7 +134,19 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
         throws FinderException, RemoteException {
         final String sql = "select * from " + ENTITY_NAME + " where "
                 + COLUMN_TOPCATEGORY_ID + " = '" + topCategoryId + "'";
-        System.out.println ("sql: " + sql);
         return idoFindIDsBySQL (sql);
+    }
+
+    private void addGroupToDatabaseAndMap (final String groupName,
+                                           final Map groupsMap) {
+        try {
+            final GroupHome home = (GroupHome) IDOLookup.getHome(Group.class);
+            final Group group = home.create ();
+            group.setName (groupName);
+            group.store ();
+            groupsMap.put (groupName, group.getPrimaryKey ());
+        } catch (final Exception e) {
+            e.printStackTrace ();
+        }
     }
 }
