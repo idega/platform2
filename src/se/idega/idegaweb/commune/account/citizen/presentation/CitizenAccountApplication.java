@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.63 2004/02/03 09:55:37 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.64 2004/02/19 12:36:31 anders Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -36,6 +36,7 @@ import se.idega.util.PIDChecker;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.core.location.business.CommuneBusiness;
+import com.idega.core.location.data.Commune;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -50,7 +51,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.util.SelectorUtility;
+//import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
@@ -60,11 +61,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/02/03 09:55:37 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/19 12:36:31 $ by $Author: anders $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.63 $
+ * @version $Revision: 1.64 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -339,7 +340,7 @@ public class CitizenAccountApplication extends CommuneBlock {
         }
     }
 
-private void viewUnknownCitizenApplicationForm2(final IWContext iwc) throws RemoteException {
+private void viewUnknownCitizenApplicationForm2(final IWContext iwc) {
 	final Form form = new Form();
 	form.maintainParameter(SSN_KEY);
 	form.maintainParameter(EMAIL_KEY);
@@ -399,6 +400,10 @@ private void viewUnknownCitizenApplicationForm2(final IWContext iwc) throws Remo
 		table.mergeCells(1, row, 3, row);
 		table.add(movingToNackaHeader, 1, row++);
 
+		table.add(getHeader(CURRENT_KOMMUN_KEY, CURRENT_KOMMUN_DEFAULT), 1, row);
+		DropdownMenu communes = getCommuneDropdownMenu(iwc, CURRENT_KOMMUN_KEY, null);
+		table.add(communes, 3, row++);
+
 		table.add(getHeader(MOVING_IN_ADDRESS_KEY, MOVING_IN_ADDRESS_DEFAULT), 1, row);
 		table.add(getSingleInput(iwc, MOVING_IN_ADDRESS_KEY, 40, true), 3, row++);
 		table.add(getHeader(MOVING_IN_DATE_KEY, MOVING_IN_DATE_DEFAULT), 1, row);
@@ -428,9 +433,10 @@ private void viewUnknownCitizenApplicationForm2(final IWContext iwc) throws Remo
 		table.add(putChildrenInNackaHeader, 1, row++);
 
 		table.add(getHeader(CURRENT_KOMMUN_KEY, CURRENT_KOMMUN_DEFAULT), 1, row);
-		DropdownMenu communes = getDropdownInput(CURRENT_KOMMUN_KEY);
-		SelectorUtility su = new SelectorUtility();
-		su.getSelectorFromIDOEntities(communes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
+		DropdownMenu communes = getCommuneDropdownMenu(iwc, CURRENT_KOMMUN_KEY, null);
+//		DropdownMenu communes = getDropdownInput(CURRENT_KOMMUN_KEY);
+//		SelectorUtility su = new SelectorUtility();
+//		su.getSelectorFromIDOEntities(communes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
 		table.add(communes, 3, row++);
 
 	}
@@ -441,9 +447,10 @@ private void viewUnknownCitizenApplicationForm2(final IWContext iwc) throws Remo
 		table.mergeCells(1, row, 3, row);
 		table.add(putChildrenInNackaHeader, 1, row++);
 		table.add(getHeader(CURRENT_KOMMUN_KEY, CURRENT_KOMMUN_DEFAULT), 1, row);
-		DropdownMenu communes = getDropdownInput(CURRENT_KOMMUN_KEY);
-		SelectorUtility su = new SelectorUtility();
-		su.getSelectorFromIDOEntities(communes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
+		DropdownMenu communes = getCommuneDropdownMenu(iwc, CURRENT_KOMMUN_KEY, null);
+//		DropdownMenu communes = getDropdownInput(CURRENT_KOMMUN_KEY);
+//		SelectorUtility su = new SelectorUtility();
+//		su.getSelectorFromIDOEntities(communes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
 		table.add(communes, 3, row++);
 	}
 
@@ -453,7 +460,7 @@ private void viewUnknownCitizenApplicationForm2(final IWContext iwc) throws Remo
 	add(form);
 }
 
-private void submitUnknownCitizenForm2(final IWContext iwc) throws RemoteException {
+private void submitUnknownCitizenForm2(final IWContext iwc) {
 	final Collection mandatoryParameterNames = new ArrayList();
 	mandatoryParameterNames.addAll(Arrays.asList(new String[] { SSN_KEY, FIRST_NAME_KEY, LAST_NAME_KEY, CIVIL_STATUS_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CHILDREN_COUNT_KEY }));
 	final Collection stringParameterNames = new ArrayList();
@@ -480,8 +487,11 @@ private void submitUnknownCitizenForm2(final IWContext iwc) throws RemoteExcepti
 	if (applicationReason.equals(CitizenAccount.MOVING_TO_NACKA_KEY)) {
 		stringParameterNames.addAll(Arrays.asList(new String[] { MOVING_IN_ADDRESS_KEY, MOVING_IN_DATE_KEY, HOUSING_TYPE_KEY, PROPERTY_TYPE_KEY, LANDLORD_NAME_KEY, LANDLORD_PHONE_KEY, LANDLORD_ADDRESS_KEY }));
 		mandatoryParameterNames.addAll(Arrays.asList(new String[] { MOVING_IN_ADDRESS_KEY, MOVING_IN_DATE_KEY, HOUSING_TYPE_KEY }));
+		mandatoryParameterNames.add(CURRENT_KOMMUN_KEY);
+		stringParameterNames.add(CURRENT_KOMMUN_KEY);
 	}
-	else if (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY) || applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY)) {
+	else if (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY) ||
+				applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY)) {
 		mandatoryParameterNames.add(CURRENT_KOMMUN_KEY);
 		stringParameterNames.add(CURRENT_KOMMUN_KEY);
 	}
@@ -544,6 +554,7 @@ private void submitUnknownCitizenForm2(final IWContext iwc) throws RemoteExcepti
 			final String landlordPhone = parameters.get(LANDLORD_PHONE_KEY).toString();
 			final String landlordAddress = parameters.get(LANDLORD_ADDRESS_KEY).toString();
 			business.insertMovingTo(applicationId, movingInAddress, movingInDate, housingType, propertyType, landlordName, landlordPhone, landlordAddress);
+			business.insertPutChildren(applicationId, parameters.get(CURRENT_KOMMUN_KEY).toString());
 		}
 		else if (null != applicationId && (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY) || applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY))) {
 			business.insertPutChildren(applicationId, parameters.get(CURRENT_KOMMUN_KEY).toString());
@@ -682,11 +693,11 @@ private TextInput getSingleInput(IWContext iwc, final String paramId, final int 
 	return textInput;
 }
 
-private DropdownMenu getDropdownInput(String paramName) {
-	DropdownMenu dropdown = new DropdownMenu(paramName);
-	dropdown.setStyleAttribute(CommuneBlock.STYLENAME_INTERFACE);
-	return dropdown;
-}
+//private DropdownMenu getDropdownInput(String paramName) {
+//	DropdownMenu dropdown = new DropdownMenu(paramName);
+//	dropdown.setStyleAttribute(CommuneBlock.STYLENAME_INTERFACE);
+//	return dropdown;
+//}
 
 private Text getHeader(final String paramId, final String defaultText) {
 	return getSmallHeader(localize(paramId, defaultText));
@@ -861,6 +872,31 @@ static private class ParseException extends Exception {
 	String getKey() {
 		return key;
 	}
+}
+
+private DropdownMenu getCommuneDropdownMenu(IWContext iwc, String parameter, String communeId) {
+	DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
+//	menu.addMenuElement(0, localize(KEY_COMMUNE_SELECTOR_HEADER, "Choose commune"));
+	try {
+		Collection c = getCommuneBusiness(iwc).getCommunes();
+		int defaultCommuneId = ((Integer) getCommuneBusiness(iwc).getDefaultCommune().getPrimaryKey()).intValue(); 
+		if (c != null) {
+			Iterator iter = c.iterator();
+			while (iter.hasNext()) {
+				Commune commune = (Commune) iter.next();
+				int id = ((Integer) commune.getPrimaryKey()).intValue();
+				if (id != defaultCommuneId) {
+					menu.addMenuElement("" + id, commune.getCommuneName());
+				}
+			}
+			if (communeId != null) {
+				menu.setSelectedElement(communeId);
+			}
+		}		
+	} catch (Exception e) {
+		add(new ExceptionWrapper(e));
+	}
+	return menu;	
 }
 
 	protected CommuneBusiness getCommuneBusiness(IWApplicationContext iwac) throws RemoteException {

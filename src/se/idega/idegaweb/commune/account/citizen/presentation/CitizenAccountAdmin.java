@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.22 2003/10/22 10:01:39 gimmi Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.23 2004/02/19 12:36:31 anders Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -43,11 +43,11 @@ import com.idega.util.PersonalIDFormatter;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/10/22 10:01:39 $ by $Author: gimmi $
+ * Last modified: $Date: 2004/02/19 12:36:31 $ by $Author: anders $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -238,8 +238,10 @@ public class CitizenAccountAdmin extends CommuneBlock {
 
                 if (applicant.getApplicationReason().equals
                     (CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY)
-                    || applicant.getApplicationReason().equals
-                    (CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY)) {
+                	|| applicant.getApplicationReason().equals
+                	(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY)
+					|| applicant.getApplicationReason().equals
+					(CitizenAccount.MOVING_TO_NACKA_KEY)) {
                     try {
                         final CitizenApplicantPutChildren capc = business.findCitizenApplicantPutChildren (id);
                         Commune commune = business.findCommuneByCommunePK(new Integer(capc.getCurrentCommuneId()));
@@ -250,7 +252,8 @@ public class CitizenAccountAdmin extends CommuneBlock {
                     } catch (FinderException e) {
                         System.err.println (e.getMessage ());
                     }
-                } else if (applicant.getApplicationReason().equals
+                } 
+                if (applicant.getApplicationReason().equals
                            (CitizenAccount.MOVING_TO_NACKA_KEY)) {
                     try {
                         final CitizenApplicantMovingTo camt
