@@ -1,36 +1,34 @@
 package com.idega.block.contract.presentation;
+
 import com.idega.block.IWBlock;
-import com.idega.block.contract.business.*;
-import com.idega.block.contract.data.*;
-import com.idega.presentation.Block;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.Image;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.util.text.Edit;
+import com.idega.block.contract.business.ContractBusiness;
+import com.idega.block.contract.business.ContractFinder;
+import com.idega.block.contract.data.Contract;
+import com.idega.block.contract.data.ContractTag;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import java.util.List;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.util.text.Edit;
+
 import java.text.DateFormat;
+import java.util.List;
+
 /**
-
  * Title:
-
  * Description:
-
  * Copyright:    Copyright (c) 2001
-
  * Company:
-
  * @author
-
  * @version 1.0
-
  */
-public class ContractViewer extends Block implements IWBlock
-{
+public class ContractViewer extends Block implements IWBlock {
 	protected final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5;
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.contract";
 	protected boolean isAdmin = false;
@@ -43,43 +41,37 @@ public class ContractViewer extends Block implements IWBlock
 	private static final String prmCategoryId = "conv_cat";
 	private String conPrm = "contract_status";
 	private String sessConPrm = "sess_con_status";
-	public ContractViewer()
-	{
+
+	public ContractViewer() {
 		super();
 	}
-	protected void control(IWContext iwc)
-	{
+
+	protected void control(IWContext iwc) {
 		iwrb = getResourceBundle(iwc);
 		iwb = getBundle(iwc);
 		boolean info = false;
 		Table T = new Table();
 		T.setCellpadding(0);
 		T.setCellspacing(0);
-		if (iCategoryId <= 0)
-		{
+		if (iCategoryId <= 0) {
 			String sCategoryId = iwc.getParameter(prmCategoryId);
 			if (sCategoryId != null)
 				iCategoryId = Integer.parseInt(sCategoryId);
-			else if (getICObjectInstanceID() > 0)
-			{
+			else if (getICObjectInstanceID() > 0) {
 				iCategoryId = ContractFinder.getObjectInstanceCategoryId(getICObjectInstanceID(), true);
-				if (iCategoryId <= 0)
-				{
+				if (iCategoryId <= 0) {
 					newobjinst = true;
 				}
 			}
 		}
-		if (isAdmin)
-		{
+		if (isAdmin) {
 			T.add(getAdminPart(iCategoryId, false, newobjinst, info, iwc), 1, 1);
 		}
-		if (iwc.getParameter(conPrm) != null)
-		{
+		if (iwc.getParameter(conPrm) != null) {
 			this.sGlobalStatus = (iwc.getParameter(conPrm));
 			iwc.setSessionAttribute(sessConPrm, sGlobalStatus);
 		}
-		else if (iwc.getSessionAttribute(sessConPrm) != null)
-		{
+		else if (iwc.getSessionAttribute(sessConPrm) != null) {
 			this.sGlobalStatus = ((String) iwc.getSessionAttribute(sessConPrm));
 		}
 		T.add(statusForm(), 1, 2);
@@ -90,18 +82,17 @@ public class ContractViewer extends Block implements IWBlock
 		//  add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
 		//add(String.valueOf(iSubjectId));
 	}
-	public String getBundleIdentifier()
-	{
+	
+	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
-	private PresentationObject getAdminPart(int iCategoryId, boolean enableDelete, boolean newObjInst, boolean info, IWContext iwc)
-	{
+	
+	private PresentationObject getAdminPart(int iCategoryId, boolean enableDelete, boolean newObjInst, boolean info, IWContext iwc) {
 		Table T = new Table(3, 1);
 		T.setCellpadding(2);
 		T.setCellspacing(2);
 		IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-		if (iCategoryId > 0)
-		{
+		if (iCategoryId > 0) {
 			Link ne = new Link(core.getImage("/shared/create.gif", "create"));
 			ne.setWindowToOpen(ContractEditorWindow.class);
 			ne.addParameter(ContractEditorWindow.prmCategory, iCategoryId);
@@ -117,8 +108,7 @@ public class ContractViewer extends Block implements IWBlock
 			change.addParameter(ContractEditorWindow.prmCategory, iCategoryId);
 			change.addParameter(ContractEditorWindow.prmObjInstId, getICObjectInstanceID());
 			T.add(change, 1, 1);
-			if (enableDelete)
-			{
+			if (enableDelete) {
 				T.add(T.getTransparentCell(iwc), 1, 1);
 				Link delete = new Link(core.getImage("/shared/delete.gif"));
 				delete.setWindowToOpen(ContractEditorWindow.class);
@@ -126,8 +116,7 @@ public class ContractViewer extends Block implements IWBlock
 				T.add(delete, 3, 1);
 			}
 		}
-		if (newObjInst)
-		{
+		if (newObjInst) {
 			Link newLink = new Link(core.getImage("/shared/create.gif"));
 			newLink.setWindowToOpen(ContractEditorWindow.class);
 			if (newObjInst)
@@ -135,40 +124,41 @@ public class ContractViewer extends Block implements IWBlock
 			T.add(newLink, 2, 1);
 		}
 		T.setWidth("100%");
+
 		return T;
 	}
-	public PresentationObject makeLinkTable(int menuNr)
-	{
+	
+	public PresentationObject makeLinkTable(int menuNr) {
 		Table LinkTable = new Table(6, 1);
+
 		return LinkTable;
 	}
-	private Form subjectForm()
-	{
+	
+	private Form subjectForm() {
 		Form myForm = new Form();
 		DropdownMenu status = statusDrop(conPrm, sGlobalStatus);
 		status.setToSubmit();
 		Edit.setStyle(status);
 		myForm.add(status);
+
 		return myForm;
 	}
-	private PresentationObject statusForm()
-	{
+	
+	private PresentationObject statusForm() {
 		DropdownMenu status = statusDrop(conPrm, sGlobalStatus);
 		status.setToSubmit();
 		Edit.setStyle(status);
 		Table T = new Table(3, 1);
 		T.add(Edit.formatText(iwrb.getLocalizedString("status", "Status")), 1, 1);
 		T.add(status, 2, 1);
-		// SubmitButton get = new SubmitButton("conget",iwrb.getLocalizedString("get","Get"));
-		// Edit.setStyle(get);
-		// T.add(get,3,1);
 		T.setCellpadding(1);
 		T.setCellspacing(0);
+
 		return T;
 	}
-	private PresentationObject getContractTable(IWContext iwc, int iCategoryId)
-	{
-		List L = ContractFinder.listOfStatusContracts(this.sGlobalStatus, iCategoryId);
+	
+	private PresentationObject getContractTable(IWContext iwc, int iCategoryId) {
+		List L = ContractFinder.listOfStatusContracts(sGlobalStatus, iCategoryId);
 		List tags = ContractFinder.listOfContractTagsInList(iCategoryId);
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
 		Contract C = null;
@@ -179,8 +169,7 @@ public class ContractViewer extends Block implements IWBlock
 		T.setCellspacing(0);
 		T.setCellpadding(2);
 		String field;
-		if (L != null)
-		{
+		if (L != null) {
 			int len = L.size();
 			T = new Table(5 + tagCount, len + 2);
 			T.setCellspacing(1);
@@ -193,8 +182,7 @@ public class ContractViewer extends Block implements IWBlock
 			T.add(Edit.titleText(iwrb.getLocalizedString("validfrom", "Valid to")), col++, row);
 			T.add(Edit.titleText(iwrb.getLocalizedString("changed", "Changed")), col++, row);
 			String[] tagKeys = new String[tagCount];
-			for (int k = 0; k < tagCount; k++)
-			{
+			for (int k = 0; k < tagCount; k++) {
 				tag = (ContractTag) tags.get(k);
 				T.add(Edit.titleText(tag.getName()), col++, row);
 				tagKeys[k] = String.valueOf(tag.getID());
@@ -202,20 +190,17 @@ public class ContractViewer extends Block implements IWBlock
 			row++;
 			col = 1;
 			Image propImage = core.getImage("/shared/edit.gif");
-			for (int i = 0; i < len; i++)
-			{
+			for (int i = 0; i < len; i++) {
 				C = (Contract) L.get(i);
 				T.add(Edit.formatText(i + 1), col++, row);
-				if (isAdmin)
-				{
+				if (isAdmin) {
 					T.add(getPropertyLink(propImage, C), col, row);
 				}
 				col++;
 				T.add(Edit.formatText(df.format(C.getValidFrom())), col++, row);
 				T.add(Edit.formatText(df.format(C.getValidTo())), col++, row);
 				T.add(Edit.formatText(df.format(C.getStatusDate())), col++, row);
-				for (int k = 0; k < tagCount; k++)
-				{
+				for (int k = 0; k < tagCount; k++) {
 					field = C.getMetaData(tagKeys[k]);
 					T.add(Edit.formatText(field), col++, row);
 				}
@@ -233,25 +218,21 @@ public class ContractViewer extends Block implements IWBlock
 			T.setHeight(row, Edit.bottomBarThickness);
 			T.setWidth("100%");
 		}
-		else
-		{
+		else {
 			T.add(Edit.formatText(iwrb.getLocalizedString("no_contracts", "No contracts")));
 		}
 		return T;
 	}
-	private Link getPropertyLink(PresentationObject obj, Contract C)
-	{
+	private Link getPropertyLink(PresentationObject obj, Contract C) {
 		Link L = new Link(obj);
 		L.setWindowToOpen(ContractEditorWindow.class);
 		L.addParameter(ContractEditorWindow.prmContractId, C.getID());
 		return L;
 	}
-	private String getStatus(String status)
-	{
+	private String getStatus(String status) {
 		String r = "";
 		char c = status.charAt(0);
-		switch (c)
-		{
+		switch (c) {
 			case 'C' :
 				r = iwrb.getLocalizedString("created", "Created");
 				break;
@@ -273,8 +254,7 @@ public class ContractViewer extends Block implements IWBlock
 		}
 		return r;
 	}
-	private DropdownMenu statusDrop(String name, String selected)
-	{
+	private DropdownMenu statusDrop(String name, String selected) {
 		DropdownMenu drp = new DropdownMenu(name);
 		drp.addMenuElement("C", getStatus("C"));
 		drp.addMenuElement("P", getStatus("P"));
@@ -285,12 +265,10 @@ public class ContractViewer extends Block implements IWBlock
 		drp.setSelectedElement(selected);
 		return drp;
 	}
-	public boolean deleteBlock(int iObjectInstanceId)
-	{
+	public boolean deleteBlock(int iObjectInstanceId) {
 		return ContractBusiness.deleteBlock(iObjectInstanceId);
 	}
-	public void main(IWContext iwc)
-	{
+	public void main(IWContext iwc) {
 		isAdmin = iwc.hasEditPermission(this);
 		core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		control(iwc);
