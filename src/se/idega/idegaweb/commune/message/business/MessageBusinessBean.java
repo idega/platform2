@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.43 2003/10/15 09:29:55 roar Exp $
+ * $Id: MessageBusinessBean.java,v 1.44 2003/10/23 22:28:10 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -230,12 +230,12 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 				}
 				else {
 					if (sendLetter)
-						createPrintedLetterMessage(receiver, subject, body);
+						createPrintedLetterMessage(parentCase, receiver, subject, body);
 				}
 			}
 			else {
 				if (sendLetter)
-					createPrintedLetterMessage(receiver, subject, body);
+					createPrintedLetterMessage(parentCase, receiver, subject, body);
 			}
 			//return message;
 			return message;
@@ -259,11 +259,20 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 
 	public Message createPrintedLetterMessage(User user, String subject, String body) throws CreateException, RemoteException {
-		Message message = createPrintedLetterMessage(user, subject, body,null);
+		Message message = createPrintedLetterMessage(null, user, subject, body, null);
+		return message;
+	}
+
+	private Message createPrintedLetterMessage(Case parentCase, User user, String subject, String body) throws CreateException, RemoteException {
+		Message message = createPrintedLetterMessage(parentCase, user, subject, body, null);
 		return message;
 	}
 
 	public Message createPrintedLetterMessage(int userID, String subject, String body) throws CreateException, RemoteException {
+		return createPrintedLetterMessage(null, userID, subject, body);
+	}
+
+	private Message createPrintedLetterMessage(Case parentCase, int userID, String subject, String body) throws CreateException, RemoteException {
 		User user;
 		try {
 			user = getUser(userID);
@@ -272,7 +281,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			throw new IDOCreateException(fex);
 		}
 
-		return createPrintedLetterMessage(user, subject, body);
+		return createPrintedLetterMessage(parentCase, user, subject, body);
 	}
 	
 	/**	 * @return Collection of PrintedLetterMessage that have already been printed	 */
@@ -547,11 +556,17 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 
 	public PrintedLetterMessage createPrintedLetterMessage(User user, String subject, String body,String printedLetterType) throws CreateException, RemoteException {
+		return createPrintedLetterMessage(null, user, subject, body, printedLetterType);
+	}
+	
+	private PrintedLetterMessage createPrintedLetterMessage(Case parentCase, User user, String subject, String body,String printedLetterType) throws CreateException, RemoteException {
 		PrintedLetterMessageHome home = (PrintedLetterMessageHome)this.getMessageHome(getTypeMailMessage());
 		PrintedLetterMessage message = (PrintedLetterMessage)home.create();
 		message.setOwner(user);
 		message.setSubject(subject);
 		message.setBody(body);
+		if (parentCase != null)
+			message.setParentCase(parentCase);
 		if(printedLetterType!=null){
 			message.setLetterType(printedLetterType);
 		}
