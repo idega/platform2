@@ -18,7 +18,7 @@ public class BannerListener implements IWEventListener{
   public BannerListener() {
   }
 
-  public void actionPerformed(IWContext iwc){
+  public boolean actionPerformed(IWContext iwc){
     String mode = iwc.getParameter(BannerBusiness.PARAMETER_MODE);
     if ( mode == null )
       mode = "";
@@ -33,5 +33,6 @@ public class BannerListener implements IWEventListener{
         iwc.sendRedirect(URL);
       }
     }
+    return true;
   }
 }

@@ -862,9 +862,11 @@ public class ReportContentViewer extends Block implements Reports,IWEventListene
 
 
 
-  public void actionPerformed(IWContext iwc){
+  public boolean actionPerformed(IWContext iwc){
 
     removeSessionParameters(iwc);
+
+    return true;
 
   }
 

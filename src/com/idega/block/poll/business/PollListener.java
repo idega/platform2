@@ -17,9 +17,10 @@ public class PollListener implements IWEventListener{
   public PollListener() {
   }
 
-  public void actionPerformed(IWContext iwc){
+  public boolean actionPerformed(IWContext iwc){
     if (PollBusiness.thisObjectSubmitted(iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER))){
       PollBusiness.handleInsert(iwc);
     }
+    return true;
   }
 }

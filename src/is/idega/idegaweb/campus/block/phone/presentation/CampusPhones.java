@@ -346,8 +346,9 @@ public class CampusPhones extends Block implements IWEventListener{
   }
 
 
-  public void actionPerformed(IWContext iwc)throws IWException{
+  public boolean actionPerformed(IWContext iwc)throws IWException{
     //System.err.println("test is actionPerformed");
     update(iwc);
+    return true;
   }
 }

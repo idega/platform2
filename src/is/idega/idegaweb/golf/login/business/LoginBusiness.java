@@ -112,7 +112,7 @@ public class LoginBusiness implements IWEventListener{
 
 
 
-  public void actionPerformed(IWContext iwc)throws IWException{
+  public boolean actionPerformed(IWContext iwc)throws IWException{
 
     try{
 
@@ -213,7 +213,7 @@ public class LoginBusiness implements IWEventListener{
     }
 
 
-
+    return true;
   }
 
 

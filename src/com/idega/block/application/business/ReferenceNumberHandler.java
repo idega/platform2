@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberHandler.java,v 1.7 2002/04/06 18:52:26 tryggvil Exp $
+ * $Id: ReferenceNumberHandler.java,v 1.8 2002/05/28 17:22:26 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -34,7 +34,7 @@ public class ReferenceNumberHandler implements IWEventListener {
   /**
    *
    */
-  public void actionPerformed(IWContext iwc) throws IWException {
+  public boolean actionPerformed(IWContext iwc) throws IWException {
     String ref = iwc.getParameter(ReferenceNumber.CAM_REF_NUMBER);
     if (ref.length() != 10) {
       System.out.println("Setting upp decyphered reference number");
@@ -50,6 +50,7 @@ public class ReferenceNumberHandler implements IWEventListener {
       iwc.setSessionAttribute(referenceNumber_,ref);
       iwc.setSessionAttribute("DUMMY_LOGIN","true");
     }
+    return true;
   }
 
   /**
