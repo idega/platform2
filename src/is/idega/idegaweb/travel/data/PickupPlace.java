@@ -2,7 +2,7 @@ package is.idega.idegaweb.travel.data;
 
 import javax.ejb.*;
 
-public interface HotelPickupPlace extends com.idega.data.IDOEntity
+public interface PickupPlace extends com.idega.data.IDOEntity
 {
  public void addToService(is.idega.idegaweb.travel.data.Service p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
  public void addToSupplier(com.idega.block.trade.stockroom.data.Supplier p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;

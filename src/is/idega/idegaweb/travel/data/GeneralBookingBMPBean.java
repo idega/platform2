@@ -59,6 +59,8 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     addAttribute(getUserIdColumnName(), "user id", true, true, Integer.class);
     addAttribute(getCommentColumnName(), "comment", true, true, String.class);
     addAttribute(getCreditcardAuthorizationNumberColumnName(), "cc auth", true, true, String.class);
+    addAttribute(getPickupPlaceIDColumnName(),"Rick-up staður",true,true,Integer.class,"many_to_one",PickupPlace.class);
+    addAttribute(getPickupExtraInfoColumnName(), "Pickup extra info", true, true, String.class);
 
     this.addManyToManyRelationShip(Reseller.class);
     this.addManyToManyRelationShip(Address.class);
@@ -250,6 +252,30 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     setColumn(getCreditcardAuthorizationNumberColumnName(), number);
   }
 
+	public int getPickupPlaceID() {
+		return getIntColumnValue(getPickupPlaceIDColumnName());	
+	}
+	
+	public PickupPlace getPickupPlace() {
+    return (PickupPlace) getColumnValue(getPickupPlaceIDColumnName());
+	}
+
+	public void setPickupPlace(PickupPlace pPlace) throws RemoteException{
+		setPickupPlaceId(((Integer) pPlace.getPrimaryKey()).intValue());
+	}
+	
+	public void setPickupPlaceId(int pickupPlaceId) {
+		setColumn(getPickupPlaceIDColumnName(), pickupPlaceId);
+	}
+	
+	public String getPickupExtraInfo() {
+		return getStringColumnValue(getPickupExtraInfoColumnName());	
+	}
+	
+	public void setPickupExtraInfo(String info) {
+		setColumn(getPickupExtraInfoColumnName(), info);	
+	}
+
   public void store() {
     CypherText cyph = new CypherText();
     String key = cyph.getKey(8);
@@ -289,6 +315,8 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   public static String getUserIdColumnName() {return "IC_USER_ID";}
   public static String getCommentColumnName() {return "BK_COMMENT";}
   public static String getCreditcardAuthorizationNumberColumnName() {return "CC_AUTH_NUMBER";}
+	public static String getPickupPlaceIDColumnName() {return "PICKUP_PLACE_ID";}
+	public static String getPickupExtraInfoColumnName() {return "PICKUP_EXTRA_INFO";}
 
 
   public  Collection ejbFindBookings(int resellerId, int serviceId, IWTimestamp stamp) throws FinderException{

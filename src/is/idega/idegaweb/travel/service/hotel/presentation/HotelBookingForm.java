@@ -252,6 +252,36 @@ public class HotelBookingForm extends BookingForm {
         }
 
 
+	      DropdownMenu pickupMenu = null;
+	      TextInput roomNumber = null;
+
+	      PickupPlaceHome hppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
+	      Collection hotelPickup = hppHome.findHotelPickupPlaces(this._service);
+	      //HotelPickupPlace[] hotelPickup = (HotelPickupPlace[]) coll.toArray(new HotelPickupPlace[]{});
+	      if (hotelPickup.size() > 0) {
+	          ++row;
+	          table.mergeCells(2,row,4,row);
+	
+	          Text hotelText = (Text) theText.clone();
+	            hotelText.setText(iwrb.getLocalizedString("travel.pickup_sm","pickup"));
+	          pickupMenu = new DropdownMenu(hotelPickup, parameterPickupId);
+	            pickupMenu.addMenuElementFirst("-1",iwrb.getLocalizedString("travel.no_pickup","No pickup"));
+	            pickupMenu.keepStatusOnAction();
+	
+	          Text roomNumberText = (Text) theText.clone();
+	            roomNumberText.setText(iwrb.getLocalizedString("travel.extra_info","extra_info"));
+	          roomNumber = new TextInput(parameterPickupInf);
+	            roomNumber.setSize(textInputSizeSm);
+	            roomNumber.keepStatusOnAction();
+	
+	          table.add(hotelText,1,row);
+	          table.add(pickupMenu,2,row);
+	          table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
+	          table.add(roomNumberText,2,row);
+	          table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
+	          table.add(roomNumber,2,row);
+	      }
+	
         if (_booking == null) {
           ++row;
           table.add(fromText, 1, row);
@@ -531,6 +561,15 @@ public class HotelBookingForm extends BookingForm {
           if (_booking.getComment() != null) {
             comment.setContent(_booking.getComment());
           }
+	        if (pickupMenu != null) {
+	          try {
+	            pickupMenu.setSelectedElement(Integer.toString(_booking.getPickupPlaceID()));
+	            roomNumber.setContent(_booking.getPickupExtraInfo());
+
+	          }catch (NullPointerException n) {
+	            //n.printStackTrace(System.err);
+	          }
+	        }
 
         }
 
@@ -608,11 +647,16 @@ public class HotelBookingForm extends BookingForm {
 
       ProductPrice[] prices = {};
       ProductPrice[] misc = {};
-//      Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, stamp, addressId);
-//      if (tFrame != null) {
+      Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, stamp, -1);
+      int timeframeId = -1;
+      if (tFrame != null) {
+      	timeframeId = tFrame.getID();
+        prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), timeframeId, -1, true);
+        misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), timeframeId, -1, true);
+      }else {
         prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, true);
         misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), -1, -1, true);
-//      }
+      }
 
 
       Text availSeats = (Text) theText.clone();
@@ -839,7 +883,7 @@ public class HotelBookingForm extends BookingForm {
                   pTable = (Table) pTableToClone.clone();
 //                  ++pRow;
                   category = pPrices[i].getPriceCategory();
-                  int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,_product.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimestamp.getTimestampRightNow(), -1, -1);
+                  int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,_product.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, -1);
     //              pPrices[i].getPrice();
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
@@ -876,7 +920,7 @@ public class HotelBookingForm extends BookingForm {
                         if (entries[j].getProductPriceId() == pPrices[i].getID()) {
                           pPri = entries[j].getProductPrice();
                           currentCount = entries[j].getCount();
-                          currentSum = (int) (currentCount * getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), -1, -1));
+                          currentSum = (int) (currentCount * getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, -1));
 
                           totalCount += currentCount;
                           totalSum += currentSum;
@@ -1004,6 +1048,51 @@ public class HotelBookingForm extends BookingForm {
           table.setVerticalAlignment(1,row,"top");
           table.setAlignment(2,row,"left");
 */
+
+          PickupPlaceHome hppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
+          Collection hotelPickup = hppHome.findHotelPickupPlaces(this._service);
+          //HotelPickupPlace[] hotelPickup = (HotelPickupPlace[]) coll.toArray(new HotelPickupPlace[]{});
+//          HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this._service);
+          if (hotelPickup.size() > 0) {
+              ++row;
+              table.mergeCells(1,row,6,row);
+              table.add(hr,1,row);
+              ++row;
+              table.mergeCells(1,row,6,row);
+              subHeader = (Text) theBoldText.clone();
+                subHeader.setFontColor(WHITE);
+                subHeader.setText(iwrb.getLocalizedString("travel.booking_choose_pickup","If you choose to be picked up, select your preferred pickup place from the list below"));
+              table.add(subHeader,1,row);
+              table.setAlignment(1,row,"left");
+              ++row;
+              ++row;
+
+				      DropdownMenu pickupMenu = null;
+				      TextInput roomNumber = null;
+
+              Text hotelText = (Text) theText.clone();
+                hotelText.setText(iwrb.getLocalizedString("travel.pickup_sm","pickup"));
+              pickupMenu = new DropdownMenu(hotelPickup, parameterPickupId);
+                pickupMenu.addMenuElementFirst("-1",iwrb.getLocalizedString("travel.no_pickup","No pickup"));
+
+              Text roomNumberText = (Text) theText.clone();
+                roomNumberText.setText(iwrb.getLocalizedString("travel.extra_info","extra info"));
+              roomNumber = new TextInput(parameterPickupInf);
+                roomNumber.setSize(textInputSizeSm);
+
+              table.add(hotelText,1,row);
+              table.add(pickupMenu,2,row);
+              table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
+              table.add(roomNumberText,3,row);
+              table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
+              table.add(roomNumber,4,row);
+
+              table.setAlignment(1,row,"right");
+              table.setAlignment(2,row,"left");
+              table.setAlignment(3,row,"right");
+              table.setAlignment(4,row,"left");
+              table.mergeCells(4,row,6,row);
+          }
 
            table.add(new HiddenInput("available",Integer.toString(available)),2,row);
 
@@ -1161,6 +1250,9 @@ public class HotelBookingForm extends BookingForm {
 
     String fromDate = iwc.getParameter(parameterFromDate);
     String manyDays = iwc.getParameter(parameterManyDays);
+    
+    String pickupId = iwc.getParameter(parameterPickupId);
+    String pickupInf = iwc.getParameter(parameterPickupInf);
 
     String ccNumber = iwc.getParameter(parameterCCNumber);
     String ccMonth = iwc.getParameter(parameterCCMonth);
@@ -1174,13 +1266,27 @@ public class HotelBookingForm extends BookingForm {
     Text star = new Text(Text.NON_BREAKING_SPACE+"*");
       star.setFontColor(errorColor);
 
+	  IWTimestamp fromStamp = new IWTimestamp(fromDate);
 
-//    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this.product.getID(), true);
+	  ProductPrice[] prices = {};
+	  ProductPrice[] misc = {};
+	  Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, fromStamp, -1);
+	  int timeframeId = -1;
+	  if (tFrame != null) {
+	  	timeframeId = tFrame.getID();
+	    prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), timeframeId, -1, true);
+	    misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), timeframeId, -1, true);
+	  }else {
+	    prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, true);
+	    misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), -1, -1, true);
+	  }
+  
+/*    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this.product.getID(), true);
     ProductPrice[] prices = {};
     ProductPrice[] misc = {};
       prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, true);
       misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), -1, -1, true);
-
+*/
     Table table = new Table();
       table.setCellpadding(3);
       table.setCellspacing(3);
@@ -1200,7 +1306,6 @@ public class HotelBookingForm extends BookingForm {
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
 
-      IWTimestamp fromStamp = new IWTimestamp(fromDate);
       try {
         int iManyDays = Integer.parseInt(manyDays);
         IWTimestamp toStamp = new IWTimestamp(fromStamp);
@@ -1282,6 +1387,25 @@ public class HotelBookingForm extends BookingForm {
       table.add(getTextWhite(iwrb.getLocalizedString("travel.telephone_number","Telephone number")),1,row);
       table.add(getBoldTextWhite(telephoneNumber),2,row);
 
+			if (pickupId != null) {
+				try {
+					PickupPlace pickup = ((PickupPlaceHome) IDOLookup.getHome(PickupPlace.class)).findByPrimaryKey(new Integer(pickupId));
+		      ++row;
+		      table.setAlignment(1,row,"right");
+		      table.setAlignment(2,row,"left");
+		      table.add(getTextWhite(iwrb.getLocalizedString("travel.pickup","Pickup")),1,row);
+		      table.add(getBoldTextWhite(pickup.getAddress().getStreetName()),2,row);
+		      ++row;
+		      table.setAlignment(1,row,"right");
+		      table.setAlignment(2,row,"left");
+		      table.add(getTextWhite(iwrb.getLocalizedString("travel.pickup_info","Pickup  info")),1,row);
+		      table.add(getBoldTextWhite(pickupInf),2,row);
+				} catch (FinderException e) {
+					e.printStackTrace(System.err);
+				}
+				
+			}
+
 /*      ++row;
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
@@ -1324,7 +1448,7 @@ public class HotelBookingForm extends BookingForm {
         try {
           if (i == 0)
           currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrices[i].getCurrencyId());
-          price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), -1, -1);
+          price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), timeframeId, -1);
         }catch (SQLException sql) {
         }catch (NumberFormatException n) {}
 
@@ -1454,8 +1578,15 @@ public class HotelBookingForm extends BookingForm {
       onlineOnly = false;
     }
 
+    Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, -1);
 
-    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, onlineOnly);
+    ProductPrice[] pPrices = {};
+    if (tFrame == null) {
+      pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, onlineOnly);
+    }else {
+      pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), -1, onlineOnly);
+    }
+    
     int current = 0;
     for (int i = 0; i < pPrices.length; i++) {
       try {

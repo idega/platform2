@@ -80,7 +80,7 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
 
     Product product = (( ProductHome ) IDOLookup.getHome(Product.class)).findByPrimaryKey(new Integer(productId));
     product.removeAllFrom(TravelAddress.class);
-    product.removeAllFrom(Timeframe.class);
+//    product.removeAllFrom(Timeframe.class);
 
 
 

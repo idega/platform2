@@ -12,7 +12,7 @@ import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.data.*;
 import java.sql.Timestamp;
 import com.idega.core.data.*;
-import is.idega.idegaweb.travel.data.HotelPickupPlace;
+import is.idega.idegaweb.travel.data.PickupPlace;
 import java.sql.SQLException;
 import com.idega.util.*;
 import java.sql.SQLException;

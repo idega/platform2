@@ -73,7 +73,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
               hotelPickupAddress.setStreetName(hppNames[i]);
               hotelPickupAddress.insert();
 
-            HotelPickupPlace hpp = ((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHome(HotelPickupPlace.class)).create();
+            PickupPlace hpp = ((is.idega.idegaweb.travel.data.PickupPlaceHome)com.idega.data.IDOLookup.getHome(PickupPlace.class)).create();
               hpp.setName(hppNames[i]);
               hpp.setAddress(hotelPickupAddress);
               hpp.store();
@@ -85,7 +85,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
           del = iwc.getParameter("hotel_pickup_place_to_delete_"+hppIds[i]);
           add = iwc.getParameter("hotel_pickup_place_add_to_all_"+hppIds[i]);
 
-          HotelPickupPlace hpp = ((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHome(HotelPickupPlace.class)).findByPrimaryKey(new Integer(hppIds[i]));
+          PickupPlace hpp = ((is.idega.idegaweb.travel.data.PickupPlaceHome)com.idega.data.IDOLookup.getHome(PickupPlace.class)).findByPrimaryKey(new Integer(hppIds[i]));
           Address address = hpp.getAddress();
 
           if (del == null) {
@@ -143,9 +143,9 @@ public class HotelPickupPlaceDesigner extends TravelManager {
       table.setColor(TravelManager.WHITE);
       table.setCellspacing(1);
       table.setAlignment("center");
-      HotelPickupPlaceHome hppHome = (HotelPickupPlaceHome) IDOLookup.getHome(HotelPickupPlace.class);
+      PickupPlaceHome hppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
       Collection coll = hppHome.findHotelPickupPlaces(supplier);
-      HotelPickupPlace[] places = (HotelPickupPlace[]) coll.toArray(new HotelPickupPlace[]{});
+      PickupPlace[] places = (PickupPlace[]) coll.toArray(new PickupPlace[]{});
 
     Text header = (Text) theText.clone();
       header.setText(iwrb.getLocalizedString("travel.hotel_pickup","Hotel pick-up"));

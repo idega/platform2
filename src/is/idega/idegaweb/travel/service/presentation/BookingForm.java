@@ -65,6 +65,8 @@ public abstract class BookingForm extends TravelManager{
   public static String parameterCCNumber = "CCNumber";
   public static String parameterCCMonth  = "CCMonth";
   public static String parameterCCYear   = "CCYear";
+  public static String parameterPickupId = "bookingPicId";
+  public static String parameterPickupInf= "bookingPicInf";
 
   public static String sAction = "bookingFormAction";
   public static String parameterSaveBooking = "bookingFormSaveBooking";
@@ -1230,6 +1232,8 @@ public abstract class BookingForm extends TravelManager{
       form.maintainParameter("telephone_number");
       form.maintainParameter("city");
       form.maintainParameter("country");
+      form.maintainParameter(this.parameterPickupId);
+      form.maintainParameter(this.parameterPickupInf);
 //      form.maintainParameter(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
 //      form.maintainParameter("room_number");
 //      form.maintainParameter("reference_number");
@@ -1461,10 +1465,11 @@ public abstract class BookingForm extends TravelManager{
 
       String city = iwc.getParameter("city");
       String country = iwc.getParameter("country");
-      String hotelPickupPlaceId = iwc.getParameter(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
-      String roomNumber = iwc.getParameter("room_number");
+      String pickupId = iwc.getParameter(parameterPickupId);
+      String pickupInfo = iwc.getParameter(parameterPickupInf);
       String sPaymentType = iwc.getParameter("payment_type");
       String comment = iwc.getParameter("comment");
+
 
       String sAddressId = iwc.getParameter(this.parameterDepartureAddressId);
       int iAddressId = -1;
@@ -1508,7 +1513,7 @@ public abstract class BookingForm extends TravelManager{
 
       String many;
       int iMany = 0;
-      int iHotelId;
+      int iPickupId;
 
 
       String sOnline = iwc.getParameter(this.parameterOnlineBooking);
@@ -1560,9 +1565,9 @@ public abstract class BookingForm extends TravelManager{
 
 
         try {
-          iHotelId = Integer.parseInt(hotelPickupPlaceId);
+          iPickupId = Integer.parseInt(pickupId);
         }catch (NumberFormatException n) {
-          iHotelId = -1;
+          iPickupId = -1;
         }
 
         int paymentType = Booking.PAYMENT_TYPE_ID_NO_PAYMENT;
@@ -1595,20 +1600,27 @@ public abstract class BookingForm extends TravelManager{
               _fromDate.addDays(1);
             }
             lbookingId = getBooker(iwc).Book(_service.getID(),country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
-          }else {
+		        if (iPickupId > 0) {
+		            getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+		        }
+            }else {
             //handle multiple...
             List tempBookings = getBooker(iwc).getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
             if (tempBookings == null || tempBookings.size() < 2) {
               lbookingId = getBooker(iwc).updateBooking(iBookingId, _service.getID(), country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
+            if (iPickupId > 0) {
+                getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+            }
             }else {
               GeneralBooking gBooking;
               for (int j = 0; j < tempBookings.size(); j++) {
                 gBooking = (GeneralBooking) tempBookings.get(j);
                 getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, new IWTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
+                if (iPickupId > 0) {
+	                getBooker(iwc).setPickup(gBooking.getID(), iPickupId, pickupInfo);
+                }
               }
               lbookingId = iBookingId;
-
-
             }
           }
           bookingIds[i] = lbookingId;
@@ -1758,7 +1770,7 @@ public abstract class BookingForm extends TravelManager{
 
     String city = iwc.getParameter("city");
     String country = iwc.getParameter("country");
-    String hotelPickupPlaceId = iwc.getParameter(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
+    String hotelPickupPlaceId = iwc.getParameter(parameterPickupId);
 
 //    String referenceNumber = iwc.getParameter("reference_number");
     String fromDate = iwc.getParameter(parameterFromDate);
@@ -1911,7 +1923,7 @@ public abstract class BookingForm extends TravelManager{
     String telephoneNumber = iwc.getParameter("telephone_number");
     String city = iwc.getParameter("city");
     String country = iwc.getParameter("country");
-    String hotelPickupPlaceId = iwc.getParameter(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
+    String hotelPickupPlaceId = iwc.getParameter(is.idega.idegaweb.travel.data.PickupPlaceBMPBean.getHotelPickupPlaceTableName());
     String room_number = iwc.getParameter("room_number");
     String comment = iwc.getParameter("comment");
     String depAddressId = iwc.getParameter(parameterDepartureAddressId);

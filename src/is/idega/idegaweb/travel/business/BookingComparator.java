@@ -1,6 +1,6 @@
 package is.idega.idegaweb.travel.business;
 
-import is.idega.idegaweb.travel.data.HotelPickupPlace;
+import is.idega.idegaweb.travel.data.PickupPlace;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.service.tour.data.TourBooking;
 import java.rmi.RemoteException;
@@ -163,17 +163,17 @@ public class BookingComparator implements Comparator {
     else if (err1 && !err2) return 1;
     else if (!err1 && err2) return -1;
 
-    HotelPickupPlace hp1 = tp1.getHotelPickupPlace();
-    HotelPickupPlace hp2 = tp2.getHotelPickupPlace();
+    PickupPlace hp1 = tp1.getPickupPlace();
+    PickupPlace hp2 = tp2.getPickupPlace();
 
 
     if (hp1 != null && hp1 != null) {
-      String one = tp1.getHotelPickupPlace().getName()!=null?tp1.getHotelPickupPlace().getName():"";
-      String two = tp2.getHotelPickupPlace().getName()!=null?tp2.getHotelPickupPlace().getName():"";
+      String one = tp1.getPickupPlace().getName()!=null?tp1.getPickupPlace().getName():"";
+      String two = tp2.getPickupPlace().getName()!=null?tp2.getPickupPlace().getName():"";
       return IsCollator.getIsCollator().compare(one,two);
-    }else if (tp1.getHotelPickupPlace() == null && tp2.getHotelPickupPlace() == null) {
+    }else if (tp1.getPickupPlace() == null && tp2.getPickupPlace() == null) {
       return 0;
-    }else if (tp1.getHotelPickupPlace() == null && tp2.getHotelPickupPlace() != null) {
+    }else if (tp1.getPickupPlace() == null && tp2.getPickupPlace() != null) {
       return 1;
     }else {
       return -1;

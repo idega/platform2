@@ -87,6 +87,11 @@ public interface Booking extends IDOEntity{
 
   public String getComment()throws RemoteException;
   public void setComment(String comment)throws RemoteException;
+  
+  public int getPickupPlaceID() throws RemoteException;
+  public PickupPlace getPickupPlace() throws RemoteException;
+  public String getPickupExtraInfo() throws RemoteException;
+  
  public java.util.Collection getTravelAddresses()throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
 
   /*

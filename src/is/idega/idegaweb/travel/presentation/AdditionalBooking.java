@@ -164,6 +164,8 @@ public class AdditionalBooking extends TravelWindow {
       }
       if (tfrId != null) {
         tFrames.setSelectedElement(tfrId);
+      }else if (timeframe != null ){
+      	tFrames.setSelectedElement(timeframe.getID());
       }
 
     ++row;

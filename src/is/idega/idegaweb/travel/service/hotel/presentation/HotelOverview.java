@@ -38,6 +38,7 @@ import com.idega.util.text.TextSoap;
  */
 
 public class HotelOverview extends AbstractServiceOverview {
+	Product _product;
 
   public HotelOverview(IWContext iwc) throws RemoteException{
     super.main(iwc);
@@ -48,6 +49,7 @@ public class HotelOverview extends AbstractServiceOverview {
   }
 
   public Table getServiceInfoTable(IWContext iwc, Product product) throws IDOFinderException, SQLException, ServiceNotFoundException, TimeframeNotFoundException, RemoteException{
+  	_product = product;
     Table contentTable;
     int contRow = 0;
     contentTable = new Table();
@@ -72,6 +74,7 @@ public class HotelOverview extends AbstractServiceOverview {
     Currency currency;
 
     service = getTravelStockroomBusiness(iwc).getService(product);
+    Timeframe[] tFrames = product.getTimeframes();
 
     if (product.getFileId() != -1) {
       image = new Image(product.getFileId());
@@ -103,60 +106,26 @@ public class HotelOverview extends AbstractServiceOverview {
     contentTable.setRowColor(contRow, super.GRAY);
 
     ++contRow;
-    prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, false);
-    if (prices.length > 0) {
-      contentTable.setVerticalAlignment(2,contRow,"top");
-      contentTable.setVerticalAlignment(3,contRow,"top");
-      contentTable.setVerticalAlignment(4,contRow,"top");
-      contentTable.setVerticalAlignment(5,contRow,"top");
-      contentTable.setAlignment(2,contRow,"right");
-      contentTable.setAlignment(3,contRow,"left");
-      contentTable.setRowColor(contRow, super.GRAY);
+    
+    if (tFrames.length == 0) {
+//	    prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, false);
+			contRow = listPrices(iwc, contentTable, contRow, service, -1);
+    }else {
+    	Text timeframeText;
+    	--contRow;
+    	for (int i = 0; i < tFrames.length; i++ ) {
+//    		timeframeText = (Text) theBoldText.clone();
+				++contRow;
+    		timeframeText = super.getTimeframeText(tFrames[i], iwc);
+    		timeframeText.setFontStyle(super.theBoldTextStyle);
+    		contentTable.add(timeframeText, 2, contRow);
+    		contentTable.mergeCells(2, contRow, 3, contRow);
+    		contentTable.setRowColor(contRow, super.GRAY);
+    		++contRow;
+				contRow = listPrices(iwc, contentTable, contRow, service, tFrames[i].getID());				
+    	}
     }
-
-    int col1 = 2;
-    int col2 = 3;
-    for (int j = 0; j < prices.length; j++) {
-
-      currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
-      nameOfCategory = (Text) theText.clone();
-      nameOfCategory.setFontColor(super.BLACK);
-      nameOfCategory.setText(prices[j].getPriceCategory().getName());
-      nameOfCategory.addToText(":");
-      priceText = (Text) theBoldText.clone();
-      priceText.setFontColor(super.BLACK);
-      try {
-        if (service == null) {debug("SERVICE");}
-        if (prices[j] == null) {debug("PRICES");}
-        priceText.setText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), -1, -1 ) ));
-        priceText.addToText(Text.NON_BREAKING_SPACE);
-        priceText.addToText(currency.getCurrencyAbbreviation());
-      }catch (ProductPriceException p) {
-        priceText.setText("Rangt upp sett");
-      }
-
-      if (prices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT) {
-        priceText.addToText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)");
-      }
-
-      contentTable.setVerticalAlignment(col1,contRow,"top");
-      contentTable.setVerticalAlignment(col2,contRow,"top");
-      contentTable.setAlignment(col1,contRow,"right");
-      contentTable.setAlignment(col2,contRow,"left");
-
-      contentTable.add(nameOfCategory,col1,contRow);
-      contentTable.add(priceText,col2,contRow);
-      contentTable.setRowColor(contRow, super.GRAY);
-
-      if (j % 2 != 0) {
-        ++contRow;
-        col1 = 2;
-        col2 = 3;
-      }else {
-        col1 = 4;
-        col2 = 5;
-      }
-    }
+    
 
 
     contentTable.setVerticalAlignment(2,contRow,"top");
@@ -183,6 +152,68 @@ public class HotelOverview extends AbstractServiceOverview {
 
     return contentTable;
   }
+
+
+private int listPrices(IWContext iwc, Table contentTable,	int contRow,	Service service,	int timeframeId)	throws SQLException, RemoteException {
+	Text nameOfCategory;
+	Text priceText;
+	Currency currency;
+	ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_product.getID(), timeframeId, -1, false);
+	if (prices.length > 0) {
+	  contentTable.setVerticalAlignment(2,contRow,"top");
+	  contentTable.setVerticalAlignment(3,contRow,"top");
+	  contentTable.setVerticalAlignment(4,contRow,"top");
+	  contentTable.setVerticalAlignment(5,contRow,"top");
+	  contentTable.setAlignment(2,contRow,"right");
+	  contentTable.setAlignment(3,contRow,"left");
+	  contentTable.setRowColor(contRow, super.GRAY);
+	}
+	
+	int col1 = 2;
+	int col2 = 3;
+	for (int j = 0; j < prices.length; j++) {
+	
+	  currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
+	  nameOfCategory = (Text) theText.clone();
+	  nameOfCategory.setFontColor(super.BLACK);
+	  nameOfCategory.setText(prices[j].getPriceCategory().getName());
+	  nameOfCategory.addToText(":");
+	  priceText = (Text) theBoldText.clone();
+	  priceText.setFontColor(super.BLACK);
+	  try {
+	    if (service == null) {debug("SERVICE");}
+	    if (prices[j] == null) {debug("PRICES");}
+	    priceText.setText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 ) ));
+	    priceText.addToText(Text.NON_BREAKING_SPACE);
+	    priceText.addToText(currency.getCurrencyAbbreviation());
+	  }catch (ProductPriceException p) {
+	    priceText.setText("Rangt upp sett");
+	  }
+	
+	  if (prices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT) {
+	    priceText.addToText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)");
+	  }
+	
+	  contentTable.setVerticalAlignment(col1,contRow,"top");
+	  contentTable.setVerticalAlignment(col2,contRow,"top");
+	  contentTable.setAlignment(col1,contRow,"right");
+	  contentTable.setAlignment(col2,contRow,"left");
+	
+	  contentTable.add(nameOfCategory,col1,contRow);
+	  contentTable.add(priceText,col2,contRow);
+	  contentTable.setRowColor(contRow, super.GRAY);
+	
+	  if (j % 2 != 0) {
+	    ++contRow;
+	    col1 = 2;
+	    col2 = 3;
+	  }else {
+	    col1 = 4;
+	    col2 = 5;
+	  }
+	}
+	return contRow;
+}
 
 
   public Table getPublicServiceInfoTable(IWContext iwc, Product product) throws RemoteException, FinderException {
@@ -268,33 +299,26 @@ public class HotelOverview extends AbstractServiceOverview {
       String stampTxt2 = _iwrb.getLocalizedString("travel.not_configured","Not configured");
       ProductPrice[] prices;
       Text timeframeTextBold;
+		  Timeframe[] tFrames = product.getTimeframes();
 
       Table pTable = new Table();
         pTable.setCellspacing(0);
 
       int pRow = 1;
-      prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, true);
-          if (prices.length > 0) {
-            for (int j = 0; j < prices.length; j++) {
-              currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
-              nameOfCategory = getText(prices[j].getPriceCategory().getName());
-                nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-              try {
-                priceText = getBoldText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) product.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), -1, -1) ) );
-                currencyText = getBoldText(currency.getCurrencyAbbreviation());
-                pTable.add(currencyText,5,pRow);
-              }catch (ProductPriceException p) {
-                priceText.setText(_iwrb.getLocalizedString("travel.not_configured","Not configured"));
-              }
-
-              pTable.add(nameOfCategory,3,pRow);
-              pTable.add(priceText,4,pRow);
-              ++pRow;
-            }
-          }
+      if (tFrames.length == 0) {
+				pRow = listPublicPrices(iwc, product, priceText, -1, pTable, pRow);
+      }else {
+      	for (int i = 0; i < tFrames.length; i++) {
+      		Text text = super.getTimeframeText(tFrames[i], iwc); 
+      		text.setFontStyle(super.theBoldTextStyle);
+	      	pTable.add(text, 1, pRow);
+					pRow = listPublicPrices(iwc, product, priceText, tFrames[i].getID(), pTable, pRow);
+      	}	
+      }
 
       pTable.setColumnAlignment(1,"left");
       pTable.setColumnAlignment(2,"left");
+      pTable.setWidth(2, "20");
       pTable.setColumnAlignment(3,"left");
       pTable.setColumnAlignment(4,"right");
       pTable.setColumnAlignment(5,"left");
@@ -327,6 +351,32 @@ public class HotelOverview extends AbstractServiceOverview {
     }
     return aroundTable;
   }
+
+private int listPublicPrices(IWContext iwc,	Product product,	Text priceText,	int timeframeId,	Table pTable,	int pRow)	throws SQLException, RemoteException {
+	Currency currency;
+	Text nameOfCategory;
+	Text currencyText;
+	ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframeId, -1, true);
+	  if (prices.length > 0) {
+	    for (int j = 0; j < prices.length; j++) {
+	      currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
+	      nameOfCategory = getText(prices[j].getPriceCategory().getName());
+	        nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+	      try {
+	        priceText = getBoldText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) product.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1) ) );
+	        currencyText = getBoldText(currency.getCurrencyAbbreviation());
+	        pTable.add(currencyText,5,pRow);
+	      }catch (ProductPriceException p) {
+	        priceText.setText(_iwrb.getLocalizedString("travel.not_configured","Not configured"));
+	      }
+	
+	      pTable.add(nameOfCategory,3,pRow);
+	      pTable.add(priceText,4,pRow);
+	      ++pRow;
+	    }
+	  }
+	 return pRow;
+}
 
   private Text getBoldText(String content) {
     Text text = new Text();

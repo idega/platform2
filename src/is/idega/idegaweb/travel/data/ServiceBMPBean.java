@@ -38,7 +38,7 @@ public class ServiceBMPBean extends com.idega.data.GenericEntity implements is.i
     addAttribute(getIsValidColumnName(), "is valid", true, true, Boolean.class);
 
 //    this.setAsPrimaryKey(getIDColumnName(), true);
-    this.addManyToManyRelationShip(HotelPickupPlace.class, "TB_SERVICE_HOTEL_PICKUP_PLACE");
+    this.addManyToManyRelationShip(PickupPlace.class, "TB_SERVICE_HOTEL_PICKUP_PLACE");
    this.addManyToManyRelationShip(Address.class, "TB_SERVICE_IC_ADDRESS");
 
  }
@@ -146,7 +146,7 @@ public class ServiceBMPBean extends com.idega.data.GenericEntity implements is.i
 
 
   public Collection getHotelPickupPlaces() throws IDORelationshipException{
-    return this.idoGetRelatedEntities(HotelPickupPlace.class);
+    return this.idoGetRelatedEntities(PickupPlace.class);
   }
 
 
@@ -159,7 +159,7 @@ public class ServiceBMPBean extends com.idega.data.GenericEntity implements is.i
   }
 
   public void removeAllHotelPickupPlaces() throws IDORemoveRelationshipException{
-    this.idoRemoveFrom(HotelPickupPlace.class);
+    this.idoRemoveFrom(PickupPlace.class);
   }
 
 }

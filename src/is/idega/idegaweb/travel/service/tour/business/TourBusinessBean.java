@@ -116,7 +116,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
           }
 
 
-          HotelPickupPlaceHome hppHome = (HotelPickupPlaceHome) IDOLookup.getHome(HotelPickupPlace.class);
+          PickupPlaceHome hppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
           service.removeAllHotelPickupPlaces();
 //          hppHome.create().removeFromService(service);
           //service.removeFrom(HotelPickupPlace.class);
@@ -125,7 +125,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
             for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
               if (hotelPickupPlaceIds[i] != -1)
               try{
-                ((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHome(HotelPickupPlace.class)).findByPrimaryKey(new Integer(hotelPickupPlaceIds[i])).addToService(service);
+                ((is.idega.idegaweb.travel.data.PickupPlaceHome)com.idega.data.IDOLookup.getHome(PickupPlace.class)).findByPrimaryKey(new Integer(hotelPickupPlaceIds[i])).addToService(service);
 //                service.addTo(((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHome(HotelPickupPlace.class)).findByPrimaryKey(new Integer(hotelPickupPlaceIds[i])));
               }catch (IDOAddRelationshipException sql) {}
             }

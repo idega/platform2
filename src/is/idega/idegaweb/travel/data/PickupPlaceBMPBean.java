@@ -17,12 +17,12 @@ import com.idega.block.trade.stockroom.data.Supplier;
  * @version 1.0
  */
 
-public class HotelPickupPlaceBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.travel.data.HotelPickupPlace {
+public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.travel.data.PickupPlace {
 
-  public HotelPickupPlaceBMPBean(){
+  public PickupPlaceBMPBean(){
           super();
   }
-  public HotelPickupPlaceBMPBean(int id)throws SQLException{
+  public PickupPlaceBMPBean(int id)throws SQLException{
           super(id);
   }
   public void initializeAttributes(){
@@ -86,7 +86,7 @@ public class HotelPickupPlaceBMPBean extends com.idega.data.GenericEntity implem
     StringBuffer buffer = new StringBuffer();
       buffer.append("select h.* from ");
       buffer.append(is.idega.idegaweb.travel.data.ServiceBMPBean.getServiceTableName()+" s,");
-      buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Service.class,HotelPickupPlace.class)+" smh, ");
+      buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Service.class,PickupPlace.class)+" smh, ");
       buffer.append(getHotelPickupPlaceTableName() +" h ");
       buffer.append(" WHERE ");
       buffer.append("s."+is.idega.idegaweb.travel.data.ServiceBMPBean.getServiceIDColumnName()+" = "+((Integer) service.getPrimaryKey()).intValue());
@@ -109,8 +109,8 @@ public class HotelPickupPlaceBMPBean extends com.idega.data.GenericEntity implem
     StringBuffer buffer = new StringBuffer();
       buffer.append("select h.* from ");
       buffer.append(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()+" s,");
-      buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Supplier.class,HotelPickupPlace.class)+" smh, ");
-      buffer.append(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName() +" h ");
+      buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Supplier.class,PickupPlace.class)+" smh, ");
+      buffer.append(is.idega.idegaweb.travel.data.PickupPlaceBMPBean.getHotelPickupPlaceTableName() +" h ");
       buffer.append(" WHERE ");
       buffer.append("s."+supplier.getIDColumnName()+" = "+supplier.getID());
       buffer.append(" AND ");
@@ -118,8 +118,8 @@ public class HotelPickupPlaceBMPBean extends com.idega.data.GenericEntity implem
       buffer.append(" AND ");
       buffer.append(" smh."+getIDColumnName()+" = h."+getIDColumnName());
       buffer.append(" AND ");
-      buffer.append("h."+is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getDeletedColumnName() +" = 'N'");
-      buffer.append(" ORDER BY h."+is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getNameColumnName());
+      buffer.append("h."+is.idega.idegaweb.travel.data.PickupPlaceBMPBean.getDeletedColumnName() +" = 'N'");
+      buffer.append(" ORDER BY h."+is.idega.idegaweb.travel.data.PickupPlaceBMPBean.getNameColumnName());
 
 
       returner = this.idoFindPKsBySQL(buffer.toString());
@@ -145,7 +145,7 @@ public class HotelPickupPlaceBMPBean extends com.idega.data.GenericEntity implem
   }
 
   public void ejbHomeRemoveFromAllServices() throws IDORemoveRelationshipException{
-    this.idoRemoveFrom(HotelPickupPlace.class);
+    this.idoRemoveFrom(PickupPlace.class);
   }
 
 

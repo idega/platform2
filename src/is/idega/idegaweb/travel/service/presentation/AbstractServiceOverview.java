@@ -7,6 +7,8 @@ import java.util.Locale;
 
 import com.idega.data.IDOFinderException;
 import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.Timeframe;
+
 import java.rmi.RemoteException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.ui.SubmitButton;
@@ -59,7 +61,13 @@ public abstract class AbstractServiceOverview extends TravelManager implements S
     dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY] = iwCal.getDayName(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY ,locale,IWCalendar.LONG).substring(0,3);
   }
 
-
+  protected Text getTimeframeText(Timeframe timeframe, IWContext iwc) {
+    IWTimestamp from = new IWTimestamp(timeframe.getFrom());
+    IWTimestamp to = new IWTimestamp(timeframe.getTo());
+    Text text = new Text();
+      text.setText(from.getLocaleDate(iwc)+ " - " + to.getLocaleDate(iwc) );
+    return text;
+  }
 
 }
 

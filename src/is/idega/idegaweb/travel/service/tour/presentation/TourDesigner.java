@@ -412,7 +412,7 @@ public class TourDesigner extends TravelManager implements DesignerForm{
       ++row;
       Text hotelPickupText = ( Text ) theBoldText.clone();
       hotelPickupText.setText( iwrb.getLocalizedString( "travel.hotel_pickup", "Hotel pick-up" ) );
-      HotelPickupPlaceHome hppHome = (HotelPickupPlaceHome) IDOLookup.getHome(HotelPickupPlace.class);
+      PickupPlaceHome hppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
       Collection coll = hppHome.findHotelPickupPlaces(this.supplier);
       List hpps = ListUtil.convertCollectionToList(coll);
 //      HotelPickupPlace[] hpps = (HotelPickupPlace[]) coll.toArray(new HotelPickupPlace[]{});
@@ -534,7 +534,7 @@ public class TourDesigner extends TravelManager implements DesignerForm{
         arrival_time.setMinute( tempStamp.getMinute() );
 
         Collection hppService = hppHome.findHotelPickupPlaces(this.service);
-        HotelPickupPlace hpp;
+        PickupPlace hpp;
         Iterator iter = hppService.iterator();
         while (iter.hasNext()) {
           hotels.setSelectedElement(iter.next().toString());

@@ -3,7 +3,7 @@ package is.idega.idegaweb.travel.service.tour.data;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 import java.util.Collection;
-import is.idega.idegaweb.travel.data.HotelPickupPlace;
+import is.idega.idegaweb.travel.data.PickupPlace;
 import com.idega.data.*;
 import is.idega.idegaweb.travel.data.Service;
 import java.sql.*;

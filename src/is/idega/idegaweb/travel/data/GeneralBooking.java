@@ -18,6 +18,7 @@ public interface GeneralBooking extends com.idega.data.IDOEntity, Booking
  public void setName(java.lang.String p0) throws java.rmi.RemoteException;
  public java.lang.String getCreditcardAuthorizationNumber() throws java.rmi.RemoteException;
  public void setBookingDate(java.sql.Timestamp p0) throws java.rmi.RemoteException;
+ public void setPickupExtraInfo(java.lang.String p0) throws java.rmi.RemoteException;
  public boolean getIsValid() throws java.rmi.RemoteException;
  public int getBookingTypeID() throws java.rmi.RemoteException;
  public int getAttendance() throws java.rmi.RemoteException;
@@ -28,7 +29,10 @@ public interface GeneralBooking extends com.idega.data.IDOEntity, Booking
  public void setServiceID(int p0) throws java.rmi.RemoteException;
  public void removeFromReseller(com.idega.block.trade.stockroom.data.Reseller p0)throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
  public void setPaymentTypeId(int p0) throws java.rmi.RemoteException;
+ public void setPickupPlaceId(int p0) throws java.rmi.RemoteException;
+ public java.lang.String getPickupExtraInfo() throws java.rmi.RemoteException;
  public java.lang.String getName() throws java.rmi.RemoteException;
+ public void setPickupPlace(is.idega.idegaweb.travel.data.PickupPlace p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void setComment(java.lang.String p0) throws java.rmi.RemoteException;
  public java.lang.String getEmail() throws java.rmi.RemoteException;
  public java.lang.String getCountry() throws java.rmi.RemoteException;
@@ -37,6 +41,8 @@ public interface GeneralBooking extends com.idega.data.IDOEntity, Booking
  public int getOwnerId() throws java.rmi.RemoteException;
  public java.sql.Timestamp getBookingDate() throws java.rmi.RemoteException;
  public void addTravelAddress(com.idega.block.trade.stockroom.data.TravelAddress p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
+ public int getPickupPlaceID() throws java.rmi.RemoteException;
+ public is.idega.idegaweb.travel.data.PickupPlace getPickupPlace() throws java.rmi.RemoteException;
  public void setIsValid(boolean p0) throws java.rmi.RemoteException;
  public java.lang.String getCity() throws java.rmi.RemoteException;
  public is.idega.idegaweb.travel.data.Service getService() throws java.rmi.RemoteException;

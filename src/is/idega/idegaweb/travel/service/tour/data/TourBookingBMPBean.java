@@ -31,7 +31,7 @@ public class TourBookingBMPBean extends com.idega.data.GenericEntity implements 
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getHotelPickupPlaceIDColumnName(),"Hotel pick-up staður",true,true,Integer.class,"many_to_one",HotelPickupPlace.class);
+    addAttribute(getHotelPickupPlaceIDColumnName(),"Hotel pick-up staður",true,true,Integer.class,"many_to_one",PickupPlace.class);
     addAttribute(getRoomNumberColumnName(), "Númer herbergis", true, true, String.class);
   }
   public String getEntityName() {
@@ -53,24 +53,53 @@ public class TourBookingBMPBean extends com.idega.data.GenericEntity implements 
     return ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(this.getPrimaryKey());
   }
 
-  public HotelPickupPlace getHotelPickupPlace() {
-    return (HotelPickupPlace) getColumnValue(getHotelPickupPlaceIDColumnName());
+  public PickupPlace getPickupPlace() throws RemoteException{
+  	PickupPlace place = _booking.getPickupPlace();
+  	if (place != null) {
+  		return place;	
+  	}else {
+	    return (PickupPlace) getColumnValue(getHotelPickupPlaceIDColumnName());
+  	}
   }
 
-  public int getHotelPickupPlaceID() {
-    return getIntColumnValue(getHotelPickupPlaceIDColumnName());
+  public int getPickupPlaceID() throws RemoteException{
+  	int id = _booking.getPickupPlaceID();
+  	if (id > 0) {
+  		return id;
+  	}else {
+  		id = getIntColumnValue(getHotelPickupPlaceIDColumnName());
+  		if (id > 0) {
+  			System.out.println("[TourBookingBMPBean] setting GeneralBooking Pickup Id");
+	  		_booking.setPickupPlaceId(id);
+	  		_booking.store();
+  		}
+	    return id;
+  	}
   }
 
-  public void setHotelPickupPlaceID(int id) {
-    setColumn(getHotelPickupPlaceIDColumnName(),id);
+  public void setPickupPlaceID(int id) throws RemoteException{
+  	_booking.setPickupPlaceId(id);
+//    setColumn(getHotelPickupPlaceIDColumnName(),id);
   }
 
-  public void setRoomNumber(String roomNumber) {
-    setColumn(getRoomNumberColumnName(), roomNumber);
+  public void setPickupExtraInfo(String roomNumber) throws RemoteException{
+  	_booking.setPickupExtraInfo(roomNumber);
+    //setColumn(getRoomNumberColumnName(), roomNumber);
   }
 
-  public String getRoomNumber() {
-    return getStringColumnValue(getRoomNumberColumnName());
+  public String getPickupExtraInfo() throws RemoteException{
+  	String info = _booking.getPickupExtraInfo();
+  	if (info != null) {
+  		return info;	
+  	}else {
+  		info = getStringColumnValue(getRoomNumberColumnName());
+  		if (info != null) {
+  			System.out.println("[TourBookingBMPBean] setting GeneralBooking Pickup Info");
+	  		_booking.setPickupExtraInfo(info);
+	  		_booking.store();
+  		}
+	    return info;
+  	}
   }
 
   public static String getTourBookingTableName(){return "TB_BOOKING_TOUR";}

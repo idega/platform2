@@ -154,6 +154,21 @@ public class BookerBean extends IBOServiceBean implements Booker{
     return returner;
   }
 
+	public boolean setPickup(int bookingId, int pickupPlaceId, String pickupInfo) throws RemoteException{
+		try {
+			GeneralBooking booking = ((GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+			booking.setPickupPlaceId(pickupPlaceId);
+			if (pickupInfo != null) {
+				booking.setPickupExtraInfo(pickupInfo);
+			}
+			booking.store();
+			return true;
+		} catch (FinderException e) {
+			e.printStackTrace(System.err);
+		}
+		return false;
+	}
+
   public  int getBookingsTotalCountByResellers(int serviceId, IWTimestamp stamp) throws RemoteException {
     return getBookingsTotalCount(-1, serviceId, stamp, null);
   }

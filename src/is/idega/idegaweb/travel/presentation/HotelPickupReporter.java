@@ -97,7 +97,7 @@ public class HotelPickupReporter extends TravelManager implements Report {
     Booking booking;
     TourBooking tBooking;
     Product prod;
-    HotelPickupPlace hpp;
+    PickupPlace hpp;
     int oldHppNumber = -100;
     Text hotelCountText = (Text) super.theBoldText.clone();
     Text hotelNameText = (Text) super.theBoldText.clone();
@@ -157,7 +157,7 @@ public class HotelPickupReporter extends TravelManager implements Report {
                 table.setRowColor(row, super.GRAY);
                 tBooking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHome(TourBooking.class)).findByPrimaryKey(booking.getPrimaryKey());
                 ++bookingCounter;
-                hpp = tBooking.getHotelPickupPlace();
+                hpp = tBooking.getPickupPlace();
                 if (((Integer) hpp.getPrimaryKey()).intValue() != oldHppNumber) {
                   hotelNameText = (Text) super.theBoldText.clone();
                     hotelNameText.setText(hpp.getName());
@@ -177,10 +177,10 @@ public class HotelPickupReporter extends TravelManager implements Report {
                   ++row;
                 }
 
-                if (tBooking.getRoomNumber() != null) {
+                if (tBooking.getPickupExtraInfo() != null) {
                   bookingRoomNumberTxt = (Text) super.smallText.clone();
                     bookingRoomNumberTxt.setFontColor(super.BLACK);
-                    bookingRoomNumberTxt.setText(tBooking.getRoomNumber());
+                    bookingRoomNumberTxt.setText(tBooking.getPickupExtraInfo());
                   table.add(bookingRoomNumberTxt, 5, row);
                 }else {
                   table.add(Text.NON_BREAKING_SPACE, 5, row);

@@ -51,7 +51,7 @@ public class TourBookerBean extends BookerBean implements TourBooker {
     return Book(_bookingId, hotelPickupPlaceId, roomNumber);
   }
 
-  private static int Book(int bookingId, int hotelPickupPlaceId, String roomNumber) throws SQLException, RemoteException {
+  private int Book(int bookingId, int hotelPickupPlaceId, String roomNumber) throws SQLException, RemoteException {
     try {
       boolean update = false;
       TourBooking booking = null;
@@ -70,18 +70,21 @@ public class TourBookerBean extends BookerBean implements TourBooker {
         System.err.println("...roomNumber         =  "+bookingId);
       }
 
-      if (hotelPickupPlaceId != -1) {
-        booking.setHotelPickupPlaceID(hotelPickupPlaceId);
-        if (roomNumber != null) {
-          booking.setRoomNumber(roomNumber);
-        }
-      }
 
-      if (hotelPickupPlaceId != -1) {
-        booking.setHotelPickupPlaceID(hotelPickupPlaceId);
+/*      if (hotelPickupPlaceId != -1) {
+        booking.setPickupPlaceID(hotelPickupPlaceId);
         if (roomNumber != null) {
-          booking.setRoomNumber(roomNumber);
+          booking.setPickupExtraInfo(roomNumber);
         }
+
+      }
+*/
+      if (hotelPickupPlaceId != -1) {
+				super.setPickup(booking.getID(), hotelPickupPlaceId, roomNumber);
+//        booking.setPickupPlaceID(hotelPickupPlaceId);
+//        if (roomNumber != null) {
+//          booking.setPickupExtraInfo(roomNumber);
+//        }
       }
 
 
@@ -113,7 +116,7 @@ public class TourBookerBean extends BookerBean implements TourBooker {
       for (int i = 0; i < bookings.length; i++) {
         try {
           tb = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHome(TourBooking.class)).findByPrimaryKey(bookings[i].getPrimaryKey());
-          if (tb.getHotelPickupPlaceID() != -1) {
+          if (tb.getPickupPlaceID() != -1) {
             bings.add(bookings[i]);
           }
         }catch (FinderException sql) {
