@@ -48,7 +48,8 @@ public class SchoolGroupEditor extends ProviderBlock {
 	private final String PARAMETER_TEACHERS ="sge_teachers";
 	private final String PARAMETER_SEASON_ID ="sge_season_id";
 	private final String PARAMETER_TYPE_ID ="sge_type_id";
-
+	private final String PARAMETER_IS_SUBGROUP = "sge_is_subgroup";
+	
 	private final int ACTION_VIEW = 1;
 	private final int ACTION_EDIT = 2;
 	private final int ACTION_DELETE = 3;
@@ -269,6 +270,16 @@ public class SchoolGroupEditor extends ProviderBlock {
 			seasons.setSelectedElement(_group.getSchoolSeasonId());
 		table.add(seasons, 3, row++);
 		
+		table.setHeight(row++, 3);
+		table.add(getSmallHeader(localize("group_type", "Group type") + ":"), 1, row);
+		table.setNoWrap(1, row);
+		DropdownMenu subGroup = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_IS_SUBGROUP));
+		subGroup.addMenuElement("false", localize("main_group", "Main group"));
+		subGroup.addMenuElement("true", localize("sub_group", "Sub group"));
+		if (_group != null)
+			subGroup.setSelectedElement(String.valueOf(_group.getIsSubGroup()));
+		table.add(subGroup, 3, row++);
+		
 		Collection schoolYears = null;
 		try {
 			schoolYears = _provider.findRelatedSchoolYears();
@@ -371,6 +382,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		int seasonID = -1;
 		if (iwc.isParameterSet(PARAMETER_SEASON_ID))
 			seasonID = Integer.parseInt(iwc.getParameter(PARAMETER_SEASON_ID));
+		boolean isSubGroup = Boolean.valueOf(iwc.getParameter(PARAMETER_IS_SUBGROUP)).booleanValue();
 		
 		for (int a = 1; a <= 4; a++) {
 			String teacher = "-1";
@@ -380,7 +392,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 		}
 		
 		try {
-			getSchoolBusiness().storeSchoolClass(_groupID, name, getSession().getProviderID(), typeID, seasonID, years, teachers);
+			SchoolClass schoolClass = getSchoolBusiness().storeSchoolClass(_groupID, name, getSession().getProviderID(), typeID, seasonID, years, teachers);
+			schoolClass.setIsSubGroup(isSubGroup);
+			schoolClass.store();
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
