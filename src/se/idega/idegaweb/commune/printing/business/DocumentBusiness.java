@@ -24,10 +24,7 @@ public interface DocumentBusiness extends com.idega.business.IBOService
  public int getUnprintedMessagesCountByType(java.lang.String p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean isBulkLetterType(java.lang.String p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean isTypeSystemArchiveMessage(java.lang.String p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int printAllUnPrintedLetters(int p0,java.lang.String p1) throws java.rmi.RemoteException;
  public void writeBulkPDF(java.util.Collection p0,com.idega.user.data.User p1,java.lang.String p2,java.util.Locale p3,String type) throws java.rmi.RemoteException;
  public int writePDF(se.idega.idegaweb.commune.message.data.PrintMessage p0,com.idega.user.data.User p1,java.lang.String p2,java.util.Locale p3)throws java.lang.Exception, java.rmi.RemoteException;
- public int writePrintedLetterPDF(int p0,int p1) throws java.rmi.RemoteException;
- public int writePrintedLetterPDF(int[] p0,int p1) throws java.rmi.RemoteException;
- public int writePrintedLetterPDF(int[] p0,int p1,java.lang.String p2,com.lowagie.text.Font p3,com.lowagie.text.Font p4,com.lowagie.text.Font p5,com.lowagie.text.Font p6) throws java.rmi.RemoteException;
+ 
 }
