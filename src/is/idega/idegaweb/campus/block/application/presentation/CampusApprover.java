@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.36 2002/07/03 23:27:48 aron Exp $
+ * $Id: CampusApprover.java,v 1.37 2002/07/03 23:31:57 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1493,7 +1493,7 @@ public class CampusApprover extends Block {
 
       }
       if(applied2 !=null && "-1".equals(key2)){
-        System.err.println("deleting 2");
+       
          try{
           applied2.delete();
         }
@@ -1503,7 +1503,7 @@ public class CampusApprover extends Block {
           applied3.setOrder(1);
       }
       if(applied3 !=null && "-1".equals(key3)){
-      System.err.println("deleting 3");
+      
         try{
         applied3.delete();
         }
