@@ -2,6 +2,9 @@ package com.idega.block.trade.stockroom.data;
 
 import com.idega.data.*;
 import com.idega.core.data.*;
+import com.idega.block.trade.stockroom.business.ResellerManager;
+import com.idega.block.employment.data.EmployeeGroup;
+import com.idega.core.accesscontrol.data.PermissionGroup;
 
 import java.util.List;
 import java.util.Vector;
@@ -17,6 +20,7 @@ import java.sql.SQLException;
  */
 
 public class Reseller extends TreeableEntity {
+  private String newName;
 
   public Reseller() {
     super();
@@ -52,6 +56,8 @@ public class Reseller extends TreeableEntity {
   }
 
   public void setName(String name) {
+    newName = name;
+
     setColumn(getColumnNameName(), name);
   }
 
@@ -142,6 +148,10 @@ public class Reseller extends TreeableEntity {
     return getPhones(Phone.getFaxNumberID());
   }
 
+  public static Reseller[] getValidResellers() throws SQLException {
+    return (Reseller[]) Reseller.getStaticInstance(Reseller.class).findAllByColumnOrdered(Reseller.getColumnNameIsValid(),"Y",Reseller.getColumnNameName());
+  }
+
   public Reseller getParent() {
     return (Reseller) getParentEntity();
   }
@@ -158,4 +168,24 @@ public class Reseller extends TreeableEntity {
   public static String getColumnNameIsValid()         {return "IS_VALID";}
   public static String getColumnNameReferenceNumber() {return "REFERENCE_NUMBER";}
 
+  public void update() throws SQLException {
+    if (newName != null) {
+      PermissionGroup pGroup = ResellerManager.getPermissionGroup(this);
+        pGroup.setName(newName+ResellerManager.permissionGroupNameExtention);
+        pGroup.update();
+      ResellerStaffGroup sGroup = ResellerManager.getResellerStaffGroup(this);
+        sGroup.setName(newName);
+        sGroup.update();
+      setColumn(getColumnNameName(),newName);
+      newName = null;
+    }
+    super.update();
+  }
+
+  public void insert() throws SQLException {
+    if (newName != null) {
+      setColumn(getColumnNameName(),newName);
+    }
+    super.insert();
+  }
 }

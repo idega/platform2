@@ -26,7 +26,7 @@ import is.idega.idegaweb.travel.data.Contract;
 
 public class ResellerManager {
 
-  private static String permissionGroupNameExtention = " - admins";
+  public static String permissionGroupNameExtention = " - admins";
   private static String permissionGroupDescription = "Reseller administator group";
 
   public ResellerManager() {
@@ -148,7 +148,24 @@ public class ResellerManager {
   public static void invalidateReseller(Reseller reseller) throws SQLException {
     reseller.setIsValid(false);
     reseller.update();
+    List users = getUsers(reseller);
+    if (users != null) {
+      for (int i = 0; i < users.size(); i++) {
+        LoginDBHandler.deleteUserLogin( ((User) users.get(i)).getID() );
+      }
+    }
+    PermissionGroup pGroup = getPermissionGroup(reseller);
+      pGroup.setName(pGroup.getName()+"_deleted");
+      pGroup.update();
+
+    ResellerStaffGroup sGroup = getResellerStaffGroup(reseller);
+      sGroup.setName(sGroup.getName()+"_deleted");
+      sGroup.update();
   }
+/*  public static void invalidateReseller(Reseller reseller) throws SQLException {
+    reseller.setIsValid(false);
+    reseller.update();
+  }*/
 
   public static void validateReseller(Reseller reseller) throws SQLException {
     reseller.setIsValid(true);
@@ -233,7 +250,7 @@ public class ResellerManager {
           sql.append(" r."+reseller.getIDColumnName() +" = "+resellerId);
           sql.append(" AND ");
           sql.append(" p."+Product.getColumnNameIsValid()+" = 'Y'");
-          sql.append(" ORDER BY p."+Product.getColumnNameProductName());
+//          sql.append(" ORDER BY p."+Product.getColumnNameProductName());
 
         products = (Product[]) product.findAll(sql.toString());
 
@@ -464,7 +481,7 @@ public class ResellerManager {
           buffer.append("r."+reseller.getIDColumnName()+"="+ownerResellerId);
         }
         if (orderBy != null && !orderBy.equals("")) {
-          buffer.append(" ORDER BY p."+orderBy);
+//          buffer.append(" ORDER BY p."+orderBy);
         }
 
       products = (Product[]) product.findAll(buffer.toString());
@@ -598,9 +615,49 @@ public class ResellerManager {
     List users = getUsers(reseller);
 
     while (childs.hasNext()) {
+      System.err.println("In iter");
       users.addAll(getUsers((Reseller) childs.next()));
     }
     return users;
+  }
+
+  public static List getUsersIncludingSubResellers(Reseller reseller, Object objectBetweenResellers) {
+    Iterator childs = ResellerManager.getResellerChilds(reseller, Reseller.getColumnNameName());
+    List users = getUsers(reseller);
+
+    while (childs.hasNext()) {
+      System.err.println("In iter");
+      users.add(objectBetweenResellers);
+      users.addAll(getUsers((Reseller) childs.next()));
+    }
+    System.err.println("Ur iter");
+    return users;
+  }
+
+  public static Reseller getReseller(User user) throws SQLException{
+    List groups = UserBusiness.getUserGroups(user);
+    boolean isReseller = false;
+    int number = 0;
+    for (int i = 0; i < groups.size(); i++) {
+      if (groups.get(i) instanceof ResellerStaffGroup) {
+        isReseller = true;
+        number= i;
+        break;
+      }
+    }
+
+    if (isReseller) {
+      Reseller[] resellers = Reseller.getValidResellers();
+      ResellerStaffGroup rGroup = (ResellerStaffGroup) groups.get(number);
+      for (int i = 0; i < resellers.length; i++) {
+        if (resellers[i].getName().indexOf(rGroup.getName()) != -1) {
+          return resellers[i];
+        }
+      }
+
+    }
+
+    return null;
   }
 
 }

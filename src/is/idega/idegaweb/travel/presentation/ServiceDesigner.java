@@ -178,7 +178,7 @@ public class ServiceDesigner extends TravelManager {
             int row = 1;
 
           Product product = new Product(this.service.getID());
-          com.idega.block.text.presentation.TextChooser tc = new com.idega.block.text.presentation.TextChooser("le_text_id");
+/*          com.idega.block.text.presentation.TextChooser tc = new com.idega.block.text.presentation.TextChooser("le_text_id");
           if (product.getText() != null) {
             System.err.println("Text != null");
             System.err.println("TextID = "+product.getText().getID());
@@ -188,7 +188,7 @@ public class ServiceDesigner extends TravelManager {
           }
 
           tc.setChooseImage(iwrb.getLocalizedImageButton("travel.extra_info","Extra info"));
-
+*/
           PriceCategory[] cats = tsb.getPriceCategories(this.supplier.getID());
           TextInput priceDiscount;
 
@@ -207,7 +207,7 @@ public class ServiceDesigner extends TravelManager {
             priceDiscountText.setFontColor(super.WHITE);
 
 
-          table.add(tc,1,row);
+//          table.add(tc,1,row);
           ++row;
 
           table.add(catName,1,row);
@@ -306,13 +306,13 @@ public class ServiceDesigner extends TravelManager {
         if (priceDiscount != null) {
           int priceCategoryId = 0;
           int productPriceId = -1;
-
+/*
           Product product = new Product(service.getID());
           if (text_id != null && !text_id.equals("")) {
             TxText text = new TxText(Integer.parseInt(text_id));
             text.addTo(product);
           }
-
+*/
           ProductPrice.clearPrices(service.getID());
 
           float price;

@@ -34,7 +34,7 @@ public class SupplierManager {
 
 
   public void deleteSupplier(int id)throws Exception{
-    throw new Exception("not implimented");
+    invalidateSupplier(new Supplier(id));
   }
 
   public static Supplier updateSupplier(int supplierId, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
@@ -238,20 +238,52 @@ public class SupplierManager {
     }
   }
 
+  public static List getUsersIncludingResellers(Supplier supplier, Object objBetweenResellers) {
+      System.err.println("On my way");
+    List users = getUsers(supplier);
+    if (users == null) users = com.idega.util.ListUtil.getEmptyList();
+    Iterator resellers = ResellerManager.getResellers(supplier, Reseller.getColumnNameName());
+    while (resellers.hasNext()) {
+      users.addAll(ResellerManager.getUsersIncludingSubResellers((Reseller)resellers.next(), objBetweenResellers));
+    }
+    System.err.println("USERS.size() : "+users.size());
+    return users;
+  }
+
   public static List getUsersIncludingResellers(Supplier supplier) {
     List users = getUsers(supplier);
     if (users == null) users = com.idega.util.ListUtil.getEmptyList();
-//    System.err.println("Users.size() : "+users.size());
     Iterator resellers = ResellerManager.getResellers(supplier, Reseller.getColumnNameName());
     while (resellers.hasNext()) {
       users.addAll(ResellerManager.getUsersIncludingSubResellers((Reseller)resellers.next()));
-//    System.err.println("...Users.size() : "+users.size());
     }
     return users;
   }
-/*
-  public static Supplier getSupplier(ICUser user) {
+
+  public static Supplier getSupplier(User user) throws SQLException{
+    List groups = UserBusiness.getUserGroups(user);
+    boolean isSupplier = false;
+    int number = 0;
+    for (int i = 0; i < groups.size(); i++) {
+      if (groups.get(i) instanceof SupplierStaffGroup) {
+        isSupplier = true;
+        number= i;
+        break;
+      }
+    }
+
+    if (isSupplier) {
+      Supplier[] supps = Supplier.getValidSuppliers();
+      SupplierStaffGroup sGroup = (SupplierStaffGroup) groups.get(number);
+      for (int i = 0; i < supps.length; i++) {
+        if (supps[i].getName().indexOf(sGroup.getName()) != -1) {
+          return supps[i];
+        }
+      }
+
+    }
+
     return null;
   }
-*/
+
 } // Class SupplierManager

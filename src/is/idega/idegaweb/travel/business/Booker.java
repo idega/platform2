@@ -117,21 +117,26 @@ public class Booker {
         Reseller reseller = new Reseller(resellerId);
         Iterator iter = reseller.getChildren();
         List items = new Vector();
-        if (iter.hasNext()) {
-          /**
-           * @todo gera recusive fall sem skilar int[] af resellerId-um
-           */
-          while (iter.hasNext()) {
-            items.add(iter.next());
-          }
-          int[] tempInts = new int[items.size()];
-          for (int i = 0; i < tempInts.length; i++) {
-            tempInts[i] = ((Reseller) items.get(i)).getID();
-          }
-          return getNumberOfBookings( tempInts , serviceId, stamp);
+        if (iter == null) {
+            int[] tempInts = {reseller.getID()};
+            return getNumberOfBookings( tempInts , serviceId, stamp);
         }else {
-          int[] tempInts = {reseller.getID()};
-          return getNumberOfBookings( tempInts , serviceId, stamp);
+          if (iter.hasNext()) {
+            /**
+             * @todo gera recusive fall sem skilar int[] af resellerId-um
+             */
+            while (iter.hasNext()) {
+              items.add(iter.next());
+            }
+            int[] tempInts = new int[items.size()];
+            for (int i = 0; i < tempInts.length; i++) {
+              tempInts[i] = ((Reseller) items.get(i)).getID();
+            }
+            return getNumberOfBookings( tempInts , serviceId, stamp);
+          }else {
+            int[] tempInts = {reseller.getID()};
+            return getNumberOfBookings( tempInts , serviceId, stamp);
+          }
         }
       }catch (SQLException sql) {
         return 0;

@@ -8,6 +8,7 @@ import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
+import com.idega.core.user.data.User;
 import com.idega.util.*;
 import java.util.*;
 import is.idega.idegaweb.travel.data.*;
@@ -315,8 +316,10 @@ public class TourBookingForm extends TravelManager {
             if ( this.supplier != null) users = SupplierManager.getUsersIncludingResellers(supplier);
             if ( _reseller != null) users = ResellerManager.getUsersIncludingSubResellers(_reseller);
             if (users == null) users = com.idega.util.ListUtil.getEmptyList();
-            usersDrop = new DropdownMenu(users, "ic_user");
+            usersDrop = this.getDropdownMenuWithUsers(users, "ic_user");
             usersDrop.setSelectedElement(Integer.toString(super.userId));
+            //usersDrop = new DropdownMenu(users, "ic_user");
+            //usersDrop.setSelectedElement(Integer.toString(super.userId));
 
             Text tUser = (Text) theText.clone();
               tUser.setFontColor(WHITE);
@@ -817,10 +820,14 @@ public class TourBookingForm extends TravelManager {
 
               ++row;
               List users = null;
-              if ( this.supplier != null) users = SupplierManager.getUsers(supplier);
-              if ( _reseller != null) users = ResellerManager.getUsers(_reseller);
+              if ( this.supplier != null) {
+                users = SupplierManager.getUsersIncludingResellers(supplier);
+              }else if ( _reseller != null) {
+                users = ResellerManager.getUsersIncludingSubResellers(_reseller);
+              }
               if (users == null) users = com.idega.util.ListUtil.getEmptyList();
-              DropdownMenu usersDrop = new DropdownMenu(users, "ic_user");
+//              DropdownMenu usersDrop = new DropdownMenu(users, "ic_user");
+              DropdownMenu usersDrop = this.getDropdownMenuWithUsers(users, "ic_user");
               usersDrop.setSelectedElement(Integer.toString(super.userId));
 
               Text tUser = (Text) theBoldText.clone();
@@ -868,6 +875,30 @@ public class TourBookingForm extends TravelManager {
         }
         table.setAlignment(1,1,"left");
     return form;
+  }
+
+  private DropdownMenu getDropdownMenuWithUsers(List users, String name) {
+    DropdownMenu usersDrop = new DropdownMenu("ic_user");
+    User usr = null;
+    for (int i = 0; i < users.size(); i++) {
+      if (users.get(i).equals(null)) {
+        System.err.println("User == null");
+        if (i != (users.size() -1)) {
+          usr = (User) users.get(i+1);
+          try {
+            if (ResellerManager.getReseller(usr) != null) {
+              usersDrop.addMenuElement(-1, ResellerManager.getReseller(usr).getName());
+            }
+          }catch (SQLException sql) {
+            sql.printStackTrace(System.err);
+          }
+        }
+      }else {
+        usr =  (User) users.get(i);
+        usersDrop.addMenuElement(usr.getID(), usr.getName());
+      }
+    }
+    return usersDrop;
   }
 
  public Form getFormMaintainingAllParameters() {
