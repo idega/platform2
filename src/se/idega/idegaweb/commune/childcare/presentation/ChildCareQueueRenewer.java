@@ -90,7 +90,7 @@ public class ChildCareQueueRenewer extends ChildCareBlock {
 			form.addParameter(PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
 			
 			placementDate = new IWTimestamp(application.getFromDate());
-			lastReplyDate = new IWTimestamp(application.getQueueDate());
+			lastReplyDate = new IWTimestamp(application.getLastReplyDate());
 			keep = getRadioButton(PARAMETER_APPLICATION_ID + "_" + application.getPrimaryKey().toString(), Boolean.TRUE.toString());
 			discard = getRadioButton(PARAMETER_APPLICATION_ID + "_" + application.getPrimaryKey().toString(), Boolean.FALSE.toString());
 				
