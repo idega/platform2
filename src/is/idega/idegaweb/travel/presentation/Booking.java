@@ -94,6 +94,7 @@ public class Booking extends TravelManager {
   }
 
   public void main(IWContext iwc) throws Exception {
+  	System.out.println("[Booking] TEST");
       super.main(iwc);
       initialize(iwc);
 
@@ -391,7 +392,6 @@ public class Booking extends TravelManager {
           table.mergeCells(6,1,6,row);
           table.add(Text.BREAK ,1,row);
 
-        	System.out.println("[HotelBookingForm] in here -1");
 
 					if (bf.isFullyBooked(iwc, product, stamp)) {					
 //          if ((this.iMax <= this.iBookings) && (this.iMax > 0)) {
@@ -404,8 +404,6 @@ public class Booking extends TravelManager {
             table.add(super.getHeaderText(iwrb.getLocalizedString("travel.attention_under_booked","Attention! Booked seats are fewer than the service minimum.")), 1, row);
             table.add(Text.BREAK ,1,row);
           }
-
-        	System.out.println("[HotelBookingForm] in here 0");
 
 
           table.add(Text.BREAK ,1,row);
@@ -818,23 +816,16 @@ public class Booking extends TravelManager {
   }
 
   private Form getBookingForm(IWContext iwc) throws Exception{
-        	System.out.println("[HotelBookingForm] in here 1");
 
     BookingForm bf = super.getServiceHandler(iwc).getBookingForm(iwc, product);
 //    TourBookingForm tbf = new TourBookingForm(iwc,product);
     try {
 //      if (reseller != null) tbf.setReseller(reseller);
-        	System.out.println("[HotelBookingForm] in here 2");
       bf.setTimestamp(stamp);
-        	System.out.println("[HotelBookingForm] in here 3");
       if (_booking != null)  {
-        	System.out.println("[HotelBookingForm] in here 4");
       	bf.setBooking(_booking);
-        	System.out.println("[HotelBookingForm] in here 5");
       	bf.setTimestamp(new IWTimestamp(_booking.getBookingDate()));	
-        	System.out.println("[HotelBookingForm] in here 6");
       }
-        	System.out.println("[HotelBookingForm] in here 7");
       return bf.getBookingForm(iwc);
     }catch (Exception e) {
       return new Form();
