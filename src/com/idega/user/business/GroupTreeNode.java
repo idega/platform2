@@ -1,4 +1,4 @@
-package com.idega.user.presentation;
+package com.idega.user.business;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -14,7 +14,6 @@ import com.idega.core.builder.data.ICDomainHome;
 import com.idega.core.data.ICTreeNode;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
-import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.GroupType;
@@ -96,7 +95,7 @@ public class GroupTreeNode implements ICTreeNode {
 		_nodeType = TYPE_DOMAIN;
 	}
 
-	protected GroupTreeNode(Group group) {
+	public GroupTreeNode(Group group) {
 		_group = group;
 		_nodeType = TYPE_GROUP;
 	}

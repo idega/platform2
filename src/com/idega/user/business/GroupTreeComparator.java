@@ -1,5 +1,5 @@
 
-package com.idega.user.presentation;
+package com.idega.user.business;
 
 import java.text.Collator;
 import java.util.Comparator;
