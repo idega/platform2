@@ -160,6 +160,9 @@ public abstract class TourSearch extends AbstractSearchForm {
 		
 	}
 
+	protected int getNumberOfDays(IWTimestamp fromDate) {
+		return 1;
+	}
 
 	protected Image getHeaderImage(IWResourceBundle iwrb) {
 		return iwrb.getImage("/search/tour.png");
