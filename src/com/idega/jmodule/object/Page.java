@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.10 2001/07/16 17:58:33 tryggvil Exp $
+ * $Id: Page.java,v 1.11 2001/07/17 19:14:22 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ public class Page extends ModuleObjectContainer {
 
   protected static final String ROWS_PROPERTY = "ROWS";
 
-  private static final String IW_FRAME_PARAMETER="idegaweb_frame_page_s";
+  //private static final String IW_FRAME_PARAMETER="idegaweb_frame_page_s";
   protected static final String IW_PAGE_KEY = "idegaweb_page";
   public static final String IW_FRAME_STORAGE_PARMETER = IWMainApplication.windowOpenerParameter;
 
@@ -475,7 +475,7 @@ public class Page extends ModuleObjectContainer {
 
 
   public static boolean isRequestingTopPage(ModuleInfo modinfo){
-    return !modinfo.isParameterSet(IW_FRAME_PARAMETER);
+    return !modinfo.isParameterSet(IW_FRAME_STORAGE_PARMETER);
   }
 
 

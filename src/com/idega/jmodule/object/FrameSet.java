@@ -129,7 +129,7 @@ public class FrameSet extends Page{
           //buf.append(item.getID());
           //buf.append("\" src=\"");
           //buf.append(getFrameURI(item,modinfo));
-          buf.append("\" >\n");
+          buf.append(" >\n");
         }
       }
 
