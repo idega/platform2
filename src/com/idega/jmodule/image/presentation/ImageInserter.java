@@ -80,6 +80,7 @@ public ImageInserter(Class WindowToOpen) {
 }
 
   public void main(ModuleInfo modinfo)throws Exception{
+      this.empty();
 
       iwb = getBundle(modinfo);
       iwrb = getResourceBundle(modinfo);
