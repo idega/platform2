@@ -85,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/01 15:39:37 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/02 09:31:37 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.101 $
+ * @version $Revision: 1.102 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -486,16 +486,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				 ownPaymentPosting,
 				 doublePaymentPosting,
 				 orderId);
-		/*
-			final String [][] parameters =
-			{{ACTION_KEY, ACTION_SHOW_COMPILATION + "" },
-			{ INVOICE_COMPILATION_KEY, invoiceCompilation + "" }};
-			final Table table = getConfirmTable
-			(INVOICE_RECORD_CREATED_KEY,
-			INVOICE_RECORD_CREATED_DEFAULT, parameters);
-			add (createMainTable (CREATE_INVOICE_RECORD_KEY,
-			CREATE_INVOICE_RECORD_DEFAULT, table));
-		*/
 		showCompilation (context);
 	}
 	
@@ -569,14 +559,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		record.store ();
 		
 		//render
-		final String [][] parameters =
-				{{ACTION_KEY, ACTION_SHOW_COMPILATION + "" },
-				 { INVOICE_COMPILATION_KEY, record.getInvoiceHeaderId () + ""}};
-		final Table table = getConfirmTable
-				(INVOICE_RECORD_UPDATED_KEY,
-				 INVOICE_RECORD_UPDATED_DEFAULT, parameters);
-		add (createMainTable (EDIT_INVOICE_RECORD_KEY,
-													EDIT_INVOICE_RECORD_DEFAULT, table));
+		showCompilation (context);
 	}
 	
 	private void showNewRecordForm (final IWContext context)
@@ -667,7 +650,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 								(PLACEMENT_START_PERIOD_KEY));
 		inputs.put (PLACEMENT_END_PERIOD_KEY, getStyledInput
 								(PLACEMENT_END_PERIOD_KEY));
-		inputs.put (NOTE_KEY, getStyledInput (NOTE_KEY));
+		inputs.put (NOTE_KEY, getStyledWideInput (NOTE_KEY));
 		inputs.put (ACTION_KEY, getSubmitButton
 								(ACTION_NEW_RECORD, CREATE_INVOICE_RECORD_KEY,
 								 CREATE_INVOICE_RECORD_DEFAULT));
@@ -1047,10 +1030,19 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 			e.printStackTrace ();
 		}
 		final String regSpecTypeName = regSpecType.getRegSpecType ();
-		addPostingsToNewRecordForm(context, inputs, header, provider, category, regulationsBusiness, schoolType, postingBusiness, paymentPostings, regSpecTypeName);
+		addPostingsToNewRecordForm
+				(context, inputs, header, provider, category, regulationsBusiness,
+				 schoolType, postingBusiness, paymentPostings, regSpecTypeName);
 	}
 	
-	private void addPostingsToNewRecordForm(final IWContext context, final java.util.Map inputs, final InvoiceHeader header, final Provider provider, final SchoolCategory category, final RegulationsBusiness regulationsBusiness, final SchoolType schoolType, final PostingBusiness postingBusiness, String[] paymentPostings, final String regSpecTypeName) throws RemoteException {
+	private void addPostingsToNewRecordForm
+		(final IWContext context, final java.util.Map inputs,
+		 final InvoiceHeader header, final Provider provider,
+		 final SchoolCategory category,
+		 final RegulationsBusiness regulationsBusiness,
+		 final SchoolType schoolType, final PostingBusiness postingBusiness,
+		 String[] paymentPostings, final String regSpecTypeName)
+		throws RemoteException {
 		String [] invoicePostings = paymentPostings;
 		try {
 			if (regSpecTypeName.equals ("cacc_reg_spec_type.check")) {
@@ -1363,6 +1355,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		}
 		addSmallHeader (table, col++, row, AMOUNT_KEY, AMOUNT_DEFAULT, ":");
 		addPresentation (table, presentationObjects, PIECE_AMOUNT_KEY, col,
+										 row);
+		addPresentation (table, presentationObjects, ORDER_ID_KEY, col,
 										 row);
 		addPresentation (table, presentationObjects, AMOUNT_KEY, col++, row);
 		col = 1; row++;
