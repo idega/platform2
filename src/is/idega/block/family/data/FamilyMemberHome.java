@@ -1,27 +1,15 @@
-/*
- * $Id: FamilyMemberHome.java,v 1.1 2004/09/01 11:14:49 joakim Exp $
- * Created on 31.8.2004
- *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- */
 package is.idega.block.family.data;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
 import javax.ejb.FinderException;
 import com.idega.data.IDOHome;
+import com.idega.data.IDORelationshipException;
 import com.idega.user.data.User;
 
 
 /**
- * 
- *  Last modified: $Date: 2004/09/01 11:14:49 $ by $Author: joakim $
- * 
- * @author <a href="mailto:Joakim@idega.com">Joakim</a>
- * @version $Revision: 1.1 $
+ * @author gimmi
  */
 public interface FamilyMemberHome extends IDOHome {
 
@@ -43,4 +31,9 @@ public interface FamilyMemberHome extends IDOHome {
 	 * @see is.idega.block.family.data.FamilyMemberBMPBean#ejbFindForUser
 	 */
 	public FamilyMember findForUser(User user) throws FinderException;
+
+	/**
+	 * @see is.idega.block.family.data.FamilyMemberBMPBean#ejbFindBySSN
+	 */
+	public FamilyMember findBySSN(String ssn) throws IDORelationshipException, FinderException;
 }
