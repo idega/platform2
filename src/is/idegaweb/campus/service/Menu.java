@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.10 2001/08/20 17:25:35 laddi Exp $
+ * $Id: Menu.java,v 1.11 2001/08/21 18:16:27 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -102,7 +102,7 @@ public class Menu extends JModuleObject{
     LinkTable.add(link2,1,row);
     row++;
 
-    if ( iAct == ACT2 ) {
+    /*if ( iAct == ACT2 ) {
       Image menu2_1 = iwrb.getImage("/menu/staff.gif",iWidth,iHeight);
       //Image menu2_1 = new Image("/pics/menu/staff.gif","Starfsfólk",iWidth,iHeight));
       Link link2_1 = new Link(menu2_1);
@@ -110,7 +110,7 @@ public class Menu extends JModuleObject{
         link2_1.addParameter(TextControl.strAction,"2");
       LinkTable.add(link2_1,1,row);
       row++;
-    }
+    }*/
 
     Image menu4 = (iAct != ACT4?iwrb.getImage("/menu/apartment.gif","/menu/apartment_o.gif","Appartment",iWidth,iHeight):iwrb.getImage("/menu/apartment1.gif",iWidth,iHeight));
     //Image menu4 = new Image(iAct != ACT4?"/pics/menu/apartment.gif":"/pics/menu/apartment1.gif","Íbúðir");
@@ -120,29 +120,14 @@ public class Menu extends JModuleObject{
     LinkTable.add(link4,1,row);
     row++;
 
-    if ( iAct == ACT4 ) {
-      Image menu4_1 = iwrb.getImage("/menu/complex.gif",iWidth,iHeight);
-      //Image menu4_1 = new Image("/pics/menu/complex.gif","Garðarnir",iWidth,iHeight));
-      Link link4_1 = new Link(menu4_1);
-        link4_1.setURL(getUrl(ACT4));
-      LinkTable.add(link4_1,1,row);
-      row++;
-
-      Image menu4_2 = iwrb.getImage("/menu/instructions.gif",iWidth,iHeight);
-      //Image menu4_2 = new Image("/pics/menu/instructions.gif","Leiðbeiningar",iWidth,iHeight));
-      Link link4_2 = new Link(menu4_2);
-        link4_2.setURL(getUrl(ACT8));
-        link4_2.addParameter(TextControl.strAction,"4");
-      LinkTable.add(link4_2,1,row);
-      row++;
-
+    /*if ( iAct == ACT4 ) {
       Image menu4_3 = iwrb.getImage("/menu/search.gif",iWidth,iHeight);
       //Image menu4_3 = new Image("/pics/menu/search.gif","Leit",iWidth,iHeight));
       Link link4_3 = new Link(menu4_3);
         link4_3.setURL("/main/search.jsp");
       LinkTable.add(link4_3,1,row);
       row++;
-    }
+    }*/
 
     Image menu3 = (iAct != ACT3?iwrb.getImage("/menu/apply.gif","/menu/apply_o.gif","Apply",iWidth,iHeight):iwrb.getImage("/menu/apply1.gif",iWidth,iHeight));
     //Image menu3 = new Image(iAct != ACT3?"/pics/menu/apply.gif":"/pics/menu/apply1.gif","Umsókn",iWidth,iHeight));
@@ -153,6 +138,14 @@ public class Menu extends JModuleObject{
     row++;
 
     if ( iAct == ACT3 ) {
+      Image menu4_2 = iwrb.getImage("/menu/instructions.gif",iWidth,iHeight);
+      //Image menu4_2 = new Image("/pics/menu/instructions.gif","Leiðbeiningar",iWidth,iHeight));
+      Link link4_2 = new Link(menu4_2);
+        link4_2.setURL(getUrl(ACT8));
+        link4_2.addParameter(TextControl.strAction,"4");
+      LinkTable.add(link4_2,1,row);
+      row++;
+
       Image menu3_1 = iwrb.getImage("/menu/rules.gif",iWidth,iHeight);
       //Image menu3_1 = new Image("/pics/menu/rules.gif","Úthlutunarreglur",iWidth,iHeight));
       Link link3_1 = new Link(menu3_1);
