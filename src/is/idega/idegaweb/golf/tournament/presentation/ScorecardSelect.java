@@ -12,6 +12,7 @@ import is.idega.idegaweb.golf.entity.TournamentType;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapRegister;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapRegisterWindow;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapUtility;
+import is.idega.idegaweb.golf.handicap.presentation.HandicapUtilityWindow;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 import is.idega.idegaweb.golf.tournament.business.TournamentController;
 
@@ -313,44 +314,41 @@ public class ScorecardSelect extends TournamentBlock {
 					myTable.addText(out_differ + "", 10, a + 2);
 				}
 
-				GolfWindow changeWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 350, 200);
-				changeWindow.setGolfClassToInstanciate(HandicapUtility.class);
 				Image changeImage = iwb.getImage("shared/change_tees.gif", iwrb.getLocalizedString("tournament.change_tees", "Change tees"), 11, 13);
 				changeImage.setAlignment("absmiddle");
-				Link changeLink = new Link(changeImage, changeWindow);
+				Link changeLink = new Link(changeImage);
+				changeLink.setWindowToOpen(HandicapUtilityWindow.class);
 				changeLink.addParameter(HandicapUtility.PARAMETER_SCORECARD_ID, scorecard_id);
 				changeLink.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_CHANGE_TEES);
 
-				GolfWindow changeWindow2 = new GolfWindow(iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"), 350, 200);
-				changeWindow2.setGolfClassToInstanciate(HandicapUtility.class);
 				Image changeImage2 = iwb.getImage("shared/correct_handicap.gif", iwrb.getLocalizedString("tournament.update_handicap", "Update handicap"), 11, 13);
 				changeImage2.setAlignment("absmiddle");
-				Link changeLink2 = new Link(changeImage2, changeWindow2);
+				Link changeLink2 = new Link(changeImage2);
+				changeLink2.setWindowToOpen(HandicapUtilityWindow.class);
 				changeLink2.addParameter(HandicapUtility.PARAMETER_MEMBER_ID, members[a].getMemberID());
 				changeLink2.addParameter(HandicapUtility.PARAMETER_TOURNAMENT_ID, members[a].getTournamentID());
 				changeLink2.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_UPDATE_HANDICAP);
 
-				GolfWindow positionWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_position", "Change position"), 350, 200);
-				positionWindow.setGolfClassToInstanciate(ChangePosition.class);
+
 				Image positionImage = iwb.getImage("shared/updown.gif", iwrb.getLocalizedString("tournament.change_position", "Change position"), 9, 13);
 				positionImage.setAlignment("absmiddle");
-				Link positionLink = new Link(positionImage, positionWindow);
+				Link positionLink = new Link(positionImage);
+				positionLink.setWindowToOpen(ChangePositionWindow.class);
 				positionLink.addParameter("member_id", members[a].getMemberID());
 				positionLink.addParameter("tournament_id", members[a].getTournamentID());
 
-				GolfWindow groupWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_group", "Change group"), 350, 200);
-				groupWindow.setGolfClassToInstanciate(ChangeGroup.class);
 				Image groupImage = iwb.getImage("shared/change_group.gif", iwrb.getLocalizedString("tournament.change_group", "Change group"), 11, 13);
 				groupImage.setAlignment("absmiddle");
-				Link groupLink = new Link(groupImage, groupWindow);
+				Link groupLink = new Link(groupImage);
+				groupLink.setWindowToOpen(ChangeGroupWindow.class);
 				groupLink.addParameter("member_id", members[a].getMemberID());
 				groupLink.addParameter("tournament_id", members[a].getTournamentID());
 
-				GolfWindow dismissWindow = new GolfWindow(iwrb.getLocalizedString("tournament.change_group", "Change group"), 350, 200);
-				dismissWindow.setGolfClassToInstanciate(Dismiss.class);
+
 				Image dismissImage = iwb.getImage("shared/red.gif", iwrb.getLocalizedString("tournament.dismiss", "Dismiss"), 10, 10);
 				dismissImage.setAlignment("absmiddle");
-				Link dismissLink = new Link(dismissImage, dismissWindow);
+				Link dismissLink = new Link(dismissImage);
+				dismissLink.setWindowToOpen(DismissWindow.class);
 				dismissLink.addParameter("member_id", members[a].getMemberID());
 				dismissLink.addParameter("tournament_id", members[a].getTournamentID());
 

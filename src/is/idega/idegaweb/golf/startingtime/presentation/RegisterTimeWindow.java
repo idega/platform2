@@ -3,6 +3,9 @@
  */
 package is.idega.idegaweb.golf.startingtime.presentation;
 
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
+
+import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.Window;
 
 
@@ -14,10 +17,10 @@ import com.idega.presentation.ui.Window;
  * @author 2004 - idega team - <br><a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson</a><br>
  * @version 1.0
  */
-public class RegisterTimeWindow extends Window {
+public class RegisterTimeWindow extends GolfWindow {
 
 	public RegisterTimeWindow() {
-		this("Gluggi",400,340);
+		this("Register Tee Time",400,340);
 	}
 	
 	public RegisterTimeWindow(String name, int width, int hight) {
@@ -25,14 +28,18 @@ public class RegisterTimeWindow extends Window {
 		
 		this.setScrollbar(true);
 		
-	    this.setMarginHeight(0);
-	    this.setMarginWidth(0);
-	    this.setLeftMargin(0);
-	    this.setTopMargin(0);
-	    this.setAlinkColor("black");
-	    this.setVlinkColor("black");
-	    this.setLinkColor("black");
+//	    this.setMarginHeight(0);
+//	    this.setMarginWidth(0);
+//	    this.setLeftMargin(0);
+//	    this.setTopMargin(0);
+//	    this.setAlinkColor("black");
+//	    this.setVlinkColor("black");
+//	    this.setLinkColor("black");
 	    
-		add(new RegisterTime());
+		setGolfClassToInstanciate(RegisterTime.class);
+	}
+	
+	public void main(IWContext iwc) {
+		this.setTitle(localize("start.register_tee_time","Register tee time"));
 	}
 }

@@ -237,7 +237,7 @@ public class RegisterTime extends GolfWindow {
               myTable.mergeCells(4, i+2, 6, i+2);
               myTable.add(getButton(new SubmitButton(localize("teetime.book","Book"))), 4, i+2);
               myForm.setMethod("post");
-              myTable.add(getButton(new SubmitButton(localize("teetime.cancel","Cancel"),closeParameterString, "true")), 4, i+2);
+              myTable.add(getButton(new CloseButton(localize("teetime.cancel","Cancel"))), 4, i+2);
               myTable.setAlignment(4, i+2, "right");
               frameTable.empty();
               frameTable.add(myTable);
@@ -353,34 +353,34 @@ public class RegisterTime extends GolfWindow {
 
                 if(fullGroup){
                   Text Error = (Text)templText.clone();
-                  Error.setText("Holl sem reynt var aÝ skr‡ ’ er fullt ");
+                  Error.setText(localize("start.group_is_full","Group is full"));//"Holl sem reynt var aÝ skr‡ ’ er fullt ");
                   frameTable.add(Text.getBreak());
                   frameTable.add(Error);
                 }
 
                 if(fullOwnerQuota){
                   Text ownerQuota = (Text)templText.clone();
-                  ownerQuota.setText("Hefur ekki rŽttindi til aaÝ skr‡ fleiri ‡ ßessum velli ’ dag");
+                  ownerQuota.setText(localize("start.ownerquota","Not allowed to register more golfers to day"));//"Hefur ekki rŽttindi til aÝ skr‡ fleiri ‡ ßessum velli ’ dag");
                   frameTable.add(Text.getBreak());
                   frameTable.add(ownerQuota);
 
                   Text comment = (Text)templText.clone();
-                  comment.setText("HafiÝ samband viÝ klœbbinn ef skr‡ ‡ fleiri");
+                  comment.setText(localize("start.contact_club_to_register","Contact the club to register"));//"HafiÝ samband viÝ klœbbinn ef skr‡ ‡ fleiri");
                   frameTable.add(Text.getBreak());
                   frameTable.add(comment);
                 } else if(fullMemberQuota){
                   Text memberQuota = (Text)templText.clone();
-                  memberQuota.setText("Ekki m‡ skr‡ sama mann oftar en einu sinni ‡ dag ’ netskr‡ningu");
+                  memberQuota.setText(localize("start.memberquota","Not allowed to register golfer again in public registration to day"));//"Ekki m‡ skr‡ sama mann oftar en einu sinni ‡ dag ’ netskr‡ningu");
                   frameTable.add(Text.getBreak());
                   frameTable.add(memberQuota);
 
                   Text comment = (Text)templText.clone();
-                  comment.setText("HafiÝ samband viÝ klœbbinn til aÝ kl‡ra ßessa skr‡ningu");
+                  comment.setText(localize("start.contact_club_to_register","Contact the club to register"));//"HafiÝ samband viÝ klœbbinn ef skr‡ ‡ fleiri");
                   frameTable.add(Text.getBreak());
                   frameTable.add(comment);
                 }else{
                   Text comment = (Text)templText.clone();
-                  comment.setText("ReyniÝ aftur eÝa hafiÝ samband viÝ klœbbinn");
+                  comment.setText(localize("start.try_again_or_contact_the_club","Try again or contact the club"));//"ReyniÝ aftur eÝa hafiÝ samband viÝ klœbbinn");
                   frameTable.add(Text.getBreak());
                   frameTable.add(comment);
                 }
@@ -397,7 +397,7 @@ public class RegisterTime extends GolfWindow {
 
           }else{
             Text comment = (Text)templText.clone();
-            comment.setText("Enginn skr‡Ýist");
+            comment.setText(localize("start.no_one_was_registered","No one was registered"));//"Enginn skr‡Ýist");
             frameTable.add(Text.getBreak());
             frameTable.add(comment);
 
@@ -408,14 +408,14 @@ public class RegisterTime extends GolfWindow {
           }
         }else{
           Text comment = (Text)templText.clone();
-          comment.setText("Enginn skr‡Ýist");
+          comment.setText(localize("start.no_one_was_registered","No one was registered"));//"Enginn skr‡Ýist");
           frameTable.add(Text.getBreak());
           frameTable.add(comment);
 
           //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
           frameTable.add(Text.getBreak());
           frameTable.add(Text.getBreak());
-          frameTable.add(new CloseButton(_iwrb.getLocalizedString("start.close_window","Close Window")));
+          frameTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("start.close_window","Close Window"))));
         }
     }
 
@@ -423,12 +423,12 @@ public class RegisterTime extends GolfWindow {
     {
             Table myTable = new Table(2, 3);
             if(inputErr){
-                    myTable.add(getErrorText("NauÝsynlegt er aÝ skr‡ eins marga og teknir voru fr‡"), 2, 1);
-                    myTable.add(new BackButton("Til baka"), 2, 3);
+                    myTable.add(getErrorText(localize("start.you_have_to_register_as_many_as_reserved","You have to register as many as reserved")),2,1);//"NauÝsynlegt er aÝ skr‡ eins marga og teknir voru fr‡"), 2, 1);
+                    myTable.add(getButton(new BackButton()), 2, 3);
             }
             else{
-                    myTable.add(getErrorText("Þetta holl er ßv’ miÝur fullt. GjšrÝu svo vel aÝ velja ßŽr nàjan t’ma"), 2, 1);
-                    myTable.add(new CloseButton(_iwrb.getLocalizedString("start.close_window","Close Window")), 2, 3);
+                    myTable.add(getErrorText(localize("start.group_is_full","This group is full. Choose another time.")),2,1);//"Þetta holl er ßv’ miÝur fullt. GjšrÝu svo vel aÝ velja ßŽr nàjan t’ma"), 2, 1);
+                    myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("start.close_window","Close Window"))), 2, 3);
             }
 
             myTable.setAlignment(2, 3, "center");
@@ -490,77 +490,56 @@ public class RegisterTime extends GolfWindow {
 
 
 
-public void main(IWContext modinfo) throws Exception {
-    super.main(modinfo);
-    this.setTitle(this._iwrb.getLocalizedString("start.register_tee_time","Register tee time"));
+   public void main(IWContext modinfo) throws Exception {
+  	  super.main(modinfo);
+      this.setTitle(this._iwrb.getLocalizedString("start.register_tee_time","Register tee time"));
 
-
-    //Check if the Close button was pressed
-    boolean doingClose=false;
-    String closeValue = modinfo.getParameter(closeParameterString);
-    String closeValueX = modinfo.getParameter(closeParameterString+".x");
-    if(closeValue!=null && closeValueX != null){
-      if(closeValue!=null){
-        if(!closeValue.equals("")){
-          doingClose=true;
-        }
-      }
-      else{
-        doingClose=true;
-      }
-
-    }
-
-    if(doingClose){
-      this.close();
-    }else{
-      boolean keepOn = true;
-      try{
-        String date = modinfo.getSession().getAttribute("date").toString();
-        //String field_id = modinfo.getSession().getAttribute("field_id").toString();
-        currentField = modinfo.getSession().getAttribute("field_id").toString();
-        currentUnion = modinfo.getSession().getAttribute("union_id").toString();
-
-
+	  boolean keepOn = true;
+	  try{
+	    String date = modinfo.getSession().getAttribute("date").toString();
+	    //String field_id = modinfo.getSession().getAttribute("field_id").toString();
+	    currentField = modinfo.getSession().getAttribute("field_id").toString();
+	    currentUnion = modinfo.getSession().getAttribute("union_id").toString();
+	
+	
         currentMember = Integer.toString(GolfLoginBusiness.getMember(modinfo).getID());
         currentDay = new IWTimestamp(date);
       }catch(Exception e){
         keepOn = false;
         this.noPermission();
       }
-
-
-
-  //    if(modinfo.getParameter(saveParameterString+".x") != null || modinfo.getParameter(saveParameterString) != null){
-  //      this.handleFormInfo(modinfo);
-  //    }
-
-      if(keepOn){
-          myForm.maintainParameter("secure_num");
-          myForm.maintainParameter("line");
-          int skraMargaInt = 0;
-          String skraMarga = modinfo.getParameter("skraMarga");
-
-          int line = Integer.parseInt( modinfo.getParameter("line"));
-          int check = business.countEntriesInGroup(line, currentField, currentDay);
-
-          if( check > 3){
-            setErroResponse(myForm, false);
-          }
-          else{
-            if( modinfo.getParameter("secure_num") != null){
-              handleFormInfo(modinfo);
-            }else{
-              fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
-              skraMargaInt = Integer.parseInt(skraMarga);
-              lineUpTable(skraMargaInt, modinfo);
-            }
-          }
-
-       }else{
-         this.noPermission();
-       }
-    }
-  } // method main() ends
+	
+	
+	
+	  //    if(modinfo.getParameter(saveParameterString+".x") != null || modinfo.getParameter(saveParameterString) != null){
+	  //      this.handleFormInfo(modinfo);
+	  //    }
+	
+	  if(keepOn){
+	      myForm.maintainParameter("secure_num");
+	      myForm.maintainParameter("line");
+	      int skraMargaInt = 0;
+	      String skraMarga = modinfo.getParameter("skraMarga");
+	
+	      int line = Integer.parseInt( modinfo.getParameter("line"));
+	      int check = business.countEntriesInGroup(line, currentField, currentDay);
+	
+	      if( check > 3){
+	        setErroResponse(myForm, false);
+	      }
+	      else{
+	        if( modinfo.getParameter("secure_num") != null){
+	          handleFormInfo(modinfo);
+	        }else{
+	          fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
+	          skraMargaInt = Integer.parseInt(skraMarga);
+	          lineUpTable(skraMargaInt, modinfo);
+	        }
+	      }
+	
+	   }else{
+	     this.noPermission();
+	   }
+    } // method main() ends
 
 } // Class ends
