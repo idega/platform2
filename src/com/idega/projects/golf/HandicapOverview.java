@@ -59,10 +59,15 @@ private Table myTable;
 private Form myForm = new Form();
 private boolean noIcons = false;
 
+private boolean setDifferentOverviewButton = false;
+private String getOverviewButtonParameterName, getOverviewButtonParameterValue;
+
 private boolean isTilPicture = false;
 private boolean isFraPicture = false;
 private String tilPictureUrlInBundle;
 private String fraPictureUrlInBundle;
+private String getOverViewParameterName;
+private String getOverViewParameterValue;
 
 private String headerColor = "#336660";
 private String headerTextColor = "#FFFFFF";
@@ -590,8 +595,8 @@ private Link textLink = new Link();
 
 			SubmitButton skoda = new SubmitButton(iwrb.getLocalizedString("handicap.get_overview","Get overview"));
 				skoda.setAttribute("style","font-size: 8pt");
-        if ( noIcons ) {
-          skoda = new SubmitButton(iwrb.getImage(getOverviewButtonImageUrlInBundle));
+        if ( setDifferentOverviewButton ) {
+          skoda = new SubmitButton(iwrb.getImage(getOverviewButtonImageUrlInBundle), getOverviewButtonParameterName, getOverviewButtonParameterValue);
         }
                                 Table dummyTable = new Table(12,1);
                                 dummyTable.setCellpadding(0);
@@ -796,9 +801,14 @@ private Link textLink = new Link();
       this.viewScoreIceonUrlInBundle = viewScoreIconUrlInBundle;
     }
 
-    public void setGetOverviewButtonImageUrl(String getOverviewButtonImageUrlInBundle){
+    public void setGetOverviewButton(String getOverviewButtonImageUrlInBundle,
+      String getOverviewButtonParameterName, String getOverviewButtonParameterValue){
+      setDifferentOverviewButton = true;
       this.getOverviewButtonImageUrlInBundle = getOverviewButtonImageUrlInBundle;
+      this.getOverviewButtonParameterName = getOverviewButtonParameterName;
+      this.getOverviewButtonParameterValue = getOverviewButtonParameterValue;
     }
+
 
     public void setFraPicture(String fraPictureUrlInBundle){
       isFraPicture = true;
