@@ -13,7 +13,7 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
@@ -172,12 +172,11 @@ public abstract class PaymentThreadSchool extends BillingThread{
 		PostingDetail postingDetail = null;
 		
 		try {
-			//TODO (JJ) change this to RegularPaymentBusiness when Roar is done with that
-			Iterator regularPaymentIter = getRegularInvoiceBusiness().findRegularInvoicesForPeriode(startPeriod.getDate(), endPeriod.getDate()).iterator();
+			Iterator regularPaymentIter = getRegularPaymentBusiness().findRegularPaymentsForPeriode(startPeriod.getDate(), endPeriod.getDate()).iterator();
 			//Go through all the regular payments
 			while(regularPaymentIter.hasNext()){
 				//TODO (JJ) change this to RegularPaymentEntry when Roar is done with that
-				RegularInvoiceEntry regularPaymentEntry = (RegularInvoiceEntry)regularPaymentIter.next();
+				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry)regularPaymentIter.next();
 				postingDetail = new PostingDetail(regularPaymentEntry);
 				createPaymentRecord(postingDetail,regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting());
 			}

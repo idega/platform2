@@ -82,9 +82,9 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		}
 		
 		GenericButton saveButton = this.getSaveButton();
-		GenericButton cancelButton = this.getCancelButton();
+//		GenericButton cancelButton = this.getCancelButton();
 		form.add(saveButton);
-		form.add(cancelButton);
+//		form.add(cancelButton);
 	}
 	
 	/**

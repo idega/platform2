@@ -1844,4 +1844,13 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		} catch (Exception e) {}
 		return l;
 	}
+	
+	public Collection findAllSchoolsByCategory(String categoryString){
+		try {
+			SchoolCategory schoolCategory = getSchoolCategoryHome().findByLocalizedKey(categoryString);
+			return getSchoolHome().findAllByCategory(schoolCategory);
+		} catch (Exception e) {
+			return new ArrayList();
+		}
+	}
 }

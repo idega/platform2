@@ -313,6 +313,10 @@ public abstract class BillingThread extends Thread{
 		return (RegularInvoiceBusiness) IBOLookup.getServiceInstance(iwc, RegularInvoiceBusiness.class);
 	}
 
+	protected RegularPaymentBusiness getRegularPaymentBusiness() throws RemoteException {
+		return (RegularPaymentBusiness) IBOLookup.getServiceInstance(iwc, RegularPaymentBusiness.class);
+	}
+
 	//Getters to different commonly used objects
 	protected InvoiceHeaderHome getInvoiceHeaderHome() throws RemoteException {
 		return (InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class);

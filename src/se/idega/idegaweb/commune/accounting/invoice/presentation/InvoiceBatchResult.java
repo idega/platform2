@@ -21,7 +21,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -71,8 +70,8 @@ public class InvoiceBatchResult extends AccountingBlock{
 		
 			form.add(table);
 			
-			GenericButton cancelButton = this.getCancelButton();
-			form.add(cancelButton);
+//			GenericButton cancelButton = this.getCancelButton();
+//			form.add(cancelButton);
 			
 			int row = 1;
 			BatchRunErrorHome batchRunErrorHome = (BatchRunErrorHome)IDOLookup.getHome(BatchRunError.class);
@@ -116,6 +115,7 @@ public class InvoiceBatchResult extends AccountingBlock{
 	}
 	
 	/**
+	 * Probably remove to handle the navigation outside this presentation block
 	 * @param iwc
 	 */
 	private void handleAction(IWContext iwc) {
@@ -129,20 +129,13 @@ public class InvoiceBatchResult extends AccountingBlock{
 	 */
 	private void handleSave(IWContext iwc) {
 		User user = iwc.getCurrentUser();
+		//Not used...
 		if(user!=null){
 			add("Save pressed for user: "+user.getName());
 		} else {
 			add("Need to log in again.");
 		}
 	}
-
-//	public PostingBusinessHome getPostingBusinessHome() throws RemoteException {
-//		return (PostingBusinessHome) IDOLookup.getHome(PostingBusiness.class);
-//	}
-
-//	public InvoiceBusinessHome getInvoiceBusinessHome() throws RemoteException {
-//		return (InvoiceBusinessHome) IDOLookup.getHome(InvoiceBusiness.class);
-//	}
 
 	protected PostingBusiness getPostingBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (PostingBusiness) IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
