@@ -21,6 +21,8 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.user.data.User;
+import com.idega.util.text.Name;
 
 /**
  * @author palli
@@ -89,7 +91,10 @@ public class JournalLogList extends AccountingBlock {
 					JournalLog log = (JournalLog) iter.next();
 					list.add(localize(log.getLocalizedEventKey(),log.getLocalizedEventKey()));
 					list.add(log.getEventDate().toString());
-					list.add(log.getUser().getNameLastFirst());
+					
+					User user = log.getUser();
+					Name name = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
+					list.add(name.getName(iwc.getApplicationSettings().getDefaultLocale()));
 				}
 			}
 		}

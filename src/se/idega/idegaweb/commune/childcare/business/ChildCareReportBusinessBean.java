@@ -32,6 +32,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 
 /**
  * @author laddi
@@ -134,7 +135,8 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 						}
 
 						data.addData(personalID, PersonalIDFormatter.format(user.getPersonalID(), currentLocale));
-						data.addData(name, user.getNameLastFirst(true));
+						Name userName = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
+						data.addData(name, userName.getName(getIWMainApplication().getSettings().getDefaultLocale(), true));
 
 						if (homeAddress != null) {
 							data.addData(address, homeAddress.getStreetAddress());
@@ -296,7 +298,8 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 						}
 
 						data.addData(personalID, PersonalIDFormatter.format(user.getPersonalID(), currentLocale));
-						data.addData(name, user.getNameLastFirst(true));
+						Name userName = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
+						data.addData(name, userName.getName(getIWMainApplication().getSettings().getDefaultLocale(), true));
 
 						if (homeAddress != null) {
 							data.addData(address, homeAddress.getStreetAddress());

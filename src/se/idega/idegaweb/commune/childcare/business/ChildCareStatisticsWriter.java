@@ -39,6 +39,7 @@ import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 
 /**
  * @author laddi
@@ -162,7 +163,8 @@ public class ChildCareStatisticsWriter {
 					phone = getCommuneUserBusiness(iwc).getChildHomePhone(child);
 		
 					row.createCell((short)cellColumn++).setCellValue(provider.getSchoolName());
-					row.createCell((short)cellColumn++).setCellValue(child.getNameLastFirst(true));
+					Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+					row.createCell((short)cellColumn++).setCellValue(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true));
 					row.createCell((short)cellColumn++).setCellValue(PersonalIDFormatter.format(child.getPersonalID(), locale));
 		
 					if (address != null) {

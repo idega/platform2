@@ -51,6 +51,7 @@ import com.idega.util.Age;
 import com.idega.util.CalendarMonth;
 import com.idega.util.IWTimestamp;
 import com.idega.util.URLUtil;
+import com.idega.util.text.Name;
 
 /*
  * HouseHoldViewer contains a search used to find citizens and their family
@@ -262,7 +263,8 @@ public class HouseHoldViewer extends AccountingBlock {
 		for (Iterator iter = users.iterator(); iter.hasNext(); ) {
 			User user = (User) iter.next();
 			col = 1;
-			table.add(getText(user.getNameLastFirst()));
+			Name name = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
+			table.add(getText(name.getName(iwc.getApplicationSettings().getDefaultLocale())));
 			table.add(getText(user.getPersonalID()));
 			Address address = getUserAddress(iwc, user);
 			if (address != null) {

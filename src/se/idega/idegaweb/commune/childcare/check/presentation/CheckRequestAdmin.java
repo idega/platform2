@@ -30,6 +30,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.user.data.User;
 import com.idega.util.IWCalendar;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 
 /**
  * Title:
@@ -260,7 +261,8 @@ public class CheckRequestAdmin extends CommuneBlock {
 				int count = 1;
 				while (iter2.hasNext()) {
 					User parent = (User) iter2.next();
-					checkInfoTable.add(getSmallText(parent.getNameLastFirst(true)), 2, ++row);
+					Name name = new Name(parent.getFirstName(), parent.getMiddleName(), parent.getLastName());
+					checkInfoTable.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), 2, ++row);
 					checkInfoTable.add(getSmallText(" - " + PersonalIDFormatter.format(parent.getPersonalID(), iwc.getCurrentLocale())), 2, row);
 					if (check != null && getWorkSituation(check.getWorkSituation1()) != null) {
 						if (count == 1 && getWorkSituation(check.getWorkSituation1()) != null)

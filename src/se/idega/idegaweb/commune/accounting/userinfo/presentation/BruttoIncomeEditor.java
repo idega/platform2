@@ -32,6 +32,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.Name;
 /**
  * BruttoIncomeEditor used to create and list brutto income records for user
  * @author aron 
@@ -140,14 +141,14 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		appForm.setLocalizedTitle(localizePrefix + "title", "Brutto income registration");
 		//mainTable.setWidth(this.getWidth());
 		add(appForm);
-		presentateHeader();
+		presentateHeader(iwc);
 		if (isCreateView(iwc))
 			presentateCreateRecord();
 		else
 			presentateList(iwc);
 		presentateButtons(iwc);
 	}
-	private void presentateHeader() {
+	private void presentateHeader(IWContext iwc) {
 		// set up user search if no user selected
 		if (user == null) {
 			UserSearcher searcher = new UserSearcher();
@@ -156,7 +157,7 @@ public class BruttoIncomeEditor extends AccountingBlock {
 			appForm.setSearchPanel(searcher);
 		}
 		else {
-			presentateUserHeader();
+			presentateUserHeader(iwc);
 		}
 	}
 	protected boolean isCreateView(IWContext iwc) {
@@ -190,7 +191,7 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		}
 		appForm.setButtonPanel(bPanel);
 	}
-	private void presentateUserHeader() {
+	private void presentateUserHeader(IWContext iwc) {
 		Table table = new Table();
 		//table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(getCellpadding());
@@ -201,7 +202,8 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		//table.setColor(1, 2, getHeaderColor());
 		if (user != null) {
 			table.add(getText(user.getPersonalID()), 2, 1);
-			table.add(getText(user.getNameLastFirst()), 2, 2);
+			Name name = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
+			table.add(getText(name.getName(iwc.getApplicationSettings().getDefaultLocale())), 2, 2);
 		}
 		appForm.setSearchPanel(table);
 	}
@@ -229,7 +231,8 @@ public class BruttoIncomeEditor extends AccountingBlock {
 						table.add(getText(tf.format(income.getCreated())));
 						try {
 							User creator = income.getCreator ();
-							table.add(getText(creator.getNameLastFirst()));
+							Name name = new Name(creator.getFirstName(), creator.getMiddleName(), creator.getLastName());
+							table.add(getText(name.getName(iwc.getApplicationSettings().getDefaultLocale())));
 						}	catch (Exception e) {
 							table.skip();
 							e.printStackTrace();
