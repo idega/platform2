@@ -510,7 +510,7 @@ public class HouseHoldViewer extends AccountingBlock {
 
 	private String getButtonOnClickForPage(IWContext iwc, int pageID, String userParameterName) {
 		try {
-			URLUtil url = new URLUtil(getBuilderService(iwc).getPageURI(pageID), true);
+			URLUtil url = new URLUtil(getBuilderService(iwc).getPageURI(pageID), false);
 			if (userParameterName != null)
 				url.addParameter(userParameterName, "'+this.form.usr_drp.value");
 			return "javascript:window.location='" + url.toString() + ";return false;";
