@@ -145,6 +145,33 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	}
 
 	/**
+	 * Gets # of placements for the given input parameters
+	 * @param schoolID
+	 * @param period
+	 * @return
+	 * @throws FinderException
+	 * @throws IDOException
+	 */
+	public int ejbHomeGetPlacementCountForSchoolAndPeriod(int schoolID, Date period) throws FinderException, IDOException {
+		IWTimestamp start = new IWTimestamp(period);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+
+		IDOQuery sql = idoQuery();
+		sql.appendSelect().append("count (distinct m.ic_user_id) from " + getEntityName() + " p, sch_school_class c, sch_class_member m, sch_school s");
+		sql.appendWhere("p.school_id = c.school_id");
+		sql.appendAnd().append("p.school_id = s.sch_school_id");
+		sql.appendAnd().append("c.sch_school_class_id = m.sch_school_class_id");
+		sql.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append(COLUMN_PERIOD).appendLessThanSign().append(end.getDate());
+		sql.appendAndEquals("p." + COLUMN_SCHOOL_ID, schoolID);
+		return idoGetNumberOfRecords(sql);
+	}
+
+
+	/**
 	 * Finds a collection of Payment headers with a certain status
 	 * 
 	 * @param schoolCategoryPK SchoolCategory primaryKey
@@ -252,4 +279,32 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		
 		return idoFindPKsBySQL(sql.toString());
 	}
+
+	/**
+	 * Finds a collection of distinct Payment headers given the input parameters
+	 * 
+	 * @param schoolCategory
+	 * @param period
+	 * @return
+	 * @throws IDOLookupException
+	 * @throws EJBException
+	 * @throws FinderException
+	 */
+	public Collection ejbFindBySchoolCategoryAndPeriod(String sc, Date period) throws IDOLookupException, EJBException, FinderException {
+		IWTimestamp start = new IWTimestamp(period);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+
+		IDOQuery sql = idoQuery();
+		sql.append("select * from "+ ENTITY_NAME + " ph, " + SchoolBMPBean.SCHOOL + " s");
+		sql.appendWhere("ph." + COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append("ph." + COLUMN_PERIOD).appendLessThanSign().append(end.getDate());
+		sql.appendAndEqualsQuoted("ph." + COLUMN_SCHOOL_CATEGORY_ID, sc);
+		sql.appendAndEquals("ph." + COLUMN_SCHOOL_ID, "s.sch_school_id order by s.sch_school_id");
+		return idoFindPKsBySQL(sql.toString());
+	}
+
+
 }

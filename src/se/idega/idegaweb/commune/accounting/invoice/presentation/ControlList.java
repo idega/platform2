@@ -1,4 +1,4 @@
-/* $Id: ControlList.java,v 1.6 2003/11/01 12:44:20 laddi Exp $
+/* $Id: ControlList.java,v 1.7 2003/12/19 01:35:46 kjell Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -22,6 +22,7 @@ import com.idega.presentation.Image;
 import com.idega.idegaweb.IWMainApplication;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
@@ -42,7 +43,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.ControlListExceptio
  * Amount paid this period
  * The list can also be presented as an Excel sheet
  * 
- * $Id: ControlList.java,v 1.6 2003/11/01 12:44:20 laddi Exp $ 
+ * $Id: ControlList.java,v 1.7 2003/12/19 01:35:46 kjell Exp $ 
  * <p>
  *
  * @author <a href="http://www.lindman.se">Kelly Lindman</a>
@@ -54,6 +55,7 @@ public class ControlList extends AccountingBlock {
 	
 	private final static String KEY_PREFIX = "batch_reg_list."; 
 		
+	public final static String KEY_HEADER_OPERATION =  KEY_PREFIX + "header_operation";
 	public final static String KEY_TITLE = KEY_PREFIX + "title";
 	public final static String KEY_COMPARE_PERIOD = KEY_PREFIX + "compare_period";
 	public final static String KEY_WITH_PERIOD = KEY_PREFIX + "with_period";
@@ -138,16 +140,17 @@ public class ControlList extends AccountingBlock {
 	private ListTable getControlList(IWContext iwc, Date compareMonth, Date withMonth) {
 
 		ListTable list = new ListTable(this, 5);
-
 		list.setLocalizedHeader(KEY_PROVIDER, "Provider", 1);
 		list.setLocalizedHeader(KEY_NUM_INDIVIDUALS_PREL, "No of individuals Prel.", 2);
 		list.setLocalizedHeader(KEY_LAST_MONTH, "Previous", 3);
 		list.setLocalizedHeader(KEY_TOTAL_AMOUNT_PREL, "Total amount Prel.", 4);
 		list.setLocalizedHeader(KEY_LAST_MONTH, "Previous", 5);
 
+
 		Collection collection = null;
 		try {
-			collection = getControlListBusiness(iwc).getControlListValues(compareMonth, withMonth);
+			String operationalField = getSession().getOperationalField();
+			collection = getControlListBusiness(iwc).getControlListValues(compareMonth, withMonth, operationalField);
 		} catch (RemoteException e) {
 		} catch (ControlListException e) {
 			_errorMessage = localize(e.getTextKey(), e.getDefaultText());
@@ -175,11 +178,13 @@ public class ControlList extends AccountingBlock {
 	 */
 	private Table getSearchPanel(IWContext iwc) {
 		Table table = new Table();
-		table.add(getLocalizedLabel(KEY_COMPARE_PERIOD, "Compare month"), 1, 1);
-		table.add(getTextInput(PARAMETER_SEARCH_PERIOD_COMPARE, getParameter(iwc, PARAMETER_SEARCH_PERIOD_COMPARE), 60), 2, 1);
-		table.add(getLocalizedLabel(KEY_WITH_PERIOD, "with month"), 3, 1);
-		table.add(getTextInput(PARAMETER_SEARCH_PERIOD_CURRENT,  getParameter(iwc, PARAMETER_SEARCH_PERIOD_CURRENT), 60), 4, 1);
-		table.add(getLocalizedButton(PARAMETER_SEARCH, KEY_SEARCH, "Search"), 5, 1);
+		table.add(getLocalizedLabel(KEY_HEADER_OPERATION, "Huvudverksamhet"), 1, 1);
+		table.add(new OperationalFieldsMenu(), 2, 1);
+		table.add(getLocalizedLabel(KEY_COMPARE_PERIOD, "Compare month"), 1, 2);
+		table.add(getTextInput(PARAMETER_SEARCH_PERIOD_COMPARE, getParameter(iwc, PARAMETER_SEARCH_PERIOD_COMPARE), 60), 2, 2);
+		table.add(getLocalizedLabel(KEY_WITH_PERIOD, "with month"), 3, 2);
+		table.add(getTextInput(PARAMETER_SEARCH_PERIOD_CURRENT,  getParameter(iwc, PARAMETER_SEARCH_PERIOD_CURRENT), 60), 4, 2);
+		table.add(getLocalizedButton(PARAMETER_SEARCH, KEY_SEARCH, "Search"), 5, 2);
 		return table;
 	}	
 
@@ -192,10 +197,12 @@ public class ControlList extends AccountingBlock {
 		ButtonPanel bp = new ButtonPanel(this);
 		Link excelLink = null;
 		try {
+			String operationalField = getSession().getOperationalField();
 			excelLink = getXLSLink(ControlListWriter.class, 
 					getBundle().getImage("shared/xls.gif"),
 			 		compareDate,
-			 		withDate 
+			 		withDate, 
+			 		operationalField
 			);
 		} catch (RemoteException e) {}
 		bp.add(excelLink);
@@ -203,12 +210,13 @@ public class ControlList extends AccountingBlock {
 		return bp;
 	}
 	
-	private Link getXLSLink(Class classToUse, Image image, Date compareDate, Date withDate) throws RemoteException {
+	private Link getXLSLink(Class classToUse, Image image, Date compareDate, Date withDate, String opField) throws RemoteException {
 		Link link = new Link(image);
 		link.setWindow(getFileWindow());
 		link.addParameter(ControlListWriter.prmPrintType, ControlListWriter.XLS);
 		link.addParameter(ControlListWriter.compareDate, compareDate.toString());
 		link.addParameter(ControlListWriter.withDate, withDate.toString());
+		link.addParameter(ControlListWriter.opField, opField);
 		link.addParameter(ControlListWriter.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(classToUse));
 		return link;
 	}
