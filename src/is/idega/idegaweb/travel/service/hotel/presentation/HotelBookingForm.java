@@ -1512,7 +1512,7 @@ public class HotelBookingForm extends BookingForm {
 	    int iAvailable;
 	    if (totalRooms > 0) {
 		    iAvailable = totalRooms - heildarbokanir;
-		    System.out.println("iAvail = totalRooms - heildarbokanir ....."+iAvailable+" = "+totalRooms+" - "+heildarbokanir);
+//		    System.out.println("iAvail = totalRooms - heildarbokanir ....."+iAvailable+" = "+totalRooms+" - "+heildarbokanir);
 	//	    iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, null );
 			  if (iAvailable <= 0 ) {
 		    	tooMany = true;

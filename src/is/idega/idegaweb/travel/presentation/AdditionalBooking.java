@@ -107,8 +107,14 @@ public class AdditionalBooking extends TravelWindow {
 
       List addresses = product.getDepartureAddresses(true);
       Timeframe[] timeframes = product.getTimeframes();
-      int iAddressId = ((TravelAddress) addresses.get(0)).getID();
-      int iTimeframeId = timeframe.getID();
+      int iAddressId = -1;
+      if (addresses.size() > 0) {
+	      iAddressId = ((TravelAddress) addresses.get(0)).getID();
+      }
+      int iTimeframeId = -1;
+      if (timeframe != null) {
+      	iTimeframeId = timeframe.getID();
+      }
       if (addId != null) iAddressId = Integer.parseInt(addId);
       if (tfrId != null) iTimeframeId = Integer.parseInt(tfrId);
 
@@ -180,8 +186,10 @@ public class AdditionalBooking extends TravelWindow {
       ++row;
       table.add(tframeText, 1, row);
       table.add(tFrames, 2,row);
-    }else {
+    }else if (timeframes.length == 1){
       table.add(new HiddenInput(this.parameterTimeframeId, Integer.toString(timeframes[0].getID())));
+    }else if (timeframes.length < 1){
+      table.add(new HiddenInput(this.parameterTimeframeId, "-1"));
     }
 
 
@@ -236,8 +244,13 @@ public class AdditionalBooking extends TravelWindow {
       String many;
       int iMany = 0;
       int iHotelId;
+      
+      int iTimeframeId = -1;
+      if (timeframe != null) {
+      	iTimeframeId = timeframe.getID();	
+      }
 
-      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(service.getID(), timeframe.getID(), Integer.parseInt(addressId), false);
+      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(service.getID(), iTimeframeId, Integer.parseInt(addressId), false);
       int bookingId;
 
       try {

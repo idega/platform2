@@ -744,51 +744,14 @@ public class Booking extends TravelManager {
         }
         else {
            try {
-//           if (bf.getIsDayVisible(iwc)) {
           if (tsb.getIfDay(iwc, this.product, this.product.getTimeframes(),this.stamp, false, true)) {
             iCount = 0;
-//            if (this.travelAddress != null) {
               iBooked = getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) product.getPrimaryKey()).intValue(), this.stamp, null, -1, new int[]{}, travelAddressIds );
-//            }else {
-//              System.err.println("travelAddres == null");
-//            }
-//            iBooked = getBooker(iwc).getNumberOfBookings(((Integer) service.getPrimaryKey()).intValue(), this.stamp);
             iInquery = getInquirer(iwc).getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(), this.stamp, true);
 
-//            try {
 					    TravelStockroomBusiness tsb = super.getServiceHandler(iwc).getServiceBusiness( this.product);
 					    iCount = tsb.getMaxBookings( product, stamp);
 					    iMin = tsb.getMinBookings( product, stamp);
-/*
-              ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-              ServiceDay sDay = sDayHome.create();
-
-
-              sDay = sDay.getServiceDay(this.productId, stamp.getDayOfWeek());
-              if (sDay != null) {
-                iCount = sDay.getMax();
-                iMin = sDay.getMin();
-              }
-                if (tour != null) {
-                  if (iCount < 1) {
-                    iCount = tour.getTotalSeats();
-                  }
-                  if (iMin < 1) {
-                    iMin = tour.getMinimumSeats();
-                  }
-                }
-
-              }else if (tour != null ){
-                iCount = tour.getTotalSeats();
-                iMin = tour.getMinimumSeats();
-              }
-*/
-//            }catch (Exception e) {
-//              e.printStackTrace(System.err);
-//              if (tour != null) {
-//                iCount = tour.getTotalSeats();
-//              }
-//            }
 
             if (supplier != null) {
               if (iCount >0) {

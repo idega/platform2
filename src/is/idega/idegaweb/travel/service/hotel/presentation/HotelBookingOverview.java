@@ -59,13 +59,15 @@ public class HotelBookingOverview extends AbstractBookingOverview {
       Text nameText = (Text) theText.clone();
       nameText.setText(super.getTravelSessionManager(iwc).getIWResourceBundle().getLocalizedString("travel.product_name_sm","name of product"));
       Text countText = (Text) theText.clone();
-      countText.setText(super.getTravelSessionManager(iwc).getIWResourceBundle().getLocalizedString("travel.count_sm","count"));
+      countText.setText(super.getTravelSessionManager(iwc).getIWResourceBundle().getLocalizedString("travelrooms_sm","rooms"));
       Text assignedText = (Text) theText.clone();
       assignedText.setText(super.getTravelSessionManager(iwc).getIWResourceBundle().getLocalizedString("travel.assigned_small_sm","assigned"));
       Text inqText = (Text) theText.clone();
       inqText.setText(super.getTravelSessionManager(iwc).getIWResourceBundle().getLocalizedString("travel.inqueries_sm","inquiries"));
       Text bookedText = (Text) theText.clone();
       bookedText.setText(super.getTravelSessionManager(iwc).getIWResourceBundle().getLocalizedString("travel.booked_sm","booked"));
+      Text guestsText = (Text) theText.clone();
+      guestsText.setText(super.getTravelSessionManager(iwc).getIWResourceBundle().getLocalizedString("travel.guests_sm","guests"));
       Text availableText = (Text) theText.clone();
       availableText.setText(super.getTravelSessionManager(iwc).getIWResourceBundle().getLocalizedString("travel.available_small_sm","avail."));
 
@@ -76,6 +78,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
       Text assignedTextBold = (Text) theSmallBoldText.clone();
       Text inqTextBold = (Text) theSmallBoldText.clone();
       Text bookedTextBold = (Text) theSmallBoldText.clone();
+      Text guestsTextBold = (Text) theSmallBoldText.clone();
       Text availableTextBold = (Text) theSmallBoldText.clone();
 
       table.add(dateText,1,row);
@@ -84,8 +87,9 @@ public class HotelBookingOverview extends AbstractBookingOverview {
       table.add(assignedText,4,row);
       table.add(inqText,5,row);
       table.add(bookedText,6,row);
-      table.add(availableText,7,row);
-      table.add("&nbsp;",8,row);
+      table.add(guestsText, 7, row);
+      table.add(availableText,8,row);
+      table.add("&nbsp;",9,row);
 
       table.setRowColor(row, super.backgroundColor);
 
@@ -101,6 +105,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
 
       int iCount = 0;
       int iBooked =0;
+      int iGuests = 0;
       int iInquery=0;
       int iAvailable=0;
       int iAssigned=0;
@@ -163,7 +168,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
 //                }
                 
                 iBooked = getHotelBooker(iwc).getNumberOfReservedRooms(((Integer) service.getPrimaryKey()).intValue(), tempStamp, null);
-//                iBooked = getBooker(iwc).getBookingsTotalCount(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
+                iGuests = getBooker(iwc).getBookingsTotalCount(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
                 iAssigned = getAssigner(iwc).getNumberOfAssignedSeats(prod, tempStamp);
 
                 int resellerBookings = getBooker(iwc).getBookingsTotalCountByResellers(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
@@ -177,7 +182,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
               }else if (_reseller != null) {
                 iCount = _contract.getAlotment();
                 iBooked = getHotelBooker(iwc).getNumberOfReservedRooms(new int[]{_reseller.getID()},((Integer) service.getPrimaryKey()).intValue(),tempStamp);
-//                iBooked = getBooker(iwc).getBookingsTotalCountByReseller(_reseller.getID() ,((Integer) service.getPrimaryKey()).intValue(), tempStamp);
+                iGuests = getBooker(iwc).getBookingsTotalCountByReseller(_reseller.getID() ,((Integer) service.getPrimaryKey()).intValue(), tempStamp);
                 iAssigned = 0;
 
                 iInquery = getInquirer(iwc).getInquiryHome().getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(),tempStamp,_reseller.getID(), true);
@@ -196,6 +201,8 @@ public class HotelBookingOverview extends AbstractBookingOverview {
               inqTextBold.setText(Integer.toString(iInquery));
               bookedTextBold = (Text) theSmallBoldText.clone();
               bookedTextBold.setText(Integer.toString(iBooked));
+              guestsTextBold = (Text) theSmallBoldText.clone();
+              guestsTextBold.setText(Integer.toString(iGuests));
               availableTextBold = (Text) theSmallBoldText.clone();
               availableTextBold.setText(Integer.toString(iAvailable));
 
@@ -204,6 +211,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
               assignedTextBold.setFontColor(super.BLACK);
               inqTextBold.setFontColor(super.BLACK);
               bookedTextBold.setFontColor(super.BLACK);
+              guestsTextBold.setFontColor( super.BLACK);
               availableTextBold.setFontColor(super.BLACK);
 
               Link btnNanar = new Link(super.getTravelSessionManager(iwc).getIWResourceBundle().getImage("buttons/closer.gif"));
@@ -219,9 +227,10 @@ public class HotelBookingOverview extends AbstractBookingOverview {
               table.add(assignedTextBold,4,row);
               table.add(inqTextBold,5,row);
               table.add(bookedTextBold,6,row);
+              table.add(guestsTextBold, 7, row);
               if (iCount > 0) {
                 table.add(countTextBold,3,row);
-                table.add(availableTextBold,7,row);
+                table.add(availableTextBold,8,row);
               }
       /*
                                 table.setColor(1,row,theColor);
@@ -232,13 +241,13 @@ public class HotelBookingOverview extends AbstractBookingOverview {
                                 table.setColor(6,row,theColor);
                                 table.setColor(7,row,theColor);
       */
-              table.add(btnNanar,8,row);
+              table.add(btnNanar,9,row);
               if (_supplier != null) {
-                table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,8,row);
-                table.add(btnBook,8,row);
+                table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,9,row);
+                table.add(btnBook,9,row);
               } else if (_reseller != null) {
                 if (!getTravelStockroomBusiness(iwc).getIfExpired(_contract, tempStamp))
-                  table.add(btnBook,8,row);
+                  table.add(btnBook,9,row);
               }
               table.setRowColor(row,theColor);
               if (iInquery > 0) {
@@ -269,6 +278,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
       table.setWidth(5,CELL_WIDTH);
       table.setWidth(6,CELL_WIDTH);
       table.setWidth(7,CELL_WIDTH);
+      table.setWidth(8,CELL_WIDTH);
 
       table.setColumnAlignment(1,"left");
       table.setColumnAlignment(2,"left");
@@ -277,7 +287,8 @@ public class HotelBookingOverview extends AbstractBookingOverview {
       table.setColumnAlignment(5,"center");
       table.setColumnAlignment(6,"center");
       table.setColumnAlignment(7,"center");
-      table.setColumnAlignment(8,"right");
+      table.setColumnAlignment(8,"center");
+      table.setColumnAlignment(9,"right");
 
       return table;
   }
@@ -313,18 +324,20 @@ public class HotelBookingOverview extends AbstractBookingOverview {
     Text assignedTextBold = (Text) theSmallBoldText.clone();
     Text inqTextBold = (Text) theSmallBoldText.clone();
     Text bookedTextBold = (Text) theSmallBoldText.clone();
+    Text guestsTextBold = (Text) theSmallBoldText.clone();
     Text availableTextBold = (Text) theSmallBoldText.clone();
     Text hotelPickupTextBold = (Text) theSmallBoldText.clone();
 
     table.add(getHeaderText(_iwrb.getLocalizedString("travel.date","Date")), 1, row);
     table.add(getHeaderText(_iwrb.getLocalizedString("travel.product_name","Product name")), 2, row);
-    table.add(getHeaderText(_iwrb.getLocalizedString("travel.count","Count")), 3, row);
+    table.add(getHeaderText(_iwrb.getLocalizedString("travel.rooms","Rooms")), 3, row);
     table.add(getHeaderText(_iwrb.getLocalizedString("travel.assigned","Assigned")), 4, row);
     table.add(getHeaderText(_iwrb.getLocalizedString("travel.inquiries","Inquiries")), 5, row);
     table.add(getHeaderText(_iwrb.getLocalizedString("travel.booked","Booked")), 6, row);
-    table.add(getHeaderText(_iwrb.getLocalizedString("travel.available","Available")), 7, row);
-    table.add(getHeaderText(_iwrb.getLocalizedString("travel.booked_by","Booked by")), 8, row);
-    table.add(getHeaderText(Text.NON_BREAKING_SPACE), 9, row);
+    table.add(getHeaderText(_iwrb.getLocalizedString("travel.guests","Guests")), 7, row);
+    table.add(getHeaderText(_iwrb.getLocalizedString("travel.available","Available")), 8, row);
+    table.add(getHeaderText(_iwrb.getLocalizedString("travel.booked_by","Booked by")), 9, row);
+    table.add(getHeaderText(Text.NON_BREAKING_SPACE), 10, row);
 
 
     table.setRowColor(row, super.backgroundColor);
@@ -334,25 +347,29 @@ public class HotelBookingOverview extends AbstractBookingOverview {
     int assigned = 0;
     int iInqueries = 0;
     int booked = 0;
+    int guests = 0;
     int available = 0;
 
     if (_supplier != null) {
-      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+/*      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
       ServiceDay sDay = sDayHome.create();
       sDay = sDay.getServiceDay(((Integer) product.getPrimaryKey()).intValue(), stamp.getDayOfWeek());
       if (sDay != null) {
         seats = sDay.getMax();
-      }
+      }*/
+      Hotel hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(product.getPrimaryKey() );
+      seats = hotel.getNumberOfUnits();
       assigned = getAssigner(iwc).getNumberOfAssignedSeats(((Integer) product.getPrimaryKey()).intValue(), stamp);
       iInqueries = getInquirer(iwc).getInqueredSeats(product.getID() , stamp, true);
       booked = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);
+      guests = getHotelBooker(iwc).getBookingsTotalCount(product.getID() , stamp, null);
       available = seats - booked;
     }else if (_reseller != null) {
       seats = contract.getAlotment();
       assigned = 0;
       iInqueries = getInquirer(iwc).getInquiryHome().getInqueredSeats(product.getID() , stamp, _reseller.getID(), true);
 			booked = getHotelBooker(iwc).getNumberOfReservedRooms(new int[]{_reseller.getID()},product.getID() ,stamp);
-//      booked = getBooker(iwc).getBookingsTotalCountByReseller(_reseller.getID(),product.getID(), stamp);
+      guests = getBooker(iwc).getBookingsTotalCountByReseller(_reseller.getID(),product.getID(), stamp);
       available = seats - booked - iInqueries;
     }
 
@@ -364,6 +381,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
     assignedTextBold.setText(Integer.toString(assigned));
     inqTextBold.setText(Integer.toString(iInqueries));
     bookedTextBold.setText(Integer.toString(booked));
+    guestsTextBold.setText(Integer.toString(guests));
     dateTextBold.setFontColor(super.BLACK);
     nameTextBold.setFontColor(super.BLACK);
     countTextBold.setFontColor(super.BLACK);
@@ -371,6 +389,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
     assignedTextBold.setFontColor(super.BLACK);
     inqTextBold.setFontColor(super.BLACK);
     bookedTextBold.setFontColor(super.BLACK);
+    guestsTextBold.setFontColor(super.BLACK);
 
     ++row;
     table.add(dateTextBold,1,row);
@@ -379,9 +398,10 @@ public class HotelBookingOverview extends AbstractBookingOverview {
     table.add(assignedTextBold,4,row);
     table.add(inqTextBold,5,row);
     table.add(bookedTextBold,6,row);
+   	table.add(guestsTextBold, 7, row);
     if (seats > 0) {
       table.add(countTextBold,3,row);
-      table.add(availableTextBold,7,row);
+      table.add(availableTextBold,8,row);
     }
 
     table.setRowColor(row, super.GRAY);
@@ -389,6 +409,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
     Text Tname;
     Text Temail;
     Text TbookedBy = (Text) super.theSmallBoldText.clone();
+    Text Tguests;
     Text Tbooked;
 
     java.util.List emails;
@@ -527,15 +548,17 @@ public class HotelBookingOverview extends AbstractBookingOverview {
 
         Temail = (Text) super.theSmallBoldText.clone();
         Temail.setText(bookings[i].getEmail());
-        Tbooked = (Text) super.theSmallBoldText.clone();
-        Tbooked.setText(Integer.toString(bookings[i].getTotalCount() ));
+        Tguests = (Text) super.theSmallBoldText.clone();
+        Tguests.setText(Integer.toString(bookings[i].getTotalCount() ));
+        
 
         Tname.setFontColor(super.BLACK);
         Temail.setFontColor(super.BLACK);
-        Tbooked.setFontColor(super.BLACK);
+        Tguests.setFontColor(super.BLACK);
 
         TbookedBy = (Text) super.theSmallBoldText.clone();
         TbookedBy.setFontColor(super.BLACK);
+        
         if (bookings[i].getUserId() != -1) {
           try {
             bUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getUserId());
@@ -560,20 +583,20 @@ public class HotelBookingOverview extends AbstractBookingOverview {
         table.add(link, 1, row);
         table.add(Temail, 2, row);
         table.setAlignment(3, row, "left");
-        table.add(Tbooked, 6, row);
-        table.add(TbookedBy, 8, row);
+        table.add(Tguests, 7, row);
+        table.add(TbookedBy, 9, row);
 
         table.setRowColor(row, super.GRAY);
 
         link = (Link) changeLink.clone();
         link.addParameter(is.idega.idegaweb.travel.presentation.Booking.BookingAction,is.idega.idegaweb.travel.presentation.Booking.parameterUpdateBooking);
         link.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterBookingId,bookings[i].getID());
-        table.add(link, 9, row);
-        table.add(Text.NON_BREAKING_SPACE,9,row);
+        table.add(link, 10, row);
+        table.add(Text.NON_BREAKING_SPACE,10,row);
 
         link = (Link) deleteLink.clone();
         link.addParameter(BookingDeleterWindow.bookingIdParameter,bookings[i].getID());
-        table.add(link, 9, row);
+        table.add(link, 10, row);
 
       }
 
@@ -594,7 +617,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
 //      table.add(daLink, 1, tempRow);
 
     ++row;
-    table.mergeCells(1,row,6,row);
+    table.mergeCells(1,row,7,row);
     availableTextBold.setText(Integer.toString(available));
     availableTextBold.setFontColor(super.BLACK);
     Text Tavail = (Text) super.theSmallBoldText.clone();
@@ -602,7 +625,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
     Tavail.setText(_iwrb.getLocalizedString("travel.available_seats","Available seats"));
     if (seats > 0) {
       table.add(Tavail, 1, row);
-      table.add(availableTextBold, 7, row);
+      table.add(availableTextBold, 8, row);
     }
     table.setRowColor(row, super.GRAY);
 
@@ -615,14 +638,16 @@ public class HotelBookingOverview extends AbstractBookingOverview {
     table.setColumnAlignment(5,"center");
     table.setColumnAlignment(6,"center");
     table.setColumnAlignment(7,"center");
-    table.setColumnAlignment(8,"left");
+    table.setColumnAlignment(8,"center");
+    table.setColumnAlignment(9,"left");
 
     table.setWidth(3,CELL_WIDTH);
     table.setWidth(4,CELL_WIDTH);
     table.setWidth(5,CELL_WIDTH);
     table.setWidth(6,CELL_WIDTH);
     table.setWidth(7,CELL_WIDTH);
-    table.setWidth(9,"140");
+    table.setWidth(8,CELL_WIDTH);
+    table.setWidth(10,"140");
 
     return table;
   }
