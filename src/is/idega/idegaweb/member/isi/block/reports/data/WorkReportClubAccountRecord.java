@@ -7,7 +7,6 @@ public interface WorkReportClubAccountRecord extends com.idega.data.IDOEntity
  public float getAmount();
  public int getReportId();
  public int getWorkReportGroupId();
- public void initializeAttributes();
  public void setAccountKey(is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKey p0);
  public void setAccountKeyId(int p0);
  public void setAmount(float p0);

@@ -34,6 +34,13 @@ public java.util.Collection findAllRecordsByWorkReportIdAndWorkReportGroupIdAndW
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public WorkReportClubAccountRecord findRecordByWorkReportIdAndWorkReportGroupIdAndWorkReportAccountKeyId(int p0,int p1,int p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((WorkReportClubAccountRecordBMPBean)entity).ejbFindRecordByWorkReportIdAndWorkReportGroupIdAndWorkReportAccountKeyId(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public WorkReportClubAccountRecord findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (WorkReportClubAccountRecord) super.findByPrimaryKeyIDO(pk);
  }

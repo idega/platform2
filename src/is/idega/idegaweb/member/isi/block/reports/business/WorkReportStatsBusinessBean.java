@@ -176,7 +176,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_POSTALCODE = "postalcode";
 	private static final String FIELD_NAME_EMAIL = "email";
 	
-	
 	/**
 	 *  
 	 */
@@ -2432,6 +2431,191 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		return reportCollection;
 	}
 	
+	
+	/*
+	 * Report B12.4.1 and B12.4.2 of the ISI Specs rolled into one report.
+	 */
+	public ReportableCollection getYearlyAccountsStatisticComparisonForClubs(final Integer year
+																			 , final Integer comparingYear
+																			 ,Collection regionalUnionsFilter
+																			 ,Collection clubsFilter
+																			 ,Collection leaguesFilter
+																			 ,String theClubType) throws RemoteException{
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		
+		//PARAMETERS and FIELDS
+		//		Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"workreportreport",
+				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
+				"label",
+				IWTimestamp.getTimestampRightNow().toGMTString());
+		
+		//PARAMETERS and FIELDS
+		ReportableField leagueString = new ReportableField(FIELD_NAME_LEAGUE_NAME, String.class);
+		leagueString.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_LEAGUE_INFO, "League"), currentLocale);
+		reportCollection.addField(leagueString);
+		
+		ReportableField clubName = new ReportableField(FIELD_NAME_CLUB_NAME, String.class);
+		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
+		reportCollection.addField(clubName);
+
+		ReportableField regionalUnionAbbreviation = new ReportableField(FIELD_NAME_REGIONAL_UNION_NAME, String.class);
+		regionalUnionAbbreviation.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_REGIONAL_UNION_NAME, "Reg.U."), currentLocale);
+		reportCollection.addField(regionalUnionAbbreviation);
+
+		ReportableField clubType = new ReportableField(FIELD_NAME_CLUB_TYPE, String.class);
+		clubType.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_TYPE, "Club type"), currentLocale);
+		reportCollection.addField(clubType);
+		
+		//selected year stuff
+		//tekjur
+		ReportableField income = new ReportableField("income", Integer.class);
+		income.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.income", "Income"), currentLocale);
+		reportCollection.addField(income);
+		//gjold
+		ReportableField expenses = new ReportableField("expenses", Integer.class);
+		expenses.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.expenses", "Expenses"), currentLocale);
+		reportCollection.addField(expenses);
+		//afkoma (tekjur-gjold)
+		ReportableField incomeMinusExpenses = new ReportableField("incMexp", Integer.class);
+		incomeMinusExpenses.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.incMexp", "incMexp"), currentLocale);
+		reportCollection.addField(incomeMinusExpenses);
+		//veltufjarmunir
+		ReportableField rollingMoney = new ReportableField("rollingmoney", Integer.class);
+		rollingMoney.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.rollingmoney", "Rollingmoney"), currentLocale);
+		reportCollection.addField(rollingMoney);
+		//fastafjarmunir
+		ReportableField rigidMoney = new ReportableField("rigidMoney", Integer.class);
+		rigidMoney.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.rigidMoney", "Rigidmoney"), currentLocale);
+		reportCollection.addField(rigidMoney);
+		//skuldir
+		ReportableField debts = new ReportableField("debts", Integer.class);
+		debts.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.debts", "Debts"), currentLocale);
+		reportCollection.addField(debts);
+		//peningaleg stada (veltufjarmunir-skuldir)
+		ReportableField rollingMoneyMinusDebts = new ReportableField("rollingMDebts", Integer.class);
+		rollingMoneyMinusDebts.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.rollingMDebts", "RollingMDebts"), currentLocale);
+		reportCollection.addField(rollingMoneyMinusDebts);
+		
+		////////////////////////////////////////////////////
+		//comparing year stuff
+		ReportableField comparingIncome = new ReportableField("Cincome", Integer.class);
+		comparingIncome.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.income", "Income"), currentLocale);
+		reportCollection.addField(comparingIncome);
+		//gjold
+		ReportableField comparingExpenses = new ReportableField("Cexpenses", Integer.class);
+		comparingExpenses.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.expenses", "Expenses"), currentLocale);
+		reportCollection.addField(comparingExpenses);
+		//afkoma (tekjur-gjold)
+		ReportableField comparingIncomeMinusExpenses = new ReportableField("CincMexp", Integer.class);
+		comparingIncomeMinusExpenses.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.incMexp", "incMexp"), currentLocale);
+		reportCollection.addField(comparingIncomeMinusExpenses);
+		//veltufjarmunir
+		ReportableField comparingRollingMoney = new ReportableField("Crollingmoney", Integer.class);
+		comparingRollingMoney.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.rollingmoney", "Rollingmoney"), currentLocale);
+		reportCollection.addField(comparingRollingMoney);
+		//fastafjarmunir
+		ReportableField comparingRigidMoney = new ReportableField("CrigidMoney", Integer.class);
+		comparingRigidMoney.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.rigidMoney", "Rigidmoney"), currentLocale);
+		reportCollection.addField(comparingRigidMoney);
+		//skuldir
+		ReportableField comparingDebts = new ReportableField("Cdebts", Integer.class);
+		comparingDebts.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.debts", "Debts"), currentLocale);
+		reportCollection.addField(comparingDebts);
+		//peningaleg stada (veltufjarmunir-skuldir)
+		ReportableField comparingRollingMoneyMinusDebts = new ReportableField("CrollingMDebts", Integer.class);
+		comparingRollingMoneyMinusDebts.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.rollingMDebts", "RollingMDebts"), currentLocale);
+		reportCollection.addField(comparingRollingMoneyMinusDebts);
+		
+		///////////////////////////////////////////////////////////////
+		//get the data
+		Collection reports = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, clubsFilter);
+		List leagueGroupIDList = getGroupIdListFromLeagueGroupCollection(year, leaguesFilter, true);
+		Map recordsMapKeyedByLeagueIdentifierAndClubsName = new TreeMap();
+		
+		
+		Iterator iter = reports.iterator();
+		try {
+			while (iter.hasNext()) {
+				WorkReport report = (WorkReport) iter.next();
+				String regionalUnionIdentifier = getRegionalUnionIdentifier(report);
+				String groupName = report.getGroupNumber() + " " + report.getGroupName();
+				
+				Collection leagues = report.getLeagues();
+				Iterator iterator = leagues.iterator();
+				while (iterator.hasNext()) {
+					WorkReportGroup league = (WorkReportGroup) iterator.next();
+					
+					if (!leagueGroupIDList.contains(league.getGroupId()) && showClubType(report, theClubType)) {
+						continue; //don't process this one, go to next
+					}
+					
+					String leagueIdentifier = getLeagueIdentifier(league);
+						
+					String mapKey = leagueIdentifier+groupName;
+					//add the data					
+					//fetch the stats or initialize
+					ReportableData regData = (ReportableData) recordsMapKeyedByLeagueIdentifierAndClubsName.get(regionalUnionIdentifier);
+					if(regData==null){//initialize
+						regData = new ReportableData();
+						regData.addData(leagueString, leagueIdentifier);
+						regData.addData(clubName, groupName);
+						regData.addData(regionalUnionAbbreviation, getRegionalUnionIdentifier(report));
+						regData.addData(clubType, getClubTypeString(report));
+						
+						regData.addData(income, new Integer(0));
+						regData.addData(expenses, new Integer(0));
+						regData.addData(incomeMinusExpenses,new Integer(0));
+						regData.addData(rollingMoney, new Integer(0));
+						regData.addData(rigidMoney, new Integer(0));
+						regData.addData(debts, new Integer(0));
+						regData.addData(rollingMoneyMinusDebts,new Integer(0));
+						
+						regData.addData(comparingIncome, new Integer(0));
+						regData.addData(comparingExpenses, new Integer(0));
+						regData.addData(comparingIncomeMinusExpenses,new Integer(0));
+						regData.addData(comparingRollingMoney, new Integer(0));
+						regData.addData(comparingRigidMoney, new Integer(0));
+						regData.addData(comparingDebts, new Integer(0));
+						regData.addData(comparingRollingMoneyMinusDebts,new Integer(0));
+					}
+					
+					//getWorkReportBusiness().getWorkReportClubAccountRecordHome().
+					
+					
+					
+					
+					
+					
+					//TODO ADD EXTRA SUMMARY FIELDS
+					//ALWAYS ADD TO THE TOTAL IF NOT A SPECIAL CLUB
+					//GET A WORKREPORTDIVISION BOARD FOR SPECIAL CLUBS
+					//GET THE LEAGUES WORK REPORT
+					
+
+					
+					
+					
+					
+				}
+				
+			}
+		}
+		catch (IDOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return null;
+	}
+	
+	
+	
+	
 	/*
 	 * Report B12.5.1 of the ISI Specs
 	 */
@@ -2542,6 +2726,17 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//finished return the collection
 		return reportCollection;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/*
 	 * Report B12.5.2 of the ISI Specs

@@ -417,6 +417,80 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 		return count;
 	}
+	
+	public int getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyId(int reportId, int wrGroupId, int wrAccountKeyId){
+		
+		WorkReportClubAccountRecord record;
+		try {
+			record = getWorkReportClubAccountRecordHome().findRecordByWorkReportIdAndWorkReportGroupIdAndWorkReportAccountKeyId(reportId, wrGroupId, wrAccountKeyId);
+			
+			return (int)record.getAmount();
+		
+		}
+		catch (FinderException e) {
+			//no record returning 0
+			return 0;
+		}
+		
+	}
+	
+	public int getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(int reportId, int wrGroupId, String accountKeyName){
+		
+		WorkReportAccountKey key;
+		try {
+			key = getWorkReportAccountKeyHome().findAccountKeyByName(accountKeyName);
+		}
+		catch (FinderException e1) {
+			e1.printStackTrace();
+			//no such account key
+			return 0;
+		}
+		
+		int wrAccountKeyId = ((Integer)key.getPrimaryKey()).intValue();
+		
+		WorkReportClubAccountRecord record;
+		try {
+			record = getWorkReportClubAccountRecordHome().findRecordByWorkReportIdAndWorkReportGroupIdAndWorkReportAccountKeyId(reportId, wrGroupId, wrAccountKeyId);
+			
+			return (int)record.getAmount();
+		
+		}
+		catch (FinderException e) {
+			//no record returning 0
+			return 0;
+		}
+		
+	}
+	
+	public int getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(int reportId, int wrGroupId, Collection accountKeys){
+		
+	
+		Collection records;
+		int amount = 0;
+		try {
+			records = getWorkReportClubAccountRecordHome().findAllRecordsByWorkReportIdAndWorkReportGroupIdAndWorkReportAccountKeyCollection(reportId,wrGroupId,accountKeys);
+			
+			if(records!=null && !records.isEmpty()){
+				
+				Iterator iter = records.iterator();
+				while (iter.hasNext()) {
+					WorkReportClubAccountRecord rec = (WorkReportClubAccountRecord) iter.next();
+					amount+=(int)rec.getAmount();
+				}
+				 
+				
+				
+			}
+			return amount;
+		
+		}
+		catch (FinderException e) {
+			//no record returning 0
+			return amount;
+		}
+		
+	}
+	
 
 	public WorkReportHome getWorkReportHome() {
 		if (workReportHome == null) {

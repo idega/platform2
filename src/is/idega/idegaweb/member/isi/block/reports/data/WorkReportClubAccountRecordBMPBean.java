@@ -107,4 +107,18 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 		return idoFindPKsByQuery(sql);
 	}
 	
+	public Integer ejbFindRecordByWorkReportIdAndWorkReportGroupIdAndWorkReportAccountKeyId(int reportId,int wrGroupId, int accountKeyId) throws FinderException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhere()
+		.appendEquals(COLUMN_NAME_REPORT_ID,reportId)
+		.appendAnd()
+		.appendEquals(COLUMN_NAME_WORK_REPORT_GROUP,wrGroupId)
+		.appendAnd()
+		.appendEquals(COLUMN_NAME_ACCOUNT_KEY_ID,accountKeyId);
+		
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
+	
+	
 }
