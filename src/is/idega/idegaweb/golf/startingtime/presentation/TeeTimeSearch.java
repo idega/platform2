@@ -6,6 +6,7 @@ import is.idega.idegaweb.golf.TableInfo;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
 import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
 import is.idega.idegaweb.golf.startingtime.data.TeeTime;
@@ -18,6 +19,7 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 
 import com.idega.core.builder.data.ICPage;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
@@ -55,6 +57,8 @@ public class TeeTimeSearch extends GolfBlock {
 	
 	private ICPage _teeTimeTablePage = null;
 	private ICPage _teeTimesPage = null;
+	
+	private int width = 100;
 
 
 	public void main(IWContext modinfo) throws Exception {
@@ -292,13 +296,16 @@ public class TeeTimeSearch extends GolfBlock {
 
 	public Table getResultTable(IWContext modinfo, Vector Groups, GolfField info, String date1, int resultCol) throws SQLException, IOException, FinderException {
 
-		Table myTable = new Table(1, 2);
+		Table myTable = new Table(2, 2);
+		myTable.mergeCells(1, 2, 2, 2);
 		myTable.setRowStyleClass(1,getHeaderRowClass());
 		myTable.setCellspacing(0);
 		myTable.setCellpadding(0);
 		myTable.setRowAlignment(1, Table.HORIZONTAL_ALIGN_LEFT);
 		myTable.setCellpaddingLeft(1,1,15);
+		myTable.setCellpaddingRight(2,1,15);
 		myTable.setWidth(_blockWidth);
+		myTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 
 		Vector myVector = new Vector();
 		Vector boolVector = new Vector();
@@ -326,13 +333,13 @@ public class TeeTimeSearch extends GolfBlock {
 
 		if ((count % 10 == 1 || (count % 100) % 10 == 1) && count % 100 != 11) {
 			smallText.setText(" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_time", "Available tee time") + ")");
-			myTable.add(smallText, 1, 1);
+			myTable.add(smallText, 2, 1);
 		} else if (count != 0) {
 			smallText.setText(" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_times", "Available tee_times") + ")");
-			myTable.add(smallText, 1, 1);
+			myTable.add(smallText, 2, 1);
 		} else {
 			smallText.setText(" (" +getResourceBundle().getLocalizedString("start.search.no_tee_times", "_")+")");
-			myTable.add(smallText, 1, 1);
+			myTable.add(smallText, 2, 1);
 		}
 
 		boolean first = true;
@@ -385,8 +392,6 @@ public class TeeTimeSearch extends GolfBlock {
 				resultTable.setColumnAlignment(i, "center");
 			}
 
-
-			resultTable.setRows(++rows);
 
 			myTable.add(resultTable, 1, 2);
 		}
@@ -518,7 +523,7 @@ public class TeeTimeSearch extends GolfBlock {
 	}
 
 	public SubmitButton insertButton(String btnName, String Method, String Action, Form theForm) {
-		SubmitButton mySubmit = new SubmitButton(btnName);
+		SubmitButton mySubmit = (SubmitButton) getButton(new SubmitButton(btnName));
 		theForm.addObject(mySubmit);
 
 		theForm.setMethod(Method);
@@ -528,7 +533,7 @@ public class TeeTimeSearch extends GolfBlock {
 	}
 
 	private SubmitButton insertButton(Image image, String imageName, String Method, String Action, Form theForm) {
-		SubmitButton mySubmit = new SubmitButton(image, imageName);
+		SubmitButton mySubmit = (SubmitButton) getButton(new SubmitButton(image, imageName));
 		theForm.addObject(mySubmit);
 
 		theForm.setMethod(Method);
@@ -537,12 +542,12 @@ public class TeeTimeSearch extends GolfBlock {
 	}
 
 	public SubmitButton insertButton(String btnName) {
-		SubmitButton mySubmit = new SubmitButton(btnName);
+		SubmitButton mySubmit = (SubmitButton) getButton(new SubmitButton(btnName));
 		return mySubmit;
 	}
 
 	public SubmitButton insertButton(Image myImage, String btnName) {
-		SubmitButton mySubmit = new SubmitButton(myImage, btnName);
+		SubmitButton mySubmit = (SubmitButton) getButton(new SubmitButton(myImage, btnName));
 		return mySubmit;
 	}
 
@@ -554,18 +559,25 @@ public class TeeTimeSearch extends GolfBlock {
 	}
 
 	public SelectionBox insertSelectionBox(String SelectionBoxName, IWContext modinfo, int height) throws IOException, SQLException {
-		SelectionBox mySelectionBox = new SelectionBox(SelectionBoxName);
+		SelectionBox mySelectionBox = (SelectionBox) getStyledInterface(new SelectionBox(SelectionBoxName));
 		mySelectionBox.setHeight(height);
+		mySelectionBox.setWidth(String.valueOf(width));
 		Field[] field = service.getStartingEntryField();
 		for (int i = 0; i < field.length; i++) {
-			mySelectionBox.addElement("" + field[i].getID(), field[i].getName());
+			try {
+				Union union = ((UnionHome) IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKey(field[i].getUnionID());
+				mySelectionBox.addElement("" + field[i].getID(), union.getAbbrevation() + " - " + field[i].getName());
+			}
+			catch (FinderException fe) {
+				log(fe);
+			}
 		}
 		mySelectionBox.keepStatusOnAction();
 		return mySelectionBox;
 	}
 
 	public DropdownMenu insertClubSelectionBox(String SelectionBoxName, IWContext modinfo, int height) throws IOException, SQLException {
-		DropdownMenu mySelectionBox = new DropdownMenu(SelectionBoxName);
+		DropdownMenu mySelectionBox = (DropdownMenu) getStyledInterface(new DropdownMenu(SelectionBoxName));
 		mySelectionBox.setMarkupAttribute("size", Integer.toString(height));
 
 		Union[] union = service.getStartingEntryUnion();
@@ -579,7 +591,7 @@ public class TeeTimeSearch extends GolfBlock {
 
 	public DropdownMenu insertDropdown(String dropdownName, int countFrom, int countTo) {
 		String from = Integer.toString(countFrom);
-		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+		DropdownMenu myDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(dropdownName));
 
 		for (; countFrom <= countTo; countFrom++) {
 			myDropdown.addMenuElement(Integer.toString(countFrom), Integer.toString(countFrom));
@@ -593,7 +605,7 @@ public class TeeTimeSearch extends GolfBlock {
 		//String funcyDate = funcDate.getDateStamp();
 		String funcyDateRS = funcDate.toSQLDateString();
 
-		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+		DropdownMenu myDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(dropdownName));
 
 		//		myDropdown.addMenuElement(funcyDateRS, getNextDays(funcDate,
 		// funcyDateRS,
@@ -614,7 +626,7 @@ public class TeeTimeSearch extends GolfBlock {
 		//String funcyDate = funcDate.getDateStamp();
 		String funcyDateRS = funcDate.toSQLDateString();
 
-		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+		DropdownMenu myDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(dropdownName));
 
 		//		myDropdown.addMenuElement(funcyDateRS, getNextDays(funcDate,
 		// funcyDateRS,
@@ -634,7 +646,7 @@ public class TeeTimeSearch extends GolfBlock {
 	public DropdownMenu insertDrowdown(String dropdownName, TableInfo myTableInfo, IWContext modinfo) throws SQLException, IOException {
 		//		PrintWriter out = modinfo.getResponse().getWriter();
 
-		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+		DropdownMenu myDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(dropdownName));
 		int end = myTableInfo.get_row_num();
 		int interval = myTableInfo.get_interval();
 		int pic_min = myTableInfo.get_first_pic_min();
@@ -678,7 +690,7 @@ public class TeeTimeSearch extends GolfBlock {
 
 	public DropdownMenu insertDrowdown(String dropdownName, String auto, int bil) {
 
-		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+		DropdownMenu myDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(dropdownName));
 
 		String time;
 		String TimeVal;
@@ -717,7 +729,7 @@ public class TeeTimeSearch extends GolfBlock {
 
 	public DropdownMenu insertDrowdown(String dropdownName, String auto, int bil, boolean ltime) {
 
-		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+		DropdownMenu myDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(dropdownName));
 
 		String time;
 		String TimeVal;
@@ -761,7 +773,7 @@ public class TeeTimeSearch extends GolfBlock {
 
 	public DropdownMenu insertTimeDrowdown(String dropdownName, String auto, int firstHour, int lastHour, int interval) {
 
-		DropdownMenu myDropdown = new DropdownMenu(dropdownName);
+		DropdownMenu myDropdown = (DropdownMenu) getStyledInterface(new DropdownMenu(dropdownName));
 
 		String time;
 		String TimeVal;
@@ -802,7 +814,7 @@ public class TeeTimeSearch extends GolfBlock {
 	}
 
 	public TextInput insertEditBox(String name) {
-		TextInput myInput = new TextInput(name);
+		TextInput myInput = (TextInput) getStyledInterface(new TextInput(name));
 
 		myInput.keepStatusOnAction();
 
@@ -810,7 +822,7 @@ public class TeeTimeSearch extends GolfBlock {
 	}
 
 	public TextInput insertEditBox(String name, int size) {
-		IntegerInput myInput = new IntegerInput(name);
+		IntegerInput myInput = (IntegerInput) getStyledInterface(new IntegerInput(name));
 		myInput.setSize(size);
 		myInput.setValue(1);
 		
@@ -984,5 +996,11 @@ public class TeeTimeSearch extends GolfBlock {
 		if(n>0) {
 			_numberOfResultColumns = n;
 		}
+	}
+	/**
+	 * @param width The width to set.
+	 */
+	public void setWidth(int width) {
+		this.width = width;
 	}
 }
