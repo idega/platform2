@@ -103,7 +103,15 @@ public class Booking extends TravelManager {
           product = null;
         }
 
-        String action = iwc.getParameter(this.BookingAction);
+        String action = iwc.getParameter(BookingForm.sAction);
+        /** Backwards comp... */
+				String baction = iwc.getParameter(BookingForm.BookingAction);
+				if (baction != null && baction.equals(this.parameterUpdateBooking)) {
+					System.out.println("[Booking] baction = "+baction);
+					action = baction;					
+				}
+			System.out.println("[Booking] action = "+action);
+				
         if (action == null) {action = "";}
 
         if (action.equals("")) {
@@ -111,6 +119,7 @@ public class Booking extends TravelManager {
         }else if (action.equals(parameterRespondInquery)) {
           inqueryResponse(iwc);
         }else if (action.equals(this.parameterUpdateBooking)){
+        	System.out.println("[Booking] updateBooking :D");
           this.updateBooking(iwc);
         }else {
           handleInsert(iwc, true);
@@ -588,7 +597,7 @@ public class Booking extends TravelManager {
               answerYes = new Link(iwrb.getLocalizedImageButton("travel.confirm_booking","Confirm booking"));
                 answerYes.addParameter(this.parameterInqueryId,((Integer) inqueries[i].getPrimaryKey()).intValue());
                 answerYes.addParameter(this.parameterRespondInquery, this.parameterRespondYes);
-                answerYes.addParameter(this.BookingAction, this.parameterRespondInquery);
+                answerYes.addParameter(BookingForm.sAction, this.parameterRespondInquery);
                 answerYes.addParameter("year",this.stamp.getYear());
                 answerYes.addParameter("month",this.stamp.getMonth());
                 answerYes.addParameter("day",this.stamp.getDay());
@@ -596,7 +605,7 @@ public class Booking extends TravelManager {
               answerNo = new Link(iwrb.getLocalizedImageButton("travel.reject_booking","Reject booking"));
                 answerNo.addParameter(this.parameterInqueryId,((Integer) inqueries[i].getPrimaryKey()).intValue());
                 answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
-                answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);
+                answerNo.addParameter(BookingForm.sAction, this.parameterRespondInquery);
                 answerNo.addParameter("year",this.stamp.getYear());
                 answerNo.addParameter("month",this.stamp.getMonth());
                 answerNo.addParameter("day",this.stamp.getDay());
@@ -608,14 +617,14 @@ public class Booking extends TravelManager {
               answerNo = new Link(iwrb.getLocalizedImageButton("travel.cancel_inquiry","Cancel sinquiry"));
                 answerNo.addParameter(this.parameterInqueryId,((Integer) inqueries[i].getPrimaryKey()).intValue());
                 answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
-                answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);
+                answerNo.addParameter(BookingForm.sAction, this.parameterRespondInquery);
 
               table.add(answerNo,2,row);
           }
           answerDel = new Link(iwrb.getLocalizedImageButton("travel.delete_inquiry","Delete inquiry"));
             answerDel.addParameter(this.parameterInqueryId,((Integer) inqueries[i].getPrimaryKey()).intValue());
             answerDel.addParameter(this.parameterRespondInquery, this.parameterRespondDel);
-            answerDel.addParameter(this.BookingAction, this.parameterRespondInquery);
+            answerDel.addParameter(BookingForm.sAction, this.parameterRespondInquery);
             answerDel.addParameter("year",this.stamp.getYear());
             answerDel.addParameter("month",this.stamp.getMonth());
             answerDel.addParameter("day",this.stamp.getDay());
