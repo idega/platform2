@@ -30,6 +30,7 @@ public class UpdateHandicap {
 
             double grunn = (double) memberInfo.getFirstHandicap();
             int tee_id = 0;
+            double tournamentHandicap = 0;
 
             Scorecard[] scorecard = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id = "+member_id+" order by scorecard_date");
             for (int m=0; m < scorecard.length; m++) {
@@ -43,7 +44,6 @@ public class UpdateHandicap {
                     float course_rating = scorecard[m].getCourseRating();
                     int teeColorID = scorecard[m].getTeeColorID();
                     int field_id = scorecard[m].getFieldID();
-                    double tournamentHandicap = 0;
                     int tournamentRoundID = scorecard[m].getTournamentRoundId();
 
                     Field field = new Field(field_id);
