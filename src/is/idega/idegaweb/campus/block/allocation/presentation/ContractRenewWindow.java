@@ -61,6 +61,7 @@ public class ContractRenewWindow extends Window{
   private List newContracts = null;
   private idegaTimestamp lastDate = null;
   private int iContractId = -1;
+  private boolean save = false;
 
   /*
     Blár litur í topp # 27324B
@@ -81,10 +82,13 @@ public class ContractRenewWindow extends Window{
     iwb = getBundle(iwc);
     init(iwc);
     if(iwc.isParameterSet("save") || iwc.isParameterSet("save.x")){
-      if(doSaveContract(iwc))
+      save = doSaveContract(iwc);
+      if(save)
         add(Edit.formatText(iwrb.getLocalizedString("new_contract_was_made","New contract was made")));
-     else
+      else{
         add(Edit.formatText(iwrb.getLocalizedString("new_contract_could_not_be_made","New contract could not be made")));
+        add(getEditTable(iwc));
+      }
     }
     else
       add(getEditTable(iwc));
@@ -93,7 +97,7 @@ public class ContractRenewWindow extends Window{
 
   private void init(IWContext iwc){
     iContractId = Integer.parseInt( iwc.getParameter(prmContractId));
-   if(iContractId > 0){
+   if(iContractId > 0 && !save){
       try{
       eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
       eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
@@ -144,7 +148,7 @@ public class ContractRenewWindow extends Window{
           T.add(Edit.formatText(eApplicant.getSSN()),2,row);
           row++;
           T.add(Edit.formatText(iwrb.getLocalizedString("apartment","Apartment")),1,row);
-          T.add(Edit.formatText(getApartmentString(BuildingCacher.getApartment(eContract.getApartmentId().intValue()))),2,row);
+          T.add(Edit.formatText(BuildingCacher.getApartmentString((eContract.getApartmentId().intValue()))),2,row);
           row++;
 
           idegaTimestamp today = idegaTimestamp.RightNow();
@@ -174,6 +178,12 @@ public class ContractRenewWindow extends Window{
           T.add(Edit.formatText(iwrb.getLocalizedString("valid_to","Valid to")),1,row);
           T.add(to,2,row);
           row++;
+
+          if(eContract.getStatus().equals(ContractBMPBean.statusSigned)){
+            T.add(Edit.formatText(iwrb.getLocalizedString("end_old_contract","End old contract")),1,row);
+            CheckBox endOldContract = new CheckBox("end_old_contr","true");
+            T.add(endOldContract,2,row);
+          }
         }
         else
           T.add(Edit.formatText(iwrb.getLocalizedString("no_contract_user","No Contract user found")),1,row);
@@ -203,7 +213,13 @@ public class ContractRenewWindow extends Window{
       String to_date = iwc.getParameter("to_date");
       if(to_date!=null && to_date.length() == 10)
         to = (new idegaTimestamp(to_date));
+      boolean endOld = iwc.isParameterSet("end_old_contr");
 
+      if(endOld)
+        ContractBusiness.endContract(eContract.getID(),new idegaTimestamp(eContract.getValidTo()),"",false);
+
+      if(eContract.getStatus().equals(ContractBMPBean.statusSigned) && !endOld)
+        return false;
       if(from !=null && to !=null)
         return ContractBusiness.makeNewContract(iwc,contractUser,eApplicant,eContract.getApartmentId().intValue(),from,to);
       else
@@ -220,61 +236,13 @@ public class ContractRenewWindow extends Window{
     UserBusiness.addNewUserEmail(iUserId,sEmail);
   }
 
-  private PresentationObject getApartmentTable(Apartment A){
-    Table T = new Table();
-    Floor F = BuildingCacher.getFloor(A.getFloorId());
-    Building B = BuildingCacher.getBuilding(F.getBuildingId());
-    Complex C = BuildingCacher.getComplex(B.getComplexId());
-    T.add(Edit.formatText(A.getName()),1,1);
-    T.add(Edit.formatText(F.getName()),2,1);
-    T.add(Edit.formatText(B.getName()),3,1);
-    T.add(Edit.formatText(C.getName()),4,1);
-    return T;
-  }
-
-  private String getApartmentString(Apartment A){
-    StringBuffer S = new StringBuffer();
-    Floor F = BuildingCacher.getFloor(A.getFloorId());
-    Building B = BuildingCacher.getBuilding(F.getBuildingId());
-    Complex C = BuildingCacher.getComplex(B.getComplexId());
-    S.append(A.getName());S.append(" ");
-    S.append(F.getName());S.append(" ");
-    S.append(B.getName());S.append(" ");
-    S.append(C.getName());
-    return S.toString();
-  }
 
   public void main(IWContext iwc) throws Exception {
     eUser = iwc.getUser();
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = iwc.hasEditPermission(this);
+    //isAdmin = iwc.hasEditPermission(this);
     isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
     control(iwc);
   }
 
-  private String getStatus(String status){
-    String r = "";
-    char c = status.charAt(0);
-    switch (c) {
-      case 'C': r = iwrb.getLocalizedString("created","Created"); break;
-      case 'P': r = iwrb.getLocalizedString("printed","Printed"); break;
-      case 'S': r = iwrb.getLocalizedString("signed","Signed");   break;
-      case 'R': r = iwrb.getLocalizedString("rejected","Rejected");  break;
-      case 'T': r = iwrb.getLocalizedString("terminated","Terminated");   break;
-      case 'E': r = iwrb.getLocalizedString("ended","Ended");  break;
-    }
-    return r;
-  }
-
-  private DropdownMenu getStatusDrop(String name,String selected){
-    DropdownMenu drp = new DropdownMenu(name);
-    drp.addMenuElement("C",getStatus("C"));
-    drp.addMenuElement("P",getStatus("P"));
-    drp.addMenuElement("S",getStatus("S"));
-    drp.addMenuElement("R",getStatus("R"));
-    drp.addMenuElement("T",getStatus("T"));
-    drp.addMenuElement("E",getStatus("E"));
-    drp.setSelectedElement(selected);
-    return drp;
-  }
 }

@@ -275,7 +275,7 @@ public class CampusContracts extends Block{
     Image keyImage = iwb.getImage("/key.gif");
     Image nokeyImage = iwb.getImage("/nokey.gif");
     Image garbageImage = iwb.getImage("/trashcan.gif");
-    Image renewImag = iwb.getImage("/renew.gif");
+    Image renewImage= iwb.getImage("/renew.gif");
     boolean garbage = false;
     int row = 1;
     int col = 1;
@@ -292,6 +292,7 @@ public class CampusContracts extends Block{
       T.add((printImage),col++,1);//Edit.formatText(iwrb.getLocalizedString("print","Print")
     T.add((resignImage),col++,1);//Edit.formatText(iwrb.getLocalizedString("sign","Sign"))
     T.add((registerImage),col++,1);//Edit.formatText(iwrb.getLocalizedString("sign","Sign"))
+    T.add((renewImage),col++,1);
     //col = 4;
     T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),col++,1);
     T.add(Edit.formatText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,1);
@@ -315,6 +316,7 @@ public class CampusContracts extends Block{
         try {
 
           C = (Contract) L.get(i);
+          String status = C.getStatus();
           sbIDs.append(C.getID());
           sbIDs.append(ContractFiler.prmSeperator);
           U = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(C.getUserId().intValue());
@@ -326,13 +328,14 @@ public class CampusContracts extends Block{
             T.add(getGarbageLink(garbageImage,C.getID()),col++,row);
           else
             T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col++,row);
-          if(C.getStatus().equalsIgnoreCase(ContractBMPBean.statusSigned))
+          if(status.equalsIgnoreCase(ContractBMPBean.statusSigned))
             T.add(getReSignLink(resignImage,C.getID()),col,row);
           col++;
-          if(C.getStatus().equalsIgnoreCase(ContractBMPBean.statusPrinted) || C.getStatus().equalsIgnoreCase(ContractBMPBean.statusSigned)  )
+          if(status.equalsIgnoreCase(ContractBMPBean.statusPrinted) || status.equalsIgnoreCase(ContractBMPBean.statusSigned)  )
             T.add(getSignedLink(registerImage,C.getID(),isAdmin),col,row);
-          else if(C.getStatus().equalsIgnoreCase(ContractBMPBean.statusEnded) || C.getStatus().equalsIgnoreCase(ContractBMPBean.statusResigned))
-             T.add(getRenewLink(registerImage,C.getID()),col,row);
+          col++;
+          if(status.equalsIgnoreCase(ContractBMPBean.statusEnded) || status.equalsIgnoreCase(ContractBMPBean.statusResigned) || status.equalsIgnoreCase(ContractBMPBean.statusSigned))
+             T.add(getRenewLink(renewImage,C.getID()),col,row);
           col++;
           T.add(Edit.formatText(Ap.getFullName()),col++,row);
           T.add(Edit.formatText(Ap.getSSN()),col++,row);
@@ -390,14 +393,7 @@ public class CampusContracts extends Block{
 
   private void doGarbageContract(IWContext iwc){
     int id = Integer.parseInt(iwc.getParameter("garbage"));
-    try {
-      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(id);
-      eContract.setStatusGarbage();
-      eContract.update();
-    }
-    catch (SQLException ex) {
-
-    }
+    ContractBusiness.doGarbageContract(id);
   }
 
   private PresentationObject getApartmentTable(Apartment A){
@@ -506,7 +502,9 @@ public class CampusContracts extends Block{
 
    public Link getGarbageLink(PresentationObject MO,int contractId){
     Link L = new Link(MO);
-    L.addParameter("garbage",contractId);
+    L.setWindowToOpen(ContractGarbageWindow.class);
+    L.addParameter(ContractGarbageWindow.prmContractId,contractId);
+    //L.addParameter("garbage",contractId);
     return L;
   }
 
