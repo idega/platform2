@@ -23,12 +23,12 @@ public interface AgeGenderPluginBusiness extends com.idega.business.IBOService,c
  public boolean isAgeLimitStringentCondition(com.idega.user.data.Group p0) throws java.rmi.RemoteException;
  public boolean isFemale(com.idega.user.data.Group p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public boolean isMale(com.idega.user.data.Group p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public boolean isNeuter(com.idega.user.data.Group p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public boolean isNeutral(com.idega.user.data.Group p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public void setAgeLimitIsStringentCondition(com.idega.user.data.Group p0,boolean p1) throws java.rmi.RemoteException;
  public void setFemale(com.idega.user.data.Group p0) throws java.rmi.RemoteException;
  public void setKeyDateForAge(com.idega.user.data.Group p0,java.lang.String p1) throws java.rmi.RemoteException;
  public void setLowerAgeLimit(com.idega.user.data.Group p0,int p1) throws java.rmi.RemoteException;
  public void setMale(com.idega.user.data.Group p0) throws java.rmi.RemoteException;
- public void setNeuter(com.idega.user.data.Group p0) throws java.rmi.RemoteException;
+ public void setNeutral(com.idega.user.data.Group p0) throws java.rmi.RemoteException;
  public void setUpperAgeLimit(com.idega.user.data.Group p0,int p1) throws java.rmi.RemoteException;
 }

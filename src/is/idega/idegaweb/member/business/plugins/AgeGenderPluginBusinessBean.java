@@ -41,13 +41,13 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   
   private static final int FEMALE = 0;
   private static final int MALE = 1;
-  private static final int NEUTER = 2;
+  private static final int NEUTRAL = 2;
   
   
   private void setGender(Group group, int gender){
     
-    // choose neuter if either both are true or both values are false  
-    if (NEUTER == gender) {
+    // choose NEUTRAL if either both are true or both values are false  
+    if (NEUTRAL == gender) {
       // remove meta data does not work  
       // ((GenericEntity) group).removeMetaData(GENDER_META_DATA_KEY);
       group.setMetaData(GENDER_META_DATA_KEY, NULL);
@@ -82,16 +82,16 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     setGender(group, FEMALE);
   }
   
-  public void setNeuter(Group group) {
-    setGender(group, NEUTER);
+  public void setNeutral(Group group) {
+    setGender(group, NEUTRAL);
   }
   
   private int getGender(Group group) throws RemoteException, FinderException {
     String genderIdString = (String) group.getMetaData(GENDER_META_DATA_KEY);
     if (genderIdString == null || NULL.equals(genderIdString))
       // meta data was not set
-      // return neuter
-      return NEUTER;
+      // return NEUTRAL
+      return NEUTRAL;
     Integer genderId = new Integer(genderIdString);
     GenderHome home = (GenderHome) this.getIDOHome(Gender.class);
     Integer maleId = ((Integer) home.getMaleGender().getPrimaryKey());
@@ -109,8 +109,8 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     return FEMALE == getGender(group);    
   }
   
-  public boolean isNeuter(Group group) throws RemoteException, FinderException {
-    return NEUTER == getGender(group);
+  public boolean isNeutral(Group group) throws RemoteException, FinderException {
+    return NEUTRAL == getGender(group);
   }
   
   public boolean isMale(Group group) throws RemoteException, FinderException {
