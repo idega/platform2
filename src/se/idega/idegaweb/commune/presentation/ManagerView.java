@@ -67,10 +67,17 @@ public class ManagerView extends CommuneBlock {
 		//add(getLocalizedHeader("managerview.my_cases", "My cases"));
 		IWResourceBundle iwrb = this.getResourceBundle(iwc);
 		add(new Break(2));
-			boolean managerSelected= true;
+		User manager = null;
+			boolean managerSelected= false;
+			try{
+				manager = getSelectedManager(iwc);	
+				managerSelected=true;
+			}
+			catch(Exception e){
+			}
 			if (managerSelected) {
 				
-				User manager = getSelectedManager(iwc);
+				
 				
 				Table leftTable = new Table(1,7);
 				mainTable.add(leftTable,1,1);
@@ -221,7 +228,12 @@ public class ManagerView extends CommuneBlock {
 			setManager(iManagerID);
 		}
 		catch(Exception e){}
-		return getUserBusiness(iwc).getUser(iManagerID);
+		if(iManagerID!=-1){
+			return getUserBusiness(iwc).getUser(iManagerID);
+		}
+		else{
+			throw new Exception("No manager selected");	
+		}
 	}
 
 	private UserBusiness getUserBusiness(IWContext iwc) throws Exception {
