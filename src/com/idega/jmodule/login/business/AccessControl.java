@@ -61,6 +61,7 @@ public class AccessControl{
         }
 
 	public static boolean isAdmin(IWContext iwc)throws SQLException{
+        /*
 		Member member = getMember(iwc);
                 if(member!=null){
                     if(member instanceof com.idega.projects.golf.entity.Member){
@@ -125,6 +126,7 @@ public class AccessControl{
                     }
 
 		}
+                */
 		return false;
 	}
 
@@ -197,6 +199,7 @@ public class AccessControl{
 
 
         public static boolean isClubWorker(IWContext iwc) throws SQLException{
+        /*
 		Member member = getMember(iwc);
                 if(member!=null){
                     if(member instanceof com.idega.projects.golf.entity.Member){
@@ -236,11 +239,13 @@ public class AccessControl{
                         }
                     }
 		}
+                */
 		return false;
 
         }
 
         public static boolean isTournamentManager(IWContext iwc) throws SQLException{
+        /*
 		Member member = getMember(iwc);
                 if(member!=null){
                     if(member instanceof com.idega.projects.golf.entity.Member){
@@ -271,6 +276,7 @@ public class AccessControl{
                         }
                     }
 		}
+                */
 		return false;
 
         }
