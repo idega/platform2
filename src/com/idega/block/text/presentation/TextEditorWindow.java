@@ -89,8 +89,9 @@ public class TextEditorWindow extends AbstractChooserWindow{
   }
 
   private void control(IWContext iwc)throws Exception{
-    if(debugParameter)
+    if(debugParameter){
       debugParameters(iwc);
+    }
 
     //Checks if the Window is being usen by the TextChooser
     //if chooserParameterName is null it is not being used by TextChooser
@@ -111,11 +112,6 @@ public class TextEditorWindow extends AbstractChooserWindow{
     String sLocaleId = iwc.getParameter(prmLocale);
     String sAtt = null;
 
-    Enumeration E = iwc.getParameterNames();
-    while(E.hasMoreElements()){
-            String pN = (String) E.nextElement();
-      System.out.println(pN+" = "+iwc.getParameter(pN) );
-    }
     if(iwc.isParameterSet(actClose)|| iwc.isParameterSet(actClose+".x")){
       if (parentReload) {
         setParentToReload();
@@ -437,6 +433,10 @@ public class TextEditorWindow extends AbstractChooserWindow{
     if (iwc.getSessionAttribute(TextChooser.RELOAD_PARENT_PARAMETER) != null) {
       parentReload = false;
     }
+  }
+
+  public void setDebugParameters(boolean debug){
+    debugParameter = debug;
   }
 
   public void setParentToReload(boolean reload) {
