@@ -24,7 +24,7 @@ public class ReportCategoryAttribute extends GenericEntity{
 
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute("category_id","Category",true,true, "java.lang.Integer","many-to-one","com.idega.block.reports.data.ReportCategory");
+    addAttribute("category_id","Category",true,true, "java.lang.Integer","many-to-one","com.idega.jmodule.reports.data.ReportCategory");
     addAttribute("attribute_name","Attribute Name",true,true, "java.lang.String");
     addAttribute("attribute_id","Attribute Id",true,true, "java.lang.Integer");
   }

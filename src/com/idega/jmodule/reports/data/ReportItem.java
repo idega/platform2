@@ -23,7 +23,7 @@ public class ReportItem extends GenericEntity {
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute("category","Category",true,true,"java.lang.Integer","many-to-one","com.idega.block.reports.data.ReportCategory");
+    addAttribute("category","Category",true,true,"java.lang.Integer","many-to-one","com.idega.jmodule.reports.data.ReportCategory");
     addAttribute("name","Name",true,true,"java.lang.String");
     addAttribute("field", "Field", true, true, "java.lang.String");
     addAttribute("maintable", "Table", true, true, "java.lang.String");
