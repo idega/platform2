@@ -70,6 +70,11 @@ public class TournamentList extends GolfBlock {
 	public void main(IWContext modinfo) throws SQLException, RemoteException {
 		iwb = getBundle();
 		iwrb = getResourceBundle();
+		
+		if (view == null) {
+			view = modinfo.getParameter("view");
+		}
+		
 		add(getTournamentList(modinfo, view, iwrb));
 	}
 
