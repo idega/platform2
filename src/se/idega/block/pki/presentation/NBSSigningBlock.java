@@ -78,8 +78,6 @@ public class NBSSigningBlock extends Block implements Builderaware{
 						
 			String toBeSigned = signedEntity.getText() + "\n\n\n" + iwrb.getLocalizedString(LOCAL_SIGNATURE_DATE, "DOCUMENT SIGNED:") + dateFormat.format(new Date());
 			iwc.setSessionAttribute(SIGNED_TEXT, toBeSigned);
-			//TODO: (roar) TBD:
-			System.out.println("### ToBeSigned: " + toBeSigned);
 			
 			switch(signedEntity.getAction()){
 				case NBSSignedEntity.ACTION_INIT:

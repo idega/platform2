@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.20 2003/07/02 14:17:50 laddi Exp $
+ * $Id: ContractBMPBean.java,v 1.21 2003/07/04 09:20:04 roar Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -274,39 +274,28 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 		
 	}
 
-	//TODO: (roar) remove dbg code:
 	private static String setUnsetFields(Map fieldValues, String text) {
 		String retValue = null;
 		StringBuffer merged = new StringBuffer();
 
 		try {
 			XMLParser parser = new XMLParser();
-			System.out.println("### INPUT: " + text);
 			XMLDocument document = parser.parse(new StringReader("<dummy>" + text + "</dummy>"));
-
 			XMLElement root = document.getRootElement();
 			Iterator it = root.getContent().iterator();
 			while (it.hasNext()) {
 				Object obj = it.next();
-				
 				if (obj instanceof XMLElement) {
-					System.out.println("### INSTANCEOF XMLELEMENT: " + (XMLElement) obj);						
+					
 					String name = ((XMLElement)obj).getName();
 					String value = (String) fieldValues.get(name);
 					System.out.println("    (name: " + name + ", value: " + value + ")");
 					merged.append(value != null ? value : "<" + name + "/>");
 				} else if (obj instanceof String) {
-					System.out.println("### INSTANCEOF STRING: " + (String) obj);				
 					merged.append((String) obj);
-				} else {
-					System.out.println("### CLASS NAME: "+ obj.getClass().getName());					
-				}
+				} 
 			}
-			System.out.println("### RESULT " + merged.toString());	
 			retValue = merged.toString();				
-
-
-			
 		} catch (XMLException ex) {
 			ex.printStackTrace();
 		}
@@ -399,10 +388,7 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 	}
 
 	public void addFileToContract(ICFile file) throws IDOAddRelationshipException {
-		//TODO: (roar) remove debug code
-		System.out.println("addFileToContract...");
 		idoAddTo(file);
-		System.out.println("...success");
 	}
 	
 	public void removeFileFromContract(ICFile file) throws IDORemoveRelationshipException{
