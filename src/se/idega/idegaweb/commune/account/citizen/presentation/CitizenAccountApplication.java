@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.7 2002/10/31 15:13:02 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.8 2002/11/01 13:55:30 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -159,7 +159,7 @@ public class CitizenAccountApplication extends CommuneBlock {
                         7);
 
         final Text custodianHeader1
-                = getLocalizedHeader (CUSTODIAN1_KEY, "Vårdnashavare 1");
+                = getLocalizedHeader (CUSTODIAN1_KEY, "Vårdnadshavare 1");
 
         inputTable.add (custodianHeader1, 1, 9);
         addSingleInput (iwc, PARAM_CUSTODIAN1_PID, "Personnummer", inputTable,
@@ -168,7 +168,7 @@ public class CitizenAccountApplication extends CommuneBlock {
                         inputTable, 40, false, 2, 10);
 
         final Text custodianHeader2
-                = getLocalizedHeader (CUSTODIAN2_KEY, "Vårdnashavare 2");
+                = getLocalizedHeader (CUSTODIAN2_KEY, "Vårdnadshavare 2");
         inputTable.add (custodianHeader2, 1, 12);
         addSingleInput (iwc, PARAM_CUSTODIAN2_PID, "Personnummer", inputTable,
                         40, false, 1, 13);
