@@ -112,24 +112,23 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       //message checking is done in another thread
       repaint();
 
-     try {//keep the wait insync with the performance of the machine it is on
-      getToolkit().sync();
-
-      t.sleep(threadSleep);
-    }
-    catch (InterruptedException e) {
-     e.printStackTrace(System.err);
-     System.out.println("MessageApplet : Problem in the main thread");
-    }
-
-    if(isfirstRun){
-      if(cycler==null){
-        cycler = new MessageListener(checkTimer);
-        cycler.addActionListener(this);
+      try {//keep the wait insync with the performance of the machine it is on
+        getToolkit().sync();
+        t.sleep(threadSleep);
       }
+      catch (InterruptedException e) {
+        e.printStackTrace(System.err);
+        System.out.println("MessageApplet : Problem in the main thread");
+      }
+
+      if(isfirstRun){
+        if(cycler==null){
+          cycler = new MessageListener(checkTimer);
+          cycler.addActionListener(this);
+        }
         cycler.start();
         isfirstRun=false;
-    }
+      }
 
     }
   }
