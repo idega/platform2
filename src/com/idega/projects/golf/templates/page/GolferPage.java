@@ -596,17 +596,24 @@ public class GolferPage extends Page{
     supportText.setHeadlineSize(2);
     interviewsTable.setVerticalAlignment(3,1,"top");
     interviewsTable.setAlignment( 3, 1, "center");
-    interviewsTable.add(supportText,3,1);
+    Table dummyTable = new Table(1,2);
+    dummyTable.setHeight(1,"3");
+    dummyTable.setCellpadding(0);
+    dummyTable.setCellspacing(0);
+    dummyTable.addBreak(1,1);
+    dummyTable.add(supportText,1,2);
+    interviewsTable.add(dummyTable,3,1);
 
     GolferFriendsSigningSheet golferFriendsSigningSheet = new GolferFriendsSigningSheet(supportTextReaderId,
       (String) modinfo.getSessionAttribute("golferName"), sTopMenuParameterName,sInterviewsParameterValue,
       sSubmitParameterValue, (String) modinfo.getSessionAttribute("fullGolferName"));
-    Table dummyTable = new Table(1,2);
-    dummyTable.setHeight(1,"20");
+    /*Table dummyTable = new Table(1,2);
+    //dummyTable.setHeight(1,"20");
     dummyTable.setCellpadding(0);
     dummyTable.setCellspacing(0);
-    dummyTable.add(golferFriendsSigningSheet,1,2);
-    interviewsTable.add(dummyTable,1,1);
+    dummyTable.addBreak(1,1);
+    dummyTable.add(golferFriendsSigningSheet,1,2);*/
+    interviewsTable.add(golferFriendsSigningSheet,1,1);
     add(interviewsTable);
   }
 
