@@ -544,7 +544,32 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			return idoFindPKsBySQL(sql.toString());
 		else
 			return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
-	}	
+	}
+	
+	public Collection ejbFindApplicationsByProviderAndApplicationStatus(int providerID, String[] applicationStatuses) throws FinderException {
+		return ejbFindApplicationsByProviderAndApplicationStatus(providerID, applicationStatuses, null);
+	}
+	
+	public Collection ejbFindApplicationsByProviderAndApplicationStatus(int providerID, String[] applicationStatuses, String caseCode) throws FinderException {
+		return ejbFindApplicationsByProviderAndApplicationStatus(providerID, applicationStatuses, caseCode, -1, -1);
+	}
+	
+	public Collection ejbFindApplicationsByProviderAndApplicationStatus(int providerID, String[] applicationStatuses, String caseCode, int numberOfEntries, int startingEntry) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p, ic_user u");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID, "u.ic_user_id");
+		sql.appendAndEquals("c."+PROVIDER_ID, providerID);
+		sql.appendAnd().append("c."+APPLICATION_STATUS).appendInArrayWithSingleQuotes(applicationStatuses);
+		if (caseCode != null)
+			sql.appendAnd().appendEqualsQuoted("p.case_code",caseCode);
+		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
+
+		if (numberOfEntries == -1)
+			return idoFindPKsBySQL(sql.toString());
+		else
+			return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
+	}
 	
 	public Collection ejbFindApplicationsWithoutPlacing() throws FinderException {
 		IDOQuery sql = idoQuery();
