@@ -505,7 +505,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public School getFirstManagingSchoolForUser(User user) throws FinderException, RemoteException {
 		try {
 			Group rootGroup = getSchoolBusiness().getRootSchoolAdministratorGroup();
-			if (user.getPrimaryGroup().equals(rootGroup)) {
+			Group highSchoolRootGroup = getSchoolBusiness().getRootHighSchoolAdministratorGroup();
+			if (user.getPrimaryGroup().equals(rootGroup) || user.getPrimaryGroup().equals(highSchoolRootGroup)) {
 				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
 				Collection schoolIds = sub.getSchools(user);
 				if (!schoolIds.isEmpty()) {
