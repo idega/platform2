@@ -13,6 +13,7 @@ import java.sql.*;
 import java.util.*;
 
 import javax.ejb.*;
+import javax.mail.MessagingException;
 
 import com.idega.block.calendar.business.*;
 import com.idega.block.trade.stockroom.business.*;
@@ -48,6 +49,7 @@ public abstract class BookingForm extends TravelManager{
   public static String parameterDepartureAddressId = "depAddrId";
 
   protected IWResourceBundle iwrb;
+  protected IWBundle bundle;
   protected Supplier supplier;
   protected Product _product;
   protected Service _service;
@@ -61,6 +63,8 @@ public abstract class BookingForm extends TravelManager{
   protected int[] _multipleBookingNumber = new  int[] {0, 0, 0};
   protected boolean _multipleBookings = false;
 
+	private String PARAMETER_EMAIL_FOR_ERROR_NOTIFICATION = "error_email";
+	private String PARAMETER_CC_EMAIL_FOR_ERROR_NOTIFICATION = "error_email_cc";
   protected int available = is.idega.idegaweb.travel.presentation.Booking.available;
   protected int availableIfNoLimit = is.idega.idegaweb.travel.presentation.Booking.availableIfNoLimit;
   protected DecimalFormat df = new DecimalFormat("0.00");
@@ -109,6 +113,7 @@ public abstract class BookingForm extends TravelManager{
     super.initializer(iwc);
     setProduct(iwc, product);
     iwrb = super.getResourceBundle();
+    bundle = super.getBundle();
     supplier = super.getSupplier();
     _reseller = super.getReseller();
     if ((_reseller != null) && (product != null)){
@@ -2031,9 +2036,38 @@ public abstract class BookingForm extends TravelManager{
 				gBooking.store();
 		  
 			}catch(com.idega.block.tpos.business.TPosException e) {
+				sendErrorEmail("Online booking failed ("+e.getLocalizedMessage(iwrb)+")","Creditcard authorization failed.", e);
 				throw new TPosException(e.getLocalizedMessage(iwrb));
 			}catch (Exception e) {
-				throw new TPosException(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
+				e.printStackTrace(System.err);
+//				throw new TPosException(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
+				sendErrorEmail("Online booking failed (unknown error)","An online booking failed.", e);
+				throw new TPosException(iwrb.getLocalizedString("travel.unknown_error","Unknown error"));
+			}
+		}
+	}
+
+	protected void sendErrorEmail(String subject, String bodyHeader, Exception e) throws TPosException {
+		String error_notify_email = this.bundle.getProperty(PARAMETER_EMAIL_FOR_ERROR_NOTIFICATION);
+		if (error_notify_email != null) {
+			try {
+				String cc_error_notify_email = this.bundle.getProperty(PARAMETER_CC_EMAIL_FOR_ERROR_NOTIFICATION);
+				if (cc_error_notify_email == null) {
+					cc_error_notify_email = "";	
+				}
+				//StackTraceElement[] ste = e.
+				SendMail mail = new SendMail();
+				StringBuffer msg = new StringBuffer();
+				msg.append(bodyHeader+"\n\n ")
+				//for ( int i = 0 ; i < ste.length ; i++) {
+					//msg.append(ste[i].toString())
+					//.append("\n");	
+				//}
+				.append(e.toString());
+				mail.send( "gimmi@idega.is", error_notify_email, cc_error_notify_email, "", "mail.idega.is", subject, msg.toString());
+			} catch (MessagingException e1) {
+				e1.printStackTrace(System.err);
+				throw new TPosException(iwrb.getLocalizedString("travel.unknown_error","Unknown error"));
 			}
 		}
 	}
