@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.7 2002/04/03 18:09:02 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.8 2002/04/04 09:47:33 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -197,20 +197,15 @@ public class CampusApplicationForm extends ApplicationForm {
     t.add(Edit.formatText(_required,true),1,1);
     t.add(aprtType,2,1);
 
-    Window window = new Window("Apartment Viewer",ApartmentTypeViewer.class,Page.class);
-    window.setWidth(400);
-    window.setHeight(550);
-    window.setScrollbar(false);
-
     Image apartmentImage = _iwb.getImage("list.gif",_iwrb.getLocalizedString("get_apartment","Click for information about apartment"));
     apartmentImage.setAlignment("absmiddle");
     apartmentImage.setHorizontalSpacing(4);
     Link apartmentLink = new Link(apartmentImage);
-    apartmentLink.setWindowToOpen(com.idega.block.building.presentation.ApartmentTypeWindow.class);
+    apartmentLink.setWindowToOpen(CampusTypeWindow.class);
     Text apartmentText = new Text(_iwrb.getLocalizedString("see_apartment","view"));
     apartmentText.setFontStyle("font-family:arial; font-size:9px; color:#000000");
     Link apartmentLink2 = new Link(apartmentText);
-    apartmentLink2.setWindowToOpen(com.idega.block.building.presentation.ApartmentTypeWindow.class);
+    apartmentLink2.setWindowToOpen(CampusTypeWindow.class);
 
     if (_apartment1 > -1) {
       try {
@@ -823,7 +818,7 @@ public class CampusApplicationForm extends ApplicationForm {
 
     Vector wrongParameters = new Vector();
     String aprt = iwc.getParameter("aprtType");
-    if(aprt == null || aprt.length()==0 || Integer.parseInt(aprt) == -1)
+    if(aprt == null || aprt.length()==0 || aprt.equals("-1"))
       wrongParameters.add("aprtType");
     return wrongParameters;
   }
