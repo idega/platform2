@@ -1,16 +1,17 @@
 package com.idega.block.trade.stockroom.presentation;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
-
+import java.util.Vector;
 import javax.ejb.FinderException;
-
 import com.idega.block.category.business.CategoryService;
 import com.idega.block.category.data.ICCategory;
+import com.idega.block.category.data.ICCategoryHome;
 import com.idega.block.image.presentation.ImageAttributeSetter;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
@@ -21,6 +22,7 @@ import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.business.IBOLookup;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
+import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
@@ -57,6 +59,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 	private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
 	public static final String imageAttributeKey = "productimage";
 	public static final String PRODUCT_ID = "prod_edit_prod_id";
+	public static final String PARAMETER_CATEGORY_ID = "p_cat_id";
 	public static final String PRODUCT_CATALOG_OBJECT_INSTANCE_ID = "prod_edit_prod_cat_inst_id";
 	//  public static final String PRODUCT_ID = ProductBusiness.PRODUCT_ID;
 
@@ -84,13 +87,14 @@ public class ProductEditorWindow extends IWAdminWindow {
 	private IWBundle bundle;
 	private IWBundle core;
 	private ProductEditorBusiness _business = ProductEditorBusiness.getInstance();
+	private Collection categories = new Vector();
 
 	private Product _product = null;
 	private DropdownMenu _currencies = null;
 	private int _productId = -1;
 	private int iLocaleID = -1;
 	private Locale _locale;
-	private int _catalogICObjectInstanceId = -1;
+//	private int _catalogICObjectInstanceId = -1;
 
 	public ProductEditorWindow() {
 		setUnMerged();
@@ -174,7 +178,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 			_productId = -1;
 			_product = null;
 		}
-
+/*
 		String pCatObjId = iwc.getParameter(this.PRODUCT_CATALOG_OBJECT_INSTANCE_ID);
 		if (pCatObjId != null) {
 			try {
@@ -184,10 +188,35 @@ public class ProductEditorWindow extends IWAdminWindow {
 				n.printStackTrace(System.err);
 			}
 		}
-
+*/
 		setCurrencies(iwc);
 		String currCurr = getBundle(iwc).getProperty("iw_default_currency", "USD");
 		_currencies = _business.getCurrencyDropdown(this.PAR_CURRENCY, currCurr);
+		
+		String[] catIds = iwc.getParameterValues(PARAMETER_CATEGORY_ID);
+		if (_product != null) {
+			try {
+				categories = getProductBusiness(iwc).getProductCategories(_product);
+			}
+			catch (IDORelationshipException e1) {
+				e1.printStackTrace();
+			}
+		} else if (catIds != null) {
+			ICCategoryHome catHome = (ICCategoryHome) IDOLookup.getHome(ICCategory.class);
+			ICCategory cat;
+			for (int i = 0; i < catIds.length; i++) {
+				try {
+					cat = catHome.findByPrimaryKey(new Integer(catIds[i]));
+					categories.add(cat);
+				}
+				catch (NumberFormatException e1) {
+					e1.printStackTrace();
+				}
+				catch (FinderException e1) {
+					e1.printStackTrace();
+				}
+			}
+		} 
 	}
 
 	private void setCurrencies(IWContext iwc) throws RemoteException {
@@ -328,7 +357,15 @@ public class ProductEditorWindow extends IWAdminWindow {
 		SubmitButton closeBtn = new SubmitButton(iwrb.getLocalizedImageButton("close", "Close"), this.ACTION, this.PAR_CLOSE);
 		SubmitButton newBtn = new SubmitButton(iwrb.getLocalizedImageButton("create_new", "Create new"), this.ACTION, this.PAR_NEW);
 
-		if (this._catalogICObjectInstanceId != -1) {
+		
+		SelectionBox catSel = new SelectionBox(PAR_CATEGORY);
+		if (!categories.isEmpty()) {
+			catSel.addMenuElements(categories);
+			catSel.setAllSelected(true);
+		}
+		super.addLeft(iwrb.getLocalizedString("product_category", "Product category"), catSel, true);
+
+/*		//if (this._catalogICObjectInstanceId != -1) {
 			super.addHiddenInput(new HiddenInput(this.PRODUCT_CATALOG_OBJECT_INSTANCE_ID, Integer.toString(_catalogICObjectInstanceId)));
 			SelectionBox catSel = _business.getCategorySelectionBox(_product, PAR_CATEGORY, _catalogICObjectInstanceId);
 			super.addLeft(iwrb.getLocalizedString("product_category", "Product category"), catSel, true);
@@ -337,7 +374,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 			SelectionBox catSel = _business.getSelectionBox(_product, PAR_CATEGORY, _catalogICObjectInstanceId);
 			super.addLeft(iwrb.getLocalizedString("product_category", "Product category"), catSel, true);
 		}
-
+*/
 		Table table = new Table();
 		table.add(newBtn);
 		table.setAlignment(1, 1, "right");

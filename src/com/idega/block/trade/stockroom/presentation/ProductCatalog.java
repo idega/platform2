@@ -202,7 +202,7 @@ public class ProductCatalog extends CategoryBlock {
 		try {
 			Link createLink = ProductEditorWindow.getEditorLink(-1);
 			createLink.setImage(iCreate);
-			createLink.addParameter(ProductEditorWindow.PRODUCT_CATALOG_OBJECT_INSTANCE_ID, getICObjectInstanceID());
+//			createLink.addParameter(ProductEditorWindow.PRODUCT_CATALOG_OBJECT_INSTANCE_ID, getICObjectInstanceID());
 			createLink.setToolTip(iwrb.getLocalizedString("trade.product_catalog.create_new_product", "Create new product"));
 			Link detachLink = getCategoryLink(com.idega.block.trade.stockroom.data.ProductCategoryBMPBean.CATEGORY_TYPE_PRODUCT);
 			detachLink.addParameter(CategoryWindow.prmObjInstId, getICObjectInstanceID());
@@ -231,6 +231,11 @@ public class ProductCatalog extends CategoryBlock {
 				catch (Exception e) {
 					e.printStackTrace(System.err);
 				}
+			}
+			
+			Iterator iter = productCategories.iterator();
+			while (iter.hasNext()) {
+				createLink.addParameter(ProductEditorWindow.PARAMETER_CATEGORY_ID, ( (ICCategory) iter.next()).getPrimaryKey().toString());
 			}
 			Table table = new Table();
 			table.setCellpadding(0);
