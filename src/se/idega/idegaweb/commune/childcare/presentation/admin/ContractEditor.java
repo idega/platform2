@@ -16,6 +16,8 @@ import se.idega.idegaweb.commune.care.data.EmploymentType;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock;
+import se.idega.idegaweb.commune.school.presentation.CentralPlacementSchoolGroupEditor;
+
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.presentation.SchoolClassDropdownDouble;
@@ -53,7 +55,8 @@ public class ContractEditor extends ChildCareBlock {
 	private static String ACTION_UPDATE = "ce_u";
 	private static String ACTION_DELETE = "ce_d";
 	
-	private static String PARAMETER_CONTRACT_ID = "p_ci";
+	public static String PARAMETER_CONTRACT_ID = "p_ci";
+	public static String PARAMETER_APPLICATION_ID = "p_ai";
 	private static String PARAMETER_FROM_DATE = "p_fd";
 	private static String PARAMETER_CANCELLED_DATE = "p_cd";
 	private static String PARAMETER_CLEAR_DATE = "p_cld";
@@ -62,14 +65,25 @@ public class ContractEditor extends ChildCareBlock {
 	private static String PARAMETER_INVOICE_REVCEIVER = "p_ir";
 	private static String PARAMETER_SCHOOL_TYPE = "p_sct";
 	private static String PARAMETER_SCHOOL_CLASS = "p_scc";
+
+	private boolean showBackButton = true;
 	
 	public void init(IWContext iwc) throws Exception {
 		int applId = session.getApplicationID();
+		if(iwc.isParameterSet(PARAMETER_APPLICATION_ID)){
+		    try {
+                applId = Integer.parseInt(iwc.getParameter(PARAMETER_APPLICATION_ID));
+            } catch (NumberFormatException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+		    
+		}
 		if (applId > 0) {
 			application = getBusiness().getApplication(applId);
 			
 			String action = iwc.getParameter(ACTION);
-			if (ACTION_EDIT.equals(action)) {
+			if (ACTION_EDIT.equals(action) || iwc.isParameterSet(PARAMETER_CONTRACT_ID)) {
 				displayEditor(iwc);
 				displayContracts(iwc);
 			} else if (ACTION_UPDATE.equals(action)) {
@@ -84,14 +98,21 @@ public class ContractEditor extends ChildCareBlock {
 			} else {
 				displayContracts(iwc);
 			}
-		} else {
+		} 
+		else {
 			add(localize("child_care.no_application_selected"," No application selected "));
 		}
-		add(Text.getBreak());
-		GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back",localize("child_care.select_new_application","Select new application")));
-		back.setPageToOpen(getBackPage());
-		add(back);
+		if(showBackButton){
+			add(Text.getBreak());
+			GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back",localize("child_care.select_new_application","Select new application")));
+			back.setPageToOpen(getBackPage());
+			add(back);
+		}
 		
+	}
+	
+	public void setShowBackButton(boolean flag){
+	    this.showBackButton = flag;
 	}
 	
 	private void deleteContract(IWContext iwc) {
@@ -193,6 +214,7 @@ public class ContractEditor extends ChildCareBlock {
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		form.add(table);
+		form.maintainParameter(PARAMETER_APPLICATION_ID);
 		
 		int row = 1;
 		
@@ -353,13 +375,14 @@ public class ContractEditor extends ChildCareBlock {
 			table.add(getLocalizedSmallText("child_care.school_class", "School class"), 1, row);
 			table.add(schoolClasses.getSecondaryDropdown(),2,row++);
 			table.add(schoolClasses,2,row);
-			/*
+			
+			row++;
 			GenericButton createGroup = getButton(new GenericButton("", localize("child_care.create_group", "Create group")));
 			createGroup.setWindowToOpen(CentralPlacementSchoolGroupEditor.class);
 			table.add(createGroup,2,row);
-			*/
-			row++;
+			
 			Link back = new Link(getResourceBundle().getLocalizedImageButton("child_care.cancel","Cancel"));
+			back.maintainParameter(PARAMETER_APPLICATION_ID,iwc);
 			table.add(back, 1, row);
 			
 			SubmitButton update = new SubmitButton(getResourceBundle().getLocalizedImageButton("child_care.update", "Update"), ACTION, ACTION_UPDATE);
@@ -484,11 +507,13 @@ public class ContractEditor extends ChildCareBlock {
 					editLink = new Link(getEditIcon(localize("child_care.edit_contract", "Edit contract")));
 					editLink.addParameter(ACTION, ACTION_EDIT);
 					editLink.addParameter(PARAMETER_CONTRACT_ID, contract.getPrimaryKey().toString());
+					editLink.addParameter(PARAMETER_APPLICATION_ID,contract.getApplicationID());
 					
 
 					deleteLink = new Link(getDeleteIcon(localize("child_care.delete_contract","Delete contract")));
 					deleteLink.addParameter(ACTION, ACTION_DELETE);
 					deleteLink.addParameter(PARAMETER_CONTRACT_ID, contract.getPrimaryKey().toString());
+					deleteLink.addParameter(PARAMETER_APPLICATION_ID,contract.getApplicationID());
 					
 					if (isNotYetActive) {
 						showComment = true;
