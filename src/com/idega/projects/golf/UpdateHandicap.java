@@ -36,9 +36,6 @@ public class UpdateHandicap {
       try {
             int member_id = member.getID();
 
-            /*System.out.print("Updating for member '"+member_id+"'");
-            idegaTimestamp timeBefore = new idegaTimestamp();*/
-
             MemberInfo memberInfo = new MemberInfo(member_id);
             TournamentRound round = null;
             Field field = null;
@@ -65,7 +62,6 @@ public class UpdateHandicap {
             double tournamentHandicap = 0;
 
             Scorecard[] scorecard = (Scorecard[]) (Scorecard[]) Scorecard.getStaticInstance("com.idega.projects.golf.entity.Scorecard").findAll("select * from scorecard where member_id = "+member_id+" and ( scorecard_date > '"+stampur.toSQLDateString()+"' or scorecard_date is null ) order by scorecard_date");
-            //System.out.print(", "+scorecard.length+" scorecards -> ");
             if ( scorecard.length > 0 ) {
               Scorecard[] scorecardsBefore = (Scorecard[]) Scorecard.getStaticInstance("com.idega.projects.golf.entity.Scorecard").findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date < '"+stampur.toSQLDateString()+"' order by scorecard_date desc");
               if ( scorecardsBefore.length > 0 ) {
@@ -142,10 +138,10 @@ public class UpdateHandicap {
 
                     if ( scorecard[m].getUpdateHandicap().equalsIgnoreCase("Y") ) {
                       if ( isTournament ) {
-                        grunn = reiknaHandicap2((double)grunn,realTotalPoints);
+                        grunn = reiknaHandicap2(member,(double)grunn,realTotalPoints);
                       }
                       else {
-                        grunn = reiknaHandicap2((double)grunn,heildarpunktar);
+                        grunn = reiknaHandicap2(member,(double)grunn,heildarpunktar);
                       }
 
                       scorecard[m].setHandicapAfter((float) grunn);
@@ -170,12 +166,6 @@ public class UpdateHandicap {
 
             memberInfo.setHandicap((float) grunn);
             memberInfo.update();
-            /*idegaTimestamp timeAfter = new idegaTimestamp();
-            int secondsAfter = timeAfter.getSecond() + (timeAfter.getMinute() * 60) + (timeAfter.getHour() * 60 * 60);
-            int secondsBefore = timeBefore.getSecond() + (timeBefore.getMinute() * 60) + (timeBefore.getHour() * 60 * 60);
-            int between = secondsAfter - secondsBefore;
-            System.out.println("Done! ("+between+" sec)");*/
-
       }
 
       catch (Exception e) {
@@ -184,81 +174,45 @@ public class UpdateHandicap {
 
     }
 
-    public static double reiknaHandicap2(double grunn, int heildarpunktar) {
+    public static double reiknaHandicap2(Member member, double grunn, int heildarpunktar) {
+      double nyForgjof = 0;
 
-            double nyForgjof = 0;
+      try {
+        double breyting;
 
-            try {
+        if ( heildarpunktar >= 0 ) {
+          breyting = heildarpunktar - 36;
+        }
 
-              double breyting;
+        else {
+          breyting = 0.0;
+        }
 
-              if ( heildarpunktar >= 0 ) {
+        Handicap forgjof = new Handicap(grunn);
 
-                      breyting = heildarpunktar - 36;
+        nyForgjof = forgjof.getNewHandicap(breyting);
 
-              }
+        if ( member.getGender().equalsIgnoreCase("f") ) {
+          if ( nyForgjof > 40.0 ) {
+            nyForgjof = 40.0;
+          }
+        }
+        else if ( member.getGender().equalsIgnoreCase("m") ) {
+          if ( nyForgjof > 36.0 ) {
+            nyForgjof = 36.0;
+          }
+        }
+      }
+      catch (Exception e) {
+          e.printStackTrace(System.out);
+      }
 
-              else {
-
-                      breyting = 0.0;
-
-              }
-
-              Handicap forgjof = new Handicap(grunn);
-
-              nyForgjof = forgjof.getNewHandicap(breyting);
-
-              if ( nyForgjof > 36.0 ) {
-
-                      nyForgjof = 36.0;
-
-              }
-            }
-
-            catch (Exception e) {
-                e.printStackTrace(System.out);
-            }
-
-            return nyForgjof;
+      return nyForgjof;
     }
 
-    public static String reiknaHandicap(double grunn, int heildarpunktar) {
-
-        double nyForgjof = 0;
-
-        try {
-
-            double breyting;
-
-            if ( heildarpunktar >= 0 ) {
-
-                    breyting = heildarpunktar - 36;
-
-            }
-
-            else {
-
-                    breyting = 0.0;
-
-            }
-
-            Handicap forgjof = new Handicap(grunn);
-
-            nyForgjof = forgjof.getNewHandicap(breyting);
-
-            if ( nyForgjof > 36.0 ) {
-
-                    nyForgjof = 36.0;
-
-            }
-
-        }
-
-        catch (Exception e) {
-            e.printStackTrace(System.out);
-        }
-
-        return Double.toString(nyForgjof);
+    public static String reiknaHandicap(Member member, double grunn, int heildarpunktar) {
+      double nyForgjof = reiknaHandicap2(member,grunn,heildarpunktar);
+      return Double.toString(nyForgjof);
     }
 
 }
