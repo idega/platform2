@@ -560,30 +560,34 @@ public class CitizenAccountPreferences extends CommuneBlock {
 				updatePassword = true;
 			}
 
-			// Validate e-mail address
-			if (sEmail.equals("")) {
-				throw new Exception(localize(KEY_EMAIL_EMPTY, DEFAULT_EMAIL_EMPTY));
+            if (null == sEmail || 0 == sEmail.trim ().length ()) {
+                updateEmail = false;
+            } else {
+                // Validate e-mail address
+                if (sEmail.equals("")) {
+                    throw new Exception(localize(KEY_EMAIL_EMPTY, DEFAULT_EMAIL_EMPTY));
+                }
+                if (sEmail.length() < 6) {
+                    throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+                }
+                if (sEmail.indexOf('.') == -1) {
+                    throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+                }					
+                if (sEmail.indexOf('@') == -1) {
+                    throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+                }					
+                String testEmail = sEmail.toLowerCase();
+                for (int i = 0; i < testEmail.length(); i++) {
+                    char c = testEmail.charAt(i);
+                    if ((c < 'a') || (c > 'z')) {
+                        if ((c != '.') && (c != '@') && (c != '_') && ((c < '0') || (c > '9'))) {
+                            throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+                        }
+                    }
+                }
+                updateEmail = true;
 			}
-			if (sEmail.length() < 6) {
-				throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
-			}
-			if (sEmail.indexOf('.') == -1) {
-				throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
-			}					
-			if (sEmail.indexOf('@') == -1) {
-				throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
-			}					
-			String testEmail = sEmail.toLowerCase();
-			for (int i = 0; i < testEmail.length(); i++) {
-				char c = testEmail.charAt(i);
-				if ((c < 'a') || (c > 'z')) {
-					if ((c != '.') && (c != '@') && (c != '_') && ((c < '0') || (c > '9'))) {
-						throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
-					}
-				}
-			}
-			updateEmail = true;
-			
+
 			// Validate c/o-address
 			if (useCOAddress) {
 				if (coStreetAddress.equals("")) {
