@@ -212,7 +212,8 @@ public class SchoolContentEditor extends IWAdminWindow{
 
 		this.addLeft(_iwrb.getLocalizedString("school.name", "Name"), schoolName, true);
 
-		Table addressTable = new Table(2, 6);
+		Table addressTable = new Table(3, 6);
+		addressTable.setCellpaddingAndCellspacing(0);
 		Text sNameText = new Text(_iwrb.getLocalizedString("school.address", "Address"));
 		Text sNumberText = new Text(_iwrb.getLocalizedString("school.number", "Number"));
 		Text sAreaCodeText = new Text(_iwrb.getLocalizedString("school.area_code", "Area Code"));
@@ -234,19 +235,20 @@ public class SchoolContentEditor extends IWAdminWindow{
 		
 		addressTable.add(sNameText, 1, 1);
 		addressTable.add(streetName, 1, 2);
-		addressTable.mergeCells(1, 1, 2, 1);
-		addressTable.mergeCells(1, 2, 2, 2);
+		addressTable.mergeCells(1, 1, 3, 1);
+		addressTable.mergeCells(1, 2, 3, 2);
 		addressTable.add(sAreaCodeText, 1, 3);
-		addressTable.add(sZipAreaText, 2, 3);
+		addressTable.add(sZipAreaText, 3, 3);
 		addressTable.add(areaCode, 1, 4);
-		addressTable.add(zipArea, 2, 4);
+		addressTable.add(zipArea, 3, 4);
 		addressTable.add(sPhoneText, 1, 5);
-		addressTable.add(sFaxText, 2, 5);
+		addressTable.add(sFaxText, 3, 5);
 		addressTable.add(phone, 1, 6);
-		addressTable.add(fax, 2, 6);
-			
+		addressTable.add(fax, 3, 6);
+		addressTable.setWidth(2, 3, "4");
 		
-		this.addLeft(addressTable, true);
+		
+		this.addLeft(addressTable, false);
 		
 		setStyle(information);
 		this.addLeft(_iwrb.getLocalizedString("school.information","Information"), information, true);
