@@ -131,11 +131,13 @@ public class WorkReportSelector extends ClubSelector {
 		IWTimestamp stamp = IWTimestamp.RightNow();
 		
 		int currentYear = stamp.getYear();
-		int beginningYear = currentYear - 1;
+		int beginningYear = 2001;//Because we have no older data, could also be an application setting
 		
 		for (int i = beginningYear; i <= currentYear; i++) {
 			dateSelector.addMenuElement(i,Integer.toString(i));
 		}
+		
+		dateSelector.setSelectedElement(currentYear);
 		
 		Table table = new Table(2,3);
 		table.mergeCells(1,1,2,1);
