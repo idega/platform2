@@ -243,12 +243,12 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		else {
 			Form form = new Form();
 			form.maintainParameter(CitizenChildren.prmChildId);
-			form.setOnSubmit("return checkInputs(findObj('"+PARAMETER_QUEUE+"'),'"+localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once.")+"')");
+			form.setOnSubmit("return checkInputs(findObj('"+PARAMETER_QUEUE+"'))");
 		
 			Script script = form.getAssociatedFormScript();
 			if (script == null)
 				script = new Script();
-			script.addFunction("checkInputs", getCheckSubmitString());
+			script.addFunction("checkInputs", getCheckSubmitString(localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once.")));
 			form.setAssociatedFormScript(script);
 		
 			DropdownMenu drop = getChoiceDropdown(choices, choiceMap);
@@ -266,6 +266,8 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			for (int a = 0; a < choices.length; a++) {
 				provider = (DropdownMenu) drop.clone();
 				provider.setSelectedElement(choices[a]);
+				//if (a == 0)
+					//provider.setOnSubmitFunction("checkInputs", getCheckSubmitString(), localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once."));
 				table.add(getSmallHeader(localize("child_care.provider","Provider")+" "+String.valueOf(a+1)+":"), 1, row);
 				table.add(provider, 3, row++);
 			}
@@ -435,15 +437,15 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		return table;
 	}
 	
-	private String getCheckSubmitString() {
+	private String getCheckSubmitString(String message) {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("function checkInputs(inputs,warnMsg) {").append("\n\t");
+		buffer.append("function checkInputs(inputs) {").append("\n\t");
 		buffer.append("for(var i=0;i<inputs.length;i++) {").append("\n\t\t");
 		buffer.append("var inputValue = inputs[i].options[inputs[i].selectedIndex].value;").append("\n\t\t");
 		buffer.append("for (var j=0;j<inputs.length;j++) {").append("\n\t\t\t");
 		buffer.append("if (i != j) {").append("\n\t\t\t\t");
 		buffer.append("if (inputs[j].options[inputs[j].selectedIndex].value == inputValue) {").append("\n\t\t\t\t\t");
-		buffer.append("alert(warnMsg);").append("\n\t\t\t\t\t");
+		buffer.append("alert('"+message+"');").append("\n\t\t\t\t\t");
 		buffer.append("return false;").append("\n\t\t\t\t");
 		buffer.append("}").append("\n\t\t\t");
 		buffer.append("}").append("\n\t\t");
