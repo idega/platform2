@@ -27,8 +27,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/10/22 09:34:01 $ by $Author: staffan $
- * @version $Revision: 1.54 $
+ * Last modified: $Date: 2003/10/24 07:32:00 $ by $Author: laddi $
+ * @version $Revision: 1.55 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -220,6 +220,21 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendSelect().append(" m.* ").appendFrom().append(getEntityName()).append(" m, sch_school s, sch_school_sch_school_type st, sch_school_class c");
 		sql.appendWhere().append("m." + MEMBER).appendEqualSign().append(studentID);
 		sql.appendAndEquals("m." + SCHOOLCLASS, "c.sch_school_class_id");
+		sql.appendAndEquals("c.school_id", "s.sch_school_id");
+		sql.appendAndEquals("s.sch_school_id", "st.sch_school_id");
+		sql.appendAnd().append("st.sch_school_type_id").appendIn().appendLeftParenthesis();
+		sql.appendCommaDelimited(schoolTypes);
+		sql.appendRightParenthesis();
+
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+
+	public Collection ejbFindByStudentAndSchoolAndTypes(int studentID, int schoolID, Collection schoolTypes) throws FinderException, RemoteException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelect().append(" m.* ").appendFrom().append(getEntityName()).append(" m, sch_school s, sch_school_sch_school_type st, sch_school_class c");
+		sql.appendWhere().append("m." + MEMBER).appendEqualSign().append(studentID);
+		sql.appendAndEquals("m." + SCHOOLCLASS, "c.sch_school_class_id");
+		sql.appendAndEquals("c.school_id", schoolID);
 		sql.appendAndEquals("c.school_id", "s.sch_school_id");
 		sql.appendAndEquals("s.sch_school_id", "st.sch_school_id");
 		sql.appendAnd().append("st.sch_school_type_id").appendIn().appendLeftParenthesis();
