@@ -6,7 +6,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+import com.idega.block.school.data.SchoolClassMember;
 
 import com.idega.block.school.data.School;
 import com.idega.data.GenericEntity;
@@ -25,7 +25,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public static final String COLUMN_INVOICE_HEADER = "invoice_header";
 	public static final String COLUMN_PAYMENT_RECORD_ID = "payment_record_id";
 	public static final String COLUMN_PROVIDER_ID = "provider_id";
-	public static final String COLUMN_CONTRACT_ID = "contract_id";
+	public static final String COLUMN_SCHOOL_CLASS_MEMBER_ID = "sch_class_member_id";
 	public static final String COLUMN_INVOICE_TEXT = "invoice_text";
 	public static final String COLUMN_RULE_TEXT = "rule_text";
 	public static final String COLUMN_DAYS = "days";
@@ -55,7 +55,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addAttribute(COLUMN_INVOICE_HEADER, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PAYMENT_RECORD_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PROVIDER_ID, "", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_CONTRACT_ID, "", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_SCHOOL_CLASS_MEMBER_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_INVOICE_TEXT, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_RULE_TEXT, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DAYS, "", true, true, java.lang.Integer.class);
@@ -78,7 +78,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 
 		addManyToOneRelationship(COLUMN_INVOICE_HEADER, InvoiceHeader.class);
 		addManyToOneRelationship(COLUMN_PAYMENT_RECORD_ID, PaymentRecord.class);
-		addManyToOneRelationship(COLUMN_CONTRACT_ID, ChildCareContract.class);
+		addManyToOneRelationship(COLUMN_SCHOOL_CLASS_MEMBER_ID, SchoolClassMember.class);
 		addManyToOneRelationship(COLUMN_PROVIDER_ID, School.class);
 		addManyToOneRelationship(COLUMN_RULE_SPEC_TYPE, RegulationSpecType.class);
 	}
@@ -91,8 +91,8 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public int getProviderId() {
 		return getIntColumnValue(COLUMN_PROVIDER_ID);
 	}
-	public int getContractId() {
-		return getIntColumnValue(COLUMN_CONTRACT_ID);
+	public int getSchoolClassMemberId() {
+		return getIntColumnValue(COLUMN_SCHOOL_CLASS_MEMBER_ID);
 	}
 	public String getInvoiceText() {
 		return getStringColumnValue(COLUMN_INVOICE_TEXT);
@@ -174,8 +174,8 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public void setColumnProviderId(int i) {
 		setColumn(COLUMN_PROVIDER_ID, i);
 	}
-	public void setContractId(int i) {
-		setColumn(COLUMN_CONTRACT_ID, i);
+	public void setSchoolClassMemberId(int i) {
+		setColumn(COLUMN_SCHOOL_CLASS_MEMBER_ID, i);
 	}
 	public void setInvoiceText(String s) {
 		setColumn(COLUMN_INVOICE_TEXT, s);

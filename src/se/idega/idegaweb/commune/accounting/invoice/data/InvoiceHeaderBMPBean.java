@@ -1,19 +1,16 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
-import java.sql.Date;
-import java.util.Calendar;
-import java.util.Collection;
-
-import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean;
-
 import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolClassMemberBMPBean;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 import com.idega.user.data.UserBMPBean;
 import com.idega.util.IWTimestamp;
+import java.sql.Date;
+import java.util.Calendar;
+import java.util.Collection;
+import javax.ejb.FinderException;
 
 /**
  * The databean for the invoice header. The invoice header holds all the 
@@ -183,7 +180,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
         final String H_ = "h."; // sql alias for invoice header
         final String U_ = "u."; // sql alias for user
         final String R_ = "r."; // sql alias for invoice record
-        final String C_ = "c."; // sql alias for contract
+        final String M_ = "m."; // sql alias for school class member
         final String userId = user.getPrimaryKey ().toString ();
         final Date fromPeriod = getPeriod (fromDate, 0);
         final Date toPeriod = getPeriod (toDate, 1);
@@ -192,8 +189,8 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
         final String [] outerTableAliases = { "h", "u" };
         final String [] innerTableNames =
                 { InvoiceRecordBMPBean.ENTITY_NAME,
-                  ChildCareContractBMPBean.ENTITY_NAME };
-        final String [] innerTableAliases = { "r", "c" };
+                  SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER };
+        final String [] innerTableAliases = { "r", "m" };
 
         sql.appendSelect()
                 .append (H_)
@@ -213,9 +210,9 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
                 .appendEquals (H_ + ENTITY_NAME + "_id",
                                R_ + InvoiceRecordBMPBean.COLUMN_INVOICE_HEADER)
                 .appendAndEquals
-                (R_ + InvoiceRecordBMPBean.COLUMN_CONTRACT_ID,
-                 C_ + ChildCareContractBMPBean.COLUMN_CONTRACT_ID)
-                .appendAndEquals (C_ + ChildCareContractBMPBean.COLUMN_CHILD_ID,
+                (R_ + InvoiceRecordBMPBean.COLUMN_SCHOOL_CLASS_MEMBER_ID,
+                 M_ + SchoolClassMemberBMPBean.SCHOOLCLASSMEMBERID)
+                .appendAndEquals (M_ + SchoolClassMemberBMPBean.MEMBER,
                                   userId)
                 .appendRightParenthesis ()
                 .appendRightParenthesis ()

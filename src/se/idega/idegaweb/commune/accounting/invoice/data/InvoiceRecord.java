@@ -6,7 +6,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public float getAmount();
  public float getAmountVAT();
  public java.lang.String getChangedBy();
- public int getContractId();
+ public int getSchoolClassMemberId();
  public java.lang.String getCreatedBy();
  public java.sql.Date getDateChanged();
  public java.sql.Date getDateCreated();
@@ -31,7 +31,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public void setAmountVAT(float p0);
  public void setChangedBy(java.lang.String p0);
  public void setColumnProviderId(int p0);
- public void setContractId(int p0);
+ public void setSchoolClassMemberId(int p0);
  public void setCreatedBy(java.lang.String p0);
  public void setDateChanged(java.sql.Date p0);
  public void setDateCreated(java.sql.Date p0);

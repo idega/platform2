@@ -1,16 +1,26 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberHome;
+import com.idega.block.school.data.SchoolHome;
+import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.presentation.IWContext;
+import com.idega.user.data.User;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
@@ -27,29 +37,16 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
-
-import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolCategory;
-import com.idega.block.school.data.SchoolCategoryHome;
-import com.idega.block.school.data.SchoolHome;
-import com.idega.business.IBOServiceBean;
-import com.idega.data.IDOException;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.presentation.IWContext;
-import com.idega.user.data.User;
 
 /**
  * Holds most of the logic for the batchjob that creates the information that is
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/12 11:20:49 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/12 14:55:55 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.42 $
+ * @version $Revision: 1.43 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -253,11 +250,14 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return null == collection ? new InvoiceRecord[0] : (InvoiceRecord[]) collection.toArray(new InvoiceRecord[0]);
 	}
 
-	public User getChildByInvoiceRecord(final InvoiceRecord record) throws RemoteException {
-		final ChildCareContractHome contractHome = (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
+	public User getChildByInvoiceRecord(final InvoiceRecord record)
+        throws RemoteException {
+		final SchoolClassMemberHome home = (SchoolClassMemberHome)
+                IDOLookup.getHome (SchoolClassMember.class);
 		try {
-			final ChildCareContract contract = contractHome.findApplicationByContract(record.getContractId());
-			return null != contract ? contract.getChild() : null;
+			final SchoolClassMember student = home.findByPrimaryKey
+                    (new Integer (record.getSchoolClassMemberId()));
+			return null != student ? student.getStudent () : null;
 		} catch (final FinderException e) {
 			return null;
 		}
