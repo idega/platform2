@@ -105,7 +105,7 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 			++column;
 			table.add(getSmallHeader(localize(SEARCH_LAST_NAME, "Last name")), column, 1);
 			TextInput lastNameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_LAST_NAME));
-			lastNameInput.setLength(5);
+			lastNameInput.setLength(15);
 			lastNameInput.keepStatusOnAction(true);
 			table.add(lastNameInput, column++, 2);
 			
