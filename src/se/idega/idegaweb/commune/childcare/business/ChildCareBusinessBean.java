@@ -145,6 +145,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private final static String PROPERTY_HAS_THREE_MONTHS_RULE = "use_three_months_rule";
 	
 	private final static String PROPERTY_USE_VACANCIES = "use_vacancies";
+	
+	private final static String PROPERTY_USE_EMPLOYMENT = "use_employment";
 
 	private final static String PROPERTY_SEND_JOINT_MESSAGE_TO_OTHER_CUSTODIAN = "send_joint_message_to_other_custodian_on_child_care_choice";
 
@@ -4981,5 +4983,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		boolean useVacancies = bundle.getBooleanProperty(PROPERTY_USE_VACANCIES, false);
 		
 		return useVacancies;
+	}
+	
+	public boolean getUseEmployment(){
+		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
+		boolean useEmployment = bundle.getBooleanProperty(PROPERTY_USE_EMPLOYMENT, true);
+		
+		return useEmployment;
 	}
 }

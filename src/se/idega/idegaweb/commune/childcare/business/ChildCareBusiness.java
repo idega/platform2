@@ -1222,5 +1222,7 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getVacancies
 	 */
 	public boolean getUseVacancies();
+	
+	public boolean getUseEmployment();
 
 }
