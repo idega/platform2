@@ -97,6 +97,7 @@ public class UserStatusTab extends UserTab {
 		_activeField = new CheckBox(_activeFieldName);
 		_statusField = new SelectPanel(_statusFieldName);
 		_parentStatusField = new SelectDropdown(_parentStatusFieldName);
+		_boardStatusField = new SelectDropdown(_boardStatusFieldName);
 		
 		/**
 		 * @todo Setja í töflu og sækja þaðan.
