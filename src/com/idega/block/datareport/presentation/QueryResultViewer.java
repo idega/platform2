@@ -111,11 +111,11 @@ public class QueryResultViewer extends Block {
 		else {
 			errorMessage = executeQueries(query, numberOfRowsLimit, bridge, executedSQLStatements, resourceBundle, iwc);
 			if (errorMessage != null) {
-	  		addErrorMessage(errorMessage);
-	  		if (resultNumberOfRows != -1) {
-	  			showInputFieldsOrExecuteQuery(executedSQLStatements, resourceBundle, iwc);
-	  		}
-	  	}
+				addErrorMessage(errorMessage);
+				if (resultNumberOfRows != -1) {
+					showInputFieldsOrExecuteQuery(executedSQLStatements, resourceBundle, iwc);
+				}
+			}
 		}
 	}
 	
@@ -392,8 +392,14 @@ public class QueryResultViewer extends Block {
 	private String executeQueries(SQLQuery sqlQuery, int numberOfRows, QueryToSQLBridge sqlBridge, List executedSQLStatements, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
 		QueryResult queryResult = sqlBridge.executeQueries(sqlQuery, numberOfRows, executedSQLStatements);
 		// check if everything is fine
-		if (queryResult == null || queryResult.isEmpty())	{
-			// nothing to do
+		if (queryResult == null) {
+			// serious error. 
+			// It's very likely that the server has chrashed before without removing all created views.
+			// In that case a new view with the same name can't be created - the database will throw an error.
+			return resourceBundle.getLocalizedString("ro_execution_of_query_failed", "Execution of query failed.");
+		}
+		if (queryResult.isEmpty())	{
+			// nothing to do, result is empty, that is not an error
 			return resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
 		}
 		resultNumberOfRows = queryResult.getNumberOfRows();
@@ -412,6 +418,11 @@ public class QueryResultViewer extends Block {
 		// get design
 		JasperReportBusiness reportBusiness = getReportBusiness();
 		DesignBox designBox = getDesignBox(sqlQuery, reportBusiness, resourceBundle, iwc);
+		// check if the design is fine
+		if (designBox ==  null) {
+			return resourceBundle.getLocalizedString("ro_design_is_not available", "Problems with the chosen layout occurred.");
+		}
+		
 	    // synchronize design and result
 	    Map designParameters = new HashMap();
 	    designParameters.put(REPORT_HEADLINE_KEY, sqlQuery.getName());
