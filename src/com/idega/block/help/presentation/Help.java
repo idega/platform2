@@ -53,6 +53,7 @@ public class Help extends Block {
 	}
 	
 	public void main(IWContext iwc) throws Exception {
+		this.empty();
 		if (_iwbCore == null) {
 			_iwbCore = iwc.getApplication().getBundle(CORE_BUNDLE);
 			_iwrbCore = _iwbCore.getResourceBundle(iwc);
