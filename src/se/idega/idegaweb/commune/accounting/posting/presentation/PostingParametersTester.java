@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersTester.java,v 1.6 2003/09/08 08:10:07 laddi Exp $
+ * $Id: PostingParametersTester.java,v 1.7 2003/09/09 14:09:44 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,7 +26,7 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * PostingParametersTest is an idegaWeb block that is used to test the Posting parameters retrieval 
  *  
  * <p>
- * $Id: PostingParametersTester.java,v 1.6 2003/09/08 08:10:07 laddi Exp $
+ * $Id: PostingParametersTester.java,v 1.7 2003/09/09 14:09:44 laddi Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version $Version$
@@ -47,9 +47,7 @@ public class PostingParametersTester extends AccountingBlock {
 
 	private String _errorMessage = "";
 
-	public void main(final IWContext iwc) {
-		setResourceBundle(getResourceBundle(iwc));
-
+	public void init(final IWContext iwc) {
 		try {
 			int action = parseAction(iwc);
 			prepareMainTable();

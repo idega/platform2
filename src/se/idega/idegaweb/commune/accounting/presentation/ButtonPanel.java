@@ -1,5 +1,5 @@
 /*
- * $Id: ButtonPanel.java,v 1.13 2003/09/02 09:56:44 goranb Exp $
+ * $Id: ButtonPanel.java,v 1.14 2003/09/09 14:09:44 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package se.idega.idegaweb.commune.accounting.presentation;
 
 import com.idega.builder.data.IBPage;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.GenericButton;
@@ -19,10 +20,10 @@ import com.idega.presentation.ui.SubmitButton;
  * A class for button panels in Check & Peng application forms.
  * 
  * <p>
- * Last modified: $Date: 2003/09/02 09:56:44 $
+ * Last modified: $Date: 2003/09/09 14:09:44 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  * @see ApplicationForm
  */
 public class ButtonPanel extends AccountingBlock {
@@ -146,5 +147,11 @@ public class ButtonPanel extends AccountingBlock {
 		} else {
 			return defaultText;
 		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.presentation.AccountingBlock#init(com.idega.presentation.IWContext)
+	 */
+	public void init(IWContext iwc) throws Exception {
 	}
 }

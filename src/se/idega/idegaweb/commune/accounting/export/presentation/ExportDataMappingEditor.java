@@ -7,9 +7,9 @@ import java.rmi.RemoteException;
 
 import javax.ejb.FinderException;
 
-import com.idega.business.IBOLookup;
-import com.idega.business.IBORuntimeException;
-import com.idega.idegaweb.IWApplicationContext;
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -18,10 +18,6 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-
-import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
-import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
-import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 
 /**
  * @author laddi
@@ -49,12 +45,12 @@ public class ExportDataMappingEditor extends AccountingBlock {
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
-	public void main(IWContext iwc) throws Exception {
+	public void init(IWContext iwc) throws Exception {
 		parseAction(iwc);
-		drawForm(iwc);
+		drawForm();
 	}
 	
-	private void drawForm(IWContext iwc) throws RemoteException {
+	private void drawForm() throws RemoteException {
 		Form form = new Form();
 		
 		Table table = new Table(3, 21);
@@ -63,7 +59,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.setWidth(2, 12);
 		int row = 1;
 		
-		DropdownMenu operationalField = this.getDropdownMenuLocalized(PARAMETER_OPERATIONAL_FIELD, getExportBusiness(iwc).getAllOperationalFields(), "getLocalizedKey");
+		DropdownMenu operationalField = this.getDropdownMenuLocalized(PARAMETER_OPERATIONAL_FIELD, getBusiness().getExportBusiness().getAllOperationalFields(), "getLocalizedKey");
 		operationalField.addMenuElementFirst("", localize("export.select_operational_field", "Select operational field"));
 		operationalField.setToSubmit();
 		if (_operationalField != null)
@@ -113,8 +109,8 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		table.add(customerClaimAccount, 3, row++);
 		
 		DropdownMenu accountSettlementType = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_ACCOUNT_SETTLEMENT_TYPE));
-		accountSettlementType.addMenuElement(getExportBusiness(iwc).getAccountSettlementTypeDayByDay(), localize("export.type_day_by_day", "Day by day"));
-		accountSettlementType.addMenuElement(getExportBusiness(iwc).getAccountSettlementTypeSpecificDate(), localize("export.type_specific_date", "Specific date"));
+		accountSettlementType.addMenuElement(getBusiness().getExportBusiness().getAccountSettlementTypeDayByDay(), localize("export.type_day_by_day", "Day by day"));
+		accountSettlementType.addMenuElement(getBusiness().getExportBusiness().getAccountSettlementTypeSpecificDate(), localize("export.type_specific_date", "Specific date"));
 		if (_mapping != null && _mapping.getAccountSettlementType() != -1)
 			accountSettlementType.setSelectedElement(_mapping.getAccountSettlementType());
 		
@@ -178,7 +174,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 				providerAuthorization = true;
 				
 			try {
-				getExportBusiness(iwc).storeExportDataMapping(_operationalField, iwc.getParameter(PARAMETER_JOURNAL_NUMBER), iwc.getParameter(PARAMETER_ACCOUNT), iwc.getParameter(PARAMETER_COUNTER_ACCOUNT), iwc.getParameter(PARAMETER_PAYABLE_ACCOUNT), iwc.getParameter(PARAMETER_CUSTOMER_CLAIM_ACCOUNT), Integer.parseInt(iwc.getParameter(PARAMETER_ACCOUNT_SETTLEMENT_TYPE)), cashFlowIn, cashFlowOut, providerAuthorization);
+				getBusiness().getExportBusiness().storeExportDataMapping(_operationalField, iwc.getParameter(PARAMETER_JOURNAL_NUMBER), iwc.getParameter(PARAMETER_ACCOUNT), iwc.getParameter(PARAMETER_COUNTER_ACCOUNT), iwc.getParameter(PARAMETER_PAYABLE_ACCOUNT), iwc.getParameter(PARAMETER_CUSTOMER_CLAIM_ACCOUNT), Integer.parseInt(iwc.getParameter(PARAMETER_ACCOUNT_SETTLEMENT_TYPE)), cashFlowIn, cashFlowOut, providerAuthorization);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
@@ -187,7 +183,7 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		
 		if (_operationalField != null) {
 			try {
-				_mapping = getExportBusiness(iwc).getExportDataMapping(_operationalField);
+				_mapping = getBusiness().getExportBusiness().getExportDataMapping(_operationalField);
 			}
 			catch (RemoteException e) {
 				_mapping = null;
@@ -198,15 +194,6 @@ public class ExportDataMappingEditor extends AccountingBlock {
 		}
 	}
 
-	private ExportBusiness getExportBusiness(IWApplicationContext iwac) {
-		try {
-			return (ExportBusiness) IBOLookup.getServiceInstance(iwac, ExportBusiness.class);
-		}
-		catch (RemoteException e) {
-			throw new IBORuntimeException(e.getMessage());
-		}
-	}
-	
 	/**
 	 * @param inputWidth
 	 */

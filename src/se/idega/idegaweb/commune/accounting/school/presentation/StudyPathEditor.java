@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathEditor.java,v 1.3 2003/09/09 09:01:35 anders Exp $
+ * $Id: StudyPathEditor.java,v 1.4 2003/09/09 14:09:44 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -33,10 +33,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/09 09:01:35 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/09 14:09:44 $ by $Author: laddi $
  *
  * @author Anders Lindman
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class StudyPathEditor extends AccountingBlock {
 
@@ -80,9 +80,7 @@ public class StudyPathEditor extends AccountingBlock {
 	/**
 	 * @see com.idega.presentation.Block#main()
 	 */
-	public void main(final IWContext iwc) {
-		setResourceBundle(getResourceBundle(iwc));
-
+	public void init(final IWContext iwc) {
 		try {
 			int action = parseAction(iwc);
 			switch (action) {

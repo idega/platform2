@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.17 2003/09/08 08:10:07 laddi Exp $
+ * $Id: PostingParameterList.java,v 1.18 2003/09/09 14:09:43 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.17 2003/09/08 08:10:07 laddi Exp $
+ * $Id: PostingParameterList.java,v 1.18 2003/09/09 14:09:43 laddi Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -120,8 +120,7 @@ public class PostingParameterList extends AccountingBlock {
 	 * Handles all of the blocks presentation.
 	 * @param iwc user/session context 
 	 */
-	public void main(final IWContext iwc) {
-		setResourceBundle(getResourceBundle(iwc));
+	public void init(final IWContext iwc) {
 		try {
 			int action = parseAction(iwc);
 			switch (action) {

@@ -4,6 +4,7 @@
  */
 package se.idega.idegaweb.commune.accounting.presentation;
 
+import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -13,11 +14,17 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Locale;
 
+import se.idega.idegaweb.commune.accounting.business.AccountingBusiness;
+import se.idega.idegaweb.commune.accounting.business.AccountingSession;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
+import com.idega.business.IBOLookup;
+import com.idega.business.IBORuntimeException;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.SubmitButton;
@@ -30,10 +37,28 @@ import com.idega.presentation.ui.util.SelectorUtility;
  * @version 1.0
  */
 
-public class AccountingBlock extends CommuneBlock {
+public abstract class AccountingBlock extends CommuneBlock {
 	
 	public final static String IW_ACCOUNTING_BUNDLE_IDENTIFER = "se.idega.idegaweb.commune.accounting";
 	
+	private AccountingBusiness business;
+	private AccountingSession session;
+	
+	public void main(IWContext iwc) throws Exception{
+		setResourceBundle(getResourceBundle(iwc));
+		business = getAccountingBusiness(iwc);
+		session = getAccountingSession(iwc);
+
+		init(iwc);
+	}
+	
+	/**
+	 * Override this method instead of the main method from Block.
+	 * @param iwc
+	 * @throws Exception
+	 */
+	public abstract void init(IWContext iwc) throws Exception;
+
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
 	 */
@@ -41,6 +66,20 @@ public class AccountingBlock extends CommuneBlock {
 		return IW_ACCOUNTING_BUNDLE_IDENTIFER;
 	}
 	
+	/**
+	 * @return AccountingBusiness
+	 */
+	public AccountingBusiness getBusiness() {
+		return business;
+	}
+
+	/**
+	 * @return AccountingSession
+	 */
+	public AccountingSession getSession() {
+		return session;
+	}
+
 	/**
 	 * Gets the common number format for the current locale
 	 */
@@ -378,5 +417,23 @@ public class AccountingBlock extends CommuneBlock {
 	 */
 	protected CheckBox getCheckBox(String parameter, String value) {
 		return (CheckBox) getStyledInterface(new CheckBox(parameter, value));
+	}
+	
+	protected AccountingBusiness getAccountingBusiness(IWApplicationContext iwac) {
+		try {
+			return (AccountingBusiness) IBOLookup.getServiceInstance(iwac, AccountingBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+
+	protected AccountingSession getAccountingSession(IWUserContext iwuc) {
+		try {
+			return (AccountingSession) IBOLookup.getSessionInstance(iwuc, AccountingSession.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
 	}
 }

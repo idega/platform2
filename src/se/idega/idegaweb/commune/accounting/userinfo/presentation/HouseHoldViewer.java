@@ -73,7 +73,7 @@ public class HouseHoldViewer extends AccountingBlock {
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
-	public void main(IWContext iwc) throws Exception {
+	public void init(IWContext iwc) throws Exception {
 		nf = NumberFormat.getNumberInstance(iwc.getCurrentLocale());
 		process(iwc);
 		presentate(iwc);

@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeEditor.java,v 1.3 2003/09/08 08:10:07 laddi Exp $
+ * $Id: NoticeEditor.java,v 1.4 2003/09/09 14:09:44 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -37,10 +37,10 @@ import se.idega.idegaweb.commune.accounting.message.business.NoticeException;
  * notice message to all providers. The message is sent as an
  * e-mail and as case.
  * <p>
- * Last modified: $Date: 2003/09/08 08:10:07 $ by $Author: laddi $
+ * Last modified: $Date: 2003/09/09 14:09:44 $ by $Author: laddi $
  *
  * @author Anders Lindman
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class NoticeEditor extends AccountingBlock {
 
@@ -76,9 +76,7 @@ public class NoticeEditor extends AccountingBlock {
 	/**
 	 * @see com.idega.presentation.Block#main()
 	 */
-	public void main(final IWContext iwc) {
-		setResourceBundle(getResourceBundle(iwc));
-
+	public void init(final IWContext iwc) {
 		try {
 			int action = parseAction(iwc);
 			switch (action) {

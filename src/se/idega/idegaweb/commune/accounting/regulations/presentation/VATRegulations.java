@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulations.java,v 1.10 2003/09/08 08:10:07 laddi Exp $
+ * $Id: VATRegulations.java,v 1.11 2003/09/09 14:09:44 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * VAT regulations for providers. 
  * This class is replaced by VATEditor.
  * <p>
- * Last modified: $Date: 2003/09/08 08:10:07 $ by $Author: laddi $
+ * Last modified: $Date: 2003/09/09 14:09:44 $ by $Author: laddi $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class VATRegulations extends AccountingBlock {
 
@@ -44,9 +44,7 @@ public class VATRegulations extends AccountingBlock {
 	 * Handles all of the blocks presentation.
 	 * @param iwc user/session context 
 	 */
-	public void main(final IWContext iwc) {
-		setResourceBundle(getResourceBundle(iwc));
-
+	public void init(final IWContext iwc) {
 		try {
 			int action = parseAction();
 			switch (action) {

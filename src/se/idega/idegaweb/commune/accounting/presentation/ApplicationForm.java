@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.13 2003/09/08 08:10:07 laddi Exp $
+ * $Id: ApplicationForm.java,v 1.14 2003/09/09 14:09:44 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package se.idega.idegaweb.commune.accounting.presentation;
 
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -19,10 +20,10 @@ import com.idega.presentation.ui.HiddenInput;
  * A generic form for Check & Peng presentation blocks.
  * 
  * <p>
- * Last modified: $Date: 2003/09/08 08:10:07 $
+ * Last modified: $Date: 2003/09/09 14:09:44 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class ApplicationForm extends AccountingBlock {
 
@@ -43,6 +44,9 @@ public class ApplicationForm extends AccountingBlock {
 		form.add(table);
 		super.add(form);
 		setParent(parent);
+	}
+	
+	public void init(IWContext iwc) throws Exception {
 	}
 	
 	public void setParent(AccountingBlock parent){
