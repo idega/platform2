@@ -69,9 +69,9 @@ public class CitizenEditor extends UserEditor {
 				relationsTable.add(getRelatedUserLink(partner), 2, row);
 				relationsTable.add(
 					getDisConnectorLink(
-						familyService.getSpouseRelationType(),
-						(Integer) partner.getPrimaryKey(),
+						familyService.getSpouseRelationType(),null,
 						(Integer) user.getPrimaryKey(),
+						(Integer) partner.getPrimaryKey(),
 						getDeleteIcon(
 							iwrb.getLocalizedString("mbe.remove_spouse_relation", "Remove spouse relationship"))),
 					3,
@@ -90,10 +90,10 @@ public class CitizenEditor extends UserEditor {
 						User custodian = (User) iter.next();
 						relationsTable.add(getRelatedUserLink(custodian), 2, row);
 						relationsTable.add(
-							getDisConnectorLink(
+							getDisConnectorLink(null,
 								familyService.getCustodianRelationType(),
-								(Integer) custodian.getPrimaryKey(),
 								(Integer) user.getPrimaryKey(),
+								(Integer) custodian.getPrimaryKey(),
 								getDeleteIcon(
 									iwrb.getLocalizedString(
 										"mbe.remove_custodian_relation",
@@ -121,9 +121,10 @@ public class CitizenEditor extends UserEditor {
 						relationsTable.add(getRelatedUserLink(child), 2, row);
 						relationsTable.add(
 							getDisConnectorLink(
-								familyService.getChildRelationType(),
-								(Integer) child.getPrimaryKey(),
+								familyService.getCustodianRelationType(),null,
 								(Integer) user.getPrimaryKey(),
+								(Integer) child.getPrimaryKey(),
+								
 								getDeleteIcon(
 									iwrb.getLocalizedString("mbe.remove_child_relation", "Remove child relationship"))),
 							3,
@@ -160,7 +161,7 @@ public class CitizenEditor extends UserEditor {
 					iwc,
 					iwrb.getLocalizedString("mbe.register_spouse", "Register spouse"),
 					(Integer) user.getPrimaryKey(),
-					logic.getSpouseRelationType());
+					logic.getSpouseRelationType(),null);
 			buttonTable.add(spouseButton, col++, row);
 
 			//Image regCustodian = iwrb.getLocalizedImageButton("mbe.register_custodian","Register custodian");
@@ -172,7 +173,7 @@ public class CitizenEditor extends UserEditor {
 					iwc,
 					iwrb.getLocalizedString("mbe.register_custodian", "Register custodian"),
 					(Integer) user.getPrimaryKey(),
-					logic.getChildRelationType());
+					logic.getChildRelationType(),null);
 			buttonTable.add(custodianButton, col++, row);
 
 			//Image regChild = iwrb.getLocalizedImageButton("mbe.register_child","Register child");
@@ -184,7 +185,7 @@ public class CitizenEditor extends UserEditor {
 					iwc,
 					iwrb.getLocalizedString("mbe.register_child", "Register child"),
 					(Integer) user.getPrimaryKey(),
-					logic.getCustodianRelationType());
+					logic.getCustodianRelationType(),null);
 			buttonTable.add(childButton, col++, row);
 		}
 		catch (RemoteException e) {
