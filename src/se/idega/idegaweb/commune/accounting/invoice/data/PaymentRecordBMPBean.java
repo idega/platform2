@@ -433,6 +433,37 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		return idoGetNumberOfRecords(sql);
 	}
 
+
+	/**
+	 * Gets the # of placements handled for the given schoolID, period and category
+	 * @param schoolCategoryID
+	 * @param period
+	 * @return # of placements
+	 * @throws FinderException
+	 * @throws IDOException
+	 */
+	public int ejbHomeGetPlacementCountForSchoolIdAndDateAndSchoolCategory(int schoolID,  Date period, String schoolCategoryID ) throws IDOException {
+
+		IWTimestamp start = new IWTimestamp(period);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+		
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelect().append("count (distinct m.ic_user_id) from " + getEntityName() + " p, sch_class_member m , cacc_payment_header h, cacc_invoice_record i");
+		sql.appendWhereEqualsQuoted("h.school_category_id", schoolCategoryID);
+		sql.appendAnd().append("p.payment_header = h.cacc_payment_header_id");
+		sql.appendAnd().append("i.invoice_header = p."+getIDColumnName());
+		sql.appendAnd().append("p."+COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append("p."+COLUMN_PERIOD).appendLessThanSign().append(end.getDate());
+		sql.appendAndEquals("h.school_id", schoolID);
+		System.out.println(sql.toString());
+		return idoGetNumberOfRecords(sql);
+	}
+
+
 	/**
 	 * Gets tottal amount paid for the given category and period
 	 * @param schoolCategoryID
@@ -513,7 +544,9 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		sql.appendAnd().append("h.period").appendGreaterThanOrEqualsSign().append(start.getDate());
 		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
 		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
+		System.out.println(sql.toString());
 		return idoGetNumberOfRecords(sql);
 	}
 
 }
+	
