@@ -52,7 +52,8 @@ public class SchoolManagementTypeBMPBean extends GenericEntity implements School
 	 */
 	public void insertStartData() throws Exception {
 		String[] types = { TYPE_PUBLIC, TYPE_PRIVATE, TYPE_COOPERATIVE };
-		String[] names = { "Public", "Private", "Cooperative" };
+		String[] names = { "commune", "company", "trade_company", "foundation", "other" };
+		// Kommunal, AB, HB, Stiftelse, Annan bolagsform
 		
 		SchoolManagementTypeHome typeHome = (SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class);
 		SchoolManagementType type;
