@@ -327,7 +327,11 @@ public abstract class BillingThread extends Thread{
 			log.info("About to enter a batch run error to header "+batchRunLogger.getPrimaryKey()+"  "+errorLogger.toString()+"  "+desc+"  "+errorOrder);
 			BatchRunError error = (BatchRunError) IDOLookup.create(BatchRunError.class);
 			error.setBatchRunID(((Integer)batchRunLogger.getPrimaryKey()).intValue());
-			error.setRelated(errorLogger.toStringForWeb());
+			String related = errorLogger.toStringForWeb();
+			if(related.length()>=1000){
+				related = related.substring(0,999);
+			}
+			error.setRelated(related);
 			error.setDescription(desc);
 			error.setOrder(errorOrder);
 			error.store();
