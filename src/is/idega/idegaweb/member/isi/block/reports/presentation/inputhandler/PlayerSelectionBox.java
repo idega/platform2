@@ -63,6 +63,8 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 	}
 	
 	protected String getNameForGroup(Group group) {
+	    if (group == null) return null;
+	    
 		return super.getNameForGroup(group)+" ("+group.getParentNode().getNodeName()+")";
 	}
 	
