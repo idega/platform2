@@ -27,7 +27,7 @@ public class ForumThread extends GenericEntity {
     addAttribute("parent_thread_id","Foreldri",true,true,"java.lang.Integer");
     addAttribute("forum_id","Flokkur",true,true,"java.lang.Integer");
     addAttribute("thread_subject","Þráður",true,true,"java.lang.String");
-    addAttribute("thread_body","Meginmál",true,true,"java.lang.String");
+    addAttribute("thread_body","Meginmál",true,true,"java.lang.String",4000);
     addAttribute("user_id","Notandi",true,true,"java.lang.Integer");
     addAttribute("user_name","Notandi",true,true,"java.lang.String");
     addAttribute("thread_date","Dagsetning",true,true,"java.sql.Timestamp");
