@@ -74,38 +74,22 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
           try {
             product = (Product) catProducts.get(j);
             fileId = product.getFileId();
-            //table.add(getText(product.getNumber()), 1,row);
 
-            nameText = productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId));
             if (productCatalog._useAnchor) {
               table.add(productCatalog.getAnchor(product.getID()),1,row);
             }
 
-            /*
-            nameText.setName(Integer.toString(product.getID()));
-            if (productCatalog._productIsLink) {
-              if (productCatalog._useAnchor) {
-                productLink = new AnchorLink(nameText, productCatalog.getAnchorString(product.getID()));
-              }else {
-                productLink = new Link(nameText);
-              }
-              productLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
-              if (productCatalog._productLinkPage != null) {
-                productLink.setPage(productCatalog._productLinkPage);
-              }else if (productCatalog._viewerInWindow) {
-                productLink.setWindowToOpen(ProductViewerWindow.class);
-              }
-              table.add(productLink, 1,row);
-            }else {
-              table.add(nameText, 1,row);
-            }*/
+            if (productCatalog._hasEditPermission) {
+              table.add(productCatalog.getProductEditorLink(product), 1, row);
+              table.add(Text.NON_BREAKING_SPACE);
+            }
             table.add(productCatalog.getNamePresentationObject(product), 1, row);
 
-            if (fileId != -1) {
-
-              //image = new Image(fileId);
-              //table.add(image, 4, row);
-              //table.add("MYND FYLGIR", 4, row);
+            if (productCatalog._showThumbnail) {
+              if (fileId != -1) {
+                image = new Image(fileId);
+                table.add(image, 4, row);
+              }
             }
 
             if (productCatalog._showTeaser) {

@@ -394,7 +394,7 @@ public class ServiceOverview extends TravelManager {
         contentTable = new Table();
 
 
-      DecimalFormat df = new DecimalFormat("0.00");
+//      DecimalFormat df = new DecimalFormat("0.00");
       int[] dayOfWeek = new int[] {};
 
         Text nameText = (Text) theText.clone();
@@ -589,7 +589,7 @@ public class ServiceOverview extends TravelManager {
               priceText = (Text) theBoldText.clone();
                 priceText.setFontColor(super.BLACK);
               try {
-                priceText.setText(df.format(tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[k].getID(), depAddresses[l].getID()) ) );
+                priceText.setText(Integer.toString( (int) tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[k].getID(), depAddresses[l].getID() ) ));
                 priceText.addToText(Text.NON_BREAKING_SPACE);
                 priceText.addToText(currency.getCurrencyAbbreviation());
               }catch (ProductPriceException p) {
