@@ -395,7 +395,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		String tableName = this.getEntityName();		
 		sql.appendSelectAllFrom(tableName);
 		if  (types != null && types.length>0)
-			sql.appendWhere().append(COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types));
+			sql.appendWhere().append(COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types, true));
 		sql.appendAnd().appendWithinDates(COLUMN_DATE_OF_ENTRY, dateFrom, dateTo);
 		if (club != null)
 			sql.appendAndEquals(COLUMN_CLUB_ID, club.getPrimaryKey());
