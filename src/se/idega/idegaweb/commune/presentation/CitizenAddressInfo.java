@@ -41,8 +41,9 @@ public class CitizenAddressInfo extends PresentationObjectContainer
 			//System.out.println("User!=null");
 			try
 			{
-				int userID = ((Integer) user.getPrimaryKey()).intValue();
-				Address addr = getUserBusiness(iwc).getUserAddress1(userID);
+				com.idega.user.data.User newUser = com.idega.user.Converter.convertToNewUser(user);
+				//int userID = ((Integer) user.getPrimaryKey()).intValue();
+				Address addr = getUserBusiness(iwc).getUsersMainAddress(newUser);
 				PostalCode code = null;
 				if (addr != null)
 				{
