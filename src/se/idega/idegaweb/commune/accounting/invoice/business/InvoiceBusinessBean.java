@@ -42,10 +42,10 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/05 20:39:25 $ by $Author: joakim $
+ * Last modified: $Date: 2003/11/06 09:37:34 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -83,7 +83,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		Iterator headerIter;
 		InvoiceHeader header;
 		//Iterator recordIter;
-		//InvoiceRecord invoiceRrecord;
+		//InvoiceRecord invoiceRecord;
 
 		try {
 			SchoolCategory schoolCategory =
@@ -116,7 +116,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 */
 	public void removePreliminaryInvoice(InvoiceHeader header) throws RemoveException {
 		Iterator recordIter;
-		InvoiceRecord invoiceRrecord;
+		InvoiceRecord invoiceRecord;
 		UserTransaction transaction = null;
 		try {
 			transaction = getSessionContext().getUserTransaction();
@@ -125,8 +125,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			{
 				recordIter = getInvoiceRecordHome().findByInvoiceHeader(header).iterator();
 				while (recordIter.hasNext()) {
-					invoiceRrecord = (InvoiceRecord) recordIter.next();
-					removeInvoiceRecord(invoiceRrecord);
+					invoiceRecord = (InvoiceRecord) recordIter.next();
+					removeInvoiceRecord(invoiceRecord);
 				}
 				header.remove();
 			}
@@ -144,21 +144,30 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 
-	public void removeInvoiceRecord(InvoiceRecord invoiceRrecord) throws RemoteException, RemoveException {
+    /**
+     * Removes an invoice record and it's associated payments record if the
+     * rule spec type is check.
+     *
+     * @param invoiceRecord the record to remove
+     * @excpetion RemoteException if data layer fails
+     * @exception RemoveException if it wasn't possible to remove this record
+     */
+	public void removeInvoiceRecord(InvoiceRecord invoiceRecord) throws RemoteException, RemoveException {
 		PaymentRecord paymentRecord;
-		String ruleSpecType = invoiceRrecord.getRuleSpecType();
+		String ruleSpecType = invoiceRecord.getRuleSpecType();
 		if (null != ruleSpecType && RegSpecConstant.CHECK.equals(ruleSpecType)) {
 			try {
 				paymentRecord =
-					getPaymentRecordHome().findByPrimaryKey(new Integer(invoiceRrecord.getPaymentRecordId()));
+					getPaymentRecordHome().findByPrimaryKey(new Integer(invoiceRecord.getPaymentRecordId()));
 				//Remove this instance from the payment record
 				paymentRecord.setPlacements(paymentRecord.getPlacements() - 1);
-				paymentRecord.setTotalAmount(paymentRecord.getTotalAmount() - invoiceRrecord.getAmount());
-				paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT() - invoiceRrecord.getAmountVAT());
+				paymentRecord.setTotalAmount(paymentRecord.getTotalAmount() - invoiceRecord.getAmount());
+				paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT() - invoiceRecord.getAmountVAT());
 			} catch (FinderException e1) {
+                e1.printStackTrace ();
 			}
 		}
-		invoiceRrecord.remove();
+		invoiceRecord.remove();
 	}
 
 	public boolean isHighShool(String category) throws IDOLookupException, FinderException {
@@ -268,19 +277,32 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return getPaymentRecordHome().findByPaymentHeader(paymentHeader);
 	}
 
-    public void createInvoiceHeader
-        (final String schoolCategory, final User createdBy,
-         final int custodianId, final String doublePosting,
-         final String ownPosting, final Date period) throws CreateException {
+    /**
+     * Creates and stores a new Invoice Header. Status will be set to
+     * preliminary.
+     *
+     * @param schoolCategoryKey string constant from SchoolCategoryBMPBean
+     * @param createdBy the user who was logged on and initiated this
+     * @param custodianId the invoice receiver's user id
+     * @param ownPosting egen kontering
+     * @param doublePosting motkontering
+     * @param period the month this occurs
+     * @return the new Invoice Header
+     * @exception CreateException if lower level fails
+     */
+    public InvoiceHeader createInvoiceHeader
+        (final String schoolCategoryKey, final User createdBy,
+         final int custodianId, final String ownPosting,
+         final String doublePosting, final Date period) throws CreateException {
         try {
-
             final InvoiceHeader header = getInvoiceHeaderHome ().create ();
-            System.err.println ("school category = " + schoolCategory);
-
-            final String createdBySignature
-                    = createdBy.getFirstName ().charAt (0)
-                    + "" + createdBy.getLastName ().charAt (0);
-            header.setCreatedBy (createdBySignature);
+            header.setSchoolCategoryID (schoolCategoryKey);
+            if (null != createdBy) {
+                final String createdBySignature
+                        = createdBy.getFirstName ().charAt (0)
+                        + "" + createdBy.getLastName ().charAt (0);
+                header.setCreatedBy (createdBySignature);
+            }
             header.setCustodianId (custodianId);
             header.setDateCreated (new Date (new java.util.Date ().getTime()));
             header.setDoublePosting (doublePosting);
@@ -288,11 +310,16 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
             header.setPeriod (period);
             header.setStatus (ConstantStatus.PRELIMINARY);
             header.store ();
+            return header;
         } catch (RemoteException e) {
             e.printStackTrace ();
             throw new CreateException (e.getMessage ());
         }
     }
+
+    private SchoolCategoryHome getSchoolCategoryHome() throws RemoteException {
+		return (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
+	}
 
 	protected PaymentHeaderHome getPaymentHeaderHome() throws RemoteException {
 		return (PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class);

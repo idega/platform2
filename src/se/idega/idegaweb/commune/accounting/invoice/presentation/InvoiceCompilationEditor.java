@@ -29,10 +29,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/06 09:15:41 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/06 09:37:34 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -121,12 +121,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
             ACTION_SHOW_COMPILATION_LIST = 1,
-            ACTION_NEW_RECORD = 2,
+            //ACTION_NEW_RECORD = 2,
             ACTION_DELETE_COMPILATION = 3,
             ACTION_DELETE_RECORD = 4,
             ACTION_SHOW_RECORD = 5,
             ACTION_SHOW_NEW_COMPILATION_FORM = 6,
-            ACTION_NEW_COMPILATION = 7;
+            ACTION_NEW_COMPILATION = 7,
+            ACTION_SHOW_NEW_RECORD_FORM = 8;
 
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
@@ -168,6 +169,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                     newCompilation (context);
                     break;
 
+                case ACTION_SHOW_NEW_RECORD_FORM:
+                    showNewRecordForm (context);
+                    break;
+
                 default:
                     showCompilationList (context);
 					break;					
@@ -179,195 +184,90 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                      + "<li>klicka på faktureringsrad och se detaljer"
                      + "<li>se faktureringsunderlag i pdf"
                      + "<li>tillåt inte negativt taxbelopp mm"
-                     + "<li>uppdatera totalbelopp och momsers. vid justering"
-                     + "<li>visa i sökrutorna om man hittar exakt en person"
+                     + "<li>uppdatera totalb. och momsersättning vid justering"
+                     + "<li>namn etc i sökrutorna om man hittar exakt en"
                      + "<li>sök på huvudverksamhet - bara barnomsorg"
-                     + "<li>felhantering för periodinmatning, t ex  '1313'"
+                     + "<li>felhantering för periodinmatning, t ex '1313'"
                      + "<li>högerjustera totalAmount och andra tal"
                      + "<li>skriv ut personnummer som yymmdd-xxxx"
                      + "<li>inte skriva ut null på egen kontering/motkontering"
                      + "<li>visa amount utan decimaler"
+                     + "<li>confirm-page tillbaka till rätt sida"
+                     + "<li>ta bort invoice record => ta bort payment-record?"
+                     + "<li>sortera efter order_id eller något annat"
+                     + "<li>nested select ejbFindByCustodianOrChild (r & c)"
+                     + "<li>byt inte funktion vid byte av huvudverksamhet"
+                     + "<li>kontroll av felaktig eller utelämnad indata"
+                     + "<li>inte skriva ut null på egen kontering/motkontering"
                      + "</ol>\n\n(" + actionId + ')');
 		} catch (Exception exception) {
             logUnexpectedException (context, exception);
 		}
 	}
 
-    private void newCompilation (final IWContext context)
-        throws RemoteException, javax.ejb.CreateException {
-        final String operationalField = getSession ().getOperationalField ();
-        final Date period
-                = getPeriodFromString (context.getParameter (PERIOD_KEY));
-        final int custodianId = Integer.parseInt (context.getParameter
-                                                  (INVOICE_RECEIVER_KEY));
-        final User currentUser = context.getCurrentUser ();
-        final String ownPosting = context.getParameter (OWN_POSTING_KEY);
-        final String doublePosting = context.getParameter (DOUBLE_POSTING_KEY);
-        final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
-                .getServiceInstance (context, InvoiceBusiness.class);
-        business.createInvoiceHeader
-                (operationalField, currentUser, custodianId, doublePosting,
-                 ownPosting, new java.sql.Date (period.getTime ()));
-        final Table table = getConfirmTable
-                (INVOICE_COMPILATION_CREATED_KEY,
-                 INVOICE_COMPILATION_CREATED_DEFAULT);
-        add (createMainTable (CREATE_INVOICE_COMPILATION_KEY,
-                              CREATE_INVOICE_COMPILATION_DEFAULT, table));
-    }
-	
-    private void showNewCompilationForm (final IWContext context)
+    private void showNewRecordForm (final IWContext context)
         throws RemoteException {
+        throw new UnsupportedOperationException ();
+    }
+
+    /**
+     * Shows a list of invoice compilations and a search form.
+	 *
+	 * @param context session data like user info etc.
+	 */
+    private void showCompilationList (final IWContext context)
+        throws RemoteException, FinderException {
         final UserSearcher searcher = createSearcher ();
         final Table table = createTable (6);
         setColumnWidthsEqual (table);
         int row = 2; // first row is reserved for setting column widths
         addOperationFieldDropdown (table, row++);
         addUserSearcherForm (table, row++, context, searcher);
+        table.mergeCells (2, row, table.getColumns () - 1, row);
+        addPeriodForm (table, row, context);
+        table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST + "",
+                                    SEARCH_KEY, SEARCH_DEFAULT),
+                   table.getColumns (), row++);
+        if (null != searcher.getUser ()) {
+            // exactly one user found - display users invoice compilation list
+            final User userFound = searcher.getUser ();
+            final Date fromPeriod = getPeriodFromString
+                    (context.getParameter (FROM_PERIOD_KEY));
+            final Date toPeriod = getPeriodFromString
+                    (context.getParameter (TO_PERIOD_KEY));
+            final InvoiceBusiness business = (InvoiceBusiness)
+                    IBOLookup.getServiceInstance (context,
+                                                  InvoiceBusiness.class);
+            final InvoiceHeader [] headers = business
+                    .getInvoiceHeadersByCustodianOrChild (userFound, fromPeriod,
+                                                          toPeriod);
+            table.mergeCells (1, row, table.getColumns (), row);            
+            if (0 < headers.length) {
+                table.add (getInvoiceCompilationListTable (context, headers), 1,
+                           row++);
+            } else {
+                table.add (new Text ("no compilations found for this custodian"
+                                     + " or child!"), 1, row++);
+            }
+        } else if (null != searcher.getUsersFound ()) {
+            table.mergeCells (1, row, table.getColumns (), row);            
+            table.add (getSearcherResultTable
+                       (searcher.getUsersFound (),
+                        ACTION_SHOW_COMPILATION_LIST), 1, row++);
+        }
         table.setHeight (row++, 12);
         table.mergeCells (1, row, table.getColumns (), row);
         table.add (getSubmitButton (ACTION_SHOW_NEW_COMPILATION_FORM + "",
-                                    SEARCH_INVOICE_RECEIVER_KEY,
-                                    SEARCH_INVOICE_RECEIVER_DEFAULT), 1, row++);
-        if (null != searcher.getUser ()) {
-            // exactly one user found - display users invoice compilation list
-            table.setHeight (row++, 12);
-            final User user = searcher.getUser ();
-            int col = 1;
-            addSmallHeader (table, col++, row, INVOICE_RECEIVER_KEY,
-                            INVOICE_RECEIVER_DEFAULT, ":");
-            final String userInfo = getUserName (user) + " ("
-                    + user.getPersonalID () + "), " + getAddressString (user);
-            table.mergeCells (2, row, table.getColumns (), row);
-            table.add (new HiddenInput (INVOICE_RECEIVER_KEY,
-                                        user.getPrimaryKey () + ""), col, row);
-            addSmallText(table, userInfo, col++, row++);
-            col = 1;
-            addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
-            final Date now = new Date ();
-            table.add (getStyledInput (PERIOD_KEY, periodFormatter.format
-                                       (now)), col++, row);
-            addSmallHeader (table, col++, row, OWN_POSTING_KEY,
-                            OWN_POSTING_DEFAULT, ":");
-            table.add (getStyledInput (OWN_POSTING_KEY), col++, row);
-            addSmallHeader (table, col++, row, DOUBLE_POSTING_KEY,
-                            DOUBLE_POSTING_DEFAULT, ":");
-            table.add (getStyledInput (DOUBLE_POSTING_KEY), col++, row++);
-            table.setHeight (row++, 12);
-            table.mergeCells (1, row, table.getColumns (), row);
-            table.add (getSubmitButton (ACTION_NEW_COMPILATION + "",
-                                        CREATE_INVOICE_COMPILATION_KEY,
-                                        CREATE_INVOICE_COMPILATION_DEFAULT), 1,
-                       row++);
-        } else if (null != searcher.getUsersFound ()) {
-            table.mergeCells (1, row, table.getColumns (), row);
-            table.add (getSearcherResultTable
-                       (searcher.getUsersFound (),
-                        ACTION_SHOW_NEW_COMPILATION_FORM), 1, row++);
-        }
+                                    NEW_KEY, NEW_DEFAULT), 1, row);
         final Form form = new Form ();
         form.setOnSubmit("return checkInfoForm()");
         form.add (table);
         final Table outerTable = createTable (1);
         outerTable.add (form, 1, 1);
-        add (createMainTable (CREATE_INVOICE_COMPILATION_KEY,
-                              CREATE_INVOICE_COMPILATION_DEFAULT,  outerTable));
+        add (createMainTable (INVOICE_COMPILATION_LIST_KEY,
+                              INVOICE_COMPILATION_LIST_DEFAULT,  outerTable));
     }
 
-    private Table getSearcherResultTable (final Collection users,
-                                          int actionId) {
-        final Table table = createTable (1);
-        int row = 1;
-        for (Iterator i = users.iterator (); row <= 10 && i.hasNext ();) {
-            final User user = (User) i.next ();
-            final String userText = user.getPersonalID () + " "
-                    + user.getFirstName () + " " + user.getLastName ();
-            String [][] parameters = {{ ACTION_KEY, actionId + "" },
-                                      { USERSEARCHER_PERSONALID_KEY,
-                                        user.getPersonalID () }};
-            final Link link = createSmallLink (userText, parameters);
-            link.addParameter (USERSEARCHER_ACTION_KEY, "unspecified");
-            table.add (link, 1, row++);
-        }
-        if (10 < users.size ()) {
-            table.add ("För många sökresultat - försök att begränsa din sökning", 1,
-                       row++);
-        }
-
-        return table;
-    }
-
-    private void deleteCompilation (final IWContext context)
-        throws RemoteException {
-        final int headerId = Integer.parseInt (context.getParameter
-                                               (INVOICE_COMPILATION_KEY));
-        try {
-            final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
-                    .getServiceInstance (context, InvoiceBusiness.class);
-            final InvoiceHeaderHome home = business.getInvoiceHeaderHome ();
-            final InvoiceHeader header
-                    = home.findByPrimaryKey (new Integer (headerId));
-            business.removePreliminaryInvoice (header);
-            final Table table = getConfirmTable
-                    (INVOICE_COMPILATION_AND_RECORDS_REMOVED_KEY,
-                     INVOICE_COMPILATION_AND_RECORDS_REMOVED_DEFAULT);
-            add (createMainTable (INVOICE_COMPILATION_KEY,
-                                  INVOICE_COMPILATION_DEFAULT, table));
-        } catch (Exception e) {
-            final Table table = getConfirmTable
-                    (COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY,
-                     COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT);
-            add (createMainTable (INVOICE_COMPILATION_KEY,
-                                  INVOICE_COMPILATION_DEFAULT, table));
-        }
-    }
-    
-    private void deleteRecord (final IWContext context)
-        throws RemoteException {
-        final int recordId = Integer.parseInt (context.getParameter
-                                               (INVOICE_RECORD_KEY));
-        try {
-            final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
-                    .getServiceInstance (context, InvoiceBusiness.class);
-            final InvoiceRecordHome home = business.getInvoiceRecordHome ();
-            final InvoiceRecord record
-                    = home.findByPrimaryKey (new Integer (recordId));
-            final String headerId = record.getInvoiceHeader () + "";
-            business.removeInvoiceRecord (record);
-            final String [][] parameters = getHeaderLinkParameters
-                    (ACTION_SHOW_COMPILATION, headerId);
-            final Table table = getConfirmTable
-                    (INVOICE_RECORD_REMOVED_KEY,
-                     INVOICE_RECORD_REMOVED_DEFAULT, parameters);
-            add (createMainTable (INVOICE_RECORD_KEY,
-                                  INVOICE_RECORD_DEFAULT, table));
-        } catch (Exception e) {
-            final Table table = getConfirmTable
-                    (COULD_NOT_REMOVE_INVOICE_RECORD_KEY,
-                     COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT);
-            add (createMainTable (INVOICE_RECORD_KEY,
-                                  INVOICE_RECORD_DEFAULT, table));
-        }
-    }
-    
-    private Table getConfirmTable (final String key,
-                                   final String defaultString) {
-        final String [][] noParameters = {};
-        return getConfirmTable (key, defaultString, noParameters);
-    }
-    
-    private Table getConfirmTable (final String key, final String defaultString,
-                                   final String [][] parameters) {
-        final Table table = createTable (1);
-        int row = 1;
-        table.setHeight (row++, 24);
-        table.add (new Text (localize (key, defaultString)), 1, row++);
-        table.setHeight (row++, 12);
-        final String goBackText = localize (GO_BACK_KEY, GO_BACK_DEFAULT);
-        final Link link = createSmallLink (goBackText, parameters);
-        table.add (link, 1, row++);
-        return table;
-    }
-    
     /**
      * Shows one invoice compilation.
 	 *
@@ -433,7 +333,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                    row++);
         table.setHeight (row++, 12);
         table.mergeCells (1, row, table.getColumns (), row);
-        table.add (getSubmitButton (ACTION_NEW_RECORD + "", NEW_KEY,
+        table.add (getSubmitButton (ACTION_SHOW_NEW_RECORD_FORM + "", NEW_KEY,
                                     NEW_DEFAULT), 1, row);
         final Form form = new Form ();
         form.setOnSubmit("return checkInfoForm()");
@@ -444,64 +344,181 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                               INVOICE_COMPILATION_DEFAULT, outerTable));
     }
 
-    /**
-     * Shows a list of invoice compilations and a search form.
-	 *
-	 * @param context session data like user info etc.
-	 */
-    private void showCompilationList (final IWContext context)
-        throws RemoteException, FinderException {
+    private void deleteCompilation (final IWContext context)
+        throws RemoteException {
+        final int headerId = Integer.parseInt (context.getParameter
+                                               (INVOICE_COMPILATION_KEY));
+        try {
+            final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
+                    .getServiceInstance (context, InvoiceBusiness.class);
+            final InvoiceHeaderHome home = business.getInvoiceHeaderHome ();
+            final InvoiceHeader header
+                    = home.findByPrimaryKey (new Integer (headerId));
+            business.removePreliminaryInvoice (header);
+            final Table table = getConfirmTable
+                    (INVOICE_COMPILATION_AND_RECORDS_REMOVED_KEY,
+                     INVOICE_COMPILATION_AND_RECORDS_REMOVED_DEFAULT);
+            add (createMainTable (INVOICE_COMPILATION_KEY,
+                                  INVOICE_COMPILATION_DEFAULT, table));
+        } catch (Exception e) {
+            final Table table = getConfirmTable
+                    (COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY,
+                     COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT);
+            add (createMainTable (INVOICE_COMPILATION_KEY,
+                                  INVOICE_COMPILATION_DEFAULT, table));
+        }
+    }
+    
+    private void deleteRecord (final IWContext context)
+        throws RemoteException {
+        final int recordId = Integer.parseInt (context.getParameter
+                                               (INVOICE_RECORD_KEY));
+        try {
+            final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
+                    .getServiceInstance (context, InvoiceBusiness.class);
+            final InvoiceRecordHome home = business.getInvoiceRecordHome ();
+            final InvoiceRecord record
+                    = home.findByPrimaryKey (new Integer (recordId));
+            final String headerId = record.getInvoiceHeader () + "";
+            business.removeInvoiceRecord (record);
+            final String [][] parameters = getHeaderLinkParameters
+                    (ACTION_SHOW_COMPILATION, headerId);
+            final Table table = getConfirmTable
+                    (INVOICE_RECORD_REMOVED_KEY,
+                     INVOICE_RECORD_REMOVED_DEFAULT, parameters);
+            add (createMainTable (INVOICE_RECORD_KEY,
+                                  INVOICE_RECORD_DEFAULT, table));
+        } catch (Exception e) {
+            final Table table = getConfirmTable
+                    (COULD_NOT_REMOVE_INVOICE_RECORD_KEY,
+                     COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT);
+            add (createMainTable (INVOICE_RECORD_KEY,
+                                  INVOICE_RECORD_DEFAULT, table));
+        }
+    }
+    
+    private void showNewCompilationForm (final IWContext context)
+        throws RemoteException {
         final UserSearcher searcher = createSearcher ();
         final Table table = createTable (6);
         setColumnWidthsEqual (table);
         int row = 2; // first row is reserved for setting column widths
         addOperationFieldDropdown (table, row++);
         addUserSearcherForm (table, row++, context, searcher);
-        table.mergeCells (2, row, table.getColumns () - 1, row);
-        addPeriodForm (table, row, context);
-        table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST + "",
-                                    SEARCH_KEY, SEARCH_DEFAULT),
-                   table.getColumns (), row++);
-        if (null != searcher.getUser ()) {
-            // exactly one user found - display users invoice compilation list
-            final User userFound = searcher.getUser ();
-            final Date fromPeriod = getPeriodFromString
-                    (context.getParameter (FROM_PERIOD_KEY));
-            final Date toPeriod = getPeriodFromString
-                    (context.getParameter (TO_PERIOD_KEY));
-            final InvoiceBusiness business = (InvoiceBusiness)
-                    IBOLookup.getServiceInstance (context,
-                                                  InvoiceBusiness.class);
-            final InvoiceHeader [] headers = business
-                    .getInvoiceHeadersByCustodianOrChild (userFound, fromPeriod,
-                                                          toPeriod);
-            table.mergeCells (1, row, table.getColumns (), row);            
-            if (0 < headers.length) {
-                table.add (getInvoiceCompilationListTable (context, headers), 1,
-                           row++);
-            } else {
-                table.add (new Text ("no compilations found for this custodian"
-                                     + " or child!"), 1, row++);
-            }
-        } else if (null != searcher.getUsersFound ()) {
-            table.mergeCells (1, row, table.getColumns (), row);            
-            table.add (getSearcherResultTable
-                       (searcher.getUsersFound (),
-                        ACTION_SHOW_COMPILATION_LIST), 1, row++);
-        }
         table.setHeight (row++, 12);
         table.mergeCells (1, row, table.getColumns (), row);
         table.add (getSubmitButton (ACTION_SHOW_NEW_COMPILATION_FORM + "",
-                                    NEW_KEY, NEW_DEFAULT), 1, row);
+                                    SEARCH_INVOICE_RECEIVER_KEY,
+                                    SEARCH_INVOICE_RECEIVER_DEFAULT), 1, row++);
+        if (null != searcher.getUser ()) {
+            // exactly one user found - display users invoice compilation list
+            table.setHeight (row++, 12);
+            final User user = searcher.getUser ();
+            int col = 1;
+            addSmallHeader (table, col++, row, INVOICE_RECEIVER_KEY,
+                            INVOICE_RECEIVER_DEFAULT, ":");
+            final String userInfo = getUserName (user) + " ("
+                    + user.getPersonalID () + "), " + getAddressString (user);
+            table.mergeCells (2, row, table.getColumns (), row);
+            table.add (new HiddenInput (INVOICE_RECEIVER_KEY,
+                                        user.getPrimaryKey () + ""), col, row);
+            addSmallText(table, userInfo, col++, row++);
+            col = 1;
+            addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
+            final Date now = new Date ();
+            table.add (getStyledInput (PERIOD_KEY, periodFormatter.format
+                                       (now)), col++, row);
+            addSmallHeader (table, col++, row, OWN_POSTING_KEY,
+                            OWN_POSTING_DEFAULT, ":");
+            table.add (getStyledInput (OWN_POSTING_KEY), col++, row);
+            addSmallHeader (table, col++, row, DOUBLE_POSTING_KEY,
+                            DOUBLE_POSTING_DEFAULT, ":");
+            table.add (getStyledInput (DOUBLE_POSTING_KEY), col++, row++);
+            table.setHeight (row++, 12);
+            table.mergeCells (1, row, table.getColumns (), row);
+            table.add (getSubmitButton (ACTION_NEW_COMPILATION + "",
+                                        CREATE_INVOICE_COMPILATION_KEY,
+                                        CREATE_INVOICE_COMPILATION_DEFAULT), 1,
+                       row++);
+        } else if (null != searcher.getUsersFound ()) {
+            table.mergeCells (1, row, table.getColumns (), row);
+            table.add (getSearcherResultTable
+                       (searcher.getUsersFound (),
+                        ACTION_SHOW_NEW_COMPILATION_FORM), 1, row++);
+        }
         final Form form = new Form ();
         form.setOnSubmit("return checkInfoForm()");
         form.add (table);
         final Table outerTable = createTable (1);
         outerTable.add (form, 1, 1);
-        add (createMainTable (INVOICE_COMPILATION_LIST_KEY,
-                              INVOICE_COMPILATION_LIST_DEFAULT,  outerTable));
+        add (createMainTable (CREATE_INVOICE_COMPILATION_KEY,
+                              CREATE_INVOICE_COMPILATION_DEFAULT,  outerTable));
     }
 
+    private void newCompilation (final IWContext context)
+        throws RemoteException, javax.ejb.CreateException {
+        final String operationalField = getSession ().getOperationalField ();
+        final Date period
+                = getPeriodFromString (context.getParameter (PERIOD_KEY));
+        final int custodianId = Integer.parseInt (context.getParameter
+                                                  (INVOICE_RECEIVER_KEY));
+        final User currentUser = context.getCurrentUser ();
+        final String ownPosting = context.getParameter (OWN_POSTING_KEY);
+        final String doublePosting = context.getParameter (DOUBLE_POSTING_KEY);
+        final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
+                .getServiceInstance (context, InvoiceBusiness.class);
+        business.createInvoiceHeader
+                (operationalField, currentUser, custodianId,  ownPosting,
+                 doublePosting, new java.sql.Date (period.getTime ()));
+        final Table table = getConfirmTable
+                (INVOICE_COMPILATION_CREATED_KEY,
+                 INVOICE_COMPILATION_CREATED_DEFAULT);
+        add (createMainTable (CREATE_INVOICE_COMPILATION_KEY,
+                              CREATE_INVOICE_COMPILATION_DEFAULT, table));
+    }
+	
+    private Table getSearcherResultTable (final Collection users,
+                                          int actionId) {
+        final Table table = createTable (1);
+        int row = 1;
+        for (Iterator i = users.iterator (); row <= 10 && i.hasNext ();) {
+            final User user = (User) i.next ();
+            final String userText = user.getPersonalID () + " "
+                    + user.getFirstName () + " " + user.getLastName ();
+            String [][] parameters = {{ ACTION_KEY, actionId + "" },
+                                      { USERSEARCHER_PERSONALID_KEY,
+                                        user.getPersonalID () }};
+            final Link link = createSmallLink (userText, parameters);
+            link.addParameter (USERSEARCHER_ACTION_KEY, "unspecified");
+            table.add (link, 1, row++);
+        }
+        if (10 < users.size ()) {
+            table.add ("För många sökresultat - försök att begränsa din sökning", 1,
+                       row++);
+        }
+
+        return table;
+    }
+
+    private Table getConfirmTable (final String key,
+                                   final String defaultString) {
+        final String [][] noParameters = {};
+        return getConfirmTable (key, defaultString, noParameters);
+    }
+    
+    private Table getConfirmTable (final String key, final String defaultString,
+                                   final String [][] parameters) {
+        final Table table = createTable (1);
+        int row = 1;
+        table.setHeight (row++, 24);
+        table.add (new Text (localize (key, defaultString)), 1, row++);
+        table.setHeight (row++, 12);
+        final String goBackText = localize (GO_BACK_KEY, GO_BACK_DEFAULT);
+        final Link link = createSmallLink (goBackText, parameters);
+        table.add (link, 1, row++);
+        return table;
+    }
+    
     private Table getInvoiceCompilationListTable
         (final IWContext context, final InvoiceHeader [] headers)
         throws RemoteException, FinderException {
@@ -786,16 +803,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
     }
 
-    /*private Table getButtonTable (final String [][] buttonInfo) {
-        final Table table = new Table ();
-        for (int i = 0; i < buttonInfo.length; i++) {
-            table.add (getSubmitButton (buttonInfo [i][0], buttonInfo [i][1],
-                                        buttonInfo [i][2]), i + 1, 1);
-            table.add (Text.getNonBrakingSpace (), i + 1, 1);
-        }
-        return table;
-    }*/
-
     private SubmitButton getSubmitButton (final String action, final String key,
                                           final String defaultName) {
         return (SubmitButton) getButton (new SubmitButton
@@ -950,15 +957,25 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return totalAmountVat;
     }
 
+    private void displayRedText (final String string) {
+        final Text text = new Text ('\n' + string + '\n');
+        text.setFontColor ("#ff0000");
+        add (text);
+    }
+
     /*private void displayRedText (final String key, final String defaultString) {
         final String localizedString = key != null
                 ? localize (key, defaultString) : defaultString;
         displayRedText (localizedString);
     }*/
 
-    private void displayRedText (final String string) {
-        final Text text = new Text ('\n' + string + '\n');
-        text.setFontColor ("#ff0000");
-        add (text);
-    }
+    /*private Table getButtonTable (final String [][] buttonInfo) {
+        final Table table = new Table ();
+        for (int i = 0; i < buttonInfo.length; i++) {
+            table.add (getSubmitButton (buttonInfo [i][0], buttonInfo [i][1],
+                                        buttonInfo [i][2]), i + 1, 1);
+            table.add (Text.getNonBrakingSpace (), i + 1, 1);
+        }
+        return table;
+    }*/
 }
