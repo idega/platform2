@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.5 2001/05/23 18:44:48 haffi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.6 2001/05/23 19:01:09 haffi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -574,7 +574,12 @@ public class GolfMainJSPModulePage extends MainPage {
           golfHeader.setWidth("720");
           golfHeader.setCellpadding(0);
           golfHeader.setCellspacing(0);
-          golfHeader.setBackgroundImage(1, 1, new Image("/pics/templates/banner.gif","",720,68));
+
+        Image banBg = iwrb.getImage("banners/banner.gif");
+         banBg.setWidth(720);
+         banBg.setHeight(68);
+
+         golfHeader.setBackgroundImage(1, 1, banBg);
           golfHeader.setVerticalAlignment(1,2, "top");
 
           linkTable.setHeight("14");
