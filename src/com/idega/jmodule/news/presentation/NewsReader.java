@@ -5,13 +5,14 @@ import java.util.*;
 import java.io.*;
 import com.idega.util.*;
 import com.idega.jmodule.object.textObject.*;
-import	com.idega.jmodule.object.*;
-import	com.idega.jmodule.object.interfaceobject.*;
-import	com.idega.jmodule.news.data.*;
-import	com.idega.data.*;
+import com.idega.jmodule.object.*;
+import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.jmodule.news.data.*;
+import com.idega.data.*;
 import com.idega.util.text.*;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 
 
 /*
@@ -22,7 +23,7 @@ import com.idega.idegaweb.IWBundle;
 
 public class NewsReader extends JModuleObject{
 
-private static final String BUNDLE_IDENTIFIER="com.idega.block.news";
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
 private boolean isAdmin=false;
 private boolean showNewsCollectionButton=true;
 private int categoryId = 0;
@@ -36,7 +37,7 @@ private String newsCollectionURL;
 private boolean showImages = true;
 private boolean showOnlyDates = false;
 private boolean headlineAsLink = false;
-private String selectFrom = "select * from news where ";
+private String selectFrom = "select news.* from news where ";
 private String orderBy = " order by news_date DESC";
 private String sNewsCategoryId = "news_category_id ='";
 
@@ -108,57 +109,17 @@ public NewsReader(int categoryId, idegaTimestamp timestamp){
   this.date = timestamp.toSQLString();
 }
 
-public void setConnectionAttributes(String attributeName, int attributeId) {
-  this.attributeName = attributeName;
-  this.attributeId = attributeId;
-}
-
-public void setConnectionAttributes(String attributeName, String attributeId) {
-  this.attributeName = attributeName;
-  this.attributeId = Integer.parseInt(attributeId);
-}
-
-public void setNumberOfDays( int daysIn ){
-
-  idegaTimestamp stamp= idegaTimestamp.RightNow();
-  stamp.addDays(-daysIn);//dagar inni
-  this.date= stamp.toSQLString();
-
-}
-
-private String getDatastoreType(GenericEntity entity){
-  return DatastoreInterface.getDatastoreType(entity.getDatasource());
-}
-
-
-
-private String getColumnString(NewsCategoryAttributes[] attribs){
-  StringBuffer values = new StringBuffer("");
-  for (int i = 0 ; i < attribs.length ; i++) {
-    values.append(" news_category_id = '");
-    values.append(attribs[i].getNewsCategoryId());
-    values.append("'") ;
-    if( i!= (attribs.length)-1 ) values.append(" OR ");
-  }
-  String returnString = values.toString();
-  if (returnString.equalsIgnoreCase("")) return null;
-  else return returnString;
-}
-
-
-
 public void main(ModuleInfo modinfo)throws Exception{
-
-  IWResourceBundle iwrb = this.getResourceBundle(modinfo);
-  IWBundle iwb = this.getBundle(modinfo);
-
   this.isAdmin=this.isAdministrator(modinfo);
+  IWBundle iwb = getBundle(modinfo);
 
-  newsReaderURL = iwb.getProperty("newsreaderurl");
-  newsCollectionURL = iwb.getProperty("newscollectionurl");
+  IWResourceBundle iwrb = getResourceBundle(modinfo);
 
-  if( newsReaderURL == null ) newsCollectionURL = "";
-  if( newsCollectionURL == null ) newsCollectionURL = "";
+  newsReaderURL = iwb.getProperty("news_reader_url");
+  newsCollectionURL = iwb.getProperty("news_collection_url");
+
+ // if( newsReaderURL == null ) newsCollectionURL = "";
+ // if( newsCollectionURL == null ) newsCollectionURL = "";
 
   back = iwrb.getImage("back.gif");
   more  = iwrb.getImage("more.gif");
@@ -182,9 +143,9 @@ public void main(ModuleInfo modinfo)throws Exception{
         categoryId = Integer.parseInt(news_category_id);//overrides the preset category
         showSingleNews = false;//nope we are showing a collection!
         showAll = false;
-        System.out.println("inni í category");
+        //System.out.println("inni í category");
     }else if( (news_category_id==null) && (news_id != null) ){ //yup only one to see if this. owns the newscategory!
-      System.out.println("(news_category_id==null) && (news_id =="+news_id);
+     // System.out.println("(news_category_id==null) && (news_id =="+news_id);
       /*if( categoryId != 0 ){
          System.out.println("categoryId != 0 ");
         if( news[0].getNewsCategoryId() == categoryId ) {
@@ -286,7 +247,7 @@ public void main(ModuleInfo modinfo)throws Exception{
           categoryString = TextSoap.findAndCut(categoryString,"OR");
           String statementstring = selectFrom+categoryString+orderBy;
           //debug eiki 24.dec
-          System.err.println("OUT OF RANGE "+statementstring);
+         // System.err.println("OUT OF RANGE "+statementstring);
           news = (News[]) (new News()).findAll(statementstring);
 
           if( news.length!=0){
@@ -301,10 +262,10 @@ public void main(ModuleInfo modinfo)throws Exception{
     }
 
     if ( news_id == null){
-      Table newsCollection = new Table(1,1);
+        Table newsCollection = new Table(1,1);
         if ( showNewsCollectionButton ) {
         Link collectionLink = new Link( collection, newsCollectionURL);
-            collectionLink.addParameter("news_category_id",""+this.categoryId);
+        collectionLink.addParameter("news_category_id",Integer.toString(categoryId));
         newsCollection.add(collectionLink,1,1);
         newsCollection.setAlignment("right");
         add(newsCollection);
@@ -319,6 +280,43 @@ public void main(ModuleInfo modinfo)throws Exception{
 
   }
 
+}
+
+public void setConnectionAttributes(String attributeName, int attributeId) {
+  this.attributeName = attributeName;
+  this.attributeId = attributeId;
+}
+
+public void setConnectionAttributes(String attributeName, String attributeId) {
+  this.attributeName = attributeName;
+  this.attributeId = Integer.parseInt(attributeId);
+}
+
+public void setNumberOfDays( int daysIn ){
+
+  idegaTimestamp stamp= idegaTimestamp.RightNow();
+  stamp.addDays(-daysIn);//dagar inni
+  this.date= stamp.toSQLString();
+
+}
+
+private String getDatastoreType(GenericEntity entity){
+  return DatastoreInterface.getDatastoreType(entity.getDatasource());
+}
+
+
+
+private String getColumnString(NewsCategoryAttributes[] attribs){
+  StringBuffer values = new StringBuffer("");
+  for (int i = 0 ; i < attribs.length ; i++) {
+    values.append(" news_category_id = '");
+    values.append(attribs[i].getNewsCategoryId());
+    values.append("'") ;
+    if( i!= (attribs.length)-1 ) values.append(" OR ");
+  }
+  String returnString = values.toString();
+  if (returnString.equalsIgnoreCase("")) return null;
+  else return returnString;
 }
 
 
@@ -338,7 +336,7 @@ private Table drawNewsTable(News[] news)throws IOException,SQLException{
   int image_id;
   int newsLength = news.length;
 
-System.out.println("limitNumberOfNews: "+ limitNumberOfNews+" numberOfDisplayedNews: "+numberOfDisplayedNews+" newsLength: "+newsLength);
+//System.out.println("limitNumberOfNews: "+ limitNumberOfNews+" numberOfDisplayedNews: "+numberOfDisplayedNews+" newsLength: "+newsLength);
   if( (!limitNumberOfNews) || (numberOfDisplayedNews>newsLength) ){
      numberOfDisplayedNews = newsLength;
   }
@@ -912,7 +910,7 @@ return linkVector;
 
 
 public String getBundleIdentifier(){
-  return BUNDLE_IDENTIFIER;
+  return IW_BUNDLE_IDENTIFIER;
 }
 
 
