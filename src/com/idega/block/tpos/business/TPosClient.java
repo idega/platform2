@@ -48,11 +48,6 @@ public class TPosClient {
    * @return The authorisation code as a String
    */
   public String doSale(String cardnumber, String monthExpires, String yearExpires, double amount, String currency) throws TPosException {
-System.out.println("Cardnumber = " + cardnumber);
-System.out.println("Month = " + monthExpires);
-System.out.println("Year = " + yearExpires);
-System.out.println("Amount = " + amount);
-System.out.println("Currency = " + currency);
       _client.setProperty(TPOS3Client.PN_USERID, "IDE");
       _client.setProperty(TPOS3Client.PN_PASSWORD, "IDE");
       _client.setProperty(TPOS3Client.PN_MERCHANTID, "IDE");
@@ -63,7 +58,6 @@ System.out.println("Currency = " + currency);
       _client.setProperty(TPOS3Client.PN_EXPIRE, yearExpires+monthExpires);
       amount *= 100;
       String stringAmount = Integer.toString((int)amount);
-System.out.println("amount = " + stringAmount);
       _client.setProperty(TPOS3Client.PN_AMOUNT,stringAmount);
       _client.setProperty(TPOS3Client.PN_CURRENCY,currency);
       _client.setProperty(TPOS3Client.PN_TRANSACTIONTYPE,"1");
