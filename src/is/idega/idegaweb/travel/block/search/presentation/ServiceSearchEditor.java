@@ -148,7 +148,7 @@ public class ServiceSearchEditor extends TravelManager {
 				
 				table.add(select, 1, row);
 				table.add(getText(engine.getCode()), 2, row);
-				if (engine.getURL() != null) {
+				if (engine.getURL() != null && !"".equals(engine.getURL().trim())) {
 					engineLink = new Link(iwrb.getLocalizedImageButton("travel.search.url", "URL"), engine.getURL());
 					engineLink.setTarget(Link.TARGET_NEW_WINDOW);
 					table.add(engineLink, 3, row);
