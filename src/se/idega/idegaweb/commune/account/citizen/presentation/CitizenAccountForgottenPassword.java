@@ -211,15 +211,20 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
       handleKnownUserNeverLoggedIn(loginTable, user, iwc);
       message = bundle.getLocalizedString(LETTER_SENT_KEY, LETTER_SENT_DEFAULT);
     }
+		
     String password = bundle.getLocalizedString(PASSWORD_CREATED_KEY, PASSWORD_CREATED_DEFAULT);
-    Text textPassword = new Text(password, true, false, false);
-    Text textMessage = new Text(message ,true, false, false);
-    textPassword.setFontColor(COLOR_RED);
-    textMessage.setFontColor(COLOR_RED);
-    add(textPassword);
-    add(Text.getBreak());
-    add(textMessage);
-      
+		if (getParentPage() != null) {
+			getParentPage().setAlertOnLoad(password);
+		}
+		else {
+	    Text textPassword = new Text(password, true, false, false);
+	    Text textMessage = new Text(message ,true, false, false);
+	    textPassword.setFontColor(COLOR_RED);
+	    textMessage.setFontColor(COLOR_RED);
+	    add(textPassword);
+	    add(Text.getBreak());
+	    add(textMessage);
+		}      
   }
 
 	/**
