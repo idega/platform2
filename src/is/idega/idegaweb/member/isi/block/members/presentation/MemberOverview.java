@@ -6,10 +6,16 @@
  */
 package is.idega.idegaweb.member.isi.block.members.presentation;
 
+import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
+import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean;
+import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryHome;
 import is.idega.idegaweb.member.isi.block.members.data.MemberGroupData;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.Collator;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,9 +32,9 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.PrintButton;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author jonas
@@ -42,7 +48,7 @@ public class MemberOverview extends Block {
 	
 	public static final String PARAM_NAME_SHOW_STATUS = "showStatus";
 	public static final String PARAM_NAME_SHOW_HISTORY = "showHistory";
-	
+	public static final String PARAM_NAME_SHOW_FINANCE_OVERVIEW = "showFinanceOverview";	
 	private IWResourceBundle _iwrb = null;
 	
 	public void main(IWContext iwc) {
@@ -51,12 +57,18 @@ public class MemberOverview extends Block {
 		String status = iwc.getParameter(PARAM_NAME_SHOW_STATUS);
 		boolean showStatus = status==null || "true".equals(status);
 		boolean showHistory = "true".equals(iwc.getParameter(PARAM_NAME_SHOW_HISTORY));
+		boolean showFinanceOverview = "true".equals(iwc.getParameter(PARAM_NAME_SHOW_FINANCE_OVERVIEW));
 		
 		Table mainTable = new Table();
 		
 		User user = iwc.getCurrentUser();
 		_iwrb = getResourceBundle(iwc);
 		_data = new MemberGroupData(user, _iwrb);
+		try {
+			_financeData = (Collection) ((FinanceEntryHome) com.idega.data.IDOLookup.getHome(FinanceEntry.class)).findAllByUser(user);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		mainTable.add(getMemberInfo(user), 1, 1);
 		addBreak();
 		addBreak();
@@ -71,6 +83,7 @@ public class MemberOverview extends Block {
 		statusLink.setBelongsToParent(true);
 		statusLink.addParameter(PARAM_NAME_SHOW_STATUS, showStatus?"false":"true");
 		statusLink.addParameter(PARAM_NAME_SHOW_HISTORY, showHistory?"true":"false");
+		statusLink.addParameter(PARAM_NAME_SHOW_FINANCE_OVERVIEW, showFinanceOverview?"true":"false");
 		String statusHeader = _iwrb.getLocalizedString("member_overview_registration", "Membership status");
 		row = insertSectionHeaderIntoTable(table, row, new String[] {statusHeader}, statusLink);
 		if(showStatus) {
@@ -85,6 +98,7 @@ public class MemberOverview extends Block {
 		historyLink.setBelongsToParent(true);
 		historyLink.addParameter(PARAM_NAME_SHOW_STATUS, showStatus?"true":"false");
 		historyLink.addParameter(PARAM_NAME_SHOW_HISTORY, showHistory?"false":"true");
+		historyLink.addParameter(PARAM_NAME_SHOW_FINANCE_OVERVIEW, showFinanceOverview?"true":"false");
 		String historyHeader = _iwrb.getLocalizedString("member_overview_history", "Membership history");
 		String beginText = _iwrb.getLocalizedString("member_overview_begin_date", "Started");
 		String endText = _iwrb.getLocalizedString("member_overview_end_date", "Quit");
@@ -94,6 +108,25 @@ public class MemberOverview extends Block {
 			row = insertRegistrationInfoIntoTable(table, row, true);
 		}
 		
+		row += 3;
+		
+		// show finance overview section
+		Link financeOverviewLink = new Link(showFinanceOverview?"-":"+");
+		financeOverviewLink.setBold();
+		financeOverviewLink.setBelongsToParent(true);
+		financeOverviewLink.addParameter(PARAM_NAME_SHOW_STATUS, showStatus?"true":"false");
+		financeOverviewLink.addParameter(PARAM_NAME_SHOW_HISTORY, showHistory?"true":"false");
+		financeOverviewLink.addParameter(PARAM_NAME_SHOW_FINANCE_OVERVIEW, showFinanceOverview?"false":"true");
+		String financeOverviewHeader = _iwrb.getLocalizedString("member_finance_overview", "Finance entry");
+		String entryDateText = _iwrb.getLocalizedString("member_overview_entry_date", "Entry date");
+		String amountText = _iwrb.getLocalizedString("member_overview_amount", "Amount");
+		String infoText = _iwrb.getLocalizedString("member_overview_info", "Info");
+		String[] financeOverviewHeaders = showFinanceOverview?(new String[] {financeOverviewHeader, entryDateText, amountText}):(new String[] {financeOverviewHeader});
+		String[] financeOverviewHeaderAlignments = {null, null, "right"};
+		row = insertSectionHeaderIntoTable(table, row, financeOverviewHeaders, financeOverviewLink);
+		if(showFinanceOverview) {
+			row = insertFinanceInfoIntoTable(table, row, true);
+		}
 		mainTable.add(table, 1, 2);
 		
 		/*PrintButton button = new PrintButton(_iwrb.getLocalizedString("button.print","Print"));
@@ -306,6 +339,38 @@ public class MemberOverview extends Block {
 		return row;
 	}
 	
+	private int insertFinanceInfoIntoTable(Table table, int row, boolean showHistory) {
+		ArrayList finEntryList = new ArrayList(_financeData); 
+		Collections.sort(finEntryList, new Comparator() {
+
+			public int compare(Object arg0, Object arg1) {
+				FinanceEntryBMPBean fin0 = (FinanceEntryBMPBean) arg0;
+				FinanceEntryBMPBean fin1 = (FinanceEntryBMPBean) arg1;
+				Timestamp stamp0 = fin0.getDateOfEntry();
+				Timestamp stamp1 = fin1.getDateOfEntry();
+				return _collator.compare(stamp0.toString(),stamp1.toString());
+			}
+			
+		});
+		Iterator finIter = finEntryList.iterator();
+		String previousCategoryName = "";
+		resetColor();
+		NumberFormat format = NumberFormat.getInstance(_iwrb.getLocale());
+		format.setMaximumFractionDigits(0);
+		format.setMinimumIntegerDigits(1);
+		while(finIter.hasNext()) {
+			FinanceEntry finEntry = (FinanceEntry) finIter.next();
+			String displayName = finEntry.getGroup().getName()+" - "+finEntry.getDivision().getName()+" - "+finEntry.getClub(); 
+			table.add(displayName,2,row);
+			table.add(new IWTimestamp(finEntry.getDateOfEntry()).getDateString("dd-MM-yyyy"),3,row);
+			//table.add(finEntry.getInfo(),3,row);
+			table.add(format.format(finEntry.getAmount()),4,row);
+			table.setAlignment(4, row, "right");
+		row++;
+		}
+		return row;
+	}
+	
 	private Table getClubsTable() {
 		Table table = new Table();
 		Iterator clubListIter = _data.getClubList().iterator();
@@ -374,6 +439,7 @@ public class MemberOverview extends Block {
 	//private Integer _userId = new Integer(338609);
 	//private User _user = null;
 	private MemberGroupData _data = null;
+	private Collection _financeData = null;
 	
 	private Collator _collator = null;
 }
