@@ -464,7 +464,9 @@ private Table _myTable;
       userTable.add(linkTable,1,5);
     }
 
-    textTable.setWidth(1,"90");
+    textTable.setWidth(1,"100");
+    if ( _nameWidth != null )
+      textTable.setWidth(1,_nameWidth);
     textTable.setColumnVerticalAlignment(1,"top");
     textTable.setColumnVerticalAlignment(2,"top");
     userTable.setColumnVerticalAlignment(1,"top");
