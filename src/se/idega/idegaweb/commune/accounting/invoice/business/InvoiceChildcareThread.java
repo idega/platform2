@@ -148,9 +148,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					User adult = (User)custIter.next();
 					Address childAddress = userBus.getUsersMainAddress(child);
 					Address custodianAddress = userBus.getUsersMainAddress(adult);
-					if(childAddress.getPostalAddress().equals(custodianAddress.getPostalAddress()) &&
-							childAddress.getCity().equals(custodianAddress.getCity()) &&
-							childAddress.getStreetAddress().equals(custodianAddress.getStreetAddress())){
+					if (childAddress.isEqualTo (custodianAddress)) {
 						if(invoiceReceiver == null || adult.getGenderID() == 1){
 							invoiceReceiver = adult;
 						}
