@@ -264,7 +264,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			text.append(":"+iwc.getServerPort());
 		}
 
-		String url = iwc.getIWMainApplication().getBuilderServletURI();//+"&"+PARAMETER_PRODUCT_ID+"="+definedProduct.getPrimaryKey().toString();
+		//String url = iwc.getIWMainApplication().getBuilderServletURI();//+"&"+PARAMETER_PRODUCT_ID+"="+definedProduct.getPrimaryKey().toString();
 		
 		try {
 			BuilderService bs = BuilderServiceFactory.getBuilderService(iwc);
