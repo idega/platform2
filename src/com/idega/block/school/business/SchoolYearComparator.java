@@ -6,6 +6,7 @@ import java.util.Comparator;
 import com.idega.block.school.data.SchoolYear;
 
 /**
+ * A class to compare a collection of <code>SchoolYear</code> objects.
  * @author Laddi
  */
 public class SchoolYearComparator implements Comparator {
