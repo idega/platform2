@@ -334,14 +334,14 @@ private int _layout = RADIO_BUTTON_VIEW;
 		imageTable.setCellspacing(0);
 		imageTable.setCellpadding(0);
 
-	      Image image = new Image(_linkImage.getMediaServletString());
+
+	      Image image = new Image(_linkImage.getMediaURL(iwc));
 
 	      image.setVerticalSpacing(3);
 	      if ( _linkOverImage != null ) {
 		  image.setOverImage(_linkOverImage);
 		  _linkOverImage.setVerticalSpacing(3);
-
-		answerLink.setAttribute("onMouseOver","swapImage('"+image.getName()+"','','"+_linkOverImage.getMediaServletString()+"',1)");
+		answerLink.setAttribute("onMouseOver","swapImage('"+image.getName()+"','','"+_linkOverImage.getMediaURL(iwc)+"',1)");
 		answerLink.setAttribute("onMouseOut","swapImgRestore()");
 	      }
 

@@ -243,7 +243,7 @@ public class Doc extends FolderBlock implements IWBlock {
             switch (_layout) {
                 case BOX_VIEW:
                     System.out.println("getBoxView(folder,categories,boxTable);: " + folder + "," + categories + "," + boxTable);
-                    getBoxView(folder, categories, boxTable);
+                    getBoxView(folder, categories, boxTable, iwc);
                     break;
                 case CATEGORY_VIEW:
                     boxTable.setWidth(_boxWidth);
@@ -268,7 +268,7 @@ public class Doc extends FolderBlock implements IWBlock {
      *@param  categories  Description of the Parameter
      *@param  boxTable    Description of the Parameter
      */
-    private void getBoxView(InformationFolder folder, InformationCategory[] categories, Table boxTable) {
+    private void getBoxView(InformationFolder folder, InformationCategory[] categories, Table boxTable, IWContext iwc) {
         int row = 1;
         int column = 1;
         if (categories != null) {
@@ -316,7 +316,7 @@ public class Doc extends FolderBlock implements IWBlock {
                     }
 
                     for (int b = 0; b < linksLength; b++) {
-                        Link link = getLink(links[b]);
+                        Link link = getLink(links[b],iwc);
                         if (link != null) {
                             linksTable.add(link, 1, linkRow);
                             linksTable.setWidth(1, linkRow, "100%");
@@ -425,7 +425,7 @@ public class Doc extends FolderBlock implements IWBlock {
                 linkRow++;
 
                 for (int b = 0; b < links.length; b++) {
-                    Link link = getLink(links[b]);
+                    Link link = getLink(links[b],iwc);
                     idegaTimestamp stamp = new idegaTimestamp(links[b].getCreationDate());
 
                     if (link != null) {
@@ -490,7 +490,7 @@ public class Doc extends FolderBlock implements IWBlock {
             DocLink[] links = DocFinder.getLinksInFolderCategory(folder, categories[a]);
             if (links != null) {
                 for (int b = 0; b < links.length; b++) {
-                    Link link = getLink(links[b]);
+                    Link link = getLink(links[b],iwc);
                     if (link != null) {
                         table.add(link, 1, linkRow);
                         table.setWidth(1, linkRow, "100%");
@@ -557,7 +557,7 @@ public class Doc extends FolderBlock implements IWBlock {
      *@param  docLink  Description of the Parameter
      *@return          The link value
      */
-    private Link getLink(DocLink docLink) {
+    private Link getLink(DocLink docLink, IWContext iwc) {
         String linkString = docLink.getName();
         //DocBusiness.getLocalizedString(boxLink,_iLocaleID);
         if (linkString != null) {
@@ -581,8 +581,8 @@ public class Doc extends FolderBlock implements IWBlock {
                 }
                 link.setURL(URL);
             } else if (fileID != -1) {
-                System.out.println("link.setUrl(Mediabusiness.getMediaUrl(fileID))");
-                link.setURL(MediaBusiness.getMediaURL(fileID));
+                System.out.println("link.setUrl(Mediabusiness.getMediaUrl(fileID,iwc))");
+                link.setURL(MediaBusiness.getMediaURL(fileID,iwc.getApplication()));
             } else if (pageID != -1) {
                 link.setPage(pageID);
             }
