@@ -25,7 +25,7 @@ import com.idega.builder.presentation.IBPageChooser;
 
 public class BoxEditorWindow extends IWAdminWindow{
 
-private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.poll";
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.boxoffice";
 private boolean _isAdmin = false;
 private boolean _superAdmin = false;
 private boolean _update = false;
@@ -269,10 +269,10 @@ public BoxEditorWindow(){
       typeDrop.setToSubmit();
 
     DropdownMenu targetDrop = new DropdownMenu(BoxBusiness.PARAMETER_TARGET);
-      targetDrop.addMenuElement(Link.TARGET_BLANK_WINDOW,Link.TARGET_BLANK_WINDOW);
-      targetDrop.addMenuElement(Link.TARGET_NEW_WINDOW,Link.TARGET_NEW_WINDOW);
-      targetDrop.addMenuElement(Link.TARGET_PARENT_WINDOW,Link.TARGET_PARENT_WINDOW);
-      targetDrop.addMenuElement(Link.TARGET_TOP_WINDOW,Link.TARGET_TOP_WINDOW);
+      targetDrop.addMenuElement(Link.TARGET_BLANK_WINDOW,_iwrb.getLocalizedString("_blank","New Window"));
+      targetDrop.addMenuElement(Link.TARGET_SELF_WINDOW,_iwrb.getLocalizedString("_self","Same Window"));
+      targetDrop.addMenuElement(Link.TARGET_PARENT_WINDOW,_iwrb.getLocalizedString("_parent","Parent frame"));
+      targetDrop.addMenuElement(Link.TARGET_TOP_WINDOW,_iwrb.getLocalizedString("_top","Top frame"));
       targetDrop.setSelectedElement(_target);
 
     TextInput linkURL = new TextInput(BoxBusiness.PARAMETER_LINK_URL);
@@ -293,14 +293,14 @@ public BoxEditorWindow(){
 
     addLeft(_iwrb.getLocalizedString("category","Category")+":",categoryTable,true,false);
     addLeft(_iwrb.getLocalizedString("link_name","Name")+":",linkName,true);
-    addLeft(_iwrb.getLocalizedString("type","Type"),typeDrop,true);
+    addLeft(_iwrb.getLocalizedString("type","Type")+":",typeDrop,true);
 
     if ( _type == BoxBusiness.LINK )
-      addLeft(_iwrb.getLocalizedString("link_url","URL")+":",linkURL,true);
+      addLeft(_iwrb.getLocalizedString("link","Link")+":",linkURL,true);
     else if ( _type == BoxBusiness.FILE )
-      addLeft(_iwrb.getLocalizedString("link_file","File")+":",fileChooser,true);
+      addLeft(_iwrb.getLocalizedString("file","File")+":",fileChooser,true);
     else if ( _type == BoxBusiness.PAGE )
-      addLeft(_iwrb.getLocalizedString("link_page","Page")+":",pageChooser,true);
+      addLeft(_iwrb.getLocalizedString("page","Page")+":",pageChooser,true);
 
     addLeft(_iwrb.getLocalizedString("target","Target")+":",targetDrop,true);
 
