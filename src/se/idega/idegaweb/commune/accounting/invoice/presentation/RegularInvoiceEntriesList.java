@@ -58,6 +58,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
@@ -377,7 +378,11 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		entry.setFrom(from);
 		entry.setTo(to);
 					
-		entry.setNote(iwc.getParameter(PAR_REMARK));
+		String note = iwc.getParameter(PAR_REMARK);
+		if (note == null || note.length() == 0){
+			note = " "; //Oracle stores empty string as "null"
+		}
+		entry.setNote(note);
 		entry.setPlacing(iwc.getParameter(PAR_PLACING));
 		entry.setVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
 		entry.setPlacing(iwc.getParameter(PAR_PLACING));
@@ -593,6 +598,23 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		return inner;
 	}	
 	
+	private int addOperationalFieldPanel(Table table, int row, String actionCommand, User user) {
+		
+
+		table.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverksamhet"), 1, row);
+		OperationalFieldsMenu ofm = new OperationalFieldsMenu();
+		if (user != null){
+			ofm.setParameter(PAR_USER_SSN, user.getPersonalID());
+		}
+		ofm.maintainParameter(PAR_SEEK_FROM);
+		ofm.maintainParameter(PAR_SEEK_TO);
+	
+		table.add(ofm, 2, row);
+		table.add(new HiddenInput(actionCommand, " "), 3, row); //to make it return to the right page
+		return row + 1;
+	}
+		
+	
 	private UserSearcher getUserSearcherForm(IWContext iwc, User currentUser){
 	
 		UserSearcher searcher = new UserSearcher();
@@ -693,7 +715,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 					list.add(link);
 					
 					
-					list.add(getText(formatCurrency(entry.getAmount())));
+					list.add(getText(""+AccountingUtil.roundAmount(entry.getAmount())));
 					list.add(getText(entry.getNote()));
 
 					Link edit = new Link(getEditIcon(localize(KEY_EDIT_TOOLTIP, "Edit")));
@@ -732,8 +754,9 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 //		table.setCellpadding(0);
 //		table.setCellspacing(0);
 		int row = 1;
-		table.mergeCells(1,1,3,1);
-		table.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN, user), 1, row++);
+//		table.mergeCells(1,1,3,1);
+//		table.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN, user), 1, row++);
+		row = addOperationalFieldPanel(table, row, PAR_OPFIELD_DETAILSCREEN, user);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		
@@ -815,7 +838,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		addIntField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, "" + AccountingUtil.roundAmount(entry.getAmount()), 1, row++);
 
 		//Vat is currently set to 0
-		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+0, 1, row++);
+		addIntField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+0, 1, row++);
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
@@ -830,8 +853,9 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		if (errorMessages.get(ERROR_REG_SPEC_BLANK) != null) {
 			table.add(getErrorText((String) errorMessages.get(ERROR_REG_SPEC_BLANK)), 2, row++);			
 		}
-		
+		table.mergeCells(2, row, 10, row);
 		addDropDown(table, PAR_REGULATION_TYPE, KEY_REGULATION_TYPE, regTypes, entry.getRegSpecTypeId(), "getRegSpecType", 1, row++);
+		table.mergeCells(2, row, 10, row);
 		addDropDownLocalized(table, PAR_VAT_RULE, KEY_VAT_RULE, vatTypes, entry.getVatRuleRegulationId(),  "getName", 1, row++);
 
 		if (errorMessages.get(ERROR_POSTING) != null) {
@@ -839,7 +863,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		} else if (errorMessages.get(ERROR_OWNPOSTING_EMPTY) != null) {
 			table.add(getErrorText((String) errorMessages.get(ERROR_OWNPOSTING_EMPTY)), 2, row++);			
 		} else if (postingException != null){
-			table.add(getLocalizedException(postingException), 2, row++);				
+			Text error = getLocalizedException(postingException);
+			table.add(error, 2, row++);				
 		}
 		
 		table.mergeCells(1, row, 10, row);
@@ -1083,35 +1108,35 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 //		return addWidget(table, key, getTextInput(parameter, value), col, row);
 //	}
 	
-	/**
-	 * Adds a label and a TextInput to a table
-	 * @param table
-	 * @param key is used both as localization key for the label and default label value
-	 * @param value
-	 * @param parameter
-	 * @param col
-	 * @param row
-	 * @return
-	 */
+//	/**
+//	 * Adds a label and a TextInput to a table
+//	 * @param table
+//	 * @param key is used both as localization key for the label and default label value
+//	 * @param value
+//	 * @param parameter
+//	 * @param col
+//	 * @param row
+//	 * @return
+//	 */
 //	private Table addField(Table table, String parameter, String key, String value, int col, int row, int width){
 //		return addWidget(table, key, getTextInput(parameter, value, width), col, row);
 //	}
 		
-	/**
-	 * Adds a label and a TextInput to a table
-	 * @param table
-	 * @param key is used both as localization key for the label and default label value
-	 * @param value
-	 * @param parameter
-	 * @param col
-	 * @param row
-	 * @return
-	 */
-	private Table addFloatField(Table table, String parameter, String key, String value, int col, int row){
-		TextInput input = getTextInput(parameter, value);
-		input.setAsFloat(localize(LOCALIZER_PREFIX + "float_format_error", "Format-error: Expecting float:" )+ " " + localize(key, ""), 2);
-		return addWidget(table, key, input, col, row);
-	}
+//	/**
+//	 * Adds a label and a TextInput to a table
+//	 * @param table
+//	 * @param key is used both as localization key for the label and default label value
+//	 * @param value
+//	 * @param parameter
+//	 * @param col
+//	 * @param row
+//	 * @return
+//	 */
+//	private Table addFloatField(Table table, String parameter, String key, String value, int col, int row){
+//		TextInput input = getTextInput(parameter, value);
+//		input.setAsFloat(localize(LOCALIZER_PREFIX + "float_format_error", "Format-error: Expecting float:" )+ " " + localize(key, ""), 2);
+//		return addWidget(table, key, input, col, row);
+//	}
 		
 
 	/**
