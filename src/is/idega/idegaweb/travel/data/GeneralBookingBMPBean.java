@@ -549,7 +549,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
       String tTable = com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeTableName();
 
       String dateColumn = this.getBookingDateColumnName();
-      String returning = "b."+getTotalCountColumnName();
+      String returning = "sum (b."+getTotalCountColumnName()+") ";
       
       if (useDateOfBookingColumn) {
         dateColumn = this.getDateOfBookingColumnName();
@@ -619,17 +619,18 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
 							sql.append(" b."+getBookingCodeColumnName()+"= '"+code+"'");
 						}
 
-//            System.out.println(sql.toString());
+            //System.out.println(sql.toString());
         many = SimpleQuerier.executeStringQuery(sql.toString());
 //        many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
 //		System.out.println("GetBookingsTotalCount SQL \n"+sql.toString());
 
-	      if (returnTotalCountInsteadOfBookingCount) {
-	        for (int i = 0; i < many.length; i++) {
-	          returner += Integer.parseInt(many[i]);
-	        }
-	      }else if (many != null && many.length > 0){
-	      	returner += Integer.parseInt( many[0]);	
+//	      if (returnTotalCountInsteadOfBookingCount) {
+//	        for (int i = 0; i < many.length; i++) {
+//	          returner += Integer.parseInt(many[i]);
+//	        }
+//	      }else 
+	      	if (many != null && many.length > 0 && many[0] != null){
+	      		returner += Integer.parseInt( many[0]);	
 	      }
 
     }catch (Exception e) {
