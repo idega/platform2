@@ -2751,7 +2751,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			t.begin();
 
 			ChildCareApplication application = getApplication(applicationID);
-			if (application != null)
+			if (application == null)
 				application = getChildCareApplicationHome().create();
 			
 			User child = getUserBusiness().getUser(childID);
