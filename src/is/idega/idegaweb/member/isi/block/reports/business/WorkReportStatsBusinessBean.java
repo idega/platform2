@@ -4118,20 +4118,16 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		String reportStatus = report.getStatus();
 		System.out.println("report status is \"" + reportStatus + "\", chosen status is \"" + status + "\"");
 		boolean show = true;
-		if(status!=null && status.length()>0) {
+		if(status!=null && status.trim().length()>0 && !status.equals(WorkReportStatusDropDownMenu.STATUS_ALL)) {
 			show = false;
-			if(WorkReportStatusDropDownMenu.STATUS_DONE.equals(status) && 
-			   WorkReportConstants.WR_STATUS_DONE.equals(reportStatus)) {
-				show = true;
-			} else if(WorkReportStatusDropDownMenu.STATUS_NO_REPORT.equals(status) && 
-					  WorkReportConstants.WR_STATUS_NO_REPORT.equals(reportStatus)) {
-				show = true;
-			} else if(WorkReportStatusDropDownMenu.STATUS_NOT_DONE.equals(status) && 
-					  WorkReportConstants.WR_STATUS_NOT_DONE.equals(reportStatus)) {
-				show = true;
-			} else if(WorkReportStatusDropDownMenu.STATUS_SOME_DONE.equals(status) && 
-					  WorkReportConstants.WR_STATUS_SOME_DONE.equals(reportStatus)) {
-				show = true;
+			if(WorkReportStatusDropDownMenu.STATUS_DONE.equals(status)) {
+				show = WorkReportConstants.WR_STATUS_DONE.equals(reportStatus);
+			} else if(WorkReportStatusDropDownMenu.STATUS_NO_REPORT.equals(status)) {
+				show = WorkReportConstants.WR_STATUS_NO_REPORT.equals(reportStatus);
+			} else if(WorkReportStatusDropDownMenu.STATUS_NOT_DONE.equals(status)) {
+				show = WorkReportConstants.WR_STATUS_NOT_DONE.equals(reportStatus);
+			} else if(WorkReportStatusDropDownMenu.STATUS_SOME_DONE.equals(status)) {
+				show = WorkReportConstants.WR_STATUS_SOME_DONE.equals(reportStatus);
 			} 
 		}
 		return show;
