@@ -30,6 +30,7 @@ public interface Contract extends com.idega.data.IDOLegacyEntity
  public void setResignInfo(java.lang.String p0);
  public void setReturnTime(java.sql.Timestamp p0);
  public void setStarted();
+ public void setStarted(java.sql.Timestamp p0);
  public void setStatus(java.lang.String p0)throws java.lang.IllegalStateException;
  public void setStatusCreated();
  public void setStatusDate(java.sql.Date p0);

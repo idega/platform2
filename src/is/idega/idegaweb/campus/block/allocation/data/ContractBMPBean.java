@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.2 2002/05/30 14:12:36 palli Exp $
+ * $Id: ContractBMPBean.java,v 1.3 2002/08/07 14:53:30 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -206,8 +206,13 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
   }
 
    public void setStarted(){
+//    setIsRented(true);
+    setStarted(idegaTimestamp.getTimestampRightNow());
+  }
+
+   public void setStarted(Timestamp when){
     setIsRented(true);
-    setDeliverTime(idegaTimestamp.getTimestampRightNow());
+    setDeliverTime(when);
   }
 
   public void setStatus(String status) throws IllegalStateException {

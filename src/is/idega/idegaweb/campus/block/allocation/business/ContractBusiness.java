@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.14 2002/07/11 09:55:55 aron Exp $
+ * $Id: ContractBusiness.java,v 1.15 2002/08/07 14:53:30 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,7 @@ import com.idega.block.building.data.Apartment;
 
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import com.idega.data.EntityFinder;
 import java.util.Vector;
@@ -246,16 +247,23 @@ public  class ContractBusiness {
     }
   }
 
-  public static void deliverKey(IWApplicationContext iwac,int iContractId){
+  public static void deliverKey(IWApplicationContext iwac,int iContractId, Timestamp when) {
      try {
       Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
-      C.setStarted();
+      if (when == null)
+	      C.setStarted();
+	    else
+	    	C.setStarted(when);
       C.update();
        MailingListBusiness.processMailEvent(iwac,iContractId,LetterParser.DELIVER);
     }
     catch (SQLException ex) {
       ex.printStackTrace( );
     }
+  }
+  
+  public static void deliverKey(IWApplicationContext iwac,int iContractId){
+  	deliverKey(iwac,iContractId,null);
   }
 
   public static void resignContract(IWApplicationContext iwac,int iContractId,idegaTimestamp movingDate,String info,boolean datesync){

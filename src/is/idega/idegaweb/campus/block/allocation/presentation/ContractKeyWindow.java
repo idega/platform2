@@ -117,17 +117,22 @@ public class ContractKeyWindow extends Window{
       T.addButton(new CloseButton(iwrb.getImage("close.gif")));
       String val = "";
       SubmitButton save = new SubmitButton(iwrb.getImage("save.gif"),"save");
+      boolean canSave = false;
       if(apartmentReturn){
         T.addTitle(iwrb.getLocalizedString("apartment_return","Apartment return"));
         val = "return";
-        if(eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusEnded) || eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusResigned) )
+        if(eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusEnded) || eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusResigned) ) {
           T.addButton(save);
+          canSave = true;
+        }
       }
       else{
         T.addTitle(iwrb.getLocalizedString("apartment_deliver","Apartment deliver"));
         val = "deliver";
-        if(eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusSigned) )
+        if(eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusSigned) ) {
           T.addButton(save);
+          canSave = true;
+        }
       }
       T.add(new HiddenInput("val",val),1,1);
 
@@ -165,8 +170,16 @@ public class ContractKeyWindow extends Window{
       if(delstamp !=null){
         idegaTimestamp del = new idegaTimestamp(delstamp);
         T.add(Edit.formatText(del.getLocaleDate(iwc)),2,row);
+      } 
+      else {
+      	if (canSave) {
+	      	idegaTimestamp	del = new idegaTimestamp();
+  	    	DateInput input = new DateInput("deliveredDate");
+    	  	input.setDate(del.getSQLDate());
+      		Edit.setStyle(input);
+        	T.add(input,2,row);
+      	}
       }
-
 
       row++;
       boolean canSign = true;
@@ -194,7 +207,10 @@ public class ContractKeyWindow extends Window{
         ContractBusiness.returnKey(iwc,id);
       }
       else if(val.equals("deliver")){
-        ContractBusiness.deliverKey(iwc,id);
+      	String from = iwc.getParameter("deliveredDate");
+      	idegaTimestamp fromStamp = new idegaTimestamp(from);
+//        ContractBusiness.deliverKey(iwc,id);
+				ContractBusiness.deliverKey(iwc,id,fromStamp.getTimestamp());
       }
     }
   }
