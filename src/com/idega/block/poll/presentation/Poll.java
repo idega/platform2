@@ -433,6 +433,7 @@ private int _layout = RADIO_BUTTON_VIEW;
     _numberOfShownPolls = 3;
     _showVotes = true;
     _showCollection = true;
+    _questionAlignment = "center";
     _pollID = -1;
   }
 
