@@ -89,6 +89,7 @@ public class CurrencyBusiness {
 				defaultCurrency = (String) TextSoap.FindAllBetween(fileString, currencyDefault, currencyDefaultEnd).firstElement();
 			}
 			catch (Exception e) {
+				e.printStackTrace(System.err);
 			}
 		}
 
@@ -98,6 +99,7 @@ public class CurrencyBusiness {
 			rootElement = parser.parse(url).getRootElement();
 		}
 		catch (XMLException e) {
+				e.printStackTrace(System.err);
 			rootElement = null;
 		}
 
@@ -251,13 +253,20 @@ public class CurrencyBusiness {
 			CurrencyHolder holder = (CurrencyHolder) currencyMap.get(currAbbr);
 			if (holder != null && !map.containsKey(holder.getCurrencyName())) {
 				try {
-					currency = home.getCurrencyByAbbreviation(holder.getCurrencyAbbreviation());
-					update = true;
-					if (currency == null) {
+					try {
+						if (holder.getCurrencyAbbreviation() != null) {
+							currency = home.getCurrencyByAbbreviation(holder.getCurrencyAbbreviation());
+						}
+						if (currency != null) {
+							update = true;
+						}else {
+							update = false;
+						}
+					} catch (Exception e) {
 						currency = home.create();
 						update = false;
 					}
-
+					
 					currency.setCurrencyAbbreviation(holder.getCurrencyName());
 					currency.setCurrencyName(holder.getCurrencyName());
 					if (update) {
@@ -271,14 +280,12 @@ public class CurrencyBusiness {
 
 					execute = true;
 				}
-				catch (FinderException fe) {
-					fe.printStackTrace(System.err);
-				}
 				catch (CreateException ce) {
 					ce.printStackTrace(System.err);
 				}
 			}
 		}
+		
 
 		if (execute) {
 			try {
