@@ -16,10 +16,10 @@ import se.idega.idegaweb.commune.report.business.Fetcher;
 /**
  * IdegaWeb presentation class for wizard input of a new Report Generator
  * <p>
- * Last modified: $Date: 2003/04/02 20:47:26 $ by $Author: laddi $
+ * Last modified: $Date: 2003/04/23 10:46:09 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @see com.idega.block.reports.data.Report
  */
 public class ReportLink extends CommuneBlock {
@@ -56,15 +56,14 @@ public class ReportLink extends CommuneBlock {
 		setResourceBundle (getResourceBundle (context));
 
         final Report report = findReport (context);
-
-        if (context.isParameterSet (SAVE_GENERATOR_ACTION)) {
+        if (report != null) {
+            showReportLink (report);
+        } else if (context.isParameterSet (SAVE_GENERATOR_ACTION)) {
             saveGenerator (context);
         } else if (context.isParameterSet (TRY_SQL_ACTION)) {
             trySql (context);
         } else if (context.isParameterSet (EDIT_GENERATOR_ACTION)) {
             editGenerator ();
-        } else if (report != null) {
-            showReportLink (report);
         } else {
             showSqlForm (context);
         }
@@ -186,7 +185,8 @@ public class ReportLink extends CommuneBlock {
      */
     private void saveGenerator (final IWContext context) {
         // 1. get web form posted parameters
-        final String sql = context.getParameter (SQL_QUERY_KEY);
+        final String sql = replaceWhiteSpaceWithSpace (context.getParameter
+                                                       (SQL_QUERY_KEY));
         final String reportName = context.getParameter (REPORT_NAME_KEY);
         final List columnHeaderList = new ArrayList ();
         for (int col = 0; context.isParameterSet (COLUMN_NAME_KEY + col);
@@ -265,6 +265,19 @@ public class ReportLink extends CommuneBlock {
             result = (ICCategory) categoryList.iterator ().next ();
         }
         return result;
+    }
+
+    private static String replaceWhiteSpaceWithSpace (final String original) {
+        if (original == null) return "";
+
+        final StringBuffer result = new StringBuffer (original);
+
+        for (int i = 0; i < result.length (); i++) {
+            if (Character.isWhitespace (result.charAt(i))) {
+                result.setCharAt (i, ' ');
+            }
+        }
+        return result.toString ();
     }
 
     /**

@@ -19,10 +19,10 @@ import com.idega.io.MemoryOutputStream;
 /**
  * Document generator class that creates reports.
  * <p>
- * Last modified: $Date: 2003/04/02 16:12:23 $ by $Author: laddi $
+ * Last modified: $Date: 2003/04/23 10:46:09 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @see com.idega.block.reports.data.Report
  * @see se.idega.idegaweb.commune.report.business.Fetcher
  */
@@ -90,7 +90,8 @@ public class ReportGenerator implements MediaWritable
         for (int row = 0; row < data.length; row++) {
             final StringBuffer rowData = new StringBuffer ();
             for (int col = 0; col < columnCount; col++) {
-                rowData.append (data [row][col] + '\t');
+                rowData.append (replaceWhiteSpaceWithSpace
+                                (data [row][col]) + '\t');
             }
             rowData.append ('\n');
             reportStream.write (rowData.toString().getBytes());
@@ -100,5 +101,18 @@ public class ReportGenerator implements MediaWritable
         report.setMimeType("application/x-msexcel");
 
         return report;
+    }
+
+    private static String replaceWhiteSpaceWithSpace (final String original) {
+        if (original == null) return "";
+
+        final StringBuffer result = new StringBuffer (original);
+
+        for (int i = 0; i < result.length (); i++) {
+            if (Character.isWhitespace (result.charAt(i))) {
+                result.setCharAt (i, ' ');
+            }
+        }
+        return result.toString ();
     }
 }
