@@ -6,12 +6,13 @@
  */
 package is.idega.idegaweb.member.presentation;
 
-import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 
 import java.rmi.RemoteException;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.FinderException;
 
@@ -22,9 +23,8 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.SelectOption;
-import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.presentation.UserGroupTab;
@@ -440,6 +440,19 @@ public class ClubInformationTab extends UserGroupTab {
 		try {
 			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
 		
+			List parents = group.getParentGroups();
+			Iterator it = parents.iterator();
+			
+			String regional = null;
+			
+			if (it != null) {
+				while (it.hasNext()) {
+					Group parent = (Group)it.next();
+					if (parent.getGroupType().equals("iw_me_regional_union"))
+						regional = parent.getName();
+				}
+			}
+		
 //			group.getParentGroups()
 
 			String number = group.getMetaData("CLUBINFO_NUMBER");
@@ -477,8 +490,8 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_makeFieldName, make);
 			if (connection != null)
 				fieldValues.put(_connectionToSpecialFieldName, connection);
-//			if (regional != null)
-//				fieldValues.put(_regionalUnionFieldName, regional);
+		if (regional != null)
+				fieldValues.put(_regionalUnionFieldName, regional);
 			if (status != null)
 				fieldValues.put(_statusFieldName, status);
 			fieldValues.put(_premierLeagueFieldName, new Boolean(premier != null));
