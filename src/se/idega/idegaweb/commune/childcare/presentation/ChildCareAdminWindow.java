@@ -99,7 +99,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_PLACEMENT_ID = "cc_placement_id";
 	public static final String PARAMETER_SCHOOL_CLASS = "cc_sch_class";
 	
-	private static final String PROPERTY_RESTRICT_DATES = "child_care_restrict_alter_date";
+	//private static final String PROPERTY_RESTRICT_DATES = "child_care_restrict_alter_date";
 	
 	public static final String FIELD_CURRENT_DATE = "currentdate";
 	
@@ -161,7 +161,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	private CloseButton close;
 	private Form form;
-	private boolean restrictDates = false;
+	//private boolean restrictDates = false;
 	boolean onlyAllowFutureCareDate = true; //Changed according to #nacc149
 	
 
@@ -1759,11 +1759,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			//if (iwc.isParameterSet(PARAMETER_EARLIEST_DATE))
 			//earliestDate = new IWTimestamp(iwc.getParameter(PARAMETER_EARLIEST_DATE));
 
-		String restrict = getBundle().getProperty(PROPERTY_RESTRICT_DATES, "false");
+		/*String restrict = getBundle().getProperty(PROPERTY_RESTRICT_DATES, "false");
 		restrictDates = false;
 		if (restrict != null) {
 			restrictDates = Boolean.valueOf(restrict).booleanValue();
-		}
+		}*/
 	}
 	
 	private void alterCareTime(IWContext iwc) throws RemoteException {
