@@ -270,16 +270,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public int getCountOfFemalePlayersOfYoungerAgeAndByWorkReport(int age, WorkReport report) {
 		return getWorkReportMemberHome().getCountOfFemalePlayersOfYoungerAgeByWorkReport(age, report);
 	}
-	
-	
-	
-/*	data.addData(womenUnderAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
-						data.addData(womenOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
-						data.addData(menUnderAgeLimit,new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
-						data.addData(menOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
-					
-					*/
-	
 
 	/**
 	 * This method gets you the id of the workreport of the club and year specified. It will create a new report if it does not exist already.
@@ -295,9 +285,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 		try {
 			club = this.getGroupBusiness().getGroupByGroupID(groupId); //could be club,regional union or league
-
-			
-		
 
 			try {
 				report = getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(groupId, year);
@@ -325,7 +312,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			//UPDATE ALWAYS UNLESS IS READ ONLY
 			wrId = ((Integer)report.getPrimaryKey()).intValue();
 			
-			if (report != null && 	!isWorkReportReadOnly(wrId)) {
+			if (report != null && !isWorkReportReadOnly(wrId)) {
 				createOrUpdateLeagueWorkReportGroupsForYear(year);
 				
 				if(!justCreated ) {
@@ -334,8 +321,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				
 				createWorkReportData(wrId);
 			}
-			
-			
 			
 		}
 		catch (FinderException e1) {//second catch, could be a problem?
@@ -361,6 +346,16 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 		else {
 			report.setAsActive();
+		}
+		
+		String club_type = club.getMetaData(IWMemberConstants.META_DATA_CLUB_MAKE);
+		report.setType(club_type);
+		
+		String club_in_umfi = club.getMetaData(IWMemberConstants.META_DATA_CLUB_IN_UMFI);
+		if(club_in_umfi!=null && club_in_umfi.equalsIgnoreCase("true")) {
+			report.setIsInUMFI(true);			
+		} else {
+			report.setIsInUMFI(false);
 		}
 		
 		try {
@@ -532,7 +527,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 
 	public WorkReportBoardMember createWorkReportBoardMember(int reportID, String personalID, WorkReportGroup workReportGroup) throws CreateException {
-
 		User user = null;
 		try {
 			user = getUser(personalID);
