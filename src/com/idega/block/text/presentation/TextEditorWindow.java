@@ -33,7 +33,7 @@ import com.idega.core.data.ICFile;
  * @version 1.1
  */
 
-public class TextEditorWindow extends IWAdminWindow{
+public class TextEditorWindow extends AbstractChooserWindow{
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
   private boolean isAdmin = false;
@@ -65,15 +65,22 @@ public class TextEditorWindow extends IWAdminWindow{
   private static String modeNew = "txem_new";
   private static String modeDelete = "txem_delete";
 
+  public static final String ONCLICK_FUNCTION_NAME = "textselect";
+  public static final String TEXT_ID_PARAMETER_NAME = "text_id";
+  public static final String TEXT_NAME_PARAMETER_NAME = "text_name";
+  private boolean parentReload = true;
+
   private TextHelper textHelper;
+
 
   private IWBundle iwb,core;
   private IWResourceBundle iwrb;
 
   public TextEditorWindow(){
+    super();
     setWidth(570);
     setHeight(430);
-		setResizable(true);
+    setResizable(true);
     setUnMerged();
   }
 
@@ -90,8 +97,10 @@ public class TextEditorWindow extends IWAdminWindow{
 		  System.out.println(pN+" = "+iwc.getParameter(pN) );
 		}
 		if(iwc.isParameterSet(actClose)|| iwc.isParameterSet(actClose+".x")){
-		  setParentToReload();
-			close();
+                  if (parentReload) {
+		    setParentToReload();
+                  }
+                  close();
 		}
 		else{
 			// LocaleHandling
@@ -301,10 +310,15 @@ public class TextEditorWindow extends IWAdminWindow{
     addRight(iwrb.getLocalizedString("image","Image"),imageTable,true,false);
 
 
-		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),actSave);
-		SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"),actClose);
+    SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),actSave);
+    SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"),actClose);
+      getAssociatedScript().addFunction(ONCLICK_FUNCTION_NAME,"function "+ONCLICK_FUNCTION_NAME+"("+TEXT_NAME_PARAMETER_NAME+","+TEXT_ID_PARAMETER_NAME+"){ }");
+      getAssociatedScript().addToFunction(ONCLICK_FUNCTION_NAME,AbstractChooserWindow.SELECT_FUNCTION_NAME+"("+TEXT_NAME_PARAMETER_NAME+","+TEXT_ID_PARAMETER_NAME+")");
+    if (txText != null) {
+      close.setOnClick(ONCLICK_FUNCTION_NAME+"('"+txText.getName()+"','"+txText.getID()+"')");
+    }
     addSubmitButton(save);
-		addSubmitButton(close);
+    addSubmitButton(close);
   }
 
   private void noAccess() throws IOException,SQLException {
@@ -360,7 +374,6 @@ public class TextEditorWindow extends IWAdminWindow{
         files.add(file);
       }
       catch (SQLException ex) {
-
       }
 
       TextBusiness.saveText(iTxTextId,iLocalizedTextId,iLocaleId,iUserId,iObjInsId,null,null,sHeadline,"",sBody,sAttribute,files);
@@ -370,20 +383,24 @@ public class TextEditorWindow extends IWAdminWindow{
   }
 
   private void deleteText(int iTextId ) {
+    /**
+     * @todo hondla fyrir TextChooser
+     */
     TextBusiness.deleteText(iTextId);
     setParentToReload();
     close();
   }
 
-  public void main(IWContext iwc) throws Exception {
-    super.main(iwc);
+  public void displaySelection(IWContext iwc) {
+//    super.main(iwc);
     isAdmin = iwc.hasEditPermission(new TextReader());
     User u= com.idega.block.login.business.LoginBusiness.getUser(iwc);
     iUserId = u != null?u.getID():-1;
     isAdmin = true;
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
-		core = iwc.getApplication().getBundle(TextReader.IW_CORE_BUNDLE_IDENTIFIER);
+    core = iwc.getApplication().getBundle(TextReader.IW_CORE_BUNDLE_IDENTIFIER);
+    reloadCheck(iwc);
     addTitle(iwrb.getLocalizedString("text_editor","Text Editor"));
 		try{
     control(iwc);
@@ -396,4 +413,17 @@ public class TextEditorWindow extends IWAdminWindow{
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
+
+  private void reloadCheck(IWContext iwc) {
+    if (iwc.getSessionAttribute(TextChooser.RELOAD_PARENT_PARAMETER) != null) {
+      parentReload = false;
+    }
+  }
+
+  public void setParentToReload(boolean reload) {
+    this.parentReload = reload;
+  }
+
+/*  public void displaySelection(IWContext iwc) {
+  }*/
 }
