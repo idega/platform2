@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.14 2003/04/07 11:20:46 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.15 2003/07/24 14:05:17 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -454,6 +455,50 @@ public abstract class CampusApplicationFinder {
 	 */
 	public static CampusApplicationHolder getApplicationInfo(Application a) {
 		CampusApplicationHolder cah = null;
+				CampusApplication ca = null;
+				Collection resultSet = null;
+				Vector applieds = null;
+				Applicant applicant = null;
+				Contract contract = null;
+				Vector wl = null;
+				if (a != null) {
+					try {
+						ca =((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome) com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy();
+						resultSet =  EntityFinder.findAllByColumn(ca, ca.getApplicationIdColumnName(), a.getID());
+						if (resultSet != null && !resultSet.isEmpty()) {
+							ca = (CampusApplication) resultSet.iterator().next();
+				
+							Applied applied = ((is.idega.idegaweb.campus.block.application.data.AppliedHome) com.idega.data.IDOLookup.getHomeLegacy(Applied.class)).createLegacy();
+							resultSet = EntityFinder.findAllByColumnOrdered(applied, applied.getApplicationIdColumnName(), ca.getID(), applied.getOrderColumnName());
+				
+							if (resultSet != null && !resultSet.isEmpty()) {
+								applieds = new Vector(resultSet);
+							}
+						}
+						// Applicant
+						applicant = ((com.idega.block.application.data.ApplicantHome) com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(a.getApplicantId());
+				
+						// Contracts
+						resultSet = ContractFinder.listOfApplicantContracts(applicant.getID());
+						if (resultSet != null && !resultSet.isEmpty()) {
+							contract = (Contract) resultSet.iterator().next();
+						}
+				
+						// Waitinglist entries
+						resultSet =  listOfWaitinglist(applicant.getID());
+						if (resultSet != null){
+							wl = new Vector(resultSet);
+						}
+						cah = new CampusApplicationHolder(a, applicant, ca, applieds, contract, wl);
+						return cah;
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				return null;
+		/*
+		CampusApplicationHolder cah = null;
 		List resultSet = null;
 		if (a != null) {
 			try {
@@ -514,8 +559,10 @@ public abstract class CampusApplicationFinder {
 				ex.printStackTrace();
 			}
 		}
+		
 
 		return (cah);
+		*/
 	}
 
 	/**
