@@ -16,10 +16,10 @@ import com.idega.data.IDOQuery;
  */
 public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCategory {
 
-	public static final String ENTITY_NAME = "sch_school_category";
+	public static final String ENTITY_NAME = "SCH_SCHOOL_CATEGORY";
 
-	public static final String COLUMN_CATEGORY = "category";
-	public static final String COLUMN_NAME = "category_name";
+	public static final String COLUMN_CATEGORY = "CATEGORY";
+	public static final String COLUMN_NAME = "CATEGORY_NAME";
 	public static final String COLUMN_LOCALIZED_KEY = "localized_key";
 	
 	public static final String CATEGORY_CHILD_CARE = "CHILD_CARE";
