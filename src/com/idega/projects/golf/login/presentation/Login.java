@@ -175,7 +175,8 @@ protected IWBundle iwb;
 			}
 			TrirTable.setCellpadding(0);
 			TrirTable.setCellspacing(0);
-			TrirTable.setBackgroundImage(1,2,iwrb.getImage(""));
+			//debug eiki tok þetta út
+                        //TrirTable.setBackgroundImage(1,2,new Image(""));
 			TrirTable.setColor(1,2,"#FFFFFF");
 			TveirTable.add(TrirTable,1,1);
 
@@ -274,7 +275,8 @@ protected IWBundle iwb;
 			}
 			TrirTable.setCellpadding(0);
 			TrirTable.setCellspacing(0);
-			TrirTable.setBackgroundImage(1,2,iwrb.getImage(""));
+                        //debug eiki ég tók þetta út
+			//TrirTable.setBackgroundImage(1,2,iwrb.getImage(""));
 
 
 
@@ -509,7 +511,8 @@ private void isLoggedOn(ModuleInfo modinfo){
 			}
 			TrirTable.setCellpadding(0);
 			TrirTable.setCellspacing(0);
-			TrirTable.setBackgroundImage(1,2,iwrb.getImage(""));
+			                        //debug eiki ég tók þetta út
+			//TrirTable.setBackgroundImage(1,2,iwrb.getImage(""));
 
 
 			Text loginTexti = new Text(userText);
@@ -619,7 +622,8 @@ private void isLoggedOn(ModuleInfo modinfo){
 			}
 			TrirTable.setCellpadding(0);
 			TrirTable.setCellspacing(0);
-			TrirTable.setBackgroundImage(1,2,iwrb.getImage(""));
+			                        //debug eiki ég tók þetta út
+			//TrirTable.setBackgroundImage(1,2,iwrb.getImage(""));
 
 
 			Text loginTexti = new Text(userText);
@@ -727,7 +731,8 @@ private void isLoggedOn(ModuleInfo modinfo){
 			}
 			TrirTable.setCellpadding(0);
 			TrirTable.setCellspacing(0);
-			TrirTable.setBackgroundImage(1,2,iwrb.getImage(""));
+                        //debug eiki ég tók þetta út
+			//TrirTable.setBackgroundImage(1,2,iwrb.getImage(""));
 
 
 			Text loginTexti = new Text(userText);
