@@ -134,13 +134,8 @@ public class CurrencyBusiness {
 			getValuesFromDatabase();
 		}
 
-		if (getCurrencyHolder(defaultCurrency) == null && currencyMap != null) {
-			CurrencyHolder defaultHolder = new CurrencyHolder();
-			defaultHolder.setCurrencyName(defaultCurrency);
-			defaultHolder.setBuyValue(1);
-			defaultHolder.setSellValue(1);
-			defaultHolder.setMiddleValue(1);
-			currencyMap.put(holder.getCurrencyName(), defaultHolder);
+		if (getCurrencyHolder(defaultCurrency) == null) {
+			addDefaultCurrency();
 		}
 
 		System.out.println("Default currency: " + defaultCurrency);
@@ -173,6 +168,8 @@ public class CurrencyBusiness {
 	}
 
 	public static void addDefaultCurrency() {
+		if ( currencyMap == null )
+			currencyMap = new HashMap();
 		CurrencyHolder holder = new CurrencyHolder();
 		holder.setCurrencyName(defaultCurrency);
 		holder.setBuyValue(1);
