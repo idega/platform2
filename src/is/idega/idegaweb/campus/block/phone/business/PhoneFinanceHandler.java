@@ -182,18 +182,22 @@ public class PhoneFinanceHandler implements FinanceHandler {
 
 				int iRoundId = -1;
 				int iAccountCount = 0;
+				TransactionManager t = IdegaTransactionManager.getInstance();
 				try {
+					t.begin();
+				//try {
 					AR = ((com.idega.block.finance.data.AssessmentRoundHome) com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).createLegacy();
 					AR.setAsNew(roundName);
 					AR.setCategoryId(iCategoryId);
 					AR.setTariffGroupId(iTariffGroupId);
 					AR.setType(getAccountType());
-					AR.insert();
+					AR.store();
 					//try {
-						iRoundId = ((Integer) AR.getPrimaryKey()).intValue() + 1;
+						iRoundId = ((Integer) AR.getPrimaryKey()).intValue() ; // + 1; 
 					//}
 					//catch (RemoteException e) {
 					//}
+					/*
 				}
 				catch (SQLException ex) {
 					ex.printStackTrace();
@@ -211,6 +215,7 @@ public class PhoneFinanceHandler implements FinanceHandler {
 
 					try {
 						t.begin();
+						*/
 						AccountKey AK = ((com.idega.block.finance.data.AccountKeyHome) com.idega.data.IDOLookup.getHomeLegacy(AccountKey.class)).findByPrimaryKeyLegacy(iAccountKeyId);
 						TariffKey TK = ((com.idega.block.finance.data.TariffKeyHome) com.idega.data.IDOLookup.getHomeLegacy(TariffKey.class)).findByPrimaryKeyLegacy(AK.getTariffKeyId());
 						Integer phAccId;
@@ -276,16 +281,16 @@ public class PhoneFinanceHandler implements FinanceHandler {
 						catch (javax.transaction.SystemException ex) {
 							ex.printStackTrace();
 						}
-						try {
+						/*try {
 							AR.delete();
 						}
 						catch (Exception ex2) {
 							ex2.printStackTrace();
 
-						}
+						}*/
 						e.printStackTrace();
 					}
-				}
+			//	}
 
 			}
 			else
@@ -451,7 +456,7 @@ public class PhoneFinanceHandler implements FinanceHandler {
 
 	public Map getAttributeMap() {
 		Hashtable H = new Hashtable(2);
-		H.put("a", "Mánaðargjald");
+		H.put("a", "M?na?argjald");
 		H.put("b", "Stofngjald");
 		H.put("t", "Skattur (%)");
 

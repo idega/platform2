@@ -85,7 +85,11 @@ public class CampusFinanceHandler implements FinanceHandler {
 				int iAttributeId = -1;
 				int iRoundId = -1;
 				AssessmentRound AR = null;
+				javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+
 				try {
+					t.begin();
+				//try {
 					AR = ((com.idega.block.finance.data.AssessmentRoundHome) com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).createLegacy();
 					AR.setAsNew(roundName);
 					AR.setCategoryId(iCategoryId);
@@ -94,8 +98,8 @@ public class CampusFinanceHandler implements FinanceHandler {
 					AR.setType(com.idega.block.finance.data.AccountBMPBean.typeFinancial);
 					AR.insert();
 					iRoundId = AR.getID();
-					iRoundId++;
-				}
+					//iRoundId++; // is this quickfix of death
+			/*	}
 				catch (SQLException ex) {
 					ex.printStackTrace();
 					try {
@@ -112,6 +116,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 
 					try {
 						t.begin();
+						*/
 						int totals = 0;
 						int totalAmount = 0;
 						double factor = 1;
@@ -181,7 +186,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 
 						} // Outer loop block
 
-						AR.update();
+						AR.store();
 						t.commit();
 						return true;
 					} // Try block
@@ -196,7 +201,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 
 					}
 				}
-			}
+			//}
 		}
 		return false;
 	}
