@@ -229,6 +229,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public void updateMissingPlacements() throws java.rmi.RemoteException;
  public void updatePrognosis(int p0,int p1,int p2,int p3,int p4, int p5) throws java.rmi.RemoteException;
  public String getStatusString(char status) throws java.rmi.RemoteException;
+ public String getStatusStringAbbr(char status) throws java.rmi.RemoteException;
  public Collection getPreSchoolTypes() throws java.rmi.RemoteException;
  public Collection getFamilyDayCareTypes() throws java.rmi.RemoteException;
  public Collection getFamilyAfterSchoolTypes() throws java.rmi.RemoteException;

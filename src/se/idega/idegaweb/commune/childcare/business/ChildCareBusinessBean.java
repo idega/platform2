@@ -3890,10 +3890,33 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		else if (status == getStatusNewChoice()) {
 			return getLocalizedString("child_care.status_new_choice", "New Choice");
 		}
+		else if (status == getStatusDenied()) {
+			return getLocalizedString("child_care.status_denied", "Denied");
+		}
 		else if (status == STATUS_DELETED) {
 			return getLocalizedString("child_care.status_deleted", "Deleted");
 		}
 		else if (status == STATUS_TIMED_OUT) { return getLocalizedString("child_care.status_timed_out", "Timed out"); }
+
+		return "";
+	}
+	public String getStatusStringAbbr(char status) {
+		if (status == getStatusCancelled()) {
+			return getLocalizedString("child_care.status_cancelled_abbr", "Cancelled");
+		}
+		else if (status == getStatusRejected()) {
+			return getLocalizedString("child_care.status_rejected_abbr", "Rejected");
+		}
+		else if (status == getStatusNotAnswered()) {
+			return getLocalizedString("child_care.status_not_answered_abbr", "Not answered");
+		}
+		else if (status == getStatusDenied()) {
+			return getLocalizedString("child_care.status_denied_abbr", "Denied");
+		}
+		else if (status == STATUS_DELETED) {
+			return getLocalizedString("child_care.status_deleted_abbr", "Deleted");
+		}
+		else if (status == STATUS_TIMED_OUT) { return getLocalizedString("child_care.status_timed_out_abbr", "Timed out"); }
 
 		return "";
 	}

@@ -173,21 +173,25 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	}
 	
 	protected String getStatusString(ChildCareApplication application) throws RemoteException {
-		return getStatusString(application.getApplicationStatus());
+		return getStatusStringAbbr(application.getApplicationStatus());
 	}
 	
 	protected String getStatusString(char status) throws RemoteException {
 		return getBusiness().getStatusString(status);
 	}
 	
+	protected String getStatusStringAbbr(char status) throws RemoteException {
+		return getBusiness().getStatusStringAbbr(status);
+	}
+	
 	protected DropdownMenu getRejectedStatuses() throws RemoteException {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(getSession().getParameterStatus()));
 		menu.addMenuElement(STATUS_ALL, localize("child_care.all_rejected_applications", "Show all rejected"));
-		menu.addMenuElement(String.valueOf(getBusiness().getStatusCancelled()), getStatusString(getBusiness().getStatusCancelled()));
-		menu.addMenuElement(String.valueOf(getBusiness().getStatusDenied()), getStatusString(getBusiness().getStatusDenied()));
-		menu.addMenuElement(String.valueOf(getBusiness().getStatusNotAnswered()), getStatusString(getBusiness().getStatusNotAnswered()));
-		menu.addMenuElement(String.valueOf(getBusiness().getStatusRejected()), getStatusString(getBusiness().getStatusRejected()));
-		menu.addMenuElement(String.valueOf(getBusiness().getStatusTimedOut()), getStatusString(getBusiness().getStatusTimedOut()));
+		menu.addMenuElement(String.valueOf(getBusiness().getStatusCancelled()), getStatusString(getBusiness().getStatusCancelled()) + " (" + getStatusStringAbbr(getBusiness().getStatusCancelled()) + ")");
+		menu.addMenuElement(String.valueOf(getBusiness().getStatusDenied()), getStatusString(getBusiness().getStatusDenied()) + " (" + getStatusStringAbbr(getBusiness().getStatusDenied()) + ")");
+		menu.addMenuElement(String.valueOf(getBusiness().getStatusNotAnswered()), getStatusString(getBusiness().getStatusNotAnswered()) + " (" + getStatusStringAbbr(getBusiness().getStatusNotAnswered()) + ")");
+		menu.addMenuElement(String.valueOf(getBusiness().getStatusRejected()), getStatusString(getBusiness().getStatusRejected()) + " (" + getStatusStringAbbr(getBusiness().getStatusRejected()) + ")");
+		menu.addMenuElement(String.valueOf(getBusiness().getStatusTimedOut()), getStatusString(getBusiness().getStatusTimedOut()) + " (" + getStatusStringAbbr(getBusiness().getStatusTimedOut()) + ")");
 		if (getSession().getStatus() != null) {
 			menu.setSelectedElement(getSession().getStatus());
 		}

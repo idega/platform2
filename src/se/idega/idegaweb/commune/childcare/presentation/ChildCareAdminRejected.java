@@ -176,6 +176,7 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 									else										
 									emails = email.getEmailAddress();																		
 								}
+								
 								emailLink.setURL("mailto:" + emails);
 							}
 							catch (NoEmailFoundException nef) {
