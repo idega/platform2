@@ -208,20 +208,26 @@ public class PIDChecker {
 	 * @return
 	 */
 	public  int getRandomIntDecimal(){
-		int theReturn = (int)Math.round(10*Math.random());
-		while(theReturn>9){
-			theReturn = (int)Math.round(10*Math.random());
+		int theReturn = (int)Math.round(10*Math.random()-1);
+		while(theReturn>9 || theReturn < 0){
+			theReturn = theReturn = (int)Math.round(10*Math.random()-1);
 		}
 		return theReturn;
 	}
 	
 	
 	/**
-	 * Gets a random int on the range from 1-12 as a String
+	 * Gets a random int on the range from 1-12 as a double digit String (0 in front i number is lower than 10)
 	 * @return
 	 */
 	public String getRandomMonthString(){
-		return Integer.toString(getRandomMonth());
+		int month = getRandomMonth();
+		if(month<10){
+			return "0"+month;
+		}
+		else{
+			return Integer.toString(month);
+		}
 	}
 
 	/**
@@ -229,19 +235,25 @@ public class PIDChecker {
 	 * @return
 	 */
 	public  int getRandomMonth(){
-		int theReturn = (int)Math.round(12*Math.random()+1);
+		int theReturn = (int)Math.round(12*Math.random())+1;
 		while(theReturn>12){
-			theReturn = (int)Math.round(12*Math.random()+1);
+			theReturn = (int)Math.round(12*Math.random())+1;
 		}
 		return theReturn;
 	}
 	
 	/**
-	 * Gets a random int on the range from 1-28 as a String
+	 * Gets a random int on the range from 1-28 as a double digit String (0 in front i number is lower than 10)
 	 * @return
 	 */
 	public String getRandomMonthDayString(){
-		return Integer.toString(getRandomMonthDay());
+		int monthday = getRandomMonthDay();
+		if(monthday<10){
+			return "0"+monthday;
+		}
+		else{
+			return Integer.toString(monthday);
+		}
 	}
 
 	/**
@@ -249,9 +261,9 @@ public class PIDChecker {
 	 * @return
 	 */
 	public  int getRandomMonthDay(){
-		int theReturn = (int)Math.round(28*Math.random()+1);
+		int theReturn = (int)Math.round(28*Math.random())+1;
 		while(theReturn>28){
-			theReturn = theReturn = (int)Math.round(28*Math.random()+1);
+			theReturn = theReturn = (int)Math.round(28*Math.random())+1;
 		}
 		return theReturn;
 	}
