@@ -7,8 +7,10 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -57,6 +59,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.Age;
+import com.idega.util.IWTimestamp;
 
 /**
  * Holds most of the logic for the batchjob that creates the information that is base for invoicing 
@@ -76,7 +79,8 @@ public class InvoiceChildcareThread extends BillingThread{
 	private ChildCareContract contract;
 	private PostingDetail postingDetail;
 	private Map siblingOrders = new HashMap();
-
+	private Set incoiceEntryChildSet;
+	
 	public InvoiceChildcareThread(Date month, IWContext iwc){
 		super(month,iwc);
 	}
@@ -95,7 +99,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				//Create all the billing info derrived from the contracts
 				contracts();
 				//Create all the billing info derrived from the regular invoices
-				regularInvoice();
+				//regularInvoice();
 				//Create all the billing info derrived from the regular payments
 				regularPayment();
 				//VAT
@@ -121,8 +125,9 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * Creates all the invoice headers, invoice records, payment headers and payment records
 	 * for the childcare contracts
 	 */
+
 	private void contracts() throws NotEmptyException{
-		Collection contractArray = new ArrayList();
+		//Collection contractArray = new ArrayList();
 		Collection regulationArray = new ArrayList();
 		User custodian;
 		Age age;
@@ -137,7 +142,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				throw new NotEmptyException("invoice.must_first_empty_old_data");
 			}
 
-			contractArray = getChildCareContractHome().findByDateRangeWhereStatusActive(startPeriod.getDate(), endPeriod.getDate());
+			Collection contractArray = getChildCareContractHome().findByDateRangeWhereStatusActive(startPeriod.getDate(), endPeriod.getDate());
 			log.info("# of contracts = "+contractArray.size());
 			Iterator contractIter = contractArray.iterator();
 			errorOrder = 0;
@@ -190,6 +195,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				
 					//Get all the parameters needed to select the correct contract
 					SchoolClassMember schoolClassMember = contract.getSchoolClassMmeber();
+					User child = schoolClassMember.getStudent();
 					System.out.println("Contract id "+contract.getPrimaryKey());
 					System.out.println("SchoolClassMmeberid "+schoolClassMember.getPrimaryKey());
 					SchoolType schoolType = schoolClassMember.getSchoolType();
@@ -388,6 +394,11 @@ public class InvoiceChildcareThread extends BillingThread{
 							createNewErrorMessage(errorRelated,"invoice.noSubventionFoundAndSumLessThanZero");
 						}
 					}
+					
+					log.info("calling regularInvoiceForChild");
+					regularInvoiceForChild(child,schoolClassMember,custodian,invoiceHeader,placementTimes,totalSum);
+					log.info("done calling regularInvoiceForChild");
+					
 				}catch (NullPointerException e1) {
 					e1.printStackTrace();
 					if(errorRelated != null){
@@ -503,13 +514,160 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * Creates all the invoice headers, invoice records, payment headers and payment records
 	 * for the Regular payments
 	 */
+	private void regularInvoiceForChild(User child,SchoolClassMember classMember,User custodian,InvoiceHeader invoiceHeader,PlacementTimes pTimes, float totalSum){
+		int days = pTimes.getDays();
+		float months = pTimes.getMonths();
+		IWTimestamp startTime = pTimes.getFirstCheckDay();
+		IWTimestamp endTime = pTimes.getLastCheckDay();
+		int childId = ((Number)child.getPrimaryKey()).intValue();
+		RegularInvoiceEntry regularInvoiceEntry=null;
+		boolean hasBeenHandled = haveInvoiceEntriesBeenHandledForChild(child);
+		if(!hasBeenHandled){
+			try {
+				//Iterator regularInvoiceIter = getRegularInvoiceBusiness().findRegularInvoicesForPeriodAndCategory(startPeriod.getDate(), category).iterator();
+				Collection regularInvoices = getRegularInvoiceBusiness().findRegularInvoicesForPeriodAndChildAndCategory(startPeriod.getDate(),endPeriod.getDate(),childId,category.getPrimaryKey().toString());
+				Iterator regularInvoiceIter = regularInvoices.iterator();
+				//Go through all the regular invoices
+				while(regularInvoiceIter.hasNext()){
+					try{
+						//User custodian = null;
+						//InvoiceHeader invoiceHeader = null;
+						
+						regularInvoiceEntry = (RegularInvoiceEntry)regularInvoiceIter.next();
+	
+							StringBuffer errorRelated = new StringBuffer("RegularInvoiceEntry ID "+regularInvoiceEntry.getPrimaryKey()+"<br>");
+							
+							//Get the child and then look up the custodian
+							//childID = regularInvoiceEntry.getChildId();
+							
+							errorRelated.append("Child "+childId+"<br>");
+							//MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
+							//User child = (User) IDOLookup.findByPrimaryKey(User.class, new Integer(childID));
+							errorRelated.append("Child name "+child.getName()+"<br>");
+							/*Iterator custodianIter = familyLogic.getCustodiansFor(child).iterator();
+							while (custodianIter.hasNext() ){//&& invoiceHeader == null) {
+								custodian = (User) custodianIter.next();
+								//try{
+									//invoiceHeader = getInvoiceHeaderHome().findByCustodianID(((Integer)custodian.getPrimaryKey()).intValue());
+									custodianID = ((Integer)custodian.getPrimaryKey()).intValue();
+									errorRelated.append("Parent "+custodianID+"<br>");
+								//} catch (FinderException e) {
+									//That's OK, just keep looking
+								//}
+							}*/
+							if(invoiceHeader==null){
+		//					try{
+		//						invoiceHeader = getInvoiceHeaderHome().findByCustodianID(custodianID);
+		//					} catch (FinderException e) {
+								//No header was found so we have to create it
+								invoiceHeader = getInvoiceHeaderHome().create();
+								//Fill in all the field available at this times
+								invoiceHeader.setSchoolCategory(category);
+								invoiceHeader.setPeriod(startPeriod.getDate());
+								invoiceHeader.setCustodian(custodian);
+								invoiceHeader.setDateCreated(currentDate);
+								invoiceHeader.setCreatedBy(BATCH_TEXT);
+								// SN: posting not applicable in invoice header anymore
+								// invoiceHeader.setOwnPosting(categoryPosting.getAccount());
+								// invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
+								invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
+								invoiceHeader.store();
+								createNewErrorMessage(errorRelated.toString(),"invoice.CouldNotFindCustodianForRegularInvoice");
+							}
+							errorRelated.append("Note "+regularInvoiceEntry.getNote()+"<br>");
+							
+							calculateTime(new Date(regularInvoiceEntry.getFrom().getTime()),
+									new Date(regularInvoiceEntry.getTo().getTime()));
+		
+							
+							
+							InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
+							invoiceRecord.setInvoiceHeader(invoiceHeader);
+							invoiceRecord.setInvoiceText(regularInvoiceEntry.getNote());
+							invoiceRecord.setSchoolClassMember(classMember);
+		
+							invoiceRecord.setProvider(regularInvoiceEntry.getSchool());
+							invoiceRecord.setRuleText(regularInvoiceEntry.getNote());
+							invoiceRecord.setDays(days);
+							invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
+							invoiceRecord.setPeriodEndCheck(endPeriod.getDate());
+							invoiceRecord.setPeriodStartPlacement(startTime.getDate());
+							invoiceRecord.setPeriodEndPlacement(endTime.getDate());
+							invoiceRecord.setDateCreated(currentDate);
+							invoiceRecord.setCreatedBy(BATCH_TEXT);
+							float amount =regularInvoiceEntry.getAmount()*months;
+							invoiceRecord.setAmount(amount);
+							totalSum += amount;
+							if(totalSum<0){
+								createNewErrorMessage(errorRelated.toString(),"invoice.SumLessThanZeroForRegularInvoiceRecord");
+							}
+							invoiceRecord.setAmountVAT(regularInvoiceEntry.getVAT()*months);
+							invoiceRecord.setVATType(regularInvoiceEntry.getVatRuleId());
+							invoiceRecord.setRegSpecType(regularInvoiceEntry.getRegSpecType());
+		
+							invoiceRecord.setOwnPosting(regularInvoiceEntry.getOwnPosting());
+							invoiceRecord.setDoublePosting(regularInvoiceEntry.getDoublePosting());
+							invoiceRecord.store();
+							markInvoiceEntriesHandledForChild(child);
+						
+					} catch (RemoteException e) {
+						e.printStackTrace();
+						createNewErrorMessage(errorRelated.toString(),"invoice.DBSetupProblem");
+					} catch (CreateException e) {
+						e.printStackTrace();
+						createNewErrorMessage(errorRelated.toString(),"invoice.DBSetupProblem");
+					}
+					
+				}
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				createNewErrorMessage("invoice.RegularInvoices","invoice.CouldNotFindAnyRegularInvoicesTerminating");
+			} catch (FinderException e) {
+				e.printStackTrace();
+				createNewErrorMessage("invoice.RegularInvoices","invoice.CouldNotFindAnyRegularInvoicesTerminating");
+			}
+		}
+	}	
+	
+	
+	
+	/**
+	 * @param invoiceRecord
+	 * @param child
+	 */
+	private void markInvoiceEntriesHandledForChild(User child) {
+		Object childPK = child.getPrimaryKey();
+		getIncoiceEntryChildSet().add(childPK);
+	}
+
+	/**
+	 * @param regularInvoiceEntry
+	 * @param child
+	 * @return
+	 */
+	private boolean haveInvoiceEntriesBeenHandledForChild(User child) {
+		Object childPK = child.getPrimaryKey();
+		return getIncoiceEntryChildSet().contains(childPK);
+	}
+	
+	private Set getIncoiceEntryChildSet(){
+		if(incoiceEntryChildSet==null){
+			incoiceEntryChildSet=new HashSet();
+		}
+		return incoiceEntryChildSet;
+	}
+
+	/**
+	 * Creates all the invoice headers, invoice records, payment headers and payment records
+	 * for the Regular payments
+	 */
 	private void regularInvoice(){
 		int childID;
 		PlacementTimes placementTimes = null;
 		
 		RegularInvoiceEntry regularInvoiceEntry=null;
 		try {
-			Iterator regularInvoiceIter = getRegularInvoiceBusiness().findRegularInvoicesForPeriodeAndCategory(startPeriod.getDate(), category).iterator();
+			Iterator regularInvoiceIter = getRegularInvoiceBusiness().findRegularInvoicesForPeriodAndCategory(startPeriod.getDate(), category).iterator();
 			//Go through all the regular invoices
 			while(regularInvoiceIter.hasNext()){
 				try{
@@ -521,7 +679,8 @@ public class InvoiceChildcareThread extends BillingThread{
 					ErrorLogger errorRelated = new ErrorLogger("RegularInvoiceEntry ID "+regularInvoiceEntry.getPrimaryKey());
 					
 					//Get the child and then look up the custodian
-					childID = regularInvoiceEntry.getUserID();
+
+					childID = regularInvoiceEntry.getChildId();
 					errorRelated.append("Child "+childID);
 					MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
 					User child = (User) IDOLookup.findByPrimaryKey(User.class, new Integer(childID));
