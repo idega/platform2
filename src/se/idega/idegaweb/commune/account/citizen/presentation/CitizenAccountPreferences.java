@@ -299,7 +299,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		Text tNewPasswordRepeated = getSmallHeader(localize(KEY_NEW_PASSWORD_REPEATED, DEFAULT_NEW_PASSWORD_REPEATED));
 		Text tPhoneHome = getSmallHeader(localize(KEY_PHONE_HOME, DEFAULT_PHONE_HOME));
 		Text tPhoneWork = getSmallHeader(localize(KEY_PHONE_WORK, DEFAULT_PHONE_WORK));
-		Text tCOAddressSelect = getSmallText(" " + localize(KEY_CO_ADDRESS_SELECT, DEFAULT_CO_ADDRESS_SELECT) + ":");
+		Text tCOAddressSelect = getSmallText(" " + localize(KEY_CO_ADDRESS_SELECT, DEFAULT_CO_ADDRESS_SELECT));
 		Text tCOStreetAddress = getSmallHeader(localize(KEY_CO_STREET_ADDRESS, DEFAULT_CO_STREET_ADDRESS));
 		Text tCOPostalCode = getSmallHeader(localize(KEY_CO_POSTAL_CODE, DEFAULT_CO_POSTAL_CODE));
 		Text tCOCity = getSmallHeader(localize(KEY_CO_CITY, DEFAULT_CO_CITY));
