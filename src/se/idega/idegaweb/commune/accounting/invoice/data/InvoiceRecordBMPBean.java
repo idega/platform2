@@ -14,6 +14,7 @@ import java.sql.Date;
 import java.util.Collection;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 /**
  * This is the data bean for the "faktureringsrad", "fakturarad" och "detaljutbetalningspost" 
@@ -49,6 +50,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public static final String COLUMN_OWN_POSTING = "own_posting";
 	public static final String COLUMN_DOUBLE_POSTING = "double_posting";
 	public static final String COLUMN_VAT_TYPE = "vat_type";
+	public static final String COLUMN_CHILDCARE_CONTRACT_ID = "comm_childcare_archive_id";
 
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -82,6 +84,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addManyToOneRelationship(COLUMN_SCHOOL_TYPE_ID, SchoolType.class);
 		addManyToOneRelationship(COLUMN_PROVIDER_ID, School.class);
 		addManyToOneRelationship(COLUMN_REG_SPEC_TYPE_ID, RegulationSpecType.class);
+		addManyToOneRelationship(COLUMN_CHILDCARE_CONTRACT_ID, ChildCareContract.class);
 		
 		setNullable(COLUMN_INVOICE_HEADER, true);
 	}
@@ -179,6 +182,9 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		return getIntColumnValue(COLUMN_VAT_TYPE);
 	}
 
+	public ChildCareContract getChildCareContract () {
+		return (ChildCareContract) getColumnValue (COLUMN_CHILDCARE_CONTRACT_ID);
+	}
 
 	public void setInvoiceHeader(int i) {
 		setColumn(COLUMN_INVOICE_HEADER, i);
@@ -273,7 +279,10 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public void setVATType(int i) {
 		setColumn(COLUMN_VAT_TYPE, i);
 	}
-	
+	public void setChildCareContract (final ChildCareContract contract) {
+		setColumn (COLUMN_CHILDCARE_CONTRACT_ID, contract);
+	}
+
 	public Collection ejbFindByMonth(Date month) throws FinderException {
 		IWTimestamp start = new IWTimestamp(month);
 		start.setAsDate();
@@ -305,7 +314,8 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 				sql.appendAndEquals (M_ + SchoolClassMemberBMPBean.MEMBER,
 														 U_ + User.FIELD_USER_ID);
 				sql.appendOrderBy (new String []
-					{ U_ + User.FIELD_DATE_OF_BIRTH + " desc", R_ + COLUMN_ORDER_ID });
+					{ U_ + User.FIELD_DATE_OF_BIRTH + " desc",
+						R_ + COLUMN_CHILDCARE_CONTRACT_ID, R_ + COLUMN_ORDER_ID });
 				return idoFindPKsByQuery (sql);
 	}
 

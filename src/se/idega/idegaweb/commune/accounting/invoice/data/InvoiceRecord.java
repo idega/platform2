@@ -34,6 +34,7 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public com.idega.block.school.data.SchoolType getSchoolType();
  public int getSchoolTypeId();
  public int getVATType();
+	public se.idega.idegaweb.commune.childcare.data.ChildCareContract getChildCareContract ();
  public void setAmount(float p0);
  public void setAmountVAT(float p0);
  public void setChangedBy(java.lang.String p0);
@@ -65,4 +66,5 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public void setSchoolType(com.idega.block.school.data.SchoolType p0);
  public void setSchoolTypeId(int p0);
  public void setVATType(int p0);
+	public void setChildCareContract (se.idega.idegaweb.commune.childcare.data.ChildCareContract contract);
 }
