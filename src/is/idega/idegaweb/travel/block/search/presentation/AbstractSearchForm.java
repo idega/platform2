@@ -40,6 +40,7 @@ import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.ProductPriceBMPBean;
+import com.idega.block.trade.stockroom.data.ProductPriceHome;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
@@ -48,6 +49,7 @@ import com.idega.business.IBOLookup;
 import com.idega.core.data.PostalCode;
 import com.idega.core.data.PostalCodeHome;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
@@ -91,17 +93,19 @@ public abstract class AbstractSearchForm extends Block{
 	protected static final int STATE_CHECK_BOOKING = 3;
 	protected int STATE = STATE_SHOW_SEARCH_FORM;
 
+	protected String PARAMETER_TYPE = "hs_pt";
+	protected String PARAMETER_TYPE_COUNT = "hs_ptc";
+
 	public static String PARAMETER_POSTAL_CODE_NAME = "hs_pcn";
 	public static String PARAMETER_FROM_DATE = BookingForm.parameterFromDate;//"hs_fd";
-	//public static String PARAMETER_TO_DATE = "hs_td";
 	public static String ERROR_NO_BOOKING_COUNT = "ErrorNoBookingCount";
 	/** Used for checkbooking */
 	public static String PARAMETER_MANY_DAYS = BookingForm.parameterManyDays;
 	public static String PARAMETER_ONLINE = BookingForm.parameterOnlineBooking; // false or true
 	
 	public static String PARAMETER_ADDRESS_ID = BookingForm.parameterDepartureAddressId;//"hs_aid";
-	//protected String PARAMETER_TIMEFRAME_ID = "hs_tfid";
 	public static String PARAMETER_PRODUCT_ID = "hs_pid";
+	public static String PARAMETER_PRODUCT_PRICE_ID = "hs_ppid";
 	
 	public static String PARAMETER_FIRST_NAME = BookingForm.PARAMETER_FIRST_NAME;//"hs_fna";
 	public static String PARAMETER_LAST_NAME = BookingForm.PARAMETER_LAST_NAME;//"hs_lna";
@@ -114,6 +118,7 @@ public abstract class AbstractSearchForm extends Block{
 	public static String PARAMETER_CC_MONTH = BookingForm.parameterCCMonth;//"hs_ccm";
 	public static String PARAMETER_CC_YEAR = BookingForm.parameterCCYear;//"hs_ccy";
 	public static String PARAMETER_COMMENT = BookingForm.PARAMETER_COMMENT;//"hs_comm";
+	public static String PARAMETER_REFERER_URL = PublicBooking.PARAMETER_REFERRAL_URL;
 
 	private IWContext iwc;
 
@@ -132,6 +137,7 @@ public abstract class AbstractSearchForm extends Block{
 	protected Image headerImage;
 	protected Table formTable = new Table();
 	int row = 1;
+	int tmpPriceID;
 	
 	private List errorFields = null;
 	
@@ -143,9 +149,16 @@ public abstract class AbstractSearchForm extends Block{
 	protected abstract void setupSearchForm();
 	protected abstract void getResults() throws RemoteException;
 	protected abstract Image getHeaderImage(IWResourceBundle iwrb);
+	protected abstract String getPriceCategoryKey();
+	
+	
+	protected String getParameterTypeCountName() {
+		return PARAMETER_TYPE_COUNT;
+	}
 
 	public void main(IWContext iwc) throws Exception {
 		this.iwc = iwc;
+		System.out.println("ReferalUrl = "+PublicBooking.getRefererUrl(iwc));
 		iwrb = getSearchBusiness(iwc).getTravelSessionManager(iwc).getIWResourceBundle();
 
 		formTable.setWidth("100%");
@@ -165,6 +178,7 @@ public abstract class AbstractSearchForm extends Block{
 		
 		Form form = new Form();
 		form.maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM);
+		form.addParameter(BookingForm.parameterPriceCategoryKey, getPriceCategoryKey());
 		form.add(getHeader());
 		form.add(getLinks());
 		setupPresentation(formTable);
@@ -265,7 +279,7 @@ public abstract class AbstractSearchForm extends Block{
 		} else if ( action.equals(this.ACTION_BOOKING_FORM)) {
 			STATE = STATE_SHOW_BOOKING_FORM;
 		} else if (action.equals(ACTION_CONFIRM)) {
-			errorFields = getSearchBusiness(iwc).getErrorFormFields(iwc);
+			errorFields = getSearchBusiness(iwc).getErrorFormFields(iwc, getPriceCategoryKey());
 			if (errorFields == null || errorFields.isEmpty() ) {
 				STATE = STATE_CHECK_BOOKING;
 			} else {
@@ -343,7 +357,26 @@ public abstract class AbstractSearchForm extends Block{
 		//formTable.add(new HiddenInput(PARAMETER_TO_DATE, iwc.getParameter(PARAMETER_TO_DATE)));
 		formTable.add(new HiddenInput(PARAMETER_MANY_DAYS, iwc.getParameter(PARAMETER_MANY_DAYS)));
 		
-		/** PriceCategories Begin*/
+		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
+		formTable.add(new HiddenInput("priceCategory"+productPriceId, iwc.getParameter(getParameterTypeCountName())));
+		
+		try {
+			ProductPrice pPrice = ((ProductPriceHome) IDOLookup.getHome(ProductPrice.class)).findByPrimaryKey(new Integer(productPriceId));
+			int addressId = -1;
+			try {
+				addressId = Integer.parseInt(iwc.getParameter(PARAMETER_ADDRESS_ID));
+			} catch (Exception e) {}
+			Timeframe tFrame = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, from, addressId);
+			int tFrameID = -1;
+			if (tFrame != null) {
+				tFrameID = tFrame.getID();
+			}
+			formTable.mergeCells(1, row, 3, row);
+			formTable.add(getHeaderText(getPriceString(getSearchBusiness(iwc).getBusiness(product), product.getID(), tFrameID, pPrice)), 1, row);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		/** PriceCategories Begin
 
 		try {
 			//ProductHome productHome = (ProductHome) IDOLookup.getHome(Product.class);
@@ -360,10 +393,10 @@ public abstract class AbstractSearchForm extends Block{
 			ProductPrice[] misc = {};
 			if (tFrame != null) {
 			  timeframeId = tFrame.getID();
-			  prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), addressId, true);
+			  prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), addressId, true, getPriceCategoryKey());
 			  misc = ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), addressId, true);
 			}else {
-			  prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, addressId, true);
+			  prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, addressId, true, getPriceCategoryKey());
 			  misc = ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), -1, addressId, true);
 			}
 
@@ -421,7 +454,6 @@ public abstract class AbstractSearchForm extends Block{
 					if (i >= pricesLength) {
 					  pPriceMany.setName("miscPriceCategory"+pPrices[i].getID());
 					}
-
 					pPriceText.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price+ResultOutput.OPERATOR_MULTIPLY+numberOfDays);
 					TotalPassTextInput.add(pPriceMany);
 					TotalTextInput.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price+ResultOutput.OPERATOR_MULTIPLY+numberOfDays);
@@ -550,7 +582,13 @@ public abstract class AbstractSearchForm extends Block{
 				formTable.add(Text.BREAK);
 				formTable.add(getText(iwrb.getLocalizedString("travel.you_will_reveice_an_confirmation_email_shortly","You will receive an confirmation email shortly.")));
 			}else {
-				formTable.add(getText(iwrb.getLocalizedString("travek.booking_failed","Booking failed")));
+				formTable.add(getText(iwrb.getLocalizedString("travel.booking_failed","Booking failed")));
+				formTable.add(getText(Text.BREAK));
+				if (bookingId == BookingForm.errorTooMany) {
+					formTable.add(getText(iwrb.getLocalizedString("travel.there_is_no_availability","There is no availability")));
+				} else	if (bookingId == BookingForm.errorTooFew) {
+					formTable.add(getText(iwrb.getLocalizedString("travel.there_is_no_availability","There is no availability")));
+				}
 			  if (gBooking == null) {
 					debug("gBooking == null");
 			  }
@@ -631,8 +669,11 @@ public abstract class AbstractSearchForm extends Block{
 						link = getBookingLink(product.getID());
 						link.addParameter(PARAMETER_ADDRESS_ID, -1);
 						//link.addParameter(PARAMETER_TIMEFRAME_ID, timeframeId);
-						
-						table.add(link, 1, row);
+						if (available) {
+							table.add(link, 1, row);
+						} else {
+							table.add(getText(iwrb.getLocalizedString("travel.search.not_available","Not available")), 1, row);
+						}
 					} else {
 						TravelAddress address;
 						Iterator addressesIter = addresses.iterator();
@@ -643,13 +684,15 @@ public abstract class AbstractSearchForm extends Block{
 							if (timeframe != null) {
 								timeframeId = timeframe.getID();
 							}
-
+							
 							++row;
 							table.add(getText(address.getName()), 1, row);
 							link = getBookingLink(product.getID());
 							link.addParameter(PARAMETER_ADDRESS_ID, address.getAddressId());
 							//link.addParameter(PARAMETER_TIMEFRAME_ID, timeframeId);
-							table.add(link, 2, row);
+							if (available) {
+								table.add(link, 2, row);
+							}
 							row =getPrices(iwc, stamp, bus, product, table, row, address.getAddressId(), timeframeId);
 						}
 						
@@ -671,29 +714,47 @@ public abstract class AbstractSearchForm extends Block{
 		link.maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, iwc);
 		link.maintainParameter(PARAMETER_FROM_DATE, iwc);
 		link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
+		link.maintainParameter(getParameterTypeCountName(), iwc);
 		//link.maintainParameter(PARAMETER_TO_DATE, iwc);
 		link.addParameter(ACTION, ACTION_BOOKING_FORM);
 		link.addParameter(PARAMETER_PRODUCT_ID, productId);
+		link.addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
 		return link;
 	}
 
 	private int getPrices(IWContext iwc, IWTimestamp stamp, TravelStockroomBusiness bus, Product product, Table table, int row, int addressId, int timeframeId) throws RemoteException, SQLException {
 		ProductPrice[] prices;
 		Currency currency;
-		prices = ProductPriceBMPBean.getProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC});
-		
-		table.add(getText(iwrb.getLocalizedString("travel.prices","Prices")+":"), 1, row);
-		++row;
+		prices = ProductPriceBMPBean.getProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
 		
 		for (int i = 0; i < prices.length; i++) {
-			try {
-				currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[i].getCurrencyId());
-			}catch (Exception e) {
-				currency = null;
-			}
-			table.add(getText(prices[i].getPriceCategory().getName()+" : "+bus.getPrice(prices[i].getID(),((Integer) product.getPrimaryKey()).intValue(),prices[i].getPriceCategoryID() , prices[i].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 )+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation()), 1, row++);
+			tmpPriceID = prices[i].getID();
+			table.add(getText(getPriceString(bus, product.getID(), timeframeId, prices[i])), 1, row++);
 		}
 		return row;
+	}
+
+	private String getPriceString(TravelStockroomBusiness bus, int productId, int timeframeId, ProductPrice pPrice) throws SQLException, RemoteException {
+		String sCount = iwc.getParameter(getParameterTypeCountName());
+		int count = Integer.parseInt(sCount);
+		int days = Integer.parseInt(iwc.getParameter(PARAMETER_MANY_DAYS));
+
+		Currency currency;
+		try {
+			currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId());
+		}catch (Exception e) {
+			currency = null;
+		}
+		float price = -1;
+		float total = -1;
+		String returner = "";
+		price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
+		price *= days;
+		total = price * count;
+		returner += iwrb.getLocalizedString("travel.price","Price")+":"+Text.NON_BREAKING_SPACE+price+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation();
+		returner += Text.NON_BREAKING_SPACE+iwrb.getLocalizedString("travel.search.per_nigth","per night")+Text.BREAK;
+		returner += iwrb.getLocalizedString("travel.search.total","Total")+":"+Text.NON_BREAKING_SPACE+total+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation();
+		return returner;
 	}
 
 	protected void addInputLine(String[] text, PresentationObject[] object) {
@@ -836,5 +897,10 @@ public abstract class AbstractSearchForm extends Block{
 	public ServiceSearchBusiness getSearchBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (ServiceSearchBusiness) IBOLookup.getServiceInstance(iwac, ServiceSearchBusiness.class);
 	}
+	
+	public TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
+		return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
+	}
+	
 
 }
