@@ -32,6 +32,7 @@ public class Member extends com.idega.data.genericentity.Member {
     addAttribute("image_id","Mynd",false,false,"java.lang.Integer","one-to-many","com.idega.jmodule.image.data.ImageEntity");
     addAttribute("workplace","Vinnustaður",true,true,"java.lang.String");
     addAttribute("job","Starfsheiti",true,true,"java.lang.String");
+    addAttribute("full_name","Fullt nafn",true,true,"java.lang.String");
 
     addManyToManyRelationShip("com.idega.projects.golf.entity.Address","member_address");
     addManyToManyRelationShip("com.idega.projects.golf.entity.Card","member_card");
@@ -108,6 +109,10 @@ public class Member extends com.idega.data.genericentity.Member {
 
   public void setLastName(String last_name){
     setColumn("last_name",last_name);
+  }
+
+  public void setFullName(){
+     setColumn("full_name",getName());
   }
 
   public Date getDateOfBirth(){
@@ -516,6 +521,11 @@ public class Member extends com.idega.data.genericentity.Member {
   public static com.idega.data.genericentity.Member getStaticInstance(){
     return (com.idega.data.genericentity.Member)getStaticInstance("com.idega.projects.golf.entity.Member");
   }
+
+  public void insert() throws SQLException{
+    setFullName();
+    super.insert();
+  };
 
     public void insertStartData(){
       //Administrator member created in LoginTable
