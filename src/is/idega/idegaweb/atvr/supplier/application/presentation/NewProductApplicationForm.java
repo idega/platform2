@@ -56,6 +56,8 @@ public class NewProductApplicationForm extends Block {
 	private final static String PARAM_AMOUNT = "npa_amount";
 	private final static String PARAM_WEIGHT = "npa_weigth";
 
+	private String _type = "0";
+
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
@@ -83,7 +85,7 @@ public class NewProductApplicationForm extends Block {
 			String sub = iwc.getParameter(PARAM_SUB_CATEGORY);
 			String weight = iwc.getParameter(PARAM_WEIGHT);
 			
-			appl.setApplicationType(iwc.getParameter(PARAM_FORM_TYPE));
+			appl.setApplicationType(_type);
 			appl.setDescription(desc);
 			appl.setDescription2(desc2);
 			appl.setQuantity(qty);
@@ -116,9 +118,9 @@ public class NewProductApplicationForm extends Block {
 		int typeId = parseType(type);
 
 		Form form = new Form();
-		DropdownMenu types = (DropdownMenu) getTypeDropdown(iwc, typeId);
-		form.add(types);
-		types.setToSubmit();
+//		DropdownMenu types = (DropdownMenu) getTypeDropdown(iwc, typeId);
+//		form.add(types);
+//		types.setToSubmit();
 
 		if (typeId == TYPE_TRIAL || typeId == TYPE_SPECIAL || typeId == TYPE_MONTH) {
 			Table t = new Table(2, 12);
@@ -263,4 +265,8 @@ public class NewProductApplicationForm extends Block {
 	private NewProductApplicationBusiness getApplicationBusiness(IWContext iwc) throws Exception {
 		return (NewProductApplicationBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, NewProductApplicationBusiness.class);
 	}	
+	
+	public void setApplicationType(String type) {
+		_type = type;	
+	}
 }

@@ -29,13 +29,8 @@ import javax.ejb.FinderException;
  */
 public class NewProductApplicationBusinessBean extends IBOServiceBean implements NewProductApplicationBusiness {
 	public void insertApplication(NewProductApplication application) {
-		try {
-			application.setStatus("S");
-			
-			application.store();
-		}
-		catch (RemoteException e) {
-		}		
+		application.setStatus("S");
+		application.store();
 	}
 	
 	public NewProductApplication getNewApplication() {

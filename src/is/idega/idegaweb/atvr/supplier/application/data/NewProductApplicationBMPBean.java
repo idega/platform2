@@ -28,7 +28,7 @@ import javax.ejb.FinderException;
 public class NewProductApplicationBMPBean extends GenericEntity implements NewProductApplication {
 	private final static String ENTITY_NAME = "wine_newprod";
 
-	protected final static String APPLICATION_TYPE = "type";
+	protected final static String APPLICATION_TYPE = "appl_type";
 	protected final static String DESCRIPTION = "description";
 	protected final static String DESCRIPTION2 = "description_2";
 	protected final static String QUANTITY = "quantity";
@@ -44,6 +44,7 @@ public class NewProductApplicationBMPBean extends GenericEntity implements NewPr
 	protected final static String AMOUNT = "amount";
 	protected final static String WEIGHT = "weight";
 	protected final static String STATUS = "status";
+	protected final static String CARBON_MONOXIDE = "monoxide";
 
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
@@ -72,6 +73,7 @@ public class NewProductApplicationBMPBean extends GenericEntity implements NewPr
 		addAttribute(AMOUNT,"",true,true,java.lang.String.class,100);
 		addAttribute(WEIGHT,"",true,true,java.lang.String.class,100);
 		addAttribute(STATUS,"",true,true,java.lang.String.class,1);
+		addAttribute(CARBON_MONOXIDE,"",true,true,java.lang.Float.class);
 				
 		addManyToOneRelationship(PRODUCT_CATEGORY,ProductCategory.class);
 		addManyToOneRelationship(SUPPLIER,User.class);		
@@ -149,7 +151,9 @@ public class NewProductApplicationBMPBean extends GenericEntity implements NewPr
 		setColumn(STATUS,status);
 	}
 
-
+	public void setCarbonMonoxide(float monoxide) {
+		setColumn(CARBON_MONOXIDE,monoxide);	
+	}
 
 
 
@@ -223,6 +227,10 @@ public class NewProductApplicationBMPBean extends GenericEntity implements NewPr
 	
 	public String getStatus() {
 		return getStringColumnValue(STATUS);
+	}
+	
+	public float getCarbonMonoxide() {
+		return getFloatColumnValue(CARBON_MONOXIDE);	
 	}
 	
 	public Collection ejbFindAll() throws FinderException, RemoteException {
