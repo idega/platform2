@@ -235,8 +235,10 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 			if(childAddressEntiy!=null){
 				String stName = childAddressEntiy.getStreetName();
 				String number = childAddressEntiy.getStreetNumber();
+				String postalCode = childAddressEntiy.getPostalCode().getPostalCode();
+				String city = childAddressEntiy.getCity();
 				String childAddressString = stName+((number==null)?"":(" "+number));
-				data.addData(childAddress,childAddressString);
+				data.addData(childAddress,childAddressString+", "+postalCode+" "+city);
 			}
 			
 			Collection coll = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,child,GroupRelation.STATUS_ACTIVE);
@@ -270,9 +272,12 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					if(parent1AddressEntiy!=null) {
 						String stName = parent1AddressEntiy.getStreetName();
 						String number = parent1AddressEntiy.getStreetNumber();
+						String postalCode = parent1AddressEntiy.getPostalCode().getPostalCode();
+						String city = parent1AddressEntiy.getCity();
 						String parent1AddressString = stName+((number==null)?"":(" "+number));
-						data.addData(parent1Address,parent1AddressString);
-					}			
+						data.addData(parent1Address,parent1AddressString+", "+postalCode+" "+city);
+					}
+								
 					Collection pColl = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,parent,GroupRelation.STATUS_ACTIVE);
 					Iterator pIterator = pColl.iterator();
 					if(pIterator.hasNext()){
@@ -301,8 +306,10 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					if(parent2AddressEntiy!=null){
 						String stName = parent2AddressEntiy.getStreetName();
 						String number = parent2AddressEntiy.getStreetNumber();
+						String postalCode = parent2AddressEntiy.getPostalCode().getPostalCode();
+						String city = parent2AddressEntiy.getCity();
 						String parent2AddressString = stName+((number==null)?"":(" "+number));
-						data.addData(parent2Address,parent2AddressString);
+						data.addData(parent2Address,parent2AddressString+", "+postalCode+" "+city);
 					}
 								
 					Collection pColl = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,parent,GroupRelation.STATUS_ACTIVE);
@@ -473,7 +480,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 				//e.printStackTrace();
 			} catch (EJBException e){
 				System.out.println("["+this.getClass()+"]: "+e.getMessage());
-				System.out.println("["+this.getClass()+"]: user: "+child);
+				System.out.println("["+this.getClass()+"]: user:"+child);
 				e.printStackTrace();
 			}
 			
@@ -571,9 +578,12 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 				if(childAddressEntiy!=null){
 					String stName = childAddressEntiy.getStreetName();
 					String number = childAddressEntiy.getStreetNumber();
+					String postalCode = childAddressEntiy.getPostalCode().getPostalCode();
+					String city = childAddressEntiy.getCity();
 					String childAddressString = stName+((number==null)?"":(" "+number));
-					data.addData(childAddress,childAddressString);
+					data.addData(childAddress,childAddressString+", "+postalCode+" "+city);
 				}
+
 				
 				Collection coll = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,child,GroupRelation.STATUS_ACTIVE);
 				Iterator iterator = coll.iterator();
@@ -606,8 +616,10 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 						if(parent1AddressEntiy!=null) {
 							String stName = parent1AddressEntiy.getStreetName();
 							String number = parent1AddressEntiy.getStreetNumber();
+							String postalCode = parent1AddressEntiy.getPostalCode().getPostalCode();
+							String city = parent1AddressEntiy.getCity();
 							String parent1AddressString = stName+((number==null)?"":(" "+number));
-							data.addData(parent1Address,parent1AddressString);
+							data.addData(parent1Address,parent1AddressString+", "+postalCode+" "+city);
 						}			
 						Collection pColl = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,parent,GroupRelation.STATUS_ACTIVE);
 						Iterator pIterator = pColl.iterator();
@@ -637,8 +649,10 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 						if(parent2AddressEntiy!=null){
 							String stName = parent2AddressEntiy.getStreetName();
 							String number = parent2AddressEntiy.getStreetNumber();
+							String postalCode = parent2AddressEntiy.getPostalCode().getPostalCode();
+							String city = parent2AddressEntiy.getCity();
 							String parent2AddressString = stName+((number==null)?"":(" "+number));
-							data.addData(parent2Address,parent2AddressString);
+							data.addData(parent2Address,parent2AddressString+", "+postalCode+" "+city);
 						}
 									
 						Collection pColl = gRelationHome.findGroupsRelationshipsContainingGroupsAndStatus(communeGroup,parent,GroupRelation.STATUS_ACTIVE);
