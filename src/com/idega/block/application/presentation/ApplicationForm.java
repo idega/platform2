@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.3 2001/07/30 11:46:38 palli Exp $
+ * $Id: ApplicationForm.java,v 1.4 2001/08/16 03:13:44 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,18 +25,21 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
 import java.util.List;
+import com.idega.jmodule.object.JModuleObject;
 
 /**
  *
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class ApplicationForm extends Editor {
+public class ApplicationForm extends JModuleObject{
   private final int statusEnteringPage_ = 0;
   private final int statusSubject_ = 1;
   private final int statusGeneralInfo_ = 2;
 
+  protected boolean isAdmin;
   private static final String IW_RESOURCE_BUNDLE = "com.idega.block.application";
+  protected IWResourceBundle iwrb;
 
   private String styleAttribute = "font-size: 8pt";
 
@@ -301,6 +304,16 @@ public class ApplicationForm extends Editor {
     applicant.setPO(po);
 
     modinfo.setSessionAttribute("applicant",applicant);
+  }
+
+
+  public void main(ModuleInfo modinfo){
+    iwrb = getResourceBundle(modinfo);
+    try{
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    }
+    catch(SQLException sql){ isAdmin = false;}
+    control(modinfo);
   }
 
 }
