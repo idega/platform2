@@ -112,7 +112,13 @@ public class ContractReSignWindow extends Window{
           T.add(Edit.formatText(iwrb.getLocalizedString("moving_date","Moving date")),1,5);
           idegaTimestamp movdate = eContract.getMovingDate()!=null?new idegaTimestamp(eContract.getMovingDate()):null;
           DateInput movDate = new DateInput("mov_date");
-          movDate.setDate(eContract.getValidTo());
+          idegaTimestamp moving = idegaTimestamp.RightNow();
+          moving.addDays((int)SysProps.getTermOfNoticeDays());
+
+          if(moving.isLaterThan(new idegaTimestamp(eContract.getValidTo())))
+            movDate.setDate(eContract.getValidTo());
+          else
+            movDate.setDate(moving.getSQLDate());
 
           if(movdate !=null )
             movDate.setDate(movdate.getSQLDate());

@@ -83,6 +83,9 @@ public class SystemProperties extends GenericEntity {
   public long getTermOfNotice(){
     return (long) getIntColumnValue( getColumnNameTermOfNotice());
   }
+  public long getTermOfNoticeDays(){
+    return getTermOfNotice();
+  }
   public void insert() throws java.sql.SQLException{
   }
   public void delete() throws java.sql.SQLException{
