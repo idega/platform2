@@ -22,23 +22,31 @@ public class QueryFieldPart implements QueryPart {
 	
 	private String name = null;
 	private String entity = null;
-	private String[] properties = null;
+	private String columns = null;
 	private String function = null;
 	private String display = null;
+	private String typeClass = null;
 	
-	public QueryFieldPart(String name, String entity,String[] properties,String function, String display){
+	public QueryFieldPart(String name, String entity,String[] columns,String function, String display,String typeClass){
+		this(name,entity,"",function,display,typeClass);
+		this.columns = stringArrayToCommaList(columns);
+	}
+	
+	public QueryFieldPart(String name,String entity,String column,String function,String display,String typeClass){
 		this.name = name;
 		this.entity = entity;
-		this.properties = properties;
+		this.columns = column;
 		this.function = function;
 		this.display = display;
+		this.typeClass = typeClass;
 	}
 	
 	public QueryFieldPart(XMLElement xml){
 		name = xml.getAttribute(QueryXMLConstants.NAME).getValue();
 		entity = xml.getAttribute(QueryXMLConstants.ENTITY).getValue();
-		properties = commaListToArray(xml.getAttribute(QueryXMLConstants.PROPERTIES).getValue());
+		columns = xml.getAttribute(QueryXMLConstants.PROPERTIES).getValue();
 		function = xml.getAttribute(QueryXMLConstants.FUNCTION).getValue();
+		function = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
 		if(xml.hasChildren()){
 			XMLElement xmlDisplay = xml.getChild(QueryXMLConstants.DISPLAY);
 			display = xmlDisplay.getTextTrim();
@@ -55,9 +63,11 @@ public class QueryFieldPart implements QueryPart {
 		XMLElement el = new XMLElement(QueryXMLConstants.FIELD);
 		el.setAttribute(QueryXMLConstants.NAME,name);
 		el.setAttribute(QueryXMLConstants.ENTITY,entity);
-		el.setAttribute(QueryXMLConstants.PROPERTIES,stringArrayToCommaList(this.properties));
+		el.setAttribute(QueryXMLConstants.PROPERTIES,this.columns);
 	  	if(this.function!=null)
 	  		el.setAttribute(QueryXMLConstants.FUNCTION,function);
+	  	if(this.typeClass!=null)
+	  		el.setAttribute(QueryXMLConstants.TYPE,typeClass);
 	  	XMLElement xmlDisplay = new XMLElement(QueryXMLConstants.DISPLAY);
 	  	xmlDisplay.addContent(this.display);
 	  	el.addContent(display);
@@ -95,8 +105,8 @@ public class QueryFieldPart implements QueryPart {
 	/**
 	 * @return
 	 */
-	public String[] getProperties() {
-		return properties;
+	public String[] getColumns() {
+		return commaListToArray(columns);
 	}
 
 	/**
@@ -130,8 +140,8 @@ public class QueryFieldPart implements QueryPart {
 	/**
 	 * @param strings
 	 */
-	public void setProperties(String[] strings) {
-		properties = strings;
+	public void setColumns(String[] columnStrings) {
+		columns = stringArrayToCommaList(columnStrings);
 	}
 	
 	public String stringArrayToCommaList(String[] array){
@@ -151,6 +161,33 @@ public class QueryFieldPart implements QueryPart {
 			array[i] = tokenizer.nextToken();
 		}
 		return array;
+	}
+	
+	public String encode(){
+			return this.name+";"+this.entity+";"+this.columns+";"+this.function+";"+display+";"+typeClass;
+	}
+	
+	public static QueryFieldPart  decode(String encoded){
+			StringTokenizer toker = new StringTokenizer(encoded,";");
+			if(toker.countTokens()==6){
+				return new QueryFieldPart(toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken());
+				
+			}
+			return null;
+	}
+
+	/**
+	 * @return
+	 */
+	public String getTypeClass() {
+		return typeClass;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setTypeClass(String string) {
+		typeClass = string;
 	}
 
 }

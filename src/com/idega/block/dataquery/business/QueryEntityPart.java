@@ -7,7 +7,9 @@
 package com.idega.block.dataquery.business;
 
 import java.util.Iterator;
+import java.util.StringTokenizer;
 
+import com.idega.core.IWTreeNode;
 import com.idega.xml.XMLElement;
 
 /**
@@ -19,25 +21,39 @@ import com.idega.xml.XMLElement;
  * @version 1.0
  */
 
-public class QueryEntityPart implements QueryPart {
-	private String name ;
+public class QueryEntityPart extends IWTreeNode implements QueryPart {
+	//private String name ;
 	private String beanClass;
+	//private String path;
 	
 	public QueryEntityPart(String name, String beanClass){
-		this.name = name;
-		this.beanClass = beanClass;
+		super(name);
+		//this.name = name;
+		setBeanClass( beanClass);
+		//this.path = name;
 	}
 	
+	public QueryEntityPart(String name, String beanClass,String path){
+			this(name,beanClass);
+			setPath(path);
+		}
+		
 	public QueryEntityPart(XMLElement xml){
+		this("","");
 		if(xml.hasChildren()){
 			Iterator iter = xml.getChildren().iterator();
 			while(iter.hasNext()){
 				XMLElement el = (XMLElement) iter.next();
 				if(el.getName().equals(QueryXMLConstants.NAME)){
-					this.name = el.getTextTrim();
+					//this.name = el.getTextTrim();
+					setName(el.getTextTrim());
 				}
 				else if(el.getName().equals(QueryXMLConstants.BEANCLASS)){
-					this.beanClass = el.getTextTrim();
+					setBeanClass(el.getTextTrim());
+				}
+				else if(el.getName().equals(QueryXMLConstants.PATH)){
+					//this.path = el.getTextTrim();
+					setPath(el.getTextTrim());
 				}
 			}
 			
@@ -49,7 +65,11 @@ public class QueryEntityPart implements QueryPart {
 	}
 	
 	public String getName(){
-		return name;
+		return getNodeName();
+	}
+	
+	public String getPath(){
+		return getNodePath();
 	}
 	/* (non-Javadoc)
 	 * @see com.idega.block.dataquery.business.QueryPart#toQueryXML()
@@ -58,18 +78,57 @@ public class QueryEntityPart implements QueryPart {
 		XMLElement el = new XMLElement(QueryXMLConstants.ENTITY);
 		el.addContent(getNameElement());
 		el.addContent(getBeanClassElement());
+		if(!"".equals(getPath()))
+			el.addContent(getPathElement());
 		return el;
 	}
 	
 	private XMLElement getNameElement(){
 		XMLElement xmlName = new XMLElement(QueryXMLConstants.NAME);
-		xmlName.addContent(name);
+		xmlName.addContent(getName());
 		return xmlName;
 	}
 	
 	private XMLElement getBeanClassElement(){
 		XMLElement xmlBeanClass = new XMLElement(QueryXMLConstants.BEANCLASS);
-		xmlBeanClass.addContent(beanClass);
+		xmlBeanClass.addContent(getBeanClassName());
 		return xmlBeanClass;
 	}
+	
+	private XMLElement getPathElement(){
+		XMLElement xmlBeanClass = new XMLElement(QueryXMLConstants.PATH);
+		xmlBeanClass.addContent(getPath());
+		return xmlBeanClass;
+	}
+	
+	public String encode(){
+		return this.getName()+";"+this.getBeanClassName() +(getPath()!=null?";"+getPath():"");
+	}
+	
+	public static QueryEntityPart decode(String encoded){
+		StringTokenizer toker = new StringTokenizer(encoded,";");
+		if(toker.countTokens()==2){
+			return new QueryEntityPart( toker.nextToken(), toker.nextToken());
+		}
+		else if(toker.countTokens()==3){
+			QueryEntityPart part =  new QueryEntityPart( toker.nextToken(), toker.nextToken(),toker.nextToken());
+			return part;
+		}		
+		return null;
+	}
+	/**
+	 * @param string
+	 */
+	public void setBeanClass(String string) {
+		beanClass = string;
+	}
+
+
+	/**
+	 * @param string
+	 */
+	public void setPath(String string) {
+		super.setNodePath(string);
+	}
+
 }

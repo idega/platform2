@@ -19,8 +19,9 @@ import com.idega.business.IBOSessionBean;
  * @version 1.0
  */
 
-public class QuerySessionBean extends IBOSessionBean {
-	private QueryHelper query = new QueryHelper();
+public class QuerySessionBean extends IBOSessionBean implements QuerySession{
+	private QueryHelper query = null;
+	private int xmlFileID = -1;
 	
 	public QueryService getQueryService() throws RemoteException{
 		return (QueryService)this.getServiceInstance(QueryService.class);
@@ -33,8 +34,27 @@ public class QuerySessionBean extends IBOSessionBean {
 	public void createQuery(int XMLFileID)throws RemoteException{
 		query = getQueryService().getQueryHelper( XMLFileID);
 	}
+
 	
 	public QueryHelper getQueryHelper(){
+		if(query==null){
+			try {
+				if(xmlFileID>0)
+					createQuery(xmlFileID);
+				else
+					createNewQuery();
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
 		return query;
 	}
+	/**
+	 * @param i
+	 */
+	public void setXmlFileID(int i) {
+		xmlFileID = i;
+	}
+
 }

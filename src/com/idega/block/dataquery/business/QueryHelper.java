@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.idega.data.GenericEntity;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
@@ -34,6 +35,8 @@ public class QueryHelper {
 	private List listOfRelatedEntities = null;
 	private List listOfFields = null;
 	private List listOfConditions = null;
+	private int step = 0;
+	
 		
 	public QueryHelper(){
 	}
@@ -92,8 +95,10 @@ public class QueryHelper {
 						}
 					}
 				}
-			}			
+			}		
+			checkStep();	
 		}
+		
 		}
 	}
 	
@@ -153,13 +158,13 @@ public class QueryHelper {
 		return sourceEntity!=null;
 	}
 	public boolean hasRelatedEntities(){
-		return listOfRelatedEntities !=null;
+		return listOfRelatedEntities !=null && !listOfRelatedEntities.isEmpty();
 	}
 	public boolean hasFields(){
-		return listOfFields!=null;
+		return listOfFields!=null && !listOfFields.isEmpty();
 	}
-	public boolean hasCondtions(){
-		return listOfConditions!=null;
+	public boolean hasConditions(){
+		return listOfConditions!=null && !listOfRelatedEntities.isEmpty();
 	}
 
 	/**
@@ -216,6 +221,7 @@ public class QueryHelper {
 	 */
 	public void setListOfConditions(List list) {
 		listOfConditions = list;
+		checkStep();
 	}
 
 	/**
@@ -223,6 +229,7 @@ public class QueryHelper {
 	 */
 	public void setListOfFields(List list) {
 		listOfFields = list;
+		checkStep();
 	}
 
 	/**
@@ -230,6 +237,7 @@ public class QueryHelper {
 	 */
 	public void setListOfRelatedEntities(List list) {
 		listOfRelatedEntities = list;
+		checkStep();
 	}
 
 	/**
@@ -243,35 +251,98 @@ public class QueryHelper {
 	 * @param part
 	 */
 	public void setSourceEntity(QueryEntityPart part) {
+		QueryEntityPart oldPart = sourceEntity;
 		sourceEntity = part;
+		if(oldPart !=null && !part.encode().equals(oldPart.encode())){
+			clearRelatedEntities();
+			clearFields();
+			clearConditions();
+		}			
+		checkStep();
+	}
+	
+	public void setSourceEntity(Class entityClass) {
+		QueryEntityPart  entityPart = getQueryEntityPart(entityClass);
+		if(entityPart !=null){			
+			setSourceEntity(entityPart);	
+		}
+	}
+	
+	private QueryEntityPart getQueryEntityPart(Class entityClass){
+		GenericEntity entity = getEntity(entityClass);
+		if(entity!=null)
+		 	return  new QueryEntityPart(entity.getEntityName(),entityClass.getName());
+		 return null;
+	}
+	
+	public void addRelatedEntity(Class entityClass){
+		QueryEntityPart  entityPart = getQueryEntityPart(entityClass);
+		if(entityPart !=null)
+			addRelatedEntity(entityPart);
 	}
 	
 	public void addRelatedEntity(QueryEntityPart entity){
-		if(listOfRelatedEntities==null)
+		if(listOfRelatedEntities==null){
 			listOfRelatedEntities = new ArrayList();
+		}
 		listOfRelatedEntities.add(entity);
+		checkStep();
 	}
 	
 	public void addField(QueryFieldPart field){
-		if(listOfFields!=null)
+		if(listOfFields==null){
 			listOfFields = new ArrayList();
+		}
 		listOfFields.add(field);
+		checkStep();
 	}
 	
 	public void addCondition(QueryConditionPart condition){
-		if(listOfConditions== null)
+		if(listOfConditions== null){
 			listOfConditions = new ArrayList();
+		}
 		listOfConditions.add(condition);
+		checkStep();
 	}
+	
+	public void clearSourceEntity(){
+			sourceEntity = null;
+			checkStep();
+		}
 	
 	public void clearRelatedEntities(){
 		listOfRelatedEntities = null;
+		checkStep();
 	}
 	public void clearFields(){
 		listOfFields = null;
+		checkStep();
 	}
 	public void clearConditions(){
 		listOfConditions = null;
+		checkStep();
+	}
+	
+	public int getStep(){
+		return step;		
+	}
+	
+	private void checkStep(){
+		if(hasConditions())
+			step = 4;
+		else if(hasFields())
+			step = 3;
+		else if(hasRelatedEntities())
+			step = 2;
+		else if(hasSourceEntity())
+			step = 1;
+		else 
+			step = 0;
+		//System.out.println("checkstep : step is now "+step);
+	}
+	
+	private GenericEntity getEntity(Class entityClass){
+		return (GenericEntity) GenericEntity.getStaticInstance(entityClass);
 	}
 
 }

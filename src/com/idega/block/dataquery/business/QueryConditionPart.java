@@ -6,6 +6,8 @@
  */
 package com.idega.block.dataquery.business;
 
+import java.util.StringTokenizer;
+
 import com.idega.xml.XMLElement;
 
 /**
@@ -89,5 +91,18 @@ public class QueryConditionPart implements QueryPart {
 	public void setType(String string) {
 		type = string;
 	}
+	
+	public String encode(){
+		return this.field+";"+this.type+";"+this.pattern;
+	}
+	
+	public static QueryConditionPart decode(String encoded){
+		StringTokenizer toker = new StringTokenizer(encoded,";");
+		if(toker.countTokens()==3){
+			return new QueryConditionPart(toker.nextToken(),toker.nextToken(),toker.nextToken());
+		}
+		return null;
+	}
+	
 
 }

@@ -20,4 +20,5 @@ import com.idega.xml.XMLElement;
 public interface QueryPart {
 	
 	public XMLElement getQueryElement();
+	public String encode();
 }
