@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.5 2002/01/12 02:25:23 aron Exp $
+ * $Id: ContractBusiness.java,v 1.6 2002/02/12 15:14:08 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -64,7 +64,7 @@ public  class ContractBusiness {
       eContract = new Contract(iContractId );
       if(eContract != null ){
         int iUserId = eContract.getUserId().intValue();
-				System.err.println("Signing user "+iUserId);
+				System.err.println("Signing user "+iUserId +" contract id : "+iContractId);
         if(sEmail !=null && sEmail.trim().length() >0){
 					//System.err.println("adding email "+sEmail);
           UserBusiness.addNewUserEmail(iUserId,sEmail);
@@ -96,7 +96,7 @@ public  class ContractBusiness {
 
         //System.err.println("changing contract status ");
         eContract.setStatusSigned();
-        eContract.setIsRented(true);
+        //eContract.setIsRented(true);
         //System.err.println("updateing contract ");
         eContract.update();
         //System.err.println("lets try to commit");
