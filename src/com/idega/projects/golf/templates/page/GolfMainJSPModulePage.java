@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.36 2001/08/27 23:44:45 laddi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.37 2001/08/27 23:52:10 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -93,7 +93,7 @@ public class GolfMainJSPModulePage extends MainPage {
 
 
   protected Table Left(ModuleInfo modinfo) throws SQLException, IOException {
-    Table leftTable = new Table(1,13);
+    Table leftTable = new Table(1,14);
     //leftTable.setBorder(1);
     leftTable.setVerticalAlignment("top");
     leftTable.setVerticalAlignment(1,1,"top");
@@ -107,6 +107,7 @@ public class GolfMainJSPModulePage extends MainPage {
     leftTable.setVerticalAlignment(1,9,"top");
     leftTable.setVerticalAlignment(1,10,"top");
     leftTable.setVerticalAlignment(1,11,"top");
+    leftTable.setVerticalAlignment(1,13,"top");
     //leftTable.setHeight("100%");
     leftTable.setColumnAlignment(1, "left");
     leftTable.setWidth(LEFTWIDTH);
@@ -125,9 +126,9 @@ public class GolfMainJSPModulePage extends MainPage {
     sponsorBox.setCacheable("SponsorBox",86400000);//24 hour
     leftTable.add(sponsorBox, 1,3);
 
-    /*HeaderTable newsBox = clubNews();
+    HeaderTable newsBox = clubNews();
     newsBox.setCacheable("NewsBox",3600000);//60*60*1000 1 hour
-    leftTable.add(newsBox,1,5);*/
+    leftTable.add(newsBox,1,5);
 
     TournamentBox tBox = new TournamentBox();
     tBox.setCacheable("TournamentBox",1800000);
@@ -277,7 +278,7 @@ public class GolfMainJSPModulePage extends MainPage {
   }
 
   protected HeaderTable clubNews() throws SQLException {
-
+/*
     HeaderTable headerTable = new HeaderTable();
     headerTable.setWidth(148);
     headerTable.setBorderColor("#8ab490");
@@ -291,7 +292,7 @@ public class GolfMainJSPModulePage extends MainPage {
     myTable.setCellpadding(2);
     myTable.setCellspacing(2);
     myTable.setBorder(0);
-/*
+
     NewsCategoryAttribute[] clubNewsAttr = (NewsCategoryAttribute[]) (com.idega.data.GenericEntity.getStaticInstance(NewsCategoryAttribute.class)).findAll("select * from news_category_attributes where attribute_name ='union_id' and news_category_attributes.news_category_id>3");
     int union_id = 0;
     Text unionText;
@@ -328,10 +329,70 @@ public class GolfMainJSPModulePage extends MainPage {
             myTable.add(newsLink,1,a+1);
        }
     }
-*/
+
     headerTable.add(myTable);
 
+    return headerTable;*/
+
+    News[] news = (News[]) (new News()).findAll("select distinct news_category_id from news where news_category_id > 3 and news_category_id < 228 and news_category_id != 226 order by news_date desc");
+
+    HeaderTable headerTable = new HeaderTable();
+    headerTable.setWidth(148);
+    headerTable.setBorderColor("#8ab490");
+    headerTable.setHeaderText(iwrb.getLocalizedString("clubNews","Club news"));
+    headerTable.setHeadlineSize(1);
+    headerTable.setRightHeader(false);
+    headerTable.setHeadlineAlign("left");
+
+    Table myTable = new Table(1,5);
+    myTable.setWidth("100%");
+    myTable.setCellpadding(2);
+    myTable.setCellspacing(2);
+    myTable.setBorder(0);
+
+    for (int a = 0; a < 5; a++) {
+      if (news.length > a) {
+        News[] clubNews = (News[]) (com.idega.data.GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News")).findAllByColumnOrdered("news_category_id",Integer.toString(news[a].getNewsCategoryId()),"news_date desc");
+        Text unionText = new Text();
+        unionText.setFontSize(1);
+        unionText.setFontColor("#666666");
+
+        NewsCategoryAttributes[] newsAttribute = (NewsCategoryAttributes[]) (com.idega.data.GenericEntity.getStaticInstance(NewsCategoryAttributes.class)).findAllByColumn("news_category_id",clubNews[0].getNewsCategoryId());
+
+        int union_id = 0;
+
+        if (newsAttribute.length > 0) {
+          union_id = newsAttribute[0].getAttributeId();
+          Union union = new Union(union_id);
+          unionText.addToText(union.getAbbrevation()+" - ");
+        }
+
+        idegaTimestamp stampur = new idegaTimestamp(clubNews[0].getDate());
+
+        String minutes = stampur.getMinute()+"";
+        if (stampur.getMinute() < 10) {
+          minutes = "0" + stampur.getMinute();
+        }
+
+        Text newsDate = new Text(stampur.getDate()+"/"+stampur.getMonth()+"/"+stampur.getYear()+" "+stampur.getHour()+":"+minutes);
+        newsDate.setFontSize(1);
+        newsDate.setFontColor("#666666");
+
+            Link newsLink = new Link(clubNews[0].getHeadline(),"/clubs/index2.jsp");
+              newsLink.addParameter("union_id",""+union_id);
+              newsLink.setFontSize(1);
+
+            myTable.add(unionText,1,a+1);
+            myTable.add(newsDate,1,a+1);
+            myTable.addBreak(1,a+1);
+            myTable.add(newsLink,1,a+1);
+          }
+        }
+
+        headerTable.add(myTable);
+
         return headerTable;
+
       }
 
       protected Table idega(){
