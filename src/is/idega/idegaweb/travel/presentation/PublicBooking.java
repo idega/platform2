@@ -907,14 +907,14 @@ public class PublicBooking extends Block  {
               debug("Trying double");
               StringBuffer mailText = new StringBuffer();
               mailText.append(iwrb.getLocalizedString("travel.double_confirmation","This email is to confirm that your booking has been received, and confirmed."));
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name   ")).append(" : ").append(gBooking.getName());
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service")).append(" : ").append(ProductBusiness.getProductName(prod, iwc.getCurrentLocaleId()));
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date   ")).append(" : ").append(new idegaTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats  ")).append(" : ").append(gBooking.getTotalCount());
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductName(prod, iwc.getCurrentLocaleId()));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new idegaTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
 
               SendMail sm = new SendMail();
                 sm.send(suppEmail, bookEmail, "", "", "mail.idega.is", "Booking",mailText.toString());
-            }catch (MessagingException me) {
+            }catch (Exception me) {
               me.printStackTrace(System.err);
             }
           }
@@ -924,14 +924,14 @@ public class PublicBooking extends Block  {
               debug("Trying afteronline");
               StringBuffer mailText = new StringBuffer();
               mailText.append(iwrb.getLocalizedString("travel.email_after_online_booking","You have just received a booking through nat.sidan.is."));
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name   ")).append(" : ").append(gBooking.getName());
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service")).append(" : ").append(ProductBusiness.getProductName(prod, iwc.getCurrentLocaleId()));
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date   ")).append(" : ").append(new idegaTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats  ")).append(" : ").append(gBooking.getTotalCount());
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductName(prod, iwc.getCurrentLocaleId()));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new idegaTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
 
               SendMail sm = new SendMail();
                 sm.send(suppEmail, suppEmail, "", "", "mail.idega.is", "Booking",mailText.toString());
-            }catch (MessagingException me) {
+            }catch (Exception me) {
               me.printStackTrace(System.err);
             }
           }
