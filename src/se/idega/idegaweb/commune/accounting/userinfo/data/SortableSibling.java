@@ -29,7 +29,9 @@ public class SortableSibling implements Comparable{
 		} else if(sibling.getDateOfBirth().before(other.getSibling().getDateOfBirth())){
 			return 1;
 		}
-		return 0;
+
+		// since date of birth is equal, compare ssn and return 0 if equal
+		return sibling.getPersonalID ().compareTo (other.getSibling ().getPersonalID ());
 	}
 
 	public User getSibling() {
