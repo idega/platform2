@@ -82,7 +82,7 @@ public class HouseHoldViewer extends AccountingBlock {
 	private int personalIdInputLength = 15;
 	private boolean constrainSearchToUniqueIdentifier = false;
 	private UserSearcher searcherOne = null, searcherTwo = null;
-	private boolean hideCohabitant = true;
+	private boolean showCohabitant = true;
 
 	/*
 	 * (non-Javadoc)
@@ -247,7 +247,7 @@ public class HouseHoldViewer extends AccountingBlock {
 			users.add(firstFamily.getHeadOfFamily());
 			if (firstFamily.hasSpouse())
 				users.add((firstFamily.getSpouse()));
-			if (!hideCohabitant && firstFamily.hasCohabitant()) {
+			if (showCohabitant && firstFamily.hasCohabitant()) {
 				users.add(firstFamily.getCohabitant());
 			}
 		}
@@ -255,7 +255,7 @@ public class HouseHoldViewer extends AccountingBlock {
 			users.add(secondFamily.getHeadOfFamily());
 			if (secondFamily.hasSpouse())
 				users.add((secondFamily.getSpouse()));
-			if (!hideCohabitant && secondFamily.hasCohabitant()) {
+			if (showCohabitant && secondFamily.hasCohabitant()) {
 				users.add(secondFamily.getCohabitant());
 			}
 		}
@@ -838,7 +838,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		return getText(child.getFirstName());
 	}
 	
-	public void setHideCohabitant(boolean flag){
-		this.hideCohabitant = flag;
+	public void setShowCohabitant(boolean flag){
+		this.showCohabitant = flag;
 	}
 }
