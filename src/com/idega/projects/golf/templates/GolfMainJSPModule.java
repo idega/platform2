@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModule.java,v 1.13 2001/05/22 20:10:16 haffi Exp $
+ * $Id: GolfMainJSPModule.java,v 1.14 2001/05/22 20:12:36 haffi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -152,7 +152,7 @@ public class GolfMainJSPModule extends MainSideJSPModule {
     table.setWidth(148);
 
     String textChat = iwrb.getLocalizedString("Chat");
-    If (textChat == null) textChat = "Chat";
+    if (textChat == null) textChat = "Chat";
     table.setHeaderText(textChat);
 
     ForumThread[] forum = (ForumThread[]) (new ForumThread()).findAllByColumnOrdered("parent_thread_id","-1","thread_date desc");
