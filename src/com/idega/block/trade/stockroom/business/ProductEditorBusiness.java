@@ -213,7 +213,7 @@ public class ProductEditorBusiness extends IBOServiceBean{
 
 
   public void addImage(Product product, int imageId) {
-    if (imageId != -1) {
+    if (imageId != -1 && product != null) {
       try {
 	product.addTo(ICFile.class, imageId);
       }catch (SQLException sql){
