@@ -14,11 +14,16 @@ import com.idega.block.messenger.presentation.MessengerApplet;
 public class MessageListener implements Runnable{
   private MessengerApplet client;
   private Thread t;
-  private long threadSleep = 500;//0.5 sec
+  private long threadSleep = 5000;//5 sec
   private boolean runThread = true;
 
-  public MessageListener(MessengerApplet client) {
-    this.client = client;
+  public MessageListener(MessengerApplet applet) {
+    this.client = applet;
+  }
+
+  public MessageListener(MessengerApplet applet, long interval) {
+    this(applet);
+    setIntervalForMsgChecking(interval);
   }
 
   public void run(){
@@ -46,5 +51,9 @@ public class MessageListener implements Runnable{
       t=null;
       runThread = false;
     }
+  }
+
+  public void setIntervalForMsgChecking(long interval){
+    this.threadSleep = interval;
   }
 }
