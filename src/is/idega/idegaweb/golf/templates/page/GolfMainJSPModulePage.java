@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.2 2002/01/16 11:41:08 tryggvil Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.3 2002/01/16 12:53:49 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -254,36 +254,6 @@ public class GolfMainJSPModulePage extends MainPage {
           return idegaTable;
       }
 
-
-
-		public BoxReader getLinks(IWContext iwc){
-
-			BoxReader box_office= new BoxReader("1",isAdmin(iwc),3);
-				box_office.setBoxBorder(0);
-				box_office.setInnerBoxBorder(0);
-				box_office.setBoxWidth(148);
-				box_office.setNoIcons(true);
-				box_office.setBoxOutline(1);
-				box_office.setOutlineColor("8ab490");
-				box_office.setInBoxColor("FFFFFF");
-				box_office.setNumberOfDisplayed(4);
-				box_office.setNumberOfLetters(60);
-				box_office.setLeftBoxWidth(0);
-				box_office.setRightBoxWidth(0);
-				box_office.setBoxTableColor("8ab490");
-				box_office.setTableAlignment("left");
-				box_office.setBoxPadding(1);
-				box_office.setBoxOnly(true);
-				box_office.setShowCategoryHeadline(true);
-				box_office.setBoxCategoryHeadlineSize(1);
-				box_office.setBoxCategoryHeadlineColor("#FFFFFF");
-				box_office.setLeftHeader(false);
-                                box_office.setHeadlineAlign("left");
-
-			return box_office;
-		}
-
-
         protected Login getLogin(){
           return new Login();
         }
@@ -435,8 +405,11 @@ public class GolfMainJSPModulePage extends MainPage {
           //gLinks.setCacheable("gLinks",86400000);//24 hour
           rightTable.add(Block.getCacheableObject(gLinks,"gLinks",86400000),1,5);//1,9
 
-          BoxReader bLinks = getLinks(iwc);
-          bLinks.setCacheable("Miscbox",86400000);//1000*60*60*24 = 24 hours
+          //BoxReader bLinks = getLinks(iwc);
+          //bLinks.setCacheable("Miscbox",86400000);//1000*60*60*24 = 24 hours
+          //rightTable.add(bLinks,1,7);
+
+          Block bLinks = new MiscellenousBox();
           rightTable.add(bLinks,1,7);
 
 
