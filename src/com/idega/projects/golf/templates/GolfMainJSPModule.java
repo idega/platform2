@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModule.java,v 1.12 2001/05/22 19:46:59 haffi Exp $
+ * $Id: GolfMainJSPModule.java,v 1.13 2001/05/22 20:10:16 haffi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -110,25 +110,6 @@ public class GolfMainJSPModule extends MainSideJSPModule {
     return topTable;
   }
 
-	protected Table AnnouncementsModule() throws SQLException, IOException {
-	  Table ModuleTable = new Table(1,3);
-    ModuleTable.setColor(1,2,"#99CC99");
-    ModuleTable.setCellpadding(1);
-    ModuleTable.setCellspacing(0);
-    ModuleTable.setWidth(148);
-    ModuleTable.setBackgroundImage(1,1, new Image("/pics/news/tilkynningar_banner.gif"));
-
-		Connection conn = getConnection();
-/*	  Announcement announcement = new Announcement(1,conn);
-	  announcement.setLinkCellWidth("146");
-    announcement.setLinkCellHeight("22");
-
-	  Table announcementTable = announcement.getAnnouncementTable();
-	  ModuleTable.add(announcementTable, 1,2);
-*/
-	  freeConnection(conn);
-    return ModuleTable;
-	}
 
   protected Table Left() throws SQLException, IOException {
     Table leftTable = new Table(1,12);
@@ -169,7 +150,10 @@ public class GolfMainJSPModule extends MainSideJSPModule {
     table.setRightHeader(false);
     table.setHeadlineAlign("left");
     table.setWidth(148);
-    table.setHeaderText("Spjallið");
+
+    String textChat = iwrb.getLocalizedString("Chat");
+    If (textChat == null) textChat = "Chat";
+    table.setHeaderText(textChat);
 
     ForumThread[] forum = (ForumThread[]) (new ForumThread()).findAllByColumnOrdered("parent_thread_id","-1","thread_date desc");
 
