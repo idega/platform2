@@ -96,6 +96,7 @@ public class IWBundleStarter implements IWBundleStartable {
 		DirectoryPoller poller = new DirectoryPoller(new File(importHandler.getAutoImpFolder()));
 		poller.setAutoMove(true);		//Moves the files to a subfolder before handling
 		poller.addPollManager(new AutoImportPollManager(importHandler.getClassName(),importHandler.getAutoImpFileType()));
+		poller.setPollInterval(5*60*1000);
 		poller.start();
 		pollers.put(importHandler.getClassName(),poller);
 		System.out.println("Starting automatic import poller: "+importHandler.getName() +" for folder "+ importHandler.getAutoImpFolder());
