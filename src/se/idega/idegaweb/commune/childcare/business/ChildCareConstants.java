@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareConstants.java,v 1.7 2005/01/18 13:44:24 laddi Exp $
+ * $Id: ChildCareConstants.java,v 1.8 2005/02/04 09:08:26 laddi Exp $
  * Created on 9.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,13 +12,14 @@ package se.idega.idegaweb.commune.childcare.business;
 
 /**
  * 
- *  Last modified: $Date: 2005/01/18 13:44:24 $ by $Author: laddi $
+ *  Last modified: $Date: 2005/02/04 09:08:26 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ChildCareConstants {
-    public final static char STATUS_ACCEPTED = 'C';
+  
+	public final static char STATUS_ACCEPTED = 'C';
 	public final static char STATUS_CANCELLED = 'V';
 	public final static char STATUS_PARENT_TERMINATED = 'R';
 	public final static char STATUS_WAITING = 'P';
@@ -37,12 +38,9 @@ public class ChildCareConstants {
 	
 	public final static String CLEAN_QUEUE_RUNNING = "clean_queue_running";
 	
-	// case code keys
-
 	public static final String PARAMETER_CHILD_ID = "ccc_child_id";
-    public static final String PROPERTIES_CHILD_CARE = "child_care";
-    public static final String PROPERTY_MAX_MONTHS_IN_QUEUE = "max_months_in_queue";
-    public static final String PROPERTY_DAYS_TO_REPLY = "days_to_reply";
-	
-
+  public static final String PROPERTIES_CHILD_CARE = "child_care";
+  public static final String PROPERTY_MAX_MONTHS_IN_QUEUE = "max_months_in_queue";
+  public static final String PROPERTY_DAYS_TO_REPLY = "days_to_reply";
+  public static final String PROPERTY_CLEAN_WITHOUT_PLACEMENT = "clean_children_without_placement";	
 }
