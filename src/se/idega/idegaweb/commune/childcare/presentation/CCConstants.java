@@ -3,7 +3,7 @@ package se.idega.idegaweb.commune.childcare.presentation;
 /**
  * enclosing_type
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: CCConstants.java,v 1.1 2003/02/19 16:18:15 roar Exp $
+ * @version $Id: CCConstants.java,v 1.2 2003/03/21 18:34:15 roar Exp $
  * @since 14.2.2003 
  */
 interface CCConstants {
@@ -37,11 +37,16 @@ interface CCConstants {
 	
 	final static String SESSION_ACCEPTED_STATUS = "SESSION_ACCEPTED_STATUS";
 	final static String SESSION_KEEP_IN_QUEUE = "SESSION_KEEP_IN_QUEUE";
+	
+	final static String ACTION = "ACTION";
 		
-
-		
-		
-
-
+	final static int NO_ACTION = 0;	
+	final static int ACTION_SUBMIT_1 = 1;	
+	final static int ACTION_CANCEL_1 = 2;	
+	final static int ACTION_SUBMIT_2 = 3;	
+	final static int ACTION_CANCEL_2 = 4;	
+	final static int ACTION_SUBMIT_3 = 5;	
+	final static int ACTION_CANCEL_3 = 6;		
+	final static int ACTION_REQUEST_INFO = 7;
 
 }
