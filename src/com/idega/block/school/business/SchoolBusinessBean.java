@@ -18,6 +18,8 @@ import javax.transaction.UserTransaction;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolAreaHome;
+import com.idega.block.school.data.SchoolSubArea;
+import com.idega.block.school.data.SchoolSubAreaHome;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryBMPBean;
 import com.idega.block.school.data.SchoolCategoryHome;
@@ -415,6 +417,16 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return new Vector();
 		}
 	}
+	
+	public Collection findAllSchoolsBySubAreaAndTypes(int subarea, Collection types) {
+		try {
+			return getSchoolHome().findAllBySubAreaAndTypes(subarea, types);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new Vector();
+		}
+	}	
 
 	public java.util.Collection findAllCentralizedAdministrated() {
 		try {
@@ -458,10 +470,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int[] type_ids, int[] year_ids, Object communePK) throws RemoteException {
-		return storeSchool(id, name, info, address, zipcode, ziparea, phone, keycode, latitude, longitude, area_id, type_ids, year_ids, null, null, null, null, communePK, -1, null, null);
+		return storeSchool(id, name, info, address, zipcode, ziparea, phone, keycode, latitude, longitude, area_id, -1, type_ids, year_ids, null, null, null, null, communePK, -1, null, null);
 	}
 
-	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int[] type_ids, int[] year_ids, String organizationNumber, String extraProviderId, String managementTypeId, java.sql.Date terminationDate, Object communePK, int countryId, Boolean centralizedAdministration, Boolean invisibleForCitizen) throws RemoteException {
+	public School storeSchool(int id, String name, String info, String address, String zipcode, String ziparea, String phone, String keycode, String latitude, String longitude, int area_id, int sub_area_id, int[] type_ids, int[] year_ids, String organizationNumber, String extraProviderId, String managementTypeId, java.sql.Date terminationDate, Object communePK, int countryId, Boolean centralizedAdministration, Boolean invisibleForCitizen) throws RemoteException {
 
 		SchoolHome shome = getSchoolHome();
 		School newSchool;
@@ -485,6 +497,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 		if (area_id > 0)
 			newSchool.setSchoolAreaId(area_id);
+		if (sub_area_id > 0)
+			newSchool.setSchoolSubAreaId(sub_area_id);			
 		if (address != null)
 			newSchool.setSchoolAddress(address);
 		if (info != null)
@@ -2371,5 +2385,29 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		school.setMetaData(propertyName, propertyValue);
 		school.store();
 	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.school.business.SchoolBusiness#findAllSchoolSubAreasByArea(java.lang.String)
+	 */
+	public Collection findAllSchoolSubAreasByArea(String area) throws RemoteException {
+		final Collection result = new ArrayList();
+		try {
+			final SchoolArea schoolArea = getSchoolAreaHome().findByPrimaryKey(area);
+			result.addAll(getSchoolSubAreaHome().findAllByArea(schoolArea));
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public SchoolSubAreaHome getSchoolSubAreaHome() {
+		try {
+			return (SchoolSubAreaHome) IDOLookup.getHome(SchoolSubArea.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}	
 
 }

@@ -50,6 +50,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	public final static String HEADMASTER = "headmaster_group_id";
 	public final static String SCHOOLTYPE = "sch_school_type_id";
 	public final static String SCHOOLAREA = "sch_school_area_id";
+	public final static String SCHOOLSUBAREA = "sch_school_sub_area_id";
 	public final static String ZIPCODE = "zip_code";
 	public final static String ZIPAREA = "zip_area";
 	public final static String PHONE = "phone";
@@ -87,6 +88,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		this.addAttribute(getIDColumnName());
 		//this.addAttribute(SCHOOLTYPE,"Schooltype",true,true,Integer.class,this.MANY_TO_ONE,SchoolType.class);
 		this.addAttribute(SCHOOLAREA, "Schoolarea", true, true, Integer.class, MANY_TO_ONE, SchoolArea.class);
+		this.addAttribute(SCHOOLSUBAREA, "Schoolsubarea", true, true, Integer.class, MANY_TO_ONE, SchoolSubArea.class);
 		this.addAttribute(NAME, "Schoolname", true, true, String.class);
 		this.addAttribute(INFO, "Info", true, true, String.class, 4000);
 		this.addAttribute(ADDRESS, "Address", true, true, String.class, 100);
@@ -140,11 +142,20 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	public int getSchoolAreaId() {
 		return this.getIntColumnValue(SCHOOLAREA);
 	}
+	public int getSchoolSubAreaId() {
+		return this.getIntColumnValue(SCHOOLSUBAREA);
+	}	
 	public SchoolArea getSchoolArea() {
 		return (SchoolArea) getColumnValue(SCHOOLAREA);
 	}
+	public SchoolSubArea getSchoolSubArea() {
+		return (SchoolSubArea) getColumnValue(SCHOOLSUBAREA);
+	}	
 	public void setSchoolAreaId(int id) {
 		this.setColumn(SCHOOLAREA, id);
+	}
+	public void setSchoolSubAreaId(int id) {
+		this.setColumn(SCHOOLSUBAREA, id);
 	}
 	public Object getCommunePK() {
 		Object communeId = getColumnValue(COMMUNE);
@@ -608,6 +619,26 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 		return super.idoFindPKsBySQL(sql.toString());
 
 	}
+	
+	public Collection ejbFindAllBySubAreaAndTypes(int subarea, Collection types) throws javax.ejb.FinderException {
+		StringBuffer sql = new StringBuffer("select distinct s.* ");
+		sql.append(" from sch_school_sub_area a, sch_school s, sch_school_type t, sch_school_sch_school_type m ");
+		sql.append(" where a.sch_school_sub_area_id = s.sch_school_sub_area_id ");
+		sql.append(" and t.sch_school_type_id = m.sch_school_type_id ");
+		sql.append(" and s.sch_school_id = m.sch_school_id ");
+		if (types != null && !types.isEmpty()) {
+			sql.append(" and t.sch_school_type_id in (");
+			sql.append(getIDOUtil().convertListToCommaseparatedString(types));
+			sql.append(") ");
+		}
+		sql.append(" and a.sch_school_sub_area_id = ");
+		sql.append(subarea);
+		sql.append(" and (termination_date is null or termination_date > '" + getCurrentDate() + "')");
+		sql.append(" order by s.").append(NAME);
+
+		return super.idoFindPKsBySQL(sql.toString());
+
+	}	
 
 	/**
 	 * Finds all providers that is "part of" a category

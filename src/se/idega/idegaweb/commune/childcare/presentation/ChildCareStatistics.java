@@ -5,22 +5,26 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 
-import com.idega.block.school.business.SchoolAreaComparator;
+import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
+import com.idega.block.school.data.SchoolSubArea;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.business.CommuneBusiness;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -28,6 +32,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SelectDropdownDouble;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 
@@ -37,6 +42,7 @@ import com.idega.util.IWTimestamp;
 public class ChildCareStatistics extends ChildCareBlock {
 
 	protected static final String PARAMETER_AREA = "cc_area";
+	protected static final String PARAMETER_SUB_AREA = "cc_sub_area";
 	protected static final String PARAMETER_ACTION = "cc_action";
 	protected static final String PARAMETER_FROM_DATE = "cc_from_date";
 	protected static final String PARAMETER_TO_DATE = "cc_to_date";
@@ -57,6 +63,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 
 	private int _action = ORDER_BY_ALL_CHOICES;
 	private int _areaID = -1;
+	private int _subAreaID = -1;
 	private int _schoolTypes = SCHOOL_TYPES_CHILD_CARE;
 	private int _queueType = QUEUE_TYPE_ALL;
 	private Date _fromDate = null;
@@ -202,10 +209,13 @@ public class ChildCareStatistics extends ChildCareBlock {
 		}
 		
 		List providers = null;
-		if (_areaID == -1) 
+		if (_areaID == -1 && _subAreaID == -1) {
 			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByType(schoolTypes));
-		else
+		} else if (_subAreaID == -1) {
 			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByAreaAndTypes(_areaID, schoolTypes));
+		} else {
+			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsBySubAreaAndTypes(_subAreaID, schoolTypes));
+		}
 
 		Date from = null;
 		try {
@@ -369,22 +379,25 @@ public class ChildCareStatistics extends ChildCareBlock {
 		menu.setSelectedElement(_action);
 		table.add(menu, 1, 1);
 		
-		DropdownMenu areas = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_AREA));
-		areas.addMenuElement(-1, localize("child_care.all_areas","All areas"));
-		try {
-			List schoolAreas = new ArrayList(getBusiness().getSchoolBusiness().findAllSchoolAreas());
-			Collections.sort(schoolAreas, new SchoolAreaComparator(iwc.getCurrentLocale()));
-			Iterator iter = schoolAreas.iterator();
-			while (iter.hasNext()) {
-				SchoolArea element = (SchoolArea) iter.next();
-				areas.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolAreaName());
-			}
+
+		SelectDropdownDouble areas = new SelectDropdownDouble(PARAMETER_AREA, PARAMETER_SUB_AREA);
+		areas.setLayoutVertical(true);
+		areas.setVerticalSpaceBetween(7);
+		areas = (SelectDropdownDouble) getStyledInterface(areas);	
+
+		Iterator iter = getSchoolAreas(iwc).iterator();
+		areas.addMenuElement("-1", localize("child_care.all_areas","All areas"), new HashMap());
+		while (iter.hasNext()) {
+			SchoolArea area = (SchoolArea) iter.next();
+			areas.addMenuElement(area.getPrimaryKey().toString(), area.getName(), getSchoolSubAreas(iwc, area.getPrimaryKey().toString()));
 		}
-		catch (RemoteException re) {
-			re.printStackTrace(System.err);
-		}
-		areas.setSelectedElement(_areaID);
+		
+		
+		areas.setSelectedValues(iwc.getParameter(PARAMETER_AREA),iwc.getParameter(PARAMETER_SUB_AREA));
+
+		table.mergeCells(2, 1, 2, 2);
 		table.add(areas, 2, 1);
+				
 		
 		DropdownMenu schoolTypes = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_SCHOOL_TYPES));
 		schoolTypes.addMenuElement(SCHOOL_TYPES_CHILD_CARE, localize("child_care.all_operations", "All operations"));
@@ -392,28 +405,71 @@ public class ChildCareStatistics extends ChildCareBlock {
 		schoolTypes.addMenuElement(SCHOOL_TYPES_FAMILY_DAYCARE, localize("child_care.family_daycare","Family daycare"));
 		schoolTypes.addMenuElement(SCHOOL_TYPES_FAMILY_AFTER_SCHOOL, localize("child_care.family_after_school","Family after school"));
 		schoolTypes.setSelectedElement(_schoolTypes);
-		table.add(schoolTypes, 3, 1);
+		table.add(schoolTypes, 1, 2);
 		
 		DropdownMenu queueType = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_QUEUE_TYPE));
 		queueType.addMenuElement(QUEUE_TYPE_ALL, localize("child_care.all_in_queue", "All in queue"));
 		queueType.addMenuElement(QUEUE_TYPE_NETTO, localize("child_care.netto_queue","Netto queue"));
 		queueType.addMenuElement(QUEUE_TYPE_BRUTTO, localize("child_care.brutto_queue","Brutto queue"));
 		queueType.setSelectedElement(_queueType);
-		table.add(queueType, 4, 1);
+		table.add(queueType, 3, 1);
 		
 		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(localize("child_care.get", "Get")));
-		table.add(submit, 5, 1);
+		table.add(submit, 4, 1);
 		
 		form.add(table);
 				
 		return form;
 	}
 	
+	private Collection getSchoolAreas(IWContext iwc) {
+		Collection c = null;
+		try {
+			c = getSchoolBusiness(iwc).findAllSchoolAreas();
+		} catch (RemoteException e) {
+			add(new ExceptionWrapper(e));
+		}
+		return c;
+	}
+		
+	private Map getSchoolSubAreas(IWContext iwc, String schoolArea) {
+		Collection c = null;
+		Map m = new TreeMap();
+		try {
+			c = getSchoolBusiness(iwc).findAllSchoolSubAreasByArea(schoolArea);
+		} catch (RemoteException e) {
+			add(new ExceptionWrapper(e));
+		}
+		Iterator i = c.iterator();
+		m.put("-1", localize("child_care.all_sub_areas","All sub areas"));
+		while (i.hasNext()){
+			SchoolSubArea a = (SchoolSubArea) i.next();
+			m.put(a.getPrimaryKey().toString(), a.getName());
+		}
+
+		return m;
+	}	
+	
+	/*
+	 * Returns a school business object
+	 */
+	private SchoolBusiness getSchoolBusiness(IWContext iwc) {
+		SchoolBusiness sb = null;
+		try {
+			sb = (SchoolBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
+		} catch (RemoteException e) {
+			add(new ExceptionWrapper(e));
+		}
+		return sb;
+	}	
+	
 	private void parse(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_ACTION))
 			_action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
 		if (iwc.isParameterSet(PARAMETER_AREA))
 			_areaID = Integer.parseInt(iwc.getParameter(PARAMETER_AREA));
+		if (iwc.isParameterSet(PARAMETER_SUB_AREA))
+			_subAreaID = Integer.parseInt(iwc.getParameter(PARAMETER_SUB_AREA));
 		if (iwc.isParameterSet(PARAMETER_SCHOOL_TYPES))
 			_schoolTypes = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPES));
 		if (iwc.isParameterSet(PARAMETER_QUEUE_TYPE))

@@ -30,6 +30,6 @@ public class SchoolAreaComparator implements Comparator {
 		SchoolArea schoolArea1 = (SchoolArea) o1;
 		SchoolArea schoolArea2 = (SchoolArea) o2;
 		
-		return collator.compare(schoolArea1.getSchoolAreaName(), schoolArea2.getSchoolAreaName());
+		return collator.compare(schoolArea1.getName(), schoolArea2.getName());
 	}
 }

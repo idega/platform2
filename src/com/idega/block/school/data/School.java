@@ -39,6 +39,8 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public java.lang.String getSchoolAddress();
  public com.idega.block.school.data.SchoolArea getSchoolArea();
  public int getSchoolAreaId();
+ public com.idega.block.school.data.SchoolSubArea getSchoolSubArea();
+ public int getSchoolSubAreaId();
  public java.lang.String getSchoolEmail();
  public java.lang.String getSchoolFax();
  public java.lang.String getSchoolInfo();
@@ -79,6 +81,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public void setOrganizationNumber(java.lang.String p0);
  public void setSchoolAddress(java.lang.String p0);
  public void setSchoolAreaId(int p0);
+ public void setSchoolSubAreaId(int p0);
  public void setSchoolEmail(java.lang.String p0);
  public void setSchoolFax(java.lang.String p0);
  public void setSchoolInfo(java.lang.String p0);

@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.16 2004/01/12 09:02:04 laddi Exp $
+ * $Id: ProviderBusinessBean.java,v 1.17 2004/07/13 17:39:09 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -32,10 +32,10 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderAccountingProper
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2004/01/12 09:02:04 $ by $Author: laddi $
+ * Last modified: $Date: 2004/07/13 17:39:09 $ by $Author: roar $
  *
  * @author Anders Lindman
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
@@ -88,6 +88,7 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 			String latitude,
 			String longitude,
 			String schoolAreaId,
+			String schoolSubAreaId,
 			Map schoolTypeMap,
 			String organizationNumber,
 			String extraProviderId,
@@ -167,6 +168,7 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 					latitude,
 					longitude,
 					getInt(schoolAreaId),
+					getInt(schoolSubAreaId),
 					getSchoolTypeIds(schoolTypeMap),
 					getSchoolYearIds(schoolTypeMap),
 					organizationNumber,

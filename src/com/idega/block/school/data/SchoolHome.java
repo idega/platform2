@@ -10,6 +10,7 @@ public interface SchoolHome extends com.idega.data.IDOHome
  public Collection findAllByAreaAndType(int p0,int p1)throws javax.ejb.FinderException;
  public Collection findAllByAreaAndTypeAndYear(int p0,int p1,int p2)throws javax.ejb.FinderException;
  public Collection findAllByAreaAndTypes(int p0,Collection p1)throws javax.ejb.FinderException;
+ public Collection findAllBySubAreaAndTypes(int subarea, Collection types)throws javax.ejb.FinderException;;
  public Collection findAllByAreaTypeCommune(int p0,int p1,int p2)throws javax.ejb.FinderException;
  public Collection findAllByAreaTypeManagement(int p0,int p1,java.lang.String p2)throws javax.ejb.FinderException;
  public Collection findAllByAreaTypeManagementCommune(int p0,int p1,Collection p2,int p3)throws javax.ejb.FinderException;
