@@ -16,10 +16,12 @@ import com.idega.presentation.PresentationObject;
 import com.idega.data.GenericEntity;
 import com.idega.data.EntityFinder;
 import java.util.List;
+import com.idega.util.text.Edit;
 
 
-public class ReportItemizer extends ReportPresentation{
+public class ReportItemizer extends Block implements Reports{
 
+  private boolean isAdmin = false;
   private final String sAction = "report_action";
   private final String prefix = "rpit_" ;
   private final String sSessPrm = "rep_category";
@@ -80,23 +82,29 @@ public class ReportItemizer extends ReportPresentation{
     }
   }
 
+  public void main(IWContext iwc){
+    isAdmin = iwc.hasEditPermission(this);
+    control(iwc);
+
+  }
+
   protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
     LinkTable.setCellpadding(2);
     LinkTable.setCellspacing(1);
-    LinkTable.setColor(this.DarkColor);
+    LinkTable.setColor(DarkColor);
     LinkTable.setWidth(last,"100%");
     Link Link1 = new Link("New");
-    Link1.setFontColor(this.LightColor);
-    Link1.addParameter(this.sAction,String.valueOf(this.ACT3));
+    Link1.setFontColor(LightColor);
+    Link1.addParameter(sAction,String.valueOf(ACT3));
     Link Link2 = new Link("View");
-    Link2.setFontColor(this.LightColor);
-    Link2.addParameter(this.sAction,String.valueOf(this.ACT2));
+    Link2.setFontColor(LightColor);
+    Link2.addParameter(sAction,String.valueOf(ACT2));
     Link Link3 = new Link("Entity");
-    Link3.setFontColor(this.LightColor);
-    Link3.addParameter(this.sAction,String.valueOf(this.ACT1));
+    Link3.setFontColor(LightColor);
+    Link3.addParameter(sAction,String.valueOf(ACT1));
     if(isAdmin){
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,2,1);
@@ -115,7 +123,7 @@ public class ReportItemizer extends ReportPresentation{
         try {
           ReportCategory RC = new ReportCategory(id);
           sName = RC.getName();
-          sInfo = RC.getInfo();
+          sInfo = RC.getDescription();
         }
         catch (Exception ex) {
         }
@@ -134,27 +142,27 @@ public class ReportItemizer extends ReportPresentation{
   private PresentationObject doView(IWContext iwc){
     List L = null;
     try{
-      L = EntityFinder.findAllByColumn(new ReportItem(),ReportItem.getColumnNameCategory(),iCategoryId);
+      L = EntityFinder.findAllByColumn(new ReportItem(),ReportItem.getColumnCategoryId(),iCategoryId);
     }
     catch(Exception e){L = null;}
     Table T = new Table();
-		T.add(formatText("Name"),1,1);
-    T.add(formatText("Entity"),2,1);
-    T.add(formatText("Display order"),3,1);
+		T.add(Edit.formatText("Name"),1,1);
+    T.add(Edit.formatText("Entity"),2,1);
+    T.add(Edit.formatText("Display order"),3,1);
     if(L != null){
       int count = L.size();
       for (int i = 0; i < count; i++) {
         int a = i+2;
         int b = 1;
-        T.add(formatText(i+1),b++,a);
+        T.add(Edit.formatText(i+1),b++,a);
         ReportItem RI = (ReportItem) L.get(i);
         Link link = new Link(RI.getName());
         link.addParameter(sAction,ACT3);
         link.addParameter("repitemid",RI.getID());
         link.addParameter("rep.cat.drp",iCategoryId);
         T.add(link,b++,a);
-				T.add(formatText(RI.getEntityName()),b++,a);
-				T.add(formatText(RI.getDisplayOrder()),b++,a);
+				T.add(Edit.formatText(RI.getEntityName()),b++,a);
+				T.add(Edit.formatText(RI.getDisplayOrder()),b++,a);
       }
       T.setWidth("100%");
       T.setHorizontalZebraColored(LightColor,WhiteColor);
@@ -177,7 +185,7 @@ public class ReportItemizer extends ReportPresentation{
     Table T = new Table();
     DropdownMenu drp = ReportObjectHandler.drpCategories("rep.cat.drp",sCatId);
     drp.setToSubmit();
-    setStyle(drp);
+    Edit.setStyle(drp);
     T.add(drp);
     return T;
   }
@@ -192,21 +200,21 @@ public class ReportItemizer extends ReportPresentation{
     T.setHorizontalZebraColored(LightColor,WhiteColor);
     T.setRowColor(1,MiddleColor);
     int a = 1;
-    T.add(formatText("Property"),1,a);
-    T.add(formatText("Value"),2,a++);
-    T.add(formatText("Name"),1,a++);
-    T.add(formatText("Field"),1,a++);
-    T.add(formatText("Maintable"),1,a++);
-    T.add(formatText("Joins"),1,a++);
-    T.add(formatText("Join Tables"),1,a++);
-    T.add(formatText("Condition Type"),1,a++);
-    T.add(formatText("Condition Data"),1,a++);
-    T.add(formatText("Condition Operator"),1,a++);
-    T.add(formatText("Entity Class"),1,a++);
-    T.add(formatText("Information"),1,a++);
-//    T.add(formatText("Is Select"),1,a++);
-T.add(formatText("Display order"),1,a++);
-		T.add(formatText("Is Function"),1,a++);
+    T.add(Edit.formatText("Property"),1,a);
+    T.add(Edit.formatText("Value"),2,a++);
+    T.add(Edit.formatText("Name"),1,a++);
+    T.add(Edit.formatText("Field"),1,a++);
+    T.add(Edit.formatText("Maintable"),1,a++);
+    T.add(Edit.formatText("Joins"),1,a++);
+    T.add(Edit.formatText("Join Tables"),1,a++);
+    T.add(Edit.formatText("Condition Type"),1,a++);
+    T.add(Edit.formatText("Condition Data"),1,a++);
+    T.add(Edit.formatText("Condition Operator"),1,a++);
+    T.add(Edit.formatText("Entity Class"),1,a++);
+    T.add(Edit.formatText("Information"),1,a++);
+//    T.add(Edit.formatText("Is Select"),1,a++);
+T.add(Edit.formatText("Display order"),1,a++);
+		T.add(Edit.formatText("Is Function"),1,a++);
 
 
     String s = "";
@@ -267,18 +275,18 @@ T.add(formatText("Display order"),1,a++);
     info.setSize(tlen);
 		displayorder.setSize(4);
 
-    setStyle(name);
-    setStyle(field);
-    setStyle(table);
-    setStyle(joins);
-    setStyle(jointables);
-    setStyle(condtype);
-    setStyle(conddata);
-    setStyle(condop);
-    setStyle(entity);
-    setStyle(info);
-		setStyle(displayorder);
-		setStyle( isFunction);
+    Edit.setStyle(name);
+    Edit.setStyle(field);
+    Edit.setStyle(table);
+    Edit.setStyle(joins);
+    Edit.setStyle(jointables);
+    Edit.setStyle(condtype);
+    Edit.setStyle(conddata);
+    Edit.setStyle(condop);
+    Edit.setStyle(entity);
+    Edit.setStyle(info);
+		Edit.setStyle(displayorder);
+		Edit.setStyle( isFunction);
 
     int col = 2;
     int row = 2;
@@ -312,7 +320,7 @@ T.add(formatText("Display order"),1,a++);
     Table T = new Table();
     T.add(new HiddenInput(sAction,String.valueOf(ACT1)));
     DropdownMenu drp = getEntityDrp(getReportEntities(),"ent_drp",sEntId);
-    setStyle(drp);
+    Edit.setStyle(drp);
     drp.setToSubmit();
     T.add(drp,1,1);
     if(iEntId > 0){
@@ -333,15 +341,15 @@ T.add(formatText("Display order"),1,a++);
     GenericEntity ent = (GenericEntity)Class.forName(RE.getEntity()).newInstance();
     Table T = new Table();
 
-    T.add(formatText("Display"),1,1);
-    T.add(formatText("Field"),2,1);
-    T.add(formatText("Relation"),3,1);
+    T.add(Edit.formatText("Display"),1,1);
+    T.add(Edit.formatText("Field"),2,1);
+    T.add(Edit.formatText("Relation"),3,1);
     for (int i = 0;i < ent.getColumnNames().length; i++ ){
-      T.add(formatText(ent.getLongName(ent.getColumnNames()[i])),1,i+2);
-      T.add(formatText(ent.getColumnNames()[i]),2,i+2);
+      T.add(Edit.formatText(ent.getLongName(ent.getColumnNames()[i])),1,i+2);
+      T.add(Edit.formatText(ent.getColumnNames()[i]),2,i+2);
       Class relationshipClass= ent.getRelationShipClass(ent.getColumnNames()[i]);
       if(relationshipClass!=null){
-        T.add(formatText(relationshipClass.getName()),3,i+2);
+        T.add(Edit.formatText(relationshipClass.getName()),3,i+2);
       }
     }
     return T;
@@ -354,9 +362,9 @@ T.add(formatText("Display order"),1,a++);
     GenericEntity ent = (GenericEntity)Class.forName(RE.getEntity()).newInstance();
     Table T = new Table();
 
-    T.add(formatText("Display"),1,1);
-    T.add(formatText("Field"),2,1);
-    T.add(formatText("Relation"),3,1);
+    T.add(Edit.formatText("Display"),1,1);
+    T.add(Edit.formatText("Field"),2,1);
+    T.add(Edit.formatText("Relation"),3,1);
     T.add(new HiddenInput("re_id",String.valueOf(RE.getID())));
     SelectionDoubleBox box = new SelectionDoubleBox("box","Fields","Order");
     SelectionBox box1 = box.getLeftBox();

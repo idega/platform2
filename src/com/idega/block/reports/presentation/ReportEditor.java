@@ -259,7 +259,7 @@ public class ReportEditor extends ReportPresentation{
         try{
           if(sReportId==null){
             Report R = new Report();
-            R.setCategory(iSaveCategory);
+            R.setCategoryId(iSaveCategory);
             R.setName(sName);
             R.setInfo(sInfo);
             R.setSQL(sSql);
@@ -351,7 +351,7 @@ public class ReportEditor extends ReportPresentation{
 
     String sql = rm.makeSQL(vRC);
     Report R = new Report();
-    R.setCategory(iSaveCategory);
+    R.setCategoryId(iSaveCategory);
     R.setName(name);
     R.setInfo(info);
     R.setSQL(sql);

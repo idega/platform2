@@ -4,11 +4,10 @@ import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.BlockMenu;
 import com.idega.presentation.text.Link;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
-
-
 
 /**
  * Title:
@@ -25,6 +24,7 @@ public class ReportViewWindow extends IWAdminWindow {
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
+  public static final  String prmCategoryId = ReportSQLEditor.prmCategoryId;
   public final static String prmReportId = ReportContentViewer.prmReportId;
 
   public ReportViewWindow() {
@@ -43,11 +43,14 @@ public class ReportViewWindow extends IWAdminWindow {
     iwrb = getResourceBundle(iwc);
     //ReportContentViewer RCV = new ReportContentViewer();
 
-    add(new ReportContentViewer());
+    ReportViewer rv = new ReportViewer();
+
+    rv.setShowLinks(false);
+    add(rv);
     String title = iwrb.getLocalizedString("report_viewer","Report Viewer");
     setTitle(title);
     addTitle(title);
-    addHeaderObject(getLinkTable());
+    addHeaderObject(rv.getLinks());
   }
 
   private PresentationObject getLinkTable(){

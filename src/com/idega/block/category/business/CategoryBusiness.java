@@ -104,6 +104,8 @@ public class CategoryBusiness{
         Cat.update();
       }
       else{
+        Cat.setCreated(idegaTimestamp.getTimestampRightNow());
+        Cat.setValid(true);
         Cat.insert();
       }
       // Binding category to instanceId

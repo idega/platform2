@@ -20,7 +20,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 
 
-public class ReportContentViewer extends ReportPresentation implements IWEventListener{
+public class ReportContentViewer extends Block implements Reports,IWEventListener{
 
   private final String sAction = "rcv_action";
   private String sActPrm = "";
@@ -33,7 +33,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
   private int displayNumber = 20;
   private Report eReport = null;
   private int listStart = 1;
-  public final static String prmReportId = "rep.viewer.repid";
+ //public final static String prmReportId = "rep.viewer.repid";
   protected static String prmContent = "rep.view.content";
   protected static String prmHeaders = "rep.view.headers";
   protected static String prmLastOrder = "rep.view.lastorder";
@@ -58,6 +58,13 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
   public void setDisplayNumber(int number){
     this.displayNumber = number;
   }
+
+  public String getLocalizedNameKey(){
+    return "report_content";
+  }
+  public String getLocalizedNameValue(){
+    return "Content";
+  }
   protected void control(IWContext iwc){
 		iwrb = getResourceBundle(iwc);
 		iwb = getBundle(iwc);
@@ -72,11 +79,18 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
       }
       iwc.setSessionAttribute(prmListStart,new Integer(listStart));
 
-      if(iwc.getParameter(prmReportId)!=null){
-        iReport = Integer.parseInt(iwc.getParameter(prmReportId));
-        eReport = new Report(iReport);
-        ReportService.setSessionReport(iwc,eReport);
-        T.add(doMain(iwc));
+      if(iwc.getParameter(PRM_REPORTID)!=null){
+        iReport = Integer.parseInt(iwc.getParameter(PRM_REPORTID));
+        if(iReport > 0){
+          eReport = new Report(iReport);
+          ReportService.setSessionReport(iwc,eReport);
+          T.add(doMain(iwc));
+        }
+        else{
+          if(ReportService.isSessionReport(iwc))
+            ReportService.removeSessionReport(iwc);
+          add("no report");
+        }
       }
       else if(iwc.getParameter(sAction) != null){
         sActPrm = iwc.getParameter(sAction);
@@ -116,7 +130,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
     Link Link2 = new Link("Spakur");
     Link2.setFontColor(this.LightColor);
     Link2.addParameter(this.sAction,String.valueOf(this.ACT2));
-    if(isAdmin){
+    if(true){
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,2,1);
     }
@@ -129,7 +143,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
     T.setCellpadding(0);
     T.setCellspacing(0);
     T.setWidth("100%");
-    if(iwc.getParameter(prmReportId) != null){
+    if(iwc.getParameter(PRM_REPORTID) != null){
       String sql = eReport.getSQL();
       String[] headers = eReport.getHeaders();
       List v = new ReportMaker().makeReport(sql);
@@ -137,9 +151,9 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
       iwc.setSessionAttribute(prmHeaders,headers);
       if(v != null){
         T.add(this.doHeader(eReport),1,1);
-        T.add(this.doFooter(listStart,v.size()),1,2);
-        T.add(this.doView(headers,v,listStart),1,3);
-        T.add(this.doFooter(listStart,v.size()),1,4);
+        T.add(this.doFooter(listStart,v.size(),eReport.getID()),1,2);
+        T.add(this.doView(headers,v,listStart,eReport.getID()),1,3);
+        T.add(this.doFooter(listStart,v.size(),eReport.getID()),1,4);
       }
       else
         T.add(new Text(" nothing to show"),1,1);
@@ -193,9 +207,9 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
 
       if(v != null){
         T.add(this.doHeader(eReport),1,1);
-        T.add(this.doFooter(listStart,v.size()),1,2);
-        T.add(this.doView(headers,v,listStart),1,3);
-        T.add(this.doFooter(listStart,v.size()),1,4);
+        T.add(this.doFooter(listStart,v.size(),eReport.getID()),1,2);
+        T.add(this.doView(headers,v,listStart,eReport.getID()),1,3);
+        T.add(this.doFooter(listStart,v.size(),eReport.getID()),1,4);
       }
       else
         T.add(new Text(" nothing to show"),1,1);
@@ -220,19 +234,19 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
 
     Link XLS = new Link(iwb.getImage("/shared/xls.gif"));//new Image("/reports/pics/xls.gif"));
     XLS.setWindowToOpen(ReportFileWindow.class);
-    XLS.addParameter(ReportFileWindow.prmReportId,R.getID());
+    XLS.addParameter(PRM_REPORTID,R.getID());
     XLS.addParameter("type","xls");
 
     Link PDF = new Link(iwb.getImage("/shared/pdf.gif"));//new Image("/reports/pics/pdf.gif"));
     PDF.setWindowToOpen(ReportFileWindow.class);
-    PDF.addParameter(ReportFileWindow.prmReportId,R.getID());
+    PDF.addParameter(PRM_REPORTID,R.getID());
     PDF.addParameter("type","pdf");
     T3.add(XLS,1,1);
     T3.add(PDF,2,1);
     T2.add(T3,2,1);
     return T2;
   }
-  private PresentationObject doFooter(int start,int total){
+  private PresentationObject doFooter(int start,int total,int reportId){
     Table T = new Table(5,1);
     T.setColor(this.DarkColor);
     T.setWidth("100%");
@@ -251,6 +265,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
       if(!(start == 1)){
         Link leftLink = new Link("<< ");
         leftLink.addParameter("start",start-displayNumber);
+        leftLink.addParameter(PRM_REPORTID,reportId);
         leftLink.setFontColor(this.LightColor);
         T.add(leftLink,1,1);
         T.add(getHeaderText((start-displayNumber)+"-"+(start-1)),1,1);
@@ -266,6 +281,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
         T.add(getHeaderText(interval),5,1);
         Link rightLink = new Link(" >>");
         rightLink.addParameter("start",start+displayNumber);
+        rightLink.addParameter(PRM_REPORTID,reportId);
         rightLink.setFontColor(this.LightColor);
         T.add(rightLink,5,1);
       }
@@ -280,18 +296,20 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
 
       Link PartLink = new Link("Partial");
       PartLink.addParameter("start",1);
+      PartLink.addParameter(PRM_REPORTID,reportId);
       PartLink.setFontColor(this.LightColor);
       T.add(PartLink,2,1);
 
     }
     Link WholeLink = new Link("All");
     WholeLink.addParameter("start",-1);
+    WholeLink.addParameter(PRM_REPORTID,reportId);
     WholeLink.setFontColor(this.LightColor);
     T.add(WholeLink,4,1);
     return T;
   }
 
-  private PresentationObject doView(String[] headers,List content,int start){
+  private PresentationObject doView(String[] headers,List content,int start,int reportId){
     int len = content.size();
     Table T;
 		int depth = (len < displayNumber ? len : displayNumber)+1;
@@ -308,6 +326,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
     T.setRowColor(1,DarkColor);
     for(int j = 0; j < headers.length ;j++){
       Link L = new Link(getHeaderText(headers[j]));
+      L.addParameter(PRM_REPORTID,reportId);
       L.addParameter(this.sAction,this.ACT2);
       L.addParameter("order",String.valueOf(j));
       L.setFontColor(WhiteColor);
@@ -365,11 +384,12 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
       Collections.sort(mbs,RCC);
   }
 
-  private Table makeTable(String[] header,String[][] content){
+  private Table makeTable(String[] header,String[][] content,int reportId){
     Table T= new Table();
     for(int j = 0; j < header.length ;j++){
       Link L = new Link(header[j]);
       L.addParameter(this.sAction,this.ACT2);
+      L.addParameter(PRM_REPORTID,reportId);
       L.addParameter("order",String.valueOf(j));
       T.add(L,j+1,1);
     }
@@ -416,6 +436,14 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
 
   public void actionPerformed(IWContext iwc){
     removeSessionParameters(iwc);
+  }
+
+  public String getBundleIdentifier(){
+    return REPORTS_BUNDLE_IDENTIFIER;
+  }
+
+  public void main(IWContext iwc){
+    control(iwc);
   }
 
 }

@@ -11,6 +11,7 @@ import com.idega.block.reports.data.Report;
 import com.idega.block.reports.business.ReportWriter;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.io.*;
 
 
@@ -24,13 +25,12 @@ import com.idega.io.*;
  * @version 1.1
  */
 
-public class ReportFileWindow extends IWAdminWindow {
+public class ReportFileWindow extends IWAdminWindow implements Reports{
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.reports";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
-  public final static String prmReportId = ReportContentViewer.prmReportId;
 
   public ReportFileWindow() {
     setWidth(800);
@@ -46,49 +46,62 @@ public class ReportFileWindow extends IWAdminWindow {
   public void main(IWContext iwc) throws Exception{
 
     iwrb = getResourceBundle(iwc);
-    String title = iwrb.getLocalizedString("report_filer","Report Filer");
-    setTitle(title);
-    addTitle(title);
-    addHeaderObject(getLinkTable());
 
-    String prefix = "";
-    String fileSeperator = System.getProperty("file.separator");
-    String filepath = iwc.getServletContext().getRealPath(fileSeperator+"reports/temp"+fileSeperator);
-    String filename = prefix+"temp.";
-    String sReportId = iwc.getParameter(prmReportId );
-    if(sReportId!=null){
-      Report R = null;
-      try{
-        R = new Report(Integer.parseInt(sReportId));
-      }
-      catch(SQLException ex){
-        R = null;
-        ex.printStackTrace();
-      }
-      if(R!= null){
-        if(iwc.getParameter("type")!=null){
-          String type = iwc.getParameter("type");
-          if(type.equalsIgnoreCase("xls")){
-            filename = filename+type;
-            String path = filepath+filename;
-            MemoryFileBuffer buf = ReportWriter.writeXLS(R);
-            if(buf!=null)
-              setToRedirect("/servlet/excel?&dir="+path,1);
-          }
-          else if(type.equalsIgnoreCase("pdf")){
-            filename = filename+type;
-            String path = filepath+filename;
-            MemoryFileBuffer buf = ReportWriter.writePDF(R);
-            if(buf !=null)
-              setToRedirect("/servlet/pdf?&dir="+path,1);
+    if(iwc.getParameter(ReportWriter.prmReportId)!=null && iwc.getParameter(ReportWriter.prmReportInfoId)!=null){
+      StringBuffer url = new StringBuffer("/servlet/MediaServlet?&");
+      url.append(ReportWriter.prmReportId).append("=").append(iwc.getParameter(ReportWriter.prmReportId));
+      url.append("&").append(ReportWriter.prmReportInfoId).append("=").append(iwc.getParameter(ReportWriter.prmReportInfoId));
+      url.append("&").append(ReportWriter.PRM_WRITABLE_CLASS).append("=").append(IWMainApplication.getEncryptedClassName(ReportWriter.class));
+      setToRedirect(url.toString());
+      close();
+    }
+    else{
+      String title = iwrb.getLocalizedString("report_filer","Report Filer");
+      setTitle(title);
+      addTitle(title);
+      addHeaderObject(getLinkTable());
+
+      String prefix = "";
+      String fileSeperator = System.getProperty("file.separator");
+      String filepath = iwc.getServletContext().getRealPath(fileSeperator+"reports/temp"+fileSeperator);
+      String filename = prefix+"temp.";
+      String sReportId = iwc.getParameter(PRM_REPORTID );
+      if(sReportId!=null){
+        Report R = null;
+        try{
+          R = new Report(Integer.parseInt(sReportId));
+        }
+        catch(SQLException ex){
+          R = null;
+          ex.printStackTrace();
+        }
+        if(R!= null){
+          if(iwc.getParameter("type")!=null){
+            String type = iwc.getParameter("type");
+            if(type.equalsIgnoreCase("xls")){
+              filename = filename+type;
+              String path = filepath+filename;
+              MemoryFileBuffer buf = ReportWriter.writeXLS(R);
+              iwc.setSessionAttribute("xls",buf);
+              if(buf!=null)
+                setToRedirect("/servlet/MediaServlet?&"+MemoryFileBufferWriter.PRM_SESSION_BUFFER+"=xls");
+            }
+            else if(type.equalsIgnoreCase("pdf")){
+              filename = filename+type;
+              String path = filepath+filename;
+              MemoryFileBuffer buf = ReportWriter.writePDF(R);
+              iwc.setSessionAttribute("pdf",buf);
+              if(buf !=null)
+                setToRedirect("/servlet/MediaServlet?&"+MemoryFileBufferWriter.PRM_SESSION_BUFFER+"=pdf");
+            }
           }
         }
+        else
+          add(formatText(iwrb.getLocalizedString("no_report","No Report")));
       }
       else
-        add(formatText(iwrb.getLocalizedString("no_report","No Report")));
+         add(formatText(iwrb.getLocalizedString("no_report","No Report")));
     }
-    else
-       add(formatText(iwrb.getLocalizedString("no_report","No Report")));
   }
 
   private PresentationObject getLinkTable(){

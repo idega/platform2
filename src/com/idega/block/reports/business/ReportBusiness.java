@@ -73,24 +73,25 @@ public class ReportBusiness {
 	  int id = -1;
 		ReportCategory cat  = null;
 		try {
-			cat = new ReportCategory();
-			boolean update = false;
-			if(iCategoryId > 0){
-			  cat = new ReportCategory(iCategoryId);
-				update = true;
-			}
-			cat.setName(Name);
-			cat.setInfo(info);
-			if(update)
-				cat.update();
-			else
-				cat.insert();
-				// Binding category to instanceId
-			if(iObjectInstanceId > 0){
-				ICObjectInstance objIns = new ICObjectInstance(iObjectInstanceId);
-				// Allows only one category per instanceId
-				objIns.removeFrom(new ReportCategory());
-        cat.addTo(objIns);
+                  cat = new ReportCategory();
+                  boolean update = false;
+                  if(iCategoryId > 0){
+                    cat = new ReportCategory(iCategoryId);
+                          update = true;
+                  }
+                  cat.setName(Name);
+                  cat.setDescription(info);
+
+                  if(update)
+                    cat.update();
+                  else
+                    cat.insert();
+                          // Binding category to instanceId
+                  if(iObjectInstanceId > 0){
+                          ICObjectInstance objIns = new ICObjectInstance(iObjectInstanceId);
+                          // Allows only one category per instanceId
+                          objIns.removeFrom(new ReportCategory());
+                          cat.addTo(objIns);
       }
 			id = cat.getID();
 		}
@@ -132,9 +133,22 @@ public class ReportBusiness {
 
   }
 
-	 public static boolean deleteReport(int iReportId){
+  public static boolean deleteReport(int id){
+    return deleteReportEntity(Report.class,id);
+  }
+
+  public static boolean deleteReportInfo(int id){
+    return deleteReportEntity(ReportInfo.class,id);
+  }
+
+  public static boolean deleteReportColumnInfo(int id){
+    return deleteReportEntity(ReportColumnInfo.class,id);
+  }
+
+
+	 public static boolean deleteReportEntity(Class entityClass,int iEntityId){
     try {
-      new Report(iReportId ).delete();
+      com.idega.data.GenericEntity.getEntityInstance(entityClass,iEntityId).delete();
       return true;
     }
     catch (SQLException ex) {
@@ -159,6 +173,45 @@ public class ReportBusiness {
 		return disconnectBlock(instanceid);
   }
 
+  public static boolean saveReportColumnInfo(ReportColumnInfo info){
+    try{
+      if(info.getID() > 0)
+        info.update();
+      else
+        info.insert();
+        return true;
+      }
+    catch(SQLException ex){
+      ex.printStackTrace();
+    }
+    return false;
+  }
+
+  public static boolean saveReportInfo(ReportInfo info){
+    try{
+      if(info.getID() > 0)
+        info.update();
+      else
+        info.insert();
+        return true;
+      }
+    catch(SQLException ex){
+      ex.printStackTrace();
+    }
+    return false;
+  }
+
+  public static void saveRelatedReportInfo(int iReportId,int[] ReportInfoIds){
+    try {
+      Report.getEntityInstance(Report.class,iReportId).removeFrom(ReportInfo.class);
+      for (int i = 0; i < ReportInfoIds.length; i++) {
+        Report.getEntityInstance(Report.class,iReportId).addTo(ReportInfo.class,ReportInfoIds[i]);
+      }
+    }
+    catch (Exception ex) {
+
+    }
+  }
 
 
 }

@@ -61,7 +61,7 @@ public class ReportCategoryMaker extends Block{
         try {
           ReportCategory RC = new ReportCategory(id);
           sName = RC.getName();
-          sInfo = RC.getInfo();
+          sInfo = RC.getDescription();
         }
         catch (Exception ex) {
         }
@@ -124,7 +124,7 @@ public class ReportCategoryMaker extends Block{
     try {
       ReportCategory rc = new ReportCategory();
       rc.setName(name);
-      rc.setInfo(info);
+      rc.setDescription(info);
       rc.insert();
       return true;
     }
@@ -137,7 +137,7 @@ public class ReportCategoryMaker extends Block{
       if(id != -1){
       ReportCategory rc = new ReportCategory(id);
       rc.setName(name);
-      rc.setInfo(info);
+      rc.setDescription(info);
       rc.update();
       return true;
       }

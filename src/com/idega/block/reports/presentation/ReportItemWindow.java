@@ -122,7 +122,7 @@ public class ReportItemWindow extends IWAdminWindow{
         try {
           ReportCategory RC = new ReportCategory(id);
           sName = RC.getName();
-          sInfo = RC.getInfo();
+          sInfo = RC.getDescription();
         }
         catch (Exception ex) {
         }
@@ -213,7 +213,7 @@ public class ReportItemWindow extends IWAdminWindow{
     String sRepItemId = iwc.getParameter("repitemid");
     Table Frame = new Table(2,1);
     Frame.setRowVerticalAlignment(1,"top");
-    Table T =  new Table(2,12);
+    Table T =  new Table();
     T.setCellpadding(2);
     T.setCellspacing(1);
     //T.setHorizontalZebraColored(LightColor,WhiteColor);
@@ -231,8 +231,8 @@ public class ReportItemWindow extends IWAdminWindow{
     T.add(formatText("Condition Operator"),1,a++);
     T.add(formatText("Entity Class"),1,a++);
     T.add(formatText("Information"),1,a++);
-		T.add(formatText("Display order"),1,a++);
-		T.add(formatText("Is Function"),1,a++);
+    T.add(formatText("Display order"),1,a++);
+    T.add(formatText("Is Function"),1,a++);
 
     String s = "";
     TextInput name,field,table,joins,jointables,

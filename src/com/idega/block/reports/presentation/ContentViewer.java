@@ -15,10 +15,9 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.Script;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Image;
-import com.idega.presentation.PresentationObjectContainer;
 
 
-public class ContentViewer extends PresentationObjectContainer{
+public class ContentViewer extends Block{
 
   private final String sAction = "rcv_action";
   private String sActPrm = "";
@@ -403,15 +402,6 @@ public class ContentViewer extends PresentationObjectContainer{
   }
 
   public void main(IWContext iwc){
-		/* debug
-		java.util.Enumeration E = iwc.getParameterNames();
-		System.err.println(" ContentViewer parameters :");
-		while(E.hasMoreElements()){
-			String prm = (String) E.nextElement();
-			System.err.println(prm + "\t :"+ iwc.getParameter(prm));
-		}
-		System.err.println();
-		*/
     control(iwc);
   }
 

@@ -20,6 +20,7 @@ import java.util.TreeMap;
 import java.util.StringTokenizer;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
+import com.idega.core.data.ICCategory;
 
 /**
  * Title:
@@ -106,10 +107,10 @@ public class ReportEditorWindow extends IWAdminWindow {
 			if(saveInfo == SAVECATEGORY){
         processCategoryForm(iwc,iCategoryId,iObjInsId);
       }
-			addCategoryFields(ReportFinder.getCategory(iCategoryId),iObjInsId  );
+      addCategoryFields(ReportFinder.getCategory(iCategoryId),iObjInsId  );
     }
     else{
-			add(formatText(iwrb.getLocalizedString("access_denied","Access denied")));
+      add(formatText(iwrb.getLocalizedString("access_denied","Access denied")));
     }
 
   }
@@ -125,7 +126,7 @@ public class ReportEditorWindow extends IWAdminWindow {
 		return 0;
 	}
 
-	 private void processCategoryForm(IWContext iwc,int iCategoryId,int iObjInsId){
+    private void processCategoryForm(IWContext iwc,int iCategoryId,int iObjInsId){
     String sName = iwc.getParameter(prmCatName);
     String sDesc = iwc.getParameter(prmCatDesc);
 		int iCatId = iCategoryId ;
@@ -145,7 +146,7 @@ public class ReportEditorWindow extends IWAdminWindow {
 			}
   }
 
-	 private void addCategoryFields(ReportCategory eCategory,int iObjInst){
+	 private void addCategoryFields(ICCategory eCategory,int iObjInst){
 
 	  String sCategory= iwrb.getLocalizedString("category","Category");
     String sName = iwrb.getLocalizedString("name","Name");
@@ -187,8 +188,8 @@ public class ReportEditorWindow extends IWAdminWindow {
 			int iReportCount = ReportFinder.countReportsInCategory(id);
 			if(eCategory.getName()!=null)
 				tiName.setContent(eCategory.getName());
-			if(eCategory.getInfo()!=null)
-				taDesc.setContent(eCategory.getInfo());
+			if(eCategory.getDescription()!=null)
+				taDesc.setContent(eCategory.getDescription());
 
 		  catDrop.setSelectedElement(String.valueOf(id));
 

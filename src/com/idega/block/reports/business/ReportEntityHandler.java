@@ -22,7 +22,7 @@ public class ReportEntityHandler {
   public static ReportCategory[] findCategorys(int iCatId){
     try {
       if(iCatId > 0){
-        return (ReportCategory[]) new ReportCategory().findAllByColumn(ReportItem.getColumnNameCategory(),iCatId);
+        return (ReportCategory[]) new ReportCategory().findAllByColumn(ReportItem.getColumnCategoryId(),iCatId);
       }
       else{
         return new ReportCategory[0];
@@ -36,7 +36,7 @@ public class ReportEntityHandler {
   public static List listOfReportItems(int iCatId){
     List L = null;
     try {
-      L = EntityFinder.findAllByColumnOrdered(new ReportItem(),ReportItem.getColumnNameCategory(),iCatId,ReportItem.getColumnNameDisplayOrder());
+      L = EntityFinder.findAllByColumnOrdered(new ReportItem(),ReportItem.getColumnCategoryId(),iCatId,ReportItem.getColumnNameDisplayOrder());
     }
     catch (SQLException ex) {
 			ex.printStackTrace();
@@ -48,7 +48,7 @@ public class ReportEntityHandler {
    public static ReportItem[] findReportItems(int iCatId){
     try {
       if(iCatId > 0){
-        return (ReportItem[]) new ReportItem().findAllByColumnOrdered(ReportItem.getColumnNameCategory(),String.valueOf(iCatId),ReportItem.getColumnNameDisplayOrder());
+        return (ReportItem[]) new ReportItem().findAllByColumnOrdered(ReportItem.getColumnCategoryId(),String.valueOf(iCatId),ReportItem.getColumnNameDisplayOrder());
       }
       else{
         return new ReportItem[0];
@@ -63,7 +63,7 @@ public class ReportEntityHandler {
   public static List listOfReports(int iCategoryId){
     List L = null;
     try {
-      L = EntityFinder.findAllByColumn(new Report(),Report.getColumnNameCategory(),iCategoryId );
+      L = EntityFinder.findAllByColumn(new Report(),Report.getColumnCategoryId(),iCategoryId );
     }
     catch (SQLException ex) {
       ex.printStackTrace();
@@ -75,7 +75,7 @@ public class ReportEntityHandler {
   public static Report[] findReports(int iCatId){
     try {
       if(iCatId > 0){
-        return (Report[]) new Report().findAllByColumn(ReportItem.getColumnNameCategory(),iCatId);
+        return (Report[]) new Report().findAllByColumn(ReportItem.getColumnCategoryId(),iCatId);
       }
       else{
         return new Report[0];
@@ -114,7 +114,7 @@ public class ReportEntityHandler {
     try {
       if(catid > 0){
         ReportItem ri = new ReportItem();
-        ri.setCategory(catid);
+        ri.setCategoryId(catid);
         ri.setName(name);
         ri.setField(field);
         ri.setMainTable(table);
@@ -144,7 +144,7 @@ public class ReportEntityHandler {
      try {
       if(id > 0){
       ReportItem ri = new ReportItem(id);
-      ri.setCategory(catid);
+      ri.setCategoryId(catid);
       ri.setName(name);
       ri.setField(field);
       ri.setMainTable(table);
@@ -167,55 +167,25 @@ public class ReportEntityHandler {
       return false;
     }
   }
-  public static boolean saveCategory(String name,String info){
-    try {
-      ReportCategory rc = new ReportCategory();
-      rc.setName(name);
-      rc.setInfo(info);
-      rc.insert();
-      return true;
-    }
-    catch (Exception ex) {
-      ex.printStackTrace();
-      return false;
-    }
-  }
 
-  public static boolean updateCategory(int id,String name,String info){
-     try {
-      if(id != -1){
-      ReportCategory rc = new ReportCategory(id);
-      rc.setName(name);
-      rc.setInfo(info);
-      rc.update();
-      return true;
-      }
-      else
-        return false;
-    }
-    catch (Exception ex) {
-      ex.printStackTrace();
-      return false;
-    }
-  }
 
-  public static boolean saveReport(String name,String info,String[] headers,String sql,int Category){
+  public static Report saveReport(String name,String info,String[] headers,String sql,int Category){
     try {
       Report r = new Report();
       r.setName(name);
       r.setInfo(info);
       r.setHeaders(headers );
       r.setSQL(sql);
-      r.setCategory(Category);
+      r.setCategoryId(Category);
       r.insert();
-      return true;
+      return r;
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      return false;
+      return null;
     }
   }
-  public static boolean updateReport(int id,String name,String info,String[] headers,String sql,int Category){
+  public static Report updateReport(int id,String name,String info,String[] headers,String sql,int Category){
      try {
       if(id != -1){
         Report r = new Report(id);
@@ -223,17 +193,15 @@ public class ReportEntityHandler {
         r.setInfo(info);
         r.setHeaders(headers );
         r.setSQL(sql);
-        r.setCategory(Category);
+        r.setCategoryId(Category);
         r.update();
-        return true;
+        return r;
       }
-      else
-        return false;
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      return false;
     }
+    return null;
   }
 
   public static boolean deleteReport(int id){

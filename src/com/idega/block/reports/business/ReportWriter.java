@@ -6,10 +6,13 @@ import java.sql.*;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
 import com.idega.block.reports.data.Report;
+import com.idega.block.reports.data.ReportInfo;
 import com.idega.util.database.ConnectionBroker;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
+import com.idega.io.MediaWritable;
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -21,9 +24,52 @@ import com.idega.io.MemoryOutputStream;
  * @version 1.0
  */
 
-public class ReportWriter {
+public class ReportWriter implements MediaWritable {
 
-  public ReportWriter(){}
+  private Report eReport;
+  private ReportInfo eReportInfo;
+  private String mimeType;
+  private MemoryFileBuffer buffer = null;
+
+  public final static String prmReportId = "repid";
+  public final static String prmReportInfoId = "repifid";
+
+  public ReportWriter(){
+
+  }
+
+  public void init(HttpServletRequest req){
+    if(req.getParameter(prmReportId)!=null && req.getParameter(prmReportInfoId)!=null){
+      eReport = ReportFinder.getReport(Integer.parseInt(req.getParameter(prmReportId)));
+      eReportInfo = ReportFinder.getReportInfo(Integer.parseInt(req.getParameter(prmReportInfoId)));
+      if(eReportInfo.getType().equals("sticker"))
+        buffer = StickerReport.writeStickerList(eReport,eReportInfo);
+      else
+        System.err.println("not sticker could it be"+eReportInfo.getType());
+    }
+  }
+
+  public String getMimeType(){
+    if(buffer != null)
+      return buffer.getMimeType();
+    return "application/pdf";
+  }
+
+  public void writeTo(OutputStream out) throws IOException{
+    if(buffer !=null){
+      MemoryInputStream mis = new MemoryInputStream(buffer);
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      // Read the entire contents of the file.
+
+      while (mis.available() > 0)
+      {
+        baos.write(mis.read());
+      }
+      baos.writeTo(out);
+    }
+    else
+      System.err.println("buffer is null");
+  }
 
   public static boolean writeXLSReport(String[] Headers,String[][] Content, OutputStream out){
       boolean returner = false;
@@ -187,7 +233,9 @@ public class ReportWriter {
     finally {
       ConnectionBroker.freeConnection(Conn);
     }
-		buffer.setMimeType("application/pdf");
+    buffer.setMimeType("application/pdf");
     return buffer;
   }
+
+
 }

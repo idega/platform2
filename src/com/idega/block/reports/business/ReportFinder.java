@@ -1,11 +1,15 @@
 package com.idega.block.reports.business;
 
 import com.idega.data.EntityFinder;
-import java.util.List;
+import java.util.*;
 import com.idega.block.reports.data.*;
 import com.idega.core.data.ICObjectInstance;
 import java.sql.SQLException;
 import com.idega.core.data.ICObject;
+import com.idega.block.category.business.*;
+import com.idega.core.data.ICCategory;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Rectangle;
 
 /**
  * Title:        idegaclasses
@@ -21,152 +25,206 @@ public class ReportFinder {
   public ReportFinder() {
   }
 
-	public static int	countReportsInCategory(int iCategoryId){
-		try {
-			Report eReport = (Report)Report.getStaticInstance(Report.class);
-			return eReport.getNumberOfRecords(eReport.getColumnNameCategory(),String.valueOf(iCategoryId));
-		}
-		catch (SQLException ex) {
+  public static int	countReportsInCategory(int iCategoryId){
+    try {
+      Report eReport = (Report)Report.getStaticInstance(Report.class);
+      return eReport.getNumberOfRecords(eReport.getColumnCategoryId(),String.valueOf(iCategoryId));
+    }
+    catch (SQLException ex) {
 
-		}
-		return 0;
+    }
+    return 0;
 
-	}
+  }
 
-	public static ReportCategory getCategory(int iCategoryId){
-    if( iCategoryId > 0){
-		  try {
-        return new ReportCategory(iCategoryId );
-      }
-      catch (SQLException ex) {
+  public static ICCategory getCategory(int iCategoryId){
+    return CategoryFinder.getCategory(iCategoryId);
+  }
 
-				ex.printStackTrace();
-      }
-		}
-		else
-			return ReportBusiness.createReportCategory(-1);
-		return null;
+   public static Report getReport(int iReportId){
+    return (Report) Report.getEntityInstance(Report.class,iReportId);
+  }
+
+  public static ReportInfo getReportInfo(int iReportInfoId){
+    return (ReportInfo) ReportInfo.getEntityInstance(ReportInfo.class,iReportInfoId);
+  }
+
+   public static ReportColumnInfo getReportColumnInfo(int iReportColumnInfoId){
+    return (ReportColumnInfo) ReportColumnInfo.getEntityInstance(ReportColumnInfo.class,iReportColumnInfoId);
+  }
+
+  public static ReportColumnInfo getReportInfoFromReport(int iReportId){
+    try {
+      List l = EntityFinder.findAllByColumn(new ReportColumnInfo(),ReportColumnInfo.getColumnReportId(),iReportId);
+      if(l!=null)
+        return (ReportColumnInfo)l.get(0);
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    return null;
   }
 
 
-	public static int getObjectInstanceCategoryId(int iObjectInstanceId,boolean CreateNew){
-    int id = -1;
+  public static int getObjectInstanceCategoryId(int iObjectInstanceId,boolean CreateNew){
+    return CategoryFinder.getObjectInstanceCategoryId(iObjectInstanceId,CreateNew,new ReportCategory().getCategoryType());
+  }
+
+  public static int getObjectInstanceCategoryId(ICObjectInstance eObjectInstance){
+    return CategoryFinder.getObjectInstanceCategoryId(eObjectInstance);
+  }
+
+  public static int getObjectInstanceCategoryId(int iObjectInstanceId){
+    return CategoryFinder.getObjectInstanceCategoryId(iObjectInstanceId);
+  }
+
+  public static int getObjectInstanceIdFromCategoryId(int iCategoryId){
+    return CategoryFinder.getObjectInstanceIdFromCategoryId(iCategoryId);
+  }
+
+  public static List listOfCategories(){
     try {
-      ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
-      id = getObjectInstanceCategoryId(obj);
-			 if(id <= 0 && CreateNew ){
-        id = ReportBusiness.createCategory(iObjectInstanceId );
-      }
+      return EntityFinder.findAll(new ReportCategory());
+    }
+    catch (SQLException ex) {
+
+    }
+    return null;
+  }
+
+
+  public static List listOfReports(int iCategoryId){
+    try {
+      return EntityFinder.findAllByColumn(new Report(),Report.getColumnCategoryId(),iCategoryId);
     }
     catch (Exception ex) {
 
     }
-    return id;
+    return null;
   }
 
-	public static int getObjectInstanceCategoryId(ICObjectInstance eObjectInstance){
-    try {
-      List L = EntityFinder.findRelated(eObjectInstance ,new ReportCategory());
-      if(L!= null){
-        return ((ReportCategory) L.get(0)).getID();
-      }
-      else
-        return -1;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return -2;
-    }
+  public static List listOfEntityForObjectInstanceId(int instanceid){
+    return CategoryFinder.listOfCategoryForObjectInstanceId(instanceid);
   }
-
-	public static int getObjectInstanceCategoryId(int iObjectInstanceId){
-    try {
-      ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
-      return getObjectInstanceCategoryId(obj);
-    }
-    catch (Exception ex) {
-
-    }
-    return -1;
-  }
-
-	public static int getObjectInstanceIdFromCategoryId(int iCategoryId){
-    try {
-      ReportCategory nw = new ReportCategory(iCategoryId);
-      List L = EntityFinder.findRelated( nw,new ICObjectInstance());
-      if(L!= null){
-        return ((ICObjectInstance) L.get(0)).getID();
-      }
-      else
-        return -1;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return -2;
-    }
-  }
-
-	public static List listOfCategories(){
-	  try {
-			return EntityFinder.findAll(new ReportCategory());
-		}
-		catch (SQLException ex) {
-
-		}
-		return null;
-	}
-
-
-	public static List listOfReports(int iCategoryId){
-	  try {
-			return EntityFinder.findAllByColumn(new Report(),Report.getColumnNameCategory(),iCategoryId);
-		}
-		catch (Exception ex) {
-
-		}
-		return null;
-	}
-
-	public static List listOfEntityForObjectInstanceId(int instanceid){
-    try {
-      ICObjectInstance obj = new ICObjectInstance(instanceid );
-      return listOfEntityForObjectInstanceId(obj);
-    }
-    catch (SQLException ex) {
-      return null;
-    }
+  public static List listOfEntityForObjectInstanceId( ICObjectInstance obj){
+    return CategoryFinder.listOfCategoryForObjectInstanceId(obj);
   }
 
    public static List listOfReportItems(int iCatId){
     List L = null;
     try {
-      L = EntityFinder.findAllByColumnOrdered(new ReportItem(),ReportItem.getColumnNameCategory(),iCatId,ReportItem.getColumnNameDisplayOrder());
+      L = EntityFinder.findAllByColumnOrdered(new ReportItem(),ReportItem.getColumnCategoryId(),iCatId,ReportItem.getColumnNameDisplayOrder());
     }
     catch (SQLException ex) {
-			ex.printStackTrace();
+      ex.printStackTrace();
       L = null;
     }
     return L;
   }
 
-  public static List listOfEntityForObjectInstanceId( ICObjectInstance obj){
+  public static List listOfDataClasses(){
     try {
-      List L = EntityFinder.findRelated(obj,new ReportCategory());
-      return L;
-    }
-    catch (SQLException ex) {
-      return null;
-    }
-  }
-
-	public static List listOfDataClasses(){
-	  try {
       return EntityFinder.findAllByColumn(new ICObject(),ICObject.getObjectTypeColumnName(),ICObject.COMPONENT_TYPE_DATA);
     }
     catch (SQLException ex) {
 
     }
-		return null;
-	}
+    return null;
+  }
+
+  public static List listOfReportColumnInfo(int iReportId){
+    try {
+      return EntityFinder.findAllByColumnOrdered(new ReportColumnInfo(),ReportColumnInfo.getColumnReportId(),iReportId,ReportColumnInfo.getColumnColNumber());
+    }
+    catch (Exception ex) {
+
+    }
+    return null;
+  }
+
+  public static Map mapOfReportColumnInfoByColumnNumber(int iReportId){
+    List L = listOfReportColumnInfo(iReportId) ;
+    if(L!=null){
+      Iterator iter = L.iterator();
+      ReportColumnInfo info;
+      Hashtable H = new Hashtable(L.size());
+      while (iter.hasNext()) {
+        info = (ReportColumnInfo) iter.next();
+        if(!H.containsKey(new Integer(info.getColumnNumber())))
+          H.put(new Integer(info.getColumnNumber()),info);
+      }
+      return H;
+    }
+    return null;
+  }
+
+  public static List listOfReportInfo(int iCategoryId,String type){
+    try {
+      ReportInfo info = new ReportInfo();
+      StringBuffer sql = new StringBuffer("select * from ").append(info.getEntityTableName());
+      sql.append(" where ").append(info.getColumnCategoryId()).append(" = ").append(iCategoryId);
+      sql.append(" and ").append(info.getColumnType()).append(" = '").append(type).append("'");
+      return EntityFinder.findAll(info,sql.toString());
+    }
+    catch (Exception ex) {
+
+    }
+    return null;
+  }
+
+   public static List listOfReportInfo(String type){
+    try {
+      ReportInfo info = new ReportInfo();
+      StringBuffer sql = new StringBuffer("select * from ").append(info.getEntityTableName());
+      if(type!=null)
+        sql.append(" where ").append(info.getColumnType()).append(" = '").append(type).append("'");
+      else
+        sql.append(" order by ").append(info.getColumnType());
+      return EntityFinder.findAll(info,sql.toString());
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    return null;
+  }
+
+  public static List listOfRelatedReportInfo(Report eReport){
+    try {
+      return EntityFinder.findRelated(eReport,new ReportInfo());
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    return null;
+  }
+/*
+  public static List listOfReportColumnInfo(int iReportId){
+    try {
+      ReportInfo info = new ReportInfo();
+      StringBuffer sql = new StringBuffer("select * from ").append(info.getEntityTableName());
+      sql.append(" where ").append(info.getColumnCategoryId()).append(" = ").append(iCategoryId);
+      sql.append(" and ").append(info.getColumnType()).append(" = '").append(type).append("'");
+      return EntityFinder.findAll(info,sql.toString());
+    }
+    catch (Exception ex) {
+
+    }
+    return null;
+  }
+*/
+  public static String[] pageSizes = { "A4","A3","A2" };
+
+  public static Rectangle getPageSize(String page){
+    if(page.equals("A4"))
+      return PageSize.A4;
+    else if(page.equals("A3"))
+      return PageSize.A3;
+    else if(page.equals("A2"))
+      return PageSize.A2;
+    else
+      return PageSize.A4;
+
+  }
+
 
 }

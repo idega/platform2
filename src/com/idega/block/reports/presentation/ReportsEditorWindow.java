@@ -525,7 +525,7 @@ public class ReportsEditorWindow extends IWAdminWindow {
 
     if(b){
       T.add(new HiddenInput(prefix+"repid",String.valueOf(R.getID())));
-      T.add(new HiddenInput(prefix+"repcatid",String.valueOf(R.getCategory())));
+      T.add(new HiddenInput(prefix+"repcatid",String.valueOf(R.getCategoryId())));
       nameInput.setContent(R.getName());
       infoInput.setContent(R.getInfo());
       headersInput.setContent(R.getHeader());

@@ -129,14 +129,18 @@ public class CategoryWindow extends IWAdminWindow {
 
     /** @todo  permission handling */
 		List L = CategoryFinder.listOfCategories(sType);
+    /*
     Collection C = CategoryFinder.collectCategoryIntegerIds(iObjectInstanceId);
     try{
-    String collString = ObjectSerializer.serialize(C);
-    System.err.println("collString");
-    System.err.println(collString);
+      String collString = ObjectSerializer.serialize(C);
+      System.err.println("collString");
+      System.err.println(collString);
     }catch(Exception ex){
 
     }
+*/
+
+
 
 		DropdownMenu catDrop = new DropdownMenu(L,prmCategoryId);
 		catDrop.addMenuElementFirst("-1",sCategory);

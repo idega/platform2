@@ -3,6 +3,7 @@ package com.idega.block.reports.data;
 import java.sql.*;
 import java.util.StringTokenizer;
 import com.idega.data.*;
+import com.idega.block.reports.business.ColumnspanList;
 
 /**
  * Title:
@@ -13,7 +14,11 @@ import com.idega.data.*;
  * @version 1.0
  */
 
-public class Report extends GenericEntity {
+public class Report extends CategoryEntity {
+
+  public static final String NORMAL = "NORMAL";
+  public static final String STICKERS = "STICKERS";
+  public static final String COLUMNS = "COLUMNS";
 
   public Report() {
   }
@@ -22,11 +27,13 @@ public class Report extends GenericEntity {
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getColumnNameCategory(),"Category",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.reports.data.ReportCategory.class);
     addAttribute(getColumnNameName(),"Name",true,true,java.lang.String.class);
     addAttribute(getColumnNameSql(), "SQL", true, true, java.lang.String.class,2000);
     addAttribute(getColumnNameHeaders(),"Titles",true,true,java.lang.String.class);
-    addAttribute(getColumnNameInfo(),"ATH",true,true,java.lang.String.class);
+    addAttribute(getColumnNameInfo(),"Info",true,true,java.lang.String.class);
+    addAttribute(getColumnType(),"Type",true,true,java.lang.String.class);
+    addAttribute(getColumnColInfo(),"Fonts",true,true,java.lang.String.class);
+    addManyToManyRelationShip(ReportInfo.class);
 
   }
 
@@ -35,16 +42,11 @@ public class Report extends GenericEntity {
   public static String getColumnNameInfo(){return "INFO";}
   public static String getColumnNameSql(){return "SQLSENTENCE";}
   public static String getColumnNameHeaders(){return "HEADERS";}
-  public static String getColumnNameCategory(){return "REP_CATEGORY_ID";}
+  public static String getColumnType(){return "REP_TYPE";}
+  public static String getColumnColInfo(){return "COLINFO";}
 
   public String getEntityName() {
     return getEntityTableName();
-  }
-  public int getCategory(){
-    return getIntColumnValue(getColumnNameCategory());
-  }
-  public void setCategory(int category){
-    setColumn(getColumnNameCategory(), new Integer(category));
   }
   public String getName(){
     return getStringColumnValue(getColumnNameName());
@@ -57,6 +59,18 @@ public class Report extends GenericEntity {
   }
   public void setSQL(String sqlsentence){
     setColumn(getColumnNameSql(), sqlsentence);
+  }
+   public String getType(){
+    return getStringColumnValue(getColumnType());
+  }
+  public void setType(String type){
+    setColumn(getColumnType(), type);
+  }
+  public String getColInfo(){
+    return getStringColumnValue(getColumnColInfo());
+  }
+  public void setColInfo(String cols){
+    setColumn(getColumnColInfo(), cols);
   }
   public String getInfo(){
     return getStringColumnValue(getColumnNameInfo());
@@ -93,6 +107,33 @@ public class Report extends GenericEntity {
       array[i++] = st.nextToken();
     }
     return array;
+  }
+
+  public void storeColumnInfos(java.util.List columnInfos){
+    try{
+    java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+    java.io.ObjectOutputStream s = new java.io.ObjectOutputStream(bos);
+    s.writeObject(columnInfos);
+    s.flush();
+    setColInfo(bos.toString());
+    }
+    catch(java.io.IOException ex){ex.printStackTrace();}
+  }
+
+  public java.util.List getColumnInfos(){
+    String infos = getColumnColInfo();
+    if(infos !=null){
+      try{
+        java.io.ByteArrayInputStream bis = new java.io.ByteArrayInputStream(infos.getBytes());
+        java.io.ObjectInputStream s = new java.io.ObjectInputStream(bis);
+        java.util.List infoList = (java.util.List)s.readObject();
+        return infoList;
+      }
+      catch(ClassNotFoundException ex){ex.printStackTrace();}
+      catch(java.io.IOException ex){ex.printStackTrace();}
+
+    }
+    return null;
   }
 
 }
