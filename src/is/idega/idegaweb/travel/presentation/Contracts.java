@@ -822,8 +822,11 @@ public class Contracts extends TravelManager {
 	        pTo.setDate(new IWTimestamp(timeframe.getTo()).getSQLDate());
         }
       }else {
-        pFrom.setDate(new IWTimestamp(contract.getFrom()).getSQLDate());
-        pTo.setDate(new IWTimestamp(contract.getTo()).getSQLDate());
+      	if (contract.getFrom() != null) {
+      		useTimeframes = true;
+	        pFrom.setDate(new IWTimestamp(contract.getFrom()).getSQLDate());
+	        pTo.setDate(new IWTimestamp(contract.getTo()).getSQLDate());
+      	}
       }
     }catch (TimeframeNotFoundException tnfe) {
       tnfe.printStackTrace(System.err);
