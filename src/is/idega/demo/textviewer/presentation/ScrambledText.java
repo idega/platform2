@@ -54,7 +54,6 @@ public class ScrambledText extends Text {
   }
 
   protected String getScrambledText(String text){
-    
     StringBuffer sbuf = new StringBuffer();
     if(text!=null){
       for (int i = 0; i < text.length(); i++) {
