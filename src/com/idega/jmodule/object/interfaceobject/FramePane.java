@@ -126,10 +126,10 @@ public void setHeight(int height){
     try {
       obj = (FramePane)super.clone();
       if(this.table!=null){
-        obj.table=this.table;
+        obj.table=(Table)this.table.clone();
       }
       if(this.InnerTable!=null){
-        obj.InnerTable=this.InnerTable;
+        obj.InnerTable=(Table)this.InnerTable.clone();
       }
     }
     catch(Exception ex) {
