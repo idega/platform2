@@ -1,5 +1,5 @@
 /*
- * $Id: Applicant.java,v 1.6 2001/07/19 11:03:37 palli Exp $
+ * $Id: Applicant.java,v 1.7 2001/07/23 11:02:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -39,17 +39,17 @@ public class Applicant extends GenericEntity {
   }
 
   public void initializeAttributes() {
-    addAttribute(getIDColumnName());
-    addAttribute(firstName_,"First name",true,true,java.lang.String.class.getClass());
-    addAttribute(middleName_,"Middle name",true,true,java.lang.String.class.getClass());
-    addAttribute(lastName_,"Last name",true,true,java.lang.String.class.getClass());
-    addAttribute(ssn_,"Social security number",true,true,java.lang.String.class.getClass());
-    addAttribute(legalResidence_,"Legal residence",true,true,java.lang.String.class.getClass());
-    addAttribute(residence_,"Residence",true,true,java.lang.String.class.getClass());
-    addAttribute(residencePhone_,"Telephone",true,true,java.lang.String.class.getClass());
-    addAttribute(po_,"Post office",true,true,java.lang.String.class.getClass());
-    addAttribute(mobilePhone_,"Mobile phone",true,true,java.lang.String.class.getClass());
-    addAttribute(sendSMS_,"Send SMS",true,true,java.lang.String.class.getClass());
+    addAttribute(getIDColumnName();
+    addAttribute(firstName_,"First name",true,true,"java.lang.String"");
+    addAttribute(middleName_,"Middle name",true,true,"java.lang.String");
+    addAttribute(lastName_,"Last name",true,true,"java.lang.String");
+    addAttribute(ssn_,"Social security number",true,true,"java.lang.String");
+    addAttribute(legalResidence_,"Legal residence",true,true,"java.lang.String");
+    addAttribute(residence_,"Residence",true,true,"java.lang.String");
+    addAttribute(residencePhone_,"Telephone",true,true,"java.lang.String");
+    addAttribute(po_,"Post office",true,true,"java.lang.String");
+    addAttribute(mobilePhone_,"Mobile phone",true,true,"java.lang.String");
+    addAttribute(sendSMS_,"Send SMS",true,true,"java.lang.String");
     setMaxLength(firstName_,255);
     setMaxLength(middleName_,255);
     setMaxLength(lastName_,255);
