@@ -82,13 +82,14 @@ public class SchoolTypeEditor extends Block {
       String name = iwc.getParameter("sch_type_name");
       String info = iwc.getParameter("sch_type_info");
       String cat = iwc.getParameter("sch_type_catid");
+      String locKey = iwc.getParameter("sch_type_lockey");
       int aid = -1,catId = -1;
       if(id!=null)
         aid = Integer.parseInt(id);
       if(cat!=null)
         catId = Integer.parseInt(cat);
 
-      sabBean.storeSchoolType(aid,name,info,catId);
+      sabBean.storeSchoolType(aid,name,info,catId,locKey);
     }
   }
 
@@ -136,12 +137,14 @@ public class SchoolTypeEditor extends Block {
     T.add(tFormat.format(iwrb.getLocalizedString("category","Category")),1,2);
     T.add(tFormat.format(iwrb.getLocalizedString("name","Name")),1,3);
     T.add(tFormat.format(iwrb.getLocalizedString("info","Info")),1,4);
+    T.add(tFormat.format(iwrb.getLocalizedString("localization_key","Key")),1,5);
 
     DropdownMenu drpCategory = new DropdownMenu("sch_type_catid");
     drpCategory.addMenuElement(SchoolType.CHILDCARE,iwrb.getLocalizedString("childcare","Childcare"));
     drpCategory.addMenuElement(SchoolType.SCHOOL,iwrb.getLocalizedString("school","School"));
 
     TextInput inputName = new TextInput("sch_type_name");
+    TextInput inputKey = new TextInput("sch_type_lockey");
     TextArea inputInfo = new TextArea("sch_type_info");
 
     int typeId = -1;
@@ -157,6 +160,9 @@ public class SchoolTypeEditor extends Block {
         T.add(new HiddenInput("sch_school_type_id",String.valueOf(typeId)));
         int category = type.getSchoolCategoryId();
         drpCategory.setSelectedElement(String.valueOf(category) );
+        String key = type.getLocalizationKey();
+        if(key!=null)
+          inputKey.setContent(key);
       }
       catch(Exception ex){
         ex.printStackTrace();
@@ -166,13 +172,14 @@ public class SchoolTypeEditor extends Block {
     T.add(drpCategory,3,2);
     T.add(inputName,3,3);
     T.add(inputInfo,3,4);
-    T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_type","true"),3,5);
+     T.add(inputInfo,3,5);
+    T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_type","true"),3,6);
     Link cancel = new Link(iwrb.getLocalizedImageButton("cancel","Cancel"));
-    T.add(cancel,3,5);
+    T.add(cancel,3,6);
     if(typeId > 0){
       Link delete = new Link(iwrb.getLocalizedImageButton("delete","Delete"));
       delete.addParameter("sch_delete_type",typeId);
-      T.add(delete,3,5);
+      T.add(delete,3,6);
     }
 
 

@@ -59,7 +59,7 @@ public class SchoolTypeBusinessBean extends IBOServiceBean implements SchoolType
     }
   }
 
-  public void storeSchoolType(int id,String name,String info,int categoryId) throws java.rmi.RemoteException{
+  public void storeSchoolType(int id,String name,String info,int categoryId,String locKey) throws java.rmi.RemoteException{
 
       SchoolTypeHome shome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
       SchoolType newType;
@@ -81,6 +81,7 @@ public class SchoolTypeBusinessBean extends IBOServiceBean implements SchoolType
       newType.setSchoolTypeInfo(info);
       newType.setSchoolTypeName(name);
       newType.setSchoolCategoryId(categoryId);
+      newType.setLocalizationKey(locKey);
       newType.store();
     }
 

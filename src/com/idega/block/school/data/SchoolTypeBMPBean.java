@@ -18,6 +18,7 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
 
   public static final String NAME = "type_name";
   public static final String INFO = "type_info";
+  public static final String LOC_KEY = "loc_key";
   public static final String TYPECATEGORY = "category_id";
   public static final String SCHOOLTYPE = "sch_school_type";
 
@@ -26,6 +27,7 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
     this.addAttribute(TYPECATEGORY,"category",true,true,Integer.class);
     this.addAttribute(NAME,"Schooltype",true,true,String.class);
     this.addAttribute(INFO,"Info",true,true,String.class);
+    this.addAttribute(LOC_KEY,"Localization key",String.class);
   }
 
   public String getEntityName() {
@@ -58,6 +60,14 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
 
   public void setSchoolCategoryId(int categoryId){
     setColumn(TYPECATEGORY,categoryId);
+  }
+
+  public String getLocalizationKey(){
+    return getStringColumnValue(LOC_KEY);
+  }
+
+  public void setLocalizationKey(String key){
+    setColumn(LOC_KEY,key);
   }
 
   public Collection ejbFindAllSchoolTypes() throws javax.ejb.FinderException{
