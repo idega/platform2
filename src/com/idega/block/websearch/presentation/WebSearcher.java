@@ -79,6 +79,7 @@ public class WebSearcher extends Block {
 	private ICPage submitPage;
 	private String inputStyle;
 	private String inputWidth;
+	private int spaceBetween = 3;
 
 	public WebSearcher() {
 	}
@@ -196,7 +197,7 @@ public class WebSearcher extends Block {
 		}
 		else if (layout == VERTICAL_LAYOUT) {
 			table.add(search, 1, 1);
-			table.setHeight(2, 3);
+			table.setHeight(2, spaceBetween);
 			
 			Link link = new Link(iwrb.getLocalizedString("search", "Search"));
 			link.setToFormSubmit(searchForm);
@@ -485,5 +486,11 @@ public class WebSearcher extends Block {
 	 */
 	public void setInputWidth(String inputWidth) {
 		this.inputWidth = inputWidth;
+	}
+	/**
+	 * @param spaceBetween The spaceBetween to set.
+	 */
+	public void setSpaceBetween(int spaceBetween) {
+		this.spaceBetween = spaceBetween;
 	}
 }
