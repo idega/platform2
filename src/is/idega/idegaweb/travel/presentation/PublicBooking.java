@@ -336,12 +336,17 @@ public class PublicBooking extends Block  {
       boolean success = false;
       boolean inquirySent = false;
 
-      com.idega.block.tpos.business.TPosClient t = null;
+//      com.idega.block.tpos.business.TPosClient t = null;
       GeneralBooking  gBooking = null;
+			BookingForm bf = null; 
+			try {
+				bf = getServiceHandler(iwc).getBookingForm(iwc, product);
+			}catch (Exception e) {
+				e.printStackTrace(System.out);	
+			}
 
       TransactionManager tm = IdegaTransactionManager.getInstance();
       try {
-		    BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
         tm.begin();
 
 //				float price = bf.getOrderPrice(iwc, product, stamp);
@@ -484,8 +489,8 @@ public class PublicBooking extends Block  {
           printVoucher.addParameter(VoucherWindow.parameterBookingId, gBooking.getID());
           printVoucher.setWindowToOpen(VoucherWindow.class);
 
-        if (t != null) {
-          com.idega.block.tpos.presentation.Receipt r = new com.idega.block.tpos.presentation.Receipt(t, supplier);
+        if (bf._TPosClient != null) {
+          com.idega.block.tpos.presentation.Receipt r = new com.idega.block.tpos.presentation.Receipt(bf._TPosClient, supplier);
           iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
 
           Link printCCReceipt = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_cc_receipt","Print creditcard receipt")));
