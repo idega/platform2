@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.14 2004/04/21 16:11:18 gummi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.15 2004/04/29 18:47:09 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -438,8 +438,6 @@ public class GolfMainJSPModulePage extends MainPage {
 
 	protected GolfLogin getLogin() {
 		GolfLogin log = new GolfLogin();
-		log.showNewUserImage = false;
-		log.setForgotPasswordUrl("/login/loginemailer.jsp");
 		return log;
 	}
 

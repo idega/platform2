@@ -26,6 +26,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SubmitButton;
@@ -255,7 +256,10 @@ public class TeeTimeSearch extends GolfBlock {
 		mergeTable.add(fjoldi, 1, 4);
 		mergeTable.add(insertEditBox("fjoldi", 2), 2, 4);
 		
-		mergeTable.add(new SubmitButton(getResourceBundle().getImage("buttons/search.gif"), localize("start.search","Search")), 3, 4);
+		GenericButton bSearch = getSubmitButton();
+		bSearch.setName(localize("start.search","Search"));
+
+		mergeTable.add(bSearch, 3, 4);
 		
 		SelectSubmit.add(mergeTable, 2, 2);
 		
