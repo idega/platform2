@@ -97,7 +97,6 @@ public abstract class BillingThread extends Thread{
 	protected PaymentRecord createPaymentRecord(PostingDetail postingDetail, String ownPosting, String doublePosting) throws CreateException, IDOLookupException {
 		PaymentHeader paymentHeader;
 		PaymentRecord paymentRecord;
-	
 		System.out.println("About to create payment record");
 		//Get the payment header
 		try {
@@ -123,8 +122,12 @@ public abstract class BillingThread extends Thread{
 		try {
 			System.out.println("payHeader "+paymentHeader.getPrimaryKey());
 			System.out.println("RuleSpec "+postingDetail.getRuleSpecType());
-			paymentRecord = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).
-					findByPaymentHeaderAndRuleSpecType(paymentHeader,postingDetail.getRuleSpecType());
+			PaymentRecordHome prechome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
+			
+			paymentRecord = prechome.findByPostingStrings(ownPosting,doublePosting);
+			//paymentRecord = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).
+			//		findByPaymentHeaderAndRuleSpecType(paymentHeader,postingDetail.getRuleSpecType());
+			
 			//If it already exists, just update the changes needed.
 			paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
 			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()+postingDetail.getAmount()*months);
@@ -386,5 +389,5 @@ public abstract class BillingThread extends Thread{
 	protected RegulationSpecTypeHome getRegulationSpecTypeHome() throws RemoteException {
 		return (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
 	}
-
+	
 }
