@@ -189,11 +189,7 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
   public void update() throws SQLException {
     if (newName != null) {
       PermissionGroup pGroup = ResellerManager.getPermissionGroup(this);
-        try {
-          pGroup.setName(newName+"_"+this.getID()+ResellerManager.permissionGroupNameExtention);
-        }catch (RemoteException ex) {
-          throw new EJBException(ex);
-        }
+        pGroup.setName(newName+"_"+this.getID()+ResellerManager.permissionGroupNameExtention);
         pGroup.update();
       ResellerStaffGroup sGroup = ResellerManager.getResellerStaffGroup(this);
         sGroup.setName(newName+"_"+this.getID());

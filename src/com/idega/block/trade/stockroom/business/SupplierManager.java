@@ -1,7 +1,5 @@
 package com.idega.block.trade.stockroom.business;
 
-import javax.ejb.EJBException;
-import java.rmi.RemoteException;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -14,7 +12,6 @@ import com.idega.util.idegaTimestamp;
 import com.idega.data.EntityFinder;
 import java.util.*;
 import java.sql.*;
-
 
 
 /**
@@ -154,12 +151,7 @@ public class SupplierManager {
       }
     }
     PermissionGroup pGroup = getPermissionGroup(supplier);
-      try{
-        pGroup.setName(pGroup.getName()+"_deleted");
-      }
-      catch (RemoteException ex) {
-        throw new EJBException(ex);
-      }
+      pGroup.setName(pGroup.getName()+"_deleted");
       pGroup.update();
 
     SupplierStaffGroup sGroup = getSupplierStaffGroup(supplier);
