@@ -1025,7 +1025,6 @@ public abstract class BookingForm extends TravelManager{
 		boolean inquirySent = false;
 		
 		GeneralBooking  gBooking = null;
-		
 		TransactionManager tm = IdegaTransactionManager.getInstance();
 		try {
 			tm.begin();
@@ -1085,7 +1084,6 @@ public abstract class BookingForm extends TravelManager{
 		
 		if (gBooking != null) {
 			boolean sendEmail = sendEmails(iwc, gBooking, iwrb);
-
 			addPublicHeading(iwrb.getLocalizedString("travel.booking_complete","Booking complete"), table, 1, 1);
 			table.setCellpaddingLeft(1, 3, 10);
 			table.setCellpaddingTop(1, 3, 3);
@@ -1127,9 +1125,10 @@ public abstract class BookingForm extends TravelManager{
 			printVoucher.setWindowToOpen(VoucherWindow.class);
 			
 			try {
-				CreditCardAuthorizationEntry entry = this.getCreditCardBusiness(iwc).getAuthorizationEntry(supplier, gBooking.getCreditcardAuthorizationNumber(),  new IWTimestamp(gBooking.getDateOfBooking()));
+				Supplier supp = gBooking.getService().getProduct().getSupplier();
+				CreditCardAuthorizationEntry entry = this.getCreditCardBusiness(iwc).getAuthorizationEntry(supp, gBooking.getCreditcardAuthorizationNumber(),  new IWTimestamp(gBooking.getDateOfBooking()));
 				if (entry != null) {
-					Receipt r = new Receipt(entry, supplier);
+					Receipt r = new Receipt(entry, supp);
 					iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
 					
 					Link printCCReceipt = new Link(getText(iwrb.getLocalizedString("travel.print_cc_receipt","Print creditcard receipt")));
