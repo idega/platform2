@@ -702,7 +702,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			e.printStackTrace();
 		}
 		
-		SchoolClassDropdownDouble schoolClasses = new SchoolClassDropdownDouble(PARAMETER_SCHOOL_TYPES,PARAMETER_SCHOOL_CLASS);
+		SchoolClassDropdownDouble schoolClasses = new SchoolClassDropdownDouble(getSession().getParameterSchoolTypeID(),getSession().getParameterGroupID());
 		//schoolClasses.setLayoutVertical(true);
 		//schoolClasses.setPrimaryLabel(getSmallText(localize("child_care.schooltype", "Type")+":"));
 		//schoolClasses.setSecondaryLabel(getSmallText(localize("child_care.group", "Group")+":"));
