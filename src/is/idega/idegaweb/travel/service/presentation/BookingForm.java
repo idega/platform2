@@ -2082,16 +2082,19 @@ public abstract class BookingForm extends TravelManager{
 				if (cc_error_notify_email == null) {
 					cc_error_notify_email = "";	
 				}
-				//StackTraceElement[] ste = e.
+				StackTraceElement[] ste = e.getStackTrace();
 				SendMail mail = new SendMail();
 				StringBuffer msg = new StringBuffer();
-				msg.append(bodyHeader+"\n\n ")
-				//for ( int i = 0 ; i < ste.length ; i++) {
-					//msg.append(ste[i].toString())
-					//.append("\n");	
-				//}
-				.append(e.toString());
-				mail.send( "gimmi@idega.is", error_notify_email, cc_error_notify_email, "", "mail.idega.is", subject, msg.toString());
+				msg.append(bodyHeader+"\n\n ");
+				for ( int i = 0 ; i < ste.length ; i++) {
+					if (i != 0) {
+						msg.append("      ");
+					}
+					msg.append(ste[i].toString())
+					.append("\n");	
+				}
+
+				mail.send("gimmi@idega.is", error_notify_email, cc_error_notify_email, "", "mail.idega.is", subject, msg.toString());
 			} catch (MessagingException e1) {
 				e1.printStackTrace(System.err);
 				throw new TPosException(iwrb.getLocalizedString("travel.unknown_error","Unknown error"));
