@@ -710,6 +710,23 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 		
 	}
+	
+	/**
+	 * Returns a collection of WorkReportGroup of the type IWMemor an empty List
+	 * @param year , the year of the report
+	 * @param type , the group type
+	 * @return A collection of WorkReportGroup or an empty List
+	 */
+	public Collection getAllLeagueWorkReportGroupsForYear(int year){
+		try {
+			return getWorkReportGroupHome().findAllWorkReportGroupsByGroupTypeAndYear(IWMemberConstants.GROUP_TYPE_LEAGUE,year);
+		}
+		catch (FinderException e) {
+			//no group available return empty list
+			return ListUtil.getEmptyList();
+		}
+		
+	}
 
 	/**
 	 * @param headerRow, the first row of the members-part worksheet
