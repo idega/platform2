@@ -54,8 +54,6 @@ public class ProductCategoryEditor extends IWAdminWindow {
       }else {
         saveAssignment(iwc);
       }
-    }else {
-      add("ranus");
     }
   }
 

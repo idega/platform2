@@ -61,6 +61,9 @@ public class ProductViewer extends Block {
       String sProductId = iwc.getParameter(this.PRODUCT_ID);
       _productId = Integer.parseInt(sProductId);
       _product = ProductBusiness.getProduct(_productId);
+      if (!_product.getIsValid()) {
+        _product = null;
+      }
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }
@@ -68,4 +71,8 @@ public class ProductViewer extends Block {
     IWBundle  coreBundle = iwc.getApplication().getCoreBundle();
     iEdit   = coreBundle.getImage("shared/edit.gif");
   }
+/*
+  public boolean deleteBlock(int ICObjectInstanceId) {
+    return false;
+  }*/
 }

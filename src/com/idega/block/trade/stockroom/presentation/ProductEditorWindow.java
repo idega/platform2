@@ -26,6 +26,7 @@ public class ProductEditorWindow extends IWAdminWindow {
   private static final String ACTION = "prod_edit_action";
   private static final String PAR_SAVE = "prod_edit_save";
   private static final String PAR_DELETE = "prod_edit_del";
+  private static final String PAR_DEL_VERIFIED = "prod_edit_del_verified";
   private static final String PAR_CLOSE = "prod_edit_close";
   private static final String PAR_NUMBER = "prod_edit_number";
   private static final String PAR_NAME = "prod_edit_name";
@@ -43,6 +44,7 @@ public class ProductEditorWindow extends IWAdminWindow {
     setUnMerged();
     setWidth(500);
     setTitle("Product Editor");
+    setName("Product Editor");
   }
 
 
@@ -50,11 +52,17 @@ public class ProductEditorWindow extends IWAdminWindow {
     init(iwc);
 
     String action = iwc.getParameter(ACTION);
-    if (action == null) {
+    if (action == null || action.equals("")) {
       displayForm(iwc);
     }else if (action.equals(this.PAR_SAVE)) {
-      saveProduct(iwc);
+      if (saveProduct(iwc)) {
+        displayForm(iwc);
+      }else {
+
+      }
     }else if (action.equals(this.PAR_DELETE)) {
+      verifyDelete(iwc);
+    }else if (action.equals(this.PAR_DEL_VERIFIED)) {
       if (deleteProduct(iwc)) {
         closeWindow();
       }
@@ -100,7 +108,10 @@ public class ProductEditorWindow extends IWAdminWindow {
     TextInput name = new TextInput(PAR_NAME);
     TextArea description = new TextArea(PAR_DESCRIPTION);
     TextInput price = new TextInput(PAR_PRICE);
-    ImageInserter imageInserter = new ImageInserter();
+    ImageInserter imageInserter = new ImageInserter(PAR_IMAGE);
+      name.setSize(50);
+      description.setWidth(50);
+      description.setHeight(5);
 
     if (_product != null) {
       number.setContent(_product.getNumber());
@@ -108,7 +119,7 @@ public class ProductEditorWindow extends IWAdminWindow {
       description.setContent(ProductBusiness.getProductDescription(_product));
       int imageId = _product.getFileId();
       if (imageId != -1) {
-        imageInserter = new ImageInserter(imageId);
+        imageInserter = new ImageInserter(imageId, PAR_IMAGE);
       }
     }
     imageInserter.setHasUseBox(false);
@@ -133,19 +144,61 @@ public class ProductEditorWindow extends IWAdminWindow {
     super.addSubmitButton(saveBtn);
   }
 
-  private void saveProduct(IWContext iwc) {
+  private boolean saveProduct(IWContext iwc) {
     String number = iwc.getParameter(PAR_NUMBER);
     String name = iwc.getParameter(PAR_NAME);
     String description = iwc.getParameter(PAR_DESCRIPTION);
     String price = iwc.getParameter(PAR_PRICE);
     String image = iwc.getParameter(PAR_IMAGE);
 
-    if (_product == null) {
-      add(" NEW : ");
-    }else {
-      add(" EDIT : ");
+    Integer fileId = null;
+    try {
+      fileId = new Integer(image);
+    }catch (NumberFormatException n) {}
+
+    if (!name.equals("")) {
+      if (_product == null) {
+        try {
+          _productId = ProductBusiness.createProduct(fileId, name, number, description, true);
+          _product = ProductBusiness.getProduct(_productId);
+          debug("Insert : id "+_productId);
+          return true;
+        }catch (Exception e) {
+          e.printStackTrace(System.err);
+        }
+      }else {
+        try {
+          debug("Update : id "+_productId);
+          ProductBusiness.updateProduct(this._productId, fileId, name, number, description, true);
+          return true;
+        }catch (Exception e) {
+          e.printStackTrace(System.err);
+        }
+      }
     }
-    add(name);
+
+    return false;
+  }
+
+  private void saveFailed(IWContext iwc) {
+    super.addLeft(iwrb.getLocalizedString("save_failed","Save failed"), "" );
+
+    BackButton back = new BackButton(iwrb.getLocalizedImageButton("back","Back"));
+
+    super.addSubmitButton(back);
+  }
+
+  private void verifyDelete(IWContext iwc) {
+    super.addHiddenInput(new HiddenInput(this.PRODUCT_ID, Integer.toString(_productId)));
+    StringBuffer text = new StringBuffer();
+      text.append(iwrb.getLocalizedString("are_you_sure_you_want_to_delete","Are you sure you want to delete this product")).append(" : ").append(ProductBusiness.getProductName(_product));
+    super.addLeft(iwrb.getLocalizedString("delete","Delete"), text.toString() );
+
+    SubmitButton ok = new SubmitButton(iwrb.getLocalizedImageButton("ok","OK"), this.ACTION, this.PAR_DEL_VERIFIED);
+    SubmitButton cancel = new SubmitButton(iwrb.getLocalizedImageButton("cancel","Cancel"), this.ACTION, "");
+
+    super.addSubmitButton(ok);
+    super.addSubmitButton(cancel);
   }
 
   private boolean deleteProduct(IWContext iwc) {

@@ -339,55 +339,13 @@ public class StockroomBusiness /* implements SupplyManager */ {
   }
 
   public static int updateProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
-    return createProduct(productId,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
+    return ProductBusiness.createProduct(productId,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
   }
 
   public static int createProduct(int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
-    return createProduct(-1,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
+    return ProductBusiness.createProduct(-1,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
   }
 
-  private static int createProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
-    Product product= null;
-    if (productId == -1) {
-      product = new Product();
-    }else {
-      product = ProductBusiness.getProduct(productId);// Product(productId);
-    }
-
-    product.setSupplierId(supplierId);
-    if(fileId != null){
-      product.setFileId(fileId);
-    }
-    product.setIsValid(isValid);
-    if (discountTypeId != -1) {
-      product.setDiscountTypeId(discountTypeId);
-    }
-    if (number == null) number = "";
-    product.setNumber(number);
-
-
-    if (productId == -1) {
-      product.insert();
-    }else {
-      ProductBusiness.updateProduct(product);
-      //product.update();
-    }
-
-    ProductBusiness.setProductName(product, productName);
-    ProductBusiness.setProductDescription(product, productDescription);
-
-    if(addressIds != null){
-      for (int i = 0; i < addressIds.length; i++) {
-        try {
-          product.addTo(TravelAddress.class, addressIds[i]);
-        }catch (SQLException sql) {
-        }
-      }
-    }
-
-    ProductBusiness.removeProductApplication(IWContext.getInstance(), supplierId);
-    return product.getID();
-  }
 
 
 

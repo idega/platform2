@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.core.data.*;
+import com.idega.block.category.business.CategoryBusiness;
 import com.idega.builder.data.IBPage;
 import com.idega.data.EntityFinder;
 import com.idega.block.presentation.CategoryBlock;
@@ -42,8 +44,10 @@ public class ProductCatalog extends CategoryBlock{
 
   private String _fontStyle = null;
   private String _catFontStyle = null;
+  private String _width = null;
   private IBPage _productLinkPage = null;
   private boolean _productIsLink = false;
+  private boolean _allowMulitpleCategories = true;
 
   public ProductCatalog() {
   }
@@ -60,6 +64,8 @@ public class ProductCatalog extends CategoryBlock{
   private void init(IWContext iwc) {
     bundle = getBundle(iwc);
     iwrb = bundle.getResourceBundle(iwc);
+
+    setAutoCreate(false);
 
     IWBundle  coreBundle = iwc.getApplication().getCoreBundle();
     iCreate = coreBundle.getImage("shared/create.gif");
@@ -136,18 +142,21 @@ public class ProductCatalog extends CategoryBlock{
   private void idegaCatalog(IWContext iwc) {
     Form form = new Form();
     Table table = new Table();
+      if (this._width != null) {
+      table.setWidth(this._width);
+      }
       form.add(table);
 
-    int row = 1;
+    int row = 0;
 
     List productCategories = new Vector();
     try {
-      productCategories = ProductBusiness.getProductCategories();
+      productCategories = (List) getCategories();
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }
 
-    ProductCategory pCat;
+    ICCategory pCat;
     Product product;
     int fileId;
     Image image;
@@ -156,9 +165,13 @@ public class ProductCatalog extends CategoryBlock{
     Link configCategory;
     Link productLink;
     for (int i = 0; i < productCategories.size(); i++) {
+      if (i != 0){
+        ++row;
+        table.add(getCategoryText(Text.NON_BREAKING_SPACE), 1,row);
+      }
       ++row;
       try {
-        pCat = (ProductCategory) productCategories.get(i);
+        pCat = (ICCategory) productCategories.get(i);
         configCategory = new Link(iDetach);
           configCategory.setWindowToOpen(ProductCategoryEditor.class);
           configCategory.addParameter(ProductCategoryEditor.SELECTED_CATEGORY, pCat.getID());
@@ -166,7 +179,7 @@ public class ProductCatalog extends CategoryBlock{
         if (hasEditPermission()) {
           table.add(configCategory, 2,row);
         }
-        catProducts = EntityFinder.getInstance().findRelated(pCat, Product.class);
+        catProducts = ProductBusiness.getProducts(pCat);//.getInstance().findRelated(pCat, Product.class);
         for (int j = 0; j < catProducts.size(); j++) {
           ++row;
           try {
@@ -290,10 +303,26 @@ public class ProductCatalog extends CategoryBlock{
   }
 
   public void setProductAsLink(boolean isLink) {
-    this._productIsLink = true;
+    this._productIsLink = isLink;
+  }
+
+  public void setAllowMultipleCategories(boolean allow) {
+    this._allowMulitpleCategories = allow;
+  }
+
+  public void setWidth(String width) {
+    this._width = width;
   }
 
   public String getCategoryType(){
-    return "product";
+    return ProductCategory.CATEGORY_TYPE_PRODUCT;
+  }
+
+  public boolean getMultible() {
+    return this._allowMulitpleCategories;
+  }
+
+  public boolean deleteBlock(int ICObjectInstanceId) {
+    return CategoryBusiness.disconnectBlock(ICObjectInstanceId);
   }
 }

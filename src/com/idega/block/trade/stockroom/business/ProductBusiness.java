@@ -45,6 +45,66 @@ public class ProductBusiness {
   public ProductBusiness() {
   }
 
+  public static int updateProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
+    return createProduct(productId,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
+  }
+
+  public static int updateProduct(int productId, Integer fileId, String productName, String number, String productDescription, boolean isValid) throws Exception{
+    return createProduct(productId,-1, fileId, productName, number, productDescription, isValid, null, -1);
+  }
+
+  public static int createProduct(Integer fileId, String productName, String number, String productDescription, boolean isValid) throws Exception{
+    return createProduct(-1,-1, fileId, productName, number, productDescription, isValid, null, -1);
+  }
+
+  public static int createProduct(int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
+    return createProduct(-1,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
+  }
+
+  static int createProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
+    Product product= null;
+    if (productId == -1) {
+      product = new Product();
+    }else {
+      product = ProductBusiness.getProduct(productId);// Product(productId);
+    }
+
+    if (supplierId != -1)
+    product.setSupplierId(supplierId);
+    if(fileId != null){
+      product.setFileId(fileId);
+    }
+    product.setIsValid(isValid);
+    if (discountTypeId != -1) {
+      product.setDiscountTypeId(discountTypeId);
+    }
+    if (number == null) number = "";
+    product.setNumber(number);
+
+
+    if (productId == -1) {
+      product.insert();
+    }else {
+      ProductBusiness.updateProduct(product);
+      //product.update();
+    }
+
+    ProductBusiness.setProductName(product, productName);
+    ProductBusiness.setProductDescription(product, productDescription);
+
+    if(addressIds != null){
+      for (int i = 0; i < addressIds.length; i++) {
+        try {
+          product.addTo(TravelAddress.class, addressIds[i]);
+        }catch (SQLException sql) {
+        }
+      }
+    }
+
+    ProductBusiness.removeProductApplication(IWContext.getInstance(), supplierId);
+    return product.getID();
+  }
+
   public static Product getProduct(int productId) throws SQLException{
     Object obj = products.get(Integer.toString(productId));
     if (obj == null) {
@@ -254,8 +314,12 @@ public class ProductBusiness {
     return getProducts(-1, null);
   }
 
+  public static List getProducts(ICCategory category) {
+    return getProducts(-1, category.getID(), null,null);
+  }
+
   public static List getProducts(ProductCategory productCategory) {
-    return getProducts(-1, productCategory.getID(), null,null);
+    return getProducts((ICCategory) productCategory);
   }
 
   public static List getProducts(idegaTimestamp stamp) {
@@ -292,7 +356,7 @@ public class ProductBusiness {
 
           Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
           Product product = (Product) Product.getStaticInstance(Product.class);
-//          ProductCategory pCat = (ProductCategory) ProductCategory.getStaticInstance(ProductCategory.class);
+          ProductCategory pCat = (ProductCategory) ProductCategory.getStaticInstance(ProductCategory.class);
           Product prod = null;
           //Service tService = (Service) Service.getStaticInstance(Service.class);
 
@@ -301,24 +365,33 @@ public class ProductBusiness {
           String Ptable = Product.getProductEntityName();
           String catMiddle = EntityControl.getManyToManyRelationShipTableName(ProductCategory.class,Product.class);
 
-
           StringBuffer timeframeSQL = new StringBuffer();
-            timeframeSQL.append("SELECT "+Ptable+".* FROM "+Ptable+", "+Ttable+", "+middleTable);
+            timeframeSQL.append("SELECT distinct ("+Ptable+".*) FROM "+Ptable);
+            if (from != null && to != null) {
+              timeframeSQL.append(", "+Ttable+", "+middleTable);
+            }
             if (productCategoryId != -1) {
               timeframeSQL.append(", "+catMiddle);
             }
             timeframeSQL.append(" WHERE ");
-            timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
-            timeframeSQL.append(" AND ");
-            timeframeSQL.append(Ptable+"."+product.getIDColumnName()+" = "+middleTable+"."+product.getIDColumnName());
+            timeframeSQL.append(Ptable+"."+Product.getColumnNameIsValid()+" = 'Y'");
+            if (from != null && to != null) {
+              timeframeSQL.append(" AND ");
+              timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
+              timeframeSQL.append(" AND ");
+              timeframeSQL.append(Ptable+"."+product.getIDColumnName()+" = "+middleTable+"."+product.getIDColumnName());
+            }
+
             if (productCategoryId != -1) {
               timeframeSQL.append(" AND ");
               timeframeSQL.append(Ptable+"."+product.getIDColumnName()+" = "+catMiddle+"."+product.getIDColumnName());
+              timeframeSQL.append(" AND ");
+              timeframeSQL.append(catMiddle+"."+pCat.getIDColumnName() +" = "+productCategoryId);
             }
 
           // Hondla ef supplierId != -1
           List tempProducts = new Vector();
-          if (supplierId != -1) getProducts(supplierId);
+          if (supplierId != -1) tempProducts = getProducts(supplierId);
           if (tempProducts.size() > 0) {
             timeframeSQL.append(" AND ");
             timeframeSQL.append(middleTable+"."+product.getIDColumnName()+" in (");
@@ -344,16 +417,18 @@ public class ProductBusiness {
             timeframeSQL.append(")");
           }
 
-          timeframeSQL.append(" AND ");
-          timeframeSQL.append(Ptable+"."+Product.getColumnNameIsValid()+" = 'Y'");
-          timeframeSQL.append(" ORDER BY "+Timeframe.getTimeframeFromColumnName());
+          if (from != null && to != null) {
+            timeframeSQL.append(" ORDER BY "+Timeframe.getTimeframeFromColumnName());
+          }
 
-          products = EntityFinder.findAll(Product.getStaticInstance(Product.class),timeframeSQL.toString());
+          //System.err.println(timeframeSQL.toString());
+          products = EntityFinder.getInstance().findAll(Product.class,timeframeSQL.toString());
 
 
-      }catch(SQLException sql) {
-        sql.printStackTrace(System.err);
+      }catch(IDOFinderException  ido) {
+        ido.printStackTrace(System.err);
       }
+
     return products;
   }
 
