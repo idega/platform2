@@ -273,6 +273,10 @@ public HttpServletRequest getRequest(){
 	return this.Request;
 }
 
+public Cookie[] getCookies() {
+  return this.getRequest().getCookies();
+}
+
 public String getParameter(String parameterName){
   return getRequest().getParameter(parameterName);
 }
