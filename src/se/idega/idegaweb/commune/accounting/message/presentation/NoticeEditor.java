@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeEditor.java,v 1.9 2003/10/08 08:44:12 anders Exp $
+ * $Id: NoticeEditor.java,v 1.10 2004/01/07 09:12:27 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.message.business.NoticeException;
  * notice message to all providers. The message is sent as an
  * e-mail and as case.
  * <p>
- * Last modified: $Date: 2003/10/08 08:44:12 $ by $Author: anders $
+ * Last modified: $Date: 2004/01/07 09:12:27 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class NoticeEditor extends AccountingBlock {
 
@@ -321,7 +321,7 @@ public class NoticeEditor extends AccountingBlock {
 		}		
 		app.setMainPanel(list);
 		app.setMainPanel(new Break()); // Test
-		app.setMainPanel(getErrorText("OBS! Detta Šr en testversion. Inga riktiga meddelanden har skickats."));
+//		app.setMainPanel(getErrorText("OBS! Detta Šr en testversion. Inga riktiga meddelanden har skickats."));
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_DEFAULT, KEY_BACK, "Tillbaka");
 		app.setButtonPanel(bp);
