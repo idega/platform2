@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/13 13:59:29 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/14 12:21:39 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.105 $
+ * @version $Revision: 1.106 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -331,10 +331,12 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			SchoolType schoolType = null;
 			//Find the oppen verksamhet and fritidsklubb
 			try {
-				String SchoolYearName = schoolClassMember.getSchoolYear().getName();
-				int schoolYear = Integer.parseInt(SchoolYearName);
-
-				if (schoolYear <= 3) {
+				String schoolYearName = schoolClassMember.getSchoolYear().getName();
+				int len = schoolYearName.length();
+				int schoolYearInt = Integer.parseInt(schoolYearName.substring(len-1,len));
+//				int schoolYear = Integer.parseInt(schoolYearName);
+				
+				if (schoolYearInt <= 3) {
 					for (Iterator i = getSchoolTypes(schoolClassMember).iterator(); i.hasNext();) {
 						schoolType = (SchoolType) i.next();
 						if (schoolType.getLocalizationKey().equalsIgnoreCase(OPPEN_VERKSAMHET)) {
@@ -343,7 +345,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 						}
 					}
 				}
-				else if (validFritidsklubbYears.contains(SchoolYearName)) {
+				else if (validFritidsklubbYears.contains(schoolYearName)) {
 					for (Iterator i = getSchoolTypes(schoolClassMember).iterator(); i.hasNext();) {
 						schoolType = (SchoolType) i.next();
 						if (schoolType.getLocalizationKey().equalsIgnoreCase(FRITIDSKLUBB)) {
@@ -472,9 +474,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		School school = schoolClassMember.getSchoolClass().getSchool();
 		
 		Collection regulationForResourceArray = getRegulationForResourceArray(regBus, schoolClassMember, resource, provider);
-		int regSize = regulationForResourceArray.size();
+//		int regSize = regulationForResourceArray.size();
 
-		errorRelated.append("# of Regulations "+regSize);
+//		errorRelated.append("# of Regulations "+regSize);
 
 		for (Iterator i = regulationForResourceArray.iterator(); i.hasNext();) {
 			try {
