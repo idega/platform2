@@ -28,6 +28,10 @@ public class NewsTable extends PresentationObjectContainer {
   protected int tableColumns;
   protected int rowToAddIn;
   protected int colToAddIn;
+	private int cellPadding = 0;
+	private int cellSpacing = 0;
+	private String firstColor = null;
+	private String secondColor = null;
 
   private String sAlign = "left";
 
@@ -44,6 +48,14 @@ public class NewsTable extends PresentationObjectContainer {
   public NewsTable(int iLayout,int iNumberOfObjects){
     iLayout = iLayout ;
     iPlannedObjectCount = iNumberOfObjects;
+  }
+
+	public NewsTable(int iLayout,int cellPadding,int cellSpacing,String firstColor,String secondColor){
+    iLayout = iLayout ;
+		this.cellPadding = cellPadding;
+		this.cellSpacing = cellSpacing;
+		this.firstColor = firstColor;
+		this.secondColor = secondColor;
   }
 
   private void init(){
@@ -66,6 +78,14 @@ public class NewsTable extends PresentationObjectContainer {
       table = new Table(1,iPlannedObjectCount);
     }
     table.setWidth("100%");
+		table.setCellpadding(cellPadding);
+		table.setCellspacing(cellSpacing);
+		if(firstColor != null && secondColor !=null){
+		  table.setVerticalZebraColored(firstColor,secondColor);
+		}
+		else if(firstColor != null && secondColor == null){
+		  table.setColor(firstColor);
+		}
     table.setResizable(true);
     //table.setBorder(1);
   }

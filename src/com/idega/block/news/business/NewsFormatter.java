@@ -91,13 +91,19 @@ public class NewsFormatter {
     return newsString;
   }
 
-  public static  String getInfoText(NwNews news,Content content,String sCategory, Locale locale, boolean showOnlyDates){
-    DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,locale);
-    String NewsStamp = content.getLastUpdated()!=null?df.format((java.util.Date)content.getLastUpdated()):null;
+  public static  String getInfoText(NwNews news,Content content,String sCategory, Locale locale, boolean showOnlyDates,boolean showTime){
+    DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,locale);
+		DateFormat dt = DateFormat.getTimeInstance(DateFormat.SHORT,locale);
+    String NewsDate = content.getLastUpdated()!=null?df.format((java.util.Date)content.getLastUpdated()):null;
+		String NewsTime = content.getLastUpdated()!=null?df.format((java.util.Date)content.getLastUpdated()):null;
     StringBuffer info = new StringBuffer();
     String spacer = " | ";
-    if(showOnlyDates && NewsStamp != null){
-      info.append(NewsStamp);
+    if(showOnlyDates && NewsDate != null){
+      info.append(NewsDate);
+			if(showTime && !"".equals(NewsTime)){
+				info.append(" ");
+        info.append(NewsTime);
+      }
     }
     else{
       if(!"".equals(sCategory)){
@@ -112,12 +118,17 @@ public class NewsFormatter {
         info.append(news.getSource());
         info.append(spacer);
       }
-      if(!"".equals(NewsStamp)){
-        info.append(NewsStamp);
+      if(!"".equals(NewsDate)){
+        info.append(NewsDate);
+        info.append(spacer);
+      }
+			if(!"".equals(NewsDate)){
+        info.append(NewsDate);
         //info.append(spacer);
       }
     }
-    return info.toString();
+		String inf = TextSoap.findAndReplace(info.toString(), " ","&nbsp;");
+    return inf;
 
   }
 
