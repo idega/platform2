@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.18 2002/11/04 15:58:20 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.19 2002/11/12 19:35:32 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package se.idega.idegaweb.commune.message.business;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -33,6 +34,7 @@ import com.idega.core.data.ICFile;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWProperty;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserProperties;
@@ -45,6 +47,7 @@ import com.idega.user.data.User;
 public class MessageBusinessBean extends com.idega.block.process.business.CaseBusinessBean implements MessageBusiness {
 
   private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
+	public static final String MESSAGE_PROPERTIES = "message_properties";
 	private String TYPE_USER_MESSAGE = "SYMEDAN";
 	private String TYPE_SYSTEM_PRINT_MAIL_MESSAGE = "SYMEBRV";
 	private String TYPE_SYSTEM_PRINT_ARCHIVATION_MESSAGE = "SYMEARK";
@@ -147,22 +150,22 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	public Message createUserMessage(User user, String subject, String body) {
 		try {
 			Message message = null;
-	   	 	//IWPropertyList property = ((UserBusiness)com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(),UserBusiness.class)).getUserProperties(user).getProperties(IW_BUNDLE_IDENTIFIER);
 			boolean sendMail = getIfUserPreferesMessageByEmail(user);
 			boolean sendToBox = getIfUserPreferesMessageInMessageBox(user);
-			/*
-			if ( property.getProperty(USER_PROP_SEND_TO_EMAIL) != null )
-				sendMail = new Boolean(property.getProperty(USER_PROP_SEND_TO_EMAIL)).booleanValue();
-			if ( property.getProperty(USER_PROP_SEND_TO_MESSAGE_BOX) != null )
-				sendToBox = new Boolean(property.getProperty(USER_PROP_SEND_TO_MESSAGE_BOX)).booleanValue();
-			*/
 			
-			if ( sendToBox )
+			System.out.println("SendMail: "+sendMail);
+			System.out.println("SendToBox: "+sendToBox);
+			
+			if ( sendToBox ) {
 				message = createMessage(getTypeUserMessage(), user, subject, body);
+				System.out.println("Creating message...");
+			}
 			if ( sendMail ) {
 				Email mail = ((UserBusiness)com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(),UserBusiness.class)).getUserMail(user);	
-				if ( mail != null )
+				if ( mail != null ) {
 					sendMessage(mail.getEmailAddress(),subject,body);
+					System.out.println("Sending e-mail...");
+				}
 			}
 			//return message;
 			return message;
@@ -340,7 +343,8 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	
 	protected IWPropertyList getUserMessagePreferences(User user) {
 		try{
-			return getUserPreferences(user).getProperties(IW_BUNDLE_IDENTIFIER);
+			IWPropertyList messageProperties = getUserPreferences(user).getProperties(MESSAGE_PROPERTIES);
+			return messageProperties;
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -350,10 +354,11 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 
 	public boolean getIfUserPreferesMessageByEmail(User user){
 		IWPropertyList propertyList = getUserMessagePreferences(user);
+		
 		if (propertyList != null) {
 			String property = propertyList.getProperty(USER_PROP_SEND_TO_EMAIL);
 			if(property!=null)
-				return Boolean.getBoolean(property);
+				return Boolean.valueOf(property).booleanValue();
 		}
 		return true;
 	}
@@ -363,7 +368,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		if (propertyList != null) {
 			String property = propertyList.getProperty(USER_PROP_SEND_TO_MESSAGE_BOX);
 			if(property!=null)
-				return Boolean.getBoolean(property);
+				return Boolean.valueOf(property).booleanValue();
 		}
 		return true;
 	}
