@@ -178,7 +178,7 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 					table.add(getSmallText(String.valueOf(queueWithin12Months)), column++, row);
 					
 					
-					table.add(getSmallText(new IWTimestamp((java.sql.Date)stat.getLastUpdate()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
+					table.add(getSmallText(new IWTimestamp(stat.getLastUpdate()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
 					
 				}
 				else {
