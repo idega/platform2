@@ -22,7 +22,7 @@ import com.idega.user.data.User;
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
 public class WorkReportClubMemberBMPBean extends GenericEntity implements WorkReportClubMember{
-	protected final static String ENTITY_NAME = "ISI_WR_CLUB_MEMBERS";
+	protected final static String ENTITY_NAME = "ISI_WR_CLUB_MEMB";
 	protected final static String COLUMN_NAME_REPORT_ID = "ISI_WORK_REPORT_ID";
 	protected final static String COLUMN_NAME_WORK_REPORT_GROUP = "WR_GROUP_ID";
 	protected final static String COLUMN_NAME_USER_ID = "IC_USER_ID";

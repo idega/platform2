@@ -10,7 +10,6 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupType;
-import com.inet.pool.i;
 
 /**
  * Description: The list of leagues and their info in the import files<br>
