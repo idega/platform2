@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.67 2004/06/28 17:03:08 aron Exp $
+ * $Id: CampusAllocator.java,v 1.68 2004/06/28 18:17:00 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -53,6 +53,8 @@ import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.ApartmentView;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.ComplexTypeView;
+import com.idega.block.building.data.ComplexTypeViewHome;
 import com.idega.block.building.data.Floor;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -246,8 +248,17 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				}
 			}
 			// get type and complex list
-			else
+			else{
+				Table table = new Table(3,1);
+				table.setAlignment(3,1,Table.HORIZONTAL_ALIGN_RIGHT);
+				Link statsLink = getLink(localize("allocation.show_statistic","Show statistics"));
+				statsLink.addParameter("shw_stats","true");
+				table.add(statsLink,3,1);
+				table.setWidth(Table.HUNDRED_PERCENT);
+				Frame.add(table,1,row++);
 				Frame.add(getCategoryLists(iwc), 1, row);
+				
+			}
 			Frame.setRowVerticalAlignment(2, "top");
 			add(Frame);
 		}
@@ -463,88 +474,122 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		T.setTitlesHorizontal(true);
 		T.addTitle(localize("apartment_category", "Apartment category"));
 		T.setWidth("100%");
+		boolean showStatistics = iwc.isParameterSet("shw_stats");
+		Image printImage = getBundle().getImage("print.gif");
 		Collection Categories = campusService.getBuildingService().getApartmentCategoryHome().findAll();
-		Map allocationView = WaitingListFinder.getAllocationView();
-		if (Categories != null && allocationView!=null) {
-			int row = 2;
-			int cLen = Categories.size();
-			int listCount = 0, contractCount = 0, appliedCount = 0, appCnt1 = 0, appCnt2 = 0, appCnt3 = 0;
-			int totalCount = 0, totalFree = 0, totalApplied = 0, totApp1 = 0, totApp2 = 0, totApp3 = 0;
-			int freeCount = 0;
-			int type, cmpx;
-			Image printImage = getBundle().getImage("print.gif");
-			for (Iterator iter = Categories.iterator(); iter.hasNext();) {
-				ApartmentCategory AC = (ApartmentCategory) iter.next();
+		if(showStatistics){
+			Map allocationView = WaitingListFinder.getAllocationView();
+			if (Categories != null && allocationView!=null) {
+				int row = 2;
+				int cLen = Categories.size();
+				int listCount = 0, contractCount = 0, appliedCount = 0, appCnt1 = 0, appCnt2 = 0, appCnt3 = 0;
+				int totalCount = 0, totalFree = 0, totalApplied = 0, totApp1 = 0, totApp2 = 0, totApp3 = 0;
+				int freeCount = 0;
+				int type, cmpx;
 				
-				List L = (List) allocationView.get(((Integer)AC.getPrimaryKey()));
-				//BuildingFinder.getApartmentTypesComplexForCategory(AC.getID());
-				if (L != null) {
-					int lLen = L.size();
-					int catlist = 0, catfree = 0, catcont = 0, catapp = 0, catcnt1 = 0, catcnt2 = 0, catcnt3 = 0;
-					T.add(getHeader(AC.getName()), 1, row);
-					row++;
-					for (int j = 0; j < lLen; j++) {
-						//						ApartmentTypeComplexHelper eAprtType = (ApartmentTypeComplexHelper) L.get(j);
-						AllocationView view = (AllocationView) L.get(j);
-						type = view.getTypeId();
-						cmpx = view.getComplexId();
-						listCount = view.getTotalNumberOfApartments();
-						freeCount = view.getNumberOfFreeApartments();
-						appCnt1 = view.getNumberOfChoice1();
-						appCnt2 = view.getNumberOfChoice2();
-						appCnt3 = view.getNumberOfChoice3();
-						appliedCount = appCnt1 + appCnt2 + appCnt3;
-						totalCount += listCount;
-						catlist += listCount;
-						//						freeCount = listCount - contractCount;
-						totalFree += freeCount;
-						catfree += freeCount;
-						totalApplied += appliedCount;
-						catapp += appliedCount;
-						totApp1 += appCnt1;
-						totApp2 += appCnt2;
-						totApp3 += appCnt3;
-						catcnt1 += appCnt1;
-						catcnt2 += appCnt2;
-						catcnt3 += appCnt3;
-						StringBuffer name = new StringBuffer(view.getTypeName());
-						name.append(" (");
-						name.append(view.getComplexName());
-						name.append(")");
-						T.add(getPDFLink(iwc,printImage, type, cmpx), 1, row);
-						T.add(getListLink(name.toString(), type, cmpx), 2, row);
-						T.add(getText(String.valueOf(listCount)), 3, row);
-						T.add(getText(String.valueOf(freeCount)), 4, row);
-						T.add(getText(String.valueOf(appliedCount)), 5, row);
-						T.add(getText(String.valueOf(appCnt1)), 6, row);
-						T.add(getText(String.valueOf(appCnt2)), 7, row);
-						T.add(getText(String.valueOf(appCnt3)), 8, row);
+				for (Iterator iter = Categories.iterator(); iter.hasNext();) {
+					ApartmentCategory AC = (ApartmentCategory) iter.next();
+					
+					List L = (List) allocationView.get(((Integer)AC.getPrimaryKey()));
+				
+					if (L != null) {
+						int lLen = L.size();
+						int catlist = 0, catfree = 0, catcont = 0, catapp = 0, catcnt1 = 0, catcnt2 = 0, catcnt3 = 0;
+						T.add(getHeader(AC.getName()), 1, row);
+						row++;
+						for (int j = 0; j < lLen; j++) {
+							
+							AllocationView view = (AllocationView) L.get(j);
+							type = view.getTypeId();
+							cmpx = view.getComplexId();
+							listCount = view.getTotalNumberOfApartments();
+							freeCount = view.getNumberOfFreeApartments();
+							appCnt1 = view.getNumberOfChoice1();
+							appCnt2 = view.getNumberOfChoice2();
+							appCnt3 = view.getNumberOfChoice3();
+							appliedCount = appCnt1 + appCnt2 + appCnt3;
+							totalCount += listCount;
+							catlist += listCount;
+							//						freeCount = listCount - contractCount;
+							totalFree += freeCount;
+							catfree += freeCount;
+							totalApplied += appliedCount;
+							catapp += appliedCount;
+							totApp1 += appCnt1;
+							totApp2 += appCnt2;
+							totApp3 += appCnt3;
+							catcnt1 += appCnt1;
+							catcnt2 += appCnt2;
+							catcnt3 += appCnt3;
+							StringBuffer name = new StringBuffer(view.getTypeName());
+							name.append(" (");
+							name.append(view.getComplexName());
+							name.append(")");
+							T.add(getPDFLink(iwc,printImage, type, cmpx), 1, row);
+							T.add(getListLink(name.toString(), type, cmpx), 2, row);
+							T.add(getText(String.valueOf(listCount)), 3, row);
+							T.add(getText(String.valueOf(freeCount)), 4, row);
+							T.add(getText(String.valueOf(appliedCount)), 5, row);
+							T.add(getText(String.valueOf(appCnt1)), 6, row);
+							T.add(getText(String.valueOf(appCnt2)), 7, row);
+							T.add(getText(String.valueOf(appCnt3)), 8, row);
+							row++;
+						}
+						T.add(getHeader(catlist), 3, row);
+						T.add(getHeader(catfree), 4, row);
+						T.add(getHeader(catapp), 5, row);
+						T.add(getHeader(catcnt1), 6, row);
+						T.add(getHeader(catcnt2), 7, row);
+						T.add(getHeader(catcnt3), 8, row);
 						row++;
 					}
-					T.add(getHeader(catlist), 3, row);
-					T.add(getHeader(catfree), 4, row);
-					T.add(getHeader(catapp), 5, row);
-					T.add(getHeader(catcnt1), 6, row);
-					T.add(getHeader(catcnt2), 7, row);
-					T.add(getHeader(catcnt3), 8, row);
-					row++;
 				}
+				T.add(getHeader(localize("apartment_category", "Apartment category")), 1, 1);
+				T.add(getHeader(localize("apartments", "Apartments")), 3, 1);
+				T.add(getHeader(localize("available", "Available")), 4, 1);
+				T.add(getHeader(localize("applied", "Applied")), 5, 1);
+				T.add(getHeader(localize("choice1", "1.Choice")), 6, 1);
+				T.add(getHeader(localize("choice2", "2.Choice")), 7, 1);
+				T.add(getHeader(localize("choice3", "3.Choice")), 8, 1);
+				T.add(getPDFLink(iwc,printImage, -1, -1), 1, row);
+				T.add(getHeader(totalCount), 3, row);
+				T.add(getHeader(totalFree), 4, row);
+				T.add(getHeader(totalApplied), 5, row);
+				T.add(getHeader(totApp1), 6, row);
+				T.add(getHeader(totApp2), 7, row);
+				T.add(getHeader(totApp3), 8, row);
+				row++;
 			}
-			T.add(getHeader(localize("apartment_category", "Apartment category")), 1, 1);
-			T.add(getHeader(localize("apartments", "Apartments")), 3, 1);
-			T.add(getHeader(localize("available", "Available")), 4, 1);
-			T.add(getHeader(localize("applied", "Applied")), 5, 1);
-			T.add(getHeader(localize("choice1", "1.Choice")), 6, 1);
-			T.add(getHeader(localize("choice2", "2.Choice")), 7, 1);
-			T.add(getHeader(localize("choice3", "3.Choice")), 8, 1);
-			T.add(getPDFLink(iwc,printImage, -1, -1), 1, row);
-			T.add(getHeader(totalCount), 3, row);
-			T.add(getHeader(totalFree), 4, row);
-			T.add(getHeader(totalApplied), 5, row);
-			T.add(getHeader(totApp1), 6, row);
-			T.add(getHeader(totApp2), 7, row);
-			T.add(getHeader(totApp3), 8, row);
-			row++;
+			
+		}
+		else{
+			int row = 2;
+			ComplexTypeViewHome ctHome = campusService.getBuildingService().getComplexTypeViewHome();
+			if(Categories!=null && !Categories.isEmpty()){
+				for (Iterator iter = Categories.iterator(); iter.hasNext();) {
+					ApartmentCategory category = (ApartmentCategory) iter.next();
+					Collection complexTypes = ctHome.findByCategory((Integer)category.getPrimaryKey());
+					T.add(getHeader(category.getName()), 1, row);
+					T.getContentTable().mergeCells(1,row,2,row);
+					row++;
+					for (Iterator iterator = complexTypes.iterator(); iterator.hasNext();) {
+						ComplexTypeView complexType = (ComplexTypeView) iterator.next();
+						StringBuffer name = new StringBuffer(complexType.getApartmentTypeName());
+						name.append(" (");
+						name.append(complexType.getComplexName());
+						name.append(")");
+						T.add(getPDFLink(iwc,printImage, complexType.getApartmentTypeID().intValue(), complexType.getComplexID().intValue()), 1, row);
+						T.add(getListLink(name.toString(), complexType.getApartmentTypeID().intValue(), complexType.getComplexID().intValue()), 2, row);
+						row++;
+					}
+					
+				}
+				T.add(getHeader(localize("apartment_category", "Apartment category")), 1, 1);
+				
+				T.add(getPDFLink(iwc,printImage, -1, -1), 1, row);
+			
+			}
+			
 		}
 		return T;
 	}
@@ -688,8 +733,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	}
 
 	private Link getListLink(String name, int type_id, int complex_id) {
-		Link L = new Link(name);
-		L.setFontSize(fontSize);
+		Link L = getLink((name));
+		//L.setFontSize(fontSize);
 		L.addParameter(TYPE_ID, type_id);
 		L.addParameter(COMPLEX_ID, complex_id);
 		return L;
@@ -1137,7 +1182,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	}
 	public Link getPDFLink(IWContext iwc,PresentationObject MO, int aprt_type_id, int cmplx_id) {
 		Link link = new Link(MO);
-		link.setURL(iwc.getIWMainApplication().getMediaServletURI()+"apps_type_"+aprt_type_id+"_complex_"+cmplx_id+".xls");
+		link.setURL(iwc.getIWMainApplication().getMediaServletURI()+"apps_type_"+aprt_type_id+"_complex_"+cmplx_id+".pdf");
 	    link.addParameter(CampusApplicationWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(CampusApplicationWriter.class));
 	    link.addParameter(CampusApplicationWriter.PRM_APARTMENT_TYPE_ID, aprt_type_id);
 	    link.addParameter(CampusApplicationWriter.PRM_COMPLEX_ID, cmplx_id);
