@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.1 2002/06/28 15:16:30 palli Exp $
+ * $Id: CitizenAccountApplication.java,v 1.2 2002/07/12 10:21:58 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -46,6 +46,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 
   private boolean _isPIDError = false;
   private boolean _isPhoneHomeError = false;
+  private boolean _isEmailError = false;
   private boolean _isError = false;
   private Vector _errorMsg = null;
 
@@ -86,10 +87,14 @@ public class CitizenAccountApplication extends CommuneBlock {
     String phone_work = localize(PARAM_PHONE_WORK,"Work/mobile phone");
 
     TextInput inputPid = new TextInput(PARAM_PID);
+    inputPid.setMaxlength(40);
     TextInput inputEmail = new TextInput(PARAM_EMAIL);
     inputEmail.setAsEmail(localize(ERROR_NOT_EMAIL,"Not a valid email"));
+    inputEmail.setMaxlength(40);
     TextInput inputPhoneHome = new TextInput(PARAM_PHONE_HOME);
+    inputPhoneHome.setMaxlength(20);
     TextInput inputPhoneWork = new TextInput(PARAM_PHONE_WORK);
+    inputPhoneWork.setMaxlength(20);
 
     inputPid.setStyle(getSmallTextFontStyle());
     inputEmail.setStyle(getSmallTextFontStyle());
@@ -117,7 +122,10 @@ public class CitizenAccountApplication extends CommuneBlock {
       inputTable.add(getSmallText(pid),1,1);
     else
       inputTable.add(getSmallErrorText(pid),1,1);
-    inputTable.add(getSmallText(email),2,1);
+    if (!_isEmailError)
+      inputTable.add(getSmallText(email),2,1);
+    else
+      inputTable.add(getSmallErrorText(email),2,1);
     if (!_isPhoneHomeError)
       inputTable.add(getSmallText(phone_home),1,3);
     else
@@ -149,13 +157,14 @@ public class CitizenAccountApplication extends CommuneBlock {
     }
     accountForm.add(inputTable);
 
-
     add(accountForm);
   }
 
   private void submitForm(IWContext iwc) {
     String pidString = iwc.getParameter(PARAM_PID);
     String phoneHomeString = iwc.getParameter(PARAM_PHONE_HOME);
+    String emailString = iwc.getParameter(PARAM_EMAIL);
+    String phoneWorkString = iwc.getParameter(PARAM_PHONE_WORK);
 
     _errorMsg = null;
 
@@ -164,6 +173,14 @@ public class CitizenAccountApplication extends CommuneBlock {
       _isError = true;
       addErrorString(localize(ERROR_PID,"PID invalid"));
     }
+
+    if (emailString == null || emailString.equals("")) {
+      _isEmailError = true;
+      _isError = true;
+      addErrorString(localize(ERROR_NOT_EMAIL,"Email invalid"));
+    }
+/*    else
+      checkEmail(emailString);*/
 
     if (phoneHomeString == null || phoneHomeString.equals("")) {
       _isPhoneHomeError = true;
@@ -175,9 +192,6 @@ public class CitizenAccountApplication extends CommuneBlock {
       viewForm(iwc);
       return;
     }
-
-    String emailString = iwc.getParameter(PARAM_EMAIL);
-    String phoneWorkString = iwc.getParameter(PARAM_PHONE_WORK);
 
     boolean insert = false;
     try {
