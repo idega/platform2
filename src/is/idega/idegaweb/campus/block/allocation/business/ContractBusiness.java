@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.25 2003/12/17 12:46:03 aron Exp $
+ * $Id: ContractBusiness.java,v 1.26 2004/03/12 23:32:32 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -231,7 +231,7 @@ public  class ContractBusiness {
     }
   }
 
-  public static void endContract(int iContractId,IWTimestamp movingDate,String info,boolean datesync){
+  public static Contract endContract(int iContractId,IWTimestamp movingDate,String info,boolean datesync){
     try {
       Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
       C.setMovingDate(movingDate.getSQLDate());
@@ -240,10 +240,11 @@ public  class ContractBusiness {
       C.setResignInfo(info);
       C.setStatusEnded();
       C.update();
+      return C;
     }
     catch (SQLException ex) {
       ex.printStackTrace( );
-    }
+    }return null;
   }
 
   public static void returnKey(IWApplicationContext iwac,int iContractId){
