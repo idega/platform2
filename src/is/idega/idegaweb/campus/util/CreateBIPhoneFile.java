@@ -136,7 +136,8 @@ public class CreateBIPhoneFile {
 				bWriter.write('\t');
 
 				bWriter.write(giro_number);
-				bWriter.newLine();	
+				bWriter.write(13);	
+				bWriter.write(10);	
 				
 				line = bReader.readLine();						
 			}
