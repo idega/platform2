@@ -128,7 +128,7 @@ public class ApplicationQueueAdmin extends ChildCareBlock{
 		table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 		
 		form.add(getLegendTable());
-		SubmitButton update = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.update", "Update"), ACTION, ACTION_UPDATE));
+		SubmitButton update = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.update_priority", "Update"), ACTION, ACTION_UPDATE));
 		GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back",localize("child_care.select_new_child","Select new child")));
 		back.setPageToOpen(getResponsePage());
 		form.add(Text.BREAK);
