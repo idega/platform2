@@ -215,12 +215,12 @@ public class TextEditorWindow extends IWAdminWindow{
     imageInsert.setImSessionImageName(prmImageId);
     imageInsert.setUseBoxParameterName(prmUseImage);
     imageInsert.setSelected(false);
-      if ( hasTxText ) {
-        if ( txText.getIncludeImage()) {
-          imageInsert.setImageId(txText.getImageId());
-          imageInsert.setSelected(true);
-        }
-      }
+    if ( hasTxText ) {
+      if(txText.getImageId() > 0)
+        imageInsert.setImageId(txText.getImageId());
+      if ( txText.getIncludeImage())
+        imageInsert.setSelected(true);
+    }
 
     addLeft(iwrb.getLocalizedString("title","Title"),tiHeadline,true);
     addLeft(iwrb.getLocalizedString("locale","Locale"), LocaleDrop,true);
