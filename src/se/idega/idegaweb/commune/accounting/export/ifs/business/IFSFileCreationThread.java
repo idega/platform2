@@ -438,7 +438,7 @@ public class IFSFileCreationThread extends Thread {
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write(executionDate.getDateString("yyyy-MM-dd"));
+					bWriter.write(paymentDate.getDateString("yyyy-MM-dd"));
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
@@ -505,7 +505,7 @@ public class IFSFileCreationThread extends Thread {
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write(executionDate.getDateString("yyyy-MM-dd"));
+					bWriter.write(paymentDate.getDateString("yyyy-MM-dd"));
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
