@@ -221,7 +221,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			isBulkManual = true;
 		}
 
-		//isBulkType = getDocumentBusiness(iwc).isBulkLetterType(currentType);
+		isBulkType = getDocumentBusiness(iwc).isBulkLetterType(currentType);
 
 		if (iwc.isParameterSet(PARAM_MESSAGE_ID)) {
 			msgID = Integer.parseInt(iwc.getParameter(PARAM_MESSAGE_ID));
