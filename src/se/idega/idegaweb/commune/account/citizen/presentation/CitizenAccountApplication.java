@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.34 2002/11/15 14:05:44 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.35 2002/11/19 12:14:34 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,11 +28,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/15 14:05:44 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/19 12:14:34 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -293,7 +293,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 		form.maintainParameter(CHILDREN_COUNT_KEY);
 		form.maintainParameter(APPLICATION_REASON_KEY);
 		form.maintainParameter(CIVIL_STATUS_KEY);
-
+        form.add(new HiddenInput(UNKNOWN_CITIZEN_FORM_2_SUBMIT_KEY,
+                                 UNKNOWN_CITIZEN_FORM_2_SUBMIT_DEAFULT));
 		final Table table = createTable(this);
 		int row = 1;
 		if (getBooleanParameter(iwc, HAS_COHABITANT_KEY)) {
@@ -648,14 +649,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 			return null;
 		}
 		return digitOnlyInput.toString();
-	}
-
-	private static void copyParameterToHidden(final IWContext iwc, final Form form, final String key) {
-		if (iwc.isParameterSet(key)) {
-			final String value = iwc.getParameter(key);
-			final HiddenInput hiddenInput = new HiddenInput(key, value);
-			form.add(hiddenInput);
-		}
 	}
 
 	private static int parseAction(final IWContext iwc) {
