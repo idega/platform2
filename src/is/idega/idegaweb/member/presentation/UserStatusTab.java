@@ -148,7 +148,8 @@ public class UserStatusTab extends UserTab {
 		if (status != null) {
 			if (status.size() > 0) {
 				IWResourceBundle iwrb = getResourceBundle(iwc);
-
+				_statusField.addOption(new SelectOption(" "," "));
+				
 				Iterator it = status.iterator();
 				while (it.hasNext()) {
 					Status s = (Status)it.next();
@@ -218,7 +219,7 @@ public class UserStatusTab extends UserTab {
 				fieldValues.put(_statusFieldName, status);
 			}
 			else {
-				fieldValues.put(_statusFieldName, "");
+				fieldValues.put(_statusFieldName, " ");
 			}
 
 //			fieldValues.put(_parent1StatusFieldName, new Boolean(parent1Status != null));
@@ -239,7 +240,7 @@ public class UserStatusTab extends UserTab {
 		try {
 			String status = (String)fieldValues.get(_statusFieldName);
 			System.out.println("Store: status = " + status);
-			if (status != null && !status.equals("")) {
+			if (status != null && !status.equals(" ") && !status.equals("")) {
 				int user_id = this.getUserId();
 				int group_id = this.getGroupID();
 				int status_id = Integer.parseInt(status);
