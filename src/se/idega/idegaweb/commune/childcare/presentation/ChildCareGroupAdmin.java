@@ -28,13 +28,22 @@ import com.idega.util.PersonalIDFormatter;
  */
 public class ChildCareGroupAdmin extends ChildCareBlock {
 
+	protected static final int STATUS_ACTIVE = 1;
+	protected static final int STATUS_NOT_YET_ACTIVE = 2;
+
 	protected static final String PARAMETER_CHILD_ID = "cc_remove_child_id";
+	protected static final String PARAMETER_STATUS_SORT = "cc_status_sort";
+	
+	private int sort = -1;
+	private boolean showNotYetActive = false;
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
 		if (getSession().hasPrognosis()) {
+			parse(iwc);
+			
 			Table table = new Table(1,5);
 			table.setWidth(getWidth());
 			table.setCellpadding(0);
@@ -77,7 +86,10 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setColumns(7);
+		if (sort == STATUS_NOT_YET_ACTIVE)
+			table.setColumns(7);
+		else
+			table.setColumns(6);
 		table.setRowColor(1, getHeaderColor());
 		int row = 1;
 		int column = 1;
@@ -86,7 +98,10 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.address","Address"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.phone","Phone"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.valid_from","Valid from"), column++, row++);
+		if (sort == STATUS_NOT_YET_ACTIVE)
+			table.add(getLocalizedSmallHeader("child_care.valid_from","Valid from"), column++, row++);
+		else
+			row++;
 			
 		SchoolClassMember student;
 		User child;
@@ -94,12 +109,19 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		Phone phone;
 		Link move;
 		Link delete;
+		Link childInfo;
 		IWTimestamp registered;
+		boolean showComment = false;
 		
 		IWTimestamp stamp = new IWTimestamp();
 		//stamp.addDays(1);
 
-		Collection students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), stamp.getDate());
+		Collection students = null;
+		if (sort != -1)
+			students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), stamp.getDate(), showNotYetActive);
+		else
+			students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), stamp.getDate());
+		
 		Iterator iter = students.iterator();
 		while (iter.hasNext()) {
 			column = 1;
@@ -127,7 +149,20 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			else
 				table.setRowColor(row, getZebraColor2());
 
-			table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
+			if (registered.isLaterThan(stamp)) {
+				showComment = true;
+				table.add(getSmallErrorText("*" + Text.NON_BREAKING_SPACE), column, row);
+			}
+
+			if (getResponsePage() != null) {
+				childInfo = getSmallLink(child.getNameLastFirst(true));
+				childInfo.setEventListener(ChildCareEventListener.class);
+				childInfo.addParameter(getSession().getParameterUserID(), student.getClassMemberId());
+				childInfo.setPage(getResponsePage());
+				table.add(childInfo, column++, row);
+			}
+			else
+				table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
 			table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 			if (address != null)
 				table.add(getSmallText(address.getStreetAddress()), column, row);
@@ -135,9 +170,8 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			if (phone != null)
 				table.add(getSmallText(phone.getNumber()), column, row);
 			column++;
-			if (registered.isLaterThan(stamp))
-				table.add(getSmallText(registered.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column, row);
-			column++;
+			if (sort == STATUS_NOT_YET_ACTIVE)
+				table.add(getSmallText(registered.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			
 			table.setWidth(column, row, 12);
 			table.add(move, column++, row);
@@ -145,6 +179,13 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			table.add(delete, column++, row++);
 		}
 		
+		if (showComment) {
+			table.setHeight(2, row++);
+			table.mergeCells(1, row, table.getColumns(), row);
+			table.add(getSmallErrorText("*"), 1, row);
+			table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.not_yet_active_placing","Placing not yet active")), 1, row++);
+		}
+
 		return table;
 	}
 
@@ -152,14 +193,26 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		Form form = new Form();
 		form.setEventListener(ChildCareEventListener.class);
 		
-		Table table = new Table(3,1);
+		Table table = new Table(7,1);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(2, 2);
+		table.setWidth(4, 16);
+		table.setWidth(6, 2);
 		form.add(table);
 
 		table.add(getSmallHeader(localize("child_care.group","Group")+":"),1,1);
 		table.add(getChildCareGroups(), 3, 1);
+		
+		DropdownMenu statusSort = new DropdownMenu(PARAMETER_STATUS_SORT);
+		statusSort.addMenuElement("-1", localize("child_care.show_all_statuses","Show all"));
+		statusSort.addMenuElement(STATUS_ACTIVE, localize("child_care.show_active","Show active"));
+		statusSort.addMenuElement(STATUS_NOT_YET_ACTIVE, localize("child_care.show_not_yet_active","Show not yet active"));
+		statusSort.setSelectedElement(sort);
+		statusSort.setToSubmit();
+		
+		table.add(getSmallHeader(localize("child_care.status_sort","Sorting")+":"), 5, 1);
+		table.add(statusSort, 7, 1);
 		
 		return form;
 	}
@@ -170,5 +223,21 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		menu.setToSubmit();
 		
 		return menu;	
+	}
+	
+	private void parse(IWContext iwc) {
+		if (iwc.isParameterSet(PARAMETER_STATUS_SORT))
+			sort = Integer.parseInt(iwc.getParameter(PARAMETER_STATUS_SORT));
+			
+		if (sort != -1) {
+			switch (sort) {
+				case STATUS_ACTIVE :
+					showNotYetActive = false;
+					break;
+				case STATUS_NOT_YET_ACTIVE :
+					showNotYetActive = true;
+					break;
+			}
+		}
 	}
 }
