@@ -17,7 +17,6 @@ import com.idega.idegaweb.IWCacheManager;
 */
 public class JModuleObject extends ModuleObjectContainer{
 
-
   private static Map permissionKeyMap = new Hashtable();
   private String cacheKey;
   private boolean cacheable=false;
@@ -186,7 +185,6 @@ public class JModuleObject extends ModuleObjectContainer{
   private void setCacheKey(ModuleInfo modinfo){
     boolean loggedon = LoginBusiness.isLoggedOn(modinfo);
     if(loggedon){
-
       String parameter = AccessControl.ACCESSCONTROL_GROUP_PARAMETER;
       String parametervalue = null;
       if(parameter.equals(AccessControl.CLUB_ADMIN_GROUP)){
@@ -200,6 +198,7 @@ public class JModuleObject extends ModuleObjectContainer{
       }
       cacheKey = cacheKey+concatter+parameter+concatter+parametervalue;
     }
+    this.cacheKey += modinfo.getCurrentLocale().toString();
   }
 
   protected boolean isCacheable(){

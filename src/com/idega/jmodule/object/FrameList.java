@@ -24,11 +24,15 @@ private String style = "";
   public FrameList() {
   }
 
-  public void main(ModuleInfo modinfo) {
+  public void _main(ModuleInfo modinfo) throws Exception {
     getParentPage().setAllMargins(0);
     initializeTable();
 
     add(listTable);
+    super._main(modinfo);
+  }
+
+  public void main(ModuleInfo modinfo) {
   }
 
   private void initializeTable() {
