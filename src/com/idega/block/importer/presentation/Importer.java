@@ -5,9 +5,11 @@ import com.idega.idegaweb.IWResourceBundle;
 import java.io.File;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
+import com.idega.user.business.GroupBusiness;
 import com.idega.presentation.text.*;
 import com.idega.block.importer.business.*;
 import com.idega.block.importer.data.*;
+import com.idega.user.data.Group;
 
 /**
  * <p>Title: IdegaWeb classes</p>
@@ -18,10 +20,11 @@ import com.idega.block.importer.data.*;
  * @version 1.0
  */
 
-public class Importer extends Block {
+public class Importer extends Window {
   String folderPath;
   boolean selectFiles,importFiles,selectFolder = false;
   IWResourceBundle iwrb;
+      Group group= null;
 
   private final String ACTION_PARAMETER = "se_im_ac"; //action
   private final String SELECT_FILES = "se_im_sf"; //select files action
@@ -29,6 +32,8 @@ public class Importer extends Block {
   private final String IMPORT_FILE_PATHS = "se_im_fp"; //list of files
   private final String SELECT_NEW_FOLDER = "se_im_snf"; //new folder overrides builder parameter action
   private final String NEW_FOLDER_PATH = "se_im_nfp"; //new folder path
+  
+    public static final String PARAMETERSTRING_GROUP_ID = "ic_group_id";
 
   public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.importer";
 
@@ -63,17 +68,29 @@ public class Importer extends Block {
     }
 
   }
+  
+   public GroupBusiness getGroupBusiness(IWContext iwc) throws Exception{
+    return (GroupBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,GroupBusiness.class);
+  }
 
   public void main(IWContext iwc) throws Exception {
     iwrb = this.getResourceBundle(iwc);
 
     parseAction(iwc);
+    
+    String groupId = iwc.getParameter(this.PARAMETERSTRING_GROUP_ID);
+
+    if( groupId!=null ){
+    	
+    	group =  getGroupBusiness(iwc).getGroupHome().findByPrimaryKey(new Integer(groupId));
+    }
 
     Link selectFolderLink = new Link(iwrb.getLocalizedString("importer.select.folder","Select folder"));
     selectFolderLink.addParameter(ACTION_PARAMETER,SELECT_NEW_FOLDER);
     selectFolderLink.setAsImageButton(true);
     add(selectFolderLink);
     addBreak();
+    
 
     if( selectFiles ){
       if( this.getFolderPath()!=null ){
@@ -141,8 +158,22 @@ public class Importer extends Block {
        *
        */
         //NackaImportFile importFile = new NackaImportFile(new File(values[i]));
-        /*ImportFile importFile = new ImportFile(new File(values[i]));
-        boolean success = biz.importRecords(importFile);
+        /*
+         */
+         
+         boolean success = false;
+         
+        ColumnSeparatedImportFile importFile = new ColumnSeparatedImportFile(new File(values[i]));
+        if(group!=null){
+        	
+        	
+        success = biz.importRecords(group,importFile);
+       
+       
+        }
+        else{
+        	success = biz.importRecords(importFile);
+        }
         addBreak();
 
         String status = (success)? iwrb.getLocalizedString("importer.success","finished!") : iwrb.getLocalizedString("importer.failure","failed!!");
