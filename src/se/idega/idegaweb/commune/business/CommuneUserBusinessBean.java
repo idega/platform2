@@ -1,5 +1,6 @@
 package se.idega.idegaweb.commune.business;
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.*;
 import com.idega.core.accesscontrol.business.LoginCreateException;
@@ -438,18 +439,30 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public School getFirstManagingSchoolForUser(User user) throws FinderException, RemoteException {
 		try {
 			Group rootGroup = getRootSchoolAdministratorGroup();
+//			System.out.println("[CommuneUserBusiness] : hello");
 			// if user is a SchoolAdministrator
 			if (user.getPrimaryGroup().equals(rootGroup)) {
-				Collection schools =
+//				System.out.println("[CommuneUserBusiness] : primary group is rootGroup");
+				
+				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
+				Collection schoolIds = sub.getSchools(user);
+				
+/*				Collection schools =
 					((SchoolBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), SchoolBusiness.class))
 						.getSchoolHome()
 						.findAllBySchoolGroup(user);
-				if (!schools.isEmpty()) {
-					Iterator iter = schools.iterator();
+*/
+				if				 (!schoolIds.isEmpty()) {
+//					System.out.println("[CommuneUserBusiness] : schools.isEmpty = false");
+					Iterator iter = schoolIds.iterator();
 					while (iter.hasNext()) {
-						School school = (School) iter.next();
+//						System.out.println("[SchoolUserBusinessBean] : returning ...");
+						School school = sub.getSchoolHome().findByPrimaryKey(iter.next());
+//						System.out.println("[SchoolUserBusinessBean] : returning schoolID = "+school.getPrimaryKey());
 						return school;
 					}
+				}else {
+//					System.out.println("[CommuneUserBusiness] : schools.isEmpty = true");
 				}
 			}
 		}
