@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.35 2001/08/09 19:07:44 eiki Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.36 2001/08/27 23:44:45 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -727,7 +727,7 @@ public class GolfMainJSPModulePage extends MainPage {
 			Link three = new Link(iwrb.getImage("/banners/opinkerfi.gif"),"http://www.ok.is");
 			Link seven = new Link(iwrb.getImage("/banners/euro.gif"),"http://www.europay.is");
 			Link eight = new Link(iwrb.getImage("/banners/syn.gif"),"http://www.syn.is");
-			Link nine = new Link(iwrb.getImage("/banners/golfcard.gif"),"http://www.europay.is/form/kort.htm");
+			//Link nine = new Link(iwrb.getImage("/banners/golfcard.gif"),"http://www.europay.is/form/kort.htm");
 
 			one.setTarget("_blank");
 			two.setTarget("_blank");
@@ -737,7 +737,7 @@ public class GolfMainJSPModulePage extends MainPage {
 			six.setTarget("_blank");
 			seven.setTarget("_blank");
 			eight.setTarget("_blank");
-			nine.setTarget("_blank");
+			//nine.setTarget("_blank");
 
 			innerTable.add(one,1,1);
 			innerTable.add(two,1,2);
@@ -747,7 +747,7 @@ public class GolfMainJSPModulePage extends MainPage {
 			innerTable.add(six,1,6);
 			innerTable.add(seven,1,7);
 			innerTable.add(eight,1,8);
-			innerTable.add(nine,1,9);
+			//innerTable.add(nine,1,9);
 
                 table.add(innerTable);
 
