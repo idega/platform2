@@ -5,10 +5,10 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2003/05/15 10:14:36 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/20 12:35:09 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class RoadResponsibleBMPBean extends GenericEntity
     implements RoadResponsible {
@@ -1232,8 +1232,6 @@ public class RoadResponsibleBMPBean extends GenericEntity
 		addAttribute (COLUMN_RESPONSIBLE, "Responsible", String.class);
 
         synchronized (this) {
-            System.out.println (ENTITY_NAME + ".isInitialized = "
-                                + isInitialized);
             if (!isInitialized) {
                 int rowCount = 0;
                 try {

@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/20 07:31:44 $ by $Author: laddi $
+ * Last modified: $Date: 2003/05/20 12:35:09 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.36 $
+ * @version $Revision: 1.37 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -66,6 +66,8 @@ public class ViewpointForm extends CommuneBlock {
         = "vp_answerviewpoint_action";
 	private final static String FORWARDVIEWPOINT_ACTION
         = "vp_forwardviewpoint_action";
+	private final static String SHOWFORWARDFORM_ACTION
+        = "vp_showforwardform_action";
     private final static String CANCEL_ACTION = "vp_cancel_action";
 
 	private final static String ANSWER_KEY = "viewpoint.answer";
@@ -151,9 +153,8 @@ public class ViewpointForm extends CommuneBlock {
 	private final static String SUBMITVIEWPOINT_KEY
         = "viewpoint.submitViewpoint";
 	private final static String SUBMITVIEWPOINT_DEFAULT = "Skicka synpunkt";
-	//private final static String UNKNOWN_KEY = "viewpoint.unknown";
-	//private final static String UNKNOWN_DEFAULT = "Okänt";
 	private final static String USER_KEY = "viewpoint.user";
+	private final static String USERID_KEY = "viewpoint.userId";
 	private final static String USE_SSN_INFO_KEY = "viewpoint.useSsnInfo";
 	private final static String USE_SSN_INFO_DEFAULT = "För att kunna lämna en synpunkt så måste du antingen vara inloggad eller om du bor i Nacka så räcker det med att ange ditt personnummer nedan";
 	private final static String VIEWPOINTS_KEY = "viewpoint.viewpoints";
@@ -186,6 +187,8 @@ public class ViewpointForm extends CommuneBlock {
                 acceptToHandleViewpoint (context);
             } else if (context.isParameterSet (ANSWERVIEWPOINT_ACTION)) {
                 answerViewpoint (context);
+            } else if (context.isParameterSet (SHOWFORWARDFORM_ACTION)) {
+                showForwardForm (context);
             } else if (context.isParameterSet (FORWARDVIEWPOINT_ACTION)) {
                 forwardViewpoint (context);
             } else if (context.isParameterSet (CANCEL_ACTION)) {
@@ -466,7 +469,7 @@ public class ViewpointForm extends CommuneBlock {
 		buttonTable.add (answerButton, 1, 1);
 		buttonTable.add (cancelButton, 2, 1);
         final SubmitButton forwardButton = getSubmitButton
-                (FORWARDVIEWPOINT_ACTION, FORWARD_KEY, FORWARD_DEFAULT);
+                (SHOWFORWARDFORM_ACTION, FORWARD_KEY, FORWARD_DEFAULT);
         final Table table = createViewpointTable (viewpoint, context);
         int row = 6;
 		table.add (getLocalizedHeader(ANSWER_KEY, ANSWER_DEFAULT), 1, row);
@@ -477,9 +480,9 @@ public class ViewpointForm extends CommuneBlock {
 		table.setHeight (row++, 24);
 		table.add (getLocalizedHeader
                    (FORWARDTO_KEY, FORWARDTO_DEFAULT.toUpperCase ()), 1, row++);
-        final String [][] labels = {/*{ LOGINNAME_KEY, LOGINNAME_DEFAULT},
-                                    { SSN_KEY, SSN_DEFAULT }, */
-                                    { GROUPNAME_KEY, GROUPNAME_DEFAULT }};
+        final String [][] labels = {/*{ LOGINNAME_KEY, LOGINNAME_DEFAULT },
+                                      { SSN_KEY, SSN_DEFAULT }, */
+            { GROUPNAME_KEY, GROUPNAME_DEFAULT }};
         table.add (getRadioButtonTable (FORWARDTO_KEY, labels), 1, row++);
 		table.setHeight (row++, 12);
 		table.add (forwardButton, 1, row++);
@@ -515,6 +518,71 @@ public class ViewpointForm extends CommuneBlock {
 		add(table);
 	}
 
+
+	private void forwardViewpoint (final IWContext context) {
+		final Table table = new Table ();
+		int row = 1;
+		table.setWidth (getWidth ());
+		table.setCellspacing (0);
+		table.setCellpadding (0);
+        add (table);
+        final String forwardType = context.getParameter (FORWARDTO_KEY);       
+        Link homeLink = null;
+        
+        try { 
+            final int viewpointId = Integer.parseInt
+                    (context.getParameter (PARAM_VIEWPOINT_ID));
+            final ViewpointBusiness viewpointBusiness
+                    = getViewpointBusiness (context);
+            homeLink = getUserHomepageLink (context);
+            String receiverName = null;
+            if (null != forwardType && forwardType.equals (LOGINNAME_KEY)) {
+                // Login name entered
+                final String loginName = context.getParameter (LOGINNAME_KEY);
+                final User receiver = getUserByLogin (context, loginName);
+                viewpointBusiness.registerHandler (viewpointId, receiver);
+                receiverName = receiver.getName ();
+            } else if (null != forwardType && forwardType.equals (SSN_KEY)) {
+                // SSN entered
+                final String ssn = getSsn (context, SSN_KEY);
+                final User receiver = getUserBySsn (context, ssn);
+                viewpointBusiness.registerHandler (viewpointId, receiver);
+                receiverName = receiver.getName ();
+            } else if (null != forwardType && forwardType.equals (USERID_KEY)) {
+                // User id entered
+                final String userId = context.getParameter (USERID_KEY);
+                final User receiver = getUserById (context, userId);
+                viewpointBusiness.registerHandler (viewpointId, receiver);
+                receiverName = receiver.getName ();
+            } else if (null != forwardType
+                       && forwardType.equals (GROUPNAME_KEY)) {
+                // Group name entered
+                final String groupName = context.getParameter (GROUPNAME_KEY);
+                final Group receiver = getGroupByName (context, groupName);
+                viewpointBusiness.registerHandler (viewpointId, receiver);
+                receiverName = receiver.getName ();
+            } else {
+                table.add (new Text("Okänd typ av vidarebefordran"), 1, row++);
+            }            
+            
+            table.add (new Text(getLocalizedString
+                                (VIEWPOINT_KEY, VIEWPOINT_DEFAULT)
+                                + " " + viewpointId + " " + getLocalizedString
+                                (FORWARDEDTO_KEY,
+                                 FORWARDEDTO_DEFAULT).toLowerCase ()
+                                + " " + receiverName), 1, row++);
+        } catch (final FinderException e) {
+            table.add (new Text (e.getMessage ()), 1, row++);
+        } catch (final RemoteException e) {
+            e.printStackTrace ();
+            table.add (new Text ("Ett fel inträffade."), 1, row++);
+        }
+        
+        if (null != homeLink) {
+            table.setHeight (row++, 12);
+            table.add (homeLink, 1, row++);
+        }
+    }
 	private void registerViewpoint(final IWContext context)
         throws RemoteException, CreateException, FinderException {
 		final ViewpointBusiness viewpointBusiness
@@ -548,67 +616,95 @@ public class ViewpointForm extends CommuneBlock {
 		add (table);
 	}
 
-	private void forwardViewpoint (final IWContext context) {
+	private void showForwardForm (final IWContext context) {
+		final Form form = new Form();
 		final Table table = new Table ();
 		int row = 1;
 		table.setWidth (getWidth ());
 		table.setCellspacing (0);
 		table.setCellpadding (0);
-        add (table);
+        form.maintainParameter (PARAM_VIEWPOINT_ID);
         final String forwardType = context.getParameter (FORWARDTO_KEY);       
+        table.add (getLocalizedHeader
+                   (FORWARDTO_KEY, FORWARDTO_DEFAULT.toUpperCase ()), 1, row++);
+        table.setHeight (row++, 12);
+        form.add (table);
+        add (form);
         Link homeLink = null;
-        
-        try { 
-            final int viewpointId = Integer.parseInt
-                    (context.getParameter (PARAM_VIEWPOINT_ID));
-            final ViewpointBusiness viewpointBusiness
-                    = getViewpointBusiness (context);
+        try {
             homeLink = getUserHomepageLink (context);
-            String receiverName = null;
-            if (null != forwardType && forwardType.equals (LOGINNAME_KEY)) {
-                // Login name entered
-                final String loginName = context.getParameter (LOGINNAME_KEY);
-                final User receiver = getUserByLogin (context, loginName);
-                viewpointBusiness.registerHandler (viewpointId, receiver);
-                receiverName = receiver.getName ();
-            } else if (null != forwardType && forwardType.equals (SSN_KEY)) {
-                // SSN entered
-                final String ssn = getSsn (context, SSN_KEY);
-                final User receiver = getUserBySsn (context, ssn);
-                viewpointBusiness.registerHandler (viewpointId, receiver);
-                receiverName = receiver.getName ();
-            } else if (null != forwardType
-                       && forwardType.equals (GROUPNAME_KEY)) {
+            if (null != forwardType && forwardType.equals (GROUPNAME_KEY)) {
                 // Group name entered
                 final String groupName = context.getParameter (GROUPNAME_KEY);
-                final Group receiver = getGroupByName (context, groupName);
-                viewpointBusiness.registerHandler (viewpointId, receiver);
-                receiverName = receiver.getName ();
+                final Group group = getGroupByName (context, groupName);
+                final RadioButton groupRadioButton = getRadioButton
+                        (FORWARDTO_KEY,  GROUPNAME_KEY);
+                form.maintainParameter (GROUPNAME_KEY);
+                final GroupBusiness groupBusiness
+                        = (GroupBusiness) IBOLookup.getServiceInstance
+                        (context, GroupBusiness.class);
+                final RadioButton userRadioButton
+                        = getRadioButton (FORWARDTO_KEY, USERID_KEY);
+                userRadioButton.setSelected();
+                final Collection users
+                        = groupBusiness.getUsersRecursive (group);
+                final DropdownMenu userDropdown = (DropdownMenu)
+                        getStyledInterface (new DropdownMenu (USERID_KEY));
+                for (Iterator i = users.iterator (); i.hasNext ();) {
+                    final User user = (User) i.next ();
+                    final String id = user.getPrimaryKey ().toString();
+                    userDropdown.addMenuElement (id, user.getName ());
+                }
+                final Table radioTable = new Table (2, 2);
+                radioTable.add (groupRadioButton, 1, 1);
+                radioTable.add (groupName, 2, 1);
+                radioTable.add (userRadioButton, 1, 2);
+                radioTable.add (userDropdown, 2, 2);
+                table.add (radioTable, 1, row++);
+                table.setHeight (row++, 12);
+                final SubmitButton forwardButton = getSubmitButton
+                        (FORWARDVIEWPOINT_ACTION, FORWARD_KEY, FORWARD_DEFAULT);
+                final SubmitButton cancelButton = getSubmitButton
+                        (CANCEL_ACTION, CANCEL_KEY, CANCEL_DEFAULT);
+                final Table buttonTable = new Table ();
+                buttonTable.add (forwardButton, 1, 1);
+                buttonTable.add (cancelButton, 2, 1);
+                table.add (buttonTable, 1, row++);
             } else {
                 table.add (new Text("Okänd typ av vidarebefordran"), 1, row++);
             }            
-            
-            table.add (new Text(getLocalizedString
-                                (VIEWPOINT_KEY, VIEWPOINT_DEFAULT)
-                                + " " + viewpointId + " " + getLocalizedString
-                                (FORWARDEDTO_KEY,
-                                 FORWARDEDTO_DEFAULT).toLowerCase ()
-                                + " " + receiverName), 1, row++);
         } catch (final FinderException e) {
             table.add (new Text (e.getMessage ()), 1, row++);
+            table.setHeight (row++, 12);
+            table.add (homeLink, 1, row++);
         } catch (final RemoteException e) {
             e.printStackTrace ();
             table.add (new Text ("Ett fel inträffade."), 1, row++);
-        }
-        
-        if (null != homeLink) {
             table.setHeight (row++, 12);
             table.add (homeLink, 1, row++);
         }
     }
 
+    private User getUserById (final IWContext context, final String userId)
+        throws FinderException {
+        User result = null;
+        try {
+            final UserBusiness userBusiness = (UserBusiness)
+                    IBOLookup.getServiceInstance (context, UserBusiness.class);
+            result = userBusiness.getUser (Integer.parseInt (userId));
+        } catch (RemoteException dummy) {
+            // nothing, since algorithm is in finally clause
+        } finally {
+            if (null == result) {
+                throw new FinderException ("Hittade inte användaren med id "
+                                           + userId);
+            }
+        }
+        return result;
+    }
+
     private User getUserByLogin (final IWContext context,
-                                   final String loginName)
+                                 final String loginName)
         throws FinderException {
         User result = null;
         try {
@@ -679,7 +775,6 @@ public class ViewpointForm extends CommuneBlock {
     private Table getRadioButtonTable (final String name,
                                        final String [][] labels) {
         final Table table = new Table (3, labels.length);
-        //        table.setWidth(2, "3");
         for (int row = 0; row < labels.length; row++) {
             final String key = labels [row][0];
             final String defaultValue = labels [row][1];
@@ -687,8 +782,8 @@ public class ViewpointForm extends CommuneBlock {
             if (row == 0) {
                 button.setSelected();
             }
-            final TextInput textInput = (TextInput) getStyledInterface
-                    (new TextInput (key));
+            final TextInput textInput
+                    = (TextInput) getStyledInterface (new TextInput (key));
             textInput.setLength (40);
             table.add (button, 1, row + 1);
             final String headerText = getLocalizedString (key, defaultValue);
