@@ -1571,6 +1571,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   
   public boolean isWorkReportReadOnly(int workReportId){
   	WorkReport report = getWorkReportById(workReportId);
+  	
+  	
+  	
+  	//TODO Eiki check if wr year params work
   	return report.isSent();
   }
   

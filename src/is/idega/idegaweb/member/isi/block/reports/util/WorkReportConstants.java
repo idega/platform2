@@ -34,6 +34,11 @@ public class WorkReportConstants extends IWMemberConstants{
   // application property name
   public static final String ISI_MAIN_BOARD_NAME = "ISI_MAIN_BOARD_NAME";
 	
+
+	public static final String WR_APPLICATION_PARAM_FROM_DATE = "WORK_REPORTS_FROM_DATE";
+	public static final String WR_APPLICATION_PARAM_TO_DATE = "WORK_REPORTS_TO_DATE";
+	
+
   public static final String INCOME_SUM_KEY = "FIN_income_sum";
   public static final String EXPENSES_SUM_KEY = "FIN_expenses_sum";
   public static final String INCOME_EXPENSES_SUM_KEY = "FIN_income_expenses_sum";
