@@ -42,10 +42,10 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/06 09:37:34 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/06 14:42:47 $ by $Author: laddi $
  *
  * @author Joakim
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -316,10 +316,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
             throw new CreateException (e.getMessage ());
         }
     }
-
-    private SchoolCategoryHome getSchoolCategoryHome() throws RemoteException {
-		return (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
-	}
 
 	protected PaymentHeaderHome getPaymentHeaderHome() throws RemoteException {
 		return (PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class);
