@@ -200,6 +200,8 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 	*/
 	public Group getRootProviderAdministratorGroup() throws CreateException, FinderException, RemoteException
 	{
+		return getSchoolBusiness().getRootProviderAdministratorGroup();
+		/*
 		Group rootGroup = null;
 		//create the default group
 		String ROOT_SCHOOL_ADMINISTRATORS_GROUP = "provider_administrators_group_id";
@@ -211,7 +213,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 		} else
 		{
 			System.err.println("trying to store Commune Root school administrators group");
-			/**@todo this seems a wrong way to do things**/
+			//@todo this seems a wrong way to do things
 			GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
 			GroupType type = typeHome.create();
 			rootGroup =
@@ -222,6 +224,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 			bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
 		}
 		return rootGroup;
+		*/
 	}
 	/**
 	* Returns or creates (if not available) the default usergroup all school administors have as their primary group.
@@ -230,6 +233,8 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 	*/
 	public Group getRootSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException
 	{
+		return getSchoolBusiness().getRootSchoolAdministratorGroup();
+/*		
 		Group rootGroup = null;
 		//create the default group
 		String ROOT_SCHOOL_ADMINISTRATORS_GROUP = "school_administrators_group_id";
@@ -241,7 +246,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 		} else
 		{
 			System.err.println("trying to store Commune Root school administrators group");
-			/**@todo this seems a wrong way to do things**/
+			//@todo this seems a wrong way to do things
 			GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
 			GroupType type = typeHome.create();
 			rootGroup =
@@ -252,6 +257,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 			bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
 		}
 		return rootGroup;
+*/
 	}
 	/**
 	* Returns or creates (if not available) the default usergroup all commune administors have as their primary group.
@@ -338,6 +344,10 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 	
 	public boolean hasCitizenAccount(int userID)throws RemoteException{
 		return getUserBusiness().hasUserLogin(userID);
+	}
+	
+	public SchoolBusiness getSchoolBusiness() throws RemoteException{
+		return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
 	}
 
 }
