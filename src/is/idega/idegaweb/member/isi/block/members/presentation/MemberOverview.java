@@ -370,7 +370,7 @@ public class MemberOverview extends Block {
 			
 			String displayName = finEntry.getGroup().getName()+" - "+finEntry.getDivision().getName()+" - "+finEntry.getClub(); 	
 			table.add(displayName,2,row);
-			table.add(new IWTimestamp(finEntry.getDateOfEntry()).getDateString("dd-MM-yyyy"),3,row);
+			table.add(new IWTimestamp(finEntry.getDateOfEntry()).getDateString("dd.MM.yyyy"),3,row);
 			Text amountText = new Text(format.format(finEntry.getAmount()));
 			if (finEntry.getType() == FinanceEntryBMPBean.TYPE_PAYMENT) {
 				amountText.setFontColor("red");

@@ -73,9 +73,9 @@ public class MemberGroupData {
 			String[] result = new String[4];
 			result[0] = _buf.toString();
 			result[1] = groupTypeName;
-			result[2] = (new IWTimestamp(groupRel.getInitiationDate())).getDateString("dd-MM-yyyy");
+			result[2] = (new IWTimestamp(groupRel.getInitiationDate())).getDateString("dd.MM.yyyy");
 			if(groupRel.getTerminationDate()!=null) {
-				result[3] = (new IWTimestamp(groupRel.getTerminationDate())).getDateString("dd-MM-yyyy");
+				result[3] = (new IWTimestamp(groupRel.getTerminationDate())).getDateString("dd.MM.yyyy");
 			} else {
 				result[3] = null;
 			}
