@@ -78,15 +78,23 @@ public abstract class BillingThread extends Thread{
 	protected BatchRun batchRunLogger=null;
 	protected ErrorLogger errorRelated = null;
 	protected boolean running;
+	private boolean testRun;
+	private School school;
 	
-	public BillingThread(Date dateInMonth, IWContext iwc){
+	public BillingThread(Date dateInMonth, IWContext iwc, School school, boolean testRun){
 		month = new CalendarMonth(dateInMonth);
 		startPeriod = month.getFirstTimestamp();
 		endPeriod = month.getLastTimestamp();
 		calculationDate=dateInMonth;
 		this.iwc = iwc;
 		running = true;
+		this.testRun = testRun;
+		this.school = school;
 	}
+
+	public BillingThread(Date dateInMonth, IWContext iwc){
+		this(dateInMonth, iwc, null, false);
+	}	
 	
 	public static String getBatchRunSignatureKey () {
 		return BATCH_TEXT;
@@ -106,11 +114,7 @@ public abstract class BillingThread extends Thread{
 			paymentHeader = (PaymentHeader) IDOLookup.create(PaymentHeader.class);
 			paymentHeader.setSchool (school);
 			paymentHeader.setSchoolCategory(category);
-			if(categoryPosting.getProviderAuthorization()){
-				paymentHeader.setStatus(ConstantStatus.BASE);
-			} else {
-				paymentHeader.setStatus(ConstantStatus.PRELIMINARY);
-			}
+			paymentHeader.setStatus(getStatus());
 			IWTimestamp period = new IWTimestamp(startPeriod);
 			period.setAsDate();
 			paymentHeader.setPeriod(period.getDate());
@@ -171,11 +175,7 @@ public abstract class BillingThread extends Thread{
 			paymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
 			//Set all the values for the payment record
 			paymentRecord.setPaymentHeaderId(((Integer)paymentHeader.getPrimaryKey()).intValue());
-			if(categoryPosting.getProviderAuthorization()){
-				paymentRecord.setStatus(ConstantStatus.BASE);
-			} else {
-				paymentRecord.setStatus(ConstantStatus.PRELIMINARY);
-			}
+			paymentRecord.setStatus(getStatus());
 			paymentRecord.setPeriod(startPeriod.getDate());
 			paymentRecord.setPaymentText(paymentText);
 			paymentRecord.setDateCreated(currentDate);
@@ -268,11 +268,7 @@ public abstract class BillingThread extends Thread{
 					paymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
 					//Set all the values for the payment record
 					paymentRecord.setPaymentHeaderId(((Integer)paymentHeader.getPrimaryKey()).intValue());
-					if(categoryPosting.getProviderAuthorization()){
-						paymentRecord.setStatus(ConstantStatus.BASE);
-					} else {
-						paymentRecord.setStatus(ConstantStatus.PRELIMINARY);
-					}
+					paymentRecord.setStatus(getStatus());
 					paymentRecord.setPeriod(startPeriod.getDate());
 					paymentRecord.setPaymentText(paymentText);
 					paymentRecord.setDateCreated(currentDate);
@@ -581,4 +577,23 @@ public abstract class BillingThread extends Thread{
 		return (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
 	}
 	
+	public School getSchool(){
+		return school; 
+	}
+	
+	public boolean isTestRun(){
+		return testRun;
+	}
+	
+	private char getStatus(){
+		if (isTestRun()) {
+			return ConstantStatus.TEST;			
+		} else {
+			if(categoryPosting.getProviderAuthorization()){
+				return ConstantStatus.BASE;
+			} else {
+				return ConstantStatus.PRELIMINARY;
+			}		
+		}		
+	}
 }

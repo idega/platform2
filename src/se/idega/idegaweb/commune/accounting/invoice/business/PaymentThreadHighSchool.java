@@ -17,6 +17,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
+import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolStudyPath;
@@ -39,9 +40,13 @@ import com.idega.presentation.IWContext;
 public class PaymentThreadHighSchool extends PaymentThreadSchool {
 	PaymentHeader paymentHeader;
 
+	public PaymentThreadHighSchool(Date month, IWContext iwc, School school, boolean testRun) {
+		super(month, iwc, school, testRun);
+	}
+	
 	public PaymentThreadHighSchool(Date month, IWContext iwc) {
 		super(month, iwc);
-	}
+	}	
 
 	public void run() {
 		try {

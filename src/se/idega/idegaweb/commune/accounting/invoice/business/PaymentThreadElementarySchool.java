@@ -5,6 +5,7 @@ import java.sql.Date;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 
+import com.idega.block.school.data.School;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 
@@ -21,9 +22,13 @@ import com.idega.presentation.IWContext;
 public class PaymentThreadElementarySchool extends PaymentThreadSchool{
 	PaymentHeader paymentHeader;
 	
-	public PaymentThreadElementarySchool(Date month, IWContext iwc){
-		super(month,iwc);
+	public PaymentThreadElementarySchool(Date month, IWContext iwc, School school, boolean testRun){
+		super(month, iwc, school, testRun);
 	}
+	
+	public PaymentThreadElementarySchool(Date month, IWContext iwc){
+		super(month, iwc);
+	}	
 	
 	public void run(){
 		try {

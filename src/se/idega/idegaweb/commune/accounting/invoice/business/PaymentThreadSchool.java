@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/02/17 10:07:21 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/17 12:23:14 $ by $Author: roar $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.120 $
+ * @version $Revision: 1.121 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -123,6 +123,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	public PaymentThreadSchool(Date month, IWContext iwc) {
 		super(month, iwc);
 	}
+	
+	public PaymentThreadSchool(Date month, IWContext iwc, School school, boolean testRun) {
+		super(month, iwc, school, testRun);
+	}		
 
 	public boolean isInDefaultCommune(User user) throws RemoteException, FinderException {
 		Address address = getCommuneUserBusiness().getUsersMainAddress(user);
@@ -135,7 +139,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	 *  
 	 */
 	protected void contracts() throws NotEmptyException {
-		School school;
+		School school = getSchool();
 		int validSchoolSeasonId = -1;
 
 		try {
@@ -153,130 +157,16 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			RegulationsBusiness regBus = getRegulationsBusiness();
 
 			//Go through all schools
-			for (Iterator i = getSchools().iterator(); i.hasNext();) {
-//			for (int i = 0; i < 1; i++) {
-				try {
-					school = (School) i.next();
-//					school = getSchoolHome().findByPrimaryKey(new Integer(8));
-					errorRelated = new ErrorLogger();
-					errorRelated.append("School:" + school.getName(),1);
-					final boolean schoolIsInDefaultCommune;
-					final boolean schoolIsPrivate;
-					Provider provider = null;
-					try{
-						provider = new Provider(((Integer) school.getPrimaryKey()).intValue());
-						//Only look at those not "payment by invoice"
-						//Check if it is private or in Nacka
-						errorRelated.append("School commune:" + school.getCommune().getCommuneName());
-						schoolIsInDefaultCommune = school.getCommune().getIsDefault();
-						schoolIsPrivate = provider.getProviderTypeId() == privateType;
+
+			if (isTestRun() && school != null){
+				contractForProvider(school,	validSchoolSeasonId, privateType, regBus);
+			}else{
+				for (Iterator i = getSchools().iterator(); i.hasNext(); school = (School) i.next()) {
+					contractForProvider(school,	validSchoolSeasonId, privateType, regBus);
+					if(!running){
+						return;
+
 					}
-					catch (NullPointerException e) {
-//						errorRelated.append(e);
-						throw new SchoolMissingVitalDataException("");
-					}
-//					errorRelated.logToConsole();
-					if ((schoolIsInDefaultCommune || schoolIsPrivate) && !provider.getPaymentByInvoice()) {
-						ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated);
-						Collection pupils = getSchoolClassMembers(school);
-						Iterator j = pupils.iterator();
-//						for (Iterator j = getSchoolClassMembers(school).iterator(); j.hasNext();) {
-//						System.out.println("Found " + pupils.size() + " class members");
-						for (; j.hasNext();) {
-							try {
-								errorRelated = new ErrorLogger(tmpErrorRelated);
-								SchoolClassMember schoolClassMember = (SchoolClassMember) j.next();
-								if(schoolClassMember.getSchoolClass().getSchoolSeasonId() == validSchoolSeasonId){
-									createPaymentForSchoolClassMember(regBus, provider, schoolClassMember, schoolIsInDefaultCommune && !schoolIsPrivate);
-								}
-							}
-							catch (NullPointerException e) {
-								e.printStackTrace();
-								errorRelated.append(e);
-								createNewErrorMessage(errorRelated, "invoice.nullpointer");
-							}
-							catch (MissingFlowTypeException e) {
-								e.printStackTrace();
-								createNewErrorMessage(errorRelated, "invoice.ErrorFindingFlowType");
-							}
-							catch (MissingConditionTypeException e) {
-								e.printStackTrace();
-								createNewErrorMessage(errorRelated, "invoice.ErrorFindingConditionType");
-							}
-							catch (MissingRegSpecTypeException e) {
-								e.printStackTrace();
-								createNewErrorMessage(errorRelated, "invoice.ErrorFindingRegSpecType");
-							}
-							catch (TooManyRegulationsException e) {
-								e.printStackTrace();
-								errorRelated.append("Regulations found:"+e.getRegulationNamesString());
-								createNewErrorMessage(errorRelated,"invoice.ErrorFindingTooManyRegulations");
-							}
-							catch (PostingException e) {
-								e.printStackTrace();
-								createNewErrorMessage(errorRelated, "invoice.PostingString");
-							}
-							catch (RegulationException e) {
-								e.printStackTrace();
-								createNewErrorMessage(errorRelated, "invoice.RegulationException");
-							}
-							catch (RemoteException e) {
-								e.printStackTrace();
-								createNewErrorMessage(errorRelated, "invoice.RemoteException");
-							}
-							catch (FinderException e) {
-								e.printStackTrace();
-								createNewErrorMessage(errorRelated, "invoice.FinderException");
-							}
-							catch (EJBException e) {
-								e.printStackTrace();
-								createNewErrorMessage(errorRelated, "invoice.EJBException");
-							}
-							catch (CreateException e) {
-								e.printStackTrace();
-								createNewErrorMessage(errorRelated, "invoice.CreateException");
-							}
-						}
-					}else{
-//						log.info("School "+school.getName()+" is not in home commune and not private or gets payment by invoice");
-					}
-				}
-				catch (RemoteException e) {
-					e.printStackTrace();
-					if (errorRelated != null) {
-						createNewErrorMessage(errorRelated, "invoice.DBError_Creating_contracts_for_school");
-					}
-					else {
-						createNewErrorMessage("invoice.school", "invoice.DBError_Creating_contracts_for_school");
-					}
-				}
-				catch (FinderException e) {
-					e.printStackTrace();
-					if (errorRelated != null) {
-						createNewErrorMessage(errorRelated, "invoice.CouldNotFindContractForSchool");
-					}
-					else {
-						createNewErrorMessage("invoice.school", "invoice.CouldNotFindContractForSchool");
-					}
-				}
-				catch (SchoolMissingVitalDataException e) {
-					e.printStackTrace();
-					createNewErrorMessage(errorRelated, "invoice.SchoolMissingVitalData");
-				}
-				catch (NullPointerException e) {
-					e.printStackTrace();
-/*
-					java.io.StringWriter sw = new java.io.StringWriter();
-					e.printStackTrace(new java.io.PrintWriter(sw, true));
-					errorRelated.append("</br>" + sw + "</br>");
-					if (errorRelated.toString().length() > 900)
-						errorRelated = new ErrorLogger(errorRelated.toString().substring(1, 900));
-*/
-					errorRelated.append(e);
-					createNewErrorMessage(errorRelated, "invoice.NullpointerException");
-				}
-				if(!running){
-					return;
 				}
 			}
 		}
@@ -317,6 +207,128 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			}
 		}
 	}
+
+	private void contractForProvider(School school,	int validSchoolSeasonId, int privateType, RegulationsBusiness regBus) {
+		try {
+//			school = getSchoolHome().findByPrimaryKey(new Integer(8));
+			errorRelated = new ErrorLogger();
+			errorRelated.append("School:" + school.getName(),1);
+			final boolean schoolIsInDefaultCommune;
+			final boolean schoolIsPrivate;
+			Provider provider = null;
+			try{
+				provider = new Provider(Integer.parseInt(school.getPrimaryKey().toString()));
+				//Only look at those not "payment by invoice"
+				//Check if it is private or in Nacka
+				errorRelated.append("School commune:" + school.getCommune().getCommuneName());
+				schoolIsInDefaultCommune = school.getCommune().getIsDefault();
+				schoolIsPrivate = provider.getProviderTypeId() == privateType;
+			}
+			catch (NullPointerException e) {
+//				errorRelated.append(e);
+				throw new SchoolMissingVitalDataException("");
+			}
+//			errorRelated.logToConsole();
+			if ((schoolIsInDefaultCommune || schoolIsPrivate) && !provider.getPaymentByInvoice()) {
+				ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated);
+				Collection pupils = getSchoolClassMembers(school);
+				Iterator j = pupils.iterator();
+//				for (Iterator j = getSchoolClassMembers(school).iterator(); j.hasNext();) {
+//				System.out.println("Found " + pupils.size() + " class members");
+				for (; j.hasNext();) {
+					try {
+						errorRelated = new ErrorLogger(tmpErrorRelated);
+						SchoolClassMember schoolClassMember = (SchoolClassMember) j.next();
+						if(schoolClassMember.getSchoolClass().getSchoolSeasonId() == validSchoolSeasonId){
+							createPaymentForSchoolClassMember(regBus, provider, schoolClassMember, schoolIsInDefaultCommune && !schoolIsPrivate);
+						}
+					}
+					catch (NullPointerException e) {
+						e.printStackTrace();
+						errorRelated.append(e);
+						createNewErrorMessage(errorRelated, "invoice.nullpointer");
+					}
+					catch (MissingFlowTypeException e) {
+						e.printStackTrace();
+						createNewErrorMessage(errorRelated, "invoice.ErrorFindingFlowType");
+					}
+					catch (MissingConditionTypeException e) {
+						e.printStackTrace();
+						createNewErrorMessage(errorRelated, "invoice.ErrorFindingConditionType");
+					}
+					catch (MissingRegSpecTypeException e) {
+						e.printStackTrace();
+						createNewErrorMessage(errorRelated, "invoice.ErrorFindingRegSpecType");
+					}
+					catch (TooManyRegulationsException e) {
+						e.printStackTrace();
+						errorRelated.append("Regulations found:"+e.getRegulationNamesString());
+						createNewErrorMessage(errorRelated,"invoice.ErrorFindingTooManyRegulations");
+					}
+					catch (PostingException e) {
+						e.printStackTrace();
+						createNewErrorMessage(errorRelated, "invoice.PostingString");
+					}
+					catch (RegulationException e) {
+						e.printStackTrace();
+						createNewErrorMessage(errorRelated, "invoice.RegulationException");
+					}
+					catch (RemoteException e) {
+						e.printStackTrace();
+						createNewErrorMessage(errorRelated, "invoice.RemoteException");
+					}
+					catch (FinderException e) {
+						e.printStackTrace();
+						createNewErrorMessage(errorRelated, "invoice.FinderException");
+					}
+					catch (EJBException e) {
+						e.printStackTrace();
+						createNewErrorMessage(errorRelated, "invoice.EJBException");
+					}
+					catch (CreateException e) {
+						e.printStackTrace();
+						createNewErrorMessage(errorRelated, "invoice.CreateException");
+					}
+				}
+			}else{
+//				log.info("School "+school.getName()+" is not in home commune and not private or gets payment by invoice");
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			if (errorRelated != null) {
+				createNewErrorMessage(errorRelated, "invoice.DBError_Creating_contracts_for_school");
+			}
+			else {
+				createNewErrorMessage("invoice.school", "invoice.DBError_Creating_contracts_for_school");
+			}
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			if (errorRelated != null) {
+				createNewErrorMessage(errorRelated, "invoice.CouldNotFindContractForSchool");
+			}
+			else {
+				createNewErrorMessage("invoice.school", "invoice.CouldNotFindContractForSchool");
+			}
+		}
+		catch (SchoolMissingVitalDataException e) {
+			e.printStackTrace();
+			createNewErrorMessage(errorRelated, "invoice.SchoolMissingVitalData");
+		}
+		catch (NullPointerException e) {
+					e.printStackTrace();
+/*
+					java.io.StringWriter sw = new java.io.StringWriter();
+					e.printStackTrace(new java.io.PrintWriter(sw, true));
+					errorRelated.append("</br>" + sw + "</br>");
+					if (errorRelated.toString().length() > 900)
+						errorRelated = new ErrorLogger(errorRelated.toString().substring(1, 900));
+*/
+					errorRelated.append(e);
+					createNewErrorMessage(errorRelated, "invoice.NullpointerException");
+		}
+	}
 	
 	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions,SchoolClassMember placement) throws RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 		return regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(category.getCategory(), /*The ID that selects barnomsorg in the regulation */ 
@@ -330,6 +342,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				placement); //Sent in to be used for e.g. VAT
 	}
 	
+
 	protected void createPaymentForSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, boolean schoolIsInDefaultCommuneAndNotPrivate) 
 			throws FinderException, EJBException, PostingException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 
@@ -796,7 +809,11 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	}
 
 	private Collection getSchoolClassMembers(School school) throws FinderException, RemoteException, EJBException {
-		return getSchoolClassMemberHome().findBySchool(((Integer) school.getPrimaryKey()).intValue(), -1, category.getCategory(), calculationDate);
+//		Object o = school.getPrimaryKey();
+//		Class c = o.getClass();
+//		Integer i = (Integer) o;
+		int i = Integer.parseInt(school.getPrimaryKey().toString());
+		return getSchoolClassMemberHome().findBySchool(i, -1, category.getCategory(), calculationDate);
 	}
 
 	private Collection getSchoolTypes(SchoolClassMember schoolClassMember) throws IDORelationshipException {

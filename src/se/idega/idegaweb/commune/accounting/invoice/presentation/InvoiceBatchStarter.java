@@ -15,8 +15,10 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
@@ -56,10 +58,12 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		handleAction(iwc,schoolCategory);
 		
 		add(opFields);
-
+		
 		Form form = new Form();
 		add(form);
-		
+
+		form.add(getShoolDropDown(iwc));
+
 		try {
 			ExportBusiness exportBusiness = getBusiness().getExportBusiness();
 			ExportDataMapping exportDataMapping = exportBusiness.getExportDataMapping(schoolCategory);
@@ -124,7 +128,7 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	/**
 	 * @param iwc
 	 */
-	private void handleSave(IWContext iwc, String schoolCategory) {
+	protected void handleSave(IWContext iwc, String schoolCategory) {
 		try {
 //			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
 			Date month = null;
@@ -140,7 +144,8 @@ public class InvoiceBatchStarter extends AccountingBlock{
 					return;
 				}
 			}
-			BatchRunQueue.addBatchRunToQueue(month, readDate, schoolCategory, iwc);
+			addBatchRunToQueue(month, readDate, schoolCategory, iwc);
+
 //			invoiceBusiness.startPostingBatch(month, readDate, schoolCategory, iwc);
 			add(getLocalizedText("invbr.batchrun_started","Batchrun started"));
 			add(new Break());
@@ -163,6 +168,10 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		}
 	}
 	
+	protected void addBatchRunToQueue(Date month, Date readDate, String schoolCategory, IWContext iwc) throws SchoolCategoryNotFoundException{
+		BatchRunQueue.addBatchRunToQueue(month, readDate, schoolCategory, iwc);		
+	}
+	
 	/**
 	 * @return
 	 */
@@ -175,6 +184,13 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	 */
 	public void setLink(String page) {
 		link = page;
+	}
+
+	/*
+	 * The IWContext parameter is used in the TestPosts subclass
+	 */
+	protected PresentationObject getShoolDropDown(IWContext iwc){
+		return new Text("");
 	}
 
 }

@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.data.IDOLookup;
@@ -36,8 +37,8 @@ public class BatchRunQueue {
 	 * @param iwc
 	 * @throws SchoolCategoryNotFoundException
 	 */
-	public static void addBatchRunToQueue(Date month, Date readDate, String schoolCategory, IWContext iwc) throws SchoolCategoryNotFoundException{
-		BatchRunObject batchRunObject = new BatchRunObject(month, readDate, schoolCategory, iwc);
+	public static void addBatchRunToQueue(Date month, Date readDate, String schoolCategory, School school, IWContext iwc, boolean testRun) throws SchoolCategoryNotFoundException{
+		BatchRunObject batchRunObject = new BatchRunObject(month, readDate, schoolCategory, school, iwc, testRun);
 		queue.add(batchRunObject);
 		log.info("Added "+batchRunObject+" to queue at place "+(queue.size()-1));
 		if(queue.size()==1){
@@ -52,6 +53,10 @@ public class BatchRunQueue {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public static void addBatchRunToQueue(Date month, Date readDate, String schoolCategory, IWContext iwc) throws SchoolCategoryNotFoundException{
+		addBatchRunToQueue(month, readDate, schoolCategory, null, iwc, false);			
 	}
 
 	/**
@@ -126,14 +131,14 @@ public class BatchRunQueue {
 			}
 		} else if (sch.findElementarySchoolCategory().getCategory().equals(batchRunObject.schoolCategory)) {
 			if(BatchRunSemaphore.getElementaryRunSemaphore()){
-				runningThread = new PaymentThreadElementarySchool(batchRunObject.month, batchRunObject.iwc);
+				runningThread = new PaymentThreadElementarySchool(batchRunObject.month, batchRunObject.iwc, batchRunObject.school, batchRunObject.testRun);
 				runningThread.start();
 			}else{
 				throw new BatchAlreadyRunningException("ElementarySchool");
 			}
 		} else if (sch.findHighSchoolCategory().getCategory().equals(batchRunObject.schoolCategory)) {
 			if(BatchRunSemaphore.getHighRunSemaphore()){
-				runningThread = new PaymentThreadHighSchool(batchRunObject.readDate, batchRunObject.iwc);
+				runningThread = new PaymentThreadHighSchool(batchRunObject.readDate, batchRunObject.iwc, batchRunObject.school, batchRunObject.testRun);
 				runningThread.start();
 			}else{
 				throw new BatchAlreadyRunningException("HighSchool");
@@ -153,13 +158,21 @@ public class BatchRunQueue {
 		Date readDate;
 		String schoolCategory;
 		IWContext iwc;
+		boolean testRun;
+		School school;
 		
-		public BatchRunObject(Date month, Date readDate, String schoolCategory, IWContext iwc){
+		public BatchRunObject(Date month, Date readDate, String schoolCategory, School school, IWContext iwc, boolean testRun){
 			this.month = month;
 			this.readDate = readDate;
 			this.schoolCategory = schoolCategory;
 			this.iwc = iwc;
+			this.testRun = testRun;
+			this.school = school;
 		}
+		
+		public BatchRunObject(Date month, Date readDate, String schoolCategory, IWContext iwc){
+			this(month, readDate, schoolCategory, null, iwc, false);
+		}		
 		
 		public String toString(){
 			IWTimestamp m=null;
@@ -168,10 +181,18 @@ public class BatchRunQueue {
 			}else if(readDate!=null){
 				m = new IWTimestamp(readDate);
 			}
+
+			String s = schoolCategory;
 			if(m!=null){
-				return schoolCategory+" "+m.getDateString("MMM yyyy");
+				s += " "+m.getDateString("MMM yyyy");
 			}
-			return schoolCategory;
+			if (school != null){
+				s += " "+school;
+			}			
+			if (testRun){
+				s += " [TEST]";
+			}
+			return s;
 		}
 	}
 }
