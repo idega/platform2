@@ -197,7 +197,7 @@ public class Banner extends Block implements Builderaware {
 
 			if (image != null) {
 
-				bannerLink = new Link(this.getStyleObject(image, IMAGE_STYLE));
+				bannerLink = new Link(image);
 
 				if (_target != null) {
 
@@ -225,7 +225,7 @@ public class Banner extends Block implements Builderaware {
 
 		if (bannerLink != null)
 
-		return bannerLink;
+		return getStyleLink(bannerLink, IMAGE_STYLE);
 
 		return null;
 
