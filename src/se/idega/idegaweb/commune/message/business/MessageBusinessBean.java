@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.67 2004/11/02 11:00:52 aron Exp $
+ * $Id: MessageBusinessBean.java,v 1.68 2004/11/02 21:22:41 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -34,6 +34,7 @@ import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseCode;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.contact.data.Email;
@@ -44,6 +45,7 @@ import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWPropertyList;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserProperties;
 import com.idega.user.data.Group;
@@ -803,6 +805,10 @@ public class MessageBusinessBean extends CaseBusinessBean implements MessageBusi
 	
 	private CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
 		return (CommuneUserBusiness) getServiceInstance(CommuneUserBusiness.class);
+	}
+	
+	public MessageSession getMessageSession(IWUserContext iwuc) throws IBOLookupException {
+	    return (MessageSession)getSessionInstance(iwuc,MessageSession.class);
 	}
 	
 	public String getBundleIdentifier(){

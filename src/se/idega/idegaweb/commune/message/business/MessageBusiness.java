@@ -1,6 +1,6 @@
 /*
- * $Id: MessageBusiness.java,v 1.34 2004/10/20 15:51:40 aron Exp $
- * Created on 15.10.2004
+ * $Id: MessageBusiness.java,v 1.35 2004/11/02 21:22:41 aron Exp $
+ * Created on 2.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -26,20 +26,22 @@ import se.idega.idegaweb.commune.message.data.SystemArchivationMessage;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseCode;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBOService;
 import com.idega.core.component.data.ICObject;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOException;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/20 15:51:40 $ by $Author: aron $
+ *  Last modified: $Date: 2004/11/02 21:22:41 $ by $Author: aron $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  */
 public interface MessageBusiness extends IBOService, CaseBusiness {
     /**
@@ -467,6 +469,12 @@ public interface MessageBusiness extends IBOService, CaseBusiness {
      */
     public void sendMessageToCommuneAdministrators(Case theCase,
             String subject, String body) throws RemoteException;
+
+    /**
+     * @see se.idega.idegaweb.commune.message.business.MessageBusinessBean#getMessageSession
+     */
+    public MessageSession getMessageSession(IWUserContext iwuc)
+            throws IBOLookupException, java.rmi.RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.message.business.MessageBusinessBean#getBundleIdentifier

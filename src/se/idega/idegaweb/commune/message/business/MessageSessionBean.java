@@ -1,8 +1,11 @@
 package se.idega.idegaweb.commune.message.business;
 
+import java.util.Collection;
+
 import com.idega.business.IBOSessionBean;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.user.business.UserProperties;
+import com.idega.user.data.User;
 
 /**
  * @author Laddi
@@ -17,6 +20,11 @@ public class MessageSessionBean extends IBOSessionBean implements MessageSession
 	public static final String MESSAGE_PROPERTIES = "message_properties";
 	public static final String USER_PROP_SEND_TO_MESSAGE_BOX = "msg_send_box";
 	public static final String USER_PROP_SEND_TO_EMAIL = "msg_send_email";
+	
+	public boolean getIfUserCanReceiveEmails(User user){
+	    Collection emails = user.getEmails();
+	    return emails!=null && !emails.isEmpty() && getIfUserPreferesMessageByEmail();
+	}
 	
 	protected UserProperties getUserPreferences() throws Exception {
 		UserProperties property = getUserContext().getUserProperties();
