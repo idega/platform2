@@ -876,7 +876,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 			menu.add(getHelpWithGrayImage("workreportwindow.workOnReport_help",true),2,6);
 			menu.add(editList, 1, 7);
 			
-			if (WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
+			if (WorkReportConstants.WR_USER_TYPE_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
 				menu.add(reportsOverview, 1, 8);
 			}
 
