@@ -51,6 +51,8 @@ import se.idega.idegaweb.commune.care.business.DefaultPlacementHelper;
 import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.check.data.Check;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.care.data.ApplicationPriority;
+import se.idega.idegaweb.commune.care.data.ApplicationPriorityHome;
 import se.idega.idegaweb.commune.care.data.CareTime;
 import se.idega.idegaweb.commune.care.data.CareTimeBMPBean;
 import se.idega.idegaweb.commune.care.data.CareTimeHome;
@@ -2996,7 +2998,17 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void setAsPriorityApplication(ChildCareApplication application, String message, String body) throws RemoteException {
 		application.setHasPriority(true);
 		application.store();
-		getMessageBusiness().sendMessageToCommuneAdministrators(application, message, body);
+		ApplicationPriorityHome home = (ApplicationPriorityHome) this.getIDOHome(ApplicationPriority.class);
+		try {
+			ApplicationPriority ap = home.create();
+			ap.setPriorityDate(new Date(System.currentTimeMillis()));
+			ap.setApplication(application);
+			ap.setMessage(body);
+			ap.store();
+		} catch (Exception e) {
+			log(e);
+		}
+//		getMessageBusiness().sendMessageToCommuneAdministrators(application, message, body);
 	}
 
 	public boolean hasBeenPlacedWithOtherProvider(int childID, int providerID) {
