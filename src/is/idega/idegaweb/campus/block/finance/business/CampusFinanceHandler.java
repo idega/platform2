@@ -1,24 +1,38 @@
 package is.idega.idegaweb.campus.block.finance.business;
 
 import com.idega.block.building.business.BuildingCacher;
+
 import com.idega.block.finance.business.AssessmentTariffPreview;
 import com.idega.block.finance.business.FinanceFinder;
 import com.idega.block.finance.business.FinanceHandler;
 import com.idega.block.finance.data.AccountEntry;
+import com.idega.block.finance.data.AccountEntryBMPBean;
+import com.idega.block.finance.data.AccountEntryHome;
 import com.idega.block.finance.data.AssessmentRound;
+import com.idega.block.finance.data.AssessmentRoundHome;
 import com.idega.block.finance.data.Tariff;
+import com.idega.block.finance.data.TariffHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.SimpleQuerier;
 import com.idega.util.IWTimestamp;
 
+import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.data.ContractAccountApartment;
+import is.idega.idegaweb.campus.data.ContractAccountApartmentHome;
 
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
 /**
  * Title:
@@ -41,7 +55,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 
 	public boolean rollbackAssessment(int iAssessmentRoundId) {
 		StringBuffer sql = new StringBuffer("delete from ");
-		sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName());
+		sql.append(AccountEntryBMPBean.getEntityTableName());
 		sql.append(" where ").append(com.idega.block.finance.data.AccountEntryBMPBean.getRoundIdColumnName());
 		sql.append(" = ").append(iAssessmentRoundId);
 		System.err.println(sql.toString());
@@ -50,8 +64,8 @@ public class CampusFinanceHandler implements FinanceHandler {
 
 		try {
 			t.begin();
-			AssessmentRound AR = ((com.idega.block.finance.data.AssessmentRoundHome) com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).findByPrimaryKeyLegacy(iAssessmentRoundId);
-			com.idega.data.SimpleQuerier.execute(sql.toString());
+			AssessmentRound AR = ((AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class)).findByPrimaryKey(new Integer(iAssessmentRoundId));
+			SimpleQuerier.execute(sql.toString());
 			AR.delete();
 			t.commit();
 			return true;
@@ -70,16 +84,26 @@ public class CampusFinanceHandler implements FinanceHandler {
 
 	public boolean executeAssessment(int iCategoryId, int iTariffGroupId, String roundName, int iCashierId, int iAccountKeyId, IWTimestamp paydate, IWTimestamp start, IWTimestamp end) {
 		System.out.println("Starting assessment for period "+start.toString()+"-"+end.toString());
-		Collection tariffs = FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
-		List listOfTariffs = new Vector(tariffs);
-		List listOfUsers = CampusAccountFinder.listOfContractAccountApartment(getAccountType(), start, end);
-
+		Collection tariffs = null;
+		Collection listOfUsers  = null;
+		String [] statuses = {ContractBMPBean.statusSigned,ContractBMPBean.statusEnded,ContractBMPBean.statusResigned,ContractBMPBean.statusTerminated};
+		try {
+			tariffs = ((TariffHome)IDOLookup.getHome(Tariff.class)).findByTariffGroup(new Integer (iTariffGroupId));
+			listOfUsers = ((ContractAccountApartmentHome)IDOLookup.getHome(ContractAccountApartment.class)).findByTypeAndStatusAndOverlapPeriod(getAccountType(),statuses,start.getDate(),end.getDate());
+		} catch (IDOLookupException e1) {
+			e1.printStackTrace();
+		} catch (FinderException e1) {
+			e1.printStackTrace();
+		}
+		//FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
+		
+		//List listOfUsers = CampusAccountFinder.listOfContractAccountApartment(getAccountType(), start, end);
+		
 		int iAccountCount = 0;
-		if (listOfTariffs != null) {
+		if (tariffs != null) {
 			if (listOfUsers != null) {
 				NumberFormat nf = NumberFormat.getPercentInstance();
 				int rlen = listOfUsers.size();
-				int tlen = listOfTariffs.size();
 				Tariff eTariff;
 				char cAttribute;
 				ContractAccountApartment user;
@@ -92,7 +116,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 				try {
 					t.begin();
 				//try {
-					AR = ((com.idega.block.finance.data.AssessmentRoundHome) com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).createLegacy();
+					AR = ((AssessmentRoundHome) IDOLookup.getHome(AssessmentRound.class)).create();
 					AR.setAsNew(roundName);
 					AR.setCategoryId(iCategoryId);
 					//AR.setCategoryId(iCategoryId);
@@ -123,17 +147,17 @@ public class CampusFinanceHandler implements FinanceHandler {
 						int totalAmount = 0;
 						double factor = 1;
 						// All tenants accounts (Outer loop)
-						for (int o = 0; o < rlen; o++) {
-							user = (ContractAccountApartment) listOfUsers.get(o);
+						for (Iterator iter = listOfUsers.iterator(); iter.hasNext();) {
+							user = (ContractAccountApartment)  iter.next();
 							factor = getFactor(user, start, end);
 							///Account eAccount = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).findByPrimaryKeyLegacy(user.getAccountId());
 							if (factor > 0) {
 								totalAmount = 0;
 								float Amount = 0;
 								// For each tariff (Inner loop)
-								for (int i = 0; i < tlen; i++) {
+								for (Iterator iter2 = tariffs.iterator(); iter2.hasNext();) {
+									eTariff = (Tariff) iter2.next();
 									Amount = 0;
-									eTariff = (Tariff) listOfTariffs.get(i);
 									String sAttribute = eTariff.getTariffAttribute();
 									// If we have an tariff attribute
 									if (sAttribute != null) {
@@ -264,19 +288,33 @@ public class CampusFinanceHandler implements FinanceHandler {
 
 		double diff = endin - begin;
 		ret = (diff) / del;
-		System.out.println("factor for contract "+con.getContractId()+" aprt:"+con.getApartmentId() +" start:"+(new Date(begin)).toGMTString()+" end: "+(new Date(endin)).toGMTString()+" factor: "+ret);
+		//System.out.println("factor for contract "+con.getContractId()+" aprt:"+con.getApartmentId() +" start:"+(new Date(begin)).toGMTString()+" end: "+(new Date(endin)).toGMTString()+" factor: "+ret);
 		return ret;
 	}
 
 	public Collection listOfAssessmentTariffPreviews(int iTariffGroupId, IWTimestamp start, IWTimestamp end) throws java.rmi.RemoteException {
-		Collection tariffs = FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
-		List listOfTariffs = new Vector(tariffs);
-		List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(getAccountType());
-
-		if (listOfTariffs != null && listOfUsers != null) {
-			Hashtable H = new Hashtable(listOfTariffs.size());
+		Collection tariffs = null;
+		try {
+			tariffs = ((TariffHome)IDOLookup.getHome(Tariff.class)).findByTariffGroup(new Integer (iTariffGroupId));
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		//FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
+		//List listOfTariffs = new Vector(tariffs);
+		//List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(getAccountType());
+		Collection listOfUsers= null;;
+		try {
+			listOfUsers = ((ContractAccountApartmentHome)IDOLookup.getHome(ContractAccountApartment.class)).findAll();
+		} catch (IDOLookupException e1) {
+			e1.printStackTrace();
+		} catch (FinderException e1) {
+			e1.printStackTrace();
+		}
+		if (tariffs != null && listOfUsers != null) {
+			Hashtable H = new Hashtable(tariffs.size());
 			int rlen = listOfUsers.size();
-			int tlen = listOfTariffs.size();
 			Tariff eTariff;
 			char cAttribute;
 			ContractAccountApartment user;
@@ -285,13 +323,14 @@ public class CampusFinanceHandler implements FinanceHandler {
 			String sAttribute;
 
 			// All tenants accounts (Outer loop)
-			for (int o = 0; o < rlen; o++) {
-				user = (ContractAccountApartment) listOfUsers.get(o);
+			for (Iterator iter1 = listOfUsers.iterator(); iter1.hasNext();) {
+				user = (ContractAccountApartment) iter1.next();
+
 				double factor = getFactor(user, end, start);
 				// For each tariff (Inner loop)
 				if (factor > 0) {
-					for (int i = 0; i < tlen; i++) {
-						eTariff = (Tariff) listOfTariffs.get(i);
+					for (Iterator iter = tariffs.iterator(); iter.hasNext();) {
+						eTariff = (Tariff)  iter.next();
 						sAttribute = eTariff.getTariffAttribute();
 						// If we have an tariff attribute
 						if (sAttribute != null) {
@@ -367,10 +406,10 @@ public class CampusFinanceHandler implements FinanceHandler {
 		count++;
 	}
 
-	private float insertEntry(Vector V, Tariff T, int iAccountId, int iRoundId, IWTimestamp itPaydate, int iCashierId, double factor) throws SQLException, java.rmi.RemoteException {
+	private float insertEntry(Vector V, Tariff T, int iAccountId, int iRoundId, IWTimestamp itPaydate, int iCashierId, double factor) throws CreateException, java.rmi.RemoteException {
 
 		if (factor > 0) {
-			AccountEntry AE = ((com.idega.block.finance.data.AccountEntryHome) com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy();
+			AccountEntry AE = ((AccountEntryHome) IDOLookup.getHome(AccountEntry.class)).create();
 			AE.setAccountId(iAccountId);
 			AE.setAccountKeyId(T.getAccountKeyId());
 			AE.setCashierId(iCashierId);
@@ -388,7 +427,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 			AE.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.statusCreated);
 			AE.setCashierId(1);
 			AE.setPaymentDate(itPaydate.getTimestamp());
-			AE.insert();
+			AE.store();
 			if (V != null)
 				V.add(AE);
 

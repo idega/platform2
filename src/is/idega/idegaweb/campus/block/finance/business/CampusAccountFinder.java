@@ -22,7 +22,7 @@ import com.idega.block.finance.data.Account;
  * @version 1.0
  */
 public class CampusAccountFinder  {
-
+/*
   public static List listOfRentingUserAccounts(){
    try {
      return EntityFinder.findAll(((is.idega.idegaweb.campus.data.ContractAccountApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccountApartment.class)).createLegacy());
@@ -30,8 +30,8 @@ public class CampusAccountFinder  {
    catch (SQLException ex) {
     return null;
    }
-  }
-
+  }*/
+/*
   public static List listOfContractAccountApartmentsInAssessment(int iAssessmentId){
     StringBuffer sql = new StringBuffer("select distinct v.* from V_CONT_ACCT_APRT v");
     sql.append(" where v.fin_account_id in ( ");
@@ -52,13 +52,14 @@ public class CampusAccountFinder  {
     }
 
   }
-
+*/
   /**
    *  Returns a list of view entity ContractAccountApartment
    *  that have legal contracts in period specified
    *  returns null if nothing found
    *  only contracts with statuses signed resigned ended terminated
    */
+	/*
   public static List listOfContractAccountApartment(String type,IWTimestamp startDate,IWTimestamp endDate){
     StringBuffer sql = new StringBuffer("select * from ").append(is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getEntityTableName());
     sql.append(" where ").append(is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getAccountTypeColumnName());
@@ -92,7 +93,7 @@ public class CampusAccountFinder  {
       (begin <= valfr && valfr <= endin) ||
       (begin <= valfr && valto <= endin) ||
       (valfr <= begin && endin <= valto)
-    */
+    *//*
     sql.append("and status in ( '");
     sql.append(ContractBMPBean.statusSigned);
     sql.append("','");
@@ -111,7 +112,7 @@ public class CampusAccountFinder  {
     sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
     sql.append(" or ");
     sql.append("(").append(validfrom).append(less).append(start).append(" and ").append(end).append(less).append(validto).append(")");
-    */
+    *//*
     sql.append("(").append(validto).append(more).append(start).append(" and ").append(validto).append(less).append(end).append(")");
     sql.append(" or ");
     sql.append("(").append(validfrom).append(more).append(start).append(" and ").append(validfrom).append(less).append(end).append(")");
@@ -131,12 +132,13 @@ public class CampusAccountFinder  {
       return null;
      }
   }
-
+*/
    /**
    *  Returns a list of view entity ConatractAccounts
    *  that have legal contracts in period specified
    *  returns null if nothing found
    */
+	/*
   public static List listOfContractAccounts(IWTimestamp startDate,IWTimestamp endDate){
     StringBuffer sql = new StringBuffer("select * from ").append(is.idega.idegaweb.campus.data.ContractAccountsBMPBean.getEntityTableName());
 /*    sql.append(" where ");
@@ -170,6 +172,7 @@ public class CampusAccountFinder  {
     
     
     //System.err.println(sql);
+	/*
     try {
       return EntityFinder.getInstance().findAll(ContractAccounts.class,sql.toString());
      }
@@ -177,8 +180,8 @@ public class CampusAccountFinder  {
       ex.printStackTrace();
       return null;
      }
-  }
-
+  }*/
+/*
   public static List listOfRentingUserAccountsByType(String type){
    String sql = "select * from V_CONT_ACCT_APRT where fin_account_type = '"+type+"'";
    try {
@@ -189,6 +192,8 @@ public class CampusAccountFinder  {
     return null;
    }
   }
+  */
+  /*
   public static List listOfConAccAprtByType(int typeId){
     try {
       ContractAccountApartment CAA = ((is.idega.idegaweb.campus.data.ContractAccountApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccountApartment.class)).createLegacy();
@@ -197,7 +202,8 @@ public class CampusAccountFinder  {
     catch (SQLException ex) {
       return null;
     }
-  }
+  }*/
+  /*
   public static List listOfConAccAprtByApartment(int aprtId){
     try {
       ContractAccountApartment CAA = ((is.idega.idegaweb.campus.data.ContractAccountApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccountApartment.class)).createLegacy();
@@ -207,7 +213,8 @@ public class CampusAccountFinder  {
       return null;
     }
   }
-
+*/
+  /*
   public static List listOfContractAccounts(){
    try {
      return EntityFinder.findAll(((is.idega.idegaweb.campus.data.ContractAccountsHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccounts.class)).createLegacy());
@@ -217,7 +224,8 @@ public class CampusAccountFinder  {
     return null;
    }
   }
-
+  */
+/*
   public static int countAccounts(String accType){
     String sql = "select count(*) from "+is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getEntityTableName() +" where "+is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getAccountTypeColumnName()+" = '"+accType+"'";
     int count = 0;
@@ -231,7 +239,8 @@ public class CampusAccountFinder  {
       count = 0;
     return count;
   }
-
+*/
+  /*
   public static TariffIndex getTariffIndex(String type){
     TariffIndex ti = ((com.idega.block.finance.data.TariffIndexHome)com.idega.data.IDOLookup.getHomeLegacy(TariffIndex.class)).createLegacy();
     try {
@@ -246,7 +255,7 @@ public class CampusAccountFinder  {
     }
     return ti;
   }
-
+  */
   public static List getSSNAccounts(String ssn,String type){
     /*
       select f.fin_account_id

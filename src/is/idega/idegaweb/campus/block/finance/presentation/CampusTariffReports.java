@@ -8,13 +8,18 @@ import com.idega.presentation.util.TextFormat;
 import com.idega.presentation.IWContext;
 import is.idega.idegaweb.campus.data.*;
 import java.util.*;
+
+import javax.ejb.FinderException;
+
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.Building;
 import com.idega.block.finance.business.FinanceFinder;
 import com.idega.block.finance.data.AccountKey;
+import com.idega.block.finance.data.AccountKeyHome;
 import com.idega.block.finance.presentation.Finance;
+import com.idega.data.IDOLookup;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -202,8 +207,13 @@ public class CampusTariffReports extends Finance implements Campus{
 
   public DropdownMenu getAccountKeysDrop(String name)throws java.rmi.RemoteException{
     DropdownMenu drp = new DropdownMenu(name);
-    List keys = FinanceFinder.getInstance().listOfAccountKeys();
-    if(keys!=null&&!keys.isEmpty()){
+    Collection keys=null;
+	try {
+		keys = ((AccountKeyHome)IDOLookup.getHome(AccountKey.class)).findAll();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
+	if(keys!=null&&!keys.isEmpty()){
       Iterator iter = keys.iterator();
       AccountKey key;
       drp.addMenuElement(-100,iwrb.getLocalizedString("all_account_keys","All account keys"));
