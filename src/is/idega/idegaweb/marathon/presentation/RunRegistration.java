@@ -573,7 +573,7 @@ public class RunRegistration extends Block {
 		Link stepTwoGreen = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.submit_step_one", "Next step")), STYLENAME_BLUE_TEXT);
 		stepTwoGreen.setFormToSubmit(f, true);
 		Link stepTwoBlue = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
-		stepTwoGreen.setFormToSubmit(f, true);
+		stepTwoBlue.setFormToSubmit(f, true);
 
 		t.add(stepTwoGreen, 1, row);
 		t.add(Text.getNonBrakingSpace(), 1, row);
