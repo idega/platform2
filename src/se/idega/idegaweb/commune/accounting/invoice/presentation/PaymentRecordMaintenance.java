@@ -74,11 +74,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/11 13:41:26 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/13 10:38:18 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.99 $
+ * @version $Revision: 1.100 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -445,13 +445,11 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
 		addSmallText (table, col++, row++, school.getName ());
 		col = 1;
-		addSmallHeader (table, col++, row, PLACEMENT_KEY, PLACEMENT_DEFAULT,
-										":");
+		addSmallHeader (table, col++, row, PLACEMENT_KEY, PLACEMENT_DEFAULT, ":");
 		addSmallText (table, col++, row++, record.getPaymentText ());
 		col = 1;
 		addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
-		addSmallText (table, col++, row++,
-									getFormattedPeriod (record.getPeriod ()));
+		addSmallText (table, col++, row++,getFormattedPeriod (record.getPeriod ()));
 		table.setHeight (row++, 6);
 		table.mergeCells (1, row, table.getColumns (), row);
 		table.add (getDetailedPaymentRecordListTable (invoiceRecords), 1, row++);
@@ -816,8 +814,10 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		final char status = record.getStatus ();
 		final Date period = record.getPeriod ();
 		final String periodText = getFormattedPeriod (period);
-		final Link paymentTextLink = createSmallLink (record.getPaymentText (),
-																									showRecordLinkParameters);
+		final String paymentText
+				= null == record.getPaymentText () ? "?" : record.getPaymentText ();
+		final Link paymentTextLink
+				= createSmallLink (paymentText, showRecordLinkParameters);
 		final Link placementLink
 				= createSmallLink (integerFormatter.format (record.getPlacements()),
 													 showDetailsLinkParameters);
@@ -1482,13 +1482,21 @@ public class PaymentRecordMaintenance extends AccountingBlock
 		final ListTable result = new ListTable (this, fields.length);
 		int offset = 0;
 		for (int i = 0; i < fields.length; i++) {
+			final StringBuffer title = new StringBuffer ();
+			final StringBuffer value = new StringBuffer ();
 			final PostingField field = fields [i];
-			final int endPosition = min (offset + field.getLen (),
-																	 postingString.length ());
-			result.setHeader (field.getFieldTitle (), i + 1);
-			result.add (getSmallText (postingString.substring
-																(offset, endPosition).trim ()));
-			offset = endPosition;
+			if (null != field) {
+				title.append (field.getFieldTitle ());
+				if (null != postingString) {
+					final int endPosition = min (offset + field.getLen (),
+																			 postingString.length ());
+					value.append (postingString.substring
+												(offset, endPosition).trim ());
+					offset = endPosition;
+				}
+			}
+			result.setHeader (title.toString (), i + 1);
+			result.add (getSmallText (value.toString ()));
 		}       
 		return result;
 	}
