@@ -505,7 +505,7 @@ public class StaffFinder {
 
     if ( mobilePhone != null ) {
 
-      holder.setArea(mobilePhone.getNumber());
+      holder.setMobilePhone(mobilePhone.getNumber());
 
     }
 
