@@ -15,6 +15,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolType;
 import com.idega.data.GenericEntity;
 import com.idega.user.data.User;
 
@@ -40,6 +41,8 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 	private static final String COLUMN_PLACING = "placing";
 	private static final String COLUMN_TO = "periode_to";
 	private static final String COLUMN_FROM = "periode_from";
+	private static final String COLUMN_SCHOOL_TYPE_ID = "school_type_id";
+	
 	
 	private static final String ENTITY_NAME = "cacc_regular_payment_entry";
 	
@@ -61,9 +64,11 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 		addAttribute(COLUMN_PLACING, "", true, true, java.lang.String.class);
 		addAttribute(COLUMN_TO, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_FROM, "", true, true, java.sql.Date.class);
+		addAttribute(COLUMN_SCHOOL_TYPE_ID, "", true, true, java.lang.Integer.class);		
 
 		addManyToOneRelationship(COLUMN_USER_ID, User.class);
 		addManyToOneRelationship(COLUMN_SCHOOL_ID, School.class);
+		addManyToOneRelationship(COLUMN_SCHOOL_TYPE_ID, SchoolType.class);
 		addManyToOneRelationship(COLUMN_REG_SPEC_TYPE_ID, RegulationSpecType.class);
 		addManyToOneRelationship(COLUMN_VAT_RULE_ID, VATRule.class);						
 	}
@@ -202,6 +207,13 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 		return getStringColumnValue(COLUMN_OWN_POSTING);
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getVatRegulationID()
+	 */
+	public int getSchoolTypeId() {
+		return getIntColumnValue(COLUMN_SCHOOL_TYPE_ID);
+	}	
+	
 
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setFrom(java.util.Date)
@@ -331,6 +343,13 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 	public void setDoublePosting(String doublePosting) {
 		setColumn(COLUMN_DOUBLE_POSTING, doublePosting);
 	}
+	
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry#setSchoolTypeId(int)
+	 */
+	public void setSchoolTypeId(int schoolTypeId) {
+		setColumn(COLUMN_SCHOOL_TYPE_ID, schoolTypeId);
+	}	
 
 
 	/**
@@ -384,18 +403,5 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 		.appendIsNull()
 		.appendRightParenthesis());
 	}
-/*
-	public Collection ejbFindRegularPaymentsForPeriodeAndCategory(Date date, String category, int lagCat) throws FinderException{
 
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, category);
-		sql.appendAnd().append(COLUMN_FROM).appendLessThanOrEqualsSign().append(date);
-		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TO).appendGreaterThanOrEqualsSign().append(date);
-		sql.appendOr().append(COLUMN_TO).append(" is null").appendRightParenthesis();
-		sql.appendAnd().append(COLUMN_REG_SPEC_TYPE_ID).appendNOTEqual().append(lagCat);
-		System.out.println("SQL:"+sql);
-		return idoFindPKsByQuery(sql);
-
-	}
-*/
 }

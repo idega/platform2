@@ -35,7 +35,8 @@ public interface RegularPaymentEntry extends IDOEntity {
 	VATRule getVatRule();	
 	int getVatRuleId();	
 	User getUser();	
-	int getUserId();		
+	int getUserId();	
+	int getSchoolTypeId();	
 	
 	void setSchoolId(int schoolId);
 	void setPlacing(String plascing);
@@ -48,6 +49,7 @@ public interface RegularPaymentEntry extends IDOEntity {
 	void setDoublePosting(String doublePosting);
 	void setVatRuleId(int vatRuleId);	
 	void setUser(User user);
+	void setSchoolTypeId(int id);	
 	
-	void delete()throws java.sql.SQLException;	
+	void delete()throws java.sql.SQLException;
 }
