@@ -5,13 +5,13 @@ import java.sql.Date;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.business.BatchRunQueue;
-import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.business.SchoolCategoryNotFoundException;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 
-import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
@@ -61,11 +61,12 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		add(form);
 		
 		try {
-			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
-			//TODO (JJ) change to use ExportDataMapping.getAccountSettlement
-			// and ExportBusinessBean.getAccountSettlementTypeXXXX() instead of the 
-			// if statement below
-			if(invoiceBusiness.isHighShool(schoolCategory)){
+			ExportBusiness exportBusiness = getBusiness().getExportBusiness();
+			ExportDataMapping exportDataMapping = exportBusiness.getExportDataMapping(schoolCategory);
+			System.out.println(""+exportDataMapping.getAccountSettlementType());
+			if(exportDataMapping.getAccountSettlementType() ==
+				exportBusiness.getAccountSettlementTypeSpecificDate())
+			{
 				readDateInput = new DateInput(PARAM_READ_DATE,true);
 				String date = iwc.getParameter(PARAM_READ_DATE);
 				if(date!=null){
