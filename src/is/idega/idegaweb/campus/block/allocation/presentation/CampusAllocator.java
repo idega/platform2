@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.40 2002/08/29 17:04:55 aron Exp $
+ * $Id: CampusAllocator.java,v 1.41 2002/08/29 18:57:15 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1008,6 +1008,7 @@ public class CampusAllocator extends Block implements Campus {
 
 	private User makeNewUser(Applicant A) {
 		String[] emails = CampusApplicationFinder.getApplicantEmail(A.getID());
+//		return service.makeNewUser(A, emails);
 		return ContractBusiness.makeNewUser(A, emails);
 	}
 
