@@ -117,7 +117,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
           cycler = new MessageListener(checkTimer);
           cycler.addActionListener(this);
         }
-      //  cycler.start();
         isfirstRun=false;
       }
 
