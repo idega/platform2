@@ -35,6 +35,7 @@ public class UpdateHandicap {
 
       try {
             int member_id = member.getID();
+            System.out.println("MemberID: "+member_id);
 
             MemberInfo memberInfo = new MemberInfo(member_id);
             TournamentRound round = null;
@@ -89,33 +90,43 @@ public class UpdateHandicap {
                       field_par = field.getFieldPar();
 
                     leikForgjof = new Handicap(grunn);
+                    System.out.println("Handicap: "+leikForgjof);
                       if ( isTournament ) {
+                      System.out.println("Is tournament");
                         if ( round.getRoundNumber() == 1 ) {
                           tournamentHandicap = grunn;
                         }
                         float tournamentPlayHandicap = (float) leikForgjof.getLeikHandicap(slope,course_rating,field_par);
+                        System.out.println("TournamentPlayHandicap: "+tournamentPlayHandicap);
                         Tournament tournament = round.getTournament();
                         modifier = tournament.getTournamentType().getModifier();
                         if ( member.getGender().equalsIgnoreCase("m") ) {
                           if ( tournamentPlayHandicap > tournament.getMaxHandicap() ) {
                             tournamentHandicap = leikForgjof.getHandicapForScorecard(tournament.getID(),teeColorID,tournament.getMaxHandicap());
+                            System.out.println("TournamentHandicap: "+tournamentHandicap);
                           }
                         }
                         else if ( member.getGender().equalsIgnoreCase("f") ) {
                           if ( tournamentPlayHandicap > tournament.getFemaleMaxHandicap() ) {
                             tournamentHandicap = leikForgjof.getHandicapForScorecard(tournament.getID(),teeColorID,tournament.getFemaleMaxHandicap());
+                            System.out.println("TournamentHandicap: "+tournamentHandicap);
                           }
                         }
                         if ( modifier != -1 ) {
+                          System.out.println("Has modifier");
                           int modified = leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
                           int modifiedHandicap = Math.round((float) modified * modifier);
                           tournamentHandicap = leikForgjof.getHandicapForScorecard(tournament.getID(),teeColorID,modifiedHandicap);
+                          System.out.println("TournamentHandicap: "+tournamentHandicap);
                         }
                         leikForgjof = new Handicap((double) tournamentHandicap);
+                        System.out.println("TournamentHandicap: "+leikForgjof);
                       }
 
                     leik = leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
                     realLeik = new Handicap(grunn).getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
+                    System.out.println("PlayHandicap: "+leik);
+                    System.out.println("RealPlayHandicap: "+realLeik);
 
                     heildarpunktar = 0;
                     realTotalPoints = 0;
