@@ -88,11 +88,6 @@ public class BookingDeleterWindow extends TravelWindow {
     return text;
   }
 
-  private Text getTextBold(String content) {
-    Text text = getText(content);
-      text.setBold(true);
-    return text;
-  }
 
   private Text getTextWhiteBold(String content) {
     Text text = new Text(content);

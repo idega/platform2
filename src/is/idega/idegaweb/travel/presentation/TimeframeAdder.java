@@ -47,11 +47,11 @@ public class TimeframeAdder extends TravelWindow {
 
   public void main(IWContext iwc) throws Exception{
     super.main(iwc);
-    initialize(iwc);
+    init(iwc);
     mainMenu(iwc);
   }
 
-  private void initialize(IWContext iwc) throws RemoteException{
+  private void init(IWContext iwc) throws RemoteException{
     iwrb = super.iwrb;
     try {
       String sProductId = iwc.getParameter(_parameterProductId);

@@ -59,7 +59,7 @@ public class AdditionalBooking extends TravelWindow {
 
   public void main(IWContext iwc) throws Exception{
     super.main(iwc);
-    initialize(iwc);
+    init(iwc);
 
     try {
       if (service != null) {
@@ -79,7 +79,7 @@ public class AdditionalBooking extends TravelWindow {
     }
   }
 
-  private void initialize(IWContext iwc) throws RemoteException{
+  private void init(IWContext iwc) throws RemoteException{
     try {
       String sCorrection = iwc.getParameter(this.correction);
       if (sCorrection != null) {
