@@ -314,11 +314,11 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return (Collection)super.idoFindPKsBySQL(sql.toString());
 	}	
 	
-	public Collection ejbFindAllCasesByUserAndStatus(User owner, String caseStatus) throws RemoteException, FinderException {
+	public Collection ejbFindAllCasesByUserAndStatus(User owner, String caseStatus) throws  FinderException {
 		return super.ejbFindAllCasesByUserAndStatus(owner,caseStatus);
 	}
 	
-	public Collection ejbFindAllCasesByStatus(String caseStatus) throws RemoteException, FinderException {
+	public Collection ejbFindAllCasesByStatus(String caseStatus) throws FinderException {
 		return super.ejbFindAllCasesByStatus(caseStatus);
 	}
 }

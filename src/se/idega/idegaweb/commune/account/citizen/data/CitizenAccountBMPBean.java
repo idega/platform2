@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.12 2002/11/20 11:50:59 staffan Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.13 2002/12/20 19:10:29 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -201,7 +201,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
      * associated caseCode
 	 */
 	public Collection ejbFindAllCasesByStatus(String caseStatus)
-        throws FinderException, RemoteException {
+        throws FinderException {
 		return super.ejbFindAllCasesByStatus(caseStatus);
 	}
 }
