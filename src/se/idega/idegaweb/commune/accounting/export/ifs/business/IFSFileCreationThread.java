@@ -987,7 +987,8 @@ public class IFSFileCreationThread extends Thread {
 						//Apris
 						bWriter.write("000000000000");
 						//moms, filler
-						bWriter.write(empty.substring(0, 2));
+						bWriter.write(empty.substring(0, 1));
+						bWriter.write("0");
 						//Avser period f.o.m
 						bWriter.write("00000000");
 						//Avser period t.o.m
