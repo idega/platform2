@@ -12,7 +12,9 @@ import com.idega.jmodule.object.interfaceobject.DropdownMenu;
 import com.idega.jmodule.object.interfaceobject.Form;
 import com.idega.jmodule.object.interfaceobject.HiddenInput;
 import com.idega.jmodule.object.interfaceobject.SubmitButton;
+import com.idega.jmodule.object.interfaceobject.InterfaceObject;
 import com.idega.jmodule.object.Table;
+import com.idega.jmodule.object.Image;
 import is.idegaweb.campus.entity.ApartmentTypePeriods;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.ApartmentType;
@@ -39,6 +41,8 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
   protected String TextFontColor = "#000000";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
+  private String redColor = "#942829",blueColor = "#27324B",lightBlue ="#ECEEF0",WhiteColor = "#FFFFFF";
+    private String bottomThickness = "8";
 
 
   public String getBundleIdentifier(){
@@ -56,6 +60,7 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
         }
 
         this.add(makeInputTable());
+
       }
       else
         this.add(new Text("Ekki Réttindi"));
@@ -70,6 +75,10 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
     if(Types != null){
       int len = Types.size();
       ApartmentType AT;
+
+      T.add(headerText(iwrb.getLocalizedString("apartment_type","Apartment type")),1,1);
+      T.add(headerText(iwrb.getLocalizedString("first_date","First date (D/M)")),2,1);
+      T.add(headerText(iwrb.getLocalizedString("second_date","Second date (D/M)")),3,1);
       int row = 2;
       for (int i = 0; i < len; i++) {
         AT = (ApartmentType) Types.get(i);
@@ -89,10 +98,10 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
           drpMonthTwo.setSelectedElement(String.valueOf(ATP.getSecondDateMonth()));
           id = ATP.getID();
         }
-        drpDayOne.setStyle( styleAttribute);
-        drpMonthOne.setStyle( styleAttribute);
-        drpDayTwo.setStyle( styleAttribute);
-        drpMonthTwo.setStyle( styleAttribute);
+        setStyle( drpDayOne);
+        setStyle(drpMonthOne);
+        setStyle(drpDayTwo);
+        setStyle(drpMonthTwo);
         T.add(new HiddenInput("typeid"+i,String.valueOf(AT.getID())),1,row);
         T.add(new HiddenInput("id"+i,String.valueOf(id)),1,row);
         T.add(drpDayOne,2,row);
@@ -102,10 +111,22 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
         row++;
       }
       T.add(new HiddenInput("count",String.valueOf(len)));
-      T.add(new SubmitButton("save","Save"),1,row);
+      T.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,row);
+       T.setCellpadding(1);
+      T.setCellspacing(1);
+      T.setBorder(0);
+       T.setHorizontalZebraColored(lightBlue,WhiteColor);
+      T.setRowColor(1,blueColor);
+      int lastrow = row;
+      T.setRowColor(lastrow,redColor);
+      T.mergeCells(1,lastrow,4,lastrow);
+      T.add(formatText(" "),1,lastrow);
+      T.setHeight(lastrow,bottomThickness);
+
     }
     else
       T.add("No data");
+    F.add(getHomeLink());
     F.add(T);
     return F;
   }
@@ -209,6 +230,13 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
   public Text formatText(int i){
     return formatText(String.valueOf(i));
   }
+  public Text headerText(String text){
+    Text T = new Text(text);
+    T.setBold();
+    T.setFontColor(this.WhiteColor);
+    T.setFontSize(1);
+    return T;
+  }
 
   public void main(ModuleInfo modinfo){
     try{
@@ -220,6 +248,14 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
     iwrb = getResourceBundle(modinfo);
     iwb = getBundle(modinfo);
     control(modinfo);
+  }
+
+  private Link getHomeLink(){
+    return new Link(new Image("/pics/list.gif"),"/allocation/index.jsp");
+  }
+
+  protected void setStyle(InterfaceObject O){
+    O.setAttribute("style",this.styleAttribute);
   }
 
 }

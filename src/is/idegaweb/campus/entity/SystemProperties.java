@@ -1,6 +1,7 @@
 package is.idegaweb.campus.entity;
 
 import com.idega.data.*;
+import com.idega.util.idegaTimestamp;
 
 
 /**
@@ -53,6 +54,17 @@ public class SystemProperties extends GenericEntity {
   public void insert() throws java.sql.SQLException{
   }
   public void delete() throws java.sql.SQLException{
+  }
+
+  public java.sql.Date getValidToDate(){
+    int years = this.getContractYears();
+    if(this.getContractYears() > 0){
+      idegaTimestamp now = idegaTimestamp.RightNow();
+      idegaTimestamp iT = new idegaTimestamp(1,now.getMonth(),now.getYear()+years);
+      return iT.getSQLDate();
+    }
+    else
+     return this.getContractDate();
   }
 
 }

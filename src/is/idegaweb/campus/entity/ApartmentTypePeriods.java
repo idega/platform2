@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentTypePeriods.java,v 1.1 2001/08/01 10:59:43 aron Exp $
+ * $Id: ApartmentTypePeriods.java,v 1.2 2001/08/08 23:29:50 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -112,5 +112,14 @@ public class ApartmentTypePeriods extends GenericEntity{
   public int getSecondDateMonth(){
     idegaTimestamp it = new idegaTimestamp(getSecondDate());
     return (it.getYear() != ZEROYEAR)?it.getMonth():0;
+  }
+
+  public boolean hasFirstPeriod(){
+    idegaTimestamp it = new idegaTimestamp(getFirstDate());
+    return (it.getYear() != ZEROYEAR)?true:false;
+  }
+  public boolean hasSecondPeriod(){
+    idegaTimestamp it = new idegaTimestamp(getSecondDate());
+    return (it.getYear() != ZEROYEAR)?true:false;
   }
 }

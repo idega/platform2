@@ -13,7 +13,17 @@ import com.idega.data.*;
  */
 
 public class Account extends GenericEntity {
-
+/*
+"FIN_ACCOUNT_ID"	INTEGER NOT NULL,
+  "IC_USER_ID"	INTEGER,
+  "FIN_CASHIER_ID"	INTEGER NOT NULL,
+  "NAME"	VARCHAR(255),
+  "LAST_UPDATED"	TIMESTAMP,
+  "BALANCE"	FLOAT,
+  "CREATION_DATE"	DATE,
+  "EXTRA_INFO"	VARCHAR(4000),
+  "VALID"	CHAR(1),
+*/
   public Account() {
     super();
   }
@@ -23,109 +33,98 @@ public class Account extends GenericEntity {
   }
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute("member_id", "Félagi", true, true, "java.lang.Integer","many-to-one","com.idega.data.genericentity.Member");
-    addAttribute("name","Heiti",true,true,"java.lang.String");
-    addAttribute("last_updated","Síðast Breytt",true,true,"java.sql.Timestamp");
-    addAttribute("balance","Staða",true,true,"java.lang.Integer");
-    addAttribute("cashier_id","Gjaldkeri",true,true,"java.lang.Integer");
-    addAttribute("creation_date","Stofndags",true,true,"java.sql.Timestamp");
-    addAttribute("extra_info","Athugasemd",true,true,"java.lang.String");
-    addAttribute("valid","í Gildi",true,true,"java.lang.Boolean");
+    addAttribute(getUserIdColumnName(), "User", true, true, "java.lang.Integer","many-to-one","com.idega.core.user.data.User");
+    addAttribute(getCashierIdColumnName(),"Gjaldkeri",true,true,"java.lang.Integer","many-to-one","com.idega.block.finance.data.Cashier");
+    addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
+    addAttribute(getLastUpdatedColumnName(),"Changed",true,true,"java.sql.Timestamp");
+    addAttribute(getBalanceColumnName(),"Balance",true,true,"java.lang.Integer");
+    addAttribute(getCreationDateColumnName(),"Created",true,true,"java.sql.Timestamp");
+    addAttribute(getInfoColumnName(),"Info",true,true,"java.lang.String");
+    addAttribute(getValidColumnName(),"Valid",true,true,"java.lang.Boolean");
 
   }
 
   public String getEntityName(){
-          return "account";
+          return getEntityTableName();
   }
 
-  public int getMemberId(){
-          return getIntColumnValue("member_id");
-  }
+  public static String getEntityTableName(){ return "FIN_ACCOUNT";}
+  public static String getUserIdColumnName(){ return "IC_USER_ID";}
+  public static String getCashierIdColumnName(){ return "FIN_CASHIER_ID";}
+  public static String getNameColumnName(){ return "NAME";}
+  public static String getLastUpdatedColumnName(){ return "LAST_UPDATED";}
+  public static String getBalanceColumnName(){ return "BALANCE";}
+  public static String getCreationDateColumnName(){ return "CREATION_DATE";}
+  public static String getInfoColumnName(){ return "EXTRA_INFO";}
+  public static String getValidColumnName(){ return "VALID";}
 
-  public void setMemberId(Integer member_id){
-    setColumn("member_id", member_id);
+  public int getUserId(){
+          return getIntColumnValue(getUserIdColumnName());
   }
-
-  public void setMemberId(int member_id){
-    setColumn("member_id", member_id);
+  public void setUserId(Integer user_id){
+    setColumn(getUserIdColumnName(), user_id);
   }
-
+  public void setUserId(int user_id){
+    setColumn(getUserIdColumnName(), user_id);
+  }
   public String getName(){
-    return getStringColumnValue("name");
+    return getStringColumnValue(getNameColumnName());
   }
-
   public void setName(String name){
-    setColumn("name", name);
+    setColumn(getNameColumnName(), name);
   }
-
   public Timestamp getLastUpdated(){
-    return (Timestamp) getColumnValue("last_updated");
+    return (Timestamp) getColumnValue(getLastUpdatedColumnName());
   }
-
   public void setLastUpdated(Timestamp last_updated){
-    setColumn("last_updated", last_updated);
+    setColumn(getLastUpdatedColumnName(), last_updated);
   }
-
   public int getCashierId(){
-          return getIntColumnValue("cashier_id");
+    return getIntColumnValue(getCashierIdColumnName());
   }
-
-  public void setCashierId(Integer member_id){
-          setColumn("cashier_id", member_id);
+  public void setCashierId(Integer cashier_id){
+    setColumn(getCashierIdColumnName(), cashier_id);
   }
-
-  public void setCashierId(int member_id){
-          setColumn("cashier_id", member_id);
+  public void setCashierId(int cashier_id){
+    setColumn(getCashierIdColumnName(), cashier_id);
   }
-
   public int getBalance(){
-    return getIntColumnValue("balance");
+    return getIntColumnValue(getBalanceColumnName());
   }
-
   public void setBalance(Integer balance){
-    setColumn("balance", balance);
+    setColumn(getBalanceColumnName(), balance);
   }
-
   public void setBalance(int balance){
-    setColumn("balance", balance);
+    setColumn(getBalanceColumnName(), balance);
   }
-
   public Timestamp getCreationDate(){
-    return (Timestamp) getColumnValue("creation_date");
+    return (Timestamp) getColumnValue(getCreationDateColumnName());
   }
-
   public void setCreationDate(Timestamp creation_date){
-    setColumn("creation_date", creation_date);
+    setColumn(getCreationDateColumnName(), creation_date);
   }
-
   public String getExtraInfo(){
-    return getStringColumnValue("extra_info");
+    return getStringColumnValue(getInfoColumnName());
   }
-
   public void setExtraInfo(String extra_info){
-    setColumn("extra_info", extra_info);
+    setColumn(getInfoColumnName(), extra_info);
   }
-
   public void addKredit(int amount){
     this.setBalance(this.getBalance()-amount);
   }
-
   public void addKredit(Integer amount){
      this.setBalance(this.getBalance()-amount.intValue());
   }
-
   public void addDebet(int amount){
     this.setBalance(this.getBalance()+amount);
   }
-
   public void addDebet(Integer amount){
     this.setBalance(this.getBalance()+amount.intValue());
   }
-
   public void setValid(boolean valid){
-    setColumn("valid",valid);
+    setColumn(getValidColumnName(),valid);
   }
   public boolean getValid(){
-    return getBooleanColumnValue("valid");
+    return getBooleanColumnValue(getValidColumnName());
   }
 }

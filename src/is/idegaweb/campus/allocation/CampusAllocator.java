@@ -17,6 +17,7 @@ import com.idega.block.building.business.BuildingFinder;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.data.*;
 import com.idega.core.user.data.User;
+import com.idega.data.EntityFinder;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import is.idegaweb.campus.application.*;
@@ -96,16 +97,20 @@ public class CampusAllocator extends KeyEditor{
 
         if(modinfo.getParameter("allocate")!=null){
           int applicantId = Integer.parseInt(modinfo.getParameter("allocate"));
-          Frame.add( getFreeApartments(iTypeId,iComplexId,applicantId),3,1 );
+          Frame.add( getFreeApartments(iTypeId,iComplexId,applicantId,-1),3,1 );
           Frame.add( getApplicantInfo(applicantId,modinfo),1,1 );
         }
         else if(modinfo.getParameter("change")!=null){
           int iContractId = Integer.parseInt(modinfo.getParameter("change"));
-          Frame.add( getContractTable(iContractId),3,1 );
+          Frame.add( getFreeApartments(iTypeId,iComplexId,-1,iContractId),3,1 );
+          //Frame.add( getContractTable(iContractId),3,1 );
           Frame.add( getWaitingList(iTypeId,iComplexId),1,1 );
         }
         else if(modinfo.getParameter("save_allocation")!=null){
-          saveAllocation(modinfo);
+          if(saveAllocation(modinfo))
+            System.err.println("vistadist");
+          else
+             System.err.println("vistadist ekki");
           Frame.add( getWaitingList(iTypeId,iComplexId),1,1 );
         }
         else if(modinfo.getParameter("delete_allocation")!=null){
@@ -274,26 +279,29 @@ public class CampusAllocator extends KeyEditor{
       bcontracts = true;
     if(L!=null){
       int len = L.size();
+      int row = 1;
       for (int i = 0; i < len; i++) {
         WaitingList WL = (WaitingList)L.get(i);
         try{
           Applicant A = new Applicant(WL.getApplicantId().intValue());
-          Frame.add(formatText(WL.getOrder().intValue()),1,i+1);
-           Frame.add(getPDFLink(new Image("/pics/print.gif"),A.getID()),2,i+1);
-          Frame.add(formatText(A.getFullName()),3,i+1);
+          Frame.add(formatText(WL.getOrder().intValue()),1,row);
+           Frame.add(getPDFLink(new Image("/pics/print.gif"),A.getID()),2,row);
+          Frame.add(formatText(A.getFullName()),3,row);
 
 
           if(bcontracts && HT.containsKey(new Integer(A.getID()))){
             Contract C = (Contract) HT.get(new Integer(A.getID()));
-            Frame.add(getChangeLink(C.getID()),2,i+1);
+            //Frame.add(formatText(getApartmentString(C)),4,i+1);
+            Frame.add(getChangeLink(C.getID()),2,row);
           }
           else{
-            Frame.add(getAllocateLink(A.getID()),2,i+1);
+            Frame.add(getAllocateLink(A.getID()),2,row);
           }
 
         }
         catch(SQLException sql){}
       }
+      row++;
     }
     else
       Frame.add(formatText(iwrb.getLocalizedString("not_to_allocate","Nothing to Allocate!")));
@@ -361,19 +369,34 @@ public class CampusAllocator extends KeyEditor{
     return MO;
   }
 
-  private ModuleObject getFreeApartments(int aprtTypeId,int cmplxId,int applicant_id){
+  private ModuleObject getFreeApartments(int aprtTypeId,int cmplxId,int applicant_id,int contract_id){
     List L = BuildingFinder.listOfApartmentsInTypeAndComplex(aprtTypeId,cmplxId);
     ApartmentType AT = BuildingCacher.getApartmentType(aprtTypeId);
     Complex CX = BuildingCacher.getComplex(cmplxId);
     Hashtable HT = ContractFinder.hashOfApartmentsContracts();
+    ApartmentTypePeriods ATP = getPeriod(aprtTypeId);
+    Contract C = null;
+    boolean hasContract = false;
+    if(contract_id != -1){
+      try {
+        C = new Contract(contract_id);
+        hasContract = true;
+      }
+      catch (SQLException ex) {
+        hasContract = false;
+      }
+    }
+
     boolean bcontracts = false;
     if(HT !=null)
       bcontracts = true;
     Table Frame = new Table();
     Table Header = new Table();
-    Header.add(headerText(AT.getName()),1,1);
-    Header.add(headerText(CX.getName()),2,1);
+    Header.add(headerText(AT.getName()+" "),1,1);
+    Header.add(headerText(CX.getName()),1,1);
+    Header.mergeCells(1,1,4,1);
     Header.setRowColor(1,blueColor);
+    Header.setWidth("100%");
     Frame.add(Header,1,1);
 
     if(L!=null){
@@ -385,30 +408,107 @@ public class CampusAllocator extends KeyEditor{
       Building B;
       int row = 1;
       SubmitButton save = new SubmitButton("save_allocation","Save");
+
       setStyle(save);
-      HiddenInput Hid = new HiddenInput("applicantid",String.valueOf(applicant_id));
-      myForm.add(Hid);
-      T.add(save,1,row++);
+      DateInput dateFrom = new DateInput("contract_date_from",true);
+      DateInput dateTo = new DateInput("contract_date_to",true);
+
+      idegaTimestamp contractDateFrom = new idegaTimestamp();
+      idegaTimestamp contractDateTo = new idegaTimestamp();
+      if(hasContract){
+        contractDateTo = new idegaTimestamp(C.getValidTo());
+          contractDateFrom = new idegaTimestamp(C.getValidFrom());
+      }
+      else if(ATP!=null){
+        boolean first = ATP.hasFirstPeriod();
+        boolean second = ATP.hasSecondPeriod();
+        // One Period
+        if(first && second){
+          idegaTimestamp today = new idegaTimestamp();
+          if(today.getMonth() <= ATP.getFirstDateMonth()){
+            contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
+            contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
+          }
+          else if(today.getMonth() <= ATP.getSecondDateMonth() ){
+            contractDateFrom = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
+            contractDateTo = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
+          }
+          else{
+            contractDateTo = new idegaTimestamp();
+            contractDateFrom = new idegaTimestamp();
+          }
+        }
+        // Two Periods
+        else if(first && !second){
+          contractDateTo = new idegaTimestamp();
+          contractDateFrom = new idegaTimestamp();
+        }
+      }
+      // are the System Properties set
+      else if(SysProps !=null){
+        contractDateTo = new idegaTimestamp(SysProps.getValidToDate());
+        contractDateFrom = new idegaTimestamp();
+      }
+      else{
+        contractDateTo = new idegaTimestamp();
+        contractDateFrom = new idegaTimestamp();
+      }
+      dateFrom.setDate(contractDateFrom.getSQLDate());
+      dateTo.setDate(contractDateTo.getSQLDate());
+      dateFrom.setStyleAttribute("style",styleAttribute);
+      dateTo.setStyleAttribute("style",styleAttribute);
+      if(applicant_id != -1){
+        HiddenInput Hid = new HiddenInput("applicantid",String.valueOf(applicant_id));
+        myForm.add(Hid);
+      }
+      T.add(formatText(iwrb.getLocalizedString("validfrom","Valid from")),1,row);
+      T.add(dateFrom,3,row);
+      T.mergeCells(1,row,2,row);
+      T.mergeCells(3,row,4,row);
+      row++;
+      T.add(formatText(iwrb.getLocalizedString("validto","Valid to")),1,row);
+      T.add(dateTo,3,row);
+      T.mergeCells(1,row,2,row);
+      T.mergeCells(3,row,4,row);
+      row++;
+      if(hasContract){
+        SubmitButton delete = new SubmitButton("delete_allocation","Delete");
+        setStyle(delete);
+        T.add(delete,1,row);
+        T.add(new HiddenInput("contract_id",String.valueOf(C.getID())));
+      }
+      T.add(save,3,row);
+      T.mergeCells(1,row,2,row);
+      T.mergeCells(3,row,4,row);
+      row++;
       for (int i = 0; i < len; i++) {
         A = (Apartment) L.get(i);
-        RadioButton RB = new RadioButton("apartmentid",String.valueOf(A.getID()));
-
+        int id = A.getID();
+        RadioButton RB = new RadioButton("apartmentid",String.valueOf(id));
+        boolean isThis = false;
+        if(hasContract && C.getApartmentId().intValue() == id){
+          RB.setSelected();
+          isThis = true;
+          TextFontColor = "#FF0000";
+        }
         // If apartment is not in contract table:
-        if(!(bcontracts && HT.containsKey(new Integer(A.getID()))) ){
-
+        if(!(bcontracts && HT.containsKey(new Integer(A.getID()))) || isThis){
           if(A.getUnavailableUntil()!=null){
             idegaTimestamp it = new idegaTimestamp(A.getUnavailableUntil());
-            if(! it.isLaterThan(idegaTimestamp.RightNow()))
+            if(! it.isLaterThan(idegaTimestamp.RightNow())){
               T.add(RB,1,row);
+            }
           }
-
-        else
-          T.add(RB,1,row);
+          else{
+            T.add(RB,1,row);
+          }
 
         T.add(formatText(A.getName()),2,row);
         F = BuildingCacher.getFloor(A.getFloorId());
         T.add(formatText(F.getName()),3,row);
         T.add(formatText((BuildingCacher.getBuilding(F.getBuildingId())).getName()),4,row);
+        if(isThis)
+          TextFontColor = "#000000";
         row++;
         }
 
@@ -469,22 +569,50 @@ public class CampusAllocator extends KeyEditor{
 
   private boolean saveAllocation(ModuleInfo modinfo){
     boolean returner = false;
+    String sContractId = modinfo.getParameter("contract_id");
     String sApartmentId = modinfo.getParameter("apartmentid");
     String sApplicantId = modinfo.getParameter("applicantid");
-    if(sApartmentId!=null && sApplicantId !=null){
-      int iApartmentId = Integer.parseInt(sApartmentId);
-      int iApplicantId = Integer.parseInt(sApplicantId);
-      Applicant eApplicant = null;
-      try{
-        eApplicant = new Applicant(iApplicantId);
-      }
-      catch(SQLException ex){}
+    String sDateFrom = modinfo.getParameter("contract_date_from");
+    String sDateTo = modinfo.getParameter("contract_date_to");
+    if( sDateFrom!=null && sDateTo!=null){
+      if(sApplicantId !=null && sApartmentId!=null ){
+        int iApartmentId = Integer.parseInt(sApartmentId);
+        int iApplicantId = Integer.parseInt(sApplicantId);
+        idegaTimestamp from = new idegaTimestamp(sDateFrom);
+        idegaTimestamp to = new idegaTimestamp(sDateTo);
+        Applicant eApplicant = null;
+        try{
+          eApplicant = new Applicant(iApplicantId);
+        }
+        catch(SQLException ex){}
 
-      List L = ContractFinder.listOfApplicantContracts(iApplicantId);
-      if(L == null && eApplicant != null ){
-        User eUser = makeNewUser(eApplicant);
-        if(eUser!=null){
-          returner = makeNewContract(eUser,eApplicant,iApartmentId);
+        List L = ContractFinder.listOfApplicantContracts(iApplicantId);
+        if(L == null && eApplicant != null ){
+          User eUser = makeNewUser(eApplicant);
+          if(eUser!=null){
+            returner = makeNewContract(eUser,eApplicant,iApartmentId,from,to);
+          }
+        }
+      }
+      else if(sContractId !=null){
+
+        int iContractId = Integer.parseInt(sContractId);
+        idegaTimestamp from = new idegaTimestamp(sDateFrom);
+        idegaTimestamp to = new idegaTimestamp(sDateTo);
+        Contract eContract = null;
+        try{
+          eContract = new Contract(iContractId);
+          eContract.setValidFrom(from.getSQLDate());
+          eContract.setValidTo(to.getSQLDate());
+          if(sApartmentId!=null){
+            int iApartmentId = Integer.parseInt(sApartmentId);
+            eContract.setApartmentId(iApartmentId);
+          }
+          eContract.update();
+          returner = true;
+        }
+        catch(SQLException ex){
+          ex.printStackTrace();
         }
       }
     }
@@ -524,15 +652,15 @@ public class CampusAllocator extends KeyEditor{
     return U;
   }
 
-  private boolean makeNewContract(User eUser,Applicant eApplicant,int iApartmentId){
-    if(SysProps !=null){
+  private boolean makeNewContract(User eUser,Applicant eApplicant,int iApartmentId,idegaTimestamp from,idegaTimestamp to){
+
       Contract eContract = new Contract();
       eContract.setApartmentId(iApartmentId);
       eContract.setApplicantId(eApplicant.getID());
       eContract.setUserId(eUser.getID());
       eContract.setStatusCreated();
-      eContract.setValidFrom(new idegaTimestamp().getSQLDate());
-      eContract.setValidTo(getValidToDate( SysProps));
+      eContract.setValidFrom(from.getSQLDate());
+      eContract.setValidTo(to.getSQLDate());
       try{
         eContract.insert();
         return true;
@@ -540,12 +668,6 @@ public class CampusAllocator extends KeyEditor{
       catch(SQLException ex){
         return false;
       }
-    }
-    else{
-      String msg = ("System properties are not set");
-      add(new Link(msg,"/allocation/sysprops.jsp"));
-      return false;
-    }
   }
 
   private java.sql.Date getValidToDate(SystemProperties SysProps){
@@ -594,6 +716,33 @@ public class CampusAllocator extends KeyEditor{
     L.addParameter("aprt_type_id",aprt_type_id);
     L.addParameter("cmplx_id",cmplx_id);
     return L;
+  }
+
+  private ApartmentTypePeriods getPeriod(int aprt_type_id){
+    try {
+      ApartmentTypePeriods A = new ApartmentTypePeriods();
+      List L = EntityFinder.findAllByColumn(A,A.getApartmentTypeIdColumnName(),aprt_type_id);
+      if(L!=null)
+        return (ApartmentTypePeriods) L.get(0);
+      else
+        return null;
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
+  private String getApartmentString(Contract eContract){
+    Apartment A = BuildingCacher.getApartment(eContract.getApartmentId().intValue());
+    Floor F = BuildingCacher.getFloor(A.getFloorId());
+    Building B = BuildingCacher.getBuilding(F.getBuildingId());
+    Complex C = BuildingCacher.getComplex(B.getComplexId());
+    StringBuffer sb = new StringBuffer(A.getName());
+    sb.append(" ");
+    sb.append(F.getName());sb.append(" ");
+    sb.append(B.getName());sb.append(" ");
+    sb.append(C.getName());
+    return sb.toString();
   }
 
 

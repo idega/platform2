@@ -235,8 +235,6 @@ public class CampusContracts extends KeyEditor{
     }
   }
 
-
-
   private ModuleObject getApartmentTable(Apartment A){
     Table T = new Table();
     Floor F = BuildingCacher.getFloor(A.getFloorId());
