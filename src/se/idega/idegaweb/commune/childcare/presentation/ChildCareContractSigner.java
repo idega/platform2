@@ -8,7 +8,6 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 
 import se.idega.block.pki.data.NBSSignedEntity;
@@ -83,9 +82,11 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 					}
 	
 					public void setSignedBy(int userId) {
+						//_contract.setUserId(userId); //This shall already be set 
 					}
 	
-					public void setSignedDate(Date time) {
+					public void setSignedDate(java.sql.Date time) {
+						_contract.setSignedDate(time);
 					}
 	
 					public void setSignedFlag(boolean flag) {
