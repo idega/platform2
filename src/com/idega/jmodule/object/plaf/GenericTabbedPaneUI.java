@@ -31,19 +31,19 @@ public abstract class GenericTabbedPaneUI implements IWTabbedPaneUI {
 
   public GenericTabbedPaneUI(){
     setMainColor(new IWColor(212,208,200));
-    initFrame();
+//    initFrame();
     initTab();
     initTabPage();
   }
 
 
-  public abstract void initFrame();
+//  public abstract void initFrame();
   public abstract void initTab();
   public abstract void initTabPage();
 
-  public void setFrame(TabbedPaneFrame frame){
-    this.frame = frame;
-  }
+//  public void setFrame(TabbedPaneFrame frame){
+//    this.frame = frame;
+//  }
 
   public void setTab(TabPresentation tab){
     this.tab = tab;
@@ -54,11 +54,11 @@ public abstract class GenericTabbedPaneUI implements IWTabbedPaneUI {
   }
 
 
-  public TabbedPaneFrame getFrame(){
-    if (frame == null)
-      initFrame();
-    return frame;
-  }
+//  public TabbedPaneFrame getFrame(){
+//    if (frame == null)
+//      initFrame();
+//    return frame;
+//  }
 
   public TabPresentation getTabPresentation(){
     if (tab == null)
@@ -85,38 +85,6 @@ public abstract class GenericTabbedPaneUI implements IWTabbedPaneUI {
 
 
 
-  public abstract class GenericTabbedPaneFrame extends Table implements TabbedPaneFrame {
-
-    public SubmitButton OK;
-    public SubmitButton Cancel;
-    public SubmitButton Apply;
-
-    public GenericTabbedPaneFrame(){
-      super();
-      initTabbedPaneFrame();
-    }
-
-    public abstract void initTabbedPaneFrame();
-    public abstract void initOKButton();
-    public abstract void initCancelButton();
-    public abstract void initApplyButton();
-
-    public void addOKButton(){
-      initOKButton();
-      this.add(OK);
-    }
-
-    public void addCancelButton(){
-      initCancelButton();
-      this.add(Cancel);
-    }
-
-    public void addApplyButton(){
-      initApplyButton();
-      this.add(Apply);
-    }
-
-  } // InnerClass GenericTabbedPaneFrame
 
   public abstract class GenericTabPresentation extends Table implements TabPresentation {
 
@@ -225,6 +193,47 @@ public abstract class GenericTabbedPaneUI implements IWTabbedPaneUI {
     public void fireContentChange(){}
 
   } // InnerClass GenericTabPagePresentation
+
+
+
+
+
+//  public abstract class GenericTabbedPaneFrame extends Table implements TabbedPaneFrame {
+//
+//    public SubmitButton OK;
+//    public SubmitButton Cancel;
+//    public SubmitButton Apply;
+//
+//    public GenericTabbedPaneFrame(){
+//      super();
+//      initTabbedPaneFrame();
+//    }
+//
+//    public abstract void initTabbedPaneFrame();
+//    public abstract void initOKButton();
+//    public abstract void initCancelButton();
+//    public abstract void initApplyButton();
+//
+//    public void addOKButton(){
+//      initOKButton();
+//      this.add(OK);
+//    }
+//
+//    public void addCancelButton(){
+//      initCancelButton();
+//      this.add(Cancel);
+//    }
+//
+//    public void addApplyButton(){
+//      initApplyButton();
+//      this.add(Apply);
+//    }
+//
+//    public void main(ModuleInfo modinfo) throws Exception {
+//
+//    }
+//
+//  } // InnerClass GenericTabbedPaneFrame
 
 
 

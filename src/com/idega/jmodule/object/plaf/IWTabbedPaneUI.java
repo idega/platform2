@@ -13,7 +13,7 @@ import javax.swing.SwingConstants;
  */
 
 public interface IWTabbedPaneUI  extends SwingConstants{
-  public TabbedPaneFrame getFrame();
+//  public TabbedPaneFrame getFrame();
   public TabPresentation getTabPresentation();
   public TabPagePresentation getTabPagePresentation();
   public void setMainColor(IWColor color);

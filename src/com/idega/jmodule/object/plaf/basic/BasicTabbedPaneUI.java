@@ -31,9 +31,9 @@ public class BasicTabbedPaneUI extends GenericTabbedPaneUI{
     super();
   }
 
-  public void initFrame(){
-    setFrame(new BasicTabbedPaneFrame(getMainColor()));
-  }
+//  public void initFrame(){
+//    setFrame(new BasicTabbedPaneFrame(getMainColor()));
+//  }
 
   public void initTab(){
     setTab(new BasicTabPresentation(getMainColor()));
@@ -45,62 +45,11 @@ public class BasicTabbedPaneUI extends GenericTabbedPaneUI{
 
   public void setMainColor(IWColor color){
     super.setMainColor(color);
-    getFrame().setColor(color);
+//    getFrame().setColor(color);
     getTabPresentation().setColor(color);
     getTabPagePresentation().setColor(color);
   }
 
-  public class BasicTabbedPaneFrame extends GenericTabbedPaneFrame implements TabbedPaneFrame {
-
-    public SubmitButton OK;
-    public SubmitButton Cancel;
-    public SubmitButton Apply;
-
-    public BasicTabbedPaneFrame(){
-      super();
-    }
-
-    public BasicTabbedPaneFrame( IWColor color ){
-      this();
-      this.setColor(color);
-    }
-
-    public void initTabbedPaneFrame(){
-      this.setRows(3);
-      this.setColumns(3);
-      this.setColor(new IWColor(212,208,200));
-      this.setAlignment(3,3,"right");
-    }
-
-    public void initOKButton(){
-      OK = new SubmitButton("OK");
-    }
-
-    public void initCancelButton(){
-      Cancel = new SubmitButton("Cancel");
-    }
-
-    public void initApplyButton(){
-      Apply = new SubmitButton("Apply");
-    }
-
-    public void addOKButton(){
-      super.addOKButton();
-    }
-
-    public void addCancelButton(){
-      super.addCancelButton();
-    }
-
-    public void addApplyButton(){
-      super.addApplyButton();
-    }
-
-    public void fireStateChange(){
-
-    }
-
-  } // InnerClass GenericTabbedPaneFrame
 
   public class BasicTabPresentation extends GenericTabPresentation {
 
@@ -160,8 +109,59 @@ public class BasicTabbedPaneUI extends GenericTabbedPaneUI{
 
 
 
+//  public class BasicTabbedPaneFrame extends GenericTabbedPaneFrame implements TabbedPaneFrame {
+//
+//    public SubmitButton OK;
+//    public SubmitButton Cancel;
+//    public SubmitButton Apply;
+//
+//    public BasicTabbedPaneFrame(){
+//      super();
+//    }
+//
+//    public BasicTabbedPaneFrame( IWColor color ){
+//      this();
+//      this.setColor(color);
+//    }
+//
+//    public void initTabbedPaneFrame(){
+//      this.setRows(3);
+//      this.setColumns(3);
+//      this.setColor(new IWColor(212,208,200));
+//      this.setAlignment(3,3,"right");
+//    }
+//
+//    public void initOKButton(){
+//      OK = new SubmitButton("OK");
+//    }
+//
+//    public void initCancelButton(){
+//      Cancel = new SubmitButton("Cancel");
+//    }
+//
+//    public void initApplyButton(){
+//      Apply = new SubmitButton("Apply");
+//    }
+//
+//    public void addOKButton(){
+//      super.addOKButton();
+//    }
+//
+//    public void addCancelButton(){
+//      super.addCancelButton();
+//    }
+//
+//    public void addApplyButton(){
+//      super.addApplyButton();
+//    }
+//
+//    public void fireStateChange(){
+//
+//    }
+//
+//  } // InnerClass GenericTabbedPaneFrame
 
 
 
-}
+} // Class BasicTabbedPaneUI
 
