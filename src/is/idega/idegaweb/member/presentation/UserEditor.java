@@ -51,6 +51,7 @@ import com.idega.presentation.ui.CountryDropdownMenu;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PostalCodeDropdownMenu;
 import com.idega.presentation.ui.SubmitButton;
@@ -365,6 +366,9 @@ public class UserEditor extends Block {
 		if (showCloseButton) {
 			presentateButtonClose(iwc);
 		}
+		if(isNewUserView()){
+			presentateButtonCancel(iwc);
+		}
 		addToMainPart(buttonTable);
 	}
 	/**
@@ -387,6 +391,16 @@ public class UserEditor extends Block {
 		getParentPage().setToReload();
 		addButton(close);
 	}
+	
+	/**
+	 * Presentates the close button
+	 * @param iwc
+	 */
+		protected void presentateButtonCancel(IWContext iwc) {
+			SubmitButton close = new SubmitButton(iwrb.getLocalizedString("mbe.cancel", "Cancel"));
+			close.setStyleClass(buttonStyleName);
+			addButton(close);
+		}
 	/**
 	 * Presentates the user relation register buttons
 	 * @param iwc
