@@ -9,7 +9,6 @@ import java.util.Iterator;
 
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
-import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.data.Address;
 import com.idega.core.data.Phone;
@@ -21,7 +20,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
-import com.sun.rsasign.s;
 
 /**
  * @author laddi
