@@ -13,7 +13,7 @@ import java.util.Collection;
  * @version 1.0
  */
 
-public class AccountBMPBean extends GenericEntity implements Account{
+public class AccountBMPBean extends CategoryEntityBMPBean implements Account{
 /*
 "FIN_ACCOUNT_ID"	INTEGER NOT NULL,
   "IC_USER_ID"	INTEGER,
@@ -34,7 +34,6 @@ public class AccountBMPBean extends GenericEntity implements Account{
   }
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute(getColumnCategoryId(),"Category",true,true,Integer.class,"",FinanceCategory.class);
     addAttribute(getUserIdColumnName(), "User", true, true, java.lang.Integer.class,"many-to-one",com.idega.core.user.data.User.class);
     addAttribute(getColumnTypeId(), "Account type", true, true, java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.AccountType.class);
     addAttribute(getCashierIdColumnName(),"Gjaldkeri",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.Cashier.class);
@@ -53,7 +52,6 @@ public class AccountBMPBean extends GenericEntity implements Account{
   }
 
   public static String getEntityTableName(){ return "FIN_ACCOUNT";}
-  public static String getColumnCategoryId(){return  "FIN_CAT_ID";}
   public static String getUserIdColumnName(){ return "IC_USER_ID";}
   public static String getCashierIdColumnName(){ return "FIN_CASHIER_ID";}
   public static String getNameColumnName(){ return "NAME";}
@@ -155,12 +153,6 @@ public class AccountBMPBean extends GenericEntity implements Account{
   }
   public void setTypePhone(){
     setType(typePhone);
-  }
-  public int getCategoryId(){
-    return getIntColumnValue( getColumnCategoryId() );
-  }
-  public void setCategoryId(int categoryId){
-    setColumn(getColumnCategoryId(),categoryId);
   }
   public int getAccountTypeId(){
     return getIntColumnValue( getColumnTypeId() );

@@ -1,34 +1,24 @@
 package com.idega.block.finance.presentation;
 
 
-import com.idega.util.text.TextFormat;
-
-import com.idega.block.finance.data.*;
-import com.idega.block.building.data.*;
-import com.idega.block.finance.business.*;
-import com.idega.block.building.business.BuildingFinder;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.finance.presentation.KeyEditor;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Block;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Image;
-import com.idega.util.IWTimestamp;
-import java.sql.SQLException;
-import java.util.StringTokenizer;
-import java.util.Collection;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.Hashtable;
-import java.util.Map;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.IWTimestamp;
+import com.idega.block.finance.business.FinanceFinder;
+import com.idega.block.finance.data.Account;
 import com.idega.core.user.data.User;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.text.TextFormat;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Title:
@@ -43,7 +33,6 @@ public class Accounts extends Finance {
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   public  String strAction = "tt_action";
-  protected boolean isAdmin = false;
 
   private int iCashierId = 1;
   private static String prmGroup = "taccs_grp";
@@ -52,9 +41,6 @@ public class Accounts extends Finance {
   private Collection accountUsers = null;
   private Collection accounts = null;
 
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb,core;
   private int viewerPageId = -1;
   private int tarifferPageId = -1;
   private TextFormat Edit;
@@ -83,7 +69,6 @@ public class Accounts extends Finance {
   protected void control(IWContext iwc)throws java.rmi.RemoteException{
     Edit = TextFormat.getInstance();
     if(isAdmin){
-      int iCategoryId = Finance.parseCategoryId(iwc);
       Table T = new Table();
       T.setCellpadding(0);
       T.setCellspacing(0);
@@ -361,15 +346,8 @@ public class Accounts extends Finance {
     return F;
   }
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
 
   public void main(IWContext iwc)throws java.rmi.RemoteException{
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
-    core = iwc.getApplication().getCoreBundle();
-    isAdmin = iwc.hasEditPermission(this);
     control(iwc);
   }
 }

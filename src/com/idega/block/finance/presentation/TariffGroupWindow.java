@@ -1,28 +1,25 @@
 package com.idega.block.finance.presentation;
 
 
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.block.news.business.*;
-import java.sql.*;
-import java.util.*;
-import java.io.*;
-import com.idega.util.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.block.finance.data.*;
-import com.idega.block.finance.business.*;
+import com.idega.block.finance.business.FinanceBusiness;
+import com.idega.block.finance.business.FinanceFinder;
+import com.idega.block.finance.data.TariffGroup;
 import com.idega.core.user.data.User;
-
-import com.idega.data.*;
-import com.idega.util.text.*;
-import com.idega.util.text.TextSoap;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.core.data.ICFile;
-import com.idega.block.media.servlet.MediaServlet;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Title:
@@ -59,13 +56,7 @@ private IWResourceBundle iwrb;
   }
 
   private void control(IWContext iwc)throws Exception{
-  /*
-    java.util.Enumeration E = iwc.getParameterNames();
-    while(E.hasMoreElements()){
-      String prm = (String) E.nextElement();
-      System.err.println("prm "+prm+" : "+iwc.getParameter(prm));
-    }
-    */
+    debugParameters(iwc);
     int iCategoryId = Finance.parseCategoryId(iwc);
     if(iCategoryId > 0){
       int groupId = -1;

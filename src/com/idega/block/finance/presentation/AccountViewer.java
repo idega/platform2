@@ -1,31 +1,35 @@
 package com.idega.block.finance.presentation;
 
-import com.idega.block.finance.data.*;
-import com.idega.block.finance.business.*;
+import com.idega.block.finance.business.AccountBusiness;
+import com.idega.block.finance.business.FinanceFinder;
+import com.idega.block.finance.data.Account;
+import com.idega.block.finance.data.AccountEntry;
+import com.idega.block.finance.data.AccountInfo;
+import com.idega.block.finance.data.AccountPhoneEntry;
+import com.idega.block.finance.data.FinanceAccount;
 import com.idega.business.IBOLookup;
 import com.idega.core.user.data.User;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import java.text.NumberFormat;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Image;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextFormat;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.util.List;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import com.idega.block.login.business.LoginBusiness;
-import com.idega.presentation.ui.DataTable;
 import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  * Title:
@@ -38,10 +42,7 @@ import java.text.DateFormat;
 
 public class AccountViewer extends Finance {
 
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
-  private boolean isAdmin,isLoggedOn;
+  private boolean isLoggedOn;
 
   private Image image ;
 
@@ -88,7 +89,7 @@ public class AccountViewer extends Finance {
     sDarkColor =  "#27324B";
   }
 
-  private void control( IWContext iwc )throws java.rmi.RemoteException{
+  protected void control( IWContext iwc )throws java.rmi.RemoteException{
     accBuiz = (AccountBusiness) IBOLookup.getServiceInstance(iwc,AccountBusiness.class);
     image = Table.getTransparentCell(iwc);
     image.setHeight(6);
@@ -172,14 +173,6 @@ public class AccountViewer extends Finance {
     CheckBox specialCheck = new CheckBox("specview");
     if(specialview)
       specialCheck.setChecked(true);
-
-    Link printable = new Link(formatText("printable",1,null));
-    printable.setClassToInstanciate(AccountViewer.class);
-    printable.addParameter(prmFromDate,getDateString(from));
-    printable.addParameter(prmToDate,getDateString(to));
-    printable.addParameter(prmAccountId,iAccountId);
-    printable.addParameter(prmClean,"true");
-    printable.setWindowToOpen(AccountWindow.class);
 
 
 
@@ -782,20 +775,11 @@ public class AccountViewer extends Finance {
   }
 
   public void main( IWContext iwc ) throws java.rmi.RemoteException{
-
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
-
-    isAdmin = iwc.hasEditPermission(this);
     isLoggedOn = iwc.isLoggedOn();
     eUser = iwc.getUser();
 		df = DateFormat.getDateInstance(DateFormat.SHORT);
 		tf = DateFormat.getTimeInstance();
     control(iwc);
-  }
-
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
   }
 
 	public String getCorrectedTimeString(long seconds){

@@ -15,7 +15,7 @@ import java.sql.*;
  * @version 1.1
  */
 
-public class AssessmentRoundBMPBean extends com.idega.data.GenericEntity implements com.idega.block.finance.data.AssessmentRound {
+public class AssessmentRoundBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.finance.data.AssessmentRound {
 
   public AssessmentRoundBMPBean(){
     super();
@@ -26,8 +26,6 @@ public class AssessmentRoundBMPBean extends com.idega.data.GenericEntity impleme
   }
 
   public void initializeAttributes(){
-    addAttribute(getIDColumnName());
-    addAttribute(getColumnCategoryId(),"Category",true,true,Integer.class,"",FinanceCategory.class);
     addAttribute(getColumnTariffGroupId(),"Tariff group",true,true,Integer.class,"",TariffGroup.class);
     addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
     addAttribute(getRoundStampColumnName(),"Round stamp",true,true,java.sql.Timestamp.class);
@@ -43,7 +41,6 @@ public class AssessmentRoundBMPBean extends com.idega.data.GenericEntity impleme
   public static final String statusReceived = "R";
 
   public static String getEntityTableName(){return "FIN_ASSESSMENT_ROUND";}
-  public static String getColumnCategoryId(){return  "FIN_CAT_ID";}
   public static String getColumnTariffGroupId(){return "FIN_TARIFF_GROUP_ID";}
   public static String getNameColumnName(){return "NAME";}
   public static String getRoundStampColumnName(){return "ROUND_STAMP";}
@@ -119,13 +116,6 @@ public class AssessmentRoundBMPBean extends com.idega.data.GenericEntity impleme
 
   public String getType(){
     return getStringColumnValue( getTypeColumnName());
-  }
-
-  public int getCategoryId(){
-    return getIntColumnValue( getColumnCategoryId() );
-  }
-  public void setCategoryId(int categoryId){
-    setColumn(getColumnCategoryId(),categoryId);
   }
 
   public int getTariffGroupId(){

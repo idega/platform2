@@ -1,22 +1,13 @@
 package com.idega.block.finance.presentation;
 
-import com.idega.block.IWBlock;
-import com.idega.block.finance.business.*;
-import com.idega.block.finance.data.*;
-import com.idega.presentation.Block;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.Image;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.ui.Parameter;
+import com.idega.block.*;
+import com.idega.block.presentation.*;
+import com.idega.idegaweb.*;
+import com.idega.presentation.*;
 import com.idega.presentation.text.*;
-import com.idega.util.text.Edit;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-
-import java.util.List;
-import java.text.DateFormat;
+import com.idega.presentation.ui.*;
+import com.idega.util.text.*;
+import java.util.*;
 
 /**
  * Title:   idegaclasses
@@ -27,29 +18,53 @@ import java.text.DateFormat;
  * @version 1.0
  */
 
-public class Finance extends Block implements IWBlock{
+public class Finance extends CategoryBlock implements IWBlock{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
   public final static String CATEGORY_PROPERTY="finance_category";
   protected boolean isAdmin = false;
-  protected int iCategoryId = -1;
   protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
-  private IWBundle core ;
+  protected IWBundle iwb,core;
   boolean newobjinst = false;
   boolean administrative = true;
   private List FinanceObjects = null;
   public final static String FRAME_NAME = "fin_frame";
   public static final String prmFinanceClass = "fin_clss";
   public static final String prmAccountId = "fin_acc_id";
+  public int iCategoryId = -1;
+  protected TextFormat textFormat;
 
-  public static final String prmCategoryId = "fin_cat_id";
+  //public static final String prmCategoryId = "fin_cat_id";
 
-/*
-  protected void control(IWContext iwc){
+
+  public boolean getMultible(){
+    return false;
+  }
+  public String getCategoryType(){
+    return "Finance";
+  }
+
+  public void main(IWContext iwc)throws java.rmi.RemoteException{
+    control(iwc);
+  }
+
+  public void initializeInMain(IWContext iwc){
+    super.initializeInMain(iwc);
+    init(iwc);
+
+  }
+
+  public void init(IWContext iwc){
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
+    core = iwc.getApplication().getCoreBundle();
+    isAdmin = this.hasEditPermission();
+    textFormat = TextFormat.getInstance();
+    iCategoryId = getCategoryId();
+  }
+  protected void control(IWContext iwc)throws java.rmi.RemoteException{
+
     boolean info = false;
 
     Table T = new Table();
@@ -58,33 +73,16 @@ public class Finance extends Block implements IWBlock{
     T.setCellpadding(0);
     T.setCellspacing(0);
 
-    if(iCategoryId <= 0){
-      String sCategoryId = iwc.getParameter(prmCategoryId );
-      if(sCategoryId != null)
-        iCategoryId = Integer.parseInt(sCategoryId);
-      else if(getICObjectInstanceID() > 0){
-        iCategoryId = FinanceFinder.getInstance().getInstance().getObjectInstanceCategoryId(getICObjectInstanceID(),true);
-        if(iCategoryId <= 0 ){
-          newobjinst = true;
-        }
-      }
-    }
-    if(isAdmin && administrative && getICObjectInstanceID() > 0){
-      T.add(getAdminPart(iCategoryId,false,newobjinst,info,iwc),1,1);
-    }
 
-    FinanceIndex index = new FinanceIndex(iCategoryId);
+    if(isAdmin && administrative && getICObjectInstanceID() > 0){
+      T.add(getAdminPart(getCategoryId(),false,newobjinst,info,iwc),1,1);
+    }
+    FinanceIndex index = new FinanceIndex(getCategoryId());
     if(FinanceObjects !=null)
       index.addFinanceObjectAll(FinanceObjects);
-
     T.add(index,1,2);
-
-
-
     add(T);
-
   }
-  */
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
@@ -105,97 +103,21 @@ public class Finance extends Block implements IWBlock{
       T.add(T.getTransparentCell(iwc),1,1);
       */
 
-      Link change = new Link(core.getImage("/shared/edit.gif","edit"));
-      change.setWindowToOpen(FinanceEditorWindow.class);
-      change.addParameter(FinanceEditorWindow.prmCategory,iCategoryId);
-      change.addParameter(FinanceEditorWindow.prmObjInstId,getICObjectInstanceID());
+      Link change = getCategoryLink();
+      change.setImage(core.getImage("/shared/edit.gif","edit"));
       T.add(change,1,1);
-
-      if ( enableDelete ) {
-        T.add(T.getTransparentCell(iwc),1,1);
-        Link delete = new Link(core.getImage("/shared/delete.gif"));
-        delete.setWindowToOpen(FinanceEditorWindow.class);
-        delete.addParameter(FinanceEditorWindow.prmDelete,iCategoryId);
-        T.add(delete,3,1);
       }
-    }
-    if(newObjInst){
-      Link newLink = new Link(core.getImage("/shared/create.gif"));
-      newLink.setWindowToOpen(FinanceEditorWindow.class);
-      if(newObjInst)
-        newLink.addParameter(FinanceEditorWindow.prmObjInstId,getICObjectInstanceID());
-
-      T.add(newLink,2,1);
-    }
     T.setWidth("100%");
     return T;
   }
 
-  public PresentationObject getBoxedLinks(){
-    Table frame = new Table(3,3);
-    frame.setWidth("100%");
-    frame.setHeight("100%");
-    Table box = new Table();
-      int row = 1;
-      box.add(getLink(PaymentTypeEditor.class,iwrb.getLocalizedString("payment_types","Payment types")),1,row++);
-      box.add(getLink(TariffKeyEditor.class,iwrb.getLocalizedString("tariff_keys","Tariff keys")),1,row++);
-      box.add(getLink(AccountKeyEditor.class,iwrb.getLocalizedString("account_keys","Account keys")),1,row++);
-      box.add(getLink(TariffIndexEditor.class,iwrb.getLocalizedString("indexes","Indexes")),1,row++);
-      box.add(getLink(TariffEditor.class,iwrb.getLocalizedString("tariff","Tariffs")),1,row++);
-      box.add(getLink(TariffAssessments.class,iwrb.getLocalizedString("assessment","Assessment")),1,row++);
-      box.add(getLink(EntryGroups.class,iwrb.getLocalizedString("bunks","Bunks")),1,row++);
-      box.add(getLink(Accounts.class,iwrb.getLocalizedString("accounts","Accounts")),1,row++);
-      if(FinanceObjects != null){
-        java.util.Iterator I = FinanceObjects.iterator();
-        FinanceObject obj;
-        while(I.hasNext()){
-          obj = (FinanceObject) I.next();
-          box.add(getLink(obj.getClass(),iwrb.getLocalizedString(obj.getKey(),obj.getValue())),1,row++);
-        }
-      }
-      box.setColor(Edit.colorLight);
-    frame.add(box,2,2);
-    return frame;
-  }
-
-  public PresentationObject getLinkTable(int menuNr){
-     Table frame = new Table();
-      frame.setWidth("100%");
-      frame.setCellpadding(2);
-      frame.setCellspacing(2);
-
-        int row = 1;
-        int col = 1;
-        frame.add(getLink(PaymentTypeEditor.class,iwrb.getLocalizedString("payment_types","Payment types")),col,row);
-        frame.add(getLink(TariffKeyEditor.class,iwrb.getLocalizedString("tariff_keys","Tariff keys")),col,row);
-        frame.add(getLink(AccountKeyEditor.class,iwrb.getLocalizedString("account_keys","Account keys")),col,row);
-        frame.add(getLink(TariffIndexEditor.class,iwrb.getLocalizedString("indexes","Indexes")),col,row);
-        frame.add(getLink(TariffEditor.class,iwrb.getLocalizedString("tariff","Tariffs")),col,row);
-        frame.add(getLink(TariffAssessments.class,iwrb.getLocalizedString("assessment","Assessment")),col,row);
-        frame.add(getLink(EntryGroups.class,iwrb.getLocalizedString("bunks","Bunks")),col,row);
-        frame.add(getLink(Accounts.class,iwrb.getLocalizedString("accounts","Accounts")),col,row);
-         if(FinanceObjects != null){
-          java.util.Iterator I = FinanceObjects.iterator();
-          FinanceObject obj;
-          while(I.hasNext()){
-            obj = (FinanceObject) I.next();
-            frame.add(getLink(obj.getClass(),iwrb.getLocalizedString(obj.getKey(),obj.getValue())),1,row++);
-          }
-        }
-
-
-      return frame;
-  }
-
-  public boolean deleteBlock(int iObjectInstanceId){
-    return FinanceBusiness.deleteBlock(iObjectInstanceId);
-  }
 
   public static Parameter getCategoryParameter(int iCategoryId){
     return new Parameter(prmCategoryId,String.valueOf(iCategoryId));
   }
 
   public static int parseCategoryId(IWContext iwc){
+
     if(iwc.isParameterSet(prmCategoryId))
       return Integer.parseInt(iwc.getParameter(prmCategoryId));
     else if(iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY)!=null)
@@ -204,9 +126,17 @@ public class Finance extends Block implements IWBlock{
       return -1;
   }
 
+  private  void initCategoryId(IWContext iwc){
+    iCategoryId = getCategoryId();
+    if(iCategoryId <= 0){
+      if(iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY)!=null)
+        iCategoryId =  Integer.parseInt(iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY));
+    }
+  }
+
   public Link getLink(Class cl,String name){
     Link L = new Link(name);
-    L.addParameter(Finance.getCategoryParameter(iCategoryId));
+    L.addParameter(Finance.getCategoryParameter(getCategoryId()));
     L.addParameter(getFinanceObjectParameter(cl));
     L.setFontSize(1);
     L.setFontColor(Edit.colorDark);

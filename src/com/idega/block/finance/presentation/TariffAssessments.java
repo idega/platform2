@@ -1,38 +1,38 @@
 package com.idega.block.finance.presentation;
 
 
-import com.idega.util.text.Edit;
-
-import com.idega.block.finance.data.*;
-import com.idega.block.building.data.*;
-import com.idega.block.finance.business.*;
-import com.idega.block.building.business.BuildingFinder;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.finance.presentation.KeyEditor;
-import com.idega.idegaweb.presentation.BusyBar;
-import com.idega.idegaweb.presentation.StatusBar;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Block;
-import com.idega.presentation.text.*;
-import com.idega.util.IWTimestamp;
-import com.idega.util.IWCalendar;
-import java.sql.SQLException;
-import java.util.StringTokenizer;
-import java.util.List;
-import java.util.Vector;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.HashMap;
+import com.idega.block.finance.business.AssessmentBusiness;
+import com.idega.block.finance.business.AssessmentTariffPreview;
+import com.idega.block.finance.business.FinanceFinder;
+import com.idega.block.finance.business.FinanceHandler;
+import com.idega.block.finance.data.AccountEntry;
+import com.idega.block.finance.data.AccountInfo;
+import com.idega.block.finance.data.RoundInfo;
+import com.idega.block.finance.data.TariffGroup;
+import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.BusyBar;
+import com.idega.idegaweb.presentation.StatusBar;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
-import com.idega.core.user.data.User;
+import com.idega.util.text.Edit;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Title:
@@ -479,7 +479,10 @@ public class TariffAssessments extends Block {
   private PresentationObject doMainTable(IWContext iwc,int iCategoryId ,int iGroupId, FinanceHandler handler){
     Form F = new Form();
     Table T = new Table();
-    int iAccountCount = FinanceFinder.getInstance().countAccounts(iCategoryId,handler.getAccountType());
+    int iAccountCount = 0;
+    if(handler!=null){
+      iAccountCount = FinanceFinder.getInstance().countAccounts(iCategoryId,handler.getAccountType());
+    }
     int row = 1;
     T.add(Edit.formatText(iwrb.getLocalizedString("number_of_accounts","Number of accounts")),1,row);
     T.add(String.valueOf(iAccountCount),2,row);

@@ -1,21 +1,35 @@
 package com.idega.block.finance.presentation;
 
 
-import com.idega.util.text.Edit;
-import com.idega.block.finance.data.*;
-import com.idega.block.finance.business.*;
-import com.idega.presentation.Block;
-import com.idega.presentation.PresentationObject;
+import com.idega.block.finance.business.FinanceBusiness;
+import com.idega.block.finance.business.FinanceFinder;
+import com.idega.block.finance.business.FinanceHandler;
+import com.idega.block.finance.business.Finder;
+import com.idega.block.finance.data.AccountKey;
+import com.idega.block.finance.data.Tariff;
+import com.idega.block.finance.data.TariffGroup;
+import com.idega.block.finance.data.TariffIndex;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.Edit;
 import com.idega.util.text.TextSoap;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
+import java.util.Collection;
 import java.util.Hashtable;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 
 /**
@@ -27,7 +41,7 @@ import java.util.*;
  * @version 1.0
  */
 
-public class TariffEditor extends Block{
+public class TariffEditor extends Finance{
 
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4;
@@ -41,11 +55,6 @@ public class TariffEditor extends Block{
   private boolean bRoundAmounts = true;;
 
   private static String prmGroup = "taed_grp";
-
-  protected boolean isAdmin = false;
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb,core;
 
   public String getLocalizedNameKey(){
     return "tariffs";
@@ -63,9 +72,8 @@ public class TariffEditor extends Block{
   }
 
   protected void control(IWContext iwc){
-    int iCategoryId = Finance.parseCategoryId(iwc);
     int iGroupId = -1;
-    List groups = FinanceFinder.getInstance().getInstance().listOfTariffGroups(iCategoryId);
+    List groups = FinanceFinder.getInstance().listOfTariffGroups(iCategoryId);
     TariffGroup group = null;
     if(iwc.isParameterSet(prmGroup))
       iGroupId = Integer.parseInt(iwc.getParameter(prmGroup));
@@ -104,9 +112,10 @@ public class TariffEditor extends Block{
         Table T = new Table(1,4);
         T.setCellpadding(0);
         T.setCellspacing(0);
-        T.add(Edit.headerText(iwrb.getLocalizedString("tariffs","Tariffs")+"  "+group.getName(),3),1,1);
+        String groupName = group!=null?group.getName():"";
+        T.add(Edit.headerText(iwrb.getLocalizedString("tariffs","Tariffs")+"  "+groupName,3),1,1);
         T.add(getGroupLinks(iCategoryId,iGroupId,groups),1,2);
-        T.add(makeLinkTable(1,iCategoryId,iGroupId),1,3);
+        T.add(makeLinkTable(1,iCategoryId,group),1,3);
         T.add(MO,1,4);
         T.setWidth("100%");
         add(T);
@@ -118,33 +127,36 @@ public class TariffEditor extends Block{
     else
       add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
-  protected PresentationObject makeLinkTable(int menuNr,int iCategoryId,int iGroupId){
+  protected PresentationObject makeLinkTable(int menuNr,int iCategoryId,TariffGroup group){
     Table LinkTable = new Table(4,1);
     int last = 4;
-    LinkTable.setWidth("100%");
-    LinkTable.setCellpadding(2);
-    LinkTable.setCellspacing(1);
-    LinkTable.setColor(Edit.colorDark);
-    LinkTable.setWidth(last,"100%");
-    Link Link1 = new Link(iwrb.getLocalizedString("view","View"));
-    Link1.setFontColor(Edit.colorLight);
-    Link1.addParameter(this.strAction,String.valueOf(this.ACT1));
-    Link1.addParameter(Finance.getCategoryParameter(iCategoryId));
-    Link1.addParameter(prmGroup,iGroupId);
-    Link Link2 = new Link(iwrb.getLocalizedString("change","Change"));
-    Link2.setFontColor(Edit.colorLight);
-    Link2.addParameter(this.strAction,String.valueOf(this.ACT2));
-    Link2.addParameter(Finance.getCategoryParameter(iCategoryId));
-    Link2.addParameter(prmGroup,iGroupId);
-    /*
-    Link Link3 = new Link(iwrb.getLocalizedString("new","New"));
-    Link3.setFontColor(Edit.colorLight);
-    Link3.addParameter(this.strAction,String.valueOf(this.ACT4));
-    */
-    if(isAdmin){
-      LinkTable.add(Link1,1,1);
-      LinkTable.add(Link2,2,1);
-      //LinkTable.add(Link3,3,1);
+
+      LinkTable.setWidth("100%");
+      LinkTable.setCellpadding(2);
+      LinkTable.setCellspacing(1);
+      LinkTable.setColor(Edit.colorDark);
+      LinkTable.setWidth(last,"100%");
+     if(group!=null){
+      Link Link1 = new Link(iwrb.getLocalizedString("view","View"));
+      Link1.setFontColor(Edit.colorLight);
+      Link1.addParameter(this.strAction,String.valueOf(this.ACT1));
+      Link1.addParameter(Finance.getCategoryParameter(iCategoryId));
+      Link1.addParameter(prmGroup,group.getID());
+      Link Link2 = new Link(iwrb.getLocalizedString("change","Change"));
+      Link2.setFontColor(Edit.colorLight);
+      Link2.addParameter(this.strAction,String.valueOf(this.ACT2));
+      Link2.addParameter(Finance.getCategoryParameter(iCategoryId));
+      Link2.addParameter(prmGroup,group.getID());
+      /*
+      Link Link3 = new Link(iwrb.getLocalizedString("new","New"));
+      Link3.setFontColor(Edit.colorLight);
+      Link3.addParameter(this.strAction,String.valueOf(this.ACT4));
+      */
+      if(isAdmin){
+        LinkTable.add(Link1,1,1);
+        LinkTable.add(Link2,2,1);
+        //LinkTable.add(Link3,3,1);
+      }
     }
     return LinkTable;
   }
@@ -816,16 +828,8 @@ public class TariffEditor extends Block{
   }
 
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
-
   public void main(IWContext iwc){
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
-    core = iwc.getApplication().getCoreBundle();
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = iwc.hasEditPermission(this);
     control(iwc);
   }
 
