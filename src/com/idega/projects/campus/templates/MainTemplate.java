@@ -204,11 +204,6 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
     RightTable.setVerticalAlignment(1,2,"top");
     RightTable.setVerticalAlignment(1,3,"top");
     RightTable.setBorder(BORDER);
-
-    RightTable.add(new Image("/pics/titles/IS/poll.gif"),1,2);
-    RightTable.addBreak(1,2);
-    RightTable.add(new Image("/pics/titles/IS/calendar.gif"),1,3);
-
     return RightTable;
   }
   private void initTabTable(){
@@ -366,7 +361,7 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
   public void addLogo(ModuleObject objectToAdd){
     SubHeaderTable.add(objectToAdd,1,1);
   }
-  /** Adds a ModuleObject to the lower logo area on the right
+  /** Adds a ModuleObject to the lower logo area on the left
    *
    */
   public void addLowerLogo(ModuleObject objectToAdd){
