@@ -6,7 +6,13 @@ package is.idega.idegaweb.member.util;
  *
  */
 public final class IWMemberConstants {
+	public static final String APPLICATION_PARAMETER_ADMINISTRATOR_MAIN_EMAIL = "IW_MEMBER_ADMINISTRATOR_MAIN_EMAIL";
+	public static final String APPLICATION_PARAMETER_MAIL_SERVER = "IW_MEMBER_MAIL_SERVER_ADDRESS";
+	
+	public static final String GROUP_RELATION_TYPE_PARENT = "GROUP_PARENT";
+	
 	public static final String META_DATA_LEAGUE_CONNECTION = "CLUBINFO_CONN";
+	
 	public static final String GROUP_TYPE_FEDERATION = "iwme_federation";
 	public static final String GROUP_TYPE_FEDERATION_STAFF = "iwme_federation_staff";
 	public static final String GROUP_TYPE_FEDERATION_COMMITTEE = "iwme_federation_committee";

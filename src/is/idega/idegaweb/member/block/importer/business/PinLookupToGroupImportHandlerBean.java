@@ -58,6 +58,8 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 
 	private static final int PIN_COLUMN = 0;
 	private static final int NAME_COLUMN = 1;
+	private static final int STATUS_COLUMN = 2;
+	
 	
 	private List userProperties;
 	private UserHome home;
@@ -86,6 +88,8 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
     clock.start();
 
     try {
+    	//TODO : Eiki virkni support og henda userum inn i tempororary group ef rootGroup er iwme_club
+    	
       //initialize business beans and data homes
       userBiz = (UserBusiness) this.getServiceInstance(UserBusiness.class);
       //addressBiz = (AddressBusiness) this.getServiceInstance(AddressBusiness.class);

@@ -77,7 +77,6 @@ public class ClubMemberExchangeWindow extends IWAdminWindow {
 			addForm(iwc);
 		}else if (action.equals(ACTION_SAVE)) {
 			save(iwc);
-			this.close();
 		}
 
 	}
@@ -97,7 +96,15 @@ public class ClubMemberExchangeWindow extends IWAdminWindow {
 			Group fromDiv = groupBiz.getGroupByGroupID(Integer.parseInt(fromDivisionId));
 			Group toDiv = groupBiz.getGroupByGroupID(Integer.parseInt(toDivisionId));
 			
-			memBiz.moveUserBetweenDivisions(user,fromDiv,toDiv,term,init);
+			boolean success = memBiz.moveUserBetweenDivisions(user,fromDiv,toDiv,term,init,iwc);
+			if(success){
+				close();
+			}
+			else{
+				add(iwrb.getLocalizedString("clubexchangewindow.error_occured", "An error occurred when trying to transfer the player. Please try again or contact your system administrator."));
+				add(new CloseButton(iwrb.getLocalizedImageButton("clubexchangewindow.close", "close")));
+			}
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -159,7 +166,7 @@ public class ClubMemberExchangeWindow extends IWAdminWindow {
 		
 		CloseButton close = new CloseButton(iwrb.getLocalizedImageButton("clubexchangewindow.close", "Close"));
 		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("clubexchangewindow.save", "Save"), ACTION, ACTION_SAVE);
-		
+		save.setSubmitConfirm(iwrb.getLocalizedString("clubexchangewindow.confirm_message", "Are you sure you want to transfer the user at the given dates? An email message will be sent to all parties involved."));
 		UserChooserBrowser chooser = new UserChooserBrowser(PARAMETER_USER_ID);
 		
 		table.add(new Text(iwrb.getLocalizedString("clubexchangewindow.text","Please select the member to transfer and the dates for the transfer to take place.")), 1,1 );
