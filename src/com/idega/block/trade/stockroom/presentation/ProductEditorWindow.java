@@ -304,7 +304,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 		super.addLeft(iwrb.getLocalizedString("name", "Name"), name, true);
 		
 		//Adding metadata inputs
-		if (_product != null) {
+		if (!categories.isEmpty()) {
 			boolean addTable = false;
 			Table metaTable = new Table();
 			metaTable.setColumns(3);
@@ -312,33 +312,28 @@ public class ProductEditorWindow extends IWAdminWindow {
 			metaTable.setWidth(2, 8);
 			int row = 1;
 			
-			try {
-				Hashtable metaData = new Hashtable();
-				Hashtable metaDataTypes = new Hashtable();
+			Hashtable metaData = new Hashtable();
+			Hashtable metaDataTypes = new Hashtable();
 
-				List categories = getProductBusiness(iwc).getProductCategories(_product);
-				Iterator iter = categories.iterator();
-				while (iter.hasNext()) {
-					ICCategory element = (ICCategory) iter.next();
-					metaData.putAll(getCategoryService(iwc).getInheritedMetaData(element.getMetaDataAttributes(), element));
-					metaDataTypes.putAll(getCategoryService(iwc).getInheritedMetaDataTypes(element.getMetaDataTypes(), element));
-				}
-
-				Iterator iterator = metaData.keySet().iterator();
-				while (iterator.hasNext()) {
-					String key = (String) iterator.next();
-					String value = (String) metaData.get(key);
-					String type = (String) metaDataTypes.get(key);
-					
-					if (type.equals(IWMetaDataConstants.METADATA_TYPE_MULTIVALUED))
-						metaTable.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-					metaTable.add(formatText(iwrb.getLocalizedString(METADATA + key, key)), 1, row);
-					metaTable.add(getMetaDataObject(key, value, type, _product, _locale), 3, row++);
-					metaTable.setHeight(row++, 6);
-					addTable = true;
-				}
+			Iterator iter = categories.iterator();
+			while (iter.hasNext()) {
+				ICCategory element = (ICCategory) iter.next();
+				metaData.putAll(getCategoryService(iwc).getInheritedMetaData(element.getMetaDataAttributes(), element));
+				metaDataTypes.putAll(getCategoryService(iwc).getInheritedMetaDataTypes(element.getMetaDataTypes(), element));
 			}
-			catch (IDORelationshipException e) {
+
+			Iterator iterator = metaData.keySet().iterator();
+			while (iterator.hasNext()) {
+				String key = (String) iterator.next();
+				String value = (String) metaData.get(key);
+				String type = (String) metaDataTypes.get(key);
+				
+				if (type.equals(IWMetaDataConstants.METADATA_TYPE_MULTIVALUED))
+					metaTable.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+				metaTable.add(formatText(iwrb.getLocalizedString(METADATA + key, key)), 1, row);
+				metaTable.add(getMetaDataObject(key, value, type, _product, _locale), 3, row++);
+				metaTable.setHeight(row++, 6);
+				addTable = true;
 			}
 			
 			if (addTable)
