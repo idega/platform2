@@ -35,6 +35,7 @@ public class TPosClient {
       path = path + _iwb.getProperty("properties_file");
 
     try {
+      System.err.println("Path = " + path);
       _client = new TPOS3Client(path);
       _client.setIPSet(2);
     }
@@ -49,6 +50,7 @@ public class TPosClient {
     _client.setProperty(TPOS3Client.PN_POSID, "BJO003001");
 
     boolean valid = _client.sendCACertificateReq();
+    _client.confirmCACertificate();
 
     if (!valid) {
       System.err.println("Error no: " + _client.getProperty(TPOS3Client.PN_ERRORNUMBER));
@@ -58,6 +60,7 @@ public class TPosClient {
       System.err.println("Got certifycate!!!");
       System.err.println("Return no: " + _client.getProperty(TPOS3Client.PN_ERRORNUMBER));
       System.err.println("Return string : " + _client.getProperty(TPOS3Client.PN_ERRORTEXT));
+      System.err.println("IP Set = " + _client.getIPSet());
     }
 
     return(valid);
