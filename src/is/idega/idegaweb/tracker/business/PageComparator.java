@@ -17,14 +17,14 @@ import is.idega.idegaweb.tracker.data.PageStatistics;
 
 public class PageComparator implements Comparator {
 
-  public static final int ORDER_BY_SESSIONS   = 1;
-  public static final int REVERSE_ORDER_BY_SESSIONS   = 2;
+  public static final int ORDER_BY_HITS   = 1;
+  public static final int REVERSE_ORDER_BY_HITS   = 2;
   public static final int ORDER_BY_PAGE_NAME = 3;
 
   private int sortBy;
 
   public PageComparator() {
-      sortBy = ORDER_BY_SESSIONS;
+      sortBy = ORDER_BY_HITS;
   }
 
   public PageComparator(int toSortBy) {
@@ -41,23 +41,23 @@ public class PageComparator implements Comparator {
       switch (this.sortBy) {
         case ORDER_BY_PAGE_NAME     : result = urlSort(o1, o2);
         break;
-        case ORDER_BY_SESSIONS   : result = sessionSort(o1,o2);
+        case ORDER_BY_HITS   : result = hitSort(o1,o2);
         break;
-        case REVERSE_ORDER_BY_SESSIONS   : result = reverseSessionSort(o1,o2);
+        case REVERSE_ORDER_BY_HITS   : result = reverseHitSort(o1,o2);
         break;
       }
 
       return result;
   }
 
-  private int sessionSort(Object o1, Object o2) {
+  private int hitSort(Object o1, Object o2) {
     int result;
     PageStatistics p1 = (PageStatistics) o1;
     PageStatistics p2 = (PageStatistics) o2;
-    if( p1.getSessions() > p2.getSessions() ){
+    if( p1.getHits() > p2.getHits() ){
       result = -1;
     }
-    else if( p1.getSessions() < p2.getSessions() ){
+    else if( p1.getHits() < p2.getHits() ){
       result = 1;
     }
     else result = 0;
@@ -65,8 +65,8 @@ public class PageComparator implements Comparator {
     return result;
   }
 
-  private int reverseSessionSort(Object o1, Object o2) {
-    return (-1*sessionSort(o1,o2));
+  private int reverseHitSort(Object o1, Object o2) {
+    return (-1*hitSort(o1,o2));
   }
 
   private int urlSort(Object o1, Object o2) {

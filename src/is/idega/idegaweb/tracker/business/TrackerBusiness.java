@@ -181,13 +181,13 @@ public class TrackerBusiness {
     return list;
   }
 
-  public static ArrayList getPageHitsArrayListSortedBySessions(){
-    PageComparator comparer = new PageComparator(PageComparator.ORDER_BY_SESSIONS);
+  public static ArrayList getPageHitsArrayListSortedByHits(){
+    PageComparator comparer = new PageComparator(PageComparator.ORDER_BY_HITS);
     return comparer.sortedArrayList(getPageHitsArrayList());
   }
 
-  public static ArrayList getPageHitsArrayListReverseSortedBySessions(){
-    PageComparator comparer = new PageComparator(PageComparator.REVERSE_ORDER_BY_SESSIONS);
+  public static ArrayList getPageHitsArrayListReverseSortedByHits(){
+    PageComparator comparer = new PageComparator(PageComparator.REVERSE_ORDER_BY_HITS);
     return comparer.sortedArrayList(getPageHitsArrayList());
   }
 
