@@ -36,8 +36,11 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
   this.productCatalog = productCatalog;
   this.iwc = iwc;
   Table table = new Table();
+  table.setCellpaddingAndCellspacing(0);
   table.setWidth("100%");
   int row = 0;
+
+  Table productTable;
 
   Product selectedProduct = productCatalog.getSelectedProduct(iwc);
   Product product;
@@ -56,44 +59,42 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
     products = ProductBusiness.getProducts((ICCategory) pCat);
     productCatalog.sortList(products);
     ++row;
-    table.add(productCatalog.getCategoryText(pCat.getName()), 1,row);
-    table.mergeCells(1,row, 2, row);
+
     if (productCatalog._hasEditPermission) {
       configCategory = new Link(productCatalog.iDetach);
-        configCategory.setWindowToOpen(ProductCategoryEditor.class);
-        configCategory.addParameter(ProductCategoryEditor.SELECTED_CATEGORY, pCat.getID());
-      table.add(configCategory, 3,row);
-      table.setAlignment(3, row, "right");
+	configCategory.setWindowToOpen(ProductCategoryEditor.class);
+	configCategory.addParameter(ProductCategoryEditor.SELECTED_CATEGORY, pCat.getID());
+      table.add(configCategory, 1,row);
     }
+    table.add(productCatalog.getCategoryText(pCat.getName()), 1,row);
+
     for (int i = 0; i < products.size(); i++) {
+      productTable = new Table();
+      productTable.setCellpaddingAndCellspacing(0);
       product = (Product) products.get(i);
       ++row;
       if (productCatalog._hasEditPermission) {
-        editLink = productCatalog.getProductEditorLink(product);
-        table.add(editLink, 1, row);
+	editLink = productCatalog.getProductEditorLink(product);
+	productTable.add(editLink, 1, 1);
       }
       if (productCatalog._useAnchor) {
-        table.add(productCatalog.getAnchor(product.getID()), 1,row);
+	productTable.add(productCatalog.getAnchor(product.getID()), 1,1);
       }
 
-      if (productCatalog._useAnchor) {
-        nameLink = new AnchorLink(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)), productCatalog.getAnchorString(product.getID()));
-      }else {
-        nameLink = new Link(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)));
+      if ( productCatalog._productIsLink ) {
+	if (productCatalog._useAnchor) {
+	  nameLink = new AnchorLink(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)), productCatalog.getAnchorString(product.getID()));
+	}else {
+	  nameLink = new Link(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)));
+	}
+	nameLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
+	productTable.add(nameLink, 1,1);
       }
-      nameLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
-
-      table.add(nameLink, 1,row);
-      table.mergeCells(1, row, 3, row);
-
-      if (productCatalog._expandSelectedOnly) {
-        if (selectedProduct != null && (selectedProduct.getID() == product.getID())) {
-          row = expand(product, table ,row);
-        }
-      }else {
-        row = expand(product, table, row);
+      else {
+	nameText = productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId));
+	productTable.add(nameText, 1,1);
       }
-
+      row = expand(product, table, productTable, row);
     }
   }
 
@@ -103,64 +104,29 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
   return table;
  }
 
-  private int expand(Product product, Table table, int row) {
-    boolean addedRow = false;
-    if (productCatalog._showNumber) {
-    }
-    if (productCatalog._showTeaser) {
-      if (!addedRow){
-        ++row;
-        addedRow = true;
+  private int expand(Product product, Table table, Table productTable, int row) {
+    if (productCatalog._showThumbnail) {
+      imageId = product.getFileId();
+      if (imageId != -1) {
+	try {
+	  Table imageTable = new Table(1,1);
+	  imageTable.setCellpaddingAndCellspacing(0);
+	  imageTable.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
+	  imageTable.add(new Image(imageId), 1, 1);
+	  productTable.add(imageTable,1,2);
+	}
+	catch (SQLException sql) {
+	  sql.printStackTrace(System.err);
+	}
       }
-      teaser = ProductBusiness.getProductTeaser(product, productCatalog._currentLocaleId);
-      teaser = TextFormatter.formatText(teaser, -1, null);
-      table.add(productCatalog.getText(teaser), 2, row);
-      table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
-    }
-    if (productCatalog._showPrice) {
     }
 
     if (productCatalog._showDescription) {
-      if (!addedRow){
-        ++row;
-        addedRow = true;
-      }
       description = ProductBusiness.getProductDescription(product, productCatalog._currentLocaleId);
       description = TextFormatter.formatText(description, -1, null);
-      table.add(productCatalog.getText(description), 2, row);
-      table.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
+      productTable.add(productCatalog.getText(description), 1, 2);
     }
-
-    if (productCatalog._showThumbnail) {
-      if (!addedRow){
-        ++row;
-        addedRow = true;
-      }
-      imageId = product.getFileId();
-      if (imageId != -1) {
-        try {
-          table.add(new Image(imageId), 3, row);
-          table.setVerticalAlignment(3, row, Table.VERTICAL_ALIGN_TOP);
-        }catch (SQLException sql) {
-          sql.printStackTrace(System.err);
-        }
-      }
-    }
-
-
-    //// addin closerlookbutton();
-    if (productCatalog._productIsLink) {
-      ++row;
-      table.mergeCells(1, row, 3, row);
-      table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-      String viewerIm = productCatalog.iwrb.getLocalizedString("more","more");
-
-      Link po = productCatalog.getNameLink(product, productCatalog.getText(productCatalog.iwrb.getLocalizedString("more","more")), false);
-      table.add(po, 1, row);
-    }
-
 
     return row;
-
   }
 }
