@@ -102,7 +102,7 @@ public class SchoolYearEditor extends Block {
       int iAge = -1,sid = -1, stid = -1;
       if(id !=null)
         sid = Integer.parseInt(id);
-      if(age!=null)
+      if(age!=null && age.length() > 0)
         iAge = Integer.parseInt(age);
        if(type!=null)
        	stid = Integer.parseInt(type);
@@ -185,6 +185,7 @@ public class SchoolYearEditor extends Block {
 			if (coll != null && !coll.isEmpty() ) {
 				inputType.addMenuElements(coll);
 			}
+			inputType.addMenuElementFirst("-1", "");
 		} catch (Exception e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

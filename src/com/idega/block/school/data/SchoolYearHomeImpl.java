@@ -55,6 +55,13 @@ public java.util.Collection findAllSchoolYears()throws javax.ejb.FinderException
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllSchoolYearsBySchoolCategory(com.idega.block.school.data.SchoolCategory p0,boolean p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolYearBMPBean)entity).ejbFindAllSchoolYearsBySchoolCategory(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findBySchoolCategory(java.lang.String p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolYearBMPBean)entity).ejbFindBySchoolCategory(p0);

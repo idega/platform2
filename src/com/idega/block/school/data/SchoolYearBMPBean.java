@@ -124,7 +124,7 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear {
 	}
 	
 	public boolean isSelectable() {
-		return getBooleanColumnValue(IS_SELECTABLE);
+		return getBooleanColumnValue(IS_SELECTABLE, true);
 	}
 	
 	public void setIsSelectable(boolean isSelectable) {
@@ -171,6 +171,21 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(getEntityName());
 		sql.appendWhereEquals(SCHOOL_CATEGORY, schoolCategory);
+		sql.appendOrderBy(getIDColumnName());
+		return super.idoFindPKsByQuery(sql);
+	}
+	
+	public Collection ejbFindAllSchoolYearsBySchoolCategory(SchoolCategory schoolCategory, boolean showSelectable) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(getEntityName());
+		sql.appendWhereEquals(SCHOOL_CATEGORY, schoolCategory);
+		if (showSelectable) {
+			sql.appendAnd().appendLeftParenthesis().append(IS_SELECTABLE).appendEqualSign().append(showSelectable);
+			sql.appendOr().append(IS_SELECTABLE).appendIsNull().appendRightParenthesis();
+		}
+		else {
+			sql.appendAndEquals(IS_SELECTABLE, showSelectable);
+		}
 		sql.appendOrderBy(getIDColumnName());
 		return super.idoFindPKsByQuery(sql);
 	}
