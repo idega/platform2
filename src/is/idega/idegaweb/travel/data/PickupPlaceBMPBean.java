@@ -166,8 +166,8 @@ public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements 
     this.idoAddTo(supplier);
   }
   public void removeFromSupplier(Supplier supplier) throws IDORemoveRelationshipException{
-    System.err.println("Trying to remove ID "+this.getID()+" from "+supplier.getName());
-    System.err.println("Trying to remove PK "+this.getPrimaryKey()+" from "+supplier.getName());
+    //System.err.println("Trying to remove ID "+this.getID()+" from "+supplier.getName());
+    //System.err.println("Trying to remove PK "+this.getPrimaryKey()+" from "+supplier.getName());
     super.idoRemoveFrom(supplier);
   }
 
@@ -188,11 +188,19 @@ public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements 
   }
 
 	public boolean getIsPickup() {
-		return TYPE_PICKUP == getIntColumnValue(getTypeColumnName());	
+		return TYPE_PICKUP == getType();	
 	}
 	
 	public boolean getIsDropoff() {
-		return TYPE_DROPOFF == getIntColumnValue(getTypeColumnName());	
+		return TYPE_DROPOFF == getType();	
+	}
+
+	public int getType() {
+		return getIntColumnValue(getTypeColumnName());	
+	}
+	
+	public void setType(int type) {
+		setColumn(getTypeColumnName(), type);	
 	}
 
 }
