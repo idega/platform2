@@ -315,8 +315,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							appl.setMessage("");
 						appl.setPresentation("");
 						appl.setChildId(childId);
-						if (queueDates != null)
-							appl.setQueueDate(queueDates[i]);
+						if (queueDates != null) {
+							if (queueDates[i] != null)
+								appl.setQueueDate(queueDates[i]);
+							else
+								appl.setQueueDate(now.getDate());
+						}
 						else
 							appl.setQueueDate(now.getDate());
 						appl.setMethod(1);
