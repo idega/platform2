@@ -37,6 +37,8 @@ public class Messenger extends Block {
     //isAdmin = AccessControl.hasEditPermission(this,iwc);
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
+//test delete this
+    iwc.getApplication().getImageFactory().createButton("RAPPSON",iwb);
 
     if( com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc) ){
       if(messenger==null){
