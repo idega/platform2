@@ -147,6 +147,7 @@ public Calendar(idegaTimestamp timestamp){
 
     Table entriesTable = new Table();
       entriesTable.setWidth(Table.HUNDRED_PERCENT);
+    outerTable.add(entriesTable,1,1);
 
       String[] localeStrings = null;
       Text headlineText = null;
