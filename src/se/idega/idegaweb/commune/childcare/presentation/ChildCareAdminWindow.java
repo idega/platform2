@@ -689,7 +689,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			// deadline has passed
 
 			if (helper.hasDeadlinePassed()) {
-				dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + format.format(deadlinePeriod.getFirstTimestamp().getDate()));
+				dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + " " + format.format(deadlinePeriod.getFirstTimestamp().getDate()));
 				dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
 			}
 			// still within deadline
@@ -1006,14 +1006,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			if (helper.hasDeadlinePassed()) {
 //				dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + format.format(deadlinePeriod.getFirstTimestamp().getDate()));
 				if (rejectionDate != null)
-					dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + format.format(rejectionDate.getDate()));
+					dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + " " + format.format(rejectionDate.getDate()));
 				dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
 			}
 			// still within deadline
 			else {
 //				dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_still_within", "You can not choose a date back in time."));
 				if (rejectionDate != null)
-					dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + format.format(rejectionDate.getDate()));
+					dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + " " +  format.format(rejectionDate.getDate()));
 				dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
 			}
 
@@ -1022,7 +1022,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			dateInput.setDate(stamp.getDate());
 //			dateInput.setEarliestPossibleDate(stamp.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
 			if (rejectionDate != null)
-				dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + format.format(rejectionDate.getDate()));
+				dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + " " + format.format(rejectionDate.getDate()));
 		}
 
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date", "You must select a date."));
@@ -1139,7 +1139,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 						if (deadlinePeriod.getFirstTimestamp().isLaterThan(earliestTerminationDate)) {
 							earliestTerminationDate = deadlinePeriod.getFirstTimestamp();
 							DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
-							earliestPossibleMessage = localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + format.format(deadlinePeriod.getFirstTimestamp().getDate());							
+							earliestPossibleMessage = localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + " " + format.format(deadlinePeriod.getFirstTimestamp().getDate());							
 						}
 					} else {
 						IWTimestamp twoDaysAfterToday = new IWTimestamp();
@@ -2508,7 +2508,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
 			buffer.append("\n\t\t if (d < ").append(deadlinePeriod.getFirstTimestamp().getDateString("yyyyMMdd")).append(") {");
 			if (helper.hasDeadlinePassed()) {
-				buffer.append("\n\t\t\t dateMessage = '").append(localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + format.format(deadlinePeriod.getFirstTimestamp().getDate())).append("';");
+				buffer.append("\n\t\t\t dateMessage = '").append(localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + " " + format.format(deadlinePeriod.getFirstTimestamp().getDate())).append("';");
 			} else {
 				buffer.append("\n\t\t\t dateMessage = '").append(localize("childcare.deadline_still_within", "You can not choose a date back in time.")).append("';");
 			}
