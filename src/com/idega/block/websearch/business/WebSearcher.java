@@ -55,9 +55,9 @@ public final class WebSearcher {
             }
         }
     }
-    public WebSearchHitIterator search(String input) {
+    public WebSearchHitIterator search(String input) throws Exception{
         
-        try {
+        //try {
             
             String indexPath = index.getIndexPath();
             Hits hits;
@@ -106,11 +106,12 @@ public final class WebSearcher {
             
             return searchHits;
             
-        } catch (Exception e) {
+        //} catch (Exception e) {
             //System.out.println(" caught a " + e.getClass() + "\n with message: " + e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
+            //e.printStackTrace();
+            //return null;
+        	
+        //}
         
     }
     public void setCategories(String cat) {
