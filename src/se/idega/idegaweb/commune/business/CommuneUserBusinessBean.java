@@ -100,12 +100,17 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			final UserHome home = getUserHome();
 			user = home.findByPersonalID(personalID);
 			//update if found
+			firstName = (firstName == null) ? "" : firstName;
+			middleName = (middleName == null) ? "" : middleName;
+			lastName = (lastName == null) ? "" : lastName;
+			
 			StringBuffer fullName = new StringBuffer();
 			firstName = (firstName == null) ? "" : firstName;
 			middleName = (middleName == null) ? "" : middleName;
 			lastName = (lastName == null) ? "" : lastName;
 			fullName.append(firstName).append(" ").append(middleName).append(" ").append(lastName);
 			user.setFullName(fullName.toString());
+			
 			if (gender != null)
 				user.setGender((Integer) gender.getPrimaryKey());
 			if (dateOfBirth != null)
