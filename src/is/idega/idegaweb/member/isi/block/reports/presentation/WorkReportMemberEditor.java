@@ -363,6 +363,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       browser.setMandatoryColumn(i++, leagueName);
       browser.setEntityToPresentationConverter(leagueName, converter);
     }
+    browser.setDefaultNumberOfRows(Math.min(entities.size(), 20));
     browser.setEntities("dummy_string", entities);
     return browser;
   }
@@ -518,23 +519,24 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       
       EntityRepresentation idoEntity = (EntityRepresentation) entity;
       Integer id = (Integer) idoEntity.getPrimaryKey();
-
+      CheckBox checkBox = new CheckBox(getKeyForCheckBox(), id.toString());
       Collection leagues = (Collection) memberLeaguesMap.get(id);
       boolean shouldBeChecked = (leagues != null && leagues.contains(getKeyForCheckBox()));
+      checkBox.setChecked(shouldBeChecked);
+      boolean disableCheckBox = true;
       if (iwc.isParameterSet(ConverterConstants.EDIT_ENTITY_KEY)) {
         String idEditEntity = iwc.getParameter(ConverterConstants.EDIT_ENTITY_KEY);
         try {
           Integer primaryKey = new Integer(idEditEntity);
           if (id.equals(primaryKey))  {
-            CheckBox checkBox = new CheckBox(getKeyForCheckBox(), id.toString());
-            checkBox.setChecked(shouldBeChecked);
-            return checkBox;
+            disableCheckBox = false;
           }
         }
         catch (NumberFormatException ex)  {
         }
       }
-      return (shouldBeChecked) ? new Text("X") : new Text("");
+      checkBox.setDisabled(disableCheckBox);
+      return checkBox;
     }
     
     public PresentationObject getHeaderPresentationObject(
