@@ -569,6 +569,9 @@ public class Tournament extends GolfEntity{
 		Statement Stmt= null;
                 int returner = -1;
 		try{
+                    conn = this.getConnection();
+                    Stmt=conn.createStatement();
+
                     ResultSet RS = Stmt.executeQuery("Select TOURNAMENT_GROUP_ID from TOURNAMENT_MEMBER where TOURNAMENT_ID = "+this.getID()+" AND MEMBER_ID ="+member_id);
                     if (RS.next()) {
                         returner = RS.getInt("TOURNAMENT_GROUP_ID");
@@ -587,6 +590,39 @@ public class Tournament extends GolfEntity{
                 return returner;
 
 	}
+
+	public int getTournamentMemberUnionId(Member member)throws SQLException{
+            return getTournamentMemberUnionId(member.getID());
+        }
+
+	public int getTournamentMemberUnionId(int member_id)throws SQLException{
+		Connection conn= null;
+		Statement Stmt= null;
+                int returner = -1;
+		try{
+                    conn = this.getConnection();
+                    Stmt=conn.createStatement();
+
+                    ResultSet RS = Stmt.executeQuery("Select UNION_ID from TOURNAMENT_MEMBER where TOURNAMENT_ID = "+this.getID()+" AND MEMBER_ID ="+member_id);
+                    if (RS.next()) {
+                        returner = RS.getInt("UNION_ID");
+                    }
+
+		}
+		finally{
+			if (Stmt != null){
+				Stmt.close();
+			}
+			if (conn != null){
+				freeConnection(conn);
+			}
+		}
+
+                return returner;
+
+	}
+
+
 
 
         public boolean isDirectRegistration() {
