@@ -203,7 +203,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
       GroupType type = typeHome.create();
 
 
-      rootGroup = getUserBusiness().getGroupBusiness().createGroup("School Administrators","The Commune Root School Administrators Group.",type.getGeneralGroupTypeString());
+      rootGroup = getUserBusiness().getGroupBusiness().createGroup("Provider Administrators","The Commune Root Provider Administrators Group.",type.getGeneralGroupTypeString());
 
      bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP,rootGroup.getPrimaryKey().toString());
     }
