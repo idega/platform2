@@ -153,6 +153,18 @@ public class BoxFinder {
 		}
 	}
 
+	public static List getAllCategories() {
+		try {
+			EntityFinder.debug = true;
+			List list = EntityFinder.findAll(com.idega.block.boxoffice.data.BoxCategoryBMPBean.getStaticInstance(BoxCategory.class));
+			return list;
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+			return null;
+		}
+	}
+
 	public static List getCategoriesInBox(int boxID) {
 		try {
 			BoxEntity box = BoxFinder.getBox(boxID);

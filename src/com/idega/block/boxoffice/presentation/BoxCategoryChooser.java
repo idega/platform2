@@ -255,10 +255,12 @@ public BoxCategoryChooser(){
 
 
 
-    List categoriesNotInBox = BoxFinder.getCategoriesNotInBox(_boxID);
+    List categoriesNotInBox = BoxFinder.getAllCategories();
 
     if(categoriesNotInBox != null){
-
+    		if (categoriesInBox != null) {
+    			categoriesNotInBox.removeAll(categoriesInBox);
+    		}
       iter = categoriesNotInBox.iterator();
 
       while (iter.hasNext()) {
