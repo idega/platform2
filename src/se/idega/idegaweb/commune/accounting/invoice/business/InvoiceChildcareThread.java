@@ -547,6 +547,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord) throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
 		invoiceRecord.setProviderId(school);
         //		invoiceRecord.setContractId(contract.getContractID());
+		invoiceRecord.setSchoolClassMemberId(contract.getSchoolClassMmeber());
 		invoiceRecord.setRuleText(postingDetail.getTerm());
 		invoiceRecord.setDays(days);
 		invoiceRecord.setPeriodStartCheck(startPeriod.getDate());

@@ -23,18 +23,25 @@ import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
-import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
+import com.idega.business.IBOLookup;
+import com.idega.core.location.data.Address;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -54,7 +61,17 @@ public abstract class PaymentThreadSchool extends BillingThread{
 		currentDate = month;
 	}
 	
+	public boolean isInDefaultCommune(User user) throws RemoteException, FinderException {
+		Address address = getCommuneUserBusiness().getUsersMainAddress(user);
+		Commune commmune = getCommuneHome().findByPrimaryKey(new Integer(address.getCommuneID()));
+		return commmune.getIsDefault();
+	}
 	
+	private CommuneHome getCommuneHome() throws RemoteException {
+		return (CommuneHome) IDOLookup.getHome(Commune.class);
+	}
+									
+
 	protected void contracts(){
 		Collection regulationArray = new ArrayList();
 		ArrayList conditions = new ArrayList();
@@ -108,49 +125,69 @@ public abstract class PaymentThreadSchool extends BillingThread{
 						{
 							Regulation regulation = (Regulation)regulationIter.next();
 							//NOTE this should be changed to use ...ByDateRange when changed to date range rathre than day by day calculation
-							Iterator contractIter = getChildCareContractHome().findValidContractByProvider(((Integer)school.getPrimaryKey()).intValue(),currentDate).iterator();
+							
+							Iterator schoolClassMemberIter = getSchoolClassMemberHome().findBySchool(((Integer)school.getPrimaryKey()).intValue(),-1,category.getCategory(),currentDate).iterator();
+//							Iterator contractIter = getChildCareContractHome().findValidContractByProvider(((Integer)school.getPrimaryKey()).intValue(),currentDate).iterator();
 //							Iterator applicationIter = getChildCareApplicationHome().findApplicationsByProviderAndDate(((Integer)school.getPrimaryKey()).intValue(), 
 //									((Integer)school.getPrimaryKey()).intValue(),currentDate).iterator();
 							System.out.println("looking at regulation");
-							ChildCareContract contract = null;
-							while(contractIter.hasNext()){
+//							ChildCareContract contract = null;
+							while(schoolClassMemberIter.hasNext()){
+								SchoolClassMember schoolClassMember = null;
 								try{
-									System.out.println("looking at contract");
+									System.out.println("looking at school class memeber");
 
 //									ChildCareApplication application = (ChildCareApplication) applicationIter.next();
-									contract = (ChildCareContract) contractIter.next();
-//									Header created in the createPaymentRecord()
-/*
-									if(first){
-										System.out.println("Creating payment header");
-										paymentHeader = (PaymentHeader) IDOLookup.create(PaymentHeader.class);
-										paymentHeader.setSchoolID(school);
-										paymentHeader.setSchoolCategoryID(category);
-										if(categoryPosting.getProviderAuthorization()){
-											paymentHeader.setStatus(ConstantStatus.BASE);
-										} else {
-											paymentHeader.setStatus(ConstantStatus.PRELIMINARY);
+
+									schoolClassMember = (SchoolClassMember) schoolClassMemberIter.next();
+
+									if( getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent()) ){
+//									if( isInDefaultCommune(schoolClassMember.getStudent()) ){
+//										address.getCommuneID();
+//										Header created in the createPaymentRecord()
+	/*
+										if(first){
+											System.out.println("Creating payment header");
+											paymentHeader = (PaymentHeader) IDOLookup.create(PaymentHeader.class);
+											paymentHeader.setSchoolID(school);
+											paymentHeader.setSchoolCategoryID(category);
+											if(categoryPosting.getProviderAuthorization()){
+												paymentHeader.setStatus(ConstantStatus.BASE);
+											} else {
+												paymentHeader.setStatus(ConstantStatus.PRELIMINARY);
+											}
+											first = false;
+											paymentHeader.store();
 										}
-										first = false;
-										paymentHeader.store();
+	*/
+//										ChildCareContract contract = getChildCareContractHome().findApplicationByContract(((Integer)application.getPrimaryKey()).intValue());
+										Date sDate= null;
+										Date eDate=null;
+										if(schoolClassMember.getRegisterDate()!=null)
+										{
+											sDate = new Date(schoolClassMember.getRegisterDate().getTime());
+										}
+										if(schoolClassMember.getRemovedDate()!=null)
+										{
+											eDate = new Date(schoolClassMember.getRemovedDate().getTime());
+										}
+										calculateTime(sDate,eDate);
+										//Get the posting details for the contract
+										postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
+										RegulationSpecType regSpecType = getRegulationSpecTypeHome().
+												findByRegulationSpecType(postingDetail.getRuleSpecType());
+										int schoolType = ((Integer)schoolClassMember.getSchoolType().getPrimaryKey()).intValue();
+										String[] postings = compilePostingStrings(iwc,
+												schoolType, ((Integer)regSpecType.getPrimaryKey()).intValue(), provider);
+										System.out.println("about to create payment record");
+										createPaymentRecord(postingDetail,postings[0],postings[1]);
+										System.out.println("created payment record");
 									}
-*/
-//									ChildCareContract contract = getChildCareContractHome().findApplicationByContract(((Integer)application.getPrimaryKey()).intValue());
-									calculateTime(contract.getValidFromDate(),contract.getTerminatedDate());
-									//Get the posting details for the contract
-									postingDetail = regBus.getPostingDetailForContract(0.0f,contract, regulation);
-									RegulationSpecType regSpecType = getRegulationSpecTypeHome().
-											findByRegulationSpecType(postingDetail.getRuleSpecType());
-									int schoolType = ((Integer)contract.getSchoolClassMmeber().getSchoolType().getPrimaryKey()).intValue();
-									String[] postings = compilePostingStrings(iwc,
-											schoolType, ((Integer)regSpecType.getPrimaryKey()).intValue(), provider);
-									System.out.println("abbout to create payment record");
-									createPaymentRecord(postingDetail,postings[0],postings[1]);
-									System.out.println("created payment record");
+									
 								}catch(NullPointerException e){
 									e.printStackTrace();
-									if(contract != null){
-										createNewErrorMessage(contract.getChild().getName(),"invoice.Child with no school type for school placement");
+									if(schoolClassMember != null){
+										createNewErrorMessage(schoolClassMember.getStudent().getName(),"invoice.Child with no school type for school placement");
 									}else{
 										createNewErrorMessage("invoice.ContractCreation","invoice.nullpointer");
 									}
@@ -243,6 +280,14 @@ public abstract class PaymentThreadSchool extends BillingThread{
 		//calc the how many months are in the given time.
 		months = 1.0f;
 		days = IWTimestamp.getDaysBetween(startTime, endTime);
+	}
+
+	private SchoolClassMemberHome getSchoolClassMemberHome() throws RemoteException {
+		return (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
+	}
+
+	private CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
+		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
 	}
 
 	private SchoolHome getSchoolHome() throws RemoteException {
