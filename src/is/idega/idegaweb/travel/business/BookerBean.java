@@ -263,7 +263,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
 
 
   public  Booking[] getBookings(int serviceId, idegaTimestamp stamp) throws RemoteException, FinderException{
-    return getBookings(serviceId, stamp);
+    return getBookings(serviceId, stamp, new int[]{});
   }
 
   public  Booking[] getBookings(int serviceId, idegaTimestamp stamp, TravelAddress address) throws RemoteException, FinderException{

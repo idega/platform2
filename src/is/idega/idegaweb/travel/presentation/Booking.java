@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.data.IDORelationshipException;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import com.idega.business.IBOLookup;
@@ -499,6 +500,7 @@ public class Booking extends TravelManager {
       table.setWidth(1,"100");
 
       Text dateText;
+      Text addrText;
       Text nameText;
       Text countText;
       Text contentText;
@@ -510,9 +512,12 @@ public class Booking extends TravelManager {
 
       List groupInq;
       idegaTimestamp tempStamp;
+      GeneralBooking booking;
+      Collection coll;
 
      for (int i = 0; i < inqueries.length; i++) {
           theStamp = new idegaTimestamp(inqueries[i].getInqueryDate());
+          booking = inqueries[i].getBooking();
 
           groupInq = getInquirer(iwc).getInquiryHome().create().getMultibleInquiries(inqueries[i]);
           dateText = (Text) theSmallBoldText.clone();
@@ -528,6 +533,8 @@ public class Booking extends TravelManager {
           nameText = (Text) theSmallBoldText.clone();
               nameText.setFontColor(BLACK);
               nameText.setText(inqueries[i].getName());
+          addrText = (Text) theSmallBoldText.clone();
+              addrText.setFontColor(BLACK);
           countText = (Text) theSmallBoldText.clone();
               countText.setFontColor(BLACK);
               countText.setText(Integer.toString(inqueries[i].getNumberOfSeats()));
@@ -545,6 +552,20 @@ public class Booking extends TravelManager {
           table.add(countText,3,row);
 
           ++row;
+          try {
+            coll = booking.getTravelAddresses();
+            Iterator iter = coll.iterator();
+            if (iter.hasNext()) {
+              TravelAddress item = (TravelAddress) iter.next();
+              idegaTimestamp time = new idegaTimestamp(item.getTime());
+              addrText.setText(item.getName());
+              table.add(addrText, 1, row);
+              table.setAlignment(1,row,"left");
+            }
+          }catch (IDORelationshipException idoRelEx) {
+            idoRelEx.printStackTrace(System.err);
+          }
+
           ++row;
           table.mergeCells(2,row,3,row);
           table.setAlignment(2,row,"left");

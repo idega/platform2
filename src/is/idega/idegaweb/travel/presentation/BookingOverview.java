@@ -574,7 +574,7 @@ public class BookingOverview extends TravelManager {
         table.setColor(super.WHITE);
 
         int row = 1;
-
+/*
           Text dateText = (Text) theText.clone();
               dateText.setText(iwrb.getLocalizedString("travel.date_sm","date"));
           Text nameText = (Text) theText.clone();
@@ -591,7 +591,7 @@ public class BookingOverview extends TravelManager {
               availableText.setText(iwrb.getLocalizedString("travel.available_small_sm","avail."));
           Text hotelPickupText = (Text) theText.clone();
               hotelPickupText.setText(iwrb.getLocalizedString("travel.booked_by","Booked by"));
-
+*/
 
           Text dateTextBold = (Text) theSmallBoldText.clone();
           Text nameTextBold = (Text) theSmallBoldText.clone();
@@ -602,6 +602,17 @@ public class BookingOverview extends TravelManager {
           Text availableTextBold = (Text) theSmallBoldText.clone();
           Text hotelPickupTextBold = (Text) theSmallBoldText.clone();
 
+          table.add(getHeaderText(iwrb.getLocalizedString("travel.date","Date")), 1, row);
+          table.add(getHeaderText(iwrb.getLocalizedString("travel.product_name","Product name")), 2, row);
+          table.add(getHeaderText(iwrb.getLocalizedString("travel.count","Count")), 3, row);
+          table.add(getHeaderText(iwrb.getLocalizedString("travel.assigned","Assigned")), 4, row);
+          table.add(getHeaderText(iwrb.getLocalizedString("travel.inquiries","Inquiries")), 5, row);
+          table.add(getHeaderText(iwrb.getLocalizedString("travel.booked","Booked")), 6, row);
+          table.add(getHeaderText(iwrb.getLocalizedString("travel.available","Available")), 7, row);
+          table.add(getHeaderText(iwrb.getLocalizedString("travel.booked_by","Booked by")), 8, row);
+          table.add(getHeaderText(Text.NON_BREAKING_SPACE), 9, row);
+
+/*
           table.add(dateText,1,row);
           table.add(nameText,2,row);
           table.add(countText,3,row);
@@ -611,7 +622,7 @@ public class BookingOverview extends TravelManager {
           table.add(availableText,7,row);
           table.add(hotelPickupText,8,row);
           table.add(Text.NON_BREAKING_SPACE, 9,row);
-
+*/
           table.setRowColor(row, super.backgroundColor);
 
           idegaTimestamp currentStamp = new idegaTimestamp(view_date);
@@ -717,69 +728,74 @@ public class BookingOverview extends TravelManager {
           }
 
 
-          TravelAddress[] trAddresses = ProductBusiness.getDepartureAddresses(product);
-
-          Link link;
-          // ------------------ INQUERIES ------------------------
-          Link answerLink = new Link(iwrb.getLocalizedImageButton("travel.answer","Answer"),is.idega.idegaweb.travel.presentation.Booking.class);
-            answerLink.addParameter(CalendarBusiness.PARAMETER_YEAR, currentStamp.getYear());
-            answerLink.addParameter(CalendarBusiness.PARAMETER_MONTH, currentStamp.getMonth());
-            answerLink.addParameter(CalendarBusiness.PARAMETER_DAY, currentStamp.getDay());
-          Inquery[] inqueries = null;
-
-          int[] iNumbers;
-          if (supplier != null) inqueries = getInquirer(iwc).getInqueries(service.getID(), currentStamp, true, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
-          if (reseller != null) {
-            Collection coll = getInquirer(iwc).getInquiryHome().findInqueries(service.getID(), currentStamp, reseller.getID(),true, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
-            inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
-          }
-          for (int i = 0; i < inqueries.length; i++) {
-            ++row;
-            iNumbers = getInquirer(iwc).getMultibleInquiriesNumber(inqueries[i]);
-            Tname = (Text) super.theSmallBoldText.clone();
-              Tname.setText(inqueries[i].getName());
-              if ( iNumbers[0] != 0 ) {
-                Tname.addToText(Text.NON_BREAKING_SPACE+"( "+iNumbers[0]+" / "+iNumbers[1]+" )");
-              }
-            Temail = (Text) super.theSmallBoldText.clone();
-              Temail.setText(inqueries[i].getEmail());
-            Tbooked = (Text) super.theSmallBoldText.clone();
-              Tbooked.setText(Integer.toString(inqueries[i].getNumberOfSeats()));
-
-              Tname.setFontColor(super.BLACK);
-              Temail.setFontColor(super.BLACK);
-              Tbooked.setFontColor(super.BLACK);
-
-            table.mergeCells(2,row,4, row);
-            table.add(Tname,1,row);
-            table.add(Temail,2,row);
-            table.setAlignment(3,row,"left");
-            table.add(Tbooked,5,row);
-
-            table.setRowColor(row, super.YELLOW);
-//            table.setRowColor(row, super.GRAY);
-
-            link = (Link) answerLink.clone();
-            table.add(link, 9, row);
-
-          }
-
           List addresses = ProductBusiness.getDepartureAddresses(product, true);
           TravelAddress trAddress;
           int addressesSize = addresses.size();
           int tempRow;
           int tempTotal;
           int tempBookings;
-          int trAddrBookings = 0;
+          int tempAvail;
+          int tempInq;
+          Collection travelAddressIds;
+//          int trAddrBookings = 0;
           for (int g = 0; g < addressesSize; g++) {
+            trAddress = (TravelAddress) addresses.get(g);
             ++row;
             tempRow = row;
             tempTotal = 0;
-            trAddress = (TravelAddress) addresses.get(g);
+            tempAvail = 0;
+            tempInq = 0;
             table.mergeCells(1, row, 2, row);
             table.add(getHeaderText(trAddress.getName()), 1, row);
             table.setRowColor(row, super.backgroundColor);
 
+            Link link;
+            // ------------------ INQUERIES ------------------------
+            Link answerLink = new Link(iwrb.getLocalizedImageButton("travel.answer","Answer"),is.idega.idegaweb.travel.presentation.Booking.class);
+              answerLink.addParameter(CalendarBusiness.PARAMETER_YEAR, currentStamp.getYear());
+              answerLink.addParameter(CalendarBusiness.PARAMETER_MONTH, currentStamp.getMonth());
+              answerLink.addParameter(CalendarBusiness.PARAMETER_DAY, currentStamp.getDay());
+            Inquery[] inqueries = null;
+
+            int[] iNumbers;
+            if (supplier != null) inqueries = getInquirer(iwc).getInqueries(service.getID(), currentStamp, true, trAddress, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
+            if (reseller != null) {
+              inqueries = inqueries = getInquirer(iwc).getInqueries(service.getID(), currentStamp, true, trAddress, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
+//              Collection coll = getInquirer(iwc).getInquiryHome().findInqueries(service.getID(), currentStamp, reseller.getID(),true, trAddress,is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
+//              inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
+            }
+            for (int i = 0; i < inqueries.length; i++) {
+              ++row;
+              iNumbers = getInquirer(iwc).getMultibleInquiriesNumber(inqueries[i]);
+              tempInq += inqueries[i].getNumberOfSeats();
+              Tname = (Text) super.theSmallBoldText.clone();
+                Tname.setText(inqueries[i].getName());
+                if ( iNumbers[0] != 0 ) {
+                  Tname.addToText(Text.NON_BREAKING_SPACE+"( "+iNumbers[0]+" / "+iNumbers[1]+" )");
+                }
+              Temail = (Text) super.theSmallBoldText.clone();
+                Temail.setText(inqueries[i].getEmail());
+              Tbooked = (Text) super.theSmallBoldText.clone();
+                Tbooked.setText(Integer.toString(inqueries[i].getNumberOfSeats()));
+
+                Tname.setFontColor(super.BLACK);
+                Temail.setFontColor(super.BLACK);
+                Tbooked.setFontColor(super.BLACK);
+
+              table.mergeCells(2,row,4, row);
+              table.add(Tname,1,row);
+              table.add(Temail,2,row);
+              table.setAlignment(3,row,"left");
+              table.add(Tbooked,5,row);
+
+              table.setRowColor(row, super.YELLOW);
+  //            table.setRowColor(row, super.GRAY);
+
+              link = (Link) answerLink.clone();
+                link.addParameter(TourBookingForm.parameterDepartureAddressId, trAddress.getID());
+              table.add(link, 9, row);
+
+            }
 
 //            int tempBookingTest = getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(product.getID(), currentStamp, null, -1, new int[]{}, getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(product, trAddress) );
 //            table.add(getHeaderText(Integer.toString(tempBookingTest)), 6, row);
@@ -816,7 +832,7 @@ public class BookingOverview extends TravelManager {
 
                 tempBookings = bookings[i].getTotalCount();
                 tempTotal += tempBookings;
-                trAddrBookings += tempBookings;
+//                trAddrBookings += tempBookings;
 
                 Temail = (Text) super.theSmallBoldText.clone();
                   Temail.setText(bookings[i].getEmail());
@@ -865,16 +881,22 @@ public class BookingOverview extends TravelManager {
                 table.add(link, 9, row);
 
             }
+
+            table.add(getHeaderText(Integer.toString(seats)), 3, tempRow);
+            table.add(getHeaderText(Integer.toString(assigned)), 4, tempRow);
+            table.add(getHeaderText(Integer.toString(tempInq)), 5, tempRow);
             table.add(getHeaderText(Integer.toString(tempTotal)), 6, tempRow);
+            if (seats > 0) {
+              travelAddressIds = super.getTravelStockroomBusiness(iwc).getTravelAddressIdsFromRefill(product, trAddress);
+              tempAvail = seats - getBooker(iwc).getGeneralBookingHome().getNumberOfBookings(( (Integer) product.getPrimaryKey()).intValue(), currentStamp, null, -1, new int[]{}, travelAddressIds );
+              table.add(getHeaderText(Integer.toString(tempAvail)), 7, tempRow);
+            }
+
             Link daLink = LinkGenerator.getLink(iwc, product.getID(), is.idega.idegaweb.travel.presentation.Booking.class);
               daLink.addParameter(TourBookingForm.parameterDepartureAddressId, trAddress.getID());
               daLink.setPresentationObject(iwrb.getImage("buttons/book.gif"));
-            table.add(daLink, 8, tempRow);
-//            if (trAddress.getRefillStock()) {
-//              table.add(getHeaderText(Integer.toString(trAddrBookings)), 7, tempRow);
-//              trAddrBookings = 0;
-//            }
-
+            table.add(Text.NON_BREAKING_SPACE, 1, tempRow);
+            table.add(daLink, 1, tempRow);
           }
 
         ++row;
@@ -894,6 +916,7 @@ public class BookingOverview extends TravelManager {
 
     table.setColumnAlignment(1,"left");
     table.setColumnAlignment(2,"left");
+    table.setColumnAlignment(3,"center");
     table.setColumnAlignment(4,"center");
     table.setColumnAlignment(5,"center");
     table.setColumnAlignment(6,"center");

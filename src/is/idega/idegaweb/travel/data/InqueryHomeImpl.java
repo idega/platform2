@@ -13,6 +13,13 @@ public class InqueryHomeImpl extends com.idega.data.IDOFactory implements Inquer
  }
 
 
+public java.util.Collection findInqueries(int p0,com.idega.util.idegaTimestamp p1,int p2,boolean p3,com.idega.block.trade.stockroom.data.TravelAddress p4,java.lang.String p5)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((InqueryBMPBean)entity).ejbFindInqueries(p0,p1,p2,p3,p4,p5);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findInqueries(int p0,com.idega.util.idegaTimestamp p1,int p2,boolean p3,java.lang.String p4)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((InqueryBMPBean)entity).ejbFindInqueries(p0,p1,p2,p3,p4);

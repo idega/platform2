@@ -43,18 +43,26 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
     return getInquiryHome().getInqueredSeats(serviceId, stamp, -1, unansweredOnly);
   }
 
-
-
+  /**
+   * @deprecated
+   */
   public Inquery[] getInqueries(int serviceId, idegaTimestamp stamp, boolean unansweredOnly) throws RemoteException, FinderException {
     return this.collectionToInqueryArray(getInquiryHome().findInqueries(serviceId, stamp, -1, unansweredOnly, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryDateColumnName()));
   }
 
-
+  /**
+   * @deprecated
+   */
   public Inquery[] getInqueries(int serviceId, idegaTimestamp stamp, boolean unansweredOnly, String orderBy)  throws RemoteException, FinderException{
     return this.collectionToInqueryArray(getInquiryHome().findInqueries(serviceId, stamp, -1, unansweredOnly, orderBy));
   }
 
-
+  public Inquery[] getInqueries(int serviceId, idegaTimestamp stamp, boolean unansweredOnly, TravelAddress travelAddress)  throws RemoteException, FinderException{
+    return getInqueries(serviceId, stamp, unansweredOnly, travelAddress, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryDateColumnName());
+  }
+  public Inquery[] getInqueries(int serviceId, idegaTimestamp stamp, boolean unansweredOnly, TravelAddress travelAddress, String orderBy)  throws RemoteException, FinderException{
+    return this.collectionToInqueryArray(getInquiryHome().findInqueries(serviceId, stamp,-1, unansweredOnly, travelAddress, orderBy ));
+  }
 
   public int sendInquery(String name,String email, idegaTimestamp inqueryDate, int productId, int numberOfSeats, int bookingId, Reseller reseller)  throws RemoteException, FinderException, CreateException {
     String sInquery = "Are the available seats this day";
