@@ -2192,33 +2192,41 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			transaction.begin();
 			ChildCareContract archive = getContractByApplicationAndDate(applicationId, validFrom);
 			SchoolClassMember member = archive.getSchoolClassMember();
-			SchoolClassMemberLog pastLog = getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDateBack(member, validFrom);
-			if (pastLog.getStartDate().compareTo(validFrom) == 0) {
-				pastLog.setSchoolClass(new Integer(schoolClassId));
-				pastLog.setUserPlacing(user);
-				pastLog.store();
-			} else {
-				Date validTo = pastLog.getEndDate();
-				SchoolClassMemberLog newLog = getSchoolBusiness().getSchoolClassMemberLogHome().create();				
-				newLog.setUserPlacing(user);
-				newLog.setSchoolClass(new Integer(schoolClassId));
-				newLog.setSchoolClassMember(member);
-				newLog.setStartDate(validFrom);
-				newLog.setEndDate(validTo);
-				if (validTo != null) {
-					newLog.setUserTerminating(user);
+			SchoolClass group = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassId));
+			SchoolClassMemberLog pastLog = null;
+			try {
+				pastLog = getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDateBack(member, validFrom);
+			}
+			catch (FinderException fe) {
+				//No past log found...
+			}
+			
+			boolean updateDone = false;
+			Date validTo = null;
+			if (pastLog != null) {
+				if (pastLog.getStartDate().compareTo(validFrom) == 0) {
+					pastLog.setSchoolClass(group);
+					pastLog.setUserPlacing(user);
+					pastLog.store();
+					updateDone = true;
 				}
-				newLog.store();
-				
+				else {
+					validTo = pastLog.getEndDate();
+				}
+			}
+			if (!updateDone) {
 				IWTimestamp t = new IWTimestamp(validFrom);
 				t.addDays(-1);
-				pastLog.setEndDate(t.getDate());
-				pastLog.setUserTerminating(user);
-				pastLog.store();
+				getSchoolBusiness().addToSchoolClassMemberLog(member, member.getSchoolClass(), t.getDate(), user);
+				getSchoolBusiness().addToSchoolClassMemberLog(member, group, validFrom, validTo, user);
 			}		
+			member.setSchoolClass(group);
+			member.store();
+
 			transaction.commit();
-		} catch (Exception e) {
-			log(e);
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
 			try {
 				transaction.rollback();
 			} catch (SystemException ex) {
