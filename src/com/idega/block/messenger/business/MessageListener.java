@@ -23,12 +23,10 @@ public class MessageListener implements Runnable{
   private boolean runThread = false;
 
   public MessageListener() {
-    start();
   }
 
   public MessageListener(long interval) {
     setInterval(interval);
-    start();
   }
 
   public void run(){
