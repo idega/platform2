@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.8 2004/05/24 14:21:41 palli Exp $
+ * $Id: ContractBMPBean.java,v 1.9 2004/06/04 17:35:54 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,12 +10,18 @@
 package is.idega.idegaweb.campus.block.allocation.data;
 
 
+
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.application.data.Applicant;
+import com.idega.block.building.data.Apartment;
+import com.idega.data.IDOException;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -74,9 +80,9 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(userId_,"User id",true,true,java.lang.Integer.class,"one-to-many",com.idega.core.user.data.User.class);
-    addAttribute(apartmentId_,"Apartment id",true,true,java.lang.Integer.class,"one-to-many",com.idega.block.building.data.Apartment.class);
-    addAttribute(applicantId_,"Applicant id",true,true,java.lang.Integer.class,"one-to-one",com.idega.block.application.data.Applicant.class);
+    addAttribute(userId_,"User id",true,true,java.lang.Integer.class,"one-to-many",User.class);
+    addAttribute(apartmentId_,"Apartment id",true,true,java.lang.Integer.class,"one-to-many",Apartment.class);
+    addAttribute(applicantId_,"Applicant id",true,true,java.lang.Integer.class,"one-to-one",Applicant.class);
     addAttribute(validFrom_,"Valid from",true,true,java.sql.Date.class);
     addAttribute(validTo_,"Valid to",true,true,java.sql.Date.class);
     addAttribute(statusDate_,"Resign date",true,true,java.sql.Date.class);
@@ -104,6 +110,11 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
   public Integer getUserId() {
     return(getIntegerColumnValue(userId_));
   }
+  
+  public User getUser(){
+  		return (User) getColumnValue(userId_);
+  }
+  
   public void setApplicantId(int id) {
     setColumn(applicantId_,id);
   }
@@ -126,6 +137,10 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
   public Integer getApplicantId() {
     return(getIntegerColumnValue(applicantId_));
   }
+  
+  public Applicant getApplicant(){
+  	return (Applicant)getColumnValue(applicantId_);
+  }
 
   public void setApartmentId(int id) {
     setColumn(apartmentId_,id);
@@ -137,6 +152,10 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
 
   public Integer getApartmentId() {
     return(getIntegerColumnValue(apartmentId_));
+  }
+  
+  public Apartment getApartment(){
+  	return (Apartment)getColumnValue(apartmentId_);
   }
 
   public void setValidFrom(Date date) {
@@ -271,4 +290,88 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
  public java.util.Collection ejbFindByApplicant(Integer ID) throws FinderException{
  	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),ID.intValue()));
  }
+ 
+ public Collection ejbFindByApartmentAndRented(Integer apartment,Boolean rented)throws FinderException{
+ 	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApartmentIdColumnName(),apartment).appendAndEquals(getRentedColumnName(),rented.booleanValue()));
+ }
+ 
+ public Collection ejbFindByApplicantAndStatus(Integer applicant,String status)throws FinderException{
+ 	return super.idoFindPKsByQuery(super.idoQueryGetSelectCount().appendWhereEquals(getApplicantIdColumnName(),applicant).appendAndEqualsQuoted(getStatusColumnName(),status));
+ }
+ 
+ public Collection ejbFindByApplicantInCreatedStatus(Integer applicant)throws FinderException{
+ 	return ejbFindByApplicantAndStatus(applicant,statusCreated);
+ }
+ 
+ public Date ejbHomeGetLastValidToForApartment(Integer apartment )throws FinderException{
+ 	try {
+		return getDateTableValue("select max(c.valid_to) from cam_contract c where c.bu_apartment_id =  "+apartment);
+	} catch (SQLException e) {
+		throw new FinderException(e.getMessage());
+	}
+ }
+ 
+ public Date ejbHomeGetLastValidFromForApartment(Integer apartment )throws FinderException{
+ 	try {
+		return getDateTableValue("select max(c.valid_from) from cam_contract c where c.bu_apartment_id =  "+apartment);
+	} catch (SQLException e) {
+		throw new FinderException(e.getMessage());
+	}
+ }
+ 
+ public Collection ejbFindBySearchConditions(String status,Integer complexId,Integer buildingId,Integer floorId,Integer typeId,Integer categoryId,String order,int returnResultSize,int startingIndex)throws FinderException{
+ 	 String sql = getSearchConditionSQL(status, complexId, buildingId, floorId, typeId, categoryId, order,false);
+     return super.idoFindPKsBySQL(sql.toString(),returnResultSize,startingIndex);
+ }
+ 
+ public int ejbHomeCountBySearchConditions(String status,Integer complexId,Integer buildingId,Integer floorId,Integer typeId,Integer categoryId,String order)throws IDOException{
+ 	String sql = getSearchConditionSQL(status, complexId, buildingId, floorId, typeId, categoryId, order,true);
+ 	return idoGetNumberOfRecords(sql);
+ }
+private String getSearchConditionSQL(String status, Integer complexId, Integer buildingId, Integer floorId, Integer typeId, Integer categoryId, String order,boolean count) {
+	StringBuffer sql = new StringBuffer("select ");
+	if(count)
+		sql.append(" count( * )");
+	else 
+		sql.append(" con.* ");
+     sql.append(" from bu_apartment a,bu_floor f,bu_building b,app_applicant p ");
+     sql.append(",bu_complex c,bu_aprt_type t,bu_aprt_cat y,cam_contract con ");
+     sql.append(" where a.bu_aprt_type_id = t.bu_aprt_type_id ");
+     sql.append(" and t.bu_aprt_cat_id = y.bu_aprt_cat_id");
+     sql.append(" and a.bu_floor_id = f.bu_floor_id ");
+     sql.append(" and f.bu_building_id = b.bu_building_id ");
+     sql.append(" and b.bu_complex_id = c.bu_complex_id ");
+     sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
+     sql.append(" and con.app_applicant_id = p.app_applicant_id");
+     if(status !=null && !"".equals(status)){
+       sql.append(" and con.status = '");
+       sql.append(status);
+       sql.append("' ");
+     }
+     if(complexId !=null && complexId.intValue()>0){
+       sql.append(" and bu_complex_id  = ");
+       sql.append(complexId);
+     }
+     if(buildingId !=null && buildingId.intValue()>0){
+       sql.append(" and bu_building_id = ");
+       sql.append(buildingId);
+     }
+     if(floorId !=null && floorId.intValue()>0){
+       sql.append(" and bu_floor_id = ");
+       sql.append(floorId);
+     }
+     if(typeId !=null && typeId.intValue()>0){
+       sql.append(" and bu_aprt_type_id = ");
+       sql.append(typeId);
+     }
+     if(categoryId !=null && categoryId.intValue()>0){
+       sql.append(" and bu_aprt_cat_id = ");
+       sql.append(categoryId);
+     }
+     if(order!=null && !"".equals(order)){
+       sql.append(" order by ");
+       sql.append(order);
+     }
+	return sql.toString();
+}
 }

@@ -43,6 +43,7 @@ import com.idega.presentation.ui.TextInput;
  * @version 1.0
  */
 public class Finance extends CategoryBlock implements Builderaware {
+	public static final String CATEGORY_TYPE = "Finance";
 	protected static String LOCALIZATION_SAVE_KEY = "save";
 	protected static String PARAM_SAVE = "cb_save";
 	protected static String LOCALIZATION_CANCEL_KEY = "cancel";
@@ -251,7 +252,7 @@ public class Finance extends CategoryBlock implements Builderaware {
 		return false;
 	}
 	public String getCategoryType() {
-		return "Finance";
+		return CATEGORY_TYPE;
 	}
 	public String getBackgroundColor() {
 		return backgroundColor;

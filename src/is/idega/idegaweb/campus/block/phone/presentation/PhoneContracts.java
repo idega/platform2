@@ -2,7 +2,7 @@ package is.idega.idegaweb.campus.block.phone.presentation;
 
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.phone.business.PhoneFinder;
-import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.presentation.CampusBlock;
 
 import java.rmi.RemoteException;
 import java.text.DateFormat;
@@ -12,9 +12,6 @@ import java.util.StringTokenizer;
 
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.business.IBOLookup;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -35,11 +32,8 @@ import com.idega.user.data.User;
   *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.1
  */
-public class PhoneContracts extends Block {
+public class PhoneContracts extends CampusBlock {
 
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
   private DateFormat df;
   private UserBusiness ub;
   private TextFormat tf;
@@ -63,14 +57,10 @@ public class PhoneContracts extends Block {
        }
     }
     else
-      add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
+      add(getNoAccessObject(iwc));
     //add(String.valueOf(iSubjectId));
   }
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
-  
   public String[] parseNumbers(String numbers){
   	StringTokenizer tokener = new StringTokenizer(numbers,",;: ");
   	String[] nums = new String[tokener.countTokens()];
@@ -127,8 +117,7 @@ public class PhoneContracts extends Block {
   }
 
   public void main(IWContext iwc)throws RemoteException{
-  	iwrb = getResourceBundle(iwc);
-	iwb = getBundle(iwc);
+  
     isAdmin = iwc.hasEditPermission(this);
     df = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
     ub = (UserBusiness)IBOLookup.getServiceInstance(iwc,UserBusiness.class);

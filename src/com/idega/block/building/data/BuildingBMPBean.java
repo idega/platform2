@@ -1,4 +1,9 @@
 package com.idega.block.building.data;
+
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 /**
  * Title:
  * Description:
@@ -69,6 +74,9 @@ public class BuildingBMPBean extends com.idega.block.text.data.TextEntityBMPBean
 	public int getComplexId() {
 		return getIntColumnValue(getComplexIdColumnName());
 	}
+	public Complex getComplex(){
+		return (Complex) getColumnValue(getComplexIdColumnName());
+	}
 	public void setComplexId(int complex_id) {
 		setColumn(getComplexIdColumnName(), complex_id);
 	}
@@ -98,5 +106,23 @@ public class BuildingBMPBean extends com.idega.block.text.data.TextEntityBMPBean
 	}
 	public void setSerie(String serie) {
 		setColumn(getSerieColumnName(), serie);
+	}
+	
+	public Collection getFloors(){
+		try {
+			return super.idoGetRelatedEntities(Floor.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error in getFloors() : " + e.getMessage());
+		}
+	}
+	
+	public Collection ejbFindByComplex(Integer complexID) throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getComplexIdColumnName(),complexID.intValue()));
+	}
+	
+	public Collection ejbFindByComplex(Complex complex) throws FinderException{
+		return ejbFindByComplex((Integer)complex.getPrimaryKey());
 	}
 }

@@ -1,11 +1,9 @@
 package is.idega.idegaweb.campus.block.phone.presentation;
 
-
 import is.idega.idegaweb.campus.block.phone.business.PhoneFinder;
 import is.idega.idegaweb.campus.block.phone.data.CampusPhone;
-import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.presentation.CampusBlock;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -20,10 +18,7 @@ import com.idega.block.building.data.Floor;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.event.IWPageEventListener;
-import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWException;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -43,17 +38,11 @@ import com.idega.util.IWTimestamp;
  * @version 1.1
  */
 
-public class CampusPhones extends Block implements IWPageEventListener{
+public class CampusPhones extends CampusBlock implements IWPageEventListener{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
-
-  private int iSubjectId = -1;
-  private String sGlobalStatus = "C", sCLBU="-1",sCLFL="-1",sCLCX="-1",sCLTP="-1",sCLCT="-1",sORDER = "-1";
-
-
+ 
+  private String  sCLBU="-1",sCLFL="-1",sCLCX="-1",sCLTP="-1",sCLCT="-1",sORDER = "-1";
   private final String prmCx = "cl_clx",prmBu = "cl_bu",prmFl = "cl_fl",prmCt="cl_ct",prmTp="cl_tp",prmOrder="ct_or";
   private final String sessCx = "s_clx",sessBu = "s_bu",sessFl = "s_fl",sessCt="s_ct",sessTp="s_tp",sessOrder="s_or";
   private String[] prmArray = { prmCx ,prmBu ,prmFl,prmCt,prmTp,prmOrder};
@@ -62,7 +51,6 @@ public class CampusPhones extends Block implements IWPageEventListener{
   protected boolean isAdmin = false;
   private boolean fetch = false;
 
-  private String sessConPrm = "sess_con_status";
 
   public CampusPhones() {
     super();
@@ -77,8 +65,6 @@ public class CampusPhones extends Block implements IWPageEventListener{
   }
 
   protected void control(IWContext iwc){
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
 
     fetch = false;
     for (int i = 0; i < prmArray.length; i++) {
@@ -99,12 +85,8 @@ public class CampusPhones extends Block implements IWPageEventListener{
          add(getPhoneTable(iwc));
     }
     else
-      add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
+      add(getNoAccessObject(iwc));
     //add(String.valueOf(iSubjectId));
-  }
-
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
   }
 
   public PresentationObject makeLinkTable(int menuNr){
@@ -115,26 +97,21 @@ public class CampusPhones extends Block implements IWPageEventListener{
 
   private Form statusForm(){
     Form myForm = new Form();
-    DropdownMenu complex = drpLodgings(((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy(),prmArray[0],"--",sValues[0]);
-    DropdownMenu building = drpLodgings(((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).createLegacy(),prmArray[1],"--",sValues[1]);
+    DropdownMenu complex = drpLodgings(Complex.class,prmArray[0],"--",sValues[0]);
+    DropdownMenu building = drpLodgings(Building.class,prmArray[1],"--",sValues[1]);
     DropdownMenu floor = drpFloors(prmArray[2],"--",sValues[2],true);
-    DropdownMenu cat = drpLodgings(((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).createLegacy(),prmArray[3],"--",sValues[3]);
-    DropdownMenu type = drpLodgings(((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).createLegacy(),prmArray[4],"--",sValues[4]);
+    DropdownMenu cat = drpLodgings(ApartmentCategory.class,prmArray[3],"--",sValues[3]);
+    DropdownMenu type = drpLodgings(ApartmentType.class,prmArray[4],"--",sValues[4]);
     DropdownMenu order = orderDrop(prmArray[5],"--",sValues[5]);
     //Edit.setStyle(status);
-    Edit.setStyle(complex);
-    Edit.setStyle(building);
-    Edit.setStyle(floor);
-    Edit.setStyle(cat);
-    Edit.setStyle(type);
-    Edit.setStyle(order);
+    
     Table T = new Table();
-      T.add(Edit.formatText(iwrb.getLocalizedString("complex","Complex")),1,1);
-      T.add(Edit.formatText(iwrb.getLocalizedString("building","Building")),2,1);
-      T.add(Edit.formatText(iwrb.getLocalizedString("floor","Floor")),3,1);
-      T.add(Edit.formatText(iwrb.getLocalizedString("category","Category")),4,1);
-      T.add(Edit.formatText(iwrb.getLocalizedString("type","Type")),5,1);
-     // T.add(Edit.formatText(iwrb.getLocalizedString("order","Order")),2,1);
+      T.add(getHeader(localize("complex","Complex")),1,1);
+      T.add(getHeader(localize("building","Building")),2,1);
+      T.add(getHeader(localize("floor","Floor")),3,1);
+      T.add(getHeader(localize("category","Category")),4,1);
+      T.add(getHeader(localize("type","Type")),5,1);
+     // T.add(getHeader(localize("order","Order")),2,1);
      // T.add(status,1,2);
       T.add(complex,1,2);
       T.add(building,2,2);
@@ -142,8 +119,8 @@ public class CampusPhones extends Block implements IWPageEventListener{
       T.add(cat,4,2);
       T.add(type,5,2);
       //T.add(order,2,2);
-      SubmitButton get = new SubmitButton("conget",iwrb.getLocalizedString("get","Get"));
-      Edit.setStyle(get);
+      SubmitButton get = (SubmitButton) getSubmitButton("conget",null,"Get","get");
+   
       T.add(get,1,3);
     T.setCellpadding(1);
     T.setCellspacing(0);
@@ -152,12 +129,12 @@ public class CampusPhones extends Block implements IWPageEventListener{
     return myForm;
   }
 
-  private DropdownMenu drpLodgings(IDOLegacyEntity lodgings,String name,String display,String selected) {
+  private DropdownMenu drpLodgings(Class lodgings,String name,String display,String selected) {
     List L = null;
     try{
-      L = EntityFinder.findAll(lodgings);
+      L = EntityFinder.getInstance().findAll(lodgings);
     }
-    catch(SQLException e){}
+    catch(Exception e){}
     DropdownMenu drp = new DropdownMenu(name);
     if(!"".equals(display))
       drp.addDisabledMenuElement("-1",display);
@@ -243,15 +220,15 @@ public class CampusPhones extends Block implements IWPageEventListener{
           Integer ID = new Integer(A.getID());
           TextInput ti = new TextInput("ti_"+i);
           T.add(new HiddenInput("apid"+i,String.valueOf(A.getID())));
-          T.add(Edit.formatText(i+1),1,row);
+          T.add(getHeader(String.valueOf(i+1)),1,row);
           T.add((getApartmentTable(A)),2,row);
           ti.setLength(10);
-          Edit.setStyle(ti);
+          
           T.add(ti,3,row);
           if(M != null && M.containsKey(ID)){
             P = (CampusPhone)M.get(ID);
             ti.setContent(P.getPhoneNumber());
-            T.add(Edit.formatText(new IWTimestamp(P.getDateInstalled()).getLocaleDate(iwc)),4,row);
+            T.add(getText(new IWTimestamp(P.getDateInstalled()).getLocaleDate(iwc)),4,row);
             T.add(new HiddenInput("phoneid"+i,String.valueOf(P.getID())),1,row);
           }
           row++;
@@ -260,25 +237,25 @@ public class CampusPhones extends Block implements IWPageEventListener{
         catch (Exception ex) {  ex.printStackTrace(); }
         }
         form.add(new HiddenInput("ap_count",String.valueOf(len)));
-        T.add(Edit.titleText(iwrb.getLocalizedString("apartment","Apartment")),2,1);
-        T.add(Edit.titleText(iwrb.getLocalizedString("number","Number")),3,1);
-        T.add(Edit.titleText(iwrb.getLocalizedString("installed","Installed")),4,1);
+        T.add(getHeader(localize("apartment","Apartment")),2,1);
+        T.add(getHeader(localize("number","Number")),3,1);
+        T.add(getHeader(localize("installed","Installed")),4,1);
 
 
-        T.setHorizontalZebraColored(Edit.colorLightBlue,Edit.colorWhite);
-        T.setRowColor(1,Edit.colorBlue);
-        T.setRowColor(row,Edit.colorRed);
+        T.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
+        T.setRowColor(1,getHeaderColor());
+       
         T.mergeCells(1,row,8,row);
         T.setWidth(1,"15");
-        T.add(Edit.formatText(" "),1,row);
+        T.add(getText(" "),1,row);
         T.setColumnAlignment(1,"left");
-        T.setHeight(row,Edit.bottomBarThickness);
+        
         //T.setWidth("100%");
     }
     else
-      add(Edit.formatText(iwrb.getLocalizedString("no_apartments","No Apartments")));
+      add(getText(localize("no_apartments","No Apartments")));
     form.add(T);
-    form.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")));
+    form.add(new SubmitButton("save",localize("save","Save")));
     form.setEventListener(this.getClassName());
 
     return form;
@@ -337,10 +314,10 @@ public class CampusPhones extends Block implements IWPageEventListener{
     Floor F = BuildingCacher.getFloor(A.getFloorId());
     Building B = BuildingCacher.getBuilding(F.getBuildingId());
     Complex C = BuildingCacher.getComplex(B.getComplexId());
-    T.add(Edit.formatText(A.getName()),1,1);
-    T.add(Edit.formatText(F.getName()),2,1);
-    T.add(Edit.formatText(B.getName()),3,1);
-    T.add(Edit.formatText(C.getName()),4,1);
+    T.add(getText(A.getName()),1,1);
+    T.add(getText(F.getName()),2,1);
+    T.add(getText(B.getName()),3,1);
+    T.add(getText(C.getName()),4,1);
     return T;
 
   }

@@ -1,9 +1,13 @@
 package com.idega.block.building.data;
 
+import com.idega.block.text.data.TextEntity;
 
-public interface Apartment extends com.idega.block.text.data.TextEntity
+
+public interface Apartment extends TextEntity
 {
+ public com.idega.block.building.data.ApartmentType getApartmentType();
  public int getApartmentTypeId();
+ public com.idega.block.building.data.Floor getFloor();
  public int getFloorId();
  public int getImageId();
  public java.lang.String getInfo();
@@ -14,8 +18,8 @@ public interface Apartment extends com.idega.block.text.data.TextEntity
  public java.sql.Date getUnavailableUntil();
  public void setApartmentTypeId(int p0);
  public void setApartmentTypeId(java.lang.Integer p0);
- public void setFloorId(java.lang.Integer p0);
  public void setFloorId(int p0);
+ public void setFloorId(java.lang.Integer p0);
  public void setImageId(int p0);
  public void setImageId(java.lang.Integer p0);
  public void setInfo(java.lang.String p0);

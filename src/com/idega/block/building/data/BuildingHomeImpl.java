@@ -7,37 +7,30 @@ public class BuildingHomeImpl extends com.idega.data.IDOFactory implements Build
   return Building.class;
  }
 
+
  public Building create() throws javax.ejb.CreateException{
-  return (Building) super.idoCreate();
+  return (Building) super.createIDO();
  }
 
- public Building createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
+public java.util.Collection findByComplex(java.lang.Integer p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((BuildingBMPBean)entity).ejbFindByComplex(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
- public Building findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Building) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findByComplex(com.idega.block.building.data.Complex p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((BuildingBMPBean)entity).ejbFindByComplex(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public Building findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Building) super.idoFindByPrimaryKey(pk);
+  return (Building) super.findByPrimaryKeyIDO(pk);
  }
 
- public Building findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

@@ -88,9 +88,9 @@ public void setSpecialAttributes(String name,List attributes){
       this.infoStyle = "font-family:arial; font-size:8pt; color:#000000; line-height: 1.8; text-align: justify;";
     }
 
-    private void getApartmentType(IWContext iwc) throws SQLException {
-
-      ApartmentType room = ((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(apartmenttypeid);
+    private void getApartmentType(IWContext iwc) throws Exception {
+    	ApartmentType room = BuildingBusiness.getStaticInstance().getApartmentTypeHome().findByPrimaryKey(new Integer(apartmenttypeid));
+      
 		BuildingBusiness.getStaticInstance().changeNameAndInfo(room,iwc.getCurrentLocale());
 
       Table roomTable = new Table(1,6);

@@ -7,37 +7,30 @@ public class ApartmentHomeImpl extends com.idega.data.IDOFactory implements Apar
   return Apartment.class;
  }
 
+
  public Apartment create() throws javax.ejb.CreateException{
-  return (Apartment) super.idoCreate();
+  return (Apartment) super.createIDO();
  }
 
- public Apartment createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
+public java.util.Collection findByFloor(com.idega.block.building.data.Floor p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ApartmentBMPBean)entity).ejbFindByFloor(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
- public Apartment findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Apartment) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findByFloor(java.lang.Integer p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ApartmentBMPBean)entity).ejbFindByFloor(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public Apartment findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Apartment) super.idoFindByPrimaryKey(pk);
+  return (Apartment) super.findByPrimaryKeyIDO(pk);
  }
 
- public Apartment findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

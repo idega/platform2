@@ -1,26 +1,24 @@
 package is.idega.idegaweb.campus.block.phone.presentation;
 
-
 import is.idega.idegaweb.campus.block.phone.business.PhoneFileHandler;
 import is.idega.idegaweb.campus.block.phone.data.PhoneFileInfo;
-import is.idega.idegaweb.campus.presentation.Edit;
 
 import java.io.File;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import com.idega.block.finance.presentation.Finance;
 import com.idega.data.EntityFinder;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.util.Edit;
+
 
 /**
  * Title:
@@ -31,21 +29,18 @@ import com.idega.presentation.ui.SubmitButton;
  * @version 1.1
  */
 
-public class PhoneAssessment extends PresentationObjectContainer {
+public class PhoneAssessment extends Finance {
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String sAction = "cam.ph.file.action";
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
+ 
   protected boolean isAdmin = false;
   private String dir = "/phone/upload/";
 
-  private String sessConPrm = "sess_con_status";
 
   protected void control(IWContext iwc){
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
+   
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);

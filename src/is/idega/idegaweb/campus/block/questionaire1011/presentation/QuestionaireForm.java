@@ -1,18 +1,18 @@
 package is.idega.idegaweb.campus.block.questionaire1011.presentation;
 
 import is.idega.idegaweb.campus.block.questionaire1011.business.QuestionaireBusiness;
-import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.presentation.CampusBlock;
 
 import java.rmi.RemoteException;
 
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.RadioGroup;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.util.Edit;
 
 
 
@@ -24,7 +24,7 @@ import com.idega.presentation.ui.SubmitButton;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class QuestionaireForm extends Block {
+public class QuestionaireForm extends CampusBlock {
 	protected final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus.block.questionaire1011";
  
  	protected final static String SUBMIT_ANSWER = "sub_questionaire1011";
@@ -240,23 +240,23 @@ public class QuestionaireForm extends Block {
 		answer_9.keepStatusOnAction();
 		
 		int row = 1;
-		t.add(Edit.formatText(iwrb.getLocalizedString(QUESTION_1),true),1,row++);
+		t.add(getHeader(iwrb.getLocalizedString(QUESTION_1)),1,row++);
 		t.add(answer_1,1,row++);
-		t.add(Edit.formatText(iwrb.getLocalizedString(QUESTION_2),true),1,row++);
+		t.add(getHeader(iwrb.getLocalizedString(QUESTION_2)),1,row++);
 		t.add(answer_2,1,row++);
-		t.add(Edit.formatText(iwrb.getLocalizedString(QUESTION_3),true),1,row++);
+		t.add(getHeader(iwrb.getLocalizedString(QUESTION_3)),1,row++);
 		t.add(answer_3,1,row++);
-		t.add(Edit.formatText(iwrb.getLocalizedString(QUESTION_4),true),1,row++);
+		t.add(getHeader(iwrb.getLocalizedString(QUESTION_4)),1,row++);
 		t.add(answer_4,1,row++);
-		t.add(Edit.formatText(iwrb.getLocalizedString(QUESTION_5),true),1,row++);
+		t.add(getHeader(iwrb.getLocalizedString(QUESTION_5)),1,row++);
 		t.add(answer_5,1,row++);
-		t.add(Edit.formatText(iwrb.getLocalizedString(QUESTION_6),true),1,row++);
+		t.add(getHeader(iwrb.getLocalizedString(QUESTION_6)),1,row++);
 		t.add(answer_6,1,row++);
-		t.add(Edit.formatText(iwrb.getLocalizedString(QUESTION_7),true),1,row++);
+		t.add(getHeader(iwrb.getLocalizedString(QUESTION_7)),1,row++);
 		t.add(answer_7,1,row++);
-		t.add(Edit.formatText(iwrb.getLocalizedString(QUESTION_8),true),1,row++);
+		t.add(getHeader(iwrb.getLocalizedString(QUESTION_8)),1,row++);
 		t.add(answer_8,1,row++);
-		t.add(Edit.formatText(iwrb.getLocalizedString(QUESTION_9),true),1,row++);
+		t.add(getHeader(iwrb.getLocalizedString(QUESTION_9)),1,row++);
 		t.add(answer_9,1,row++);
 				
 		f.add(t);

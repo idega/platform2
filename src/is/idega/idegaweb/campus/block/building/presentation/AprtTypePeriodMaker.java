@@ -1,8 +1,9 @@
 package is.idega.idegaweb.campus.block.building.presentation;
 
 
+
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
-import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.presentation.CampusBlock;
 
 import java.util.Hashtable;
 import java.util.List;
@@ -10,9 +11,6 @@ import java.util.List;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.data.EntityFinder;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Text;
@@ -21,6 +19,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.util.Edit;
 
 /**
  * Title:   idegaclasses
@@ -31,13 +30,11 @@ import com.idega.presentation.ui.SubmitButton;
  * @version 1.0
  */
 
-public class AprtTypePeriodMaker extends Block{
+public class AprtTypePeriodMaker extends CampusBlock{
 
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
+  
   private boolean isAdmin = false;
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
-
+ 
 
   public String getLocalizedNameKey(){
     return "periods";
@@ -71,8 +68,8 @@ public class AprtTypePeriodMaker extends Block{
 
   public PresentationObject makeInputTable(){
     Form F = new Form();
-    DataTable T = new DataTable();
-    T.addTitle(iwrb.getLocalizedString("apartment_periods","Apartment periods"));
+    DataTable T = getDataTable();
+    T.addTitle(localize("apartment_periods","Apartment periods"));
     T.setTitlesVertical(false);
     List Types = BuildingCacher.getTypes();
     Hashtable ht = hashOfStuff();
@@ -80,9 +77,9 @@ public class AprtTypePeriodMaker extends Block{
       int len = Types.size();
       ApartmentType AT;
 
-      T.add(Edit.formatText(iwrb.getLocalizedString("apartment_type","Apartment type")),1,1);
-      T.add(Edit.formatText(iwrb.getLocalizedString("first_date","First date (D/M)")),2,1);
-      T.add(Edit.formatText(iwrb.getLocalizedString("second_date","Second date (D/M)")),3,1);
+      T.add(Edit.formatText(localize("apartment_type","Apartment type")),1,1);
+      T.add(Edit.formatText(localize("first_date","First date (D/M)")),2,1);
+      T.add(Edit.formatText(localize("second_date","Second date (D/M)")),3,1);
       int row = 2;
       for (int i = 0; i < len; i++) {
         AT = (ApartmentType) Types.get(i);
@@ -115,7 +112,7 @@ public class AprtTypePeriodMaker extends Block{
         row++;
       }
       T.add(new HiddenInput("count",String.valueOf(len)));
-      SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save");
+      SubmitButton save = (SubmitButton)getSubmitButton("save","true","Save","save");
       Edit.setStyle(save);
       T.addButton(save);
 
@@ -212,8 +209,6 @@ public class AprtTypePeriodMaker extends Block{
 
   public void main(IWContext iwc){
     isAdmin = iwc.hasEditPermission(this);
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
     control(iwc);
   }
 

@@ -2,7 +2,6 @@ package is.idega.idegaweb.campus.block.phone.presentation;
 
 import is.idega.idegaweb.campus.block.phone.business.PhoneFileHandler;
 import is.idega.idegaweb.campus.block.phone.data.PhoneFileInfo;
-import is.idega.idegaweb.campus.presentation.Edit;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -50,8 +49,6 @@ public class PhoneFiles extends Finance {
   protected boolean isAdmin = false;
   private String dir = "phone"+File.separator+"upload";
 
-  private String sessConPrm = "sess_con_status";
-
   public String getLocalizedNameKey(){
     return "phonefiles";
   }
@@ -60,8 +57,7 @@ public class PhoneFiles extends Finance {
     return "Phonefiles";
   }
   protected void control(IWContext iwc){
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
+   
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
@@ -82,7 +78,7 @@ public class PhoneFiles extends Finance {
       
     }
     else
-      T.add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
+      T.add(getText(localize("access_denied","Access denied")));
     //add(String.valueOf(iSubjectId));
     add(T);
   }
@@ -93,7 +89,7 @@ public class PhoneFiles extends Finance {
     LinkTable.setWidth(LinkTable.HUNDRED_PERCENT);
     LinkTable.setCellpadding(2);
     LinkTable.setCellspacing(1);
-    LinkTable.setColor(Edit.colorDark);
+    LinkTable.setColor(getHeaderColor());
     LinkTable.setWidth(last,LinkTable.HUNDRED_PERCENT);
 
     return LinkTable;
@@ -107,26 +103,26 @@ public class PhoneFiles extends Finance {
     Form form = new Form();
     Table T = new Table();
     String fileName = iwc.getParameter("filename");
-    T.add(Edit.formatText(iwrb.getLocalizedString("filename","Filename")),1,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("filesize","Filesize")),2,1);
+    T.add(getHeader(localize("filename","Filename")),1,1);
+    T.add(getHeader(localize("filesize","Filesize")),2,1);
     if(fileName != null){
       try {
         File F = new File(dir,fileName);
-        T.add(Edit.formatText(F.getName()),1,2);
-        T.add(Edit.formatText(new Long(F.length()).toString()),2,2);
+        T.add(getText(F.getName()),1,2);
+        T.add(getText(new Long(F.length()).toString()),2,2);
         T.add(new HiddenInput(sAction,String.valueOf(ACT2)));
         T.add(new HiddenInput("filename",fileName));
-        SubmitButton read = new SubmitButton("read",iwrb.getLocalizedString("read","Read"));
+        SubmitButton read = new SubmitButton("read",localize("read","Read"));
         read.setOnClick("this.form.submit()");
         BusyBar busy = new BusyBar("phonebusy");
         busy.setInterfaceObject(read);
-        Edit.setStyle(read);
+      
 
         T.add(read,3,2);
         T.add(busy,3,2);
       }
       catch (Exception ex) {
-        T.add(Edit.formatText(iwrb.getLocalizedString("no_file","No file")),1,2);
+        T.add(getText(localize("no_file","No file")),1,2);
       }
 
     }
@@ -153,17 +149,17 @@ public class PhoneFiles extends Finance {
 
   private PresentationObject getFileTable(IWContext iwc){
     DataTable T = new DataTable();
-    T.addTitle(iwrb.getLocalizedString("phone_files","Phone files"));
+    T.addTitle(localize("phone_files","Phone files"));
     T.setTitlesHorizontal(true);
     int col = 2;
-    T.add(Edit.formatText(iwrb.getLocalizedString("files","Files")),2,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("size","Size")),3,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),4,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("time_read","Read")),5,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("updated","Updated")),6,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("line_count","Count")),7,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("phone_numbers","Numbers")),8,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("amount_read","Amount")),9,1);
+    T.add(getHeader(localize("files","Files")),2,1);
+    T.add(getHeader(localize("size","Size")),3,1);
+    T.add(getHeader(localize("status","Status")),4,1);
+    T.add(getHeader(localize("time_read","Read")),5,1);
+    T.add(getHeader(localize("updated","Updated")),6,1);
+    T.add(getHeader(localize("line_count","Count")),7,1);
+    T.add(getHeader(localize("phone_numbers","Numbers")),8,1);
+    T.add(getHeader(localize("amount_read","Amount")),9,1);
 	int row = 2;
     Map M = mapOfReadFilesByFileName() ;
     try{
@@ -202,16 +198,16 @@ public class PhoneFiles extends Finance {
           if(M!= null && M.containsKey(name)){
             info = (PhoneFileInfo) M.get(name);
 
-            T.add(Edit.formatText(name),2,row);
-            T.add(Edit.formatText(iwrb.getLocalizedString("read","Read")),4,row);
-            T.add(Edit.formatText(info.getReadTime().toString()),5,row);
-            T.add(Edit.formatText(info.getLineCount()),7,row);
-            T.add(Edit.formatText(info.getNumberCount()),8,row);
-            T.add(Edit.formatText(NF.format(info.getTotalAmount())),9,row);
+            T.add(getText(name),2,row);
+            T.add(getText(localize("read","Read")),4,row);
+            T.add(getText(info.getReadTime().toString()),5,row);
+            T.add(getText(String.valueOf(info.getLineCount())),7,row);
+            T.add(getText(String.valueOf(info.getNumberCount())),8,row);
+            T.add(getAmountText((info.getTotalAmount())),9,row);
           }
 
-          T.add(Edit.formatText(Long.toString(F.length()/1000)+" KB"),3,row);
-          T.add(Edit.formatText(new IWTimestamp(F.lastModified()).getLocaleDate(iwc.getCurrentLocale())),6,row);
+          T.add(getText(Long.toString(F.length()/1000)+" KB"),3,row);
+          T.add(getText(new IWTimestamp(F.lastModified()).getLocaleDate(iwc.getCurrentLocale())),6,row);
           row++;
         }
 
@@ -228,18 +224,18 @@ public class PhoneFiles extends Finance {
           Link L = new Link(name);
           L.addParameter(sAction,ACT1);
           L.addParameter("filename",name);
-          L.setFontSize(Edit.textFontSize);
+          //L.setFontSize(Edit.textFontSize);
           T.add(L,2,row);
-          T.add(Edit.formatText(iwrb.getLocalizedString("unread","Unread")),4,row);
-          T.add(Edit.formatText(Long.toString(F.length()/1000)+" KB"),3,row);
-          T.add(Edit.formatText(new IWTimestamp(F.lastModified()).getLocaleDate(iwc.getCurrentLocale())),6,row);
+          T.add(getHeader(localize("unread","Unread")),4,row);
+          T.add(getText(Long.toString(F.length()/1000)+" KB"),3,row);
+          T.add(getText(new IWTimestamp(F.lastModified()).getLocaleDate(iwc.getCurrentLocale())),6,row);
 
           row++;
         }
       }
       else{
       	T.getContentTable().mergeCells(1,row,T.getContentTable().getColumns(),row);
-        T.add(Edit.formatText(iwrb.getLocalizedString("no_files","No files")),1,row);
+        T.add(getText(localize("no_files","No files")),1,row);
       }
     }
     catch(Exception e){
@@ -280,11 +276,11 @@ public class PhoneFiles extends Finance {
 	form.setMultiPart();
 	form.add(new HiddenInput(sAction, String.valueOf(ACT3)));
 	FileInput chooser = new FileInput();
-	SubmitButton confirm = new SubmitButton(iwrb.getLocalizedString("commit","commit"));
+	SubmitButton confirm = new SubmitButton(localize("commit","commit"));
   	Table T = new Table();
-  	T.add(new Text(iwrb.getLocalizedString("upload_file","Upload file")),1,1);
+  	T.add(new Text(localize("upload_file","Upload file")),1,1);
   	T.add(chooser,2,1);
-  	T.add(new Text(iwrb.getLocalizedString("new_file_name","New file name")),3,1);
+  	T.add(new Text(localize("new_file_name","New file name")),3,1);
   	T.add(new TextInput("new_file_name"),4,1);
   	T.add(confirm,5,1);
   	form.add(T);

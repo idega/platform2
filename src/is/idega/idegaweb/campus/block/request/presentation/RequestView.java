@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.9 2004/05/24 14:21:43 palli Exp $
+ * $Id: RequestView.java,v 1.10 2004/06/04 17:32:48 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,13 +9,12 @@
  */
 package is.idega.idegaweb.campus.block.request.presentation;
 
+
 import is.idega.idegaweb.campus.block.request.business.RequestBusiness;
-import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.presentation.CampusWindow;
 
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.user.data.User;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
@@ -26,15 +25,15 @@ import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
+import com.idega.presentation.util.Edit;
 import com.idega.util.IWTimestamp;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class RequestView extends Window {
-  private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
+public class RequestView extends CampusWindow {
+ 
   protected final static String REQUEST_SEND = "request_send";
   protected final static String REQUEST_TYPE = "request_type";
   public final static String REQUEST_STREET = "request_street";
@@ -56,9 +55,6 @@ public class RequestView extends Window {
 
   protected final static String REQUEST_REPAIR = "request_repair";
   protected final static String REQUEST_COMPUTER = "request_computer";
-
-  protected IWResourceBundle _iwrb;
-  protected IWBundle _iwb;
 
   private boolean _isAdmin;
   private boolean _isLoggedOn;
@@ -84,8 +80,6 @@ public class RequestView extends Window {
    *
    */
   protected void control(IWContext iwc) {
-    _iwrb = getResourceBundle(iwc);
-    _iwb = getBundle(iwc);
 
     if (_isAdmin || _isLoggedOn){
 
@@ -102,7 +96,7 @@ public class RequestView extends Window {
       addMainForm(iwc);
     }
     else
-      add(Edit.formatText(_iwrb.getLocalizedString("access_denied","Access denied")));
+      add(getText(localize("access_denied","Access denied")));
   }
 
   /**
@@ -155,25 +149,25 @@ public class RequestView extends Window {
 
     DataTable data = new DataTable();
     data.setWidth("100%");
-    data.addTitle(_iwrb.getLocalizedString(REQUEST_TABLE_TITLE,"Senda beiðni"));
+    data.addTitle(localize(REQUEST_TABLE_TITLE,"Senda beiðni"));
     data.addButton(new SubmitButton(REQUEST_SEND,"Senda beiðni"));
     form.add(data);
 
     int row = 1;
-    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_STREET,"Götuheiti")),1,row);
-    data.add(Edit.formatText(street),2,row);
+    data.add(getHeader(localize(REQUEST_STREET,"Götuheiti")),1,row);
+    data.add(getText(street),2,row);
     row++;
-    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_APRT,"Herb./íbúð")),1,row);
-    data.add(Edit.formatText(aprt),2,row);
+    data.add(getHeader(localize(REQUEST_APRT,"Herb./íbúð")),1,row);
+    data.add(getText(aprt),2,row);
     row++;
-    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_NAME,"Nafn")),1,row);
-    data.add(Edit.formatText(name),2,row);
+    data.add(getHeader(localize(REQUEST_NAME,"Nafn")),1,row);
+    data.add(getText(name),2,row);
     row++;
-    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_TEL,"Símanúmer")),1,row);
-    data.add(Edit.formatText(telephone),2,row);
+    data.add(getHeader(localize(REQUEST_TEL,"Símanúmer")),1,row);
+    data.add(getText(telephone),2,row);
     row++;
-    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_EMAIL,"email")),1,row);
-    data.add(Edit.formatText(email),2,row);
+    data.add(getHeader(localize(REQUEST_EMAIL,"email")),1,row);
+    data.add(getText(email),2,row);
     row++;
 
     if (type.equals(REQUEST_REPAIR))
@@ -192,22 +186,22 @@ public class RequestView extends Window {
    *
    */
   protected void addRepair(DataTable data, int row) {
-    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
+    data.add(getHeader(localize(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
     DateInput dateOfCrash = new DateInput(REQUEST_DATE_OF_CRASH);
     dateOfCrash.setToCurrentDate();
     Edit.setStyle(dateOfCrash);
     data.add(dateOfCrash,2,row);
     row++;
-    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_COMMENT,"Athugasemdir")),1,row);
+    data.add(getHeader(localize(REQUEST_COMMENT,"Athugasemdir")),1,row);
     TextArea comment = new TextArea(REQUEST_COMMENT,"",60,5);
     Edit.setStyle(comment);
     data.add(comment,2,row);
     row++;
     data.add(new RadioButton(REQUEST_TIME,REQUEST_DAYTIME),1,row);
-    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_DAYTIME,"Viðgerð má fara fram á dagvinnutíma, án þess að nokkur sé heima.Þriðjudagar eru almennir viðgerðardagar.")),2,row);
+    data.add(getHeader(localize(REQUEST_DAYTIME,"Viðgerð má fara fram á dagvinnutíma, án þess að nokkur sé heima.Þriðjudagar eru almennir viðgerðardagar.")),2,row);
     row++;
     data.add(new RadioButton(REQUEST_TIME,REQUEST_SPECIAL_TIME),1,row);
-    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
+    data.add(getHeader(localize(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
     data.add(new TextInput(REQUEST_SPECIAL_TIME),2,row);
     row++;
   }
@@ -216,17 +210,17 @@ public class RequestView extends Window {
    *
    */
   protected void addComputer(DataTable data, int row) {
-    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
+    data.add(getHeader(localize(REQUEST_DATE_OF_CRASH,"Dagsetning bilunar")),1,row);
     DateInput dateOfCrash = new DateInput(REQUEST_DATE_OF_CRASH);
     Edit.setStyle(dateOfCrash);
     data.add(dateOfCrash,2,row);
     row++;
-    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_COMMENT,"Athugasemdir")),1,row);
+    data.add(getHeader(localize(REQUEST_COMMENT,"Athugasemdir")),1,row);
     TextArea comment = new TextArea(REQUEST_COMMENT,"",60,5);
     Edit.setStyle(comment);
     data.add(comment,2,row);
     row++;
-    data.add(Edit.formatText(_iwrb.getLocalizedString(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
+    data.add(getHeader(localize(REQUEST_SPECIAL_TIME,"Ég óska eftir sérstakri tímasetningu og að viðgerð verði framkvæmd: ")),2,row);
     data.add(new TextInput(REQUEST_SPECIAL_TIME),2,row);
     row++;
   }

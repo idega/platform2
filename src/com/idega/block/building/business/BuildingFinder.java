@@ -9,13 +9,20 @@ import java.util.List;
 import java.util.Vector;
 
 import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.ApartmentBMPBean;
 import com.idega.block.building.data.ApartmentCategory;
+import com.idega.block.building.data.ApartmentHome;
 import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.ApartmentTypeBMPBean;
 import com.idega.block.building.data.Building;
+import com.idega.block.building.data.BuildingBMPBean;
+import com.idega.block.building.data.BuildingHome;
 import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.ComplexHome;
 import com.idega.block.building.data.Floor;
 import com.idega.block.building.data.RoomType;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
 
 /**
  * Title:
@@ -33,59 +40,60 @@ public class BuildingFinder {
 
   public static List listOfComplex(){
     try{
-      return EntityFinder.findAll(((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy());
+      return EntityFinder.getInstance().findAll(Complex.class);
     }
-    catch(SQLException e){return null;}
+    catch(Exception e){return null;}
   }
   public static List listOfBuilding(){
     try{
-      return EntityFinder.findAll(((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).createLegacy());
+      return EntityFinder.getInstance().findAll(Building.class);
     }
-    catch(SQLException e){return null;}
+    catch(Exception e){return null;}
   }
 
   public static List listOfFloor(){
     try{
-      return EntityFinder.findAll(((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).createLegacy());
+      return EntityFinder.getInstance().findAll(Floor.class);
     }
-    catch(SQLException e){return null;}
+    catch(Exception e){return null;}
   }
 
   public static List listOfApartmentType(){
     try{
-     return EntityFinder.findAll(((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).createLegacy());
+     return EntityFinder.getInstance().findAll(ApartmentType.class);
     }
-    catch(SQLException e){return null;}
+    catch(Exception e){return null;}
   }
 
   public static List listOfApartmentCategory(){
     try{
-     return EntityFinder.findAll(((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).createLegacy());
+     return EntityFinder.getInstance().findAll(ApartmentCategory.class);
     }
-    catch(SQLException e){return null;}
+    catch(Exception e){return null;}
   }
 
   public static List listOfApartment(){
     try{
-     return EntityFinder.findAll(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy());
+     return EntityFinder.getInstance().findAll(Apartment.class);
     }
-    catch(SQLException e){return null;}
+    catch(Exception e){return null;}
   }
 
   public static List ListOfAparmentOrderedByFloor(){
     try{
-     return EntityFinder.findAllOrdered(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy(),com.idega.block.building.data.ApartmentBMPBean.getFloorIdColumnName());
+     return EntityFinder.getInstance().findAllOrdered(Apartment.class,com.idega.block.building.data.ApartmentBMPBean.getFloorIdColumnName());
     }
-    catch(SQLException e){return null;}
+    catch(Exception e){return null;}
   }
 
 
   public static Floor[] findFloors(){
     Floor[] floors = new Floor[0];
     try{
-    floors = (Floor[]) (((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).createLegacy()).findAll();
+    	List l =  EntityFinder.getInstance().findAll(Floor.class);
+    	return (Floor[]) l.toArray();
     }
-    catch(SQLException e){}
+    catch(Exception e){}
     return floors;
   }
 
@@ -136,9 +144,10 @@ public class BuildingFinder {
     sql.append(iBuildingId);
 
     try{
-      rt= (ApartmentType[])(((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).createLegacy()).findAll(sql.toString());
+    	List l = EntityFinder.getInstance().findAll(ApartmentType.class,sql.toString());
+      rt= (ApartmentType[])l.toArray();
     }
-    catch(SQLException ex){}
+    catch(Exception ex){}
     return rt;
   }
 
@@ -183,7 +192,8 @@ public class BuildingFinder {
   public static ApartmentType[] findApartmentTypesInCategory(int iCategoryId){
     ApartmentType[] rt = new ApartmentType[0];
     try {
-      rt = (ApartmentType[]) ((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).createLegacy().findAllByColumn(com.idega.block.building.data.ApartmentTypeBMPBean.getApartmentCategoryIdColumnName(),iCategoryId);
+    	List l = EntityFinder.getInstance().findAllByColumn(ApartmentType.class,ApartmentTypeBMPBean.getApartmentCategoryIdColumnName(),iCategoryId);
+      rt = (ApartmentType[]) l.toArray();
     }
     catch (Exception ex) {
 
@@ -229,18 +239,20 @@ public class BuildingFinder {
     sql.append(iComplexId);
 
     try{
-      rt= (ApartmentType[])(((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).createLegacy()).findAll(sql.toString());
+    	List l = EntityFinder.getInstance().findAll(ApartmentType.class,sql.toString());
+      rt= (ApartmentType[])l.toArray();
     }
-    catch(SQLException ex){}
+    catch(Exception ex){}
     return rt;
   }
 
   public static ApartmentType[] findApartmentTypesForCategory(int categoryId) {
     ApartmentType aprtType[] = null;
     try {
-      aprtType = (ApartmentType[])((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).createLegacy().findAllByColumn(com.idega.block.building.data.ApartmentTypeBMPBean.getApartmentCategoryIdColumnName(),categoryId);
+    	List l = EntityFinder.getInstance().findAllByColumn(ApartmentType.class,ApartmentTypeBMPBean.getApartmentCategoryIdColumnName(),categoryId);
+      aprtType = (ApartmentType[]) l.toArray();
     }
-    catch(SQLException e) {
+    catch(Exception e) {
     }
 
     return(aprtType);
@@ -282,11 +294,12 @@ public class BuildingFinder {
     int r = -1;
     Complex[] c = new Complex[0];
     try{
-      c= (Complex[])(((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy()).findAll(sql.toString());
+    	List l = EntityFinder.getInstance().findAll(Complex.class,sql.toString());
+      c= (Complex[])l.toArray();
       if(c.length > 0)
         r = c[0].getID();
     }
-    catch(SQLException ex){}
+    catch(Exception ex){}
     return r;
 
   }
@@ -343,17 +356,17 @@ public class BuildingFinder {
   }
 
   public static List listOfApartmentsInType(int id){
-    Apartment A = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy();
+   
     List L = null;
     try{
-     L = EntityFinder.findAllByColumnOrdered(A,A.getIDColumnName(),String.valueOf(id),com.idega.block.building.data.ApartmentBMPBean.getNameColumnName());
+     L = EntityFinder.getInstance().findAllByColumnOrdered(Apartment.class,ApartmentBMPBean.getNameTableName()+"_id",String.valueOf(id),com.idega.block.building.data.ApartmentBMPBean.getNameColumnName());
     }
-    catch(SQLException sql){}
+    catch(Exception sql){}
     return L;
   }
 
   public static List listOfApartmentsInTypeAndComplex(int typeId,int cmplxId){
-    Apartment A = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy();
+    
     List L = null;
     StringBuffer sql = new StringBuffer("select bu_apartment.* ");
     sql.append("from bu_apartment,bu_floor,bu_building,bu_aprt_type,bu_complex ");
@@ -368,21 +381,21 @@ public class BuildingFinder {
     sql.append(" order by bu_apartment.bu_floor_id ");
 
     try{
-      L = EntityFinder.findAll(A,sql.toString());
+      L = EntityFinder.getInstance().findAll(Apartment.class,sql.toString());
     }
-    catch(SQLException ex){
+    catch(Exception ex){
       ex.printStackTrace();
     }
     return L;
   }
 
   public static List searchApartment(String searchname){
-    Apartment A = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy();
+    
     List L = null;
     try {
-      L = EntityFinder.findAllByColumnOrdered(A,com.idega.block.building.data.ApartmentBMPBean.getNameColumnName(),searchname,com.idega.block.building.data.ApartmentBMPBean.getFloorIdColumnName());
+      L = EntityFinder.getInstance().findAllByColumnOrdered(Apartment.class,ApartmentBMPBean.getNameColumnName(),searchname,ApartmentBMPBean.getFloorIdColumnName());
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
 
     }
     return L;
@@ -461,12 +474,12 @@ public class BuildingFinder {
   }
 
   public static List listOfBuildingsInComplex(int id){
-     Building B = ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).createLegacy();
+     
     List L = null;
     try {
-      L = EntityFinder.findAllByColumn(B,com.idega.block.building.data.BuildingBMPBean.getComplexIdColumnName(),id);
+      L = EntityFinder.getInstance().findAllByColumn(Building.class,BuildingBMPBean.getComplexIdColumnName(),id);
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
 
     }
     return L;
@@ -499,9 +512,10 @@ public class BuildingFinder {
     sql.append(cmplxId);
     int count = 0;
     try{
-      count = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy().getNumberOfRecords(sql.toString());
+    	
+      count = ((ComplexHome)IDOLookup.getHome(Complex.class)).create().getNumberOfRecords(sql.toString());
     }
-    catch(SQLException ex){}
+    catch(Exception ex){}
     if(count < 0)
       count = 0;
     return count;
@@ -512,10 +526,10 @@ public class BuildingFinder {
     int count = 0;
     //System.err.println(sql.toString());
     try{
-      count = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy().getNumberOfRecords(sql.toString());
+      count = ((ApartmentHome)IDOLookup.getHome(Apartment.class)).create().getNumberOfRecords(sql.toString());
 
     }
-    catch(SQLException ex){ex.printStackTrace();}
+    catch(Exception ex){ex.printStackTrace();}
     if(count < 0)
       count = 0;
     return count;
@@ -559,9 +573,9 @@ public class BuildingFinder {
     }
 
     try{
-      return  EntityFinder.findAll(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy(),sql.toString());
+      return  EntityFinder.getInstance().findAll(Apartment.class,sql.toString());
     }
-    catch(SQLException ex){
+    catch(Exception ex){
       return null;
     }
   }

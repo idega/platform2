@@ -3,6 +3,8 @@ package is.idega.idegaweb.campus.block.allocation.business;
 
 import is.idega.idegaweb.campus.data.ApartmentContracts;
 import is.idega.idegaweb.campus.block.allocation.data.*;
+
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.List;
 import com.idega.data.*;
@@ -37,9 +39,9 @@ public abstract class ContractFinder {
   public static Contract getContract(int id){
     if(id > 0){
       try {
-        return ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(id);
+        return ((ContractHome)IDOLookup.getHome(Contract.class)).findByPrimaryKey(new Integer(id));
       }
-      catch (SQLException ex) {
+      catch (Exception ex) {
       }
     }
     return null;
@@ -177,7 +179,7 @@ public abstract class ContractFinder {
       int len = L.size();
       for (int i = 0; i < len; i++) {
         Contract C = (Contract) L.get(i);
-        H.put(new Integer(C.getID()),C);
+        H.put(new Integer(C.getPrimaryKey().toString()),C);
       }
       return H;
     }
@@ -416,7 +418,7 @@ public abstract class ContractFinder {
     }
   }
 
-
+/*
   public static int countApartmentsInTypeAndComplex(int typeId,int cmplxId,String status){
     StringBuffer sql = new StringBuffer("select count(*) ");
     sql.append(" from bu_apartment a,bu_floor f,bu_building b");
@@ -444,7 +446,8 @@ public abstract class ContractFinder {
       count = 0;
     return count;
   }
-
+*/
+  /*
   public static int countContracts(String status){
 
     StringBuffer sql = new StringBuffer("select * from cam_contract ");
@@ -461,7 +464,7 @@ public abstract class ContractFinder {
     if(count < 0)
       count = 0;
     return count;
-  }
+  }*/
 
   /**
    * @deprecated Replaced by findByApplicant(int applicantId)
@@ -525,14 +528,6 @@ public abstract class ContractFinder {
     return eUser;
   }
 
-  public static Apartment getApartment(Contract contract){
-    try {
-      return ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(contract.getApartmentId().intValue());
-    }
-    catch (SQLException ex) {
-      return null;
-    }
-  }
 
   public static Map mapOfAvailableApartmentContracts(int iApartmentTypeId, int iComplexId){
     List L = listOfAvailable(CONTRACT ,iApartmentTypeId ,iComplexId ) ;
@@ -630,7 +625,7 @@ public abstract class ContractFinder {
       if(entity == CONTRACT)
         L =  EntityFinder.getInstance().findAll(Contract.class,sql.toString());
       else if(entity== APARTMENT)
-        L =  EntityFinder.getInstance().findAll(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy(),sql.toString());
+        L =  EntityFinder.getInstance().findAll(Apartment.class,sql.toString());
       /*
       if(entity == APARTMENT){
         List A = listOfNonContractApartments(iApartmentTypeId,iComplexId);
@@ -812,5 +807,9 @@ public abstract class ContractFinder {
     sql.append(ssn);
     sql.append("'");
     return EntityFinder.getInstance().findAll(Applicant.class,sql.toString());
+  }
+  
+  public static ContractHome getContractHome()throws RemoteException{
+  		return (ContractHome) IDOLookup.getHome(Contract.class);
   }
 }

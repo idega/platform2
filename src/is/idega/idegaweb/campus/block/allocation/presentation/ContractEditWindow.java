@@ -2,10 +2,6 @@ package is.idega.idegaweb.campus.block.allocation.presentation;
 
 
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
-import is.idega.idegaweb.campus.data.SystemProperties;
-import is.idega.idegaweb.campus.presentation.Edit;
-
-import java.sql.SQLException;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.building.business.BuildingCacher;
@@ -13,18 +9,16 @@ import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
-import com.idega.core.data.GenericGroup;
-import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
@@ -32,6 +26,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TimestampInput;
 import com.idega.presentation.ui.Window;
 import com.idega.util.IWTimestamp;
+
 
 /**
  * Title:   idegaclasses
@@ -48,13 +43,7 @@ public class ContractEditWindow extends Window{
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
-  private boolean isAdmin;
-  private boolean isLoggedOn;
-  private String login = null;
-  private String passwd = null;
-  private boolean print = false;
-  private SystemProperties SysProps = null;
-  private GenericGroup eGroup = null;
+  
   private User eUser = null;
 
   /*
@@ -81,7 +70,7 @@ public class ContractEditWindow extends Window{
       }
       add(getEditTable(iwc));
 
-    //  add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
+    //  add(getText(iwrb.getLocalizedString("access_denied","Access denied")));
 
     //add(String.valueOf(iSubjectId));
   }
@@ -110,20 +99,20 @@ public class ContractEditWindow extends Window{
 
     try{
       if(iContractId > 0){
-        Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
-        Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
-        User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
+        Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHome(Contract.class)).findByPrimaryKey(new Integer(iContractId));
+        Applicant eApplicant = eContract.getApplicant();
+        User user = eContract.getUser();
         boolean isContractUser = user.getID() == eUser.getID();
         if(user !=null){
-          T.add(new HiddenInput("contract_id",String.valueOf(eContract.getID())),1,row);
-          T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),1,row);
-          T.add(Edit.formatText(user.getName()),2,row);
+          T.add(new HiddenInput("contract_id",eContract.getPrimaryKey().toString()),1,row);
+          T.add(getText(iwrb.getLocalizedString("name","Name")),1,row);
+          T.add(getText(user.getName()),2,row);
           row++;
-          T.add(Edit.formatText(iwrb.getLocalizedString("ssn","SocialNumber")),1,row);
-          T.add(Edit.formatText(eApplicant.getSSN()),2,row);
+          T.add(getText(iwrb.getLocalizedString("ssn","SocialNumber")),1,row);
+          T.add(getText(eApplicant.getSSN()),2,row);
           row++;
-          T.add(Edit.formatText(iwrb.getLocalizedString("apartment","Apartment")),1,row);
-          T.add(Edit.formatText(getApartmentString(BuildingCacher.getApartment(eContract.getApartmentId().intValue()))),2,row);
+          T.add(getText(iwrb.getLocalizedString("apartment","Apartment")),1,row);
+          T.add(getText(getApartmentString(BuildingCacher.getApartment(eContract.getApartmentId().intValue()))),2,row);
           row++;
 
           IWTimestamp today = IWTimestamp.RightNow();
@@ -132,70 +121,70 @@ public class ContractEditWindow extends Window{
           from.setYearRange(today.getYear()-3,today.getYear()+7);
           if(eContract.getValidFrom()!=null)
             from.setDate(eContract.getValidFrom());
-          Edit.setStyle(from);
-          T.add(Edit.formatText(iwrb.getLocalizedString("valid_from","Valid from")),1,row);
+      
+          T.add(getText(iwrb.getLocalizedString("valid_from","Valid from")),1,row);
           T.add(from,2,row);
           row++;
           DateInput to = new DateInput("to_date",true);
           to.setYearRange(today.getYear()-3,today.getYear()+7);
           if(eContract.getValidTo()!=null)
             to.setDate(eContract.getValidTo());
-          Edit.setStyle(to);
-          T.add(Edit.formatText(iwrb.getLocalizedString("valid_to","Valid to")),1,row);
+        
+          T.add(getText(iwrb.getLocalizedString("valid_to","Valid to")),1,row);
           T.add(to,2,row);
           row++;
           DateInput moving = new DateInput("moving_date",true);
           moving.setYearRange(today.getYear()-3,today.getYear()+7);
           if(eContract.getMovingDate()!=null)
             moving.setDate(eContract.getMovingDate());
-          Edit.setStyle(moving);
-          T.add(Edit.formatText(iwrb.getLocalizedString("moving_to","Moving date")),1,row);
+          
+          T.add(getText(iwrb.getLocalizedString("moving_to","Moving date")),1,row);
           T.add(moving,2,row);
           row++;
           TimestampInput deliver = new TimestampInput("deliver_date",true);
           deliver.setYearRange(today.getYear()-3,today.getYear()+7);
           if(eContract.getDeliverTime()!=null)
             deliver.setTimestamp(eContract.getDeliverTime());
-          Edit.setStyle(deliver);
-          T.add(Edit.formatText(iwrb.getLocalizedString("deliver_date","Deliver date")),1,row);
+ 
+          T.add(getText(iwrb.getLocalizedString("deliver_date","Deliver date")),1,row);
           T.add(deliver,2,row);
           row++;
           TimestampInput returnd = new TimestampInput("return_date",true);
           returnd.setYearRange(today.getYear()-3,today.getYear()+7);
           if(eContract.getReturnTime()!=null)
             returnd.setTimestamp(eContract.getReturnTime());
-          Edit.setStyle(returnd);
-          T.add(Edit.formatText(iwrb.getLocalizedString("return_date","Return date")),1,row);
+          
+          T.add(getText(iwrb.getLocalizedString("return_date","Return date")),1,row);
           T.add(returnd,2,row);
           row++;
-          T.add(Edit.formatText(iwrb.getLocalizedString("has_key","Has key")),1,row);
+          T.add(getText(iwrb.getLocalizedString("has_key","Has key")),1,row);
           //T.add(status,2,row);
-          T.add(Edit.formatText(getStatus(eContract.getIsRented()?"yes":"no")),2,row);
+          T.add(getText(getStatus(eContract.getIsRented()?"yes":"no")),2,row);
           row++;
           //DropdownMenu status = getStatusDrop("status",eContract.getStatus());
           //Edit.setStyle(status);
-          T.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),1,row);
+          T.add(getText(iwrb.getLocalizedString("status","Status")),1,row);
           //T.add(status,2,row);
-          T.add(Edit.formatText(getStatus(eContract.getStatus())),2,row);
+          T.add(getText(getStatus(eContract.getStatus())),2,row);
           row++;
-          T.add(Edit.formatText(iwrb.getLocalizedString("status_date","Status date")),1,row);
+          T.add(getText(iwrb.getLocalizedString("status_date","Status date")),1,row);
           if(eContract.getStatusDate()!=null){
             String sdate = eContract.getStatusDate().toString();
-            T.add(Edit.formatText(sdate),2,row);
+            T.add(getText(sdate),2,row);
           }
           row++;
           TextArea info = new TextArea("info");
           if(eContract.getResignInfo()!=null)
             info.setContent(eContract.getResignInfo());
-          T.add(Edit.formatText(iwrb.getLocalizedString("resign_info","Resign info")),1,row);
-          Edit.setStyle(info);
+          T.add(getText(iwrb.getLocalizedString("resign_info","Resign info")),1,row);
+      
           T.add(info,2,row);
           row++;
 
         }
       }
     }
-    catch(SQLException ex){}
+    catch(Exception ex){}
 
     Form F = new Form();
     F.add(T);
@@ -206,7 +195,7 @@ public class ContractEditWindow extends Window{
     try{
 
       int id = Integer.parseInt(iwc.getParameter("contract_id"));
-      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(id);
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHome(Contract.class)).findByPrimaryKey(new Integer(id));
 
       IWTimestamp from = null,to = null,moving = null,deliver = null, retur = null;
       String sfrom = iwc.getParameter("from_date");
@@ -232,7 +221,7 @@ public class ContractEditWindow extends Window{
         eContract.setResignInfo((iwc.getParameter("info")));
       }
 
-      eContract.update();
+      eContract.store();
     }
     catch(Exception ex){
       ex.printStackTrace();
@@ -240,23 +229,7 @@ public class ContractEditWindow extends Window{
 
   }
 
-  private void doAddEmail( int iUserId ,IWContext iwc){
-    String sEmail = iwc.getParameter("new_email");
-    UserBusiness.addNewUserEmail(iUserId,sEmail);
-  }
-
-  private PresentationObject getApartmentTable(Apartment A){
-    Table T = new Table();
-    Floor F = BuildingCacher.getFloor(A.getFloorId());
-    Building B = BuildingCacher.getBuilding(F.getBuildingId());
-    Complex C = BuildingCacher.getComplex(B.getComplexId());
-    T.add(Edit.formatText(A.getName()),1,1);
-    T.add(Edit.formatText(F.getName()),2,1);
-    T.add(Edit.formatText(B.getName()),3,1);
-    T.add(Edit.formatText(C.getName()),4,1);
-    return T;
-  }
-
+ 
   private String getApartmentString(Apartment A){
     StringBuffer S = new StringBuffer();
     Floor F = BuildingCacher.getFloor(A.getFloorId());
@@ -272,8 +245,7 @@ public class ContractEditWindow extends Window{
   public void main(IWContext iwc) throws Exception {
     eUser = iwc.getUser();
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = iwc.hasEditPermission(this);
-    isLoggedOn = com.idega.core.accesscontrol.business.LoginBusinessBean.isLoggedOn(iwc);
+   
     control(iwc);
   }
 
@@ -290,16 +262,9 @@ public class ContractEditWindow extends Window{
     }
     return r;
   }
-
-  private DropdownMenu getStatusDrop(String name,String selected){
-    DropdownMenu drp = new DropdownMenu(name);
-    drp.addMenuElement("C",getStatus("C"));
-    drp.addMenuElement("P",getStatus("P"));
-    drp.addMenuElement("S",getStatus("S"));
-    drp.addMenuElement("R",getStatus("R"));
-    drp.addMenuElement("T",getStatus("T"));
-    drp.addMenuElement("E",getStatus("E"));
-    drp.setSelectedElement(selected);
-    return drp;
+  
+  private Text getText(String text){
+  		Text t = new Text(text);
+  		return t;
   }
 }

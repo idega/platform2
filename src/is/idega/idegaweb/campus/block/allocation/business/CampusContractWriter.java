@@ -163,13 +163,13 @@ public class CampusContractWriter{
 				if(bEntity ){
           try {
 						//System.err.println("instanciating Contract "+ids[0]);
-            eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(ids[0]);
-						Applicant A = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
+            eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHome(Contract.class)).findByPrimaryKey(new Integer(ids[0]));
+						Applicant A = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHome(Applicant.class)).findByPrimaryKey(eContract.getApplicantId());
 						fileName = A.getSSN();
 						if(!"".equals(fileName))
 							fileName = A.getFirstName();
           }
-          catch (SQLException ex) {
+          catch (Exception ex) {
             ex.printStackTrace();
           }
         }
@@ -196,9 +196,9 @@ public class CampusContractWriter{
 							update = true;
 						}
 						if(update)
-            eContract.update();
+            eContract.store();
           }
-          catch (SQLException ex) {
+          catch (Exception ex) {
             ex.printStackTrace();
           }
         }
@@ -287,16 +287,16 @@ public class CampusContractWriter{
   private static Hashtable getHashTags(int contractId,IWResourceBundle iwrb,Font nameFont,Font tagFont,Font textFont){
     try{
       IWBundle iwb = iwrb.getIWBundleParent();
-      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(contractId);
-      Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
-      Apartment eApartment = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(eContract.getApartmentId().intValue());
-      ApartmentType eApartmentType = ((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(eApartment.getApartmentTypeId());
-//      ApartmentCategory eApartmentCategory = ((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).findByPrimaryKeyLegacy(eApartmentType.getApartmentCategoryId());
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHome(Contract.class)).findByPrimaryKey(new Integer(contractId));
+      Applicant eApplicant = eContract.getApplicant();
+      Apartment eApartment = eContract.getApartment();
+      ApartmentType eApartmentType = eApartment.getApartmentType();
+//      ApartmentCategory eApartmentCategory = ((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHome(ApartmentCategory.class)).findByPrimaryKey(eApartmentType.getApartmentCategoryId());
 			String aprtTypeName = eApartmentType.getName();
 			System.out.println("aprtTypeName = " + aprtTypeName);
-      Floor eFloor = ((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).findByPrimaryKeyLegacy(eApartment.getFloorId());
-      Building eBuilding = ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).findByPrimaryKeyLegacy(eFloor.getBuildingId());
-      Complex eComplex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(eBuilding.getComplexId());
+      Floor eFloor = eApartment.getFloor();
+      Building eBuilding = eFloor.getBuilding();
+      Complex eComplex = eBuilding.getComplex();
       ApartmentTypeRent rent = null;
       try {
       	rent = ((ApartmentTypeRentHome) IDOLookup.getHome(ApartmentTypeRent.class)).findByTypeAndValidity(eApartmentType.getID(),eContract.getValidFrom());
@@ -345,10 +345,7 @@ public class CampusContractWriter{
       H.put(renting_index,new Chunk( iwb.getProperty("contract_campus_index","100"),tagFont));
       return H;
     }
-    catch(SQLException ex){
-      ex.printStackTrace();
-      return new Hashtable();
-    }
+    
     catch(Exception e)
     {e.printStackTrace();
 		return new Hashtable();}

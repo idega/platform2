@@ -1,4 +1,9 @@
 package com.idega.block.building.data;
+
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 /**
  * Title:
  * Description:
@@ -50,5 +55,19 @@ public class ComplexBMPBean extends com.idega.block.text.data.TextEntityBMPBean 
 	}
 	public void setImageId(Integer image_id) {
 		setColumn(getImageIdColumnName(), image_id);
+	}
+	
+	public Collection getBuildings(){
+		try {
+			return super.idoGetRelatedEntities(Building.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error in getBuildings() : " + e.getMessage());
+		}
+	}
+	
+	public Collection ejbFindAll() throws FinderException{
+		return super.idoFindAllIDsBySQL();
 	}
 }

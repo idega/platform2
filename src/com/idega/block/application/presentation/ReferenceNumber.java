@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.21 2004/02/05 17:44:32 laddi Exp $
+ * $Id: ReferenceNumber.java,v 1.22 2004/06/04 17:39:59 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -38,7 +38,7 @@ public class ReferenceNumber extends Block {
   private int _pageId;
   private int _referenceTextSize;
 
-  private String _backgroundImageUrl = "";
+  private String _backgroundImageUrl = null;
   private String _referenceWidth = "";
   private String _referenceHeight = "";
   private String _referenceText;
@@ -88,6 +88,7 @@ public class ReferenceNumber extends Block {
     }
     referenceTable.setCellpadding(0);
     referenceTable.setCellspacing(0);
+    if(!"".equals(_backgroundImageUrl))
     referenceTable.setBackgroundImage(new Image(_backgroundImageUrl));
 
     HelpButton helpButton = new HelpButton(_iwrb.getLocalizedString("help_headline","Reference number"),_iwrb.getLocalizedString("help","Help"));

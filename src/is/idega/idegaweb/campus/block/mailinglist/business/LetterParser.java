@@ -17,6 +17,8 @@ import java.util.StringTokenizer;
  * @version    1.0
  */
 public class LetterParser implements ContentParsable {
+	
+	public static String ANNOUNCEMENT = "ANNOUNCEMENT";
 
     public static String APPROVAL = "APPROVAL";
     public static String REJECTION = "REJECTION";
@@ -27,6 +29,11 @@ public class LetterParser implements ContentParsable {
     public static String RETURN = "RETURN";
     public static String DELIVER = "DELIVER";
     public static String SUBMISSION = "SUBMISSION";
+	public static String APPLICANT_ACCEPTS = "APPLICANT_ACCEPTS";
+	public static String APPLICANT_DENIES = "APPLICANT_DENIES";
+	public static String APPLICANT_QUITS = "APPLICANT_QUITS";
+	public static String WAIT_LIST_REMOVED = "WAIT_LIST_REMOVED";
+	
 
     public final static String tenant_name = "TENANT_NAME";
     public final static String tenant_address = "TENANT_ADDRESS";
@@ -50,14 +57,29 @@ public class LetterParser implements ContentParsable {
     public final static String type_area = "TYPE_AREA";
     public final static String cat_name = "CATEGORY_NAME";
     public final static String cat_desc = "CATEGORY_DESC";
+    
+    private static final String WL_COMPLEX = "WL_COMPLEXT";
+    private static final String WL_APARTMENT_TYPE = "WL_APARTMENT_TYPE";
+	private static final String WL_ORDER = "WL_ORDER";
+	private static final String WL_TYPE = "WL_TYPE";
+	private static final String WL_CHOICE_NUMBER = "WL_CHOICE_NUMBER";
+	private static final String WL_LAST_CONFIRMATION = "WL_LAST_CONFIRM";
+	private static final String WL_NUMBER_OF_REJECTIONS = "WL_NR_DENIALS";
+	private static final String WL_REJECT_FLAG = "WL_IN_DENIAL";
+	private static final String WL_REMOVED_FROM_LIST = "WL_WISHES_OFF";
+	private static final String WL_PRIORITY_LEVEL = "WL_PRIORITY";
+	private static final String WL_ACCEPTED_DATE = "WL_ACCEPTED_DATE";
 
     public static String[] TAGS = {tenant_name, tenant_address, tenant_id,
             contract_starts, contract_ends, reference_number,today, aprt_name, aprt_desc,
             floor_name, bldg_name, bldg_desc, camp_name, camp_info,
-            type_name, type_desc, type_area, cat_name, cat_desc};
+            type_name, type_desc, type_area, cat_name, cat_desc,
+            WL_ORDER,WL_TYPE,WL_CHOICE_NUMBER,WL_LAST_CONFIRMATION,
+            WL_NUMBER_OF_REJECTIONS,WL_REJECT_FLAG,WL_REMOVED_FROM_LIST,
+            WL_PRIORITY_LEVEL,WL_ACCEPTED_DATE,WL_COMPLEX,WL_APARTMENT_TYPE};
 
 
-    public static String[] types = {APPROVAL, REJECTION, ALLOCATION,
+    public static String[] types = {ANNOUNCEMENT,APPROVAL, REJECTION, ALLOCATION,
             SIGNATURE, RETURN, DELIVER, RESIGN, TERMINATION,SUBMISSION};
 
     private EntityHolder holder;
@@ -115,6 +137,9 @@ public class LetterParser implements ContentParsable {
                   return holder.getApplicant().getSSN();
               }
             }
+            
+            
+            
             // Contract section
             if(holder.getContract()!=null){
               if (tag.equals(contract_starts)) {

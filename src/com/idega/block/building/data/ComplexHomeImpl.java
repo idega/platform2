@@ -7,37 +7,23 @@ public class ComplexHomeImpl extends com.idega.data.IDOFactory implements Comple
   return Complex.class;
  }
 
+
  public Complex create() throws javax.ejb.CreateException{
-  return (Complex) super.idoCreate();
+  return (Complex) super.createIDO();
  }
 
- public Complex createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
-
- public Complex findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Complex) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ComplexBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public Complex findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Complex) super.idoFindByPrimaryKey(pk);
+  return (Complex) super.findByPrimaryKeyIDO(pk);
  }
 
- public Complex findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

@@ -1,7 +1,6 @@
 package is.idega.idegaweb.campus.block.building.presentation;
 
-
-import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.presentation.CampusBlock;
 
 import java.util.List;
 
@@ -12,7 +11,6 @@ import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Floor;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -34,12 +32,9 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 
-public class ApartmentFreezer extends Block {
-
-
+public class ApartmentFreezer extends CampusBlock {
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
-  private final String strAction = "fin_action";
   protected boolean isAdmin = false;
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   protected IWResourceBundle iwrb;
@@ -97,10 +92,9 @@ public class ApartmentFreezer extends Block {
     Frame.add(Right,3,1);
 
     Table T = new Table(2,1);
-    TextInput SearchInput = new TextInput("ap_search");
-    Edit.setStyle(SearchInput);
-    SubmitButton SearchButton = new SubmitButton("search","Search");
-    Edit.setStyle(SearchButton);
+    TextInput SearchInput = getTextInput("ap_search");
+    SubmitButton SearchButton = (SubmitButton) getSubmitButton("search","true","Search","search");
+    
     T.add(SearchInput,1,1);
     T.add(SearchButton,2,1);
     Form F = new Form();
@@ -135,12 +129,12 @@ public class ApartmentFreezer extends Block {
         Link l = new Link(A.getName());
         l.addParameter("apartment_id",A.getID());
         T.add(l,1,i+1);
-        T.add(Edit.formatText(F.getName()),2,i+1);
-        T.add(Edit.formatText(B.getName()),3,i+1);
+        T.add(getText(F.getName()),2,i+1);
+        T.add(getText(B.getName()),3,i+1);
         if(A.getUnavailableUntil()!=null)
-          T.add(Edit.formatText((new IWTimestamp(A.getUnavailableUntil())).getLocaleDate(iwc)),4,i+1);
+          T.add(getText((new IWTimestamp(A.getUnavailableUntil())).getLocaleDate(iwc)),4,i+1);
         else
-          T.add(Edit.formatText("Unfrozen"),4,i+1);
+          T.add(getText("Unfrozen"),4,i+1);
       }
       Right.add(T);
     }
@@ -161,15 +155,15 @@ public class ApartmentFreezer extends Block {
       DI.setDate(A.getUnavailableUntil());
     //else
     //  DI.setToCurrentDate();
-    DI.setStyle(Edit.styleAttribute);
+    
     HiddenInput hid = new HiddenInput("app_id",String.valueOf(id));
     SubmitButton sb = new SubmitButton("freeze","Freeze");
-      Edit.setStyle(sb);
+      
     Form myForm = new Form();
     Table T = new Table();
-    T.add(Edit.formatText(A.getName()),1,1);
-    T.add(Edit.formatText(F.getName()),2,1);
-    T.add(Edit.formatText(B.getName()),3,1);
+    T.add(getText(A.getName()),1,1);
+    T.add(getText(F.getName()),2,1);
+    T.add(getText(B.getName()),3,1);
     T.add(DI,4,1);
     T.add(sb,5,1);
     T.add(hid,5,1);

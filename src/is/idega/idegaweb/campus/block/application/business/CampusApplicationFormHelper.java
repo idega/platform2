@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.18 2003/07/28 18:32:09 aron Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.19 2004/06/04 17:36:43 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -362,26 +362,26 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 
 		try {
 			int type = ApartmentTypeComplexHelper.getPartKey(key1, 1);
-			ApartmentType room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(type);
+			ApartmentType room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKey(new Integer(type));
 
 			int pic = room.getFloorPlanId();
 			ret.add(0, new Integer(pic));
 
 			if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
 				type = ApartmentTypeComplexHelper.getPartKey(key2, 1);
-				room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(type);
+				room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHome(ApartmentType.class)).findByPrimaryKey(new Integer(type));
 				pic = room.getFloorPlanId();
 			}
 			ret.add(1, new Integer(pic));
 
 			if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
 				type = ApartmentTypeComplexHelper.getPartKey(key3, 1);
-				room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(type);
+				room = ((com.idega.block.building.data.ApartmentTypeHome) com.idega.data.IDOLookup.getHome(ApartmentType.class)).findByPrimaryKey(new Integer(type));
 				pic = room.getFloorPlanId();
 			}
 			ret.add(2, new Integer(pic));
 		}
-		catch (SQLException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 

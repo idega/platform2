@@ -1,5 +1,5 @@
 /*
- * $Id: AccountPhoneBMPBean.java,v 1.3 2004/05/24 14:21:41 palli Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.4 2004/06/04 17:32:19 aron Exp $
  * 
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
  * 
@@ -9,8 +9,10 @@
 
 package is.idega.idegaweb.campus.data;
 
+
 import java.sql.Date;
 import java.sql.SQLException;
+
 
 /**
  * 

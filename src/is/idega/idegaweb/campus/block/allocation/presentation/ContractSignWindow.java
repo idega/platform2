@@ -2,17 +2,23 @@ package is.idega.idegaweb.campus.block.allocation.presentation;
 import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
-import is.idega.idegaweb.campus.data.SystemProperties;
-import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
+import is.idega.idegaweb.campus.business.CampusSettings;
+import is.idega.idegaweb.campus.presentation.CampusWindow;
+
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+
 import com.idega.block.application.data.Applicant;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.ApartmentHome;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
@@ -24,11 +30,9 @@ import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.EmailHome;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.business.UserBusiness;
-import com.idega.core.user.data.User;
+
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -41,7 +45,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.PrintButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 /**
  * Title: idegaclasses Description: Copyright: Copyright (c) 2001 Company:
@@ -49,16 +53,13 @@ import com.idega.util.IWTimestamp;
  * @author <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
-public class ContractSignWindow extends Window {
+public class ContractSignWindow extends CampusWindow {
 	protected final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5;
-	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
-	protected IWResourceBundle iwrb;
-	protected IWBundle iwb;
+	
 	private boolean isAdmin;
 	private String login = null;
 	private String passwd = null;
 	private boolean print = false;
-	private SystemProperties SysProps = null;
 	private GenericGroup eGroup = null;
 	public static final String prmAdmin = "is_camp_csat";
 	private FinanceService finServ = null;
@@ -72,16 +73,11 @@ public class ContractSignWindow extends Window {
 	}
 	protected void control(IWContext iwc) throws java.rmi.RemoteException {
 		//debugParameters(iwc);
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
+		
 		finServ = getFinanceService(iwc);
 		// permissons !!
 		if (true) {
-			if (iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName()) != null) {
-				SysProps = (SystemProperties) iwc
-						.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean
-								.getEntityTableName());
-			}
+			
 			if (iwc.isParameterSet("save") || iwc.isParameterSet("save.x")) {
 				doSignContract(iwc);
 				setParentToReload();
@@ -89,7 +85,7 @@ public class ContractSignWindow extends Window {
 			}
 			add(getSignatureTable(iwc));
 		} else
-			add(Edit.formatText(iwrb.getLocalizedString("access_denied", "Access denied")));
+			add(getHeader(localize("access_denied", "Access denied")));
 	}
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
@@ -99,179 +95,171 @@ public class ContractSignWindow extends Window {
 		return LinkTable;
 	}
 	private PresentationObject getSignatureTable(IWContext iwc) throws java.rmi.RemoteException {
-		int iContractId = Integer.parseInt(iwc.getParameter("signed_id"));
-		try {
-			Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome) com.idega.data.IDOLookup
-					.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
-			List listOfContracts = ContractFinder.listOfApartmentContracts(eContract.getApartmentId().intValue(), true);
-			User eUser = ((com.idega.core.user.data.UserHome) com.idega.data.IDOLookup.getHomeLegacy(User.class))
-					.findByPrimaryKeyLegacy(eContract.getUserId().intValue());
-			IWTimestamp from = new IWTimestamp(eContract.getValidFrom());
-			IWTimestamp to = new IWTimestamp(eContract.getValidTo());
-			Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome) com.idega.data.IDOLookup
-					.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
-			Collection lEmails = null;
+		Integer iContractId = Integer.valueOf(iwc.getParameter("signed_id"));
+		
 			try {
-				lEmails = ((EmailHome) IDOLookup.getHome(Email.class)).findEmailsForUser(eContract.getUserId()
-						.intValue());
-			} catch (IDOLookupException e) {
+				ContractHome cHome = getCampusService(iwc).getContractService().getContractHome();
+				Contract contract = cHome.findByPrimaryKey(iContractId);
+				Collection contracts = cHome.findByApartmentAndRented(contract.getApartmentId(),Boolean.TRUE);
+				User user = contract.getUser();
+				Applicant applicant = contract.getApplicant();
+				IWTimestamp from = new IWTimestamp(contract.getValidFrom());
+				IWTimestamp to = new IWTimestamp(contract.getValidTo());
+				Collection emails = user.getEmails();
+				
+				Collection financeAccounts = null;
+				Collection phoneAccounts = null;
+				
+				try {
+					financeAccounts = finServ.getAccountHome().findAllByUserIdAndType(contract.getUserId().intValue(),
+							finServ.getAccountTypeFinance());
+					phoneAccounts = finServ.getAccountHome().findAllByUserIdAndType(contract.getUserId().intValue(),
+							finServ.getAccountTypePhone());
+				} catch (RemoteException e1) {
+					e1.printStackTrace();
+				} catch (FinderException e1) {
+					e1.printStackTrace();
+				}
+				
+				CampusSettings settings = getCampusSettings(iwc);
+				if(settings!=null){
+					try {
+						getUserService(iwc).getGroupHome().findByPrimaryKey(settings.getTenantGroupID());
+					} catch (RemoteException e2) {
+						e2.printStackTrace();
+					} catch (FinderException e2) {
+						e2.printStackTrace();
+					}
+				}
+				// TODO use userservice  to lookup login name
+				LoginTable loginTable = LoginDBHandler.getUserLogin(((Integer)user.getPrimaryKey()).intValue());
+				DataTable T = new DataTable();
+				T.setWidth("100%");
+				T.addTitle(localize("contract_signing", "Contract signing"));
+				T.addButton(new CloseButton(getResourceBundle().getImage("close.gif")));
+				T.addButton(new SubmitButton(getResourceBundle().getImage("save.gif"), "save"));
+				SubmitButton save = new SubmitButton("save", localize("save", "Save"));
+				SubmitButton signed = new SubmitButton("sign", localize("signed", "Signed"));
+				CloseButton close = new CloseButton(localize("close", "Close"));
+				PrintButton PB = new PrintButton(localize("print", "Print"));
+				TextInput emailInput = new TextInput("new_email");
+				emailInput.setAsEmail(localize("warning_illlegal_email",
+						"Please enter a legal email address"));
+				CheckBox accountCheck = new CheckBox("new_fin_account", "true");
+				accountCheck.setChecked(true);
+				CheckBox phoneAccountCheck = new CheckBox("new_phone_account", "true");
+				phoneAccountCheck.setChecked(true);
+				CheckBox loginCheck = new CheckBox("new_login", "true");
+				loginCheck.setChecked(true);
+				int row = 1;
+				HiddenInput HI = new HiddenInput("signed_id", contract.getPrimaryKey().toString());
+				T.add(HI, 1, row);
+				if (iwc.isParameterSet(prmAdmin)) {
+					T.add(new HiddenInput(prmAdmin, "true"));
+				}
+				T.add(getHeader(localize("name", "Name")), 1, row);
+				T.add(getText(applicant.getFullName()), 2, row);
+				row++;
+				T.add(getHeader(localize("ssn", "SocialNumber")), 1, row);
+				T.add(getText(applicant.getSSN()), 2, row);
+				row++;
+				T.add(getHeader(localize("apartment", "Apartment")), 1, row);
+				T.add(getText(getApartmentString(contract.getApartment())), 2, row);
+				row++;
+				T.add(getHeader(localize("valid_from", "Valid from")), 1, row);
+				T.add(getText(from.getLocaleDate(iwc)), 2, row);
+				row++;
+				T.add(getHeader(localize("valid_to", "Valid to")), 1, row);
+				T.add(getText(to.getLocaleDate(iwc)), 2, row);
+				row++;
+				boolean canSign = true;
+				Integer con_id = new Integer(-1);
+				if (contracts != null && !contracts.isEmpty()) {
+					Contract C = (Contract) contracts.iterator().next();
+					con_id = ((Integer)C.getPrimaryKey());
+					if (con_id.intValue() != ((Integer)contract.getPrimaryKey()).intValue())
+						canSign = false;
+				}
+				T.add(getHeader(localize("email", "Email")), 1, row);
+				if (emails != null) {
+					//T.add(getText(
+					// ((Email)lEmails.get(0)).getEmailAddress()),2,row);
+					int pos = emails.size() - 1;
+					
+					Email email = null;
+					for (Iterator iter = emails.iterator(); iter.hasNext();) {
+						email = (Email) iter.next();
+					}
+					if (email != null)
+						emailInput.setContent(email.getEmailAddress());
+					T.add(emailInput, 2, row);
+				} else {
+					T.add(emailInput, 2, row);
+				}
+				row++;
+				if (eGroup != null) {
+					HiddenInput Hgroup = new HiddenInput("user_group", String.valueOf(eGroup.getID()));
+					T.add(Hgroup);
+					if (financeAccounts.isEmpty()) {
+						T.add(accountCheck, 2, row);
+						T.add(getHeader(localize("fin_account", "New finance account")), 2, row);
+					} else {
+						int len = financeAccounts.size();
+						for (Iterator iter = financeAccounts.iterator(); iter.hasNext();) {
+							T.add(getHeader(localize("fin_account", "Finance account")), 1, row);
+							T.add(getText(((Account) iter.next()).getName() + " "), 2, row);
+						}
+					}
+					row++;
+					if (phoneAccounts.isEmpty()) {
+						T.add(phoneAccountCheck, 2, row);
+						T.add(getHeader(localize("phone_account", "New phone account")), 2, row);
+					} else {
+						int len = phoneAccounts.size();
+						for (Iterator iter = phoneAccounts.iterator(); iter.hasNext();) {
+							T.add(getHeader(localize("phone_account", "Phone account")), 1, row);
+							T.add(getText(((Account) iter.next()).getName() + " "), 2, row);
+						}
+					}
+					row++;
+					if (loginTable != null) {
+						T.add(getHeader(localize("login", "Login")), 1, row);
+						T.add(getText(loginTable.getUserLogin()), 2, row);
+						row++;
+						T.add(getHeader(localize("passwd", "Passwd")), 1, row);
+						if (passwd != null)
+							T.add(getText(passwd), 2, row++);
+					} else {
+						T.add(loginCheck, 2, row);
+						T.add(getHeader(localize("new_login", "New login")), 2, row);
+					}
+					row++;
+					/*
+					 * if(eContract.getStatus().equalsIgnoreCase(eContract.statusSigned))
+					 * T.add(save,2,row); else T.add(signed,2,row); if(print){
+					 * T.add(PB,2,row); } T.add(close,2,row);
+					 */
+				} else {
+					T.add(getHeader(localize("sys_props_error", "System property error")), 2, row++);
+					T.add(getHeader(localize("no_default_group", "No default group")), 2, row++);
+				}
+				if (!canSign) {
+					row++;
+					Text msg = getHeader(localize("contract_conflict", "Apartment is still in rent"));
+					msg.setFontColor("#FF0000");
+					T.add(msg, 2, row);
+					//T.add(CampusContracts.getReSignLink(iwb.getImage("/scissors.gif"),con_id),2,row);
+				}
+				Form F = new Form();
+				F.add(T);
+				return F;
+			} catch (EJBException e) {
 				e.printStackTrace();
 			} catch (FinderException e) {
 				e.printStackTrace();
 			}
-			Collection lFinanceAccounts = null;
-			//FinanceFinder.getInstance().listOfAccountByUserIdAndType(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typeFinancial);
-			Collection lPhoneAccounts = null;
-			// FinanceFinder.getInstance().listOfAccountByUserIdAndType(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typePhone);
-			try {
-				lFinanceAccounts = finServ.getAccountHome().findAllByUserIdAndType(eContract.getUserId().intValue(),
-						finServ.getAccountTypeFinance());
-				lPhoneAccounts = finServ.getAccountHome().findAllByUserIdAndType(eContract.getUserId().intValue(),
-						finServ.getAccountTypePhone());
-			} catch (RemoteException e1) {
-				e1.printStackTrace();
-			} catch (FinderException e1) {
-				e1.printStackTrace();
-			}
-			if (SysProps != null) {
-				int groupId = SysProps.getDefaultGroup();
-				try {
-					eGroup = ((com.idega.core.data.GenericGroupHome) com.idega.data.IDOLookup
-							.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(groupId);
-				} catch (SQLException ex) {
-					ex.printStackTrace();
-					eGroup = null;
-				}
-			}
-			LoginTable loginTable = LoginDBHandler.getUserLogin(eContract.getUserId().intValue());
-			DataTable T = new DataTable();
-			T.setWidth("100%");
-			T.addTitle(iwrb.getLocalizedString("contract_signing", "Contract signing"));
-			T.addButton(new CloseButton(iwrb.getImage("close.gif")));
-			T.addButton(new SubmitButton(iwrb.getImage("save.gif"), "save"));
-			SubmitButton save = new SubmitButton("save", iwrb.getLocalizedString("save", "Save"));
-			SubmitButton signed = new SubmitButton("sign", iwrb.getLocalizedString("signed", "Signed"));
-			CloseButton close = new CloseButton(iwrb.getLocalizedString("close", "Close"));
-			PrintButton PB = new PrintButton(iwrb.getLocalizedString("print", "Print"));
-			TextInput emailInput = new TextInput("new_email");
-			emailInput.setAsEmail(iwrb.getLocalizedString("warning_illlegal_email",
-					"Please enter a legal email address"));
-			CheckBox accountCheck = new CheckBox("new_fin_account", "true");
-			accountCheck.setChecked(true);
-			CheckBox phoneAccountCheck = new CheckBox("new_phone_account", "true");
-			phoneAccountCheck.setChecked(true);
-			CheckBox loginCheck = new CheckBox("new_login", "true");
-			loginCheck.setChecked(true);
-			int row = 1;
-			HiddenInput HI = new HiddenInput("signed_id", String.valueOf(eContract.getID()));
-			T.add(HI, 1, row);
-			if (iwc.isParameterSet(prmAdmin)) {
-				T.add(new HiddenInput(prmAdmin, "true"));
-			}
-			T.add(Edit.formatText(iwrb.getLocalizedString("name", "Name")), 1, row);
-			T.add(Edit.formatText(eApplicant.getFullName()), 2, row);
-			row++;
-			T.add(Edit.formatText(iwrb.getLocalizedString("ssn", "SocialNumber")), 1, row);
-			T.add(Edit.formatText(eApplicant.getSSN()), 2, row);
-			row++;
-			T.add(Edit.formatText(iwrb.getLocalizedString("apartment", "Apartment")), 1, row);
-			T
-					.add(
-							Edit
-									.formatText(getApartmentString(((com.idega.block.building.data.ApartmentHome) com.idega.data.IDOLookup
-											.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(eContract
-											.getApartmentId().intValue()))), 2, row);
-			row++;
-			T.add(Edit.formatText(iwrb.getLocalizedString("valid_from", "Valid from")), 1, row);
-			T.add(Edit.formatText(from.getLocaleDate(iwc)), 2, row);
-			row++;
-			T.add(Edit.formatText(iwrb.getLocalizedString("valid_to", "Valid to")), 1, row);
-			T.add(Edit.formatText(to.getLocaleDate(iwc)), 2, row);
-			row++;
-			boolean canSign = true;
-			int con_id = -1;
-			if (listOfContracts != null && !listOfContracts.isEmpty()) {
-				Contract C = (Contract) listOfContracts.get(0);
-				con_id = C.getID();
-				if (con_id != eContract.getID())
-					canSign = false;
-			}
-			T.add(Edit.formatText(iwrb.getLocalizedString("email", "Email")), 1, row);
-			if (lEmails != null) {
-				//T.add(Edit.formatText(
-				// ((Email)lEmails.get(0)).getEmailAddress()),2,row);
-				int pos = lEmails.size() - 1;
-				Edit.setStyle(emailInput);
-				Email email = null;
-				for (Iterator iter = lEmails.iterator(); iter.hasNext();) {
-					email = (Email) iter.next();
-				}
-				if (email != null)
-					emailInput.setContent(email.getEmailAddress());
-				T.add(emailInput, 2, row);
-			} else {
-				T.add(emailInput, 2, row);
-			}
-			row++;
-			if (eGroup != null) {
-				HiddenInput Hgroup = new HiddenInput("user_group", String.valueOf(eGroup.getID()));
-				T.add(Hgroup);
-				if (lFinanceAccounts.isEmpty()) {
-					T.add(accountCheck, 2, row);
-					T.add(Edit.formatText(iwrb.getLocalizedString("fin_account", "New finance account")), 2, row);
-				} else {
-					int len = lFinanceAccounts.size();
-					for (Iterator iter = lFinanceAccounts.iterator(); iter.hasNext();) {
-						T.add(Edit.formatText(iwrb.getLocalizedString("fin_account", "Finance account")), 1, row);
-						T.add(Edit.formatText(((Account) iter.next()).getName() + " "), 2, row);
-					}
-				}
-				row++;
-				if (lPhoneAccounts.isEmpty()) {
-					T.add(phoneAccountCheck, 2, row);
-					T.add(Edit.formatText(iwrb.getLocalizedString("phone_account", "New phone account")), 2, row);
-				} else {
-					int len = lPhoneAccounts.size();
-					for (Iterator iter = lPhoneAccounts.iterator(); iter.hasNext();) {
-						T.add(Edit.formatText(iwrb.getLocalizedString("phone_account", "Phone account")), 1, row);
-						T.add(Edit.formatText(((Account) iter.next()).getName() + " "), 2, row);
-					}
-				}
-				row++;
-				if (loginTable != null) {
-					T.add(Edit.formatText(iwrb.getLocalizedString("login", "Login")), 1, row);
-					T.add(Edit.formatText(loginTable.getUserLogin()), 2, row);
-					row++;
-					T.add(Edit.formatText(iwrb.getLocalizedString("passwd", "Passwd")), 1, row);
-					if (passwd != null)
-						T.add(Edit.formatText(passwd), 2, row++);
-				} else {
-					T.add(loginCheck, 2, row);
-					T.add(Edit.formatText(iwrb.getLocalizedString("new_login", "New login")), 2, row);
-				}
-				row++;
-				/*
-				 * if(eContract.getStatus().equalsIgnoreCase(eContract.statusSigned))
-				 * T.add(save,2,row); else T.add(signed,2,row); if(print){
-				 * T.add(PB,2,row); } T.add(close,2,row);
-				 */
-			} else {
-				T.add(Edit.formatText(iwrb.getLocalizedString("sys_props_error", "System property error")), 2, row++);
-				T.add(Edit.formatText(iwrb.getLocalizedString("no_default_group", "No default group")), 2, row++);
-			}
-			if (!canSign) {
-				row++;
-				Text msg = Edit.formatText(iwrb.getLocalizedString("contract_conflict", "Apartment is still in rent"));
-				msg.setFontColor("#FF0000");
-				T.add(msg, 2, row);
-				//T.add(CampusContracts.getReSignLink(iwb.getImage("/scissors.gif"),con_id),2,row);
-			}
-			Form F = new Form();
-			F.add(T);
-			return F;
-		} catch (SQLException ex) {
-			return new Text("");
-		}
+			return null;
+		
 	}
 	private void doSignContract(IWContext iwc) {
 		int id = Integer.parseInt(iwc.getParameter("signed_id"));
@@ -289,7 +277,7 @@ public class ContractSignWindow extends Window {
 		boolean newPhoneAccount = sPhoneAccount != null ? true : false;
 		boolean createLogin = sCreateLogin != null ? true : false;
 		passwd = ContractBusiness.signCampusContract(iwc, id, iGroupId, 1, sEmail, sendMail, newAccount,
-				newPhoneAccount, createLogin, false, iwrb, login, passwd);
+				newPhoneAccount, createLogin, false, getResourceBundle(), login, passwd);
 		if (login != null && passwd != null)
 			print = true;
 		else
@@ -305,10 +293,10 @@ public class ContractSignWindow extends Window {
 		Floor F = BuildingCacher.getFloor(A.getFloorId());
 		Building B = BuildingCacher.getBuilding(F.getBuildingId());
 		Complex C = BuildingCacher.getComplex(B.getComplexId());
-		T.add(Edit.formatText(A.getName()), 1, 1);
-		T.add(Edit.formatText(F.getName()), 2, 1);
-		T.add(Edit.formatText(B.getName()), 3, 1);
-		T.add(Edit.formatText(C.getName()), 4, 1);
+		T.add(getText(A.getName()), 1, 1);
+		T.add(getText(F.getName()), 2, 1);
+		T.add(getText(B.getName()), 3, 1);
+		T.add(getText(C.getName()), 4, 1);
 		return T;
 	}
 	private String getApartmentString(Apartment A) {

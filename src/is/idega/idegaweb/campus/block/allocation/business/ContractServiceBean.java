@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.6 2004/05/24 14:21:41 palli Exp $
+ * $Id: ContractServiceBean.java,v 1.7 2004/06/04 17:36:06 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,14 +9,16 @@
  */
 package is.idega.idegaweb.campus.block.allocation.business;
 
-
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
+import is.idega.idegaweb.campus.business.CampusSettings;
 
+import java.rmi.RemoteException;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Iterator;
@@ -27,17 +29,19 @@ import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationBMPBean;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.Apartment;
-import com.idega.block.finance.business.AccountManager;
+import com.idega.block.finance.business.AccountBusiness;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
+
 
 /**
  * Title: Service Bean for the campus contract system
@@ -47,40 +51,44 @@ import com.idega.util.IWTimestamp;
  * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
  */
 
-public class ContractServiceBean extends IBOServiceBean implements ContractService {
+public class ContractServiceBean extends IBOServiceBean  implements ContractService{
+	
+	public IWResourceBundle getResourceBundle(IWUserContext context){
+		return getIWMainApplication().getBundle(CampusSettings.IW_BUNDLE_IDENTIFIER).getResourceBundle(context.getCurrentLocale());
+	}
 
-  public  String signContract(int iContractId,int iGroupId,int iCashierId,String sEmail,boolean sendMail,
-                boolean newAccount,boolean newPhoneAccount,boolean newLogin ,boolean generatePasswd,IWResourceBundle iwrb,String login,String passwd){
+  public  String signContract(IWUserContext context,Integer contractId,Integer groupId,Integer cashierId,String email,boolean sendMail,
+                boolean newAccount,boolean newPhoneAccount,boolean newLogin ,boolean generatePasswd,String login,String passwd){
     Contract eContract = null;
     String pass = null;
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
-
+    
     try{
      t.begin();
-
-      eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
+     IWResourceBundle iwrb = getResourceBundle(context);
+      eContract =getContractHome().findByPrimaryKey(contractId );
       if(eContract != null ){
-        int iUserId = eContract.getUserId().intValue();
-				System.err.println("Signing user "+iUserId +" contract id : "+iContractId);
-        if(sEmail !=null && sEmail.trim().length() >0){
-          getUserService().addNewUserEmail(iUserId,sEmail);
+        Integer userId = eContract.getUserId();
+				System.err.println("Signing user "+userId +" contract id : "+contractId);
+        if(email !=null && email.trim().length() >0){
+          getUserService().addNewUserEmail(userId.intValue(),email);
         }
         if(newAccount){
           String prefix = iwrb.getLocalizedString("finance","Finance");
-          AccountManager.makeNewFinanceAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",iCashierId,1);
+          getAccountService().makeNewFinanceAccount(userId.intValue(),prefix+" - "+String.valueOf(userId),"",cashierId.intValue(),1);
         }
         if(newPhoneAccount){
           String prefix = iwrb.getLocalizedString("phone","Phone");
-          AccountManager.makeNewPhoneAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",iCashierId,1);
+          getAccountService().makeNewPhoneAccount(userId.intValue(),prefix+" - "+String.valueOf(userId),"",cashierId.intValue(),1);
         }
-        if(newLogin  && iGroupId > 0){
-          createUserLogin( iUserId,iGroupId,login,pass,generatePasswd );
+        if(newLogin  && groupId.intValue() > 0){
+          createUserLogin( userId.intValue(),groupId.intValue(),login,pass,generatePasswd );
         }
         deleteFromWaitingList(eContract);
         changeApplicationStatus( eContract);
         eContract.setStatusSigned();
         eContract.store();
-        MailingListBusiness.processMailEvent(getIWApplicationContext(),iContractId,LetterParser.SIGNATURE);
+        MailingListBusiness.processMailEvent(getIWApplicationContext(),contractId.intValue(),LetterParser.SIGNATURE);
       }
      t.commit();
     }
@@ -133,80 +141,101 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
       }
   }
 
-  public void endContract(int iContractId,IWTimestamp movingDate,String info,boolean datesync){
+  public Contract endContract(Integer contractId,IWTimestamp movingDate,String info,boolean datesync){
     try {
-      Contract C = ((ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
+      Contract C = getContractHome().findByPrimaryKey(contractId );
       C.setMovingDate(movingDate.getSQLDate());
       if(datesync)
         C.setValidTo(movingDate.getSQLDate());
       C.setResignInfo(info);
       C.setStatusEnded();
-      C.update();
+      C.store();
+      return C;
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       ex.printStackTrace( );
     }
+    return null;
   }
-
-  public  void returnKey(IWApplicationContext iwac,int iContractId){
+  
+  public Contract updateAllocation(Integer contractId,Integer apartmentId,Date from,Date to){
+  	Contract contract = null;
     try {
-      Contract C = ((ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
-      C.setEnded();
-      C.update();
-      MailingListBusiness.processMailEvent(iwac,iContractId,LetterParser.RETURN);
+      contract = getContractHome().findByPrimaryKey(contractId);
+      contract.setValidFrom(from);
+      contract.setValidTo(to);
+      if (apartmentId != null) {
+        contract.setApartmentId(apartmentId);
+      }
+      contract.store();
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+   return contract;
+
+  }
+  
+
+  public  void returnKey(IWApplicationContext iwac,Integer contractId){
+    try {
+      Contract C = getContractHome().findByPrimaryKey(contractId );
+      C.setEnded();
+      C.store();
+      MailingListBusiness.processMailEvent(iwac,contractId.intValue(),LetterParser.RETURN);
+    }
+    catch (Exception ex) {
       ex.printStackTrace( );
     }
   }
 
-  public  void deliverKey(IWApplicationContext iwac,int iContractId, Timestamp when) {
+  public  void deliverKey(IWApplicationContext iwac,Integer contractId, Timestamp when) {
      try {
-      Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
+      Contract C = getContractHome().findByPrimaryKey(contractId );
       if (when == null)
 	      C.setStarted();
 	    else
 	    	C.setStarted(when);
-      C.update();
-       MailingListBusiness.processMailEvent(iwac,iContractId,LetterParser.DELIVER);
+      C.store();
+       MailingListBusiness.processMailEvent(iwac,contractId.intValue(),LetterParser.DELIVER);
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       ex.printStackTrace( );
     }
   }
 
-  public  void deliverKey(IWApplicationContext iwac,int iContractId){
-  	deliverKey(iwac,iContractId,null);
+  public  void deliverKey(IWApplicationContext iwac,Integer contractId){
+  		deliverKey(iwac,contractId,null);
   }
 
-  public  void resignContract(IWApplicationContext iwac,int iContractId,IWTimestamp movingDate,String info,boolean datesync){
+  public  void resignContract(IWApplicationContext iwac,Integer contractId,IWTimestamp movingDate,String info,boolean datesync){
     try {
-      Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
+      Contract C = getContractHome().findByPrimaryKey(contractId );
       C.setMovingDate(movingDate.getSQLDate());
       if(datesync)
         C.setValidTo(movingDate.getSQLDate());
       C.setResignInfo(info);
       C.setStatusResigned();
-      C.update();
-      MailingListBusiness.processMailEvent(iwac,iContractId,LetterParser.RESIGN);
+      C.store();
+      MailingListBusiness.processMailEvent(iwac,contractId.intValue(),LetterParser.RESIGN);
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       ex.printStackTrace();
     }
   }
 
-  public  boolean makeNewContract(IWApplicationContext iwc,User eUser,Applicant eApplicant,int iApartmentId,IWTimestamp from,IWTimestamp to)throws java.rmi.RemoteException{
+  public  boolean makeNewContract(IWApplicationContext iwc,User user,Applicant applicant,Integer apartmentId,IWTimestamp from,IWTimestamp to)throws java.rmi.RemoteException{
     try{
-      Contract eContract = getContractHome().create();
-      eContract.setApartmentId(iApartmentId);
-      eContract.setApplicantId(eApplicant.getID());
-      eContract.setUserId(((Integer)eUser.getPrimaryKey()).intValue());
-      eContract.setStatusCreated();
-      eContract.setValidFrom(from.getSQLDate());
-      eContract.setValidTo(to.getSQLDate());
+      Contract contract = getContractHome().create();
+      contract.setApartmentId(apartmentId);
+      contract.setApplicantId(((Integer)applicant.getPrimaryKey()).intValue());
+      contract.setUserId(((Integer)user.getPrimaryKey()).intValue());
+      contract.setStatusCreated();
+      contract.setValidFrom(from.getSQLDate());
+      contract.setValidTo(to.getSQLDate());
 
-        eContract.store();
-        MailingListBusiness.processMailEvent(iwc, eContract.getID(),LetterParser.ALLOCATION);
+        contract.store();
+        MailingListBusiness.processMailEvent(iwc,((Integer) contract.getPrimaryKey()).intValue(),LetterParser.ALLOCATION);
         return true;
       }
       catch(Exception ex){
@@ -245,9 +274,9 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
     return null;
   }
 
-  public  boolean deleteAllocation(int iContractId, User currentUser){
+  public  boolean deleteAllocation(Integer contractId, User currentUser){
     try {
-      Contract eContract =  getContractHome().findByPrimaryKey(iContractId);
+      Contract eContract =  getContractHome().findByPrimaryKey(contractId);
       getUserService().deleteUser(eContract.getUserId().intValue(), currentUser);
       eContract.remove();
 
@@ -329,10 +358,10 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
     return r;
   }
 
-  public   boolean  doGarbageContract(int iContract){
-    int id = iContract;
+  public   boolean  doGarbageContract(Integer contract){
+   
     try {
-      Contract eContract = getContractHome().findByPrimaryKey(iContract);
+      Contract eContract = getContractHome().findByPrimaryKey(contract);
       eContract.setStatusGarbage();
       eContract.store();
 	  return true;
@@ -349,5 +378,9 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 
   public ContractHome getContractHome()throws java.rmi.RemoteException{
     return (ContractHome)IDOLookup.getHome(Contract.class);
+  }
+  
+  public AccountBusiness getAccountService() throws RemoteException{
+  	return (AccountBusiness) getServiceInstance(AccountBusiness.class);
   }
 }

@@ -1,9 +1,15 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
 
+import is.idega.idegaweb.campus.block.allocation.business.CampusContractWriter;
+import is.idega.idegaweb.campus.block.allocation.data.ContractText;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean;
+import is.idega.idegaweb.campus.presentation.CampusBlock;
+
+import java.sql.SQLException;
+import java.util.List;
+
 import com.idega.data.EntityFinder;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -16,12 +22,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import is.idega.idegaweb.campus.block.allocation.business.CampusContractWriter;
-import is.idega.idegaweb.campus.block.allocation.data.ContractText;
-import is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean;
-import is.idega.idegaweb.campus.presentation.Edit;
-import java.sql.SQLException;
-import java.util.List;
+import com.idega.presentation.util.Edit;
 
 /**
  * Title:   idegaclasses
@@ -32,15 +33,14 @@ import java.util.List;
  * @version 1.0
  */
 
-public class ContractTextSetter extends com.idega.presentation.Block{
+public class ContractTextSetter extends CampusBlock{
 
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
+ 
   private final static String IS ="IS";
   private final static String EN ="EN";
   private final static String TIS ="TIS";
   private final static String TEN ="TEN";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
+
   private String propParameter = is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName();
   private String localesParameter="iw_locales";
   private String bottomThickness = "8";
@@ -59,19 +59,11 @@ public class ContractTextSetter extends com.idega.presentation.Block{
   public String getLocalizedNameValue(){
     return "Contracttext";
   }
-
-
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
-
   public void setToUseObjectInstanciator(boolean use){
     useObjectInstanciator=use;
   }
 
   protected void control(IWContext iwc){
-    iwb = getBundle(iwc);
-    iwrb = getResourceBundle(iwc);
 
     if(isAdmin){
       //add(getPDFLink(iwb.getImage("print.gif")));
@@ -106,7 +98,7 @@ public class ContractTextSetter extends com.idega.presentation.Block{
 
     }
     else
-      add(iwrb.getLocalizedString("access_denied","Access_denied"));
+      add(getNoAccessObject(iwc));
 
 
   }
@@ -124,22 +116,22 @@ public class ContractTextSetter extends com.idega.presentation.Block{
       newTitleLink.addParameter("title_id",String.valueOf(Title.getID()));
     }
     else{
-      sTitle = iwrb.getLocalizedString("new_title","New Title");
+      sTitle = localize("new_title","New Title");
       newTitleLink.addParameter("new_title","new_title");
     }
     newTitleLink.setText(sTitle);
 
 
     int row = 1;
-    T.add(getPDFLink(iwb.getImage("print.gif")),1,row);
+    T.add(getPDFLink(getBundle().getImage("print.gif")),1,row);
     T.add(getNewLink(),2,row);
     row++;
-    T.add(Edit.titleText(iwrb.getLocalizedString("header","Header")),1,row);
+    T.add(Edit.titleText(localize("header","Header")),1,row);
     row++;
     T.add(newTitleLink,2,row);
     row++;
-    T.add(Edit.titleText(iwrb.getLocalizedString("order","Order")),1,row);
-    T.add(Edit.titleText(iwrb.getLocalizedString("title","Title")),2,row);
+    T.add(Edit.titleText(localize("order","Order")),1,row);
+    T.add(Edit.titleText(localize("title","Title")),2,row);
     row++;
     if(L!=null){
       int len = L.size();
@@ -166,7 +158,7 @@ public class ContractTextSetter extends com.idega.presentation.Block{
       T.setHeight(row,bottomThickness);
     }
     else{
-      T.add(iwrb.getLocalizedString("no_texts","No text in database"),1,2);
+      T.add(localize("no_texts","No text in database"),1,2);
     }
 
 
@@ -196,7 +188,7 @@ public class ContractTextSetter extends com.idega.presentation.Block{
     SubmitButton save = new SubmitButton("savetitle","Save");
     text.setLength(80);
     T.add(getUpLink(),1,row++);
-    T.add(Edit.formatText(iwrb.getLocalizedString("text","Text")),1,row++);
+    T.add(Edit.formatText(localize("text","Text")),1,row++);
     T.add(text,1,row++);
     T.add(save,1,row);
     F.add(T);
@@ -246,9 +238,9 @@ public class ContractTextSetter extends com.idega.presentation.Block{
     DropdownMenu tagDrop = getTagDrop("tags");
     tagDrop.setOnChange("this.form.texti.value += this.options[this.selectedIndex].value;");
     name.setLength(80);
-    T.add(Edit.formatText(iwrb.getLocalizedString("title","Title")),1,row++);
+    T.add(Edit.formatText(localize("title","Title")),1,row++);
     T.add(name,1,row++);
-    T.add(Edit.formatText(iwrb.getLocalizedString("text","Text")),1,row++);
+    T.add(Edit.formatText(localize("text","Text")),1,row++);
     T.add(text,1,row++);
 
     Table bottomTable = new Table();
@@ -289,10 +281,10 @@ public class ContractTextSetter extends com.idega.presentation.Block{
     T.mergeCells(1,1,3,1);
     if(sTextId != null)
       T.add(new HiddenInput("text_id",sTextId));
-    SubmitButton del = new SubmitButton("conf_delete",iwrb.getLocalizedString("ok","OK"));
-    BackButton back = new BackButton(iwrb.getLocalizedString("cancel","Cancel"));
+    SubmitButton del = new SubmitButton("conf_delete",localize("ok","OK"));
+    BackButton back = new BackButton(localize("cancel","Cancel"));
     back.setHistoryMove(2);
-    T.add( Edit.formatText(iwrb.getLocalizedString("sure_to_delete","Do really want to delete")),1,1);
+    T.add( Edit.formatText(localize("sure_to_delete","Do really want to delete")),1,1);
     T.add( del,1,2);
      T.add( back,3,2);
     F.add(T);
@@ -423,11 +415,11 @@ public class ContractTextSetter extends com.idega.presentation.Block{
 
 
   private Link getUpLink(){
-    return new Link(iwb.getImage("list.gif"));
+    return new Link(getBundle().getImage("list.gif"));
   }
 
   private Link getNewLink(){
-    Link newLink = new Link(iwb.getImage("new.gif"));
+    Link newLink = new Link(getBundle().getImage("new.gif"));
     newLink.addParameter("new_text","new");
     return newLink;
   }
@@ -442,9 +434,9 @@ public class ContractTextSetter extends com.idega.presentation.Block{
   private DropdownMenu getTagDrop(String name){
     String[] tags = CampusContractWriter.getTags();
     DropdownMenu drp = new DropdownMenu(name);
-    drp.addDisabledMenuElement("tag",iwrb.getLocalizedString("tags","Tags"));
+    drp.addDisabledMenuElement("tag",localize("tags","Tags"));
     for (int i = 0; i < tags.length; i++) {
-      drp.addMenuElement(" ["+tags[i]+"]",iwrb.getLocalizedString(tags[i],tags[i]));
+      drp.addMenuElement(" ["+tags[i]+"]",localize(tags[i],tags[i]));
     }
     return drp;
   }

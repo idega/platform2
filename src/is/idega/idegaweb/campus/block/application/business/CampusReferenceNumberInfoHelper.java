@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.14 2004/05/24 14:21:42 palli Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.15 2004/06/04 17:36:43 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -91,7 +91,7 @@ public class CampusReferenceNumberInfoHelper {
           	Iterator it2 = contracts.iterator();
           	while (it2.hasNext()) {
           		contract = (Contract)it2.next();
-		          System.out.println("Contract id = " + contract.getID());
+		          //System.out.println("Contract id = " + contract.getID());
 		          
   	  	      if (contract != null) {
     		        if (contract.getIsRented())

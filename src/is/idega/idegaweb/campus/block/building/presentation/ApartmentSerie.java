@@ -1,7 +1,6 @@
 package is.idega.idegaweb.campus.block.building.presentation;
 
-
-import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.presentation.CampusBlock;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -11,9 +10,6 @@ import com.idega.block.building.business.BuildingFinder;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Floor;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -29,12 +25,9 @@ import com.idega.presentation.text.Text;
  * @version 1.0
  */
 
-public class ApartmentSerie extends Block {
+public class ApartmentSerie extends CampusBlock {
   protected boolean isAdmin = false;
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
-
+  
   public String getLocalizedNameKey(){
     return "apartment_series";
   }
@@ -59,7 +52,7 @@ public class ApartmentSerie extends Block {
       add(makeMainTable());
     }
     else
-      this.add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
+      this.add(getNoAccessObject(iwc));
 
   }
 
@@ -115,8 +108,8 @@ public class ApartmentSerie extends Block {
       for (int i = 0; i < len; i++) {
         try{
         Apartment A = (Apartment) L.get(i);
-        Floor F = ((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).findByPrimaryKeyLegacy(A.getFloorId());
-        Building B = ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).findByPrimaryKeyLegacy(F.getBuildingId());
+        Floor F = A.getFloor();
+        Building B = F.getBuilding();
         //Floor F = BuildingCacher.getFloor(A.getFloorId());
         //Building B = BuildingCacher.getBuilding(F.getBuildingId());
         T.add(B.getName(),1,i+1);
@@ -135,8 +128,7 @@ public class ApartmentSerie extends Block {
   }
 
   public void main(IWContext iwc){
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
+  
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
     isAdmin = iwc.hasEditPermission(this);
     control(iwc);

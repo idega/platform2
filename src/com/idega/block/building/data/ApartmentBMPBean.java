@@ -1,5 +1,8 @@
 package com.idega.block.building.data;
 import java.sql.Date;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 /**
  * Title:
  * Description:
@@ -83,6 +86,10 @@ public class ApartmentBMPBean extends com.idega.block.text.data.TextEntityBMPBea
 	public int getFloorId() {
 		return getIntColumnValue(getFloorIdColumnName());
 	}
+	
+	public Floor getFloor(){
+		return (Floor)getColumnValue(getFloorIdColumnName());
+	}
 	public void setFloorId(int floor_id) {
 		setColumn(getFloorIdColumnName(), floor_id);
 	}
@@ -91,6 +98,9 @@ public class ApartmentBMPBean extends com.idega.block.text.data.TextEntityBMPBea
 	}
 	public int getApartmentTypeId() {
 		return getIntColumnValue(getApartmentTypeColumnName());
+	}
+	public ApartmentType getApartmentType(){
+		return (ApartmentType)getColumnValue(getApartmentTypeColumnName());
 	}
 	public void setApartmentTypeId(int apartment_type_id) {
 		setColumn(getApartmentTypeColumnName(), apartment_type_id);
@@ -142,5 +152,13 @@ public class ApartmentBMPBean extends com.idega.block.text.data.TextEntityBMPBea
 	}
 	public void setStatusRented() {
 		setStatus(RENTED);
+	}
+	
+	public Collection ejbFindByFloor(Floor floor) throws FinderException{
+		return ejbFindByFloor((Integer)floor.getPrimaryKey());
+	}
+	
+	public Collection ejbFindByFloor(Integer floorID) throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getFloorIdColumnName(),floorID.intValue()));
 	}
 }

@@ -1,13 +1,18 @@
 package com.idega.block.building.presentation;
 
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 
 import com.idega.block.building.business.BuildingBusiness;
 import com.idega.block.building.business.BuildingFinder;
 import com.idega.block.building.data.ApartmentCategory;
+import com.idega.block.building.data.ApartmentCategoryHome;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.ComplexHome;
+import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -84,13 +89,16 @@ public void setApartmentTypeWindowClass(Class windowClass){
     this.infoStyle = "font-family:arial; font-size:8pt; color:#000000; line-height: 1.8; text-align: justify;";
   }
 
-  private void getAllBuildings(IWContext iwc) throws SQLException {
+  private void getAllBuildings(IWContext iwc) throws Exception {
 
-    Complex[] complex = (Complex[]) (((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy()).findAllOrdered(com.idega.block.building.data.ComplexBMPBean.getNameColumnName());
-    Table campusTable = new Table(1,complex.length);
-
-    for ( int a = 0; a < complex.length; a++ ) {
-      int iComplexId = complex[a].getID();
+  	java.util.Collection complexes  = EntityFinder.getInstance().findAllOrdered(Complex.class,com.idega.block.building.data.ComplexBMPBean.getNameColumnName());
+    
+    Table campusTable = new Table(1,complexes.size());
+    int a = -1;
+    for (Iterator iter = complexes.iterator(); iter.hasNext();) {
+    	a++;
+		Complex complex = (Complex) iter.next();
+      int iComplexId = ((Integer)complex.getPrimaryKey()).intValue();
       String[] types = BuildingFinder.findDistinctApartmentTypesInComplex(iComplexId);
 
       Table complexTable = new Table(3,4);
@@ -106,9 +114,9 @@ public void setApartmentTypeWindowClass(Class windowClass){
         complexTable.setWidth(2,1,"20");
         complexTable.setBorder(0);
 	  
-	    BuildingBusiness.getStaticInstance().changeNameAndInfo(complex[a],iwc.getCurrentLocale());
-	   String infoText = complex[a].getInfo();
-	  	String nameText=complex[a].getName();
+	    BuildingBusiness.getStaticInstance().changeNameAndInfo(complex,iwc.getCurrentLocale());
+	   String infoText = complex.getInfo();
+	  	String nameText=complex.getName();
 	 
         infoText = TextSoap.findAndReplace(infoText,"\n","<br>");
 
@@ -119,7 +127,7 @@ public void setApartmentTypeWindowClass(Class windowClass){
         ImageSlideShow slide = new ImageSlideShow();
         //slide.setFileFolder(file);
         slide.setWidth(imageMaxSize);
-        slide.setAlt(complex[a].getName());
+        slide.setAlt(complex.getName());
         slide.setFiles(L);
         complexTable.add(slide,3,2);
         /*
@@ -131,7 +139,7 @@ public void setApartmentTypeWindowClass(Class windowClass){
 
       if ( types != null ) {
         for ( int b = 0; b < types.length; b++ ) {
-          ApartmentCategory cat = ((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).findByPrimaryKeyLegacy(Integer.parseInt(types[b]));
+          ApartmentCategory cat = ((ApartmentCategoryHome)IDOLookup.getHome(ApartmentCategory.class)).findByPrimaryKey(Integer.valueOf(types[b]));
           Image image = new Image(cat.getImageId());
             image.setName("");
             image.setHorizontalSpacing(4);
@@ -164,12 +172,12 @@ public void setApartmentTypeWindowClass(Class windowClass){
       String divideText = "<br>.........<br><br>";
 
       campusTable.add(complexTable,1,a+1);
-      if ( a+1 < complex.length ) {
+      if ( a+1 < complexes.size() ) {
         campusTable.add(getInfoText(divideText),1,a+1);
       }
     }
 
-    if ( complex.length == 0 ) {
+    if ( complexes.size() == 0 ) {
       add(iwrb_.getLocalizedString("no_buildings","No buildings in database"));
     }
 
@@ -198,9 +206,9 @@ public void setApartmentTypeWindowClass(Class windowClass){
       return T;
     }
 
-  private void getSingleBuilding(IWContext iwc) throws SQLException {
+  private void getSingleBuilding(IWContext iwc) throws Exception {
 
-    Complex complex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(building_id);
+    Complex complex = ((ComplexHome)com.idega.data.IDOLookup.getHome(Complex.class)).findByPrimaryKey(new Integer(building_id));
     ApartmentType[] types = BuildingFinder.findApartmentTypesInComplex(building_id);
 
     Table complexTable = new Table(1,types.length+1);

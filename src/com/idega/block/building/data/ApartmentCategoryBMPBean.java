@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentCategoryBMPBean.java,v 1.5 2003/05/03 01:36:11 tryggvil Exp $
+ * $Id: ApartmentCategoryBMPBean.java,v 1.6 2004/06/04 17:40:30 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,9 @@
  *
  */
 package com.idega.block.building.data;
+
+import java.util.Collection;
+
 /**
  * @author       <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.0
@@ -58,5 +61,14 @@ public class ApartmentCategoryBMPBean
 	}
 	public void setImageId(Integer image_id) {
 		setColumn(getImageIdColumnName(), image_id);
+	}
+	public Collection getApartmentTypes(){
+		try {
+			return super.idoGetRelatedEntities(ApartmentType.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error in getApartmentTypes() : " + e.getMessage());
+		}
 	}
 }

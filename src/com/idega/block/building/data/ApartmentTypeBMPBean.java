@@ -1,4 +1,7 @@
 package com.idega.block.building.data;
+
+import java.util.Collection;
+
 /**
  * Title:
  * Description:
@@ -100,6 +103,9 @@ public class ApartmentTypeBMPBean
 	}
 	public int getApartmentCategoryId() {
 		return getIntColumnValue(getApartmentCategoryIdColumnName());
+	}
+	public ApartmentCategory getApartmentCategory(){
+		return( ApartmentCategory ) getColumnValue(getApartmentCategoryIdColumnName());
 	}
 	public void setApartmentCategoryId(int apartment_category_id) {
 		setColumn(getApartmentCategoryIdColumnName(), apartment_category_id);
@@ -205,5 +211,15 @@ public class ApartmentTypeBMPBean
 	}
 	public void setFurniture(boolean furniture) {
 		setColumn(getFurnitureColumnName(), furniture);
+	}
+	
+	public Collection getApartments(){
+		try {
+			return super.idoGetRelatedEntities(Apartment.class);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Error in getApartments() : " + e.getMessage());
+		}
 	}
 }

@@ -1,9 +1,10 @@
 package is.idega.idegaweb.campus.block.mailinglist.business;
 import is.idega.idegaweb.campus.block.mailinglist.data.EmailLetter;
 import is.idega.idegaweb.campus.block.mailinglist.data.MailingList;
-import is.idega.idegaweb.campus.presentation.Campus;
+import is.idega.idegaweb.campus.business.CampusSettings;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +23,7 @@ import com.idega.transaction.IdegaTransactionManager;
 import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
 import com.idega.util.text.ContentParser;
+
 
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:
@@ -241,11 +243,15 @@ public class MailingListBusiness {
      * @param  letterId  Description of the Parameter
      * @param  holder    Description of the Parameter
      * @return           Description of the Return Value
-     */
+     */ 
     public static boolean sendMail(IWApplicationContext iwac,int letterId, EntityHolder holder) {
+    return sendMail(iwac,letterId,holder,null);
+    }
+    
+    public static boolean sendMail(IWApplicationContext iwac,int letterId, EntityHolder holder,Collection stringEmails) {
         try {
             EmailLetter letter = ((is.idega.idegaweb.campus.block.mailinglist.data.EmailLetterHome)com.idega.data.IDOLookup.getHomeLegacy(EmailLetter.class)).findByPrimaryKeyLegacy(letterId);
-            return sendMail(iwac,letter, holder);
+            return sendMail(iwac,letter, holder,stringEmails);
         } catch (Exception ex) {
 
         }
@@ -261,8 +267,16 @@ public class MailingListBusiness {
      * @return              Description of the Return Value
      */
     public static boolean processMailEvent(IWApplicationContext iwac ,int iContractId, String type) {
-        return processMailEvent(iwac,new EntityHolder(iContractId), type);
+        return processMailEvent(iwac,new EntityHolder(iContractId), type,null);
     }
+    
+	public static boolean processMailEvent(IWApplicationContext iwac, EntityHolder holder, String type){
+		return processMailEvent(iwac,holder,type,null);
+	}
+	
+	public static boolean processMailEvent(IWApplicationContext iwac, String type,Collection stringEmails){
+			return processMailEvent(iwac,null,type,stringEmails);
+	}
 
 
     /**
@@ -272,9 +286,9 @@ public class MailingListBusiness {
      * @param  type    Description of the Parameter
      * @return         Description of the Return Value
      */
-    public static boolean processMailEvent(IWApplicationContext iwac, EntityHolder holder, String type) {
+    public static boolean processMailEvent(IWApplicationContext iwac, EntityHolder holder, String type,Collection stringEmails) {
         try {
-        	IWBundle bundle = iwac.getIWMainApplication().getBundle(Campus.CAMPUS_BUNDLE_IDENTIFIER);
+        	IWBundle bundle = iwac.getIWMainApplication().getBundle(CampusSettings.IW_BUNDLE_IDENTIFIER);
         	if(bundle.getProperty("no_mailevents")!=null){
         		System.err.println("not sending any mail although requested");
         		return false;
@@ -287,7 +301,7 @@ public class MailingListBusiness {
                 EmailLetter letter;
                 while (iter.hasNext()) {
                     letter = (EmailLetter) iter.next();
-                    sendMail(iwac,letter, holder);
+                    sendMail(iwac,letter, holder,stringEmails);
                 }
                 return true;
             } else {
@@ -299,6 +313,9 @@ public class MailingListBusiness {
         return true;
     }
 
+	public static boolean sendMail(IWApplicationContext iwac,EmailLetter letter, EntityHolder holder) {
+		return sendMail(iwac,letter,holder,null);
+	}
 
     /**
      *  Parses an email letter and sends it to all recipients
@@ -307,7 +324,7 @@ public class MailingListBusiness {
      * @param  holder  Description of the Parameter
      * @return         Description of the Return Value
      */
-    public static boolean sendMail(IWApplicationContext iwac,EmailLetter letter, EntityHolder holder) {
+    public static boolean sendMail(IWApplicationContext iwac,EmailLetter letter, EntityHolder holder,Collection stringEmails) {
         try {
             String Body = letter.getBody();
             List holderEmails = new Vector();
@@ -346,12 +363,15 @@ public class MailingListBusiness {
                 }
 
             }
+            if(stringEmails!=null && !stringEmails.isEmpty()){
+            	holderEmails.addAll(stringEmails);
+            }
             if (holderEmails != null && !holderEmails.isEmpty()) {
                 Iterator eIter = holderEmails.iterator();
                 String email;
                 while (eIter.hasNext()) {
                     email = (String) eIter.next();
-                    System.err.println("Sending letter to " + email);
+                    //System.err.println("Sending letter to " + email);
                     SendMail.send(letter.getFrom(), email, "", "", letter.getHost(), subject, Body);
                 }
             }

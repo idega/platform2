@@ -1,7 +1,8 @@
 package is.idega.idegaweb.campus.block.building.presentation;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypeRent;
 import is.idega.idegaweb.campus.block.building.data.ApartmentTypeRentHome;
-import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.presentation.CampusBlock;
+
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
@@ -42,13 +43,12 @@ import com.idega.util.IWTimestamp;
  * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
-public class AprtTypeRentSetter extends Block {
-	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
+public class AprtTypeRentSetter extends CampusBlock {
+	
 	private boolean isAdmin = false;
 	private String prmATid = "AT_id";
 	private String prmATRid = "ATR_id";
-	protected IWResourceBundle iwrb;
-	protected IWBundle iwb;
+	
 	public String getLocalizedNameKey() {
 		return "rent";
 	}
@@ -77,21 +77,21 @@ public class AprtTypeRentSetter extends Block {
 				this.add(getTypeTable());
 		}
 		else
-			this.add(iwrb.getLocalizedString("access_denied", "Access denied"));
+			this.add(getNoAccessObject(iwc));
 	}
 	public PresentationObject getTypeTable() {
 		DataTable T = new DataTable();
-		T.addTitle(iwrb.getLocalizedString("apartment_types", "Apartment types"));
+		T.addTitle(localize("apartment_types", "Apartment types"));
 		T.setTitlesVertical(false);
 		List Types = BuildingCacher.getTypes();
 		if (Types != null) {
 			Iterator iter = Types.iterator();
 			ApartmentType AT;
-			T.add(Edit.formatText(iwrb.getLocalizedString("apartment_type", "Apartment type")), 1, 1);
+			T.add(getHeader(localize("apartment_type", "Apartment type")), 1, 1);
 			int row = 2;
 			while (iter.hasNext()) {
 				AT = (ApartmentType) iter.next();
-				Link link = new Link(Edit.formatText(AT.getName()));
+				Link link = new Link(getText(AT.getName()));
 				link.addParameter(prmATid, AT.getPrimaryKey().toString());
 				T.add(link, 1, row++);
 			}
@@ -111,10 +111,10 @@ public class AprtTypeRentSetter extends Block {
 				ApartmentType AT = BuildingCacher.getApartmentType(atID);
 				T.addTitle(AT.getName());
 				T.setTitlesVertical(false);
-				T.add(Edit.formatText(iwrb.getLocalizedString("rent", "Rent")), 1, 1);
-				T.add(Edit.formatText(iwrb.getLocalizedString("from_date", "From date (D/M/Y)")), 2, 1);
-				T.add(Edit.formatText(iwrb.getLocalizedString("to_date", "To date (D/M/Y)")), 3, 1);
-				T.add(Edit.formatText(iwrb.getLocalizedString("choise", "Choice")), 4, 1);
+				T.add(getHeader(localize("rent", "Rent")), 1, 1);
+				T.add(getHeader(localize("from_date", "From date (D/M/Y)")), 2, 1);
+				T.add(getHeader(localize("to_date", "To date (D/M/Y)")), 3, 1);
+				T.add(getHeader(localize("choise", "Choice")), 4, 1);
 				int row = 2;
 				Collection atrs = getAPRHome().findByType(atID);
 				NumberFormat nf = NumberFormat.getInstance();
@@ -124,10 +124,10 @@ public class AprtTypeRentSetter extends Block {
 					Iterator iter = atrs.iterator();
 					while (iter.hasNext()) {
 						ApartmentTypeRent theRent = (ApartmentTypeRent) iter.next();
-						T.add(Edit.formatText(nf.format((double) theRent.getRent())), 1, row);
-						T.add(Edit.formatText(df.format(theRent.getValidFrom())), 2, row);
+						T.add(getText(String.valueOf((double) theRent.getRent())), 1, row);
+						T.add(getText(df.format(theRent.getValidFrom())), 2, row);
 						if (theRent.getValidTo() != null)
-							T.add(Edit.formatText(df.format(theRent.getValidFrom())), 3, row);
+							T.add(getText(df.format(theRent.getValidFrom())), 3, row);
 						rb = new RadioButton(prmATRid, theRent.getPrimaryKey().toString());
 						if(theRent.getPrimaryKey().toString().equals(ATRid))
 							rb.setSelected();
@@ -136,12 +136,12 @@ public class AprtTypeRentSetter extends Block {
 					}
 				}
 				T.add(new HiddenInput(prmATid, ATid));
-				Link btnNew = new Link(iwrb.getLocalizedImageButton("btn_new","New"));
+				Link btnNew = new Link(localize("btn_new","New"));
 				btnNew.addParameter(prmATid,ATid);
-				SubmitButton edit = new SubmitButton(iwrb.getLocalizedImageButton("btn_edit", "Edit"), "edit");
-				SubmitButton delete = new SubmitButton(iwrb.getLocalizedImageButton("btn_delete", "Delete"), "delete");
-				SubmitButton create = new SubmitButton(iwrb.getLocalizedImageButton("btn_create", "Create"), "create");
-				SubmitButton update = new SubmitButton(iwrb.getLocalizedImageButton("btn_update", "Update"), "update");
+				SubmitButton edit = new SubmitButton(getResourceBundle().getLocalizedImageButton("btn_edit", "Edit"), "edit");
+				SubmitButton delete = new SubmitButton(getResourceBundle().getLocalizedImageButton("btn_delete", "Delete"), "delete");
+				SubmitButton create = new SubmitButton(getResourceBundle().getLocalizedImageButton("btn_create", "Create"), "create");
+				SubmitButton update = new SubmitButton(getResourceBundle().getLocalizedImageButton("btn_update", "Update"), "update");
 				T.addButton(btnNew);
 				T.addButton(edit);
 				T.addButton(delete);
@@ -149,10 +149,10 @@ public class AprtTypeRentSetter extends Block {
 				TextInput rent = new TextInput("apr_rent");
 				DateInput from = new DateInput("apr_from");
 				DateInput to = new DateInput("apr_to");
-				inputTable.add(Edit.formatText(iwrb.getLocalizedString("rent", "Rent")), 1, 1);
-				inputTable.add(Edit.formatText(iwrb.getLocalizedString("from_date", "From date (D/M/Y)")), 2, 1);
-				inputTable.add(Edit.formatText(iwrb.getLocalizedString("to_date", "To date (D/M/Y)")), 3, 1);
-				//inputTable.add(Edit.formatText(iwrb.getLocalizedString("choise", "Choice")), 4, 1);
+				inputTable.add(getHeader(localize("rent", "Rent")), 1, 1);
+				inputTable.add(getHeader(localize("from_date", "From date (D/M/Y)")), 2, 1);
+				inputTable.add(getHeader(localize("to_date", "To date (D/M/Y)")), 3, 1);
+				//inputTable.add(Edit.formatText(localize("choise", "Choice")), 4, 1);
 				inputTable.add(rent, 1, 2);
 				inputTable.add(from, 2, 2);
 				inputTable.add(to, 3, 2);
@@ -284,8 +284,6 @@ public class AprtTypeRentSetter extends Block {
 	}
 	public void main(IWContext iwc) {
 		isAdmin = iwc.hasEditPermission(this);
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
 		control(iwc);
 	}
 }

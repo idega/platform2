@@ -4,6 +4,12 @@
  */
 package is.idega.idegaweb.campus.business;
 
+import java.rmi.RemoteException;
+
+import is.idega.idegaweb.campus.block.allocation.business.ContractService;
+import is.idega.idegaweb.campus.block.application.business.ApplicationService;
+
+import com.idega.block.building.business.BuildingService;
 import com.idega.business.IBOServiceBean;
 import com.idega.idegaweb.IWBundle;
 
@@ -67,4 +73,16 @@ public class CampusServiceBean extends IBOServiceBean implements CampusService {
 		bundle.setProperty(CampusSettings.PROPERTY_TENANT_GROUP, settings.getTenantGroupID().toString());
 		bundle.setProperty(CampusSettings.PROPERTY_FINANCE_CATEGORY,settings.getFinanceCategoryID().toString());
 	}
+	
+	public ContractService getContractService()throws RemoteException{
+		return (ContractService) getServiceInstance(ContractService.class);
+	}
+	public ApplicationService getApplicationService()throws RemoteException{
+		return (ApplicationService) getServiceInstance(ApplicationService.class);
+	}
+	
+	public BuildingService getBuildingService()throws RemoteException{
+		return (BuildingService) getServiceInstance(BuildingService.class);
+	}
+	
 }

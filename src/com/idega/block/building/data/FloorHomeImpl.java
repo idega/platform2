@@ -7,37 +7,30 @@ public class FloorHomeImpl extends com.idega.data.IDOFactory implements FloorHom
   return Floor.class;
  }
 
+
  public Floor create() throws javax.ejb.CreateException{
-  return (Floor) super.idoCreate();
+  return (Floor) super.createIDO();
  }
 
- public Floor createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
+public java.util.Collection findByBuilding(java.lang.Integer p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((FloorBMPBean)entity).ejbFindByBuilding(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
- public Floor findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Floor) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findByBuilding(com.idega.block.building.data.Building p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((FloorBMPBean)entity).ejbFindByBuilding(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public Floor findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Floor) super.idoFindByPrimaryKey(pk);
+  return (Floor) super.findByPrimaryKeyIDO(pk);
  }
 
- public Floor findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

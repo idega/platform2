@@ -1,11 +1,8 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
-
 import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
-import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.presentation.CampusWindow;
 
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -14,7 +11,9 @@ import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Window;
+
+
+
 
 /**
  * Title:   idegaclasses
@@ -25,13 +24,12 @@ import com.idega.presentation.ui.Window;
  * @version 1.0
  */
 
-public class ContractGarbageWindow extends Window{
+public class ContractGarbageWindow extends CampusWindow{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
+  
   public final static String prmContractId = "cam_contract_id";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
+
   private int iContractId = -1;
 
   /*
@@ -49,22 +47,21 @@ public class ContractGarbageWindow extends Window{
 
   protected void control(IWContext iwc){
     //   debugParameters(iwc);
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
+  
     init(iwc);
     if(iwc.isParameterSet("save") || iwc.isParameterSet("save.x")){
       if(doGarbageContract(iwc)){
-        add(Edit.formatText(iwrb.getLocalizedString("contract_was_garbaged","Contract was garbaged")));
+        add(getHeader(localize("contract_was_garbaged","Contract was garbaged")));
         this.setParentToReload();
         this.close();
       }
      else
-        add(Edit.formatText(iwrb.getLocalizedString("contract_was_not_garbaged","Contract could not be garbaged")));
+        add(getHeader(localize("contract_was_not_garbaged","Contract could not be garbaged")));
     }
     else if(iContractId >0)
       add(getEditTable(iwc));
     else
-      add(Edit.formatText(iwrb.getLocalizedString("no_contract_to_garbage","No contract to garbage")));
+      add(getHeader(localize("no_contract_to_garbage","No contract to garbage")));
 
   }
 
@@ -90,15 +87,15 @@ public class ContractGarbageWindow extends Window{
     T.setUseTop(false);
     T.setUseBottom(false);
     T.setWidth("100%");
-    T.addTitle(iwrb.getLocalizedString("contract_garbage","Contract garbage"));
+    T.addTitle(localize("contract_garbage","Contract garbage"));
     T.add(new HiddenInput(prmContractId,String.valueOf(iContractId)));
-    T.addButton(new CloseButton(iwrb.getImage("close.gif")));
-    T.addButton(new SubmitButton(iwrb.getImage("save.gif"),"save"));
+    T.addButton(new CloseButton(getResourceBundle().getImage("close.gif")));
+    T.addButton(new SubmitButton(getResourceBundle().getImage("save.gif"),"save"));
 
     int row = 1;
     int col = 1;
 
-    T.add(Edit.formatText(iwrb.getLocalizedString("garbage_are_you_sure","Are you sure ?")),1,1);
+    T.add(getHeader(localize("garbage_are_you_sure","Are you sure ?")),1,1);
 
     Form F = new Form();
     F.add(T);

@@ -13,8 +13,11 @@ import is.idega.idegaweb.campus.block.application.business.CampusApplicationFind
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.data.SystemProperties;
-import is.idega.idegaweb.campus.data.SystemPropertiesBMPBean;
-import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.presentation.CampusWindow;
+
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -24,8 +27,6 @@ import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Text;
@@ -34,7 +35,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
+
 
 /**
  * A window class for making it possible to move people up and down
@@ -43,7 +44,7 @@ import com.idega.presentation.ui.Window;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class WaitingListOrganizerWindow extends Window {
+public class WaitingListOrganizerWindow extends CampusWindow {
 	public static String COMPLEX_ID = "complex";
 	public static String APARTMENT_TYPE_ID = "aprtType";
 	public static String WL_ORDER = "order";
@@ -52,9 +53,7 @@ public class WaitingListOrganizerWindow extends Window {
 	public static String PRIORITY = "priority";
 	public static String MAX_LIST = "maxlist";
 
-	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
-	protected IWResourceBundle iwrb;
-	protected IWBundle iwb;
+	
 	private boolean isAdmin;
 	private boolean isLoggedOn;
 	private SystemProperties SysProps = null;
@@ -68,13 +67,9 @@ public class WaitingListOrganizerWindow extends Window {
 	}
 
 	protected void control(IWContext iwc) {
-		iwrb = getResourceBundle(iwc);
-		iwb = getBundle(iwc);
-
+		
 		if (isAdmin || isLoggedOn) {
-			if (iwc.getApplicationAttribute(SystemPropertiesBMPBean.getEntityTableName()) != null) {
-				SysProps = (SystemProperties) iwc.getApplicationAttribute(SystemPropertiesBMPBean.getEntityTableName());
-			}
+			
 
 			if (iwc.isParameterSet("move")) {
 				doRenumberWaitingList(iwc);
@@ -88,7 +83,7 @@ public class WaitingListOrganizerWindow extends Window {
 			add(getRenumberTable(iwc));
 		}
 		else
-			add(Edit.formatText(iwrb.getLocalizedString("access_denied", "Access denied")));
+			add(getHeader(localize("access_denied", "Access denied")));
 	}
 
 	protected boolean doRenumberWaitingList(IWContext iwc) {
@@ -182,11 +177,11 @@ public class WaitingListOrganizerWindow extends Window {
 		form.maintainParameter(WL_ID);
 		DataTable table = new DataTable();
 		table.setTitlesVertical(true);
-		table.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),1,1);
-		table.add(Edit.formatText(iwrb.getLocalizedString("no_on_list","No. On list")),1,2);
-		table.add(Edit.formatText(iwrb.getLocalizedString("list_count","List count")),1,3);
-		table.add(Edit.formatText(iwrb.getLocalizedString("move_to_no","Move to No.")),1,4);
-		table.add(Edit.formatText(iwrb.getLocalizedString("priority","Priority")),1,5);
+		table.add(getHeader(localize("name","Name")),1,1);
+		table.add(getHeader(localize("no_on_list","No. On list")),1,2);
+		table.add(getHeader(localize("list_count","List count")),1,3);
+		table.add(getHeader(localize("move_to_no","Move to No.")),1,4);
+		table.add(getHeader(localize("priority","Priority")),1,5);
 
 		WaitingList item = null;
 		Applicant applicant = null;
@@ -200,26 +195,26 @@ public class WaitingListOrganizerWindow extends Window {
 		catch (SQLException e) {
 		}
 		
-		table.add(Edit.formatText(applicant.getFullName()),2,1);
-		table.add(Edit.formatText(onList),2,2);
-		table.add(Edit.formatText(max),2,3);
+		table.add(getText(applicant.getFullName()),2,1);
+		table.add(getText(String.valueOf(onList)),2,2);
+		table.add(getText(String.valueOf(max)),2,3);
 		TextInput input = new TextInput("move_to");
-		Edit.setStyle(input);
+		
 		table.add(input,2,4);
 		DropdownMenu priorities = priorityDrop(PRIORITY,prioritySelected);
-		Edit.setStyle(priorities);
+		
 		table.add(priorities,2,5);
 		
-		table.addTitle(iwrb.getLocalizedString("move_person_on_waitinglist","Move person on waitinglist"));
+		table.addTitle(localize("move_person_on_waitinglist","Move person on waitinglist"));
 		
-		SubmitButton ok = new SubmitButton("move",iwrb.getLocalizedString("move","Move"));
-		SubmitButton cancel = new SubmitButton("cancel",iwrb.getLocalizedString("cancel","Cancel"));
+		SubmitButton ok = new SubmitButton("move",localize("move","Move"));
+		SubmitButton cancel = new SubmitButton("cancel",localize("cancel","Cancel"));
 		table.addButton(ok);
 		table.addButton(cancel);
 		
 		form.add(table);
 		form.add(Text.getBreak());
-		form.add( Edit.formatText(iwrb.getLocalizedString("waitinglist_priority_will_be_upated","Priority level of will be changed to be the same as in the target area")));
+		form.add( getHeader(localize("waitinglist_priority_will_be_upated","Priority level of will be changed to be the same as in the target area")));
 		
 		return form;
 	}
