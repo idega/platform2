@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.40 2003/10/09 12:00:13 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.41 2003/10/09 21:21:57 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -999,6 +999,16 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/*
 			arr.add(new ConditionHolder(
+					RuleTypeConstant.CONDITION_ID_MAX_AMOUNT, 
+					"Maxbelopp", 
+					LP + "maxbelopp", 
+					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
+					"findAllMaxAmounts",
+					"")
+			);
+
+		
+			arr.add(new ConditionHolder(
 					"8", 
 					"Rabattsats", 
 					LP + "rabattsats", 
@@ -1007,14 +1017,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					"")
 			);
 			
-			arr.add(new ConditionHolder(
-					"9", 
-					"Maxbelopp", 
-					LP + "maxbelopp", 
-					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
-					"findAllMaxAmounts",
-					"")
-			);
 */
 			return (Collection) arr;	
 

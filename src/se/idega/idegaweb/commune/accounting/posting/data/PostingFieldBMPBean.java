@@ -1,5 +1,5 @@
 /*
- * $Id: PostingFieldBMPBean.java,v 1.6 2003/10/09 13:19:08 kjell Exp $
+ * $Id: PostingFieldBMPBean.java,v 1.7 2003/10/09 21:21:57 kjell Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -36,9 +36,15 @@ public class PostingFieldBMPBean extends GenericEntity implements PostingField
 	private static final String COLUMN_JUSTIFICATION = "justification";
 	private static final String COLUMN_MANDATORY = "mandatory";
 	private static final String COLUMN_PAD_CHAR = "pad_char";
+	private static final String COLUMN_FIELD_TYPE = "field_type";
+	
+	private static final String FIELD_TYPE_ALPHA = "ALPHA";
+	private static final String FIELD_TYPE_NUMERIC = "NUMERIC";
+	private static final String FIELD_TYPE_ALPHA_NUMERIC = "ALPHANUM";
 	
 	public static final int JUSTIFY_LEFT = 0;
 	public static final int JUSTIFY_RIGHT = 1;
+
 
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
@@ -59,7 +65,7 @@ public class PostingFieldBMPBean extends GenericEntity implements PostingField
 		addAttribute(COLUMN_JUSTIFICATION, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_MANDATORY,"",true,true,java.lang.Boolean.class);
 		addAttribute(COLUMN_PAD_CHAR, "", true, true, java.lang.String.class, 1);
-		
+		addAttribute(COLUMN_FIELD_TYPE, "", true, true, java.lang.String.class);
 		
 		addManyToOneRelationship(COLUMN_CP_POSTING_STRING_ID,PostingString.class);
 		setNullable(COLUMN_CP_POSTING_STRING_ID, false);
@@ -69,6 +75,7 @@ public class PostingFieldBMPBean extends GenericEntity implements PostingField
 		setNullable(COLUMN_JUSTIFICATION, false);
 		setNullable(COLUMN_MANDATORY, false);
 		setNullable(COLUMN_PAD_CHAR, false);
+		setNullable(COLUMN_FIELD_TYPE, false);
 	}
 
 	public int getPostingStringId() {
@@ -99,6 +106,10 @@ public class PostingFieldBMPBean extends GenericEntity implements PostingField
 		return getCharColumnValue(COLUMN_PAD_CHAR);
 	}
 
+	public String getFieldType() {
+		return getStringColumnValue(COLUMN_FIELD_TYPE);
+	}
+
 	public void setPostingStringId(int postingStringId) {
 		setColumn(COLUMN_CP_POSTING_STRING_ID, postingStringId);
 	}
@@ -126,6 +137,42 @@ public class PostingFieldBMPBean extends GenericEntity implements PostingField
 	public void setPadChar(char padChar) {
 		setColumn(COLUMN_PAD_CHAR, padChar);
 	}
+
+	public void setFieldTypeAlpha() {
+		setColumn(COLUMN_FIELD_TYPE, FIELD_TYPE_ALPHA);
+	}
+
+	public void setFieldTypeNumeric() {
+		setColumn(COLUMN_FIELD_TYPE, FIELD_TYPE_NUMERIC);
+	}
+
+	public void setFieldTypeAlphaNumeric() {
+		setColumn(COLUMN_FIELD_TYPE, FIELD_TYPE_ALPHA_NUMERIC);
+	}
+
+	/**
+	 * Checks if field is alphabetic only
+	 * @author Kelly
+	 */
+	public boolean isAlpha() {
+		return getStringColumnValue(COLUMN_FIELD_TYPE).compareTo(FIELD_TYPE_ALPHA) == 0 ? true : false; 
+	}
+
+	/**
+	 * Checks if field is numeric only
+	 * @author Kelly
+	 */
+	public boolean isNumeric() {
+		return getStringColumnValue(COLUMN_FIELD_TYPE).compareTo(FIELD_TYPE_NUMERIC) == 0 ? true : false; 
+	}
+
+	/**
+	 * Checks if field is alphanumeric
+	 * @author Kelly
+	 */
+	public boolean isAlphaNumeric() {
+		return getStringColumnValue(COLUMN_FIELD_TYPE).compareTo(FIELD_TYPE_ALPHA_NUMERIC) == 0 ? true : false; 
+	}
 	
 	public Collection ejbFindAllFieldsByPostingString(int PostingStringId) throws FinderException {
 		IDOQuery sql = idoQuery();
@@ -136,7 +183,6 @@ public class PostingFieldBMPBean extends GenericEntity implements PostingField
 		return idoFindPKsByQuery(sql);
 	}		
 	
-	// added by kelly
 	public Object ejbFindFieldByPostingStringAndFieldNo(int PostingStringId, int fieldNo) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);

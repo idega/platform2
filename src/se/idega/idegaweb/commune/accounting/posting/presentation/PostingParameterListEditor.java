@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.26 2003/10/04 23:06:52 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.27 2003/10/09 21:21:58 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,6 +20,7 @@ import com.idega.presentation.Table;
 import com.idega.core.builder.data.ICPage;
 import com.idega.user.data.User;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.util.IWTimestamp;
@@ -43,10 +44,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.26 2003/10/04 23:06:52 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.27 2003/10/09 21:21:58 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -81,33 +82,12 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String KEY_SCHOOL_YEAR = "posting_parm_edit.school_yearfrom";
 	private final static String KEY_SCHOOL_YEAR_TO = "posting_parm_edit.school_year_to";
 
-/*
-	private final static String KEY_OWN_ENTRY = "posting_parm_edit.own_entry";
-	private final static String KEY_DOUBLE_ENTRY = "posting_parm_edit.double_entry";
+	private final static String KEY_NUMERIC = "posting_parm_edit.numeric_only";
+	private final static String KEY_ALPHA = "posting_parm_edit.alpha_only";
 	
-	private final static String KEY_ACCOUNT = "posting_parm_edit.account";
-	private final static String KEY_LIABILITY = "posting_parm_edit.liability";
-	private final static String KEY_RESOURCE = "posting_parm_edit.resource";
-	private final static String KEY_ACTIVITY_CODE = "posting_parm_edit.activity_code";
-	private final static String KEY_DOUBLE_ENTRY_CODE = "posting_parm_edit.double_entry_code";
-	private final static String KEY_ACTIVITY_FIELD = "posting_parm_edit.activity_field";
-	private final static String KEY_PROJECT = "posting_parm_edit.project";
-	private final static String KEY_OBJECT = "posting_parm_edit.object";
-
-	private final static String KEY_POST_ACCOUNT = "posting_parm_edit_post.account";
-	private final static String KEY_POST_LIABILITY = "posting_parm_edit_post.liability";
-	private final static String KEY_POST_RESOURCE = "posting_parm_edit_post.resource";
-	private final static String KEY_POST_ACTIVITY_CODE = "posting_parm_edit_post.activity_code";
-	private final static String KEY_POST_DOUBLE_ENTRY_CODE = "posting_parm_edit_post.double_entry_code";
-	private final static String KEY_POST_ACTIVITY_FIELD = "posting_parm_edit_post.activity_field";
-	private final static String KEY_POST_PROJECT = "posting_parm_edit_post.project";
-	private final static String KEY_POST_OBJECT = "posting_parm_edit_post.object";
-*/
-
 	private final static String PARAM_BUTTON_SAVE = "button_save";
 	private final static String PARAM_BUTTON_CANCEL = "button_cancel";
 	
-//	private final static String PARAM_POSTING_ID = "pp_edit_posting_id";
 	private final static String PARAM_EDIT_ID = "param_edit_id";
 	private final static String PARAM_PERIODE_FROM = "pp_edit_periode_from";
 	private final static String PARAM_PERIODE_TO = "pp_edit_periode_to";
@@ -439,16 +419,19 @@ public class PostingParameterListEditor extends AccountingBlock {
 					theData2 = pBiz.extractField(doublePostingString,readPointer, fieldLength, field);
 				}
 				readPointer += fieldLength;
-				
-				list1.add(getTextInput(PARAM_OWN_STRING+"_"+index, theData1, 80, field.getLen()));
-				list2.add(getTextInput(PARAM_DOUBLE_STRING+"_"+index, theData2, 80, field.getLen()));
+				list1.add(inputTextFieldValidation(
+						getTextInput(PARAM_OWN_STRING+"_"+index, theData1, 80, field.getLen()),
+						field
+				));
+				list2.add(inputTextFieldValidation(
+						getTextInput(PARAM_DOUBLE_STRING+"_"+index, theData2, 80, field.getLen()),
+						field
+						));
 				index++;
 			}
 			
 		} catch (RemoteException e) {
 		}
-
-
 		accounts.add(getLocalizedText(KEY_HEADER_OWN_ENTRY, "Egen kontering"), 1, 1);
 		accounts.add(list1, 1, 2);
 		accounts.add(getLocalizedText(KEY_HEADER_DOUBLE_ENTRY, "Mot kontering"), 1, 3);
@@ -457,6 +440,21 @@ public class PostingParameterListEditor extends AccountingBlock {
 		return accounts;
 	}
 
+
+	/*
+	 * formats the textinput and sets restrictions on inputs depending on field type
+	 */
+	private TextInput inputTextFieldValidation(TextInput ti, PostingField field) {
+		
+		if (field.isAlpha()) {
+			ti.setAsAlphabeticText(localize(KEY_ALPHA, "Endast bokstäver tillåtna"));
+		}
+		if (field.isNumeric()) {
+			ti.setAsFloat(localize(KEY_NUMERIC, "Endast siffror tillåtna"));
+		}
+		return ti;
+	}
+	
 	/*
 	 * Retrives from business the current posting data that is pointed out by PARAM_EDIT_ID.
 	 * Remeber that this app only can edit one record at a time.
