@@ -15,8 +15,11 @@ package se.idega.idegaweb.commune.childcare.presentation;
 public class ChildCareWindowBig extends ChildCareWindow {
 	public ChildCareWindowBig() {
 		super();		
-		this.setWidth(700);
+		this.setWidth(650);
 		this.setHeight(500);
 
 	}
+	
+	
+	
 }
