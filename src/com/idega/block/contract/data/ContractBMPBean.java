@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.11 2003/06/10 11:33:12 roar Exp $
+ * $Id: ContractBMPBean.java,v 1.12 2003/06/11 09:08:42 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,6 @@ package com.idega.block.contract.data;
 import java.io.StringReader;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
