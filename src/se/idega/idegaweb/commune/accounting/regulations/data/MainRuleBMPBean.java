@@ -1,5 +1,5 @@
 /*	
- * $Id: MainRuleBMPBean.java,v 1.1 2003/08/28 19:38:07 kjell Exp $
+ * $Id: MainRuleBMPBean.java,v 1.2 2003/08/29 00:54:32 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,12 +22,12 @@ import com.idega.data.IDOLookup;
  * Holds Main rulez types ("Check", "Resurs", "Subvention") etc. Used for the posting 
  * and many other things as well
  * 
- * @see se.idega.idegaweb.commune.accounting.regulation.data.RegulationSpecType# 
+ * @see se.idega.idegaweb.commune.accounting.regulation.data.RegulationSpecTypeBMPBean# 
  * <p>
- * $Id: MainRuleBMPBean.java,v 1.1 2003/08/28 19:38:07 kjell Exp $
+ * $Id: MainRuleBMPBean.java,v 1.2 2003/08/29 00:54:32 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MainRuleBMPBean extends GenericEntity implements MainRule {
 	
@@ -45,7 +45,7 @@ public class MainRuleBMPBean extends GenericEntity implements MainRule {
 
 		MainRuleHome home
 				= (MainRuleHome) IDOLookup.getHome(MainRule.class);
-		final String [] data = { "Check", "Resurs", "Subvention" };
+		final String [] data = { "check", "resurs", "subvention" };
 		for (int i = 0; i < data.length; i++) {
 			MainRule mainrule = home.create();
 			mainrule.setMainRule(ENTITY_NAME + "." + data[i]);
@@ -66,6 +66,15 @@ public class MainRuleBMPBean extends GenericEntity implements MainRule {
 	public String getMainRule() {
 		return (String) getStringColumnValue(COLUMN_MAIN_RULE);
 	}
+
+	public void setTextKey(String key) { 
+		setColumn(COLUMN_MAIN_RULE, key); 
+	}
+	
+	public String getTextKey() {
+		return (String) getStringColumnValue(COLUMN_MAIN_RULE);
+	}
+
 
 	public Collection ejbFindAllMainRules() throws FinderException {
 		IDOQuery sql = idoQuery();

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.5 2003/08/28 18:35:31 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.6 2003/08/29 00:53:46 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -12,6 +12,8 @@ package se.idega.idegaweb.commune.accounting.regulations.business;
 import java.util.Collection;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+import javax.ejb.CreateException;
 import java.util.Iterator;
 
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
@@ -26,12 +28,23 @@ import se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowTypeHome
 import se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowType;
 import se.idega.idegaweb.commune.accounting.regulations.data.ProviderTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
+import se.idega.idegaweb.commune.accounting.regulations.data.MainRuleHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
 
 /**
  * @author Kjell Lindman
  * 
  */ 
 public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean implements RegulationsBusiness {
+
+	private final static String KP = "regulation_spec_type_error."; // key prefix 
+	public final static String KEY_CANNOT_DELETE_REG_SPEC_TYPE  = KP + "cannot_delete_reg_spec_type_regulation";
+	public final static String DEFAULT_CANNOT_DELETE_REG_SPEC_TYPE = "Kunde inte radera regelspecifikationstypen";
+	public final static String KEY_CANNOT_SAVE_REG_SPEC_TYPE  = KP + "cannot_save_reg_spec_type_regulation";
+	public final static String DEFAULT_CANNOT_SAVE_REG_SPEC_TYPE = "Kunde inte spara regelspecifikationstypen";
+	public final static String KEY_GENERAL_ERROR  = KP + "general_error";
+	public final static String DEFAULT_GENERAL_ERROR = "Systemfel";
 	 
 	/**
 	 * Gets all Activity types
@@ -172,16 +185,76 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType 
 	 * @author Kjell
 	 */
-	public Collection findAllRegulationSpecTypes() {
+	public Collection findAllRegulationSpecTypes() throws RegulationException {
 		try {
 			RegulationSpecTypeHome home = getRegulationSpecTypeHome();
 			return home.findAllRegulationSpecTypes();				
 		} catch (RemoteException e) {
-			return null;
+			throw new RegulationException(KEY_GENERAL_ERROR, DEFAULT_GENERAL_ERROR);
 		} catch (FinderException e) {
-			return null;
+			throw new RegulationException(KEY_GENERAL_ERROR, DEFAULT_GENERAL_ERROR);
 		}
 	}	
+
+
+	/**
+	 * Saves a Regulation specification type.
+	 * @param regSpecTypeId The regulation specification id
+	 * @param regSpecTypeKey localized key
+	 * @param mainRuleId the MainTule relational id
+	 * @throws RegulationException if invalid parameters
+	 * @author Kelly
+	 */
+	public void saveRegulationSpecType(
+			int regSpecTypeId,
+			String regSpecTypeKey,
+			int mainRuleId) throws RegulationException {
+
+		boolean create = false;
+		RegulationSpecTypeHome home = null;
+		RegulationSpecType rst = null;
+		
+		try {
+			home = getRegulationSpecTypeHome();
+			rst = home.findByPrimaryKey(new Integer(regSpecTypeId));
+		} catch (FinderException e) {
+			create = true;
+		} catch (RemoteException e) { 
+			throw new RegulationException(KEY_CANNOT_SAVE_REG_SPEC_TYPE, DEFAULT_CANNOT_SAVE_REG_SPEC_TYPE);
+		}
+		try { 
+			if (create) {
+				rst = home.create();
+			}
+			rst.setMainRule(mainRuleId);
+			rst.setTextKey(regSpecTypeKey);
+			rst.store();
+		} catch (CreateException e) { 
+			throw new RegulationException(KEY_CANNOT_SAVE_REG_SPEC_TYPE, DEFAULT_CANNOT_SAVE_REG_SPEC_TYPE);
+		}		
+	
+	} 
+
+
+	/**
+	 * Deletes the regulation spec type object with the specified id.
+	 * @param id the RegSpecType id
+	 * @throws RegulationException if the regulation could not be deleted
+	 */ 
+	public void deleteRegulationSpecType(int id) throws RegulationException {
+		try {
+			RegulationSpecTypeHome home = getRegulationSpecTypeHome();
+			RegulationSpecType rst = home.findByPrimaryKey(new Integer(id));
+			rst.remove();
+		} catch (RemoteException e) { 
+			throw new RegulationException(KEY_CANNOT_DELETE_REG_SPEC_TYPE, DEFAULT_CANNOT_DELETE_REG_SPEC_TYPE);
+		} catch (FinderException e) { 
+			throw new RegulationException(KEY_CANNOT_DELETE_REG_SPEC_TYPE, DEFAULT_CANNOT_DELETE_REG_SPEC_TYPE);
+		} catch (RemoveException e) { 
+			throw new RegulationException(KEY_CANNOT_DELETE_REG_SPEC_TYPE, DEFAULT_CANNOT_DELETE_REG_SPEC_TYPE);
+		}		
+	}
+
 
 	/**
 	 * Gets all Regulation Spec Types (keys) as a comma separated string
@@ -244,6 +317,41 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			return null;
 		}
 	}	
+
+	/**
+	 * Gets all Main Rules
+	 * @return collection of provider types
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.MainRuleBMPBean# 
+	 * @author Kelly
+	 */
+	public Collection findAllMainRules() {
+		try {
+			MainRuleHome home = getMainRuleHome();
+			return home.findAllMainRules();				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+
+	/**
+	 * Gets a Regulation Specification
+	 * @return RegulationSpecType
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType#
+	 * @author Kelly
+	 */
+	public Object findRegulationSpecType(int id) {
+		try {
+			RegulationSpecTypeHome home = getRegulationSpecTypeHome();
+			return home.findRegulationSpecType(id);				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+
  
 	protected ActivityTypeHome getActivityTypeHome() throws RemoteException {
 		return (ActivityTypeHome) com.idega.data.IDOLookup.getHome(ActivityType.class);
@@ -268,5 +376,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	protected ProviderTypeHome getProviderTypeHome() throws RemoteException {
 		return (ProviderTypeHome) com.idega.data.IDOLookup.getHome(ProviderType.class);
 	}	
+
+	protected MainRuleHome getMainRuleHome() throws RemoteException {
+		return (MainRuleHome) com.idega.data.IDOLookup.getHome(MainRule.class);
+	}	
+
 }
  
