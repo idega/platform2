@@ -13,6 +13,9 @@ import java.sql.SQLException;
 import java.util.Vector;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+import java.util.Collections;
 import com.idega.data.EntityBulkUpdater;
 import com.idega.io.FileGrabber;
 import com.idega.util.idegaTimestamp;
@@ -51,65 +54,65 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
     FileGrabber grabber = new FileGrabber();
     if ( fileString == null ) {
       try {
-        fileString = FileUtil.getStringFromFile(bundle.getResourcesRealPath()+FileUtil.getFileSeparator()+filterSource);
+	fileString = FileUtil.getStringFromFile(bundle.getResourcesRealPath()+FileUtil.getFileSeparator()+filterSource);
       }
       catch (Exception e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
 
     if ( fileString != null ) {
       try {
-        String site = TextSoap.FindAllBetween(fileString,theSiteURLB,theSiteURLE).firstElement().toString();
-        String beginTag = TextSoap.FindAllBetween(fileString,startTag1,startTag2).firstElement().toString();
-        String endTag = TextSoap.FindAllBetween(fileString,endTag1,endTag2).firstElement().toString();
-        String currB = TextSoap.FindAllBetween(fileString,currencyBegins1,currencyBegins2).firstElement().toString();
-        String currE = TextSoap.FindAllBetween(fileString,currencyEnds1,currencyEnds2).firstElement().toString();
-        String currency = TextSoap.FindAllBetween(fileString,currencyB,currencyE).firstElement().toString();
-        if ( currency != null ) {
-          bundle.getApplication().setAttribute(IW_CURRENCY_MAP,currency);
-          defaultCurrency = currency;
-        }
+	String site = TextSoap.FindAllBetween(fileString,theSiteURLB,theSiteURLE).firstElement().toString();
+	String beginTag = TextSoap.FindAllBetween(fileString,startTag1,startTag2).firstElement().toString();
+	String endTag = TextSoap.FindAllBetween(fileString,endTag1,endTag2).firstElement().toString();
+	String currB = TextSoap.FindAllBetween(fileString,currencyBegins1,currencyBegins2).firstElement().toString();
+	String currE = TextSoap.FindAllBetween(fileString,currencyEnds1,currencyEnds2).firstElement().toString();
+	String currency = TextSoap.FindAllBetween(fileString,currencyB,currencyE).firstElement().toString();
+	if ( currency != null ) {
+	  bundle.getApplication().setAttribute(IW_CURRENCY_MAP,currency);
+	  defaultCurrency = currency;
+	}
 
-        CurrencyHolder holder = null;
-        String pageString = grabber.getTheURL(site);
+	CurrencyHolder holder = null;
+	String pageString = grabber.getTheURL(site);
 
-        if ( pageString != null ) {
-          if ( currencyMap == null )
-            currencyMap = new HashMap();
-          Vector pageVector = TextSoap.FindAllBetween(pageString,beginTag,endTag);
-          Iterator iter = pageVector.iterator();
-          int a = 1;
+	if ( pageString != null ) {
+	  if ( currencyMap == null )
+	    currencyMap = new HashMap();
+	  Vector pageVector = TextSoap.FindAllBetween(pageString,beginTag,endTag);
+	  Iterator iter = pageVector.iterator();
+	  int a = 1;
 
-          while (iter.hasNext()) {
-            a = 1;
-            holder = new CurrencyHolder();
-            Vector currencyVector = TextSoap.FindAllBetween((String)iter.next(),currB,currE);
-            Iterator iter2 = currencyVector.iterator();
-            while (iter2.hasNext()) {
-              String vectorString = TextSoap.findAndReplace((String)iter2.next(),',','.');
-              if ( a == 1 )
-                holder.setCurrencyName(vectorString);
-              else if ( a == 2 )
-                holder.setBuyValue(Float.parseFloat(vectorString));
-              else if ( a == 3 )
-                holder.setSellValue(Float.parseFloat(vectorString));
-              else if ( a == 4 )
-                holder.setMiddleValue(Float.parseFloat(vectorString));
-              a++;
-            }
-            holder.setTimestamp(stamp);
-            currencyMap.put(holder.getCurrencyName(),holder);
-          }
-          saveCurrencyValuesToDatabase();
-        }
-        else {
-          System.err.println("Error: No currency information found at "+TextSoap.FindAllBetween(fileString,theSiteURLB,theSiteURLE).firstElement().toString());
-          getValuesFromDatabase();
-        }
+	  while (iter.hasNext()) {
+	    a = 1;
+	    holder = new CurrencyHolder();
+	    Vector currencyVector = TextSoap.FindAllBetween((String)iter.next(),currB,currE);
+	    Iterator iter2 = currencyVector.iterator();
+	    while (iter2.hasNext()) {
+	      String vectorString = TextSoap.findAndReplace((String)iter2.next(),',','.');
+	      if ( a == 1 )
+		holder.setCurrencyName(vectorString);
+	      else if ( a == 2 )
+		holder.setBuyValue(Float.parseFloat(vectorString));
+	      else if ( a == 3 )
+		holder.setSellValue(Float.parseFloat(vectorString));
+	      else if ( a == 4 )
+		holder.setMiddleValue(Float.parseFloat(vectorString));
+	      a++;
+	    }
+	    holder.setTimestamp(stamp);
+	    currencyMap.put(holder.getCurrencyName(),holder);
+	  }
+	  saveCurrencyValuesToDatabase();
+	}
+	else {
+	  System.err.println("Error: No currency information found at "+TextSoap.FindAllBetween(fileString,theSiteURLB,theSiteURLE).firstElement().toString());
+	  getValuesFromDatabase();
+	}
       }
       catch (Exception e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
     else {
@@ -124,7 +127,7 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
     if ( currencyMap != null ) {
       CurrencyHolder holder = (CurrencyHolder) currencyMap.get(currencyName);
       if ( holder != null )
-        return holder;
+	return holder;
       return null;
     }
     return null;
@@ -134,13 +137,13 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
     if ( fromCurrency != defaultCurrency ) {
       CurrencyHolder fromHolder = getCurrencyHolder(fromCurrency);
       if ( fromHolder != null ) {
-        amount = amount * fromHolder.getBuyValue();
+	amount = amount * fromHolder.getBuyValue();
       }
     }
     if ( toCurrency != defaultCurrency ) {
       CurrencyHolder toHolder = getCurrencyHolder(toCurrency);
       if ( toHolder != null ) {
-        amount = amount / toHolder.getSellValue();
+	amount = amount / toHolder.getSellValue();
       }
     }
     return amount;
@@ -160,31 +163,31 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
 
       Iterator iter = currencyMap.keySet().iterator();
       while (iter.hasNext()) {
-        update = true;
-        holder = (CurrencyHolder) currencyMap.get((String)iter.next());
-        currency = (Currency) currencies.get(holder.getCurrencyName());
-        values = CurrencyFinder.getCurrencyValue(currency.getID());
-        if ( values == null ) {
-          update = false;
-          values = new CurrencyValues();
-          values.setID(currency.getID());
-        }
-        values.setBuyValue(holder.getBuyValue());
-        values.setSellValue(holder.getSellValue());
-        values.setMiddleValue(holder.getMiddleValue());
-        values.setCurrencyDate(stamp.getTimestamp());
+	update = true;
+	holder = (CurrencyHolder) currencyMap.get((String)iter.next());
+	currency = (Currency) currencies.get(holder.getCurrencyName());
+	values = CurrencyFinder.getCurrencyValue(currency.getID());
+	if ( values == null ) {
+	  update = false;
+	  values = new CurrencyValues();
+	  values.setID(currency.getID());
+	}
+	values.setBuyValue(holder.getBuyValue());
+	values.setSellValue(holder.getSellValue());
+	values.setMiddleValue(holder.getMiddleValue());
+	values.setCurrencyDate(stamp.getTimestamp());
 
-        if ( update )
-          bulk.add(values,EntityBulkUpdater.update);
-        else
-           bulk.add(values,EntityBulkUpdater.insert);
+	if ( update )
+	  bulk.add(values,EntityBulkUpdater.update);
+	else
+	   bulk.add(values,EntityBulkUpdater.insert);
       }
 
       try {
-        bulk.execute();
+	bulk.execute();
       }
       catch (Exception e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
   }
@@ -198,21 +201,21 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
     while (iter.hasNext()) {
       CurrencyHolder holder = (CurrencyHolder) currencyMap.get((String)iter.next());
       if ( holder != null ) {
-        currency = new Currency();
-        currency.setCurrencyAbbreviation(holder.getCurrencyName());
-        currency.setCurrencyName(holder.getCurrencyName());
-        bulk.add(currency,bulk.insert);
-        execute = true;
+	currency = new Currency();
+	currency.setCurrencyAbbreviation(holder.getCurrencyName());
+	currency.setCurrencyName(holder.getCurrencyName());
+	bulk.add(currency,bulk.insert);
+	execute = true;
       }
     }
 
     if ( execute ) {
       try {
-        bulk.execute();
-        System.out.println("Saving currency values to database...");
+	bulk.execute();
+	System.out.println("Saving currency values to database...");
       }
       catch (Exception e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
 
@@ -232,18 +235,33 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
     if ( currencies != null && values != null ) {
       Iterator iter = currencies.keySet().iterator();
       while (iter.hasNext()) {
-        currency = (Currency) currencies.get(iter.next());
-        value = (CurrencyValues) values.get(new Integer(currency.getID()));
-        if ( currency != null && value != null ) {
-          holder = new CurrencyHolder();
-          holder.setBuyValue(value.getBuyValue());
-          holder.setCurrencyName(currency.getCurrencyAbbreviation());
-          holder.setMiddleValue(value.getMiddleValue());
-          holder.setSellValue(value.getSellValue());
-          currencyMap.put(holder.getCurrencyName(),holder);
-        }
+	currency = (Currency) currencies.get(iter.next());
+	value = (CurrencyValues) values.get(new Integer(currency.getID()));
+	if ( currency != null && value != null ) {
+	  holder = new CurrencyHolder();
+	  holder.setBuyValue(value.getBuyValue());
+	  holder.setCurrencyName(currency.getCurrencyAbbreviation());
+	  holder.setMiddleValue(value.getMiddleValue());
+	  holder.setSellValue(value.getSellValue());
+	  currencyMap.put(holder.getCurrencyName(),holder);
+	}
       }
     }
+  }
+
+  public static List getCurrencyList() {
+    Vector vector = new Vector();
+    HashMap map = currencyMap;
+    if ( map != null ) {
+      Iterator iter = map.keySet().iterator();
+      while (iter.hasNext()) {
+	vector.add((CurrencyHolder)iter.next());
+      }
+      Collections.sort(vector,new CurrencyComparator());
+
+      return vector;
+    }
+    return null;
   }
 
 }
