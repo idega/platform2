@@ -313,8 +313,13 @@ public class ReportGenerator extends Block {
 							ClassDescription clDesc = (ClassDescription)iterator.next();
 							Class prmClassType = clDesc.getClassObject();
 							paramTypes[index] = prmClassType;
-							String prm = iwc.getParameter(getParameterName(clDesc.getName()));
+							String[] prmValues = iwc.getParameterValues(getParameterName(clDesc.getName()));
+							String prm = null;
 							Object obj = null;
+							
+							if(prmValues!=null && prmValues.length>0) {
+								prm = prmValues[0];
+							}
 							
 							ClassHandler cHandler = clDesc.getClassHandler();
 							InputHandler iHandler = null;
@@ -323,9 +328,10 @@ public class ReportGenerator extends Block {
 							}
 							
 							if(iHandler != null){
-								obj = iHandler.getResultingObject(prm,iwc);
+								obj = iHandler.getResultingObject(prmValues,iwc);
 								_parameterMap.put(clDesc.getName(),iHandler.getDisplayNameOfValue(obj,iwc));
 							} else {
+								//ONLY HANDLES ONE VALUE!
 								obj = getParameterObject(iwc,prm,prmClassType);
 								_parameterMap.put(clDesc.getName(),prm);
 							}
@@ -405,6 +411,7 @@ public class ReportGenerator extends Block {
 			
 			_parameterMap.put(DynamicReportDesign.PRM_REPORT_NAME,_reportName);
 			JasperPrint print = business.getReport(_dataSource,_parameterMap,_design);
+			
 			_reportFilePath = business.getExcelReport(print,_reportName);
 			//business.getPdfReport(print,_reportName);
 			//business.getHtmlReport(print,_reportName);

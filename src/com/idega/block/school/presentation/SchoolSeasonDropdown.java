@@ -64,9 +64,9 @@ public class SchoolSeasonDropdown extends DropdownMenu implements InputHandler{
 	/* (non-Javadoc)
 	 * @see com.idega.business.InputHandler#getResultingObject(java.lang.String, com.idega.presentation.IWContext)
 	 */
-	public Object getResultingObject(String value, IWContext iwc) throws Exception {
+	public Object getResultingObject(String[] value, IWContext iwc) throws Exception {
 		if(value != null){
-			Object pk = Integer.decode(value);
+			Object pk = Integer.decode(value[0]);
 			try {
 				if(value != null){
 					SchoolSeason season = ((SchoolSeasonHome)IDOLookup.getHome(SchoolSeason.class)).findByPrimaryKey(pk);
