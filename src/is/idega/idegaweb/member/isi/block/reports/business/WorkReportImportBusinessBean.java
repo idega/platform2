@@ -267,9 +267,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 								.getCell((short) (leaguesStartColumn + i));
 						if (c != null) {
 							if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+							    int currCell = leaguesStartColumn+i;
 								throw new WorkReportImportException(
 										"workreportimportexception.formula_in_sheet",
-										row.getRowNum(), c.getCellNum(), null);
+										currRow, currCell, null);
+//							    		row.getRowNum(), c.getCellNum(), null);
 							}
 
 							val = c.getNumericCellValue();
@@ -296,7 +298,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 							rec.setAccountKey(eAccKey);
 							rec.setWorkReportGroup(league);
 							rec.setReportId(workReportId);
-							rec.setAmount((float) val);
+							rec.setAmount (val);
 							rec.store();
 
 							try {
@@ -351,9 +353,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 								.getCell((short) (leaguesStartColumn + i));
 						if (c != null) {
 							if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+							    int currCell = leaguesStartColumn+i;
 								throw new WorkReportImportException(
 										"workreportimportexception.formula_in_sheet",
-										row.getRowNum(), c.getCellNum(), null);
+										currRow, currCell, null);
+//							    		row.getRowNum(), c.getCellNum(), null);
 							}
 
 							val = c.getNumericCellValue();
@@ -382,7 +386,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 							rec.setAccountKey(eAccKey);
 							rec.setWorkReportGroup(league);
 							rec.setReportId(workReportId);
-							rec.setAmount((float) val);
+							rec.setAmount(val);
 							rec.store();
 
 							try {
@@ -429,9 +433,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 					HSSFCell c = row.getCell((short) (leaguesStartColumn + i));
 					if (c != null) {
 						if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+						    int currCell = leaguesStartColumn+i;
 							throw new WorkReportImportException(
 									"workreportimportexception.formula_in_sheet",
-									row.getRowNum(), c.getCellNum(), null);
+									currRow, currCell, null);
+//									row.getRowNum(), c.getCellNum(), null);
 						}
 
 						val = c.getNumericCellValue();
@@ -449,7 +455,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 							rec.setAccountKey(eAccKey);
 							rec.setWorkReportGroup(league);
 							rec.setReportId(workReportId);
-							rec.setAmount((float) val);
+							rec.setAmount(val);
 							rec.store();
 
 							try {
@@ -502,9 +508,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 								.getCell((short) (leaguesStartColumn + i));
 						if (c != null) {
 							if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+							    int currCell = leaguesStartColumn+i;
 								throw new WorkReportImportException(
 										"workreportimportexception.formula_in_sheet",
-										row.getRowNum(), c.getCellNum(), null);
+										currRow, currCell, null);
+//										row.getRowNum(), c.getCellNum(), null);
 							}
 
 							val = c.getNumericCellValue();
@@ -586,15 +594,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 			}
 
 			trans.commit();
+		} catch (WorkReportImportException e) {
+			rollbackTransaction(trans);
+			throw new WorkReportImportException(e.getMessage(), e.getRowForError(), e.getColumnForError(), e.getDetail());
 		} catch (Exception e) {
-			if (trans != null) {
-				try {
-					trans.rollback();
-				} catch (SystemException se) {
-					se.printStackTrace();
-				}
-			}
-
+			rollbackTransaction(trans);
 			throw new WorkReportImportException(e.getMessage());
 		}
 
@@ -602,6 +606,19 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 	}
 
 	/**
+     * @param trans
+     */
+    private void rollbackTransaction(UserTransaction trans) {
+        if (trans != null) {
+        	try {
+        		trans.rollback();
+        	} catch (SystemException se) {
+        		se.printStackTrace();
+        	}
+        }
+    }
+
+    /**
 	 * A method to export the work reports to excel for those who are not using
 	 * the member system.
 	 * 
