@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeEditor.java,v 1.6 2003/09/30 14:25:01 anders Exp $
+ * $Id: NoticeEditor.java,v 1.7 2003/10/07 15:50:03 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,6 +22,9 @@ import com.idega.presentation.Table;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.CheckBox;
+
+import com.idega.block.school.data.SchoolCategory;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
@@ -37,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.message.business.NoticeException;
  * notice message to all providers. The message is sent as an
  * e-mail and as case.
  * <p>
- * Last modified: $Date: 2003/09/30 14:25:01 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/07 15:50:03 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class NoticeEditor extends AccountingBlock {
 
@@ -53,6 +56,7 @@ public class NoticeEditor extends AccountingBlock {
 
 	private final static String PARAMETER_SUBJECT = PP + "subject";
 	private final static String PARAMETER_BODY = PP + "body";
+	private final static String PARAMETER_OPERATIONAL_FIELD = PP + "operational_field";
 	private final static String PARAMETER_PREVIEW = PP + "preview";
 	private final static String PARAMETER_BACK = PP + "back";
 	private final static String PARAMETER_SEND = PP + "send";
@@ -65,6 +69,8 @@ public class NoticeEditor extends AccountingBlock {
 	private final static String KEY_TITLE_SEND_CONFIRM_ERROR = KP + "title_send_confirm_error";
 	private final static String KEY_TITLE_NOTICE_SENT = KP + "title_notice_sent";
 	private final static String KEY_SCHOOL = KP + "school";
+	private final static String KEY_OPERATIONAL_FIELDS = KP + "operational_fields";	
+	private final static String KEY_NO_OPERATIONAL_FIELDS_SELECTED = KP + "no_operational_fields_selected";	
 	private final static String KEY_PREVIEW = KP + "preview";
 	private final static String KEY_BACK = KP + "back";
 	private final static String KEY_SEND_NOTICE = KP + "send_notice";
@@ -125,15 +131,45 @@ public class NoticeEditor extends AccountingBlock {
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "PŒminnelsebrev");
 
+
+		Table mainTable = new Table();
+		mainTable.setCellpadding(0);
+		mainTable.setCellspacing(0);
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		TextArea body = (TextArea) getStyledInterface(new TextArea(PARAMETER_BODY));
-		body.setColumns(60);
-		body.setRows(10);
+		body.setColumns(80);
+		body.setRows(16);
 		body.setValue(getParameter(iwc, PARAMETER_BODY));
 		table.add(body, 1, 1);
-		app.setMainPanel(table);
+		mainTable.add(table, 1, 1);
+		table = new Table();
+		table.setCellpadding(getCellpadding());
+		table.setCellspacing(getCellspacing());
+		int row = 1;
+		Collection c = null;
+		try {
+			c = getBusiness().getExportBusiness().getAllOperationalFields();
+			Iterator iter = c.iterator();
+			while (iter.hasNext()) {
+				SchoolCategory sc = (SchoolCategory) iter.next();
+				CheckBox cb = new CheckBox(PARAMETER_OPERATIONAL_FIELD, sc.getPrimaryKey().toString());
+				String[] selectedOperationalFields = iwc.getParameterValues(PARAMETER_OPERATIONAL_FIELD);
+				if (selectedOperationalFields != null) {
+					for (int i = 0; i < selectedOperationalFields.length; i++) {						
+						if (sc.getPrimaryKey().toString().equals(selectedOperationalFields[i])) {
+							cb.setChecked(true);
+						}
+					}
+				}
+				table.add(cb, 1, row);
+				table.add(localize(sc.getLocalizedKey(), sc.getLocalizedKey()), 2, row++);
+			}
+			table.setColumnWidth(2, "100%");
+		} catch (RemoteException e) {}
+		mainTable.add(table, 1, 2);
+		app.setMainPanel(mainTable);
 
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_PREVIEW, KEY_PREVIEW, "Fšrhandsgranska");
@@ -148,23 +184,67 @@ public class NoticeEditor extends AccountingBlock {
 	private void handlePreviewAction(IWContext iwc) {		
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE_SEND_CONFIRM, "PŒminnelsebrev - fšrhandsgranska");
+		Table mainTable = new Table();
+		mainTable.setCellpadding(0);
+		mainTable.setCellspacing(0);
+
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 
+		int row = 1;
 		String subject = localize(KEY_SUBJECT, "PŒminnelse frŒn Nacka24");
 		subject += " - " + formatDate(new Date(System.currentTimeMillis()), 10);
-		table.add(getLocalizedLabel(KEY_SUBJECT_LABEL, "Rubrik"), 1, 1);
-		table.add(getSmallHeader(" " + subject), 1, 1);
+		table.add(getLocalizedLabel(KEY_SUBJECT_LABEL, "Rubrik"), 1, row);
+		table.add(getSmallHeader(" " + subject), 1, row);
+		row += 2;
 		
 		String body = getParameter(iwc, PARAMETER_BODY);
 		StringTokenizer st = new StringTokenizer(body, "\n");
 		while (st.hasMoreTokens()) {
-			String row = st.nextToken();
-			table.add(getText(row), 1, 3);
-			table.add(new Break(), 1, 3);
+			String line = st.nextToken();
+			table.add(getText(line), 1, row);
+			table.add(new Break(), 1, row);
 		}
-		app.setMainPanel(table);
+		mainTable.add(table, 1, 1);
+		
+		table = new Table();
+		table.setCellpadding(getCellpadding());
+		table.setCellspacing(getCellspacing());
+		
+		table.add(getLocalizedLabel(KEY_OPERATIONAL_FIELDS, "Huvudverksamheter"), 1, row);
+		String[] selectedOperationalFields = iwc.getParameterValues(PARAMETER_OPERATIONAL_FIELD);
+		if (selectedOperationalFields == null || selectedOperationalFields.length == 0) {
+			table.add(getErrorText(localize(KEY_NO_OPERATIONAL_FIELDS_SELECTED, "Inga huvudverksamheter valda")), 2, row++);
+		} else {
+			try {
+				Collection c = getBusiness().getExportBusiness().getAllOperationalFields();
+				String fields = "";
+				for (int i = 0; i < selectedOperationalFields.length; i++) {
+					String operationalField = selectedOperationalFields[i];
+					app.addHiddenInput(PARAMETER_OPERATIONAL_FIELD, operationalField);
+					Iterator iter = c.iterator();
+					while (iter.hasNext()) {
+						SchoolCategory sc = (SchoolCategory) iter.next();
+						String id = sc.getPrimaryKey().toString();
+						if (operationalField.equals(id)) {
+							fields += localize(sc.getLocalizedKey(), sc.getLocalizedKey());
+							if (i < (selectedOperationalFields.length - 1)) {
+								if (i != (selectedOperationalFields.length - 2)) {
+									fields += ", ";
+								} else {
+									fields += " och ";
+								}
+							}
+						}
+					}
+				}
+				table.add(getSmallHeader(fields), 2, row++);
+			} catch (RemoteException e) {}
+		}
+		mainTable.add(table, 1, 2);
+
+		app.setMainPanel(mainTable);
 
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_SEND, KEY_SEND_NOTICE, "Skicka pŒminnelse");
@@ -187,7 +267,8 @@ public class NoticeEditor extends AccountingBlock {
 			NoticeBusiness nb = getNoticeBusiness(iwc);
 			//String subject = getParameter(iwc, PARAMETER_SUBJECT);
 			String body = getParameter(iwc, PARAMETER_BODY);
-			schools = nb.sendNotice("Rubrik", body);
+			String[] operationalFields = iwc.getParameterValues(PARAMETER_OPERATIONAL_FIELD);
+			schools = nb.sendNotice("Rubrik", body, operationalFields);
 		} 
 		catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
@@ -206,6 +287,12 @@ public class NoticeEditor extends AccountingBlock {
 			ButtonPanel bp = new ButtonPanel(this);
 			bp.addLocalizedButton(PARAMETER_DEFAULT, KEY_BACK, "Tillbaka");
 			app.setButtonPanel(bp);
+			
+			app.addHiddenInput(PARAMETER_BODY, getParameter(iwc, PARAMETER_BODY));
+			String[] selectedOperationalFields = iwc.getParameterValues(PARAMETER_OPERATIONAL_FIELD);
+			for (int i = 0; i < selectedOperationalFields.length; i++) {
+				app.addHiddenInput(PARAMETER_OPERATIONAL_FIELD, selectedOperationalFields[i]);
+			}
 			return;
 		}
 

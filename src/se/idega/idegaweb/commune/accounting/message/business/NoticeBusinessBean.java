@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeBusinessBean.java,v 1.6 2003/09/30 14:21:25 anders Exp $
+ * $Id: NoticeBusinessBean.java,v 1.7 2003/10/07 15:50:03 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -12,6 +12,8 @@ package se.idega.idegaweb.commune.accounting.message.business;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.rmi.RemoteException;
 
 import com.idega.block.school.business.SchoolBusiness;
@@ -28,31 +30,42 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 /** 
  * Business logic for notice messages.
  * <p>
- * Last modified: $Date: 2003/09/30 14:21:25 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/07 15:50:03 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implements NoticeBusiness  {
 
 	private final static String KP = "notice_error."; // key prefix 
 
 	public final static String KEY_EMPTY_BODY = KP + "empty_body";
+	public final static String KEY_OPERATIONAL_FIELDS_EMPTY = KP + "operational_fields_empty";
 	public final static String KEY_SYSTEM_ERROR = KP + "system_error";
 
 	public final static String DEFAULT_EMPTY_BODY = "PŒminnelsen kan inte vara tom.";
+	public final static String DEFAULT_OPERATIONAL_FIELDS_EMPTY = "Minst en huvudverksamhet m?ste v?ljas.";
 	public final static String DEFAULT_SYSTEM_ERROR = "PŒminnelsen kunde inte skickas p.g.a. tekniskt fel.";
 	
 	/**
-	 * Send message and e-mail to all headmasters for schools.
+	 * Send message and e-mail to all administrators for schools belonging
+	 * to the specified operational fields.
 	 * @param subject the message subject
 	 * @param body the message body
+	 * @param operationalFields the operational field ids
 	 * @return a collection of {school_name, headmaster} 
-	 * @throws NoticeException if body empty or technical send error
+	 * @throws NoticeException if incomplete parameters or technical send error
 	 */
-	public Collection sendNotice(String subject, String body) throws NoticeException {
+	public Collection sendNotice(String subject, String body, String[] operationalFields) throws NoticeException {
 		if (body.equals("")) {
 			throw new NoticeException(KEY_EMPTY_BODY, DEFAULT_EMPTY_BODY);
+		}
+		if (operationalFields == null) {
+			throw new NoticeException(KEY_OPERATIONAL_FIELDS_EMPTY, DEFAULT_OPERATIONAL_FIELDS_EMPTY);
+		}
+		Map schoolCategories = new HashMap();
+		for (int i = 0; i < operationalFields.length; i++) {
+			schoolCategories.put(operationalFields[i], operationalFields[i]);
 		}
 		
 		Collection c = new ArrayList();
@@ -64,6 +77,9 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 			Iterator iter = schoolTypes.iterator();
 			while (iter.hasNext()) {
 				SchoolType st = (SchoolType) iter.next();
+				if (!schoolCategories.containsKey(st.getCategory())) {
+					continue;
+				}
 				String sc = st.getSchoolCategory();				
 				int schoolTypeId = ((Integer) st.getPrimaryKey()).intValue();
 				Collection schools = sb.findAllSchoolsByType(schoolTypeId);
