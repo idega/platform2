@@ -430,7 +430,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 				String key = (String) iterator.next();
 				String type = (String) metaDataTypes.get(key);
 				
-				if (iwc.isParameterSet(METADATA + key)) {
+				if (iwc.isParameterSet(METADATA + key) && iwc.getParameter(METADATA + key).length() > 0) {
 					if (type.equals(IWMetaDataConstants.METADATA_TYPE_MULTIVALUED)) {
 						String[] values = iwc.getParameterValues(METADATA + key);
 						if (values != null && values.length > 0) {
@@ -450,8 +450,12 @@ public class ProductEditorWindow extends IWAdminWindow {
 							product.setMetaData(METADATA + key, iwc.getParameter(METADATA + key), type);
 					}
 				}
-				else
-					product.removeMetaData(METADATA + key);
+				else {
+					if (type.equals(IWMetaDataConstants.METADATA_TYPE_STRING))
+						product.removeMetaData(METADATA + key + "_" + _locale.toString());
+					else
+						product.removeMetaData(METADATA + key);
+				}
 			}
 			product.store();
 		}
