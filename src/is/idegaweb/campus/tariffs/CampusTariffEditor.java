@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffEditor.java,v 1.3 2001/06/28 10:35:39 aron Exp $
+ * $Id: CampusTariffEditor.java,v 1.4 2001/07/23 10:00:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -47,6 +47,14 @@ public class CampusTariffEditor extends KeyEditor{
   private int period = MONTH;
   private GenericEntity[] entities = null;
   private int iPeriod;
+
+  public static String prefixComplex = "x";
+  public static String prefixAll = "a";
+  public static String prefixBuilding = "b";
+  public static String prefixFloor = "f";
+  public static String prefixCategory = "c";
+  public static String prefixType = "t";
+  public static String prefixApartment = "p";
 
   public CampusTariffEditor(String sHeader) {
     super(sHeader);
@@ -544,7 +552,7 @@ public class CampusTariffEditor extends KeyEditor{
       ApartmentType T;
       for (int i = 0; i < len; i++) {
         T = (ApartmentType) TypeList.get(i);
-        drp.addMenuElement(String.valueOf("t_"+T.getID()),T.getName());
+        drp.addMenuElement(String.valueOf(prefixType+"_"+T.getID()),T.getName());
       }
     }
     if(CategoryList != null){
@@ -552,7 +560,7 @@ public class CampusTariffEditor extends KeyEditor{
       ApartmentCategory C;
       for (int i = 0; i < len; i++) {
         C = (ApartmentCategory) CategoryList.get(i);
-        drp.addMenuElement(String.valueOf("c_"+C.getID()),C.getName());
+        drp.addMenuElement(String.valueOf(prefixCategory+"_"+C.getID()),C.getName());
       }
     }
     if(ComplexList != null){
@@ -560,7 +568,7 @@ public class CampusTariffEditor extends KeyEditor{
       Complex C;
       for (int i = 0; i < clen; i++) {
         C = (Complex) ComplexList.get(i);
-        drp.addMenuElement(String.valueOf("x_"+C.getID()),C.getName());
+        drp.addMenuElement(String.valueOf(prefixComplex+"_"+C.getID()),C.getName());
       }
     }
     if(BuildingList != null){
@@ -568,7 +576,7 @@ public class CampusTariffEditor extends KeyEditor{
       Building B;
       for (int i = 0; i < clen; i++) {
         B = (Building) BuildingList.get(i);
-        drp.addMenuElement(String.valueOf("b_"+B.getID()),B.getName());
+        drp.addMenuElement(String.valueOf(prefixBuilding+"_"+B.getID()),B.getName());
         Bhash.put(new Integer(B.getID()),B.getName());
       }
     }
@@ -581,7 +589,7 @@ public class CampusTariffEditor extends KeyEditor{
         String sAdd = "";
         if(Bhash.containsKey(I))
            sAdd = (String)Bhash.get(I);
-        drp.addMenuElement(String.valueOf("f_"+F.getID()),F.getName()+" "+sAdd);
+        drp.addMenuElement(String.valueOf(prefixFloor+"_"+F.getID()),F.getName()+" "+sAdd);
       }
     }
 
