@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.17 2003/09/04 13:53:38 laddi Exp $
+ * $Id: PostingParameterListEditor.java,v 1.18 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,7 +17,6 @@ import java.util.Iterator;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBPage;
 import com.idega.user.data.User;
 import com.idega.presentation.ui.HiddenInput;
@@ -43,15 +42,14 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.17 2003/09/04 13:53:38 laddi Exp $
+ * $Id: PostingParameterListEditor.java,v 1.18 2003/09/08 08:10:07 laddi Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
 	private final static int ACTION_DEFAULT = 0;
-	private final static int ACTION_EDIT = 1;
 	private final static int ACTION_SAVE = 2;
 	private final static int ACTION_CANCEL = 3;
 
@@ -79,6 +77,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String KEY_REG_SPEC = "posting_parm_edit.reg_spec";
 	private final static String KEY_COMPANY_TYPE = "posting_parm_edit.company_type";
 	private final static String KEY_COMMUNE_BELONGING = "posting_parm_edit.commune_belonging";
+
+/*
 	private final static String KEY_OWN_ENTRY = "posting_parm_edit.own_entry";
 	private final static String KEY_DOUBLE_ENTRY = "posting_parm_edit.double_entry";
 	
@@ -99,11 +99,12 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String KEY_POST_ACTIVITY_FIELD = "posting_parm_edit_post.activity_field";
 	private final static String KEY_POST_PROJECT = "posting_parm_edit_post.project";
 	private final static String KEY_POST_OBJECT = "posting_parm_edit_post.object";
+*/
 
 	private final static String PARAM_BUTTON_SAVE = "button_save";
 	private final static String PARAM_BUTTON_CANCEL = "button_cancel";
 	
-	private final static String PARAM_POSTING_ID = "pp_edit_posting_id";
+//	private final static String PARAM_POSTING_ID = "pp_edit_posting_id";
 	private final static String PARAM_EDIT_ID = "param_edit_id";
 	private final static String PARAM_PERIODE_FROM = "pp_edit_periode_from";
 	private final static String PARAM_PERIODE_TO = "pp_edit_periode_to";
@@ -172,8 +173,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 					id = null;
 				}
 				getPostingBusiness(iwc).savePostingParameter(id,
-				(Date) parseDate(iwc.getParameter(PARAM_PERIODE_FROM)),
-				(Date) parseDate(iwc.getParameter(PARAM_PERIODE_TO)),
+				parseDate(iwc.getParameter(PARAM_PERIODE_FROM)),
+				parseDate(iwc.getParameter(PARAM_PERIODE_TO)),
 				iwc.getParameter(PARAM_SIGNED),
 				iwc.getParameter(PARAM_SELECTOR_ACTIVITY),				
 				iwc.getParameter(PARAM_SELECTOR_REGSPEC),					
@@ -203,9 +204,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 			int index = 1;
 			PostingBusiness pBiz = getPostingBusiness(iwc);
 			Collection fields = pBiz.getAllPostingFieldsByDate(parseDate(iwc.getParameter(PARAM_PERIODE_FROM)));
-			int size = fields.size();
 			Iterator iter = fields.iterator();
-			int readPointer = 0;
 			while (iter.hasNext()) {
 				PostingField field = (PostingField) iter.next();
 				_theOwnString += pBiz.pad(iwc.getParameter(PARAM_OWN_STRING + "_" + index), field);
@@ -220,7 +219,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 
 
 	private void closeMe(IWContext iwc) {
-		getParentPage().setToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _responsePage.getID()));
+		iwc.forwardToIBPage(getParentPage(), _responsePage);
 	}
 	 
 	/*
@@ -290,7 +289,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 		table.add(getText(formatDate(pp != null ? pp.getChangedDate(): rightNow, 6)), 2, 2);
 
 		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,2);
-		table.add(""+userName, 4, 2);
+		table.add(getText(userName), 4, 2);
 		table.add(new HiddenInput(PARAM_SIGNED, ""+userName));
 		if(iwc.isParameterSet(PARAM_MODE_COPY)) {
 			table.add(new HiddenInput(PARAM_MODE_COPY, ""+iwc.getParameter(PARAM_MODE_COPY)));

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecificationEditor.java,v 1.7 2003/09/06 08:46:18 kjell Exp $
+ * $Id: RegulationSpecificationEditor.java,v 1.8 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /** 
  * RegulationSpecificationEditor is an idegaWeb block that handles RegSpec types
  * <p>
- * $Date: 2003/09/06 08:46:18 $
+ * $Date: 2003/09/08 08:10:07 $
  *
  * @author Kjell Lindman
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class RegulationSpecificationEditor extends AccountingBlock {
 
@@ -248,7 +248,6 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 	 * Handles the delete action for this block.
 	 */	
 	private void handleDeleteAction(IWContext iwc) {
-		String errorMessage = null;
 		try {
 			RegulationsBusiness rb = getRegulationsBusiness(iwc);
 			rb.deleteRegulationSpecType(
@@ -257,7 +256,7 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 		} catch (RegulationException e) {
-			errorMessage = localize(e.getTextKey(), e.getDefaultText());
+			add(getErrorText(localize(e.getTextKey(), e.getDefaultText())));
 		}
 		handleDefaultAction(iwc);
 	}

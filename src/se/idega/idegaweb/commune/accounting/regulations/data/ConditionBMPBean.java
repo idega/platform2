@@ -1,5 +1,5 @@
 /*
- * $Id: ConditionBMPBean.java,v 1.4 2003/09/06 22:44:09 kjell Exp $
+ * $Id: ConditionBMPBean.java,v 1.5 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.data.IDOQuery;
  * 
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPbean# 
  * <p>
- * $Id: ConditionBMPBean.java,v 1.4 2003/09/06 22:44:09 kjell Exp $
+ * $Id: ConditionBMPBean.java,v 1.5 2003/09/08 08:10:07 laddi Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ConditionBMPBean extends GenericEntity implements Condition {
 	
@@ -52,7 +52,7 @@ public class ConditionBMPBean extends GenericEntity implements Condition {
 	}
 	
 	public int getRegulationID() {
-		return (int) getIntColumnValue(COLUMN_REGULATION_ID);
+		return getIntColumnValue(COLUMN_REGULATION_ID);
 	}
 
 	public void setConditionID(int id) { 
@@ -60,7 +60,7 @@ public class ConditionBMPBean extends GenericEntity implements Condition {
 	}
 	
 	public int getConditionID() {
-		return (int) getIntColumnValue(COLUMN_CONDITION_ID);
+		return getIntColumnValue(COLUMN_CONDITION_ID);
 	}
 
 	public void setIntervalID(int id) { 
@@ -68,7 +68,7 @@ public class ConditionBMPBean extends GenericEntity implements Condition {
 	}
 	
 	public int getIntervalID() {
-		return (int) getIntColumnValue(COLUMN_INTERVAL_ID);
+		return getIntColumnValue(COLUMN_INTERVAL_ID);
 	}
 
 	public void setIndex(int id) { 
@@ -76,7 +76,7 @@ public class ConditionBMPBean extends GenericEntity implements Condition {
 	}
 	
 	public int getIndex() {
-		return (int) getIntColumnValue(COLUMN_INDEX);
+		return getIntColumnValue(COLUMN_INDEX);
 	}
 
 	public Collection ejbFindAllConditions() throws FinderException {

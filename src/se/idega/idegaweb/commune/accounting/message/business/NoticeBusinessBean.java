@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeBusinessBean.java,v 1.2 2003/09/01 11:23:36 anders Exp $
+ * $Id: NoticeBusinessBean.java,v 1.3 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,10 +26,10 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/09/01 11:23:36 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/08 08:10:07 $ by $Author: laddi $
  *
  * @author Anders Lindman
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implements NoticeBusiness  {
 
@@ -56,7 +56,6 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 		Collection c = new ArrayList();
 		try {
 			UserBusiness ub = getUserBusiness();
-			MessageBusiness mb = getMessageBusiness();
 			SchoolBusiness sb = getSchoolBusiness();
 			Collection schoolTypes = sb.findAllSchoolTypes();
 			Iterator iter = schoolTypes.iterator();
@@ -75,7 +74,7 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 							s[0] = school.getName();
 							s[1] = headmaster.getName();
 							c.add(s);
-// remove comment			Message message = mb.createUserMessage(headmaster, subject, body);
+// remove comment			Message message = getMessageBusiness().createUserMessage(headmaster, subject, body);
 // to activate message		message.store();							
 						}
 					}

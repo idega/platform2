@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.20 2003/04/30 09:39:11 staffan Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.21 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -42,11 +42,11 @@ import com.idega.util.PersonalIDFormatter;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/04/30 09:39:11 $ by $Author: staffan $
+ * Last modified: $Date: 2003/09/08 08:10:07 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -192,7 +192,7 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			final CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
 			final String idAsString = iwc.getParameter(PARAM_FORM_DETAILS);
 			final int id = new Integer(idAsString).intValue();
-			final CitizenAccount applicant = (CitizenAccount) business.getAccount(id);
+			final CitizenAccount applicant = business.getAccount(id);
 
 			table.add(getSmallHeader(localize(NAME_KEY, NAME_DEFAULT)), 1, row);
 			table.add(getSmallText(applicant.getApplicantName()), 3, row++);

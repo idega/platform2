@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.2 2003/09/06 22:45:17 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.3 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -38,22 +38,21 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusi
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
 import se.idega.idegaweb.commune.accounting.regulations.business.ConditionHolder;
-import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
 
 
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.2 2003/09/06 22:45:17 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.3 2003/09/08 08:10:07 laddi Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
 	private final static int ACTION_DEFAULT = 0;
-	private final static int ACTION_EDIT = 1;
+	//private final static int ACTION_EDIT = 1;
 	private final static int ACTION_SAVE = 2;
 	private final static int ACTION_CANCEL = 3;
 	private final static String COLUMN_WIDTH = "100";
@@ -73,7 +72,7 @@ public class RegulationListEditor extends AccountingBlock {
 	private final static String KEY_HEADER_SPECIAL_CALCULATION = PP + "header_special_calculation";
 
 	private final static String KEY_CONDITION_HEADER = PP + "condition_header";
-	private final static String KEY_INTERVAL_HEADER = PP + "intervall_header";
+	//private final static String KEY_INTERVAL_HEADER = PP + "intervall_header";
 	private final static String KEY_CONDITION_TYPE_HEADER = PP + "condition_type_header";
 	private final static String KEY_REG_SPEC_TYPE_HEADER = PP + "reg_spec_type_header";
 	private final static String KEY_CONDITION_ORDER_HEADER = PP + "condition_order_header";
@@ -97,10 +96,10 @@ public class RegulationListEditor extends AccountingBlock {
 	private final static String PARAM_MODE_COPY = "mode_copy";
 	private final static String PARAM_EDIT_ID = "param_edit_id";
 	private final static String PARAM_CHANGED_SIGN = "param_signed";
-	private final static String PARAM_CHANGED_DATE = "param_changed_date";
+	//private final static String PARAM_CHANGED_DATE = "param_changed_date";
 	
-	private final static String PARAM_OPERATION_ID = "param_operation_id";
-	private final static String PARAM_PAYMENT_FLOW_TYPE_ID = "param_payment_flow_type_id";	 
+	//private final static String PARAM_OPERATION_ID = "param_operation_id";
+	//private final static String PARAM_PAYMENT_FLOW_TYPE_ID = "param_payment_flow_type_id";	 
 	private final static String PARAM_CONDITION_ORDER= "param_condition_order";	 
 	
 	private final static String PARAM_SELECTOR_MAIN_OPERATION = "param_main_oper_sel";
@@ -169,8 +168,8 @@ public class RegulationListEditor extends AccountingBlock {
 			
 			newId = getRegulationBusiness(iwc).saveRegulation(
 					id,
-					(Date) parseDate(iwc.getParameter(PARAM_PERIOD_FROM)),
-					(Date) parseDate(iwc.getParameter(PARAM_PERIOD_TO)),
+					parseDate(iwc.getParameter(PARAM_PERIOD_FROM)),
+					parseDate(iwc.getParameter(PARAM_PERIOD_TO)),
 					iwc.getParameter(PARAM_NAME),
 					iwc.getParameter(PARAM_AMOUNT),
 					iwc.getParameter(PARAM_CONDITION_ORDER),
@@ -348,17 +347,9 @@ public class RegulationListEditor extends AccountingBlock {
 	 * @return main table
 	 */
 	private Table getRegulationForm(IWContext iwc, Regulation r) {
-
 		Table mtable = new Table();
 		Table table = new Table();
 		int row = 1;
-		Date defaultDate;
-	
-		if (r == null) {
-			defaultDate = new Date(System.currentTimeMillis());
-		} else  {
-			defaultDate = r.getPeriodFrom();
-		}
 	
 		row += 2;
 		Collection conditions = null;
@@ -419,7 +410,7 @@ public class RegulationListEditor extends AccountingBlock {
 		
 		table.add(specialCalculationSelector(iwc, PARAM_SELECTOR_SPECIAL_CALCULATION, specCalcPK), 2, 1);
 
-		table.add(vatYesNoSelector(iwc, PARAM_SELECTOR_VAT_ELIGIBLE, vatYesNoID), 2, 2);
+		table.add(vatYesNoSelector(PARAM_SELECTOR_VAT_ELIGIBLE, vatYesNoID), 2, 2);
 		table.add(vatRuleSelector(iwc, PARAM_SELECTOR_VAT_RULE, vatRulePK), 2, 3);
 		return table;
 	}
@@ -433,7 +424,6 @@ public class RegulationListEditor extends AccountingBlock {
 	 * @return Regulation loaded with data
 	 */
 	private Regulation getThisRegulation(IWContext iwc) {
-		RegulationsBusiness rBiz;
 		Regulation r = null;
 		try {
 			int regulationID = 0;
@@ -441,7 +431,7 @@ public class RegulationListEditor extends AccountingBlock {
 			if(iwc.isParameterSet(PARAM_EDIT_ID)) {
 				regulationID = Integer.parseInt(iwc.getParameter(PARAM_EDIT_ID));
 			}
-			r = (Regulation) getRegulationBusiness(iwc).findRegulation(regulationID);
+			r = getRegulationBusiness(iwc).findRegulation(regulationID);
 		} catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}	
@@ -524,7 +514,7 @@ public class RegulationListEditor extends AccountingBlock {
 	 * @param refIndex The initial position to set the selector to 
 	 * @return the drop down menu
 	 */
-	private DropdownMenu vatYesNoSelector(IWContext iwc, String name, int refIndex) {
+	private DropdownMenu vatYesNoSelector(String name, int refIndex) {
 		
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
 		menu.addMenuElement(1, localize(KEY_VAT_YES, "Ja"));
@@ -683,9 +673,9 @@ public class RegulationListEditor extends AccountingBlock {
 	private RegulationsBusiness getRegulationBusiness(IWContext iwc) throws RemoteException {
 		return (RegulationsBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
 	}
-	private VATBusiness getVATBusiness(IWContext iwc) throws RemoteException {
+	/*private VATBusiness getVATBusiness(IWContext iwc) throws RemoteException {
 		return (VATBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, VATBusiness.class);
-	}
+	}*/
 }
 
 

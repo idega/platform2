@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
-import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.SchoolArea;
@@ -32,7 +31,6 @@ import com.idega.util.PersonalIDFormatter;
 public class ChildCareAdminPlacer extends ChildCareBlock {
 
 	private User child;
-	private GrantedCheck check;
 	
 	private final static int ACTION_VIEW_FORM = 1;
 	private final static int ACTION_SUBMIT = 2;
@@ -40,7 +38,6 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 	private int _action = -1;
 	
 	private final static String PARAMETER_ACTION = "cca_action";
-	private final static String PARAM_FORM_SUBMIT = "cca_submit";
 	private final static String PARAM_FROM_DATE = "cca_from_date";
 	private final static String PARAM_TO_DATE = "cca_to_date";
 	private final static String PARAM_CARE_TIME = "cca_care_time";

@@ -24,7 +24,7 @@ public class ChildCareQueueComparator implements Comparator {
 		User user1 = queue1.getChild();
 		User user2 = queue2.getChild();
 		Age age1 = new Age(user1.getDateOfBirth());
-		Age age2 = new Age(user2.getDateOfBirth());;
+		Age age2 = new Age(user2.getDateOfBirth());
 
 		if (age1.isOlder(age2))
 			return -1;

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.12 2003/08/28 12:10:13 anders Exp $
+ * $Id: ApplicationForm.java,v 1.13 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -19,10 +19,10 @@ import com.idega.presentation.ui.HiddenInput;
  * A generic form for Check & Peng presentation blocks.
  * 
  * <p>
- * Last modified: $Date: 2003/08/28 12:10:13 $
+ * Last modified: $Date: 2003/09/08 08:10:07 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class ApplicationForm extends AccountingBlock {
 
@@ -42,6 +42,7 @@ public class ApplicationForm extends AccountingBlock {
 		table.setCellspacing(getCellspacing());
 		form.add(table);
 		super.add(form);
+		setParent(parent);
 	}
 	
 	public void setParent(AccountingBlock parent){

@@ -20,7 +20,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
-;
+
 
 /**
  * In this window you should be able to edit the name, description and the invalidation date of the topic (ICCategery)

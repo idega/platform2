@@ -19,10 +19,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2003/09/02 15:58:07 $ by $Author: staffan $
+ * Last modified: $Date: 2003/09/08 08:10:06 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -375,8 +375,6 @@ public class InvoiceByCompensationView extends CommuneBlock {
                 digitOnlyInput.append(rawInput.charAt(i));
             }
         }
-        final Calendar rightNow = Calendar.getInstance();
-        final int currentYear = rightNow.get(Calendar.YEAR);
         if (digitOnlyInput.length() == 6) {
             digitOnlyInput.insert(0, 20);
         }
@@ -391,12 +389,8 @@ public class InvoiceByCompensationView extends CommuneBlock {
         if (year < 2003 || month < 1 || month > 12 || day < 1 || day > 31) {
             return null;
         }
-        final Calendar calendar = Calendar.getInstance ();
+        final Calendar calendar = Calendar.getInstance();
         calendar.set (year, month - 1, day);
         return calendar.getTime ();
     }
-
-	private String getLocalizedString (final String key, final String value) {
-		return getResourceBundle ().getLocalizedString (key, value);
-	}
 }

@@ -313,7 +313,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 
-		return (Collection)super.idoFindPKsBySQL(sql.toString());
+		return idoFindPKsBySQL(sql.toString());
   }
   
 	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, CaseStatus caseStatus) throws FinderException {
@@ -347,7 +347,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
 
-		return (Collection)super.idoFindPKsBySQL(sql.toString());
+		return idoFindPKsBySQL(sql.toString());
 	}	
 	
 	
@@ -359,7 +359,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
             " c.provider_id = " + providerId + " and " +
             " p.parent_case_id in (select proc_case_id from proc_case where case_code = 'MBANBOP' and proc_case_id = c.comm_childcare_id)");
 		
-		return (Collection)super.idoFindPKsBySQL(sql.toString());
+		return idoFindPKsBySQL(sql.toString());
 	}	
 		
 	
@@ -375,7 +375,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendOrderBy("c."+QUEUE_ORDER);
 
-		return (Collection)super.idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
+		return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
 	
 	public Collection ejbFindAllCasesByProviderAndNotInStatus(int providerId, String[] caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
@@ -388,7 +388,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_DATE+", c."+QUEUE_ORDER);
 
-		return (Collection)super.idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
+		return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
 	
 	public Collection ejbFindAllCasesByProviderAndNotInStatus(int providerId, int sortBy, Date fromDate, Date toDate, String[] caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
@@ -416,7 +416,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		}
 		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_DATE+", c."+QUEUE_ORDER);
 
-		return (Collection)super.idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
+		return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
 	
 	public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus[]) throws FinderException {
@@ -428,7 +428,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
 		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
 
-		return (Collection)super.idoFindPKsBySQL(sql.toString());
+		return idoFindPKsBySQL(sql.toString());
 	}		
 	
 	public Collection ejbFindAllCasesByProviderStatusNotRejected(int providerId, String caseStatus) throws FinderException {
@@ -440,7 +440,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().append(REJECTION_DATE).append(" is null");
 		
-		return (Collection)super.idoFindPKsBySQL(sql.toString());
+		return idoFindPKsBySQL(sql.toString());
 	}	
 	
 	public Collection ejbFindAllCasesByUserAndStatus(User owner, String caseStatus) throws  FinderException {

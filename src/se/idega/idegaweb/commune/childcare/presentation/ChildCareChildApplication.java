@@ -164,7 +164,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			table.add(getInputTable(iwc), 1, row++);
 			table.setHeight(row++, 12);
 	
-			GenericButton showPrognosis = (GenericButton) getButton(new GenericButton("show_prognosis", localize("child_care.view_prognosis", "View prognosis")));
+			GenericButton showPrognosis = getButton(new GenericButton("show_prognosis", localize("child_care.view_prognosis", "View prognosis")));
 			showPrognosis.setWindowToOpen(ChildCarePrognosisWindow.class);
 			
 			SubmitButton submit = (SubmitButton)getButton(new SubmitButton(localize(PARAM_FORM_SUBMIT, "Submit application"), PARAMETER_ACTION, String.valueOf(ACTION_SUBMIT)));

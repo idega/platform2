@@ -1,5 +1,5 @@
 /*
- * $Id: ConditionTypeBMPBean.java,v 1.1 2003/09/03 23:32:00 kjell Exp $
+ * $Id: ConditionTypeBMPBean.java,v 1.2 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.data.IDOLookup;
  * Holds Special types ("Härleds", "Manuell", "Moms") 
  * 
  * <p>
- * $Id: ConditionTypeBMPBean.java,v 1.1 2003/09/03 23:32:00 kjell Exp $
+ * $Id: ConditionTypeBMPBean.java,v 1.2 2003/09/08 08:10:07 laddi Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ConditionTypeBMPBean extends GenericEntity implements ConditionType {
 	
@@ -61,7 +61,7 @@ public class ConditionTypeBMPBean extends GenericEntity implements ConditionType
 	}
 	
 	public String getConditionType() {
-		return (String) getStringColumnValue(COLUMN_CONDITION_TYPE);
+		return getStringColumnValue(COLUMN_CONDITION_TYPE);
 	}
 
 	public void setLocalizationKey(String type) { 
@@ -69,7 +69,7 @@ public class ConditionTypeBMPBean extends GenericEntity implements ConditionType
 	}
 	
 	public String getLocalizationKey() {
-		return (String) getStringColumnValue(COLUMN_CONDITION_TYPE);
+		return getStringColumnValue(COLUMN_CONDITION_TYPE);
 	}
 
 	public Collection ejbFindAllConditionTypes() throws FinderException {

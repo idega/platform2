@@ -1,5 +1,5 @@
 /*
- * $Id: ActivityTypeBMPBean.java,v 1.9 2003/09/03 23:32:44 kjell Exp $
+ * $Id: ActivityTypeBMPBean.java,v 1.10 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean 
  * <p>
- * $Id: ActivityTypeBMPBean.java,v 1.9 2003/09/03 23:32:44 kjell Exp $
+ * $Id: ActivityTypeBMPBean.java,v 1.10 2003/09/08 08:10:07 laddi Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ActivityTypeBMPBean extends GenericEntity implements ActivityType {
 	
@@ -61,7 +61,7 @@ public class ActivityTypeBMPBean extends GenericEntity implements ActivityType {
 	}
 	
 	public String getActivityType() {
-		return (String) getStringColumnValue(COLUMN_ACTIVITY_TYPE);
+		return getStringColumnValue(COLUMN_ACTIVITY_TYPE);
 	}
 
 	public void setLocalizationKey(String type) { 
@@ -69,7 +69,7 @@ public class ActivityTypeBMPBean extends GenericEntity implements ActivityType {
 	}
 	
 	public String getLocalizationKey() {
-		return (String) getStringColumnValue(COLUMN_ACTIVITY_TYPE);
+		return getStringColumnValue(COLUMN_ACTIVITY_TYPE);
 	}
 
 	public Collection ejbFindAllActivityTypes() throws FinderException {

@@ -21,7 +21,6 @@ import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusinessHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.KeyMapping;
-import se.idega.idegaweb.commune.accounting.regulations.data.KeyMappingBMPBean;
 import se.idega.idegaweb.commune.accounting.regulations.data.KeyMappingHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchiveHome;
@@ -34,7 +33,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchiveHome;
  */
 public class InvoiceBusinessBean {
 	private static final String BATCH_TEXT = "Härledd uppgift";		//Localize this text in the user interface
-	private static final String HOURS_PER_WEEK = "tim/v";		//Localize this text in the user interface
+//	private static final String HOURS_PER_WEEK = "tim/v";		//Localize this text in the user interface
 	
 	public void createInvoicingData(Date startPeriod, Date endPeriod){
 		
@@ -44,14 +43,15 @@ public class InvoiceBusinessBean {
 		School provider;
 		Date currentDate = new Date( new java.util.Date().getTime());
 		float months;
-		int days;
+//		int days;
 		IWTimestamp time, startTime, endTime;
 		try {
+			/*
 			int childcare = getKeyMappingHome().findValueByCategoryAndKey(
 				KeyMappingBMPBean.CAT_ACTIVITY,KeyMappingBMPBean.KEY_CHILDCARE).getValue();
 			int check = getKeyMappingHome().findValueByCategoryAndKey(
 				KeyMappingBMPBean.CAT_REG_SPEC,KeyMappingBMPBean.KEY_CHECK).getValue();
-	
+			*/
 			//**Flag all contracts as 'not processed'
 	
 			try {
@@ -108,13 +108,13 @@ public class InvoiceBusinessBean {
 					months += 1.0;
 					months -= percentOfMonthDone(startTime);
 					months -= 1.0 - percentOfMonthDone(endTime);
-					days = IWTimestamp.getDaysBetween(startTime, endTime);
+					//days = IWTimestamp.getDaysBetween(startTime, endTime);
 //				}
 
 
 				//Get all the rules for this contract
 				//TODO (JJ) This is a func that Thomas will provide.
-				PostingBusiness postingBusiness = getPostingBusinessHome().create();
+				//PostingBusiness postingBusiness = getPostingBusinessHome().create();
 				
 /*				
 				PostingParameters rule = postingBusiness.getPostingParameter(new Date(), childcare, check, null, null);
@@ -146,9 +146,6 @@ public class InvoiceBusinessBean {
 			e1.printStackTrace();
 		} catch (CreateException e) {
 			// TODO (JJ) Auto-generated catch block
-			e.printStackTrace();
-		} catch (FinderException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.7 2003/09/02 23:42:55 kjell Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.8 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean
  * <p>
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.7 2003/09/02 23:42:55 kjell Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.8 2003/09/08 08:10:07 laddi Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class CommuneBelongingTypeBMPBean extends GenericEntity implements CommuneBelongingType {
 	
@@ -62,7 +62,7 @@ public class CommuneBelongingTypeBMPBean extends GenericEntity implements Commun
 	}
 	
 	public String getCommuneBelongingType() {
-		return (String) getStringColumnValue(COLUMN_COMMUNE_BELONGING_TYPE);
+		return getStringColumnValue(COLUMN_COMMUNE_BELONGING_TYPE);
 	}
 
 	public void setLocalizationKey(String type) { 
@@ -70,7 +70,7 @@ public class CommuneBelongingTypeBMPBean extends GenericEntity implements Commun
 	}
 	
 	public String getLocalizationKey() {
-		return (String) getStringColumnValue(COLUMN_COMMUNE_BELONGING_TYPE);
+		return getStringColumnValue(COLUMN_COMMUNE_BELONGING_TYPE);
 	}
 
 	public Collection ejbFindAllCommuneBelongingTypes() throws FinderException {

@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulations.java,v 1.9 2003/08/25 21:54:35 anders Exp $
+ * $Id: VATRegulations.java,v 1.10 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * VAT regulations for providers. 
  * This class is replaced by VATEditor.
  * <p>
- * Last modified: $Date: 2003/08/25 21:54:35 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/08 08:10:07 $ by $Author: laddi $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class VATRegulations extends AccountingBlock {
 
@@ -48,10 +48,10 @@ public class VATRegulations extends AccountingBlock {
 		setResourceBundle(getResourceBundle(iwc));
 
 		try {
-			int action = parseAction(iwc);
+			int action = parseAction();
 			switch (action) {
 				case ACTION_DEFAULT :
-					viewDefaultForm(iwc);
+					viewDefaultForm();
 					break;
 			}
 		}
@@ -64,14 +64,14 @@ public class VATRegulations extends AccountingBlock {
 	 * Returns the action constant for the action to perform based 
 	 * on the POST parameters in the specified context.
 	 */
-	private int parseAction(IWContext iwc) {
+	private int parseAction() {
 		return ACTION_DEFAULT;
 	}
 
 	/*
 	 * Adds the default form to the block.
 	 */	
-	private void viewDefaultForm(IWContext iwc) {
+	private void viewDefaultForm() {
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Momssats");
 		app.setMainPanel(getVATList());

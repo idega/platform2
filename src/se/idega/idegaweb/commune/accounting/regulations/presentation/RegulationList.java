@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.2 2003/09/06 22:45:17 kjell Exp $
+ * $Id: RegulationList.java,v 1.3 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -12,7 +12,6 @@ package se.idega.idegaweb.commune.accounting.regulations.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.sql.Date;
 
 import com.idega.presentation.IWContext;
@@ -40,15 +39,15 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.2 2003/09/06 22:45:17 kjell Exp $
+ * $Id: RegulationList.java,v 1.3 2003/09/08 08:10:07 laddi Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class RegulationList extends AccountingBlock {
 
 	private final static int ACTION_DEFAULT = 0;
-	private final static int ACTION_EDIT = 1;
+	//private final static int ACTION_EDIT = 1;
 	private final static int ACTION_DELETE = 1;
 	private final static String PP = "cacc_regulation_list"; // Parameter prefix 
 
@@ -57,8 +56,8 @@ public class RegulationList extends AccountingBlock {
 	private final static String KEY_CONDITION_TYPE = PP + "condition_type";
 	private final static String KEY_CONDITION_ORDER = PP + "condition_order";
 	private final static String KEY_REG_SPEC_TYPE = PP + "reg_specification_type";
-	private final static String KEY_COPY = PP + "copy";
-	private final static String KEY_EDIT = PP + "edit";
+	//private final static String KEY_COPY = PP + "copy";
+	//private final static String KEY_EDIT = PP + "edit";
 	private final static String KEY_CLICK_REMOVE = PP + "click_to_remove";
 	private final static String KEY_HEADER_OPERATION = PP + "operation_header"; 
 	private final static String KEY_HEADER_PAYMENT_FLOW_TYPE = PP + "payment_flow_type_header"; 
@@ -290,7 +289,7 @@ public class RegulationList extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_HEADER_SORT_BY, "Sortera på"), 3, 1);
 		table.add(getLocalizedButton(PARAM_SEARCH, KEY_SEARCH, "Sök"), 3, 3);
 
-		table.add(sortBySelector(iwc, PARAM_SELECTOR_SORT_BY, 1), 4, 1);
+		table.add(sortBySelector(PARAM_SELECTOR_SORT_BY, 1), 4, 1);
 
 		return table;
 	}
@@ -314,9 +313,7 @@ public class RegulationList extends AccountingBlock {
 	 * @param refIndex The initial position to set the selector to 
 	 * @return the drop down menu
 	 */
-	private DropdownMenu sortBySelector(IWContext iwc, String name, int refIndex) {
-		
-		ArrayList items = new ArrayList();
+	private DropdownMenu sortBySelector(String name, int refIndex) {
 		DropdownMenu menu = new DropdownMenu(name);
 		menu.addMenuElementFirst("1", localize(KEY_MENU_SORTPERIODE_HEADER, "Period"));
 		menu.addMenuElementFirst("2", localize(KEY_MENU_SORTNAME_HEADER, "Benämning"));

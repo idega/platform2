@@ -112,7 +112,7 @@ public class MessageBox extends CommuneBlock {
 
 					isRead = getMessageBusiness(iwc).isMessageRead(msg);
 					
-					subject = (Link) getSmallLink(msg.getSubject());
+					subject = getSmallLink(msg.getSubject());
 					subject.setWindowToOpen(MessageViewerWindow.class);
 					subject.addParameter(PARAM_MESSAGE_ID, msg.getPrimaryKey().toString());
 					subject.addParameter(MessageViewer.PARAMETER_METHOD, MessageViewer.METHOD_VIEW_MESSAGE);

@@ -137,9 +137,9 @@ public class HouseHoldViewer extends AccountingBlock {
 				if (childs != null && !childs.isEmpty()) {
 					for (Iterator iter2 = childs.iterator(); iter2.hasNext();) {
 						User child = (User) iter2.next();
-						if (!childrenMap.containsKey((Integer) child.getPrimaryKey())) {
+						if (!childrenMap.containsKey(child.getPrimaryKey())) {
 							children.add(child);
-							childrenMap.put((Integer) child.getPrimaryKey(), child);
+							childrenMap.put(child.getPrimaryKey(), child);
 						}
 					}
 				}
@@ -512,11 +512,13 @@ public class HouseHoldViewer extends AccountingBlock {
 
 	// TODO get sibling order from database somehow
 	private Integer getSiblingOrder(User child) {
+		System.out.println(child.getPrimaryKey());
 		return new Integer(1);
 	}
 
 	// TODO fetch low income invoice record
 	private Object getLowIncome(User user) {
+		System.out.println(user.getPrimaryKey());
 		return null;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * $Id: VATRuleBMPBean.java,v 1.1 2003/09/06 08:45:33 kjell Exp $
+ * $Id: VATRuleBMPBean.java,v 1.2 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.data.IDOLookup;
  * Holds VAT rules ("Momsersättning förskoleklass", "Momsersättning grundskola" etc) 
  * 
  * <p>
- * $Id: VATRuleBMPBean.java,v 1.1 2003/09/06 08:45:33 kjell Exp $
+ * $Id: VATRuleBMPBean.java,v 1.2 2003/09/08 08:10:07 laddi Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class VATRuleBMPBean extends GenericEntity implements VATRule {
 	
@@ -72,7 +72,7 @@ public class VATRuleBMPBean extends GenericEntity implements VATRule {
 	}
 	
 	public String getVATRule() {
-		return (String) getStringColumnValue(COLUMN_VAT_RULE);
+		return getStringColumnValue(COLUMN_VAT_RULE);
 	}
 
 	public void setLocalizationKey(String type) { 
@@ -80,7 +80,7 @@ public class VATRuleBMPBean extends GenericEntity implements VATRule {
 	}
 	
 	public String getLocalizationKey() {
-		return (String) getStringColumnValue(COLUMN_VAT_RULE);
+		return getStringColumnValue(COLUMN_VAT_RULE);
 	}
 
 	public Collection ejbFindAllVATRules() throws FinderException {

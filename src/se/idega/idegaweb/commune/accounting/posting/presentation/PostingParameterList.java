@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.16 2003/09/04 13:53:38 laddi Exp $
+ * $Id: PostingParameterList.java,v 1.17 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,22 +47,22 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.16 2003/09/04 13:53:38 laddi Exp $
+ * $Id: PostingParameterList.java,v 1.17 2003/09/08 08:10:07 laddi Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class PostingParameterList extends AccountingBlock {
 
 	private final static int ACTION_DEFAULT = 0;
-	private final static int ACTION_EDIT = 1;
+//	private final static int ACTION_EDIT = 1;
 	private final static int ACTION_DELETE = 1;
 	
 	private final static String KEY_HEADER = "posting_def_list.header";
 	private final static String KEY_PERIOD = "posting_def_list.periode";
 	private final static String KEY_PERIOD_SEARCH = "posting_def_list.periode_search";
-	private final static String KEY_FROM_DATE = "posting_parm_list.from_date";
-	private final static String KEY_TO_DATE = "posting_parm_list.to_date";
+//	private final static String KEY_FROM_DATE = "posting_parm_list.from_date";
+//	private final static String KEY_TO_DATE = "posting_parm_list.to_date";
 	private final static String KEY_ACTIVITY = "posting_parm_list.activity";
 	private final static String KEY_REG_SPEC = "posting_parm_list.reg_spec";
 	private final static String KEY_COMPANY_TYPE = "posting_parm_list.company_type";
@@ -78,22 +78,22 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String KEY_REMOVE = "posting_parm_list.remove";
 	private final static String KEY_REMOVE_CONFIRM = "posting_parm_list.remove_confirm";
 	private final static String KEY_CLICK_REMOVE = "posting_parm_list.click_to_remove";
-	private final static String KEY_CLICK_COPY = "posting_parm_list.click_to_copy";
-	private final static String KEY_CLICK_EDIT = "posting_parm_list.click_to_edit";
-	private final static String KEY_CANCEL = "posting_parm_list.cancel";
-	private final static String KEY_CONFIRM_REMOVE_MESSAGE = "posting_parm_list.confirm_remove_message";
+//	private final static String KEY_CLICK_COPY = "posting_parm_list.click_to_copy";
+//	private final static String KEY_CLICK_EDIT = "posting_parm_list.click_to_edit";
+//	private final static String KEY_CANCEL = "posting_parm_list.cancel";
+//	private final static String KEY_CONFIRM_REMOVE_MESSAGE = "posting_parm_list.confirm_remove_message";
 	private final static String KEY_DEFAULT_BLANK = "posting_parm_list.blank";
 
 	private final static String PARAM_SEARCH = "button_search";
-	private final static String PARAM_COPY = "button_copy";
+//	private final static String PARAM_COPY = "button_copy";
 	private final static String PARAM_NEW = "button_new";
-	private final static String PARAM_REMOVE = "button_remove";
+//	private final static String PARAM_REMOVE = "button_remove";
 
 	private final static String PARAM_MODE_COPY = "mode_copy";
-	private final static String PARAM_CHECKED_FOR_DELETE = "param_checked_for_delete";
+//	private final static String PARAM_CHECKED_FOR_DELETE = "param_checked_for_delete";
 	private final static String PARAM_FROM = "param_from";
 	private final static String PARAM_TO = "param_to";
-	private final static String PARAM_POSTING_ID = "param_posting_id";
+//	private final static String PARAM_POSTING_ID = "param_posting_id";
 	private final static String PARAM_DELETE_ID = "param_delete_id";
 	private final static String PARAM_EDIT_ID = "param_edit_id";
 
@@ -307,7 +307,7 @@ public class PostingParameterList extends AccountingBlock {
 		fromDate.setLength(4);
 		toDate.setLength(4);
 		table.add(fromDate, 1, 1);
-		table.add(new String("-"), 2, 1);
+		table.add(getText("-"), 2, 1);
 		table.add(toDate, 3, 1);
 		return table;
 	}

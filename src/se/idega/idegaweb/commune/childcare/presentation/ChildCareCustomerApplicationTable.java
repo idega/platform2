@@ -40,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.50 2003/07/05 17:20:57 gummi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.51 2003/09/08 08:10:07 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -439,7 +439,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 			Table appTable = new ChildCarePlaceOfferTable1(iwc, this, sortApplications(applications, false), hasOffer, hasActiveApplication);
 
-			GenericButton cancelBtn = (GenericButton) getButton(new GenericButton("cancel", localize(CANCEL)));
+			GenericButton cancelBtn = getButton(new GenericButton("cancel", localize(CANCEL)));
 			cancelBtn.setPageToOpen(getParentPageID());
 			cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_1);
 
@@ -533,7 +533,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(getSmallText(school.getSchoolAddress()), 3, row++);
 			layoutTbl.add(getSmallText(school.getSchoolPhone()), 3, row++);
 
-			GenericButton careTimePopup = (GenericButton) getButton(new GenericButton("new_care_time", localize(NEW_CARETIME)));
+			GenericButton careTimePopup = getButton(new GenericButton("new_care_time", localize(NEW_CARETIME)));
 			careTimePopup.setWindowToOpen(ChildCareWindow.class);
 			careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_NEW_CARE_TIME));
 			careTimePopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
@@ -541,7 +541,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			
 			careTimePopup.addParameterToWindow(CCConstants.APPID, activeApplication.getNodeID());
 
-			GenericButton cancelPopup = (GenericButton) getButton(new GenericButton("end_contract", localize(END_CARETIME)));
+			GenericButton cancelPopup = getButton(new GenericButton("end_contract", localize(END_CARETIME)));
 			cancelPopup.setWindowToOpen(ChildCareWindow.class);
 			cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_END_CONTRACT));
 			cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
@@ -553,7 +553,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(cancelPopup, 3, row);
 			
 			if (archive != null) {
-				GenericButton contractPopup = (GenericButton) getButton(new GenericButton("contract", localize("child_care.show_contract", "Show contract")));
+				GenericButton contractPopup = getButton(new GenericButton("contract", localize("child_care.show_contract", "Show contract")));
 				contractPopup.setFileToOpen(archive.getContractFileID());
 				layoutTbl.add(Text.getNonBrakingSpace(), 3, row);
 				layoutTbl.add(contractPopup, 3, row);
@@ -576,7 +576,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	private String createPagePhase2(IWContext iwc, Table layoutTbl, Collection applications) throws RemoteException {
 		Table appTable = new ChildCarePlaceOfferTable2(iwc, this, sortApplications(applications, true));
 
-		GenericButton cancelBtn = (GenericButton) getButton(new GenericButton("cancel", localize(CANCEL)));
+		GenericButton cancelBtn = getButton(new GenericButton("cancel", localize(CANCEL)));
 		cancelBtn.setPageToOpen(getParentPageID());
 		cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_2);
 

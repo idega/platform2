@@ -1,5 +1,5 @@
 /*
- * $Id: ExtendedDropdownDouble.java,v 1.2 2003/09/06 09:01:43 kjell Exp $
+ * $Id: ExtendedDropdownDouble.java,v 1.3 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -119,7 +119,7 @@ public class ExtendedDropdownDouble extends InterfaceObjectContainer {
             getSecondaryDropdown().setStyleClass(_styleClass);
         }
         Script script = getParentPage().getAssociatedScript();
-        script.addFunction("setDropdownOptions"+_nameCounter, getSelectorScript(iwc));
+        script.addFunction("setDropdownOptions"+_nameCounter, getSelectorScript());
         if(_secondarySelected == null)
             _secondarySelected = "-1";
         getParentPage().setOnLoad("setDropdownOptions"+_nameCounter+"(findObj('" + primaryName + "'),findObj('" + secondaryName + "'), '" + _secondarySelected + "')");
@@ -147,7 +147,7 @@ public class ExtendedDropdownDouble extends InterfaceObjectContainer {
         }
     }
 
-    private String getSelectorScript(IWContext iwc)
+    private String getSelectorScript()
     {
         StringBuffer s = new StringBuffer();
         s.append("function setDropdownOptions"+_nameCounter+"(input, inputToChange, selected) {").append("\n\t");
@@ -167,8 +167,8 @@ public class ExtendedDropdownDouble extends InterfaceObjectContainer {
                 for(Iterator iterator = map.keySet().iterator(); iterator.hasNext(); s.append("dropdownValues[\"" + key + "\"][" + column++ + "] = new Option('" + value + "','" + secondKey + "');").append("\n\t"))
                 {
                     Object element = iterator.next();
-                    secondKey = getKey(iwc, element);
-                    value = getValue(iwc, map.get(element), methodName);
+                    secondKey = getKey(element);
+                    value = getValue(map.get(element), methodName);
                 }
 
             }
@@ -190,7 +190,7 @@ public class ExtendedDropdownDouble extends InterfaceObjectContainer {
         return s.toString();
     }
 
-    protected String getKey(IWContext iwc, Object key)
+    protected String getKey(Object key)
     {
 		if (key instanceof GenericEntity) {
 			GenericEntity ge = (GenericEntity) key;
@@ -203,7 +203,7 @@ public class ExtendedDropdownDouble extends InterfaceObjectContainer {
 		}
     }
 
-    protected String getValue(IWContext iwc, Object value, String methodName)
+    protected String getValue(Object value, String methodName)
     {
 		if (value instanceof GenericEntity) {
 			// Bean OBJ
@@ -213,9 +213,9 @@ public class ExtendedDropdownDouble extends InterfaceObjectContainer {
 			try {
 				Method m = c.getMethod(methodName, null);					
 				if (methodName.compareTo("getLocalizationKey") == 0) {
-					s  = (String) localize((String)m.invoke(o, null), (String)m.invoke(o, null));
+					s  = localize((String)m.invoke(o, null), (String)m.invoke(o, null));
 				} else {
-					s  = (String) localize((String)m.invoke(o, null), (String)m.invoke(o, null));
+					s  = localize((String)m.invoke(o, null), (String)m.invoke(o, null));
 				}
 				
 			} catch (Exception e) {

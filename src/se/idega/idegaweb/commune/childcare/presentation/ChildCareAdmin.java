@@ -152,7 +152,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 						applicationTable.setRowColor(row, getZebraColor2());
 				}
 					
-				link = (Link) this.getSmallLink(child.getNameLastFirst(true));
+				link = getSmallLink(child.getNameLastFirst(true));
 				link.setEventListener(ChildCareEventListener.class);
 				link.setParameter(getSession().getParameterUserID(), String.valueOf(application.getChildId()));
 				link.setParameter(getSession().getParameterApplicationID(), application.getPrimaryKey().toString());

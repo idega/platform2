@@ -24,7 +24,7 @@ public class ChildCareApplicationComparator implements Comparator {
 		User user1 = application1.getChild();
 		User user2 = application2.getChild();
 		Age age1 = new Age(user1.getDateOfBirth());
-		Age age2 = new Age(user2.getDateOfBirth());;
+		Age age2 = new Age(user2.getDateOfBirth());
 
 		if (age1.isOlder(age2))
 			return -1;

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.17 2003/09/06 22:43:50 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.18 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -150,7 +150,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			}
 			r = null;
 			if(rID != 0) {				
-				int eq = 0;
 				r = home.findRegulation(rID);
 			}
 		} catch (FinderException e) {
@@ -592,7 +591,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public Regulation findRegulation(int id) {
 		try {
 			RegulationHome home = getRegulationHome();
-			return (Regulation) home.findRegulation(id);				
+			return home.findRegulation(id);				
 		} catch (RemoteException e) {
 			return null;
 		} catch (FinderException e) {
@@ -674,7 +673,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 */
 	public void deleteRegulation(int id) throws java.rmi.RemoteException {
 		try {
-			Regulation r = (Regulation) findRegulation(id);
+			Regulation r = findRegulation(id);
 			r.remove();
 			r.store();	
 		} catch (Exception e) {

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersTester.java,v 1.5 2003/09/02 23:40:22 kjell Exp $
+ * $Id: PostingParametersTester.java,v 1.6 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -11,26 +11,22 @@ package se.idega.idegaweb.commune.accounting.posting.presentation;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
-import java.sql.Timestamp;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ExceptionWrapper;
-import com.idega.util.IWTimestamp;
 import com.idega.presentation.ui.Form;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
-
 
 /**
  * PostingParametersTest is an idegaWeb block that is used to test the Posting parameters retrieval 
  *  
  * <p>
- * $Id: PostingParametersTester.java,v 1.5 2003/09/02 23:40:22 kjell Exp $
+ * $Id: PostingParametersTester.java,v 1.6 2003/09/08 08:10:07 laddi Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version $Version$
@@ -56,7 +52,7 @@ public class PostingParametersTester extends AccountingBlock {
 
 		try {
 			int action = parseAction(iwc);
-			prepareMainTable(iwc);
+			prepareMainTable();
 			switch (action) {
 				case ACTION_DEFAULT :
 					viewMainForm(iwc);
@@ -73,11 +69,11 @@ public class PostingParametersTester extends AccountingBlock {
 			super.add(new ExceptionWrapper(e, this));
 		}
 	}
-		 
+
 	private int parseAction(IWContext iwc) {
 		int action = ACTION_DEFAULT;
 		if (iwc.isParameterSet(PARAM_BUTTON_SEARCH)) {
-		  action = ACTION_SEARCH;
+			action = ACTION_SEARCH;
 		}
 		return action;
 	}
@@ -89,110 +85,79 @@ public class PostingParametersTester extends AccountingBlock {
 		PostingParameters pp = searchPostingParameter(iwc);
 
 		if (pp == null) {
-			_errorMessage = "Hittades ej";		
+			_errorMessage = "Hittades ej";
 		}
-		if(_errorMessage.length() !=0) {
-			table.add(getSmallErrorText(_errorMessage),1 ,row);
+		if (_errorMessage.length() != 0) {
+			table.add(getSmallErrorText(_errorMessage), 1, row);
 			mainForm.add(table);
 			return;
 		}
-		
-		table.add(getSmallText(""),1 ,row);
-		
-		table.add(getSmallText("Egen konteringssträng"),1 ,row);
-		table.add(getSmallText(pp.getPostingString()),2 ,row++);
 
-		table.add(getSmallText("Motkonteringsträng"),1 ,row);
-		table.add(getSmallText(pp.getDoublePostingString()),2 ,row++);
+		table.add(getSmallText(""), 1, row);
+
+		table.add(getSmallText("Egen konteringssträng"), 1, row);
+		table.add(getSmallText(pp.getPostingString()), 2, row++);
+
+		table.add(getSmallText("Motkonteringsträng"), 1, row);
+		table.add(getSmallText(pp.getDoublePostingString()), 2, row++);
 
 		mainForm.add(table);
 	}
-	
+
 	private void viewMainForm(IWContext iwc) {
 		Table table = new Table();
-		Timestamp rightNow = IWTimestamp.getTimestampRightNow();
 		Date dd = new Date(System.currentTimeMillis());
 
-		RegulationsBusiness rBiz = null;;
-		
 		try {
-			rBiz = getRegulationsBusiness(iwc);
-		
-			table.add(getLocalizedLabel("posting_test_date", "Datum"),1 ,1);
+			table.add(getLocalizedLabel("posting_test_date", "Datum"), 1, 1);
 			table.add(getTextInput(PARAM_FIELD_DATE, formatDate(dd, 10)), 2, 1);
-			
-			table.add(getLocalizedLabel("posting_test_activity", "Verksamhet"),1 ,2);
-			table.add(getTextInput(
-					PARAM_FIELD_ACTIVITY, 
-					iwc.isParameterSet(PARAM_FIELD_ACTIVITY) ?
-					iwc.getParameter(PARAM_FIELD_ACTIVITY) : ""), 2, 2);
-//			table.add(getSmallText("keys: " +rBiz.getActivityTypesAsString()), 3, 2);
-	
-	
-	
-			table.add(getLocalizedLabel("posting_test_regspec", "Regelspec. typ"),1 ,3);
-			table.add(getTextInput(
-					PARAM_FIELD_REGSPEC, 
-					iwc.isParameterSet(PARAM_FIELD_REGSPEC) ?
-					iwc.getParameter(PARAM_FIELD_REGSPEC) : ""), 2, 3);
-//			table.add(getSmallText("keys: "+rBiz.getRegulationSpecTypesAsString()), 3, 3);
-	
-	
-						 
-			table.add(getLocalizedLabel("posting_test_company_type", "Bolagstyp"),1 ,4);
-			table.add(getTextInput(
-					PARAM_FIELD_COMPANY_TYPE, 
-					iwc.isParameterSet(PARAM_FIELD_COMPANY_TYPE) ?
-					iwc.getParameter(PARAM_FIELD_COMPANY_TYPE) : ""), 2, 4);
-//			table.add(getSmallText("keys: "+rBiz.getCompanyTypesAsString()), 3, 4);
-	
-	
-			table.add(getLocalizedLabel("posting_test_com_bel_type", "Kommuntillhörighet"),1 ,5);
-			table.add(getTextInput(
-					PARAM_FIELD_COM_BELONGING, 
-					iwc.isParameterSet(PARAM_FIELD_COM_BELONGING) ?
-					iwc.getParameter(PARAM_FIELD_COM_BELONGING) : ""), 2, 5);
-//			table.add(getSmallText("keys: "+rBiz.getCommuneBelongingsAsString()), 3, 5);
-	
+
+			table.add(getLocalizedLabel("posting_test_activity", "Verksamhet"), 1, 2);
+			table.add(getTextInput(PARAM_FIELD_ACTIVITY, iwc.isParameterSet(PARAM_FIELD_ACTIVITY) ? iwc.getParameter(PARAM_FIELD_ACTIVITY) : ""), 2, 2);
+			//			table.add(getSmallText("keys: " +rBiz.getActivityTypesAsString()), 3, 2);
+
+			table.add(getLocalizedLabel("posting_test_regspec", "Regelspec. typ"), 1, 3);
+			table.add(getTextInput(PARAM_FIELD_REGSPEC, iwc.isParameterSet(PARAM_FIELD_REGSPEC) ? iwc.getParameter(PARAM_FIELD_REGSPEC) : ""), 2, 3);
+			//			table.add(getSmallText("keys: "+rBiz.getRegulationSpecTypesAsString()), 3, 3);
+
+			table.add(getLocalizedLabel("posting_test_company_type", "Bolagstyp"), 1, 4);
+			table.add(getTextInput(PARAM_FIELD_COMPANY_TYPE, iwc.isParameterSet(PARAM_FIELD_COMPANY_TYPE) ? iwc.getParameter(PARAM_FIELD_COMPANY_TYPE) : ""), 2, 4);
+			//			table.add(getSmallText("keys: "+rBiz.getCompanyTypesAsString()), 3, 4);
+
+			table.add(getLocalizedLabel("posting_test_com_bel_type", "Kommuntillhörighet"), 1, 5);
+			table.add(getTextInput(PARAM_FIELD_COM_BELONGING, iwc.isParameterSet(PARAM_FIELD_COM_BELONGING) ? iwc.getParameter(PARAM_FIELD_COM_BELONGING) : ""), 2, 5);
+			//			table.add(getSmallText("keys: "+rBiz.getCommuneBelongingsAsString()), 3, 5);
+
 			table.add(getLocalizedButton(PARAM_BUTTON_SEARCH, "posting_test_search", "Sök"), 2, 6);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			_errorMessage = e.getMessage();
 			return;
-		}	
+		}
 
-		mainForm.add(table);		
+		mainForm.add(table);
 	}
 
 	private PostingParameters searchPostingParameter(IWContext iwc) {
 		PostingBusiness pBiz;
 		PostingParameters pp = null;
 		try {
-			int postingID = 0;
 			pBiz = getPostingBusiness(iwc);
-			
-			pp = (PostingParameters) 
-				pBiz.getPostingParameter(
-						parseDate(iwc.getParameter(PARAM_FIELD_DATE)),
-						Integer.parseInt(iwc.getParameter(PARAM_FIELD_ACTIVITY)),
-						Integer.parseInt(iwc.getParameter(PARAM_FIELD_REGSPEC)),
-						Integer.parseInt(iwc.getParameter(PARAM_FIELD_COMPANY_TYPE)),
-						Integer.parseInt(iwc.getParameter(PARAM_FIELD_COM_BELONGING))
-				);
-			
-		} catch (PostingParametersException e) {
+
+			pp = pBiz.getPostingParameter(parseDate(iwc.getParameter(PARAM_FIELD_DATE)), Integer.parseInt(iwc.getParameter(PARAM_FIELD_ACTIVITY)), Integer.parseInt(iwc.getParameter(PARAM_FIELD_REGSPEC)), Integer.parseInt(iwc.getParameter(PARAM_FIELD_COMPANY_TYPE)), Integer.parseInt(iwc.getParameter(PARAM_FIELD_COM_BELONGING)));
+		}
+		catch (PostingParametersException e) {
 			_errorMessage = localize(e.getTextKey(), e.getDefaultText());
-		} catch (RemoteException e) {
+		}
+		catch (RemoteException e) {
 		}
 		return pp;
 	}
 
-	private void prepareMainTable(IWContext iwc) {
+	private void prepareMainTable() {
 		mainForm = new Form();
 	}
-	
-	private RegulationsBusiness getRegulationsBusiness(IWContext iwc) throws RemoteException {
-		return (RegulationsBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
-	}
+
 	private PostingBusiness getPostingBusiness(IWContext iwc) throws RemoteException {
 		return (PostingBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
 	}

@@ -64,14 +64,14 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			else
 				localized = localize("child_care.create_group", "Create group");
 	
-			GenericButton createGroup = (GenericButton) getButton(new GenericButton("create_change_group", localized));
+			GenericButton createGroup = getButton(new GenericButton("create_change_group", localized));
 			createGroup.setWindowToOpen(ChildCareWindow.class);
 			createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CREATE_GROUP);
 			createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 			table.add(createGroup, 1, 5);
 			
 			if (getSession().getGroupID() != -1 && getBusiness().getSchoolBusiness().getNumberOfStudentsInClass(getSession().getGroupID()) == 0) {
-				GenericButton deleteGroup = (GenericButton) getButton(new GenericButton("delete_group", localize("child_care.delete_group", "Delete group")));
+				GenericButton deleteGroup = getButton(new GenericButton("delete_group", localize("child_care.delete_group", "Delete group")));
 				deleteGroup.setWindowToOpen(ChildCareWindow.class);
 				deleteGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_DELETE_GROUP);
 				deleteGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());

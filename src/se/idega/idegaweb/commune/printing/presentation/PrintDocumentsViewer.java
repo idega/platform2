@@ -66,7 +66,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private final static String PARAM_LETTER_STATUS = "prv_let_sts";
 
 	private final static String PRM_STAMP_P_FROM = "prv_pfrm";
-	;
+	
 	private final static String PRM_STAMP_U_FROM = "prv_ufrm";
 	private final static String PRM_STAMP_P_TO = "prv_pto";
 	private final static String PRM_STAMP_U_TO = "prv_uto";

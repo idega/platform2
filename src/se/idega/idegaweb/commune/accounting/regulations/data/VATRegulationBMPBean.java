@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulationBMPBean.java,v 1.9 2003/09/02 10:36:59 anders Exp $
+ * $Id: VATRegulationBMPBean.java,v 1.10 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOQuery;
 /**
  * Entity bean for VATRegulation entries.
  * <p>
- * Last modified: $Date: 2003/09/02 10:36:59 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/08 08:10:07 $ by $Author: laddi $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class VATRegulationBMPBean extends GenericEntity implements VATRegulation {
 
@@ -82,7 +82,7 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	}
 
 	public float getVATPercent() {
-		return ((float) getIntColumnValue(COLUMN_VAT_PERCENT)) / PERCENT_DECIMAL_DIVIDER;	
+		return getFloatColumnValue(COLUMN_VAT_PERCENT) / PERCENT_DECIMAL_DIVIDER;	
 	}
 	
 	public PaymentFlowType getPaymentFlowType() {

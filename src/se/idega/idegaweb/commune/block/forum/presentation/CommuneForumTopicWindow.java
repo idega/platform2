@@ -8,7 +8,7 @@ package se.idega.idegaweb.commune.block.forum.presentation;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.Window;
-;
+
 
 /**
  * In this window you should be able to edit the name, description and the invalidation date of the topic (ICCategery)

@@ -119,8 +119,6 @@ public class CommuneCategoryWindow extends CategoryWindow {
 			if (parent > 0) {
 				ICCategory cat = CategoryFinder.getInstance().getCategory(parent);
 				T.add(formatText(iwrb.getLocalizedString("create_child_category_under", "Create child under") + " " + cat.getName()), 2, row);
-				;
-
 			}
 			else {
 				T.add(formatText(iwrb.getLocalizedString("create_root_category", "Create new root category")), 2, row);

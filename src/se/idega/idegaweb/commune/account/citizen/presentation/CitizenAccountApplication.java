@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.55 2003/06/11 09:08:16 laddi Exp $
+ * $Id: CitizenAccountApplication.java,v 1.56 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -56,11 +56,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/06/11 09:08:16 $ by $Author: laddi $
+ * Last modified: $Date: 2003/09/08 08:10:07 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.55 $
+ * @version $Revision: 1.56 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -507,7 +507,6 @@ private void submitUnknownCitizenForm2(final IWContext iwc) {
 
 		if (null != applicationId && hasCohabitant) {
 			final String cohabitantFirstName = parameters.get(FIRST_NAME_KEY + COHABITANT_KEY).toString();
-			;
 			final String cohabitantLastName = parameters.get(LAST_NAME_KEY + COHABITANT_KEY).toString();
 			final String cohabitantSsn = parameters.get(SSN_KEY + COHABITANT_KEY).toString();
 			final String cohabitantCivilStatus = parameters.get(CIVIL_STATUS_KEY + COHABITANT_KEY).toString();
@@ -518,7 +517,6 @@ private void submitUnknownCitizenForm2(final IWContext iwc) {
 		if (null != applicationId && childrenCount > 0) {
 			for (int i = 0; i < childrenCount; i++) {
 				final String childrenFirstName = parameters.get(FIRST_NAME_KEY + CHILDREN_KEY + i).toString();
-				;
 				final String childrenLastName = parameters.get(LAST_NAME_KEY + CHILDREN_KEY + i).toString();
 				final String childrenSsn = parameters.get(SSN_KEY + CHILDREN_KEY + i).toString();
 				business.insertChildren(applicationId, childrenFirstName, childrenLastName, childrenSsn);

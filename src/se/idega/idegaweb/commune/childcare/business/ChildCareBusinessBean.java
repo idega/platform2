@@ -866,7 +866,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public boolean rejectApplication(int applicationId, String rejectSubject, String rejectBody, String newSubject, String newBody, User user) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			ChildCareApplication appl = (ChildCareApplication) home.findByPrimaryKey(new Integer(applicationId));
+			ChildCareApplication appl = home.findByPrimaryKey(new Integer(applicationId));
 			return rejectApplication(appl, rejectSubject, rejectBody, newSubject, newBody, user);
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -1096,7 +1096,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public boolean acceptApplication(int applicationId, IWTimestamp validUntil, String subject, String message, User user) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			ChildCareApplication appl = (ChildCareApplication) home.findByPrimaryKey(new Integer(applicationId));
+			ChildCareApplication appl = home.findByPrimaryKey(new Integer(applicationId));
 
 			return acceptApplication(appl, validUntil, subject, message, user);
 		}
@@ -1114,7 +1114,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public boolean rejectOffer(int applicationId, User user) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			ChildCareApplication application = (ChildCareApplication)home.findByPrimaryKey(new Integer(applicationId));
+			ChildCareApplication application = home.findByPrimaryKey(new Integer(applicationId));
 			
 			UserTransaction t = getSessionContext().getUserTransaction();
 			try {
@@ -1205,7 +1205,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public boolean removeFromQueue(int applicationId, User user) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
-			ChildCareApplication appl = (ChildCareApplication) home.findByPrimaryKey(new Integer(applicationId));
+			ChildCareApplication appl = home.findByPrimaryKey(new Integer(applicationId));
 
 			return removeFromQueue(appl, user);
 		}

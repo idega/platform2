@@ -88,7 +88,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 					this.logOutBankID(iwc);
 					NBSLoggedOnInfo info = (NBSLoggedOnInfo)createLoggedOnInfo(iwc);
 					info.setNbsAuthResult((NBSAuthResult)result);
-					this.setBankIDLoggedOnInfo(iwc, (NBSLoggedOnInfo)info);
+					this.setBankIDLoggedOnInfo(iwc, info);
 					logInUser(iwc, result);
 
 					break;

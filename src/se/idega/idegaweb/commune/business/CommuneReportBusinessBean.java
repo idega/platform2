@@ -7,6 +7,7 @@
 package se.idega.idegaweb.commune.business;
 
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.business.NoCustodianFound;
 import is.idega.idegaweb.member.business.NoParentFound;
 
 import java.rmi.RemoteException;
@@ -272,7 +273,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 			
 			try {
 				//Parent data
-				Collection parents = _familyLogic.getParentsFor(child);
+				Collection parents = _familyLogic.getCustodiansFor(child);
 				Iterator pIter = parents.iterator();
 				//parent1
 				if (pIter.hasNext()) {
@@ -492,8 +493,8 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 			User child = (User)iter.next();
 			Collection parents = null;
 			try{
-				parents = _familyLogic.getParentsFor(child);
-			} catch (NoParentFound e) {
+				parents = _familyLogic.getCustodiansFor(child);
+			} catch (NoCustodianFound e) {
 				//System.out.println("["+this.getClass()+"]: "+e.getMessage());
 				//e.printStackTrace();
 			}

@@ -1,5 +1,5 @@
 /*
- * $Id: AgeEditor.java,v 1.6 2003/09/02 15:46:46 anders Exp $
+ * $Id: AgeEditor.java,v 1.7 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -33,10 +33,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.AgeException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/02 15:46:46 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/08 08:10:07 $ by $Author: laddi $
  *
  * @author Anders Lindman
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class AgeEditor extends AccountingBlock {
 
@@ -189,7 +189,6 @@ public class AgeEditor extends AccountingBlock {
 	 */	
 	private void handleNewAction(IWContext iwc) {
 		add(getAgeRegulationForm(
-				iwc,
 				getParameter(iwc, PARAMETER_AGE_REGULATION_ID),
 				getParameter(iwc, PARAMETER_PERIOD_FROM),
 				getParameter(iwc, PARAMETER_PERIOD_TO),
@@ -210,7 +209,6 @@ public class AgeEditor extends AccountingBlock {
 			AgeBusiness ab = getAgeBusiness(iwc);
 			AgeRegulation ar = ab.getAgeRegulation(getIntParameter(iwc, PARAMETER_AGE_REGULATION_ID));
 			add(getAgeRegulationForm(
-					iwc,
 					ar.getPrimaryKey().toString(),
 					formatDate(ar.getPeriodFrom(), 4),
 					formatDate(ar.getPeriodTo(), 4),
@@ -256,7 +254,6 @@ public class AgeEditor extends AccountingBlock {
 		
 		if (errorMessage != null) {
 			add(getAgeRegulationForm(
-					iwc,
 					getParameter(iwc, PARAMETER_AGE_REGULATION_ID),
 					getParameter(iwc, PARAMETER_PERIOD_FROM),
 					getParameter(iwc, PARAMETER_PERIOD_TO),
@@ -463,7 +460,6 @@ public class AgeEditor extends AccountingBlock {
 	 * Returns the application form for creating or editing an age regulation.
 	 */
 	private ApplicationForm getAgeRegulationForm(
-			IWContext iwc,
 			String id,
 			String periodFrom,
 			String periodTo,

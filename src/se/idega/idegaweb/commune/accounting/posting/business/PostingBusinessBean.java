@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.18 2003/09/06 22:43:10 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.19 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -142,10 +142,9 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		
 		try {
 			int match;
-			ActivityTypeHome ath = getActivityTypeHome();
 			PostingParametersHome home = getPostingParametersHome();
 			
-			Collection ppCol = (Collection) home.findPostingParametersByDate(date);
+			Collection ppCol = home.findPostingParametersByDate(date);
 			Iterator iter = ppCol.iterator();
 
 			while(iter.hasNext())  {
@@ -271,7 +270,6 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				}
 				pp = null;
 				if(ppID != 0) {				
-					int eq = 0;
 					pp = home.findPostingParameter(ppID);
 				}
 			} catch (FinderException e) {
@@ -306,13 +304,11 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 								int code1, int code2, String code3, int code4) {
 	
 		try {
-			int match;
 			if(ownPosting == null || doublePosting == null) {
 				return false;
 			}
-			ActivityTypeHome ath = getActivityTypeHome();
 			PostingParametersHome home = getPostingParametersHome();
-			Collection ppCol = (Collection) home.findAllPostingParameters();
+			Collection ppCol = home.findAllPostingParameters();
 			Iterator iter = ppCol.iterator();
 			
 			while(iter.hasNext())  {

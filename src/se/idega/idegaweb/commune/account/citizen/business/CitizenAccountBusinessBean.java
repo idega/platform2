@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.53 2003/06/05 17:58:34 gummi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.54 2003/09/08 08:10:06 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -69,21 +69,19 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2003/06/05 17:58:34 $ by $Author: gummi $
+ * Last modified: $Date: 2003/09/08 08:10:06 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.53 $
+ * @version $Revision: 1.54 $
  */
-public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
-  implements CitizenAccountBusiness, AccountBusiness 
-    {
+public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
 
 	protected CitizenAccountHome getCitizenAccountHome() throws RemoteException {
 		return (CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class);
 	}
-	
+
 	/**
 	 * Creates an application for CitizenAccount for a user with a personalId that is in the system.
 	 * @param user The user that makes the application
@@ -94,19 +92,16 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 	 * @return Integer appliaction id or null if insertion was unsuccessful
 	 * @throws UserHasLoginException If A User already has a login in the system.
 	 */
-	public Integer insertApplication (IWContext iwc, User user, String ssn, String email,
-                                      String phoneHome, String phoneWork)
-        throws UserHasLoginException, RemoteException {
-        CitizenAccount application = null;
-        UserTransaction transaction = null;
+	public Integer insertApplication(IWContext iwc, User user, String ssn, String email, String phoneHome, String phoneWork) throws UserHasLoginException, RemoteException {
+		CitizenAccount application = null;
+		UserTransaction transaction = null;
 		NBSLoginBusinessBean loginBusiness = new NBSLoginBusinessBean();
 		NBSLoggedOnInfo info = loginBusiness.getBankIDLoggedOnInfo(iwc);
 		try {
-            transaction = getSessionContext ().getUserTransaction ();
-            transaction.begin ();
-			application = ((CitizenAccountHome) IDOLookup.getHome
-                           (CitizenAccount.class)).create();
-			application.setSsn (ssn);
+			transaction = getSessionContext().getUserTransaction();
+			transaction.begin();
+			application = ((CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class)).create();
+			application.setSsn(ssn);
 			if (user != null) {
 				application.setOwner(user);
 				if (user.getName() != null) {
@@ -122,28 +117,29 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 
 			application.store();
 
-			int applicationID
-                    = ((Integer) application.getPrimaryKey()).intValue();
+			int applicationID = ((Integer) application.getPrimaryKey()).intValue();
 			if (acceptApplicationOnCreation) {
-				if(info != null){
-					acceptApplication(applicationID, user,false);
-				} else {
+				if (info != null) {
+					acceptApplication(applicationID, user, false);
+				}
+				else {
 					acceptApplication(applicationID, user);
 				}
 			}
-            transaction.commit ();
+			transaction.commit();
 		}
 		catch (Exception e) {
-            if (transaction != null) {
-                try {
+			if (transaction != null) {
+				try {
 					//application = null;
-                    transaction.rollback ();
-                } catch (SystemException se) {
-                    se.printStackTrace ();
-                } 
-            }
+					transaction.rollback();
+				}
+				catch (SystemException se) {
+					se.printStackTrace();
+				}
+			}
 			if (e instanceof UserHasLoginException) {
-				throw (UserHasLoginException) e;	
+				throw (UserHasLoginException) e;
 			}
 			e.printStackTrace();
 
@@ -151,195 +147,146 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 		}
 		//logg in if BankID auth. is ok and acceptApplicationOnCreation is true
 		//...
-		if(application != null && acceptApplicationOnCreation){
-			
-			if(info != null){
+		if (application != null && acceptApplicationOnCreation) {
+
+			if (info != null) {
 				try {
-					loginBusiness.logInByPersonalID(iwc,info.getNBSPersonalID());
-				} catch (Exception e1) {
+					loginBusiness.logInByPersonalID(iwc, info.getNBSPersonalID());
+				}
+				catch (Exception e1) {
 					e1.printStackTrace();
 				}
 			}
 		}
-		
-		return (Integer) (application == null ? null
-                          : application.getPrimaryKey());
+
+		return (Integer) (application == null ? null : application.getPrimaryKey());
 	}
 
-
-    public Integer insertApplication
-        (IWContext iwc,final String name, final String ssn, final String email,
-         final String phoneHome, final String phoneWork,
-         final String street, final String zipCode, final String city,
-         final String civilStatus, final boolean hasCohabitant,
-         final int childrenCount, final String applicationReason)
-        throws RemoteException {
+	public Integer insertApplication(IWContext iwc, final String name, final String ssn, final String email, final String phoneHome, final String phoneWork, final String street, final String zipCode, final String city, final String civilStatus, final boolean hasCohabitant, final int childrenCount, final String applicationReason) throws RemoteException {
 		CitizenAccount application = null;
-        try {
-            final CitizenAccountHome citizenAccountHome = (CitizenAccountHome)
-                    IDOLookup.getHome(CitizenAccount.class);
-			application = citizenAccountHome.create ();
-			application.setApplicantName (name != null ? name : "");
-			application.setSsn (ssn != null ? ssn : "");
-            application.setEmail (email != null ? email : "");
-			application.setPhoneHome (phoneHome != null ? phoneHome : "");
-            application.setPhoneWork (phoneWork != null ? phoneWork : "");
-            application.setStreet (street != null ? street : "");
-            application.setZipCode (zipCode != null ? zipCode : "");
-            application.setCity (city != null ? city : "");
-            application.setCivilStatus (civilStatus != null ? civilStatus : "");
-            application.setHasCohabitant (hasCohabitant);
-            application.setChildrenCount (childrenCount);
-            application.setApplicationReason (applicationReason != null
-                                              ? applicationReason : "");
-			application.setCaseStatus (getCaseStatusOpen());
-			application.store ();
+		try {
+			final CitizenAccountHome citizenAccountHome = (CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class);
+			application = citizenAccountHome.create();
+			application.setApplicantName(name != null ? name : "");
+			application.setSsn(ssn != null ? ssn : "");
+			application.setEmail(email != null ? email : "");
+			application.setPhoneHome(phoneHome != null ? phoneHome : "");
+			application.setPhoneWork(phoneWork != null ? phoneWork : "");
+			application.setStreet(street != null ? street : "");
+			application.setZipCode(zipCode != null ? zipCode : "");
+			application.setCity(city != null ? city : "");
+			application.setCivilStatus(civilStatus != null ? civilStatus : "");
+			application.setHasCohabitant(hasCohabitant);
+			application.setChildrenCount(childrenCount);
+			application.setApplicationReason(applicationReason != null ? applicationReason : "");
+			application.setCaseStatus(getCaseStatusOpen());
+			application.store();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-        
-		return (Integer) (application == null ? null
-                          : application.getPrimaryKey());
-    }
 
-    public Integer insertCohabitant
-        (final Integer applicationId, final String firstName,
-         final String lastName, final String ssn, final String civilStatus,
-         final String phoneWork) throws RemoteException,CreateException {
+		return (Integer) (application == null ? null : application.getPrimaryKey());
+	}
+
+	public Integer insertCohabitant(final Integer applicationId, final String firstName, final String lastName, final String ssn, final String civilStatus, final String phoneWork) throws RemoteException, CreateException {
 		CitizenApplicantCohabitant cohabitant = null;
-        try {
-            final CitizenApplicantCohabitantHome citizenApplicantCohabitantHome
-                    = (CitizenApplicantCohabitantHome)
-                    IDOLookup.getHome(CitizenApplicantCohabitant.class);
-			cohabitant = citizenApplicantCohabitantHome.create ();
-            cohabitant.setApplicationId (applicationId.intValue ());
-            cohabitant.setFirstName (firstName);
-            cohabitant.setLastName (lastName);
-            cohabitant.setSsn (ssn);
-            cohabitant.setCivilStatus (civilStatus);
-            cohabitant.setPhoneWork (phoneWork);
-			cohabitant.store ();
+		try {
+			final CitizenApplicantCohabitantHome citizenApplicantCohabitantHome = (CitizenApplicantCohabitantHome) IDOLookup.getHome(CitizenApplicantCohabitant.class);
+			cohabitant = citizenApplicantCohabitantHome.create();
+			cohabitant.setApplicationId(applicationId.intValue());
+			cohabitant.setFirstName(firstName);
+			cohabitant.setLastName(lastName);
+			cohabitant.setSsn(ssn);
+			cohabitant.setCivilStatus(civilStatus);
+			cohabitant.setPhoneWork(phoneWork);
+			cohabitant.store();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-        
-		return (Integer) (cohabitant == null ? null
-                          : cohabitant.getPrimaryKey());
-    }
 
-    public Integer insertChildren
-        (final Integer applicationId, final String firstName,
-         final String lastName, final String ssn)
-        throws RemoteException,CreateException {
+		return (Integer) (cohabitant == null ? null : cohabitant.getPrimaryKey());
+	}
+
+	public Integer insertChildren(final Integer applicationId, final String firstName, final String lastName, final String ssn) throws RemoteException, CreateException {
 		CitizenApplicantChildren children = null;
-        try {
-            final CitizenApplicantChildrenHome citizenApplicantChildrenHome
-                    = (CitizenApplicantChildrenHome)
-                    IDOLookup.getHome(CitizenApplicantChildren.class);
-			children = citizenApplicantChildrenHome.create ();
-            children.setApplicationId (applicationId.intValue ());
-            children.setFirstName (firstName);
-            children.setLastName (lastName);
-            children.setSsn (ssn);
-			children.store ();
+		try {
+			final CitizenApplicantChildrenHome citizenApplicantChildrenHome = (CitizenApplicantChildrenHome) IDOLookup.getHome(CitizenApplicantChildren.class);
+			children = citizenApplicantChildrenHome.create();
+			children.setApplicationId(applicationId.intValue());
+			children.setFirstName(firstName);
+			children.setLastName(lastName);
+			children.setSsn(ssn);
+			children.store();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-        
+
 		return (Integer) (children == null ? null : children.getPrimaryKey());
-    }
+	}
 
-    public Integer insertMovingTo
-        (final Integer applicationId, final String address, final String date,
-         final String housingType, final String propertyType,
-         final String landlordName, final String landlordPhone,
-         final String landlordAddress)
-        throws RemoteException, CreateException {
+	public Integer insertMovingTo(final Integer applicationId, final String address, final String date, final String housingType, final String propertyType, final String landlordName, final String landlordPhone, final String landlordAddress) throws RemoteException, CreateException {
 		CitizenApplicantMovingTo movingTo = null;
-        try {
-            final CitizenApplicantMovingToHome citizenApplicantMovingToHome
-                    = (CitizenApplicantMovingToHome)
-                    IDOLookup.getHome(CitizenApplicantMovingTo.class);
-			movingTo = citizenApplicantMovingToHome.create ();
-            movingTo.setApplicationId (applicationId.intValue ());
-            movingTo.setAddress (address);
-            movingTo.setMovingInDate (date);
-            movingTo.setHousingType (housingType);
-            movingTo.setPropertyType (propertyType);
-            movingTo.setLandlord (landlordName, landlordPhone, landlordAddress);
-			movingTo.store ();
-		} 
+		try {
+			final CitizenApplicantMovingToHome citizenApplicantMovingToHome = (CitizenApplicantMovingToHome) IDOLookup.getHome(CitizenApplicantMovingTo.class);
+			movingTo = citizenApplicantMovingToHome.create();
+			movingTo.setApplicationId(applicationId.intValue());
+			movingTo.setAddress(address);
+			movingTo.setMovingInDate(date);
+			movingTo.setHousingType(housingType);
+			movingTo.setPropertyType(propertyType);
+			movingTo.setLandlord(landlordName, landlordPhone, landlordAddress);
+			movingTo.store();
+		}
 		catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-        
+
 		return (Integer) (movingTo == null ? null : movingTo.getPrimaryKey());
-    }
+	}
 
-    public Integer insertPutChildren (final Integer applicationId,
-                               final String currentKommun)
-        throws RemoteException, CreateException {
+	public Integer insertPutChildren(final Integer applicationId, final String currentKommun) throws RemoteException, CreateException {
 		CitizenApplicantPutChildren putChildren = null;
-        try {
-            final CitizenApplicantPutChildrenHome
-                    citizenApplicantPutChildrenHome
-                    = (CitizenApplicantPutChildrenHome)
-                    IDOLookup.getHome(CitizenApplicantPutChildren.class);
-			putChildren = citizenApplicantPutChildrenHome.create ();
-            putChildren.setApplicationId (applicationId.intValue ());
-            putChildren.setCurrentKommun (currentKommun);
-			putChildren.store ();
+		try {
+			final CitizenApplicantPutChildrenHome citizenApplicantPutChildrenHome = (CitizenApplicantPutChildrenHome) IDOLookup.getHome(CitizenApplicantPutChildren.class);
+			putChildren = citizenApplicantPutChildrenHome.create();
+			putChildren.setApplicationId(applicationId.intValue());
+			putChildren.setCurrentKommun(currentKommun);
+			putChildren.store();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
-        
-		return (Integer) (putChildren == null ? null
-                          : putChildren.getPrimaryKey());
-    }
 
-    public CitizenApplicantPutChildren findCitizenApplicantPutChildren
-        (final int applicationId) throws RemoteException, FinderException {
-		CitizenApplicantPutChildrenHome home
-                = (CitizenApplicantPutChildrenHome) IDOLookup.getHome
-                (CitizenApplicantPutChildren.class);
-		return (CitizenApplicantPutChildren) home.findByApplicationId
-                (applicationId);
-    }
+		return (Integer) (putChildren == null ? null : putChildren.getPrimaryKey());
+	}
 
-    public CitizenApplicantChildren [] findCitizenApplicantChildren
-        (final int applicationId) throws RemoteException, FinderException {
-		CitizenApplicantChildrenHome home
-                = (CitizenApplicantChildrenHome) IDOLookup.getHome
-                (CitizenApplicantChildren.class);
-		return  home.findByApplicationId (applicationId);
-    }
+	public CitizenApplicantPutChildren findCitizenApplicantPutChildren(final int applicationId) throws RemoteException, FinderException {
+		CitizenApplicantPutChildrenHome home = (CitizenApplicantPutChildrenHome) IDOLookup.getHome(CitizenApplicantPutChildren.class);
+		return home.findByApplicationId(applicationId);
+	}
 
-    public CitizenApplicantCohabitant findCitizenApplicantCohabitant
-        (final int applicationId) throws RemoteException, FinderException {
-		CitizenApplicantCohabitantHome home
-                = (CitizenApplicantCohabitantHome) IDOLookup.getHome
-                (CitizenApplicantCohabitant.class);
-		return (CitizenApplicantCohabitant) home.findByApplicationId
-                (applicationId);
-    }
+	public CitizenApplicantChildren[] findCitizenApplicantChildren(final int applicationId) throws RemoteException, FinderException {
+		CitizenApplicantChildrenHome home = (CitizenApplicantChildrenHome) IDOLookup.getHome(CitizenApplicantChildren.class);
+		return home.findByApplicationId(applicationId);
+	}
 
-    public CitizenApplicantMovingTo findCitizenApplicantMovingTo
-        (final int applicationId) throws RemoteException, FinderException {
-		CitizenApplicantMovingToHome home
-                = (CitizenApplicantMovingToHome) IDOLookup.getHome
-                (CitizenApplicantMovingTo.class);
-		return (CitizenApplicantMovingTo) home.findByApplicationId
-                (applicationId);
-    }
+	public CitizenApplicantCohabitant findCitizenApplicantCohabitant(final int applicationId) throws RemoteException, FinderException {
+		CitizenApplicantCohabitantHome home = (CitizenApplicantCohabitantHome) IDOLookup.getHome(CitizenApplicantCohabitant.class);
+		return home.findByApplicationId(applicationId);
+	}
+
+	public CitizenApplicantMovingTo findCitizenApplicantMovingTo(final int applicationId) throws RemoteException, FinderException {
+		CitizenApplicantMovingToHome home = (CitizenApplicantMovingToHome) IDOLookup.getHome(CitizenApplicantMovingTo.class);
+		return home.findByApplicationId(applicationId);
+	}
 
 	public User getUser(String ssn) {
 		User user = null;
@@ -389,16 +336,15 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 				CitizenAccount account = (CitizenAccount) it.next();
 				User user = account.getOwner();
 				AdminListOfApplications apps = new AdminListOfApplications();
-				apps.setPID (account.getSsn());
+				apps.setPID(account.getSsn());
 				apps.setId(((Integer) account.getPrimaryKey()).toString());
 				if (user == null) {
-                    // There's no user with this ssn in the system
-                    apps.setName (account.getApplicantName ());
-                    apps.setAddress (account.getStreet () + "; "
-                                     + account.getZipCode () + " "
-                                     + account.getCity ());
-                } else {
-                    // User is allready with this ssn in the system
+					// There's no user with this ssn in the system
+					apps.setName(account.getApplicantName());
+					apps.setAddress(account.getStreet() + "; " + account.getZipCode() + " " + account.getCity());
+				}
+				else {
+					// User is allready with this ssn in the system
 					apps.setName(user.getName());
 					Collection addresses = user.getAddresses();
 					Iterator it2 = addresses.iterator();
@@ -406,12 +352,11 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 					if (it2.hasNext())
 						address = (Address) it2.next();
 					if (address != null && address.getStreetName() != null) {
-						StringBuffer fullAddress
-                                = new StringBuffer(address.getStreetName());
-                        if (address.getStreetNumber() != null) {
-                            fullAddress.append(" ");
-                            fullAddress.append(address.getStreetNumber());
-                        }
+						StringBuffer fullAddress = new StringBuffer(address.getStreetName());
+						if (address.getStreetNumber() != null) {
+							fullAddress.append(" ");
+							fullAddress.append(address.getStreetNumber());
+						}
 						apps.setAddress(fullAddress.toString());
 					}
 				}
@@ -443,202 +388,136 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 		return CitizenAccount.class;
 	}
 
-	public void acceptApplication
-        (final int applicationID, final User performer, boolean createUserMessage, boolean createPasswordMessage)
-        throws RemoteException, CreateException, FinderException {
-        UserTransaction transaction = null;
-        try {
-            transaction = getSessionContext ().getUserTransaction ();
-            transaction.begin ();
-            final CitizenAccount applicant = getAccount (applicationID);
-            final String name = applicant.getApplicantName();
-            final int spaceIndex = name != null ? name.indexOf(" ") : -1;
-            final String firstName
-                    = spaceIndex != -1 ? name.substring(0, spaceIndex) : "";
-            final String lastName = spaceIndex != -1
-                    ? name.substring(spaceIndex + 1, name.length ())
-                    : (name != null ? name : "");
-            final String ssn = applicant.getSsn ();
-            final GenderHome genderHome
-                    = (GenderHome) IDOLookup.getHome(Gender.class);
-            final PIDChecker pidChecker = PIDChecker.getInstance ();
-            final Gender gender = pidChecker.isFemale (ssn)
-                    ? genderHome.getFemaleGender ()
-                    : genderHome.getMaleGender ();
-            final Date birthDate = pidChecker.getDateFromPersonalID (ssn);
-            final IWTimestamp timestamp = birthDate != null
-                    ? new IWTimestamp (birthDate.getTime ()) : null;
-            final CommuneUserBusiness userBusiness = getUserBusiness ();
-            final String applicationReason = applicant.getApplicationReason();
-            final boolean notNackaResident = applicationReason != null
-                    && (applicationReason.equals
-                        (CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY)
-                        || applicationReason.equals
-                        (CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY));
-            final User user = notNackaResident ?
-                    userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist
-                    (firstName, "", lastName, ssn, gender, timestamp)
-                    : userBusiness.createCitizenByPersonalIDIfDoesNotExist
-                    (firstName, "", lastName, ssn, gender, timestamp);
-            
-            final String streetName = applicant.getStreet ();
-            final String postalCode = applicant.getZipCode ();
-            final String postalName = applicant.getCity ();
+	public void acceptApplication(final int applicationID, final User performer, boolean createUserMessage, boolean createPasswordMessage) throws RemoteException, CreateException, FinderException {
+		UserTransaction transaction = null;
+		try {
+			transaction = getSessionContext().getUserTransaction();
+			transaction.begin();
+			final CitizenAccount applicant = getAccount(applicationID);
+			final String name = applicant.getApplicantName();
+			final int spaceIndex = name != null ? name.indexOf(" ") : -1;
+			final String firstName = spaceIndex != -1 ? name.substring(0, spaceIndex) : "";
+			final String lastName = spaceIndex != -1 ? name.substring(spaceIndex + 1, name.length()) : (name != null ? name : "");
+			final String ssn = applicant.getSsn();
+			final GenderHome genderHome = (GenderHome) IDOLookup.getHome(Gender.class);
+			final PIDChecker pidChecker = PIDChecker.getInstance();
+			final Gender gender = pidChecker.isFemale(ssn) ? genderHome.getFemaleGender() : genderHome.getMaleGender();
+			final Date birthDate = pidChecker.getDateFromPersonalID(ssn);
+			final IWTimestamp timestamp = birthDate != null ? new IWTimestamp(birthDate.getTime()) : null;
+			final CommuneUserBusiness userBusiness = getUserBusiness();
+			final String applicationReason = applicant.getApplicationReason();
+			final boolean notNackaResident = applicationReason != null && (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY) || applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY));
+			final User user = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(firstName, "", lastName, ssn, gender, timestamp) : userBusiness.createCitizenByPersonalIDIfDoesNotExist(firstName, "", lastName, ssn, gender, timestamp);
 
-            if (streetName != null && postalCode != null && postalName != null) {
-                final Country sweden = ((CountryHome) getIDOHome (Country.class))
-                        .findByIsoAbbreviation ("SE");
-                final AddressBusiness addressBusiness
-                        = (AddressBusiness) getServiceInstance
-                        (AddressBusiness.class);
-                final PostalCode code = addressBusiness
-                        .getPostalCodeAndCreateIfDoesNotExist
-                        (postalCode,postalName,sweden);
-                final AddressHome addressHome = addressBusiness.getAddressHome();
-                final Address address = addressHome.create();
-                final AddressType mainAddressType = addressHome.getAddressType1();
-                address.setAddressType(mainAddressType);
-                address.setCountry(sweden);
-                address.setPostalCode(code);
-                address.setProvince(postalName);
-                address.setCity(postalName);
-                address.setStreetName(streetName);
-                address.store();
-                user.addAddress(address);
-            }
-            final Email email
-                    = ((EmailHome) IDOLookup.getHome(Email.class)).create();
-            email.setEmailAddress(applicant.getEmail());
-            email.store();
-            user.addEmail(email);
-            Phone homePhone = null;
-            
-            if (applicant.getPhoneHome() != null) {
-                homePhone
-                        = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
-                homePhone.setNumber(applicant.getPhoneHome());
-                homePhone.setPhoneTypeId(PhoneBMPBean.getHomeNumberID());
-                homePhone.store();
-                user.addPhone (homePhone);
-            }
-            
-            if (applicant.getPhoneWork() != null) {
-                final Phone workPhone
-                        = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
-                workPhone.setNumber(applicant.getPhoneWork());
-                workPhone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
-                workPhone.store();
-                user.addPhone(workPhone);
-            }
+			final String streetName = applicant.getStreet();
+			final String postalCode = applicant.getZipCode();
+			final String postalName = applicant.getCity();
 
-            final MemberFamilyLogic familyLogic = (MemberFamilyLogic)
-                    getServiceInstance (MemberFamilyLogic.class);
-            if (applicant.hasCohabitant ()) {
-                final CitizenApplicantCohabitantHome home
-                        = (CitizenApplicantCohabitantHome)
-                        IDOLookup.getHome(CitizenApplicantCohabitant.class);
-                final CitizenApplicantCohabitant cohabitant
-                        = home.findByApplicationId (applicationID);
-                final String cohabitantSsn = cohabitant.getSsn ();
-                if (cohabitantSsn != null
-                    && cohabitantSsn.trim ().length () > 0) {
-                    final Gender cohabitantGender = pidChecker.isFemale (ssn)
-                            ? genderHome.getFemaleGender ()
-                            : genderHome.getMaleGender ();
-                    final Date cohabitantBirth
-                            = pidChecker.getDateFromPersonalID (ssn);
-                    final IWTimestamp cohabitantTimestamp
-                            = cohabitantBirth != null
-                            ? new IWTimestamp (cohabitantBirth.getTime ())
-                            : null;
-                    final User cohabitantUser = notNackaResident ?
-                            userBusiness
-                            .createSpecialCitizenByPersonalIDIfDoesNotExist
-                            (cohabitant.getFirstName (), "",
-                             cohabitant.getLastName (), cohabitantSsn,
-                             cohabitantGender, cohabitantTimestamp)
-                            : userBusiness
-                            .createCitizenByPersonalIDIfDoesNotExist
-                            (cohabitant.getFirstName (), "",
-                             cohabitant.getLastName (), cohabitantSsn,
-                             cohabitantGender, cohabitantTimestamp);
-                    familyLogic.setAsSpouseFor (user, cohabitantUser);
-                    final Phone phone = ((PhoneHome) IDOLookup
-                                         .getHome(Phone.class)).create();
-                    phone.setNumber (cohabitant.getPhoneWork());
-                    phone.setPhoneTypeId (PhoneBMPBean.getWorkNumberID());
-                    phone.store ();
-                    cohabitantUser.addPhone (phone);
-                    if (homePhone != null) {
-                        cohabitantUser.addPhone (homePhone);
-                    }
-                }
-            }
-            if (applicant.getChildrenCount () > 0) {
-                final CitizenApplicantChildrenHome home
-                        = (CitizenApplicantChildrenHome)
-                        IDOLookup.getHome(CitizenApplicantChildren.class);
-                final CitizenApplicantChildren [] children
-                        = home.findByApplicationId (applicationID);
-                for (int i = 0; i < children.length; i++) {
-                    final String childrenSsn = children [i].getSsn ();
-                    if (childrenSsn != null
-                        && childrenSsn.trim (). length () > 0) {
-                        final Gender childrenGender = pidChecker.isFemale (ssn)
-                                ? genderHome.getFemaleGender ()
-                                : genderHome.getMaleGender ();
-                        final Date childrenBirth
-                                = pidChecker.getDateFromPersonalID (childrenSsn);
-                        final IWTimestamp childrenTimestamp
-                                = childrenBirth != null
-                                ? new IWTimestamp (childrenBirth.getTime ())
-                                : null;
-                        final User childrenUser = notNackaResident ?
-                                userBusiness
-                                .createSpecialCitizenByPersonalIDIfDoesNotExist
-                                (children [i].getFirstName (), "",
-                                 children [i].getLastName (), childrenSsn,
-                                 childrenGender, childrenTimestamp)
-                                :userBusiness
-                                .createCitizenByPersonalIDIfDoesNotExist
-                                (children [i].getFirstName (), "",
-                                 children [i].getLastName (), childrenSsn,
-                                 childrenGender, childrenTimestamp);
-                        familyLogic.setAsParentFor (user, childrenUser);
-                        familyLogic.setAsCustodianFor(user, childrenUser);
-                        if (homePhone != null) {
-                            childrenUser.addPhone (homePhone);
-                        }
-                    }
-                }
-            }
-            applicant.setOwner (user);
-            applicant.store ();
-            super.acceptApplication (applicationID, performer, createUserMessage, createPasswordMessage);
-            transaction.commit ();
-		} catch (Exception e) {
-            if (transaction != null) {
-                try {
-                    transaction.rollback ();
-                } catch (SystemException se) {
-                    se.printStackTrace ();
-                } 
-            }
+			if (streetName != null && postalCode != null && postalName != null) {
+				final Country sweden = ((CountryHome) getIDOHome(Country.class)).findByIsoAbbreviation("SE");
+				final AddressBusiness addressBusiness = (AddressBusiness) getServiceInstance(AddressBusiness.class);
+				final PostalCode code = addressBusiness.getPostalCodeAndCreateIfDoesNotExist(postalCode, postalName, sweden);
+				final AddressHome addressHome = addressBusiness.getAddressHome();
+				final Address address = addressHome.create();
+				final AddressType mainAddressType = addressHome.getAddressType1();
+				address.setAddressType(mainAddressType);
+				address.setCountry(sweden);
+				address.setPostalCode(code);
+				address.setProvince(postalName);
+				address.setCity(postalName);
+				address.setStreetName(streetName);
+				address.store();
+				user.addAddress(address);
+			}
+			final Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
+			email.setEmailAddress(applicant.getEmail());
+			email.store();
+			user.addEmail(email);
+			Phone homePhone = null;
 
-            if (e instanceof UserHasLoginException) {
-                throw (UserHasLoginException) e;
-            } else {
-                e.printStackTrace ();
-                throw new CreateException(e.getMessage());
-            }
-        }		
+			if (applicant.getPhoneHome() != null) {
+				homePhone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
+				homePhone.setNumber(applicant.getPhoneHome());
+				homePhone.setPhoneTypeId(PhoneBMPBean.getHomeNumberID());
+				homePhone.store();
+				user.addPhone(homePhone);
+			}
+
+			if (applicant.getPhoneWork() != null) {
+				final Phone workPhone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
+				workPhone.setNumber(applicant.getPhoneWork());
+				workPhone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
+				workPhone.store();
+				user.addPhone(workPhone);
+			}
+
+			final MemberFamilyLogic familyLogic = (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
+			if (applicant.hasCohabitant()) {
+				final CitizenApplicantCohabitantHome home = (CitizenApplicantCohabitantHome) IDOLookup.getHome(CitizenApplicantCohabitant.class);
+				final CitizenApplicantCohabitant cohabitant = home.findByApplicationId(applicationID);
+				final String cohabitantSsn = cohabitant.getSsn();
+				if (cohabitantSsn != null && cohabitantSsn.trim().length() > 0) {
+					final Gender cohabitantGender = pidChecker.isFemale(ssn) ? genderHome.getFemaleGender() : genderHome.getMaleGender();
+					final Date cohabitantBirth = pidChecker.getDateFromPersonalID(ssn);
+					final IWTimestamp cohabitantTimestamp = cohabitantBirth != null ? new IWTimestamp(cohabitantBirth.getTime()) : null;
+					final User cohabitantUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp) : userBusiness.createCitizenByPersonalIDIfDoesNotExist(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp);
+					familyLogic.setAsSpouseFor(user, cohabitantUser);
+					final Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
+					phone.setNumber(cohabitant.getPhoneWork());
+					phone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
+					phone.store();
+					cohabitantUser.addPhone(phone);
+					if (homePhone != null) {
+						cohabitantUser.addPhone(homePhone);
+					}
+				}
+			}
+			if (applicant.getChildrenCount() > 0) {
+				final CitizenApplicantChildrenHome home = (CitizenApplicantChildrenHome) IDOLookup.getHome(CitizenApplicantChildren.class);
+				final CitizenApplicantChildren[] children = home.findByApplicationId(applicationID);
+				for (int i = 0; i < children.length; i++) {
+					final String childrenSsn = children[i].getSsn();
+					if (childrenSsn != null && childrenSsn.trim().length() > 0) {
+						final Gender childrenGender = pidChecker.isFemale(ssn) ? genderHome.getFemaleGender() : genderHome.getMaleGender();
+						final Date childrenBirth = pidChecker.getDateFromPersonalID(childrenSsn);
+						final IWTimestamp childrenTimestamp = childrenBirth != null ? new IWTimestamp(childrenBirth.getTime()) : null;
+						final User childrenUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(children[i].getFirstName(), "", children[i].getLastName(), childrenSsn, childrenGender, childrenTimestamp) : userBusiness.createCitizenByPersonalIDIfDoesNotExist(children[i].getFirstName(), "", children[i].getLastName(), childrenSsn, childrenGender, childrenTimestamp);
+						familyLogic.setAsParentFor(user, childrenUser);
+						familyLogic.setAsCustodianFor(user, childrenUser);
+						if (homePhone != null) {
+							childrenUser.addPhone(homePhone);
+						}
+					}
+				}
+			}
+			applicant.setOwner(user);
+			applicant.store();
+			super.acceptApplication(applicationID, performer, createUserMessage, createPasswordMessage);
+			transaction.commit();
+		}
+		catch (Exception e) {
+			if (transaction != null) {
+				try {
+					transaction.rollback();
+				}
+				catch (SystemException se) {
+					se.printStackTrace();
+				}
+			}
+
+			if (e instanceof UserHasLoginException) {
+				throw (UserHasLoginException) e;
+			}
+			else {
+				e.printStackTrace();
+				throw new CreateException(e.getMessage());
+			}
+		}
 	}
 
-	public void removeApplication(final int applicationId, final User performer)
-        throws RemoteException, FinderException {
-        final CitizenAccount application = getAccount (applicationId);
-		changeCaseStatus (application,
-                          getCaseStatusDenied ().getStatus (), performer);
+	public void removeApplication(final int applicationId, final User performer) throws RemoteException, FinderException {
+		final CitizenAccount application = getAccount(applicationId);
+		changeCaseStatus(application, getCaseStatusDenied().getStatus(), performer);
 	}
 
 	public void rejectApplication(int applicationID, User performer, String reasonDescription) throws RemoteException, CreateException, FinderException {
@@ -683,154 +562,122 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 	/**
 	 * Creates a citizen in the Commune system
 	 */
-	protected User createCitizenForApplication (AccountApplication theCase)
-        throws CreateException, RemoteException {
-        final CitizenAccount applicant = (CitizenAccount) theCase;
-        final String name = applicant.getApplicantName();
-        final int spaceIndex = name != null ? name.indexOf(" ") : -1;
-		final String firstName
-                = spaceIndex != -1 ? name.substring(0, spaceIndex) : "";
-		final String lastName = spaceIndex != -1
-                ? name.substring(spaceIndex + 1, name.length ())
-                : (name != null ? name : "");
-        final String ssn = applicant.getSsn ();
-        final GenderHome genderHome
-                = (GenderHome) IDOLookup.getHome(Gender.class);
-        final PIDChecker pidChecker = PIDChecker.getInstance ();
-        Gender gender = null;
-        try {
-            gender = pidChecker.isFemale (ssn) ? genderHome.getFemaleGender ()
-                    : genderHome.getMaleGender ();
-        } catch (final FinderException e) {
-            throw new CreateException (e.getMessage ());
-        }
-        final Date birthDate = pidChecker.getDateFromPersonalID (ssn);
-        final IWTimestamp timestamp = birthDate != null
-                ? new IWTimestamp (birthDate.getTime ()) : null;
-        final CommuneUserBusiness userBusiness = getUserBusiness ();
-        final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist
-                (firstName, "", lastName, ssn, gender, timestamp);
+	protected User createCitizenForApplication(AccountApplication theCase) throws CreateException, RemoteException {
+		final CitizenAccount applicant = (CitizenAccount) theCase;
+		final String name = applicant.getApplicantName();
+		final int spaceIndex = name != null ? name.indexOf(" ") : -1;
+		final String firstName = spaceIndex != -1 ? name.substring(0, spaceIndex) : "";
+		final String lastName = spaceIndex != -1 ? name.substring(spaceIndex + 1, name.length()) : (name != null ? name : "");
+		final String ssn = applicant.getSsn();
+		final GenderHome genderHome = (GenderHome) IDOLookup.getHome(Gender.class);
+		final PIDChecker pidChecker = PIDChecker.getInstance();
+		Gender gender = null;
+		try {
+			gender = pidChecker.isFemale(ssn) ? genderHome.getFemaleGender() : genderHome.getMaleGender();
+		}
+		catch (final FinderException e) {
+			throw new CreateException(e.getMessage());
+		}
+		final Date birthDate = pidChecker.getDateFromPersonalID(ssn);
+		final IWTimestamp timestamp = birthDate != null ? new IWTimestamp(birthDate.getTime()) : null;
+		final CommuneUserBusiness userBusiness = getUserBusiness();
+		final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist(firstName, "", lastName, ssn, gender, timestamp);
 
-        return user;        
+		return user;
 	}
-	
-	public String getAcceptMessageSubject()
-	{
+
+	public String getAcceptMessageSubject() {
 		return this.getLocalizedString("acc.app.citizen.appr.subj", "Your citizen account application has been approved");
 	}
 
-	public String getRejectMessageSubject()
-	{
+	public String getRejectMessageSubject() {
 		return this.getLocalizedString("acc.app.citizen.rej.subj", "Your citizen account application has been rejected");
 	}
-  
 
-  /**
-   * Changes a password for CitizenAccount for a user and sends a letter and/or email.
-   * @param loginTable LoginTable of the user
-   * @param user User
-   * @param newPassword Password in plain text (not already encrypted)
-   * @param sendLetter True if a letter should be sent else false
-   * @param sendEmail True if an email should be sent else false
-   * @throws CreateException If changing of the password failed.
-   */  
-  public void changePasswordAndSendLetterOrEmail(
-    LoginTable loginTable, 
-    User user, 
-    String newPassword,
-    boolean sendLetter, 
-    boolean sendEmail) throws CreateException  {
+	/**
+	 * Changes a password for CitizenAccount for a user and sends a letter and/or email.
+	 * @param loginTable LoginTable of the user
+	 * @param user User
+	 * @param newPassword Password in plain text (not already encrypted)
+	 * @param sendLetter True if a letter should be sent else false
+	 * @param sendEmail True if an email should be sent else false
+	 * @throws CreateException If changing of the password failed.
+	 */
+	public void changePasswordAndSendLetterOrEmail(LoginTable loginTable, User user, String newPassword, boolean sendLetter, boolean sendEmail) throws CreateException {
 
-    UserTransaction trans=null;
-    try
-    {
-      trans = this.getSessionContext().getUserTransaction();
-      trans.begin();
-      createAndStoreNewPasswordAndSendLetterOrEmail(
-        loginTable, 
-        user, 
-        newPassword,
-        sendLetter, 
-        sendEmail);
-      trans.commit();
-    }
-    catch (Exception e) {
-      System.err.println(e.getMessage());
-//      e.printStackTrace();
-      if(trans!=null) {
-        try {
-          trans.rollback();
-        }
-        catch (SystemException se) {
-          se.printStackTrace();
-        } 
-      }
-      throw new CreateException("There was an error changing the password. Message was: "+e.getMessage());
-    }
-  }    
-    
-  protected void createAndStoreNewPasswordAndSendLetterOrEmail(
-    LoginTable loginTable, 
-    User user, 
-    String newPassword,
-    boolean sendLetter, 
-    boolean sendEmail) throws CreateException, RemoteException  {    
-    // encrypte new password
-    String encryptedPassword = Encrypter.encryptOneWay(newPassword);
-    // store new password
-    loginTable.setUserPassword(encryptedPassword, newPassword);
-    loginTable.store();
-    // set content of letter
-    String userName = user.getLastName();
-    String loginName = loginTable.getUserLogin();
-    String messageSubject = getNewPasswordWasCreatedSubject();
-    String messageBody = getNewPasswordWasCreatedMessageBody(userName, loginName, newPassword);
-    // send letter or email to user
-    MessageBusiness messageBusiness = getMessageBusiness(); 
-    Message messageLetter = null;
-    Message messageEmail = null;
-    if (sendLetter) 
-      messageLetter = messageBusiness.createPasswordMessage(user, loginName, newPassword);
-    if (sendEmail)
-      messageEmail = messageBusiness.createUserMessage(user, messageSubject, messageBody);   
-    if ((messageLetter == null && sendLetter) 
-        || (messageEmail == null && sendEmail)) {
-      //do something: email or letter was not sent!     
-      throw new CreateException("Email or letter could not be created"); 
-    } 
-  }
-  
-  public int getNumberOfApplications() throws RemoteException {
+		UserTransaction trans = null;
+		try {
+			trans = this.getSessionContext().getUserTransaction();
+			trans.begin();
+			createAndStoreNewPasswordAndSendLetterOrEmail(loginTable, user, newPassword, sendLetter, sendEmail);
+			trans.commit();
+		}
+		catch (Exception e) {
+			System.err.println(e.getMessage());
+			//      e.printStackTrace();
+			if (trans != null) {
+				try {
+					trans.rollback();
+				}
+				catch (SystemException se) {
+					se.printStackTrace();
+				}
+			}
+			throw new CreateException("There was an error changing the password. Message was: " + e.getMessage());
+		}
+	}
+
+	protected void createAndStoreNewPasswordAndSendLetterOrEmail(LoginTable loginTable, User user, String newPassword, boolean sendLetter, boolean sendEmail) throws CreateException, RemoteException {
+		// encrypte new password
+		String encryptedPassword = Encrypter.encryptOneWay(newPassword);
+		// store new password
+		loginTable.setUserPassword(encryptedPassword, newPassword);
+		loginTable.store();
+		// set content of letter
+		String userName = user.getLastName();
+		String loginName = loginTable.getUserLogin();
+		String messageSubject = getNewPasswordWasCreatedSubject();
+		String messageBody = getNewPasswordWasCreatedMessageBody(userName, loginName, newPassword);
+		// send letter or email to user
+		MessageBusiness messageBusiness = getMessageBusiness();
+		Message messageLetter = null;
+		Message messageEmail = null;
+		if (sendLetter)
+			messageLetter = messageBusiness.createPasswordMessage(user, loginName, newPassword);
+		if (sendEmail)
+			messageEmail = messageBusiness.createUserMessage(user, messageSubject, messageBody);
+		if ((messageLetter == null && sendLetter) || (messageEmail == null && sendEmail)) {
+			//do something: email or letter was not sent!     
+			throw new CreateException("Email or letter could not be created");
+		}
+	}
+
+	public int getNumberOfApplications() throws RemoteException {
 		try {
 			return getCitizenAccountHome().getTotalCount();
 		}
 		catch (IDOException ie) {
 			return 0;
 		}
-  }
+	}
 
+	protected String getNewPasswordWasCreatedSubject() {
+		return this.getLocalizedString("acc.app.acc.fp.subj", "New password for your account");
+	}
 
-  protected String getNewPasswordWasCreatedSubject()  {
-    return this.getLocalizedString("acc.app.acc.fp.subj", "New password for your account");
-  }
+	protected String getNewPasswordWasCreatedMessageBody(String userName, String loginName, String password) throws RemoteException {
+		//int ownerID = ((Integer) theCase.getOwner().getPrimaryKey()).intValue();
+		String body = this.getLocalizedString("acc.app.acc.body1", "Dear mr./ms./mrs. ");
+		body += userName + "\n";
+		body += this.getLocalizedString("acc.app.acc.fp.body2", "A new password was created for your account.\n");
+		body += this.getLocalizedString("acc.app.acc.body3", "You have been given access to the system with username: ");
+		body += "\"" + loginName + "\"";
+		body += this.getLocalizedString("acc.app.acc.body4", " and password: ");
+		body += "\"" + password + "\"";
+		body += "\n\n";
+		body += this.getLocalizedString("acc.app.acc.body5", "You can log on via: ");
+		body += getApplicationLoginURL();
+		return body;
+	}
 
-  protected String getNewPasswordWasCreatedMessageBody(
-    String userName, 
-    String loginName, 
-    String password)
-    throws RemoteException  {
-    //int ownerID = ((Integer) theCase.getOwner().getPrimaryKey()).intValue();
-    String body = this.getLocalizedString("acc.app.acc.body1", "Dear mr./ms./mrs. ");
-    body += userName + "\n";
-    body += this.getLocalizedString("acc.app.acc.fp.body2", "A new password was created for your account.\n");
-    body += this.getLocalizedString("acc.app.acc.body3", "You have been given access to the system with username: ");
-    body += "\"" + loginName + "\"";
-    body += this.getLocalizedString("acc.app.acc.body4", " and password: ");
-    body += "\"" + password + "\"";
-    body += "\n\n";
-    body += this.getLocalizedString("acc.app.acc.body5", "You can log on via: ");
-    body += getApplicationLoginURL();
-    return body;
-   }  
-  
 }

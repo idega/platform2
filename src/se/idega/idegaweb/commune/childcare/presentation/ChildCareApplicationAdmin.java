@@ -173,13 +173,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 				data.add(new Text(Integer.toString(application.getCheckId())),4,row);
 				data.add(new Text(application.getFromDate().toString()),6,row);
 
-				String id = null;;
-				//try {
-					id = ((Integer) application.getPrimaryKey()).toString();
-				//}
-				//catch (RemoteException e) {
-				//}
-
+				String id = application.getPrimaryKey().toString();
 				try {
 					String status = application.getStatus();
 										

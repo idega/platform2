@@ -261,7 +261,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 
 		final IWApplicationContext iwc = getIWApplicationContext();
 		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
-		String groupId = (String) settings.getProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME);
+		String groupId = settings.getProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME);
 		if (groupId != null) {
 			final GroupHome groupHome = getGroupHome();
 			rootCitizenGroup = groupHome.findByPrimaryKey(new Integer(groupId));
@@ -273,7 +273,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			final GroupType type = typeHome.create();
 			final GroupBusiness groupBusiness = getGroupBusiness();
 			rootCitizenGroup = groupBusiness.createGroup("Commune Citizens", "The Commune Root Group.", type.getGeneralGroupTypeString());
-			settings.setProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootCitizenGroup.getPrimaryKey());
+			settings.setProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME, rootCitizenGroup.getPrimaryKey());
 		}
 		return rootCitizenGroup;
 	}
@@ -289,7 +289,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 
 		final IWApplicationContext iwc = getIWApplicationContext();
 		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
-		String groupId = (String) settings.getProperty(ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME);
+		String groupId = settings.getProperty(ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME);
 		if (groupId != null) {
 			final GroupHome groupHome = getGroupHome();
 			rootSpecialCitizenGroup = groupHome.findByPrimaryKey(new Integer(groupId));
@@ -301,7 +301,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			final GroupType type = typeHome.create();
 			final GroupBusiness groupBusiness = getGroupBusiness();
 			rootSpecialCitizenGroup = groupBusiness.createGroup("Commune Special Citizens", "The Commune Special Citizen Root Group.", type.getGeneralGroupTypeString());
-			settings.setProperty(ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootSpecialCitizenGroup.getPrimaryKey());
+			settings.setProperty(ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME, rootSpecialCitizenGroup.getPrimaryKey());
 		}
 		return rootSpecialCitizenGroup;
 	}
@@ -320,7 +320,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 
 		final IWApplicationContext iwc = getIWApplicationContext();
 		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
-		String groupId = (String) settings.getProperty(ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME);
+		String groupId = settings.getProperty(ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME);
 		if (groupId != null) {
 			final GroupHome groupHome = getGroupHome();
 			rootCustomerChoiceGroup = groupHome.findByPrimaryKey(new Integer(groupId));
@@ -333,7 +333,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			final GroupType type = typeHome.create();
 			final GroupBusiness groupBusiness = getGroupBusiness();
 			rootCustomerChoiceGroup = groupBusiness.createGroup("Kundvalsgruppen", "Kundvalsgruppen", type.getGeneralGroupTypeString());
-			settings.setProperty(ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME, (Integer) rootCustomerChoiceGroup.getPrimaryKey());
+			settings.setProperty(ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME, rootCustomerChoiceGroup.getPrimaryKey());
 		}
 		return rootCustomerChoiceGroup;
 	}
@@ -350,7 +350,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 
 		final IWApplicationContext iwc = getIWApplicationContext();
 		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
-		String groupId = (String) settings.getProperty(ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME);
+		String groupId = settings.getProperty(ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME);
 		if (groupId != null) {
 			final GroupHome groupHome = getGroupHome();
 			rootProtectedCitizenGroup = groupHome.findByPrimaryKey(new Integer(groupId));
@@ -362,7 +362,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			final GroupType type = typeHome.create();
 			final GroupBusiness groupBusiness = getGroupBusiness();
 			rootProtectedCitizenGroup = groupBusiness.createGroup("Commune Protected Citizens", "The Commune Protected Citizen Root Group.", type.getGeneralGroupTypeString());
-			settings.setProperty(ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootProtectedCitizenGroup.getPrimaryKey());
+			settings.setProperty(ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME, rootProtectedCitizenGroup.getPrimaryKey());
 		}
 		return rootProtectedCitizenGroup;
 	}

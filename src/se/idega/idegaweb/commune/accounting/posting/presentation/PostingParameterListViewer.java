@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListViewer.java,v 1.1 2003/08/20 11:53:39 kjell Exp $
+ * $Id: PostingParameterListViewer.java,v 1.2 2003/09/08 08:10:07 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,7 +18,7 @@ import com.idega.presentation.ui.Window;
  */
 public class PostingParameterListViewer extends Window {
 
-	private final static String PARAM_ACTION = "action";
+//	private final static String PARAM_ACTION = "action";
 
 	public PostingParameterListViewer() {
 		this.setWidth(640);
@@ -31,7 +31,7 @@ public class PostingParameterListViewer extends Window {
 	 * @see com.idega.presentation.PresentationObject#main(IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		String action = iwc.getParameter(PARAM_ACTION);
+		//String action = iwc.getParameter(PARAM_ACTION);
 		
 		PostingParameterListEditor editor = new PostingParameterListEditor();
 		add(editor);
