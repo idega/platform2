@@ -243,8 +243,11 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
          * com.idega.block.finance.business.AccountManager
         public static Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws Exception{       
         */
-        if( rootGroup!=null)
+        if( rootGroup!=null){ 
         	rootGroup.addGroup(user);
+        	System.err.println("Adding to group: "+rootGroup.getName());	
+        }
+        else System.err.println(" ROOT GROUP IS NULL");
 
     }
      catch(Exception e){
