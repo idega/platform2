@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.block.finance.data.Account;
@@ -18,7 +19,8 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -44,6 +46,7 @@ public class Accounts extends Finance {
 
 	private int viewerPageId = -1;
 	private int tarifferPageId = -1;
+	private String type = null;
 
 	public Accounts() {
 
@@ -66,12 +69,16 @@ public class Accounts extends Finance {
 	}
 
 	protected void control(IWContext iwc) throws java.rmi.RemoteException {
-		
+		debugParameters(iwc);
 		if (isAdmin) {
 			 df = getDateTimeFormat(iwc.getCurrentLocale());
 			if (iwc.isParameterSet(prmNewAccount)) {
 				int iUserId = Integer.parseInt(iwc.getParameter(prmNewAccount));
-				setMainPanel(getNewAccountForm(iUserId, iCategoryId));
+				setMainPanel(getNewAccountForm(iwc,iUserId, iCategoryId));
+			}
+			if(iwc.isParameterSet("fin_create_account")){
+				createAccount(iwc);
+				setSearchPanel(getSearchForm(iwc, iCategoryId));
 			}
 			else if (iwc.isParameterSet("sf_search")) {
 				performSearch(iwc, iCategoryId);
@@ -90,12 +97,28 @@ public class Accounts extends Finance {
 
 		}
 		else
-			add(localize("access_denied", "Access denies"));
+			add(localize("access_denied", "Access denied"));
+	}
+	
+	/**
+	 * @param iwc
+	 */
+	private void createAccount(IWContext iwc){
+		String accountName = iwc.getParameter("account_name");
+		int userID = Integer.parseInt(iwc.getParameter("fin_usr_id"));
+		type = iwc.getParameter("fin_type");
+		try {
+			getFinanceService().getAccountBusiness().makeNewAccount(userID,accountName,"",1,type,getFinanceCategoryId().intValue());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (CreateException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private PresentationObject getSearchForm(IWContext iwc, int iCategoryId) {
-		Form F = new Form();
-		DataTable T = new DataTable();
+		
+		DataTable T = getDataTable();
 		T.setUseBottom(false);
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.addTitle(localize("account_search", "Account Search"));
@@ -108,15 +131,15 @@ public class Accounts extends Finance {
 		//T.add(getHeader(localize("last_name", "Last name")), 1, 4);
 
 		String id = iwc.getParameter("sf_id");
-		String name = iwc.getParameter("df_name");
-		String pid = iwc.getParameter("df_pid");
+		String name = iwc.getParameter("sf_name");
+		String pid = iwc.getParameter("sf_pid");
 		//String first = iwc.getParameter("sf_firstname");
 		//String middle = iwc.getParameter("sf_middlename");
 		//String last = iwc.getParameter("sf_lastname");
 
 		TextInput accountid = getTextInput("sf_id");
 		TextInput nameinput = getTextInput("sf_name");
-		TextInput pidinput = getTextInput("df_pid");
+		TextInput pidinput = getTextInput("sf_pid");
 		//TextInput firstname = getTextInput("sf_firstname");
 		//TextInput middlename = getTextInput("sf_middlename");
 		//TextInput lastname = getTextInput("sf_lastname");
@@ -170,47 +193,45 @@ public class Accounts extends Finance {
 		reset = (ResetButton) setStyle(reset,STYLENAME_INTERFACE_BUTTON);
 		T.addButton(reset);
 
-		F.add(T);
+		
 
-		return F;
+		return T;
 	}
 
-	private PresentationObject getNewAccountForm(int iUserId, int iCategoryId) {
-		Form F = new Form();
-		Table T = new Table(3, 4);
-		T.add(getHeader(localize("account_id", "Account id")), 1, 1);
-		T.add(getHeader(localize("first_name", "First name")), 1, 3);
-		T.add(getHeader(localize("middle_name", "Middle name")), 2, 3);
-		T.add(getHeader(localize("last_name", "Last name")), 3, 3);
-
-		TextInput accountid = getTextInput("sf_id");
-		TextInput firstname = getTextInput("sf_firstname");
-		TextInput middlename = getTextInput("sf_middlename");
-		TextInput lastname = getTextInput("sf_lastname");
-
-		int len = 30;
-		accountid.setLength(len);
-		firstname.setLength(len);
-		middlename.setLength(len);
-		lastname.setLength(len);
-
-		T.add(accountid, 1, 2);
-		T.add(getAccountTypes("sf_type", "", null), 2, 2);
-		T.add(firstname, 1, 4);
-		T.add(middlename, 2, 4);
-		T.add(lastname, 3, 4);
-
+	private PresentationObject getNewAccountForm(IWContext iwc, int iUserId, int iCategoryId) {
+		
+		DataTable T = getDataTable();
+		T.setUseBottom(false);
+		T.addTitle(localize("create_new_account","Create new account"));
+		TextInput accountName = new TextInput("account_name");
+		type = iwc.getParameter("fin_type");
+		
+		SubmitButton create = new SubmitButton(localize("create", "Create"), "fin_create_account", "true");
+		create = (SubmitButton) setStyle(create,STYLENAME_INTERFACE_BUTTON);
+		T.addButton(create);
+		T.add(getHeader(localize("user_name","User name")),1,1);
+		T.add(getText(localize("persona_id","Personal ID")),1,2);
+		T.add(getHeader(localize("account_id","Account ID")),1,3);
+		try {
+			User user = (User)getFinanceService().getAccountUserHome().findByPrimaryKey(new Integer(iUserId));
+			T.add(getText(user.getName()),2,1);
+			T.add(getText(user.getPersonalID()),2,2);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		T.add(accountName,2,3);
+		T.add(new Parameter("fin_usr_id",String.valueOf(iUserId)));
+		T.add(new Parameter("fin_type",type));
 		T.add(Finance.getCategoryParameter(iCategoryId));
-		SubmitButton search = new SubmitButton("sf_search", localize("search", "Search"));
-		T.add(search, 3, 2);
+	
 
-		F.add(T);
-
-		return F;
+		return T;
 	}
 
 	private void performSearch(IWContext iwc, int iCategoryId) {
-		String id = null,type = null;//, first = null, middle = null, last = null;
+		String id = null;//, first = null, middle = null, last = null;
 		String pid = null, name = null;
 		// See if we have an account id
 		if (iwc.isParameterSet("sf_type"))
@@ -300,8 +321,9 @@ public class Accounts extends Finance {
 			T.add(getHeader(localize("account_assessment", "Assessment")), 1, row);
 			T.add(getHeader(localize("account_id", "Account id")), 2, row);
 			T.add(getHeader(localize("user_name", "User name")), 3, row);
-			T.add(getHeader(localize("balance", "Balance")), 4, row);
-			T.add(getHeader(localize("last_updated", "Last updated")), 5, row);
+			T.add(getHeader(localize("personal_id", "Personal ID")), 4, row);
+			T.add(getHeader(localize("balance", "Balance")), 5, row);
+			T.add(getHeader(localize("last_updated", "Last updated")), 6, row);
 			row++;
 			Iterator I = accounts.iterator();
 			Account A;
@@ -341,13 +363,13 @@ public class Accounts extends Finance {
 				col++;
 
 				T.add(getText(U.getName()), col++, row);
-				
+				T.add(getText(U.getPersonalID()), col++, row);
 				T.add(getAmountText((getFinanceService().getAccountBalance(A.getAccountId()))), col++, row);
 				T.add(getText(df.format(A.getLastUpdated())), col++, row);
 				row++;
 			}
-			T.getContentTable().setColumnAlignment(4,Table.HORIZONTAL_ALIGN_RIGHT);
 			T.getContentTable().setColumnAlignment(5,Table.HORIZONTAL_ALIGN_RIGHT);
+			T.getContentTable().setColumnAlignment(6,Table.HORIZONTAL_ALIGN_RIGHT);
 			
 		}
 		return T;
@@ -358,15 +380,20 @@ public class Accounts extends Finance {
 		T.setWidth(Table.HUNDRED_PERCENT);
 		T.setTitlesHorizontal(true);
 		T.setUseBottom(false);
-		T.addTitle(localize("users_without_accounts", "Users without accounts"));
 		int row = 1;
+		T.addTitle(localize("users_without_accounts", "Users without accounts"));
+		T.add(getHeader(localize("user_name", "User name")), 1, row);
+		T.add(getHeader(localize("personal_id", "Personal ID")), 2, row);
+		T.add(getHeader(localize("create_account", "Create account")), 3, row);
+		row++;
 		Iterator I2 = mapOfUsers.values().iterator();
 		Image newImage = core.getImage("/shared/create.gif");
 		User U;
 		while (I2.hasNext()) {
 			U = (User)I2.next();
 			T.add(getText(U.getName()), 1, row);
-			T.add(getNewAccountLink(newImage, U.getID(), iCategoryId), 2, row);
+			T.add(getText(U.getPersonalID()), 2, row);
+			T.add(getNewAccountLink(newImage, U.getID(), iCategoryId,type), 3, row);
 			row++;
 		}
 		return T;
@@ -384,10 +411,11 @@ public class Accounts extends Finance {
 		return drp;
 	}
 
-	private Link getNewAccountLink(PresentationObject obj, int iUserId, int iCategoryId) {
+	private Link getNewAccountLink(PresentationObject obj, int iUserId, int iCategoryId,String type) {
 		Link L = new Link(obj);
 		L.addParameter(Finance.getCategoryParameter(iCategoryId));
 		L.addParameter(prmNewAccount, iUserId);
+		L.addParameter("fin_type",type);
 		return L;
 	}
 
