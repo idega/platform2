@@ -274,16 +274,6 @@ private IWResourceBundle iwrb;
     close();
   }
 
-  public void setConnectionAttributes(String attributeName, int attributeId) {
-    this.attributeName = attributeName;
-    this.attributeId = attributeId;
-  }
-
-  public void setConnectionAttributes(String attributeName, String attributeId) {
-    this.attributeName = attributeName;
-    this.attributeId = Integer.parseInt(attributeId);
-  }
-
   public String getColumnString(NewsCategoryAttribute[] attribs){
     String values = "";
     for (int i = 0 ; i < attribs.length ; i++) {

@@ -163,6 +163,7 @@ public class NewsBusiness{
         if(sSource !=null)
           eNwNews.setSource(sSource );
 
+        eNwNews.setNewsCategoryId(iCategoryId );
         if(update)
         eNwNews.update();
         else

@@ -99,7 +99,7 @@ public class NewsFinder {
     sql.append(" order by ");
     sql.append(Content.getColumnNamePublishFrom());
     sql.append(" desc ");
-    System.err.println(sql.toString());
+    //System.err.println(sql.toString());
     try {
       return EntityFinder.findAll(new NwNews(),sql.toString());
     }

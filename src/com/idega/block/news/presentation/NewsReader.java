@@ -281,38 +281,51 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
       fileCount = files.size();
     }
 
-    Text hLetters = new Text(iwrb.getLocalizedString("letters","Letters")+" : ");
-    Text hFiles = new Text(iwrb.getLocalizedString("files","Files")+" : ");
-    Text hFrom = new Text( iwrb.getLocalizedString("publish_from","Publish from")+" : ");
-    Text hTo = new Text(iwrb.getLocalizedString("publish_to","Publish to")+" : ");
-    Text tLetters = new Text(String.valueOf(letterCount ));
-    Text tFiles = new Text(String.valueOf(fileCount ));
+    Text hLetters = formatText(iwrb.getLocalizedString("letters","Letters")+" : ",true);
+    Text hFiles = formatText(iwrb.getLocalizedString("files","Files")+" : ",true);
+    Text hFrom = formatText( iwrb.getLocalizedString("publish_from","Publish from")+" : ",true);
+    Text hTo = formatText(iwrb.getLocalizedString("publish_to","Publish to")+" : ",true);
+    Text tLetters = formatText(String.valueOf(letterCount ),false);
+    Text tFiles = formatText(String.valueOf(fileCount ),false);
+
+    idegaTimestamp now = idegaTimestamp.RightNow();
     idegaTimestamp from = new idegaTimestamp(newsHelper.getContentHelper().getContent().getPublishFrom());
     idegaTimestamp to = new idegaTimestamp(newsHelper.getContentHelper().getContent().getPublishTo());
 
-    Text tFrom = new Text(from.getLocaleDate(locale));
-    Text tTo = new Text(to.getLocaleDate(locale));
+    Text tFrom = formatText(from.getLocaleDate(locale),false);
+    Text tTo = formatText(to.getLocaleDate(locale),false);
+    if(from.isLaterThan(now)){
+      tFrom.setFontColor("#FF0000");
+      tTo.setFontColor("#FF0000");
+    }
+    else if(now.isLaterThan(to)){
+      tFrom.setFontColor("#0000FF");
+      tTo.setFontColor("#0000FF");
+    }
+    else if(now.isLaterThan(from) && to.isLaterThan(now)){
+      tFrom.setFontColor("#00FF00");
+      tTo.setFontColor("#00FF00");
+    }
 
     Text headLine = new Text(sHeadline);
-
     newsInfo = setInformationAttributes(newsInfo);
     headLine = setHeadlineAttributes(headLine);
 
 
     Table infoTable = new Table();
       infoTable.add(hLetters,1,1);
-      infoTable.add(tLetters ,1,2);
-      infoTable.add(hFiles ,1,3);
-      infoTable.add(tFiles ,1,3);
-      infoTable.add(hFrom,1,3);
-      infoTable.add(tFrom,1,3);
-      infoTable.add(hTo,1,3);
-      infoTable.add(tTo,1,3);
+      infoTable.add(tLetters ,2,1);
+      infoTable.add(hFiles ,1,2);
+      infoTable.add(tFiles ,2,2);
+      infoTable.add(hFrom,3,1);
+      infoTable.add(tFrom,4,1);
+      infoTable.add(hTo,3,2);
+      infoTable.add(tTo,4,2);
 
 
     T.add(newsInfo,1,1);
     T.add(headLine,1,2);
-    T.add(infoTable);
+    T.add(infoTable,1,3);
 
     Link moreLink = new Link(iwrb.getImage("more.gif"));
     moreLink.addParameter(prmMore,news.getID());
@@ -321,6 +334,12 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     return T;
   }
 
+  private Text formatText(String text,boolean bold){
+    Text T = new Text(text);
+    T.setFontSize(2);
+    T.setBold(bold);
+    return T;
+  }
 
   private PresentationObject publishNews(IWContext iwc ,NewsCategory newsCategory,Locale locale){
     List L = NewsFinder.listOfNewsHelpersInCategory(newsCategory.getID(),numberOfDisplayedNews,locale );
