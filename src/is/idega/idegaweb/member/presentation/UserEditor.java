@@ -1171,7 +1171,6 @@ public class UserEditor extends Block {
 								
 							}
 							catch (FinderException e) {
-								e.printStackTrace();
 								legalState |= true;
 							}
 							
