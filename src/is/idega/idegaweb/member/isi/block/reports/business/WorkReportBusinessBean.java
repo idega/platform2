@@ -1937,7 +1937,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		Date toDate = getWorkReportOpenToDate();
 		if(fromDate!=null && toDate!=null) {
 			//check if we are in the allowed timespan
-			return ( year >= fromDate.getYear() && year<=toDate.getYear() );				
+			return ( (year >= (new IWTimestamp(fromDate)).getYear()) && (year<= (new IWTimestamp(toDate)).getYear()));				
 		}
 		return true;
 		
@@ -1946,20 +1946,31 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public Date getWorkReportOpenFromDate() {
 		String fDate = getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_BUNDLE_PARAM_FROM_DATE);
 		
-  	if(fDate!=null) {
-  		return (new IWTimestamp(fDate)).getDate();
-  	}
+		try{
+			if(fDate!=null) {
+				return (new IWTimestamp(fDate)).getDate();
+			}
+		}
+		catch(java.lang.IllegalArgumentException ex){
+			ex.printStackTrace();
+			return null;
+		}
+  
   	
   	return null;
   }
   
 	public Date getWorkReportOpenToDate() {
 		String tDate = getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_BUNDLE_PARAM_TO_DATE);
-		
-		if(tDate!=null) {
-			return (new IWTimestamp(tDate)).getDate();
+		try{
+			if(tDate!=null) {
+				return (new IWTimestamp(tDate)).getDate();
+			}
 		}
-  	
+		catch(java.lang.IllegalArgumentException ex){
+			ex.printStackTrace();
+			return null;
+		}
 		return null;
 	}
 	
