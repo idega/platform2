@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.55 2003/11/21 19:01:27 tryggvil Exp $
+ * $Id: CampusAllocator.java,v 1.56 2004/02/26 13:37:21 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -548,6 +548,7 @@ public class CampusAllocator extends Block implements Campus {
 		if (HT != null)
 			bcontracts = true;
 		if (L != null) {
+			int listCount = L.size();
 			java.util.Iterator it = L.iterator();
 			row = 2;
 			String TempColor = "#000000";
@@ -555,12 +556,14 @@ public class CampusAllocator extends Block implements Campus {
 			boolean redColorSet = false;
 			int numberOnList = 1;
 			IWTimestamp now = IWTimestamp.RightNow();
+			int wlID = -1;
 			while (it.hasNext()) {
 				col = 1;
 				con_id = -1;
 				WaitingList WL = (WaitingList) it.next();
+				wlID = ((Integer)WL.getPrimaryKey()).intValue();
 				try {
-					Applicant A = ((com.idega.block.application.data.ApplicantHome) com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(WL.getApplicantId().intValue());
+					Applicant A = ((ApplicantHome) IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(WL.getApplicantId().intValue());
 
 					Application app = CampusApplicationFinder.getLastApprovedApplication(A);
 					TextFontColor = TempColor;
@@ -573,7 +576,8 @@ public class CampusAllocator extends Block implements Campus {
 						TextFontColor = "#00CC00";
 					}
 
-					Frame.add(formatText(numberOnList), col++, row);
+					//Frame.add(formatText(numberOnList), col++, row);
+					Frame.add(getWaitingListOrderLink(wlID,numberOnList,aprtTypeId,cmplxId,listCount), col++, row);
 					numberOnList++;
 					Frame.add(formatText(WL.getPriorityLevel()), col++, row);
 					String cypher = null;
@@ -1437,6 +1441,18 @@ public class CampusAllocator extends Block implements Campus {
 		L.addParameter("aprt_type_id", aprt_type_id);
 		L.addParameter("cmplx_id", cmplx_id);
 		return L;
+	}
+	
+	public Link getWaitingListOrderLink(int id,int order,int aprtTypeID,int complexID,int max){
+		Link L = new Link(formatText(order));
+		L.setWindowToOpen(WaitingListOrganizerWindow.class);
+		L.addParameter(WaitingListOrganizerWindow.COMPLEX_ID,complexID);
+		L.addParameter(WaitingListOrganizerWindow.APARTMENT_TYPE_ID,aprtTypeID);
+		L.addParameter(WaitingListOrganizerWindow.NUMBER_ON_LIST,order);
+		L.addParameter(WaitingListOrganizerWindow.WL_ID,id);
+		L.addParameter(WaitingListOrganizerWindow.MAX_LIST,max);
+		return L;
+		
 	}
 
 	private ApartmentTypePeriods getPeriod(int aprt_type_id) {
