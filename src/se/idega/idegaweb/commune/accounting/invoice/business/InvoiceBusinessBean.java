@@ -52,7 +52,6 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
-import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
@@ -65,11 +64,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/18 13:21:08 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/19 14:05:27 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.111 $
+ * @version $Revision: 1.112 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -693,16 +692,11 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 							 doublePaymentPosting, regSpecTypeName, orderId);
 					record.setPaymentRecord (paymentRecord);
 					record.store ();
-					// inte till kommun landsting, stat ?
-					
-					/*
 					final SchoolClassMember placement = record.getSchoolClassMember ();
 					createVatPaymentRecord
-							(paymentRecord, null, //final PostingDetail postingDetail
-							 school, placement.getSchoolType (),
+							(paymentRecord, school, placement.getSchoolType (),
 							 placement.getSchoolYear (), new CalendarMonth (period),
 							 ConstantStatus.PRELIMINARY, createdBySignature);
-					*/
 			}
 		} catch (Exception e) {
 			e.printStackTrace ();
@@ -711,7 +705,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	}
 
 	public PaymentRecord createVatPaymentRecord
-		(final PaymentRecord paymentRecord, final PostingDetail postingDetail,
+		(final PaymentRecord paymentRecord,
 		 final School school, final SchoolType schoolType,
 		 final SchoolYear schoolYear, final CalendarMonth month, final char status,
 		 final String createdBySignature)
@@ -746,22 +740,17 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			e.printStackTrace ();
 		}
 
-		// count increase value for amount
-		final float newTotalVatAmount = AccountingUtil.roundAmount
-				(vatRuleRegulation.getAmount ().intValue () * paymentRecord.getTotalAmount ());				
-		final String paymentText = vatRuleRegulation.getName ();
-
 		// find or create vat payment record
 		PaymentRecord vatPaymentRecord;
 		try {
 			// update old vat payment record
 			vatPaymentRecord = getPaymentRecordHome ()
 					.findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus
-					(ownPosting, doublePosting, null, paymentText,
+					(ownPosting, doublePosting, null, vatRuleRegulation.getName (),
 					 new CalendarMonth (startDate),status);
 			vatPaymentRecord.setTotalAmount
 					(AccountingUtil.roundAmount (vatPaymentRecord.getTotalAmount ()
-																			 + newTotalVatAmount));
+																			 + paymentRecord.getTotalAmountVAT ()));
 			vatPaymentRecord.setChangedBy (createdBySignature);
 			vatPaymentRecord.setDateChanged (now ());
 			vatPaymentRecord.store ();
@@ -771,17 +760,16 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			vatPaymentRecord.setPaymentHeader (paymentHeader);
 			vatPaymentRecord.setStatus (status);
 			vatPaymentRecord.setPeriod (startDate);
-			vatPaymentRecord.setPaymentText (paymentText);
+			vatPaymentRecord.setPaymentText (vatRuleRegulation.getName ());
 			vatPaymentRecord.setDateCreated (now ());
 			vatPaymentRecord.setCreatedBy (createdBySignature);
 			vatPaymentRecord.setPlacements (0);
 			vatPaymentRecord.setPieceAmount (0);
-			vatPaymentRecord.setTotalAmount (newTotalVatAmount);
+			vatPaymentRecord.setTotalAmount (paymentRecord.getTotalAmountVAT ());
 			vatPaymentRecord.setTotalAmountVAT (0);
-			//			vatPaymentRecord.setRuleSpecType (regSpecType.getRegSpecType ());
+			vatPaymentRecord.setRuleSpecType (regSpecType.getRegSpecType ());
 			vatPaymentRecord.setOwnPosting (ownPosting);
 			vatPaymentRecord.setDoublePosting (doublePosting);
-			//			vatPaymentRecord.setOrderId (postingDetail.getOrderID());
 			vatPaymentRecord.store();
 		}
 		return vatPaymentRecord;
