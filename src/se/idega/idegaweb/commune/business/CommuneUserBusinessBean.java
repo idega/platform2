@@ -22,6 +22,8 @@ import java.rmi.RemoteException;
 import java.util.*;
 
 import javax.ejb.*;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 /**
@@ -36,6 +38,9 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	
 	private final String ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME = "commune_id";
 	private final String ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME = "special_citizen_group_id";
+	private Group rootCitizenGroup;
+	private Group rootSpecialCitizenGroup;
+	
 	
 	/**
 	 * Creates a new citizen with a firstname,middlename, lastname and personalID where middlename and personalID can be null.<br>
@@ -274,14 +279,16 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * throws a CreateException if it failed to locate or create the group.
 	 */
 	public Group getRootCitizenGroup() throws CreateException, FinderException, RemoteException {
-		Group rootGroup = null;
 		//create the default group
+		
+		if( rootCitizenGroup != null ) return rootCitizenGroup;
+		
 		final IWApplicationContext iwc = getIWApplicationContext();
 		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
 		String groupId = (String) settings.getProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME);
 		if (groupId != null) {
 			final GroupHome groupHome = getGroupHome();
-			rootGroup = groupHome.findByPrimaryKey(new Integer(groupId));
+			rootCitizenGroup = groupHome.findByPrimaryKey(new Integer(groupId));
 		}
 		else {
 			System.err.println("trying to store Commune Root group");
@@ -289,11 +296,11 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			final GroupTypeHome typeHome = (GroupTypeHome) getIDOHome(GroupType.class);
 			final GroupType type = typeHome.create();
 			final GroupBusiness groupBusiness = getGroupBusiness();
-			rootGroup =
+			rootCitizenGroup =
 				groupBusiness.createGroup("Commune Citizens", "The Commune Root Group.", type.getGeneralGroupTypeString());
-			settings.setProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootGroup.getPrimaryKey());
+			settings.setProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootCitizenGroup.getPrimaryKey());
 		}
-		return rootGroup;
+		return rootCitizenGroup;
 	}
 	/**
 	 * Creates (if not available) and returns the default usergroup for  all
@@ -301,14 +308,15 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * CreateException if it failed to locate or create the group.
 	 */
 	public Group getRootSpecialCitizenGroup() throws CreateException, FinderException, RemoteException {
-		Group rootGroup = null;
 		//create the default group
+		if( rootSpecialCitizenGroup!=null ) return rootSpecialCitizenGroup;
+		
 		final IWApplicationContext iwc = getIWApplicationContext();
 		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
 		String groupId = (String) settings.getProperty(ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME);
 		if (groupId != null) {
 			final GroupHome groupHome = getGroupHome();
-			rootGroup = groupHome.findByPrimaryKey(new Integer(groupId));
+			rootSpecialCitizenGroup = groupHome.findByPrimaryKey(new Integer(groupId));
 		}
 		else {
 			System.err.println("trying to store Commune Special Citizen Root group");
@@ -316,14 +324,14 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			final GroupTypeHome typeHome = (GroupTypeHome) getIDOHome(GroupType.class);
 			final GroupType type = typeHome.create();
 			final GroupBusiness groupBusiness = getGroupBusiness();
-			rootGroup =
+			rootSpecialCitizenGroup =
 				groupBusiness.createGroup(
 					"Commune Special Citizens",
 					"The Commune Special Citizen Root Group.",
 					type.getGeneralGroupTypeString());
-			settings.setProperty(ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootGroup.getPrimaryKey());
+			settings.setProperty(ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootSpecialCitizenGroup.getPrimaryKey());
 		}
-		return rootGroup;
+		return rootSpecialCitizenGroup;
 	}
 	
 
@@ -488,38 +496,93 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	}
 
 	public boolean moveCitizenFromCommune(User user) throws RemoteException {
-		try {
-			getRootCitizenGroup().removeUser(user);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Could not remove user from root citizen group");
-			return false;
-		}
 		
-		try {
-			getRootSpecialCitizenGroup().addGroup(user);
+		/*UserTransaction transaction =  getSessionContext().getUserTransaction();
+		
+		try{
+			transaction.begin();*/
+			Group rootGroup = null;
+			try{
+				rootGroup = getRootCitizenGroup();
+			}
+			catch(Exception ex){
+				ex.printStackTrace();
+				return false;
+			}
+			Group rootSpecialGroup = null;
+			try{
+				rootSpecialGroup = getRootSpecialCitizenGroup();
+			}
+			catch(Exception ex){
+				ex.printStackTrace();
+				return false;
+			}
+			
+			rootGroup.removeUser(user);
+			rootSpecialGroup.addGroup(user);
+			
+		/*	transaction.commit();
 		}
 		catch (Exception ex) {
-			ex.printStackTrace();
-			System.out.println("Could not add user to root special citizen group");
-			return false;
-		}
+		 ex.printStackTrace();
+		 System.err.println("Could not move the user to the root special citizen group");
+
+		 try {
+			transaction.rollback();
+		 }
+		 catch (SystemException e) {
+			 e.printStackTrace();
+		 }
+
+		 return false;
+		}*/
 		
 		return true;
 	}
 	
 	public boolean moveCitizenToCommune(User user) throws RemoteException {
-		try {
-			getRootCitizenGroup().addGroup(user);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Could not add user to root citizen group");
-			return false;
-		}
+	/*
+		UserTransaction transaction =  getSessionContext().getUserTransaction();
 		
-		return false;
+		try{
+			transaction.begin();*/
+			Group rootGroup = null;
+			try{
+				rootGroup = getRootCitizenGroup();
+			}
+			catch(Exception ex){
+				ex.printStackTrace();
+				return false;
+			}
+			Group rootSpecialGroup = null;
+			try{
+				rootSpecialGroup = getRootSpecialCitizenGroup();
+			}
+			catch(Exception ex){
+				ex.printStackTrace();
+				return false;
+			}
+			
+			rootSpecialGroup.removeUser(user);
+			rootGroup.addGroup(user);
+			/*
+			transaction.commit();
+		}
+		catch (Exception ex) {
+		 ex.printStackTrace();
+		 System.err.println("Could not move the user to the root citizen group");
+
+		 try {
+			transaction.rollback();
+		 }
+		 catch (SystemException e) {
+			 e.printStackTrace();
+		 }
+
+		 return false;
+		}*/
+		
+		return true;
 	}
 	
 	
