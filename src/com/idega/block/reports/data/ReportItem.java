@@ -3,6 +3,7 @@ package com.idega.block.reports.data;
 import java.sql.*;
 import java.util.StringTokenizer;
 import com.idega.data.*;
+import java.util.Vector;
 
 /**
  * Title:
@@ -31,12 +32,19 @@ public class ReportItem extends GenericEntity {
     addAttribute("condtype","Condition type",true,true,"java.lang.String");
     addAttribute("conddata","Condition data",true,true,"java.lang.String");
     addAttribute("condoperator","Condition data",true,true,"java.lang.String");
+    addAttribute("entity","Entity Class",true,true,"java.lang.String");
     addAttribute("info","Info",true,true,"java.lang.String");
     super.setMaxLength("condtype",1);
 
   }
   public String getEntityName() {
     return "report_item";
+  }
+  public int getCategory(){
+    return getIntColumnValue("category");
+  }
+  public void setCategory(int category){
+    setColumn("category", new Integer(category));
   }
   public String getName(){
     return getStringColumnValue("name");
@@ -57,10 +65,10 @@ public class ReportItem extends GenericEntity {
     setColumn("maintable", main_table);
   }
   public String getJoin(){
-    return getStringColumnValue("join");
+    return getStringColumnValue("joins");
   }
-  public void setJoin(String join){
-    setColumn("join", join);
+  public void setJoin(String joins){
+    setColumn("joins", joins);
   }
   public String getJoinTables(){
     return getStringColumnValue("jointables");
@@ -73,6 +81,15 @@ public class ReportItem extends GenericEntity {
   }
   public void setInfo(String info){
     setColumn("info", info);
+  }
+  public String getEntity(){
+    return getStringColumnValue("entity");
+  }
+  public void setEntity(String entity){
+    setColumn("entity", entity);
+  }
+  public void setEntity(GenericEntity E){
+    setColumn("entity",E.getClass().getName());
   }
   public String getConditionType(){
     return getStringColumnValue("condtype");
@@ -99,6 +116,23 @@ public class ReportItem extends GenericEntity {
   public void setOps(String[] s){
     this.setConditionOperator(this.sm(s,";"));
   }
+
+  public String[] getJoinTable(){
+    String s = this.getJoinTables();
+    if(!"".equalsIgnoreCase(s)){
+    StringTokenizer st = new StringTokenizer(s,",");
+    String[] S = new String[st.countTokens()];
+    int i = 0;
+    while(st.hasMoreTokens()){
+      S[i] = st.nextToken();
+      i++;
+    }
+    return S;
+    }
+    else
+      return null;
+  }
+
   public String[][] getData(){
     String s = this.getConditionData();
     String[] sB = ms(s,";");

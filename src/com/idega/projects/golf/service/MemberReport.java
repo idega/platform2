@@ -379,7 +379,7 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
         sql.append(",");
     }
 
-    add(sql.toString());
+    //add(sql.toString());
     return sql.toString();
   }
 
@@ -426,7 +426,7 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
 
           }
         }
-        rm = new ReportMember(f,m,l,s,g+n,e,b,h,p,c,u);
+        rm = new ReportMember(f,m,l,s,g,e,b,h,p,c,u);
         Members.addElement(rm);
 
       }

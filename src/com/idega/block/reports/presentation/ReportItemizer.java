@@ -8,54 +8,81 @@ import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.Script;
+import com.idega.jmodule.object.Editor;
+import com.idega.block.reports.presentation.ReportObjectHandler;
+import com.idega.block.reports.business.ReportEntityHandler;
+import com.idega.jmodule.object.ModuleObject;
 
 
-public class ReportItemizer extends JModuleObject{
+public class ReportItemizer extends Editor{
 
-  private boolean isAdmin;
-  private final int ACT0 = 0,ACT1=1,ACT2=2,ACT3=3,ACT4=4;
-  protected String MiddleColor,LightColor,DarkColor,WhiteColor,TextFontColor,HeaderFontColor,IndexFontColor;
-  private String sAction = "report_action";
+  private final String sAction = "report_action";
+  private final String prefix = "rpit_" ;
   private String sActPrm = "0";
   private int iAction = 0;
   private String sName,sInfo;
   private String sIndex;
-  private int fontSize = 2;
-  protected boolean fontBold = false;
-  protected String styleAttribute = "font-size: 8pt";
 
   public ReportItemizer(){
     sIndex = "0";
     sName = "";
     sInfo = "";
+    LightColor = "#D7DADF";
+    MiddleColor = "#9fA9B3";
+    DarkColor = "#27334B";
+    WhiteColor = "#FFFFFF";
+    TextFontColor = "#000000";
+    HeaderFontColor = DarkColor;
+    IndexFontColor = "#000000";
+
   }
 
-  private void control(ModuleInfo modinfo){
+  protected void control(ModuleInfo modinfo){
 
+    add("check");
     try{
         doSome(modinfo);
-
+        doMain(modinfo);
         if(modinfo.getParameter(sAction) != null){
           sActPrm = modinfo.getParameter(sAction);
           try{
             iAction = Integer.parseInt(sActPrm);
             switch(iAction){
-              case ACT0: doSome(modinfo); break;
-              case ACT1: doAct1(modinfo); break;
-              case ACT2: doAct2(modinfo); break;
-              case ACT3: break;
-              case ACT4: break;
+              case ACT1:    break;
+              case ACT2:    break;
+              case ACT3: doChange(modinfo); break;
+              case ACT4: doUpdate(modinfo);        break;
             }
           }
           catch(Exception e){
-
+            e.printStackTrace();
           }
         }
     }
     catch(Exception S){
       S.printStackTrace();
     }
-    doMain(modinfo);
+
+  }
+  protected ModuleObject makeLinkTable(int menuNr){
+    Table LinkTable = new Table(3,1);
+    int last = 3;
+    LinkTable.setWidth("100%");
+    LinkTable.setCellpadding(2);
+    LinkTable.setCellspacing(1);
+    LinkTable.setColor(this.DarkColor);
+    LinkTable.setWidth(last,"100%");
+    Link Link1 = new Link("Yfirlit");
+    Link1.setFontColor(this.LightColor);
+    Link1.addParameter(this.sAction,String.valueOf(this.ACT3));
+    Link Link2 = new Link("Breyta");
+    Link2.setFontColor(this.LightColor);
+    Link2.addParameter(this.sAction,String.valueOf(this.ACT2));
+    if(isAdmin){
+      LinkTable.add(Link1,1,1);
+      LinkTable.add(Link2,2,1);
+    }
+    return LinkTable;
   }
 
   private void doSome(ModuleInfo modinfo){
@@ -63,6 +90,7 @@ public class ReportItemizer extends JModuleObject{
     String sIndex = modinfo.getParameter("rep_cat_drp");
     if(sIndex != null){
       id = Integer.parseInt(sIndex);
+      modinfo.setSessionAttribute(prefix+"id",new Integer(id));
       if(id != 0){
         try {
           ReportCategory RC = new ReportCategory(id);
@@ -79,219 +107,142 @@ public class ReportItemizer extends JModuleObject{
     String sIndex = modinfo.getParameter("rep_cat_drp");
     Table T = new Table();
     Form myForm = new Form();
-    DropdownMenu drp = this.drpCategories("rep_cat_drp",sIndex);
+    if(sIndex==null)
+      sIndex = "0";
+    DropdownMenu drp = ReportObjectHandler.drpCategories("rep_cat_drp",sIndex);
     drp.setToSubmit();
-    TextInput tiName = new TextInput("rep_cat_name",sName);
-    TextInput tiInfo = new TextInput("rep_cat_info",sInfo);
-    SubmitButton submit= new SubmitButton("Save",this.sAction,String.valueOf(this.ACT1));
-    SubmitButton delete= new SubmitButton("Del",this.sAction,String.valueOf(this.ACT2));
+    Text Name = new Text(sName);
+    Text Info = new Text(sInfo);
+
     Table T2 = new Table();
 
     T2.add("Flokkur",1,1);
     T2.add(drp,1,2);
     T2.add("Name:",2,1);
-    T2.add(tiName,2,2);
+    T2.add(Name,2,2);
     T2.add("Info:",3,1);
-    T2.add(tiInfo,3,2);
-    T2.add(submit,4,2);
-    T2.add(delete,5,2);
+    T2.add(Info,3,2);
+
     myForm.add(T2);
     T.add(myForm);
-    add(T);
+    Link L = new Link("sjá");
+    L.addParameter(this.sAction,String.valueOf(this.ACT3));
+    add(L);
+    this.makeView();
+    this.addHeader(this.makeLinkTable(0));
+    this.addMain(T);
   }
   protected void doChange(ModuleInfo modinfo) throws SQLException{
     Form myForm = new Form();
-    //myForm.maintainAllParameters();
-    String sCatId = modinfo.getParameter("category_id");
-    int iCatId = 0;
-    if(sCatId != null)
-      iCatId = Integer.parseInt(sCatId);
-
+    int id  = ((Integer)modinfo.getSessionAttribute(prefix+"id")).intValue();
+    add(""+id);
+    /*
     ReportItem[] RI;
     try{
     RI = (ReportItem[])new ReportItem().findAll();
     }
     catch(Exception e){RI = new ReportItem[0];}
     int count = RI.length;
-    int inputcount = count+5;
-    Table inputTable =  new Table(4,inputcount+1);
-    inputTable.setWidth("100%");
-    inputTable.setCellpadding(2);
-    inputTable.setCellspacing(1);
-    inputTable.setColumnAlignment(1,"right");
-    inputTable.setHorizontalZebraColored(LightColor,WhiteColor);
-    inputTable.setRowColor(1,MiddleColor);
-    int a = 1;
-    inputTable.add(formatText("Name"),a++,1);
-    inputTable.add(formatText("Field"),a++,1);
-    inputTable.add(formatText("Maintable"),a++,1);
-    inputTable.add(formatText("Joins"),a++,1);
-    inputTable.add(formatText("Join Tables"),a++,1);
-    inputTable.add(formatText("Condition Data"),a++,1);
-    inputTable.add(formatText("Condition Operator"),a++,1);
-    inputTable.add(formatText("Information"),a++,1);
-
-    for (int i = 1; i <= inputcount ;i++){
-      String rownum = String.valueOf(i);
-      String s = "";
-      TextInput nameInput, infoInput;
-      HiddenInput idInput;
-      CheckBox delCheck;
-      int pos;
-      if(i <= count ){
-        pos = i-1;
-        nameInput  = new TextInput("tke_nameinput"+i,(RI[pos].getName()));
-        infoInput = new TextInput("tke_infoinput"+i,(RI[pos].getInfo()));
-        idInput = new HiddenInput("tke_idinput"+i,String.valueOf(RI[pos].getID()));
-        delCheck = new CheckBox("tke_delcheck"+i,"true");
-        setStyle(delCheck);
-        inputTable.add(delCheck,4,i+1);
-      }
-      else{
-        nameInput  = new TextInput("tke_nameinput"+i);
-        infoInput = new TextInput("tke_infoinput"+i);
-        idInput = new HiddenInput("tke_idinput"+i,"-1");
-      }
-      nameInput.setSize(20);
-      infoInput.setSize(40);
-
-      setStyle(nameInput);
-      setStyle(infoInput);
-
-      inputTable.add(formatText(rownum),1,i+1);
-      inputTable.add(nameInput,2,i+1);
-      inputTable.add(infoInput,3,i+1);
-      inputTable.add(idInput);
-    }
-    myForm.add(new HiddenInput("tke_count", String.valueOf(inputcount) ));
-    myForm.add(new HiddenInput(this.sAction,String.valueOf(this.ACT3 )));
-    myForm.add(inputTable);
-    myForm.add(new SubmitButton("Vista"));
-
-    add(myForm);
-  }
-
-  private ReportCategory[] findCategorys(int iCatId){
-    try {
-      if(iCatId > 0){
-        return (ReportCategory[]) new ReportCategory().findAllByColumn("category",iCatId);
-      }
-      else{
-        return new ReportCategory[0];
-      }
-    }
-    catch (SQLException ex) {
-      return new ReportCategory[0];
-    }
-  }
-
-
-  private void doAct1(ModuleInfo modinfo){
-    int id = -1;
-    String sIndex = modinfo.getParameter("rep_cat_drp");
-    if(sIndex != null)
-       id = Integer.parseInt(sIndex);
-    sName = modinfo.getParameter("rep_cat_name");
-    sInfo = modinfo.getParameter("rep_cat_info");
-    if(id == 0)
-      this.saveCategory(sName,sInfo);
-    else
-      this.updateCategory(id,sName,sInfo);
-  }
-
-  private void doAct2(ModuleInfo modinfo){
-    int id = 0;
-    String sIndex = modinfo.getParameter("rep_cat_drp");
-    if(sIndex != null)
-       id = Integer.parseInt(sIndex);
-    if(id != 0)
-      this.deleteCategory(id);
-    sName = "";
-    sInfo = "";
-  }
-
-  private boolean saveCategory(String name,String info){
-    try {
-      ReportCategory rc = new ReportCategory();
-      rc.setName(name);
-      rc.setInfo(info);
-      rc.insert();
-      return true;
-    }
-    catch (Exception ex) {
-      return false;
-    }
-  }
-  private boolean updateCategory(int id,String name,String info){
-     try {
-      if(id != -1){
-      ReportCategory rc = new ReportCategory(id);
-      rc.setName(name);
-      rc.setInfo(info);
-      rc.update();
-      return true;
-      }
-      else
-        return false;
-    }
-    catch (Exception ex) {
-      return false;
-    }
-  }
-  private boolean deleteCategory(int id){
-    try {
-      ReportCategory rc = new ReportCategory(id);
-      rc.delete();
-      return true;
-    }
-    catch (Exception ex) {
-      return false;
-    }
-  }
-
-  private DropdownMenu drpCategories(String sPrm,String selected) {
-    ReportCategory[] cat = new ReportCategory[0];
-    try{
-      cat = (ReportCategory[]) (new ReportCategory()).findAll();
-    }
-    catch(SQLException sql){}
-    DropdownMenu drp = new DropdownMenu(sPrm);
-    drp.addMenuElement("0","Flokkar");
-    for (int i = 0; i < cat.length; i++) {
-      drp.addMenuElement(cat[i].getID(),cat[i].getName());
-    }
-    if(!selected.equalsIgnoreCase(""))
-      drp.setSelectedElement(selected);
-    return drp;
-  }
-
-  public Text formatText(String s){
-    Text T= new Text();
-    if(s!=null){
-      T= new Text(s);
-      if(this.fontBold)
-      T.setBold();
-      T.setFontSize(this.fontSize);
-    }
-    return T;
-  }
-  public Text formatText(int i){
-    return formatText(String.valueOf(i));
-  }
-  protected void setStyle(InterfaceObject O){
-    O.setAttribute("style",this.styleAttribute);
-  }
-
-  public void main(ModuleInfo modinfo) {
-    /* try{
-      isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
-    }
-    catch(SQLException e){
-      isAdmin = false;
-    }
     */
-    isAdmin = true;
-    control(modinfo);
+
+    Table T =  new Table(2,11);
+    T.setCellpadding(2);
+    T.setCellspacing(1);
+    T.setHorizontalZebraColored(LightColor,WhiteColor);
+    T.setRowColor(1,MiddleColor);
+    int a = 1;
+    T.add(formatText("Property"),1,a);
+    T.add(formatText("Value"),2,a++);
+    T.add(formatText("Name"),1,a++);
+    T.add(formatText("Field"),1,a++);
+    T.add(formatText("Maintable"),1,a++);
+    T.add(formatText("Joins"),1,a++);
+    T.add(formatText("Join Tables"),1,a++);
+    T.add(formatText("Condition Type"),1,a++);
+    T.add(formatText("Condition Data"),1,a++);
+    T.add(formatText("Condition Operator"),1,a++);
+    T.add(formatText("Entity Class"),1,a++);
+    T.add(formatText("Information"),1,a++);
+
+
+    String s = "";
+    TextInput name,field,table,joins,jointables,
+              condtype,conddata,condop,entity,info;
+    HiddenInput idInput;
+    CheckBox delCheck;
+
+    name        = new TextInput(prefix+"name");
+    field       = new TextInput(prefix+"field");
+    table       = new TextInput(prefix+"table");
+    joins       = new TextInput(prefix+"joins");
+    jointables  = new TextInput(prefix+"jointables");
+    condtype    = new TextInput(prefix+"condtype");
+    conddata    = new TextInput(prefix+"conddata");
+    condop      = new TextInput(prefix+"condop");
+    entity      = new TextInput(prefix+"entity");
+    info        = new TextInput(prefix+"info");
+
+    int tlen = 80;
+    name.setSize(tlen);
+    field.setSize(tlen);
+    table.setSize(tlen);
+    joins.setSize(tlen);
+    jointables.setSize(tlen);
+    condtype.setSize(tlen);
+    conddata.setSize(tlen);
+    condop.setSize(tlen);
+    entity.setSize(tlen);
+    info.setSize(tlen);
+
+    setStyle(name);
+    setStyle(field);
+    setStyle(table);
+    setStyle(joins);
+    setStyle(jointables);
+    setStyle(condtype);
+    setStyle(conddata);
+    setStyle(condop);
+    setStyle(entity);
+    setStyle(info);
+
+    int col = 2;
+    int row = 2;
+    T.add(name,col,row++);
+    T.add(field,col,row++);
+    T.add(table,col,row++);
+    T.add(joins,col,row++);
+    T.add(jointables,col,row++);
+    T.add(condtype,col,row++);
+    T.add(conddata,col,row++);
+    T.add(condop,col,row++);
+    T.add(entity,col,row++);
+    T.add(info,col,row++);
+
+    myForm.add(T);
+    myForm.add(new SubmitButton("Vista",this.sAction,String.valueOf(this.ACT4 )));
+    this.makeView();
+    this.addHeader(this.makeLinkTable(0));
+    this.addMain(myForm);
   }
 
+ protected void doUpdate(ModuleInfo modinfo) throws SQLException{
+
+    int id  = ((Integer)modinfo.getSessionAttribute(prefix+"id")).intValue();
+    String name,field,table,joins,jointables,condtype,conddata,condop,entity,info;
+
+    name        = modinfo.getParameter(prefix+"name");
+    field       = modinfo.getParameter(prefix+"field");
+    table       = modinfo.getParameter(prefix+"table");
+    joins       = modinfo.getParameter(prefix+"joins");
+    jointables  = modinfo.getParameter(prefix+"jointables");
+    condtype    = modinfo.getParameter(prefix+"condtype");
+    conddata    = modinfo.getParameter(prefix+"conddata");
+    condop      = modinfo.getParameter(prefix+"condop");
+    entity      = modinfo.getParameter(prefix+"entity");
+    info        = modinfo.getParameter(prefix+"info");
+
+    if(id!=0){
+     boolean b = ReportEntityHandler.saveReportItem(id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info);
+    }
+  }
 }

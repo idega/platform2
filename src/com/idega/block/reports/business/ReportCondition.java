@@ -17,6 +17,7 @@ import java.sql.SQLException;
   private String sJoin="",sOperator="",sVariable="";
   private String[] sOps,sVars;
   private String sCondition="";
+  private boolean bCondition,bSelect;
 
   public ReportCondition(ReportItem Item) {
    this.Item = Item;
@@ -25,8 +26,10 @@ import java.sql.SQLException;
   public ReportCondition(int ItemId){
     try {
       this.Item  = new ReportItem(ItemId);
+      init();
     }
     catch (SQLException ex) {
+      ex.printStackTrace();
     }
   }
   private void init(){
@@ -35,6 +38,8 @@ import java.sql.SQLException;
     sb.append(this.Item.getField());
     this.sJoin = sb.toString();
     this.sOps = this.Item.getOps();
+    this.bCondition = false;
+    this.bSelect   = false;
   }
   public void setCondition(){
 
@@ -43,15 +48,19 @@ import java.sql.SQLException;
     return this.Item;
   }
   public String getCondition(){
-    int len = this.Item.getOps().length;
-    StringBuffer sb = new StringBuffer();
-    for (int i = 0; i < len; i++) {
-      sb.append(this.sJoin);
-      sb.append(" ");
-      sb.append(this.sOps[i]);
-      sb.append(" ");
-      sb.append(this.sVars[i]);
-      sb.append(" ");
+    StringBuffer sb = new StringBuffer("");
+    if(bCondition){
+      int len = this.Item.getOps().length;
+      for (int i = 0; i < len; i++) {
+        sb.append(this.sJoin);
+        sb.append(" ");
+        sb.append(this.sOps[i]);
+        sb.append(" ");
+        if(sVars != null){
+          sb.append(this.sVars[i]);
+          sb.append(" ");
+        }
+      }
     }
     this.sCondition = sb.toString();
     return this.sCondition;
@@ -59,7 +68,22 @@ import java.sql.SQLException;
   public void setOperator(String[] sOps){
     this.sOps = sOps;
   }
+  public void setVariable(String sVar){
+    this.sVars = new String[1];
+    sVars[0] = sVar;
+    this.bCondition = true;
+  }
   public void setVariables(String[] sVars){
     this.sVars = sVars;
+    this.bCondition = true;
+  }
+  public String getDisplay(){
+    return this.getItem().getName();
+  }
+  public void setIsSelect(){
+    this.bSelect = true;
+  }
+  public boolean isSelect(){
+    return bSelect;
   }
 }

@@ -16,87 +16,141 @@ import com.idega.util.database.ConnectionBroker;
 
 public class ReportMaker {
 
-  public static int STRING = 1,INTEGER = 2, AGE = 3;
-
   public ReportMaker(){
 
   }
+  public Vector makeReport(String sql){
+    Vector v = this.searchInDatabase(sql);
+    return v;
+  }
 
-  private Vector makeReport(ReportCondition[] conds){
+  public Vector makeReport(Vector conds){
+    String sql = worker(conds);
+    Vector v = this.searchInDatabase(sql);
+    return v;
+  }
+
+  public String makeSQL(Vector conds){
+    return worker(conds);
+  }
+
+  private String worker(Vector conds){
+    ReportCondition cond;
     Vector vSelect = new Vector();
     Vector vTables = new Vector();
     Vector vJoin = new Vector();
     Vector vWhere = new Vector();
     Vector vOrder = new Vector();
 
-    vSelect.addElement("select distinct ");
-    vTables.addElement(" from ");
-    vOrder.addElement(" order by ");
-    vJoin.addElement(" where ");
-
     ReportItem item;
-    for (int i = 0; i < conds.length; i++) {
-      item = conds[i].getItem();
-      if(!vSelect.contains(item.getField()))
-        vSelect.addElement(item.getField());
+    for (int i = 0; i < conds.size(); i++) {
+      cond = (ReportCondition) conds.elementAt(i);
+      item = cond.getItem();
+      if(cond.isSelect()){
+      if(!vSelect.contains(item.getMainTable()+"."+item.getField()))
+        vSelect.addElement(item.getMainTable()+"."+item.getField());
+      }
       if(!vTables.contains(item.getMainTable()))
         vTables.addElement(item.getMainTable());
-      if(!vJoin.contains(item.getJoin()))
-        vJoin.addElement(item.getJoin());
-      if(conds[i].getCondition() != null)
-        vWhere.addElement(conds[i].getCondition());
+
+      String[] sa = item.getJoinTable();
+      if(sa != null){
+        for (int j = 0; j < sa.length; j++) {
+          if(!vTables.contains(sa[j]))
+          vTables.addElement(sa[j]);
+        }
+      }
+      String sJoin = item.getJoin();
+      if(sJoin.length() > 1){
+        if(!vJoin.contains(sJoin))
+          vJoin.addElement(sJoin);
+      }
+      String c = cond.getCondition();
+      if(c != null && c.length() > 0 && !vWhere.contains(c))
+        vWhere.addElement(c);
     }
     String sql = makeSQL(vSelect,vTables,vJoin,vWhere,vOrder);
-    Vector v = this.searchInDatabase(sql);
-    return v;
+    return sql;
   }
 
   private String makeSQL(Vector Select,Vector From,Vector Join,Vector Where,Vector Order){
-    StringBuffer sql = new StringBuffer();
+    ///////////////////////////
+    //  Select part
+    ///////////////////////////
+    StringBuffer sql = new StringBuffer("select  ");
     int len = Select.size();
     for(int i = 0; i < len ; i++){
       sql.append(Select.elementAt(i));
-      if(i > 0 && i < len-1)
-        sql.append(",");
-    }
-    sql.append(" ");
-    len = From.size();
-    for(int i = 0; i < len ; i++){
-      sql.append(From.elementAt(i));
-      if(i > 0 && i < len-1)
+      if(i < len-1)
         sql.append(",");
     }
     sql.append(" ");
 
+    ///////////////////////
+    //  Table part
+    //////////////////////
+    int flen = From.size();
+    if(flen > 0){
+      sql.append(" from ");
+      for(int i = 0; i < flen ; i++){
+        sql.append(From.elementAt(i));
+        if(i < flen-1)
+          sql.append(",");
+      }
+      sql.append(" ");
+    }
+
+    /////////////////////
+    //  Join Part
+    ////////////////////
+    boolean ifwhere = false;
     len = Join.size();
-    int wlen = Where.size();
-    if(len > 1 || wlen >0){
+    System.err.println("join length "+len );
+    // use the join if  we have more than two tables
+    //
+    if(len > 0 && flen > 1){
+      sql.append(" where ");
+      ifwhere = true;
       for(int i = 0; i < len ; i++){
         sql.append(Join.elementAt(i));
-        if(i > 1 && i < len-1)
+        if(i < len-1)
           sql.append(" and ");
       }
     }
-
-    int old = len;
     sql.append(" ");
+    ////////////////////////
+    //  Where part
+    ///////////////////////
     len = Where.size();
-    if(len > 0 && old > 2)
-    if(old > 2 && len > 0)    sql.append(" and ");
-    for(int i = 0; i < len ; i++){
-      sql.append(Where.elementAt(i));
-      if( i < len-1)
+    if(len > 0 ){
+      if(ifwhere)
         sql.append(" and ");
+      else
+        sql.append(" where ");
+      for(int i = 0; i < len ; i++){
+        sql.append(Where.elementAt(i));
+        if( i < len-1)
+          sql.append(" and ");
+      }
     }
     sql.append(" ");
+    ////////////////////////
+    //  Order by part
+    ///////////////////////
+
     len = Order.size();
-    for(int i = 0; i < len ; i++){
-      sql.append(Order.elementAt(i));
-      if(i > 0 && i < len-1 )
-        sql.append(",");
+    if(len > 0 ){
+      sql.append( "order by ");
+      for(int i = 0; i < len ; i++){
+        sql.append(Order.elementAt(i));
+        if(i > 0 && i < len-1 )
+          sql.append(",");
+      }
     }
+
     return sql.toString();
   }
+
   private Vector[] makeVectorArray(int size){
     Vector[] v = new Vector[size];
     for(int i = 0; i < size;i++){
@@ -114,14 +168,14 @@ public class ReportMaker {
       int count = MD.getColumnCount();
       String temp;
       ReportContent RC;
-      String[] s = new String[count];
+      String[] s;
       while(RS.next()){
-        RC = new ReportContent(s);
+        s = new String[count];
         for(int i = 1; i <= count; i++){
           temp = RS.getString(i);
           s[i-1] = temp!=null?temp:"";
         }
-        RC.setContent(s);
+        RC = new ReportContent(s);
         v.addElement(RC);
       }
       RS.close();
