@@ -37,6 +37,12 @@ public class ContentViewer extends ModuleObjectContainer{
   private final String prmHeaders = "ctv.headers";
   private final String prmOrder = "ctv.order";
   private final String prmLastOrder = "ctv.lastorder";
+  private Link headerLinkToClone = new Link();
+  private boolean isHeaderLinkCloned = false;
+
+  {
+    headerLinkToClone.setFontColor("#FFFFFF");
+  }
 
   protected final static int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5,ACT6=6;
   protected String MiddleColor,LightColor,DarkColor,WhiteColor,TextFontColor,HeaderFontColor,IndexFontColor;
@@ -277,16 +283,21 @@ public class ContentViewer extends ModuleObjectContainer{
     T.setVerticalZebraColored(LightColor,MiddleColor);
     T.setRowColor(1,DarkColor);
     for(int j = 0; j < headers.length ;j++){
-      String Header = headers[j];
+      Link HeaderLink = (Link) this.headerLinkToClone.clone();
+      HeaderLink.setText(headers[j]);
       if(allowOrder){
-        Link L = new Link(Header);
-        L.addParameter(this.sAction,this.ACT2);
-        L.addParameter(prmOrder,String.valueOf(j));
-        L.setFontColor(WhiteColor);
-        T.add(L,j+2,1);
+        HeaderLink.addParameter(this.sAction,this.ACT2);
+        HeaderLink.addParameter(prmOrder,String.valueOf(j));
+        //L.setFontColor(WhiteColor);
+        T.add(HeaderLink,j+2,1);
       }
       else{
-        T.add(getHeaderText(Header),j+2,1);
+        if (!isHeaderLinkCloned) {
+          HeaderLink.setFontSize( 2);
+          HeaderLink.setBold();
+//          (Text) HeaderLink.getObject();
+        }
+        T.add( (Text) HeaderLink.getObject(), j+2, 1);
       }
 
     }
@@ -375,6 +386,11 @@ public class ContentViewer extends ModuleObjectContainer{
       }
     }
     return s;
+  }
+
+  public void setHeaderLinkProperties(Link linkToClonePropertiesFrom){
+    this.isHeaderLinkCloned = true;
+    this.headerLinkToClone = linkToClonePropertiesFrom;
   }
 
   public void main(ModuleInfo modinfo){
