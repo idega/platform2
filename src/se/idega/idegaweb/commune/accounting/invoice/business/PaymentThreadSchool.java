@@ -66,11 +66,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/07 00:27:32 $ by $Author: palli $
+ * Last modified: $Date: 2004/01/07 07:36:06 $ by $Author: laddi $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.88 $
+ * @version $Revision: 1.89 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -273,7 +273,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 	}
 	
-	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions, Provider provider) throws RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
+	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions) throws RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 		return regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(category.getCategory(), /*The ID that selects barnomsorg in the regulation */ 
 				PaymentFlowConstant.OUT, //The payment flow is out
 				calculationDate, //Current date to select the correct date range
@@ -300,13 +300,13 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			School school = schoolClassMember.getSchoolClass().getSchool();
 			errorRelated.append("Category " + category.getCategory() + "<br>" + "PaymentFlowConstant.OUT " + PaymentFlowConstant.OUT + "<br>" + "Date " + calculationDate.toString() + "<br>" + "RuleTypeConstant.DERIVED " + RuleTypeConstant.DERIVED + "<br>" + "#conditions " + conditions.size() + "<br>");
 			//Get the check
-			PostingDetail postingDetail = getCheck(regBus, conditions, provider); 
+			PostingDetail postingDetail = getCheck(regBus, conditions); 
 			RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 			String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
 			PlacementTimes placementTimes = getPlacementTimes(schoolClassMember);
 			log.info("About to create payment record");
 			final PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
-			PaymentRecord vatPaymentRecord = createVATPaymentRecord(record, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+			createVATPaymentRecord(record, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
 			log.info("About to create invoice record");
 			createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 			log.info("Done creating invoice record");
@@ -440,7 +440,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
-				PaymentRecord vatPaymentRecord = createVATPaymentRecord(record, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+				createVATPaymentRecord(record, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
 				createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes, startDate, endDate);
 			}
 			catch (BruttoIncomeException e) {
@@ -482,7 +482,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				
 				SchoolYear SchoolYear;
 				try {
-					SchoolYear = (SchoolYear) ((SchoolYearHome) IDOLookup.getHome(SchoolYear.class)).
+					SchoolYear = ((SchoolYearHome) IDOLookup.getHome(SchoolYear.class)).
 							findByYearName(FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
 					errorRelated.append("Fritidsklubb schoolyear" + FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
 					
@@ -529,7 +529,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				String[] postings =  getPostingBusiness().getPostingStrings(category, schoolType, ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue());
 
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
-				PaymentRecord vatPaymentRecord = createVATPaymentRecord(record, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
+				createVATPaymentRecord(record, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
 				errorRelated.append("created payment info for Oppen verksamhet" + schoolClassMember.getStudent().getName(),1);
 				createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 			}
@@ -665,7 +665,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STUDY_PATH, new Integer(studyPathId)));
 			errorRelated.append("Study path ID " + schoolClassMember.getStudyPathId());
 			try {
-				SchoolCategory schoolCategory = (SchoolCategory)((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(new Integer(schoolClassMember.getStudyPathId()));
+				SchoolCategory schoolCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(new Integer(schoolClassMember.getStudyPathId()));
 				errorRelated.append("Study path " + schoolCategory.getLocalizedKey());
 			} catch (Exception e) {
 				e.printStackTrace();
