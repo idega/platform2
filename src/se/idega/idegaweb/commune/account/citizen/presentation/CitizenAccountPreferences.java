@@ -154,6 +154,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	public static final String USER_PROPERTY_USE_CO_ADDRESS = "cap_use_co_address";
 
 	private User user = null;
+	private boolean requirePasswordVerification = true;
 		
 	public CitizenAccountPreferences() {
 	}
@@ -394,9 +395,11 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		row++;
 		table.setHeight(row, 12);
 
-		row++;
-		table.add(tCurrentPassword, 1, row);
-		table.add(tiCurrentPassword, 2, row);
+		if (requirePasswordVerification) {
+			row++;
+			table.add(tCurrentPassword, 1, row);
+			table.add(tiCurrentPassword, 2, row);
+		}
 
 		row++;
 		table.add(tNewPassword, 1, row);
@@ -499,7 +502,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		boolean updateCOAddress = false;
 		
 		try {
-			if (!LoginDBHandler.verifyPassword(login, currentPassword)) {
+			if (requirePasswordVerification && !LoginDBHandler.verifyPassword(login, currentPassword)) {
 				throw new Exception(localize(KEY_PASSWORD_INVALID, DEFAULT_PASSWORD_INVALID));
 			}
 			
@@ -672,4 +675,10 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		return validEmail;
 	}
 
+	/**
+	 * @param requirePasswordVerification The requirePasswordVerification to set.
+	 */
+	public void setRequirePasswordVerification(boolean requirePasswordVerification) {
+		this.requirePasswordVerification = requirePasswordVerification;
+	}
 }
