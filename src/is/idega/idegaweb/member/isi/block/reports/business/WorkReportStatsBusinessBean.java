@@ -2724,14 +2724,14 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					addToIntegerCount(expenses,regData,expensesTotal);
 					//income minus expenses
 					addToIntegerCount(incomeMinusExpenses,regData,incomeTotal - expensesTotal);
-					//rollingMoney FIN_85000
-					int rollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_85000");
+					//rollingMoney FIN_89998
+					int rollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_89998");
 					addToIntegerCount(rollingMoney,regData,rollingMoneyTotal);
-					//rigidMoney FIN_81000
-					int rigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_81000");
+					//rigidMoney FIN_84999
+					int rigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_84999");
 					addToIntegerCount(rigidMoney,regData,rigidMoneyTotal);
-					//debts FIN_92000
-					int debtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_92000");
+					//debts FIN_99998
+					int debtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_99998");
 					addToIntegerCount(debts,regData,debtsTotal);
 					//rollingmoney minus debts
 					addToIntegerCount(rollingMoneyMinusDebts,regData,(rollingMoneyTotal-debtsTotal));
@@ -2746,14 +2746,14 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						addToIntegerCount(comparingExpenses,regData,comparingExpensesTotal);
 						//income minus expenses
 						addToIntegerCount(comparingIncomeMinusExpenses,regData,comparingIncomeTotal - comparingExpensesTotal);
-						//rollingMoney FIN_85000
-						int comparingRollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_85000");
+						//rollingMoney FIN_89998
+						int comparingRollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_89998");
 						addToIntegerCount(comparingRollingMoney,regData,comparingRollingMoneyTotal);
-						//rigidMoney FIN_81000
-						int comparingRigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_81000");
+						//rigidMoney FIN_84999
+						int comparingRigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_84999");
 						addToIntegerCount(comparingRigidMoney,regData,comparingRigidMoneyTotal);
-						//debts FIN_92000
-						int comparingDebtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_92000");
+						//debts FIN_99998
+						int comparingDebtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_99998");
 						addToIntegerCount(comparingDebts,regData,comparingDebtsTotal);
 						//rollingmoney minus debts
 						addToIntegerCount(comparingRollingMoneyMinusDebts,regData,(comparingRollingMoneyTotal-comparingDebtsTotal));
@@ -2841,14 +2841,14 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 							addToIntegerCount(expenses,leagueData,expensesTotal);
 							//income minus expenses
 							addToIntegerCount(incomeMinusExpenses,leagueData,incomeTotal - expensesTotal);
-							//rollingMoney FIN_85000
-							rollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(leagueReportId,mainBoardWRGroupId,"FIN_85000");
+							//rollingMoney FIN_89998
+							rollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(leagueReportId,mainBoardWRGroupId,"FIN_89998");
 							addToIntegerCount(rollingMoney,leagueData,rollingMoneyTotal);
-							//rigidMoney FIN_81000
-							rigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(leagueReportId,mainBoardWRGroupId,"FIN_81000");
+							//rigidMoney FIN_84999
+							rigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(leagueReportId,mainBoardWRGroupId,"FIN_84999");
 							addToIntegerCount(rigidMoney,leagueData,rigidMoneyTotal);
-							//debts FIN_92000
-							debtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(leagueReportId,mainBoardWRGroupId,"FIN_92000");
+							//debts FIN_99998
+							debtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(leagueReportId,mainBoardWRGroupId,"FIN_99998");
 							addToIntegerCount(debts,leagueData,debtsTotal);
 							//rollingmoney minus debts
 							addToIntegerCount(rollingMoneyMinusDebts,leagueData,(rollingMoneyTotal-debtsTotal));
@@ -2867,14 +2867,14 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 							addToIntegerCount(comparingExpenses,leagueData,comparingExpensesTotal);
 							//income minus expenses
 							addToIntegerCount(comparingIncomeMinusExpenses,leagueData,comparingIncomeTotal - comparingExpensesTotal);
-							//rollingMoney FIN_85000
-							int comparingRollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingLeagueReportId,comparingMainBoardWRGroupId,"FIN_85000");
+							//rollingMoney FIN_89998
+							int comparingRollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingLeagueReportId,comparingMainBoardWRGroupId,"FIN_89998");
 							addToIntegerCount(comparingRollingMoney,leagueData,comparingRollingMoneyTotal);
-							//rigidMoney FIN_81000
-							int comparingRigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingLeagueReportId,comparingMainBoardWRGroupId,"FIN_81000");
+							//rigidMoney FIN_84999
+							int comparingRigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingLeagueReportId,comparingMainBoardWRGroupId,"FIN_84999");
 							addToIntegerCount(comparingRigidMoney,leagueData,comparingRigidMoneyTotal);
-							//debts FIN_92000
-							int comparingDebtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingLeagueReportId,comparingMainBoardWRGroupId,"FIN_92000");
+							//debts FIN_99998
+							int comparingDebtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingLeagueReportId,comparingMainBoardWRGroupId,"FIN_99998");
 							addToIntegerCount(comparingDebts,leagueData,comparingDebtsTotal);
 							//rollingmoney minus debts
 							addToIntegerCount(comparingRollingMoneyMinusDebts,leagueData,(comparingRollingMoneyTotal-comparingDebtsTotal));
@@ -3795,10 +3795,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(playersAnnualChangePercent);
 
 		
-		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
+		Collection reports = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
+		WorkReportGroup mainBoardReportGroup = getWorkReportBusiness().getMainBoardWorkReportGroup(year.intValue());
 		Map regionalUnionsStatsMap = new TreeMap();
 		//Iterating through workreports and creating report data 
-		Iterator iter = clubs.iterator();
+		Iterator iter = reports.iterator();
 		int totalDone = 0;
 		int totalNotDone = 0;
 		int totalSomeDone = 0;
@@ -3892,7 +3893,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			
 			regData.addData(membersAnnualChangePercent, format.format(change));
 						
-			int pThisYear = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
+			int pThisYear = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);//, mainBoardReportGroup);
 			int pLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfPlayersByWorkReport(lastYearReport);
 			totalPlayersThisYear += pThisYear;
 			totalPlayersLastYear += pLastYear;
