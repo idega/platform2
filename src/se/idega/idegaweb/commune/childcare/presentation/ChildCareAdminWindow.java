@@ -140,7 +140,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private CloseButton close;
 	private Form form;
 	private boolean restrictDates;
-
+	boolean onlyAllowFutureCareDate = false;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -613,9 +613,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				validFrom.addDays(1);
 				dateInput.setDate(validFrom.getDate());
 				if (validFrom.isEarlierThan(stamp))
-					dateInput.setEarliestPossibleDate(stamp.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
-				else
+				{
+					if(onlyAllowFutureCareDate){
+						dateInput.setEarliestPossibleDate(stamp.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+					}
+				}
+				else{
 					dateInput.setEarliestPossibleDate(validFrom.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
+				}
 				if (archive.getTerminatedDate() != null) {
 					IWTimestamp terminated = new IWTimestamp(archive.getTerminatedDate());
 					dateInput.setLatestPossibleDate(terminated.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated."));
@@ -965,7 +970,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 	
 	private Table getNewCareTimeForm() throws RemoteException {
-		boolean onlyAllowFutureCareDate = false;
 		Table layoutTbl = new Table();
 		layoutTbl.setCellpadding(5);
 		layoutTbl.setWidth(Table.HUNDRED_PERCENT);
