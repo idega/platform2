@@ -84,8 +84,8 @@ public class ChildCareAdmin extends ChildCareBlock {
         //table.add(getNavigator(iwc), 1, 3);
         //table.add(getApplicationTable(iwc), 1, 5);
         table.add(getLegendTable(true), 1, 3);
-       // table.add(getPDFLink(), 1, 5);
-        //table.add(Text.getNonBrakingSpace(), 1, 5);
+        table.add(getPDFLink(), 1, 5);
+        table.add(Text.getNonBrakingSpace(), 1, 5);
         table.add(getXSLLink(), 1, 5);
          table.add(getApplicationTable(iwc), 1, 7);
         table.add(getLegendTable(true), 1, 9);

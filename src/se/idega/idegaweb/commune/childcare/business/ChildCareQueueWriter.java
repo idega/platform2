@@ -307,8 +307,8 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 			Cell cell;
 			
 			String[] headers = {iwrb.getLocalizedString("child_care.name","Name"), iwrb.getLocalizedString("child_care.personal_id","Personal ID"),
-					iwrb.getLocalizedString("child_care.queue_date","Queue date"), iwrb.getLocalizedString("child_care.placement_date","Placement date"),
-					iwrb.getLocalizedString("child_care.current_provider","Current provider")};
+					iwrb.getLocalizedString("child_care.queue_date","Queue date"), iwrb.getLocalizedString("child_care.placement_date_pdf","Placement date"),
+					iwrb.getLocalizedString("child_care.current_provider_pdf","Current provider")};
 		
 			
 			
