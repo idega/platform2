@@ -12,7 +12,6 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.search.FlagTerm;
 
-import com.idega.presentation.Block;
 
 /**
  * Title:
@@ -23,7 +22,7 @@ import com.idega.presentation.Block;
  * @version 1.0
  */
 
-public class MessageFinder extends Block {
+public class MessageFinder {
 
   public MessageFinder() {
   }
