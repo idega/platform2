@@ -235,7 +235,7 @@ public class ServiceDesigner extends TravelManager {
                   try {
                     if (prices[j].getPriceType() == ProductPrice.PRICETYPE_PRICE) {
                       //priceDiscount.setContent(df.format(prices[j].getPrice()));
-                      priceDiscount.setContent(Float.toString(prices[j].getPrice()));
+                      priceDiscount.setContent(Integer.toString((int)prices[j].getPrice()));
                     }else {
                       priceDiscount.setContent(Float.toString(prices[j].getPrice()));
                     }

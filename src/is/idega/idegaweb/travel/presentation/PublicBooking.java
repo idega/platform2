@@ -8,6 +8,7 @@ import com.idega.util.*;
 import com.idega.util.text.*;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import java.text.DecimalFormat;
+import java.util.*;
 import com.idega.block.calendar.business.CalendarBusiness;
 
 import com.idega.core.data.Address;
@@ -373,35 +374,42 @@ public class PublicBooking extends Block  {
   private Form leftBottom(IWContext iwc) {
     try {
       TourBookingForm tbf = new TourBookingForm(iwc, product);
-//        tbf.setProduct(product);
+      CalendarHandler ch  = new CalendarHandler(iwc);
+        ch.setProduct(product);
 
-      Form form = new Form();
-      String action = iwc.getParameter(this.sAction);
-      if (action == null || action.equals("")) {
-          form = tbf.getPublicBookingForm(iwc, product, stamp);
-          form.maintainParameter(this.parameterProductId);
-          form.addParameter(this.sAction,this.parameterSubmitBooking);
-      }else if (action.equals(this.parameterSubmitBooking)) {
-          form = tbf.getFormMaintainingAllParameters();
-          form.maintainParameter(this.parameterProductId);
-          form.add(getVerifyBookingTable(iwc));
-      }else if (action.equals(this.parameterBookingVerified)) {
-          form = tbf.getFormMaintainingAllParameters();
-          form.maintainParameter(this.parameterProductId);
-          form.add(doBooking(iwc));
+      boolean legalDay = false;
+
+      List depDays = ch.getDepartureDays(iwc, false);
+      idegaTimestamp temp;
+      for (int i = 0; i < depDays.size(); i++) {
+        temp = (idegaTimestamp) depDays.get(i);
+        if (temp.toSQLDateString().equals(this.stamp.toSQLDateString())) {
+          legalDay = true;
+          break;
+        }
       }
 
 
-      try {
-/*        String action = iwc.getParameter(TourBookingForm.BookingAction);
-        if (action != null) {
-          TourBookingForm tbf = new TourBookingForm(iwc);
-            tbf.setProduct(product);
-            System.err.println("Created booking_id = "+tbf.handleInsert(iwc));
+
+      Form form = new Form();
+
+      if (legalDay) {
+        String action = iwc.getParameter(this.sAction);
+        if (action == null || action.equals("")) {
+            form = tbf.getPublicBookingForm(iwc, product, stamp);
+            form.maintainParameter(this.parameterProductId);
+            form.addParameter(this.sAction,this.parameterSubmitBooking);
+        }else if (action.equals(this.parameterSubmitBooking)) {
+            form = tbf.getFormMaintainingAllParameters();
+            form.maintainParameter(this.parameterProductId);
+            form.add(getVerifyBookingTable(iwc));
+        }else if (action.equals(this.parameterBookingVerified)) {
+            form = tbf.getFormMaintainingAllParameters();
+            form.maintainParameter(this.parameterProductId);
+            form.add(doBooking(iwc));
         }
-*/
-      }catch (Exception e) {
-        e.printStackTrace(System.err);
+      }else {
+          form.add(getNoSeatsAvailable(iwc));
       }
 
       return form;
@@ -411,6 +419,34 @@ public class PublicBooking extends Block  {
     }
   }
 
+
+  public Table getNoSeatsAvailable(IWContext iwc) {
+    Table table = new Table();
+      table.setCellpadding(0);
+      table.setCellspacing(6);
+
+          Text notAvailSeats = new Text();
+            notAvailSeats.setFontStyle(TravelManager.theTextStyle);
+            notAvailSeats.setFontColor(TravelManager.WHITE);
+            notAvailSeats.setText(iwrb.getLocalizedString("travel.there_are_no_available_seats ","There are no available seats "));
+
+          Text dateText = new Text();
+            dateText.setFontStyle(TravelManager.theBoldTextStyle);
+            dateText.setFontColor(TravelManager.WHITE);
+            dateText.setText(stamp.getLocaleDate(iwc));
+            dateText.addToText("."+Text.NON_BREAKING_SPACE);
+
+          Text pleaseFindAnotherDay = new Text();
+            pleaseFindAnotherDay.setFontStyle(TravelManager.theTextStyle);
+            pleaseFindAnotherDay.setFontColor(TravelManager.WHITE);
+            pleaseFindAnotherDay.setText(iwrb.getLocalizedString("travel.please_find_another_day","Please find another day"));
+
+      table.add(notAvailSeats);
+      table.add(dateText);
+      table.add(pleaseFindAnotherDay);
+
+    return table;
+  }
 
   private Table getVerifyBookingTable(IWContext iwc) {
     String surname = iwc.getParameter("surname");

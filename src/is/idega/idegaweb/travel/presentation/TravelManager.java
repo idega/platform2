@@ -62,6 +62,7 @@ public class TravelManager extends Block {
     protected static String parameterHome = "lHome";
 
     public static String theTextStyle = "font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+";";
+    public static String theBoldTextStyle = "font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+"; font-weight: bold;";
 
     private int tableWidth = 849;
     private boolean showLogo = true;
@@ -307,8 +308,8 @@ public class TravelManager extends Block {
         theBigBoldText.setFontColor(this.textColor);
         theBigBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_12_STYLE_TAG+"; font-weight: bold;");
         theBoldText.setFontColor(this.textColor);
-        theText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+";");
-        theBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+"; font-weight: bold;");
+        theText.setFontStyle(theTextStyle);
+        theBoldText.setFontStyle(theBoldTextStyle);
         smallText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+";");
         theSmallBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+"; font-weight: bold;");
 

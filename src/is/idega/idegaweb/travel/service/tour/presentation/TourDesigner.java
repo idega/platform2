@@ -193,7 +193,14 @@ public class TourDesigner extends TravelManager {
           imgText.setText(iwrb.getLocalizedString("travel.image","Image"));
 
       ImageInserter imageInserter = new ImageInserter("design_image_id");
-        imageInserter.setWindowToReload(true);
+      if (service != null) {
+          Product product = service.getProduct();
+          if (product.getFileId() != -1) {
+            imageInserter = new ImageInserter(product.getFileId(), "design_image_id");
+            //imageInserter.setImageId(product.getFileId());
+          }
+      }
+        //imageInserter.setWindowToReload(true);
 
 
       table.setVerticalAlignment(1,row,"top");
@@ -391,10 +398,6 @@ public class TourDesigner extends TravelManager {
               else if (days[i] == ServiceDay.SATURDAY) saturdays.setChecked(true);
           }
 
-          Product product = service.getProduct();
-          if (product.getFileId() != -1) {
-            imageInserter.setImageId(product.getFileId());
-          }
           if (depAddress != null)
           departure_from.setContent(depAddress.getStreetName());
           idegaTimestamp tempStamp = new idegaTimestamp(service.getDepartureTime());

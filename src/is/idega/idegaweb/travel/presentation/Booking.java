@@ -285,9 +285,9 @@ public class Booking extends TravelManager {
           if (supplier == null) {
             if (isDayVisible) {
               iBookings = Booker.getNumberOfBookings(productId, stamp);
-              if (iBookings < tour.getMinimumSeats() || iBookings > tour.getTotalSeats()) {
+              /*if (iBookings < tour.getMinimumSeats() || iBookings > tour.getTotalSeats()) {
                 isDayVisible = false;
-              }
+              }*/ /** @todo setja í calendarHandler */
             }
           }
         }
@@ -297,6 +297,25 @@ public class Booking extends TravelManager {
             tfnfe.printStackTrace(System.err);
       }
 
+
+      List depDays = null;
+      if (isDayVisible) {
+
+        CalendarHandler ch = new CalendarHandler(iwc);
+          ch.setProduct(product);
+        depDays = ch.getDepartureDays(iwc, false);
+
+        isDayVisible = false;
+        idegaTimestamp tempStamp;
+        for (int i = 0; i < depDays.size(); i++) {
+          tempStamp = (idegaTimestamp) depDays.get(i);
+          if (tempStamp.toSQLDateString().equals(stamp.toSQLDateString())) {
+            isDayVisible = true;
+            break;
+          }
+        }
+
+      }
 
 
       if (isDayVisible) {

@@ -726,6 +726,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   public static List getDepartureDays(IWContext iwc, Product product, idegaTimestamp from, idegaTimestamp to) {
     return getDepartureDays(iwc, product, from, to, true);
   }
+
   public static List getDepartureDays(IWContext iwc, Product product, idegaTimestamp from, idegaTimestamp to, boolean showPast) {
     List returner = new Vector();
     try {

@@ -126,8 +126,6 @@ public class CalendarHandler extends TravelManager {
       sm.setTimestamp(_fromStamp);
       this.timeframeCheck();
 
-
-
       Table table = new Table(4,6);
           table.setBorder(0);
           table.setColor(this.backgroundColor);
@@ -285,20 +283,14 @@ public class CalendarHandler extends TravelManager {
       idegaTimestamp temp = new idegaTimestamp(1, month , year);
       int iBookings = 0;
 
-      List depDays = new Vector();
+      List depDays = this.getDepartureDays(iwc, false);
       int seats = 0;
       int minSeats = 0;
 
       if (_tour != null) {
         seats = _tour.getTotalSeats();
-        if (_tour.getNumberOfDays() > 1) {
-          depDays = TourBusiness.getDepartureDays(iwc, _tour);
-        }else {
-          depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp);
-        }
-      }else {
-          depDays = TravelStockroomBusiness.getDepartureDays(iwc, _product, false);
       }
+
 
 
 
@@ -443,6 +435,9 @@ public class CalendarHandler extends TravelManager {
       _supplier = new Supplier(product.getSupplierId());
       _service = TravelStockroomBusiness.getService(product);
       _timeframe = _service.getTimeframe();
+      try {
+        _tour = new Tour(_productId);
+      }catch (SQLException sql) {}
     }catch (Exception e) {
       e.printStackTrace();
     }
@@ -532,6 +527,24 @@ public class CalendarHandler extends TravelManager {
 
   public void showInquiries(boolean show) {
     _viewInquiries = show;
+  }
+
+  public List getDepartureDays(IWContext iwc) {
+    return getDepartureDays(iwc, false);
+  }
+
+  public List getDepartureDays(IWContext iwc, boolean showPast) {
+    List depDays = new Vector();
+      if (_tour != null) {
+        if (_tour.getNumberOfDays() > 1) {
+          depDays = TourBusiness.getDepartureDays(iwc, _tour);
+        }else {
+          depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp);
+        }
+      }else {
+          depDays = TravelStockroomBusiness.getDepartureDays(iwc, _product, showPast);
+      }
+    return depDays;
   }
 
 }
