@@ -1168,12 +1168,13 @@ private String DatastoreType;
         if ((i % 2)== 0) colorToUse = color_1;
         else colorToUse = color_2;
 
+        myTable.setRowColor(row,colorToUse);
+
 //	myTable.setHeight(i+1,"56");
 		for (j=1; j<=(7); j++) {
 		if ((i==1) && ((m + j) == 9))
 			break;
 
-                myTable.setRowColor(i,colorToUse);
 
 		double hoursToday=0;
 
