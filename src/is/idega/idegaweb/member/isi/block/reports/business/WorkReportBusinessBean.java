@@ -1047,8 +1047,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   public Collection getAllWorkReportDivisionBoardForWorkReportIdAndYear(int workReportId, int year){
 	try {
 		if(year>0){
-			WorkReport report = getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(getWorkReportById(workReportId).getGroupId().intValue(),year);
-			workReportId = ((Integer)report.getPrimaryKey()).intValue();
+			WorkReport wReport = getWorkReportById(workReportId);
+			if(wReport.getYearOfReport().intValue()!=year){
+				wReport = getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(getWorkReportById(workReportId).getGroupId().intValue(),year);
+				workReportId = ((Integer)wReport.getPrimaryKey()).intValue();
+			}
 		}
 		
 		
