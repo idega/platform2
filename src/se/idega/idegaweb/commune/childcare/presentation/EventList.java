@@ -43,7 +43,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.14 2003/06/11 09:08:16 laddi Exp $
+ * @version $Id: EventList.java,v 1.15 2003/10/01 11:13:23 roar Exp $
  * @since 17.3.2003 
  */
 
@@ -85,6 +85,7 @@ public class EventList extends CommuneBlock {
 	private final static String LOCALE_RECEIVER = "eventlist.receiver";
 	private final static String LOCALE_LAST = "eventlist.last";
 	private final static String LOCALE_NEXT = "eventlist.next";
+	private final static String LOCALE_MSGID_INT = "eventlist.msgid_int";	
 
 	public boolean showTypesAsDropdown = false;
 	private String currentType = ""; 
@@ -192,9 +193,9 @@ public class EventList extends CommuneBlock {
 		if (iwc.isParameterSet(PRM_SSN)) {
 			searchSsn = iwc.getParameter(PRM_SSN);
 		}
-		/*if (iwc.isParameterSet(PRM_MSGID)) {
-			String searchMsgId = iwc.getParameter(PRM_MSGID);
-		}*/
+		if (iwc.isParameterSet(PRM_MSGID)) {
+			searchMsgId = iwc.getParameter(PRM_MSGID);
+		}
 
 	}
 
@@ -375,6 +376,8 @@ public class EventList extends CommuneBlock {
 		if (iwc.getParameter(PRM_MSGID) != null) {
 			msgid.setValue(iwc.getParameter(PRM_MSGID));
 		}
+		msgid.setAsIntegers(localize(LOCALE_MSGID_INT, "Message id must be an integer."));
+		
 
 		TextInput ssn = new TextInput(PRM_SSN);
 		ssn = (TextInput) getStyledInterface(ssn);
