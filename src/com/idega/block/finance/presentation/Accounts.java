@@ -61,19 +61,21 @@ public class Accounts extends Block {
   }
 
   protected void control(IWContext iwc){
+    /*
     java.util.Enumeration E = iwc.getParameterNames();
     while(E.hasMoreElements()){
       String prm = (String) E.nextElement();
       System.err.println("prm "+prm+" : "+iwc.getParameter(prm));
     }
+    */
     if(isAdmin){
       int iCategoryId = Finance.parseCategoryId(iwc);
       Table T = new Table();
       T.setCellpadding(0);
       T.setCellspacing(0);
       T.setWidth("100%");
-      if(iwc.isParameterSet(prmAccountUserId)){
-        add(new AccountViewer(Integer.parseInt(iwc.getParameter(prmAccountUserId))));
+      if(iwc.isParameterSet(AccountViewer.prmAccountId)){
+        add(new AccountViewer());
       }
       else if(iwc.isParameterSet(prmNewAccount)){
         int iUserId = Integer.parseInt(iwc.getParameter(prmNewAccount));
@@ -244,7 +246,7 @@ public class Accounts extends Block {
         else
           U = FinanceFinder.getUser(uid.intValue());
         accountLink = new Link(Edit.formatText(A.getName()));
-        accountLink.addParameter(prmAccountUserId,A.getID());
+        accountLink.addParameter(AccountViewer.prmAccountId,A.getID());
         T.add(accountLink,1,row);
         T.add(Edit.formatText(U.getName()),2,row);
         T.add(Edit.formatText(Float.toString(A.getBalance())),3,row);

@@ -79,10 +79,10 @@ public class AccountManager {
     return listOfAccEntries(iAccountId,new AccountEntry(), from,to,null);
   }
   public static List listOfPhoneEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
-    return listOfAccEntries(iAccountId,new AccountPhoneEntry(), from,to,null);
+    return listOfPhoneEntries(iAccountId, from,to,null);
   }
   public static List listOfPhoneEntries(int iAccountId,idegaTimestamp to,String status){
-    return listOfAccEntries(iAccountId,new AccountPhoneEntry(),null,to,status);
+    return listOfPhoneEntries(iAccountId,null,to,status);
   }
   private static List listOfAccEntries(int iAccountId,Entry entry,idegaTimestamp from,idegaTimestamp to,String status){
     StringBuffer sql = new StringBuffer("select * from ");
@@ -120,6 +120,43 @@ public class AccountManager {
       else if(entry.getType().equals(entry.typePhone)){
         A = EntityFinder.findAll(new AccountPhoneEntry(),sql.toString());
       }
+    }
+    catch(Exception e){A=null;}
+    return A;
+  }
+
+  private static List listOfPhoneEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to,String status){
+    StringBuffer sql = new StringBuffer("select * from ");
+    sql.append(AccountPhoneEntry.getEntityTableName());
+    sql.append(" where ");
+    sql.append(AccountPhoneEntry.getColumnNameAccountId());
+    sql.append(" = ");
+    sql.append(iAccountId);
+    if(from !=null){
+      sql.append(" and ");
+      sql.append(AccountPhoneEntry.getColumnNamePhonedStamp());
+      sql.append(" >= '");
+      sql.append(from.getSQLDate());
+      sql.append("'");
+    }
+    if(to != null){
+      sql.append(" and ");
+      sql.append(AccountPhoneEntry.getColumnNamePhonedStamp());
+      sql.append(" <= '");
+      sql.append(to.getSQLDate());
+      sql.append(" 23:59:59'");
+    }
+    if(status!=null){
+      sql.append(" and ");
+      sql.append(AccountPhoneEntry.getColumnNameStatus());
+      sql.append(" = '");
+      sql.append(status);
+      sql.append("'");
+    }
+    //System.err.println(sql.toString());
+    List A = null;
+    try{
+        A = EntityFinder.findAll(new AccountPhoneEntry(),sql.toString());
     }
     catch(Exception e){A=null;}
     return A;

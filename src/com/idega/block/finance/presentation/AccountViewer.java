@@ -302,6 +302,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     }
 
     Table T = new Table(9,tableDepth);
+    T.setLinesBetween(true);
     T.setWidth("100%");
     T.setWidth(1,"65");
     T.setCellspacing(0);
@@ -505,7 +506,8 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     Table T = new Table(4,tableDepth);
     T.setWidth("100%");
     T.setCellspacing(0);
-    T.setCellpadding(2);
+    T.setCellpadding(0);
+    T.setLineColor("#000000");
     T.setColumnAlignment(1,"right");
     T.setColumnAlignment(2,"left");
     T.setColumnAlignment(3,"left");
@@ -561,8 +563,10 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       else
         txTotPrice.setFontColor(sKreditColor);
       T.add(txTotPrice,4,tableDepth);
-      T.setLineAfterColumn(3);
-      T.setLineAfterRow(tableDepth-1);
+      //T.setLineAfterColumn(3);
+      //T.setLineAfterRow(tableDepth-1);
+      T.setLinesBetween(true);
+
     }
     return T;
   }

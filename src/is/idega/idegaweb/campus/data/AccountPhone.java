@@ -1,5 +1,5 @@
 /*
- * $Id: AccountPhone.java,v 1.1 2001/11/08 14:43:05 aron Exp $
+ * $Id: AccountPhone.java,v 1.2 2001/12/18 01:28:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -24,17 +24,20 @@ import java.sql.SQLException;
 public class AccountPhone extends GenericEntity {
 
 /*
- create view V_PHONE_ACCOUNTS ( FIN_ACCOUNT_ID,CAM_PHONE_NUMBER )
+ create view V_PHONE_ACCOUNTS ( FIN_ACCOUNT_ID,CAM_PHONE_NUMBER ,VALID_FROM,VALID_TO)
 as
-select ACC.fin_account_id, PHO.PHONE_NUMBER
+select ACC.fin_account_id, PHO.PHONE_NUMBER ,con.valid_from ,con.valid_to
 from cam_phone pho,cam_contract con, fin_account acc
 where pho.bu_apartment_id = con.bu_apartment_id
 and acc.ic_user_id = con.ic_user_id
-and con.status = 'S'
+and acc.account_type = 'PHONE'
+order by pho.phone_number
 */
   public static String getEntityTableName(){return "V_PHONE_ACCOUNTS";}
   public static String getColumnNameAccountId(){return "FIN_ACCOUNT_ID";}
   public static String getColumnNamePhoneNumber(){return  "CAM_PHONE_NUMBER";}
+  public static String getColumnNameValidTo(){return "VALID_TO";}
+  public static String getColumnNameValidFrom(){return "VALID_FROM";}
 
 
   public AccountPhone() {
@@ -45,10 +48,28 @@ and con.status = 'S'
   public void initializeAttributes() {
     addAttribute(getColumnNameAccountId(),"Account Id",true,true,java.lang.Integer.class);
     addAttribute(getColumnNamePhoneNumber(),"Phone number",true,true,java.lang.String.class);
+    addAttribute(getColumnNameValidFrom(),"Valid from",true,true,java.sql.Date.class);
+    addAttribute(getColumnNameValidTo(),"Valid to",true,true,java.sql.Date.class);
 
   }
   public String getEntityName() {
     return(getEntityTableName());
+  }
+
+  public void setValidFrom(Date date) {
+    setColumn(getColumnNameValidFrom(),date);
+  }
+
+  public Date getValidFrom() {
+    return((Date)getColumnValue(getColumnNameValidFrom()));
+  }
+
+  public void setValidTo(Date date) {
+    setColumn(getColumnNameValidTo(),date);
+  }
+
+  public Date getValidTo() {
+    return((Date)getColumnValue(getColumnNameValidTo()));
   }
 
   public Integer getAccountId(){

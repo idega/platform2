@@ -7,11 +7,13 @@ import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.data.AccountPhone;
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import java.util.List;
+import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Iterator;
 import java.sql.SQLException;
 import com.idega.block.finance.data.Account;
+import com.idega.util.idegaTimestamp;
 /**
  * Title:
  * Description:
@@ -74,6 +76,27 @@ public abstract class PhoneFinder {
     }
   }
 
+  public static List listOfAccountPhones(idegaTimestamp from){
+    StringBuffer sql = new StringBuffer("Select a.* from ");
+    sql.append(AccountPhone.getEntityTableName());
+    sql.append(" a ");
+    if(from !=null){
+      sql.append(" where a.");
+      sql.append(AccountPhone.getColumnNameValidTo());
+      sql.append(" >= '");
+      sql.append(from.getSQLDate());
+      sql.append("'");
+    }
+    System.err.println(sql.toString());
+    try {
+      return EntityFinder.findAll(new AccountPhone(),sql.toString());
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return null;
+    }
+  }
+
   public static List listOfAccountWithPhoneNumber(){
     StringBuffer sql = new StringBuffer("Select a.* from ");
     sql.append(Account.getEntityTableName());
@@ -89,6 +112,30 @@ public abstract class PhoneFinder {
       return null;
     }
   }
+
+  public static List listOfAccountWithPhoneNumber(idegaTimestamp from){
+    StringBuffer sql = new StringBuffer("Select a.* from ");
+    sql.append(Account.getEntityTableName());
+    sql.append(" a ,");
+    sql.append(AccountPhone.getEntityTableName());
+    sql.append(" p where a.fin_account_id = p.fin_account_id");
+    if(from !=null){
+      sql.append(" and ");
+      sql.append(AccountPhone.getColumnNameValidTo());
+      sql.append(" >= '");
+      sql.append(from.getSQLDate());
+      sql.append("'");
+    }
+    //System.err.println (sql.toString());
+    try {
+      return EntityFinder.findAll(new Account(),sql.toString());
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return null;
+    }
+  }
+
 
   public static Map mapOfAccountIdsByPhoneNumber(){
     Hashtable H = null;
@@ -125,9 +172,81 @@ public abstract class PhoneFinder {
     return H;
   }
 
+  public static Map mapOfAccountPhoneListsByPhoneNumber(idegaTimestamp from){
+    Hashtable H = null;
+    List L = listOfAccountPhones();
+    if(L!=null ){
+      H = new Hashtable( L.size());
+      Iterator I = L.iterator();
+      String number;
+      AccountPhone A;
+      while(I.hasNext()){
+       List apList;
+        A = (AccountPhone) I.next();
+        number = A.getPhoneNumber();
+        if(H.contains(number))
+          apList = (List) H.get(number);
+        else
+          apList = new Vector();
+        apList.add(A);
+        H.put(number,apList);
+      }
+      System.err.println("hashsize"+H.size());
+    }
+
+    return H;
+  }
+
+
+  public static Map mapOfAccountsListsByPhoneNumber(idegaTimestamp from){
+    Hashtable H = null;
+    List L = listOfAccountPhones(from);
+    Map M= mapOfAccountsWithPhoneNumber(from);
+    if(L!=null && M!=null){
+      H = new Hashtable( L.size());
+      Iterator I = L.iterator();
+      AccountPhone A;
+      Account a;
+      Integer id;
+      Vector V;
+      String number;
+      while(I.hasNext()){
+        A = (AccountPhone) I.next();
+        id = A.getAccountId();
+        number = A.getPhoneNumber();
+        if(M.containsKey(id)){
+          if(H.contains(number)){
+            V = (Vector) H.get(number);
+          }
+          else{
+            V = new Vector();
+          }
+          V.add(M.get(id));
+          H.put(number,V);
+        }
+      }
+    }
+    return H;
+  }
+
   public static Map mapOfAccountsWithPhoneNumber(){
     Hashtable H = null;
     List L = listOfAccountWithPhoneNumber();
+    if(L!=null){
+      H = new Hashtable( L.size());
+      Iterator I = L.iterator();
+      Account A;
+      while(I.hasNext()){
+        A = (Account) I.next();
+        H.put(new Integer(A.getID()),A);
+      }
+    }
+    return H;
+  }
+
+  public static Map mapOfAccountsWithPhoneNumber(idegaTimestamp from){
+    Hashtable H = null;
+    List L = listOfAccountWithPhoneNumber(from );
     if(L!=null){
       H = new Hashtable( L.size());
       Iterator I = L.iterator();
