@@ -8,31 +8,19 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
-import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
-import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
-import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
+import se.idega.idegaweb.commune.accounting.invoice.data.*;
+import se.idega.idegaweb.commune.accounting.posting.business.*;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
-import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.*;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -55,8 +43,8 @@ public abstract class BillingThread extends Thread{
 	private IWTimestamp time;
 	protected IWTimestamp startTime, endTime;
 	protected Date currentDate = new Date( System.currentTimeMillis());
-	protected SchoolCategory category;
-	protected ExportDataMapping categoryPosting;
+	protected SchoolCategory category = null;
+	protected ExportDataMapping categoryPosting = null;
 	protected School school;
 
 	
@@ -102,7 +90,7 @@ public abstract class BillingThread extends Thread{
 		try {
 			paymentRecord = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).
 					findByPaymentHeaderAndRuleSpecType(paymentHeader,postingDetail.getRuleSpecType());
-			//If it already exists, just update the contents.
+			//If it already exists, just update the changes needed.
 			paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
 			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()+postingDetail.getAmount()*months);
 			paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()+postingDetail.getVat()*months);
@@ -141,18 +129,36 @@ public abstract class BillingThread extends Thread{
 			Iterator paymentHeaderIter = getPaymentHeaderHome().findBySchoolCategoryAndPeriodForPrivate(category,currentDate).iterator();
 			while(paymentHeaderIter.hasNext()){
 				PaymentHeader paymentHeader = (PaymentHeader)paymentHeaderIter.next();
-				Iterator paymentRecordIter = getPaymentRecordHome().findByPaymentHeader(paymentHeader).iterator();
-				while(paymentRecordIter.hasNext()){
-					PaymentRecord paymentRecord = (PaymentRecord) paymentRecordIter.next();
-					VATRegulation vatRegulation = getVATBusiness().getVATRegulation(paymentRecord.getVATType());
-					//TODO (JJ) this needs to be tested heavily. I have no idea what I am doing...
-					float vat = paymentRecord.getTotalAmount() * vatRegulation.getVATPercent();
-					paymentRecord.setTotalAmountVAT(-vat);
+				Iterator paymentRecordIter;
+				try {
+					paymentRecordIter = getPaymentRecordHome().findByPaymentHeader(paymentHeader).iterator();
+					while(paymentRecordIter.hasNext()){
+						PaymentRecord paymentRecord = (PaymentRecord) paymentRecordIter.next();
+						VATRegulation vatRegulation;
+						try {
+							vatRegulation = getVATBusiness().getVATRegulation(paymentRecord.getVATType());
+							//TODO (JJ) this needs to be tested heavily. I have no idea what I am doing...
+							float vat = paymentRecord.getTotalAmount() * vatRegulation.getVATPercent();
+							paymentRecord.setTotalAmountVAT(-vat);
+						} catch (VATException e) {
+							createNewErrorMessage(paymentRecord.getPaymentText(),"invoice.VATError");
+							e.printStackTrace();
+						} catch (RemoteException e) {
+							createNewErrorMessage(paymentRecord.getPaymentText(),"invoice.DBError");
+							e.printStackTrace();
+						}
+					}
+				} catch (RemoteException e1) {
+					createNewErrorMessage(paymentHeader.getSchool().getName(),"invoice.DBError");
+					e1.printStackTrace();
+				} catch (FinderException e1) {
+					createNewErrorMessage(paymentHeader.getSchool().getName(),"invoice.DBError");
+					e1.printStackTrace();
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.severeError","invoice.DBSetupProblem");
+			createNewErrorMessage("invoice.severeError","invoice.VATCalculationAborted");
 		}
 	}
 
@@ -168,8 +174,8 @@ public abstract class BillingThread extends Thread{
 		//Set the posting strings
 		PostingBusiness postingBusiness = (PostingBusiness)IDOLookup.create(PostingBusiness.class);
 
-		PostingParameters parameters = postingBusiness.getPostingParameter(
-			currentDate, category, regSpecType, 0, 0);
+		PostingParameters parameters;
+		parameters = postingBusiness.getPostingParameter(currentDate, category, regSpecType, 0, 0);
 
 		String ownPosting = parameters.getPostingString();
 		ownPosting = postingBusiness.generateString(ownPosting,provider.getOwnPosting(),currentDate);

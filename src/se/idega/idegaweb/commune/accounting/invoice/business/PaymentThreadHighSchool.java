@@ -12,17 +12,17 @@ import com.idega.presentation.IWContext;
  * @author Joakim
  *
  */
-public class PaymentThreadElementarySchool extends PaymentThreadSchool{
+public class PaymentThreadHighSchool extends PaymentThreadSchool{
 	PaymentHeader paymentHeader;
 	Date currentDate = new Date( System.currentTimeMillis());
 	
-	public PaymentThreadElementarySchool(Date month, IWContext iwc){
+	public PaymentThreadHighSchool(Date month, IWContext iwc){
 		super(month,iwc);
 	}
 	
 	public void run(){
 		try {
-			category = getSchoolCategoryHome().findElementarySchoolCategory();
+			category = getSchoolCategoryHome().findHighSchoolCategory();
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).
 					findByPrimaryKeyIDO(category.getPrimaryKey());
 			//Create all the billing info derrived from the contracts

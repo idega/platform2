@@ -36,7 +36,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * @param month
 	 */
 	public void startPostingBatch(Date month, IWContext iwc){
-		new InvoiceThread(month, iwc).start();
+		new InvoiceChildcareThread(month, iwc).start();
 	}
 	
 	/**
