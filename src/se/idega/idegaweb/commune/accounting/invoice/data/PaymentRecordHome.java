@@ -16,7 +16,7 @@ public interface PaymentRecordHome extends com.idega.data.IDOHome
  public int getCountForMonthAndStatusLH(com.idega.util.CalendarMonth p0)throws com.idega.data.IDOException;
  public int getCountForMonthCategoryAndStatusLH(com.idega.util.CalendarMonth p0,java.lang.String p1)throws com.idega.data.IDOException;
  public int getPlacementCountForSchoolCategoryAndMonth(java.lang.String p0,com.idega.util.CalendarMonth p1)throws com.idega.data.IDOException;
- public int getTotAmountForProviderAndPeriod(int p0,java.sql.Date p1)throws com.idega.data.IDOException;
+ public int getTotAmountForProviderAndPeriod(int p0,java.sql.Date p1,java.lang.String p2)throws com.idega.data.IDOException;
  public int getTotAmountForSchoolCategoryAndPeriod(java.lang.String p0,java.sql.Date p1)throws com.idega.data.IDOException;
  public int getTotalVATAmountForPaymentHeaderAndMonthAndVATRuleRegulation(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0,com.idega.util.CalendarMonth p1,se.idega.idegaweb.commune.accounting.regulations.data.Regulation p2)throws com.idega.data.IDOException;
 

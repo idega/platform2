@@ -12,8 +12,8 @@ public interface PaymentRecord extends com.idega.data.IDOEntity
  public java.lang.String getNotes();
  public int getOrderId();
  public java.lang.String getOwnPosting();
+ public se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader getPaymentHeader();
  public int getPaymentHeaderId();
-	public se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader getPaymentHeader ();
  public java.lang.String getPaymentText();
  public java.sql.Date getPeriod();
  public float getPieceAmount();
@@ -33,8 +33,8 @@ public interface PaymentRecord extends com.idega.data.IDOEntity
  public void setNotes(java.lang.String p0);
  public void setOrderId(int p0);
  public void setOwnPosting(java.lang.String p0);
- public void setPaymentHeaderId(int p0);
  public void setPaymentHeader(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0);
+ public void setPaymentHeaderId(int p0);
  public void setPaymentText(java.lang.String p0);
  public void setPeriod(java.sql.Date p0);
  public void setPieceAmount(float p0);
@@ -43,6 +43,6 @@ public interface PaymentRecord extends com.idega.data.IDOEntity
  public void setStatus(char p0);
  public void setTotalAmount(float p0);
  public void setTotalAmountVAT(float p0);
- public void setVATRuleRegulationId(int p0);
  public void setVATRuleRegulation(se.idega.idegaweb.commune.accounting.regulations.data.Regulation p0);
+ public void setVATRuleRegulationId(int p0);
 }
