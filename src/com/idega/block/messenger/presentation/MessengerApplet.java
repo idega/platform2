@@ -106,11 +106,11 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         ex.printStackTrace(System.err);
       }
 
-      /*
+
 
     userPanel = new Panel();
-    userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
-    add(userPanel);*/
+    userPanel.setSize(400,400);
+    add(userPanel);
 
   }
 
@@ -381,8 +381,9 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.add(new Label(name));
       item.setSize(18,150);
 
-      add(item);
+      userPanel.add(item);
 //      item.repaint();
+userPanel.repaint();
       repaint();
  //     item.repaint();
 
