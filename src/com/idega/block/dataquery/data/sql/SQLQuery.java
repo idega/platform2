@@ -65,6 +65,8 @@ public class SQLQuery implements DynamicExpression {
   private Map fieldNameQueryField = new HashMap();
   
   private List fieldOrder = new ArrayList();
+  
+  private List selectHiddenFields = new ArrayList();
   // conditions
   private List conditions = new ArrayList();
   
@@ -273,6 +275,26 @@ public class SQLQuery implements DynamicExpression {
     }
   }
   
+  private void addSelectHiddenField(QueryFieldPart field) {
+  	String path = field.getPath();
+  	String name = field.getName();
+  	Iterator iterator = fieldOrder.iterator();
+  	while (iterator.hasNext()) {
+  		QueryFieldPart fieldPart = (QueryFieldPart) iterator.next();
+  		String partPath = fieldPart.getPath();
+  		String partName = fieldPart.getName();
+  		if (path.equals(partPath) && name.equals(partName)) {
+  			// nothing to do
+  			return;
+  		}
+  	}
+  	// select...
+  	selectHiddenFields.add(field);
+  	// but do not display it
+  }
+  	
+  
+  
   private void setFields(QueryHelper queryHelper)  {
     List fields = queryHelper.getListOfFields();
     if (fields == null) {
@@ -333,9 +355,30 @@ public class SQLQuery implements DynamicExpression {
     setFields(queryHelper);
     setConditions(queryHelper);
     setOrderConditions(queryHelper);
+    
+    // set order conditions (order by) (must be executed before set fields)
+    Iterator orderConditionsIterator = orderConditions.iterator();
+    while(orderConditionsIterator.hasNext())	{
+    	QueryOrderConditionPart orderConditionPart = (QueryOrderConditionPart) orderConditionsIterator.next();
+    	OrderConditionExpression orderCriterion = new OrderConditionExpression(orderConditionPart, this);
+    	if (orderCriterion.isValid()) {
+	    	// microsoft sql server hack START -------------------------------------------------------------------------------------------------------------------------
+	    	String fieldName = orderConditionPart.getField();
+	    	String fieldPath = orderConditionPart.getPath();
+	    	QueryFieldPart queryFieldPart = getField(fieldPath, fieldName);
+	    	addSelectHiddenField(queryFieldPart);
+	    	// microsoft sql server hack END -----------------------------------------------------------------------------------------------------------------------------
+    		String path = orderCriterion.getPath();
+    		entitiesUsedByCriterion.add(path);
+    		statement.addOrderByClause(orderCriterion); 
+    	}
+    }
+
 
     // set fields (select clause)
-    Iterator fieldIterator = fieldOrder.iterator(); 
+    List selectFields = (new ArrayList(fieldOrder));
+    selectFields.addAll(selectHiddenFields);
+    Iterator fieldIterator = selectFields.iterator(); 
     while (fieldIterator.hasNext()) {
       QueryFieldPart queryField = (QueryFieldPart) fieldIterator.next();
       String path = queryField.getPath();
@@ -376,17 +419,6 @@ public class SQLQuery implements DynamicExpression {
     }
     if (booleanExpressionIsUsed)	{
     	statement.addWhereClause(criteriaExpression);
-    }
-    // set order conditions (order by)
-    Iterator orderConditionsIterator = orderConditions.iterator();
-    while(orderConditionsIterator.hasNext())	{
-    	QueryOrderConditionPart orderConditionPart = (QueryOrderConditionPart) orderConditionsIterator.next();
-    	OrderConditionExpression orderCriterion = new OrderConditionExpression(orderConditionPart, this);
-    	if (orderCriterion.isValid()) {
-    		String path = orderCriterion.getPath();
-    		entitiesUsedByCriterion.add(path);
-    		statement.addOrderByClause(orderCriterion); 
-    	}
     }
     // set tables (from clause)
     Iterator entityIterator = entityQueryEntity.values().iterator();
