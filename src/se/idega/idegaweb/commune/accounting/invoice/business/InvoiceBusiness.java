@@ -41,4 +41,6 @@ public interface InvoiceBusiness extends com.idega.business.IBOService
 	void removePaymentRecord (se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord paymentRecord) throws java.rmi.RemoteException, javax.ejb.RemoveException;
 	void removePaymentHeader (se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader paymentHeader) throws java.rmi.RemoteException, javax.ejb.RemoveException;
 	se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord createVatPaymentRecord(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord previousPaymentRecord,se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail postingDetail, com.idega.block.school.data.School school, com.idega.block.school.data.SchoolType sType,com.idega.block.school.data.SchoolYear sYear,com.idega.util.CalendarMonth month,char status,String signature) throws java.rmi.RemoteException,javax.ejb.CreateException;
+	public java.util.Collection findInvoiceRecordsByContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract contract) throws java.rmi.RemoteException,javax.ejb.FinderException;
+
 }

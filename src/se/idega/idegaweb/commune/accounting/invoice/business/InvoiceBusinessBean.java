@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/12 10:26:46 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/12 17:01:55 $ by $Author: laddi $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.105 $
+ * @version $Revision: 1.106 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -501,8 +501,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 												 (header));
 		} catch (FinderException exception) {
 			// no problem, return empty array
-		} catch (RemoteException exception) {
-			exception.printStackTrace();
 		}
 		return (InvoiceRecord[]) collection.toArray (new InvoiceRecord[0]);
 	}
@@ -865,6 +863,10 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 		return paymentHeader;
 	}
+	
+	public Collection findInvoiceRecordsByContract(ChildCareContract contract) throws FinderException {
+		return getInvoiceRecordHome().findByContract(contract);
+	}
 
 	public SchoolClassMember [] getSchoolClassMembers
 		(final InvoiceHeader header) {
@@ -1043,8 +1045,13 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return (InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class);
 	}
 	
-	public InvoiceRecordHome getInvoiceRecordHome() throws RemoteException {
-		return (InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class);
+	public InvoiceRecordHome getInvoiceRecordHome() {
+		try {
+			return (InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}
 
 	protected RegulationsBusiness getRegulationsBusiness(){

@@ -326,6 +326,12 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 						R_ + COLUMN_CHILDCARE_CONTRACT_ID, R_ + COLUMN_ORDER_ID });
 				return idoFindPKsByQuery (sql);
 	}
+	
+	public Collection ejbFindByContract(ChildCareContract contract) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILDCARE_CONTRACT_ID, contract);
+		return idoFindPKsByQuery(query);
+	}
 
 	public Collection ejbFindByPaymentRecord (PaymentRecord paymentRecord)
         throws FinderException {

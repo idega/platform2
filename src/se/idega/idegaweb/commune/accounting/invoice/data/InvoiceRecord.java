@@ -67,6 +67,6 @@ public interface InvoiceRecord extends com.idega.data.IDOEntity
  public void setSchoolClassMemberId(int p0);
  public void setSchoolType(com.idega.block.school.data.SchoolType p0);
  public void setSchoolTypeId(int p0);
- public void setVATRuleRegulation(int p0);
  public void setVATRuleRegulation(se.idega.idegaweb.commune.accounting.regulations.data.Regulation p0);
+ public void setVATRuleRegulation(int p0);
 }
