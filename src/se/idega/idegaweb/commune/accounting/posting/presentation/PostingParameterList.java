@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.25 2003/10/21 23:22:50 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.26 2003/11/06 10:27:17 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.25 2003/10/21 23:22:50 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.26 2003/11/06 10:27:17 anders Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -314,19 +314,41 @@ public class PostingParameterList extends AccountingBlock {
 
 
 	private void setupDefaultDates(IWContext iwc) { 
-	
+		Date sessionFromDate = null;
+		Date sessionToDate = null;
+		try {
+			sessionFromDate = (Date) getSession().getUserContext().getSessionAttribute(PARAM_FROM);
+			sessionToDate = (Date) getSession().getUserContext().getSessionAttribute(PARAM_TO);
+		} catch (Exception e) {}
+
 		if (iwc.isParameterSet(PARAM_FROM)) {
 			_currentFromDate = parseDate(iwc.getParameter(PARAM_FROM));
 		} else {
-			_currentFromDate = iwc.isParameterSet(PARAM_RETURN_FROM_DATE) ? 
-					parseDate(iwc.getParameter(PARAM_RETURN_FROM_DATE)) : getFlattenedTodaysDate();
+			if (iwc.isParameterSet(PARAM_RETURN_FROM_DATE)) {
+				_currentFromDate = parseDate(iwc.getParameter(PARAM_RETURN_FROM_DATE));
+			}
+			if (_currentFromDate == null) {
+				if (sessionFromDate != null) {
+					_currentFromDate = sessionFromDate;				
+				} else {
+					_currentFromDate = getFlattenedTodaysDate();
+				}
+			}
 		}
 			
 		if (iwc.isParameterSet(PARAM_TO)) {
 			_currentToDate = parseDate(iwc.getParameter(PARAM_TO));
 		} else {
-			_currentToDate = iwc.isParameterSet(PARAM_RETURN_TO_DATE) ? 
-					parseDate(iwc.getParameter(PARAM_RETURN_TO_DATE)) : parseDate("9999-12-31");
+			if (iwc.isParameterSet(PARAM_RETURN_TO_DATE)) {
+				_currentToDate = parseDate(iwc.getParameter(PARAM_RETURN_TO_DATE));
+			}
+			if (_currentToDate == null) {
+				if (sessionToDate != null) {
+					_currentToDate = sessionToDate;				
+				} else {
+					_currentToDate = parseDate("9999-12-31");
+				}
+			}
 		}
 			
 		if(_currentToDate == null) {
@@ -337,6 +359,11 @@ public class PostingParameterList extends AccountingBlock {
 		}
 		_currentFromDate = parseDate(formatDate(_currentFromDate, 4));
 		_currentToDate = parseDate(formatDate(_currentToDate, 4));
+		
+		try {
+			getSession().getUserContext().setSessionAttribute(PARAM_FROM, _currentFromDate);
+			getSession().getUserContext().setSessionAttribute(PARAM_TO, _currentToDate);
+		} catch (Exception e) {}
 	}
 	
 	private Date getFlattenedTodaysDate() {
