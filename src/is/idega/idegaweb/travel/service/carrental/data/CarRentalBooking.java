@@ -59,5 +59,4 @@ public interface CarRentalBooking extends com.idega.data.IDOEntity,is.idega.ideg
  public void setTelephoneNumber(java.lang.String p0)throws java.rmi.RemoteException;
  public void setTotalCount(int p0)throws java.rmi.RemoteException;
  public void setUserId(int p0)throws java.rmi.RemoteException;
- public void store();
 }

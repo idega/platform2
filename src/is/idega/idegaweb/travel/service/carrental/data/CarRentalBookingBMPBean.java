@@ -1,15 +1,20 @@
 package is.idega.idegaweb.travel.service.carrental.data;
 
+import is.idega.idegaweb.travel.data.BookingEntry;
+import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.data.GeneralBookingHome;
+import is.idega.idegaweb.travel.data.PickupPlace;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.interfaces.Booking;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collection;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import java.rmi.RemoteException;
-import java.util.Collection;
-import com.idega.data.*;
-
-import is.idega.idegaweb.travel.data.*;
-import java.sql.*;
-
-import is.idega.idegaweb.travel.interfaces.Booking;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDORelationshipException;
 
 
 
@@ -22,7 +27,7 @@ import is.idega.idegaweb.travel.interfaces.Booking;
  * @version 1.0
  */
 
-public class CarRentalBookingBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.travel.interfaces.Booking, CarRentalBooking {
+public class CarRentalBookingBMPBean extends com.idega.data.GenericEntity implements CarRentalBooking {
 
   GeneralBooking _booking;
 
@@ -38,9 +43,10 @@ public class CarRentalBookingBMPBean extends com.idega.data.GenericEntity implem
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addAttribute(COLUMN_PICKUP_TIME, "pickup time", true, true, Timestamp.class);
-    addAttribute(COLUMN_DROPOFF_PLACE_ID, "dropoff place", true, true, Integer.class, "many_to_one", PickupPlace.class);
-	addAttribute(COLUMN_DROPOFF_TIME, "dropoff time", true, true, Timestamp.class);
+    addManyToOneRelationship(COLUMN_DROPOFF_PLACE_ID, PickupPlace.class);
+    addAttribute(COLUMN_DROPOFF_TIME, "dropoff time", true, true, Timestamp.class);
   }
+  
   public String getEntityName() {
     return TABLE_NAME;
   }
@@ -66,11 +72,12 @@ public class CarRentalBookingBMPBean extends com.idega.data.GenericEntity implem
 	}
 	
 	public PickupPlace getDropoffPlace() throws IDOLookupException, FinderException {
-		int id = getDropoffPlaceId();
-		if ( id > 0 ) {
-			return ((PickupPlaceHome) IDOLookup.getHome(PickupPlace.class)).findByPrimaryKey(new Integer(id));
-		}		
-		return null;
+		return (PickupPlace) getColumnValue(COLUMN_DROPOFF_PLACE_ID);
+//		int id = getDropoffPlaceId();
+//		if ( id > 0 ) {
+//			return ((PickupPlaceHome) IDOLookup.getHome(PickupPlace.class)).findByPrimaryKey(new Integer(id));
+//		}		
+//		return null;
 	}
 	
 	public void setDropoffPlaceId(int id) {
@@ -89,7 +96,11 @@ public class CarRentalBookingBMPBean extends com.idega.data.GenericEntity implem
   }
 
   public Booking getBooking() throws RemoteException, FinderException{
-    return ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(this.getPrimaryKey());
+  	if (_booking == null) {
+  		return ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(this.getPrimaryKey());
+  	} else {
+  		return _booking;
+  	}
   }
 
   public PickupPlace getPickupPlace() throws RemoteException{
@@ -110,10 +121,6 @@ public class CarRentalBookingBMPBean extends com.idega.data.GenericEntity implem
 
   public String getPickupExtraInfo() throws RemoteException{
   	return _booking.getPickupExtraInfo();
-  }
-
-  public void store()  {
-      super.store();
   }
 
   public void delete() throws SQLException {
