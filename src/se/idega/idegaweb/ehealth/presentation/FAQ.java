@@ -16,12 +16,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
-import com.idega.util.IWTimestamp;
 
 
 
@@ -35,17 +30,6 @@ public class FAQ extends EHealthBlock {
 	
 	private String prefix = "patient_";
 	private String prmForm = prefix + "form_visit";
-	
-	private String prmCareUnit = prefix + "care_unit";
-	private String prmDate = prefix + "date";
-	private String prmAppointType = prefix + "appoint_type";
-	private String prmPrint = prefix + "print";
-	private String prmCost = prefix + "cost";
-	private String prmHealthCentre = prefix + "healthcentre";
-	private String prmFrom = prefix + "from";
-	private String prmTo = prefix + "to";
-	private String prmSearch = prefix + "search";
-	
 	
 	
 	IWContext _iwc = null;
@@ -102,6 +86,7 @@ public class FAQ extends EHealthBlock {
 		Layer layer = new Layer(Layer.DIV);
 		layer.setVisibility("hidden");
 		layer.setPositionType("absolute");
+		layer.setWidth("400");
 				
 		int theRow;
 		for (theRow = 1; theRow <= 8; theRow++) {
@@ -152,7 +137,7 @@ public class FAQ extends EHealthBlock {
 		for (theRow = 1; theRow <= 8; theRow++) {
 				Layer layers = (Layer) layer.clone();
 				layers.setID("lay" + theRow + "_"+ theColumn);
-				layers.add(questions[theRow-1]);							
+				layers.add(getSmallHeader(questions[theRow-1]));							
 				tableInfo.add(layers, theColumn, theRow);
 						
 		}
@@ -162,91 +147,7 @@ public class FAQ extends EHealthBlock {
 		return layerInfo;
 	}
 	
-	private Layer getHeadingTable(){
-		Layer layerHead = new Layer(Layer.DIV);
-		layerHead.setMarkupAttribute("class", "ehealth_div_no_border");
 		
-		Table table = new Table(7, 1);
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setBorder(0);
-		table.setWidth(570);
-		table.setHeight(20);
-		
-		
-		table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
-		
-		
-		table.setWidth(1, 1, "100");
-		table.setWidth(2, 1, "20");
-		table.setWidth(3, 1, "110");
-		table.setWidth(4, 1, "20");
-		table.setWidth(5, 1, "200");
-		table.setWidth(6, 1, "20");
-		table.setWidth(7, 1, "100");
-		
-		Text date = getLocalizedSmallHeader(prmDate,"Date");
-		Text careUnit = getLocalizedSmallHeader(prmCareUnit,"Care unit");
-		Text regReason = getLocalizedSmallHeader(prmAppointType,"Appointment type");
-		Text regCostReceipt = getLocalizedSmallHeader(prmCost,"Cost/receipt");
-		
-		table.add(date, 1, 1);
-		table.add(careUnit, 3, 1);
-		table.add(regReason, 5, 1);
-		table.add(regCostReceipt, 7, 1);
-		
-		layerHead.add(table);
-		
-		return layerHead;
-	}
-	
-	private Table getSearchSortTable(){
-		
-		Table table = new Table(3, 3);
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setBorder(0);
-		
-		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_BOTTOM);
-		table.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_BOTTOM);
-		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_BOTTOM);
-		table.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_BOTTOM);
-		
-		table.setHeight(1, 1, "25");
-		table.setHeight(1, 2, "25");
-		table.setHeight(1, 3, "25");
-		table.setWidth(2, 1, "20");
-		
-		IWTimestamp stamp = new IWTimestamp();
-		
-		DateInput from = (DateInput) getStyledInterface(new DateInput(prmFrom, true));
-		from.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
-		
-		DateInput to = (DateInput) getStyledInterface(new DateInput(prmTo, true));
-		to.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
-		
-		DropdownMenu dropHCentre = (DropdownMenu) getStyledInterface(new DropdownMenu(prmHealthCentre));
-		dropHCentre.addMenuElementFirst("1", "Gimo VC");
-		dropHCentre.addMenuElement("2", "Östhammar VC");
-		dropHCentre.addMenuElement("3", "Alunda VC");
-		dropHCentre.addMenuElement("4", "Österbybruk VC");
-		dropHCentre.addMenuElement("5", "Tierp VC");
-		dropHCentre.addMenuElement("6", "Öregrund VC");
-		dropHCentre.addMenuElement("7", "Skutskär VC");
-		dropHCentre.addMenuElement("8", "Månkarbo VC");
-		
-		
-		
-		GenericButton search = getButton(new GenericButton("search", localize(prmSearch, "Search")));
-		
-		table.add(from, 1, 1);
-		table.add(to, 3, 1);
-		table.add(dropHCentre, 1, 2);
-		table.add(search, 1, 3);
-		
-		return table;
-	}
-	
 	private String setRowColorScript() {
 		StringBuffer s = new StringBuffer();
 		
@@ -272,29 +173,5 @@ public class FAQ extends EHealthBlock {
 	}
 	
 	
-	private Table getTableButtons() {
-		Table table = new Table(3, 1);
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setBorder(0);
-		table.setHeight(20);
 		
-		
-		table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
-		
-		table.setWidth(2, 1, "20");
-		
-		
-		Image printIcon = (Image) getPrintIcon(_iwc);
-		table.add(printIcon, 1, 1);
-		
-		GenericButton print = getButton(new GenericButton("print", localize(prmPrint, "Print")));
-		table.add(print, 3, 1);
-		
-		
-		return table;
-		
-	}
-	
-	
 }
