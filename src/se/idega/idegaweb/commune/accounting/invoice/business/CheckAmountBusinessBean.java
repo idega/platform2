@@ -66,11 +66,11 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 /**
- * Last modified: $Date: 2004/01/21 18:03:05 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/22 10:07:44 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -173,7 +173,8 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 						plm.setSubject(iwrb.getLocalizedString(CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT) + " " + school.getName ());
 						plm.setMessageData(icFile);
 						plm.setOwner(iwc.getCurrentUser());
-						mBusiness.flagMessageAsUnPrinted(iwc.getCurrentUser(), plm);
+						//mBusiness.flagMessageAsUnPrinted(iwc.getCurrentUser(), plm);
+						mBusiness.flagMessageAsPrinted(iwc.getCurrentUser(), plm);
 						plm.store();
 						filesSentByPapermail.put (school.getName (),
 																			icFile.getPrimaryKey ());
