@@ -608,12 +608,10 @@ public class ServiceOverview extends TravelManager {
               priceText = (Text) theBoldText.clone();
                 priceText.setFontColor(super.BLACK);
               try {
-                debug("+++++++++++++++++++++++++++++++++++++++++++++++++++");
                 if (service == null) {debug("SERVICE");}
                 if (prices[j] == null) {debug("PRICES");}
                 if (timeframes[k] == null) {debug("TIMEFRAMEs");}
                 if (depAddress == null) {debug("ADDRESS");}
-                debug("+++++++++++++++++++++++++++++++++++++++++++++++++++");
                 priceText.setText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[k].getID(), depAddress.getID() ) ));
                 priceText.addToText(Text.NON_BREAKING_SPACE);
                 priceText.addToText(currency.getCurrencyAbbreviation());
