@@ -86,7 +86,12 @@ public class GolfMainJSPModule extends MainSideJSPModule{
 //          topTable.setBorder(1);
           topTable.setHeight("90");
           topTable.add(getLogin(),1,1);
-          topTable.add(getHBanner(),2,1);
+
+
+         /*debug eiki  24 april bugcheck
+         topTable.add(getHBanner(),2,1);
+
+         */
 //		 topTable.add(new Link(new Image("/pics/banners/golfkort.gif"),"http://www.isbank.is"),2,1);
           topTable.add(new Image("/pics/templates/toyotalogo.gif"),3,1);
 
