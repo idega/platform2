@@ -33,7 +33,7 @@ public class CarRentalBookerBean extends BookerBean implements CarRentalBooker {
 
   public int book(int bookingId, int pickupPlaceId, IWTimestamp pickupTime, int dropoffPlaceId, IWTimestamp dropoffTime) throws IDOException, RemoteException {
 		try {
-			System.out.println("[CarRentalBooker] Book()");
+
 		  boolean update = false;
 		  CarRentalBooking booking = null;
 		  try {
