@@ -167,12 +167,12 @@ public class HandicapCard extends GolfBlock {
 		return text;
 	}
 
-	private Text getText(String content) {
-		Text text = new Text(content);
-		text.setFontSize(1);
-		text.setFontColor(textColor);
-		return text;
-	}
+//	private Text getText(String content) {
+//		Text text = new Text(content);
+//		text.setFontSize(1);
+//		text.setFontColor(textColor);
+//		return text;
+//	}
 
 	public void setWidth(String width) {
 		this.width = width;

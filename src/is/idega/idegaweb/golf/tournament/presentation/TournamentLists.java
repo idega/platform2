@@ -117,17 +117,17 @@ public class TournamentLists extends TournamentBlock{
 		add(form);
 	}
 
-	private Text getText(String content) {
-		Text text = new Text(content);
-		text.setFontSize(Text.FONT_SIZE_10_HTML_2);
-		return text;
-	}
-	
-	private Text getHeader(String content) {
-		Text text = getText(content);
-		text.setBold(true);
-		return text;	
-	}
+//	private Text getText(String content) {
+//		Text text = new Text(content);
+//		text.setFontSize(Text.FONT_SIZE_10_HTML_2);
+//		return text;
+//	}
+//	
+//	private Text getHeader(String content) {
+//		Text text = getText(content);
+//		text.setBold(true);
+//		return text;	
+//	}
 
 	private void init(IWContext modinfo) throws SQLException {
 		iwrb = getResourceBundle(modinfo);
