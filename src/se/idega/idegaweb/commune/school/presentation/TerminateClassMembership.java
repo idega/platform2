@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/10/08 13:32:58 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/08 14:30:16 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -81,9 +81,9 @@ public class TerminateClassMembership extends CommuneBlock {
 	public void main(final IWContext context) {
         try {
             if (context.isParameterSet (ACTION_TERMINATE_KEY)) {
-                terminateMembership (context);
+                add (createMainTable (getTerminateMembershipTable (context)));
             } else {
-                showTerminateForm (context);
+                add (createMainTable (getUserSearchFormTable (context)));
             }
         } catch (final Exception exception) {
             System.err.println ("Exception caught in " + getClass ().getName ()
@@ -101,12 +101,34 @@ public class TerminateClassMembership extends CommuneBlock {
 	}
 
 	/**
+	 * Returns a styled table with content placed properly
+	 *
+	 * @param content the page unique content
+     * @return Table to add to output
+	 */
+    private Table createMainTable (final PresentationObject content) {
+        final Table mainTable = new Table();
+        mainTable.setCellpadding (getCellpadding ());
+        mainTable.setCellspacing (getCellspacing ());
+        mainTable.setWidth (Table.HUNDRED_PERCENT);
+        mainTable.setColumns (1);
+        mainTable.setRowColor (1, getHeaderColor ());
+        mainTable.setRowAlignment(1, Table.HORIZONTAL_ALIGN_CENTER) ;
+
+        mainTable.add (getSmallHeader (localize (TERMINATEMEMBERSHIP_KEY,
+                                                 TERMINATEMEMBERSHIP_DEFAULT)),
+                       1, 1);
+        mainTable.add (content, 1, 2);
+        return mainTable;
+    }
+
+	/**
 	 * Terminates membership in a school class for the user kept in session
      * object MEMBER_KEY
 	 *
 	 * @param context session data
 	 */
-    private void terminateMembership (final IWContext context) {
+    private Table getTerminateMembershipTable (final IWContext context) {
         // find input values
         final HttpSession session = context.getSession ();
         final SchoolClassMember member = (SchoolClassMember)
@@ -135,7 +157,7 @@ public class TerminateClassMembership extends CommuneBlock {
         }
         table.setHeight (2, 12);
         table.add (getSmallLink (localize (BACK_KEY, BACK_DEFAULT)), 1, 3);
-        add (table);
+        return table;
     }
 
     /**
@@ -146,7 +168,7 @@ public class TerminateClassMembership extends CommuneBlock {
 	 * @param context session data
      * @exception RemoteException if exception happens in lower layer
      */
-    private void showTerminateForm (final IWContext context)
+    private Table getUserSearchFormTable (final IWContext context)
         throws RemoteException {
         // 1. set up searcher
         final UserSearcher searcher = new UserSearcher ();
@@ -177,7 +199,7 @@ public class TerminateClassMembership extends CommuneBlock {
             terminateForm.add (terminateTable);
             table.add (terminateForm, 1, 1);
         }
-        add (table);
+        return table;
     }
 
     /**
@@ -199,7 +221,7 @@ public class TerminateClassMembership extends CommuneBlock {
             if (null == usersFound) {
                 throw new FinderException ();
             }
-            
+
             // 2. filter out students that are placed and that the logged on
             // user is authorized to see
             final SchoolCommuneBusiness communeBusiness
@@ -210,12 +232,11 @@ public class TerminateClassMembership extends CommuneBlock {
                 final SchoolClassMember student
                         = communeBusiness.getCurrentSchoolClassMembership
                         (user);
-                if (null != student && null != student.getRemovedDate()) {
+                if (null != student && null == student.getRemovedDate ()) {
                     students.add (user);
                 }
             }
         } catch (FinderException e) {
-            e.printStackTrace ();
             // no students found
         }
         return students;
