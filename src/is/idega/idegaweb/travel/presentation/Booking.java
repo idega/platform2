@@ -81,6 +81,7 @@ public class Booking extends TravelManager {
       super.main(iwc);
       initialize(iwc);
 
+      if (super.isLoggedOn(iwc)) {
 
         if (reseller != null && contract == null) {
           product = null;
@@ -100,6 +101,10 @@ public class Booking extends TravelManager {
         }
 
         super.addBreak();
+      }else {
+        super.addBreak();
+        add(super.getLogin(iwc));
+      }
   }
 
   private void initialize(IWContext iwc) {
@@ -234,10 +239,6 @@ public class Booking extends TravelManager {
       topTable.setAlignment(5,1,"right");
       topTable.add(new SubmitButton(iwrb.getImage("buttons/get.gif"),"", ""),5,1);
 
-//      topTable.add(new HiddenInput("month",Integer.toString(stamp.getMonth()) ));
-//      topTable.add(new HiddenInput("day",Integer.toString(stamp.getDay())));
-//      topTable.add(new HiddenInput("year",Integer.toString(stamp.getYear())));
-
       return form;
   }
 
@@ -351,7 +352,8 @@ public class Booking extends TravelManager {
             }
             if (addWarning) {
               Text overBookingWarning = (Text)super.theBoldText.clone();
-                overBookingWarning.setText(iwrb.getLocalizedString("travel.there_are_no_available_seats_on_the_selected_day","There are no available seats on the selected day"));
+                overBookingWarning.setText(iwrb.getLocalizedString("travel.there_are_no_availability_selected_day","There are no availability on the selected day"));
+                overBookingWarning.setFontColor(super.RED);
               table.add(overBookingWarning, 1, row);
             }
           }

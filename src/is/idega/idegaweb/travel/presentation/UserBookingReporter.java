@@ -27,7 +27,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class UserBookingReporter extends TravelManager {
+public class UserBookingReporter extends TravelManager implements Report{
 
   private static final String PARAMETER_ORDER_BY = "ubr_par_order_by";
   private static final String PARAMETER_USER_ID = "ubr_par_user_id";
@@ -38,23 +38,35 @@ public class UserBookingReporter extends TravelManager {
   private int orderBy = BookingComparator.USER;
   private int userId = -1;
   private int ownerId = -1;
+  private idegaTimestamp _fromStamp;
+  private idegaTimestamp _toStamp;
 
-  public UserBookingReporter() {
-  }
-
-  public void main(IWContext iwc) throws Exception{
-    super.main(iwc);
+  public UserBookingReporter(IWContext iwc) throws Exception {
     initialize(iwc);
   }
 
+  public String getReportName() {
+    return iwrb.getLocalizedString("travel.report_name.user_bookings","User bookings");
+  }
+
+  public String getReportDescription() {
+    return iwrb.getLocalizedString("travel.report_description.user_bookings","Displays owner and user of bookins.");
+  }
+
+  public boolean useTwoDates() {
+    return true;
+  }
+
   private void initialize(IWContext iwc) {
-    if (bundle == null && iwrb == null) {
-      try {
-        super.main(iwc);
-      }catch (Exception e) {e.printStackTrace(System.err);}
-      bundle = super.getBundle(iwc);
-      iwrb = super.getResourceBundle();
-    }
+    try {
+      if (iwrb == null) {
+        if (super.getResourceBundle() == null) {
+          super.main(iwc);
+          bundle = super.getBundle(iwc);
+          iwrb = super.getResourceBundle();
+        }
+      }
+    }catch (Exception e) {e.printStackTrace(System.err);}
 
     String sOrderBy = iwc.getParameter(PARAMETER_ORDER_BY);
     if (sOrderBy != null) {
@@ -70,28 +82,11 @@ public class UserBookingReporter extends TravelManager {
     }
   }
 
-  public Table getReport(IWContext iwc, Supplier supplier, idegaTimestamp stamp) {
-    return getReport(iwc, supplier, stamp, new idegaTimestamp(stamp));
-  }
-  public Table getReport(IWContext iwc, Supplier supplier, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
-    List products = ProductBusiness.getProducts(supplier.getID(), fromStamp, toStamp);
-    return getReport(iwc, products, fromStamp, toStamp);
-  }
-
-  public Table getReport(IWContext iwc, Product product, idegaTimestamp stamp) {
-    return getReport(iwc, product, stamp, new idegaTimestamp(stamp));
-  }
-  public Table getReport(IWContext iwc, Product product, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
-    List list = new Vector();
-    list.add(product);
-    return getReport(iwc, list, fromStamp, toStamp);
-  }
-
-  public Table getReport(IWContext iwc, List products, idegaTimestamp stamp) {
+  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp) {
     return getReport(iwc, products, stamp, new idegaTimestamp(stamp));
   }
 
-  public Table getReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
+  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
     initialize(iwc);
 
     if (userId != -1) {
@@ -105,7 +100,7 @@ public class UserBookingReporter extends TravelManager {
 
   private Table getUserReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
     Table table = getTable();
-
+      table.setWidth("100%");
     int row = 1;
 
     try {
@@ -113,6 +108,8 @@ public class UserBookingReporter extends TravelManager {
       User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(userId);
       User owner;
       Link ownerLink;
+      this._fromStamp = fromStamp;
+      this._toStamp = toStamp;
 
       float price;
       float totalPrice = 0;
@@ -128,15 +125,15 @@ public class UserBookingReporter extends TravelManager {
       table.mergeCells(1, row, 5, row);
       table.setRowColor(row, super.backgroundColor);
 
-      Link dateLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.date","Date")));
+      Link dateLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.date","Date")));
         dateLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.DATE);
-      Link countLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.count","Count")));
+      Link countLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.count","Count")));
         countLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.TOTALCOUNT);
-      Link userHLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.user","User")));
+      Link userHLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.user","User")));
         userHLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.USER);
-      Link ownerHLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.owner","Owner")));
+      Link ownerHLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.owner","Owner")));
         ownerHLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.OWNER);
-      Link amountLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.amount","Amount")));
+      Link amountLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.amount","Amount")));
         amountLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.AMOUNT);
 
         addParameters(dateLink);
@@ -162,7 +159,7 @@ public class UserBookingReporter extends TravelManager {
         totalPrice += price;
         totalCount += count;
 
-        ownerLink = new Link(getText(owner.getName()));
+        ownerLink = Reports.getReportLink(getText(owner.getName()));
           ownerLink.addParameter(PARAMETER_OWNER_ID, owner.getID());
 
         table.add(getText(new idegaTimestamp(bookings[i].getBookingDate()).getLocaleDate(_locale)), 1, row);
@@ -193,6 +190,7 @@ public class UserBookingReporter extends TravelManager {
 
   private Table getOwnerReport(IWContext iwc, List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
     Table table = getTable();
+      table.setWidth("100%");
     int row = 1;
 
     try {
@@ -214,15 +212,15 @@ public class UserBookingReporter extends TravelManager {
       table.mergeCells(1, row, 5, row);
       table.setRowColor(row, super.backgroundColor);
 
-      Link dateLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.date","Date")));
+      Link dateLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.date","Date")));
         dateLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.DATE);
-      Link countLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.count","Count")));
+      Link countLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.count","Count")));
         countLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.TOTALCOUNT);
-      Link userHLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.user","User")));
+      Link userHLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.user","User")));
         userHLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.USER);
-      Link ownerHLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.owner","Owner")));
+      Link ownerHLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.owner","Owner")));
         ownerHLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.OWNER);
-      Link amountLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.amount","Amount")));
+      Link amountLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.amount","Amount")));
         amountLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.AMOUNT);
 
         addParameters(dateLink);
@@ -248,7 +246,7 @@ public class UserBookingReporter extends TravelManager {
         totalPrice += price;
         totalCount += count;
 
-        userLink = new Link(getText(user.getName()));
+        userLink = Reports.getReportLink(getText(user.getName()));
           userLink.addParameter(PARAMETER_USER_ID, user.getID());
 
         table.add(getText(new idegaTimestamp(bookings[i].getBookingDate()).getLocaleDate(_locale)), 1, row);
@@ -258,6 +256,7 @@ public class UserBookingReporter extends TravelManager {
         table.add(getText(TextSoap.decimalFormat(price, 0)), 5, row);
 
         table.setRowColor(row, super.GRAY);
+
       }
       ++row;
       Text totalPriceText = getText(TextSoap.decimalFormat(totalPrice, 0));
@@ -286,6 +285,7 @@ public class UserBookingReporter extends TravelManager {
     bookings = bComp.sortedArray(bookings);
 
     Table table = getTable();
+      table.setWidth("100%");
     int row = 1;
 
     Product prod;
@@ -294,18 +294,20 @@ public class UserBookingReporter extends TravelManager {
     Link userLink;
     Link ownerLink;
 
-    Link dateLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.date","Date")));
+    Link dateLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.date","Date")));
       dateLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.DATE);
-//    Link nameLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.product","Product")));
+//    Link nameLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.product","Product")));
 //      nameLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.NAME);
-    Link countLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.count","Count")));
+    Link countLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.count","Count")));
       countLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.TOTALCOUNT);
-    Link userHLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.user","User")));
+    Link userHLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.user","User")));
       userHLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.USER);
-    Link ownerHLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.owner","Owner")));
+    Link ownerHLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.owner","Owner")));
       ownerHLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.OWNER);
-    Link amountLink = new Link(getHeaderText(iwrb.getLocalizedString("travel.amount","Amount")));
+    Link amountLink = Reports.getReportLink(getHeaderText(iwrb.getLocalizedString("travel.amount","Amount")));
       amountLink.addParameter(PARAMETER_ORDER_BY, BookingComparator.AMOUNT);
+
+
 
     table.add(dateLink, 1, row);
     table.add(getHeaderText(iwrb.getLocalizedString("travel.product","Product")), 2, row);
@@ -316,25 +318,41 @@ public class UserBookingReporter extends TravelManager {
     table.setRowColor(row, super.backgroundColor);
 
     for (int i = 0; i < bookings.length; i++) {
+      user = null;
+      owner = null;
       try {
         ++row;
-        user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getUserId());
-        owner = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getOwnerId());
+        if (bookings[i].getUserId() != -1) {
+          user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getUserId());
+          userLink = Reports.getReportLink(getText(user.getName()));
+            userLink.addParameter(PARAMETER_USER_ID, user.getID());
+          table.add(userLink, 4, row);
+        }else {
+          if (( (GeneralBooking) bookings[i]).getCreditcardAuthorizationNumber() != null) {
+            table.add(getText(iwrb.getLocalizedString("travel.-online-","-online-")), 4, row);
+          }
+        }
+        if (bookings[i].getOwnerId() != -1) {
+          owner = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getOwnerId());
+          ownerLink = Reports.getReportLink(getText(owner.getName()));
+            ownerLink.addParameter(PARAMETER_OWNER_ID, owner.getID());
+          table.add(ownerLink, 5, row);
+        }else {
+          if (( (GeneralBooking) bookings[i]).getCreditcardAuthorizationNumber() != null) {
+            table.add(getText(iwrb.getLocalizedString("travel.-online-","-online-")), 5, row);
+          }
+        }
         prod = ProductBusiness.getProduct(bookings[i].getServiceID());
 
-        userLink = new Link(getText(user.getName()));
-          userLink.addParameter(PARAMETER_USER_ID, user.getID());
-        ownerLink = new Link(getText(owner.getName()));
-          ownerLink.addParameter(PARAMETER_OWNER_ID, owner.getID());
 
         table.add(getText(new idegaTimestamp(bookings[i].getBookingDate()).getLocaleDate(_locale)), 1, row);
         table.add(getText(ProductBusiness.getProductName(prod, _localeId)), 2, row);
         table.add(getText(Integer.toString(bookings[i].getTotalCount())), 3, row);
-        table.add(userLink, 4, row);
-        table.add(ownerLink, 5, row);
         table.add(getText(TextSoap.decimalFormat(Booker.getBookingPrice(iwc, bookings[i]), 0)), 6, row);
 
         table.setRowColor(row, super.GRAY);
+
+
       }catch (SQLException sql) {
         sql.printStackTrace();
       }
@@ -354,25 +372,37 @@ public class UserBookingReporter extends TravelManager {
     if (ownerId != -1) {
       link.addParameter(PARAMETER_OWNER_ID, ownerId);
     }
+
+/*    if (_fromStamp != null) {
+      link.addParameter(Reports.PARAMATER_DATE_FROM, _fromStamp.toSQLDateString());
+    }
+    if (_toStamp != null) {
+      link.addParameter(Reports.PARAMATER_DATE_TO, _toStamp.toSQLDateString());
+    }
+
+    for (int i = 0; i < names.size(); i++) {
+      link.addParameter((String) names.get(i), (String) values.get(i));
+    }*/
+
+
   }
 
-  private Text getText(String content) {
+
+  protected Text getText(String content) {
     Text text = (Text) super.theText.clone();
       text.setText(content);
       text.setFontColor(super.BLACK);
     return text;
   }
 
-  private Text getHeaderText(String content) {
+  protected Text getHeaderText(String content) {
     Text text = (Text) super.theBoldText.clone();
       text.setText(content);
     return text;
   }
 
-  private Table getTable() {
-    Table table = new Table();
-      table.setColor(super.WHITE);
-      table.setCellspacing(1);
+  protected Table getTable() {
+    Table table = super.getTable();
       table.setCellpadding(2);
       table.setWidth("90%");
     return table;

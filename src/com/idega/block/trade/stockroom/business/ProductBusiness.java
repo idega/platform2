@@ -636,10 +636,13 @@ public class ProductBusiness {
     }
   }
 
-
   public static DropdownMenu getDropdownMenuWithProducts(IWContext iwc, int supplierId) {
+    return getDropdownMenuWithProducts(iwc, supplierId, ((Product)com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class)).getEntityName());
+  }
+
+  public static DropdownMenu getDropdownMenuWithProducts(IWContext iwc, int supplierId, String parameterName) {
     List list = getProducts(iwc, supplierId);
-    DropdownMenu menu = new DropdownMenu(((Product)com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class)).getEntityName());
+    DropdownMenu menu = new DropdownMenu(parameterName);
     Product product;
     if (list != null && list.size() > 0) {
       for (int i = 0; i < list.size(); i++) {

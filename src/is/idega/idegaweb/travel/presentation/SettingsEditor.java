@@ -117,7 +117,7 @@ public class SettingsEditor extends TravelManager {
     }
 
   }
-
+/*
   private Text getText(String content) {
     Text text = (Text) super.theText.clone();
       text.setText(content);
@@ -131,5 +131,5 @@ public class SettingsEditor extends TravelManager {
       text.setFontColor(super.WHITE);
     return text;
   }
-
+*/
 }

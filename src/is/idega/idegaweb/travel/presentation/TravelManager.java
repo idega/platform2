@@ -108,13 +108,10 @@ public class TravelManager extends Block {
     }
 
     public void main(IWContext iwc) throws Exception{
-        initializer(iwc);
-
-        showLogo = isLoggedOn(iwc);
-
-        draw(iwc);
-
-
+//      debug("main(iwc)");
+      initializer(iwc);
+      showLogo = isLoggedOn(iwc);
+      draw(iwc);
     }
 
     private boolean isLoginPage(IWContext iwc) {
@@ -231,7 +228,8 @@ public class TravelManager extends Block {
               lBooking.addParameter(this.sAction,this.parameterBooking);
             Link lStatistics = new Link(iStatistics,Statistics.class);
               lStatistics.addParameter(this.sAction,this.parameterStatistics);
-            Link lDailyReport = new Link(iDailyReport,DailyReport.class);
+            Link lDailyReport = new Link(iDailyReport,Reports.class);
+//            Link lDailyReport = new Link(iDailyReport,DailyReport.class);
               lDailyReport.addParameter(this.sAction,this.parameterDailyReport);
             Link lContracts = new Link(iContracts,Contracts.class);
               lContracts.addParameter(this.sAction,this.parameterContracts);
@@ -416,5 +414,26 @@ public class TravelManager extends Block {
       }
       return false;
 
+    }
+
+    protected Table getTable() {
+      Table table = new Table();
+        table.setCellpaddingAndCellspacing(1);
+        table.setColor(WHITE);
+      return table;
+    }
+
+    protected Text getText(String content) {
+      Text text = (Text) this.theText.clone();
+        text.setText(content);
+        text.setFontColor(BLACK);
+      return text;
+    }
+
+    protected Text getHeaderText(String content) {
+      Text text = getText(content);
+        text.setFontColor(WHITE);
+        text.setBold(true);
+      return text;
     }
 }

@@ -32,19 +32,10 @@ import is.idega.idegaweb.travel.interfaces.Booking;
  * @version 1.0
  */
 
-public class DailyReport extends TravelManager {
+public class DailyReport extends TravelManager implements Report{
 
   private IWBundle bundle;
   private IWResourceBundle iwrb;
-
-  private Supplier supplier;
-  private Product product;
-  private List products;
-  private Service service;
-  private Tour tour;
-  private Timeframe timeframe;
-
-  private idegaTimestamp stamp;
 
   private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
 
@@ -65,283 +56,36 @@ public class DailyReport extends TravelManager {
   private boolean closerLook = false;
 
 
-  public DailyReport() {
+  public DailyReport(IWContext iwc) throws Exception {
+    super.main(iwc);
+    initialize(iwc);
   }
 
-  public void add(PresentationObject mo) {
-    super.add(mo);
+  public boolean useTwoDates() {
+    return false;
   }
 
-  public void main(IWContext iwc) throws Exception {
-      super.main(iwc);
-      initialize(iwc);
+  public String getReportName() {
+    return iwrb.getLocalizedString("travel.daily_report","Daily report");
+  }
 
-      if (super.isLoggedOn(iwc)) {
-        String action = iwc.getParameter(sAction);
-        if (action == null) {action = "";}
-
-        if (action.equals(this.parameterUpdate)) {
-          update(iwc);
-        }else if (action.equals(this.parameterYes)) {
-          this.closerLook = true;
-        }else if (action.equals(this.parameterNo)) {
-          this.closerLook = false;
-        }
-        displayForm(iwc);
-
-        super.addBreak();
-      }else {
-        add(super.getLoggedOffTable(iwc));
-      }
+  public String getReportDescription() {
+    return iwrb.getLocalizedString("travel.daily_description","Daily report");
   }
 
   public void initialize(IWContext iwc) {
-      bundle = super.getBundle();
-      iwrb = super.getResourceBundle();
-
-      supplier = super.getSupplier();
-      stamp = getFromIdegaTimestamp(iwc);
-
-      String hppr = iwc.getParameter(this.parameterBookingReportType);
-      if (hppr != null) {
-        if (hppr.equals(this.parameterHotelPickupPlaceReport)) {
-          this.hotelPickupReport = true;
-        }else if (hppr.equals(this.parameterUserReport)) {
-          this.userReport = true;
-        }
-      }
-
-      String productId = iwc.getParameter(com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName());
-      try {
-        if (productId == null) {
-          productId = (String) iwc.getSessionAttribute("TB_BOOKING_PRODUCT_ID");
-        }else {
-          iwc.setSessionAttribute("TB_BOOKING_PRODUCT_ID",productId);
-        }
-        if (productId != null && !productId.equals("-1")) {
-          product = ProductBusiness.getProduct(Integer.parseInt(productId));
-          service = tsb.getService(product);
-          tour = TourBusiness.getTour(product);
-          timeframe = ProductBusiness.getTimeframe(product, stamp);
-        }else if (productId != null && productId.equals("-1")){
-          viewAllProducts = true;
-          if (supplier != null)
-          products = ProductBusiness.getProducts(supplier.getID(), stamp);
-        }
-      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
-          snfe.printStackTrace(System.err);
-      }catch (TourBusiness.TourNotFoundException tnfe) {
-          tnfe.printStackTrace(System.err);
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
-      }
-
-      String toggler = iwc.getParameter(this.parameterToggleCloser);
-      if (toggler != null) {
-        if (toggler.equals(this.parameterYes)) {
-          this.closerLook = true;
-        }else if (toggler.equals(this.parameterNo) ) {
-          this.closerLook = false;
-        }
-      }
+    bundle = super.getBundle();
+    iwrb = super.getResourceBundle();
   }
 
-  public void displayForm(IWContext iwc) {
-
-      Form form = new Form();
-      Table topTable = getTopTable(iwc);
-        form.add(topTable);
-
-
-      if (this.viewAllProducts) {
-        if (products != null) {
-          Table table = getFullReport(iwc);
-          form.add(Text.BREAK);
-          form.add(table);
-        }
-      }else {
-        if (product != null) {
-            form.add(getContentHeader(iwc));
-          Table table = getContentTable(iwc);
-            form.add(table);
-
-          form.add(Text.BREAK);
-          Table par = new Table();
-            par.setAlignment(1,1,"right");
-            par.setAlignment("center");
-            par.setWidth("90%");
-            par.add(new PrintButton(iwrb.getImage("buttons/print.gif")));
-          form.add(par);
-
-        }
-        else {
-          Text selectProduct = (Text) theBoldText.clone();
-            selectProduct.setText(iwrb.getLocalizedString("travel.please_select_a_product","Please select a product"));
-            selectProduct.setFontColor(WHITE);
-          form.add(selectProduct);
-        }
-      }
-
-      int row = 0;
-      add(Text.getBreak());
-      add(form);
-  }
-
-
-  // BUSINESS
-  public idegaTimestamp getFromIdegaTimestamp(IWContext iwc) {
-      idegaTimestamp stamp = null;
-      String from_time = iwc.getParameter("active_from");
-      if (from_time!= null) {
-          try {
-              stamp = new idegaTimestamp(from_time);
-          }
-          catch (RuntimeException e) {
-              stamp = idegaTimestamp.RightNow();
-          }
-      }
-      else {
-          stamp = idegaTimestamp.RightNow();
-      }
-      return stamp;
-  }
-
-
-  public Table getTopTable(IWContext iwc) {
-      Table topTable = new Table(5,3);
-        topTable.setBorder(0);
-        topTable.setWidth("90%");
-
-      Text tframeText = (Text) theText.clone();
-          tframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
-          tframeText.addToText(":");
-
-      DropdownMenu trip = null;
-        trip = ProductBusiness.getDropdownMenuWithProducts(iwc, supplier.getID());
-        if (product != null) {
-            trip.setSelectedElement(Integer.toString(product.getID()));
-        }
-        trip.addMenuElementFirst("-1", iwrb.getLocalizedString("travel.all_services","All services"));
-
-
-      DateInput active_from = new DateInput("active_from");
-          idegaTimestamp fromStamp = getFromIdegaTimestamp(iwc);
-          active_from.setDate(fromStamp.getSQLDate());
-
-      Text nameText = (Text) theText.clone();
-          nameText.setText(iwrb.getLocalizedString("travel.product_name_lg","Name of product"));
-          nameText.addToText(":");
-      Text timeframeText = (Text) theText.clone();
-          timeframeText.setText(iwrb.getLocalizedString("travel.date","Date"));
-          timeframeText.addToText(":");
-
-
-
-      Text bookingReportText = (Text) theText.clone();
-          bookingReportText.setText(iwrb.getLocalizedString("travel.booking_report","Booking Report"));
-          bookingReportText.addToText(":");
-
-      Text hotelPickupPlaceReportText = (Text) theText.clone();
-          hotelPickupPlaceReportText.setText(iwrb.getLocalizedString("travel.hotel_pickup_list","Hotel pick-up list"));
-          hotelPickupPlaceReportText.addToText(": ");
-
-      Text userReportText = (Text) theText.clone();
-          userReportText.setText(iwrb.getLocalizedString("travel.user_report","User report"));
-          userReportText.addToText(": ");
-
-      RadioButton bookingReport = new RadioButton(parameterBookingReportType, parameterBookingReport);
-      RadioButton hotelPickupPlaceReport = new RadioButton(parameterBookingReportType, parameterHotelPickupPlaceReport);
-      RadioButton userReport = new RadioButton(parameterBookingReportType, parameterUserReport);
-      if (this.hotelPickupReport) {
-        hotelPickupPlaceReport.setSelected();
-      } else if (this.userReport) {
-        userReport.setSelected();
-      }else {
-        bookingReport.setSelected();
-      }
-
-
-      topTable.setAlignment(1,1, "right");
-      topTable.setAlignment(2,1, "left");
-      topTable.setAlignment(3,1, "right");
-      topTable.setAlignment(4,1, "left");
-      topTable.add(nameText,1,1);
-      topTable.add(trip,2,1);
-      topTable.add(timeframeText,3,1);
-      topTable.add(active_from,4,1);
-
-      topTable.mergeCells(1,2,2,2);
-      topTable.mergeCells(3,2,4,2);
-
-      topTable.add(bookingReportText, 1, 2);
-      topTable.add(bookingReport, 1, 2);
-      topTable.add(hotelPickupPlaceReportText, 3, 2);
-      topTable.add(hotelPickupPlaceReport, 3, 2);
-      topTable.add(userReportText, 1, 3);
-      topTable.add(userReport, 1, 3);
-
-      topTable.setAlignment(5,3,"right");
-      topTable.add(new SubmitButton(iwrb.getImage("/buttons/get.gif")),5,3);
-
-      return topTable;
-  }
-
-  public Table getContentHeader(IWContext iwc) {
-      Table table = new Table(2,2);
-      table.setWidth("90%");
-
-
-
-      String mode = iwc.getParameter("mode");
-      if (mode== null) mode="";
-
-
-      Text headerText = (Text) theBoldText.clone();
-        headerText.setFontColor(super.textColor);
-        if (this.hotelPickupReport) {
-          headerText.setText(iwrb.getLocalizedString("travel.hotel_pickup_report","Hotel pick-up report"));
-        }else {
-          headerText.setText(iwrb.getLocalizedString("travel.daily_report","Daily report"));
-        }
-        headerText.addToText(" : ");
-
-      Text timeText = (Text) theBoldText.clone();
-          timeText.setText(stamp.getLocaleDate(iwc));
-          timeText.setFontColor(super.textColor);
-      Text nameText = (Text) theBoldText.clone();
-          nameText.setText(ProductBusiness.getProductName(product, super._localeId));
-
-
-      table.setColumnAlignment(1,"left");
-      table.add(headerText,1,1);
-      table.add(nameText,1,1);
-      table.setAlignment(2,1,"right");
-      table.add(timeText,2,1);
-
-
-      return table;
-  }
-
-  private Table getContentTable(IWContext iwc) {
-    if (this.userReport) {
-      UserBookingReporter ubr = new UserBookingReporter();
-      return ubr.getReport(iwc, product, this.stamp);
-    }else if (this.hotelPickupReport) {
-      HotelPickupReporter hpr = new HotelPickupReporter();
-      return hpr.getHotelPickupReport(iwc, this.product, this.stamp);
-    }else {
-      return getBookingTable(iwc);
-    }
-  }
-
-  private Table getBookingTable(IWContext iwc) {
+  public Table getBookingTable(IWContext iwc, Product product, idegaTimestamp stamp) {
       int totalBookings = 0;
       int totalAttendance = 0;
       int totalAmount = 0;
 
       Table theTable = new Table();
           theTable.setBorder(0);
-          theTable.setWidth("90%");
+          theTable.setWidth("100%");
           if (closerLook) {
             theTable.add(new HiddenInput(this.parameterToggleCloser , this.parameterYes));
           }else {
@@ -421,7 +165,7 @@ public class DailyReport extends TravelManager {
       float amount;
 
       int[] bookingTypeIds = {Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING , Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING ,Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING };
-      Timeframe tframe = ProductBusiness.getTimeframe(this.product, this.stamp);
+      Timeframe tframe = ProductBusiness.getTimeframe(product, stamp);
       ProductPrice[] prices = {};
       TravelAddress[] addresses = {};
       try {
@@ -433,7 +177,7 @@ public class DailyReport extends TravelManager {
 
 
       if (tframe != null) {
-        prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(service.getID(), tframe.getID(), false);
+        prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tframe.getID(), false);
       }
 
       ProductPrice price;
@@ -846,7 +590,7 @@ public class DailyReport extends TravelManager {
                 bookedText = (Text) smallText.clone();
                   bookedText.setText(Integer.toString(many));
                 amountText = (Text) smallText.clone();
-                  amountText.setText(Integer.toString(many * ((int) tsb.getPrice(prices[i].getID(), service.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), tframe.getID(), addresses[k].getID()))));
+                  amountText.setText(Integer.toString(many * ((int) tsb.getPrice(prices[i].getID(), product.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), tframe.getID(), addresses[k].getID()))));
 
                 nameText.setFontColor(super.BLACK);
                 bookedText.setFontColor(super.BLACK);
@@ -870,7 +614,7 @@ public class DailyReport extends TravelManager {
 
       Link link = new Link(iwrb.getImage("buttons/add.gif"));
         link.setFontColor(super.textColor);
-        link.addParameter(AdditionalBooking.parameterServiceId,service.getID());
+        link.addParameter(AdditionalBooking.parameterServiceId,product.getID());
         link.addParameter(AdditionalBooking.parameterDate, stamp.toSQLDateString());
         link.setWindowToOpen(AdditionalBooking.class);
 
@@ -929,24 +673,29 @@ public class DailyReport extends TravelManager {
         sql.printStackTrace(System.err);
       }
     }
-
-
   }
 
-  private Table getFullReport(IWContext iwc) {
-    if (this.userReport) {
-      UserBookingReporter ur = new UserBookingReporter();
-      return ur.getReport(iwc, products, stamp);
-    }else if (this.hotelPickupReport) {
-      HotelPickupReporter htp = new HotelPickupReporter();
-      Collections.sort(products, new ProductComparator(ProductComparator.NUMBER));
-      return htp.getHotelPickupReport(iwc, this.products, this.stamp);
+  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp, idegaTimestamp toStamp) {
+    /**
+     * unsupported
+     */
+    return new Table();
+  }
+
+  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp) {
+    if (products.size() == 1) {
+      return getBookingTable(iwc, (Product) products.get(0), stamp);
     }else {
+      return getDailyReportSimple(iwc, products, stamp);
+    }
+  }
+
+  public Table getDailyReportSimple(IWContext iwc, List products, idegaTimestamp stamp) {
       Table table = new Table();
         table.setColor(super.WHITE);
         table.setCellspacing(1);
         table.setCellpadding(2);
-        table.setWidth("90%");
+        table.setWidth("100%");
       int row = 1;
       int count = 0;
       int totalCount = 0;
@@ -955,9 +704,6 @@ public class DailyReport extends TravelManager {
 
       Product prod;
       Booking[] bookings;
-      Tour tour;
-      TourBooking tBooking;
-      HotelPickupPlace hpp;
       idegaTimestamp depTime;
 
 
@@ -986,16 +732,16 @@ public class DailyReport extends TravelManager {
         countTxt.setFontColor(super.WHITE);
 
 
-      Link servNameLnk = new Link(servNameTxt);
+      Link servNameLnk = Reports.getReportLink(servNameTxt);
         servNameLnk.addParameter("dayRepOrderBy",ProductComparator.NAME);
-      Link servNumLnk = new Link(servNumTxt);
+      Link servNumLnk = Reports.getReportLink(servNumTxt);
         servNumLnk.addParameter("dayRepOrderBy",ProductComparator.NUMBER);
-      Link timeLnk = new Link(timeTxt);
+      Link timeLnk = Reports.getReportLink(timeTxt);
         timeLnk.addParameter("dayRepOrderBy",ProductComparator.DEPARTURETIME_NAME);
 
-      addDateParameters(servNameLnk);
-      addDateParameters(servNumLnk);
-      addDateParameters(timeLnk);
+//      addParameters(servNameLnk);
+//      addParameters(servNumLnk);
+//      addParameters(timeLnk);
 
 
       table.add(servNumLnk, 1, row);
@@ -1044,7 +790,9 @@ public class DailyReport extends TravelManager {
         pPriceTxt.setText(TextSoap.decimalFormat(price, 2));
 
         table.add(pNumberTxt, 1,row);
-        table.add(pNameTxt,2, row);
+        Link pNameLink = Reports.getReportLink(pNameTxt);
+          pNameLink.addParameter(Reports.PARAMETER_PRODUCT_ID, prod.getID());
+        table.add(pNameLink,2, row);
         table.add(pTimeTxt, 3, row);
         table.add(pCountTxt, 4, row);
         table.add(pPriceTxt, 5, row);
@@ -1072,20 +820,5 @@ public class DailyReport extends TravelManager {
       table.setWidth(4, "70");
       table.setWidth(5, "70");
       return table;
-    }
-
-
-  }
-
-  private void addDateParameters(Link link) {
-    link.addParameter("active_from",stamp.toSQLDateString());
-  }
-
-  private List getBookingList(Booking[] bookings) {
-    List list = new Vector(bookings.length);
-    for (int i = 0; i < bookings.length; i++) {
-      list.add(bookings[i]);
-    }
-    return list;
   }
 }

@@ -342,10 +342,16 @@ public class Booker {
   public static Booking[] getBookings(List products, idegaTimestamp stamp) {
     return getBookings(products, stamp, null);
   }
+  public static Booking[] getBookings(List products, int[] bookingTypeIds, idegaTimestamp stamp) {
+    return getBookings(products, bookingTypeIds, stamp, null, null, null);
+  }
   public static Booking[] getBookings(List products, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
-    return getBookings(products, fromStamp, toStamp, null, null);
+    return getBookings(products, new int[]{}, fromStamp, toStamp, null, null);
   }
   public static Booking[] getBookings(List products, idegaTimestamp fromStamp, idegaTimestamp toStamp, String columnName, String columnValue) {
+    return getBookings(products, new int[]{}, fromStamp, toStamp, columnName, columnValue);
+  }
+  public static Booking[] getBookings(List products, int[] bookingTypeIds, idegaTimestamp fromStamp, idegaTimestamp toStamp, String columnName, String columnValue) {
     if (products != null) {
       int[] ids = new int[products.size()];
       Product prod;
@@ -353,7 +359,7 @@ public class Booker {
         prod = (Product) products.get(i);
         ids[i] = prod.getID();
       }
-      return getBookings(ids, fromStamp, toStamp,new int[]{}, columnName, columnValue);
+      return getBookings(ids, fromStamp, toStamp,bookingTypeIds, columnName, columnValue);
     }
     return new Booking[]{};
   }
@@ -377,6 +383,7 @@ public class Booker {
   public static Booking[] getBookings(int[] serviceIds, idegaTimestamp fromStamp, idegaTimestamp toStamp,int[] bookingTypeIds) {
     return getBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, null, null);
   }
+
   public static Booking[] getBookings(int[] serviceIds, idegaTimestamp fromStamp, idegaTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue) {
     Booking[] returner = {};
     StringBuffer sql = new StringBuffer();

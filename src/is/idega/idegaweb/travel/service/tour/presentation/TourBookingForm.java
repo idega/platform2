@@ -1307,6 +1307,9 @@ public class TourBookingForm extends TravelManager {
   public int handleInsert(IWContext iwc) throws Exception{
     String check = iwc.getParameter(sAction);
     String action = iwc.getParameter(this.BookingAction);
+    if (this._booking == null) {
+      return 0;
+    }
     if (check.equals(this.parameterSaveBooking)) {
       if (action != null) {
         if (action.equals(this.BookingParameter)) {
@@ -1641,14 +1644,16 @@ public class TourBookingForm extends TravelManager {
 
   private void setProduct(Product product) {
     _product = product;
-    _productId = product.getID();
     try {
+      _productId = product.getID();
       _service = TravelStockroomBusiness.getService(product);
       try {
         _tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHomeLegacy(Tour.class)).findByPrimaryKeyLegacy(product.getID());
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
       }
+    }catch (NullPointerException np) {
+      System.err.println("TourBookingForm : Product == null, probably expired session");
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }

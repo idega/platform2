@@ -50,7 +50,9 @@ public class SettingsBMPBean extends GenericEntity implements Settings{
     this.setIfEmailAfterOnlineBooking(false);
   }
 
-
+  public Integer ejbPostCreate(IDOLegacyEntity entity) throws CreateException{
+    return null;
+  }
 //  public Integer ejbCreate(IDOLegacyEntity entity)throws CreateException{
   public Integer ejbCreate(IDOLegacyEntity entity) throws CreateException{
     try {

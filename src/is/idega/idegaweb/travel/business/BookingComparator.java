@@ -164,8 +164,20 @@ public class BookingComparator implements Comparator {
     Booking p1 = (Booking) o1;
     Booking p2 = (Booking) o2;
     try {
-      User user1 = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(p1.getUserId());
-      User user2 = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(p2.getUserId());
+      int id1 = p1.getUserId();
+      int id2 = p2.getUserId();
+
+      if (id1 == -1 && id2 == -1) {
+        return 0;
+      }else if (id1 == -1 && id2 != -1) {
+        return 1;
+      }else if (id1 != -1 && id2 == -1) {
+        return -1;
+      }
+
+
+      User user1 = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(id1);
+      User user2 = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(id2);
 
       String one = user1.getName()!=null?user1.getName():"";
       String two = user2.getName()!=null?user2.getName():"";
@@ -182,8 +194,19 @@ public class BookingComparator implements Comparator {
     Booking p2 = (Booking) o2;
 
     try {
-      User user1 = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(p1.getOwnerId());
-      User user2 = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(p2.getOwnerId());
+      int id1 = p1.getOwnerId();
+      int id2 = p2.getOwnerId();
+
+      if (id1 == -1 && id2 == -1) {
+        return 0;
+      }else if (id1 == -1 && id2 != -1) {
+        return 1;
+      }else if (id1 != -1 && id2 == -1) {
+        return -1;
+      }
+
+      User user1 = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(id1);
+      User user2 = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(id2);
 
       String one = user1.getName()!=null?user1.getName():"";
       String two = user2.getName()!=null?user2.getName():"";

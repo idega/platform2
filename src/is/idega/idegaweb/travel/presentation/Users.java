@@ -88,13 +88,13 @@ public class Users extends TravelManager {
       text.setText(content);
     return text;
   }
-
+/*
   private Text getText(String content) {
     Text text = getTextWhite(content);
       text.setFontColor(super.BLACK);
     return text;
   }
-
+*/
   private Form getUserList(IWContext iwc) {
     Form form = new Form();
     Table table = new Table();

@@ -68,8 +68,10 @@ public class Voucher extends TravelManager {
       _product = _service.getProduct();
       _entries = _booking.getBookingEntries();
       _supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(_product.getSupplierId());
-      _user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(_booking.getUserId());
-      _reseller = ResellerManager.getReseller(_user);
+      if (_booking.getUserId() != -1) {
+        _user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(_booking.getUserId());
+        _reseller = ResellerManager.getReseller(_user);
+      }
       _timeframe = ProductBusiness.getTimeframe(_product, new idegaTimestamp(_booking.getBookingDate()));
       TravelAddress[] addresses = (TravelAddress[]) gBooking.findRelated(com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
       _address = addresses[addresses.length - 1];
@@ -97,14 +99,14 @@ public class Voucher extends TravelManager {
       text.setText(content);
     return text;
   }
-
+/*
   private Text getText(String content) {
     Text text = (Text) theText.clone();
       text.setFontColor(BLACK);
       text.setText(content);
     return text;
   }
-
+*/
   private int getVoucherNumber() {
     return _booking.getID() + voucherNumberChanger;
   }

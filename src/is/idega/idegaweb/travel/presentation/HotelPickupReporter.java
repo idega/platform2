@@ -26,29 +26,39 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class HotelPickupReporter extends TravelManager {
+public class HotelPickupReporter extends TravelManager implements Report {
 
   private IWBundle bundle;
   private IWResourceBundle iwrb;
 
-  public HotelPickupReporter() {
-  }
-
-  public void main(IWContext iwc) throws Exception{
-    super.main(iwc);
+  public HotelPickupReporter(IWContext iwc) throws Exception {
     initialize(iwc);
   }
 
-  private void initialize(IWContext iwc) {
-    if (bundle == null && iwrb == null) {
-      try {
-        super.main(iwc);
-      }catch (Exception e) {e.printStackTrace(System.err);}
-      bundle = super.getBundle(iwc);
-      iwrb = super.getResourceBundle();
-    }
+  public boolean useTwoDates() {
+    return false;
   }
 
+  public String getReportName() {
+    return iwrb.getLocalizedString("travel.report_name.pickup","Pickup");
+  }
+
+  public String getReportDescription() {
+    return iwrb.getLocalizedString("travel.report_description.pikcup","Displays booking with pickup.");
+  }
+
+  private void initialize(IWContext iwc) {
+    try {
+      if (iwrb == null) {
+        if (super.getResourceBundle() == null) {
+          super.main(iwc);
+          bundle = super.getBundle(iwc);
+          iwrb = super.getResourceBundle();
+        }
+      }
+    }catch (Exception e) {e.printStackTrace(System.err);}
+  }
+/*
   public Table getHotelPickupReport(IWContext iwc, Supplier supplier, idegaTimestamp stamp) {
     List products = ProductBusiness.getProducts(supplier.getID(), stamp);
     return getHotelPickupReport(iwc, products, stamp);
@@ -59,14 +69,23 @@ public class HotelPickupReporter extends TravelManager {
     list.add(product);
     return getHotelPickupReport(iwc, list, stamp);
   }
+*/
 
-  public Table getHotelPickupReport(IWContext iwc, List products, idegaTimestamp stamp) {
+  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp, idegaTimestamp toStamp) {
+    /**
+     * unsupported
+     */
+    return new Table();
+  }
+
+  public PresentationObject getReport(IWContext iwc, List products, idegaTimestamp stamp) {
     initialize(iwc);
     Table table = new Table();
       table.setColor(super.WHITE);
       table.setCellspacing(1);
       table.setCellpadding(3);
-      table.setWidth("50%");
+      table.setWidth("100%");
+//      table.setWidth("50%");
       table.setBorder(0);
     int row = 0;
     int bookingCounter = 0;
@@ -135,60 +154,64 @@ public class HotelPickupReporter extends TravelManager {
           table.setRowColor(row, super.backgroundColor);
 
             for (int i = 0; i < bookingsList.size(); i++) {
-              booking = (Booking) bookingsList.get(i);
+              try {
+                booking = (Booking) bookingsList.get(i);
 
-              ++row;
-              table.setRowColor(row, super.GRAY);
-              tBooking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(booking.getID());
-              ++bookingCounter;
-              hpp = tBooking.getHotelPickupPlace();
-              if (hpp.getID() != oldHppNumber) {
-                hotelNameText = (Text) super.theBoldText.clone();
-                  hotelNameText.setText(hpp.getName());
-                  hotelNameText.setFontColor(super.BLACK);
-                table.add(hotelNameText, 2, row);
-                table.mergeCells(2,row,3,row);
-
-                hotelCountText = (Text) super.theBoldText.clone();
-                  hotelCountText.setText("0");
-                  hotelCountText.setFontColor(super.BLACK);
-                table.add(hotelCountText, 4, row);
-                table.setAlignment(5, row, "right");
-
-                oldHppNumber = hpp.getID();
-                bookingCounter = 1;
-                hotelCount = 0;
                 ++row;
+                table.setRowColor(row, super.GRAY);
+                tBooking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(booking.getID());
+                ++bookingCounter;
+                hpp = tBooking.getHotelPickupPlace();
+                if (hpp.getID() != oldHppNumber) {
+                  hotelNameText = (Text) super.theBoldText.clone();
+                    hotelNameText.setText(hpp.getName());
+                    hotelNameText.setFontColor(super.BLACK);
+                  table.add(hotelNameText, 2, row);
+                  table.mergeCells(2,row,3,row);
+
+                  hotelCountText = (Text) super.theBoldText.clone();
+                    hotelCountText.setText("0");
+                    hotelCountText.setFontColor(super.BLACK);
+                  table.add(hotelCountText, 4, row);
+                  table.setAlignment(5, row, "right");
+
+                  oldHppNumber = hpp.getID();
+                  bookingCounter = 1;
+                  hotelCount = 0;
+                  ++row;
+                }
+
+                if (tBooking.getRoomNumber() != null) {
+                  bookingRoomNumberTxt = (Text) super.smallText.clone();
+                    bookingRoomNumberTxt.setFontColor(super.BLACK);
+                    bookingRoomNumberTxt.setText(tBooking.getRoomNumber());
+                  table.add(bookingRoomNumberTxt, 5, row);
+                }else {
+                  table.add(Text.NON_BREAKING_SPACE, 5, row);
+                }
+
+                table.setRowColor(row, super.GRAY);
+                count = booking.getTotalCount();
+
+                totalCount += count;
+                hotelCount += count;
+                productCount += count;
+
+  //              table.mergeCells(1,row,2,row);
+                bookingNameTxt = (Text) super.smallText.clone();
+                  bookingNameTxt.setText(booking.getName());
+                  bookingNameTxt.setFontColor(super.BLACK);
+                bookingCountTxt = (Text) super.smallText.clone();
+                  bookingCountTxt.setText(Integer.toString(count));
+                  bookingCountTxt.setFontColor(super.BLACK);
+
+                table.add(bookingNameTxt, 3, row);
+                table.add(bookingCountTxt, 4, row);
+
+                hotelCountText.setText(""+hotelCount);
+              }catch (SQLException sql) {
+                debug(sql.getMessage());
               }
-
-              if (tBooking.getRoomNumber() != null) {
-                bookingRoomNumberTxt = (Text) super.smallText.clone();
-                  bookingRoomNumberTxt.setFontColor(super.BLACK);
-                  bookingRoomNumberTxt.setText(tBooking.getRoomNumber());
-                table.add(bookingRoomNumberTxt, 5, row);
-              }else {
-                table.add(Text.NON_BREAKING_SPACE, 5, row);
-              }
-
-              table.setRowColor(row, super.GRAY);
-              count = booking.getTotalCount();
-
-              totalCount += count;
-              hotelCount += count;
-              productCount += count;
-
-//              table.mergeCells(1,row,2,row);
-              bookingNameTxt = (Text) super.smallText.clone();
-                bookingNameTxt.setText(booking.getName());
-                bookingNameTxt.setFontColor(super.BLACK);
-              bookingCountTxt = (Text) super.smallText.clone();
-                bookingCountTxt.setText(Integer.toString(count));
-                bookingCountTxt.setFontColor(super.BLACK);
-
-              table.add(bookingNameTxt, 3, row);
-              table.add(bookingCountTxt, 4, row);
-
-              hotelCountText.setText(""+hotelCount);
             }
           if (expand) {
             table.add("EXPAND");

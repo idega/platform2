@@ -50,6 +50,12 @@ public class TourBooker extends Booker {
         booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).createLegacy();
         booking.setColumn(booking.getIDColumnName(), bookingId);
       }
+      if (booking == null) {
+        System.err.println("TourBooker : booking  == null !!!");
+        System.err.println("...bookingId          =  "+bookingId);
+        System.err.println("...hotelPickupPlaceId =  "+hotelPickupPlaceId);
+        System.err.println("...roomNumber         =  "+bookingId);
+      }
 
       if (hotelPickupPlaceId != -1) {
         booking.setHotelPickupPlaceID(hotelPickupPlaceId);
@@ -92,16 +98,18 @@ public class TourBooker extends Booker {
       List bings = new Vector();
       TourBooking tb;
       for (int i = 0; i < bookings.length; i++) {
-        tb = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(bookings[i].getID());
-        if (tb.getHotelPickupPlaceID() != -1) {
-          bings.add(bookings[i]);
+        try {
+          tb = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(bookings[i].getID());
+          if (tb.getHotelPickupPlaceID() != -1) {
+            bings.add(bookings[i]);
+          }
+        }catch (SQLException sql) {
+          System.err.println("TourBooker : getBookings : "+sql.getMessage());
         }
       }
       if (bookings.length > 0) {
         bookings = (Booking[]) bings.toArray(new Booking[]{});
       }
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
     }catch (javax.ejb.EJBException ejb) {
       ejb.printStackTrace(System.err);
     }
