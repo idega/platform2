@@ -150,6 +150,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 
 			add(form);
 			add(iwrb.getLocalizedString("WorkReportMemberEditor.number_of_members","Number of members : ")+(Math.max(row-3,0)));
+			
 		}
 		catch (RemoteException re) {
 		}
