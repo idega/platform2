@@ -39,8 +39,8 @@ private int _view = CalendarBusiness.MONTH;
 private idegaTimestamp _stamp;
 private String _width = "100%";
 private boolean _isSelectedDay = false;
-private int _daysAhead = 7;
-private int _daysBack = 7;
+private Integer _daysAhead = null;//= 7;
+private Integer _daysBack = null;//= 7;
 private int _numberOfShown = 4;
 
 private String _bodyColor = "#000000";
@@ -186,12 +186,15 @@ public Calendar(idegaTimestamp timestamp){
 	      numberOfShown = entries.size();
     }
     else {
-      entries = CalendarFinder.getInstance().listOfNextEntries(getCategoryIds());
+			if(_daysAhead != null || _daysBack !=null )
+			  entries = CalendarFinder.getInstance().listOfWeekEntries(_stamp,_daysAhead.intValue() ,_daysBack.intValue(),getCategoryIds());
+			else
+        entries = CalendarFinder.getInstance().listOfNextEntries(getCategoryIds());
       if ( entries != null) {
 	      if ( entries.size() > _numberOfShown )
-		numberOfShown = _numberOfShown;
+				  numberOfShown = _numberOfShown;
 	      else
-		numberOfShown = entries.size();
+				  numberOfShown = entries.size();
       }
     }
 
@@ -482,11 +485,11 @@ public Calendar(idegaTimestamp timestamp){
   }
 
   public void setDaysAhead(int daysAhead) {
-    _daysAhead = daysAhead;
+    _daysAhead = new Integer(daysAhead);
   }
 
   public void setDaysBack(int daysBack) {
-    _daysBack = daysBack;
+    _daysBack = new Integer(daysBack);
   }
 
   public void setHeadlineColor(String headlineColor) {
