@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBMPBean.java,v 1.2 2004/12/06 21:30:34 laddi Exp $ Created on
+ * $Id: MeetingFeeBMPBean.java,v 1.3 2004/12/09 13:43:38 laddi Exp $ Created on
  * 23.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,8 @@ import java.sql.Date;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 
+import se.agura.applications.meeting.fee.business.MeetingFeeConstants;
+
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.data.IDOLookup;
 import com.idega.user.data.Group;
@@ -26,13 +28,13 @@ import com.idega.user.data.User;
  * Last modified: 23.11.2004 09:44:45 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MeetingFeeBMPBean extends AbstractCaseBMPBean implements MeetingFee {
 
 	public static final String ENTITY_NAME = "me_meeting_fee";
 
-	public static final String CASE_CODE = "MEETING";
+	public static final String CASE_CODE = MeetingFeeConstants.CASE_CODE_KEY;
 
 	public static final String COLUMN_MEETING_FEE_ID = "meeting_fee_id";
 

@@ -1,6 +1,6 @@
 /*
- * $Id: VacationBusiness.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
- * Created on 5.12.2004
+ * $Id: VacationBusiness.java,v 1.3 2004/12/09 13:43:37 laddi Exp $
+ * Created on 9.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -11,26 +11,38 @@ package se.agura.applications.vacation.business;
 
 import java.sql.Date;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.agura.applications.business.ApplicationsBusiness;
 import se.agura.applications.vacation.data.VacationRequest;
 import se.agura.applications.vacation.data.VacationType;
 
-import com.idega.block.process.business.CaseBusiness;
+import com.idega.block.process.data.Case;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2004/12/06 21:30:34 $ by $Author: laddi $
+ * Last modified: $Date: 2004/12/09 13:43:37 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public interface VacationBusiness extends CaseBusiness {
+public interface VacationBusiness extends ApplicationsBusiness {
+
+	/**
+	 * @see se.agura.applications.vacation.business.VacationBusinessBean#getLocalizedCaseDescription
+	 */
+	public String getLocalizedCaseDescription(Case theCase, Locale locale) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.agura.applications.vacation.business.VacationBusinessBean#getPrimaryKeyParameter
+	 */
+	public String getPrimaryKeyParameter() throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.agura.applications.vacation.business.VacationBusinessBean#getVacationRequest
@@ -60,7 +72,7 @@ public interface VacationBusiness extends CaseBusiness {
 	/**
 	 * @see se.agura.applications.vacation.business.VacationBusinessBean#approveApplication
 	 */
-	public void approveApplication(VacationRequest vacation, User performer, String comment) throws java.rmi.RemoteException;
+	public void approveApplication(VacationRequest vacation, User performer, String comment, boolean hasCompensation) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.agura.applications.vacation.business.VacationBusinessBean#rejectApplication
@@ -68,9 +80,14 @@ public interface VacationBusiness extends CaseBusiness {
 	public void rejectApplication(VacationRequest vacation, User performer, String comment) throws java.rmi.RemoteException;
 
 	/**
+	 * @see se.agura.applications.vacation.business.VacationBusinessBean#closeApplication
+	 */
+	public void closeApplication(VacationRequest vacation, User performer) throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.agura.applications.vacation.business.VacationBusinessBean#forwardApplication
 	 */
-	public void forwardApplication(VacationRequest vacation, User performer, Group handler, String comment) throws java.rmi.RemoteException;
+	public void forwardApplication(VacationRequest vacation, User performer, Group handlerGroup, User handler, String comment, boolean hasCompensation) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.agura.applications.vacation.business.VacationBusinessBean#getVacationTypes
@@ -81,6 +98,11 @@ public interface VacationBusiness extends CaseBusiness {
 	 * @see se.agura.applications.vacation.business.VacationBusinessBean#getLogs
 	 */
 	public Collection getLogs(VacationRequest vacation) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.agura.applications.vacation.business.VacationBusinessBean#getParentGroup
+	 */
+	public Group getParentGroup(User user) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.agura.applications.vacation.business.VacationBusinessBean#getExtraVacationTypeInformation

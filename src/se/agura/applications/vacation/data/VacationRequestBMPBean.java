@@ -9,6 +9,9 @@ package se.agura.applications.vacation.data;
 import java.sql.Date;
 import java.util.Iterator;
 import java.util.Map;
+
+import se.agura.applications.vacation.business.VacationConstants;
+
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.user.data.User;
 
@@ -18,7 +21,7 @@ import com.idega.user.data.User;
 public class VacationRequestBMPBean extends AbstractCaseBMPBean implements VacationRequest {
 
 	public String getCaseCodeKey() {
-		return "VACATIN";// ONLY SEVEN LETTERS ALLOWED HERE!
+		return VacationConstants.CASE_CODE_KEY;// ONLY SEVEN LETTERS ALLOWED HERE!
 	}
 
 	public String getCaseCodeDescription() {
@@ -49,6 +52,8 @@ public class VacationRequestBMPBean extends AbstractCaseBMPBean implements Vacat
 
 	public static final String COLUMN_COMMENT = "notes";
 
+	public static final String COLUMN_SALARY_COMPENSATION = "salary_compensation";
+
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
@@ -65,6 +70,7 @@ public class VacationRequestBMPBean extends AbstractCaseBMPBean implements Vacat
 		addAttribute(COLUMN_REJECTED_DATE, "Date", Date.class);
 		addManyToOneRelationship(COLUMN_DECISION_BY, User.class);
 		addAttribute(COLUMN_COMMENT, "Comment", String.class);
+		addAttribute(COLUMN_SALARY_COMPENSATION, "Salary compensation", Boolean.class);
 		addManyToOneRelationship(COLUMN_VACATION_TYPE, VacationType.class);
 		addMetaDataRelationship();
 	}
@@ -111,6 +117,10 @@ public class VacationRequestBMPBean extends AbstractCaseBMPBean implements Vacat
 	public String getComment() {
 		return getStringColumnValue(COLUMN_COMMENT);
 	}
+	
+	public boolean getSalaryCompensation() {
+		return getBooleanColumnValue(COLUMN_SALARY_COMPENSATION, false);
+	}
 
 	// /////////////////////////////////////////////////
 	// setters
@@ -153,6 +163,10 @@ public class VacationRequestBMPBean extends AbstractCaseBMPBean implements Vacat
 
 	public void setComment(String comment) {
 		setColumn(COLUMN_COMMENT, comment);
+	}
+	
+	public void setSalaryCompensation(boolean getsCompensation) {
+		setColumn(COLUMN_SALARY_COMPENSATION, getsCompensation);
 	}
 
 	// Metadata methods

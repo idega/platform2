@@ -1,6 +1,6 @@
 /*
- * $Id: VacationRequest.java,v 1.1 2004/11/25 14:22:35 anna Exp $
- * Created on 24.11.2004
+ * $Id: VacationRequest.java,v 1.2 2004/12/09 13:43:37 laddi Exp $
+ * Created on 7.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -10,16 +10,17 @@
 package se.agura.applications.vacation.data;
 
 import java.sql.Date;
+
 import com.idega.block.process.data.Case;
 import com.idega.data.MetaDataCapable;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: 24.11.2004 09:37:38 by: anna
+ * Last modified: $Date: 2004/12/09 13:43:37 $ by $Author: laddi $
  * 
- * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.2 $
  */
 public interface VacationRequest extends Case, MetaDataCapable {
 
@@ -84,6 +85,11 @@ public interface VacationRequest extends Case, MetaDataCapable {
 	public String getComment();
 
 	/**
+	 * @see se.agura.applications.vacation.data.VacationRequestBMPBean#getSalaryCompensation
+	 */
+	public boolean getSalaryCompensation();
+
+	/**
 	 * @see se.agura.applications.vacation.data.VacationRequestBMPBean#setFromDate
 	 */
 	public void setFromDate(Date fromDate);
@@ -134,6 +140,11 @@ public interface VacationRequest extends Case, MetaDataCapable {
 	public void setComment(String comment);
 
 	/**
+	 * @see se.agura.applications.vacation.data.VacationRequestBMPBean#setSalaryCompensation
+	 */
+	public void setSalaryCompensation(boolean getsCompensation);
+
+	/**
 	 * @see se.agura.applications.vacation.data.VacationRequestBMPBean#setExtraTypeInformation
 	 */
 	public void setExtraTypeInformation(String key, String value, String type);
@@ -157,4 +168,15 @@ public interface VacationRequest extends Case, MetaDataCapable {
 	 * @see se.agura.applications.vacation.data.VacationRequestBMPBean#removeAllExtraTypeInformation
 	 */
 	public void removeAllExtraTypeInformation();
+
+	/**
+	 * @see se.agura.applications.vacation.data.VacationRequestBMPBean#getCaseStatusDescriptions
+	 */
+	public String[] getCaseStatusDescriptions();
+
+	/**
+	 * @see se.agura.applications.vacation.data.VacationRequestBMPBean#getCaseStatusKeys
+	 */
+	public String[] getCaseStatusKeys();
+
 }

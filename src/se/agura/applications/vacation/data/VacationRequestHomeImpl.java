@@ -1,6 +1,6 @@
 /*
- * $Id: VacationRequestHomeImpl.java,v 1.1 2004/11/25 14:22:35 anna Exp $
- * Created on 24.11.2004
+ * $Id: VacationRequestHomeImpl.java,v 1.2 2004/12/09 13:43:37 laddi Exp $
+ * Created on 7.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -9,14 +9,15 @@
  */
 package se.agura.applications.vacation.data;
 
+
 import com.idega.data.IDOFactory;
 
 
 /**
- * Last modified: 24.11.2004 09:37:41 by: anna
+ * Last modified: $Date: 2004/12/09 13:43:37 $ by $Author: laddi $
  * 
- * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.2 $
  */
 public class VacationRequestHomeImpl extends IDOFactory implements VacationRequestHome {
 
@@ -31,4 +32,5 @@ public class VacationRequestHomeImpl extends IDOFactory implements VacationReque
 	public VacationRequest findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
 		return (VacationRequest) super.findByPrimaryKeyIDO(pk);
 	}
+
 }

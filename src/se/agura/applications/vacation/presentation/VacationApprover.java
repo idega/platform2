@@ -1,5 +1,5 @@
 /*
- * $Id: VacationApprover.java,v 1.2 2004/12/06 21:30:34 laddi Exp $ Created on
+ * $Id: VacationApprover.java,v 1.3 2004/12/09 13:43:37 laddi Exp $ Created on
  * 18.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,6 +10,7 @@
 package se.agura.applications.vacation.presentation;
 
 import java.rmi.RemoteException;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
@@ -21,17 +22,24 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.data.Group;
+import com.idega.user.data.User;
 
 /**
  * Last modified: 18.11.2004 10:21:40 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class VacationApprover extends VacationBlock {
 
@@ -57,7 +65,7 @@ public class VacationApprover extends VacationBlock {
 			parse(iwc);
 
 			if (action.equals(ACTION_SEND)) {
-				getSendToHandleForm();
+				getSendToHandleForm(iwc);
 			}
 			else if (action.equals(ACTION_FORWARD)) {
 				forward(iwc);
@@ -71,8 +79,18 @@ public class VacationApprover extends VacationBlock {
 				approve(iwc);
 				showMessage(getResourceBundle().getLocalizedString("meeting_approver.application_approved", "Application approved."));
 			}
+			else if (action.equals(ACTION_CLOSED)) {
+				close(iwc);
+				showMessage(getResourceBundle().getLocalizedString("meeting_approver.application_closed", "Application closed."));
+			}
 			else {
-				add(supervisorView(iwc));
+				User owner = vacation.getOwner();
+				if (owner.equals(iwc.getCurrentUser())) {
+					add(ownerView(iwc));
+				}
+				else {
+					add(supervisorView(iwc));
+				}
 			}
 		}
 		catch (RemoteException re) {
@@ -137,11 +155,21 @@ public class VacationApprover extends VacationBlock {
 			throw new IBORuntimeException(re);
 		}
 	}
+	
+	private void close(IWContext iwc) {
+		try {
+			getBusiness(iwc).closeApplication(vacation, iwc.getCurrentUser());
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
 
 	private void approve(IWContext iwc) {
 		String comment = iwc.getParameter(PARAMETER_COMMENT);
+		boolean salaryCompensation = iwc.isParameterSet(PARAMETER_WITH_SALARY_COMPENSATION) ? new Boolean(iwc.getParameter(PARAMETER_WITH_SALARY_COMPENSATION)).booleanValue() : false;
 		try {
-			getBusiness(iwc).approveApplication(vacation, iwc.getCurrentUser(), comment);
+			getBusiness(iwc).approveApplication(vacation, iwc.getCurrentUser(), comment, salaryCompensation);
 		}
 		catch (RemoteException re) {
 			throw new IBORuntimeException(re);
@@ -149,28 +177,74 @@ public class VacationApprover extends VacationBlock {
 	}
 
 	private void forward(IWContext iwc) {
-		String comment = iwc.getParameter(PARAMETER_COMMENT);
-		Group group = null;
 		try {
-			getBusiness(iwc).forwardApplication(vacation, iwc.getCurrentUser(), group, comment);
+			String comment = iwc.getParameter(PARAMETER_COMMENT);
+			boolean salaryCompensation = iwc.isParameterSet(PARAMETER_WITH_SALARY_COMPENSATION) ? new Boolean(iwc.getParameter(PARAMETER_WITH_SALARY_COMPENSATION)).booleanValue() : false;
+			Group group = getUserBusiness(iwc).getGroupBusiness().getGroupByGroupID(Integer.parseInt(iwc.getParameter(PARAMETER_FORWARD_GROUP)));
+			User handler = getUserBusiness(iwc).getUser(new Integer(iwc.getParameter(PARAMETER_HANDLER)));
+			getBusiness(iwc).forwardApplication(vacation, iwc.getCurrentUser(), group, handler, comment, salaryCompensation);
 		}
 		catch (RemoteException re) {
 			throw new IBORuntimeException(re);
 		}
+		catch (FinderException fe) {
+			log(fe);
+			add("FinderException occured...");
+		}
 	}
 
-	private Form getSendToHandleForm() {
+	private Form getSendToHandleForm(IWContext iwc) throws RemoteException {
 		Form form = new Form();
-		//DropdownMenu sentToHandle = new DropdownMenu();
-		form.add(getResourceBundle().getLocalizedString("vacation.request.handle", "Sent to be handled by"));
-		// LADDI! EKKI EYÜA GR®NUM TEXTA - LESA FYRST!
-		// for(int i = o; i < handleGroup.length; i++) {
-		// sentToHandle.addMenuElement(i, String.valueOf(i));
-		// }
-		form.addParameter(PARAMETER_ACTION, ACTION_CANCEL);
-		form.addParameter(PARAMETER_ACTION, ACTION_SEND);
+		form.add(forwardView(iwc));
+		form.add(new Break());
 		form.add(getCancelButton());
-		form.add(getSendButton());// skicka
+		form.add(getSendButton());
+		return form;
+	}
+	
+	private Table forwardView(IWContext iwc) throws RemoteException {
+		Group parentGroup = getBusiness(iwc).getParentGroup(iwc.getCurrentUser());
+		Table table = new Table();
+		table.setWidth(iWidth);
+		table.setCellpadding(iCellpadding);
+		table.setCellspacing(0);
+		int row = 1;
+		
+		if (parentGroup != null) {
+			Collection users = getUserBusiness(iwc).getUsersInGroup(parentGroup);
+					
+			table.add(new HiddenInput(PARAMETER_FORWARD_GROUP, parentGroup.getPrimaryKey().toString()), 1, row);
+			table.add(getHeader(getResourceBundle().getLocalizedString("vacation.request.handle", "Send to be handled by")), 1, row);
+	
+			SelectorUtility util = new SelectorUtility();
+			DropdownMenu menu = (DropdownMenu) getInput(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_HANDLER), users, "getName"));
+			table.add(menu, 2, row);
+		}
+		else {
+			table.add(getHeader(getResourceBundle().getLocalizedString("vacation.request.handle", "Send to be handled by")), 1, row);
+			table.add(new Break(2), 1, row);
+			table.add(new BackButton(getResourceBundle().getLocalizedString("vacation.request.back", "Back")), 1, row);
+		}
+		
+		table.setWidth(1, iHeaderColumnWidth);
+		table.setCellpaddingLeft(1, 0);
+		
+		return table;
+	}
+	
+	private Form ownerView(IWContext iwc) throws RemoteException {
+		Form form = new Form();
+		form.maintainParameter(PARAMETER_PRIMARY_KEY_VAC);
+		
+		Table logs = getVacationActionOverview(iwc, vacation);
+		if (logs != null) {
+			form.add(logs);
+			form.add(new Break());
+		}
+		
+		form.add(showVacationRequest(iwc, vacation));
+		form.add(new Break());
+		form.add(getCloseButton());
 		return form;
 	}
 
@@ -194,6 +268,11 @@ public class VacationApprover extends VacationBlock {
 			form.add(getForwardButton());
 		}
 		return form;
+	}
+
+	private SubmitButton getCloseButton() {
+		SubmitButton closeButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.close_application", "Close"), PARAMETER_ACTION, ACTION_CLOSED));
+		return closeButton;
 	}
 
 	private SubmitButton getDeniedButton() {
@@ -233,16 +312,37 @@ public class VacationApprover extends VacationBlock {
 		
 		boolean hasSalaryRole = iwc.getAccessController().hasRole(ROLE_SALARY_ADMINISTRATION, iwc);
 		if (hasSalaryRole) {
-			log("Has salary role...");
+			RadioButton withCompensation = (RadioButton) getRadioButton(new RadioButton(PARAMETER_WITH_SALARY_COMPENSATION, Boolean.TRUE.toString()));
+			RadioButton withoutCompensation = (RadioButton) getRadioButton(new RadioButton(PARAMETER_WITH_SALARY_COMPENSATION, Boolean.FALSE.toString()));
+			if (vacation.getSalaryCompensation()) {
+				withCompensation.setSelected(true);
+			}
+			else {
+				withoutCompensation.setSelected(false);
+			}
+			
+			table.add(getHeader(getResourceBundle().getLocalizedString("vacation.request.salary_compensation", "Salary compensation")), 1, row);
+			table.add(withCompensation, 2, row);
+			table.add(Text.getNonBrakingSpace(), 2, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.request.with", "With")), 2, row);
+
+			table.add(Text.getNonBrakingSpace(), 2, row);
+			table.add(Text.getNonBrakingSpace(), 2, row);
+
+			table.add(withoutCompensation, 2, row);
+			table.add(Text.getNonBrakingSpace(), 2, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.request.without", "Without")), 2, row++);
+			table.setHeight(row++, 12);
 		}
-		
+
 		TextArea area = (TextArea) getInput(new TextArea(PARAMETER_COMMENT));
 		area.setWidth(Table.HUNDRED_PERCENT);
 		area.setRows(4);
 
-		table.add(getResourceBundle().getLocalizedString("vacation.request.message_to_worker", "Message to worker"), 1, row);
-		table.add(area, 2, row);
-
+		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.request.message_to_worker", "Message to worker")), 1, row);
+		table.add(area, 2, row++);
+		
 		table.setWidth(1, iHeaderColumnWidth);
 		table.setCellpaddingLeft(1, 0);
 		

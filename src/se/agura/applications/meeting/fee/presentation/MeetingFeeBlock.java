@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBlock.java,v 1.3 2004/12/08 10:35:27 laddi Exp $
+ * $Id: MeetingFeeBlock.java,v 1.4 2004/12/09 13:43:38 laddi Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,6 +15,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import se.agura.applications.meeting.fee.business.MeetingFeeBusiness;
+import se.agura.applications.meeting.fee.business.MeetingFeeConstants;
 import se.agura.applications.meeting.fee.data.MeetingFee;
 import se.agura.applications.meeting.fee.data.MeetingFeeFormula;
 
@@ -44,7 +45,7 @@ import com.idega.user.data.User;
  * Last modified: 25.11.2004 09:11:42 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public abstract class MeetingFeeBlock extends Block {
 	
@@ -56,7 +57,7 @@ public abstract class MeetingFeeBlock extends Block {
 	protected static final String PARAMETER_MEETING_FEE_MEETING_LOCATION = "me_meeting_fee_meeting_location";
 	protected static final String PARAMETER_MEETING_FEE_PARTICIPANTS = "me_meeting_fee_participants";
 	protected static final String PARAMETER_ACTION = "me_action";
-	protected static final String PARAMETER_MEETING_FEE_ID = "me_meeting_fee_id";
+	protected static final String PARAMETER_MEETING_FEE_ID = MeetingFeeConstants.PARAMETER_PRIMARY_KEY;
 	protected static final String PARAMETER_MEETING_FEE_INFO_ID = "me.meeting_fee_info_id";
 	
 	protected static final String ACTION_EDIT = "edit";

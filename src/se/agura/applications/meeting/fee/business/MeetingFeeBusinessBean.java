@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.3 2004/12/09 13:43:37 laddi Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,8 +10,10 @@
 package se.agura.applications.meeting.fee.business;
 
 import java.sql.Date;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Locale;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -19,6 +21,7 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import se.agura.AguraConstants;
+import se.agura.applications.business.ApplicationsBusinessBean;
 import se.agura.applications.meeting.fee.data.MeetingFee;
 import se.agura.applications.meeting.fee.data.MeetingFeeFormula;
 import se.agura.applications.meeting.fee.data.MeetingFeeFormulaHome;
@@ -26,13 +29,14 @@ import se.agura.applications.meeting.fee.data.MeetingFeeHome;
 import se.agura.applications.meeting.fee.data.MeetingFeeInfo;
 import se.agura.applications.meeting.fee.data.MeetingFeeInfoHome;
 
-import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.process.data.Case;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 
@@ -40,9 +44,40 @@ import com.idega.user.data.User;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class MeetingFeeBusinessBean extends CaseBusinessBean  implements MeetingFeeBusiness{
+public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
+	
+	public String getLocalizedCaseDescription(Case theCase, Locale locale) {
+		MeetingFee request = getMeetingFeeInstance(theCase);
+		Group parish = request.getCongregationGroup();
+		Group participants = request.getParticipantGroup();
+		Object[] arguments = { parish.getName(), participants.getName() };
+
+		String desc = super.getLocalizedCaseDescription(theCase, locale);
+		return MessageFormat.format(desc, arguments);
+	}
+
+	protected MeetingFee getMeetingFeeInstance(Case theCase) throws RuntimeException {
+		String caseCode = "unreachable";
+		try {
+			caseCode = theCase.getCode();
+			if (MeetingFeeConstants.CASE_CODE_KEY.equals(caseCode)) {
+				return this.getMeetingFee(theCase.getPrimaryKey());
+			}
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		throw new ClassCastException("Case with casecode: " + caseCode + " cannot be converted to a vacation request");
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.idega.block.process.business.CaseBusiness#getPrimaryKeyParameter()
+	 */
+	public String getPrimaryKeyParameter() {
+		return MeetingFeeConstants.PARAMETER_PRIMARY_KEY;
+	}
 	
 	private UserBusiness getUserBusiness() {
 		try {
@@ -170,8 +205,12 @@ public class MeetingFeeBusinessBean extends CaseBusinessBean  implements Meeting
 		if (application == null) {
 			application = getMeetingFeeHome().create();
 		}
+		Group handlerGroup = getParentGroup(user);
 		
 		application.setOwner(user);
+		if (handlerGroup != null) {
+			application.setHandler(handlerGroup);
+		}
 		application.setMeetingDate(meetingDate);
 		application.setInCommune(inCommune);
 		application.setParticipantGroupID(participantGroupID);
@@ -196,6 +235,15 @@ public class MeetingFeeBusinessBean extends CaseBusinessBean  implements Meeting
 		}
 	}
 	
+	private Group getParentGroup(User user) {
+		Group primaryGroup = user.getPrimaryGroup();
+		if (primaryGroup != null) {
+			Group parentGroup = (Group) primaryGroup.getParentNode();
+			return parentGroup;
+		}
+		return null;
+	}
+
 	public void acceptApplication(MeetingFee meetingFee, User performer) {
 		changeCaseStatus(meetingFee, getCaseStatusGranted().getStatus(), performer);
 	}

@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import se.agura.applications.vacation.business.VacationBusiness;
+import se.agura.applications.vacation.business.VacationConstants;
 import se.agura.applications.vacation.data.VacationRequest;
 import se.agura.applications.vacation.data.VacationTime;
 import se.agura.applications.vacation.data.VacationType;
@@ -30,6 +31,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InterfaceObject;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -43,7 +45,7 @@ public abstract class VacationBlock extends Block {
 	protected static final String IW_BUNDLE_IDENTIFIER = "se.agura.applications.vacation";
 
 	protected static final String PARAMETER_ACTION = "vac_action";
-	protected static final String PARAMETER_PRIMARY_KEY_VAC = "vac_pk";
+	protected static final String PARAMETER_PRIMARY_KEY_VAC = VacationConstants.PARAMETER_PRIMARY_KEY;
 	protected static final String PARAMETER_PRIMARY_KEY_VAC_TIME = "vac_time_pk";
 	protected static final String PARAMETER_PRIMARY_KEY_VAC_TYPE = "vac_type_pk";
 	protected static final String PARAMETER_VACATION_TYPE = "vac_vacation_type";
@@ -53,6 +55,9 @@ public abstract class VacationBlock extends Block {
 	protected static final String PARAMETER_VACATION_WORKING_HOURS = "vac_vacation_working_hours";
 	protected static final String PARAMETER_VACATION_EXTRA_TEXT = "vac_vacation_extra_text";
 	protected static final String PARAMETER_COMMENT = "vac_comment";
+	protected static final String PARAMETER_WITH_SALARY_COMPENSATION = "vac_salary_compensation";
+	protected static final String PARAMETER_FORWARD_GROUP = "vac_forward_group";
+	protected static final String PARAMETER_HANDLER = "vac_handler";
 	
 	protected static final String ACTION_NEXT = "next";
 	protected static final String ACTION_CANCEL = "cancel";
@@ -64,6 +69,7 @@ public abstract class VacationBlock extends Block {
 	protected static final String ACTION_PAGE_FOUR = "page_four";
 	protected static final String ACTION_SAVE = "save";
 	protected static final String ACTION_FORWARD = "forward";
+	protected static final String ACTION_CLOSED = "closed";
 
 	private IWBundle iwb;
 	private IWResourceBundle iwrb;
@@ -153,43 +159,48 @@ public abstract class VacationBlock extends Block {
 		table.add(getText(String.valueOf(selectedHours) + Text.NON_BREAKING_SPACE + getResourceBundle().getLocalizedString("vacation.hours", "hours")), 2, row++);
 		table.setHeight(row++, 12);
 
-		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.period", "Working days and hours under the period")), 1, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.week", "Week")), 2, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.monday", "Mo")), 3, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.tuesday", "Tu")), 4, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.wednesday", "We")), 5, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.thursday", "th")), 6, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.friday", "Fr")), 7, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.saturday", "Sa")), 8, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.sunday", "Su")), 9, row++);
-		Iterator iter = times.iterator();
-		while (iter.hasNext()) {
-			VacationTime time = (VacationTime) iter.next();
-			table.add(getText(String.valueOf(time.getWeekNumber())), 2, row);
-			if (time.getMonday() > 0) {
-				table.add(getText(String.valueOf(time.getMonday())), 3, row);
+		if (times.size() > 0) {
+			int startRow = row;
+			table.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.period", "Working days and hours under the period")), 1, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.week", "Week")), 2, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.monday", "Mo")), 3, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.tuesday", "Tu")), 4, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.wednesday", "We")), 5, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.thursday", "th")), 6, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.friday", "Fr")), 7, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.saturday", "Sa")), 8, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.sunday", "Su")), 9, row++);
+			Iterator iter = times.iterator();
+			while (iter.hasNext()) {
+				VacationTime time = (VacationTime) iter.next();
+				table.add(getText(String.valueOf(time.getWeekNumber())), 2, row);
+				if (time.getMonday() > 0) {
+					table.add(getText(String.valueOf(time.getMonday())), 3, row);
+				}
+				if (time.getTuesday() > 0) {
+					table.add(getText(String.valueOf(time.getTuesday())), 4, row);
+				}
+				if (time.getWednesday() > 0) {
+					table.add(getText(String.valueOf(time.getWednesday())), 5, row);
+				}
+				if (time.getThursday() > 0) {
+					table.add(getText(String.valueOf(time.getThursday())), 6, row);
+				}
+				if (time.getFriday() > 0) {
+					table.add(getText(String.valueOf(time.getFriday())), 7, row);
+				}
+				if (time.getSaturday() > 0) {
+					table.add(getText(String.valueOf(time.getSaturday())), 8, row);
+				}
+				if (time.getSunday() > 0) {
+					table.add(getText(String.valueOf(time.getSunday())), 9, row);
+				}
+				row++;
 			}
-			if (time.getTuesday() > 0) {
-				table.add(getText(String.valueOf(time.getTuesday())), 4, row);
-			}
-			if (time.getWednesday() > 0) {
-				table.add(getText(String.valueOf(time.getWednesday())), 5, row);
-			}
-			if (time.getThursday() > 0) {
-				table.add(getText(String.valueOf(time.getThursday())), 6, row);
-			}
-			if (time.getFriday() > 0) {
-				table.add(getText(String.valueOf(time.getFriday())), 7, row);
-			}
-			if (time.getSaturday() > 0) {
-				table.add(getText(String.valueOf(time.getSaturday())), 8, row);
-			}
-			if (time.getSunday() > 0) {
-				table.add(getText(String.valueOf(time.getSunday())), 9, row);
-			}
-			row++;
+			table.setVerticalAlignment(1, startRow, Table.VERTICAL_ALIGN_TOP);
+			table.mergeCells(1, startRow, 1, row -1);
+			table.setHeight(row++, 12);
 		}
-		table.setHeight(row++, 12);
 		
 		table.mergeCells(2, row, table.getColumns(), row);
 		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.type", "Type")), 1, row);
@@ -234,10 +245,10 @@ public abstract class VacationBlock extends Block {
 				
 				String action = "";
 				if (status.equals(getBusiness(iwc).getCaseStatusDenied().getStatus())) {
-					action = getResourceBundle().getLocalizedString("vacation.rejected_by", "Supported by");
+					action = getResourceBundle().getLocalizedString("vacation.rejected_by", "Rejected by");
 				}
 				else if (status.equals(getBusiness(iwc).getCaseStatusGranted().getStatus())) {
-					action = getResourceBundle().getLocalizedString("vacation.granted_by", "Supported by");
+					action = getResourceBundle().getLocalizedString("vacation.granted_by", "Granted by");
 				}
 				else if (status.equals(getBusiness(iwc).getCaseStatusMoved().getStatus())) {
 					action = getResourceBundle().getLocalizedString("vacation.supported_by", "Supported by");
@@ -267,6 +278,15 @@ public abstract class VacationBlock extends Block {
 	protected VacationBusiness getBusiness(IWApplicationContext iwac) {
 		try {
 			return (VacationBusiness) IBOLookup.getServiceInstance(iwac, VacationBusiness.class);
+		}
+		catch (IBOLookupException ible) {
+			throw new IBORuntimeException(ible);
+		}
+	}
+
+	protected UserBusiness getUserBusiness(IWApplicationContext iwac) {
+		try {
+			return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
 		}
 		catch (IBOLookupException ible) {
 			throw new IBORuntimeException(ible);
