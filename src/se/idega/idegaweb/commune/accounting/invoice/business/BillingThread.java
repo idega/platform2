@@ -60,17 +60,13 @@ import com.idega.util.IWTimestamp;
 public abstract class BillingThread extends Thread{
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 	protected static final String BATCH_TEXT = "invoice.batchrun";		//Localize this text in the user interface
-	protected int days;
-	protected float months;
 	protected int errorOrder;
-	protected IWTimestamp startPeriod;
-	protected IWTimestamp endPeriod;
+	protected IWTimestamp startPeriod;	//Holds first day of period
+	protected IWTimestamp endPeriod;		//Holds last day of period
 	protected IWContext iwc;
-	protected IWTimestamp startTime, endTime;
 	protected Date currentDate = new Date( System.currentTimeMillis());
 	protected SchoolCategory category = null;
 	protected ExportDataMapping categoryPosting = null;
-	protected School school;
 	protected BatchRun batchRunLogger=null;
 	protected StringBuffer errorRelated = null;
 	
@@ -81,6 +77,7 @@ public abstract class BillingThread extends Thread{
 		endPeriod = new IWTimestamp(startPeriod);
 		endPeriod.setAsDate();
 		endPeriod.addMonths(1);
+		endPeriod.addDays(-1);
 		this.iwc = iwc;
 	}
 	
@@ -96,7 +93,8 @@ public abstract class BillingThread extends Thread{
 	 * @throws CreateException
 	 * @throws IDOLookupException
 	 */
-	protected PaymentRecord createPaymentRecord(PostingDetail postingDetail, String ownPosting, String doublePosting) throws CreateException, IDOLookupException {
+	protected PaymentRecord createPaymentRecord(PostingDetail postingDetail, String ownPosting, String doublePosting, float months, School school) 
+			throws CreateException, IDOLookupException {
 		PaymentHeader paymentHeader;
 		PaymentRecord paymentRecord;
 		System.out.println("About to create payment record");
@@ -122,13 +120,9 @@ public abstract class BillingThread extends Thread{
 		}
 		//Update or create the payment record
 		try {
-			System.out.println("payHeader "+paymentHeader.getPrimaryKey());
-			System.out.println("RuleSpec "+postingDetail.getRuleSpecType());
 			PaymentRecordHome prechome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
 			
 			paymentRecord = prechome.findByPostingStrings(ownPosting,doublePosting);
-			//paymentRecord = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).
-			//		findByPaymentHeaderAndRuleSpecType(paymentHeader,postingDetail.getRuleSpecType());
 			
 			//If it already exists, just update the changes needed.
 			paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
@@ -162,51 +156,50 @@ public abstract class BillingThread extends Thread{
 		return paymentRecord;
 	}
 	
-    protected InvoiceRecord createInvoiceRecord
-        (final PaymentRecord paymentRecord, final SchoolClassMember placement,
-         final PostingDetail postingDetail) throws RemoteException,
-                                                   CreateException {
-        final InvoiceRecord result = getInvoiceRecordHome ().create ();
-        result.setAmount (months * postingDetail.getAmount ());
-        result.setCreatedBy (BATCH_TEXT);
-        result.setDateCreated (new Date (System.currentTimeMillis()));
-        result.setDays (days);
-        if (null != paymentRecord) result.setPaymentRecord (paymentRecord);
-        if (null != placement) {
-            result.setSchoolClassMember (placement);
-            final Timestamp startPlacementDate = placement.getRegisterDate ();
-            final Timestamp endPlacementDate = placement.getRemovedDate ();
-            if (null != startPlacementDate) {
-                result.setPeriodStartPlacement
-                        (new Date (startPlacementDate.getTime()));
-            }
-            if (null != endPlacementDate) {
-                result.setPeriodEndPlacement
-                        (new Date (endPlacementDate.getTime()));
-            }
-            if (null != startTime) {
-                result.setPeriodStartCheck(startTime.getDate ());
-            }
-            if (null != endTime) {
-                final long lastDay
-                        = endTime.getTime ().getTime () - (24 * 60 * 60 * 1000);
-                result.setPeriodEndCheck (new Date (lastDay));
-            }
-            final SchoolType schoolType = placement.getSchoolType ();
-            if (null != schoolType) result.setSchoolType (schoolType);
-        }
-        try {
-            final RegulationSpecType regSpecType
-                    = getRegulationSpecTypeHome ().findByRegulationSpecType
-                    (postingDetail.getRuleSpecType ());
-            result.setRegSpecType (regSpecType);
-            //        result.setRuleText(java.lang.String p0);
-        } catch (Exception e) {
-            e.printStackTrace ();
-        }
-        result.store ();
-        return result;
-    }
+	protected InvoiceRecord createInvoiceRecord(
+			final PaymentRecord paymentRecord,final SchoolClassMember placement,final PostingDetail postingDetail, PlacementTimes placementTimes)
+			throws RemoteException, CreateException {
+		final InvoiceRecord result = getInvoiceRecordHome().create();
+		result.setAmount(placementTimes.getMonths() * postingDetail.getAmount ());
+		result.setCreatedBy(BATCH_TEXT);
+		result.setDateCreated(new Date(System.currentTimeMillis()));
+		result.setDays(placementTimes.getDays());
+		if (null != paymentRecord)
+			result.setPaymentRecord(paymentRecord);
+		if (null != placement) {
+			result.setSchoolClassMember(placement);
+			final Timestamp startPlacementDate = placement.getRegisterDate();
+			final Timestamp endPlacementDate = placement.getRemovedDate();
+			if (null != startPlacementDate) {
+				result.setPeriodStartPlacement(new Date(startPlacementDate.getTime()));
+			}
+			if (null != endPlacementDate) {
+				result.setPeriodEndPlacement(new Date(endPlacementDate.getTime()));
+			}
+			if (null != placementTimes.getStartTime()) {
+				result.setPeriodStartCheck(placementTimes.getStartTime().getDate());
+			}
+			if (null != placementTimes.getStartTime()) {
+//Change in storing last day of month should make this obsolete
+//				final long lastDay = placementTimes.getStartTime().getTime().getTime() - (24 * 60 * 60 * 1000);
+//				result.setPeriodEndCheck(new Date(lastDay));
+				result.setPeriodEndCheck(placementTimes.getStartTime().getDate());
+			}
+			final SchoolType schoolType = placement.getSchoolType ();
+			if (null != schoolType) result.setSchoolType (schoolType);
+		}
+		try {
+			final RegulationSpecType regSpecType
+					= getRegulationSpecTypeHome ().findByRegulationSpecType
+					(postingDetail.getRuleSpecType ());
+			result.setRegSpecType (regSpecType);
+			//        result.setRuleText(java.lang.String p0);
+		} catch (Exception e) {
+			e.printStackTrace ();
+		}
+		result.store ();
+		return result;
+	}
     
 	/**
 	 * Creates the VATpostings for private providers
@@ -271,16 +264,17 @@ public abstract class BillingThread extends Thread{
 	 * @param start
 	 * @param end
 	 */
-	protected void calculateTime(Date start, Date end){
-		startTime = new IWTimestamp(start);
+	protected PlacementTimes calculateTime(Date start, Date end){
+		float months = 0;
+		IWTimestamp startTime = new IWTimestamp(start);
 		startTime.setAsDate();
-        IWTimestamp time = new IWTimestamp(startPeriod);
+		IWTimestamp time = new IWTimestamp(startPeriod);
 		time.setAsDate();
 		if(!startTime.isLaterThan(time)){
 			startTime = time;
 		}
 		//Then get end date
-		endTime = new IWTimestamp(endPeriod);
+		IWTimestamp endTime = new IWTimestamp(endPeriod);
 		endTime.setAsDate();
 		if(end!=null){
             // Since end of period is set to the day after the last day, also
@@ -291,12 +285,15 @@ public abstract class BillingThread extends Thread{
 				endTime = time;
 			}
 		}
+		endTime.addDays(1);
 		//calc the how many months are in the given time.
 		months = endTime.getMonth() - startTime.getMonth() + (endTime.getYear()-startTime.getYear())*12;
 		months += 1.0;
 		months -= percentOfMonthDone(startTime);
 		months -= 1.0 - percentOfMonthDone(endTime);
-		days = IWTimestamp.getDaysBetween(startTime, endTime);
+		int days = IWTimestamp.getDaysBetween(startTime, endTime);
+		PlacementTimes ret = new PlacementTimes(startTime, endTime, months, days);
+		return ret;
 	}
 	
 	public static void main(String[] arg){
@@ -330,7 +327,7 @@ public abstract class BillingThread extends Thread{
 	 */
 	protected void createNewErrorMessage(String related, String desc){
 		try {
-			System.out.println("About to enter new error message");
+			System.out.println("About to enter new error message "+related);
 			System.out.println("About to enter a batch run error to header "+batchRunLogger.getPrimaryKey()+"  "+related+"  "+desc+"  "+errorOrder);
 			BatchRunError error = (BatchRunError) IDOLookup.create(BatchRunError.class);
 			error.setBatchRunID(((Integer)batchRunLogger.getPrimaryKey()).intValue());
