@@ -29,6 +29,7 @@ import com.idega.block.entity.presentation.converter.CheckBoxConverter;
 import com.idega.block.entity.presentation.converter.editable.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converter.editable.OptionProvider;
 import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
@@ -243,9 +244,36 @@ public class ReportQueryOverview extends Block {
 	}
 	
   private static Collection getQueries(IWContext iwc , int showOnlyOneQueryWithId) throws RemoteException, FinderException {
-		Group topGroup = ReportQueryOverview.getTopGroupForUser(iwc);
+		 //To keep them ordered alphabetically
+  	TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
+  	// start: special case: admin
+  	if (iwc.isSuperAdmin()) {
+  		User user = iwc.getCurrentUser();
+  		// use the admin user as group
+  		ReportQueryOverview.getOwnQueries(user, queryRepresentations, showOnlyOneQueryWithId);
+  		// bye bye
+  		return queryRepresentations.values();
+  	}
+  	// end: special case: admin
+  	Group topGroup = ReportQueryOverview.getTopGroupForUser(iwc);
 		GroupBusiness groupBusiness = ReportQueryOverview.getGroupBusiness(iwc);
   	Collection parentGroups = new ArrayList();
+  	// special case admin
+  	// add the administrator group to the parent groups
+  	try {
+  		AccessController accessController = iwc.getAccessController();
+  		com.idega.core.user.data.User superAdmin = accessController.getAdministratorUser();
+  		Group adminGroup = groupBusiness.getGroupByGroupID(((Integer)superAdmin.getPrimaryKey()).intValue());
+  		parentGroups.add(adminGroup);
+  	}
+  	catch (Exception ex) {
+  		//TODO thi: implement logger
+			String message =
+				"[ReportOverview]: Can't retrieve AdministratorUser.";
+			System.err.println(message + " Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+  		// return empty collection
+  	}
   	try {
   		// bad implementation in GroupBusiness
   		// null is returned instead of an empty collection
@@ -259,8 +287,6 @@ public class ReportQueryOverview extends Block {
   	catch (Exception ex) {
   		parentGroups = new ArrayList();
   	}
-  	//To keep them ordered alphabetically
-  	TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
 		// add own queries
 		ReportQueryOverview.getOwnQueries(topGroup, queryRepresentations, showOnlyOneQueryWithId);
 		// add public queries
