@@ -129,7 +129,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			//Adding row to the table
 			validateDateScript.append(" || ");			
 			validateDateScript.append(
-				addToTable(row,	app, hasOffer, isOffer, offerPresented, disableAccept, iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID())	!= null));
+				addToTable(iwc, row,	app, hasOffer, isOffer, offerPresented, disableAccept, iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID())	!= null));
 
 
 			if (isOffer) {
@@ -169,7 +169,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 	 * @param status
 	 * @param prognosis
 	 */
-	private String addToTable(int row, ChildCareApplication app, boolean hasOffer, boolean isOffer, boolean offerPresented, boolean disableAccept, boolean disableReqBtn) throws RemoteException{
+	private String addToTable(IWContext iwc, int row, ChildCareApplication app, boolean hasOffer, boolean isOffer, boolean offerPresented, boolean disableAccept, boolean disableReqBtn) throws RemoteException{
 		
 		int providerId = app.getProviderId();
 		int ownerId = app.getOwner().getID();
@@ -316,21 +316,24 @@ class ChildCarePlaceOfferTable1 extends Table {
 		int col = hasOffer ? 7 : 4;
 
 					
-		Link popup = new Link("...");
+		Link popup = new Link();
 //		popup.setImage(new Image());
+//		popup.setAsImageButton(true);
+		popup.setImage(_page.getEditIcon("Edit"));
 		popup.setWindowToOpen(ChildCareProviderQueueWindow.class);
 		popup.addParameter(CCConstants.PROVIDER_ID, "" + providerId);
 		popup.addParameter(CCConstants.APPID, "" + app.getNodeID());
 		popup.addParameter(CCConstants.USER_ID, "" + ownerId);
-		popup.setAsImageButton(true);
+
 		add(popup, col++, row);
 		
-		Link delete = new Link("Delete");
+		Link delete = new Link();
+//		delete.setAsImageButton(true);
+		delete.setImage(_page.getDeleteIcon("Delete"));		
 //		popup.setImage(new Image());
 		delete.setOnClick("return confirm('" + CONFIRM_DELETE + "')");
 		delete.addParameter(CCConstants.ACTION, CCConstants.ACTION_DELETE);
 		delete.addParameter(CCConstants.APPID, app.getNodeID());
-		delete.setAsImageButton(true);
 		add(delete, col++, row);
 				
 
