@@ -63,6 +63,7 @@ import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWResourceBundle;
@@ -1308,6 +1309,13 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 
 		report.setMemberFileId(workReportFileId);
 		report.store();
+		Collection reportLeagues = null;
+		try {
+		    reportLeagues = report.getLeagues();
+		}
+		catch (IDOException e) {
+		    e.printStackTrace();
+		}
 
 		HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
 		int sheets = excel.getNumberOfSheets();
@@ -1379,8 +1387,12 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 					try {
 						user = getUser(ssn);
 					} catch (Exception e) {
-						user = getUserByPartOfPersonalIdAndFirstName(ssn,
+					    if (ssn.length() >= 6) {
+						    user = findByFirstSixLettersOfPersonalIDAndFirstName(ssn,
 								first_name);
+						} else {
+						    throw new FinderException("SSN shorter than 6 letters");
+						}
 					}
 
 					try {
@@ -1439,7 +1451,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 						}
 
 						try {
-							report.addLeague(mainBoard);
+						  if (reportLeagues != null && !reportLeagues.contains(mainBoard)) { 
+						    report.addLeague(mainBoard);
+						    reportLeagues.add(mainBoard);
+						  }
 						} catch (Exception e) {
 							//e.printStackTrace();
 						}
@@ -1471,7 +1486,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 										try {
 											league.addEntity(member);
 											try {
-												report.addLeague(league);
+											    if (reportLeagues != null && !reportLeagues.contains(league)) { 
+												    report.addLeague(league);
+												    reportLeagues.add(league);
+												  }
 											} catch (Exception e) {
 												//e.printStackTrace();
 											}
