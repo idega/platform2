@@ -30,8 +30,6 @@ import com.idega.presentation.ui.SubmitButton;
 /**
  * @author Roar
  *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class ChildCareEndContractWindow extends Window {
 
@@ -65,7 +63,7 @@ public class ChildCareEndContractWindow extends Window {
 		Table layoutTbl = new Table();
 		
 		DateInput fromDate = new DateInput(FROM_DATE);
-		fromDate.setAsNotEmpty("Please choose a valid from date.");
+		fromDate.setAsNotEmpty(style.localize("ccecw_date_missing","Please choose a valid from date."));
 		fromDate.setStyleAttribute("style", style.getSmallTextFontStyle());
 		
 		HiddenInput action = new HiddenInput(CCConstants.ACTION);
