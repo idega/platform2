@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.20 2001/09/09 21:51:57 gummi Exp $
+ * $Id: Page.java,v 1.21 2001/09/19 01:06:19 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,6 +41,7 @@ public class Page extends ModuleObjectContainer {
   private boolean isTemplate_ = false;
   private boolean isPage_ = true;
   private boolean isDraft_ = false;
+
 
   private static Page NULL_CLONE_PAGE = new Page();
 
