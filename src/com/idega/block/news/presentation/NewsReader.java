@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.71 2002/02/22 18:21:35 eiki Exp $
+ * $Id: NewsReader.java,v 1.72 2002/02/23 21:57:33 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -972,6 +972,14 @@ public class NewsReader extends Block implements IWBlock {
   }
   public void setMoreImage(Image image) {
     this.moreImage=image;
+  }
+
+  public void setFirstImageWidth(int imageWith){
+    firstImageWidth = imageWith;
+  }
+
+  public void setImageWidth(int imagewidth){
+    ImageWidth = imagewidth;
   }
 
   public void setCollectionImage(Image image) {
