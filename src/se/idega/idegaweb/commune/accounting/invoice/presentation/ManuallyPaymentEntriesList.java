@@ -38,9 +38,13 @@ import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
@@ -50,6 +54,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
@@ -70,16 +75,15 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	private String ERROR_AMOUNT_MONTH_NULL = "error_amount_month";
 	private String ERROR_POSTING = "error_posting";
 	private String ERROR_OWNPOSTING_EMPTY = "error_ownposting_empty";
+	private String ERROR_USER = "error_user";	
 
 	private String LOCALIZER_PREFIX = "regular_payment_entries_list.";
 	
 	private static final String KEY_OPERATIONAL_FIELD = "operational_field";
 	private static final String KEY_AMOUNT_PR_MONTH = "amount_pr_month";
 	private static final String KEY_CANCEL = "cancel";
-	private static final String KEY_DOUBLE_ENTRY_ACCOUNT = "double_entry_account";
 	private static final String KEY_FROM = "from";
 
-	private static final String KEY_OWN_POSTING = "own_posting";
 	private static final String KEY_PLACING = "placing";
 	private static final String KEY_REMARK = "remark";
 	private static final String KEY_SAVE = "save";
@@ -94,14 +98,14 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 
 	
 	private static final String PAR_AMOUNT_PR_MONTH = KEY_AMOUNT_PR_MONTH;
-	private static final String PAR_DOUBLE_ENTRY_ACCOUNT  = KEY_DOUBLE_ENTRY_ACCOUNT;
+//	private static final String PAR_DOUBLE_ENTRY_ACCOUNT  = KEY_DOUBLE_ENTRY_ACCOUNT;
 	private static final String PAR_SEEK_FROM = "SEEK_" + KEY_FROM;	
 	private static final String PAR_PLACING = KEY_PLACING;
 	private static final String PAR_REMARK = KEY_REMARK;
 	private static final String PAR_TO = KEY_TO;
 	private static final String PAR_SEEK_TO = "SEEK_" + KEY_TO;	
 	private static final String PAR_USER_SSN = "usrch_search_pid"; //Constant used in UserSearcher...
-	private static final String PAR_OWN_POSTING = KEY_OWN_POSTING;	
+//	private static final String PAR_OWN_POSTING = KEY_OWN_POSTING;	
 	private static final String PAR_VAT_PR_MONTH = KEY_VAT_PR_MONTH;
 	private static final String PAR_VAT_TYPE = KEY_VAT_TYPE;
 	public static final String PAR_SELECTED_PROVIDER = "selected_provider";	
@@ -116,7 +120,8 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	private static final String PAR_USER_ID = "user_id";
 	
 	private static final int MIN_LEFT_COLUMN_WIDTH = 150;	
-	
+		 
+	private ICPage _returnPage;	
 
 	private UserSearcher searcher = null;
 
@@ -241,23 +246,82 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		PaymentRecord pay = null;
 		PaymentHeader payhdr = null;
 		InvoiceRecord inv = null;
-
+		
+		int schoolId = -1;
+		SchoolCategory category = null;
+		Date periode = null;
+		
+		//Finding paymentHeader (if existing)
 		try{
-			payhdr = getPaymentHeaderHome().create();
+			SchoolHome schoolHome = (SchoolHome) IDOLookup.getHome(School.class);	
+			schoolId = new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue();
+			School school = schoolHome.findByPrimaryKey("" + schoolId);
+			
+			SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(),	SchoolBusiness.class);
+			String opField = getSession().getOperationalField();
+			category = schoolBusiness.getSchoolCategoryHome().findByPrimaryKey(opField);					
+					
+			periode = parseDate(getValue(iwc, RegulationSearchPanel.PAR_VALID_DATE));
+							
+			payhdr = getPaymentHeaderHome().findBySchoolCategorySchoolPeriod(school, category, periode);
+		}catch(RemoteException ex){
+			ex.printStackTrace();
+		}catch(FinderException ex){
+			ex.printStackTrace();
+		}
+
+		//Creating paymentHeader if not found
+		if (payhdr == null){
+			try{
+				payhdr = getPaymentHeaderHome().create();
+				payhdr.store();				
+				payhdr.setPeriod(periode);
+				payhdr.setSchoolID(schoolId);
+				payhdr.setSchoolCategory(category);
+				payhdr.store();
+			}catch(CreateException ex2){
+				ex2.printStackTrace();
+				//TODO errormessage...
+				return;
+			}				
+		}
+		
+		//Creating paymentRecord
+		try{
 			pay = getPaymentRecordHome().create();
-			inv = getInvoiceRecordHome().create();			
-		}catch(CreateException ex2){
-			ex2.printStackTrace();
+		}catch(CreateException ex){
+			ex.printStackTrace();
 			return;
-		}			
-		
-		
-		if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
-			payhdr.setSchoolID(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
+		}
+				
+
+		User student = null;
+		try{
+			student = getUserBusiness(iwc).getUser(getValue(iwc, PAR_USER_SSN));
+		}catch(FinderException ex){
+			ex.printStackTrace();
+		}
+
+		if (student != null){
+			try{
+				SchoolClassMemberHome scmHome = (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
+				SchoolClassMember member = scmHome.findLatestByUserAndSchool(student.getNodeID(), schoolId);
+				inv = getInvoiceRecordHome().create();		
+				inv.setSchoolClassMember(member);
+				inv.setPaymentRecord(pay);				
+			}catch(RemoteException ex){
+				ex.printStackTrace();
+			}catch(FinderException ex){
+				errorMessages.put(ERROR_USER, localize(ERROR_USER, "Student has no active placement for chosen school"));
+				ex.printStackTrace();
+			}catch(CreateException ex){
+				ex.printStackTrace();
+				return;
+			}	
 		}
 				
 		pay.setPaymentHeader(payhdr);
-		inv.setPaymentRecord(pay);
+
 				
 		float amountPrMonth = 0;
 		try{
@@ -268,34 +332,31 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		pay.setTotalAmount(amountPrMonth);
 		
 		pay.setNotes(iwc.getParameter(PAR_REMARK));
-		inv.setNotes(iwc.getParameter(PAR_REMARK));
 		pay.setPaymentText(iwc.getParameter(PAR_PLACING));
 		pay.setTotalAmountVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
 		pay.setDateCreated(new Date(System.currentTimeMillis()));
 
-//			pay.setUser(getUser(iwc));
 		int vatType = new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue();
 		pay.setVATType(vatType);
-		inv.setVATType(vatType);
+//		inv.setVATType(vatType);
 		
 		try{
 			PostingBlock p = new PostingBlock(iwc);			
 			pay.setOwnPosting(p.getOwnPosting());
-			inv.setOwnPosting(p.getOwnPosting());
 			pay.setDoublePosting(p.getDoublePosting());
-			inv.setDoublePosting(p.getDoublePosting());
 		} catch (PostingParametersException e) {
-			errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
+			errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getDefaultText()));
 		}	
 	
 		if (! errorMessages.isEmpty()){
 			handleEditAction(iwc, errorMessages);	
 		}else{		
 	
-			payhdr.store();		
-			pay.store();		
-			inv.store();		
-			//TODO return to calling page
+			pay.store();	
+			if (inv != null){	
+				inv.store();		
+			}
+			iwc.forwardToIBPage(getParentPage(), _returnPage);
 		}
 	}
 
@@ -445,6 +506,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		table.add(regSearchPanel, 1, row++); 
 
 		Regulation reg = regSearchPanel.getRegulation(); 
+		
 		String[] posting = new String[]{"",""};
 		String postingError = null;
 		try{
@@ -459,9 +521,9 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			table.add(getErrorText((String) errorMessages.get(ERROR_AMOUNT_MONTH_NULL)), 2, row++);	
 		}		
 
-
-
-		addField(table, PAR_AMOUNT_PR_ITEM, KEY_AMOUNT_PR_ITEM, ""+AccountingUtil.roundAmount(new Float(getValue(iwc, PAR_AMOUNT_PR_ITEM)).floatValue()), 1, row, 30);
+		long amountPrItem = reg != null ? reg.getAmount().intValue() : AccountingUtil.roundAmount(getFloatValue(iwc, PAR_AMOUNT_PR_ITEM));
+		
+		addField(table, PAR_AMOUNT_PR_ITEM, KEY_AMOUNT_PR_ITEM, ""+amountPrItem, 1, row, 30);
 
 		String items = getValue(iwc, PAR_NUMBER_OF_ITEMS);
 		if (items == null || items.length() == 0){
@@ -471,11 +533,11 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		
 		
 		//Amount, vat, remark
-		String amount =(reg != null) ? ""+reg.getAmount() : getValue(iwc, PAR_AMOUNT_PR_MONTH);
+		long amount =(reg != null) ? reg.getAmount().intValue() : AccountingUtil.roundAmount(getFloatValue(iwc, PAR_AMOUNT_PR_MONTH));
 		if (reg != null && errorMessages.get(ERROR_AMOUNT_ITEM_NULL) != null) {
 			table.add(getErrorText((String) errorMessages.get(ERROR_AMOUNT_ITEM_NULL)), 2, row++);	
 		}			
-		addField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, ""+AccountingUtil.roundAmount(new Float(amount).floatValue()), 1, row++, 30);
+		addField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, ""+amount, 1, row++, 30);
 		//Vat is currently set to 0
 		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, "0", 1, row++);
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
@@ -509,21 +571,39 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		
 		//Posting strings
 		table.mergeCells(1, row, 10, row);
-		String ownPosting = (reg != null) ? posting[0] : getValue(iwc, PAR_OWN_POSTING);
-		String dblPosting = (reg != null) ? posting[1] : getValue(iwc, PAR_DOUBLE_ENTRY_ACCOUNT);
-		PostingBlock postingBlock = new PostingBlock(ownPosting, dblPosting);
+		PostingBlock postingBlock = null;
+		try{ 
+			if (reg != null){
+				postingBlock = new PostingBlock(posting[0], posting[1]);
+			} else {
+//				Need to separate construction of object from generation of Strings, so that the object exists even if errors in generation
+				postingBlock = new PostingBlock(); 
+				try{
+					postingBlock.generateStrings(iwc);
+				}catch(NullPointerException ex){
+					postingBlock = new PostingBlock("", "");
+				}
+			}
+		}catch(PostingParametersException ex){
+			ex.printStackTrace();
+		}
 		table.add(postingBlock, 1, row++);
 						
 		
 //		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
 //		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
-		addDropDownLocalized(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, getIntValue(iwc, PAR_VAT_TYPE),  "getVATRule", 1, row++);
+		addDropDownLocalized(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, getIntValue(iwc, PAR_VAT_TYPE, -1),  "getVATRule", 1, row++);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
 		//user search		
+		if (errorMessages.get(ERROR_USER) != null) {
+			table.mergeCells(2, row, 10, row);
+			table.add(getErrorText((String) errorMessages.get(ERROR_USER)), 2, row++);			
+		}
+				
 		table.mergeCells(1, row, 10, row);
-		int userId = getIntValue(iwc, PAR_USER_ID);
+		int userId = getIntValue(iwc, PAR_USER_ID, -1);
 		User user = null;
 		if (userId != -1){
 			try{
@@ -532,13 +612,13 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 				ex.printStackTrace();
 			}
 		}
-
+		
 		UserSearcher searcher = getUserSearcher(iwc, user);
 		table.add(searcher, 1, row++);
-//		if (searcher.getUser() != null && ! searcher.isHasManyUsers()){
-//			HiddenInput h = new HiddenInput(PAR_USER_SSN, searcher.getUser().getPersonalID());
-//			table.add(h);
-//		}
+		if (searcher.getUser() != null && ! searcher.isHasManyUsers()){
+			HiddenInput h = new HiddenInput(PAR_USER_SSN, searcher.getUser().getPersonalID());
+			table.add(h);
+		}
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);		
 				
@@ -572,13 +652,22 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		}
 	}
 	
-	private int getIntValue(IWContext iwc, String parName) {
+	private float getFloatValue(IWContext iwc, String parName) {
+		try{
+			return Float.parseFloat(getValue(iwc, parName));
+		}catch(NumberFormatException ex){
+			return 0f;
+		}
+	}
+		
+	
+	private int getIntValue(IWContext iwc, String parName, int defaultValue) {
 		try{
 			return Integer.parseInt(getValue(iwc, parName));
 		}catch(NumberFormatException ex){
-			return -1;
+			return defaultValue;
 		}
-	}
+	}	
 	
 
 	
@@ -697,7 +786,16 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	protected VATBusiness getVATBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (VATBusiness) IBOLookup.getServiceInstance(iwc, VATBusiness.class);
 	}
-		 
+
+	
+	//Property returnPage
+	public void setReturnPage(ICPage returnPage){
+		_returnPage = returnPage;
+	}
+	
+	public ICPage getReturnPage(){
+		return _returnPage;
+	}	
 		 
 	
 }
