@@ -21,7 +21,7 @@ import com.idega.idegaweb.IWMainApplication;
 **
 */
 
-public class NewsReader extends JModuleObject{
+public class NewsReader extends ModuleObjectContainer{
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
 private boolean isAdmin=false;
@@ -116,7 +116,7 @@ public NewsReader(int categoryId, idegaTimestamp timestamp){
 public void main(ModuleInfo modinfo)throws Exception{
 
   if(askForPermission){
-    this.isAdmin=this.isAdministrator(modinfo);
+    this.isAdmin=com.idega.block.login.business.AccessControl.isAdmin(modinfo);
   }
   IWBundle iwb = getBundle(modinfo);
   IWResourceBundle iwrb = getResourceBundle(modinfo);
@@ -174,7 +174,7 @@ public void main(ModuleInfo modinfo)throws Exception{
     if(isAdmin) {
       Form newsEditor = new Form(newsEditorURL);
       newsEditor.add(new SubmitButton(editor));
-      add(newsEditor);
+      super.add(newsEditor);
     }
 
     if(showSingleNews){//single news
@@ -184,7 +184,7 @@ public void main(ModuleInfo modinfo)throws Exception{
       backbutton=true;
       cutNews = false;
       setNumberOfDisplayedNews(1);
-      add(drawNewsTable(news));
+      super.add(drawNewsTable(news));
     }
     else{//view all or category view
 
@@ -251,7 +251,7 @@ public void main(ModuleInfo modinfo)throws Exception{
         }
       }
 
-      if(news.length > 0){	add(drawNewsTable(news));}
+      if(news.length > 0){	super.add(drawNewsTable(news));}
       else {//if out of date range
         if( byDate ){
           date=null;
@@ -263,11 +263,11 @@ public void main(ModuleInfo modinfo)throws Exception{
 
           if( news.length!=0){
             setNumberOfDisplayedNews(1);
-            add(drawNewsTable(news));
+            super.add(drawNewsTable(news));
           }
-          else add(new Text("<b>No news in database</b><br>"));
+          else super.add(new Text("<b>No news in database</b><br>"));
         }
-        else add(new Text("<b>No news in database</b><br>"));
+        else super.add(new Text("<b>No news in database</b><br>"));
 
       }
     }
@@ -279,13 +279,13 @@ public void main(ModuleInfo modinfo)throws Exception{
         collectionLink.addParameter("news_category_id",Integer.toString(categoryId));
         newsCollection.add(collectionLink,1,1);
         newsCollection.setAlignment("right");
-        add(newsCollection);
+        super.add(newsCollection);
         }
     }
   }
   catch( Exception e ){
 
-    add(new Text(e.getMessage()) );//something went wrong
+    super.add(new Text(e.getMessage()) );//something went wrong
     e.printStackTrace( System.err);
 
 
@@ -937,5 +937,8 @@ public String getBundleIdentifier(){
   return IW_BUNDLE_IDENTIFIER;
 }
 
+public void add(ModuleObject obj){
+ outerTable.addAtBeginning(obj);
+}
 
 }
