@@ -1,5 +1,5 @@
 /*
- * $Id: Edit.java,v 1.2 2002/01/22 14:39:44 palli Exp $
+ * $Id: Edit.java,v 1.3 2002/01/23 14:48:36 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -121,6 +121,9 @@ public class Edit {
    *
    */
   public static void setStyle(InterfaceObjectContainer O) {
-    O.setAttribute("style",styleAttribute);
+    if (O instanceof com.idega.presentation.ui.DateInput)
+      ((com.idega.presentation.ui.DateInput)O).setStyleAttribute("style",styleAttribute);
+    else
+      O.setAttribute("style",styleAttribute);
   }
 }
