@@ -67,10 +67,11 @@ public class ClubAdminHandler extends JModuleObject {
 
         Family family = new Family();
         family.insert();
-        member.setFamily(family);
+       //debug this is in union_member_info
+       //member.setFamily(family);
 
 
-        member.setCardId(1);
+        //member.setCardId(1);
 
         member.insert();
         member.addTo(group);

@@ -4,7 +4,6 @@ package com.idega.projects.golf.entity;
 //import java.util.*;
 import java.sql.*;
 
-
 public class Family extends GolfEntity{
 
 	public Family(){
