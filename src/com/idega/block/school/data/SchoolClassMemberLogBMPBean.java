@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberLogBMPBean.java,v 1.9 2005/02/16 17:26:03 laddi Exp $
+ * $Id: SchoolClassMemberLogBMPBean.java,v 1.10 2005/02/17 11:43:56 laddi Exp $
  * Created on 27.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/02/16 17:26:03 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/17 11:43:56 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class SchoolClassMemberLogBMPBean extends GenericEntity  implements SchoolClassMemberLog{
 
@@ -196,6 +196,30 @@ public class SchoolClassMemberLogBMPBean extends GenericEntity  implements Schoo
 		Criteria a = new MatchCriteria(table, END_DATE, MatchCriteria.LESSEQUAL, date);
 		Criteria b = new MatchCriteria(table, END_DATE, MatchCriteria.IS, MatchCriteria.NULL);
 		query.addCriteria(new OR(a, b));
+		query.addOrder(new Order(new Column(table, START_DATE), true));
+		
+		return (Integer) idoFindOnePKByQuery(query);
+	}
+
+	public Integer ejbFindFutureLogByPlacementAndDate(SchoolClassMember member, Date date) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		query.addCriteria(new MatchCriteria(table, SCHOOLCLASSMEMBER, MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(table, START_DATE, MatchCriteria.GREATEREQUAL, date));	
+		query.addOrder(new Order(new Column(table, START_DATE), true));
+		
+		return (Integer) idoFindOnePKByQuery(query);
+	}
+
+	public Integer ejbFindByPlacementAndEndDate(SchoolClassMember member, Date date) throws FinderException {
+		Table table = new Table(this);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		query.addCriteria(new MatchCriteria(table, SCHOOLCLASSMEMBER, MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(table, END_DATE, MatchCriteria.EQUALS, date));	
 		query.addOrder(new Order(new Column(table, START_DATE), true));
 		
 		return (Integer) idoFindOnePKByQuery(query);

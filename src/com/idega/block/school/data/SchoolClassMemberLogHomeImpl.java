@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberLogHomeImpl.java,v 1.5 2005/02/16 16:48:46 anders Exp $
- * Created on 10.2.2005
+ * $Id: SchoolClassMemberLogHomeImpl.java,v 1.6 2005/02/17 11:43:56 laddi Exp $
+ * Created on 17.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -18,10 +18,10 @@ import com.idega.data.IDOFactory;
 
 
 /**
- * Last modified: $Date: 2005/02/16 16:48:46 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/17 11:43:56 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class SchoolClassMemberLogHomeImpl extends IDOFactory implements SchoolClassMemberLogHome {
 
@@ -68,6 +68,20 @@ public class SchoolClassMemberLogHomeImpl extends IDOFactory implements SchoolCl
 	public SchoolClassMemberLog findByPlacementAndDate(SchoolClassMember member, Date date) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		Object pk = ((SchoolClassMemberLogBMPBean) entity).ejbFindByPlacementAndDate(member, date);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public SchoolClassMemberLog findFutureLogByPlacementAndDate(SchoolClassMember member, Date date) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((SchoolClassMemberLogBMPBean) entity).ejbFindFutureLogByPlacementAndDate(member, date);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public SchoolClassMemberLog findByPlacementAndEndDate(SchoolClassMember member, Date date) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((SchoolClassMemberLogBMPBean) entity).ejbFindByPlacementAndEndDate(member, date);
 		this.idoCheckInPooledEntity(entity);
 		return this.findByPrimaryKey(pk);
 	}
