@@ -593,8 +593,10 @@ public class QueryBuilder extends Block {
 		tree.setUI(tree._UI_WIN);
 		Link treeLink = new Link();
 		treeLink.addParameter(PARAM_STEP, step);
+		treeLink.addParameter(SHOW_WIZARD, SHOW_WIZARD);
 		tree.setLinkOpenClosePrototype(treeLink);
-		tree.addOpenCloseParameter(PARAM_STEP, "2");
+		tree.addOpenCloseParameter(PARAM_STEP, Integer.toString(step));
+		tree.addOpenCloseParameter(SHOW_WIZARD, SHOW_WIZARD);
 		tree.setInitOpenLevel();
 		tree.setNestLevelAtOpen(1);
 		//tree.setToMaintainParameter(PARAM_STEP,iwc);
