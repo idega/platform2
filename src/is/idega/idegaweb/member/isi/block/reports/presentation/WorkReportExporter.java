@@ -48,7 +48,8 @@ public class WorkReportExporter extends RegionalUnionAndYearSelector {
 
 			int fileId = getWorkReportBusiness(iwc).exportToExcel(getRegionalUnionId(),getYear(),Integer.parseInt(templateId));
 			if (fileId > 0) {
-				add(new Link(fileId));
+				String name = getWorkReportBusiness(iwc).getFileName(fileId); 				
+				add(new Link(fileId,name));
 			}
 			else {
 				add(iwrb.getLocalizedString(ERROR_LOCALIZATION_KEY, "Unable to export file"));

@@ -23,7 +23,7 @@ public class WorkReportExportFileBMPBean extends GenericEntity implements WorkRe
 	private static final String ENTITY_NAME = "isi_wr_export";
 	
 	private static final String GROUP_ID = "ic_group_id";
-	private static final String YEAR = "year";
+	private static final String YEAR = "year_of_wr";
 	private static final String FILE_ID = "ic_file_id";
 
 	/* (non-Javadoc)

@@ -61,6 +61,7 @@ import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.transaction.IdegaTransactionManager;
 import com.idega.user.business.GroupBusiness;
@@ -1207,6 +1208,25 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		else {
 			return -1;
 		}
+	}
+	
+	public String getFileName(int id) {
+		ICFile icfile;
+		try {
+			icfile = ((ICFileHome) IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(id));
+
+			return icfile.getName();
+		}
+		catch (IDOLookupException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "no_file";
 	}
 
 	protected MemberUserBusiness getMemberUserBusiness() {

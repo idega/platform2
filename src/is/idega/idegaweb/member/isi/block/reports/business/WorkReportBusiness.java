@@ -49,4 +49,5 @@ public interface WorkReportBusiness extends com.idega.business.IBOService,is.ide
  public boolean removeWorkReportGroupFromEntity(int p0,is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p1,com.idega.data.IDOEntity p2) throws java.rmi.RemoteException;
  public boolean sendWorkReport(int p0,java.lang.String p1, IWResourceBundle iwrb) throws java.rmi.RemoteException;
  public boolean unSendWorkReport(int p0) throws java.rmi.RemoteException;
+ public String getFileName(int p0);
 }
