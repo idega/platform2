@@ -16,4 +16,6 @@ public interface SchoolUser extends com.idega.data.IDOEntity
  public void setShowInContact(boolean p0);
  public void setUserId(int p0);
  public void setUserType(int p0);
+	void setIsEconomicalResponsible(boolean b);
+	boolean isEconomicalResponsible();
 }
