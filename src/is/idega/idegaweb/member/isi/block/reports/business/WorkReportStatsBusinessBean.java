@@ -1259,7 +1259,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				String ruNumber = report.getRegionalUnionNumber();
 				regData.addData(regionalUnionNumber, ruNumber==null?"":ruNumber);*/
 				
-				// @TODO get the population somehow
+				//
 				//regData.addData(regionalUnionPopulation, "10000");
 				regData.addData(womenUnderAge, new Integer(0));
 				regData.addData(womenOverOrEqualAgeLimit, new Integer(0));
@@ -2791,7 +2791,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						if(divDataSum==null){//initialize
 							divDataSum = new ReportableData();
 							divDataSum.addData(leagueString, leagueIdentifier);
-							divDataSum.addData(clubName, "F�l�g me� efstudeild");
+							
+							divDataSum.addData(clubName, _iwrb.getLocalizedString("WorkReportStatsBusiness.clubs_with_national_league","Clubs with national league"));
+							
 							divDataSum.addData(regionalUnionAbbreviation, "Samtals");
 							divDataSum.addData(clubType,"");
 						
@@ -2839,7 +2841,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						if(divDataSum==null){//initialize
 							divDataSum = new ReportableData();
 							divDataSum.addData(leagueString, leagueIdentifier);
-							divDataSum.addData(clubName, "F�l�g �n efstudeildar");
+							divDataSum.addData(clubName,_iwrb.getLocalizedString("WorkReportStatsBusiness.clubs_without_national_league","Clubs without a national league"));
 							divDataSum.addData(regionalUnionAbbreviation, "Samtals");
 							divDataSum.addData(clubType,"");
 						
@@ -2888,8 +2890,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					if(divDataSum==null){//initialize
 						divDataSum = new ReportableData();
 						divDataSum.addData(leagueString, leagueIdentifier);
-						divDataSum.addData(clubName, "�ll f�l�g");
-						divDataSum.addData(regionalUnionAbbreviation, "samtals");
+						divDataSum.addData(clubName, _iwrb.getLocalizedString("WorkReportStatsBusiness.all_clubs","All clubs"));
+						divDataSum.addData(regionalUnionAbbreviation, "Samtals");
 						divDataSum.addData(clubType,"");
 
 						divDataSum.addData(income, new Integer(0));
