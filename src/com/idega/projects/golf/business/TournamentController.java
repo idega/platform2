@@ -528,6 +528,8 @@ public class TournamentController{
             com.idega.projects.golf.entity.Member tempMember;
             TextInput socialNumber;
 
+            Connection conn = GenericEntity.getStaticInstance("com.idega.data.genericentity.Member").getConnection();
+
             while (endHour.isLaterThan(startHour) ) {
                 ++row;
                 ++groupCounter;
@@ -547,7 +549,12 @@ public class TournamentController{
                         if (i != 0) table.add(tooMany,1,row);
                         table.add(tempMember.getSocialSecurityNumber(),2,row);
 
-                        union_id = tournament.getTournamentMemberUnionId(tempMember);
+                        if (conn != null) {
+                            union_id = tournament.getTournamentMemberUnionId(conn, tempMember.getID());
+                        }
+                        else {
+                            union_id = -1;
+                        }
 
                         if (union_id != -1) {
                           union = new Union(union_id);
@@ -586,6 +593,12 @@ public class TournamentController{
                     table.mergeCells(1,row,6,row);
                 }
             }
+
+            if (conn != null) {
+                GenericEntity.getStaticInstance("com.idega.data.genericentity.Member").freeConnection(conn);
+            }
+
+
 
 
             table.mergeCells(1,row,3,row);

@@ -595,27 +595,50 @@ public class Tournament extends GolfEntity{
             return getTournamentMemberUnionId(member.getID());
         }
 
+        /**
+         * @deprecated
+         */
 	public int getTournamentMemberUnionId(int member_id)throws SQLException{
 		Connection conn= null;
-		Statement Stmt= null;
                 int returner = -1;
-		try{
-                    conn = this.getConnection();
-                    Stmt=conn.createStatement();
 
-                    ResultSet RS = Stmt.executeQuery("Select UNION_ID from TOURNAMENT_MEMBER where TOURNAMENT_ID = "+this.getID()+" AND MEMBER_ID ="+member_id);
+                try {
+                    conn = this.getConnection();
+
+                    if (conn != null) {
+                        returner = getTournamentMemberUnionId(conn,member_id);
+                    }
+
+                }
+                catch (Exception e) {}
+		finally{
+			if (conn != null){
+				freeConnection(conn);
+			}
+		}
+            return returner;
+
+	}
+
+	public int getTournamentMemberUnionId(Connection conn, int member_id)throws SQLException{
+                int returner = -1;
+                ResultSet RS = null;
+                Statement Stmt = null;
+		try{
+    		    Stmt = conn.createStatement();
+
+                    RS = Stmt.executeQuery("Select UNION_ID from TOURNAMENT_MEMBER where TOURNAMENT_ID = "+this.getID()+" AND MEMBER_ID ="+member_id);
                     if (RS.next()) {
                         returner = RS.getInt("UNION_ID");
                     }
-
 		}
 		finally{
 			if (Stmt != null){
 				Stmt.close();
 			}
-			if (conn != null){
-				freeConnection(conn);
-			}
+                        if (RS != null) {
+                          RS.close();
+                        }
 		}
 
                 return returner;
