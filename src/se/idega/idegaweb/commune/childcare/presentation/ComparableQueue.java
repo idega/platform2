@@ -1,14 +1,12 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
-import java.rmi.RemoteException;
-
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 
 /**
  * This class is used to sort ChildCareQueue object according to their
  * choice number and granted status.
  * @author <a href="mailto:joakim@idega.is">joakim</a>
- * @version $Id: ComparableQueue.java,v 1.3 2003/10/05 20:07:06 laddi Exp $
+ * @version $Id: ComparableQueue.java,v 1.4 2003/10/06 12:30:32 laddi Exp $
  * @since 12.2.2003 
  */
 class ComparableQueue implements Comparable {
