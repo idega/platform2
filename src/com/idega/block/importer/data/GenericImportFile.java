@@ -236,6 +236,27 @@ public class GenericImportFile implements ImportFile{
 		
 		return value;
 	} 
+	
+	
+	/**
+	 * Method getValueAtIndexFromRecordString. Uses the valueSeparator and a stringtokenizer to read and return a value at a selected index.
+	 * @param recordString
+	 * @return An ArrayList of values or null is no value was found
+	 */
+	public ArrayList getValuesFromRecordString(String recordString){	
+		ArrayList values = null;	
+		recordString = TextSoap.findAndReplace(recordString,valueSeparator+valueSeparator,valueSeparator+ignoreIfFoundValue+valueSeparator);
+		StringTokenizer tokens = new StringTokenizer(recordString,valueSeparator);
+		String value = null;
+		while( tokens.hasMoreTokens() ){
+			if(values==null) values = new ArrayList();
+			values.add(tokens.nextToken());	
+			System.out.println("GenericImportFile : value = "+value);
+		}
+		
+		
+		return values;
+	} 
 
 
 	/**
