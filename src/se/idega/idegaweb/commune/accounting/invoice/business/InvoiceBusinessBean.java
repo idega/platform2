@@ -56,11 +56,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/08 15:41:47 $ by $Author: thomas $
+ * Last modified: $Date: 2004/01/08 17:07:44 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.81 $
+ * @version $Revision: 1.82 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -70,19 +70,30 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * @param month
 	 */
 	public void startPostingBatch(Date month, Date readDate, String schoolCategory, IWContext iwc)
-		throws IDOLookupException, FinderException, SchoolCategoryNotFoundException {
+		throws IDOLookupException, FinderException, SchoolCategoryNotFoundException, BatchAlreadyRunningException {
 		//Select correct thread to start
 		SchoolCategoryHome sch = (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
 		if (sch.findChildcareCategory().getCategory().equals(schoolCategory)) {
-			new InvoiceChildcareThread(month, iwc).start();
+			if(BatchRunSemaphore.getChildcareRunSemaphore()){
+				new InvoiceChildcareThread(month, iwc).start();
+			}else{
+				throw new BatchAlreadyRunningException("Childcare");
+			}
 		} else if (sch.findElementarySchoolCategory().getCategory().equals(schoolCategory)) {
-			new PaymentThreadElementarySchool(month, iwc).start();
+			if(BatchRunSemaphore.getElementaryRunSemaphore()){
+				new PaymentThreadElementarySchool(month, iwc).start();
+			}else{
+				throw new BatchAlreadyRunningException("ElementarySchool");
+			}
 		} else if (sch.findHighSchoolCategory().getCategory().equals(schoolCategory)) {
-			new PaymentThreadHighSchool(readDate, iwc).start();
+			if(BatchRunSemaphore.getHighRunSemaphore()){
+				new PaymentThreadHighSchool(readDate, iwc).start();
+			}else{
+				throw new BatchAlreadyRunningException("HighSchool");
+			}
 		} else {
 			logWarning ("Error: couldn't find any Schoolcategory for billing named " + schoolCategory);
-			throw new SchoolCategoryNotFoundException(
-																								"Couldn't find any Schoolcategory for billing named " + schoolCategory);
+			throw new SchoolCategoryNotFoundException("Couldn't find any Schoolcategory for billing named " + schoolCategory);
 		}
 	}
 	

@@ -70,6 +70,7 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 			createNewErrorMessage("invoice.severeError", "invoice.DBSetupProblem");
 		}
 		batchRunLoggerDone();
+		BatchRunSemaphore.releaseHighRunSemaphore();
 	}
 
 	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions) throws RegulationException {

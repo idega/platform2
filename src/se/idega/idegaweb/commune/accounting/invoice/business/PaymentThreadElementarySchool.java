@@ -54,5 +54,6 @@ public class PaymentThreadElementarySchool extends PaymentThreadSchool{
 			createNewErrorMessage("invoice.severeError","invoice.DBSetupProblem");
 		}
 		batchRunLoggerDone();
+		BatchRunSemaphore.releaseElementaryRunSemaphore();
 	}
 }

@@ -5,7 +5,9 @@ import java.sql.Date;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.invoice.business.BatchAlreadyRunningException;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.business.SchoolCategoryNotFoundException;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 
@@ -117,12 +119,12 @@ public class InvoiceBatchStarter extends AccountingBlock{
 				try{
 					readDate = new IWTimestamp(iwc.getParameter(PARAM_READ_DATE)).getDate();
 				}catch(IllegalArgumentException e){
-					add(getLocalizedText("invbr.Please_provide_a_valid_date","Please provide a proper date."));
+					add(getErrorText(getLocalizedString("invbr.Please_provide_a_valid_date","Please provide a proper date.",iwc)));
 					return;
 				}
 			}
 			invoiceBusiness.startPostingBatch(month, readDate, schoolCategory, iwc);
-			add(getLocalizedLabel("invbr.batchrun_started","Batchrun started."));
+			add(getLocalizedText("invbr.batchrun_started","Batchrun started"));
 			add(new Break());
 			if(link!=null)
 			{
@@ -133,6 +135,11 @@ public class InvoiceBatchStarter extends AccountingBlock{
 			} else {
 				System.out.println("WARNING need to set the Link property for invoice batch start block!");
 			}
+		} catch (SchoolCategoryNotFoundException e) {
+			add(getErrorText(getLocalizedString("invbr.please_select_valid_school_category","Please select valid school category.",iwc)));
+			e.printStackTrace();
+		} catch (BatchAlreadyRunningException e) {
+			add(getErrorText(getLocalizedString("invbr.batchrun_already_started","Batchrun already started",iwc)));
 		} catch (Exception e) {
 			add(new ExceptionWrapper(e));
 		}

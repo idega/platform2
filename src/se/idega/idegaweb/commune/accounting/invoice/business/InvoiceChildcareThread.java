@@ -110,21 +110,17 @@ public class InvoiceChildcareThread extends BillingThread{
 				regularPayment();
 				//VAT
 				//calcVAT();
-				batchRunLoggerDone();
 			}else{
 				createNewErrorMessage("invoice.severeError","invoice.Posts_with_status_L_or_H_already_exist");
-				batchRunLoggerDone();
 			}
 		} catch (NotEmptyException e) {
 			createNewErrorMessage("invoice.severeError", "invoice.Severe_MustFirstEmptyOldData");
-			batchRunLoggerDone();
 			e.printStackTrace();
 		} catch (Exception e) {
 			//This is a spawned off thread, so we cannot report back errors to the browser, just log them
 			e.printStackTrace();
 			if (null != errorRelated) {
 				errorRelated.append(e);
-				errorRelated.logToConsole();
 				createNewErrorMessage(errorRelated,"invoice.DBSetupProblem");
 			}else{
 				StringBuffer message = new StringBuffer();
@@ -134,8 +130,9 @@ public class InvoiceChildcareThread extends BillingThread{
 				}
 				createNewErrorMessage(message.toString(),"invoice.DBSetupProblem");
 			}
-			batchRunLoggerDone();
 		}
+		batchRunLoggerDone();
+		BatchRunSemaphore.releaseChildcareRunSemaphore();
 	}
 	
 	/**
