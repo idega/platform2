@@ -44,6 +44,10 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 	private static final String COLUMN_FROM = "periode_from";
 	private static final String COLUMN_SCHOOL_TYPE_ID = "school_type_id";
 	private static final String COLUMN_VAT_RULE_REGULATION_ID="VAT_RULE_REGULATION_ID";
+	private static final String COLUMN_EDIT_NAME = "edit_name";
+	private static final String COLUMN_EDIT_DATE = "edit_date";
+	private static final String COLUMN_CREATED_NAME = "created_date";
+	private static final String COLUMN_CREATED_DATE = "created_name";	
 	
 	private static final String ENTITY_NAME = "cacc_regular_payment_entry";
 	
@@ -65,7 +69,11 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 		addAttribute(COLUMN_PLACING, "", true, true, java.lang.String.class);
 		addAttribute(COLUMN_TO, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_FROM, "", true, true, java.sql.Date.class);
-//		addAttribute(COLUMN_SCHOOL_TYPE_ID, "", true, true, java.lang.Integer.class);		
+//		addAttribute(COLUMN_SCHOOL_TYPE_ID, "", true, true, java.lang.Integer.class);	
+		addAttribute(COLUMN_EDIT_NAME, "", true, true, java.lang.String.class);
+		addAttribute(COLUMN_EDIT_DATE, "", true, true, java.sql.Date.class);
+		addAttribute(COLUMN_CREATED_NAME, "", true, true, java.lang.String.class);
+		addAttribute(COLUMN_CREATED_DATE, "", true, true, java.sql.Date.class);	
 
 		addManyToOneRelationship(COLUMN_USER_ID, User.class);
 		addManyToOneRelationship(COLUMN_SCHOOL_ID, School.class);
@@ -350,6 +358,68 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 	public void setSchoolTypeId(int schoolTypeId) {
 		setColumn(COLUMN_SCHOOL_TYPE_ID, schoolTypeId);
 	}	
+	
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getCreatedDate()
+	 */
+	public Date getCreatedDate() {
+		return getDateColumnValue(COLUMN_CREATED_DATE);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getCreatedName()
+	 */
+	public String getCreatedName() {
+		return getStringColumnValue(COLUMN_CREATED_NAME);	
+	}
+
+
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getEditDate()
+	 */
+	public Date getEditDate() {
+		return getDateColumnValue(COLUMN_EDIT_DATE);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getEditdName()
+	 */
+	public String getEditName() {
+		return getStringColumnValue(COLUMN_EDIT_NAME);	
+	}
+	
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setCreatedDate(java.sql.Date)
+	 */
+	public void setCreatedDate(Date date) {
+		setColumn(COLUMN_CREATED_DATE, date);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setCreatedSign(java.lang.String)
+	 */
+	public void setCreatedSign(String name) {
+		setColumn(COLUMN_CREATED_NAME, name);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setEditDate(java.sql.Date)
+	 */
+	public void setEditDate(Date date) {
+		setColumn(COLUMN_EDIT_DATE, date);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setEditSign(java.lang.String)
+	 */
+	public void setEditSign(String name) {
+		setColumn(COLUMN_EDIT_NAME, name);
+	}		
 
 
 	/**
