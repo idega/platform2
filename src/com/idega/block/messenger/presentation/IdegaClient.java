@@ -31,7 +31,7 @@ public class IdegaClient extends Applet implements Runnable{
   private static String SESSION_ID = "session_id";
   private static String USER_ID = "user_id";
   private static String SERVLET_URL = "servlet_url";
-
+  private static String SERVER_ROOT_URL = "server_root_url";
 
   private Thread t;
 
@@ -70,6 +70,7 @@ public class IdegaClient extends Applet implements Runnable{
       sessionId = this.getParameter(SESSION_ID, "noId");
       userId = this.getParameter(USER_ID, "-1");
       servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
+      hostURL = new URL(this.getParameter(SERVER_ROOT_URL, "http://iw.idega.is"));
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -85,7 +86,6 @@ public class IdegaClient extends Applet implements Runnable{
   /**Component initialization*/
   private void initializeEngine() throws Exception {
     threadSleep = 1000*checkTimer;
-    hostURL = getCodeBase();
   }
 
   public void run(){

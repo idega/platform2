@@ -23,6 +23,7 @@ public class Messenger extends JModuleObject {
   private static String SESSION_ID = "session_id";
   private static String USER_ID = "user_id";
   private static String SERVLET_URL = "servlet_url";
+  private static String SERVER_ROOT_URL = "server_root_url";
 
 
   public Messenger() {
@@ -42,6 +43,7 @@ public class Messenger extends JModuleObject {
         messenger.setParam(SESSION_ID,modinfo.getSession().getId());
         messenger.setParam(USER_ID,Integer.toString(com.idega.block.login.business.LoginBusiness.getUser(modinfo).getID()));
         messenger.setParam(SERVLET_URL,com.idega.block.messenger.servlet.ClientServer.SERVLET_URL);
+        messenger.setParam(SERVER_ROOT_URL,modinfo.getServerName());
       }
       add(messenger);
     }
