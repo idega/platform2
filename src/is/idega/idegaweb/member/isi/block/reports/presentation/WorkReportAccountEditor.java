@@ -97,6 +97,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private boolean isReadOnly = false;
   private List leaguesWhereTheAccountIsOutOfBalance = null;
   
+  private String errorMessageStyle = "errorMessage";
+  
   // this number format is shared by the converters
   NumberFormat currencyNumberFormat = null;
   
@@ -469,8 +471,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 //      text.setBold();
 //      text.setFontColor("#FF0000");
       errorMessageTable.add(text);
+			add(errorMessageTable);
     }
-    add(errorMessageTable);
+    
     
     // define entity browser
     EntityBrowser browser = getEntityBrowser(workReportAccountGroupHelpers, resourceBundle, form);
@@ -497,6 +500,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 		errorMessageTable.setCellpaddingAndCellspacing(0);
 		errorMessageTable.setWidth(Table.HUNDRED_PERCENT);
 		errorMessageTable.setAlignment("center");
+		errorMessageTable.setAlignment(1,1,"center");
+		errorMessageTable.setStyleClass(1,1,errorMessageStyle);
   	
 		return errorMessageTable;
 	}

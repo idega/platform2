@@ -101,6 +101,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   private static final String FAX = WorkReportBoardMember.class.getName()+".FAX";
   private static final String EMAIL = WorkReportBoardMember.class.getName()+".EMAIL";
   
+  private String errorMessageStyle = "errorMessage";
+  
   // add these columns to this list that should be parsed
   private static List FIELD_LIST;
     
@@ -325,23 +327,26 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
         return result;          
       }
     };
+		Table errorMessageTable = getErrorMessageTable();
     // get new entry message
     if (newMemberMessage != null) {
       Text text = new Text(newMemberMessage);
-      text.setBold();
-      text.setFontColor("#FF0000");
-      add(text);
+//      text.setBold();
+//      text.setFontColor("#FF0000");
+      errorMessageTable.add(text);
+      add(errorMessageTable);
     }
     // get error message
-    Table errorMessageTable = getErrorMessageTable();
+    
     if (personalIdnotCorrect) {
       String message = resourceBundle.getLocalizedString("wr_editor_ssn_not_valid", "The input of the social security number is not valid");
       Text text = new Text(message);
 //      text.setBold();
 //      text.setFontColor("#FF0000");
       errorMessageTable.add(text);
+			add(errorMessageTable);
     }
-    add(errorMessageTable);
+    
 
     Collections.sort(list, comparator);
     EntityBrowser browser = getEntityBrowser(list, resourceBundle, form);
@@ -375,6 +380,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
 		errorMessageTable.setCellpaddingAndCellspacing(0);
 		errorMessageTable.setWidth(Table.HUNDRED_PERCENT);
 		errorMessageTable.setAlignment("center");
+		errorMessageTable.setAlignment(1,1,"center");
+		errorMessageTable.setStyleClass(1,1,errorMessageStyle);
   	
 		return errorMessageTable;
 	}
