@@ -70,7 +70,7 @@ public class HouseHoldViewer extends AccountingBlock {
 	private ApplicationForm appForm = null;
 	private int nameInputLength = 25;
 	private int personalIdInputLength = 15;
-	private boolean constrainSearchToUniqueIdentifier = true;
+	private boolean constrainSearchToUniqueIdentifier = false;
 	
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
@@ -85,22 +85,26 @@ public class HouseHoldViewer extends AccountingBlock {
 		String prm = UserSearcher.getUniqueUserParameterName("one");
 		if (iwc.isParameterSet(prm)) {
 			Integer firstUserID = Integer.valueOf(iwc.getParameter(prm));
+			if(firstUserID.intValue()>0){
 			try {
 				firstUser = getUserService(iwc).getUser(firstUserID);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
 			}
+			}
 			//add(firstUserID.toString());
 		}
 		prm = UserSearcher.getUniqueUserParameterName("two");
 		if (iwc.isParameterSet(prm)) {
 			Integer secondUserID = Integer.valueOf(iwc.getParameter(prm));
+			if(secondUserID.intValue()>0){
 			try {
 				secondUser = getUserService(iwc).getUser(secondUserID);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
+			}
 			}
 			//add(secondUserID.toString());
 		}
@@ -127,7 +131,7 @@ public class HouseHoldViewer extends AccountingBlock {
 					//System.out.println("parential children "+parentialChildren.size());
 				}
 				catch (NoChildrenFound e2) {
-					e2.printStackTrace();
+					
 				}
 				if (parentialChildren != null)
 					childs.addAll(parentialChildren);
@@ -182,6 +186,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		searcherOne.setFirstNameLength(nameInputLength);
 		searcherOne.setLastNameLength(nameInputLength);
 		searcherOne.setConstrainToUniqueSearch(constrainSearchToUniqueIdentifier);
+		searcherOne.addMonitoredSearchIdentifier("two");
 		UserSearcher searcherTwo = new UserSearcher();
 		searcherTwo.setShowMiddleNameInSearch(false);
 		searcherTwo.setOwnFormContainer(false);
@@ -193,6 +198,9 @@ public class HouseHoldViewer extends AccountingBlock {
 		searcherTwo.setFirstNameLength(nameInputLength);
 		searcherTwo.setLastNameLength(nameInputLength);
 		searcherTwo.setConstrainToUniqueSearch(constrainSearchToUniqueIdentifier);
+		searcherTwo.addClearButtonIdentifiers("one");
+		searcherTwo.setShowMultipleResetButton(true);
+		searcherTwo.addMonitoredSearchIdentifier("one");
 		String prmTwo = UserSearcher.getUniqueUserParameterName("two");
 		String prmOne = UserSearcher.getUniqueUserParameterName("one");
 		if (iwc.isParameterSet(prmTwo)) {
