@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.67 2003/11/21 16:28:58 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.68 2003/11/23 23:42:31 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -10,6 +10,9 @@
 
 package se.idega.idegaweb.commune.accounting.regulations.business;
 
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.business.NoCustodianFound;
+
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
@@ -48,6 +52,8 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNo;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNoHome;
+import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
+import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 import com.idega.block.school.data.SchoolCategoryBMPBean;
@@ -59,6 +65,7 @@ import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -470,9 +477,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL)) {
 						int id = regCond.getIntervalID();
-						
+
 						switch (id) {
-							case 1 : 
+							case 1 :
 								if (1 > value.intValue() || value.intValue() > 2)
 									match = false;
 								break;
@@ -491,7 +498,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							case 5 :
 								if (value.intValue() > 5)
 									match = false;
-								break;	
+								break;
 						}
 					}
 				}
@@ -509,7 +516,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						int id = regCond.getIntervalID();
 						//I'll just use the fact that this is hardcoded.						
 						switch (id) {
-							case 1 : 
+							case 1 :
 								if (1 > value.intValue() || value.intValue() > 25)
 									match = false;
 								break;
@@ -528,15 +535,15 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							case 5 :
 								if (value.intValue() < 25)
 									match = false;
-								break;	
+								break;
 							case 6 :
 								if (value.intValue() > 13)
 									match = false;
-								break;	
+								break;
 							case 7 :
 								if (value.intValue() < 14)
 									match = false;
-								break;	
+								break;
 						}
 					}
 				}
@@ -554,7 +561,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						int id = regCond.getIntervalID();
 						//I'll just use the fact that this is hardcoded.						
 						switch (id) {
-							case 1 : 
+							case 1 :
 								if (1 != value.intValue())
 									match = false;
 								break;
@@ -576,22 +583,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 				if (!match)
 					return 0;
-			}			
+			}
 		}
 
 		return 1;
 	}
-
-//	private boolean checkAgeIntervals(int age, String condition) {
-//		if (condition.indexOf("-") > 0) {
-//			
-//		}
-//		else if (condition.indexOf(">=") > 0) {
-//			
-//		}
-//		
-//		return true;
-//	}
 
 	/**
 	 * Gets a Condition by Regulation ID and Index
@@ -1031,7 +1027,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 */
 	public Collection findAllHourIntervals() {
 		ArrayList arr = new ArrayList();
-        int index = 1;
+		int index = 1;
 		arr.add(new Object[] { new Integer(index++), "1-25" });
 		arr.add(new Object[] { new Integer(index++), "26-35" });
 		arr.add(new Object[] { new Integer(index++), ">=36" });
@@ -1359,7 +1355,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		String regSpecType,
 		Collection condition,
 		float totalSum,
-		ChildCareContract contract) {
+		ChildCareContract contract)
+		throws RegulationException {
 
 		PostingDetail postingDetail = null;
 
@@ -1414,22 +1411,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (match.size() == 1) {
 					Regulation res = (Regulation) match.get(0);
 
-					if (res.getSpecialCalculation() != null) {
-						//String calcType = res.getSpecialCalculation().getSpecialCalculationType();
-						//if statements for each type. get info from joakim
-					}
-					else {
-						postingDetail = new PostingDetail();
-						postingDetail.setAmount(res.getAmount().floatValue());
-						postingDetail.setRuleSpecType(res.getRegSpecType().getLocalizationKey());
-						postingDetail.setTerm(res.getName());
-						//						postingDetail.setVat(res.getv);
-						//						postingDetail.setVatRegulationID(1);
-						return postingDetail;
-					}
+					postingDetail = getPostingDetailFromRegulation(res, condition, contract, null, period, totalSum);
 				}
 				else if (match.size() > 1) {
-					//What to do here??? throw new Exception("Too many regulation match conditions");
+					throw new RegulationException("reg_exp_to_many_results", "Too many regulation match conditions");
 				}
 			}
 		}
@@ -1442,17 +1427,147 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			postingDetail = null;
 		}
 
-		//Just for testing, please remove when done with the real code
-		if (postingDetail == null) {
-			postingDetail = new PostingDetail();
-			postingDetail.setAmount(100f);
-			postingDetail.setRuleSpecType("TestRule"); //??? String
-			postingDetail.setTerm("Testing (JJ)");
-			postingDetail.setVat(32.0f);
-			postingDetail.setVatRegulationID(1);
+		return postingDetail;
+	}
+
+	//	public PostingDetail getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
+	//		String operation,
+	//		String flow,
+	//		Date period,
+	//		String conditionType,
+	//		String regSpecType,
+	//		Collection condition,
+	//		float totalSum,
+	//		ChildCareContract contract) {
+
+	private PostingDetail getPostingDetailFromRegulation(Regulation reg, Collection conditions, ChildCareContract contract, SchoolClassMember placement, Date period, float total_sum) {
+		PostingDetail ret = null;
+		if (reg.getSpecialCalculation() != null) {
+			String type = reg.getSpecialCalculation().getSpecialCalculationType();
+			if (type.equals("cacc_sp_calc_type.subv")) {
+				PostingDetail d = null;
+				try {
+					d =
+						getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
+							(String) reg.getOperation().getPrimaryKey(),
+							reg.getPaymentFlowType().getLocalizationKey(),
+							period,
+							"cacc_condition_type.formula",
+							"z_cacc_reg_spec.checktaxa",
+							conditions,
+							total_sum,
+							contract);
+				}
+				catch (RegulationException e) {
+					e.printStackTrace();
+				}
+				catch (EJBException e) {
+					e.printStackTrace();
+				}
+				if (d != null) {
+					ret = new PostingDetail();
+					ret.setAmount(total_sum - d.getAmount());
+					ret.setRuleSpecType(d.getRuleSpecType());
+					ret.setTerm(d.getTerm());
+					//				ret.setVat(32.0f);
+					//				ret.setVatRegulationID(1);
+				}
+			}
+			else if (type.equals("cacc_sp_calc_type.syskon")) {
+				float amount = reg.getDiscount() * total_sum / 100;
+				ret = new PostingDetail();
+				ret.setAmount(amount);
+				ret.setRuleSpecType(reg.getLocalizationKey());
+				ret.setTerm(reg.getName());
+				//				ret.setVat(32.0f);
+				//				ret.setVatRegulationID(1);
+			}
+			else if (type.equals("cacc_sp_calc_type.maxtaxa")) {
+				User child = null;
+				if (contract != null) {
+					child = contract.getChild();
+				}
+				else if (placement != null) {
+					child = placement.getStudent();
+				}
+
+				//				float amount = 0;
+				boolean missingIncome = false;
+				float income = 0;
+				if (child != null) {
+					try {
+						//get the family
+						Collection cust = getMemberFamilyLogic().getCustodiansFor(child);
+						if (cust != null && !cust.isEmpty()) {
+							Iterator it = cust.iterator();
+							while (it.hasNext()) {
+								User custodian = (User) it.next();
+								try {
+									BruttoIncome userIncome = getUserInfoService().getBruttoIncomeHome().findLatestByUser((Integer) custodian.getPrimaryKey());
+									if (userIncome != null) {
+										income += userIncome.getIncome().floatValue();
+									}
+									else {
+										missingIncome = true;
+										break;
+									}
+								}
+								catch (EJBException e1) {
+									e1.printStackTrace();
+									missingIncome = true;
+									break;
+								}
+								catch (FinderException e1) {
+									e1.printStackTrace();
+									missingIncome = true;
+									break;
+								}
+							}
+						}
+					}
+					catch (NoCustodianFound e) {
+						e.printStackTrace();
+					}
+					catch (RemoteException e) {
+						e.printStackTrace();
+					}
+
+					if (!missingIncome) {
+						float perc = reg.getDiscount();
+						float amount = income * perc / 100;
+						if (amount < total_sum) {
+							ret = new PostingDetail();
+							ret.setAmount(amount - total_sum);
+							ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
+							ret.setTerm(reg.getName());
+							//			ret.setVat(32.0f);
+							//			ret.setVatRegulationID(1);
+						}
+					}
+				}
+			}
+			else if (type.equals("cacc_sp_calc_type.laginkomst")) {
+
+			}
+		}
+		else {
+			ret = new PostingDetail();
+			ret.setAmount(reg.getAmount().floatValue());
+			ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
+			ret.setTerm(reg.getName());
+			//			ret.setVat(32.0f);
+			//			ret.setVatRegulationID(1);
 		}
 
-		return postingDetail;
+		return ret;
+	}
+
+	protected MemberFamilyLogic getMemberFamilyLogic() throws RemoteException {
+		return (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
+	}
+
+	protected UserInfoService getUserInfoService() throws RemoteException {
+		return (UserInfoService) getServiceInstance(UserInfoService.class);
 	}
 
 	/**
@@ -1494,7 +1609,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				condTypeID = -1;
 			}
 
-
 			Collection reg = home.findRegulations(period, period, operation, flowID, condTypeID, -1);
 			if (reg != null && !reg.isEmpty()) {
 				Iterator it = reg.iterator();
@@ -1515,21 +1629,23 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 		return match;
 	}
-	
+
 	/**
 	 * 
 	 * @param regulation
 	 * @return
 	 */
-	
-	public SchoolType getSchoolType(Regulation regulation){
+
+	public SchoolType getSchoolType(Regulation regulation) {
 		Collection cond = null;
-		try{
+		try {
 			cond = getConditionHome().findAllConditionsByRegulation(regulation);
-		} catch (RemoteException ex) {
+		}
+		catch (RemoteException ex) {
 			ex.printStackTrace();
 			return null;
-		} catch (FinderException ex) {
+		}
+		catch (FinderException ex) {
 			ex.printStackTrace();
 			return null;
 		}
@@ -1552,10 +1668,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					return null;
 				}
 			}
-		}		
+		}
 		return null;
 	}
-		
 
 	/**
 	 * Returns PostingDetail (the text, sum, vat and vat type) calculated for the specific regulation
@@ -1566,22 +1681,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @return PostingDetail
 	 */
 	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract, Regulation regulation) {
-
-		PostingDetail postingDetail = new PostingDetail();
-
-		//Silly line to prevent the function from generation unused variable warning. Remove when logic created.
-		System.out.println(totalSum + " " + contract + " " + regulation);
-
-		//Insert code here to create postingDetail
-
-		//Just for testing, please remove when done with the real code
-		postingDetail.setAmount(100f);
-		postingDetail.setRuleSpecType("cacc_reg_spec_type.check");
-		postingDetail.setTerm("Testing (JJ)");
-		postingDetail.setVat(6.0f);
-		postingDetail.setVatRegulationID(1);
-
-		return postingDetail;
+		return getPostingDetailFromRegulation(regulation, null, contract, null, null, totalSum);
 	}
 
 	/**
@@ -1594,22 +1694,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @return
 	 */
 	public PostingDetail getPostingDetailForPlacement(float totalSum, SchoolClassMember schoolClassMember, Regulation regulation) {
-
-		PostingDetail postingDetail = new PostingDetail();
-
-		//Silly line to prevent the function from generation unused variable warning. Remove when logic created.
-		System.out.println(totalSum + " " + schoolClassMember + " " + regulation);
-
-		//Insert code here to create postingDetail
-
-		//Just for testing, please remove when done with the real code
-		postingDetail.setAmount(200f);
-		postingDetail.setRuleSpecType("cacc_reg_spec_type.check");
-		postingDetail.setTerm("Testing2 (JJ)");
-		postingDetail.setVat(12.0f);
-		postingDetail.setVatRegulationID(1);
-
-		return postingDetail;
+		return getPostingDetailFromRegulation(regulation, null, null, schoolClassMember, null, totalSum);
 	}
 
 	/**

@@ -30,6 +30,7 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
 import se.idega.idegaweb.commune.accounting.regulations.business.IntervalConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
@@ -168,17 +169,23 @@ public class InvoiceChildcareThread extends BillingThread{
 					conditions.add(new ConditionParameter(IntervalConstant.HOURS,new Integer(hours)));
 					conditions.add(new ConditionParameter(IntervalConstant.AGE,new Integer(age.getYears())));
 	
-					//Select a specific row from the regulation, given the following restrictions
-					postingDetail = regBus.
-					getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
-					category.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
-						PaymentFlowConstant.OUT, 	//The payment flow is out
-						currentDate,					//Current date to select the correct date range
-						RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
-						RuleTypeConstant.DERIVED,	//The conditiontype
-						conditions,						//The conditions that need to fulfilled
-						totalSum,						//Sent in to be used for "Specialutrakning"
-						contract);						//Sent in to be used for "Specialutrakning"
+					try {
+						//Select a specific row from the regulation, given the following restrictions
+						postingDetail = regBus.
+						getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
+						category.getLocalizedKey(),//The ID that selects barnomsorg in the regulation
+							PaymentFlowConstant.OUT, 	//The payment flow is out
+							currentDate,					//Current date to select the correct date range
+							RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
+							RuleTypeConstant.DERIVED,	//The conditiontype
+							conditions,						//The conditions that need to fulfilled
+							totalSum,						//Sent in to be used for "Specialutrakning"
+							contract);						//Sent in to be used for "Specialutrakning"
+					}
+					catch (RegulationException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 		
 					Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
 					RegulationSpecType regSpecType = getRegulationSpecTypeHome().
