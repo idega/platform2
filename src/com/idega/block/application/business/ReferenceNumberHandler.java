@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberHandler.java,v 1.4 2001/11/29 11:16:16 palli Exp $
+ * $Id: ReferenceNumberHandler.java,v 1.5 2001/12/04 12:26:35 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -64,15 +64,14 @@ public class ReferenceNumberHandler implements IWEventListener {
   }
 
   /**
-   * Gets the decyphered reference number from the IWContext and does than
-   * delete the sessionAttribute.
+   * Gets the decyphered reference number from the IWContext.
    *
    * @param iwc The IWContext for the session
    * @return
    */
   public static String getReferenceNumber(IWContext iwc) {
     String ref = (String)iwc.getSessionAttribute(referenceNumber_);
-    iwc.removeSessionAttribute(referenceNumber_);
+//    iwc.removeSessionAttribute(referenceNumber_);
     return(ref);
   }
 }
