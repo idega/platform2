@@ -597,9 +597,11 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		 */
 		document.close();
 		ICFile file = getICFileHome().create();
-		/* *** writing pdf to cachefolder manually
+		
 		if(!fileName.endsWith(".pdf") &&  !fileName.endsWith(".PDF"))
 		    fileName +=".pdf";
+		
+		/* *** writing pdf to cachefolder manually
 		String folder = getIWApplicationContext().getIWMainApplication().getRealPath(getIWApplicationContext().getIWMainApplication().getCacheDirectoryURI()+"/prints");
 		File tfile = FileUtil.getFileAndCreateIfNotExists(folder,fileName);
 		FileOutputStream fos = new FileOutputStream(tfile);
