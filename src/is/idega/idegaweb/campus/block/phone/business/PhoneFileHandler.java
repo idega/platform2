@@ -135,15 +135,15 @@ public class PhoneFileHandler {
 	public void process3(File PhoneFile) throws java.rmi.RemoteException,FinderException {
 	//	Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(null);
 		Map M2 = PhoneFinder.mapOfAccountsWithPhoneNumber();
-		DateFormat  df = DateFormat.getDateInstance(DateFormat.SHORT,new Locale("is","IS"));
+		//DateFormat  df = DateFormat.getDateInstance(DateFormat.SHORT,new Locale("is","IS"));
 		// If we can assess something
 		if (/*M != null &&*/ M2 != null) {
 			try {
 				long phonetime = -1;
 				long from = -1;
 				long to = -1;
-				long deliverTime = -1;
-				long returnTime = -1;
+				//long deliverTime = -1;
+				//long returnTime = -1;
 
 				FileReader fin = new FileReader(PhoneFile);
 				LineNumberReader lin = new LineNumberReader(fin);
@@ -162,11 +162,11 @@ public class PhoneFileHandler {
 					IWTimestamp stamp;
 					int count = 10;
 					int linecount = 1, noAccountCount = 0, errorCount = 0, numberCount = 0;
-					Vector vError = new Vector();
-					Vector vNoAccount = new Vector();
+					//Vector vError = new Vector();
+					//Vector vNoAccount = new Vector();
 					Hashtable phoneNumbers = new Hashtable();
 					AccountPhoneEntry ape;
-					Integer iAccountId;
+					//Integer iAccountId;
 					Account eAccount;
 					AccountPhone ap;
 					Collection accountList;
