@@ -58,12 +58,12 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 	private IWResourceBundle iwrb;
 	private List failedInserts;
 	
-	private String mainStyleClass = "main";
+//	private String mainStyleClass = "main";
 
 
 	public ClubMemberExchangeWindow() {
-		setHeight(260);
-		setWidth(680);	
+		setHeight(300);
+		setWidth(700);	
 		setResizable(true);
 	}
 	
@@ -124,11 +124,17 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 	private void addForm(IWContext iwc) {
 		Form form = new Form();
 		
+		Table mainTable = new Table();
+		mainTable.setWidth(660);
+		mainTable.setHeight(200);
+		mainTable.setCellpadding(0);
+		mainTable.setCellspacing(0);
+		
 		Table table = new Table(3,5);
-		form.add(table);
-		table.setStyleClass(mainStyleClass);
-		table.setWidth(660);
-		table.setHeight(200);
+		form.add(mainTable);
+		table.setStyleClass(MAIN_STYLECLASS);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(160);
 		table.mergeCells(1,1,3,1);
 		table.mergeCells(2,5,3,5);
 //		table.setWidthAndHeightToHundredPercent();
@@ -193,10 +199,25 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 		table.add(new Text(iwrb.getLocalizedString("clubexchangewindow.going_to","Going to : ")), 1,4 );
 		table.add(divisionTo,2,4);
 		table.add(initDate,3,4);
-		table.add(help,1,5);
-		table.add(save,2,5);
-		table.add(Text.NON_BREAKING_SPACE,2,5);
-		table.add(close,2,5);
+		
+		Table bottomTable = new Table();
+		bottomTable.setCellpadding(0);
+		bottomTable.setCellspacing(5);
+		bottomTable.setWidth(Table.HUNDRED_PERCENT);
+		bottomTable.setHeight(39);
+		bottomTable.setStyleClass(MAIN_STYLECLASS);
+		bottomTable.add(help,1,1);
+		bottomTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
+		bottomTable.add(save,2,1);
+		bottomTable.add(Text.getNonBrakingSpace(),2,1);
+		bottomTable.add(close,2,1);
+		
+		mainTable.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
+		mainTable.setVerticalAlignment(1,3,Table.VERTICAL_ALIGN_TOP);
+		mainTable.add(table,1,1);
+		mainTable.add(bottomTable,1,3);
+
+		
 		
 		//changed from add(form) - birna
 		add(form, iwc);
