@@ -1,10 +1,10 @@
 package com.idega.block.dataquery.data;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
+import java.util.Map;
 import com.idega.util.datastructures.SortedHashMatrix;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
@@ -27,8 +27,14 @@ public class QueryResult implements JRDataSource {
   
   private static final String DEFINITION = "definition";
   private static final String CONTENT = "content";
-    
-  private SortedMap fields = new TreeMap();
+  
+  private static final String DEFAULT_VALUE = "[not found]";
+  
+  private List fieldOrder = new ArrayList();  
+  private Map fields = new HashMap();
+  
+  private Map designIdFieldIdMapping = null;
+  
   private SortedHashMatrix cells = new SortedHashMatrix();
   
   private Iterator cellIterator = null;
@@ -62,15 +68,29 @@ public class QueryResult implements JRDataSource {
        
  
   public void addField(QueryResultField field) {
-    fields.put(field.getId(), field);
+    String id = field.getId();
+    fields.put(id, field);
+    // store the order of the fields
+    if (fieldOrder.contains(id))  {
+      fieldOrder.remove(id);
+    }
+    fieldOrder.add(id);
   }
   
   public void addCell(QueryResultCell cell) {
     cells.put(cell.getId(), cell.getFieldId(), cell);
   }
   
-  public String getField(String id) {
-    return (String) fields.get(id);
+  public QueryResultField getField(String id) {
+    return (QueryResultField) fields.get(id);
+  }
+  
+  public QueryResultField getField(int orderNumber) {
+    if (orderNumber < 0 || orderNumber >= fieldOrder.size()) {
+      return null;
+    }
+    String id = (String) fieldOrder.get(orderNumber);
+    return getField(id);
   }
   
   public String getCell(String id, String fieldId)  {
@@ -82,9 +102,11 @@ public class QueryResult implements JRDataSource {
     XMLElement definition = new XMLElement(DEFINITION);
     XMLElement content = new XMLElement(CONTENT);
     
-    Iterator fieldsIterator = fields.values().iterator();
+    Iterator fieldsIterator = fieldOrder.iterator();
     while (fieldsIterator.hasNext())  {
-      QueryResultField field = (QueryResultField) fieldsIterator.next();
+      // store the order of the fields
+      String id = (String) fieldsIterator.next();
+      QueryResultField field = (QueryResultField) fields.get(id);
       XMLElement fieldElement = field.convertToXML();
       definition.addContent(fieldElement);
     }
@@ -101,14 +123,25 @@ public class QueryResult implements JRDataSource {
     return queryResult;
   }
   
+  
+  public void mapDesignIdToFieldId(String designId, String fieldId)  {
+    if (designIdFieldIdMapping == null)   {
+      designIdFieldIdMapping = new HashMap();
+    }
+    designIdFieldIdMapping.put(designId, fieldId);
+  }
+  
   /** @see dori.jasper.engine.JRDataSource#next()
    * 
    */
   public boolean next() throws JRException  {
+    // the very first time we have to initialize the iterator  
     if (cellIterator == null) {
       cellIterator = cells.firstKeySet().iterator();
     }
+    // now ask the iterator
     if (cellIterator.hasNext()) {
+      // compare with the behaviour of a result set...
       currentCellId = (String) cellIterator.next();
       return true;
     }
@@ -126,8 +159,17 @@ public class QueryResult implements JRDataSource {
    */
   public Object getFieldValue(JRField jrField) throws JRException {
     String fieldId = jrField.getName();
-    return cells.get(currentCellId, fieldId);
+    // if mapping is required use the map
+    if (designIdFieldIdMapping != null) {
+      // if there is an entry use this one
+      String id = (String) designIdFieldIdMapping.get(fieldId);
+      if (id != null) {
+        fieldId = id;
+      }
+    }
+    // fetch the cell
+    QueryResultCell cell = (QueryResultCell) cells.get(currentCellId, fieldId);
+    // return the value of the cell
+    return (cell == null) ? DEFAULT_VALUE : cell.getValue();
   }
-
-  
 }

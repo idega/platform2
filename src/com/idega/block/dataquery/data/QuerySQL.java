@@ -1,12 +1,13 @@
 package com.idega.block.dataquery.data;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.idega.block.dataquery.business.QueryConditionPart;
 import com.idega.block.dataquery.business.QueryEntityPart;
@@ -27,15 +28,15 @@ public class QuerySQL {
   
   private final String DOT = ".";
   
+  private Set usedEntities = new HashSet();
   // source
   private String sourceEntityTable;
-  // tables
-  private Map entityTable = new HashMap();
+  // entities
+  private Map entityQueryEntity = new HashMap();
   // select fields
-  private Map fieldColumns = new HashMap();
-  private Map fieldTable = new HashMap();
-  private Map fieldDisplayName = new HashMap();
-  private Map fieldFunction = new HashMap();
+  private Map fieldQueryField = new HashMap();
+  // conditions
+  private List conditions = new ArrayList();
   
   private SQLQueryExpression query = null;
   
@@ -64,10 +65,8 @@ public class QuerySQL {
     if (queryEntity == null)  {
       return;
     }
-    sourceEntityTable = queryEntity.getBeanClassName();
-    String tableName = getTableName(sourceEntityTable);
     String name = queryEntity.getName();
-    entityTable.put(name, tableName);
+    entityQueryEntity.put(name, queryEntity);
   }
     
   private void setRelatedEntities(QueryHelper queryHelper)  {
@@ -79,9 +78,7 @@ public class QuerySQL {
     while (iterator.hasNext())  {
       QueryEntityPart queryEntity = (QueryEntityPart) iterator.next();
       String name = queryEntity.getName();
-      String beanClassName = queryEntity.getBeanClassName();
-      String tableName = getTableName(beanClassName);
-      entityTable.put(name, tableName);
+      entityQueryEntity.put(name, queryEntity);
     }
   }
   
@@ -94,63 +91,69 @@ public class QuerySQL {
     while (fieldIterator.hasNext())  {
       QueryFieldPart field = (QueryFieldPart) fieldIterator.next();
       String name = field.getName();
-      String displayName = field.getDisplay();
-      String function = field.getFunction();
-      String entity = field.getEntity();
-      String table = (String) entityTable.get(entity);
-      if (table == null)  {
-        throw new IOException("[QuerySQL] Entity is unknown");
-      }
-      // properties are column names
-      String[] columns = field.getColumns();
-      fieldColumns.put(name, Arrays.asList(columns));
-      fieldTable.put(name, table);
-      fieldDisplayName.put(name, displayName);
-      fieldFunction.put(name, function);
+      fieldQueryField.put(name, field);
     }
   }
+  
+  private void setConditions(QueryHelper queryHelper) {
+    List list = queryHelper.getListOfConditions();
+    if (list == null) {
+      return;
+    }
+    conditions.addAll(list);
+  }
+    
       
   private SQLQueryExpression createQuery(QueryHelper queryHelper) throws IOException {
     
     SQLQueryExpression query = new SQLQueryExpression();
-    
     // prepare everything
     setSourceEntity(queryHelper);
     setRelatedEntities(queryHelper);
     setFields(queryHelper);
-    
-    // set tables (from clause)
-    query.addFromClauses(entityTable.values());
+    setConditions(queryHelper);
 
-    
     // set fields (select clause)
-    Iterator columnsIterator = fieldColumns.entrySet().iterator();
-    while (columnsIterator.hasNext()) {
-      Map.Entry entry = (Map.Entry) columnsIterator.next();
-      Collection columns = (Collection) entry.getValue();
-      String field = (String) entry.getKey();
-      String table = (String) fieldTable.get(field);
-      if (table == null)  {
+    Iterator fieldIterator = fieldQueryField.values().iterator();
+    while (fieldIterator.hasNext()) {
+      QueryFieldPart queryField = (QueryFieldPart) fieldIterator.next();
+      String[] columns = queryField.getColumns();
+      String entity = queryField.getEntity();
+      // alias test
+      if (! entityQueryEntity.containsKey(entity))  {
         throw new IOException("[QuerySQL] criteria could not be created, table is unknown");
       }
-      StringBuffer tableWithDot = new StringBuffer(table).append(DOT);
+      // note that this entity is used
+      usedEntities.add(entity);
+      StringBuffer entityWithDot = new StringBuffer(entity).append(DOT);
       // add table name to each column
-      Iterator columnIterator = columns.iterator();
-      while (columnIterator.hasNext())  {
-        String column = (String) columnIterator.next();
-        String tableDotColumn = tableWithDot.append(column).toString(); 
-        query.addSelectClause(tableDotColumn);
+      int i;
+      for (i=0; i < columns.length ; i++) {
+        String column = columns[i];
+        String entityDotColumn = entityWithDot.append(column).toString(); 
+        query.addSelectClause(entityDotColumn);
       }
     }
-    
     // set conditions (where clause)
-    List conditionList = queryHelper.getListOfConditions();
-    Iterator conditionsIterator = conditionList.iterator();
+    Iterator conditionsIterator = conditions.iterator();
     while (conditionsIterator.hasNext())  {
       QueryConditionPart condition = (QueryConditionPart) conditionsIterator.next();
       SQLCriterionExpression criterion = createCriterion(condition);
-      query.addWhereClause(criterion);
+      if (criterion.isValid()) {
+        query.addWhereClause(criterion);
+      }
     }
+    // set tables (from clause)
+    Iterator entityIterator = entityQueryEntity.values().iterator();
+    while (entityIterator.hasNext())  {
+      QueryEntityPart queryEntity = (QueryEntityPart) entityIterator.next();
+      String table = getTableName(queryEntity.getBeanClassName());
+      String entity = queryEntity.getName();
+      // add only entities that are actually used
+      if (usedEntities.contains(entity))  {
+        query.addFromClause(table, queryEntity.getName());
+      }
+    }    
     return query;
   }
       
@@ -158,25 +161,39 @@ public class QuerySQL {
   private SQLCriterionExpression createCriterion(QueryConditionPart condition) throws IOException {
 
     String field = condition.getField();
-    String table = (String) fieldTable.get(field);
-    if (table == null)  {
+    QueryFieldPart queryField = (QueryFieldPart) fieldQueryField.get(field);
+    if (queryField == null) {
+      throw new IOException("[QuerySQL] criteria could not be created, field is unknown");
+    }
+    String entity = queryField.getEntity();
+    QueryEntityPart queryEntity = (QueryEntityPart) entityQueryEntity.get(entity);
+    if (queryEntity == null) {
       throw new IOException("[QuerySQL] criteria could not be created, table is unknown");
     }
-    List columns = (List) fieldColumns.get(field);
-    if (columns == null || columns.size() != 1) {
+    // note that this entity is used
+    usedEntities.add(entity);
+    String[] columns = queryField.getColumns();
+    if (columns == null || columns.length != 1) {
       throw new IOException("[QuerySQL] criteria could not be created, column is unknown");
     }
     // get the only one
-    String column = (String) columns.get(0);
+    String column = columns[0];
     String type = condition.getType();
-    SQLCriterionExpression criterion = new SQLCriterionExpression();
     String pattern = condition.getPattern();
-    criterion.add(table, column, pattern, type);
+    // get columnclass
+    String columnClass = getClassOfColumn(queryEntity.getBeanClassName(), column);
+    SQLCriterionExpression criterion = new SQLCriterionExpression();
+    criterion.add( entity, column, columnClass, pattern, type);
     return criterion;
   }
   
   private String getTableName(String beanClassName) {
     return GenericEntity.getStaticInstance(beanClassName).getTableName();
   }
+  
+  private String getClassOfColumn(String beanClassName, String columnName)  {
+    return GenericEntity.getStaticInstance(beanClassName).getStorageClassName(columnName);
+  }
+    
     
 }

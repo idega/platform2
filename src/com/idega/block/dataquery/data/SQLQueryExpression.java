@@ -27,14 +27,13 @@ public class SQLQueryExpression {
   private List selectClauses = new ArrayList();
   private List whereClauses = new ArrayList();
 
-  public void addFromClause(String clause) {
-    fromClauses.add(clause);
+  public void addFromClause(String clause, String alias) {
+    StringBuffer buffer = new StringBuffer(clause);
+    buffer.append(WHITE_SPACE);
+    buffer.append(alias);
+    fromClauses.add(buffer.toString());
   }
   
-  public void addFromClauses(Collection clauses)  {
-    fromClauses.addAll(clauses);
-  }
-    
   public void addSelectClause(String clause) {
     selectClauses.add(clause);
   }

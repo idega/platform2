@@ -24,8 +24,6 @@ import com.idega.util.database.ConnectionBroker;
  */
 public class QueryToSQLBridgeBean extends IBOServiceBean implements QueryToSQLBridge {
   
-  private final char ROW_COLUMN_DELIMITER = '_';
-  
   public String createSQLStatement(QueryHelper queryHelper)  {
     QuerySQL querySQL = new QuerySQL();
     querySQL.initialize(queryHelper);
@@ -56,14 +54,12 @@ public class QueryToSQLBridgeBean extends IBOServiceBean implements QueryToSQLBr
       }
       int numberOfRow = 1;
       while (resultSet.next())  {
+        String id = Integer.toString(numberOfRow++);
         for (i=1 ; i <= numberOfColumns; i++)  {
           String columnValue = resultSet.getString(i);
           // store into QueryResultCell
           String fieldId = Integer.toString(i);  
-          StringBuffer cellId = new StringBuffer(numberOfRow++)
-            .append(ROW_COLUMN_DELIMITER)
-            .append(i);
-          QueryResultCell cell = new QueryResultCell(cellId.toString(), fieldId, columnValue);
+          QueryResultCell cell = new QueryResultCell(id, fieldId, columnValue);
           queryResult.addCell(cell);
         }
       }
