@@ -487,6 +487,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	 */
 	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
 		//if the group is a club then search for the union and update it, create if it does not exist
+		init();
 		Union union = getUnionFromGroup(group);
 		if(union==null){
 			
