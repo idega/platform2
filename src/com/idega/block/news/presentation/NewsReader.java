@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.119 2003/07/02 20:16:18 laddi Exp $
+ * $Id: NewsReader.java,v 1.120 2003/07/07 07:32:33 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.Vector;
 
 import com.idega.idegaweb.block.presentation.Builderaware;
+import com.idega.idegaweb.block.presentation.ImageWindow;
 import com.idega.block.news.business.NewsBusiness;
 import com.idega.block.news.business.NewsFinder;
 import com.idega.block.news.business.NewsFormatter;

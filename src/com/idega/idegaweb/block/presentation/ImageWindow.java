@@ -1,4 +1,4 @@
-package com.idega.block.news.presentation;
+package com.idega.idegaweb.block.presentation;
 
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
