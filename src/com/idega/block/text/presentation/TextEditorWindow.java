@@ -398,7 +398,11 @@ public class TextEditorWindow extends AbstractChooserWindow{
 	  }
 
       TxText tx = TextBusiness.saveText(iTxTextId,iLocalizedTextId,iLocaleId,iUserId,iObjInsId,null,null,sHeadline,"",sBody,sAttribute,files);
-      sTextId = String.valueOf(tx.getID());
+      
+      if(tx != null){
+		sTextId = tx.getPrimaryKey().toString();
+      }
+      
     }
 
   }
