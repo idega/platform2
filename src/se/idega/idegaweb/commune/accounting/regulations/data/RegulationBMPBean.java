@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.21 2003/12/14 14:36:27 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.22 2003/12/14 14:45:46 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -24,7 +24,7 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.21 2003/12/14 14:36:27 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.22 2003/12/14 14:45:46 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -510,6 +510,10 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		return null;
 	}
 
+	/*
+	 * This is a fix to always make sure the last date in the (to) month is covered
+	 * See nacp377 
+	 */
 	private Date getEndOfMonth(Date date) {
 		SimpleDateFormat formatter = new SimpleDateFormat ("yyMM");
 		IWTimestamp modDate;

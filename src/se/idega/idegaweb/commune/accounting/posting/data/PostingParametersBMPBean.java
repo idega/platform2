@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.26 2003/12/14 14:36:26 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.27 2003/12/14 14:45:46 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -43,10 +43,10 @@ import com.idega.block.school.data.SchoolStudyPath;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.26 2003/12/14 14:36:26 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.27 2003/12/14 14:45:46 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -478,7 +478,10 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		return idoFindOnePKByQuery(sql);
 	}
 
-
+/*
+ * This is a fix to always make sure the last date in the (to) month is covered
+ * See nacp377 
+ */
 	private Date getEndOfMonth(Date date) {
 		SimpleDateFormat formatter = new SimpleDateFormat ("yyMM");
 		IWTimestamp modDate;
