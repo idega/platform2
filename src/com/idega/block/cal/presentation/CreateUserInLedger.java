@@ -152,10 +152,13 @@ public class CreateUserInLedger extends StyledIWAdminWindow{
 				//go through the groupIDs to see if the user is in the ledgerGroup
 				while(groupIter.hasNext()) {
 					Group g = (Group) groupIter.next();
-					Integer groupID = (Integer) g.getPrimaryKey();
-					if(groupID.intValue() == ledger.getGroupID()) {
-						isInGroup = true;
+					if(g != null) {
+						Integer groupID = (Integer) g.getPrimaryKey();
+						if(groupID.intValue() == ledger.getGroupID()) {
+							isInGroup = true;
+						}
 					}
+					
 				}
 			}
 			
