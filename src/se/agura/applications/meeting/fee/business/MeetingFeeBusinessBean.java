@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.3 2004/12/09 13:43:37 laddi Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.4 2004/12/09 15:49:11 laddi Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -44,10 +44,16 @@ import com.idega.user.data.User;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
+	protected static final String IW_MEETING_BUNDLE_IDENTIFIER = "se.agura.applications.meeting.fee";
+	
+	protected String getBundleIdentifier() {
+		return IW_MEETING_BUNDLE_IDENTIFIER;
+	}
+
 	public String getLocalizedCaseDescription(Case theCase, Locale locale) {
 		MeetingFee request = getMeetingFeeInstance(theCase);
 		Group parish = request.getCongregationGroup();
