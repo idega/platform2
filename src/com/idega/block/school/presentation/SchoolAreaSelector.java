@@ -46,6 +46,7 @@ public class SchoolAreaSelector extends Block {
 	private ICPage _page;
 	private int _spaceBeforeExpanded = 2;
 	private boolean _isHighSchool = false;
+	private boolean _showSchoolArea = true;
 
 	public void main(IWContext iwc) throws RemoteException{
 		init(iwc);
@@ -53,9 +54,9 @@ public class SchoolAreaSelector extends Block {
 	if (!_displayWithoutTypeId && _schoolTypeId == -1) {
 			/** Does Nothing */
 		}else {
-			if (getIsHighSchool()) { 
-				drawHighSchoolList(iwc);
-			}
+			if (!getShowSchoolArea()) { 
+					drawNoSchoolAreaList(iwc);
+				}
 			else {
 			drawList(iwc);
 			}
@@ -91,19 +92,19 @@ public class SchoolAreaSelector extends Block {
 			return IW_BUNDLE_IDENTIFIER;
 	}	
 
-private void drawHighSchoolList(IWContext iwc) throws RemoteException {
+private void drawNoSchoolAreaList(IWContext iwc) throws RemoteException {
 			SchoolBusiness sb = (SchoolBusiness) IBOLookup.getServiceInstance( iwc, SchoolBusiness.class);
 			//SchoolArea sArea;
 			//int iAreaId;
 		
 			Collection coll;
 			SchoolCategory highSchoolCategory = sb.getCategoryHighSchool();
+			SchoolCategory elementarySchoolCategory = sb.getCategoryElementarySchool();
 			
-			if (highSchoolCategory != null) {
-				coll = sb.findAllSchoolTypesInCategory(highSchoolCategory.getCategory());				
-			}
-			else {
-				coll = sb.findAllSchoolTypes();
+			if (_isHighSchool) {
+				coll = sb.findAllSchoolsByCategory(highSchoolCategory.getCategory());
+			}  else {
+				coll = sb.findAllSchoolsByCategory(elementarySchoolCategory.getCategory());
 			}			
 			
 			School school;
@@ -115,60 +116,22 @@ private void drawHighSchoolList(IWContext iwc) throws RemoteException {
 			int row = 0;
 			int col = 1;
 		
-			Iterator iter = coll.iterator(); //coll = collection with highschool categories	
+			Iterator iter = coll.iterator(); //coll = collection with all schools for a specific category
 			while (iter.hasNext()) {
 				++row;		
 				table.setWidth(col, row, _spaceBetween);
 
 				++row;
 									
-				SchoolType schType = (SchoolType) iter.next();
-
-				int ihighSchoolTypeId = ((Integer) schType.getPrimaryKey()).intValue();
-				
-				Collection schools = sb.findAllSchoolsByType(ihighSchoolTypeId);
-	
-				table.setWidth(col, row, _spaceBetween);
-				schools = sb.getHomeCommuneSchools(schools);
-				if (schools != null) {
+				if (coll != null) {
 					String indent = "";
-					for (int i = 0; i < _spaceBeforeExpanded; i++) {
-						indent = indent + Text.NON_BREAKING_SPACE;	
-					}
-	
-					Iterator sIter = schools.iterator();
-					while (sIter.hasNext()) {
-						++row;
-						school = (School) sIter.next();
+						school = (School) iter.next();
 						iSchoolId = ((Integer) school.getPrimaryKey()).intValue();
-						//if (iSchoolId == _schoolId) {
-						//	table.add(getExpandedText(indent+school.getName(), true), col, row);
-						//}
-						//else {
-							//table.add(getExpandedText(indent, false), col, row);
-							table.add(getExpandedLink(school.getName(), Integer.toString(school.getSchoolAreaId()), Integer.toString(iSchoolId)), col, row);
+						table.add(getExpandedLink(school.getName(), Integer.toString(school.getSchoolAreaId()), Integer.toString(iSchoolId)), col, row);
 	
-						//}
-						//table.add(getText(school.getName(), false), col, row);
-					}	
 				}
-			//}else if (_expandSchools && _schoolTypeId == -1) {
-			//	++row;
-			//	table.add(getText("School Type Not Defined", false), col, row);
-			//}
-	
-					}
-add(table);	
-				/*else {
-						table.add(getLink(sArea.getName(), sArea.getPrimaryKey().toString() ), col, row);
-					}*/
-				//}
-
-				
-			//}
-			/*else {
-				add("No areas found");	
-			}*/
+			  }
+			add(table);
 }
 	private void drawList(IWContext iwc) throws RemoteException {
 		SchoolBusiness sb = (SchoolBusiness) IBOLookup.getServiceInstance( iwc, SchoolBusiness.class);
@@ -379,5 +342,13 @@ add(table);
 	
 	public boolean getIsHighSchool(){
 			return _isHighSchool;	
-		}
+	}
+	
+	public void setShowSchoolArea(boolean showSchoolArea){
+		_showSchoolArea = showSchoolArea;	
+	}
+	
+	public boolean getShowSchoolArea(){
+		return _showSchoolArea;	
+	}
 }
