@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.104 2002/12/06 12:58:53 aron Exp $
+ * $Id: NewsReader.java,v 1.105 2002/12/10 11:14:05 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -221,9 +221,11 @@ public class NewsReader extends CategoryBlock implements IWBlock {
       String sCategoryId = iwc.getParameter(prmNewsCategoryId );
       if(sCategoryId != null)
 			  iCategoryId = Integer.parseInt(sCategoryId);
-      else if(getICObjectInstanceID() > 0){
-			  iCategoryId = NewsFinder.getObjectInstanceCategoryId(getICObjectInstanceID(),true);
-			  if(iCategoryId <= 0 ){
+      else {
+      //if(getICObjectInstanceID() > 0){
+	  //		  iCategoryId = NewsFinder.getObjectInstanceCategoryId(getICObjectInstanceID(),true);
+	  iCategoryId = getCategoryId();
+	  		  if(iCategoryId <= 0 ){
 				  newobjinst = true;
 			  }
       }
@@ -286,7 +288,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 
       if(hasEdit){
         Link change = getCategoryLink();
-        change.setImage(core.getImage("/shared/edit.gif"));
+        change.setImage(core.getImage("/shared/detach.gif"));
         T.add(change,1,1);
       }
 
@@ -299,10 +301,12 @@ public class NewsReader extends CategoryBlock implements IWBlock {
       }
     }
     if(hasEdit && newObjInst){
-      Link newLink = new Link(core.getImage("/shared/create.gif"));
-      newLink.setWindowToOpen(NewsEditorWindow.class);
-      if(newObjInst)
-	      newLink.addParameter(NewsEditorWindow.prmObjInstId,getICObjectInstanceID());
+	  Link newLink = getCategoryLink();
+	  newLink.setImage(core.getImage("/shared/detach.gif"));
+      //Link newLink = new Link(core.getImage("/shared/create.gif"));
+      //newLink.setWindowToOpen(NewsEditorWindow.class);
+      //if(newObjInst)
+	      //newLink.addParameter(NewsEditorWindow.prmObjInstId,getICObjectInstanceID());
 
       T.add(newLink,2,1);
     }
@@ -703,7 +707,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 
       ////////// MORE LINK ///////////////
 
-	
+
       if(!showAll && needMoreButton){
         T.setHeight(row++,String.valueOf(iSpaceBetweenNewsAndBody));
         if(showMoreButton){
