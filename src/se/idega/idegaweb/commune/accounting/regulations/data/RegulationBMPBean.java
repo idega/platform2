@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.20 2003/12/01 01:51:14 joakim Exp $
+ * $Id: RegulationBMPBean.java,v 1.21 2003/12/14 14:36:27 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -11,9 +11,12 @@ package se.idega.idegaweb.commune.accounting.regulations.data;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.text.ParsePosition;
 import java.util.Collection;
 import javax.ejb.FinderException;
 
+import com.idega.util.IWTimestamp;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.block.school.data.SchoolCategory;
@@ -21,7 +24,7 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.20 2003/12/01 01:51:14 joakim Exp $
+ * $Id: RegulationBMPBean.java,v 1.21 2003/12/14 14:36:27 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -267,6 +270,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	}
 
 	public Collection ejbFindRegulationsByPeriod(Date from, Date to) throws FinderException {
+		to = getEndOfMonth(to); 
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere(COLUMN_PERIOD_FROM);
@@ -375,6 +379,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	}
 
 	public Collection ejbFindRegulationsByPeriod(Date from, Date to, String operationID, int flowTypeID, int sortByID) throws FinderException {
+		to = getEndOfMonth(to); 
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere(COLUMN_PERIOD_FROM);
@@ -395,6 +400,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	}
 
 	public Collection ejbFindRegulations(Date from, Date to, String operationID, int flowTypeID, int condTypeID, int regSpecTypeID, int mainRuleId) throws FinderException {
+		to = getEndOfMonth(to); 
 		IDOQuery sql = idoQuery();
 		sql.append("select r.* from ");
 		sql.append(ENTITY_NAME);
@@ -441,6 +447,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	}
 
 	public Object ejbFindRegulationOverlap(String name, Date from, Date to, Regulation r) throws FinderException {
+		to = getEndOfMonth(to); 
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere();
@@ -497,9 +504,33 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		return idoFindOnePKByQuery(sql);
 	}
 
+
 	//Find functions for C&P
 	public Collection ejbFindAllBy() throws FinderException {
 		return null;
 	}
+
+	private Date getEndOfMonth(Date date) {
+		SimpleDateFormat formatter = new SimpleDateFormat ("yyMM");
+		IWTimestamp modDate;
+		Date outDate;
+		String dateString = "";
+		if (formatter != null) {
+			java.util.Date d = new java.util.Date(date.getTime());
+			dateString = formatter.format(d);		
+		} else {
+			return date;
+		}
+		formatter = new SimpleDateFormat ("yyyyMMdd");
+		java.util.Date d = formatter.parse("20" + dateString + "01", new ParsePosition(0));
+
+		modDate = new IWTimestamp(d.getTime());
+		modDate.setAsDate();
+		modDate.addMonths(1);
+		modDate.addDays(-1);
+		outDate = modDate.getDate();
+		return outDate;
+	}	
+
 
 }

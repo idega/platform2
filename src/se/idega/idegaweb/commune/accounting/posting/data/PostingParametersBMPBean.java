@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.25 2003/12/13 17:21:07 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.26 2003/12/14 14:36:26 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -12,10 +12,13 @@ package se.idega.idegaweb.commune.accounting.posting.data;
 import java.util.Collection;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.text.ParsePosition;
 
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.util.IWTimestamp;
 import com.idega.data.IDOQuery;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolType;
@@ -40,10 +43,10 @@ import com.idega.block.school.data.SchoolStudyPath;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.25 2003/12/13 17:21:07 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.26 2003/12/14 14:36:26 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -233,6 +236,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	}
 	
 	public Collection ejbFindPostingParametersByPeriod(Date from, Date to) throws FinderException {
+		to = getEndOfMonth(to);		
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere(COLUMN_PERIOD_FROM);
@@ -451,6 +455,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 			int schoolYear1,
 			int schoolYear2,
 			int studyPath) throws FinderException {
+		to = getEndOfMonth(to);		
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_ACTIVITY_ID, activityType);
 		sql.appendAndEqualsQuoted(COLUMN_PERIOD_FROM, from.toString());
@@ -473,5 +478,27 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		return idoFindOnePKByQuery(sql);
 	}
 
+
+	private Date getEndOfMonth(Date date) {
+		SimpleDateFormat formatter = new SimpleDateFormat ("yyMM");
+		IWTimestamp modDate;
+		Date outDate;
+		String dateString = "";
+		if (formatter != null) {
+			java.util.Date d = new java.util.Date(date.getTime());
+			dateString = formatter.format(d);		
+		} else {
+			return date;
+		}
+		formatter = new SimpleDateFormat ("yyyyMMdd");
+		java.util.Date d = formatter.parse("20" + dateString + "01", new ParsePosition(0));
+
+		modDate = new IWTimestamp(d.getTime());
+		modDate.setAsDate();
+		modDate.addMonths(1);
+		modDate.addDays(-1);
+		outDate = modDate.getDate();
+		return outDate;
+	}	
 
 }
