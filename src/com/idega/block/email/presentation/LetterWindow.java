@@ -154,7 +154,7 @@ public class LetterWindow extends IWAdminWindow {
 		SubmitButton send = new SubmitButton(iwrb.getLocalizedImageButton("send", "Send"), "send");
 		//SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save");
 
-		CheckBox save = new CheckBox("save", "true");
+		//CheckBox save = new CheckBox("save", "true");
 		Table submitTable = new Table(5, 1);
 		//submitTable.add(tf.format(iwrb.getLocalizedString("save_to_archive","Save to archive")),3,1);
 		//submitTable.add(save,3,1);

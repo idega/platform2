@@ -155,7 +155,7 @@ public class NewsLetterArchive extends CategoryBlock {
 						if (letters != null && letters.size() > 0) {
 							Iterator iter2 = letters.iterator();
 							EmailLetter let;
-							Link subject;
+							//Link subject;
 							while (iter2.hasNext()) {
 								let = (EmailLetter) iter2.next();
 								int lid = Integer.parseInt(let.toString());
