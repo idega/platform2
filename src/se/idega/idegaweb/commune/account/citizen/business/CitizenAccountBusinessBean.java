@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.40 2002/12/21 00:34:28 thomas Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.41 2002/12/30 23:37:21 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -34,11 +34,11 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2002/12/21 00:34:28 $ by $Author: thomas $
+ * Last modified: $Date: 2002/12/30 23:37:21 $ by $Author: palli $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.40 $
+ * @version $Revision: 1.41 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
   implements CitizenAccountBusiness, AccountBusiness 
@@ -474,7 +474,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                                 ? genderHome.getFemaleGender ()
                                 : genderHome.getMaleGender ();
                         final Date childrenBirth
-                                = pidChecker.getDateFromPersonalID (ssn);
+                                = pidChecker.getDateFromPersonalID (childrenSsn);
                         final IWTimestamp childrenTimestamp
                                 = childrenBirth != null
                                 ? new IWTimestamp (childrenBirth.getTime ())
