@@ -39,6 +39,7 @@ public class GolfLogin extends GolfBlock {
 	private int _indent = 8;
 	private int _logOnPage = -1;
 	private boolean lockedAsWapLayout = false;
+	private String PRM_DISABLE_TIMER_ON_LOGGED_ON_PAGE = "nooptimer";
 
 	public GolfLogin() {
 		super();
@@ -105,10 +106,6 @@ public class GolfLogin extends GolfBlock {
 
 		Form myForm = new Form();
 		myForm.setEventListener(GolfLoginBusiness.class);
-		
-		if (_logOnPage > 0) {
-			myForm.setPageToSubmitTo(_logOnPage);
-		}
 
 		myForm.setMethod("post");
 		myForm.maintainAllParameters();
@@ -222,17 +219,37 @@ public class GolfLogin extends GolfBlock {
 				String temp = modinfo.getParameter("login");
 				if (temp != null) {
 					if (temp.length() == 11) {
-						loginFailed("toBig");
+						if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
+							loginFailedWML("toBig");
+						} else {
+							loginFailed("toBig");
+						}
 					} else if (temp.equals("") || temp.equals(" ")) {
-						loginFailed("empty");
+						if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
+							loginFailedWML("empty");
+						} else {
+							loginFailed("empty");
+						}
+					} else {
+						if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
+							loginFailedWML("");
+						} else {
+							loginFailed("");
+						}
+					}
+				} else {
+					if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
+						loginFailedWML("");
 					} else {
 						loginFailed("");
 					}
+				}
+			} else if (state.equals("loginfailed")) {
+				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
+					loginFailedWML("");
 				} else {
 					loginFailed("");
 				}
-			} else if (state.equals("loginfailed")) {
-				loginFailed("");
 			} else {
 				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
 					startStateWML(modinfo);
@@ -315,6 +332,9 @@ public class GolfLogin extends GolfBlock {
 				Link go = new Link(getResourceBundle().getLocalizedString("login.forward","forward >"));
 				go.setPage(_logOnPage);
 				myTable.add(go, 1, row++);
+				if(modinfo.getParameter(PRM_DISABLE_TIMER_ON_LOGGED_ON_PAGE = "nooptimer")==null){ 
+					//this.getParentPage().setToRedirect(go.getURL(modinfo),3);
+				}
 			}
 			
 			myTable.add(logout, 1,row++);
@@ -370,6 +390,87 @@ public class GolfLogin extends GolfBlock {
 			add(myForm);
 		}
 	}
+	
+	private void loginFailedWML(String what) {
+		
+		String userText = getResourceBundle().getLocalizedString("user", "User");
+		String passwordText = getResourceBundle().getLocalizedString("password", "Password");
+
+		Form myForm = new Form();
+		myForm.setEventListener(GolfLoginBusiness.class);
+
+		myForm.setMethod("post");
+		myForm.maintainAllParameters();
+
+		Table myTable = new Table();
+		int row = 1;
+
+
+		Text failed = new Text(getResourceBundle().getLocalizedString("loginfailed", "Login failed"));
+		//failed.setFontSize(1);
+		if (what.equals("empty")) {
+			failed.setText(getResourceBundle().getLocalizedString("id_needed", "Identification needed"));
+		} else if (what.equals("toBig")) {
+			failed.setText(getResourceBundle().getLocalizedString("wrong_format", "Wrong format"));
+		}
+
+		
+		SubmitButton loginButton = new SubmitButton(localize("login.try_again","Try again"));
+		
+		myTable.add(failed,1,row++);
+		myTable.add(loginButton,1,row++);
+		
+		myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "tryagain"));
+		myForm.add(myTable);
+		add(myForm);
+
+		
+		
+//		String userText = getResourceBundle().getLocalizedString("user", "User");
+//		String passwordText = getResourceBundle().getLocalizedString("password", "Password");
+//
+//		Form myForm = new Form();
+//		myForm.setEventListener(GolfLoginBusiness.class);
+//
+//		myForm.setMethod("post");
+//		myForm.maintainAllParameters();
+//
+//		Table myTable = new Table(3, 1);
+//		myTable.setWidth(Table.HUNDRED_PERCENT);
+//		myTable.setCellspacing(0);
+//		myTable.setCellpadding(0);
+//		myTable.setCellpaddingRight(1, 1, 5);
+//		myTable.setCellpaddingRight(2, 1, 5);
+//		myTable.setCellpaddingRight(3, 1, 5);
+//		
+//		Text failed = getStyleText(getResourceBundle().getLocalizedString("loginfailed", "Login failed"), this.STYLENAME_TEMPLATE_HEADER2);
+//		//failed.setFontSize(1);
+//		if (what.equals("empty")) {
+//			failed.setText(getResourceBundle().getLocalizedString("id_needed", "Identification needed"));
+//		} else if (what.equals("toBig")) {
+//			failed.setText(getResourceBundle().getLocalizedString("wrong_format", "Wrong format"));
+//		}
+//		myTable.add(failed,1,1);
+//		myTable.setAlignment(1, 1, "center");
+//		
+//		Text spacer = getStyleText("|", this.STYLENAME_TEMPLATE_HEADER2);
+//		myTable.add(spacer, 2, 1);
+//		
+//		Link tryAgain = getStyleLink(localize("login.try_again","Try again"), this.STYLENAME_TEMPLATE_LINK3);
+//		tryAgain.setToFormSubmit(myForm);
+//		myTable.add(tryAgain, 3, 1);
+//
+//		/*GenericButton tryAgain = getSaveButton();
+//		tryAgain.setContent(localize("login.try_again","Try again"));
+//		myTable.add(tryAgain, 3, 1);*/
+//		myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "tryagain"));
+//
+//		myForm.add(myTable);
+//		add(myForm);
+		
+		
+	}
+
 
 	///// additional mothods /////////
 
