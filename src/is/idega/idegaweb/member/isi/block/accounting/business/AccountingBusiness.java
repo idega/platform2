@@ -30,5 +30,4 @@ public interface AccountingBusiness extends com.idega.business.IBOService
  public boolean insertTariff(com.idega.user.data.Group p0,com.idega.user.data.Group p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.sql.Date p6,java.sql.Date p7,boolean p8,java.lang.String p9) throws java.rmi.RemoteException;
  public boolean insertTariff(com.idega.user.data.Group p0,com.idega.user.data.Group p1,com.idega.user.data.Group p2,is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType p3,java.lang.String p4,float p5,java.sql.Date p6,java.sql.Date p7,boolean p8,java.lang.String p9,java.util.List p10) throws java.rmi.RemoteException;
  public boolean insertTariffType(java.lang.String p0,java.lang.String p1,java.lang.String p2,com.idega.user.data.Group p3) throws java.rmi.RemoteException;
- public com.idega.block.datareport.util.ReportableCollection getPaymentStatusByLeaguesGroupsAndDateIntervalFiltering(java.util.Collection p1,java.util.Collection p2) throws java.rmi.RemoteException, java.rmi.RemoteException;
 }
