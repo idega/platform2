@@ -48,18 +48,18 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/25 10:33:03 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/26 05:57:24 $ by $Author: gimmi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
  * @see se.idega.idegaweb.commune.accounting.presentation.AccountingBlock
  */
 public class PaymentRecordMaintenance extends AccountingBlock {
-    private static final String PREFIX = "cacc_payrec_";
+    public static final String PREFIX = "cacc_payrec_";
 
     private static final String ADJUSTED_SIGNATURE_KEY = PREFIX + "adjusted_signature";
     private static final String ADJUSTMENT_DATE_DEFAULT = "Just.datum";
@@ -88,6 +88,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String EDIT_PAYMENT_RECORD_DEFAULT = "Ändra utbetalningspost";
     private static final String EDIT_PAYMENT_RECORD_KEY = PREFIX + "edit_payment_record";
     private static final String END_PERIOD_KEY = PREFIX + "end_period";
+    //private static final String HEADER_KEY = PREFIX + "end_period";
     private static final String GO_BACK_DEFAULT = "Tillbaka";
     private static final String GO_BACK_KEY = PREFIX + "go_back";
     private static final String HEADER_KEY = PREFIX + "end_period";
@@ -97,10 +98,10 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String MANAGEMENT_TYPE_KEY = PREFIX + "management_type";
     private static final String NAME_DEFAULT = "Namn";
     private static final String NAME_KEY = PREFIX + "name";
-    private static final String NOTE_DEFAULT = "Anmärkning";
-    private static final String NOTE_KEY = PREFIX + "note";
-    private static final String NO_OF_PLACEMENTS_DEFAULT = "Antal plac";
-    private static final String NO_OF_PLACEMENTS_KEY = PREFIX + "no_of_placements";
+    public static final String NOTE_DEFAULT = "Anmärkning";
+    public static final String NOTE_KEY = PREFIX + "note";
+    public static final String NO_OF_PLACEMENTS_DEFAULT = "Antal plac";
+    public static final String NO_OF_PLACEMENTS_KEY = PREFIX + "no_of_placements";
     private static final String NO_PAYMENT_RECORDS_FOUND_DEFAULT = "Inga utbetalningsrader hittades";
     private static final String NO_PAYMENT_RECORDS_FOUND_KEY = PREFIX + "no_payment_records_found";
     private static final String NUMBER_OF_PLACEMENTS_DEFAULT = "Placeringar";
@@ -114,12 +115,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String PAYMENT_RECORD_UPDATED_DEFAULT = "Utbetalninsraden är nu uppdaterad";
     private static final String PAYMENT_RECORD_UPDATED_KEY = PREFIX + "payment_record_updated";
     private static final String PAYMENT_TEXT_KEY = PREFIX + "payment_text";
-    private static final String PERIOD_DEFAULT = "Period";
-    private static final String PERIOD_KEY = PREFIX + "period";
+    public static final String PERIOD_DEFAULT = "Period";
+    public static final String PERIOD_KEY = PREFIX + "period";
     private static final String PIECE_AMOUNT_DEFAULT = "Styckepris";
     private static final String PIECE_AMOUNT_KEY = PREFIX + "piece_amount";
-    private static final String PLACEMENT_DEFAULT = "Placering";
-    private static final String PLACEMENT_KEY = PREFIX + "placement";
+    public static final String PLACEMENT_DEFAULT = "Placering";
+    public static final String PLACEMENT_KEY = PREFIX + "placement";
     private static final String PLACEMENT_PERIOD_DEFAULT = "Plac.period";
     private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
     private static final String PROVIDER_DEFAULT = "Anordnare";
@@ -143,16 +144,16 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String START_PERIOD_KEY = PREFIX + "start_period";
     private static final String STATUS_DEFAULT = "Status";
     private static final String STATUS_KEY = PREFIX + "status";
-    private static final String TOTAL_AMOUNT_DEFAULT = "Totalbelopp";
-    private static final String TOTAL_AMOUNT_INDIVIDUALS_DEFAULT = "Totalt antal individer";
-    private static final String TOTAL_AMOUNT_INDIVIDUALS_KEY = PREFIX + "total_amount_individuals";
-    private static final String TOTAL_AMOUNT_KEY = PREFIX + "total_amount";
-    private static final String TOTAL_AMOUNT_PLACEMENTS_DEFAULT = "Totalt antal placeringar";
-    private static final String TOTAL_AMOUNT_PLACEMENTS_KEY = PREFIX + "total_amount_placements";
-    private static final String TOTAL_AMOUNT_VAT_DEFAULT = "Totalbelopp, moms";
-    private static final String TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT = "Totalbelopp, exklusive moms";
-    private static final String TOTAL_AMOUNT_VAT_EXCLUDED_KEY = PREFIX + "total_amount_vat_excluded";
-    private static final String TOTAL_AMOUNT_VAT_KEY = PREFIX + "total_amount_vat";
+    public static final String TOTAL_AMOUNT_DEFAULT = "Totalbelopp";
+    public static final String TOTAL_AMOUNT_INDIVIDUALS_DEFAULT = "Totalt antal individer";
+    public static final String TOTAL_AMOUNT_INDIVIDUALS_KEY = PREFIX + "total_amount_individuals";
+    public static final String TOTAL_AMOUNT_KEY = PREFIX + "total_amount";
+    public static final String TOTAL_AMOUNT_PLACEMENTS_DEFAULT = "Totalt antal placeringar";
+    public static final String TOTAL_AMOUNT_PLACEMENTS_KEY = PREFIX + "total_amount_placements";
+    public static final String TOTAL_AMOUNT_VAT_DEFAULT = "Totalbelopp, moms";
+    public static final String TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT = "Totalbelopp, exklusive moms";
+    public static final String TOTAL_AMOUNT_VAT_EXCLUDED_KEY = PREFIX + "total_amount_vat_excluded";
+    public static final String TOTAL_AMOUNT_VAT_KEY = PREFIX + "total_amount_vat";
     private static final String TRANSACTION_DATE_DEFAULT = "Bokföringsdag";
     private static final String TRANSACTION_DATE_KEY = PREFIX + "transaction_date";
     private static final String VAT_AMOUNT_DEFAULT = "Momsbelopp";
@@ -810,6 +811,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private void renderRecordDetailsOrForm
         (final IWContext context, final java.util.Map presentationObjects)
         throws RemoteException, FinderException  {
+        //final PaymentRecord record = getPaymentRecord (context);
         final PaymentHeader header = getPaymentHeader (context);
 
         // render form/details
