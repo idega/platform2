@@ -32,6 +32,8 @@ import com.idega.block.presentation.CategoryBlock;
 
 public class Calendar extends CategoryBlock implements IWBlock {
 
+	private int _timeStyle = IWTimestamp.SHORT;
+	private int _dateStyle = IWTimestamp.SHORT;
 	private boolean hasEdit = false, hasAdd = false, hasPref = false;
 	private int _iLocaleID;
 	private int _view = CalendarBusiness.MONTH;
@@ -415,7 +417,7 @@ public class Calendar extends CategoryBlock implements IWBlock {
 				int row = 1;
 				if (headlineText != null) {
 					stamp = new IWTimestamp(entry.getDate());
-					Text dateText = getStyleText(stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT), DATE_STYLE_NAME);
+					Text dateText = getStyleText(stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), _dateStyle, _timeStyle), DATE_STYLE_NAME);
 					Text category = getStyleText(CategoryFinder.getInstance().getCategory(entry.getCategoryId()).getName(iwc.getCurrentLocale()), CATEGORY_STYLE_NAME);
 					dateTable.add(dateText, 1, 1);
 					if (_showCategory)
@@ -702,6 +704,22 @@ public class Calendar extends CategoryBlock implements IWBlock {
 	 */
 	public void setShowCategory(boolean showCategory) {
 		_showCategory = showCategory;
+	}
+
+	/**
+	 * Sets the dateStyle.
+	 * @param dateStyle The dateStyle to set
+	 */
+	public void setDateStyle(int dateStyle) {
+		_dateStyle = dateStyle;
+	}
+
+	/**
+	 * Sets the timeStyle.
+	 * @param timeStyle The timeStyle to set
+	 */
+	public void setTimeStyle(int timeStyle) {
+		_timeStyle = timeStyle;
 	}
 
 }
