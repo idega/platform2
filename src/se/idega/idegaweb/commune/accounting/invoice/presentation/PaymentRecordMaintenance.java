@@ -39,8 +39,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import javax.ejb.FinderException;
-//import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
-//import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
+import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
 import se.idega.idegaweb.commune.accounting.invoice.business.CheckAmountBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
@@ -58,20 +58,21 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
-//import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
-//import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 
 /**
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/22 12:33:54 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/28 10:13:45 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.87 $
+ * @version $Revision: 1.88 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -505,7 +506,7 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 				 (localize (PAYMENT_HEADER_KEY, PAYMENT_HEADER_DEFAULT),
 					outerTable));
 	}
-/*
+
 	private boolean hasCurrentSchoolCategoryFlowInAndFlowOut
 		(final IWContext context) throws RemoteException, FinderException {
 		final String schoolCategory = getSession().getOperationalField ();
@@ -515,7 +516,7 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 		if (null == mapping) return false;
 		return mapping.getCashFlowIn () && mapping.getCashFlowOut ();
 	}
-*/
+
 	private Table getDetailedPaymentRecordListTable
 		(final IWContext context, final Collection invoiceRecords)
 		throws RemoteException {
@@ -685,7 +686,7 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 	
 	private Table getPaymentRecordListTable
 		(final IWContext context, final PaymentRecord [] records)
-	throws /*FinderException,*/ RemoteException {
+	throws FinderException, RemoteException {
 		// set up header row
 		final String [][] columnNames =
 				{{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
@@ -712,13 +713,12 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 		return table;
 	}
 	
-	/*
+	
 	private static boolean isManualRecord (final PaymentRecord record) {
 		final String autoSignature = BillingThread.getBatchRunSignatureKey ();
 		final String createdBy = record.getCreatedBy ();
 		return null == createdBy || !createdBy.equals (autoSignature);
 	}
-	*/
 	
 	private Text getSmallSignature (final String string) {
 		final StringBuffer result = new StringBuffer ();
@@ -733,7 +733,6 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 		return getSmallText (result.toString ());
 	}
 	
-	/*
 	private boolean isCheck (final RegulationSpecType regSpecType) {
 		try {
 				final MainRule mainRule = regSpecType.getMainRule ();
@@ -743,9 +742,7 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 			return false;
 		}
 	}
-*/
-
-	/*
+	
 	private boolean isCheck (final String regSpecTypeName) {
 		try {
 			final RegulationSpecTypeHome regSpecTypeHome =
@@ -757,23 +754,21 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 			return false;
 		}
 	}
-*/
 	
 	private void showPaymentRecordOnARow
 		(final IWContext context, final Table table, final int row,
-		 final PaymentRecord record) throws RemoteException/*, FinderException*/ {
+		 final PaymentRecord record) throws RemoteException, FinderException {
 		final String recordId = record.getPrimaryKey () + "";
 		final String [][] showDetailsLinkParameters
 				= {{ ACTION_KEY, ACTION_SHOW_RECORD_DETAILS + "" },
 					 { PAYMENT_RECORD_KEY, recordId }};
-		//final String regSpecType = record.getRuleSpecType ();
+		final String regSpecType = record.getRuleSpecType ();
 		final boolean userIsSchoolManager
 				= null != getSchoolByLoggedInUser (context);
-		//final boolean isFlowInAndOut
-		//		= hasCurrentSchoolCategoryFlowInAndFlowOut (context);
-		final boolean isRecordEditAllowed = !userIsSchoolManager;
-		//final boolean isRecordEditAllowed = isManualRecord (record)
-		//&& !(isFlowInAndOut && isCheck (regSpecType)) && !userIsSchoolManager;
+		final boolean isFlowInAndOut
+				= hasCurrentSchoolCategoryFlowInAndFlowOut (context);
+		final boolean isRecordEditAllowed = isManualRecord (record)
+				&& !(isFlowInAndOut && isCheck (regSpecType)) && !userIsSchoolManager;
 		final String [][] showRecordLinkParameters = isRecordEditAllowed
 				? new String [][] {{ ACTION_KEY,
 														 ACTION_SHOW_EDIT_RECORD_FORM + "" },
@@ -1187,9 +1182,7 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 		final DropdownMenu dropdown = (DropdownMenu)
 		getStyledInterface (new DropdownMenu (VAT_RULE_KEY));
 		for(Iterator iter = rules.iterator();iter.hasNext();){
-			//for (int i = 0; i < rules.length; i++) {
 			Regulation rule = (Regulation)iter.next();
-			//final VATRule rule = rules [i];
 			final String ruleName = rule.getName();
 			final Object ruleId = rule.getPrimaryKey ();
 			dropdown.addMenuElement (ruleId + "",
@@ -1582,13 +1575,11 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 				(context, SchoolBusiness.class);	
 	}
 	
-	/*
 	private ExportBusiness getExportBusiness
 		(final IWContext context) throws RemoteException {
 		return (ExportBusiness) IBOLookup.getServiceInstance
 				(context, ExportBusiness.class);	
 	}
-	*/
 	
 	private PostingBusiness getPostingBusiness
 		(final IWContext context) throws RemoteException {

@@ -89,10 +89,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/16 11:09:53 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/28 10:13:45 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.122 $
+ * @version $Revision: 1.123 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1842,12 +1842,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 			col += 2;
 		}
 		final String recordId = record.getPrimaryKey ().toString ();
-		//final boolean isManualRecord = isManualRecord (record);
-		//final String [][] editLinkParameters = getRecordLinkParameters
-		//(isManualRecord ? ACTION_SHOW_EDIT_RECORD_FORM
-		//: ACTION_SHOW_RECORD_DETAILS, recordId);
+		final boolean isManualRecord = isManualRecord (record);
 		final String [][] editLinkParameters = getRecordLinkParameters
-				(ACTION_SHOW_EDIT_RECORD_FORM, recordId);
+				(isManualRecord ? ACTION_SHOW_EDIT_RECORD_FORM
+				 : ACTION_SHOW_RECORD_DETAILS, recordId);
 		final Link textLink = createSmallLink (record.getInvoiceText (),
 																					 editLinkParameters);
 		table.add (textLink, col++, row);
@@ -1860,13 +1858,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final Link editLink = createIconLink (getEditIcon (),
 																					editLinkParameters);
 		table.add (editLink, col++, row);
-		//if (isManualRecord) {
-		final String [][] deleteLinkParamaters = getRecordLinkParameters
-				(ACTION_DELETE_RECORD,  recordId);
-		final Link deleteLink = createIconLink (getDeleteIcon (),
-																						deleteLinkParamaters);
-		table.add (deleteLink, col++, row);
-		//}
+		if (isManualRecord) {
+			final String [][] deleteLinkParamaters = getRecordLinkParameters
+					(ACTION_DELETE_RECORD,  recordId);
+			final Link deleteLink = createIconLink (getDeleteIcon (),
+																							deleteLinkParamaters);
+			table.add (deleteLink, col++, row);
+		}
 	}
 	
 	private String getProviderName (final SchoolClassMember placement) {
@@ -2048,11 +2046,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		return createMainTable (localize (headerKey, headerDefault), content);
 	}
 	
-	/*private static boolean isManualRecord (final InvoiceRecord record) {
+	private static boolean isManualRecord (final InvoiceRecord record) {
 		final String autoSignature = BillingThread.getBatchRunSignatureKey ();
 		final String createdBy = record.getCreatedBy ();
 		return null == createdBy || !createdBy.equals (autoSignature);
-	}*/
+	}
 	
 	private Text getSmallSignature (final String string) {
 		final StringBuffer result = new StringBuffer ();
@@ -2503,10 +2501,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				getStyledInterface (new DropdownMenu (VAT_RULE_KEY));
 		final Object defaultRuleId = null != defaultRule
 				? defaultRule.getPrimaryKey () : null;
-		//for (int i = 0; i < vatRuleRegulations.length; i++) {
 		for (Iterator iter = vatRuleRegulations.iterator(); iter.hasNext();) {
-			Regulation vatRuleRegulation = (Regulation) iter.next();
-			//final Regulation vatRuleRegulation = vatRuleRegulations [i];
+			final Regulation vatRuleRegulation = (Regulation) iter.next();
 			final String ruleName = vatRuleRegulation.getName();
 			final Object ruleId = vatRuleRegulation.getPrimaryKey();
 			dropdown.addMenuElement (ruleId + "",
