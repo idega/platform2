@@ -293,7 +293,7 @@ public void main(ModuleInfo modinfo) throws Exception {
 			String link = linkVector.elementAt(a).toString();
 				int comma = link.indexOf(",");
 
-			link = "<a href=\""+link.substring(comma+1,link.length())+"\">"+link.substring(0,comma)+"</a>";
+			link = "<a href=\""+link.substring(comma+1,link.length())+"\" target=\"_blank\">"+link.substring(0,comma)+"</a>";
 
 			text_body = TextSoap.findAndReplace(text_body,"Link("+linkVector.elementAt(a).toString()+")",link);
 		}
