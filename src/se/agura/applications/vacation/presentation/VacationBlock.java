@@ -222,7 +222,7 @@ public abstract class VacationBlock extends Block {
 		
 		table.mergeCells(2, row, table.getColumns(), row);
 		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.type", "Type")), 1, row);
-		table.add(getText(vacationType.getTypeName()), 2, row++);
+		table.add(getText(getResourceBundle().getLocalizedString(vacationType.getLocalizedKey())), 2, row++);
 		table.setHeight(row++, 12);
 
 		if (extraInfo != null && extraInfo.size() > 0) {
