@@ -3,7 +3,6 @@
  */
 package is.idega.idegaweb.marathon.util;
 
-import com.idega.presentation.text.Text;
 
 /**
  * Description: <br>
@@ -57,8 +56,8 @@ public class IWMarathonConstants {
   public static final String PARAMETER_GROUPS = "prm_groups";
   public static final String PARAMETER_GROUPS_COMPETITION = "prm_groups_competition";
   public static final String PARAMETER_AGREEMENT = "prm_agreement";
-  public static final String PARAMETER_AGREE = "prm_agree";
-  public static final String PARAMETER_DISAGREE = "prm_disagree";
+  public static final String PARAMETER_AGREE = Boolean.TRUE.toString();
+  public static final String PARAMETER_DISAGREE = Boolean.FALSE.toString();
   
   //localized strings
   public static final String RR_INFO_RED_STAR = "run_reg.info_red_star";

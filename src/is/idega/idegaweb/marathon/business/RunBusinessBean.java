@@ -6,16 +6,20 @@ package is.idega.idegaweb.marathon.business;
 import is.idega.idegaweb.marathon.data.Run;
 import is.idega.idegaweb.marathon.data.RunHome;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
+
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
@@ -31,6 +35,7 @@ import com.idega.core.location.data.PostalCode;
 import com.idega.core.location.data.PostalCodeHome;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.UnavailableIWContext;
 import com.idega.presentation.IWContext;
@@ -49,14 +54,23 @@ import com.idega.util.IWTimestamp;
  */
 public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 
+	private final static String IW_BUNDLE_IDENTIFIER = IWMarathonConstants.IW_BUNDLE_IDENTIFIER;
+
+	private static String DEFAULT_SMTP_MAILSERVER = "mail.agurait.com";
+
+	private static String PROP_SYSTEM_SMTP_MAILSERVER = "messagebox_smtp_mailserver";
+
+	private static String PROP_MESSAGEBOX_FROM_ADDRESS = "messagebox_from_mailaddress";
+
+	private static String DEFAULT_MESSAGEBOX_FROM_ADDRESS = "messagebox@idega.com";
+
 	/**
 	 * saves information on the user - creates a new user if he doesn't exsist..
 	 */
-	public int saveUser(String name, String ssn, String gender, String address, String postal, String city,
-			String country, String tel, String mobile, String email) {
+	public int saveUser(String name, String ssn, IWTimestamp dateOfBirth, String gender, String address, String postal, String city, String country, String tel, String mobile, String email) {
 		User user = null;
 		try {
-			user = getUserBiz(IWContext.getInstance()).createUserByPersonalIDIfDoesNotExist(name, ssn, null, null);
+			user = getUserBiz().createUserByPersonalIDIfDoesNotExist(name, ssn, null, dateOfBirth);
 			user.store();
 			if (gender != null && !gender.equals("")) {
 				user.setGender(Integer.parseInt(gender));
@@ -171,11 +185,11 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	 * saves information on the run for the specific user puts user in the right
 	 * group
 	 */
-	public void saveRun(int userID, String run, String distance, String year, String nationality, String tshirt,
-			String chipNumber, String groupName, String bestTime, String goalTime) {
+	public void saveRun(int userID, String run, String distance, String year, String nationality, String tshirt, String chipNumber, String groupName, String bestTime, String goalTime, Locale locale) {
 		Group groupRun = null;
+		User user = null;
 		try {
-			groupRun = getGroupBiz(IWContext.getInstance()).getGroupByGroupID(Integer.parseInt(run));
+			groupRun = getGroupBiz().getGroupByGroupID(Integer.parseInt(run));
 		}
 		catch (IBOLookupException e) {
 			e.printStackTrace();
@@ -194,15 +208,13 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 		String distanceType = null;
 		try {
-			User user = getUserBiz(IWContext.getInstance()).getUser(userID);
-			user.setDateOfBirth(getBirthDateFromSSN(user.getPersonalID()).getDate());
-			user.store();
+			user = getUserBiz().getUser(userID);
 			int age = getUserAge(user);
 			if (distance != null && !distance.equals("")) {
 				int disGroupID = Integer.parseInt(distance);
 				Group disGroup = null;
 				try {
-					disGroup = getGroupBiz(IWContext.getInstance()).getGroupByGroupID(disGroupID);
+					disGroup = getGroupBiz().getGroupByGroupID(disGroupID);
 					distanceType = disGroup.getName();
 				}
 				catch (UnavailableIWContext e1) {
@@ -212,8 +224,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 					e1.printStackTrace();
 				}
 				String[] groupType = { IWMarathonConstants.GROUP_TYPE_RUN_GROUP };
-				Collection groups = getGroupBiz(IWContext.getInstance()).getChildGroupsRecursive(disGroup, groupType,
-						true);
+				Collection groups = getGroupBiz().getChildGroupsRecursive(disGroup, groupType, true);
 				Iterator groupsIter = groups.iterator();
 				while (groupsIter.hasNext()) {
 					Group group = (Group) groupsIter.next();
@@ -249,6 +260,15 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 				}
 			}
 			r.store();
+
+			Email email = getUserBiz().getUserMail(user);
+			if (groupRun != null && user != null && email != null && email.getEmailAddress() != null) {
+				IWResourceBundle iwrb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+				Object[] args = { user.getName(), iwrb.getLocalizedString(groupRun.getName(),groupRun.getName()), tshirt };
+				String subject = iwrb.getLocalizedString("registration_received_subject", "Your registration has been received.");
+				String body = MessageFormat.format(iwrb.getLocalizedString("registration_received", "Your registration has been received."), args);
+				sendMessage(email.getEmailAddress(), subject, body);
+			}
 		}
 		catch (RemoteException rme) {
 		}
@@ -256,39 +276,25 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 	}
 
-	/**
-	 * 
-	 * @param pin -
-	 *            a social security number - format ddmmyyxxxx or ddmmyyyy
-	 * @return IWTimstamp - the date of birth from the pin..
-	 */
-	private IWTimestamp getBirthDateFromSSN(String pin) {
-		//pin format = 14011973
-		if (pin.length() == 8) {
-			int edd = Integer.parseInt(pin.substring(0, 2));
-			int emm = Integer.parseInt(pin.substring(2, 4));
-			int eyyyy = Integer.parseInt(pin.substring(4, 8));
-			IWTimestamp dob = new IWTimestamp(edd, emm, eyyyy);
-			return dob;
+	public void sendMessage(String email, String subject, String body) {
+
+		String mailServer = DEFAULT_SMTP_MAILSERVER;
+		String fromAddress = DEFAULT_MESSAGEBOX_FROM_ADDRESS;
+		try {
+			IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+			mailServer = iwb.getProperty(PROP_SYSTEM_SMTP_MAILSERVER, DEFAULT_SMTP_MAILSERVER);
+			fromAddress = iwb.getProperty(PROP_MESSAGEBOX_FROM_ADDRESS, DEFAULT_MESSAGEBOX_FROM_ADDRESS);
 		}
-		//  pin format = 140173xxxx ddmmyyxxxx
-		else if (pin.length() == 10) {
-			int dd = Integer.parseInt(pin.substring(0, 2));
-			int mm = Integer.parseInt(pin.substring(2, 4));
-			int yy = Integer.parseInt(pin.substring(4, 6));
-			int century = Integer.parseInt(pin.substring(9, 10));
-			int yyyy = 0;
-			if (century == 9) {
-				yyyy = yy + 1900;
-			}
-			else if (century == 0) {
-				yyyy = yy + 2000;
-			}
-			IWTimestamp dob = new IWTimestamp(dd, mm, yyyy);
-			return dob;
+		catch (Exception e) {
+			System.err.println("MessageBusinessBean: Error getting mail property from bundle");
+			e.printStackTrace();
 		}
-		else {
-			return null;
+
+		try {
+			com.idega.util.SendMail.send(fromAddress, email.trim(), "", "", mailServer, subject, body);
+		}
+		catch (javax.mail.MessagingException me) {
+			System.err.println("Error sending mail to address: " + email + " Message was: " + me.getMessage());
 		}
 	}
 
@@ -403,7 +409,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		String runName = run.getName();
 		Group group = null;
 		try {
-			group = getGroupBiz(iwc).createGroupUnder(year, null, run);
+			group = getGroupBiz().createGroupUnder(year, null, run);
 			group.setGroupType(IWMarathonConstants.GROUP_TYPE_RUN_YEAR);
 			group.store();
 		}
@@ -416,24 +422,13 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		catch (CreateException e) {
 			e.printStackTrace();
 		}
-		String[] disForMarathon = { IWMarathonConstants.DISTANCE_42, IWMarathonConstants.DISTANCE_21,
-				IWMarathonConstants.DISTANCE_10, IWMarathonConstants.DISTANCE_7, IWMarathonConstants.DISTANCE_3 };
+		String[] disForMarathon = { IWMarathonConstants.DISTANCE_42, IWMarathonConstants.DISTANCE_21, IWMarathonConstants.DISTANCE_10, IWMarathonConstants.DISTANCE_7, IWMarathonConstants.DISTANCE_3 };
 		String[] disForLaugavegur = { IWMarathonConstants.DISTANCE_55 };
-		String[] disForMidnight = { IWMarathonConstants.DISTANCE_3, IWMarathonConstants.DISTANCE_5,
-				IWMarathonConstants.DISTANCE_10 };
+		String[] disForMidnight = { IWMarathonConstants.DISTANCE_3, IWMarathonConstants.DISTANCE_5, IWMarathonConstants.DISTANCE_10 };
 		String[] disForRollerSkate = { IWMarathonConstants.DISTANCE_10 };
-		String[] grForMarathon = { IWMarathonConstants.FEMALE_14, IWMarathonConstants.FEMALE_15_17,
-				IWMarathonConstants.FEMALE_18_39, IWMarathonConstants.FEMALE_40_49, IWMarathonConstants.FEMALE_50_59,
-				IWMarathonConstants.FEMALE_60, IWMarathonConstants.MALE_14, IWMarathonConstants.MALE_15_17,
-				IWMarathonConstants.MALE_18_39, IWMarathonConstants.MALE_40_49, IWMarathonConstants.MALE_50_59,
-				IWMarathonConstants.MALE_60 };
-		String[] grForLaugavegur = { IWMarathonConstants.FEMALE_18_29, IWMarathonConstants.FEMALE_30_39,
-				IWMarathonConstants.FEMALE_40_49, IWMarathonConstants.FEMALE_50, IWMarathonConstants.MALE_18_29,
-				IWMarathonConstants.MALE_30_39, IWMarathonConstants.MALE_40_49, IWMarathonConstants.MALE_50_59,
-				IWMarathonConstants.MALE_60 };
-		String[] grForMidnight = { IWMarathonConstants.FEMALE_18, IWMarathonConstants.FEMALE_19_39,
-				IWMarathonConstants.FEMALE_40_49, IWMarathonConstants.FEMALE_50, IWMarathonConstants.MALE_18,
-				IWMarathonConstants.MALE_19_39, IWMarathonConstants.MALE_40_49, IWMarathonConstants.MALE_50 };
+		String[] grForMarathon = { IWMarathonConstants.FEMALE_14, IWMarathonConstants.FEMALE_15_17, IWMarathonConstants.FEMALE_18_39, IWMarathonConstants.FEMALE_40_49, IWMarathonConstants.FEMALE_50_59, IWMarathonConstants.FEMALE_60, IWMarathonConstants.MALE_14, IWMarathonConstants.MALE_15_17, IWMarathonConstants.MALE_18_39, IWMarathonConstants.MALE_40_49, IWMarathonConstants.MALE_50_59, IWMarathonConstants.MALE_60 };
+		String[] grForLaugavegur = { IWMarathonConstants.FEMALE_18_29, IWMarathonConstants.FEMALE_30_39, IWMarathonConstants.FEMALE_40_49, IWMarathonConstants.FEMALE_50, IWMarathonConstants.MALE_18_29, IWMarathonConstants.MALE_30_39, IWMarathonConstants.MALE_40_49, IWMarathonConstants.MALE_50_59, IWMarathonConstants.MALE_60 };
+		String[] grForMidnight = { IWMarathonConstants.FEMALE_18, IWMarathonConstants.FEMALE_19_39, IWMarathonConstants.FEMALE_40_49, IWMarathonConstants.FEMALE_50, IWMarathonConstants.MALE_18, IWMarathonConstants.MALE_19_39, IWMarathonConstants.MALE_40_49, IWMarathonConstants.MALE_50 };
 		//TODO: remove this hack - set metadata on the groups containing the
 		// specific run...
 		if (runName.equals("Rvk Marathon")) {
@@ -460,13 +455,13 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		for (int i = 0; i < dis.length; i++) {
 			Group distance = null;
 			try {
-				distance = getGroupBiz(iwc).createGroupUnder(dis[i], null, group);
+				distance = getGroupBiz().createGroupUnder(dis[i], null, group);
 				distance.setGroupType(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE);
 				distance.store();
 				for (int j = 0; j < gr.length; j++) {
 					Group g = null;
 					try {
-						g = getGroupBiz(iwc).createGroupUnder(gr[j], null, distance);
+						g = getGroupBiz().createGroupUnder(gr[j], null, distance);
 						g.setGroupType(IWMarathonConstants.GROUP_TYPE_RUN_GROUP);
 						g.store();
 					}
@@ -497,7 +492,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		Collection runs = null;
 		String[] type = { IWMarathonConstants.GROUP_TYPE_RUN };
 		try {
-			runs = getGroupBiz(iwc).getGroups(type, true);
+			runs = getGroupBiz().getGroups(type, true);
 		}
 		catch (Exception e) {
 			runs = null;
@@ -519,7 +514,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		Collection type = new ArrayList();
 		type.add(IWMarathonConstants.GROUP_TYPE_RUN_YEAR);
 		try {
-			years = getGroupBiz(iwc).getChildGroupsRecursiveResultFiltered(run, type, true);
+			years = getGroupBiz().getChildGroupsRecursiveResultFiltered(run, type, true);
 		}
 		catch (Exception e) {
 			years = null;
@@ -548,8 +543,8 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	}
 
 	/**
-	 * Gets a Collection of distances for a specific run and year. Distances are groups
-	 * with the group type "iwma_distance".
+	 * Gets a Collection of distances for a specific run and year. Distances are
+	 * groups with the group type "iwma_distance".
 	 * 
 	 * @param Group
 	 *            run - the supersupergroup of the specific run
@@ -568,7 +563,7 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			Group y = (Group) yearsIter.next();
 			if (y.getName().equals(year)) {
 				try {
-					distances = getGroupBiz(iwc).getChildGroupsRecursiveResultFiltered(y, type, true);
+					distances = getGroupBiz().getChildGroupsRecursiveResultFiltered(y, type, true);
 				}
 				catch (Exception e) {
 					distances = null;
@@ -610,13 +605,13 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		return countries;
 	}
 
-	private GroupBusiness getGroupBiz(IWContext iwc) throws IBOLookupException {
-		GroupBusiness business = (GroupBusiness) IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
+	private GroupBusiness getGroupBiz() throws IBOLookupException {
+		GroupBusiness business = (GroupBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), GroupBusiness.class);
 		return business;
 	}
 
-	private UserBusiness getUserBiz(IWContext iwc) throws IBOLookupException {
-		UserBusiness business = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+	private UserBusiness getUserBiz() throws IBOLookupException {
+		UserBusiness business = (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
 		return business;
 	}
 

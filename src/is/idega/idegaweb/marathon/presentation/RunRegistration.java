@@ -6,12 +6,18 @@ package is.idega.idegaweb.marathon.presentation;
 import is.idega.idegaweb.marathon.business.RunBusiness;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 
+import java.rmi.RemoteException;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ejb.FinderException;
+
+import com.idega.block.text.business.TextFormatter;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -28,6 +34,8 @@ import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
+import com.idega.user.business.GroupBusiness;
+import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
 
@@ -601,6 +609,11 @@ public class RunRegistration extends Block {
 		String nationality = iwc.getParameter(IWMarathonConstants.PARAMETER_NATIONALITY);
 		String ssnIS = iwc.getParameter(IWMarathonConstants.PARAMETER_SSN_IS);
 		String ssn = iwc.getParameter(IWMarathonConstants.PARAMETER_SSN);
+		IWTimestamp dateOfBirth = null;
+		if (ssn != null) {
+			dateOfBirth = new IWTimestamp(ssn);
+			ssn = dateOfBirth.getDateString("ddMMyy");
+		}
 		String gender = iwc.getParameter(IWMarathonConstants.PARAMETER_GENDER);
 		String address = iwc.getParameter(IWMarathonConstants.PARAMETER_ADDRESS);
 		String postal = iwc.getParameter(IWMarathonConstants.PARAMETER_POSTAL);
@@ -625,54 +638,80 @@ public class RunRegistration extends Block {
 		String bestTime = iwc.getParameter(IWMarathonConstants.PARAMETER_BEST_TIME);
 		String goalTime = iwc.getParameter(IWMarathonConstants.PARAMETER_GOAL_TIME);
 		String agreement = iwc.getParameter(IWMarathonConstants.PARAMETER_AGREEMENT);
+		boolean agrees = false;
+		if (agreement != null) {
+			agrees = new Boolean(agreement).booleanValue();
+		}
 
 		int userID = -1;
 		
-		if (ssnIS != null && !ssnIS.equals("")) {
-			userID = runBiz.saveUser(name, ssnIS, gender, address, postal, city, country, tel, mobile, email);
+		if (agrees) {
+			if (ssnIS != null && !ssnIS.equals("")) {
+				userID = runBiz.saveUser(name, ssnIS, dateOfBirth, gender, address, postal, city, country, tel, mobile, email);
+				
+			}
+			else if (ssn != null && !ssn.equals("")) {
+				userID = runBiz.saveUser(name, ssn, dateOfBirth, gender, address, postal, city, country, tel, mobile, email);
+			}
+	
+			if (userID > 0) {
+				runBiz.saveRun(userID, run, distance, year, nationality, tshirt, chipNumber, groupName, bestTime, goalTime, iwc.getCurrentLocale());
+			}
+	
+			Table t = new Table();
+			t.setCellpadding(0);
+			t.setCellspacing(0);
+			t.setWidth(Table.HUNDRED_PERCENT);
+			int row = 1;
+	
+			String message = iwrb.getLocalizedString("registration_received", "Your registration has been received.");
+			Group runGroup = null;
+			Group distanceGroup = null;
+			try {
+				runGroup = getGroupBusiness(iwc).getGroupByGroupID(Integer.parseInt(run));
+				distanceGroup = getGroupBusiness(iwc).getGroupByGroupID(Integer.parseInt(distance));
+				Object[] args = { name, iwrb.getLocalizedString(runGroup.getName(),runGroup.getName()), tshirt };
+				message = MessageFormat.format(iwrb.getLocalizedString("registration_received", "Your registration has been received."), args);
+			}
+			catch (RemoteException re) {
+				log(re);
+			}
+			catch (FinderException fe) {
+				log(fe);
+			}
 			
+			t.setHeight(row++, 12);
+			t.add(TextFormatter.formatText(message), 1, row++);
+			t.setHeight(row++, 8);
+	
+			Table buttonTable = new Table(3, 1);
+			buttonTable.setCellpadding(0);
+			buttonTable.setCellspacing(0);
+			buttonTable.setWidth(2, 1, 12);
+	
+			Link backBlue = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.back", "Back")), STYLENAME_BLUE_TEXT);
+			Link backGreen = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
+	
+			Link payBlue = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.pay", "Pay fee")), STYLENAME_BLUE_TEXT);
+			Link payGreen = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
+			if (runGroup != null && distanceGroup != null) {
+				String URL = iwrb.getIWBundleParent().getProperty("travelURL_"+runGroup.getName()+"_"+distanceGroup.getName()+"_"+year+"_"+iwc.getCurrentLocale().toString(), "#");
+				payBlue.setURL(URL);
+				payGreen.setURL(URL);
+			}
+	
+			buttonTable.add(backBlue, 1, 1);
+			buttonTable.add(Text.getNonBrakingSpace(), 1, 1);
+			buttonTable.add(backGreen, 1, 1);
+			if (showPayment) {
+				buttonTable.add(payBlue, 3, 1);
+				buttonTable.add(Text.getNonBrakingSpace(), 3, 1);
+				buttonTable.add(payGreen, 3, 1);
+			}
+			t.add(buttonTable, 1, row);
+			add(t);
 		}
-		else if (ssn != null && !ssn.equals("")) {
-			userID = runBiz.saveUser(name, ssn, gender, address, postal, city, country, tel, mobile, email);
-		}
-
-		if (userID > 0) {
-			runBiz.saveRun(userID, run, distance, year, nationality, tshirt, chipNumber, groupName, bestTime, goalTime);
-		}
-
-		Table t = new Table();
-		t.setCellpadding(0);
-		t.setCellspacing(0);
-		t.setWidth(Table.HUNDRED_PERCENT);
-		int row = 1;
-
-		t.setHeight(row++, 12);
-		t.add(iwrb.getLocalizedString("registration_received", "Your registration has been received."), 1, row++);
-		t.setHeight(row++, 8);
-
-		Table buttonTable = new Table(3, 1);
-		buttonTable.setCellpadding(0);
-		buttonTable.setCellspacing(0);
-		buttonTable.setWidth(2, 1, 12);
-
-		Link backBlue = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.back", "Back")), STYLENAME_BLUE_TEXT);
-		Link backGreen = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
-
-		Link payBlue = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.pay", "Pay fee")), STYLENAME_BLUE_TEXT);
-		Link payGreen = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
-
-		buttonTable.add(backBlue, 1, 1);
-		buttonTable.add(Text.getNonBrakingSpace(), 1, 1);
-		buttonTable.add(backGreen, 1, 1);
-		if (showPayment) {
-			buttonTable.add(payBlue, 3, 1);
-			buttonTable.add(Text.getNonBrakingSpace(), 3, 1);
-			buttonTable.add(payGreen, 3, 1);
-		}
-		t.add(buttonTable, 1, row);
-		add(t);
 	}
-
 	public void main(IWContext iwc) {
 		f = new Form();
 		initializeTexts(iwc);
@@ -730,6 +769,15 @@ public class RunRegistration extends Block {
 			business = null;
 		}
 		return business;
+	}
+
+	private GroupBusiness getGroupBusiness(IWContext iwc) {
+		try {
+			return (GroupBusiness) IBOLookup.getServiceInstance(iwc, GroupBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
 	}
 
 	/**
