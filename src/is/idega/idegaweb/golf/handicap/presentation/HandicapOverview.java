@@ -154,19 +154,19 @@ public class HandicapOverview extends GolfBlock {
 		table.setRowVerticalAlignment(1, Table.VERTICAL_ALIGN_BOTTOM);
 		int row = 2;
 
-		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.date", "Date")), 1, row);
-		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.course", "Course")), 2, row);
-		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.tournament", "Tournament")), 3, row);
-		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.tees", "Tees")), 4, row);
-		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.slope", "Slope/CR")), 5, row);
-		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.course_handicap", "Course") + Text.BREAK + iwrb.getLocalizedString("handicap.handicap_lowercase", "handicap")), 6, row);
-		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.points", "Points")), 7, row);
-		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.difference", "Difference")), 8, row);
-		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.handicap", "Handicap")), 9, row);
-		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.new", "New") + Text.BREAK + iwrb.getLocalizedString("handicap.handicap_lowercase", "handicap")), 10, row);
+		table.add(iwrb.getLocalizedString("handicap.date", "Date"), 1, row);
+		table.add(iwrb.getLocalizedString("handicap.course", "Course"), 2, row);
+		table.add(iwrb.getLocalizedString("handicap.tournament", "Tournament"), 3, row);
+		table.add(iwrb.getLocalizedString("handicap.tees", "Tees"), 4, row);
+		table.add(iwrb.getLocalizedString("handicap.slope", "Slope/CR"), 5, row);
+		table.add(iwrb.getLocalizedString("handicap.course_handicap", "Course") + Text.BREAK + iwrb.getLocalizedString("handicap.handicap_lowercase", "handicap"), 6, row);
+		table.add(iwrb.getLocalizedString("handicap.points", "Points"), 7, row);
+		table.add(iwrb.getLocalizedString("handicap.difference", "Difference"), 8, row);
+		table.add(iwrb.getLocalizedString("handicap.handicap", "Handicap"), 9, row);
+		table.add(iwrb.getLocalizedString("handicap.new", "New") + Text.BREAK + iwrb.getLocalizedString("handicap.handicap_lowercase", "handicap"), 10, row);
 
 		if (!isWindow) {
-			table.add(getSmallHeader(iwrb.getLocalizedString("handicap.scorecard", "Scorecard")), 11, row);
+			table.add(iwrb.getLocalizedString("handicap.scorecard", "Scorecard"), 11, row);
 			if (isAdmin) {
 				table.setWidth(11, row, 72);
 			}
@@ -174,8 +174,7 @@ public class HandicapOverview extends GolfBlock {
 				table.setWidth(11, row, 54);
 			}
 		}
-		table.setRowColor(row, getHeaderColor());
-		table.setRowPadding(row, getCellpadding());
+		table.setRowStyleClass(row, getHeaderRowClass());
 		table.setRowAlignment(row, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_LEFT);
@@ -186,8 +185,8 @@ public class HandicapOverview extends GolfBlock {
 		boolean mergedCells = false;
 		
 		for (int a = 0; a < scoreCards.length; a++) {
-			Text date = getSmallText(new IWTimestamp(scoreCards[a].getScorecardDate()).getDateString("dd/MM/yy"));
-
+			String date = new IWTimestamp(scoreCards[a].getScorecardDate()).getDateString("dd/MM/yy");
+			
 			Image deleteImage = iwb.getImage("shared/handicap/delete.gif", iwrb.getLocalizedString("handicap.scorecard_delete", "Delete scorecard"));
 			deleteImage.setToolTip(iwrb.getLocalizedString("handicap.scorecard_delete", "Delete scorecard"));
 			deleteImage.setHorizontalSpacing(1);
@@ -201,11 +200,11 @@ public class HandicapOverview extends GolfBlock {
 				mergedCells = true;
 
 				table.add(date, 1, row);
-				table.add(getSmallText("- " + scoreCards[a].getForeignCourseName() + " -"), 2, row);
-				table.add(getSmallText("" + scoreCards[a].getTotalPoints()), 7, a + 3);
-				table.add(getSmallText(String.valueOf(scoreCards[a].getTotalPoints() - basePoints)), 8, row);
-				table.add(getSmallText(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapBefore())), 9, row);
-				table.add(getSmallText(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapAfter())), 10, row);
+				table.add("- " + scoreCards[a].getForeignCourseName() + " -", 2, row);
+				table.add("" + scoreCards[a].getTotalPoints(), 7, a + 3);
+				table.add(String.valueOf(scoreCards[a].getTotalPoints() - basePoints), 8, row);
+				table.add(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapBefore()), 9, row);
+				table.add(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapAfter()), 10, row);
 
 				if (!isWindow) {
 					if (isAdmin || iMemberID.equalsIgnoreCase("1")) {
@@ -297,7 +296,7 @@ public class HandicapOverview extends GolfBlock {
 						table.add(fieldLink, 2, row);
 					}
 					else {
-						table.add(getSmallText(fieldName), 2, row);
+						table.add(fieldName, 2, row);
 					}
 
 					if (tournamentName != null) {
@@ -309,31 +308,31 @@ public class HandicapOverview extends GolfBlock {
 							table.add(tournamentLink, 3, row);
 						}
 						else {
-							table.add(getSmallText(tournamentName), 3, row);
+							table.add(tournamentName, 3, row);
 						}
 					}
 					else {
 						table.addText("", 3, row);
 					}
 
-					table.add(getSmallText(teeName), 4, row);
-					table.add(getSmallText(String.valueOf((int) Math.rint(slope)) + Text.NON_BREAKING_SPACE + "/" + Text.NON_BREAKING_SPACE + cr), 5, row);
+					table.add(teeName, 4, row);
+					table.add(String.valueOf((int) Math.rint(slope)) + Text.NON_BREAKING_SPACE + "/" + Text.NON_BREAKING_SPACE + cr, 5, row);
 
 					if (showRealHandicap) {
-						table.add(getSmallText(String.valueOf(realPlayHandicap)), 6, row);
-						table.add(getSmallText(String.valueOf(realPoints)), 7, row);
-						table.add(getSmallText(String.valueOf(realPoints - basePoints)), 8, row);
-						table.add(getSmallText(TextSoap.singleDecimalFormat(String.valueOf(realHandicap))), 9, row);
+						table.add(String.valueOf(realPlayHandicap), 6, row);
+						table.add(String.valueOf(realPoints), 7, row);
+						table.add(String.valueOf(realPoints - basePoints), 8, row);
+						table.add(TextSoap.singleDecimalFormat(String.valueOf(realHandicap)), 9, row);
 					}
 					else {
-						table.add(getSmallText(String.valueOf(playHandicap)), 6, row);
-						table.add(getSmallText(String.valueOf(totalPoints)), 7, row);
-						table.add(getSmallText(String.valueOf(totalPoints - basePoints)), 8, row);
-						table.add(getSmallText(TextSoap.singleDecimalFormat(String.valueOf(baseHandicap))), 9, row);
+						table.add(String.valueOf(playHandicap), 6, row);
+						table.add(String.valueOf(totalPoints), 7, row);
+						table.add(String.valueOf(totalPoints - basePoints), 8, row);
+						table.add(TextSoap.singleDecimalFormat(String.valueOf(baseHandicap)), 9, row);
 					}
 
 					if (Double.toString(baseHandicap) != null) {
-						table.add(getSmallText(TextSoap.singleDecimalFormat(String.valueOf(newBaseHandicap))), 10, row);
+						table.add(TextSoap.singleDecimalFormat(String.valueOf(newBaseHandicap)), 10, row);
 					}
 
 					table.setRowAlignment(row, Table.HORIZONTAL_ALIGN_CENTER);
@@ -427,9 +426,9 @@ public class HandicapOverview extends GolfBlock {
 					table.mergeCells(2, row, 8, row);
 					table.setRowAlignment(row, Table.HORIZONTAL_ALIGN_CENTER);
 
-					Text updateText = getSmallText("- " + iwrb.getLocalizedString("handicap.handicap_correction", "Handicap correction") + " -");
-					Text handicapBefore = getSmallText(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapBefore()));
-					Text handicapAfter = getSmallText(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapAfter()));
+					Text updateText = new Text("- " + iwrb.getLocalizedString("handicap.handicap_correction", "Handicap correction") + " -");
+					Text handicapBefore = new Text(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapBefore()));
+					Text handicapAfter = new Text(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapAfter()));
 
 					table.add(date, 1, row);
 					table.add(updateText, 2, row);
@@ -444,7 +443,6 @@ public class HandicapOverview extends GolfBlock {
 				}
 			}
 
-			table.setRowPadding(row, getCellpadding());
 			table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_MIDDLE);
 			table.setRowAlignment(row, Table.HORIZONTAL_ALIGN_CENTER);
 			table.setHeight(row, 20);
@@ -463,15 +461,12 @@ public class HandicapOverview extends GolfBlock {
 				}
 			}
 			if (zebraRow % 2 != 0) {
-				table.setRowColor(row++, getZebraColor1());
+				table.setRowStyleClass(row++, getLightRowClass());
 			}
 			else {
-				table.setRowColor(row++, getZebraColor2());
+				table.setRowStyleClass(row++, getDarkRowClass());
 			}
 			zebraRow++;
-			table.mergeCells(1, row, table.getColumns(), row);
-			table.setRowColor(row, "#B2B2B2");
-			table.setHeight(row++, 1);
 		}
 
 		if (!isWindow) {
