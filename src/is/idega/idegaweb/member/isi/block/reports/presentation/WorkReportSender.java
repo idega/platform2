@@ -59,40 +59,7 @@ public class WorkReportSender extends WorkReportSelector {
 				sendWorkReport(iwc);
 			}
 			else{//show the first message and the check button
-				boolean readOnly = getWorkReportBusiness(iwc).isWorkReportReadOnly(getWorkReportId());
-				
-				if(readOnly){//ALREADY SENT
-					add(iwrb.getLocalizedString("workreportsender.report_is_read_only","The work report has already been sent with these comments : "));
-					addBreak();
-					String comments = getWorkReportBusiness(iwc).getWorkReportSentText(getWorkReportId());
-					if( comments == null){
-						comments = iwrb.getLocalizedString("workreportsender.no_comments","No comments.");
-					}
-					add( comments);
-					
-					
-					if(iwc.isSuperAdmin() || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(getUserType())){
-						Form form = new Form();
-						form.addBreak();
-						form.add(new HiddenInput(PARAM_UNSEND,"TRUE"));
-						SubmitButton check = new SubmitButton(iwrb.getLocalizedString("workreportsender.open","reopen report"));
-						check.setAsImageButton(true);
-						form.add(check);
-						form.maintainParameters(this.getParametersToMaintain());
-						add(form);
-					}
-				}//NOT SENT YET
-				else {
-					Form form = new Form();
-					form.add(iwrb.getLocalizedString("workreportsender.check_report_text","Press the button below to check the validity of this work report."));
-					form.addBreak();
-					form.add(new HiddenInput(PARAM_CHECK,"TRUE"));
-					SubmitButton check = new SubmitButton(iwrb.getLocalizedString("workreportsender.check","check report"));
-					check.setAsImageButton(true);
-					form.add(check);
-					form.maintainParameters(this.getParametersToMaintain());
-					add(form);
-				}
+				showFirstRespone(iwc);
 			}
 			
 			
@@ -101,6 +68,46 @@ public class WorkReportSender extends WorkReportSelector {
 		
 	}
 	
+
+	private void showFirstRespone(IWContext iwc) throws RemoteException {
+		boolean readOnly = getWorkReportBusiness(iwc).isWorkReportReadOnly(getWorkReportId());
+				
+		if(readOnly){//ALREADY SENT
+			add(iwrb.getLocalizedString("workreportsender.report_is_read_only","The work report has already been sent with these comments : "));
+			addBreak();
+			String comments = getWorkReportBusiness(iwc).getWorkReportSentText(getWorkReportId());
+			if( comments == null){
+				comments = iwrb.getLocalizedString("workreportsender.no_comments","No comments.");
+			}
+			add( comments);
+		
+		
+			if(iwc.isSuperAdmin() || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(getUserType())){
+				Form form = new Form();
+				form.addBreak();
+				form.add(new HiddenInput(PARAM_UNSEND,"TRUE"));
+				SubmitButton check = new SubmitButton(iwrb.getLocalizedString("workreportsender.open","reopen report"));
+				check.setAsImageButton(true);
+				form.add(check);
+				form.maintainParameters(this.getParametersToMaintain());
+				add(form);
+			}
+		}//NOT SENT YET
+		else {
+			Form form = new Form();
+			form.add(iwrb.getLocalizedString("workreportsender.check_report_text","Press the button below to check the validity of this work report."));
+			form.addBreak();
+			form.add(new HiddenInput(PARAM_CHECK,"TRUE"));
+			SubmitButton check = new SubmitButton(iwrb.getLocalizedString("workreportsender.check","check report"));
+			check.setAsImageButton(true);
+			form.add(check);
+			form.maintainParameters(this.getParametersToMaintain());
+			add(form);
+		}	
+	}
+
+
+
 	private Form checkWorkReport(IWContext iwc) throws RemoteException{
 		StringBuffer report = new StringBuffer();
 	
@@ -158,7 +165,7 @@ public class WorkReportSender extends WorkReportSelector {
 	}
 	
 	private void sendWorkReport(IWContext iwc) throws RemoteException{
-		if(getWorkReportBusiness(iwc).sendWorkReport(getWorkReportId(),iwc.getParameter(PARAM_TEXT))){
+		if(getWorkReportBusiness(iwc).sendWorkReport(getWorkReportId(),iwc.getParameter(PARAM_TEXT),iwrb)){
 			add(iwrb.getLocalizedString("workreportsender.has_been_sent","The work report has now been sent and is read only."));
 		}
 		else{

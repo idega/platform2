@@ -26,8 +26,10 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 	protected final static String COLUMN_NAME_REGIONAL_UNION_GROUP_ID = "REG_UNI_GR_ID";//a connection for a club
 	
 	protected final static String COLUMN_NAME_GROUP_NAME = "GROUP_NAME";
+	protected final static String COLUMN_NAME_GROUP_TYPE = "GROUP_TYPE";
 	protected final static String COLUMN_NAME_GROUP_SHORT_NAME = "GROUP_SHORT_NAME";
 	protected final static String COLUMN_NAME_GROUP_NUMBER = "GROUP_NUMBER";
+	protected final static String COLUMN_NAME_GROUP_INACTIVE = "INACTIVE";
 	protected final static String COLUMN_NAME_WORK_REPORT_YEAR = "YEAR_OF_REPORT";
 	protected final static String COLUMN_NAME_MEMBERS_DONE = "MEMB_DONE";
 	protected final static String COLUMN_NAME_ACCOUNT_DONE = "ACC_DONE";
@@ -50,16 +52,21 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		addAttribute(COLUMN_NAME_GROUP_ID, "Group id of club/league/regional union",true,true,Integer.class,"many-to-one",Group.class);
 		addAttribute(COLUMN_NAME_REGIONAL_UNION_GROUP_ID, "Regional union group id",true,true,Integer.class,"many-to-one",Group.class);
 		
+		
 		addAttribute(COLUMN_NAME_MEMBER_FILE_ID, "Members-part file id",true,true,Integer.class,"many-to-one",ICFile.class);
 		addAttribute(COLUMN_NAME_ACCOUNT_FILE_ID, "Account-part file id",true,true,Integer.class,"many-to-one",ICFile.class);
 		addAttribute(COLUMN_NAME_BOARD_FILE_ID, "Board-part file id",true,true,Integer.class,"many-to-one",ICFile.class);
 		addAttribute(COLUMN_NAME_GROUP_NAME, "Group name",true,true,String.class);
 		addAttribute(COLUMN_NAME_GROUP_SHORT_NAME, "Group short name",true,true,String.class,30);
+		addAttribute(COLUMN_NAME_GROUP_TYPE, "Group type",true,true,String.class,30);
 		addAttribute(COLUMN_NAME_GROUP_NUMBER, "Group number",true,true,String.class);
 		addAttribute(COLUMN_NAME_WORK_REPORT_YEAR,"The year this report is valid for",true,true,Integer.class);
 		addAttribute(COLUMN_NAME_MEMBERS_DONE, "Is the members-part of the work report finished", true, true, Boolean.class);
 		addAttribute(COLUMN_NAME_ACCOUNT_DONE, "Is the account-part of the work report finished", true, true, Boolean.class);		
-		addAttribute(COLUMN_NAME_BOARD_DONE, "Is the board-part of the work report finished", true, true, Boolean.class);	
+		addAttribute(COLUMN_NAME_BOARD_DONE, "Is the board-part of the work report finished", true, true, Boolean.class);
+			
+		addAttribute(COLUMN_NAME_GROUP_INACTIVE, "Is the group inactive", true, true, Boolean.class);	
+		
 		addAttribute(COLUMN_NAME_CREATION_FROM_DATABASE_DONE, "Has the data been created from database?", true, true, Boolean.class);
     addAttribute(COLUMN_NAME_STATUS, "Status",true,true,String.class,30);
 		addAttribute(COLUMN_NAME_SENT, "Has the workreport been sent, finalized", true, true, Boolean.class);
@@ -176,6 +183,18 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		setColumn(COLUMN_NAME_BOARD_DONE,isDone);
 	}
 	
+	public void setAsInactive(){
+		setColumn(COLUMN_NAME_GROUP_INACTIVE,true);
+	}
+	
+	public void setAsActive(){
+		setColumn(COLUMN_NAME_GROUP_INACTIVE,false);
+	}
+	
+	public boolean isInActive(){
+		return getBooleanColumnValue(COLUMN_NAME_GROUP_INACTIVE,false);
+	}
+	
 	public boolean isMembersPartDone(){
 		return getBooleanColumnValue(COLUMN_NAME_MEMBERS_DONE,false);
 	}
@@ -234,7 +253,13 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
     idoAddTo(group);
   }
     
+	public String getGroupType() {
+		return getStringColumnValue(COLUMN_NAME_GROUP_TYPE);
+	}
 	
+	public void setGroupType(String groupType) {
+		setColumn(COLUMN_NAME_GROUP_TYPE, groupType);
+	}
 	
 	
 	

@@ -2,6 +2,7 @@ package is.idega.idegaweb.member.business;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -180,7 +181,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		if(userEmails!=null && !userEmails.isEmpty()){
 			toEmailAddress = ((Email) userEmails.iterator().next()).getEmailAddress();
 			try {
-				sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body, iwuc);
+				sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body);
 			}
 			catch (MessagingException e) {
 				e.printStackTrace();
@@ -191,7 +192,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		if(leagueEmails!=null && !leagueEmails.isEmpty()){
 			toEmailAddress = ((Email) leagueEmails.iterator().next()).getEmailAddress();
 			try {
-				sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body, iwuc);
+				sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body);
 			}
 			catch (MessagingException e) {
 				e.printStackTrace();
@@ -203,7 +204,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 			if(toRegionalEmails!=null && !toRegionalEmails.isEmpty()){
 				toEmailAddress = ((Email) toRegionalEmails.iterator().next()).getEmailAddress();
 				try {
-					sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body, iwuc);
+					sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body);
 				}
 				catch (MessagingException e) {
 					e.printStackTrace();
@@ -216,7 +217,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 			if(fromRegionalEmails!=null && !fromRegionalEmails.isEmpty()){
 				toEmailAddress = ((Email) fromRegionalEmails.iterator().next()).getEmailAddress();
 				try {
-					sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body, iwuc);
+					sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body);
 				}
 				catch (MessagingException e) {
 					e.printStackTrace();
@@ -229,13 +230,110 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 	}
 	
 	
-	public boolean sendEmailFromIWMemberSystemAdministrator(String toEmailAddress, String CC, String BCC,String subject, String theMessageBody, IWUserContext iwuc) throws MessagingException{
+	/**
+	 * Checks the groups parents for a regional union and returns the first it finds.
+	 * @param club (Group)
+	 * @return the regional union for that club if it exists, otherwise throws an exception
+	 * @throws NoRegionalUnionFoundException
+	 */
+	public Group getRegionalUnionGroupForClubGroup(Group club) throws NoRegionalUnionFoundException{
+		List parents = club.getParentGroups();
+		Iterator it = parents.iterator();
+		Group regionalUnionGroup = null;
+		
+		if (it != null) {
+			while (it.hasNext()) {
+				Group parent = (Group) it.next();
+				if (IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(parent.getGroupType())){
+					regionalUnionGroup = parent;
+				}			
+			}
+		}
+		
+		if(regionalUnionGroup==null){
+			throw new NoRegionalUnionFoundException(club.getName());
+		}
+		else{
+			return regionalUnionGroup;
+		}
+	}
+	
+	/**
+	 * TEMP IMPLEMENTATION : Gets all groups of the type iwme_federation if there are more than one than it only returns the first one!
+	 * @param club (Group)
+	 * @return the federation union for that club if it exists, otherwise throws an exception
+	 * @throws NoFederationFoundException
+	 */
+	public Group getFederationGroupForClubGroup(Group club) throws NoFederationFoundException, RemoteException{
+		try {
+			Collection federations = this.getGroupBusiness().getGroupHome().findGroupsByType(IWMemberConstants.GROUP_TYPE_FEDERATION);
+			return (Group) federations.iterator().next();
+			
+		} catch (FinderException e) {
+			e.printStackTrace();
+			throw new NoFederationFoundException(club.getName());
+		}
+		
+	}
+	
+	/**
+	 * Checks the groups children for club divisons and then gets the division league connection and add to the list it returns
+	 * @param club (Group)
+	 * @return a list of leagues for that club if it has connections to any, otherwise throws an exception
+	 * @throws NoLeagueFoundException
+	 */
+	public List getLeagueGroupListForClubGroup(Group club) throws NoLeagueFoundException, RemoteException{
+		String[] divisionType = {IWMemberConstants.GROUP_TYPE_CLUB_DIVISION};
+		List children = club.getChildGroups(divisionType,true);
+		List list = new ArrayList();
+		
+		if(children!=null && !children.isEmpty()){
+			
+			Iterator it = children.iterator();
+			
+			while (it.hasNext()) {
+				Group div = (Group) it.next();
+				String leagueId = div.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION);		
+				if(leagueId!=null){
+					int id;
+					try {
+						id = Integer.parseInt(leagueId);
+						Group league;
+						league = this.getGroupBusiness().getGroupByGroupID(id);
+						list.add(league);
+					}
+					catch (NumberFormatException e) {
+						e.printStackTrace();
+					}
+					catch (FinderException e1) {
+						e1.printStackTrace();
+					}
+
+				}
+			}
+		}
+		
+		
+		if(list.isEmpty()){
+			throw new NoLeagueFoundException(club.getName());
+		}
+		else{
+			return list;
+		}
+		
+	}
+	
+	
+	
+	
+	public boolean sendEmailFromIWMemberSystemAdministrator(String toEmailAddress, String CC, String BCC,String subject, String theMessageBody) throws MessagingException{
 		String systemEmailAddress = this.getIWApplicationContext().getApplicationSettings().getProperty(IWMemberConstants.APPLICATION_PARAMETER_ADMINISTRATOR_MAIN_EMAIL);
 		String systemMailServer = this.getIWApplicationContext().getApplicationSettings().getProperty(IWMemberConstants.APPLICATION_PARAMETER_MAIL_SERVER);
 		com.idega.util.SendMail.send(systemEmailAddress,toEmailAddress,CC,BCC,systemMailServer,subject,theMessageBody);
 		
 		return true;
 	}
+	
 
 	//temp refactor this class to MemberBusiness or move this method to that class
 	/**

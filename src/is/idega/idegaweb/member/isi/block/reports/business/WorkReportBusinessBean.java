@@ -1,6 +1,8 @@
 package is.idega.idegaweb.member.isi.block.reports.business;
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.business.MemberUserBusinessBean;
+import is.idega.idegaweb.member.business.NoFederationFoundException;
+import is.idega.idegaweb.member.business.NoRegionalUnionFoundException;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKey;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKeyHome;
@@ -15,6 +17,7 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroupHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMemberHome;
+import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.io.File;
@@ -33,6 +36,7 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import javax.mail.MessagingException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
@@ -44,6 +48,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.core.data.Address;
+import com.idega.core.data.Email;
 import com.idega.core.data.Phone;
 import com.idega.core.data.PhoneType;
 import com.idega.core.data.PostalCode;
@@ -51,6 +56,7 @@ import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.transaction.IdegaTransactionManager;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
@@ -110,7 +116,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			report = getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(groupId, year);
 		}
 		catch (FinderException e) {
-			System.out.println("[WorkReportBusinessBean] No report for groupId : " + groupId + " adn year : " + year + " creating a new one.");
+			System.out.println("[WorkReportBusinessBean] No report for groupId : " + groupId + " ann year : " + year + " creating a new one.");
 			try {
 				Group club;
 				try {
@@ -122,6 +128,25 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					report.setGroupName((club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) != null) ? club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) : club.getName());
 					report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
 					report.setGroupShortName(club.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME));
+					
+					report.setGroupType(club.getGroupType());
+					
+					//tegund felags?
+					
+					//ovirkt?
+					
+					
+					
+					
+					try {
+						Group regionalUnion = this.getRegionalUnionGroupForClubGroup(club);
+						
+						report.setRegionalUnionGroupId((Integer)regionalUnion.getPrimaryKey());
+					}
+					catch (NoRegionalUnionFoundException e3) {
+						//no regional union, must be a league or a regional union itself
+					}
+					
 					report.store();
 				}
 				catch (FinderException e2) {
@@ -1874,15 +1899,88 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   }
   
 
-	public boolean sendWorkReport(int workReportId, String reportText) {
-		//TODO Eiki change status
+	public boolean sendWorkReport(int workReportId, String reportText, IWResourceBundle iwrb) throws RemoteException {
+
 		WorkReport report = getWorkReportById(workReportId);
 		report.setAsSent(true);
 		report.setSentReportText(reportText);
+		
+		//if some is done set status to partial else if it is not set yet to not done
+		if( report.isMembersPartDone() || report.isAccountPartDone() || report.isBoardPartDone() ){
+			report.setStatus(WorkReportConstants.WR_STATUS_SOME_DONE);
+		}
+		else{	
+			report.setStatus(WorkReportConstants.WR_STATUS_NOT_DONE);
+		}
+		
 		report.store();
-
+		
+		String subject = iwrb.getLocalizedString("work_report_send.email_subject","IWMember workreport sent announcement");
+		String body = report.getGroupName()+"\n";
+		body += iwrb.getLocalizedString("work_report_send.email_body","has just sent a workreport.\n\n");
+		body += iwrb.getLocalizedString("work_report_send.email_body_comments","Comments: \n");
+		body += reportText;
+		
+		
+		//send email to regional union
+		try {
+			Integer regUniId = report.getRegionalUnionGroupId();
+			if(regUniId!=null){
+			
+				Group regionalUnion = this.getGroupBusiness().getGroupByGroupID(regUniId.intValue());
+				
+				Collection toRegionalEmails = regionalUnion.getEmails();
+				String toEmailAddress = null;
+				if(toRegionalEmails!=null && !toRegionalEmails.isEmpty()){
+					toEmailAddress = ((Email) toRegionalEmails.iterator().next()).getEmailAddress();
+					try {
+						sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body);
+					}
+					catch (MessagingException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		catch (FinderException e) {
+			//either not found or this is a regional union / league
+			e.printStackTrace();
+		}
+			
+		//send email to federation
+		Group federation;
+		try {
+			Integer groupID = report.getGroupId();
+			
+			if(groupID!=null){
+				
+				federation = getFederationGroupForClubGroup(getGroupBusiness().getGroupByGroupID(groupID.intValue()));
+	
+				Collection fedEmails = federation.getEmails();
+				
+				if(fedEmails!=null && !fedEmails.isEmpty()){
+					String toEmailAddress = ((Email) fedEmails.iterator().next()).getEmailAddress();
+					try {
+						sendEmailFromIWMemberSystemAdministrator(toEmailAddress, null, null, subject, body);
+					}
+					catch (MessagingException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+	
+		}
+		catch (NoFederationFoundException e1) {
+			e1.printStackTrace();
+		}
+		catch (FinderException e1) {
+			e1.printStackTrace();
+		}
+			
+			
 		return true;
 	}
+	
 	
 	public boolean closeWorkReport(int workReportId) {
 		WorkReport report = getWorkReportById(workReportId);

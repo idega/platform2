@@ -10,6 +10,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public java.lang.String getGroupName();
  public java.lang.String getGroupNumber();
  public java.lang.String getGroupShortName();
+ public java.lang.String getGroupType();
  public java.util.Collection getLeagues()throws com.idega.data.IDOException;
  public java.lang.Integer getMemberFileId();
  public java.lang.Integer getRegionalUnionGroupId();
@@ -20,10 +21,13 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public boolean isAccountPartDone();
  public boolean isBoardPartDone();
  public boolean isCreationFromDatabaseDone();
+ public boolean isInActive();
  public boolean isMembersPartDone();
  public boolean isSent();
  public void setAccountFileId(int p0);
  public void setAccountPartDone(boolean p0);
+ public void setAsActive();
+ public void setAsInactive();
  public void setAsSent(boolean p0);
  public void setBoardFileId(int p0);
  public void setBoardPartDone(boolean p0);
@@ -33,6 +37,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public void setGroupName(java.lang.String p0);
  public void setGroupNumber(java.lang.String p0);
  public void setGroupShortName(java.lang.String p0);
+ public void setGroupType(java.lang.String p0);
  public void setMemberFileId(int p0);
  public void setMembersPartDone(boolean p0);
  public void setRegionalUnionGroupId(int p0);
