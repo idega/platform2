@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneUserBusiness.java,v 1.43 2004/10/13 15:29:57 thomas Exp $
+ * $Id: CommuneUserBusiness.java,v 1.44 2004/10/14 07:33:59 laddi Exp $
  * Created on 18.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,13 +10,15 @@
 package se.idega.idegaweb.commune.business;
 
 import is.idega.block.family.business.FamilyLogic;
+
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import com.idega.block.school.business.SchoolBusiness;
+
 import com.idega.block.school.data.School;
 import com.idega.business.IBOService;
 import com.idega.core.contact.data.Email;
@@ -30,10 +32,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/13 15:29:57 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/14 07:33:59 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.43 $
+ * @version $Revision: 1.44 $
  */
 public interface CommuneUserBusiness extends IBOService, UserBusiness {
     /**
