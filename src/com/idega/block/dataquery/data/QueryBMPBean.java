@@ -27,7 +27,7 @@ public class QueryBMPBean extends ICFileBMPBean implements Query,ICFile{
 	 }
 	 
 	 public void setAsTemplate(boolean template){
-	 	setMetaData("templateflag",Boolean.toString(template));	 
+	 	setMetaData("templateflag",template +"");	 
 	 }
 	  
 }

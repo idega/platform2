@@ -117,7 +117,7 @@ public class QueryBuilder extends Block {
 				table.setWidth(width!=null?width:"300");
 				table.setBorder(tableBorder);
 				table.setColor(stepTableColor);
-				table.setColor(1,1,IWColor.getHexColorString(Color.WHITE));
+				table.setColor(1,1,"#FFFFFF");
 				
 				Table headerTable = new Table(2,2);
 				headerTable.setWidth(Table.HUNDRED_PERCENT);
