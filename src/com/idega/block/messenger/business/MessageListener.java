@@ -43,7 +43,7 @@ public class MessageListener implements Runnable{
     if( t == null ){
       t = new Thread();
       t.start();
-      //run();
+      run();
     }
   }
 
