@@ -14,7 +14,7 @@ import com.idega.presentation.text.*;
 public class LinkGenerator extends TravelWindow {
 
   public static String parameterProductId = "linkGeneratorProductId";
-  private static String http = "https";
+  private static String http = "http";
 
   public LinkGenerator() {
     super.setWidth(600);
@@ -50,6 +50,11 @@ public class LinkGenerator extends TravelWindow {
   }
 
   private static String getLinkText(IWContext iwc, int serviceId) {
-    return http+"://"+iwc.getServerName()+":"+iwc.getServerPort()+"/servlet/ObjectInstanciator?idegaweb_instance_class="+PublicBooking.class.getName()+"&"+parameterProductId+"="+serviceId;
+    StringBuffer text = new StringBuffer(http+"://"+iwc.getServerName());
+    if (!http.equals("https")) {
+      text.append(":"+iwc.getServerPort());
+    }
+    text.append("/servlet/ObjectInstanciator?idegaweb_instance_class="+PublicBooking.class.getName()+"&"+parameterProductId+"="+serviceId);
+    return text.toString();
   }
 }
