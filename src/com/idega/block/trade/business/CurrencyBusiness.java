@@ -228,7 +228,7 @@ public class CurrencyBusiness {
 		boolean execute = false;
 
                 String currAbbr;
-                CurrencyHome home = (CurrencyHome) IDOLookup.getHome(CurrencyHome.class);
+                CurrencyHome home = (CurrencyHome) IDOLookup.getHome(Currency.class);
                 boolean update;
 
 		Iterator iter = currencyMap.keySet().iterator();
