@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.19 2003/09/10 16:04:24 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.20 2003/09/11 14:33:12 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -104,13 +104,14 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				String conditionType,
 				String specialCalculation,
 				String vatRule,
-				String changedBy
+				String changedBy,
+				String discount
 		) throws RegulationException, RemoteException {
 
 		RegulationHome home = null;
 		Regulation r = null;
 		int amountVal = 0;
-		
+		float discountVal = 0;
 		Integer operationID = null;  
 		Integer conditionOrderID = null; 
 		Integer regSpecTypeID = null;  
@@ -125,18 +126,22 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		try {
 			home = (RegulationHome) IDOLookup.getHome(Regulation.class);
 
-			if(amount == null) amount = "0"; 
+			if (amount == null) amount = "0"; 
+			if (discount == null) discount = "0"; 
 			
-			if(operation == null) operation = ""; 
-			if(conditionOrder == null) conditionOrder = ""; 
-			if(regSpecType == null) regSpecType = ""; 
-			if(conditionType == null) conditionType = ""; 
-			if(specialCalculation == null) specialCalculation = ""; 
-			if(vatRule == null) vatRule = ""; 
+			if (operation == null) operation = ""; 
+			if (conditionOrder == null) conditionOrder = ""; 
+			if (regSpecType == null) regSpecType = ""; 
+			if (conditionType == null) conditionType = ""; 
+			if (specialCalculation == null) specialCalculation = ""; 
+			if (vatRule == null) vatRule = ""; 
 
 			
-			if(amount.length()!=0) {
+			if (amount.length() != 0) {
 				amountVal = Integer.parseInt(amount);
+			}
+			if (discount.length() != 0) {
+				discountVal = Float.parseFloat(discount);
 			}
 			
 			operationID = operation.length() != 0 ? new Integer(operation) : null;  
@@ -147,11 +152,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			vatRuleID = vatRule.length() != 0 ? new Integer(vatRule) : null;  
 
 			int rID = 0;
-			if(regID != null) {
+			if (regID != null) {
 				rID = Integer.parseInt(regID);
 			}
 			r = null;
-			if(rID != 0) {				
+			if (rID != 0) {				
 				r = home.findRegulation(rID);
 			}
 		} catch (FinderException e) {
@@ -166,34 +171,35 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			r.setPeriodTo(periodeTo);
 			r.setName(name);
 			r.setAmount(amountVal);
+			r.setDiscount(discountVal);
 			r.setChangedDate(IWTimestamp.getTimestampRightNow());
 
-			if(vatEligible != null) {
+			if (vatEligible != null) {
 				r.setVATEligible(Integer.parseInt(vatEligible));
 			}
-			if(paymentFlowType != null) {
+			if (paymentFlowType != null) {
 				r.setPaymentFlowType(Integer.parseInt(paymentFlowType));
 			}
-			if(operationID != null) {
+			if (operationID != null) {
 			// No data in the bean.				
 //					r.setOperation(operationID.intValue());
 			}
-			if(conditionOrderID != null) {
+			if (conditionOrderID != null) {
 				r.setConditionOrder(conditionOrderID.intValue());
 			}
-			if(regSpecTypeID != null) {
+			if (regSpecTypeID != null) {
 				r.setRegSpecType(regSpecTypeID.intValue());
 			}
-			if(conditionTypeID != null) {
+			if (conditionTypeID != null) {
 				r.setConditionType(conditionTypeID.intValue());
 			}
 			if(specialCalculationID != null) {
 				r.setSpecialCalculation(specialCalculationID.intValue());
 			}
-			if(vatRuleID != null) {
+			if (vatRuleID != null) {
 				r.setVATRegulation(vatRuleID.intValue());
 			}							
-			if(changedBy != null) {
+			if (changedBy != null) {
 				r.setChangedSign(changedBy);
 			}							
 			r.store();
@@ -201,7 +207,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			throw new RegulationException(KEY_ERROR_REGULATION_CREATE, "Kan ej skapa regel");			
 		}
 		int id = 0;
-		if(r != null) {
+		if (r != null) {
 			id = Integer.parseInt(r.getPrimaryKey().toString());
 		}
 		return id;
@@ -246,13 +252,13 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				c = home.create();
 			}
 			c.setConditionID(operationID.intValue());
-			if(intervalID != null) {
+			if (intervalID != null) {
 				c.setIntervalID(intervalID.intValue());
 			}
-			if(index != null) {
+			if (index != null) {
 				c.setIndex(index.intValue());
 			}
-			if(regulationID != null) {
+			if (regulationID != null) {
 				c.setRegulationID(regulationID.intValue());
 			}
 			c.store();
@@ -610,7 +616,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 */
 	public Collection findAllSiblingValues() {
 		ArrayList arr = new ArrayList();
-		for(int i = 0; i <= 9; i++) {
+		for (int i = 0; i <= 9; i++) {
 			arr.add(new Object[]{new Integer(i), ""+i});
 		}
 		return arr; 
@@ -643,7 +649,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 */
 	public Collection findAllMaxAmounts() {
 		ArrayList arr = new ArrayList();
-		for(int i = 1; i <= 100; i++) {
+		for (int i = 1; i <= 100; i++) {
 			String s = i+"%";
 			arr.add(new Object[]{new Integer(i), s});
 	}
@@ -660,7 +666,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 */
 	public Collection findAllDiscountValues() {
 		ArrayList arr = new ArrayList();
-		for(int i = 0; i <= 100; i++) {
+		for (int i = 0; i <= 100; i++) {
 			String s = i+"%";
 			arr.add(new Object[]{new Integer(i), "-" + s});
 		}
