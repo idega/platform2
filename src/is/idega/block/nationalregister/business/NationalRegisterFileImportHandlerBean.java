@@ -19,9 +19,11 @@ import com.idega.block.importer.data.ImportFile;
 import com.idega.block.importer.presentation.Importer;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.Age;
@@ -78,12 +80,12 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	public final static int COLUMN_NEW_SSN_OR_NAME = 29;
 	public final static int COLUMN_DATE_OF_BIRTH = 30;
 	
-	private final static String PROPERTY_NAME_CREATE_ONLY = "NAT_REG_CREATE_ONLY";
 	private final static String PROPERTY_NAME_RELATION_ONLY = "NAT_REG_RELATION_ONLY";
 	private final static String PROPERTY_NAME_POSTAL_CODE_FIX = "NAT_REG_POSTAL_CODE_FIX";
-	private boolean createOnly = false;
+	private final static String PROPERTY_NAME_GROUP_ID_FIX = "NAT_REG_GROUP_ID_FIX";
 	private boolean relationOnly = false;
 	private boolean postalCodeFix = false;
+	private Group groupFix = null;
 	/**
 	 * @see com.idega.block.importer.business.ImportFileHandler#handleRecords()
 	 */
@@ -102,16 +104,19 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			_familyRelations = new MultivaluedHashMap();
 			_spouseRelations = new MultivaluedHashMap();
 			IWBundle bundle = getIWMainApplication().getBundle(Importer.IW_BUNDLE_IDENTIFIER);
-			String sCreateOnly = bundle.getProperty(PROPERTY_NAME_CREATE_ONLY);
 			String sRelationOnly = bundle.getProperty(PROPERTY_NAME_RELATION_ONLY);
 			String sPostal = bundle.getProperty(PROPERTY_NAME_POSTAL_CODE_FIX);
-			createOnly = (sCreateOnly != null && sCreateOnly.equalsIgnoreCase("yes"));
+			String sGroupID = bundle.getProperty(PROPERTY_NAME_GROUP_ID_FIX);
+			
 			relationOnly = (sRelationOnly != null && sRelationOnly.equalsIgnoreCase("yes"));
 			postalCodeFix = (sPostal != null && sPostal.equalsIgnoreCase("yes"));
-			int count = 0;
-			if (createOnly) {
-				System.out.println("NationalRegisterHandler create only variable set to TRUE");
+			if (sGroupID != null) {
+				try {
+					groupFix = ((GroupHome) IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(sGroupID));
+				} catch (Exception e) {}
 			}
+			
+			int count = 0;
 			if (relationOnly) {
 				System.out.println("NationalRegisterHandler relation only variable set to TRUE");
 			}
@@ -356,18 +361,25 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		if (ssn == null || ssn.equals(""))
 			return false;
 
-		if (relationOnly && familyId != null) {
-			_familyRelations.put(familyId, ssn);
-			return true;
-		}
+		
 		
 		//			//initialize business beans and data homes           
 		NationalRegisterBusiness natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 
-		if (postalCodeFix) {
+		if (postalCodeFix || groupFix != null || relationOnly) {
 			UserBusiness uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
 			try {
-				natReg.updateUserAddress(uBiz.getUser(ssn), uBiz, address, po);
+				User user = uBiz.getUser(ssn);
+				if (postalCodeFix) {
+					natReg.updateUserAddress(uBiz.getUser(ssn), uBiz, address, po);
+				}
+				if (groupFix != null) {
+					groupFix.addGroup(user);
+					user.setPrimaryGroup(groupFix);
+				}
+				if (relationOnly && familyId != null && !"".equals(familyId.trim())) {
+					_familyRelations.put(familyId, ssn);
+				}
 				return true;
 			} catch (Exception e){
 				return false;
@@ -375,25 +387,11 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		}
 		
 		
-		boolean success = false;
-		if (createOnly) {
-			NationalRegister reg = natReg.getEntryBySSN(ssn);
-			if (reg == null) {
-				success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
-            floor,sex,maritialStatus,empty,prohibitMarking,
-            nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
-						addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
-						agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth);
-			} else {
-				success = true;
-			}
-		} else {
-			success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
-          floor,sex,maritialStatus,empty,prohibitMarking,
-          nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
-					addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
-					agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth);
-		}
+		boolean success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
+	    floor,sex,maritialStatus,empty,prohibitMarking,
+	    nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
+			addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
+			agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth);
 		if (success) {
 			_familyRelations.put(familyId, ssn);
 		}
