@@ -93,6 +93,11 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	public final static String DEFAULT_C_TITLE = "font-style:normal;color:#000000;font-size:11px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:bold;";
 	public final static String DEFAULT_Q_COUNT = "font-weight:plain;";
 	
+	
+	public QuestionsAndAnswers(){
+		setAutoCreate(false);
+	}
+	
 	public String getBundleIdentifier(){
 		return IW_BUNDLE_IDENTIFIER;
 	}
@@ -117,7 +122,8 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		iwrb = getResourceBundle(iwc);
 		core = iwc.getApplication().getCoreBundle();
 
-		isAdmin = hasEditPermission();
+		isAdmin = iwc.hasEditPermission(this);
+		
 		questionsService = (QuestionsService)IBOLookup.getServiceInstance(iwc,QuestionsService.class);
 		
 		currentLocale = iwc.getCurrentLocale();
@@ -128,7 +134,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	
 		Table T = new Table();
 		int row = 1;
-		if(iwc.hasEditPermission(this)){
+		if(isAdmin){
       		T.add(getAdminPart(iwc),1,row++);
 		}
 		Table QandATable = new Table();
@@ -150,7 +156,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 	    String helpText = iwrb.getLocalizedString("help_text","If the blank page icon appears you have to save changes with the save button, else changes are saved in the editor window ( when the open icon appears)");
 	    HelpButton help = new HelpButton(helpTitle,helpText);
 	    T.add(help,3,1);
-			return T;	
+		return T;	
 	}
 	
 	 private Link getCategoryLink(Image image) {
@@ -176,10 +182,13 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		else{
 		 	categories = getCategories();
 		}
-		if(categories!=null){
+		if(categories!=null && !categories.isEmpty()){
 			Iterator iter = categories.iterator();
 			int row = 2;
 			fillQuestionTree(iwc,iter,QTable,QandATable);
+		}
+		else{
+			QTable.add(iwrb.getLocalizedString("no_category","Please create a category"),1,row);
 		}
 		return QTable;
 	}
