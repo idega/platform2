@@ -70,8 +70,6 @@ public class MessengerApplet extends Applet implements ActionListener{
 
   /**Construct the applet*/
   public MessengerApplet() {
-    setBackground(Color.red);
-    setForeground(Color.blue);
   }
 
 
@@ -80,6 +78,9 @@ public class MessengerApplet extends Applet implements ActionListener{
 
 
     g = getGraphics();
+
+        setBackground(Color.red);
+    setForeground(Color.blue);
 
     try {
       sessionId = this.getParameter(SESSION_ID, "noId");
@@ -368,6 +369,9 @@ public class MessengerApplet extends Applet implements ActionListener{
       item.paint(g);
       //repaint();
       paint(g);
+
+      getToolkit().sync();
+
   }
 
   public synchronized void cycle(){
