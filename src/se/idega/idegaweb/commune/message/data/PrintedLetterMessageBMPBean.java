@@ -556,7 +556,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendSelectAllFrom(sqlFrom);
 		sql.appendWhereEquals("m.msg_letter_message_id","p.proc_case_id");
 		sql.appendAndEquals("p.parent_case_id", "c.comm_sch_choice_id");
-		sql.appendAndEquals("c.chosen_school", providerID);
+		sql.appendAndEquals("c.school_id", providerID);
 		if (ssn != null && ! ssn.equals("")){
 			sql.appendAndEquals("p.user_id", "u.ic_user_id");
 			sql.appendAndEqualsQuoted("u.personal_id", ssn);
