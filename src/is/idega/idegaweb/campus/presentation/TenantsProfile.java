@@ -568,7 +568,10 @@ public class TenantsProfile extends CampusBlock {
       }
     }
     if ( email != null ) {
+    	   
       campusApplication.setEmail(email);
+      getUserService(iwc).storeUserEmail(user,email,true);
+      
       
     }
     if ( mobile != null ) {
