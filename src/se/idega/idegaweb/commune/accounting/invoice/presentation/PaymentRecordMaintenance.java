@@ -50,11 +50,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/01 09:55:55 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/01 14:27:44 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -408,7 +408,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     }
     
     private void showRecordDetails (final IWContext context)
-        throws RemoteException, javax.ejb.FinderException {
+        throws RemoteException, FinderException {
         // get business objects
         final InvoiceBusiness business = getInvoiceBusiness (context);
         final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
@@ -471,7 +471,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     }
 
     private void showPayment (final IWContext context)
-        throws RemoteException, javax.ejb.FinderException {
+        throws RemoteException, FinderException {
         final Table table = createTable (3);
         setColumnWidthsEqual (table);
         int row = 2; // first row is reserved for setting column widths
@@ -519,7 +519,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 
     private Table getDetailedPaymentRecordListTable
         (final IWContext context, final Collection invoiceRecords)
-        throws RemoteException, javax.ejb.FinderException {
+        throws RemoteException, FinderException {
         // set up header row
         final String [][] columnNames =
                 {{ SSN_KEY, SSN_DEFAULT },
@@ -556,7 +556,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 
     private Table getDetailedPaymentRecordSummaryTable
         (final IWContext context, final Collection invoiceRecords)
-        throws RemoteException, javax.ejb.FinderException {
+        throws RemoteException, FinderException {
         final Set placements = new HashSet ();
         final Set individuals = new HashSet ();
         long totalAmountVatExcluded = 0;
@@ -601,8 +601,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 
 	private void showDetailedPaymentRecordOnARow
         (final Table table, final int row, final InvoiceRecord record,
-         final SchoolClassMemberHome home)
-        throws RemoteException, javax.ejb.FinderException {
+         final SchoolClassMemberHome home) throws FinderException {
         final String checkPeriod = getFormattedPeriod
                 (record.getPeriodStartCheck ()) + " - "
                 + getFormattedPeriod (record.getPeriodEndCheck ());
@@ -638,7 +637,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private Table getPaymentSummaryTable
         (final IWContext context, final PaymentRecord [] records,
          final InvoiceBusiness business)
-        throws RemoteException, javax.ejb.FinderException {
+        throws RemoteException, FinderException {
         // get home objects
         final SchoolBusiness schoolBusiness = getSchoolBusiness (context);
         final SchoolClassMemberHome placementHome
@@ -695,8 +694,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         return table;
     }
 
-    private Table getPaymentRecordListTable (final PaymentRecord [] records)
-        throws RemoteException {
+    private Table getPaymentRecordListTable (final PaymentRecord [] records) {
         // set up header row
         final String [][] columnNames =
                 {{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
@@ -1136,8 +1134,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
      * @return Table to add to output
 	 */
     private Table createMainTable
-        (final String header, final PresentationObject content)
-        throws RemoteException {
+        (final String header, final PresentationObject content) {
         final Table mainTable = createTable (1);
         mainTable.setCellpadding (getCellpadding ());
         mainTable.setCellspacing (getCellspacing ());

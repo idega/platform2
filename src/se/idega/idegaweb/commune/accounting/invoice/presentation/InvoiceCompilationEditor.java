@@ -46,6 +46,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
@@ -80,10 +81,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/01 14:00:36 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/01 14:27:44 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.75 $
+ * @version $Revision: 1.76 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -558,64 +559,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         if (1 == regulations.size ()) {
             final Regulation regulation
                     = (Regulation) regulations.iterator ().next ();
-            final String regulationName = regulation.getName ();
-            final RegulationSpecType regSpecType = regulation.getRegSpecType ();
-            final Integer regSpecTypeId
-                    = (Integer) regSpecType.getPrimaryKey ();
-            final VATRule vatRule = regulation.getVATRegulation ();
-            final SchoolCategory category = header.getSchoolCategory ();
-            final RegulationsBusiness regulationsBusiness
-                    = getRegulationsBusiness (context);
-            final SchoolType schoolType
-                    = regulationsBusiness.getSchoolType (regulation);
-            final PostingBusiness postingBusiness
-                    = getPostingBusiness (context);
-            inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY,
-                                                       regulationName));
-            inputs.put (INVOICE_TEXT_KEY, getStyledInput (INVOICE_TEXT_KEY,
-                                                          regulationName));
-            inputs.put (AMOUNT_KEY, getStyledInput
-                        (AMOUNT_KEY, regulation.getAmount () + ""));
-            inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
-            inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
-                        (business.getAllRegulationSpecTypes (), regSpecType));
-            inputs.put (VAT_RULE_KEY,  getLocalizedDropdown
-                        (business.getAllVatRules (), vatRule));
-            try {
-                final String [] postings = postingBusiness.getPostingStrings
-                        (category, schoolType, regSpecTypeId.intValue (),
-                         provider, period);	
-                final PresentationObject ownPostingForm
-                        = getPostingParameterForm (context, OWN_POSTING_KEY,
-                                                   postings [0]);
-                inputs.put (OWN_POSTING_KEY, ownPostingForm);
-                final PresentationObject doublePostingForm
-                        = getPostingParameterForm (context, DOUBLE_POSTING_KEY,
-                                                   postings [1]);
-                inputs.put (DOUBLE_POSTING_KEY, doublePostingForm);
-            } catch (PostingException e) {
-                e.printStackTrace ();
-                inputs.put (OWN_POSTING_KEY, getPostingParameterForm
-                            (context, OWN_POSTING_KEY));
-                inputs.put (DOUBLE_POSTING_KEY, getPostingParameterForm
-                            (context, DOUBLE_POSTING_KEY));
-            }
+            addPresentationObjectsForNewRecordForm(context, inputs, header, business, period, provider, regulation);
         } else {
             if (!regulations.isEmpty ()) {
-                final Table table = createTable (1);
-                int row = 1;
-                for (Iterator i = regulations.iterator (); i.hasNext ();) {
-                    final Regulation regulation = (Regulation) i.next ();
-                    final Link link = getSmallLink (regulation.getName ());
-                    link.addParameter (ACTION_KEY,
-                                       context.getParameter (ACTION_KEY));
-                    link.addParameter (RULE_TEXT_KEY, regulation.getName ());
-                    link.addParameter
-                            (INVOICE_COMPILATION_KEY, context.getParameter
-                             (INVOICE_COMPILATION_KEY));
-                    table.add (link, 1, row++);
-                }
-                inputs.put (RULE_TEXT_LINK_LIST_KEY, table);
+                addRegulationLinkListForNewRecordForm(context, inputs, regulations);
             }
             inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY,
                                                        searchString));
@@ -654,7 +601,69 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         renderRecordDetailsOrForm (context, inputs);
     }
 
-    private void showEditRecordForm (final IWContext context)
+    private void addRegulationLinkListForNewRecordForm(final IWContext context, final java.util.Map inputs, final Collection regulations) {
+		final Table table = createTable (1);
+		int row = 1;
+		for (Iterator i = regulations.iterator (); i.hasNext ();) {
+		    final Regulation regulation = (Regulation) i.next ();
+		    final Link link = getSmallLink (regulation.getName ());
+		    link.addParameter (ACTION_KEY,
+		                       context.getParameter (ACTION_KEY));
+		    link.addParameter (RULE_TEXT_KEY, regulation.getName ());
+		    link.addParameter
+		            (INVOICE_COMPILATION_KEY, context.getParameter
+		             (INVOICE_COMPILATION_KEY));
+		    table.add (link, 1, row++);
+		}
+		inputs.put (RULE_TEXT_LINK_LIST_KEY, table);
+	}
+
+	private void addPresentationObjectsForNewRecordForm(final IWContext context, final java.util.Map inputs, final InvoiceHeader header, final InvoiceBusiness business, final java.sql.Date period, final Provider provider, final Regulation regulation) throws EJBException, RemoteException {
+		final String regulationName = regulation.getName ();
+		final RegulationSpecType regSpecType = regulation.getRegSpecType ();
+		final Integer regSpecTypeId
+		        = (Integer) regSpecType.getPrimaryKey ();
+		final VATRule vatRule = regulation.getVATRegulation ();
+		final SchoolCategory category = header.getSchoolCategory ();
+		final RegulationsBusiness regulationsBusiness
+		        = getRegulationsBusiness (context);
+		final SchoolType schoolType
+		        = regulationsBusiness.getSchoolType (regulation);
+		final PostingBusiness postingBusiness
+		        = getPostingBusiness (context);
+		inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY,
+		                                           regulationName));
+		inputs.put (INVOICE_TEXT_KEY, getStyledInput (INVOICE_TEXT_KEY,
+		                                              regulationName));
+		inputs.put (AMOUNT_KEY, getStyledInput
+		            (AMOUNT_KEY, regulation.getAmount () + ""));
+		inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
+		inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
+		            (business.getAllRegulationSpecTypes (), regSpecType));
+		inputs.put (VAT_RULE_KEY,  getLocalizedDropdown
+		            (business.getAllVatRules (), vatRule));
+		try {
+		    final String [] postings = postingBusiness.getPostingStrings
+		            (category, schoolType, regSpecTypeId.intValue (),
+		             provider, period);	
+		    final PresentationObject ownPostingForm
+		            = getPostingParameterForm (context, OWN_POSTING_KEY,
+		                                       postings [0]);
+		    inputs.put (OWN_POSTING_KEY, ownPostingForm);
+		    final PresentationObject doublePostingForm
+		            = getPostingParameterForm (context, DOUBLE_POSTING_KEY,
+		                                       postings [1]);
+		    inputs.put (DOUBLE_POSTING_KEY, doublePostingForm);
+		} catch (PostingException e) {
+		    e.printStackTrace ();
+		    inputs.put (OWN_POSTING_KEY, getPostingParameterForm
+		                (context, OWN_POSTING_KEY));
+		    inputs.put (DOUBLE_POSTING_KEY, getPostingParameterForm
+		                (context, DOUBLE_POSTING_KEY));
+		}
+	}
+
+	private void showEditRecordForm (final IWContext context)
         throws RemoteException, FinderException {
         final InvoiceBusiness business = getInvoiceBusiness (context);
         final InvoiceRecord record = getInvoiceRecord (context);
@@ -1452,8 +1461,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
 	private void showInvoiceHeaderOnARow
         (final Table table, final int row,
-         final InvoiceBusiness business, final InvoiceHeader header)
-        throws FinderException {
+         final InvoiceBusiness business, final InvoiceHeader header) {
 		int col = 1;
 		table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
 		                   : getZebraColor2 ());
@@ -1487,7 +1495,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private Table getInvoiceRecordListTable
         (final IWContext context, final InvoiceBusiness business,
-         final InvoiceHeader header) throws RemoteException, FinderException {
+         final InvoiceHeader header) throws RemoteException {
 
  		final InvoiceRecord [] records
 		        = business.getInvoiceRecordsByInvoiceHeader (header);
@@ -1703,8 +1711,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
     private void createForm
-        (final IWContext context, final Table table, final String header)
-        throws RemoteException {
+        (final IWContext context, final Table table, final String header) {
 		final Form form = new Form ();
         form.setOnSubmit("return checkInfoForm()");
         form.add (table);
@@ -1729,8 +1736,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
      * @return Table to add to output
 	 */
     private Table createMainTable
-        (final String header, final PresentationObject content)
-        throws RemoteException {
+        (final String header, final PresentationObject content) {
         final Table mainTable = createTable (1);
         mainTable.setCellpadding (getCellpadding ());
         mainTable.setCellspacing (getCellspacing ());
