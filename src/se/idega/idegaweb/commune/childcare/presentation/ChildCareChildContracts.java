@@ -16,7 +16,11 @@ import com.idega.core.data.Phone;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -26,27 +30,38 @@ import com.idega.util.PersonalIDFormatter;
  */
 public class ChildCareChildContracts extends ChildCareBlock {
 
+	public static final String PARAMETER_APPLICATION_ID = "ccc_application_id";
+	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
-		Table table = new Table(1,5);
+		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(getWidth());
-		table.setHeight(2, 12);
-		table.setHeight(4, 12);
 		
 		GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back",localize("back","Back")));
 		back.setPageToOpen(getResponsePage());
 
 		if (getSession().getUserID() != -1) {
-			table.add(getInformationTable(iwc), 1, 1);
-			table.add(getContractsTable(iwc), 1, 3);
-			table.add(back, 1, 5);
+			parse(iwc);
+			
+			int row = 1;
+			table.add(getInformationTable(iwc), 1, row++);
+			table.setHeight(row++, 12);
+			if (getBusiness().hasFutureContracts(getSession().getApplicationID())) {
+				table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+				table.add(getRemoveContractsForm(), 1, row++);
+				table.setHeight(row++, 6);
+			}
+			table.add(getContractsTable(iwc), 1, row++);
+			table.setHeight(row++, 12);
+			table.add(back, 1, row);
 		}
 		else {
 			table.add(getLocalizedHeader("child_care.no_child_or_application_found","No child or application found."), 1, 1);
+			table.setHeight(2, 12);
 			table.add(back, 1, 3);
 		}
 		
@@ -76,6 +91,8 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		IWTimestamp terminated = null;
 		Link viewContract;
 		String careTime;
+		boolean isActive = false;
+		IWTimestamp stampNow = new IWTimestamp();
 		
 		Collection contracts = null;
 		if (getSession().getApplicationID() != -1)
@@ -95,6 +112,16 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			careTime = String.valueOf(contract.getCareTime());
 			if (contract.getCareTime() == -1)
 				careTime = "-";
+				
+			if (stampNow.isLaterThanOrEquals(validFrom)) {
+				isActive = true;
+				if (contract.getTerminatedDate() != null) {
+					if (terminated.isLaterThanOrEquals(stampNow))
+						isActive = true;
+					else
+						isActive = false;
+				}
+			}
 					
 			viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
 			viewContract.setFile(contract.getContractFileID());
@@ -105,14 +132,14 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			else
 				table.setRowColor(row, getZebraColor2());
 	
-			table.add(getSmallText(provider.getSchoolName()), column++, row);
-			table.add(getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-			table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+			table.add(getText(provider.getSchoolName(), isActive), column++, row);
+			table.add(getText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
+			table.add(getText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
 			if (contract.getTerminatedDate() != null)
-				table.add(getSmallText(terminated.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+				table.add(getText(terminated.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
 			else
-				table.add(getSmallText("-"), column++, row);
-			table.add(getSmallText(careTime), column++, row);
+				table.add(getText("-", isActive), column++, row);
+			table.add(getText(careTime, isActive), column++, row);
 					
 			table.setWidth(column, row, 12);
 			table.add(viewContract, column++, row++);
@@ -193,5 +220,42 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		}
 		
 		return table;
+	}
+	
+	protected Form getRemoveContractsForm() {
+		Form form = new Form();
+		form.add(new HiddenInput(PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID())));
+		
+		SubmitButton removeContracts = (SubmitButton) getStyledInterface(new SubmitButton("remove", localize("child_care.remove_future_contracts","Remove future contracts")));
+		removeContracts.setSingleSubmitConfirm(localize("child_care.submit_contract_delete", "Are you sure you want to remove future contracts for this application?"));
+		form.add(removeContracts);
+	
+		return form;
+	}
+
+	protected Text getText(String text, boolean isActive) {
+		if (isActive)
+			return getSmallHeader(text);
+		else
+			return getSmallText(text);
+	}
+	
+	protected Link getLink(String text, boolean isActive) {
+		if (isActive)
+			return this.getSmallHeaderLink(text);
+		else
+			return getSmallLink(text);
+	}
+	
+	private void parse(IWContext iwc) {
+		if (iwc.isParameterSet(PARAMETER_APPLICATION_ID)) {
+			int applicationID = Integer.parseInt(iwc.getParameter(PARAMETER_APPLICATION_ID));
+			try {
+				getBusiness().removeFutureContracts(applicationID);
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

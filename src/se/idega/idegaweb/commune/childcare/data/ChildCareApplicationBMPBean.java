@@ -304,6 +304,11 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public void setHasQueuePriority(boolean hasPriority) {
 		setColumn(HAS_QUEUE_PRIORITY, hasPriority);
 	}
+	
+	public void setRejectionDateAsNull(boolean setAsNull) {
+		if (setAsNull)
+			removeFromColumn(ENTITY_NAME);
+	}
   
 	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, CaseStatus caseStatus) throws FinderException {
 		try {

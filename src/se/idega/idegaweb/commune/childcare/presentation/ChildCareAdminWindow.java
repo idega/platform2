@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.text.MessageFormat;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 
 import com.idega.block.school.data.SchoolClass;
@@ -51,6 +52,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_CANCEL_REASON = "cc_cancel_reason";
 	public static final String PARAMETER_CANCEL_MESSAGE = "cc_cancel_message";
 	public static final String PARAMETER_CANCEL_DATE = "cc_cancel_date";
+	public static final String PARAMETER_EARLIEST_DATE = "cc_earliest_date";
 	
 
 	//private final static String USER_MESSAGE_SUBJECT = "child_care.application_received_subject";
@@ -83,6 +85,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int ACTION_ALTER_CARE_TIME = 11;
 	public static final int ACTION_DELETE_GROUP = 12;
 	public static final int ACTION_RETRACT_OFFER = 13;
+	public static final int ACTION_REMOVE_FUTURE_CONTRACTS = 14;
 
 	private int _method = -1;
 	private int _action = -1;
@@ -90,6 +93,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private int _userID = -1;
 	private int _applicationID = -1;
 	private int _pageID;
+	
+	private IWTimestamp earliestDate;
 
 	private CloseButton close;
 	private Form form;
@@ -141,6 +146,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case ACTION_RETRACT_OFFER :
 				retractOffer(iwc);
+				break;
+			case ACTION_REMOVE_FUTURE_CONTRACTS :
+				removeFutureContracts(iwc);
 				break;
 		}
 
@@ -370,8 +378,38 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
 
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
-		if (application != null)
-			dateInput.setDate(application.getFromDate());
+		if (earliestDate != null) {
+			dateInput.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
+			dateInput.setDate(earliestDate.getDate());
+		}
+		else {
+			IWTimestamp stampNow = new IWTimestamp();
+			ChildCareContractArchive archive = getBusiness().getLatestContract(_userID);
+			if (archive != null && archive.getTerminatedDate() != null) {
+				IWTimestamp stamp = new IWTimestamp(archive.getTerminatedDate());
+				stamp.addDays(1);
+				if (stamp.isEarlierThan(stampNow)) {
+					dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+					dateInput.setDate(stampNow.getDate());
+				}
+				else {
+					dateInput.setEarliestPossibleDate(stamp.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
+					dateInput.setDate(stamp.getDate());
+				}
+			}
+			else {
+				dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+				if (application != null) {
+					IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
+					if (fromDate.isLaterThan(stampNow))
+						dateInput.setDate(fromDate.getDate());
+					else
+						dateInput.setDate(stampNow.getDate());
+				}
+				else
+					dateInput.setDate(stampNow.getDate());
+			}
+		}
 
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
 		table.add(dateInput, 1, row++);
@@ -425,6 +463,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
+		
+		ChildCareApplication application = getBusiness().getApplication(_applicationID);
+		ChildCareContractArchive archive = getBusiness().getContractFile(application.getContractFileId());
 
 		TextInput textInput = (TextInput) getStyledInterface(new TextInput(this.PARAMETER_CHILDCARE_TIME));
 		textInput.setLength(2);
@@ -436,7 +477,18 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(textInput, 1, row++);
 		
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
-		dateInput.setDate(new IWTimestamp().getDate());
+		if (archive != null) {
+			IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
+			validFrom.addDays(1);
+			dateInput.setDate(validFrom.getDate());
+			dateInput.setEarliestPossibleDate(validFrom.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
+			if (archive.getTerminatedDate() != null) {
+				IWTimestamp terminated = new IWTimestamp(archive.getTerminatedDate());
+				dateInput.setLatestPossibleDate(terminated.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated."));
+			}
+		}
+		else
+			dateInput.setDate(new IWTimestamp().getDate());
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
 
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
@@ -458,43 +510,55 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
-
-		RadioButton parentalLeave = this.getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(true));
-		parentalLeave.keepStatusOnAction(true);
-		RadioButton other = getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(false));
-		other.keepStatusOnAction(true);
-		if (!iwc.isParameterSet(PARAMETER_CANCEL_REASON))
-			other.setSelected(true);
 		
-		table.add(getSmallHeader(localize("child_care.enter_cancel_information", "Enter cancel information:")), 1, row++);
-		table.add(parentalLeave, 1, row);
-		table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_parental_leave", "Cancel because of parental leave")), 1, row);
-		table.add(new Break(), 1, row);
-		table.add(other, 1, row);
-		table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_other", "Other reason")), 1, row++);
+		ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(_userID, getSession().getChildCareID());
+		boolean canCancel = !getBusiness().hasFutureContracts(((Integer)application.getPrimaryKey()).intValue());
 		
-		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_CANCEL_MESSAGE));
-		textArea.setWidth(Table.HUNDRED_PERCENT);
-		textArea.setRows(4);
-		textArea.setAsNotEmpty(localize("child_care.offer_message_required","You must fill in the message."));
-		textArea.keepStatusOnAction(true);
+		if (canCancel) {
+			RadioButton parentalLeave = this.getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(true));
+			parentalLeave.keepStatusOnAction(true);
+			RadioButton other = getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(false));
+			other.keepStatusOnAction(true);
+			if (!iwc.isParameterSet(PARAMETER_CANCEL_REASON))
+				other.setSelected(true);
+			
+			table.add(getSmallHeader(localize("child_care.enter_cancel_information", "Enter cancel information:")), 1, row++);
+			table.add(parentalLeave, 1, row);
+			table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_parental_leave", "Cancel because of parental leave")), 1, row);
+			table.add(new Break(), 1, row);
+			table.add(other, 1, row);
+			table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_other", "Other reason")), 1, row++);
+			
+			TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_CANCEL_MESSAGE));
+			textArea.setWidth(Table.HUNDRED_PERCENT);
+			textArea.setRows(4);
+			textArea.setAsNotEmpty(localize("child_care.offer_message_required","You must fill in the message."));
+			textArea.keepStatusOnAction(true);
+	
+			table.add(getSmallHeader(localize("child_care.cancel_reason_message", "Reason for cancel")+":"), 1, row++);
+			table.add(textArea, 1, row++);
+	
+			IWTimestamp stampNow = new IWTimestamp();
+			stampNow.addDays(1);
+			IWTimestamp stamp = new IWTimestamp();
+			stamp.addMonths(2);
+			DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
+			dateInput.setDate(stamp.getDate());
+			dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+			dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
+			dateInput.keepStatusOnAction(true);
+	
+			table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date")+":"), 1, row++);
+			table.add(dateInput, 1, row++);
+	
+			SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.cancel_contract", "Cancel contract"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
+			table.add(placeInGroup, 1, row);
+			table.add(Text.getNonBrakingSpace(), 1, row);
+		}
+		else {
+			table.add(getSmallErrorText(localize("child_care.must_remove_future_contracts", "Future contracts must be removed before cancel is possible.")), 1, row++);
+		}
 
-		table.add(getSmallHeader(localize("child_care.cancel_reason_message", "Reason for cancel")+":"), 1, row++);
-		table.add(textArea, 1, row++);
-
-		IWTimestamp stamp = new IWTimestamp();
-		stamp.addMonths(2);
-		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
-		dateInput.setDate(stamp.getDate());
-		dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
-		dateInput.keepStatusOnAction(true);
-
-		table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date")+":"), 1, row++);
-		table.add(dateInput, 1, row++);
-
-		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.cancel_contract", "Cancel contract"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
-		table.add(placeInGroup, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
@@ -643,6 +707,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		if (iwc.isParameterSet(PARAMETER_PAGE_ID))
 			_pageID = Integer.parseInt(iwc.getParameter(PARAMETER_PAGE_ID));
+			
+		if (iwc.isParameterSet(PARAMETER_EARLIEST_DATE))
+			earliestDate = new IWTimestamp(iwc.getParameter(PARAMETER_EARLIEST_DATE));
 	}
 	
 	private void alterCareTime(IWContext iwc) throws RemoteException {
@@ -757,6 +824,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void moveToGroup(IWContext iwc) throws RemoteException {
 		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
 		getBusiness().moveToGroup(_userID, getSession().getChildCareID(), groupID);
+
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+		getParentPage().close();
+	}
+	
+	private void removeFutureContracts(IWContext iwc) throws RemoteException {
+		getBusiness().removeFutureContracts(_applicationID);
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();

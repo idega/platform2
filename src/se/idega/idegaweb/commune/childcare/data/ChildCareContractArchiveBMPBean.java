@@ -11,6 +11,7 @@ import javax.ejb.FinderException;
 import com.idega.block.contract.data.Contract;
 import com.idega.core.data.ICFile;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
@@ -149,6 +150,11 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 		setColumn(COLUMN_CONTRACT_FILE_ID, contractFile);
 	}
 	
+	public void setTerminationDateAsNull(boolean setAsNull) {
+		if (setAsNull)
+			removeFromColumn(COLUMN_TERMINATED_DATE);
+	}
+	
 	public Collection ejbFindByChild(int childID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID, childID);
@@ -181,6 +187,66 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 		sql.appendOr().append(COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
 		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
 		return (Integer) idoFindOnePKByQuery(sql);
+	}
+
+	public Integer ejbFindValidContractByChild(int childID, Date date) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID, childID);
+		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(date);
+		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(date);
+		sql.appendOr().append(COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+
+	public Integer ejbFindLatestTerminatedContractByChild(int childID, Date date) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID, childID);
+		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(date);
+		sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(date);
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+
+	public Integer ejbFindLatestContractByChild(int childID) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID, childID);
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+
+	public Collection ejbFindFutureContractsByApplication(int applicationID, Date date) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_APPLICATION_ID, applicationID);
+		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendGreaterThanSign().append(date);
+		return idoFindPKsByQuery(sql);
+	}
+
+	public int ejbHomeGetNumberOfActiveNotWithProvider(int childID, int providerID) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select a.* from ").append(this.getEntityName()).append(" a, comm_childcare c");
+		sql.appendWhereEquals("a."+this.COLUMN_APPLICATION_ID, "c.comm_childcare_id");
+		sql.appendAndEquals("a." + COLUMN_CHILD_ID, childID);
+		sql.appendAnd().append("c.provider_id").appendNOTEqual().append(providerID);
+		sql.appendAnd().append(this.COLUMN_TERMINATED_DATE).append(" is null");
+		return idoGetNumberOfRecords(sql);
+	}
+
+	public int ejbHomeGetNumberOfTerminatedLaterNotWithProvider(int childID, int providerID, Date date) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select a.* from ").append(this.getEntityName()).append(" a, comm_childcare c");
+		sql.appendWhereEquals("a."+this.COLUMN_APPLICATION_ID, "c.comm_childcare_id");
+		sql.appendAndEquals("a." + COLUMN_CHILD_ID, childID);
+		sql.appendAnd().append("c.provider_id").appendNOTEqual().append(providerID);
+		sql.appendAnd().append(this.COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(date);
+		return idoGetNumberOfRecords(sql);
+	}
+
+	public int ejbHomeGetFutureContractsCountByApplication(int applicationID, Date date) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectCountFrom(this).appendWhereEquals(COLUMN_APPLICATION_ID, applicationID);
+		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendGreaterThanSign().append(date);
+		return idoGetNumberOfRecords(sql);
 	}
 
 	public Integer ejbFindByContractFileID(int contractFileID) throws FinderException {

@@ -115,7 +115,8 @@ public class ChildCareContracts extends ChildCareBlock {
 	
 					if (allowAlter && application.getApplicationStatus() == getBusiness().getStatusReady()) {
 						table.setWidth(column, row, 12);
-						table.add(alterCareTime, column++, row);
+						if (getBusiness().getNumberOfFutureContracts(((Integer)application.getPrimaryKey()).intValue()) < 2)
+							table.add(alterCareTime, column++, row);
 					}
 					row++;
 				}

@@ -787,15 +787,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
 			addContractToArchive(oldFileID, application, -1, fromDate.getDate());
 			
-			try {
+			/*try {
 				SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByUserAndSchool(application.getChildId(), application.getProviderId());
 				classMember.setSchoolClassId(groupID);
 				classMember.setRegisterDate(fromDate.getTimestamp());
 				classMember.store();
 			}
-			catch (FinderException e) {
+			catch (FinderException e) {*/
 				getSchoolBusiness().storeSchoolClassMember(application.getChildId(), groupID, fromDate.getTimestamp(), ((Integer)user.getPrimaryKey()).intValue());
-			}
+			//}
 			sendMessageToParents(application, subject, body);
 		}
 		catch (FinderException e) {
@@ -929,6 +929,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.setApplicationStatus(getStatusCancelled());
 			application.setRejectionDate(date.getDate());
 			caseBiz.changeCaseStatus(application, this.getCaseStatusCancelled().getStatus(), user);
+			terminateContract(application.getContractFileId(), date.getDate());
 			
 			removeFromProvider(application.getChildId(), application.getProviderId(), date.getTimestamp(), parentalLeave, message);
 			sendMessageToParents(application, subject, body);
@@ -1619,6 +1620,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			archive.setApplication(application);
 			archive.setCreatedDate(new IWTimestamp().getDate());
 			archive.setValidFromDate(validFrom);
+			if (application.getRejectionDate() != null)
+				archive.setTerminatedDate(application.getRejectionDate());
 			archive.setCareTime(application.getCareTime());
 			archive.store();
 		}
@@ -1872,18 +1875,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public ChildCareContractArchive getValidContract(int applicationID) throws RemoteException {
-		try {
-			IWTimestamp stamp = new IWTimestamp();
-			return getChildCareContractArchiveHome().findValidContractByApplication(applicationID, stamp.getDate());
-		}
-		catch (FinderException fe) {
-			try {
-				return getContractFile(getApplication(applicationID).getContractFileId());
-			}
-			catch (NullPointerException e) {
-				return null;
-			}
-		}
+		IWTimestamp stamp = new IWTimestamp();
+		return getValidContract(applicationID, stamp.getDate());
 	}
 	
 	public ChildCareContractArchive getValidContract(int applicationID, Date validDate) throws RemoteException {
@@ -1896,6 +1889,68 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 			catch (NullPointerException e) {
 				return null;
+			}
+		}
+	}
+	
+	public ChildCareContractArchive getValidContractByChild(int childID) throws RemoteException {
+		IWTimestamp stamp = new IWTimestamp();
+		return getValidContractByChild(childID, stamp.getDate());
+	}
+	
+	public ChildCareContractArchive getValidContractByChild(int childID, Date validDate) throws RemoteException {
+		try {
+			return getChildCareContractArchiveHome().findValidContractByChild(childID, validDate);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+	
+	public void removeFutureContracts(int applicationID) throws RemoteException {
+		IWTimestamp stamp = new IWTimestamp();
+		removeFutureContracts(applicationID, stamp.getDate());
+	}
+	
+	public void removeFutureContracts(int applicationID, Date date) throws RemoteException {
+		UserTransaction t = getSessionContext().getUserTransaction();
+
+		try {
+			t.begin();
+			ChildCareApplication application = getApplication(applicationID);
+			ChildCareContractArchive archive = getValidContract(applicationID);
+			application.setContractFileId(archive.getContractFileID());
+			application.setContractId(archive.getContractID());
+			application.setCareTime(archive.getCareTime());
+			application.store();
+			if (application.getRejectionDate() != null)
+				archive.setTerminatedDate(application.getRejectionDate());
+			else
+				archive.setTerminatedDate(null);
+			archive.store();
+
+			Collection contracts = getChildCareContractArchiveHome().findFutureContractsByApplication(applicationID, date);
+			Iterator iter = contracts.iterator();
+			while (iter.hasNext()) {
+				archive = (ChildCareContractArchive) iter.next();
+				try {
+					Contract contract = archive.getContract();
+					contract.setStatus("T");
+					contract.store();
+				}
+				catch (Exception e) {
+				}
+				archive.remove();
+			}
+			t.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				t.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
 			}
 		}
 	}
@@ -2013,6 +2068,23 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return getActivePlacement(childID) != null;
 	}
 	
+	public boolean hasFutureContracts(int applicationID) throws RemoteException {
+		int numberOfContracts = getNumberOfFutureContracts(applicationID);
+		if (numberOfContracts > 0)
+			return true;
+		return false;
+	}
+	
+	public int getNumberOfFutureContracts(int applicationID) throws RemoteException {
+		try {
+			IWTimestamp stampNow = new IWTimestamp();
+			return getChildCareContractArchiveHome().getFutureContractsCountByApplication(applicationID, stampNow.getDate());
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+	
 	public boolean hasUnansweredOffers(int childID) throws RemoteException {
 		try {
 			int numberOfOffers = getChildCareApplicationHome().getNumberOfApplicationsForChild(childID, getCaseStatusGranted().getStatus());
@@ -2040,5 +2112,49 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}catch(FinderException ex) {
 			return null;
 		}
-	}	
+	}
+	
+	public boolean hasActivePlacementNotWithProvider(int childID, int providerID) throws RemoteException {
+		try {
+			int numberOfPlacings = getChildCareContractArchiveHome().getNumberOfActiveNotWithProvider(childID, providerID);
+			if (numberOfPlacings > 0)
+				return true;
+			return false;
+		}
+		catch (IDOException e) {
+			return false;
+		}
+	}
+
+	public boolean hasTerminationInFutureNotWithProvider(int childID, int providerID) throws RemoteException {
+		try {
+			IWTimestamp stamp = new IWTimestamp();
+			int numberOfPlacings = getChildCareContractArchiveHome().getNumberOfTerminatedLaterNotWithProvider(childID, providerID, stamp.getDate());
+			if (numberOfPlacings > 0)
+				return true;
+			return false;
+		}
+		catch (IDOException e) {
+			return false;
+		}
+	}
+
+	public ChildCareContractArchive getLatestTerminatedContract(int childID) throws RemoteException {
+		try {
+			IWTimestamp stamp = new IWTimestamp();
+			return getChildCareContractArchiveHome().findLatestTerminatedContractByChild(childID, stamp.getDate());
+		}
+		catch (FinderException e) {
+			return null;
+		}
+	}
+
+	public ChildCareContractArchive getLatestContract(int childID) throws RemoteException {
+		try {
+			return getChildCareContractArchiveHome().findLatestContractByChild(childID);
+		}
+		catch (FinderException e) {
+			return null;
+		}
+	}
 }

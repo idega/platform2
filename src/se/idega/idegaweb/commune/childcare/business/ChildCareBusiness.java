@@ -111,4 +111,14 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean hasActivePlacement(int childID) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getActivePlacement(int childID) throws java.rmi.RemoteException;
  public boolean hasUnansweredOffers(int childID) throws java.rmi.RemoteException;
+ public boolean hasFutureContracts(int applicationID) throws java.rmi.RemoteException;
+ public int getNumberOfFutureContracts(int applicationID) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive getValidContractByChild(int childID, java.sql.Date validDate) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive getValidContractByChild(int childID) throws java.rmi.RemoteException;
+ public void removeFutureContracts(int applicationID, java.sql.Date date) throws java.rmi.RemoteException;
+ public void removeFutureContracts(int applicationID) throws java.rmi.RemoteException;
+ public boolean hasActivePlacementNotWithProvider(int childID, int providerID) throws java.rmi.RemoteException;
+ public boolean hasTerminationInFutureNotWithProvider(int childID, int providerID) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive getLatestTerminatedContract(int childID) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive getLatestContract(int childID) throws java.rmi.RemoteException;
 }

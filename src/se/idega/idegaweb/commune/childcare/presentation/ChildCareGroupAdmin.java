@@ -114,8 +114,6 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		boolean showComment = false;
 		
 		IWTimestamp stamp = new IWTimestamp();
-		//stamp.addDays(1);
-
 		Collection students = null;
 		if (sort != -1)
 			students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), stamp.getDate(), showNotYetActive);
@@ -138,12 +136,6 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			move.addParameter(ChildCareAdminWindow.PARAMETER_OLD_GROUP, student.getSchoolClassId());
 			move.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
 			
-			delete = new Link(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")));
-			delete.setWindowToOpen(ChildCareWindow.class);
-			delete.setParameter(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_CANCEL_CONTRACT));
-			delete.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-			delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
-
 			if (row % 2 == 0)
 				table.setRowColor(row, getZebraColor1());
 			else
@@ -152,6 +144,19 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			if (registered.isLaterThan(stamp)) {
 				showComment = true;
 				table.add(getSmallErrorText("*" + Text.NON_BREAKING_SPACE), column, row);
+
+				delete = new Link(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")));
+				delete.setWindowToOpen(ChildCareWindow.class);
+				delete.setParameter(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_CANCEL_CONTRACT));
+				delete.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+				delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
+			}
+			else {
+				delete = new Link(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")));
+				delete.setWindowToOpen(ChildCareWindow.class);
+				delete.setParameter(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_CANCEL_CONTRACT));
+				delete.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+				delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
 			}
 
 			if (getResponsePage() != null) {

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
 import com.idega.builder.data.IBPage;
@@ -309,13 +310,42 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
 					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_RETRACT_OFFER);
 					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-					table.add(removeFromQueue, 5, 1);
+					table.add(removeFromQueue, 7, 1);
 				}
 			}
 			else if (status == getBusiness().getStatusParentsAccept()) {
 				GenericButton createContract = getButton("create_contract", localize("child_care.create_contract","Create contract"), -1);
 				createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT);
-				table.add(createContract, 3, 1);
+
+				GenericButton disabledCreateContract = (GenericButton) getStyledInterface(new GenericButton("create_contract", localize("child_care.create_contract","Create contract")));
+				disabledCreateContract.setDisabled(true);
+
+				GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
+
+				if (getBusiness().hasActivePlacementNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {
+					table.add(disabledCreateContract, 3, 1);
+				}
+				else {
+					if (getBusiness().hasTerminationInFutureNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {
+						ChildCareContractArchive archive = getBusiness().getLatestTerminatedContract(getSession().getChildID());
+						IWTimestamp terminationDate = new IWTimestamp(archive.getTerminatedDate());
+						IWTimestamp validFrom = new IWTimestamp(application.getFromDate());
+						if (terminationDate.isLaterThanOrEquals(validFrom)) {
+							terminationDate.addDays(1);
+							changeDate.addParameterToWindow(ChildCareAdminWindow.PARAMETER_EARLIEST_DATE, terminationDate.toString());
+							table.add(changeDate, 3, 1);
+							table.add(disabledCreateContract, 5, 1);
+						}
+						else {
+							table.add(changeDate, 3, 1);
+							table.add(createContract, 5, 1);
+						}
+					}
+					else {
+						table.add(changeDate, 3, 1);
+						table.add(createContract, 5, 1);
+					}
+				}
 			}
 			else if (status == getBusiness().getStatusContract()) {
 				GenericButton viewContract = (GenericButton) getStyledInterface(new GenericButton("view_contract", localize("child_care.view_contract","View contract")));

@@ -27,5 +27,6 @@ public interface ChildCareContractArchive extends com.idega.data.IDOEntity
  public void setContractID(int p0);
  public void setCreatedDate(java.sql.Date p0);
  public void setTerminatedDate(java.sql.Date p0);
+ public void setTerminationDateAsNull(boolean p0);
  public void setValidFromDate(java.sql.Date p0);
 }
