@@ -20,6 +20,7 @@ public class NewsEditor extends JModuleObject{
 
 private String Error;
 private boolean isAdmin=false;
+private boolean askForPermission = true;
 
 
 
@@ -51,6 +52,7 @@ public NewsEditor(){
 public NewsEditor(boolean isAdmin){
 
 	this.isAdmin=isAdmin;
+        askForPermission = false;
 
 }
 
@@ -99,8 +101,9 @@ return values;
 }
 
 public void main(ModuleInfo modinfo)throws Exception{
-        this.isAdmin=this.isAdministrator(modinfo);
-
+        if(askForPermission){
+          this.isAdmin=this.isAdministrator(modinfo);
+        }
         setSpokenLanguage(modinfo);
 	String mode = modinfo.getParameter("mode");
 
