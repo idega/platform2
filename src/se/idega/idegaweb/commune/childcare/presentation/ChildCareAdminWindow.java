@@ -497,7 +497,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		add(form);
 		
 		if (_addCareTimeScript) {
-			_submitButton.setOnSubmitFunction("checkCareTime", getSubmitCheckCareTimeScript(_child));
+			_submitButton.setOnSubmitFunction("checkCareTime", getSubmitCheckCareTimeScript(_child, _method == METHOD_PLACE_IN_GROUP));
 		}
 	}
 
@@ -844,7 +844,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
 			table.add(getSmallText(localize("child_care.child_care_time", "Time") + ":"), 1, row);
 			if (isUsePredefinedCareTimeValues()) {
-				DropdownMenu menu = super.getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
+				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
 				table.add(menu, 1, row++);
 			}
 			else {
@@ -941,6 +941,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.place_in_group", "Place in group"), PARAMETER_ACTION, String.valueOf(ACTION_PLACE_IN_GROUP)));
 		form.setToDisableOnSubmit(placeInGroup, true);
+		_submitButton = placeInGroup;
+		_child = application.getChild();
+		_addCareTimeScript = isUsePredefinedCareTimeValues();
 		table.add(placeInGroup, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
@@ -2327,7 +2330,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return menu;
 	}
 	
-	private String getSubmitCheckCareTimeScript(User child) {
+	private String getSubmitCheckCareTimeScript(User child, boolean useApplication) throws RemoteException {
 		String childDate = child.getDateOfBirth().toString();
 		String childYear = childDate.substring(0, 4);
 		String emptyCareTimeMessage = localize("child_care.care_time_empty", "Care time must be selected.");
@@ -2336,12 +2339,24 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		buffer.append("\nfunction checkCareTime(){\n\t");
 		buffer.append("\n\t var message = '';");
 		buffer.append("\n\t var childYear = " + childYear + ";");
-		buffer.append("\n\t var dropDay = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_day").append("');");
-		buffer.append("\n\t var dropMonth = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_month").append("');");
-		buffer.append("\n\t var dropYear = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_year").append("');");
-		buffer.append("\n\t var dateDay = ").append("parseInt(dropDay.options[dropDay.selectedIndex].value, 10);");
-		buffer.append("\n\t var dateMonth = ").append("parseInt(dropMonth.options[dropMonth.selectedIndex].value, 10);");
-		buffer.append("\n\t var dateYear = ").append("parseInt(dropYear.options[dropYear.selectedIndex].value, 10);");
+		if (useApplication) {
+			ChildCareApplication application = getBusiness().getApplication(_applicationID);
+			Date fromDate = application.getFromDate();
+			if (fromDate == null) {
+				fromDate = new Date(System.currentTimeMillis());
+			}
+			IWTimestamp ts = new IWTimestamp(fromDate);
+			buffer.append("\n\t var dateDay = ").append(ts.getDay()).append(";");
+			buffer.append("\n\t var dateMonth = ").append(ts.getMonth()).append(";");
+			buffer.append("\n\t var dateYear = ").append(ts.getYear()).append(";");
+		} else {
+			buffer.append("\n\t var dropDay = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_day").append("');");
+			buffer.append("\n\t var dropMonth = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_month").append("');");
+			buffer.append("\n\t var dropYear = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_year").append("');");
+			buffer.append("\n\t var dateDay = ").append("parseInt(dropDay.options[dropDay.selectedIndex].value, 10);");
+			buffer.append("\n\t var dateMonth = ").append("parseInt(dropMonth.options[dropMonth.selectedIndex].value, 10);");
+			buffer.append("\n\t var dateYear = ").append("parseInt(dropYear.options[dropYear.selectedIndex].value, 10);");
+		}
 
 		buffer.append("\n\n\t if (dateYear < 2000) {\n\t\t return true;\n\t }");
 
