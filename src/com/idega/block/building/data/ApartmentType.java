@@ -25,7 +25,8 @@ public class ApartmentType extends GenericEntity {
     addAttribute(getIDColumnName());
     addAttribute(getApartmentCategoryIdColumnName(),"Category",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.ApartmentCategory");
     addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
-    addAttribute(getInfoColumnName(),"Info",true,true,"java.lang.String");
+    addAttribute(getInfoColumnName(),"Info",true,true,"java.lang.String",4000);
+    addAttribute(getExtraInfoColumnName(),"Extra_Info",true,true,"java.lang.String",4000);
     addAttribute(getImageIdColumnName(),"Photo",true,true,"java.lang.Integer");
     addAttribute(getFloorPlanIdColumnName(),"Plan",true,true,"java.lang.Integer");
     addAttribute(getRoomCountColumnName(),"Room Count",true,true,"java.lang.Integer");
@@ -48,6 +49,7 @@ public class ApartmentType extends GenericEntity {
   public static String getApartmentCategoryIdColumnName(){return "BU_APRT_CAT_ID";}
   public static String getNameColumnName(){return "name";}
   public static String getInfoColumnName(){return "info";}
+  public static String getExtraInfoColumnName(){return "extra_info";}
   public static String getImageIdColumnName(){return "ic_image_id"; }
   public static String getFloorPlanIdColumnName(){return "plan_id"; }
   public static String getRoomCountColumnName(){return "room_count";}
@@ -82,6 +84,12 @@ public class ApartmentType extends GenericEntity {
   }
   public void setInfo(String info){
     setColumn(getInfoColumnName(),info);
+  }
+  public String getExtraInfo(){
+    return getStringColumnValue(getExtraInfoColumnName());
+  }
+  public void setExtraInfo(String info){
+    setColumn(getExtraInfoColumnName(),info);
   }
   public int getImageId(){
     return getIntColumnValue(getImageIdColumnName());
