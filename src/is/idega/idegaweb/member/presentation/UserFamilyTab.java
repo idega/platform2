@@ -186,7 +186,7 @@ public class UserFamilyTab extends UserTab {
 			Iterator iter = custodians.iterator();
 			while (iter.hasNext()) {
 				User user = (User) iter.next();
-				table.add(getFamilyLink(user, getMemberFamilyLogic(getIWApplicationContext()).getParentRelationType()), 1, row);
+				table.add(getFamilyLink(user, getMemberFamilyLogic(getIWApplicationContext()).getCustodianRelationType()), 1, row);
 				table.add(getUserPropertyLink(user), 2, row++);
 //				table.add(new Text(user.getName() + ", " + user.getPersonalID()), 2, row++);
 			}
