@@ -83,10 +83,8 @@ public class ChildCareGroupWriter implements MediaWritable {
 			business = getChildCareBusiness(iwma.getIWApplicationContext());
 			userBusiness = getCommuneUserBusiness(iwma.getIWApplicationContext());
 			iwrb = iwma.getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
-			System.out.println("In init...");
 			
 			if (req.getParameter(PARAMETER_PROVIDER_ID) != null && req.getParameter(PARAMETER_GROUP_ID) != null) {
-				System.out.println("Parameters are set...");
 				int groupID = Integer.parseInt(req.getParameter(PARAMETER_GROUP_ID));
 				int providerID = Integer.parseInt(req.getParameter(PARAMETER_PROVIDER_ID));
 				boolean showNotYetActive = false;
@@ -108,7 +106,6 @@ public class ChildCareGroupWriter implements MediaWritable {
 				schoolName = business.getSchoolBusiness().getSchool(new Integer(providerID)).getSchoolName();
 				
 				String type = req.getParameter(PARAMETER_TYPE);
-				System.out.println("Type: "+type);
 				if (type.equals(PDF)) {
 					buffer = writePDF(students);
 				}
