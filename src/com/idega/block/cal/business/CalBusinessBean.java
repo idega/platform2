@@ -136,7 +136,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness,UserG
 			}
 			
 		}
-		System.out.println("list: " + list.toString());
+//		System.out.println("list: " + list.toString());
 		return list;
 	}
 	public Collection getPracticesByLedIDandMonth(int ledgerID, int month, int year) {
@@ -481,7 +481,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness,UserG
 			type.store();			
 		}
 		catch(Exception e) {
-			System.out.println("Couldn't add type: " + typeName);
+//			System.out.println("Couldn't add type: " + typeName);
 			return false;
 		}
 		return true;
