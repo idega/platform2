@@ -28,6 +28,7 @@ public class ResultsCollector {
   private int resultType_ = 0;
 
   private int memberId_ = 0;
+  private int tournamentPosition_ = 0;
   private int totalPoints_ = 0;
   private int totalStrokes_ = 0;
   private int totalStrokesWithHandicap_ = 0;
@@ -82,6 +83,10 @@ public class ResultsCollector {
 
   public void setMemberId(int memberId) {
     memberId_ = memberId;
+  }
+
+  public void setTournamentPosition(int tournamentPosition) {
+    tournamentPosition_ = tournamentPosition;
   }
 
   public void setFirstName(String firstName) {
@@ -311,6 +316,10 @@ public class ResultsCollector {
 
   public int getMemberId() {
     return(memberId_);
+  }
+
+  public int getTournamentPosition() {
+    return(tournamentPosition_);
   }
 
   public String getAbbrevation() {
