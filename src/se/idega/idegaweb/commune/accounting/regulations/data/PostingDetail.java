@@ -1,5 +1,7 @@
 package se.idega.idegaweb.commune.accounting.regulations.data;
 
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
+
 /**
  * Object to be returned by the Regulation as a responce to a query for a specific 
  * row/instance in the regulation framework
@@ -14,6 +16,15 @@ public class PostingDetail {
 	private String ruleSpecType;
 	
 	public PostingDetail(){
+	}
+
+	//TODO (JJ) Have to change the regularInvoiceEntry to regularPaymentEntrry
+	public PostingDetail(RegularInvoiceEntry regularPaymentEntry){
+		setAmount(regularPaymentEntry.getAmount());
+		setRuleSpecType(regularPaymentEntry.getRegSpecType().getRegSpecType());
+		setTerm(regularPaymentEntry.getPlacing());
+		setVat(regularPaymentEntry.getVAT());
+		setVatRegulationID(regularPaymentEntry.getVatRegulationID());
 	}
 	
 	public PostingDetail(String t, float a, float v, int vID, String rst){
