@@ -132,9 +132,15 @@ public class AccountTariffer extends Finance {
       if(qtys!=null && qtys.length>0 && ids!=null && qtys.length==ids.length){
 		Vector t_ids = new Vector();
       	for (int i = 0; i < qtys.length; i++) {
-			Integer qty = Integer.valueOf(qtys[i]);
-			for (int j = 0; j <qty.intValue(); j++) {
-				t_ids.add(qty.toString());
+      		
+			try {
+				Integer qty = Integer.valueOf(qtys[i]);
+				for (int j = 0; j <qty.intValue(); j++) {
+					t_ids.add(qty.toString());
+				}
+			}
+			catch (NumberFormatException e) {
+				
 			}
 		}
 		if(t_ids.size()>0){
@@ -258,7 +264,7 @@ public class AccountTariffer extends Finance {
         if(hasMap)
           T.add(textFormat.format((String) map.get(tariff.getTariffAttribute())),col++,row);
         T.add(textFormat.format(tariff.getName()),col++,row);
-        T.add(textFormat.format(Float.toString(tariff.getPrice())),col,row);
+        T.add(textFormat.format(Float.toString(tariff.getPrice())),col++,row);
         IntegerInput QtyInput= new IntegerInput(prmQuantity);
         T.add(QtyInput,col,row);
         T.add(new HiddenInput(prmTariffIds,tariff.getPrimaryKey().toString()));
