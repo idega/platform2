@@ -419,12 +419,14 @@ private Table resultTable;
         }
         else if ( tournament.getNumberOfRounds() > 1 && sortBy == ResultComparator.TOTALSTROKES ) {
           if ( tournamentRounds != null ) {
-            tournamentRoundID = tournamentRounds[tournamentRounds.length-1];
-            scoreLink.addParameter("tournamentRoundID",tournamentRoundID);
+            if (tournamentRounds.length > 0) {
+              tournamentRoundID = tournamentRounds[tournamentRounds.length-1];
+              scoreLink.addParameter("tournamentRoundID",tournamentRoundID);
 
-            if ( tournamentRoundID != 0 ) {
-              outerTable.setAlignment(1,3,"right");
-              outerTable.add(scoreLink,1,3);
+              if ( tournamentRoundID != 0 ) {
+                outerTable.setAlignment(1,3,"right");
+                outerTable.add(scoreLink,1,3);
+              }
             }
           }
           else {
