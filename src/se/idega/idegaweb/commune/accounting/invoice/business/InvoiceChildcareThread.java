@@ -211,7 +211,8 @@ public class InvoiceChildcareThread extends BillingThread{
 		int hours;
 		PlacementTimes placementTimes = null;
 		long totalSum;
-		InvoiceRecord invoiceRecord, subvention;
+		InvoiceRecord invoiceRecord, subventionToReduce;
+		int highestOrderNr;
 		School school;
 
 		try {
@@ -273,7 +274,8 @@ public class InvoiceChildcareThread extends BillingThread{
 					placementTimes = calculateTime(contract.getValidFromDate(), contract.getTerminatedDate());
 	
 					totalSum = 0;
-					subvention = null;
+					subventionToReduce = null;
+					highestOrderNr = -1;
 					//
 					//Get the check for the contract
 					//
@@ -395,8 +397,10 @@ public class InvoiceChildcareThread extends BillingThread{
 							invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], "", placementTimes, school, contract);
 	
 							//Need to store the subvention row, so that it can be adjusted later if needed
-							if(postingDetail.getRuleSpecType().equalsIgnoreCase(RegSpecConstant.SUBVENTION) || regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(RegSpecConstant.SUBVENTION)){
-								subvention = invoiceRecord;
+//							if(postingDetail.getRuleSpecType().equalsIgnoreCase(RegSpecConstant.SUBVENTION) || regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(RegSpecConstant.SUBVENTION)){
+							if(postingDetail.getOrderID()>highestOrderNr){
+								highestOrderNr = postingDetail.getOrderID();
+								subventionToReduce = invoiceRecord;
 							}
 							totalSum += AccountingUtil.roundAmount(postingDetail.getAmount()*placementTimes.getMonths());
 							errorRelated.append("Total sum so far: "+totalSum);
@@ -454,11 +458,11 @@ public class InvoiceChildcareThread extends BillingThread{
 					ErrorLogger errorRelated = new ErrorLogger(tmpErrorRelated);
 					errorRelated.append("Total sum is:"+totalSum);
 					if(totalSum<0){
-						if(subvention!=null){
-							errorRelated.append("Sum too low, changing subvention from "+subvention.getAmount()+"...to "+(subvention.getAmount()-totalSum),1);
+						if(subventionToReduce!=null){
+							errorRelated.append("Sum too low, changing subvention from "+subventionToReduce.getAmount()+"...to "+(subventionToReduce.getAmount()-totalSum),1);
 							createNewErrorMessage(errorRelated,"invoice.Info_SubventionChangedToMakeSumZero");
-							subvention.setAmount(subvention.getAmount()-totalSum);
-							subvention.store();
+							subventionToReduce.setAmount(subventionToReduce.getAmount()-totalSum);
+							subventionToReduce.store();
 						} else {
 							errorRelated.append("Sum too low, but no subvention found. Creating error message",1);
 							createNewErrorMessage(errorRelated,"invoice.noSubventionFoundAndSumLessThanZero");
