@@ -966,21 +966,37 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 				return getIntValue(PAR_VAT_RULE);
 			}
 			*/
-			public int getVatRuleRegulationId() {
-				return getIntValue(PAR_VAT_RULE);
-			}
+			
 			public Regulation getVatRuleRegulation() {
-				Regulation vatRuleRegulation = null;
-				try{
-					RegulationHome rhome = (RegulationHome) IDOLookup.getHome(Regulation.class);
-					vatRuleRegulation = rhome.findByPrimaryKey(new Integer(getVatRuleRegulationId()));
-				}catch(IDOLookupException ex){
-					ex.printStackTrace(); 
-				}catch(FinderException ex){
-					ex.printStackTrace(); 
+				if (_reg != null){
+					return _reg.getVATRuleRegulation();
+				} else {
+					Regulation vatRule = null;
+					try{
+						RegulationHome rhome = (RegulationHome) IDOLookup.getHome(Regulation.class);
+						vatRule = rhome.findByPrimaryKey(new Integer(getVatRuleRegulationId()));
+					}catch(IDOLookupException ex){
+						ex.printStackTrace(); 
+					}catch(FinderException ex){
+						ex.printStackTrace(); 
+					}				
+					return vatRule;
 				}
-				return vatRuleRegulation;	
-			}			
+			}
+		
+			public int getVatRuleRegulationId() {
+				if (_reg != null){
+					Regulation r = getVatRuleRegulation();
+					if (r != null){
+						return ((Integer) r.getPrimaryKey()).intValue();
+					} else{
+						return -1;
+					}
+				} else {
+					return getIntValue(PAR_VAT_RULE);
+				}
+			}
+								
 			
 			public String getNote() {
 				return getValue(PAR_REMARK) != null ? getValue(PAR_REMARK) : "";
