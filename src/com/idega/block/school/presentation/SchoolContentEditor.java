@@ -124,7 +124,8 @@ public class SchoolContentEditor extends IWAdminWindow{
 		}
 		
 		sue = new SchoolUserEditor(iwc);
-		sue.addParameter(PARAMETER_SCHOOL_ID, schoolId);
+		//GIMMI FIX THIS
+		//sue.addParameter(PARAMETER_SCHOOL_ID, schoolId);
 		
 
 		Text testText = new Text("test");
