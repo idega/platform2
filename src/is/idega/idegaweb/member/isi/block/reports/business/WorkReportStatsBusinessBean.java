@@ -1004,11 +1004,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(regionalUnionFiffName);
 		
 		ReportableField menUnderAge = new ReportableField("menUnderAge", Integer.class);
-		menUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "all -"+age), currentLocale);
+		menUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
 		reportCollection.addField(menUnderAge);
 		
 		ReportableField womenUnderAge = new ReportableField("womenUnderAge", Integer.class);
-		womenUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "all -"+age), currentLocale);
+		womenUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
 		reportCollection.addField(womenUnderAge);
 		
 		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
@@ -1020,11 +1020,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(menOverOrEqualAgeLimit);
 		
 		ReportableField bothGendersUnderAge = new ReportableField("bothGendersUnderAge", Integer.class);
-		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "men "+age+"+"),currentLocale);
+		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "all -"+age),currentLocale);
 		reportCollection.addField(bothGendersUnderAge);
 		
 		ReportableField bothGendersEqualOrOver = new ReportableField("bothGendersEqualOrOverAge", Integer.class);
-		bothGendersEqualOrOver.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "men "+age+"+"),currentLocale);
+		bothGendersEqualOrOver.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "all "+age+"+"),currentLocale);
 		reportCollection.addField(bothGendersEqualOrOver);
 		
 		ReportableField bothGendersAllAge = new ReportableField("bothGendersAllAge", Integer.class);
@@ -1176,11 +1176,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(menOverOrEqualAgeLimit);
 
 		ReportableField bothGendersUnderAge = new ReportableField("bothGendersUnderAge", Integer.class);
-		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "men "+age+"+"),currentLocale);
+		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "all -"+age),currentLocale);
 		reportCollection.addField(bothGendersUnderAge);
 		
 		ReportableField bothGendersEqualOrOver = new ReportableField("bothGendersEqualOrOverAge", Integer.class);
-		bothGendersEqualOrOver.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "men "+age+"+"),currentLocale);
+		bothGendersEqualOrOver.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "all "+age+"+"),currentLocale);
 		reportCollection.addField(bothGendersEqualOrOver);
 		
 		ReportableField bothGendersAllAge = new ReportableField("bothGendersAllAge", Integer.class);
@@ -1328,11 +1328,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(clubName);
 
 		ReportableField menUnderAge = new ReportableField("menUnderAge", Integer.class);
-		menUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "all -"+age), currentLocale);
+		menUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
 		reportCollection.addField(menUnderAge);
 	
 		ReportableField womenUnderAge = new ReportableField("womenUnderAge", Integer.class);
-		womenUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "all -"+age), currentLocale);
+		womenUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
 		reportCollection.addField(womenUnderAge);
 
 		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
@@ -1431,11 +1431,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(regionalUnionFiffName);
 	
 		ReportableField menUnderAge = new ReportableField("menUnderAge", Integer.class);
-		menUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "all -"+age), currentLocale);
+		menUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
 		reportCollection.addField(menUnderAge);
 	
 		ReportableField womenUnderAge = new ReportableField("womenUnderAge", Integer.class);
-		womenUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "all -"+age), currentLocale);
+		womenUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
 		reportCollection.addField(womenUnderAge);
 
 		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
@@ -1443,15 +1443,15 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(womenOverOrEqualAgeLimit);
 
 		ReportableField menOverOrEqualAgeLimit = new ReportableField("menOverOrEqualAgeLimit", Integer.class);
-		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
+		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "men "+age+"+"),currentLocale);
 		reportCollection.addField(menOverOrEqualAgeLimit);
 	
 		ReportableField bothGendersUnderAge = new ReportableField("bothGendersUnderAge", Integer.class);
-		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "men "+age+"+"),currentLocale);
+		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "all -"+age),currentLocale);
 		reportCollection.addField(bothGendersUnderAge);
 
 		ReportableField bothGendersEqualOrOver = new ReportableField("bothGendersEqualOrOverAge", Integer.class);
-		bothGendersEqualOrOver.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "men "+age+"+"),currentLocale);
+		bothGendersEqualOrOver.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "all "+age+"+"),currentLocale);
 		reportCollection.addField(bothGendersEqualOrOver);
 
 		ReportableField bothGendersLastYear = new ReportableField("bothGendersLastYear", Integer.class);
