@@ -1850,10 +1850,9 @@ private ReportableData addToIntegerCount(ReportableField reportableField, Report
 private String getLeagueIdentifier(WorkReportGroup league) {
 	//for the page separations
 	StringBuffer leagueBuf = new StringBuffer();
-	leagueBuf.append( (league.getNumber()!=null)? league.getNumber() : "" )
-	.append("  ")
+	leagueBuf.append( (league.getNumber()!=null)? league.getNumber()+" " : "" )
 	.append( (league.getShortName()!=null)? league.getShortName() : "");
-	//.append("  ")
+	
 	//.append( (league.getName()!=null)? league.getName() : "");
 	String leagueText=league.toString();
 	
@@ -1865,8 +1864,7 @@ private String getLeagueIdentifier(WorkReportGroup league) {
 
 private String getRegionalUnionIdentifier(WorkReport report) {
 	StringBuffer ruBuf = new StringBuffer();
-	ruBuf.append( (report.getRegionalUnionNumber()!=null)? report.getRegionalUnionNumber() : "" )
-	.append("  ")
+	ruBuf.append( (report.getRegionalUnionNumber()!=null)? report.getRegionalUnionNumber()+" " : "" )
 	.append( (report.getRegionalUnionAbbreviation()!=null)? report.getRegionalUnionAbbreviation() : "");
 	//.append("  ")
 	//.append( (report.getRegionalUnionName()!=null)? report.getRegionalUnionName() : "");
