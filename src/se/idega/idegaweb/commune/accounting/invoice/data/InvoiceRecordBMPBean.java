@@ -470,5 +470,27 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		return idoGetValueFromSingleValueResultSet(sql);
 	}
 
-		
+	/**
+	 * Gets a Collection of payment records for the specified month and category
+	 * @param month
+	 * @return Collection of payment records
+	 * @throws FinderException
+	 */
+	public Collection ejbFindByMonthAndCategory(CalendarMonth month,String categoryId) throws FinderException {
+		/*IWTimestamp start = new IWTimestamp(month);
+		 start.setAsDate();
+		 start.setDay(1);
+		 IWTimestamp end = new IWTimestamp(start);
+		 end.addMonths(1);*/
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getLastDateOfMonth();
+		IDOQuery sql = idoQuery();
+		sql.append("select r.* from "+getEntityName());
+		sql.append(" r, sch_school_type st ");
+		sql.appendWhere("r."+COLUMN_PERIOD_START_CHECK).appendGreaterThanOrEqualsSign().append(start);
+		sql.appendAnd().append("r."+COLUMN_PERIOD_END_CHECK).appendLessThanOrEqualsSign().append(end);
+		sql.appendAndEquals("r."+COLUMN_SCHOOL_TYPE_ID, "st.sch_school_type_id");
+		sql.appendAndEqualsQuoted("st.school_category",categoryId);
+		return idoFindPKsByQuery(sql);
+	}	
 }		

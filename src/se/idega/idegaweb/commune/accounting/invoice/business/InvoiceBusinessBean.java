@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/03/12 12:21:56 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/12 16:40:23 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.121 $
+ * @version $Revision: 1.122 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -178,7 +178,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * @param month
 	 */
 	private void removePreliminaryInvoiceSub(CalendarMonth month, String category) throws RemoveException {
-		PaymentRecord paymentRecord;
+		InvoiceRecord invoiceRecord;
 		Iterator headerIter;
 		InvoiceHeader header;		
 		try {
@@ -190,10 +190,10 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 					header = (InvoiceHeader) headerIter.next();
 					removePreliminaryInvoice(header);
 				}
-				Iterator recordIter = getPaymentRecordHome().findByMonthAndCategory(month,category).iterator();
+				Iterator recordIter = getInvoiceRecordHome().findByMonthAndCategory(month,category).iterator();
 				while(recordIter.hasNext()){
-					paymentRecord = (PaymentRecord) recordIter.next();
-					paymentRecord.remove();
+					invoiceRecord = (InvoiceRecord) recordIter.next();
+					invoiceRecord.remove();
 				}
 				
 			}else{
