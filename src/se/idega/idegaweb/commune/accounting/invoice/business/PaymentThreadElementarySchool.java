@@ -20,7 +20,6 @@ import com.idega.presentation.IWContext;
  */
 public class PaymentThreadElementarySchool extends PaymentThreadSchool{
 	PaymentHeader paymentHeader;
-	Date currentDate = new Date( System.currentTimeMillis());
 	
 	public PaymentThreadElementarySchool(Date month, IWContext iwc){
 		super(month,iwc);
