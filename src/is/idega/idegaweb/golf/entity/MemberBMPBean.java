@@ -41,6 +41,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
     addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Card.class,"member_card");
     addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Phone.class,"member_phone");
     addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Group.class,"group_member");
+    addManyToManyRelationShip(is.idega.idegaweb.golf.entity.Union.class,"union_member");
 
 
   }
