@@ -245,12 +245,24 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 	public Collection ejbFindBySchoolAndSchoolCategory(School school, SchoolCategory schoolCategory) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom().append(getEntityName()).append(" s, sch_school_study_path r");
-		query.appendWhereEquals("s."+COLUMN_SCHOOL_CATEGORY, schoolCategory);
+		if (schoolCategory != null) {
+			query.appendWhereEquals("s."+COLUMN_SCHOOL_CATEGORY, schoolCategory);
+		}
 		query.appendAndEquals("r.sch_school_id", school.getPrimaryKey());
 		query.appendAndEquals("r." + getIDColumnName(), "s." + getIDColumnName());
 		query.append(" AND (s.").append(COLUMN_IS_VALID).append(" is null");
 		query.append(" OR s.").append(COLUMN_IS_VALID).append(" = 'Y')");
 		
 		return this.idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindBySchool(School school) throws FinderException {
+		return ejbFindBySchoolAndSchoolCategory(school, null);
+	}
+
+	public Collection ejbFindAllByIDs(String[] studyPathIDs) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhere().append(getIDColumnName()).appendInArray(studyPathIDs);
+		return idoFindPKsByQuery(query);
 	}
 }

@@ -90,6 +90,13 @@ public java.util.Collection findBySchoolAndSeasonAndInYear(int p0,int p1,int p2)
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findBySchoolAndSeasonAndInYear(int p0,int p1,int p2,int p3)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeasonAndInYear(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findBySchoolAndSeasonAndTeacher(int p0,int p1,int p2)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSeasonAndTeacher(p0,p1,p2);

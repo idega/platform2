@@ -1832,6 +1832,16 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public Collection findSchoolClassesBySchoolAndSeasonAndYearAndStudyPath(int schoolID, int schoolSeasonID, int schoolYearID, int studyPathID) {
+		try {
+			return getSchoolClassHome().findBySchoolAndSeasonAndInYear(schoolID, schoolSeasonID, schoolYearID, studyPathID);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new ArrayList();
+		}
+	}
+
 	public Collection findSchoolClassesBySchoolAndSeasonAndYears(int schoolID, int schoolSeasonID, String[] schoolYearIDs) {
 		try {
 			return getSchoolClassHome().findBySchoolAndSeasonAndYears(schoolID, schoolSeasonID, schoolYearIDs);
@@ -1938,6 +1948,10 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 
 	public SchoolClass storeSchoolClass(int schoolClassID, String className, int schoolID, int schoolTypeID, int seasonID, String[] schoolYearIDs, String[] teacherIDs) {
+		return storeSchoolClass(schoolClassID, className, schoolID, schoolTypeID, seasonID, schoolYearIDs, teacherIDs, null);
+	}
+	
+	public SchoolClass storeSchoolClass(int schoolClassID, String className, int schoolID, int schoolTypeID, int seasonID, String[] schoolYearIDs, String[] teacherIDs, String[] studyPathIDs) {
 		SchoolClass schoolClass = null;
 		try {
 			schoolClass = getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassID));
@@ -2014,6 +2028,35 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				User teacher = (User) iter.next();
 				try {
 					schoolClass.addTeacher(teacher);
+				}
+				catch (IDOAddRelationshipException iare) {
+					iare.printStackTrace();
+				}
+			}
+		}
+
+		if (studyPathIDs != null) {
+			Collection studyPaths = null;
+
+			try {
+				studyPaths = getSchoolStudyPathHome().findAllByIDs(studyPathIDs);
+			}
+			catch (FinderException e1) {
+				studyPaths = new ArrayList();
+			}
+
+			try {
+				schoolClass.removeStudyPaths();
+			}
+			catch (IDORemoveRelationshipException e1) {
+				e1.printStackTrace();
+			}
+
+			Iterator iter = studyPaths.iterator();
+			while (iter.hasNext()) {
+				SchoolStudyPath studyPath = (SchoolStudyPath) iter.next();
+				try {
+					schoolClass.addStudyPath(studyPath);
 				}
 				catch (IDOAddRelationshipException iare) {
 					iare.printStackTrace();

@@ -272,10 +272,24 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   }
   
 	public Collection ejbFindBySchoolAndSeasonAndInYear(int schoolID, int schoolSeasonID, int schoolYearID)throws FinderException {
+		return ejbFindBySchoolAndSeasonAndInYear(schoolID, schoolSeasonID, schoolYearID, -1);
+	}
+	
+	public Collection ejbFindBySchoolAndSeasonAndInYear(int schoolID, int schoolSeasonID, int schoolYearID, int studyPathID)throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelect().append("distinct s.*").appendFrom().append(this.getEntityName() + " s, ").append("sch_school_year y, ").append(SCHOOL_CLASS_YEAR + " sy");
-		query.appendWhereEquals(SCHOOL, schoolID).appendAndEquals("s."+getIDColumnName(), "sy."+getIDColumnName()).appendAndEquals("sy.sch_school_year_id", "y.sch_school_year_id");
-		query.appendAndEquals("y.sch_school_year_id", schoolYearID).appendAndEquals(SEASON, schoolSeasonID);
+		query.appendSelect().append("distinct s.*").appendFrom().append(this.getEntityName() + " s, ").append(SCHOOL_CLASS_YEAR + " sy, ").append("sch_group_study_path sp");
+		query.appendWhereEquals(SCHOOL, schoolID);
+		query.appendAndEquals("s."+getIDColumnName(), "sy."+getIDColumnName());
+		query.appendAndEquals("s."+getIDColumnName(), "sp."+getIDColumnName());
+		if (schoolYearID != -1) {
+			query.appendAndEquals("sy.sch_school_year_id", schoolYearID);
+		}
+		if (schoolSeasonID != -1) {
+			query.appendAndEquals(SEASON, schoolSeasonID);
+		}
+		if (studyPathID != -1) {
+			query.appendAndEquals("sy.sch_study_path_id", studyPathID);
+		}
 		query.appendAnd().appendLeftParenthesis().appendEqualsQuoted(COLUMN_VALID, "Y").appendOr().append(COLUMN_VALID).appendIsNull().appendRightParenthesis();
 		query.appendOrderBy(NAME);
 		return idoFindPKsByQuery(query);

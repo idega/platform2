@@ -13,6 +13,13 @@ public class SchoolStudyPathHomeImpl extends com.idega.data.IDOFactory implement
  }
 
 
+public java.util.Collection findAllByIDs(java.lang.String[] p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolStudyPathBMPBean)entity).ejbFindAllByIDs(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllStudyPaths()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolStudyPathBMPBean)entity).ejbFindAllStudyPaths();
@@ -39,6 +46,13 @@ public SchoolStudyPath findByCodeAndSchoolType(java.lang.String p0,int p1)throws
 	Object pk = ((SchoolStudyPathBMPBean)entity).ejbFindByCodeAndSchoolType(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
+}
+
+public java.util.Collection findBySchool(com.idega.block.school.data.School p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolStudyPathBMPBean)entity).ejbFindBySchool(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
 public java.util.Collection findBySchoolAndSchoolCategory(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolCategory p1)throws javax.ejb.FinderException{
