@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.14 2004/06/24 21:57:52 aron Exp $
+ * $Id: ContractBMPBean.java,v 1.15 2004/06/25 10:05:13 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -323,6 +323,10 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements is.
 	public Collection ejbFindByApartmentAndStatus(Integer ID,String status)throws FinderException{
 			return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApartmentIdColumnName(),ID.intValue()).appendAndEqualsQuoted(getStatusColumnName(),status).appendOrderByDescending(getValidToColumnName()));
 		}
+	
+	public Collection ejbFindByApartmentAndStatus(Integer ID,String[] status)throws FinderException{
+		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApartmentIdColumnName(),ID.intValue()).appendAnd().append(getStatusColumnName()).appendInArrayWithSingleQuotes(status).appendOrderByDescending(getValidToColumnName()));
+	}
 
 	public Collection ejbFindByApplicantAndStatus(Integer ID,String status)throws FinderException{
 		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApplicantIdColumnName(),ID.intValue()).appendAndEqualsQuoted(getStatusColumnName(),status));

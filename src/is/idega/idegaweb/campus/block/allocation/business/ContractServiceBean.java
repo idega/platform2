@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.15 2004/06/17 11:39:05 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.16 2004/06/25 10:05:13 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -811,7 +811,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		return new Period(contractDateFrom.getDate(), contractDateFrom.getDate());
 	}
 	public Date getNextAvailableDate(Apartment apartment) {
-		ApartmentContracts apartmentContracts = new ApartmentContracts(apartment);
+		ApartmentContracts apartmentContracts = new ApartmentContracts(apartment,getRentableStatuses());
 		Date nextAvailable = apartmentContracts.getNextDate();
 		// If apartment is not in contract table:
 		if (!apartmentContracts.hasContracts() && apartment.getUnavailableUntil() != null) {
