@@ -8,17 +8,21 @@ package com.idega.block.dataquery.business;
 
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.block.dataquery.data.QueryResult;
+import com.idega.block.dataquery.data.QuerySQL;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.IWTreeNode;
 import com.idega.core.data.ICObject;
@@ -219,6 +223,29 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService {
 	public QueryFieldPart createQueryFieldPart(IWResourceBundle iwrb,String entityName,EntityAttribute attribute){
 		return new QueryFieldPart(attribute.getName(),entityName,attribute.getColumnName(),(String)null,iwrb.getLocalizedString(attribute.getName(),attribute.getName()),attribute.getStorageClassName());
 	}
+	
+	public QueryResult generateQueryResult(Integer queryID) throws QueryGenerationException{
+		
+		try {
+			QueryHelper queryHelper = getQueryHelper(queryID.intValue());
+			QueryToSQLBridge bridge = getQueryToSQLBridge();
+			QuerySQL query = bridge.createQuerySQL(queryHelper);
+			String sqlStatement = query.getSQLStatement();
+			List displayNames = query.getDisplayNames();
+			QueryResult queryResult = bridge.executeStatement(sqlStatement, displayNames);
+			return queryResult;
+		}
+		catch (RemoteException e) {
+			throw new QueryGenerationException(e.getMessage());
+		}
+		catch (SQLException e) {
+			throw new QueryGenerationException(e.getMessage());
+		}
+	}
+	
+	public QueryToSQLBridge getQueryToSQLBridge() throws RemoteException {
+		return (QueryToSQLBridge)getServiceInstance(QueryToSQLBridge.class);
+	  }
 
 }
 
