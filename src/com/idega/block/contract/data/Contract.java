@@ -1,5 +1,7 @@
 package com.idega.block.contract.data;
 
+
+
 import com.idega.data.MetaDataCapable;
 
 
@@ -38,4 +40,6 @@ public interface Contract extends com.idega.data.IDOEntity,MetaDataCapable
  public void setValidFrom(java.sql.Date p0);
  public void setValidTo(java.sql.Date p0);
  public void setXmlSignedData(java.lang.String p0);
+ public java.util.Set getUnsetFields();
+ public void setUnsetFields(java.util.Map fieldValues);
 }

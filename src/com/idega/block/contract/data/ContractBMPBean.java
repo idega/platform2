@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.10 2003/05/31 00:49:39 aron Exp $
+ * $Id: ContractBMPBean.java,v 1.11 2003/06/10 11:33:12 roar Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,11 +8,17 @@
  *
  */
 package com.idega.block.contract.data;
+import java.io.StringReader;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
@@ -24,6 +30,10 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDOStoreException;
 import com.idega.util.IWTimestamp;
+import com.idega.xml.XMLDocument;
+import com.idega.xml.XMLElement;
+import com.idega.xml.XMLException;
+import com.idega.xml.XMLParser;
 /**
  * Title:        idegaclasses
  * Description:
@@ -233,6 +243,64 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 	public Date getSignedDate() {
 		return (Date) getColumnValue(signedDate_);
 	}
+	
+	/**
+	 * Returns all xml fields in the contract text that have not yet got a value.
+	 */
+	public Set getUnsetFields(){
+		Set fields = new HashSet();
+		try {
+			XMLParser parser = new XMLParser();
+			XMLDocument document = parser.parse(new StringReader("<dummy>" + getText() + "</dummy>"));
+		
+			XMLElement root = document.getRootElement();
+			List xmlFields = root.getChildren();
+			Iterator i = xmlFields.iterator();
+			while (i.hasNext()){
+				fields.add(((XMLElement) i.next()).getName());
+			}			
+			
+		}catch (XMLException ex){
+			ex.printStackTrace();
+		}
+		
+		return fields;
+	}
+	
+	/**
+	 * Gives value to xml-fields in the contract text. The xml field is substituted with the text value.
+	 * If no value is given in the fieldValues parameter, the xml field is left unchanged.
+	 */
+	public void setUnsetFields(Map fieldValues){
+		StringBuffer merged = new StringBuffer();
+		
+		try {
+			XMLParser parser = new XMLParser();
+			XMLDocument document = parser.parse(new StringReader("<dummy>" + getText() + "</dummy>"));
+		
+			XMLElement root = document.getRootElement();
+			Iterator it = root.getContent().iterator();
+			while (it.hasNext()){
+				Object obj = it.next();
+				if (obj instanceof XMLElement) {
+					String name = ((XMLElement) obj).getName();
+					String value = (String) fieldValues.get(name);
+					System.out.println("name: " + name + " value: " + value);
+					
+					merged.append(value != null ? value : "<"+name+"/>");
+				}
+//				else if (obj instanceof XMLCDATA) { ignore	}
+				else if (obj instanceof String) {
+					merged.append((String) obj);			
+				}
+				setText(merged.toString());
+				store();
+			}	
+		}catch (XMLException ex){
+			ex.printStackTrace();
+		}
+	}
+	
 	public Contract ejbHomeCreate(
 		int userID,
 		int iCategoryId,
