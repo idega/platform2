@@ -22,7 +22,7 @@ import com.idega.user.data.User;
 public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements WorkReportClubAccountRecord{
 	protected final static String ENTITY_NAME = "ISI_WR_CLUB_ACC_REC";
 	protected final static String COLUMN_NAME_REPORT_ID = "ISI_WORK_REPORT_ID";
-	protected final static String COLUMN_NAME_WORK_REPORT_GROUP = "WR_GROUP_ID";
+	protected final static String COLUMN_NAME_WORK_REPORT_GROUP = "ISI_WR_GROUP_ID";
 	protected final static String COLUMN_NAME_AMOUNT = "AMOUNT";
 	protected final static String COLUMN_NAME_ACCOUNT_KEY_ID = "ACC_KEY_ID";
 
@@ -33,7 +33,7 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_NAME_REPORT_ID, "Id of the work report",true,true,Integer.class,"many-to-one",WorkReport.class);
-		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP,"The league id / club",true,true,String.class);
+		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP,"The league id / club",true,true, WorkReportGroup.class);
 		addAttribute(COLUMN_NAME_AMOUNT,"Amount",true,true,Float.class);	
 		addAttribute(COLUMN_NAME_ACCOUNT_KEY_ID, "Account key",true,true,Integer.class,"many-to-one",WorkReportAccountKey.class);
 		
