@@ -23,11 +23,12 @@ public class HandicapRegisterWindow extends GolfWindow {
 	 * 
 	 */
 	public HandicapRegisterWindow() {
-		this("Handicap register",600,630);
+		this("Handicap register",600,580);
 	}
 	
     public HandicapRegisterWindow(String name, int width, int height) {
         super(name, width, height);
+        setScrollbar(true);
         setGolfClassToInstanciate(HandicapRegister.class);
     }
     
