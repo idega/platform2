@@ -315,7 +315,7 @@ public class ContractTextSetter extends com.idega.presentation.PresentationObjec
 	}
 	private TextArea getTextArea(String name, String content) {
 		TextArea TA = new TextArea(name, content);
-		TA.setStyle(Edit.styleAttribute);
+		TA.setStyleClass(Edit.styleAttribute);
 		TA.setWidth(80);
 		TA.setHeight(20);
 		return TA;
