@@ -151,7 +151,7 @@ private void drawTable() throws IOException,SQLException {
         Text memberText = new Text(memberInfo.getName());
                 memberText.setFontSize(2);
 
-        String handicapScaled = scale_decimals(String.valueOf(memberInfo2.getHandicap()),1);
+        String handicapScaled = TextSoap.singleDecimalFormat(String.valueOf(memberInfo2.getHandicap()));
         Text handicapText = new Text(handicapScaled);
             if ( (int) memberInfo2.getHandicap() == 100 ) {
               handicapText = new Text(iwrb.getLocalizedString("handicap.no_handicap","No handicap"));
@@ -203,7 +203,7 @@ private void drawTable() throws IOException,SQLException {
 
                         }
 
-                        String averagePoints = scale_decimals(String.valueOf((punktar/(float) scoreCards.length)),2);
+                        String averagePoints = TextSoap.decimalFormat(String.valueOf((punktar/(float) scoreCards.length)),2);
 
                         averageText = new Text(averagePoints+iwrb.getLocalizedString("handicap.points"," points"));
                 }
@@ -291,16 +291,6 @@ private void drawTable() throws IOException,SQLException {
         imageTable.add(memberImage);
 
         myTable.add(imageTable,1,1);
-}
-
-private String scale_decimals(String nyForgjof,int scale) throws IOException {
-
-        BigDecimal test2 = new BigDecimal(nyForgjof);
-
-        String nyForgjof2 = test2.setScale(scale,5).toString();
-
-        return nyForgjof2;
-
 }
 
 public String getBundleIdentifier(){
