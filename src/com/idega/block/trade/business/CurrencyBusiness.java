@@ -23,7 +23,6 @@ import javax.ejb.CreateException;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.data.CurrencyHome;
 import com.idega.block.trade.data.CurrencyValues;
-import com.idega.data.EntityBulkUpdater;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;

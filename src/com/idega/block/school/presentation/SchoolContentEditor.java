@@ -10,7 +10,6 @@ import com.idega.block.boxoffice.presentation.Box;
 import com.idega.block.documents.presentation.Doc;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.business.SchoolBusinessBean;
 import com.idega.block.school.business.SchoolContentBusinessBean;
 import com.idega.block.school.data.School;
 import com.idega.block.text.data.LocalizedText;

@@ -2,8 +2,6 @@ package com.idega.block.school.data;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Vector;
 
 import javax.ejb.FinderException;
 

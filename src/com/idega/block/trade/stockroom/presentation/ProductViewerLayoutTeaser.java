@@ -1,23 +1,14 @@
 package com.idega.block.trade.stockroom.presentation;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
 import com.idega.block.text.business.TextFormatter;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.data.Product;
-import com.idega.block.trade.stockroom.data.ProductCategory;
 import com.idega.business.IBOLookup;
-import com.idega.core.data.ICFile;
-import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.HorizontalRule;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 

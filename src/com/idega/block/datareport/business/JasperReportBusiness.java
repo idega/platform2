@@ -1,7 +1,6 @@
 package com.idega.block.datareport.business;
 
 import java.io.IOException;
-import java.util.Map;
 
 import dori.jasper.engine.JRDataSource;
 import dori.jasper.engine.JRException;
