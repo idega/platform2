@@ -581,10 +581,18 @@ public Box(String attribute){
     _target = target;
   }
 
+  /**
+   * @deprecated
+   */
   public void setLinkStyle(String linkStyle,String activeStyle,String visitedStyle,String hoverStyle) {
     _linkStyle = linkStyle;
     _visitedStyle = linkStyle;
     _activeStyle = visitedStyle;
+    _hoverStyle = hoverStyle;
+  }
+
+  public void setLinkStyle(String linkStyle,String hoverStyle) {
+    _linkStyle = linkStyle;
     _hoverStyle = hoverStyle;
   }
 
@@ -603,9 +611,7 @@ public Box(String attribute){
     }
 
     if ( getParentPage() != null ) {
-      getParentPage().setStyleDefinition("A."+_name+":link",_linkStyle);
-      getParentPage().setStyleDefinition("A."+_name+":visited",_visitedStyle);
-      getParentPage().setStyleDefinition("A."+_name+":active",_activeStyle);
+      getParentPage().setStyleDefinition("A."+_name,_linkStyle);
       getParentPage().setStyleDefinition("A."+_name+":hover",_hoverStyle);
     }
     else {

@@ -491,9 +491,7 @@ private int _layout = RADIO_BUTTON_VIEW;
     }
 
     if ( getParentPage() != null ) {
-      getParentPage().setStyleDefinition("A."+_name+":link",_styleAttribute);
-      getParentPage().setStyleDefinition("A."+_name+":visited",_styleAttribute);
-      getParentPage().setStyleDefinition("A."+_name+":active",_styleAttribute);
+      getParentPage().setStyleDefinition("A."+_name,_styleAttribute);
       getParentPage().setStyleDefinition("A."+_name+":hover",_hoverStyle);
     }
     else {
