@@ -24,6 +24,28 @@ public class ContentBusiness{
     return ContentFinder.getContent(iContentId );
   }
 
+	public static boolean addFileToContent(int iContentId,int iICFileId){
+		try {
+
+			new ICFile(iICFileId).addTo(new Content(iContentId));
+			return true;
+		}
+		catch (SQLException ex) {
+
+		}
+		return false;
+	}
+
+	public static boolean removeFileFromContent(int iContentId,int iICFileId){
+	  try {
+			new ICFile(iICFileId).removeFrom(new Content(iContentId));
+		}
+		catch (Exception ex) {
+
+		}
+		return false;
+	}
+
 
   public static boolean deleteContent(int iContentId ) {
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();

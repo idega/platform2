@@ -208,8 +208,9 @@ public class NewsReader extends Block implements IWBlock{
     T.setCellspacing(2);
     T.setBorder(0);
 
+		IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     if(iCategoryId > 0){
-      Link ne = new Link(iwb.getImage("/shared/create.gif"));
+      Link ne = new Link(core.getImage("/shared/create.gif"));
       ne.setWindowToOpen(NewsEditorWindow.class);
       ne.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
       T.add(ne,1,1);
@@ -219,7 +220,7 @@ public class NewsReader extends Block implements IWBlock{
         list.addParameter(prmListCategory,"true");
       T.add(list,1,1);
 		  T.add(T.getTransparentCell(iwc),1,1);
-      Link change = new Link(iwb.getImage("/shared/edit.gif"));
+      Link change = new Link(core.getImage("/shared/edit.gif"));
       change.setWindowToOpen(NewsEditorWindow.class);
       change.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
       change.addParameter(NewsEditorWindow.prmObjInstId,getICObjectInstanceID());
@@ -227,14 +228,14 @@ public class NewsReader extends Block implements IWBlock{
 
       if ( enableDelete ) {
 				T.add(T.getTransparentCell(iwc),1,1);
-        Link delete = new Link(iwb.getImage("/shared/delete.gif"));
+        Link delete = new Link(core.getImage("/shared/delete.gif"));
         delete.setWindowToOpen(NewsEditorWindow.class);
         delete.addParameter(NewsEditorWindow.prmDelete,iCategoryId);
         T.add(delete,3,1);
       }
     }
     if(newObjInst){
-      Link newLink = new Link(iwb.getImage("/shared/create.gif"));
+      Link newLink = new Link(core.getImage("/shared/create.gif"));
       newLink.setWindowToOpen(NewsEditorWindow.class);
       if(newObjInst)
         newLink.addParameter(NewsEditorWindow.prmObjInstId,getICObjectInstanceID());

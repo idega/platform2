@@ -1,34 +1,27 @@
-/*
- * $Id: ReferenceNumberInfo.java,v 1.9 2001/10/05 07:59:59 tryggvil Exp $
- *
- * Copyright (C) 2001 Idega hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- *
- */
 package com.idega.block.application.presentation;
 
+
+import is.idega.idegaweb.campus.block.application.data.Applied;
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.application.data.WaitingList;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
-import is.idegaweb.campus.entity.Applied;
-import is.idegaweb.campus.entity.Contract;
-import is.idegaweb.campus.entity.WaitingList;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.application.business.ReferenceNumberHandler;
-import is.idegaweb.campus.application.CampusApplicationFinder;
-import is.idegaweb.campus.application.CampusApplicationHolder;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.text.Text;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.BackButton;
 import java.util.Vector;
 import java.util.Date;
 import java.text.DateFormat;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.BackButton;
+
 
 /**
  *

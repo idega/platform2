@@ -29,7 +29,12 @@ public abstract class ReportPresentation extends com.idega.presentation.Presenta
   protected static boolean fontBold = false;
   protected static String styleAttribute = "font-size: 8pt";
   private static int iBorder = 2;
+	 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.reports";
 
+
+	public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
   public ReportPresentation(String sHeader){
     LightColor = "#D7DADF";
     MiddleColor = "#9fA9B3";

@@ -27,6 +27,8 @@ public class TextBusiness{
     return TX;
   }
 
+
+
   public static boolean deleteBlock(int instanceid){
     List L = TextFinder.listOfTextForObjectInstanceId(instanceid);
     if(L!= null){

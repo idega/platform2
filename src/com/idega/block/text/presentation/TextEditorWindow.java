@@ -55,12 +55,15 @@ public class TextEditorWindow extends IWAdminWindow{
   private static String prmTxTextId = "txep_txtextid";
   private static String prmLocalizedTextId = "txep_loctextid";
   private static String prmUseImage = "txep_useimage";
+	private static String prmDeleteFile = "txep_deletefile";
+	private static String prmSaveFile = "txep_savefile";
   private static String actDelete = "txea_delete";
   private static String actSave = "txea_save";
   private static String actUpdate = "txea_update" ;
   private static String actNew = "txea_new";
   private static String modeNew = "txem_new";
   private static String modeDelete = "txem_delete";
+
   private TextHelper textHelper;
 
   private IWBundle iwb;
@@ -69,6 +72,7 @@ public class TextEditorWindow extends IWAdminWindow{
   public TextEditorWindow(){
     setWidth(570);
     setHeight(430);
+		setResizable(true);
     setUnMerged();
   }
 
@@ -78,6 +82,12 @@ public class TextEditorWindow extends IWAdminWindow{
 
     String sLocaleId = iwc.getParameter(prmLocale);
     String sAtt = null;
+
+		Enumeration E = iwc.getParameterNames();
+		while(E.hasMoreElements()){
+			String pN = (String) E.nextElement();
+		  System.out.println(pN+" = "+iwc.getParameter(pN) );
+		}
 
     // LocaleHandling
     int iLocaleId = -1;
@@ -156,6 +166,19 @@ public class TextEditorWindow extends IWAdminWindow{
     else if(iwc.getParameter( actNew ) != null || iwc.getParameter(actNew+".x")!= null){
       sTextId = null;sAttribute = null;
     }
+		else if(iwc.getParameter(prmDeleteFile)!=null){
+
+		  if(sTextId!=null){
+		    String sFileId = iwc.getParameter(prmDeleteFile);
+				deleteFile(sTextId,sFileId);
+			}
+		}
+		else if(iwc.getParameter(prmSaveFile)!= null || iwc.getParameter(prmSaveFile+".x")!=null){
+		   if(sTextId!=null){
+		    String sFileId = iwc.getParameter(prmImageId);
+				saveFile(sTextId,sFileId);
+			}
+		}
     // end of Form Actions
   }
 
@@ -215,28 +238,61 @@ public class TextEditorWindow extends IWAdminWindow{
       addHiddenInput(new HiddenInput(prmObjInstId,String.valueOf(iObjInsId)));
 
     SubmitButton save = new SubmitButton(iwrb.getImage("save.gif"),actSave);
-
+		SubmitButton addButton = null;
+		addButton = new SubmitButton(iwb.getImage("/shared/create.gif"),prmSaveFile);
     ImageInserter imageInsert = new ImageInserter();
     imageInsert.setImSessionImageName(prmImageId);
     imageInsert.setUseBoxParameterName(prmUseImage);
     imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
+		imageInsert.setHasUseBox(false);
     imageInsert.setSelected(false);
+		Table imageTable = new Table();
+		int row = 1;
     if ( hasContent ) {
       List files = contentHelper.getFiles();
       if(files != null){
         ICFile file1 = (ICFile) files.get(0);
         imageInsert.setImageId(file1.getID());
+
         Text properties = new Text("properties");
         propslink = com.idega.block.media.presentation.ImageAttributeSetter.getLink(properties,file1.getID(),imageAttributeKey);
-      }
-    }
+				Iterator I = files.iterator();
+				while(I.hasNext()){
+					try {
 
+					ICFile f = (ICFile) I.next();
+					Image immi = new Image(f.getID());
+					immi.setMaxImageWidth(50);
+
+					imageTable.add(immi,1,row);
+					//Link edit = new Link(iwb.getImage("/shared/edit.gif"));
+					Link edit = com.idega.block.media.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),file1.getID(),imageAttributeKey);
+					Link delete = new Link(iwb.getImage("/shared/delete.gif"));
+					delete.addParameter(prmDeleteFile,f.getID());
+					delete.addParameter(prmTxTextId,prmTxTextId);
+					imageTable.add(edit,2,row);
+					imageTable.add(delete,3,row);
+				  row++;
+					}
+					catch (Exception ex) {
+
+					}
+				}
+      }
+
+    }
     addLeft(iwrb.getLocalizedString("title","Title"),tiHeadline,true);
     addLeft(iwrb.getLocalizedString("locale","Locale"), LocaleDrop,true);
     addLeft(iwrb.getLocalizedString("body","Text"),taBody,true);
     addRight(iwrb.getLocalizedString("image","Image"),imageInsert,true);
-		if(propslink != null)
-      addRight("props",propslink,true);
+		if(addButton!=null){
+			addRight("",addButton,true,false);
+		}
+		addRight(iwrb.getLocalizedString("images","Image"),imageTable,true,false);
+
+		//if(propslink != null)
+    //  addRight("props",propslink,true);
+
     addSubmitButton(save);
   }
 
@@ -244,6 +300,16 @@ public class TextEditorWindow extends IWAdminWindow{
     addLeft(iwrb.getLocalizedString("no_access","Login first!"));
     this.addSubmitButton(new CloseButton(iwrb.getLocalizedString("close","Closee")));
   }
+
+	private void saveFile(String sTextId,String sFileId){
+		TxText tx = TextFinder.getText(Integer.parseInt(sTextId));
+	  ContentBusiness.addFileToContent(tx.getContentId(),Integer.parseInt(sFileId));
+	}
+
+	private void deleteFile(String sTextId,String sFileId){
+	  TxText tx = TextFinder.getText(Integer.parseInt(sTextId));
+	  ContentBusiness.removeFileFromContent(tx.getContentId(),Integer.parseInt(sFileId));
+	}
 
 
   private void confirmDelete(String sTextId,int iObjInsId ) throws IOException,SQLException {
@@ -276,7 +342,8 @@ public class TextEditorWindow extends IWAdminWindow{
       int iImageId = sImageId != null ? Integer.parseInt(sImageId):-1;
       boolean bUseImage = sUseImage!= null?true:false;
       Vector files = null;
-      try {
+
+			try {
         ICFile file = new ICFile(iImageId);
         files = new Vector();
         files.add(file);
@@ -307,7 +374,12 @@ public class TextEditorWindow extends IWAdminWindow{
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("text_editor","Text Editor"));
+		try{
     control(iwc);
+		}
+		catch(Exception e){
+		  e.printStackTrace();
+		}
   }
 
   public String getBundleIdentifier(){

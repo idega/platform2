@@ -15,6 +15,8 @@ import com.idega.presentation.Script;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Image;
 import com.idega.business.IWEventListener;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 
 public class ReportContentViewer extends ReportPresentation implements IWEventListener{
@@ -34,6 +36,8 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
   protected static String prmHeaders = "rep.view.headers";
   protected static String prmLastOrder = "rep.view.lastorder";
   protected static String prmListStart = "rep.view.liststart";
+	private IWBundle iwb;
+	private IWResourceBundle iwrb;
 
   public ReportContentViewer(){
     vReportContent = null;
@@ -53,6 +57,8 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
     this.displayNumber = number;
   }
   protected void control(IWContext iwc){
+		iwrb = getResourceBundle(iwc);
+		iwb = getBundle(iwc);
     Table  T = new Table();
     T.setWidth("100%");
     T.setCellpadding(0);
@@ -210,12 +216,12 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
     T2.add(T,1,1);
     Table T3 = new Table(2,1);
 
-    Link XLS = new Link(new Image("/reports/pics/xls.gif"));
+    Link XLS = new Link(iwb.getImage("/shared/xls.gif"));//new Image("/reports/pics/xls.gif"));
     XLS.setWindowToOpen(ReportFileWindow.class);
     XLS.addParameter(ReportFileWindow.prmReportId,R.getID());
     XLS.addParameter("type","xls");
 
-    Link PDF = new Link(new Image("/reports/pics/pdf.gif"));
+    Link PDF = new Link(iwb.getImage("/shared/pdf.gif"));//new Image("/reports/pics/pdf.gif"));
     PDF.setWindowToOpen(ReportFileWindow.class);
     PDF.addParameter(ReportFileWindow.prmReportId,R.getID());
     PDF.addParameter("type","pdf");

@@ -39,7 +39,7 @@ public class Finder  {
    Tariff[] tariffs = new Tariff[0];
     try{
 
-      tariffs = (Tariff[]) new Tariff().findAll();
+      tariffs = (Tariff[]) new Tariff().findAllOrdered(Tariff.getAttributeColumnName());
     }
     catch(SQLException e){}
     return tariffs;

@@ -18,6 +18,8 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.Script;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Image;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 
 public class ReportEditor extends ReportPresentation{
@@ -38,6 +40,9 @@ public class ReportEditor extends ReportPresentation{
   public final static String prmSaveCategory = "rep.category_id";
   public final static String prmReportId = "rep.report_id";
 
+	private IWBundle iwb;
+	private IWResourceBundle iwrb;
+
   public ReportEditor(){
     super();
     this.iCategory = 0;
@@ -56,6 +61,8 @@ public class ReportEditor extends ReportPresentation{
   }
 
   protected void control(IWContext iwc){
+		iwrb = getResourceBundle(iwc);
+		iwb = getBundle(iwc);
     try{
         if(isAdmin){
           if(iSaveCategory != -1 && iwc.getParameter(prmSaveCategory)!=null){
@@ -168,17 +175,17 @@ public class ReportEditor extends ReportPresentation{
       box1.setHeight(20);
       box2.setHeight(20);
       box2.selectAllOnSubmit();
-      B.add(new SubmitButton(new Image("/reports/pics/ok.gif")));
+      B.add(new SubmitButton(iwb.getImage("/shared/ok.gif")));//new Image("/reports/pics/ok.gif")));
       B.add(new HiddenInput(sAction, String.valueOf(ACT4)));
       form.add(new HiddenInput("reportcategory_id",String.valueOf(iSaveCategory)));
       add(form);
     }
     else
       add(new Text("Nothing to show"));
-    Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
+    Link back =  new Link(iwb.getImage("/shared/newlist.gif"));//new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
     add(back);
     if(sqlEditAdmin){
-      Link admin = new Link(new Image("/reports/pics/admin.gif"),"/reports/reportedit.jsp");
+      Link admin = new Link(iwb.getImage("/shared/admin.gif"));//new Image("/reports/pics/admin.gif"),"/reports/reportedit.jsp");
       admin.addParameter(sAction,String.valueOf(ACT2));
       admin.addParameter("reportcategory_id",String.valueOf(iSaveCategory));
       add(admin);
@@ -228,11 +235,11 @@ public class ReportEditor extends ReportPresentation{
     T.add(sqlText,1,7);
     T.add(sqlInput,1,8);
 
-    T.add(new SubmitButton(new Image("/reports/pics/ok.gif")),1,9);
+    T.add(new SubmitButton(iwb.getImage("/shared/ok.gif")));//new Image("/reports/pics/ok.gif")),1,9);
     T.add(new HiddenInput(sAction, String.valueOf(ACT1)),1,9);
 
     form.add(T);
-    Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
+    Link back =  new Link(iwb.getImage("/shared/newlist.gif"));//new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
     this.add(back);
     form.add(new HiddenInput("reportcategory_id",String.valueOf(iSaveCategory)));
     add(form);
@@ -283,7 +290,7 @@ public class ReportEditor extends ReportPresentation{
     }
     else
       msg = "Needs a name";
-    Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
+    Link back =  new Link(iwb.getImage("/shared/newlist.gif"));//new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
     this.add(back);
     add(formatText(msg));
   }
@@ -369,7 +376,7 @@ public class ReportEditor extends ReportPresentation{
     return array;
   }
    public void makeAnswer(Report R){
-    Link L = new Link(new Image("/reports/pics/newlist.gif"),"/reports/reportview.jsp");
+    Link L = new Link(iwb.getImage("/shared/newlist.gif"));//new Image("/reports/pics/newlist.gif"),"/reports/reportview.jsp");
     L.addParameter("report",R.getID());
     add(L);
     add(formatText("View the results"));

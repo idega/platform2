@@ -141,6 +141,7 @@ public class Reporter extends ReportPresentation{
 
   protected void control(IWContext iwc){
     iwrb = getResourceBundle(iwc);
+		iwb = getBundle(iwc);
     Form form = new Form();
     checkCategories(iwc);
     if(iwc.getParameter(sAction) != null){
@@ -218,7 +219,7 @@ public class Reporter extends ReportPresentation{
       T.setCellpadding(2);
       T.setCellspacing(1);
       T.setBorder(0);
-      Link lEdit =  new Link(new Image("/reports/pics/new.gif"));
+      Link lEdit =  new Link(iwb.getImage("/shared/new.gif"));//new Image("/reports/pics/new.gif"));
       lEdit.setWindowToOpen(ReportEditorWindow.class);
       lEdit.addParameter(ReportEditorWindow.prmSaveCategory,iCategory);
 
@@ -264,7 +265,7 @@ public class Reporter extends ReportPresentation{
         }
         T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
         if(bEdit){
-          SubmitButton deleteButtton = new SubmitButton(new Image("/reports/pics/delete.gif"));
+          SubmitButton deleteButtton = new SubmitButton(iwb.getImage("/shared/delete.gif"));//new Image("/reports/pics/delete.gif"));
           T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
           T.add(deleteButtton,4,len+3);
           HiddenInput countHidden = new HiddenInput(prefix+"count",String.valueOf(len));
@@ -294,13 +295,13 @@ public class Reporter extends ReportPresentation{
   }
 
   private Link getLink(int id){
-    Link L = new Link(new Image("/reports/pics/view.gif"));
+    Link L = new Link(iwb.getImage("/shared/view.gif"));// Image("/reports/pics/view.gif"));
     L.setWindowToOpen(ReportViewWindow.class);
     L.addParameter(ReportViewWindow.prmReportId,id);
     return L;
   }
   private Link getAdminLink(int id,int catid){
-    Link L = new Link(new Image("/reports/pics/edit.gif"));
+    Link L = new Link(iwb.getImage("/shared/edit.gif"));//new Image("/reports/pics/edit.gif"));
     L.setWindowToOpen(ReportEditorWindow.class);
     L.addParameter(ReportEditorWindow.prmReportId,id);
     L.addParameter(ReportEditorWindow.prmSaveCategory,catid);
@@ -331,7 +332,5 @@ public class Reporter extends ReportPresentation{
     }
   }
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
+
 }
