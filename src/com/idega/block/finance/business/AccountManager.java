@@ -164,8 +164,7 @@ public class AccountManager {
     else
       return null;
   }
-
-  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId){
+  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,String type){
     Account A = new Account();
     A.setBalance(0);
     A.setCreationDate(idegaTimestamp.getTimestampRightNow() );
@@ -175,10 +174,23 @@ public class AccountManager {
     A.setExtraInfo(sExtra);
     A.setCashierId(iCashierId);
     A.setValid(true);
+    A.setType(type);
     try{
       A.insert();
     }
     catch(SQLException sql){A = null;}
     return A;
+  }
+
+  public static Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId){
+    return makeNewAccount(iUserId,sName,sExtra,iCashierId,Account.typeFinancial);
+  }
+
+  public static Account makeNewPhoneAccount(int iUserId, String sName,String sExtra, int iCashierId){
+    return makeNewAccount(iUserId,sName,sExtra,iCashierId,Account.typePhone);
+  }
+
+  public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId){
+   return makeNewAccount(iUserId,sName,sExtra,iCashierId,"");
   }
 }
