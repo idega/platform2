@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoiceBMPBean.java,v 1.10 2004/10/07 14:08:09 thomas Exp $
+ * $Id: AfterSchoolChoiceBMPBean.java,v 1.1 2004/10/07 18:54:12 thomas Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -7,7 +7,7 @@
  * Use is subject to license terms.
  *
  */
-package se.idega.idegaweb.commune.childcare.data;
+package se.idega.idegaweb.commune.school.data;
 
 import java.util.Collection;
 

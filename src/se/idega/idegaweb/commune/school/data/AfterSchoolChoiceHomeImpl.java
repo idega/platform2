@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.childcare.data;
+package se.idega.idegaweb.commune.school.data;
 
 
 public class AfterSchoolChoiceHomeImpl extends com.idega.data.IDOFactory implements AfterSchoolChoiceHome

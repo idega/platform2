@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.childcare.data;
+package se.idega.idegaweb.commune.school.data;
 
 import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareApplication;
 
