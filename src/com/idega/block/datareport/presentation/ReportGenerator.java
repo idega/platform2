@@ -360,7 +360,7 @@ public class ReportGenerator extends Block {
 					try {
 						_dataSource = (JRDataSource)method.invoke(forInvocationOfMethod,prmVal);
 					} catch (InvocationTargetException e) {
-						Throwable someException = e.getCause();
+						Throwable someException = e.getTargetException();
 						if(someException != null && someException instanceof Exception){
 							throw (Exception)someException;
 						} else {
