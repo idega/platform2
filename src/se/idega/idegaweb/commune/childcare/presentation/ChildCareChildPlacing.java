@@ -20,6 +20,7 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
+import com.idega.data.IDOStoreException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -34,6 +35,8 @@ import com.idega.util.PersonalIDFormatter;
 public class ChildCareChildPlacing extends ChildCareBlock {
 
 	private static final String PRM_RM_CLASS_MEMBER_ID = "ccc_rm_cl_mb";
+    private static final String PRM_UPD_RM_DATE = "ccc_upd_cl_mb_rm_date";
+    private static final String PRM_UPD_CLASS_MEMBER_ID = "ccc_upd_cl_mb_id";
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -55,6 +58,24 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 			} catch (FinderException e) {
 				e.printStackTrace();
 			}
+		}
+		if(iwc.isParameterSet(PRM_UPD_CLASS_MEMBER_ID)&& iwc.isParameterSet(PRM_UPD_RM_DATE)){
+		    try {
+                Integer classMemberID = Integer.valueOf(iwc.getParameter(PRM_UPD_CLASS_MEMBER_ID));
+                IWTimestamp removedDate = new IWTimestamp(iwc.getParameter(PRM_UPD_RM_DATE));
+                SchoolClassMember updateMember  = getBusiness().getSchoolBusiness().getSchoolClassMemberHome().findByPrimaryKey(classMemberID);
+                updateMember.setRemovedDate(removedDate.getTimestamp());
+                updateMember.store();
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            } catch (IDOStoreException e) {
+                e.printStackTrace();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            } catch (FinderException e) {
+                e.printStackTrace();
+            }
+		
 		}
 		
 		Table table = new Table(1,5);
@@ -122,6 +143,7 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.removed","Removed"), column++, row++);
 		
 		SchoolClassMember member;
+		SchoolClassMember previousMember=null;
 		SchoolClass group;
 		School provider;
 		IWTimestamp validFrom;
@@ -130,6 +152,7 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 		Collection placings = getBusiness().getSchoolBusiness().findClassMemberInChildCare(getSession().getChildID(), getSession().getChildCareID());
 		ChildCareContractHome contractHome = getBusiness().getChildCareContractArchiveHome();
 		Iterator iter = placings.iterator();
+		
 		while (iter.hasNext()) {
 			column = 1;
 			member = (SchoolClassMember) iter.next();
@@ -171,15 +194,27 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 
 			} catch (FinderException e) {
 			
-			}	
+			}
+			
+			// Fix link, when a classmember is not related to any contract, it can be deleted
 			if(contract==null){
 				Link removeLink = new Link(getDeleteIcon(localize("child_care.tooltip.removed_noncontract_placement","Remove noncontract placement")));
 				removeLink.addParameter(PRM_RM_CLASS_MEMBER_ID,member.getPrimaryKey().toString());
 				table.add(removeLink,column++,row);
 			}
-			
+			// Fix link , when old classmember's removed_date has not been set
+			if(previousMember!=null && member.getRemovedDate()==null){
+			    IWTimestamp removedDate = new IWTimestamp(previousMember.getRegisterDate());
+			    removedDate.addDays(-1);
+			    java.text.DateFormat df = java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT,iwc.getCurrentLocale());
+			    Link updateLink = new Link(getEditIcon(localize("child_care.tooltip.update_placement_removeddate","Update removed date to one day before next startdate")+" ("+df.format(removedDate.getDate()) +")"));
+			    updateLink.addParameter(PRM_UPD_RM_DATE,removedDate.toString());
+			    updateLink.addParameter(PRM_UPD_CLASS_MEMBER_ID,member.getPrimaryKey().toString());
+			    table.add(updateLink,column++,row);
+			}
 				
 			row++;
+			previousMember = member;
 			
 		}
 		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
