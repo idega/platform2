@@ -1,5 +1,5 @@
 /*
- * $Id: MainPage.java,v 1.1 2001/08/23 13:50:46 aron Exp $
+ * $Id: MainPage.java,v 1.2 2001/08/27 08:28:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import com.idega.jmodule.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.data.*;
+import com.idega.idegaweb.IWBundle;
 
 
 /**
@@ -38,12 +39,18 @@ public class MainPage extends Page{
   private String sAlignment = "center";
   private Image Face = new Image("/pics/template/face.gif");
   private Image BottomLogo = new Image("/pics/template/bottomlogo.gif");
+  protected IWBundle iwb;
+  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus";
 
   public  MainPage(){
     super();
     content = new Table(1,4);
-     initContent();
+    initContent();
     super.add(content);
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 
   public void setBorder(int iBorder){

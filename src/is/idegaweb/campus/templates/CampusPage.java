@@ -1,5 +1,5 @@
 /*
- * $Id: CampusPage.java,v 1.3 2001/08/24 10:30:42 laddi Exp $
+ * $Id: CampusPage.java,v 1.4 2001/08/27 08:28:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,8 @@ import com.idega.jmodule.object.textObject.Link;
 import is.idegaweb.campus.service.Menu;
 import is.idegaweb.campus.service.Title;
 import is.idegaweb.campus.service.Tabber;
+import com.idega.idegaweb.IWBundle;
+
 
 
 /**
@@ -28,9 +30,22 @@ import is.idegaweb.campus.service.Tabber;
  */
 public class CampusPage extends MainPage{
 
+  protected IWBundle iwb;
+  private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus";
+
+
   public CampusPage(){
     super();
   }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
+  public void main(ModuleInfo modinfo){
+    iwb = getBundle(modinfo);
+  }
+
 
   public void Content(){
     setAllMargins(0);

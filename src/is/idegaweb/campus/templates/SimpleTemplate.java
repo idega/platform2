@@ -1,5 +1,5 @@
 /*
- * $Id: SimpleTemplate.java,v 1.1 2001/08/13 10:14:23 aron Exp $
+ * $Id: SimpleTemplate.java,v 1.2 2001/08/27 08:28:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,10 +28,7 @@ public abstract class SimpleTemplate extends JSPModule implements JspPage{
 
   private Table content,MainTable,HeaderTable;
 
-  private int BORDER = 0;
-  private Image Header = new Image("/pics/template/headerblack.gif");
-  private Image Tiler = new Image("/pics/template/hbtiler.gif");
-  private String sAlignment = "center";
+
 
   public void initializePage(){
     super.initializePage();
