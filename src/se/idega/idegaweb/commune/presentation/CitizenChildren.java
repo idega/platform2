@@ -28,6 +28,8 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.Age;
+import com.idega.util.StringHandler;
+import com.idega.util.text.TextSoap;
 
 /**
  * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
@@ -178,6 +180,7 @@ public class CitizenChildren extends CommuneBlock {
 	private User processSSNRequest(IWContext iwc) throws javax.ejb.FinderException, java.rmi.RemoteException {
 		String ssn = iwc.getParameter(prmChildSSN);
 		if (ssn != null && !ssn.equals("")) {
+			ssn = handlePersonalID(ssn);
 			UserHome userHome = (UserHome) IDOLookup.getHome(User.class);
 			User child = userHome.findByPersonalID(ssn);
 			if (child != null) {
@@ -185,6 +188,19 @@ public class CitizenChildren extends CommuneBlock {
 			}
 		}
 		throw new javax.ejb.FinderException("No user with that ssn");
+	}
+	
+	private String handlePersonalID(String s){
+		StringBuffer sb = new StringBuffer();
+
+		for (int i=0; i<s.length(); i++) {
+  			 if (Character.isDigit(s.charAt(i)))
+       			sb.append(s.charAt(i));
+		}
+		sb.insert(0,"%");
+		//System.err.println("changing "+s+" to "+sb.toString());
+		return sb.toString();
+	
 	}
 
 	private Collection getChilds(IWContext iwc, User user) throws RemoteException {
