@@ -539,12 +539,12 @@
 					</textElement>
 				<text>Alls</text>
 				</staticText>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Group" evaluationGroup="league_group"  hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Group" evaluationGroup="league_group"  hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="1"
+						x="0"
 						y="0"
-						width="116"
-						height="11"
+						width="218"
+						height="13"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						positionType="Float"
@@ -827,3 +827,4 @@
 			</band>
 		</summary>
 </jasperReport>
+

@@ -74,7 +74,7 @@
 						mode="Transparent"
 						x="131"
 						y="2"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -92,7 +92,7 @@
 						mode="Transparent"
 						x="179"
 						y="2"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -110,7 +110,7 @@
 						mode="Transparent"
 						x="275"
 						y="2"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -128,7 +128,7 @@
 						mode="Transparent"
 						x="227"
 						y="2"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -146,7 +146,7 @@
 						mode="Transparent"
 						x="371"
 						y="2"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -164,7 +164,7 @@
 						mode="Transparent"
 						x="323"
 						y="2"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -180,27 +180,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="467"
+						x="420"
 						y="2"
-						width="45"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
-						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.Integer">$V{bothGendersLastYearSum}</textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="419"
-						y="2"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -411,7 +393,7 @@
 				<rectangle>
 					<reportElement
 						mode="Opaque"
-						x="1"
+						x="3"
 						y="15"
 						width="554"
 						height="16"
@@ -446,7 +428,7 @@
 						mode="Transparent"
 						x="227"
 						y="15"
-						width="45"
+						width="47"
 						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -464,7 +446,7 @@
 						mode="Transparent"
 						x="131"
 						y="15"
-						width="45"
+						width="47"
 						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -482,7 +464,7 @@
 						mode="Transparent"
 						x="179"
 						y="15"
-						width="45"
+						width="47"
 						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -500,7 +482,7 @@
 						mode="Transparent"
 						x="275"
 						y="15"
-						width="45"
+						width="47"
 						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -518,7 +500,7 @@
 						mode="Transparent"
 						x="323"
 						y="15"
-						width="45"
+						width="47"
 						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -536,7 +518,7 @@
 						mode="Transparent"
 						x="371"
 						y="15"
-						width="45"
+						width="47"
 						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -552,9 +534,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="419"
+						x="420"
 						y="15"
-						width="45"
+						width="47"
 						height="20"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -567,24 +549,6 @@
 						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String">$P{bothGendersAllAge}</textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="467"
-						y="15"
-						width="45"
-						height="20"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
-						<font fontName="Helvetica" pdfFontName="Helvetica-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.String">$P{bothGendersLastYear}</textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Group" evaluationGroup="regionalUnionGroup"  hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -630,7 +594,7 @@
 						mode="Transparent"
 						x="227"
 						y="0"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -648,7 +612,7 @@
 						mode="Transparent"
 						x="275"
 						y="0"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -666,7 +630,7 @@
 						mode="Transparent"
 						x="323"
 						y="0"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -684,7 +648,7 @@
 						mode="Transparent"
 						x="371"
 						y="0"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -700,9 +664,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="419"
+						x="420"
 						y="0"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -718,27 +682,9 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="467"
-						y="0"
-						width="45"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Right" verticalAlignment="Top" lineSpacing="Single">
-						<font fontName="Helvetica" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.Integer">$F{bothGendersLastYear}</textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
 						x="131"
 						y="0"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -756,7 +702,7 @@
 						mode="Transparent"
 						x="179"
 						y="0"
-						width="45"
+						width="47"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"

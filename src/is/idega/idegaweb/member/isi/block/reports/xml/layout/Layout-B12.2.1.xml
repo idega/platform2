@@ -46,11 +46,11 @@
 			</band>
 			</groupHeader>
 			<groupFooter>
-			<band height="18">
+			<band height="20">
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="304"
-						y="2"
+						y="3"
 						width="55"
 						height="15"
 						forecolor="#000000"
@@ -68,7 +68,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="173"
-						y="2"
+						y="3"
 						width="60"
 						height="15"
 						forecolor="#000000"
@@ -86,7 +86,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="239"
-						y="2"
+						y="3"
 						width="60"
 						height="15"
 						forecolor="#000000"
@@ -105,7 +105,7 @@
 					<reportElement
 						mode="Transparent"
 						x="91"
-						y="2"
+						y="3"
 						width="80"
 						height="15"
 						forecolor="#000000"
@@ -120,6 +120,22 @@
 					</textElement>
 				<text>Samtals</text>
 				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="1"
+						width="554"
+						height="0"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Dotted" fill="Solid" />
+				</line>
 			</band>
 			</groupFooter>
 		</group>
@@ -472,7 +488,7 @@
 					<reportElement
 						mode="Opaque"
 						x="1"
-						y="0"
+						y="1"
 						width="554"
 						height="15"
 						forecolor="#000000"

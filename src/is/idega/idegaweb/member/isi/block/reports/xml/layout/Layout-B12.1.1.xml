@@ -649,12 +649,12 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String">$P{comparing_year}</textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Group" evaluationGroup="league_group"  hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Group" evaluationGroup="league_group"  hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="0"
 						y="0"
-						width="116"
-						height="11"
+						width="168"
+						height="13"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						positionType="Float"
@@ -955,3 +955,4 @@
 			</band>
 		</summary>
 </jasperReport>
+
