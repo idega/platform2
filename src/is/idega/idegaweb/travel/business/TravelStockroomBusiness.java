@@ -186,16 +186,16 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       int serviceId = createService(supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
 
       Service service = new Service(serviceId);
-      Tour tour = new Tour();
-        tour.setID(serviceId);
+      Trip trip = new Trip();
+        trip.setID(serviceId);
 
       if(hotePickupPlaceIds.length > 0){
         for (int i = 0; i < hotePickupPlaceIds.length; i++) {
           service.addTo(HotelPickupPlace.class, hotePickupPlaceIds[i]);
         }
-        tour.setHotelPickup(true);
+        trip.setHotelPickup(true);
       }else{
-        tour.setHotelPickup(false);
+        trip.setHotelPickup(false);
       }
 
 
