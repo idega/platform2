@@ -41,11 +41,11 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/24 07:45:07 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/24 10:36:49 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -100,6 +100,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String OWN_POSTING_KEY = PREFIX + "own_posting";
     private static final String PAYMENT_HEADER_DEFAULT = "Utbetalning";
     private static final String PAYMENT_HEADER_KEY = PREFIX + "payment_header";
+    private static final String PAYMENT_RECORD_DEFAULT = "Utbetalningspost";
     private static final String PAYMENT_RECORD_KEY = PREFIX + "payment_record";
     private static final String PAYMENT_TEXT_KEY = PREFIX + "payment_text";
     private static final String PERIOD_DEFAULT = "Period";
@@ -198,9 +199,54 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         renderRecordDetailsOrForm (context, new java.util.HashMap ());
     }
     
+    private void addSmallText (final java.util.Map map, final String key,
+                               final String value) {
+        map.put (key, getSmallText (null != value && !value.equals (null + "")
+                                    ? value : ""));
+    }
+
+    private void addSmallText (final java.util.Map map, final String key,
+                               final long value) {
+        map.put (key, getSmallText (-1 != value ? value + "" : "0"));
+    }
+
+    private void addSmallText (final java.util.Map map, final String key,
+                               final Date date) {
+        map.put (key, getSmallText (null != date ? dateFormatter.format (date)
+                                    : ""));
+    }
+
+    private void addSmallPeriodText (final java.util.Map map, final String key,
+                                     final Date date) {
+        map.put (key, getSmallText (null != date ? periodFormatter.format (date)
+                                    : ""));
+    }
+
     private void showRecord (final IWContext context) 
         throws RemoteException, FinderException {
-        renderRecordDetailsOrForm (context, new java.util.HashMap ());
+        final PaymentRecord record = getPaymentRecord (context);
+        final java.util.Map map = new java.util.HashMap ();
+        addSmallText (map, ADJUSTED_SIGNATURE_KEY, record.getChangedBy ());
+        addSmallText (map, AMOUNT_KEY, (long) record.getTotalAmount ());
+        addSmallText (map, CREATED_SIGNATURE_KEY, record.getCreatedBy ());
+        addSmallText (map, DATE_ADJUSTED_KEY, record.getDateChanged ());
+        addSmallText (map, DATE_CREATED_KEY, record.getDateCreated ());
+        addSmallText (map, DOUBLE_POSTING_KEY, record.getDoublePosting ());
+        //MANAGEMENT_TYPE_KEY
+        addSmallText (map, NOTE_KEY, record.getNotes ());
+        addSmallText (map, OWN_POSTING_KEY, record.getOwnPosting ());
+        addSmallText (map, PAYMENT_TEXT_KEY, record.getPaymentText ());
+        addSmallPeriodText (map, PERIOD_KEY, record.getPeriod ());
+        addSmallText (map, PIECE_AMOUNT_KEY, (long) record.getPieceAmount ());
+        addSmallText (map, NUMBER_OF_PLACEMENTS_KEY, record.getPlacements ());
+        //PROVIDER_KEY
+        addSmallText (map, STATUS_KEY, record.getStatus () + "");
+        addSmallText (map, TRANSACTION_DATE_KEY, record.getDateTransaction ());
+        addSmallText (map, VAT_AMOUNT_KEY, (long) record.getTotalAmountVAT ());
+        //VAT_RULE_KEY public int getVATType();
+        map.put (HEADER_KEY, getSmallHeader
+                 (localize (PAYMENT_RECORD_KEY, PAYMENT_RECORD_DEFAULT)));
+        renderRecordDetailsOrForm (context, map);
     }
     
     private void showRecordDetails (final IWContext context)
@@ -675,6 +721,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         //--verksamhet
         //--skolår/timmar
         //--grupp
+        //-- public java.lang.String PaymentRecord.getRuleSpecType();
 
         addSmallHeader (table, col++, row, VAT_RULE_KEY, VAT_RULE_DEFAULT, ":");
         table.mergeCells (col, row, table.getColumns (), row);
@@ -704,9 +751,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         form.add (table);
         final Table outerTable = createTable (1);
         outerTable.add (form, 1, 1);
-        add (createMainTable ("rubrik", outerTable));
-        //        add (createMainTable (presentationObjects.get (HEADER_KEY).toString (),
-        //                    outerTable));
+        add (createMainTable (presentationObjects.get (HEADER_KEY) + "",
+                              outerTable));
     }
 
     private void addPresentation
@@ -943,15 +989,17 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 
     private void logUnexpectedException (final IWContext context,
                                          final Exception exception) {
-        logWarning ("Exception caught in " + getClass ().getName ()
-                            + " " + (new java.util.Date ()));
-        logWarning ("Parameters:");
+        final StringBuffer message = new StringBuffer ();
+        message.append ("Exception caught in " + getClass ().getName ()
+                        + " " + (new java.util.Date ()));
+        message.append ("Parameters:");
         final java.util.Enumeration enum = context.getParameterNames ();
         while (enum.hasMoreElements ()) {
             final String key = (String) enum.nextElement ();
-            logWarning ('\t' + key + "='"
-                                + context.getParameter (key) + "'");
+            message.append ('\t' + key + "='"
+                            + context.getParameter (key) + "'");
         }
+        logWarning (message.toString ());
         log (exception);
         add ("Det inträffade ett fel. Försök igen senare.");
     }
