@@ -122,12 +122,18 @@ public class CitizenBMPBean extends UserBMPBean implements Citizen {
 			query.append(currentDate);
 			query.appendRightParenthesis();
 			
+			/*
 			//order by usr.last_name, usr.first_name, usr.middle_name
 			String[] order = new String[3];
 			order[0] = variables[0]+"."+usrDef.findFieldByUniqueName(User.FIELD_LAST_NAME).getSQLFieldName();
 			order[1] = variables[0]+"."+usrDef.findFieldByUniqueName(User.FIELD_MIDDLE_NAME).getSQLFieldName();
 			order[2] = variables[0]+"."+usrDef.findFieldByUniqueName(User.FIELD_MIDDLE_NAME).getSQLFieldName();
 			query.appendOrderBy(order); 
+			*/
+			
+			//orderby personal_id	
+			query.appendOrderBy(variables[0]+"."+usrDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID).getSQLFieldName()); 
+
 			  	
 			  	
 			System.out.println("SQL -> "+this.getClass()+":"+query);
