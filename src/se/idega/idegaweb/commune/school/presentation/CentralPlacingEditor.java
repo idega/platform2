@@ -14,6 +14,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.resource.business.ResourceBusiness;
 import se.idega.idegaweb.commune.accounting.resource.data.Resource;
@@ -144,7 +145,7 @@ public class CentralPlacingEditor extends CommuneBlock {
   private int _presentation = -1;
   
   	public void main(IWContext iwc) throws Exception {
-	  	setResourceBundle(getResourceBundle(iwc));
+	  	//setResourceBundle(getResourceBundle(iwc));
 	  	mainTable = new Table();
 	  	parse(iwc);
 	  
