@@ -96,6 +96,8 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     FIELD_LIST.add(FAX);
     FIELD_LIST.add(EMAIL);
   }
+  
+  private boolean editable = true;
     
   public WorkReportDivisionBoardEditor() {
     super();
@@ -216,7 +218,10 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     WorkReport workReport = null;
     try {
-      workReport = workReportBusiness.getWorkReportById(getWorkReportId()); 
+      int workReportId = getWorkReportId();
+      workReport = workReportBusiness.getWorkReportById(workReportId); 
+      // should the data be editable?
+      editable = ! workReportBusiness.isWorkReportReadOnly(workReportId);
     }
     catch (RemoteException ex) {
       String message =
@@ -225,6 +230,8 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       ex.printStackTrace(System.err);
       throw new RuntimeException(message);
     }
+    // should the data be editable?
+    editable = workReport.isSent();
     try {
       // create data from the database
       workReportBusiness.createWorkReportData(getWorkReportId());
@@ -306,23 +313,26 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     // put browser into a table
     Table mainTable = new Table(1,2);
     mainTable.add(browser, 1,1);
-    PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
-      getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
-    PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
-    PresentationObject cancelButton = getCancelButton(resourceBundle);
-    Table buttonTable = new Table(4,1);
-    buttonTable.add(newEntryButton,1,1);
-    buttonTable.add(deleteEntriesButton,2,1);
-    buttonTable.add(cancelButton, 3,1);
-    if (! workReport.isBoardPartDone()) {
-      buttonTable.add(getFinishButton(resourceBundle), 4, 1);
+    // do not show the buttons if not editable
+    if (editable) {
+      PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
+        getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
+      PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
+      PresentationObject cancelButton = getCancelButton(resourceBundle);
+      Table buttonTable = new Table(4,1);
+      buttonTable.add(newEntryButton,1,1);
+      buttonTable.add(deleteEntriesButton,2,1);
+      buttonTable.add(cancelButton, 3,1);
+      if (! workReport.isBoardPartDone()) {
+        buttonTable.add(getFinishButton(resourceBundle), 4, 1);
+      }
+      else {
+        Text text = new Text(resourceBundle.getLocalizedString("wr_account_editor_account_part_finished", "Account part is finished."));
+        text.setBold();
+        buttonTable.add(text, 4,1);
+      }
+      mainTable.add(buttonTable,1,2);
     }
-    else {
-      Text text = new Text(resourceBundle.getLocalizedString("wr_account_editor_account_part_finished", "Account part is finished."));
-      text.setBold();
-      buttonTable.add(text, 4,1);
-    }
-    mainTable.add(buttonTable,1,2);
     return mainTable;    
   }
   
@@ -366,9 +376,13 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
     TextEditorConverter textEditorConverter = new TextEditorConverter(form);
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
-    EntityToPresentationObjectConverter leagueDropDownMenuConverter = getConverterForLeague(resourceBundle, form);
-    EntityToPresentationObjectConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
-    
+    DropDownMenuConverter leagueDropDownMenuConverter = getConverterForLeague(resourceBundle, form);
+    DropDownMenuConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
+    // define if the converters should be editable or not
+    checkBoxConverter.setEditable(editable);
+    textEditorConverter.setEditable(editable);
+    leagueDropDownMenuConverter.setEditable(editable);
+    dropDownPostalCodeConverter.setEditable(editable);
     // define path short keys and map corresponding converters
     Object[] columns = {
       "okay", new EditOkayButtonConverter(),
@@ -402,7 +416,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   /**
    * Converter for league column 
    */
-  private EntityToPresentationObjectConverter getConverterForLeague(final IWResourceBundle resourceBundle, Form form) {
+  private DropDownMenuConverter getConverterForLeague(final IWResourceBundle resourceBundle, Form form) {
     DropDownMenuConverter converter = new DropDownMenuConverter(form) {
       protected Object getValue(
         Object entity,
@@ -452,7 +466,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   /**
    * converter for postal code column
    */
-  private EntityToPresentationObjectConverter getConverterForPostalCode(Form form) {
+  private DropDownMenuConverter getConverterForPostalCode(Form form) {
     DropDownPostalCodeConverter dropDownPostalCodeConverter = new DropDownPostalCodeConverter(form);
     dropDownPostalCodeConverter.setCountry("Iceland");
     dropDownPostalCodeConverter.maintainParameters(getParametersToMaintain());

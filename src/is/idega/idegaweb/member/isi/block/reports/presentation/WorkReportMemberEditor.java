@@ -93,6 +93,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   
   private boolean personalIdnotCorrect = false;
   private boolean memberAlreadyExist = false;
+  private boolean editable = true;
   
   // key: member id, value: collection of league names, to that the member belongs
   private Map memberLeaguesMap = null;
@@ -280,7 +281,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     try {
       // create data from the database
-      workReportBusiness.createWorkReportData(getWorkReportId());
+      int workReportId = getWorkReportId();
+      workReportBusiness.createWorkReportData(workReportId);
+      editable = ! workReportBusiness.isWorkReportReadOnly(workReportId);
     } catch (RemoteException ex) {
       System.err.println(
         "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
@@ -358,26 +361,26 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     // put browser into a table
     Table mainTable = new Table(1,2);
     mainTable.add(browser, 1,1);
-    PresentationObject inputField = getPersonalIdInputField(resourceBundle);
-    PresentationObject newEntryButton = getCreateNewEntityButton(resourceBundle);
-    PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
-    PresentationObject cancelButton = getCancelButton(resourceBundle, iwc);
-    Table buttonTable = new Table(5,1);
-    buttonTable.add(inputField,1,1);
-    buttonTable.add(newEntryButton,2,1);
-    buttonTable.add(deleteEntriesButton,3,1);
-    buttonTable.add(cancelButton, 4,1);
-    if (! workReport.isMembersPartDone()) {
-      buttonTable.add(getFinishButton(resourceBundle), 5, 1);
+    if (editable) {
+      PresentationObject inputField = getPersonalIdInputField(resourceBundle);
+      PresentationObject newEntryButton = getCreateNewEntityButton(resourceBundle);
+      PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
+      PresentationObject cancelButton = getCancelButton(resourceBundle, iwc);
+      Table buttonTable = new Table(5,1);
+      buttonTable.add(inputField,1,1);
+      buttonTable.add(newEntryButton,2,1);
+      buttonTable.add(deleteEntriesButton,3,1);
+      buttonTable.add(cancelButton, 4,1);
+      if (! workReport.isMembersPartDone()) {
+        buttonTable.add(getFinishButton(resourceBundle), 5, 1);
+      }
+      else {
+        Text text = new Text(resourceBundle.getLocalizedString("wr_member_editor_member_part_finished", "Member part is finished."));
+        text.setBold();
+        buttonTable.add(text, 5 , 1);
+      }
+      mainTable.add(buttonTable,1,2);
     }
-    else {
-      Text text = new Text(resourceBundle.getLocalizedString("wr_member_editor_member_part_finished", "Member part is finished."));
-      text.setBold();
-      buttonTable.add(text, 5 , 1);
-    }
-    
-
-    mainTable.add(buttonTable,1,2);
     return mainTable;    
   }
   
@@ -437,8 +440,12 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     socialSecurityNumberEditorConverter.setAsIcelandicSocialSecurityNumber(message);
     socialSecurityNumberEditorConverter.maintainParameters(this.getParametersToMaintain());
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
-    EntityToPresentationObjectConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
-    
+    DropDownMenuConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
+    // define if the converters should be editable
+    checkBoxConverter.setEditable(editable);
+    textEditorConverter.setEditable(editable);
+    socialSecurityNumberEditorConverter.setEditable(editable);
+    dropDownPostalCodeConverter.setEditable(editable);    
     // define path short keys and map corresponding converters
     // if a converter is "null" the default converter of the entity browser is used
     Object[] columns = {
@@ -477,6 +484,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     while (iterator.hasNext())  {
       String leagueName = (String) iterator.next();
      WorkReportCheckBoxConverter converter = new WorkReportCheckBoxConverter(leagueName);
+     converter.setEditable(editable);
       converter.maintainParameters(getParametersToMaintain());
       browser.setMandatoryColumn(i++, leagueName);
       browser.setEntityToPresentationConverter(leagueName, converter);
@@ -497,7 +505,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   /**
    * converter for postal code column
    */
-  private EntityToPresentationObjectConverter getConverterForPostalCode(Form form) {
+  private DropDownMenuConverter getConverterForPostalCode(Form form) {
     DropDownPostalCodeConverter dropDownPostalCodeConverter = new DropDownPostalCodeConverter(form);
     dropDownPostalCodeConverter.setCountry("Iceland");
     dropDownPostalCodeConverter.maintainParameters(getParametersToMaintain());
@@ -768,6 +776,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       }
       else {
         text = "_";
+      }
+      if (! editable) {
+        return new Text(text);
       }
       Link link = new Link(text);
       link.addParameter(ConverterConstants.EDIT_ENTITY_KEY, id.toString());

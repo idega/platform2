@@ -86,6 +86,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   
   private List specialFieldList;
   
+  private boolean editable = true;
+  
   { 
     specialFieldList = new ArrayList();
     
@@ -377,6 +379,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     // get work report 
     try {
       workReport = workReportBusiness.getWorkReportById(workReportId);
+      editable = ! workReportBusiness.isWorkReportReadOnly(workReportId);
     }
     catch (RemoteException ex) {
       String message =
@@ -435,25 +438,27 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     // put browser into a table
     Table mainTable = new Table(1,2);
     mainTable.add(browser, 1,1);
-    // add buttons
-//    PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
-//      getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
-//    PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
-    PresentationObject cancelButton = getCancelButton(resourceBundle);
-    // add buttons
-    Table buttonTable = new Table(2,1);
-//    buttonTable.add(newEntryButton,1,1);
-//    buttonTable.add(deleteEntriesButton,2,1);
-    buttonTable.add(cancelButton, 1,1);
-    if (! workReport.isAccountPartDone()) {
-      buttonTable.add(getFinishButton(resourceBundle), 2, 1);
+    if (editable) {
+      // add buttons
+//      PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
+//        getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
+//      PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
+      PresentationObject cancelButton = getCancelButton(resourceBundle);
+      // add buttons
+      Table buttonTable = new Table(2,1);
+//      buttonTable.add(newEntryButton,1,1);
+//      buttonTable.add(deleteEntriesButton,2,1);
+      buttonTable.add(cancelButton, 1,1);
+      if (! workReport.isAccountPartDone()) {
+        buttonTable.add(getFinishButton(resourceBundle), 2, 1);
+      }
+      else {
+        Text text = new Text(resourceBundle.getLocalizedString("wr_account_editor_account_part_finished", "Account part is finished."));
+        text.setBold();
+        buttonTable.add(text, 2 , 1);
+      }
+      mainTable.add(buttonTable,1,2);
     }
-    else {
-      Text text = new Text(resourceBundle.getLocalizedString("wr_account_editor_account_part_finished", "Account part is finished."));
-      text.setBold();
-      buttonTable.add(text, 2 , 1);
-    }
-    mainTable.add(buttonTable,1,2);
     return mainTable;
   }
   
@@ -529,6 +534,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     WorkReportAccountInputConverter textEditorConverter = new WorkReportAccountInputConverter(form, resourceBundle);
     EntityToPresentationObjectConverter textConverter = new WorkReportAccountTextConverter();
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
+    // define if converters should be editable
+    checkBoxConverter.setEditable(editable);
+    textEditorConverter.setEditable(editable);
+    // textConverter does not offer any input fields
     // define path short keys and map corresponding converters
     int i = 1;
     Iterator fieldListIterator = fieldList.iterator();
