@@ -490,9 +490,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
     browser.setMandatoryColumn(i++, OKAY_BUTTON);
     browser.setEntityToPresentationConverter(OKAY_BUTTON, okayConverter);
-    browser.setCellpadding(6);
+    browser.setCellpadding(1);
     browser.setCellspacing(0);
-    browser.setBorder(2);
+    browser.setBorder(1);
     browser.setColorForEvenRows("#EFEFEF");
     browser.setColorForOddRows("#FFFFFF");
     browser.setColorForHeader("#DFDFDF");
