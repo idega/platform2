@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.6 2002/07/29 23:28:32 tryggvil Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.7 2002/08/13 12:26:26 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -38,6 +38,8 @@ import javax.ejb.FinderException;
  * @version 1.0
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness,AccountBusiness {
+	private boolean acceptApplicationOnCreation=true;
+	
 	public boolean insertApplication(User user, String pid, String email, String phoneHome, String phoneWork) {
 		try {
 			CitizenAccount application = ((CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class)).create();
@@ -52,6 +54,11 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			application.setCaseStatus(getCaseStatusOpen());
 
 			application.store();
+			
+			int applicationID=((Integer)application.getPrimaryKey()).intValue();
+			if(acceptApplicationOnCreation){
+				acceptApplication(applicationID,user);
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
