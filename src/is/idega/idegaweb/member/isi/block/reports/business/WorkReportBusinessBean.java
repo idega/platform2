@@ -4,8 +4,6 @@ import is.idega.idegaweb.member.business.MemberUserBusinessBean;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKey;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKeyHome;
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMemberHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecord;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecordHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubMember;
@@ -29,6 +27,7 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import javax.transaction.UserTransaction;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -66,7 +65,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	private WorkReportAccountKeyHome workReportAccountKeyHome;
 	private WorkReportHome workReportHome;
 	private WorkReportClubMemberHome workReportClubMemberHome;
-	private WorkReportBoardMemberHome workReportBoardMemberHome;
 	
 	private static final short COLUMN_MEMBER_NAME = 0;
 	private static final short COLUMN_MEMBER_SSN = 1;
@@ -143,17 +141,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return workReportClubMemberHome;
 	}
 	
-	public WorkReportBoardMemberHome getWorkReportBoardMemberHome(){
-		if(workReportBoardMemberHome==null){
-			try{
-				workReportBoardMemberHome = (WorkReportBoardMemberHome) IDOLookup.getHome(WorkReportBoardMember.class);
-			}
-			catch(RemoteException rme){
-				throw new RuntimeException(rme.getMessage());
-			}
-		}
-		return workReportBoardMemberHome;
-	}
 	
 	public WorkReportGroupHome getWorkReportGroupHome(){
 		if(workReportGroupHome==null){
@@ -256,15 +243,17 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return excel;
 	}
 	
-	public boolean importMemberPart(int workReportFileId, int workReportId){
+	public boolean importMemberPart(int workReportFileId, int workReportId) throws WorkReportImportException{
 		
 			System.out.println("Starting member importing from excel file...");
-			
+		
+		//clear the table first
 			deleteWorkReportClubMembersForReport(workReportId);
 		
 			WorkReportClubMemberHome membHome = getWorkReportClubMemberHome();
 			WorkReport report = getWorkReportById(workReportId);
 			int year = report.getYearOfReport().intValue();
+			//update or create the league groups so we can connect the users to them
 			createOrUpdateLeagueWorkReportGroupsForYear(year);
 		
 			report.setMemberFileId(workReportFileId);
@@ -370,123 +359,125 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			return true;
 	}
 	
-	public boolean importBoardPart(int workReportFileId, int workReportId){
+	public boolean importBoardPart(int workReportFileId, int workReportId) throws WorkReportImportException{
 		
-				System.out.println("Starting member importing from excel file...");
-			
-				deleteWorkReportClubMembersForReport(workReportId);
+		UserTransaction transaction;
 		
-				WorkReportClubMemberHome membHome = getWorkReportClubMemberHome();
-				WorkReport report = getWorkReportById(workReportId);
-				int year = report.getYearOfReport().intValue();
-				createOrUpdateLeagueWorkReportGroupsForYear(year);
-				
-				report.setMemberFileId(workReportFileId);
-				report.store();
+			System.out.println("Starting member importing from excel file...");
+		
+			deleteWorkReportClubMembersForReport(workReportId);
+	
+			WorkReportClubMemberHome membHome = getWorkReportClubMemberHome();
+			WorkReport report = getWorkReportById(workReportId);
+			int year = report.getYearOfReport().intValue();
+			createOrUpdateLeagueWorkReportGroupsForYear(year);
 			
+			report.setMemberFileId(workReportFileId);
+			report.store();
+		
 
+	
+			HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
 		
-				HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
+			HSSFSheet members = excel.getSheetAt(SHEET_MEMBER_PART);
+			int firstRow = 4;
+			int lastRow = members.getLastRowNum();
+		
+			System.out.println("First row is at: "+firstRow);
+			System.out.println("Last row is at: "+lastRow);
+		
+			//get the top row to get a list of leagues to use.
+			HSSFRow headerRow = (HSSFRow) members.getRow(firstRow);
+			Map leaguesMap = getLeaguesMapFromRow(headerRow,year);
+		
+		
+			//iterate through the rows that contain the actual data and create the records in the database
+			for (int i = (firstRow+1); i <= lastRow; i++) {
+				HSSFRow row = (HSSFRow) members.getRow(i);
 			
-				HSSFSheet members = excel.getSheetAt(SHEET_MEMBER_PART);
-				int firstRow = 4;
-				int lastRow = members.getLastRowNum();
-			
-				System.out.println("First row is at: "+firstRow);
-				System.out.println("Last row is at: "+lastRow);
-			
-				//get the top row to get a list of leagues to use.
-				HSSFRow headerRow = (HSSFRow) members.getRow(firstRow);
-				Map leaguesMap = getLeaguesMapFromRow(headerRow,year);
-			
-			
-				//iterate through the rows that contain the actual data and create the records in the database
-				for (int i = (firstRow+1); i <= lastRow; i++) {
-					HSSFRow row = (HSSFRow) members.getRow(i);
+				if(row!=null){
+					int firstCell = row.getFirstCellNum();
+					int lastCell = row.getLastCellNum();
 				
-					if(row!=null){
-						int firstCell = row.getFirstCellNum();
-						int lastCell = row.getLastCellNum();
-					
-						String name = row.getCell(COLUMN_MEMBER_NAME).getStringCellValue();
-						String ssn = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_SSN);
-						ssn = (ssn.length()<10)? "0"+ssn : ssn;
-						String streetName = row.getCell(COLUMN_MEMBER_STREET_NAME).getStringCellValue();
-						String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_POSTAL_CODE);
-						String boardMember = row.getCell(COLUMN_BOARD_MEMBER).getStringCellValue();
+					String name = row.getCell(COLUMN_MEMBER_NAME).getStringCellValue();
+					String ssn = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_SSN);
+					ssn = (ssn.length()<10)? "0"+ssn : ssn;
+					String streetName = row.getCell(COLUMN_MEMBER_STREET_NAME).getStringCellValue();
+					String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_MEMBER_POSTAL_CODE);
+					String boardMember = row.getCell(COLUMN_BOARD_MEMBER).getStringCellValue();
+				
+					try {
+						User user = this.getUser(ssn);
+
 					
 						try {
-							User user = this.getUser(ssn);
-
+							membHome.findClubMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
+						}
+						catch (FinderException e4) {
+						//this should happen, we don't want them created twice	
+					
+							WorkReportClubMember member = membHome.create();
+							member.setReportId(workReportId);
+							member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
+							member.setName(name);
+							member.setAsBoardMember( (boardMember!=null && "X".equals(boardMember.toUpperCase())) );
+							member.setPersonalId(ssn);
+							member.setStreetName(streetName);
+							//member.setAge();
+							//member.setDateOfBirth();
 						
 							try {
-								membHome.findClubMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
+								PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
+								member.setPostalCode(postal);
 							}
-							catch (FinderException e4) {
-							//this should happen, we don't want them created twice	
+							catch (FinderException e3) {
+								//e3.printStackTrace();
+							} catch (RemoteException e) {
+								e.printStackTrace();
+							}
 						
-								WorkReportClubMember member = membHome.create();
-								member.setReportId(workReportId);
-								member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
-								member.setName(name);
-								member.setAsBoardMember( (boardMember!=null && "X".equals(boardMember.toUpperCase())) );
-								member.setPersonalId(ssn);
-								member.setStreetName(streetName);
-								//member.setAge();
-								//member.setDateOfBirth();
+							member.store();
+						
+							//find which leagues the member belongs to
+							//and create the many to many connections
+							for (int j = 5; j <  lastCell ; j++) {
+								HSSFCell leagueCell = row.getCell((short)j);
 							
-								try {
-									PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode,((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
-									member.setPostalCode(postal);
-								}
-								catch (FinderException e3) {
-									//e3.printStackTrace();
-								} catch (RemoteException e) {
-									e.printStackTrace();
-								}
-							
-								member.store();
-							
-								//find which leagues the member belongs to
-								//and create the many to many connections
-								for (int j = 5; j <  lastCell ; j++) {
-									HSSFCell leagueCell = row.getCell((short)j);
-								
-									if(leagueCell !=null){
-										WorkReportGroup league = (WorkReportGroup) leaguesMap.get(leagueCell.getStringCellValue());
-										if(league!=null){
-											try {
-												league.addMember(member);
-											}
-											catch (IDOAddRelationshipException e5) {
-												e5.printStackTrace();
-											}
+								if(leagueCell !=null){
+									WorkReportGroup league = (WorkReportGroup) leaguesMap.get(leagueCell.getStringCellValue());
+									if(league!=null){
+										try {
+											league.addMember(member);
+										}
+										catch (IDOAddRelationshipException e5) {
+											e5.printStackTrace();
 										}
 									}
-								
 								}
+							
 							}
 						}
-						catch (EJBException e1) {
-							e1.printStackTrace();
-						}
-						catch (CreateException e2) {
-							//failed to create move on.
-							e2.printStackTrace();
-							System.err.println("Failed to create user for ssn : "+ssn);
-						} 
-						catch (FinderException e) {
-							System.err.println("User not found for ssn : "+ssn);
-						}
+					}
+					catch (EJBException e1) {
+						e1.printStackTrace();
+					}
+					catch (CreateException e2) {
+						//failed to create move on.
+						e2.printStackTrace();
+						System.err.println("Failed to create user for ssn : "+ssn);
+					} 
+					catch (FinderException e) {
+						System.err.println("User not found for ssn : "+ssn);
 					}
 				}
-					
-				return true;
+			}
+				
+			return true;
 		}
 		
 		
 	
-	public boolean importAccountPart(int workReportFileId, int workReportId){
+	public boolean importAccountPart(int workReportFileId, int workReportId) throws WorkReportImportException{
 		
 				System.out.println("Starting member importing from excel file...");
 			
@@ -684,7 +675,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	/**
 	 * @param headerRow, the first row of the members-part worksheet
 	 */
-	private Map getLeaguesMapFromRow(HSSFRow headerRow, int year) {
+	private Map getLeaguesMapFromRow(HSSFRow headerRow, int year) throws WorkReportImportException {
 		Map leagues = new HashMap();
 		int lastCell = headerRow.getLastCellNum();
 		WorkReportGroupHome home = getWorkReportGroupHome();
@@ -717,9 +708,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 							group = getWorkReportGroupHome().findWorkReportGroupByNameAndYear(name,year);
 						}
 						catch (FinderException e1) {
-							// TODO EIKI-ISI throw invalidreportexception
-							e1.printStackTrace();
-							System.err.println("WorkReportGroup not found by name either: "+name);
+							throw new WorkReportImportException("workreportimportexception.league_not_found");
 						}
 						
 					}

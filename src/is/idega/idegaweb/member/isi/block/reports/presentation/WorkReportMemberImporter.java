@@ -3,6 +3,10 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
+import is.idega.idegaweb.member.isi.block.reports.business.WorkReportImportException;
+
+import java.rmi.RemoteException;
+
 import com.idega.presentation.IWContext;
 
 /**
@@ -25,12 +29,22 @@ public class WorkReportMemberImporter extends WorkReportImporter {
 		
 		if(getWorkReportFileId()!=-1){ //do nothing before we have the file id
 		
-			boolean success = getWorkReportBusiness(iwc).importMemberPart(getWorkReportFileId(),getWorkReportId());
-			if(success){
-				add(iwrb.getLocalizedString("WorkReportMemberImporter.import_successful","Importing members completed successfully."));
+		
+			try {
+				boolean success = getWorkReportBusiness(iwc).importMemberPart(getWorkReportFileId(),getWorkReportId());
+				if(success){
+					add(iwrb.getLocalizedString("WorkReportMemberImporter.import_successful","Importing members completed successfully."));
+				}
+				else{
+					add(iwrb.getLocalizedString("WorkReportMemberImporter.import_failed","Importing members failed!"));
+				}
 			}
-			else{
-				add(iwrb.getLocalizedString("WorkReportMemberImporter.import_failed","Importing members failed!"));
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			catch (WorkReportImportException e) {
+				e.printStackTrace();
+				add( iwrb.getLocalizedString(e.getMessage(),e.getMessage()));
 			}
 		}
 	}

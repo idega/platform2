@@ -31,9 +31,16 @@ public class WorkReportClubMemberBMPBean extends GenericEntity implements WorkRe
 	protected final static String COLUMN_NAME_AGE = "AGE_FOR_YEAR";
 	protected final static String COLUMN_NAME_DATE_OF_BIRTH = "DATE_OF_BIRTH";
 	protected final static String COLUMN_NAME_GENDER = "GENDER";
+	
 	protected final static String COLUMN_NAME_STREET_NAME = "STREET_NAME";
 	protected final static String COLUMN_NAME_POSTAL_CODE_ID = "POSTAL_CODE_ID";
+	protected final static String COLUMN_NAME_HOME_PHONE = "HOME_PHONE";
+	protected final static String COLUMN_NAME_WORK_PHONE = "WORK_PHONE";
+	protected final static String COLUMN_NAME_FAX = "FAX";
+	protected final static String COLUMN_NAME_EMAIL = "EMAIL";;
+	
 	protected final static String COLUMN_NAME_BOARD_MEMBER = "BOARD_MEMBER";
+	protected final static String COLUMN_NAME_STATUS = "STATUS";//precident,vice president etc.
 	
 	protected final static String MALE = "m";
 	protected final static String FEMALE = "f";
@@ -52,10 +59,19 @@ public class WorkReportClubMemberBMPBean extends GenericEntity implements WorkRe
 		addAttribute(COLUMN_NAME_DATE_OF_BIRTH,"Date of birth",true,true,Timestamp.class);
 		addAttribute(COLUMN_NAME_AGE, "The yearly age of the member",true,true,Integer.class);
 		addAttribute(COLUMN_NAME_GENDER,"Gender m/f",true,true,String.class,1);
-		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP, "The league/division connection, null then use club",true,true,Integer.class,"many-to-many",WorkReportGroup.class);
+		
+		addAttribute(COLUMN_NAME_BOARD_MEMBER, "Is a board member", true, true, Boolean.class);
+		addAttribute(COLUMN_NAME_STATUS,"Precident,vice president etc.",true,true,String.class,30);
+		
 		addAttribute(COLUMN_NAME_STREET_NAME,"Streetname",true,true,String.class);
 		addAttribute(COLUMN_NAME_POSTAL_CODE_ID, "Postal code id",true,true,Integer.class,"many-to-one",PostalCode.class);
-		addAttribute(COLUMN_NAME_BOARD_MEMBER, "Is a board member", true, true, Boolean.class);
+		addAttribute(COLUMN_NAME_HOME_PHONE,"Home phone number",true,true,String.class);
+		addAttribute(COLUMN_NAME_WORK_PHONE,"Work phone number",true,true,String.class);
+		addAttribute(COLUMN_NAME_FAX,"Fax number",true,true,String.class);
+		addAttribute(COLUMN_NAME_EMAIL,"Email",true,true,String.class);
+		
+		
+		addManyToManyRelationShip(WorkReportGroup.class);
 	}
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -184,6 +200,48 @@ public class WorkReportClubMemberBMPBean extends GenericEntity implements WorkRe
 	}
 	public void setPostalCodeID(int postal_code_id) {
 		setColumn(COLUMN_NAME_POSTAL_CODE_ID, postal_code_id);
+	}
+	
+
+	public void setHomePhone(String number){
+		setColumn(COLUMN_NAME_HOME_PHONE, number);
+	}
+	
+	public String getHomePhone(){
+		return getStringColumnValue(COLUMN_NAME_HOME_PHONE);
+	}
+	
+	public void setWorkPhone(String number){
+		setColumn(COLUMN_NAME_WORK_PHONE, number);
+	}
+	
+	public String getWorkPhone(){
+		return getStringColumnValue(COLUMN_NAME_WORK_PHONE);
+	}
+	
+	public void setFax(String number){
+		setColumn(COLUMN_NAME_FAX, number);
+	}
+	
+	public String getFax(){
+		return getStringColumnValue(COLUMN_NAME_FAX);
+	}
+	
+	public void setEmail(String email){
+		setColumn(COLUMN_NAME_EMAIL, email);
+	}
+	
+	public String getEmail(){
+		return getStringColumnValue(COLUMN_NAME_EMAIL);
+	}
+	
+	
+	public void setStatus(String status){
+		setColumn(COLUMN_NAME_STATUS,status);
+	}
+	
+	public String getStatus(){
+		return getStringColumnValue(COLUMN_NAME_STATUS);
 	}
 	
 	
