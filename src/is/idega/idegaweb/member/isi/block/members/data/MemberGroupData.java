@@ -10,8 +10,10 @@ import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -53,7 +55,11 @@ public class MemberGroupData {
 	 */
 	private String processGroup(Group group) {
 		boolean ok = processGroup(group, _buf, true);
-		String result = ok?_buf.toString():null;
+		String result = "";
+		if(ok) {
+			result = _buf.toString();
+			_stringByFinalGroup.put(group, result);
+		}
 		_buf.setLength(0);
 		return result;
 	}
@@ -94,7 +100,8 @@ public class MemberGroupData {
 				}
 			}
 		} else {
-			buf.append(group.getName());
+			String name = group.getName();
+			buf.append(name);
 		}
 		
 		if(isDivision || isFirstGroup) {
@@ -102,6 +109,15 @@ public class MemberGroupData {
 		}
 		
 		return ok;
+	}
+	
+	/*
+	 * Get a string from the list in getMemberInfo base on the group displayd in the last part of the String
+	 * @param group the group at the end of the string
+	 * @return the string
+	 */
+	public String getStringByGroup(Group group) {
+		return (String) _stringByFinalGroup.get(group);
 	}
 	
 	/**
@@ -116,6 +132,7 @@ public class MemberGroupData {
 		return _memberInfo;
 	}
 	
+	private Map _stringByFinalGroup = new HashMap();
 	private User _user;
 	
 	private StringBuffer _buf = new StringBuffer();

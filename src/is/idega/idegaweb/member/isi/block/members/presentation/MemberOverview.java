@@ -20,6 +20,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.user.data.Group;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.GroupRelationHome;
 import com.idega.user.data.User;
@@ -62,8 +63,6 @@ public class MemberOverview extends Block {
 		String addressLabel = _iwrb.getLocalizedString("member_overview_address", "Address: ");
 		String phone = getInfoFromCollection(user.getPhones());
 		String phoneLabel = _iwrb.getLocalizedString("member_overview_phone", "Phone: ");
-		String text = emptyIfNull(user.getDescription());
-		String textLabel = _iwrb.getLocalizedString("member_overview_more_info", "More: ");
 		
 		user.getSystemImageID();
 		
@@ -73,7 +72,6 @@ public class MemberOverview extends Block {
 			try {
 				image = new Image(imageId, _iwrb.getLocalizedString("member_overview_imag_text", "User picture"));
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
@@ -81,19 +79,17 @@ public class MemberOverview extends Block {
 		}
 		
 		Table table = new Table();
+		table.setCellpadding(1);
+		table.setCellspacing(2);
 		int row = 1;
-		if(image!=null) {
-			table.mergeCells(2, 1, 2, 5);
-			table.setAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
-			table.add(image, 2, row++);
-		}
 		table.add(nameLabel + name, 1, row++);
 		table.add(pNumLabel + pNum, 1, row++);
 		table.add(addressLabel + address, 1, row++);
 		table.add(phoneLabel + phone, 1, row++);
-		if(text!=null && text.length()>0) {
-			table.add(textLabel, 1, row++);
-			table.add(text);
+		if(image!=null) {
+			table.mergeCells(2, 1, 2, row-1);
+			table.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_MIDDLE);
+			table.add(image, 2, 1);
 		}
 		return table;
 	}
@@ -129,21 +125,26 @@ public class MemberOverview extends Block {
 			table.setCellpadding(2);
 			table.setBorder(2);
 			int row = 1;
-			table.add(_iwrb.getLocalizedString("member_overview_group", "Hopur"), 1, row);
-			//table.add(_iwrb.getLocalizedString("member_overview_state", "Virkni"), 2, row);
-			table.add(_iwrb.getLocalizedString("member_overview_begin_date", "Byrjadi"), 2, row);
-			table.add(_iwrb.getLocalizedString("member_overview_end_date", "Haetti"), 3, row++);
+			table.add(_iwrb.getLocalizedString("member_overview_group", "Group"), 1, row);
+			table.add(_iwrb.getLocalizedString("member_overview_begin_date", "Started"), 2, row);
+			table.add(_iwrb.getLocalizedString("member_overview_end_date", "Quit"), 3, row++);
 			
 			Iterator historyIter = history.iterator();
 			while(historyIter.hasNext()) {
 				GroupRelation rel = (GroupRelation) historyIter.next();
+				
+				Group group = rel.getGroup();
 				
 				IWTimestamp from = new IWTimestamp(rel.getInitiationDate());
 				IWTimestamp to = null;
 				if (rel.getTerminationDate() != null)
 					to = new IWTimestamp(rel.getTerminationDate());
 
-				table.add(rel.getGroup().getName(), 1, row);
+				String info = _data.getStringByGroup(group);
+				if(info == null) {
+					info = group.getName();
+				}
+				table.add(info, 1, row);
 				table.add(from.getDateString("dd-MM-yyyy"), 2, row);
 				if (to != null) {
 					table.add(to.getDateString("dd-MM-yyyy"), 3, row);
