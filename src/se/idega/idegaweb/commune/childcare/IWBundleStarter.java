@@ -2,7 +2,9 @@ package se.idega.idegaweb.commune.childcare;
 
 import java.util.Iterator;
 import java.util.List;
+import se.idega.idegaweb.commune.accounting.userinfo.presentation.ChildContractHistoryWindow;
 import se.idega.idegaweb.commune.childcare.business.ChildCareDeceasedUserBusiness;
+import se.idega.idegaweb.commune.childcare.presentation.ChildContractsWindow;
 import se.idega.idegaweb.commune.user.business.DeceasedUserBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
@@ -35,6 +37,7 @@ public class IWBundleStarter implements IWBundleStartable {
 	public void start(IWBundle starterBundle) {
 		ImplementorRepository repository = ImplementorRepository.getInstance();
 		repository.addImplementor(DeceasedUserBusiness.class, ChildCareDeceasedUserBusiness.class);
+		repository.addImplementor(ChildContractHistoryWindow.class, ChildContractsWindow.class);
 	}
 
 	

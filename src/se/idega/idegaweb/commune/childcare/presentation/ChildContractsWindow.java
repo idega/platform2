@@ -4,12 +4,14 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
+import se.idega.idegaweb.commune.accounting.userinfo.presentation.ChildContractHistoryWindow;
+
 /**
  * ChildContractsWindow
  * @author aron 
  * @version 1.0
  */
-public class ChildContractsWindow extends ChildCareWindow {
+public class ChildContractsWindow extends ChildCareWindow implements ChildContractHistoryWindow {
 	
 	public final static String PARAMETER_CHILD_ID = ChildCareChildContracts.PARAMETER_CHILD_ID;
 	
@@ -23,4 +25,13 @@ public class ChildContractsWindow extends ChildCareWindow {
 		contracts.setInsideWindow(true);
 			add(contracts);
 		}
+
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.userinfo.presentation.ChildContractHistoryWindow#getParameterChildID()
+	 */
+	public String getParameterChildID() {
+		return PARAMETER_CHILD_ID;
+	}
+	
+ 
 }

@@ -45,6 +45,7 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.Window;
+import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.data.User;
 import com.idega.user.presentation.UserSearcher;
 import com.idega.util.Age;
@@ -73,8 +74,8 @@ public class HouseHoldViewer extends AccountingBlock {
 	private Class userEditorWindowClass = CitizenEditorWindow.class;
 	private Class userBruttoIncomeWindowClass = BruttoIncomeWindow.class;
 	private Class userLowIncomeWindowClass = null;
-	private Class childContractHistoryWindowClass = ChildContractsWindow.class;
-	private String childContractHistoryChildParameterName = ChildContractsWindow.PARAMETER_CHILD_ID;
+	private Class childContractHistoryWindowClass = null;
+	private String childContractHistoryChildParameterName = null;
 	private String userEditorUserParameterName = CitizenEditorWindow.getUserIDParameterName();
 	private String userBruttoIncomeUserParameterName = BruttoIncomeWindow.getUserIDParameterName();
 	private String userLowIncomeUserParameterName = RegularInvoiceEntriesList.getUserIDParameterName();
@@ -85,6 +86,16 @@ public class HouseHoldViewer extends AccountingBlock {
 	private UserSearcher searcherOne = null, searcherTwo = null;
 	private boolean showCohabitant = true;
 
+	
+	public HouseHoldViewer() {
+		ImplementorRepository repository = ImplementorRepository.getInstance();
+		ChildContractHistoryWindow childContractWindow = (ChildContractHistoryWindow) repository.newInstanceOrNull(ChildContractHistoryWindow.class, this.getClass());
+		if (childContractWindow != null) {
+			childContractHistoryWindowClass = childContractWindow.getClass();
+			childContractHistoryChildParameterName = childContractWindow.getParameterChildID();
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
