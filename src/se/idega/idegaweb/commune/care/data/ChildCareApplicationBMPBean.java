@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.7 2004/12/02 12:39:08 laddi Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.8 2004/12/16 12:54:42 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1338,11 +1338,12 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		Contract contract = getContract();
 		java.util.Date today = new java.util.Date();
 		
-		return 
-		    contract != null &&
-			contract.getValidFrom().compareTo(today) <= 0 &&
-			contract.getValidTo().compareTo(today) >= 0 &&
-			contract.isSigned();
+		if (contract != null) {
+			if (contract.getValidFrom().compareTo(today) <= 0 && contract.getValidTo().compareTo(today) >= 0 && contract.isSigned()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public Collection ejbFindApplicationsInSchoolAreaByStatus(int schoolAreaID, String[] statuses, int choiceNumber) throws FinderException {
