@@ -27,6 +27,9 @@ public class SchoolContentItemImage extends SchoolContentItem {
 				Table table = new Table(1, images.size());
 				table.setCellpadding(0);
 				table.setCellspacing(_cellSpacing);
+				if (_horizontalAlignment != null) {
+					table.setHorizontalAlignment(_horizontalAlignment);
+				}
 				Image image;
 				
 				ICFile file;
