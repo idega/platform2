@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.11 2001/08/29 23:15:55 laddi Exp $
+ * $Id: ApplicationForm.java,v 1.12 2001/09/04 13:14:34 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -247,7 +247,7 @@ public class ApplicationForm extends ModuleObjectContainer {
 
   protected void doDone(String cypher) {
     Text cypherText = new Text(cypher);
-      cypherText.setBold();
+    cypherText.setBold();
     add(iwrb_.getLocalizedString("applicationRegistered","Umsókn skráð")+". "+iwrb_.getLocalizedString("applicationReferenceNumber","Tilvísunarnúmer þitt er")+": ");
     add(cypherText);
     add(Text.getBreak());
@@ -260,10 +260,11 @@ public class ApplicationForm extends ModuleObjectContainer {
   }
 
   public void main(ModuleInfo modinfo){
-System.out.println("Main fall i ApplicationForm");
     iwrb_ = getResourceBundle(modinfo);
-if (iwrb_ == null)
-  System.out.println("bundle null í ApplicationForm");
     control(modinfo);
+  }
+
+  protected void doSubjectError() {
+    add(iwrb_.getLocalizedString("applicationSubjectError","Nothing to apply for"));
   }
 }

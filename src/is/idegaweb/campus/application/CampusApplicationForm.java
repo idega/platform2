@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.18 2001/08/29 22:56:09 laddi Exp $
+ * $Id: CampusApplicationForm.java,v 1.19 2001/09/04 13:14:48 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -89,6 +89,12 @@ public class CampusApplicationForm extends ApplicationForm {
     }
 
     if (status == statusEnteringPage_) {
+      List subjects = ApplicationFinder.listOfNonExpiredSubjects();
+      if (subjects == null) {
+        doSubjectError();
+        return;
+      }
+
       addStage(1);
       doGeneralInformation(modinfo);
     }
@@ -315,7 +321,7 @@ public class CampusApplicationForm extends ApplicationForm {
 
     Text heading = (Text)textTemplate.clone();
     heading.setStyle("headlinetext");
-    heading.setText(iwrb_.getLocalizedString("applicationSubject","Veldu tegund umsóknar"));
+    heading.setText(iwrb_.getLocalizedString("applicationSubjectTitle","Veldu tegund umsóknar"));
     Text text1 = (Text)textTemplate.clone();
     text1.setStyle("bodytext");
     text1.setText(iwrb_.getLocalizedString("applicationSubject","Umsókn um"));
@@ -652,10 +658,7 @@ public class CampusApplicationForm extends ApplicationForm {
   }
 
   public void main(ModuleInfo modinfo){
-    System.out.println("Main fall i CampusApplicationForm");
-        iwrb_ = getResourceBundle(modinfo);
-    if (iwrb_ == null)
-      System.out.println("bundle null í CampusApplicationForm");
-        control(modinfo);
-      }
+    iwrb_ = getResourceBundle(modinfo);
+    control(modinfo);
+  }
 }
