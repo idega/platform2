@@ -1,5 +1,5 @@
 /*
- * $Id: NackaPlacementHelper.java,v 1.1 2004/10/05 13:51:17 aron Exp $
+ * $Id: NackaPlacementHelper.java,v 1.2 2004/11/26 09:17:48 aron Exp $
  * Created on 5.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,15 +11,17 @@ package se.idega.idegaweb.commune.childcare.business;
 
 import java.util.Date;
 
+import se.idega.idegaweb.commune.care.business.DefaultPlacementHelper;
+
 import com.idega.idegaweb.IWResourceMessage;
 import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/05 13:51:17 $ by $Author: aron $
+ *  Last modified: $Date: 2004/11/26 09:17:48 $ by $Author: aron $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class NackaPlacementHelper extends DefaultPlacementHelper {
 
