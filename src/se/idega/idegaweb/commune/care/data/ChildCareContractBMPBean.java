@@ -7,7 +7,6 @@ import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.childcare.data.EmploymentType;
 
 import com.idega.block.contract.data.Contract;
 import com.idega.block.school.data.School;

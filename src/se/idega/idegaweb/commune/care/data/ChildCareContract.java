@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareContract.java,v 1.2 2004/10/14 11:42:34 thomas Exp $
+ * $Id: ChildCareContract.java,v 1.3 2004/10/14 12:44:30 thomas Exp $
  * Created on 16.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,7 +10,6 @@
 package se.idega.idegaweb.commune.care.data;
 
 import java.sql.Date;
-import se.idega.idegaweb.commune.childcare.data.EmploymentType;
 
 
 import com.idega.block.contract.data.Contract;
@@ -21,10 +20,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/14 11:42:34 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/14 12:44:30 $ by $Author: thomas $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface ChildCareContract extends IDOEntity {
     /**

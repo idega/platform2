@@ -1,5 +1,5 @@
 /*
- * $Id: GrantedCheckBMPBean.java,v 1.1 2004/10/07 14:19:51 thomas Exp $
+ * $Id: GrantedCheckBMPBean.java,v 1.1 2004/10/14 12:44:30 thomas Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -7,7 +7,7 @@
  * Use is subject to license terms.
  *
  */
-package se.idega.idegaweb.commune.childcare.check.data;
+package se.idega.idegaweb.commune.care.check.data;
 
 import java.sql.Timestamp;
 import java.util.Collection;

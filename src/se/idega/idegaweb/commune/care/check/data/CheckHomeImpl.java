@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.childcare.check.data;
+package se.idega.idegaweb.commune.care.check.data;
 
 
 public class CheckHomeImpl extends com.idega.data.IDOFactory implements CheckHome

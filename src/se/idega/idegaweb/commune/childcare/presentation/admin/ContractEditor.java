@@ -14,7 +14,7 @@ import se.idega.idegaweb.commune.care.business.ProviderSession;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
-import se.idega.idegaweb.commune.childcare.data.EmploymentType;
+import se.idega.idegaweb.commune.care.data.EmploymentType;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock;
 import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;

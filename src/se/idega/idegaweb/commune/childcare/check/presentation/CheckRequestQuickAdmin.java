@@ -4,7 +4,7 @@ import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 
-import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.care.check.data.Check;
 
 /**
  * @author Laddi

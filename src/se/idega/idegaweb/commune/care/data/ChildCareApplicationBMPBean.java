@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.1 2004/10/14 11:42:34 thomas Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.2 2004/10/14 12:44:30 thomas Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -14,7 +14,7 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 
 import com.idega.block.contract.data.Contract;
 import com.idega.block.process.data.AbstractCaseBMPBean;

@@ -50,7 +50,7 @@ import se.idega.idegaweb.commune.accounting.userinfo.business.SiblingOrderExcept
 import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.accounting.userinfo.data.DateOfBirthMissingException;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.EmploymentType;
+import se.idega.idegaweb.commune.care.data.EmploymentType;
 import se.idega.util.ErrorLogger;
 
 import com.idega.block.school.data.School;
@@ -77,10 +77,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/10/14 10:53:12 $ by $Author: thomas $
+ * Last modified: $Date: 2004/10/14 12:44:30 $ by $Author: thomas $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.152 $
+ * @version $Revision: 1.153 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool

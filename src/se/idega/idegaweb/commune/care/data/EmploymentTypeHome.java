@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.childcare.data;
+package se.idega.idegaweb.commune.care.data;
 
 
 public interface EmploymentTypeHome extends com.idega.data.IDOHome

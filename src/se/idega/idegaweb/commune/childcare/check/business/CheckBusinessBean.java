@@ -12,10 +12,10 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.childcare.check.data.Check;
-import se.idega.idegaweb.commune.childcare.check.data.CheckHome;
-import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
-import se.idega.idegaweb.commune.childcare.check.data.GrantedCheckHome;
+import se.idega.idegaweb.commune.care.check.data.Check;
+import se.idega.idegaweb.commune.care.check.data.CheckHome;
+import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.care.check.data.GrantedCheckHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 

@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.childcare.data;
+package se.idega.idegaweb.commune.care.data;
 
 
 public interface EmploymentType extends com.idega.data.IDOEntity
