@@ -1,5 +1,5 @@
 /*
- * Created on 17.8.2004
+ * Created on 19.8.2004
  */
 package is.idega.idegaweb.marathon.data;
 
@@ -55,6 +55,11 @@ public interface Run extends IDOEntity {
 	public int getChipTime();
 
 	/**
+	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getChipOwnershipStatus
+	 */
+	public String getChipOwnershipStatus();
+
+	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getUserID
 	 */
 	public int getUserID();
@@ -63,12 +68,11 @@ public interface Run extends IDOEntity {
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getChipNumber
 	 */
 	public String getChipNumber();
-	public String getChipBunchNumber();
-	
+
 	/**
-	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getChipOwnershipStatus
+	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getChipBunchNumber
 	 */
-	public String getChipOwnershipStatus();
+	public String getChipBunchNumber();
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getUserNationality
@@ -99,12 +103,12 @@ public interface Run extends IDOEntity {
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getParticipantNumber
 	 */
 	public int getParticipantNumber();
-	
+
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getPayMethod
 	 */
 	public String getPayMethod();
-	
+
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getPayedAmount
 	 */
@@ -141,6 +145,11 @@ public interface Run extends IDOEntity {
 	public void setChipTime(double chipTime);
 
 	/**
+	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setChipOwnershipStatus
+	 */
+	public void setChipOwnershipStatus(String ownershipStatus);
+
+	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setUserID
 	 */
 	public void setUserID(int userID);
@@ -149,12 +158,12 @@ public interface Run extends IDOEntity {
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setChipNumber
 	 */
 	public void setChipNumber(String chipNumber);
-	public void setChipBunchNumber(String chipBunchNumber);
 
 	/**
-	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setChipOwnershipStatus
+	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setChipBunchNumber
 	 */
-	public void setChipOwnershipStatus(String ownershipStatus);
+	public void setChipBunchNumber(String chipBunchNumber);
+
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setUserNationality
 	 */
@@ -184,12 +193,12 @@ public interface Run extends IDOEntity {
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setParticipantNumber
 	 */
 	public void setParticipantNumber(int participantNumber);
-	
+
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setPayMethod
 	 */
 	public void setPayMethod(String payMethod);
-	
+
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setPayedAmount
 	 */

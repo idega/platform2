@@ -330,4 +330,10 @@ public class RunBMPBean extends GenericEntity implements Run {
 		query.appendWhereEquals(getColumnNameUserID(),userID);
 		return super.idoFindPKsByQuery(query);
 	}
+	
+	public Collection ejbFindAllWithoutChipNumber() throws FinderException {
+		IDOQuery query = idoQueryGetSelect();
+		query.appendWhere().append(getColumnNameChipNumber()).appendIsNull();
+		return super.idoFindPKsByQuery(query);		
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * Created on 17.8.2004
+ * Created on 19.8.2004
  */
 package is.idega.idegaweb.marathon.data;
 
@@ -27,20 +27,6 @@ public class RunHomeImpl extends IDOFactory implements RunHome {
 	public Run findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
 		return (Run) super.findByPrimaryKeyIDO(pk);
 	}
-	public Collection findRunByUserIDandDistanceID(int userID,int distanceID) throws javax.ejb.FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((RunBMPBean) entity).ejbFindByUserIDandDistanceID(userID,distanceID);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-	public Collection findByUserID(int userID) throws javax.ejb.FinderException{
-
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((RunBMPBean) entity).ejbFindByUserID(userID);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	
-	}
 
 	public Collection findAll() throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
@@ -54,6 +40,27 @@ public class RunHomeImpl extends IDOFactory implements RunHome {
 		int theReturn = ((RunBMPBean) entity).ejbHomeGetNextAvailableParticipantNumber(min, max);
 		this.idoCheckInPooledEntity(entity);
 		return theReturn;
+	}
+
+	public Collection findByUserIDandDistanceID(int userID, int distanceID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((RunBMPBean) entity).ejbFindByUserIDandDistanceID(userID, distanceID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findByUserID(int userID) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((RunBMPBean) entity).ejbFindByUserID(userID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllWithoutChipNumber() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((RunBMPBean) entity).ejbFindAllWithoutChipNumber();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
 }
