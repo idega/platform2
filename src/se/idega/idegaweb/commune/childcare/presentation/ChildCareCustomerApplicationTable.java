@@ -41,7 +41,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.59 2004/01/06 21:05:23 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.60 2004/01/07 01:27:52 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -272,7 +272,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				if (childCarebusiness.isAfterSchoolApplication(application))
 					isAfterSchoolApplication = true;
 
-				if (status.equals(CCConstants.YES)) {
+				if (status.isAccepted()) {
 					acceptedApplicationID = Integer.valueOf(status._appid).intValue();
 					getChildCareBusiness(iwc).parentsAgree(acceptedApplicationID, application.getOwner(),
 					subject,
@@ -289,7 +289,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 						
 					acceptedChoiceNumber = application.getChoiceNumber();
 				}
-				else if (status.equals(CCConstants.NO_NEW_DATE)) {
+				else if (status.isRejectedNewDate()) {
 					getChildCareBusiness(iwc).rejectOfferWithNewDate(Integer.valueOf(status._appid).intValue(), application.getOwner(), status._date);
 					getChildCareBusiness(iwc).sendMessageToProvider(
 											application,
@@ -306,7 +306,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 												+ status._date,
 											application.getOwner());					
 				}
-				else if (status.equals(CCConstants.NO)) {
+				else if (status.isRejected()) {
 					getChildCareBusiness(iwc).rejectOffer(Integer.valueOf(status._appid).intValue(), application.getOwner());
 					addDeletedAppToSession(iwc, application);
 					getChildCareBusiness(iwc).sendMessageToProvider(
@@ -366,7 +366,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	}
 
 	/**
-	 * Return true iff the application has an accepted offer; it has status PREL/C
+	 * Return true if the application has an accepted offer; it has status PREL/C
 	 * @param application
 	 * @return
 	 * @throws RemoteException
