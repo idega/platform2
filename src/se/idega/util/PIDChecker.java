@@ -9,6 +9,10 @@
  */
 package se.idega.util;
 
+import java.util.Date;
+
+import com.idega.util.IWTimestamp;
+
 /**
  * A class containing some common functions for working with Swedish social 
  * security numbers.
@@ -16,13 +20,13 @@ package se.idega.util;
  * @author <a href="palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class SSNChecker {
-	private static SSNChecker _instance = null;
+public class PIDChecker {
+	private static PIDChecker _instance = null;
 	
 	/**
 	 * Does very little today.....
 	 */
-	private SSNChecker() {
+	private PIDChecker() {
 		
 	}
 
@@ -31,9 +35,9 @@ public class SSNChecker {
 	 * 
 	 * @return An instance of the SSNChecker class.
 	 */	
-	public static SSNChecker getInstance() {
+	public static PIDChecker getInstance() {
 		if (_instance == null)
-			_instance = new SSNChecker();
+			_instance = new PIDChecker();
 			
 		return _instance;
 	}
@@ -46,18 +50,18 @@ public class SSNChecker {
 	 *            [XX]XXXXXX[-]XXXX
 	 * @return true if the ssn is valid, false otherwise.
 	 */
-	public boolean isValid(String ssn) {
-		ssn = trimSSN(ssn);
+	public boolean isValid(String personalID) {
+		personalID = trimSSN(personalID);
 		
-		if (ssn.length() != 10)
+		if (personalID.length() != 10)
 			return false;
 	
-		StringBuffer buffer = new StringBuffer(ssn);
+		StringBuffer buffer = new StringBuffer(personalID);
 	
 		int values[] = {0,0,0,0,0,0,0,0,0,0};
 		int sum = 0;
 		for (int i = 0; i < 10; i++) {
-			values[i] = ssn.charAt(i) - '0';
+			values[i] = personalID.charAt(i) - '0';
 			
 			if (i % 2 == 0) {
 				values[i] *= 2;
@@ -80,19 +84,19 @@ public class SSNChecker {
 	 * 
 	 * @return A trimmed down version of the ssn.
 	 */
-	private String trimSSN(String ssn) {
-		StringBuffer localSSN = new StringBuffer(ssn);
-		int i = ssn.indexOf('-');
+	private String trimSSN(String personalID) {
+		StringBuffer localSSN = new StringBuffer(personalID);
+		int i = personalID.indexOf('-');
 		if (i != -1) {
 			localSSN.deleteCharAt(i);
 		}
 		
 		if (localSSN.length() == 12)
-			ssn = localSSN.substring(2);
+			personalID = localSSN.substring(2);
 		else
-			ssn = localSSN.toString();
+			personalID = localSSN.toString();
 		
-		return ssn;
+		return personalID;
 	}	
 	
 	/**
@@ -102,12 +106,12 @@ public class SSNChecker {
 	 *            [XX]XXXXXX[-]XXXX
 	 * @return true if the owner is female, false otherwise. Also returns false if the ssn is invalid.
 	 */
-	public boolean isFemale(String ssn) {
-		ssn = trimSSN(ssn);
-		if (ssn.length() != 10) 
+	public boolean isFemale(String personalID) {
+		personalID = trimSSN(personalID);
+		if (personalID.length() != 10) 
 			return false;
 	
-		int sex = ssn.charAt(8) - '0';
+		int sex = personalID.charAt(8) - '0';
 			
 		if (sex % 2 == 0)
 			return true;
@@ -122,12 +126,12 @@ public class SSNChecker {
 	 *            [XX]XXXXXX[-]XXXX
 	 * @return true if the owner is male, false otherwise. Also returns false if the ssn is invalid.
 	 */
-	public boolean isMale(String ssn) {
-		return !isFemale(ssn);
+	public boolean isMale(String personalID) {
+		return !isFemale(personalID);
 	}
 	
 	public static void main(String blabla[]) {
-		SSNChecker checker = SSNChecker.getInstance();
+		PIDChecker checker = PIDChecker.getInstance();
 		
 		System.out.println("Checking ssn = " + blabla[0]);
 		if (checker.isValid(blabla[0])) {
@@ -139,5 +143,22 @@ public class SSNChecker {
 		}
 		else
 			System.out.println(blabla[0] + " is not valid");
+	}
+	
+	/**
+	 * A method to convert a personal ID string to <code>Date</code>.
+	 * @param personalID	The personal ID to convert to date.
+	 * @return Date	Returns null if personal ID is not valid.
+	 */
+	public Date getDateFromPersonalID(String personalID) {
+  	if ( isValid(personalID) ) {
+      int year = Integer.parseInt(personalID.substring(0, 4));
+      int month = Integer.parseInt(personalID.substring(4, 6));
+      int day = Integer.parseInt(personalID.substring(6, 8));
+				
+			IWTimestamp stamp = new IWTimestamp(day,month,year);
+			return stamp.getDate();
+  	}
+  	return null;
 	}
 }
