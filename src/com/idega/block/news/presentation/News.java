@@ -32,7 +32,7 @@ import com.idega.idegaweb.IWMainApplication;
  */
 
 public class News extends NewsReader implements IWBlock{
-
+/*
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
   private boolean isAdmin=false;
   private int iCategoryId = -1;
@@ -94,7 +94,7 @@ public class News extends NewsReader implements IWBlock{
   public static final int NEWS_SITE_LAYOUT = 2;
   public static final int NEWS_PAPER_LAYOUT = 3;
   private int iLayout =1;
-
+*/
   public News(){
     super();/*
     init();

@@ -107,6 +107,7 @@ public class NewsFinder {
     if(N!=null){
       NH.setNews(N);
       NH.setLocalizedText(getLocalizedText(N.getID(),iLocaleId));
+      NH.setFiles(listOfNewsFiles(news));
       return NH;
     }
     else

@@ -10,6 +10,7 @@ import com.idega.core.data.ICFile;
 import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
+import com.idega.data.EntityFinder;
 
 public class NewsBusiness{
 
@@ -208,11 +209,15 @@ public class NewsBusiness{
       locText.setTitle( sTitle);
       locText.setUpdated(idegaTimestamp.getTimestampRightNow());
 
-      ICFile file = new ICFile(iImageId);
-      ICFile[] nwfile = (ICFile[]) nwNews.findRelated(file);
-      if(nwfile == null)
-        file.addTo(nwNews );
-
+      if(iImageId > 0){
+        ICFile file = new ICFile(iImageId);
+        ICFile[] nwfile = (ICFile[]) nwNews.findRelated(file);
+        if(nwfile == null || nwfile.length == 0){
+          file.addTo(nwNews );
+        }
+        else
+          System.err.println(" not adding file to news");
+      }
       nwNews.setImageId(iImageId);
       nwNews.setIncludeImage(useImage);
       nwNews.setUpdated(idegaTimestamp.getTimestampRightNow());
