@@ -696,7 +696,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		}
 		buffer.append(" )");
 		userBuffer.append(buffer).append(" and group_relation_status = 'ST_ACTIVE')");
-		identifierValueMap.put(USER_ACCESS_VARIABLE, " ( 2, 4) ");//userBuffer.toString());
+		identifierValueMap.put(USER_ACCESS_VARIABLE, userBuffer.toString());
 		// create the where condition for group view
 		identifierValueMap.put(GROUP_ACCESS_VARIABLE, buffer.toString());
 	}
