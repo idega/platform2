@@ -666,6 +666,18 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return null;
 		}
 	}
+	
+	/**
+	 * Gets the allowed values of the column invoice_int of table sch_class_member, 
+	 * as a Collection, from String constants in SchoolClassMemberBMPBean.
+	 * @return Collection of type values
+	 * @throws RemoteException
+	 * @author Borgman
+	 */
+	public Collection findAllSchClMemberInvoiceIntervalTypes() throws RemoteException {
+		Collection coll = null;
+		return getSchoolClassMemberHome().getInvoiceIntervalTypes();		
+	}
 
 	/**
 	 *	getAssistantHeadmasters added by Kelly (kelly@lindman.se) 15 may 2003 
