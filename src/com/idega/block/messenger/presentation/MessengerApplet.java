@@ -1,11 +1,24 @@
 package com.idega.block.messenger.presentation;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.applet.*;
-import java.util.*;
-import java.io.*;
-import java.net.*;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.MalformedURLException;
+import java.applet.Applet;
+import java.applet.AudioClip;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.util.Vector;
+import java.util.Hashtable;
+import java.util.Enumeration;
+import java.awt.Component;
+import java.awt.Label;
+import java.awt.Graphics;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 import com.idega.block.messenger.data.Message;
 import com.idega.block.messenger.data.Packet;
@@ -76,7 +89,7 @@ public class MessengerApplet extends Applet implements  ActionListener{
       userId = this.getParameter(USER_ID, "-1");
       userName = this.getParameter(USER_NAME, "Anonymous");
       servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
-      hostURL = new URL(this.getParameter(SERVER_ROOT_URL, getCodeBase().getProtocol()+"://"+getCodeBase().getHost()));
+      hostURL = new URL(this.getParameter(SERVER_ROOT_URL, getCodeBase().getProtocol()+"://"+getCodeBase().getHost()+":"+getCodeBase().getPort()));
       resourceURL = this.getParameter(RESOURCE_URL,"/idegaweb/bundles/com.idega.block.messenger.bundle/resources/");
 
       if(cycler==null){
@@ -103,24 +116,17 @@ public class MessengerApplet extends Applet implements  ActionListener{
    */
   private void dispatchMessagesToDialogs(Vector MessageVector){
     Enumeration enum = MessageVector.elements();
-
     Message aMessage = null;
 
     while (enum.hasMoreElements()){
-
       aMessage = (Message) enum.nextElement();
-
       MessageDialog messageDialog = (MessageDialog) dialogs.get(Integer.toString(aMessage.getId()));
-
       if( messageDialog == null ) { //create a new dialog
-
         messageDialog = createAMessageDialog(false,aMessage);
-
       }
 
       messageDialog.addMessage(aMessage);
       messageDialog.setVisible(true);
-
     }
   }
 
@@ -162,12 +168,14 @@ public class MessengerApplet extends Applet implements  ActionListener{
   }
 
   private URLConnection getURLConnection(){
+    System.out.println("GETTING URLConnection");
+
     URLConnection servletConnection = null;
 
     try{
         // connect to the servlet
         System.out.println("Connecting to servlet...");
-        URL servlet = new URL(hostURL,servletURL+"/");
+        URL servlet = new URL(hostURL,servletURL);
 
         servletConnection = servlet.openConnection();
         System.out.println("Connected");
@@ -196,11 +204,8 @@ public class MessengerApplet extends Applet implements  ActionListener{
   *  Sends the message object to a servlet. It is serialized over the URL connection
   */
   private void sendPacket(URLConnection conn){
-
     ObjectOutputStream outputToServlet = null;
-
     try{
-
         if( packetToServlet == null) packetToServlet = new Packet();
 
         if( !loggingOff ){
@@ -219,7 +224,6 @@ public class MessengerApplet extends Applet implements  ActionListener{
         outputToServlet.close();
 
         System.out.println("Sending Complete.");
-
     }
     catch (IOException e){
         System.out.println(e.getMessage());
@@ -405,28 +409,29 @@ public class MessengerApplet extends Applet implements  ActionListener{
 
   /**Stop the applet*/
   public void stop() {
+    logOff();
 
     if(cycler!=null){
      cycler.stop();
     }
+  }
 
+  protected void logOff(){
     packetToServlet = new Packet();
     packetToServlet.addProperty(new Property(LOG_OUT,sessionId));
     loggingOff = true;
-    sendPacket(this.getURLConnection());
-
+    sendPacket(getURLConnection());
   }
 
   /**Destroy the applet*/
   public void destroy() {
-    stop();
+    logOff();
+
     Graphics g = getGraphics();
     if(g != null) {
         g.dispose(); // crucial
         g = null;
     }
-
-    //t=null;
 
     if(cycler!=null){
      cycler.destroy();
@@ -440,8 +445,6 @@ public class MessengerApplet extends Applet implements  ActionListener{
       messageDialog.dispose();
       messageDialog = null;
 */
-  /*logout*/
-
   }
 
   /**Get Applet information*/
