@@ -27,9 +27,10 @@ public class Room extends GenericEntity {
     addAttribute("name","Heiti",true,true,"java.lang.String");
     addAttribute("info","Upplýsingar",true,true,"java.lang.String");
     addAttribute("floor_id","Hæð",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.Floor");
-    addAttribute("room_type_id","Mynd",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.RoomType");
+    addAttribute("sub_type_id","Undirgerð",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.RoomSubType");
     addAttribute("rentable","Leigjanleg",true,true,"java.lang.Boolean");
     addAttribute("image_id","Mynd",true,true,"java.lang.Integer");
+    super.setMaxLength("info",5000);
   }
   public String getEntityName() {
     return "room";
@@ -55,14 +56,14 @@ public class Room extends GenericEntity {
   public void setFloorId(Integer floor_id){
     setColumn("floor_id",floor_id);
   }
-  public int getRoomTypeId(){
-    return getIntColumnValue("room_type_id");
+  public int getRoomSubTypeId(){
+    return getIntColumnValue("sub_type_id");
   }
-  public void setRoomTypeId(int roomtype_id){
-    setColumn("room_type_id",roomtype_id);
+  public void setRoomSubTypeId(int sub_type_id){
+    setColumn("sub_type_id",sub_type_id);
   }
-  public void setRoomTypeId(Integer roomtype_id){
-    setColumn("room_type_id",roomtype_id);
+  public void setRoomSubTypeId(Integer sub_type_id){
+    setColumn("sub_type_id",sub_type_id);
   }
   public int getImageId(){
     return getIntColumnValue("image_id");

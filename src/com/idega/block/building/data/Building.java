@@ -27,6 +27,7 @@ public class Building extends GenericEntity {
     addAttribute("info","Upplýsingar",true,true,"java.lang.String");
     addAttribute("address_id","HeimilisFang",true,true,"java.lang.Integer");
     addAttribute("image_id","Mynd",true,true,"java.lang.Integer");
+    super.setMaxLength("info",5000);
   }
 
   public String getEntityName() {

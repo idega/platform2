@@ -27,6 +27,7 @@ public class Floor extends GenericEntity {
     addAttribute("info","Upplýsingar",true,true,"java.lang.String");
     addAttribute("building_id","Bygging",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.Building");
     addAttribute("image_id","Mynd",true,true,"java.lang.Integer");
+    super.setMaxLength("info",5000);
   }
 
   public String getEntityName() {

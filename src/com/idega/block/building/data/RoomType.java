@@ -27,8 +27,9 @@ public class RoomType extends GenericEntity {
     addAttribute(getIDColumnName());
     addAttribute("name","Heiti",true,true,"java.lang.String");
     addAttribute("info","Upplýsingar",true,true,"java.lang.String");
-    addAttribute("image_id","Mynd",true,true,"java.lang.Integer");
+    super.setMaxLength("info",5000);
   }
+
   public String getName(){
     return getStringColumnValue("name");
   }
@@ -40,14 +41,5 @@ public class RoomType extends GenericEntity {
   }
   public void setInfo(String info){
     setColumn("info",info);
-  }
-  public int getImageId(){
-    return getIntColumnValue("image_id");
-  }
-  public void setImageId(int image_id){
-    setColumn("image_id",image_id);
-  }
-  public void setImageId(Integer image_id){
-    setColumn("image_id",image_id);
   }
 }
