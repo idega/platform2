@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.23 2003/10/15 11:25:18 anders Exp $
+ * $Id: ProviderEditor.java,v 1.24 2003/10/27 10:22:54 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -63,10 +63,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/15 11:25:18 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/27 10:22:54 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -298,18 +298,16 @@ public class ProviderEditor extends AccountingBlock {
 	 */
 	private void handleSaveAction(IWContext iwc) {
 		String errorMessage = null;
-		PostingBlock p = new PostingBlock(null, null);
-		try {
-			p.generateStrings(iwc);
-		} catch (PostingParametersException e) {
-			// no problems, this will never happen here, unless you have a parameter period_from
-			// Check PostingParameterListEditor
-			// Kelly
-		}			
-		String ownPosting = p.getOwnPosting();
-		String doublePosting = p.getDoublePosting();
 
+		String ownPosting = null;
+		String doublePosting = null;
+		 
 		try {			
+			PostingBlock p = new PostingBlock(null, null);
+			p.generateStrings(iwc);
+			ownPosting = p.getOwnPosting();
+			doublePosting = p.getDoublePosting();
+
 			ProviderBusiness pb = getProviderBusiness(iwc);
 			pb.saveProvider(
 					getParameter(iwc, PARAMETER_SCHOOL_ID),
@@ -344,7 +342,9 @@ public class ProviderEditor extends AccountingBlock {
 			return;
 		} catch (ProviderException e) {
 			errorMessage = localize(e.getTextKey(), e.getDefaultText());
-		}
+		} catch (PostingParametersException e) {
+			errorMessage = localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText();
+		}			
 		
 		if (errorMessage != null) {
 			add(getProviderForm(
