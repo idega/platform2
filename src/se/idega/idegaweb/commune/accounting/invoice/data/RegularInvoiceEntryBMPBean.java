@@ -437,6 +437,29 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 				return idoFindPKsByQuery(query);
 	}	
 	
+	public Collection ejbFindRegularInvoicesForPeriodAndChildAndCategory(Date from, Date to, int childUserId, String schoolCategoryId) throws FinderException {
+		
+				IDOQuery query = idoQuery() 
+				.appendSelectAllFrom(this)
+				.appendWhereEquals(COLUMN_USER_ID, childUserId)
+				.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, schoolCategoryId)
+				.appendAnd()
+				.append(COLUMN_FROM)
+				.appendLessThanOrEqualsSign()
+				.append(to)
+				.appendAnd()
+				.appendLeftParenthesis()
+				.append(COLUMN_TO)
+				.appendGreaterThanOrEqualsSign()
+				.append(from)
+//		.appendOr()
+//		.append(COLUMN_TO)
+//		.appendIsNull()
+				.appendRightParenthesis();
+
+				return idoFindPKsByQuery(query);
+	}	
+	
 	public Collection ejbFindRegularInvoicesForPeriodAndCategoryExceptType(Date firstDateOfMonthForPeriod, String category, int regulationSpecTypeId) throws FinderException{
 		IDOQuery sql = idoQuery();
 		IWTimestamp endOfPeriod = new IWTimestamp(firstDateOfMonthForPeriod);
