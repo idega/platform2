@@ -101,7 +101,6 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 			ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(fileId);  
 			String attributes = file.getMetaData(ProductEditorWindow.imageAttributeKey);
 			image = new Image(fileId);
-			System.out.println("ImageAttributes: "+attributes);
 			if ( attributes != null )
 				image.setAttributes(getAttributeMap(attributes));
 			table.add(image, 1, row);
