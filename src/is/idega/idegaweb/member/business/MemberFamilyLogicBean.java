@@ -537,7 +537,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 	public void registerAsDeceased(User user, Date deceasedDate) throws RemoteException {
 		removeAllFamilyRelationsForUser(user);
 		UserStatusBusiness userStatusService = (UserStatusBusiness)getServiceInstance(UserStatusBusiness.class);
-		userStatusService.setUserAsDeceased(user.getIDInteger(),deceasedDate);
+		userStatusService.setUserAsDeceased((Integer)user.getPrimaryKey(),deceasedDate);
 	}
 	
 	public void removeAllFamilyRelationsForUser(User user) throws RemoteException{
