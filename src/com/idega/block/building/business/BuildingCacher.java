@@ -391,7 +391,7 @@ public class BuildingCacher {
 
     if(ComplexList != null){
       Complex C;
-      for (Iterator iter = CategoryList.iterator(); iter.hasNext();) {
+      for (Iterator iter = ComplexList.iterator(); iter.hasNext();) {
         C = (Complex) iter.next();
         list.add(PREFIXCOMPLEX+C.getPrimaryKey().toString());
       }
