@@ -74,7 +74,7 @@ public class ContractKeyWindow extends Window{
 
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-    if(isAdmin){
+    if(iwc.isLoggedOn()){
       //add(iwrb.getLocalizedString("manual","Instructions"));
       if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
       SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());

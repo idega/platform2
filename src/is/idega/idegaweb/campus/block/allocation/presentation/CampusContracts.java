@@ -452,9 +452,12 @@ public class CampusContracts extends Block{
     return L;
   }
 
-   public static Link getReSignLink(PresentationObject MO,int contractId){
+   public Link getReSignLink(PresentationObject MO,int contractId){
     Link L = new Link(MO);
     L.setWindowToOpen(ContractReSignWindow.class);
+    if(isAdmin)
+      L.addParameter(ContractReSignWindow.prmAdmin,"true");
+
     L.addParameter("contract_id",contractId);
     return L;
   }

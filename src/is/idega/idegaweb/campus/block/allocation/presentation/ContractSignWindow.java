@@ -70,7 +70,8 @@ public class ContractSignWindow extends Window{
 
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-    if(isAdmin){
+    // permissons !!
+    if(true){
       if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
       SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
       }
@@ -239,7 +240,7 @@ public class ContractSignWindow extends Window{
         Text msg = Edit.formatText(iwrb.getLocalizedString("contract_conflict","Apartment is still in rent"));
         msg.setFontColor("#FF0000");
         T.add(msg,2,row);
-        T.add(CampusContracts.getReSignLink(iwb.getImage("/scissors.gif"),con_id),2,row);
+        //T.add(CampusContracts.getReSignLink(iwb.getImage("/scissors.gif"),con_id),2,row);
       }
 
       Form F = new Form();

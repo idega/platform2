@@ -58,6 +58,7 @@ public class ContractReSignWindow extends Window{
   private GenericGroup eGroup = null;
   private User eUser = null;
   private String prmDateSync = "date_sync";
+  public static final String prmAdmin = "is_camp_isit";
 
   /*
     Blár litur í topp # 27324B
@@ -77,7 +78,7 @@ public class ContractReSignWindow extends Window{
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
-    if(isAdmin || isLoggedOn){
+    if( isAdmin && isLoggedOn){
       if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
         SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
       }
@@ -252,7 +253,7 @@ public class ContractReSignWindow extends Window{
   public void main(IWContext iwc) throws Exception {
     eUser = iwc.getUser();
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = iwc.hasEditPermission(this);
+    isAdmin = iwc.isParameterSet(prmAdmin );
     isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
     control(iwc);
   }
