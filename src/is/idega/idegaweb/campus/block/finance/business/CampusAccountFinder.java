@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Vector;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOFinderException;
+
+import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
 import is.idega.idegaweb.campus.data.*;
 
 import com.idega.block.finance.data.TariffIndex;
@@ -52,7 +54,7 @@ public class CampusAccountFinder  {
   }
 
   /**
-   *  Returns a list of view entity ConatractAccountApartment
+   *  Returns a list of view entity ContractAccountApartment
    *  that have legal contracts in period specified
    *  returns null if nothing found
    */
@@ -90,6 +92,15 @@ public class CampusAccountFinder  {
       (begin <= valfr && valto <= endin) ||
       (valfr <= begin && endin <= valto)
     */
+    sql.append("and status in ( '");
+    sql.append(ContractBMPBean.statusSigned);
+    sql.append("','");
+    sql.append(ContractBMPBean.statusEnded);
+	sql.append("','");
+   	sql.append(ContractBMPBean.statusResigned);
+   	sql.append("','");
+	 sql.append(ContractBMPBean.statusTerminated);
+    sql.append("')");
     sql.append(" and (");
     sql.append("(").append(start).append(less).append(validto).append(" and ").append(validto).append(less).append(end).append(")");
     sql.append(" or ");
@@ -100,9 +111,9 @@ public class CampusAccountFinder  {
     sql.append("(").append(validfrom).append(less).append(start).append(" and ").append(end).append(less).append(validto).append(")");
     sql.append(")");
     sql.append(" order by ic_user_id ");
+	
 
-
-    //System.err.println(sql);
+    System.err.println(sql);
     try {
       return EntityFinder.getInstance().findAll(ContractAccountApartment.class,sql.toString());
      }
