@@ -42,8 +42,8 @@ import com.idega.user.data.UserBMPBean;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/04/01 09:23:25 $ by $Author: anders $
- * @version $Revision: 1.107 $
+ *         Last modified: $Date: 2004/04/01 13:28:00 $ by $Author: anders $
+ * @version $Revision: 1.108 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -562,7 +562,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		IDOQuery sql = idoQuery();
 
 		sql.appendSelectAllFrom(this.getTableName() + " mb" + ", " + SchoolClassBMPBean.SCHOOLCLASS + " cl, " + SchoolTypeBMPBean.SCHOOLTYPE + " tp")
-		.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y")
+		.appendWhere().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y")
 		.appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
 		.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
 		.appendAnd().append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(season.getPrimaryKey())
@@ -572,12 +572,11 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.append("mb." + REMOVED_DATE).appendGreaterThanOrEqualsSign().append(new Date(System.currentTimeMillis())).appendRightParenthesis();
 		if (schoolIds != null) {
 			if (notInSchools) {
-				sql.append("cl.school_id").appendNotInArray(schoolIds);
+				sql.appendAnd().append("cl.school_id").appendNotInArray(schoolIds);
 			} else {
-				sql.append("cl.school_id").appendInArray(schoolIds);			
+				sql.appendAnd().append("cl.school_id").appendInArray(schoolIds);			
 			}
 		}
-
 		return this.idoFindPKsByQuery(sql);
 	}
 
