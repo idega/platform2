@@ -7,6 +7,7 @@ public class HabitantsCollector {
   private String firstName_ = null;
   private String middleName_ = null;
   private String lastName_ = null;
+  private String name_ = null;
   private String apartment_ = null;
   private String floor_ = null;
   private String phone_ = null;
@@ -18,6 +19,10 @@ public class HabitantsCollector {
 
   public void setUserID(int userID) {
     userID_ = userID;
+  }
+
+  public void setName(String name){
+    name_ = name;
   }
 
   public void setFirstName(String firstName) {
@@ -57,6 +62,7 @@ public class HabitantsCollector {
   }
 
   public String getName() {
+    /*
     StringBuffer name = new StringBuffer();
     if ( firstName_ != null )
       name.append(firstName_);
@@ -66,6 +72,8 @@ public class HabitantsCollector {
       name.append(" "+lastName_);
 
     return name.toString();
+    */
+    return name_;
   }
 
   public String getFirstName() {

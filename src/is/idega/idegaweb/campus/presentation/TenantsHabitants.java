@@ -23,6 +23,7 @@ import is.idega.idegaweb.campus.block.application.business.CampusApplicationFind
 import is.idega.idegaweb.campus.block.phone.data.CampusPhone;
 import is.idega.idegaweb.campus.block.phone.business.PhoneFinder;
 import is.idega.idegaweb.campus.business.*;
+import is.idega.idegaweb.campus.data.Habitant;
 import com.idega.block.application.data.Applicant;
 import com.idega.util.text.TextStyler;
 import com.idega.util.text.StyleConstants;
@@ -65,15 +66,12 @@ public class TenantsHabitants extends Block implements Campus{
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
 
-    try {
+
       _isAdmin = iwc.hasEditPermission(this);
-      _isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
+      _isLoggedOn = iwc.isLoggedOn();
       if (_isLoggedOn)
         _isPublic = false;
-    }
-    catch(Exception sql) {
-      _isAdmin = false;
-    }
+
 
     if(iwc.isParameterSet(TenantsProfile.PARAMETER_USER_ID)){
       add(new TenantsProfile());
@@ -174,10 +172,13 @@ public class TenantsHabitants extends Block implements Campus{
       Map phoneMap = PhoneFinder.mapOfPhonesByApartmentId(PhoneFinder.listOfPhones());
       CampusPhone phone = null;
       //System.err.println("not getting from memory");
-      List list = ContractFinder.listOfContractsInComplex(_campusID,new Boolean(true));
-
+      //List list = ContractFinder.listOfContractsInComplex(_campusID,new Boolean(true));
+      List list = HabitantsFinder.findHabitants(_campusID);
+      Habitant hab;
       if ( list != null ) {
         for ( int a = 0; a < list.size(); a++ ) {
+          hab = (Habitant) list.get(a);
+          /*
           contract = (Contract) list.get(a);
           applicant = ContractFinder.getApplicant(contract);
           apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
@@ -189,9 +190,10 @@ public class TenantsHabitants extends Block implements Campus{
             phone = (CampusPhone)phoneMap.get(ID);
           else
             phone = null;
+          */
 
           collector = new HabitantsCollector();
-          collector.setUserID(contract.getUserId().intValue());
+          /*collector.setUserID(contract.getUserId().intValue());
           collector.setApartment(apartment.getName());
           collector.setEmail(campusApplication.getEmail());
           collector.setFirstName(applicant.getFirstName());
@@ -201,6 +203,16 @@ public class TenantsHabitants extends Block implements Campus{
           collector.setAddress(building.getName());
           if ( phone != null )
             collector.setPhone(phone.getPhoneNumber());
+
+          */
+          collector.setUserID(hab.getUserId());
+          collector.setApartment(hab.getApartment());
+          /** @todo  fixa email */
+          collector.setEmail("");
+          collector.setName(hab.getFullName());
+          collector.setFloor(hab.getFloor());
+          collector.setAddress(hab.getAddress());
+          collector.setPhone(hab.getPhoneNumber());
 
           vector.add(collector);
         }

@@ -81,6 +81,10 @@ public class HabitantsComparator implements Comparator {
     HabitantsCollector r2 = (HabitantsCollector) o2;
     int result = 0;
 
+    String one = r1.getName()!=null?r1.getName():"";
+    String two = r2.getName()!=null?r2.getName():"";
+    result = IsCollator.getIsCollator().compare(one,two);
+    /*
     String one = r1.getFirstName()!=null?r1.getFirstName():"";
     String two = r2.getFirstName()!=null?r2.getFirstName():"";
     result = IsCollator.getIsCollator().compare(one,two);
@@ -95,6 +99,7 @@ public class HabitantsComparator implements Comparator {
       two = r2.getMiddleName()!=null?r2.getMiddleName():"";
       result = IsCollator.getIsCollator().compare(one,two);
     }
+    */
 
     return result;
   }
