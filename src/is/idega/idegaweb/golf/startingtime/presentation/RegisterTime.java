@@ -265,21 +265,15 @@ public class RegisterTime extends GolfBlock {
 
 
             int memberId = -1;
-            boolean memberAvailable = false;
+            boolean memberAvailable = true;
             //get member_id for member to find him and put his SSN into the textinput
-            if(modinfo.getSession().getAttribute("member_id") != null){
-              memberId = Integer.parseInt((String)modinfo.getSession().getAttribute("member_id"));
-              memberAvailable = true;
-            }
 
             String lines[] = new String[skraMarga];
             int groupNums[] = new int[skraMarga];
 
             try
             {
-              Member member = null;
-              if(memberId != -1)
-                member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(memberId);
+              Member member = GolfLoginBusiness.getMember(modinfo);
               String FieldID = currentField;
               String Date = modinfo.getSession().getAttribute("date").toString();
               String MemberId = String.valueOf(GolfLoginBusiness.getMember(modinfo).getID());
