@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.16 2002/03/14 13:07:32 palli Exp $
+ *  $Id: TPosClient.java,v 1.17 2002/03/15 09:43:16 palli Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -159,46 +159,6 @@ public class TPosClient {
 
       valid = false;
     }
-
-    TPosAuthorisationEntries entry = TPosAuthorisationEntriesHome.getInstance().getNewElement();
-//    entry.setAttachmentCount(_client.getProperty(TPOS3Client.pn));
-    entry.setAuthorisationAmount(_client.getProperty(TPOS3Client.PN_AUTHORAMOUNT));
-    entry.setAuthorisationCode(_client.getProperty(TPOS3Client.PN_AUTHORISATIONCODE));
-    entry.setAuthorisationCurrency(_client.getProperty(TPOS3Client.PN_AUTHORCURRENCY));
-    entry.setAuthorisationIdRsp(_client.getProperty(TPOS3Client.PN_AUTHORIDENTIFYRSP));
-    entry.setAuthorisationPathReasonCode(_client.getProperty(TPOS3Client.PN_AUTHPATHREASONCODE));
-    entry.setBatchNumber(_client.getProperty(TPOS3Client.PN_BATCHNUMBER));
-    entry.setBrandId(_client.getProperty(TPOS3Client.PN_CARDBRANDID));
-    entry.setBrandName(_client.getProperty(TPOS3Client.PN_CARDBRANDNAME));
-    entry.setCardCharacteristics(_client.getProperty(TPOS3Client.PN_CARDCHARACTER));
-    entry.setCardExpires(_client.getProperty(TPOS3Client.PN_EXPIRE));
-    entry.setCardName(_client.getProperty(TPOS3Client.PN_CARDTYPENAME));
-    entry.setCardType(_client.getProperty(TPOS3Client.PN_CARDTYPEID));
-    entry.setDetailExpected(_client.getProperty(TPOS3Client.PN_DETAILEXPECTED));
-    entry.setEntryDate(_client.getProperty(TPOS3Client.PN_DATE));
-    entry.setEntryTime(_client.getProperty(TPOS3Client.PN_TIME));
-    entry.setErrorNo(_client.getProperty(TPOS3Client.PN_ERRORNUMBER));
-    entry.setErrorText(_client.getProperty(TPOS3Client.PN_ERRORTEXT));
-    entry.setLocationNr(_client.getProperty(TPOS3Client.PN_LOCATIONNUMBER));
-    entry.setMerchantNrAuthorisation(_client.getProperty(TPOS3Client.PN_MERCHANTNUMBERAUTHOR));
-    entry.setMerchantNrOtherServices(_client.getProperty(TPOS3Client.PN_MERCHANTNUMBEROTHERSERVICES));
-    entry.setMerchantNrSubmission(_client.getProperty(TPOS3Client.PN_MERCHANTNUMBERSUBMISSION));
-    entry.setPan("***********");
-    entry.setPosNr(_client.getProperty(TPOS3Client.PN_POSNUMBER));
-    entry.setPosSerialNr(_client.getProperty(TPOS3Client.PN_POSSERIAL));
-//    entry.setPrintData(_client.getProperty(TPOS3Client.pn_p));
-    entry.setSubmissionAmount(_client.getProperty(TPOS3Client.PN_SUBMISSIONAMOUNT));
-    entry.setSubmissionCurrency(_client.getProperty(TPOS3Client.PN_SUBMISSIONCURRENCY));
-    entry.setTotalResponseCode(_client.getProperty(TPOS3Client.PN_TOTALRESPONSECODE));
-    entry.setTransactionNr(_client.getProperty(TPOS3Client.PN_TRANSACTIONNUMBER));
-    entry.setVoidedAuthorisationIdResponse(_client.getProperty(TPOS3Client.PN_VOIDEDAUTHIDRSP));
-    entry.setVoidedTransactionNr(_client.getProperty(TPOS3Client.PN_VOIDEDTRANSNUMBER));
-//    entry.setXMLAttachment(_client.getProperty(TPOS3Client.));
-
-    boolean inserted = TPosAuthorisationEntriesHome.getInstance().insert(entry);
-    if (!inserted)
-      System.err.println("Unable to save entry to database");
-
     return (valid);
   }
 
@@ -294,6 +254,46 @@ public class TPosClient {
     }
 
     boolean valid = _client.sendAuthorisationReq();
+
+    TPosAuthorisationEntries entry = TPosAuthorisationEntriesHome.getInstance().getNewElement();
+//    entry.setAttachmentCount(_client.getProperty(TPOS3Client.pn));
+    entry.setAuthorisationAmount(_client.getProperty(TPOS3Client.PN_AUTHORAMOUNT));
+    entry.setAuthorisationCode(_client.getProperty(TPOS3Client.PN_AUTHORISATIONCODE));
+    entry.setAuthorisationCurrency(_client.getProperty(TPOS3Client.PN_AUTHORCURRENCY));
+    entry.setAuthorisationIdRsp(_client.getProperty(TPOS3Client.PN_AUTHORIDENTIFYRSP));
+    entry.setAuthorisationPathReasonCode(_client.getProperty(TPOS3Client.PN_AUTHPATHREASONCODE));
+    entry.setBatchNumber(_client.getProperty(TPOS3Client.PN_BATCHNUMBER));
+    entry.setBrandId(_client.getProperty(TPOS3Client.PN_CARDBRANDID));
+    entry.setBrandName(_client.getProperty(TPOS3Client.PN_CARDBRANDNAME));
+    entry.setCardCharacteristics(_client.getProperty(TPOS3Client.PN_CARDCHARACTER));
+    entry.setCardExpires(_client.getProperty(TPOS3Client.PN_EXPIRE));
+    entry.setCardName(_client.getProperty(TPOS3Client.PN_CARDTYPENAME));
+    entry.setCardType(_client.getProperty(TPOS3Client.PN_CARDTYPEID));
+    entry.setDetailExpected(_client.getProperty(TPOS3Client.PN_DETAILEXPECTED));
+    entry.setEntryDate(_client.getProperty(TPOS3Client.PN_DATE));
+    entry.setEntryTime(_client.getProperty(TPOS3Client.PN_TIME));
+    entry.setErrorNo(_client.getProperty(TPOS3Client.PN_ERRORNUMBER));
+    entry.setErrorText(_client.getProperty(TPOS3Client.PN_ERRORTEXT));
+    entry.setLocationNr(_client.getProperty(TPOS3Client.PN_LOCATIONNUMBER));
+    entry.setMerchantNrAuthorisation(_client.getProperty(TPOS3Client.PN_MERCHANTNUMBERAUTHOR));
+    entry.setMerchantNrOtherServices(_client.getProperty(TPOS3Client.PN_MERCHANTNUMBEROTHERSERVICES));
+    entry.setMerchantNrSubmission(_client.getProperty(TPOS3Client.PN_MERCHANTNUMBERSUBMISSION));
+//    entry.setPan("***********");
+    entry.setPosNr(_client.getProperty(TPOS3Client.PN_POSNUMBER));
+    entry.setPosSerialNr(_client.getProperty(TPOS3Client.PN_POSSERIAL));
+//    entry.setPrintData(_client.getProperty(TPOS3Client.pn_p));
+    entry.setSubmissionAmount(_client.getProperty(TPOS3Client.PN_SUBMISSIONAMOUNT));
+    entry.setSubmissionCurrency(_client.getProperty(TPOS3Client.PN_SUBMISSIONCURRENCY));
+    entry.setTotalResponseCode(_client.getProperty(TPOS3Client.PN_TOTALRESPONSECODE));
+    entry.setTransactionNr(_client.getProperty(TPOS3Client.PN_TRANSACTIONNUMBER));
+    entry.setVoidedAuthorisationIdResponse(_client.getProperty(TPOS3Client.PN_VOIDEDAUTHIDRSP));
+    entry.setVoidedTransactionNr(_client.getProperty(TPOS3Client.PN_VOIDEDTRANSNUMBER));
+//    entry.setXMLAttachment(_client.getProperty(TPOS3Client.));
+
+    boolean inserted = TPosAuthorisationEntriesHome.getInstance().insert(entry);
+    if (!inserted)
+      System.err.println("Unable to save entry to database");
+
     if (!valid) {
       TPosException e = new TPosException("Error in authorisation");
       e.setErrorNumber(_client.getProperty(TPOS3Client.PN_ERRORNUMBER));
