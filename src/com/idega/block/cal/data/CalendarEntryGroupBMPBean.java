@@ -4,9 +4,13 @@
 package com.idega.block.cal.data;
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOQuery;
 
 /**
  * Description: <br>
@@ -26,12 +30,14 @@ public class CalendarEntryGroupBMPBean extends GenericEntity implements Calendar
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
 		addAttribute(getColumnNameName(),"CalEntryGroupName", true, true, String.class);
+		addAttribute(getColumnNameLedgerID(), "CalLedgerID", true, true, Integer.class);
 		addManyToManyRelationShip(CalendarEntry.class);
 	}
 
 	public static String getEntityTableName() { return "CAL_ENTRY_GROUP"; }
 	public static String getColumnNameEntryGroupID() { return "CAL_ENTRY_GROUP_ID"; }
 	public static String getColumnNameName() { return "CAL_ENTRY_GROUP_NAME"; }
+	public static String getColumnNameLedgerID() { return CalendarLedgerBMPBean.getColumnNameLedgerID(); }
 
 	public String getEntityName(){
 		return getEntityTableName();
@@ -45,8 +51,16 @@ public class CalendarEntryGroupBMPBean extends GenericEntity implements Calendar
 		return getStringColumnValue(getColumnNameName());
 	}
 	
+	public int getLedgerID() {
+		return getIntColumnValue(getColumnNameLedgerID());
+	}
+	
 	public void setName(String entryGroupName) {
 		setColumn(getColumnNameName(),entryGroupName);
+	}
+	
+	public void setLedgerID(int ledgerID) {
+		setColumn(getColumnNameLedgerID(),ledgerID);
 	}
 	
 	public void addEntry(CalendarEntry entry) {
@@ -73,6 +87,13 @@ public class CalendarEntryGroupBMPBean extends GenericEntity implements Calendar
 			System.out.println("cannot remove from middle table");
 			e.printStackTrace();
 		}
+	}
+	
+	public Collection ejbFindEntryGroupByLedgerID(int ledgerID) throws FinderException{
+		IDOQuery query = idoQueryGetSelect();
+		query.appendWhereEquals(getColumnNameLedgerID(),ledgerID);
+		return super.idoFindPKsByQuery(query);
+		
 	}
 	
 	

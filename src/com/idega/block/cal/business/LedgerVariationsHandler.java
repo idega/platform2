@@ -18,6 +18,7 @@ import com.idega.user.data.User;
 public interface LedgerVariationsHandler{
 	
 	public String getParentGroupName(Collection parentGroups);
+	public String getParentOfParentGroupName(Collection parentGroups);
 	public void saveLedger(IWContext iwc, Page parentPage, String name, int groupID, String coachName, int coachGroupID, String date);
 	public Collection getParentGroupRelation(IWContext iwc, User user);
 	public String getParentKey();

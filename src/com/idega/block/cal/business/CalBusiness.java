@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import com.idega.block.cal.data.AttendanceEntity;
+import com.idega.block.cal.data.AttendanceMark;
 import com.idega.block.cal.data.CalendarEntry;
 import com.idega.block.cal.data.CalendarLedger;
 import com.idega.presentation.IWContext;
@@ -20,13 +21,16 @@ import com.idega.user.data.User;
 public interface CalBusiness extends com.idega.business.IBOService {
 	public java.util.List getAllLedgers();
 	public CalendarLedger getLedger(int ledgerID);
+	public AttendanceMark getMark(int markID);
 	public int getLedgerIDByName(String name); 
 //	public CalendarLedger getLedgerByUserID(int userID);
 	public com.idega.block.cal.data.CalendarEntryType getEntryTypeByName(String entryTypeName); 
 	public CalendarEntry getEntry(int p0);
 	public void deleteEntry(int entryID);
-	public void deleteEntryGroup(int entryID);
+	public void deleteEntryGroupByEntryID(int entryID);
+	public void deleteEntryGroup(int entryGroupID);
 	public void deleteLedger(int ledgerID);
+	public void deleteMark(int markID);
 	public void deleteUserFromLedger(int userID, int ledgerID, IWContext iwc);
 	public AttendanceEntity getAttendanceByUserIDandEntry(int userID, CalendarEntry entry);
 	public void updateAttendance(int attendanceID, int userID, int ledgerID, CalendarEntry entry, String mark);
@@ -35,7 +39,7 @@ public interface CalBusiness extends com.idega.business.IBOService {
 	public void createNewEntry(String headline, User user, String type, String repeat, String startDate, String startHour, String starMinute, String endDate, String enHour, String endMinute, String attendees,String ledger, String description, String location);		
 	public void updateEntry(int entryID, String headline, User user, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String ledger, String description, String location, String entryModifyOneOrMany);
 	public void createNewLedger(String name, int groupID, String coachName, String date,int coachGroupID);
-	public void createNewMark(String markName, String description);
+	public void createNewMark(int markID, String markName, String description);
 	public Collection getUsersInLedger(int ledgerID);
 	public java.util.List getAttendancesByLedgerID(int ledgerID);
 	public int getNumberOfPractices(int ledgerID); 

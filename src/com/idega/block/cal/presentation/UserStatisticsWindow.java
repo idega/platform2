@@ -6,6 +6,8 @@ package com.idega.block.cal.presentation;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,6 +15,7 @@ import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.business.DefaultLedgerVariationsHandler;
 import com.idega.block.cal.business.LedgerVariationsHandler;
 import com.idega.block.cal.data.AttendanceMark;
+import com.idega.block.cal.data.CalendarLedger;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -23,6 +26,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.PrintButton;
 import com.idega.user.business.GroupBusiness;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -40,21 +44,27 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 	private String grayBackground = "grayBack";
 	
 	//parameter names
-	private static String coachFieldParameterName = "user_stat_window.coach";
+	private static String userFieldParameterName = "user_stat_window.user";
+	private static String otherCoachesFieldParameterName = "user_stat_window.otherCoaches";
 	private static String clubFieldParameterName = "user_stat_window.club";
+	private static String divisionFieldParameterName= "user_stat_window.division";
 	private static String groupFieldParameterName = "user_stat_window.group";
 	private static String dateFieldParameterName = "user_stat_window.date";
 	
 	//texts
-	private Text coachText;
+	private Text userText;
+	private Text otherCoachesText;
 	private Text clubText;
+	private Text divisionText;
 	private Text groupText;
 	private Text dateText;
 	
 	//fields
-	private Text coachField;
+	private Text userField;
+	private String otherCoachesNameField;
 	private String clubField;
-	private String ledgerField;
+	private String divisionField;
+	private String groupField;
 	private String dateField;
 	
 	private PrintButton printButton;
@@ -78,10 +88,14 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
-		coachText = new Text(iwrb.getLocalizedString(coachFieldParameterName,"Coach"));
-		coachText.setStyleClass(bold);
+		userText = new Text(iwrb.getLocalizedString(userFieldParameterName,"User"));
+		userText.setStyleClass(bold);
+		otherCoachesText = new Text(iwrb.getLocalizedString(otherCoachesFieldParameterName,"Other coaches"));
+		otherCoachesText.setStyleClass(bold);
 		clubText = new Text(iwrb.getLocalizedString(clubFieldParameterName,"Club"));
 		clubText.setStyleClass(bold);
+		divisionText = new Text(iwrb.getLocalizedString(divisionFieldParameterName,"Division"));
+		divisionText.setStyleClass(bold);
 		groupText = new Text(iwrb.getLocalizedString(groupFieldParameterName,"Group"));
 		groupText.setStyleClass(bold);
 		dateText = new Text(iwrb.getLocalizedString(dateFieldParameterName,"Date"));
@@ -117,11 +131,40 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		
 		String lString = iwc.getParameter(LedgerWindow.LEDGER);
 		Integer lID =new Integer(lString);
+		CalendarLedger ledger = getCalendarBusiness(iwc).getLedger(lID.intValue());
 				
 		if(iwc.isLoggedOn()) {
 			User user =iwc.getCurrentUser();
-			coachField = new Text(user.getName());
+			userField = new Text(user.getName());
 		}
+		
+		int coachGroupID = ledger.getCoachGroupID();
+		Group coaches = null;
+		List trainers = null;
+		try {
+			if(coachGroupID != -1) {
+				coaches = getGroupBusiness(iwc).getGroupByGroupID(coachGroupID);
+				trainers = (List) getGroupBusiness(iwc).getUsers(coaches);
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		if(trainers != null && trainers.size() != 0) {
+			StringBuffer buff = new StringBuffer();
+			Iterator trainersIter = trainers.iterator();		
+			while(trainersIter.hasNext()) {
+				User trainer = (User) trainersIter.next();
+				buff.append(trainer.getName());
+				buff.append("<br>");
+			}
+			otherCoachesNameField = buff.toString();
+			
+		}
+		else {
+			otherCoachesNameField = "";
+		}
+		
 		
 		Collection parentGroups = null;
 		int groupID = getCalendarBusiness(iwc).getLedger(lID.intValue()).getGroupID();
@@ -134,13 +177,17 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 			e.printStackTrace();
 		}
 		if(parentGroups != null) {
-			clubField = ledgerVariationsHandler.getParentGroupName(parentGroups);
+			clubField = ledgerVariationsHandler.getParentOfParentGroupName(parentGroups);
+			divisionField = ledgerVariationsHandler.getParentGroupName(parentGroups);
 		}
 		else {
 			clubField = iwrb.getLocalizedString("user_stats_window.no_club_text","No club");
+			divisionField = iwrb.getLocalizedString("usr_stats_window.no_division_text","No division");
 		}
 		
-		ledgerField = getCalendarBusiness(iwc).getLedger(lID.intValue()).getName();
+		 
+		
+		groupField = getCalendarBusiness(iwc).getLedger(lID.intValue()).getName();
 		
 		dateField = new IWTimestamp(getCalendarBusiness(iwc).getLedger(lID.intValue()).getDate()).getDateString("dd. MMMMMMMM yyyy");
 		
@@ -154,6 +201,7 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
+		
 		table.add(getHeaderTable(iwc),1,1);
 		Table underTable = new Table();
 		underTable.setCellpadding(0);
@@ -263,14 +311,18 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		headerTable.setWidth("100%");
 		headerTable.setHeight("100%");
 		headerTable.setStyleClass(borderAllWhite);
-		headerTable.add(coachText,1,1);
-		headerTable.add(coachField,2,1);
+		headerTable.add(userText,1,1);
+		headerTable.add(userField,2,1);
 		headerTable.add(clubText,1,2);
 		headerTable.add(clubField,2,2);
-		headerTable.add(groupText,1,3);
-		headerTable.add(ledgerField,2,3);
-		headerTable.add(dateText,1,4);
-		headerTable.add(dateField,2,4);
+		headerTable.add(otherCoachesText,1,3);
+		headerTable.add(otherCoachesNameField,2,3);
+		headerTable.add(divisionText,1,4);
+		headerTable.add(divisionField,2,4);
+		headerTable.add(groupText,1,5);
+		headerTable.add(groupField,2,5);
+		headerTable.add(dateText,1,6);
+		headerTable.add(dateField,2,6);
 		
 		headerTable.setVerticalAlignment(3,1,"top");
 		headerTable.setVerticalAlignment(4,1,"top");
@@ -299,7 +351,14 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		ledgerString = iwc.getParameter(LedgerWindow.LEDGER);
 		ledgerID =new Integer(ledgerString);
 //		CalendarLedger ledger = getCalendarBusiness(iwc).getLedger(ledgerID.intValue());
-		Collection usersInLedger = getCalendarBusiness(iwc).getUsersInLedger(ledgerID.intValue());
+		List usersInLedger = (List) getCalendarBusiness(iwc).getUsersInLedger(ledgerID.intValue());
+		if(usersInLedger != null) {
+			Collections.sort(usersInLedger,new Comparator() {
+				public int compare(Object arg0, Object arg1) {
+					return ((User) arg0).getName().compareTo(((User) arg1).getName());
+				}				
+			});
+		}
 		
 		lineUp(iwc,ledgerID.intValue(),usersInLedger);
 		add(table,iwc);

@@ -51,8 +51,8 @@ public class CalendarView extends Block{
 	private IWTimestamp now = null;
 	private IWTimestamp timeStamp = null;
 	private IWCalendar cal = null;
-	private int beginHour = 8;
-	private int endHour = 22;
+	private int beginHour = 6;
+	private int endHour = 24;
 	private String borderWhiteTableStyle = "borderAllWhite";
 	private String mainTableStyle = "main";
 	private String styledLink = "styledLink";
@@ -209,17 +209,7 @@ public class CalendarView extends Block{
 					//i is the current hour 
 					if(i <= tStamp.getHours() && i >= fStamp.getHours()) {
 						entry.getGroupID();
-						Timestamp startDate = entry.getDate();
-						int hours = startDate.getHours();
-						int minutes = startDate.getMinutes();
-						String mi;
-						if(minutes<10) {
-							mi = "0"+minutes;
-						}
-						else {
-							mi = ""+minutes;
-						}
-						String headline = hours + ":" + mi + " " + entry.getName();
+						String headline = getEntryHeadline(entry);
 						Link headlineLink = new Link(headline);
 						headlineLink.addParameter(ACTION,OPEN);
 						headlineLink.addParameter(CalendarParameters.PARAMETER_VIEW,view);
@@ -305,7 +295,7 @@ public class CalendarView extends Block{
 			 * The inner for-loop runs through the rows of the weekTable
 			 * the hours
 			 */
-			for(int j=beginHour;j<endHour;j++) {
+			for(int j=beginHour;j<=endHour;j++) {
 				Table weekTable = new Table();
 				weekTable.setWidth("100%");
 				weekTable.setHeight("100%");
@@ -414,17 +404,7 @@ public class CalendarView extends Block{
 							Timestamp fStamp = entry.getDate();
 							Timestamp ttStamp = entry.getEndDate();
 							if(j <= ttStamp.getHours() && j >= fStamp.getHours()) {
-								Timestamp startDate = entry.getDate();
-								int hours = startDate.getHours();
-								int minutes = startDate.getMinutes();
-								String mi;
-								if(minutes<10) {
-									mi = "0"+minutes;
-								}
-								else {
-									mi = ""+minutes;
-								}
-								String headline = hours + ":" + mi + " " + entry.getName();
+								String headline = getEntryHeadline(entry);
 								Link headlineLink = new Link(headline);
 								headlineLink.addParameter(ACTION,OPEN);
 								headlineLink.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
@@ -619,17 +599,7 @@ public class CalendarView extends Block{
 				if(isInGroup || iwc.isSuperAdmin() || 
 						getViewGroupID() == entry.getGroupID() ||
 						userID.intValue() == entry.getUserID()) {
-					Timestamp startDate = entry.getDate();
-					int hours = startDate.getHours();
-					int minutes = startDate.getMinutes();
-					String mi;
-					if(minutes<10) {
-						mi = "0"+minutes;
-					}
-					else {
-						mi = ""+minutes;
-					}
-					String headline = hours + ":" + mi + " " + entry.getName();
+					String headline = getEntryHeadline(entry);
 					Link headlineLink = new Link(headline);
 					headlineLink.addParameter(ACTION,OPEN);
 					headlineLink.addParameter(CalendarParameters.PARAMETER_VIEW,view);
@@ -666,6 +636,42 @@ public class CalendarView extends Block{
 		return backTable;
 	}
 	
+	/**
+	 * @param entry
+	 * @return
+	 */
+	private String getEntryHeadline(CalendarEntry entry) {
+		Timestamp startDate = entry.getDate();
+		int startHours = startDate.getHours();
+		int startMinutes = startDate.getMinutes();
+		Timestamp endDate = entry.getEndDate();
+		int endHours = endDate.getHours();
+		int endMinutes = endDate.getMinutes();
+		
+		String headline = getTimeString(startHours,startMinutes) + 
+		"-" + getTimeString(endHours,endMinutes) + 
+		" " + entry.getName();
+		return headline;
+	}
+	/**
+	 * 
+	 * @param hours
+	 * @param minutes
+	 * @return
+	 */
+	private String getTimeString(int hours, int minutes) {
+		String timeString;
+		String mi;
+		if(minutes<10) {
+			mi = "0"+minutes;
+		}
+		else {
+			mi = ""+minutes;
+		}
+		timeString = hours + ":" + mi;
+		return timeString;
+		
+	}
 	public Table yearView(IWContext iwc, IWTimestamp stamp) {
 		now = new IWTimestamp(); 
 		
@@ -700,6 +706,8 @@ public class CalendarView extends Block{
 		for (int a = 1; a <= 12; a++) {
 			yearStamp = new IWTimestamp(stamp.getDay(), a, stamp.getYear());
 			smallCalendar = new SmallCalendar(yearStamp);
+			smallCalendar.setDaysAsLink(true);
+			smallCalendar.addParameterToLink(CalendarParameters.PARAMETER_VIEW,CalendarParameters.DAY);
 			yearTable.add(smallCalendar,column, row);
 			yearTable.setStyleClass(column,row,borderWhiteTableStyle);
 			yearTable.setRowVerticalAlignment(row, "top");

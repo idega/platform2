@@ -23,6 +23,9 @@ public class DefaultLedgerVariationsHandler implements LedgerVariationsHandler{
 	public String getParentGroupName(Collection parentGroups) {
 		return null;
 	}
+	public String getParentOfParentGroupName(Collection parentGroups) {
+		return null;
+	}
 	
 	public void saveLedger(IWContext iwc, Page parentPage, String name, int groupID, String coachName, int coachGroupID, String date) {
 		CalBusiness calBiz = getCalBusiness(iwc);

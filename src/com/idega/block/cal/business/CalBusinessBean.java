@@ -141,11 +141,21 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		return entryGroup;		
+		return entryGroup;				
+	}	
+	
+	public Collection getEntryGroupsByLedgerID(int ledgerID) {
+		List list = null;
+		try {
+			CalendarEntryGroupHome entryGroupHome = (CalendarEntryGroupHome) getIDOHome(CalendarEntryGroup.class);
+			list = new ArrayList(entryGroupHome.findEntryGroupsByLedgerID(ledgerID));
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;
 		
 		
 	}
-	
 	//GET methods for EntryTypes
 	/**
 	 * gets a CalendarEntryType with the name <code>entryTypeName</code>
@@ -276,6 +286,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		}
 		return marks;
 	}
+	//get methods for marks
 	public List getAllMarks() {
 
 		List marks = null;
@@ -286,7 +297,17 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			e.printStackTrace();
 		}
 		return marks;
-		
+	}
+	public AttendanceMark getMark(int markID) {
+		AttendanceMark mark = null;
+		Integer mID = new Integer(markID);
+		try {
+			AttendanceMarkHome markHome = (AttendanceMarkHome) getIDOHome(AttendanceMark.class);
+			mark = markHome.findByPrimaryKey(mID);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return mark;
 	}
 	
 	public void deleteEntry(int entryID) {		
@@ -300,30 +321,31 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		}
 	}
 	
-	public void deleteEntryGroup(int entryID) {
-		CalendarEntry entry = getEntry(entryID);
-		CalendarEntryGroup entryGroup = null;
-		if(entry != null) {
-			entryGroup = getEntryGroup(entry.getEntryGroupID());
-			try {
-				entryGroup.removeEntryRelation();
-				entryGroup.remove();
-			}catch (Exception e) {
-				e.printStackTrace();
-			}
-			Collection entries = getEntriesByEntryGroupID(entry.getEntryGroupID());
-			Iterator entIter = entries.iterator();
-			while(entIter.hasNext()) {
-				CalendarEntry e = (CalendarEntry) entIter.next();
-				try {
-					e.remove();
-				} catch (Exception ex) {
-					ex.printStackTrace(System.err);
-				}
-			}
-			
+	public void deleteEntryGroup(int entryGroupID) {
+		CalendarEntryGroup entryGroup = getEntryGroup(entryGroupID);
+		try {
+			entryGroup.removeEntryRelation();
+			entryGroup.remove();
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
-		
+		Collection entries = getEntriesByEntryGroupID(entryGroupID);
+		Iterator entIter = entries.iterator();
+		while(entIter.hasNext()) {
+			CalendarEntry e = (CalendarEntry) entIter.next();
+			try {
+				e.remove();
+			} catch (Exception ex) {
+				ex.printStackTrace(System.err);
+			}
+		}		
+	}
+	
+	public void deleteEntryGroupByEntryID(int entryID) {
+		CalendarEntry entry = getEntry(entryID);
+		if(entry != null) {
+			deleteEntryGroup(entry.getEntryGroupID());
+		}		
 	}
 	public void deleteLedger(int ledgerID) {
 		CalendarLedger led = getLedger(ledgerID);	
@@ -342,17 +364,14 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 				}			
 			}
 			/*
-			 * get all entries for this ledger and delete them
+			 * get all entryGroups for this ledger and delete them
 			 */
-			Collection entries = getEntriesByLedgerID(ledgerID);
-			Iterator entIter = entries.iterator();
+//			Collection entries = getEntriesByLedgerID(ledgerID);
+			Collection entryGroups = getEntryGroupsByLedgerID(ledgerID);
+			Iterator entIter = entryGroups.iterator();
 			while(entIter.hasNext()) {
-				CalendarEntry entry = (CalendarEntry) entIter.next();
-				try {
-					entry.remove();
-				} catch (Exception e) {
-					e.printStackTrace(System.err);
-				}
+				CalendarEntryGroup entryGroup = (CalendarEntryGroup) entIter.next();
+				deleteEntryGroup(entryGroup.getEntryGroupID());
 			}
 			try {
 				led.removeUserRelation();
@@ -362,6 +381,8 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			}
 		}
 	}
+	
+	
 	
 	public void deleteUserFromLedger(int userID, int ledgerID, IWContext iwc) {
 		UserBusiness userBiz = getUserBusiness(iwc);
@@ -399,7 +420,16 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			
 		}
 	}
-
+	public void deleteMark(int markID) {
+		AttendanceMark mark = getMark(markID); 		
+		if (mark != null) {
+			try {
+				mark.remove();
+			} catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+		}		
+	}
 
 	/**
 	 * creates a new CalendarEntryType 
@@ -434,16 +464,19 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 	 */
 	public void createNewEntry(String headline, User user, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String ledger, String description, String location) {
 		CalendarEntryGroup entryGroup = null;
-		if(repeat != null && !repeat.equals("")) {
+//		if(repeat != null && !repeat.equals("")) {
 			try {
 				CalendarEntryGroupHome entryGroupHome = (CalendarEntryGroupHome) getIDOHome(CalendarEntryGroup.class);
 				entryGroup = entryGroupHome.create();
 				entryGroup.setName(repeat);
+				if(Integer.parseInt(ledger) != -1) {
+					entryGroup.setLedgerID(Integer.parseInt(ledger));
+				}			
 				entryGroup.store();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}			
-		}
+//		}
 		Timestamp startTime = Timestamp.valueOf(startDate);		
 		//modifications of the time properties of the start timestamp
 		if(startHour != null || !startHour.equals("")) {
@@ -515,7 +548,6 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			try {
 				CalendarEntryType entryType = getEntryTypeByName(type);
 				Integer entryTypePK = (Integer) entryType.getPrimaryKey();
-				Integer ledgerID = new Integer(ledger);
 				CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
 				CalendarEntry entry = entryHome.create();
 				entry.setName(headline);
@@ -528,8 +560,8 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 				if(groupID != null) {
 					entry.setGroupID(groupID.intValue());
 				}	
-				if(ledgerID.intValue() != -1) {
-					entry.setLedgerID(ledgerID.intValue());
+				if(Integer.parseInt(ledger) != -1) {
+					entry.setLedgerID(Integer.parseInt(ledger));
 				}
 				entry.setDescription(description);
 				entry.setLocation(location);
@@ -838,7 +870,11 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		User user = null;
 		User coach = null;
 		Timestamp stamp = Timestamp.valueOf(date);
-		
+		stamp.setHours(0);
+		stamp.setMinutes(0);
+		stamp.setSeconds(0);
+		stamp.setNanos(0);
+		System.out.println("stamp: " + stamp.toString());
 		
 		try {
 			group = getGroupBusiness(iwc).getGroupByGroupID(groupID);
@@ -869,10 +905,16 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			e.printStackTrace();
 		}
 	}
-	public void createNewMark(String markName, String description) {
+	public void createNewMark(int markID, String markName, String description) {
 		try {
 			AttendanceMarkHome markHome = (AttendanceMarkHome) getIDOHome(AttendanceMark.class);
-			AttendanceMark mark = markHome.create();
+			AttendanceMark mark = null;
+			if(markID == -1) {
+				mark = markHome.create();
+			}
+			else {
+				mark = markHome.findByPrimaryKey(new Integer(markID));
+			}
 			mark.setMark(markName);
 			mark.setMarkDescription(description);
 			mark.store();
@@ -942,9 +984,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			}
 		}
 	}
-
-
-
+	
 	public boolean deleteBlock(int iObjectInstanceId) {
 		return CategoryBusiness.getInstance().deleteBlock(iObjectInstanceId);
 	}

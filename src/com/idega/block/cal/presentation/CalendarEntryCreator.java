@@ -224,9 +224,7 @@ public class CalendarEntryCreator extends Form{
 			entryIDString = "";
 		}
 		else {
-			Integer entryID = new Integer(entryIDString);
-			entry = getCalBusiness(iwc).getEntry(entryID.intValue());
-			
+			entry = getCalBusiness(iwc).getEntry(Integer.parseInt(entryIDString));
 		}
 				
 		headlineField = new TextInput(headlineFieldParameterName);
@@ -237,12 +235,13 @@ public class CalendarEntryCreator extends Form{
 		typeField = new DropdownMenu(typeFieldParameterName);
 		
 		//if the general and practice types have not been added -> they are added!
+		if(calBusiness.getEntryTypeByName(practiceFieldParameterName) == null) {
+			calBusiness.createNewEntryType(practiceFieldParameterName);
+		}	
 		if(calBusiness.getEntryTypeByName(generalFieldParameterName) == null) {
 			calBusiness.createNewEntryType(generalFieldParameterName);			
 		}
-		if(calBusiness.getEntryTypeByName(practiceFieldParameterName) == null) {
-			calBusiness.createNewEntryType(practiceFieldParameterName);
-		}		
+			
 
 		CalBusiness calBiz = getCalBusiness(iwc);
 		Iterator typeIter = calBiz.getAllEntryTypes().iterator();
@@ -353,12 +352,14 @@ public class CalendarEntryCreator extends Form{
 			newEntryLink.setStyleClass(styledLink);
 			
 			deleteLink = new Link(iwrb.getLocalizedString("delete","Delete"));
+			deleteLink.setParameter("del","del");
 			deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
-			deleteLink.setToFormSubmit(this,true);
+			deleteLink.setToFormSubmit(this);
+//			deleteLink.setOnClick("findObj('"+ modifyOneOrManyRadioButtonParameterName +"').value='"+ u.getPrimaryKey() +"';");
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, entryIDString);
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_ENTRY_OR_LEDGER,ENTRY);
-			deleteLink.addParameter(modifyOneOrManyRadioButtonParameterName,"many");
+//			deleteLink.addParameter(modifyOneOrManyRadioButtonParameterName,iwc.getParameter(modifyOneOrManyRadioButtonParameterName));
 			deleteLink.addParameter(CalendarView.ACTION,"");
 			deleteLink.setAsImageButton(true,true);
 						
@@ -529,14 +530,18 @@ public class CalendarEntryCreator extends Form{
 			CalendarLedger ledger = getCalBusiness(iwc).getLedger(ledgerID);
 			ledStartTime = ledger.getDate();
 		}
-		
-		
-		if(from.compareTo(to)>0) {
+
+		if(from.getHours() > to.getHours() || (from.getHours() == to.getHours() && from.getMinutes() > to.getMinutes())) {
+			parentPage.setAlertOnLoad(iwrb.getLocalizedString("calEntryCreator.to_time_before_from_time_message","The from time is later than the to time!"));
+			displayingTimeConflict = true;
+		}
+					
+		else if(from.compareTo(to)>0) {
 			parentPage.setAlertOnLoad(iwrb.getLocalizedString("calEntryCreator.to_date_before_from_date_message","The from day is later than the to day!"));
 			displayingTimeConflict = true;
 		}
 		
-		else if(from.compareTo(ledStartTime)<0) {
+		else if(from.getTime()<ledStartTime.getTime()) {
 			parentPage.setAlertOnLoad(iwrb.getLocalizedString("calEntryCreator.from_date_before_led_start_date_message","The from day is before the ledgers start day!"));
 			displayingTimeConflict = true;
 		}
@@ -557,17 +562,15 @@ public class CalendarEntryCreator extends Form{
 				else {
 					calBus.updateEntry(Integer.parseInt(entryID),entryHeadline, user, entryType, entryRepeat, entryDate,entryTimeHour, entryTimeMinute, entryEndDate, entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation, entryModifyOneOrMany );				
 				}
-				
-				
-				
-				
 			}
 			else {
 				calBus.createNewEntry(entryHeadline, user, entryType, entryRepeat, entryDate,entryTimeHour, entryTimeMinute, entryEndDate, entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation);			
 			}
 		}
 	}
+	
 	public void main(IWContext iwc) {
+		setName("form");
 		initializeTexts(iwc);
 		initializeFields(iwc);
 				
@@ -576,6 +579,14 @@ public class CalendarEntryCreator extends Form{
 		add(hiddenMonth);
 		add(hiddenDay);
 		add(hiddenEntryID);
+		
+		String del = iwc.getParameter("del");
+		System.out.println("del: " + del);
+		
+		if(iwc.getParameter("del") != null && !iwc.getParameter("del").equals("")) {
+			String mod = iwc.getParameter(modifyOneOrManyRadioButtonParameterName);
+			System.out.println("mod: " + mod);
+		}
 
 		add(lineUpEdit(iwc));
 	}
