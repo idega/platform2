@@ -5,7 +5,7 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
 
-import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+//import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import se.idega.idegaweb.commune.presentation.CommuneUserFinder;
@@ -13,6 +13,7 @@ import se.idega.idegaweb.commune.presentation.CommuneUserFinder;
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
+import com.idega.util.Age;
 
 /**
  * @author laddi
@@ -24,9 +25,13 @@ public class ChildCareFindChild extends CommuneUserFinder {
 	 */
 	public boolean addUser(IWContext iwc, User user) {
 		try {
-			return getChildCareBusiness(iwc).hasApplications(((Integer)user.getPrimaryKey()).intValue());
+			//return getChildCareBusiness(iwc).hasApplications(((Integer)user.getPrimaryKey()).intValue());
+			Age age = new Age(user.getDateOfBirth());
+			if (age.getYears() <= 12)
+				return true;
+			return false;
 		}
-		catch (RemoteException e) {
+		catch (NullPointerException e) {
 			return false;
 		}
 	}
@@ -71,9 +76,9 @@ public class ChildCareFindChild extends CommuneUserFinder {
 		return localize("child_care.found_children","Found children");
 	}
 
-	private ChildCareBusiness getChildCareBusiness(IWContext iwc) throws RemoteException {
+	/*private ChildCareBusiness getChildCareBusiness(IWContext iwc) throws RemoteException {
 		return (ChildCareBusiness) IBOLookup.getServiceInstance(iwc, ChildCareBusiness.class);	
-	}
+	}*/
 	
 	private ChildCareSession getChildCareSession(IWContext iwc) throws RemoteException {
 		return (ChildCareSession) IBOLookup.getSessionInstance(iwc, ChildCareSession.class);	
