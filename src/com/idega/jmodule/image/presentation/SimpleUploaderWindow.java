@@ -17,6 +17,7 @@ import com.oreilly.servlet.MultipartRequest;
 import com.oreilly.servlet.multipart.*;
 import com.idega.jmodule.image.data.*;
 import com.idega.jmodule.image.business.*;
+import com.idega.idegaweb.IWMainApplication;
 /**
  * Title:
  * Description:
@@ -70,15 +71,20 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
         if(iwc.getParameter("save")!=null){
           save(iwc);
         }
-        else
+        else {
+          if(iwc.getParameter("new")!=null)
+            deleteImage(iwc);
           add(getMultiForm(iwc));
+        }
       }
 
     }
     public Form getMultiForm(IWContext iwc){
       Form f = new Form();
       f.setMultiPart();
-      f.setAction(iwc.getRequestURI()+"?"+com.idega.presentation.Page.IW_FRAME_CLASS_PARAMETER+"="+com.idega.idegaweb.IWMainApplication.getEncryptedClassName(this.getClass()));
+      //f.setAction(iwc.getRequestURI()+"?"+com.idega.presentation.Page.IW_FRAME_CLASS_PARAMETER+"="+com.idega.idegaweb.IWMainApplication.getEncryptedClassName(this.getClass()));
+      String s = iwc.getRequestURI()+"?"+IWMainApplication.classToInstanciateParameter+"="+IWMainApplication.getEncryptedClassName(this.getClass());
+      f.setAction(s);
       f.add(new FileInput());
       f.add(new SubmitButton());
       return f;
@@ -107,6 +113,24 @@ public class SimpleUploaderWindow extends Window implements SimpleImage{
         return getMultiForm(iwc);
       }
 
+    }
+
+    public void deleteImage(IWContext iwc){
+      ImageProperties ip = null;
+      if(iwc.getSessionAttribute("image_props")!=null){
+        ip = (ImageProperties) iwc.getSessionAttribute("image_props");
+        iwc.removeSessionAttribute("image_props");
+      }
+      if(ip !=null){
+        try {
+           new File(ip.getRealPath()).delete();
+        }
+        catch (Exception ex) {
+          ex.printStackTrace();
+        }
+        setParentToReload();
+
+      }
     }
 
     public void save(IWContext iwc){

@@ -7,6 +7,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.jmodule.image.data.ImageEntity;
 import com.idega.util.idegaTimestamp;
+import com.idega.idegaweb.IWBundle;
 
 /**
  * Title:
@@ -20,14 +21,31 @@ import com.idega.util.idegaTimestamp;
  public class SimpleChooser extends PresentationObjectContainer implements SimpleImage{
 
     private String sessImageParameter = "image_id";
+    private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.image";
     private boolean includeLinks;
 
     public void setToIncludeLinks(boolean includeLinks){
       this.includeLinks = includeLinks;
     }
 
+    public String getBundleIdentifier(){
+      return IW_BUNDLE_IDENTIFIER ;
+    }
+
+    public static String getSaveImageFunction(){
+      StringBuffer function = new StringBuffer("function saveImageId(){\n \t");
+      function.append("top.opener.setImageId(iImageId) ;\n \t");
+      function.append("self.window.close(); \n }");
+      return function.toString();
+    }
+
     public void  main(IWContext iwc){
+      IWBundle iwb = getBundle(iwc);
       checkParameterName(iwc);
+
+      getParentPage().getAssociatedScript().addFunction("callbim","var iImageId = 108 ;\n "+getSaveImageFunction() );
+
+
       Table Frame = new Table();
       Frame.setCellpadding(0);
       Frame.setCellspacing(0);
@@ -44,7 +62,7 @@ import com.idega.util.idegaTimestamp;
       Frame.add(ifViewer,2,1);
       Frame.setBorderColor("#00FF00");
       if(includeLinks)
-        Frame.add(getLinkTable(),2,2);
+        Frame.add(getLinkTable(iwb),2,2);
 
       add(Frame);
     }
@@ -65,24 +83,33 @@ import com.idega.util.idegaTimestamp;
         sessImageParameter = (String) iwc.getSessionAttribute(sessImageParameterName);
     }
 
-    public PresentationObject getLinkTable(){
+    public PresentationObject getLinkTable(IWBundle iwb){
       Table T = new Table();
-      Link btnAdd = getNewImageLink("add");
-        btnAdd.setFontStyle("text-decoration: none");
-        btnAdd.setFontColor("#FFFFFF");
-        btnAdd.setBold();
-      Link btnDelete = getDeleteLink("delete");
-        btnDelete.setFontStyle("text-decoration: none");
-        btnDelete.setFontColor("#FFFFFF");
-        btnDelete.setBold();
-      Link btnSave = getSaveLink("save");
-        btnSave.setFontStyle("text-decoration: none");
-        btnSave.setFontColor("#FFFFFF");
-        btnSave.setBold();
-      Link btnReload = getReloadLink("reload");
-        btnReload.setFontStyle("text-decoration: none");
-        btnReload.setFontColor("#FFFFFF");
-        btnReload.setBold();
+
+      Text add = new Text("add");
+      add.setFontStyle("text-decoration: none");
+      add.setFontColor("#FFFFFF");
+      add.setBold();
+      Link btnAdd = getNewImageLink(add);
+
+      Text del = new Text("delete");
+      del.setFontStyle("text-decoration: none");
+      del.setFontColor("#FFFFFF");
+      del.setBold();
+      Link btnDelete = getDeleteLink(del);
+
+      Text save = new Text("use");
+      save.setFontStyle("text-decoration: none");
+      save.setFontColor("#FFFFFF");
+      save.setBold();
+      Link btnSave = getSaveLink(save);
+
+      Text reload = new Text("reload");
+      reload.setFontStyle("text-decoration: none");
+      reload.setFontColor("#FFFFFF");
+      reload.setBold();
+      Link btnReload = getReloadLink(reload);
+
       T.add(btnAdd,1,1);
       T.add(btnSave,2,1);
       T.add(btnDelete,3,1);
@@ -91,7 +118,7 @@ import com.idega.util.idegaTimestamp;
       return T;
     }
 
-    public Link getNewImageLink(String mo){
+    public Link getNewImageLink(PresentationObject mo){
       Link L = new Link(mo,SimpleUploaderWindow.class);
       L.addParameter("action","upload");
       L.addParameter("submit","new");
@@ -99,15 +126,18 @@ import com.idega.util.idegaTimestamp;
       return L;
     }
 
-    public Link getSaveLink(String mo){
+    public Link getSaveLink(PresentationObject mo){
       Link L = new Link(mo,SimpleViewer.class);
       L.addParameter(prmAction,actSave);
-      L.setOnClick("window.close()");
+      L.setOnClick("top.opener.setImageId(iImageId)");
+      //L.setOnClick("top.opener..setParentImageId(108)");
+      //L.setOnClick(getCallFunction(108) );
+      //L.setOnClick("window.close()");
       L.setTarget(target2);
       return L;
     }
 
-    public Link getDeleteLink(String mo){
+    public Link getDeleteLink(PresentationObject mo){
       Link L = new Link(mo,SimpleViewer.class);
       L.addParameter(prmAction,actDelete);
       L.setOnClick("top.setTimeout('top.frames.lister.location.reload()',150)");
@@ -115,7 +145,7 @@ import com.idega.util.idegaTimestamp;
       return L;
     }
 
-    public Link getReloadLink(String mo){
+    public Link getReloadLink(PresentationObject mo){
       Link L = new Link(mo,SimpleLister.class);
       L.setTarget(target1);
       return L;

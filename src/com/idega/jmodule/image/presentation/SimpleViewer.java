@@ -105,7 +105,6 @@ public class SimpleViewer extends PresentationObjectContainer{
       return s;
     }
 
-
     public void removeFromSession(IWContext iwc){
       iwc.removeSessionAttribute(sessImageParameter);
     }
@@ -113,6 +112,7 @@ public class SimpleViewer extends PresentationObjectContainer{
     public void saveImageId(IWContext iwc,String sImageId){
       iwc.setSessionAttribute(sessImageParameter,sImageId);
       iwc.setSessionAttribute(sessImageParameter+"2",sImageId);
+      //getParentPage().setOnUnLoad("setParentImageId("+sImageId+")");
     }
 
     public void saveImage(IWContext iwc,String sImageId){

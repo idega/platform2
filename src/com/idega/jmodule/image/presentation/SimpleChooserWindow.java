@@ -7,6 +7,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.jmodule.image.data.ImageEntity;
 import com.idega.util.idegaTimestamp;
+import com.idega.idegaweb.IWBundle;
 
 /**
  * Title:
@@ -19,6 +20,8 @@ import com.idega.util.idegaTimestamp;
 
  public class SimpleChooserWindow extends IWAdminWindow {
 
+    private String IW_BUNDLE_IDENTIFIER="com.idega.block.image";
+
     public SimpleChooserWindow(){
       super();
       setResizable(true);
@@ -26,14 +29,19 @@ import com.idega.util.idegaTimestamp;
       setHeight(460);
     }
 
+    public String getBundleIdentifier(){
+      return IW_BUNDLE_IDENTIFIER;
+    }
+
     public void  main(IWContext iwc) throws Exception{
+      IWBundle iwb = getBundle(iwc);
       SimpleChooser SC = new SimpleChooser();
       SC.setToIncludeLinks(false);
       add(SC);
-      addHeaderObject(SC.getLinkTable());
+      addHeaderObject(SC.getLinkTable(iwb));
       setTitle("Image Chooser");
       addTitle("Image Chooser" );
 
-      setParentToReload();
+      //setParentToReload();
     }
 }

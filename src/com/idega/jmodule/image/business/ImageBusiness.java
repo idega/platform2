@@ -17,6 +17,7 @@ import com.idega.presentation.ui.*;
 import com.oreilly.servlet.multipart.*;
 import com.idega.io.ImageSave;
 import com.idega.jmodule.image.business.ImageProperties;
+import com.idega.idegaweb.IWBundle;
 
 /**
  * Title: ImageBusiness
@@ -300,6 +301,7 @@ public static void makeDefaultSizes(IWContext iwc){
       else {
         id = ImageSave.saveImageToDB(-1,-1,input,ip.getContentType(),ip.getName(),"-1","-1", true);
       }
+      new File(ip.getRealPath()).delete();
     }
     catch(Exception e){
       e.printStackTrace(System.err);
@@ -314,9 +316,15 @@ public static void makeDefaultSizes(IWContext iwc){
   }
 
   public static ImageProperties doUpload(IWContext iwc) throws Exception{
+    String IW_BUNDLE_IDENTIFIER="com.idega.block.image";
+    IWBundle iwb = IWBundle.getBundle(IW_BUNDLE_IDENTIFIER,iwc.getApplication());
     String sep = System.getProperty("file.separator");
-    String realPath = iwc.getServletContext().getRealPath(sep);
-    String webPath = sep+"pics"+sep;
+    String path = sep;
+    String realPath = iwb.getResourcesRealPath()+path;
+    String webPath = iwb.getResourcesVirtualPath()+path;
+    System.err.println(webPath);
+    //String realPath = modinfo.getServletContext().getRealPath(sep);
+    //String webPath = sep+"pics"+sep;
     String realFile = "";
     ImageProperties  ip = null;
 
@@ -330,7 +338,7 @@ public static void makeDefaultSizes(IWContext iwc){
         ParamPart paramPart = (ParamPart) part;
         value = paramPart.getStringValue();
         //debug
-        System.out.println(name+" : "+value+Text.getBreak());
+        //System.out.println(name+" : "+value);
 
       }
       else if (part.isFile()) {
@@ -338,10 +346,13 @@ public static void makeDefaultSizes(IWContext iwc){
         FilePart filePart = (FilePart) part;
         String fileName = filePart.getFileName();
         if (fileName != null) {
-          webPath += fileName;
+           webPath += fileName;
           webPath = webPath.replace('\\','/');
-          realFile =  realPath+webPath;
-          File file = new File(realFile);
+          realFile =  realPath+fileName;
+          //File file = new File(realFile);
+          //System.err.println(realFile);
+          File file =  com.idega.util.FileUtil.getFileAndCreateIfNotExists(realFile);
+
           long size = filePart.writeTo(file);
           ip = new ImageProperties(fileName,filePart.getContentType(),realFile,webPath,size);
         }
