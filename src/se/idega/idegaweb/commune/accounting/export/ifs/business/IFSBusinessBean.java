@@ -713,7 +713,12 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				cell = row.createCell(i);
 				cell.setCellValue(columnNames[i]);
 				cell.setCellStyle(style);			
-			}																								
+			}
+			//style = wb.createCellStyle();
+			//style.setFont(font);	
+			//style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+			//style.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+			//row.getCell((short)9).setCellStyle(style);
 			Iterator it = data.iterator();								
 			while (it.hasNext()) {							
 				PaymentRecord pRec = (PaymentRecord) it.next();
