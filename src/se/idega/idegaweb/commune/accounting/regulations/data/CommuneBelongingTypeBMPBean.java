@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.1 2003/08/18 12:38:21 kjell Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.2 2003/08/18 13:36:49 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,17 +18,19 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
 
-
 /**
- * Commune belonging types ("Nacka", "Ej Nacka", "blabla") etc. Used for the posting.
- * @author Kjell Lindman
- * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean 
+ * Holds Commune belonging types ("Nacka", "Ej Nacka", "blabla") etc. Used for the posting.
+ * 
+ * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean
+ * <p>
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.2 2003/08/18 13:36:49 kjell Exp $
+ * 
+ * @author <a href="http://www.lindman.se">Kjell Lindman</a>
+ * @version $Revision: 1.2 $
  */
-
-public class CommuneBelongingTypeBMPBean extends GenericEntity implements CommuneBelongingType
-{
+public class CommuneBelongingTypeBMPBean extends GenericEntity implements CommuneBelongingType {
+	
 	private static final String ENTITY_NAME = "cacc_commune_belonging_type";
-
 	private static final String COLUMN_COMMUNE_BELONGING_TYPE = "commune_belonging_type";
 
 	public String getEntityName() {

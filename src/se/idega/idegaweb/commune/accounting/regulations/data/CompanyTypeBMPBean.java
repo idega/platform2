@@ -1,5 +1,5 @@
 /*
- * $Id: CompanyTypeBMPBean.java,v 1.1 2003/08/18 12:38:21 kjell Exp $
+ * $Id: CompanyTypeBMPBean.java,v 1.2 2003/08/18 13:36:49 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,19 +18,20 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
 
-
 /**
  * Holds Company types ("Kommun", "Stiftelse", "AB") etc. 
  * Used for the posting but should be used for any translation of Company Types code 
  * 
- * @author Kjell Lindman
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean 
+ * <p>
+ * $Id: CompanyTypeBMPBean.java,v 1.2 2003/08/18 13:36:49 kjell Exp $
+ * 
+ * @author <a href="http://www.lindman.se">Kjell Lindman</a>
+ * @version $Revision: 1.2 $
  */
-
-public class CompanyTypeBMPBean extends GenericEntity implements CompanyType
-{
+public class CompanyTypeBMPBean extends GenericEntity implements CompanyType {
+	
 	private static final String ENTITY_NAME = "cacc_company_type";
-
 	private static final String COLUMN_COMPANY_TYPE = "company_type";
 
 	public String getEntityName() {
