@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.7 2002/07/29 23:29:22 tryggvil Exp $
+ * $Id: MessageBusinessBean.java,v 1.8 2002/07/30 14:15:57 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import java.util.Collection;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.MessageHome;
@@ -49,6 +50,25 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			throw new java.lang.UnsupportedOperationException("MessageType " + messageType + " not yet implemented");
 		}
 	}
+	
+	public void deleteMessage(String messageType, int messageID) throws FinderException,RemoveException,java.rmi.RemoteException {
+		getMessageHome(messageType).findByPrimaryKey(new Integer(messageID)).remove();
+	}
+	
+	public void deleteUserMessage(int messageID) throws FinderException,RemoveException,java.rmi.RemoteException {
+		getUserMessage(messageID).remove();	
+	}
+	
+	public void markMessageAsRead(Message message) throws RemoteException {
+		message.setCaseStatus(this.getCaseStatusGranted());
+		message.store();
+	}
+	
+	public boolean isMessageRead(Message message) throws RemoteException {
+		if ( (message.getCaseStatus()).equals(getCaseStatusGranted()) )
+			return true;
+		return false;
+	}
 
 	private String getTypeUserMessage() {
 		return TYPE_USER_MESSAGE;
@@ -70,9 +90,8 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		return getMessage(getTypeUserMessage(), messageId);
 	}
 
-	public Collection findMessages(int userId) throws Exception {
-		//return getMessageHome().findMessages(userId);
-		return null;
+	public Collection findMessages(User user) throws Exception {
+		return getMessageHome(TYPE_USER_MESSAGE).findMessages(user);
 	}
 
 	public Message createUserMessage(User user, String subject, String body) throws CreateException, RemoteException {

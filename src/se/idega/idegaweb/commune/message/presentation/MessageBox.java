@@ -2,14 +2,20 @@ package se.idega.idegaweb.commune.message.presentation;
 
 import java.util.*;
 
+import javax.ejb.EJBException;
+
 import se.idega.idegaweb.commune.presentation.*;
 import se.idega.idegaweb.commune.message.data.*;
 import se.idega.idegaweb.commune.message.business.*;
 
+import com.idega.block.process.data.CaseStatus;
+import com.idega.core.user.data.User;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
+import com.idega.user.Converter;
+import com.idega.util.idegaTimestamp;
 
 /**
  * Title:
@@ -61,6 +67,7 @@ public class MessageBox extends CommuneBlock {
           break;
         case ACTION_DELETE_MESSAGE:
           deleteMessage(iwc);
+          viewMessageList(iwc);
           break;
         default:
           break;
@@ -103,34 +110,45 @@ public class MessageBox extends CommuneBlock {
     add(new Break(2));
 
     Form f = new Form();
-    ColumnList messageList = new ColumnList(4);
+    ColumnList messageList = new ColumnList(3);
     f.add(messageList);
     messageList.setBackroundColor("#e0e0e0");
     messageList.setHeader(localize("message.date","Date"),1);
-    messageList.setHeader(localize("message.from","From"),2);
-    messageList.setHeader(localize("message.subject","Subject"),3);
+    messageList.setHeader(localize("message.subject","Subject"),2);
 
-    int userId = iwc.getUserId();
-    Collection messages = getMessageBusiness(iwc).findMessages(userId);
+    Collection messages = getMessageBusiness(iwc).findMessages(Converter.convertToNewUser(iwc.getUser()));
+    Link link = null;
+    Text subject = null;
+    CheckBox deleteCheck = null;
+    boolean isRead = false;
 
-    Iterator iter = messages.iterator();
-    while (iter.hasNext()) {
-      Message msg = (Message)iter.next();
-      Link l = new Link(msg.getDateString());
-      l.addParameter(PARAM_VIEW_MESSAGE,"true");
-      l.addParameter(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
-      messageList.add(l);
-      messageList.add(msg.getSenderName());
-      messageList.add(msg.getSubject());
-      CheckBox deleteCheckbox = new CheckBox(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
-      messageList.add(deleteCheckbox);
+    if ( messages != null ) {
+	    Iterator iter = messages.iterator();
+	    while (iter.hasNext()) {
+	      Message msg = (Message)iter.next();
+	      isRead = getMessageBusiness(iwc).isMessageRead(msg);
+	      link = new Link((new idegaTimestamp(msg.getCreated())).getLocaleDate(iwc));
+	      link.addParameter(PARAM_VIEW_MESSAGE,"true");
+	      link.addParameter(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
+	      if ( isRead )
+	      	link.setBold();
+	      subject = this.getSmallText(msg.getSubject());
+	      if ( isRead )
+	      	subject.setBold();
+	      deleteCheck = new CheckBox(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
+	      
+	      messageList.add(link);
+	      messageList.add(subject);
+	      messageList.add(deleteCheck);
+	    }
     }
-    Link deleteButton = getLocalizedLink("message.delete","Delete");
+
+    SubmitButton deleteButton = new SubmitButton(this.getLocalizedString("message.delete", "Delete", iwc));
     deleteButton.setAsImageButton(true);
-    deleteButton.setToFormSubmit(f);
 
     messageList.skip(3);
     PresentationObject[] bottomRow = new PresentationObject[4];
+    
     bottomRow[3] = deleteButton;
     messageList.addBottomRow(bottomRow);
 
@@ -140,15 +158,16 @@ public class MessageBox extends CommuneBlock {
 
   private void viewMessage(IWContext iwc)throws Exception{
     Message msg = getMessage(iwc.getParameter(PARAM_MESSAGE_ID),iwc);
+    getMessageBusiness(iwc).markMessageAsRead(msg);
 
     add(getLocalizedHeader("message.message","Message"));
     add(new Break(2));
     add(getLocalizedText("message.from","From"));
     add(getText(": "));
-    add(getLink(msg.getSenderName()));
+    //add(getLink(msg.getSenderName()));
     add(new Break(2));
     add(getLocalizedText("message.date","Date"));
-    add(getText(": "+msg.getDateString()));
+    add(getText(": "+(new idegaTimestamp(msg.getCreated())).getLocaleDate(iwc)));
     add(new Break(2));
     add(getLocalizedText("message.subject","Subject"));
     add(getText(": "+msg.getSubject()));
@@ -222,9 +241,7 @@ public class MessageBox extends CommuneBlock {
   private void deleteMessage(IWContext iwc)throws Exception{
     String[] ids = iwc.getParameterValues(PARAM_MESSAGE_ID);
     for(int i=0; i<ids.length; i++){
-      Message msg = getMessage(ids[i],iwc);
-      add(getText(msg.getSubject()));
-      add(new Break(2));
+      getMessageBusiness(iwc).deleteUserMessage(Integer.parseInt(ids[i]));
     }
   }
 
