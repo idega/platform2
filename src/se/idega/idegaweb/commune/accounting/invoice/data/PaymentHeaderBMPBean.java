@@ -107,13 +107,17 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	 * @throws FinderException
 	 */
 	public Integer ejbFindBySchoolCategorySchoolPeriod(School school, SchoolCategory schoolCategory, Date period) throws FinderException {
-		IWTimestamp ts = new IWTimestamp(period);
-		ts.setAsDate();
-		ts.setDay(1);
+		IWTimestamp start = new IWTimestamp(period);
+		start.setAsDate();
+		start.setDay(1);
+		IWTimestamp end = new IWTimestamp(start);
+		end.addMonths(1);
+
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCHOOL_ID, school.getPrimaryKey());
 		sql.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, (String) schoolCategory.getPrimaryKey());
-		sql.appendAndEquals(COLUMN_PERIOD, ts.getDate());
+		sql.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());
+		sql.appendAnd().append(COLUMN_PERIOD).appendLessThanSign().append(end.getDate());
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 
