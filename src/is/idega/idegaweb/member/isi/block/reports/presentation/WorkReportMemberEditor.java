@@ -382,14 +382,13 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     socialSecurityNumberEditorConverter.maintainParameters(this.getParametersToMaintain());
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     EntityToPresentationObjectConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
-    EntityToPresentationObjectConverter textConverter = new WorkReportTextConverter();
     
     // define path short keys and map corresponding converters
     // if a converter is "null" the default converter of the entity browser is used
     Object[] columns = {
       "okay", new EditOkayButtonConverter(),
       CHECK_BOX, checkBoxConverter,
-      NAME, textConverter,
+      NAME, null,
       PERSONAL_ID, socialSecurityNumberEditorConverter,
       STREET_NAME, textEditorConverter,
       POSTAL_CODE_ID, dropDownPostalCodeConverter};
@@ -414,9 +413,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       String column = (String) columns[i];
       EntityToPresentationObjectConverter converter = (EntityToPresentationObjectConverter) columns[i+1];
       browser.setMandatoryColumn(i, column);
-      if (converter != null) {
-        browser.setEntityToPresentationConverter(column, converter);
-      }
+      browser.setEntityToPresentationConverter(column, converter);
     }
     // add more columns
     Iterator iterator = leagueCountMap.keySet().iterator();
@@ -719,27 +716,6 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       text.setBold();
       return text;
     }
-  }
-
-  class WorkReportTextConverter implements  EntityToPresentationObjectConverter  {    
-    
-    public PresentationObject getHeaderPresentationObject (
-        EntityPath entityPath,
-        EntityBrowser browser,
-        IWContext iwc) {
-      return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);   
-    }
-    
-    public PresentationObject getPresentationObject(
-        Object entity,
-        EntityPath path,
-        EntityBrowser browser,
-        IWContext iwc) {
-      String name = path.getShortKey();
-      String value = ((EntityRepresentation) entity).getColumnValue(name).toString();
-      return new Text(value);
-    }
-    
   }
 
 }
