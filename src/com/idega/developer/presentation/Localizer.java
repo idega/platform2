@@ -1,13 +1,12 @@
 package com.idega.developer.presentation;
 
-import com.idega.block.text.business.TextFormatter;
 import com.idega.builder.presentation.IBAddModuleWindow;
 import com.idega.business.IBOLookup;
 import com.idega.core.localisation.presentation.LocalePresentationUtil;
-import com.idega.core.localisation.presentation.LocaleSwitcher;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.LocaleChanger;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
@@ -21,6 +20,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.LocaleUtil;
 import com.idega.util.StringHandler;
+import com.idega.util.text.TextSoap;
 import com.idega.versioncontrol.business.UpdateService;
 
 /**
@@ -101,7 +101,7 @@ public class Localizer extends PresentationObjectContainer {
 			IWResourceBundle iwrb = iwb.getResourceBundle(LocaleUtil.getLocale(iwc.getParameter(localesParameter)));
 			String stringsKey = iwc.getParameter(stringsParameter);
 			String areaText = iwc.getParameter(areaParameter);
-			String newStringsKey = iwc.getParameter(this.newStringKeyParameter);
+			String newStringsKey = iwc.getParameter(newStringKeyParameter);
 			
 			if (this.isCommitting(iwc)) {
 				this.commitLocalizationFile(iwc);
@@ -158,7 +158,7 @@ public class Localizer extends PresentationObjectContainer {
 						else {
 
 							//String areaValue = iwrb.getStringChecked(stringsKey);
-							String areaValue = iwc.getParameter(this.areaParameter);
+							String areaValue = iwc.getParameter(areaParameter);
 							if (areaValue == null) {
 								area = getTextArea(areaParameter, "");
 							}
@@ -196,7 +196,7 @@ public class Localizer extends PresentationObjectContainer {
 
 			table.add(new SubmitButton("Select Locale",subAction,"select"),2,1);
 			table.add(IWDeveloper.getText("String:"), 1, 3);
-			stringsDrop = this.getLocalizeableStringsMenu(iwma, selectedBundle, stringsParameter);
+			stringsDrop = Localizer.getLocalizeableStringsMenu(iwma, selectedBundle, stringsParameter);
 			stringsDrop.keepStatusOnAction();
 			stringsDrop.setToSubmit();
 			table.add(stringsDrop, 2, 3);
@@ -204,7 +204,7 @@ public class Localizer extends PresentationObjectContainer {
 
 			Frame.add(IWDeveloper.getText("Available Strings:"), 1, 3);
 			Frame.add(Text.getBreak(), 1, 3);
-			Frame.add(this.getLocalizeableStringsTable(iwc, iwma, selectedBundle, iwrb, stringsParameter, templateLink), 1, 3);
+			Frame.add(Localizer.getLocalizeableStringsTable(iwc, iwma, selectedBundle, iwrb, stringsParameter, templateLink), 1, 3);
 
 		}
 	}
@@ -214,7 +214,7 @@ public class Localizer extends PresentationObjectContainer {
 
 		Form myForm = new Form();
 		myForm.setEventListener(com.idega.core.localisation.business.LocaleSwitcher.class.getName());
-		DropdownMenu down = LocalePresentationUtil.getAvailableLocalesDropdown(iwma, LocaleSwitcher.localesParameter);
+		DropdownMenu down = LocalePresentationUtil.getAvailableLocalesDropdown(iwma, LocaleChanger.localesParameter);
 		down.keepStatusOnAction();
 		down.setToSubmit();
 		myForm.add(down);
@@ -240,13 +240,13 @@ public class Localizer extends PresentationObjectContainer {
 			localizedString = iwrb.getLocalizedString(key);
 			if (localizedString == null || StringHandler.EMPTY_STRING.equals(localizedString)){
 				String defaultString = bundle.getLocalizableStringDefaultValue(key);
-				defaultString = TextFormatter.formatText(defaultString);
+				defaultString = TextSoap.formatText(defaultString);
 				stringValueText = new Text(defaultString);
 				stringValueText.setFontColor("#FF0000");
 				keyLink.setFontColor("#FF0000");
 			}
 			else{
-				localizedString = TextFormatter.formatText(localizedString);
+				localizedString = TextSoap.formatText(localizedString);
 				stringValueText = new Text(localizedString);
 			}
 			
@@ -286,12 +286,10 @@ public class Localizer extends PresentationObjectContainer {
 		if (subActioner == null) {
 			return false;
 		}
-		else {
-			if (subActioner.equals(ACTION_SAVE)) {
-				return true;
-			}
-			return false;
+		if (subActioner.equals(ACTION_SAVE)) {
+			return true;
 		}
+		return false;
 	}
 
 	private boolean isDeleting(IWContext iwc) {
@@ -299,12 +297,11 @@ public class Localizer extends PresentationObjectContainer {
 		if (subActioner == null) {
 			return false;
 		}
-		else {
-			if (subActioner.equals(ACTION_DELETE)) {
-				return true;
-			}
-			return false;
+		if (subActioner.equals(ACTION_DELETE)) {
+			return true;
 		}
+		return false;
+
 	}
 	
 	private boolean isCommitting(IWContext iwc) {
@@ -312,12 +309,10 @@ public class Localizer extends PresentationObjectContainer {
 		if (subActioner == null) {
 			return false;
 		}
-		else {
-			if (subActioner.equals(ACTION_COMMIT_REPO)) {
-				return true;
-			}
-			return false;
+		if (subActioner.equals(ACTION_COMMIT_REPO)) {
+			return true;
 		}
+		return false;
 	}	
 
 	private PresentationObject getTextArea(String name, String startValue) {
@@ -330,8 +325,8 @@ public class Localizer extends PresentationObjectContainer {
 	
 	private void commitLocalizationFile(IWContext iwc){
 	
-		String bundleIdentifier = iwc.getParameter(this.bundlesParameter);
-		String localeString = iwc.getParameter(this.localesParameter);
+		String bundleIdentifier = iwc.getParameter(bundlesParameter);
+		String localeString = iwc.getParameter(localesParameter);
 		
 		UpdateService updateservice;
 		boolean succeeded=false;
