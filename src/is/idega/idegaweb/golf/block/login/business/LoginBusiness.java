@@ -134,7 +134,7 @@ public class LoginBusiness extends LoginBusinessBean implements IWPageEventListe
 					User user = member.getICUser();
 	                if(user!=null) {
 	                		try {
-							logInAsAnotherUser(modinfo,user);
+							logIn(modinfo,user);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}

@@ -195,7 +195,7 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
                 //new login
                 User user = member.getICUser();
                 if(user!=null) {
-                		logInAsAnotherUser(modinfo,user);
+                		logIn(modinfo,user);
                 }
                 
                 break;
