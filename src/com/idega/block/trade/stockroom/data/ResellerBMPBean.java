@@ -10,8 +10,8 @@ import java.util.Vector;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
-import com.idega.block.tpos.data.TPosMerchant;
-import com.idega.block.tpos.data.TPosMerchantHome;
+//import com.idega.block.creditcard.data.TPosMerchant;
+//import com.idega.block.creditcard.data.TPosMerchantHome;
 import com.idega.block.trade.stockroom.business.ResellerManager;
 import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.contact.data.Email;
@@ -172,7 +172,7 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
     this.setIsValid(false);
     this.update();
   }
-
+/*
   public int getTPosMerchantId() {
     return getIntColumnValue(getColumnNameTPosMerchantID());
   }
@@ -189,7 +189,7 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
     TPosMerchantHome merchantHome = (TPosMerchantHome) IDOLookup.getHome(TPosMerchant.class);
     return merchantHome.findByPrimaryKey(new Integer(getTPosMerchantId()));
   }
-
+*/
   public static String getResellerTableName()         {return "SR_RESELLER";}
   public static String getColumnNameName()            {return "NAME";}
   public static String getColumnNameDescription()     {return "DESCRIPTION";}
