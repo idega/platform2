@@ -39,7 +39,10 @@ public class Messenger extends JModuleObject {
         messenger = new Applet();
         messenger.setCodeArchive(com.idega.block.messenger.servlet.ClientServer.MESSENGER_JAR_FILE);
         messenger.setAppletClass(com.idega.block.messenger.servlet.ClientServer.MESSENGER_APPLET_CLASS);
-        messenger.setCodebase(iwb.getResourcesVirtualPath()+"/");
+       // messenger.setCodebase(iwb.getResourcesVirtualPath()+"/");
+
+        messenger.setCodebase(".");
+
         messenger.setParam(SESSION_ID,modinfo.getSession().getId());
         messenger.setParam(USER_ID,Integer.toString(com.idega.block.login.business.LoginBusiness.getUser(modinfo).getID()));
         messenger.setParam(SERVLET_URL,com.idega.block.messenger.servlet.ClientServer.SERVLET_URL);
