@@ -69,7 +69,8 @@ public class ReportQueryOverview extends Block {
 	
   // special init parameters
   // replaced by parameters in class QueryBuilder
-  public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM_QUERY_FOLDER_ID;
+  protected static final String ADD_QUERY_SQL_FOR_DEBUG = "ADD_QUERY_SQL_FOR_DEBUG";
+public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM_QUERY_FOLDER_ID;
 	public static final String SET_ID_OF_DESIGN_FOLDER_KEY = ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID;
   
   public static final String DELETE_KEY = "delete_key";
@@ -466,7 +467,11 @@ public class ReportQueryOverview extends Block {
 	    		// show result of query
 	    		List executedSQLStatements = new ArrayList();
 	    		boolean isOkay = executeQueries(query, bridge, executedSQLStatements);
-	    		addExecutedSQLQueries(executedSQLStatements);
+	    		
+	    		if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
+	    			addExecutedSQLQueries(executedSQLStatements);
+	    		}
+	    		
 	    		if (! isOkay)	{
 	    			errorMessage = resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
 	    		}	
