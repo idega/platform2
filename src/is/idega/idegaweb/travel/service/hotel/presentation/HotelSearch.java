@@ -62,13 +62,15 @@ public class HotelSearch extends AbstractSearchForm {
 		return iwrb.getImage("/search/accomodation.png");
 	}
 	
+	protected String getUnitName() {
+		return "room";
+	}
+	
 	protected String getPriceCategoryKey() {
 		return HotelSetup.HOTEL_SEARCH_PRICE_CATEGORY_KEY;
 	}
 	
 	protected void getResults() throws RemoteException {
-		String sPostalCode[] = iwc.getParameterValues(PARAMETER_POSTAL_CODE_NAME);
-		String sFromDate = iwc.getParameter(PARAMETER_FROM_DATE);
 		String sManyDays = iwc.getParameter(PARAMETER_MANY_DAYS);
 		String sRoomType[] = iwc.getParameterValues(PARAMETER_TYPE);
 		String sRoomTypeCount[] = iwc.getParameterValues(PARAMETER_TYPE_COUNT);
@@ -106,7 +108,10 @@ public class HotelSearch extends AbstractSearchForm {
 		
 			Object[] postalCodeIds = getSearchBusiness(iwc).getPostalCodeIds(iwc);
 			
+			Object[] suppIds = getSupplierIDs();
+			/*
 			Object[] suppIds = new Object[]{};
+			String sPostalCode[] = iwc.getParameterValues(PARAMETER_POSTAL_CODE_NAME);
 			try {
 				Collection supps = engine.getSuppliers();
 				if (supps != null && !supps.isEmpty()) {
@@ -121,6 +126,7 @@ public class HotelSearch extends AbstractSearchForm {
 			}catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
+			*/
 
 			HotelHome hHome = (HotelHome) IDOLookup.getHome(Hotel.class);
 
@@ -131,39 +137,8 @@ public class HotelSearch extends AbstractSearchForm {
 				coll = hHome.find(null, null, roomTypeIds, hotelTypeIds, postalCodeIds, suppIds, min, max);
 			}
 			
-			PriceCategoryHome pcHome = (PriceCategoryHome) IDOLookup.getHome(PriceCategory.class);
-			PriceCategory priceCat = pcHome.findByKey(HotelSetup.HOTEL_SEARCH_PRICE_CATEGORY_KEY);
-			IWTimestamp from = from = new IWTimestamp(iwc.getParameter(AbstractSearchForm.PARAMETER_FROM_DATE));
 
-			//showCollectionContent(coll);
-			coll = getSearchBusiness(iwc).sortProducts(coll, priceCat, new IWTimestamp(sFromDate));
-			//showCollectionContent(coll);
-
-			HashMap map = getSearchBusiness(iwc).checkResults(iwc, coll);
-			int mapSize = map.size();
-			String foundString = "";
-			if (map != null) {
-				foundString = "Found "+mapSize+" match";
-				if (mapSize != 1) foundString += "es !<br>";
-			} else {
-				foundString = getText(iwrb.getLocalizedString("travel.search.no_matches","No matches"))+"<BR>";
-			}
-			
-			if (mapSize > 0) {
-				add(foundString);
-			}
-			listResults(iwc, coll, map);
-			add(foundString);
-
-			if (coll != null) {
-				if (coll.isEmpty()) {
-					STATE = 0;
-					setupSearchForm();
-				}
-			} else {
-				STATE = 0;
-				setupSearchForm();
-			}
+			handleResults(coll);
 		} catch (IDOLookupException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
@@ -274,13 +249,6 @@ public class HotelSearch extends AbstractSearchForm {
 		return link;
 	}
 
-	private DropdownMenu getDropdownWithNumbers(String name, int startNumber, int endNumber) {
-		DropdownMenu menu = new DropdownMenu(name);
-		for (int i = startNumber; i <= endNumber; i++) {
-			menu.addMenuElement(i, Integer.toString(i));
-		}		
-		return menu;
-	}
 	protected String getParameterTypeCountName() {
 		return PARAMETER_TYPE_COUNT;
 	}
