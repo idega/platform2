@@ -35,22 +35,23 @@ import com.idega.util.text.StyleConstants;
  */
 
 public class TenantsHabitants extends Block {
+  private static final String NAME_KEY = "cam_habitants_view";
+  private static final String DEFAULT_VALUE = "Habitant list";
+  private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
+  private final static String PARAMETER_CAMPUS_ID = "campus_id";
+  private final static String PARAMETER_ORDER_ID = "order_id";
+  private final static String APPLICATION_VARIABLE = "cam_tenants";
 
-private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
-protected IWResourceBundle iwrb;
-protected IWBundle iwb;
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
 
-private final static String PARAMETER_CAMPUS_ID = "campus_id";
-private final static String PARAMETER_ORDER_ID = "order_id";
-private final static String APPLICATION_VARIABLE = "cam_tenants";
-
-private boolean _isAdmin = false;
-private boolean _isLoggedOn = false;
-private int _userID = -1;
-private int _campusID = -1;
-private int _orderID = -1;
-private TextStyler styler;
-private Image image;
+  private boolean _isAdmin = false;
+  private boolean _isLoggedOn = false;
+  private int _userID = -1;
+  private int _campusID = -1;
+  private int _orderID = -1;
+  private TextStyler styler;
+  private Image image;
 
 
   public TenantsHabitants() {
@@ -321,4 +322,19 @@ private Image image;
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
+
+  /**
+   *
+   */
+  public String getLocalizedNameKey() {
+    return(NAME_KEY);
+  }
+
+  /**
+   *
+   */
+  public String getLocalizedNameValue() {
+    return(DEFAULT_VALUE);
+  }
+
 }

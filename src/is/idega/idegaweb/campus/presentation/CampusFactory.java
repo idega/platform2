@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFactory.java,v 1.11 2002/01/29 13:18:25 aron Exp $
+ * $Id: CampusFactory.java,v 1.12 2002/02/15 11:05:19 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -116,7 +116,8 @@ public class CampusFactory extends Block implements Campus {
         break;
       case ADM_HABITANTS :
         //obj = new CampusHabitants();
-        obj = new TenantsHabitants();
+//        obj = new TenantsHabitants();
+        obj = new Habitants();
         break;
       case ADM_ALLOCATION :
         obj = new CampusAllocation();

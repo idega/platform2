@@ -1,7 +1,7 @@
 /*
- * $Id: RequestFinder.java,v 1.4 2002/02/11 10:46:04 palli Exp $
+ * $Id: RequestFinder.java,v 1.5 2002/02/15 11:05:37 palli Exp $
  *
- * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
  * This software is the proprietary information of Idega hf.
  * Use is subject to license terms.
@@ -27,6 +27,28 @@ public class RequestFinder {
   public static List getRequests(int userId) {
     try {
       List l = EntityFinder.findAllByColumn(Request.getStaticInstance(Request.class),Request.getColumnUserId(),userId);
+      if (l == null)
+        return(null);
+
+      Iterator i = l.iterator();
+      Vector requests = new Vector();
+      while (i.hasNext()) {
+        Request r = (Request)i.next();
+        RequestHolder holder = new RequestHolder(r);
+        requests.add(holder);
+      }
+
+      return(requests);
+    }
+    catch(SQLException e) {
+      return(null);
+    }
+  }
+
+  public static List getAllRequests() {
+    try {
+      List l = EntityFinder.findAll(Request.getStaticInstance(Request.class));
+
       if (l == null)
         return(null);
 
