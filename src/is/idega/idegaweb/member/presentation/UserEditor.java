@@ -1886,7 +1886,7 @@ public class UserEditor extends Block {
 	public boolean isWarnIfPostalExists(){
 		return warnIfPostalExists;
 	}
-	}
-	}
+	
+	
 
 }
