@@ -1158,7 +1158,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			StringTokenizer tokenizer = new StringTokenizer(searchString, " ");
 			while (tokenizer.hasMoreElements()) {
 				String element = (String) tokenizer.nextElement();
-				Collection results = this.getUserHome().findUsersBySearchConditionAndMaxAge(trimSearchString(element), true, SCHOOLCHILDREN_AGE);
+				Collection results = this.getUserHome().findUsersBySearchConditionAndAge(trimSearchString(element), true, SCHOOLCHILDREN_AGE);
 				if (results != null) {
 					if (users.isEmpty())
 						users.addAll(results);
