@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocation.java,v 1.2 2001/06/25 09:59:12 aron Exp $
+ * $Id: CampusAllocation.java,v 1.3 2001/06/25 21:55:05 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -78,7 +78,7 @@ public class CampusAllocation extends KeyEditor{
   }
 
   public ModuleObject makeSubjectTable(){
-    List L = ApplicationFinder.ListOfSubject();
+    List L = ApplicationFinder.listOfSubject();
     Table Frame = new Table(3,2);
       Frame.setCellpadding(0);
       Frame.setCellspacing(0);
