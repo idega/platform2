@@ -3896,12 +3896,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						logRemoved = true;
 					}
 				} else if (log.getStartDate().compareTo(latestContract.getValidFromDate()) == 0) {
-					// Log start equals contract start
+					// Log start equals contract start, remove both log and contract
 					if (log.getStartDate().compareTo(earliestAllowedRemoveDate) >= 0) {
 						log.remove();
 						logRemoved = true;
 						removeContract = true;
 					}
+				} else if (latestContract.getValidFromDate().compareTo(earliestAllowedRemoveDate) >= 0) {
+					// Don't remove log, only contract
+					removeContract = true;
 				}
 			} else if (latestContract.getValidFromDate().compareTo(earliestAllowedRemoveDate) >= 0) {
 				removeContract = true;
@@ -4202,6 +4205,17 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		catch (IDOException e) {
 			return 0;
+		}
+	}
+
+	public boolean hasFutureLogs(int applicationID, Date from) {
+		try {
+			ChildCareContract contract = getLatestContractByApplication(applicationID);
+			SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findLatestLogByUser(contract.getSchoolClassMember());
+			return log.getStartDate().compareTo(from) >= 0;
+		}
+		catch (Exception e) {
+			return false;
 		}
 	}
 
