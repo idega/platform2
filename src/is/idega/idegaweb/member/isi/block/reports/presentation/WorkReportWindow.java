@@ -239,13 +239,13 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 					if(invocationICFileID.intValue()>0)
 					repGen.setMethodInvocationICFileID(invocationICFileID);
 	
-					if(layoutKey!=null && iwb.getProperty(layoutKey,"-1")!=null ){
+					if(layoutFileName!=null){
+						repGen.setLayoutBundleAndFileName(iwb,layoutFileName);
+					}
+					else if(layoutKey!=null && iwb.getProperty(layoutKey,"-1")!=null ){
 						Integer layoutICFileID = new Integer(iwb.getProperty(layoutKey));
 						if(layoutICFileID.intValue()>0)
 						repGen.setLayoutICFileID(layoutICFileID);
-					}
-					else if(layoutFileName!=null){
-						repGen.setLayoutBundleAndFileName(iwb,layoutFileName);
 					}
 					
 					if(localizedNameKey!=null){
