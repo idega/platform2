@@ -66,11 +66,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/12 13:19:30 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/15 12:27:51 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.39 $
+ * @version $Revision: 1.40 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -596,9 +596,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 			//--skolår/timmar
 			//--grupp
 			addSmallText (map, PROVIDER_KEY, school.getName ());
-			addSmallText (map, MANAGEMENT_TYPE_KEY,
-										localize (managementType.getLocalizedKey (),
-															managementType.getName ()));
+			addSmallText (map, MANAGEMENT_TYPE_KEY, managementType.getLocalizedKey (),
+										managementType.getName ());
 		} catch (Exception e) {
 			logWarning ("Missing school properties i payment record "
 									+ record.getPrimaryKey ());
@@ -640,8 +639,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addSmallText (map, TRANSACTION_DATE_KEY, record.getDateTransaction ());
 		addSmallText (map, VAT_AMOUNT_KEY, (long) record.getTotalAmountVAT ());
 		final String ruleSpecType = record.getRuleSpecType ();
-		addSmallText (map, REGULATION_SPEC_TYPE_KEY,
-									localize (ruleSpecType, ruleSpecType));
+		addSmallText (map, REGULATION_SPEC_TYPE_KEY,  ruleSpecType, ruleSpecType);
 		if (0 < record.getVATType ()) {
 			final InvoiceBusiness business = getInvoiceBusiness (context);
 			final VATRule rule = business.getVatRule (record.getVATType ());
@@ -659,9 +657,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 			//--skolår/timmar
 			//--grupp
 			addSmallText (map, PROVIDER_KEY, school.getName ());
-			addSmallText (map, MANAGEMENT_TYPE_KEY,
-										localize (managementType.getLocalizedKey (),
-															managementType.getName ()));
+			addSmallText (map, MANAGEMENT_TYPE_KEY, managementType.getLocalizedKey (),
+										managementType.getName ());
 		} catch (Exception e) {
 			logWarning ("Missing school properties i payment record "
 									+ record.getPrimaryKey ());
@@ -1659,6 +1656,13 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private void addStyledInput (final java.util.Map map, final String key,
 															 final float number) {
 		addStyledInput (map, key, ((long) number) + "");
+	}
+	
+	private void addSmallText (final java.util.Map map, final String mapKey,
+														 final String localKey, final String localDefault) {
+		final String value = null != localKey && null != localDefault
+				? localize (localKey, localDefault) : "";
+		addSmallText (map, mapKey, value);
 	}
 	
 	private void addSmallText (final java.util.Map map, final String key,
