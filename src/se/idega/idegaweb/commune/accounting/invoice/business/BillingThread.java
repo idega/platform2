@@ -68,6 +68,7 @@ public abstract class BillingThread extends Thread{
 	protected IWTimestamp endPeriod;		//Holds last day of period
 	protected IWContext iwc;
 	protected Date currentDate = new Date( System.currentTimeMillis());
+	protected Date calculationDate; //Date used mainly for HighSchool
 	protected SchoolCategory category = null;
 	protected ExportDataMapping categoryPosting = null;
 	protected BatchRun batchRunLogger=null;
@@ -77,6 +78,7 @@ public abstract class BillingThread extends Thread{
 		month = new CalendarMonth(dateInMonth);
 		startPeriod = month.getFirstTimestamp();
 		endPeriod = month.getLastTimestamp();
+		calculationDate=dateInMonth;
 		this.iwc = iwc;
 	}
 	
@@ -378,7 +380,7 @@ public abstract class BillingThread extends Thread{
 	}
 	
 	protected boolean hasPlacements() throws FinderException, IDOException, RemoteException, EJBException {
-		return getPaymentRecordHome().getPlacementCountForSchoolCategoryAndPeriod((String) category.getPrimaryKey(), currentDate) > 0;
+		return getPaymentRecordHome().getPlacementCountForSchoolCategoryAndMonth((String) category.getPrimaryKey(), month) > 0;
 	}
 
 	protected void batchRunLoggerDone(){

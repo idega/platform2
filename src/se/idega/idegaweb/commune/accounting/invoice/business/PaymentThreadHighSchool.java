@@ -32,7 +32,7 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool{
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).
 					findByPrimaryKeyIDO(category.getPrimaryKey());
 			
-			if(getPaymentRecordHome().getCountForMonthCategoryAndStatusLH(startPeriod.getDate(),category.getCategory()) == 0){
+			if(getPaymentRecordHome().getCountForMonthCategoryAndStatusLH(month,category.getCategory()) == 0){
 				createBatchRunLogger(category);
 				//Create all the billing info derrived from the contracts
 				contracts();

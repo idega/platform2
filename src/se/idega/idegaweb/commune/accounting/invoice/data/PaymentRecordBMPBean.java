@@ -249,7 +249,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	}	
 	
 	/**
-	 * Gets a Collection of payment records for the specified month
+	 * Gets a Collection of payment records for the specified month and all categories
 	 * @param month
 	 * @return Collection of payment records
 	 * @throws FinderException
@@ -275,6 +275,32 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	}
 
 	/**
+	 * Gets a Collection of payment records for the specified month and category
+	 * @param month
+	 * @return Collection of payment records
+	 * @throws FinderException
+	 */
+	public Collection ejbFindByMonthAndCategory(CalendarMonth month,String categoryId) throws FinderException {
+		/*IWTimestamp start = new IWTimestamp(month);
+		 start.setAsDate();
+		 start.setDay(1);
+		 IWTimestamp end = new IWTimestamp(start);
+		 end.addMonths(1);*/
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getLastDateOfMonth();
+		IDOQuery sql = idoQuery();
+		sql.append("select r.* from "+getEntityName());
+		sql.append(" r, cacc_payment_header h ");
+		sql.appendWhere("r."+COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start);
+		sql.appendAnd().append("r."+COLUMN_DATE_CREATED).appendLessThanOrEqualsSign().append(end);
+		//sql.appendAnd().append("(").appendEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.LOCKED);
+		//sql.appendOrEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.HISTORY).append(")");
+		sql.appendAndEqualsQuoted("h.school_category_id", categoryId);
+		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
+		return idoFindPKsByQuery(sql);
+	}	
+	
+	/**
 	 * 
 	 * @param month
 	 * @return
@@ -299,17 +325,19 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @return
 	 * @throws FinderException
 	 */
-	public int ejbHomeGetCountForMonthCategoryAndStatusLH(Date month, String category) throws FinderException, IDOException {
-		IWTimestamp start = new IWTimestamp(month);
+	public int ejbHomeGetCountForMonthCategoryAndStatusLH(CalendarMonth month, String category) throws FinderException, IDOException {
+		/*IWTimestamp start = new IWTimestamp(month);
 		start.setAsDate();
 		start.setDay(1);
 		IWTimestamp end = new IWTimestamp(start);
-		end.addMonths(1);
+		end.addMonths(1);*/
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getLastDateOfMonth();
 		IDOQuery sql = idoQuery();
 		sql.append("select count(r.cacc_payment_record_id) from "+getEntityName());
 		sql.append(" r, cacc_payment_header h ");
-		sql.appendWhere("r."+COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
-		sql.appendAnd().append("r."+COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
+		sql.appendWhere("r."+COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start);
+		sql.appendAnd().append("r."+COLUMN_DATE_CREATED).appendLessThanOrEqualsSign().append(end);
 		sql.appendAnd().append("(").appendEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.LOCKED);
 		sql.appendOrEqualsQuoted("r."+COLUMN_STATUS,""+ConstantStatus.HISTORY).append(")");
 		sql.appendAndEqualsQuoted("h.school_category_id", category);
@@ -326,19 +354,21 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @throws FinderException
 	 * @throws IDOException
 	 */
-	public int ejbHomeGetPlacementCountForSchoolCategoryAndPeriod(String schoolCategoryID, Date period) throws FinderException, IDOException {
-		IWTimestamp start = new IWTimestamp(period);
+	public int ejbHomeGetPlacementCountForSchoolCategoryAndMonth(String schoolCategoryID, CalendarMonth month) throws FinderException, IDOException {
+		/*IWTimestamp start = new IWTimestamp(period);
 		start.setAsDate();
 		start.setDay(1);
 		IWTimestamp end = new IWTimestamp(start);
-		end.addMonths(1);
+		end.addMonths(1);*/
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getFirstDateOfMonth();
 		
 		IDOQuery sql = idoQuery();
 		sql.append("select sum(r."+COLUMN_PLACEMENTS+") from "+getEntityName());
 		sql.append(" r, cacc_payment_header h ");
 		sql.appendWhereEqualsQuoted("h.school_category_id", schoolCategoryID);
-		sql.appendAnd().append("h.period").appendGreaterThanOrEqualsSign().append(start.getDate());
-		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
+		sql.appendAnd().append("h.period").appendGreaterThanOrEqualsSign().append(start);
+		sql.appendAnd().append("h.period").appendLessThanOrEqualsSign().append(end);
 		sql.appendAnd().append("r."+COLUMN_PAYMENT_HEADER+" = h.cacc_payment_header_id");
 		return idoGetNumberOfRecords(sql);
 	}

@@ -1,5 +1,7 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
+import com.idega.util.CalendarMonth;
+
 
 public interface BatchRun extends com.idega.data.IDOEntity
 {
@@ -13,4 +15,9 @@ public interface BatchRun extends com.idega.data.IDOEntity
  public void setSchoolCategoryID(com.idega.block.school.data.SchoolCategory p0);
  public void setSchoolCategoryID(java.lang.String p0);
  public void setStart(java.sql.Timestamp p0);
+ /**
+  * Gets the CalendarMonth for the Period
+  * @return
+  */
+ public CalendarMonth getMonth(); 
 }

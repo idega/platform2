@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
+import com.idega.util.CalendarMonth;
 /**
  * Holds information about a batchrun for an invoice build (Used in fonster 33 in the C&P req. spec.)
  * Related to a set of rows in BatchRunError.
@@ -64,6 +65,13 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 		setColumn(COLUMN_STOP, d);
 	}
 	
+	/**
+	 * Gets the CalendarMonth for the Period
+	 * @return
+	 */
+	public CalendarMonth getMonth(){
+		return new CalendarMonth(getPeriod());
+	}
 	
 	/**
 	 *	Finds one Batchrun from a schoolCategory. There should be max one schoolcategory

@@ -56,11 +56,11 @@ import com.idega.util.CalendarMonth;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/12/16 22:09:25 $ by $Author: tryggvil $
+ * Last modified: $Date: 2003/12/17 13:55:24 $ by $Author: tryggvil $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.63 $
+ * @version $Revision: 1.64 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -121,17 +121,18 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		try {
 			SchoolCategory schoolCategory =
 				((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(category);
-			if(getPaymentRecordHome().getCountForMonthAndStatusLH(month) == 0){
-				Iterator recordIter = getPaymentRecordHome().findByMonth(month).iterator();
-				while(recordIter.hasNext()){
-					paymentRecord = (PaymentRecord) recordIter.next();
-					paymentRecord.remove();
-				}
+			if(getPaymentRecordHome().getCountForMonthCategoryAndStatusLH(month,category) == 0){
 				headerIter = getInvoiceHeaderHome().findByMonthAndSchoolCategory(month, schoolCategory).iterator();
 				while (headerIter.hasNext()) {
 					header = (InvoiceHeader) headerIter.next();
 					removePreliminaryInvoice(header);
 				}
+				Iterator recordIter = getPaymentRecordHome().findByMonthAndCategory(month,category).iterator();
+				while(recordIter.hasNext()){
+					paymentRecord = (PaymentRecord) recordIter.next();
+					paymentRecord.remove();
+				}
+
 			}else{
 				throw new RemoveException("invoice.not_allowed_remove_locked_or_history_records");
 			}
@@ -191,8 +192,9 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		String typeName = regSpecType != null ? regSpecType.getRegSpecType() : null;
 		if (null != typeName && RegSpecConstant.CHECK.equals(typeName)) {
 			try {
+				int paymentRecordId=invoiceRecord.getPaymentRecordId();
 				paymentRecord =
-					getPaymentRecordHome().findByPrimaryKey(new Integer(invoiceRecord.getPaymentRecordId()));
+					getPaymentRecordHome().findByPrimaryKey(new Integer(paymentRecordId));
 				//Remove this instance from the payment record
 				paymentRecord.setPlacements(paymentRecord.getPlacements() - 1);
 				paymentRecord.setTotalAmount(paymentRecord.getTotalAmount() - invoiceRecord.getAmount());
@@ -227,9 +229,9 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	}
 
 	public int getNoPlacements(BatchRun batchRun) throws RemoteException, FinderException, IDOException {
-		Date period = batchRun.getPeriod();
+		CalendarMonth month = batchRun.getMonth();
 		String schoolCategoryID = batchRun.getSchoolCategoryID();
-		return getPaymentRecordHome().getPlacementCountForSchoolCategoryAndPeriod(schoolCategoryID, period);
+		return getPaymentRecordHome().getPlacementCountForSchoolCategoryAndMonth(schoolCategoryID, month);
 	}
 
 	public int getTotAmountWithoutVAT(BatchRun batchRun) throws RemoteException, FinderException, IDOException {

@@ -64,11 +64,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/17 13:33:13 $ by $Author: joakim $
+ * Last modified: $Date: 2003/12/17 13:55:24 $ by $Author: tryggvil $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.70 $
+ * @version $Revision: 1.71 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -85,7 +85,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 
 	public PaymentThreadSchool(Date month, IWContext iwc) {
 		super(month, iwc);
-		currentDate = month;
+		calculationDate = month;
 	}
 
 	public boolean isInDefaultCommune(User user) throws RemoteException, FinderException {
