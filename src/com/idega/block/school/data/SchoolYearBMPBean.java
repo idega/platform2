@@ -18,11 +18,11 @@ import javax.ejb.FinderException;
 
 public class SchoolYearBMPBean extends GenericEntity implements SchoolYear{
 
-  public final static String SCHOOLYEAR = "sch_school_year";
-  public final static String NAME = "year_name";
-  public final static String INFO = "year_info";
-  public final static String AGE = "year_age";
-  public final static String SCHOOL_TYPE = "school_type";
+  public final static String SCHOOLYEAR = "SCH_SCHOOL_YEAR";
+  public final static String NAME = "YEAR_NAME";
+  public final static String INFO = "YEAR_INFO";
+  public final static String AGE = "YEAR_AGE";
+  public final static String SCHOOL_TYPE = "SCHOOL_TYPE";
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
