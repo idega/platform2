@@ -9,6 +9,7 @@ package is.idega.idegaweb.marathon.data;
 import is.idega.idegaweb.marathon.business.RunBusiness;
 import java.util.Collection;
 import java.util.Iterator;
+import javax.ejb.FinderException;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
@@ -23,17 +24,28 @@ import com.idega.presentation.IWContext;
  */
 public class ParticipantNumberSetter extends IBOServiceBean{
 	
-	public void main(IWContext iwc)throws Exception{
+	public void main(IWContext iwc)throws Exception{}
+
+	public void run() {
+		IWContext iwc = IWContext.getInstance();
+
 		RunHome runHome = null;
 		Collection run = null;
 		try {
 			runHome = (RunHome) getIDOHome(Run.class);
 		}
-		catch (RuntimeException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		if(runHome != null) {
-			run = runHome.findAll();
+			
+			try {
+				run = runHome.findAll();
+			}
+			catch (FinderException e1) {
+				e1.printStackTrace();
+			}
 		}
 		if(run != null) {
 			Iterator iter = run.iterator();
@@ -44,6 +56,8 @@ public class ParticipantNumberSetter extends IBOServiceBean{
 				r.store();
 			}
 		}
+		
+	
 		
 	}
 	private RunBusiness getRunBiz(IWContext iwc) {
