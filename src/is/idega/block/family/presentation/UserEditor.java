@@ -15,10 +15,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Vector;
+
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.contact.data.PhoneType;
@@ -38,6 +42,7 @@ import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -60,6 +65,7 @@ import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.business.UserSession;
 import com.idega.user.business.UserStatusBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupRelation;
@@ -177,6 +183,7 @@ public class UserEditor extends Block {
 	private boolean warnIfPersonalIDIsIllegal =true;
 	private boolean showSeperators = true;
 	protected boolean showDefaultCommuneOption = false;
+	private boolean iShowSearchForm = true;
 	
 	private void initStyleNames() {
 		if (textFontStyleName == null)
@@ -274,7 +281,7 @@ public class UserEditor extends Block {
 	 */
 	public void presentate(IWContext iwc) throws RemoteException {
 		mainTable = new Table();
-		if (!isNewUserView()) {
+		if (!isNewUserView() && iShowSearchForm) {
 			addSeperator(iwrb.getLocalizedString("mbe.search","Search"));
 			addToMainPart(searcher);
 			addToMainPart(Text.getBreak());
@@ -1479,7 +1486,7 @@ public class UserEditor extends Block {
 	}
 	
 	public void initUser(IWContext iwc) {
-		if(iwc.isParameterSet(PRM_USER_ID)){
+		if (iwc.isParameterSet(PRM_USER_ID)) {
 			Integer uid = Integer.valueOf(iwc.getParameter(PRM_USER_ID));
 			try {
 				user = getUserService(iwc).getUser(uid);
@@ -1488,10 +1495,19 @@ public class UserEditor extends Block {
 				e.printStackTrace();
 			}
 		}
-			
+		else {
+			try {
+				user = getUserSession(iwc).getUser();
+			}
+			catch (RemoteException re) {
+				re.printStackTrace();
+			}
+		}
 	}
+	
 	private void initRelationTypes(IWContext iwc) throws RemoteException {
 	}
+	
 	protected void storeUserAsDeceased(IWContext iwc, Integer userID, Date deceasedDate) {
 		try {
 			getUserStatusService(iwc).setUserAsDeceased(userID, deceasedDate);
@@ -1931,6 +1947,15 @@ public class UserEditor extends Block {
 		s.append("\n\t return true ").append("\n }");
 		return s.toString();
 	}
+	
+	protected UserSession getUserSession(IWUserContext iwuc) {
+		try {
+			return (UserSession) IBOLookup.getSessionInstance(iwuc, UserSession.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
 	/**
 	 * @return
 	 */
@@ -2106,6 +2131,7 @@ public class UserEditor extends Block {
 		this.showDefaultCommuneOption = flag;
 	}
 	
-	
-
+	public void setShowSearchForm(boolean showSearchForm) {
+		iShowSearchForm = showSearchForm;
+	}
 }

@@ -27,9 +27,12 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.presentation.ChildContracts;
 import se.idega.idegaweb.commune.user.presentation.CitizenEditorWindow;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -41,6 +44,7 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.Window;
 import com.idega.repository.data.ImplementorRepository;
+import com.idega.user.business.UserSession;
 import com.idega.user.data.User;
 import com.idega.user.presentation.UserSearcher;
 import com.idega.util.Age;
@@ -80,7 +84,7 @@ public class HouseHoldViewer extends AccountingBlock {
 	private boolean constrainSearchToUniqueIdentifier = false;
 	private UserSearcher searcherOne = null, searcherTwo = null;
 	private boolean showCohabitant = true;
-
+	private boolean iShowSearchForm = true;
 	
 	public HouseHoldViewer() {
 		ImplementorRepository repository = ImplementorRepository.getInstance();
@@ -136,54 +140,64 @@ public class HouseHoldViewer extends AccountingBlock {
 	}
 
 	public void process(IWContext iwc) {
-		String prm = UserSearcher.getUniqueUserParameterName("one");
-		if (iwc.isParameterSet(prm)) {
-			Integer firstUserID = Integer.valueOf(iwc.getParameter(prm));
-			if (firstUserID.intValue() > 0) {
+		if (iShowSearchForm) {
+			String prm = UserSearcher.getUniqueUserParameterName("one");
+			if (iwc.isParameterSet(prm)) {
+				Integer firstUserID = Integer.valueOf(iwc.getParameter(prm));
+				if (firstUserID.intValue() > 0) {
+					try {
+						firstUser = getUserService(iwc).getUser(firstUserID);
+					}
+					catch (RemoteException e) {
+						e.printStackTrace();
+					}
+				}
+				//add(firstUserID.toString());
+			}
+			prm = UserSearcher.getUniqueUserParameterName("two");
+			if (iwc.isParameterSet(prm)) {
+				Integer secondUserID = Integer.valueOf(iwc.getParameter(prm));
+				if (secondUserID.intValue() > 0) {
+					try {
+						secondUser = getUserService(iwc).getUser(secondUserID);
+					}
+					catch (RemoteException e) {
+						e.printStackTrace();
+					}
+				}
+				//add(secondUserID.toString());
+			}
+			if (firstUser == null && searcherOne != null) {
 				try {
-					firstUser = getUserService(iwc).getUser(firstUserID);
+					searcherOne.process(iwc);
+					firstUser = searcherOne.getUser();
 				}
 				catch (RemoteException e) {
-					e.printStackTrace();
+					log(e);
+				}
+				catch (FinderException e) {
+					log(e);
 				}
 			}
-			//add(firstUserID.toString());
-		}
-		prm = UserSearcher.getUniqueUserParameterName("two");
-		if (iwc.isParameterSet(prm)) {
-			Integer secondUserID = Integer.valueOf(iwc.getParameter(prm));
-			if (secondUserID.intValue() > 0) {
+			if (secondUser == null && searcherTwo != null) {
 				try {
-					secondUser = getUserService(iwc).getUser(secondUserID);
+					searcherTwo.process(iwc);
+					secondUser = searcherTwo.getUser();
 				}
 				catch (RemoteException e) {
-					e.printStackTrace();
+					log(e);
+				}
+				catch (FinderException e) {
+					log(e);
 				}
 			}
-			//add(secondUserID.toString());
 		}
-		if (firstUser == null && searcherOne != null) {
+		else {
 			try {
-				searcherOne.process(iwc);
-				firstUser = searcherOne.getUser();
+				firstUser = getUserSession(iwc).getUser();
 			}
-			catch (RemoteException e) {
-				log(e);
-			}
-			catch (FinderException e) {
-				log(e);
-			}
-		}
-		if (secondUser == null && searcherTwo != null) {
-			try {
-				searcherTwo.process(iwc);
-				secondUser = searcherTwo.getUser();
-			}
-			catch (RemoteException e) {
-				log(e);
-			}
-			catch (FinderException e) {
-				log(e);
+			catch (RemoteException re) {
+				log(re);
 			}
 		}
 		lookupFamilies(iwc);
@@ -200,10 +214,21 @@ public class HouseHoldViewer extends AccountingBlock {
 		}
 	}
 
+	protected UserSession getUserSession(IWUserContext iwuc) {
+		try {
+			return (UserSession) IBOLookup.getSessionInstance(iwuc, UserSession.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+
 	public void presentate(IWContext iwc) {
 		appForm = new ApplicationForm(this);
 		appForm.setLocalizedTitle("household.title", "Household info");
-		presentateSearch(iwc);
+		if (iShowSearchForm) {
+			presentateSearch(iwc);
+		}
 		presentateUsersFound(iwc);
 		presentateChildren(iwc);
 		presentateButtons(iwc);
@@ -851,5 +876,9 @@ public class HouseHoldViewer extends AccountingBlock {
 	
 	public void setShowCohabitant(boolean flag){
 		this.showCohabitant = flag;
+	}
+	
+	public void setShowSearchForm(boolean showSearchForm) {
+		iShowSearchForm = showSearchForm;
 	}
 }
