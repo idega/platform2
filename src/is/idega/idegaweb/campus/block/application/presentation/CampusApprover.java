@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.52 2004/06/09 17:07:36 aron Exp $
+ * $Id: CampusApprover.java,v 1.53 2004/06/11 16:56:12 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,6 @@ package is.idega.idegaweb.campus.block.application.presentation;
 
 import is.idega.idegaweb.campus.block.application.business.ApartmentInfo;
 import is.idega.idegaweb.campus.block.application.business.ApplicantInfo;
-import is.idega.idegaweb.campus.block.application.business.ApplicationService;
 import is.idega.idegaweb.campus.block.application.business.ChildInfo;
 import is.idega.idegaweb.campus.block.application.business.ReferenceNumberFinder;
 import is.idega.idegaweb.campus.block.application.business.SpouseInfo;
@@ -42,9 +41,7 @@ import com.idega.block.application.data.ApplicationSubject;
 import com.idega.block.application.data.Status;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.data.ApartmentTypeHome;
-import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -1562,11 +1559,6 @@ public class CampusApprover extends CampusBlock {
 		return L;
 	}
 	
-	public ApplicationService getApplicationService(IWApplicationContext iwac)throws RemoteException{
-		return (ApplicationService)IBOLookup.getServiceInstance(iwac,ApplicationService.class);
-		
-	}
-
 	public void main(IWContext iwc) throws RemoteException{
 		//isStaff = com.idega.core.accesscontrol.business.AccessControl
 		isAdmin = iwc.hasEditPermission(this);
