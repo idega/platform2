@@ -233,9 +233,10 @@ public abstract class AccountingBlock extends CommuneBlock {
 		Date date = null;
 		
 		if ((d == null) && (s.length() == 4)) {
-			pos = new ParsePosition(0);
-			formatter = new SimpleDateFormat ("yyMM");
-			d = formatter.parse(s, pos);
+			s = "20" + s;
+//			pos = new ParsePosition(0);
+//			formatter = new SimpleDateFormat ("yyMM");
+//			d = formatter.parse(s, pos);
 		}
 		if ((d == null) && (s.length() == 6)) {
 			pos = new ParsePosition(0);
