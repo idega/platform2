@@ -185,16 +185,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		Collection clubs = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, clubsFilter);
 		//Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
 		
-		List leagueGroupIdList = null;
-		if (leaguesFilter != null && !leaguesFilter.isEmpty()) {
-			leagueGroupIdList = new Vector();
-			Iterator iter = leaguesFilter.iterator();
-			while (iter.hasNext()) {
-				Group group = (Group) iter.next();
-				leagueGroupIdList.add(group.getPrimaryKey());
-			}
-			
-		}
+		List leagueGroupIdList = getGroupIdListFromLeagueGroupCollection(year, leaguesFilter, false);
 		
 		Map workReportsByLeagues = new TreeMap();
 		//Iterating through workreports and creating report data 
@@ -220,7 +211,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				while (iterator.hasNext()) {
 					WorkReportGroup league = (WorkReportGroup) iterator.next();
 					
-					if (leagueGroupIdList != null && !leagueGroupIdList.contains(league.getGroupId())) {
+					if (leagueGroupIdList != null && !leagueGroupIdList.contains(league.getGroupId()) ) {
 						continue; //don't process this one, go to next
 					}
 					//create a new ReportData for each row
@@ -281,6 +272,32 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	}
 	
 	
+	private List getGroupIdListFromLeagueGroupCollection(final Integer year, Collection leaguesFilter, boolean returnWithMainBoard) throws RemoteException {
+		//Don't display the main board
+		WorkReportGroup mainBoard = getWorkReportBusiness().getMainBoardWorkReportGroup(year.intValue());
+		Integer mainGroupId = mainBoard.getGroupId();
+				
+		List leagueGroupIdList = null;
+		if (leaguesFilter != null && !leaguesFilter.isEmpty()) {
+			leagueGroupIdList = new Vector();
+			Iterator iter = leaguesFilter.iterator();
+			while (iter.hasNext()) {
+				Group group = (Group) iter.next();
+
+				if( returnWithMainBoard ){
+					leagueGroupIdList.add(group.getPrimaryKey());
+				}
+				else{
+					if(!((Integer)group.getPrimaryKey()).equals(mainGroupId) ){
+						leagueGroupIdList.add(group.getPrimaryKey());
+					}
+				}
+			}
+			
+		}
+		return leagueGroupIdList;
+	}
+
 	/*
 	 * Report B12.1.2 of the ISI Specs
 	 */
