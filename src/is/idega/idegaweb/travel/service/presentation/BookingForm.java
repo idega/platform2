@@ -2124,7 +2124,7 @@ public abstract class BookingForm extends TravelManager{
 	}
 	public void addSupplierNameInput() {
 		TextInput suppName = new TextInput(AbstractSearchForm.PARAMETER_SUPPLIER_NAME);
-		addInputLine(new String[] {iwrb.getLocalizedString("travel.search.supp_name","Supplier name")}, new PresentationObject[] {suppName});
+		addInputLine(new String[] {iwrb.getLocalizedString("travel.search.supp_name","Supplier name")+Text.NON_BREAKING_SPACE+"("+iwrb.getLocalizedString("travel.not_required", "Not required")+")"}, new PresentationObject[] {suppName});
 	}
 
 	public void addAreaCodeInput(Product product) {
@@ -4302,6 +4302,9 @@ public abstract class BookingForm extends TravelManager{
 		++row;
 
 		SubmitButton yes = new SubmitButton(bundle.getImage("images/book_01.jpg"));
+		if (this._useInquiryForm) {
+			yes = new SubmitButton(bundle.getImage("images/send_inq_01.jpg"));
+		}
 
 		BackButton no = new BackButton(bundle.getImage("images/back_01.jpg"));
 		
