@@ -34,6 +34,7 @@ private boolean showAll = false;
 private Table outerTable = new Table(1,1);
 private String newsReaderURL;
 private String newsCollectionURL;
+private String newsEditorURL;
 private boolean showImages = true;
 private boolean showOnlyDates = false;
 private boolean headlineAsLink = false;
@@ -122,6 +123,9 @@ public void main(ModuleInfo modinfo)throws Exception{
   if( newsCollectionURL == null ){
     newsCollectionURL = iwb.getProperty("news_collection_url",modinfo.getRequestURI());
   }
+  if( newsEditorURL == null ){
+     newsEditorURL = iwb.getProperty("news_editor_url","/news/editor.jsp");
+  }
 
   back = iwrb.getImage("back.gif");
   more  = iwrb.getImage("more.gif");
@@ -133,8 +137,8 @@ public void main(ModuleInfo modinfo)throws Exception{
   boolean byDate=false;
   News[] news = new News[1];
 
-  String news_id = modinfo.getRequest().getParameter("news_id");
-  String news_category_id = modinfo.getRequest().getParameter("news_category_id");
+  String news_id = modinfo.getParameter("news_id");
+  String news_category_id = modinfo.getParameter("news_category_id");
 //added for multiple newsreader support in one page
   boolean showSingleNews = false;
 
@@ -164,7 +168,7 @@ public void main(ModuleInfo modinfo)throws Exception{
     }
 
     if(isAdmin) {
-      Form newsEditor = new Form("/news/editor.jsp");
+      Form newsEditor = new Form(newsEditorURL);
       newsEditor.add(new SubmitButton(editor));
       add(newsEditor);
     }
@@ -809,16 +813,24 @@ public String getNewsCollectionURL(){
   return newsCollectionURL;
 }
 
+public void setNewsEditorURL(String URL){
+  this.newsEditorURL = URL;
+}
+
+public String getNewsEditorURL(){
+  return newsEditorURL;
+}
+
 public void showNewsCollectionButton(boolean showNewsCollectionButton){
   this.showNewsCollectionButton = showNewsCollectionButton;
 }
 
 public void setNewsReaderURLAsSamePage(ModuleInfo modinfo){
-  this.newsReaderURL =  modinfo.getRequest().getRequestURI();
+  this.newsReaderURL =  modinfo.getRequestURI();
 }
 
 public void setNewsCollectionURLAsSamePage(ModuleInfo modinfo){
-  this.newsCollectionURL =  modinfo.getRequest().getRequestURI();
+  this.newsCollectionURL =  modinfo.getRequestURI();
 }
 
 
