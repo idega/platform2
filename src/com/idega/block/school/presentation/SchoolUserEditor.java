@@ -51,7 +51,7 @@ public class SchoolUserEditor extends Block {
 	
 	TextFormat _tFormat;
 	IWResourceBundle _iwrb;
-	School _school;
+	protected School _school;
   public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
   
   String PARAMETER_ACTION = "sue_act";
@@ -89,10 +89,8 @@ public class SchoolUserEditor extends Block {
   private Table schoolList(IWContext iwc) throws RemoteException{
   	Collection schools = getSchoolBusiness(iwc).findAllSchools();
   	Table table = new Table();
-  	int row = 1;
-  	
-  	table.add(_tFormat.format(_iwrb.getLocalizedString("school.select_school","Select School"),TextFormat.HEADER), 2, row);
-  	
+  	int row = 0;
+ 	
   	if (schools != null) {
   		Iterator iter = schools.iterator();
   		Link link;
@@ -507,15 +505,15 @@ public class SchoolUserEditor extends Block {
 
 		/** Updateing headmasters */
 		try {
-			String[] hIds = iwc.getParameterValues(sid);
+			String hId = iwc.getParameter(sid);
 			
-			if (hIds != null) {
+			if (hId != null) {
 				Group priGroup = getSchoolBusiness(iwc).getRootSchoolAdministratorGroup();
 				UserHome userHome = (UserHome) IDOLookup.getHome(User.class);
 				User user;
-				for (int i = 0; i < hIds.length; i++) {
-					String name         = iwc.getParameter(sname+"_"+hIds[i]);
-					user = userHome.findByPrimaryKey(new Integer(hIds[i]));
+				user = userHome.findByPrimaryKey(new Integer(hId));
+
+					String name         = iwc.getParameter(sname+"_"+hId);
 					
 					if (name.equals("")) {
 						try {
@@ -528,7 +526,6 @@ public class SchoolUserEditor extends Block {
 
 						try {
 							getSchoolUserBusiness(iwc).setUserGroups(school, user, iUserType);
-								//getSchoolBusiness(iwc).addHeadmaster(school, user);
 						} catch (Exception e) {
 							debug("User already in headmasterGroup");
 						}
@@ -543,7 +540,7 @@ public class SchoolUserEditor extends Block {
 							Iterator iter = emails.iterator();
 							while (iter.hasNext()) {
 								Object prK = iter.next();
-								String sEmail = iwc.getParameter(semail+"_"+hIds[i]+"_"+prK);
+								String sEmail = iwc.getParameter(semail+"_"+hId+"_"+prK);
 								if (sEmail != null && !sEmail.equals("")) {
 									email = eHome.findByPrimaryKey(prK);
 									email.setEmailAddress(sEmail);
@@ -560,7 +557,7 @@ public class SchoolUserEditor extends Block {
 							Iterator iter = phones.iterator();
 							while (iter.hasNext()) {
 								Object prK = iter.next();
-								String sPhone = iwc.getParameter(sphone+"_"+hIds[i]+"_"+prK);
+								String sPhone = iwc.getParameter(sphone+"_"+hId+"_"+prK);
 								if (sPhone != null && !sPhone.equals("")) {
 									phone = pHome.findByPrimaryKey(prK);
 									phone.setNumber(sPhone);
@@ -570,8 +567,8 @@ public class SchoolUserEditor extends Block {
 							}	
 						}
 						
-						String newEmail  = iwc.getParameter(semail+"_"+hIds[i]);
-						String newPhone  = iwc.getParameter(sphone+"_"+hIds[i]);
+						String newEmail  = iwc.getParameter(semail+"_"+hId);
+						String newPhone  = iwc.getParameter(sphone+"_"+hId);
 						
 						if (newEmail != null && !newEmail.equals("")) {
 							Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
@@ -586,9 +583,8 @@ public class SchoolUserEditor extends Block {
 							phone.store();
 							user.addPhone(phone);
 						}
+						postSaveUpdate(school, user, iUserType);
 					}
-					
-				}
 			
 			}
 			
@@ -618,26 +614,9 @@ public class SchoolUserEditor extends Block {
 					user.addPhone(phone);
 				}
 
-//				if (iUserType != SchoolUserBusinessBean.USER_TYPE_TEACHER) {
-//					getSchoolBusiness(iwc).addSchoolAdministrator(user);
-//				}
 
 				getSchoolUserBusiness(iwc).addUser(school, user, iUserType);
-/*				if (userType ==1) {
-					getSchoolUserBusiness(iwc).addHeadmaster(school, user);
-//					school.setHeadmasterUserId( ((Integer)user.getPrimaryKey()).intValue());
-//						school.getHeadmasterGroup().removeUser(user);
-//					getSchoolBusiness(iwc).addHeadmaster(school, user);
-//					school.store();
-				}else if (userType == 2) {
-					getSchoolUserBusiness(iwc).addAssistantHeadmaster(school, user);
-//					_school.setAssistantHeadmasterUserId( ((Integer)user.getPrimaryKey()).intValue());
-//					_school.store();
-				}else if (userType ==3) {
-					getSchoolUserBusiness(iwc).addWebAdmin(school, user);
-//					getSchoolBusiness(iwc).addHeadmaster(school, user);
-				}
-	*/			
+				postSaveNew(school, user, iUserType);
 			}
 			
 			return true;
@@ -653,25 +632,45 @@ public class SchoolUserEditor extends Block {
 		return false;
 	}
 
+	/** 
+	 * Owerride me please.
+	 * @param school School
+	 * @param user User
+	 */
+	protected void postSaveNew(School school, User user, int userType) throws RemoteException{
+		
+	}
+
+	/** 
+	 * Owerride me please.
+	 * @param school School
+	 * @param user User
+	 */
+	protected void postSaveUpdate(School school, User user, int userType) throws RemoteException{
+		
+	}
+	
 	private Table mainForm(IWContext iwc) throws RemoteException {
-		Table table = new Table();
-		table.add(schoolList(iwc), 1, 1);
-		table.add(schoolUsers(iwc, _school), 2, 1);
-		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
-		table.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
+		Table table = new Table(2, 2);
+		table.add(getTextTitle(_iwrb.getLocalizedString("school.select_school","Select School")), 1, 1);
+		table.add(getTextTitle(_school.getName()), 2, 1);
+		table.add(schoolList(iwc), 1, 2);
+		table.add(schoolUsers(iwc, _school), 2, 2);
+		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_TOP);
+		table.setVerticalAlignment(2, 2, Table.VERTICAL_ALIGN_TOP);
 		return table;
 	}
 	
 
-	private UserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {
+	protected UserBusiness getUserBusiness(IWApplicationContext iwac) throws RemoteException {
 		return  (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
 	}
 
-	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {
+	protected SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
 	}
 
-	private SchoolHome getSchoolHome() throws RemoteException {
+	protected SchoolHome getSchoolHome() throws RemoteException {
 		return (SchoolHome) IDOLookup.getHome(School.class);	
 	}
   
@@ -738,7 +737,7 @@ public class SchoolUserEditor extends Block {
 		
 	}
 	
-	private SchoolUserBusiness getSchoolUserBusiness(IWContext iwc) throws RemoteException {
+	protected SchoolUserBusiness getSchoolUserBusiness(IWContext iwc) throws RemoteException {
 		return (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
 	}
 	
