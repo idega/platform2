@@ -188,6 +188,12 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
+	
+	public Integer ejbFindApplicationtByContract(int contractID) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CONTRACT_ID, contractID);
+		return (Integer) idoFindOnePKByQuery(sql);
+	}	
 
 	public Integer ejbFindValidContractByChild(int childID, Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
