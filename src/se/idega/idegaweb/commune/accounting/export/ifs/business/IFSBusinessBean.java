@@ -28,6 +28,7 @@ import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckRecord;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckRecordHome;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLog;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLogHome;
+import se.idega.idegaweb.commune.accounting.invoice.business.CheckAmountBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
@@ -43,6 +44,7 @@ import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -726,6 +728,11 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			log.setUser(user);
 			log.store();
 
+			// Palli, thu verdur bara ad drepa mig seinna fyrir ad hafa sett IWContext.getInstance() tharna
+			// en klukkan er bara svo mange...
+			// Eg geri rad fyrir ad herna fyrir nedan komi kodinn sem breytir status ur L i e-d annad.
+			getCheckAmountBusiness().sendCheckAmountLists(IWContext.getInstance(), schoolCategory);
+			
 			//copy files from folder A to folder B. Must get folder info from ExportMappingBean!!!
 			//ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
 
@@ -779,4 +786,13 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			throw new IBORuntimeException(e.getMessage());
 		}
 	}			
+	
+	private CheckAmountBusiness getCheckAmountBusiness() {
+		try {
+			return (CheckAmountBusiness) getServiceInstance(CheckAmountBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
 }
