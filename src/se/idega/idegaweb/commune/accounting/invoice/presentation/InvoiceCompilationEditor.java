@@ -89,10 +89,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/16 11:08:11 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/16 11:09:53 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.121 $
+ * @version $Revision: 1.122 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -881,8 +881,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	 */
 	private void showCompilationList (final IWContext context)
 		throws RemoteException {
-		final com.idega.util.Timer timer = new com.idega.util.Timer ();
-		timer.start ();
 		final UserSearcher searcher = createSearcher ();
 		final Table table = createTable (6);
 		setColumnWidthsEqual (table);
@@ -909,12 +907,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 			final CalendarMonth toPeriod = getCalendarMonthParameter
 					(context, END_PERIOD_KEY);
 			final InvoiceBusiness business = getInvoiceBusiness (context);
-			timer.stop ();
-			timer.start ();
 			final InvoiceHeader [] headers
 					= business.getInvoiceHeadersByCustodianOrChild
 					(operationalField, userFound, fromPeriod, toPeriod);
-			timer.stop ();
 			table.mergeCells (1, row, table.getColumns (), row);            
 			if (0 < headers.length) {
 				table.add (getInvoiceCompilationListTable (context, headers), 1,
