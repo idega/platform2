@@ -1335,8 +1335,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		ChildCarePrognosis prognosis = getBusiness().getPrognosis(Integer.parseInt(providerId));
 						
 		String prognosisText = prognosis == null ? localize("ccpqw_no_prognosis", "No prognosis available") :
-			localize("ccpqw_three_months", "Three months:") +" " + prognosis.getThreeMonthsPrognosis()+ "  " +
-			localize("ccpqw_one_year", "One year:") + " " + prognosis.getOneYearPrognosis() + "  " +
+			localize("ccpqw_three_months", "Three months:") +" " + prognosis.getThreeMonthsPrognosis()+ Text.BREAK +
+			localize("ccpqw_one_year", "One year:") + " " + prognosis.getOneYearPrognosis() + Text.BREAK +
 			localize("ccpqw_updated_date", "Updated date:") + " " + prognosis.getUpdatedDate();	
 		
 		Table appTbl = new Table();
@@ -1397,6 +1397,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		layoutTbl.setRowHeight(2, "20px");	
 		
+		layoutTbl.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+		layoutTbl.setVerticalAlignment(2, row, Table.VERTICAL_ALIGN_TOP);
 		layoutTbl.add(getSmallHeader(localize("ccpqw_prognosisr", "Prognosis") + ":"), 1, row);
 		layoutTbl.add(getSmallText(prognosisText), 2, row++);		
 			
