@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.19 2003/09/03 08:12:06 anders Exp $
+ * $Id: VATEditor.java,v 1.20 2003/09/08 15:48:04 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -37,10 +37,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATEditor is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/09/03 08:12:06 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/08 15:48:04 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -92,6 +92,7 @@ public class VATEditor extends AccountingBlock {
 	private final static String KEY_SEARCH = KP + "search";
 	private final static String KEY_NEW = KP + "new";
 	private final static String KEY_SAVE = KP + "save";
+	private final static String KEY_EDIT = KP + "edit";
 	private final static String KEY_CANCEL = KP + "cancel";
 //	private final static String KEY_DELETE = KP + "delete";
 //	private final static String KEY_DELETE_YES = KP + "delete_yes";
@@ -410,6 +411,8 @@ public class VATEditor extends AccountingBlock {
 		list.setLocalizedHeader(KEY_VAT_PERCENT, "Procentsats", 3);
 		list.setLocalizedHeader(KEY_PAYMENT_FLOW_TYPE, "Stršm", 4);
 		list.setLocalizedHeader(KEY_PROVIDER_TYPE, "Anordnartyp", 5);
+		list.setLocalizedHeader(KEY_EDIT, "Redigera", 6);
+		list.setLocalizedHeader(KEY_DELETE, "Ta bort", 7);
 
 		if (vatRegulations != null) {
 			Iterator iter = vatRegulations.iterator();

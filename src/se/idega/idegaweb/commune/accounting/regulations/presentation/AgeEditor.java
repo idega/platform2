@@ -1,5 +1,5 @@
 /*
- * $Id: AgeEditor.java,v 1.7 2003/09/08 08:10:07 laddi Exp $
+ * $Id: AgeEditor.java,v 1.8 2003/09/08 15:48:04 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -33,10 +33,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.AgeException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/08 08:10:07 $ by $Author: laddi $
+ * Last modified: $Date: 2003/09/08 15:48:04 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class AgeEditor extends AccountingBlock {
 
@@ -86,6 +86,7 @@ public class AgeEditor extends AccountingBlock {
 	private final static String KEY_SEARCH = KP + "search";
 	private final static String KEY_NEW = KP + "new";
 	private final static String KEY_SAVE = KP + "save";
+	private final static String KEY_EDIT = KP + "edit";
 	private final static String KEY_CANCEL = KP + "cancel";
 	private final static String KEY_DELETE = KP + "delete";
 //	private final static String KEY_DELETE_YES = KP + "delete_yes";
@@ -399,6 +400,8 @@ public class AgeEditor extends AccountingBlock {
 		list.setLocalizedHeader(KEY_AGE_TO, "Ålder till", 3);
 		list.setLocalizedHeader(KEY_DESCRIPTION, "Regel", 4);
 		list.setLocalizedHeader(KEY_CUT_DATE, "Brytdatum", 5);
+		list.setLocalizedHeader(KEY_EDIT, "Redigera", 6);
+		list.setLocalizedHeader(KEY_DELETE, "Ta bort", 7);
 
 		if (ageRegulations != null) {
 			Iterator iter = ageRegulations.iterator();
