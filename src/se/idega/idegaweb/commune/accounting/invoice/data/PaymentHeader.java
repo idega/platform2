@@ -12,7 +12,7 @@ public interface PaymentHeader extends com.idega.data.IDOEntity
  public char getStatus();
  public void initializeAttributes();
  public void setDateAttested(java.sql.Date p0);
- public void setDateChanged(java.sql.Date p0);
+ public void setPeriod(java.sql.Date p0);
  public void setSchoolCategoryID(com.idega.block.school.data.SchoolCategory p0);
  public void setSchoolCategoryID(int p0);
  public void setSchoolID(int p0);

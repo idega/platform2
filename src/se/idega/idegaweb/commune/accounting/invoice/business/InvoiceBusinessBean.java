@@ -46,10 +46,10 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/07 15:32:08 $ by $Author: joakim $
+ * Last modified: $Date: 2003/11/10 18:12:59 $ by $Author: joakim $
  *
  * @author Joakim
- * @version $Revision: 1.38 $
+ * @version $Revision: 1.39 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -58,7 +58,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * Spawns a new thread and starts the execution of the posting calculation and then returns
 	 * @param month
 	 */
-	public void startPostingBatch(Date month, String schoolCategory, IWContext iwc)
+	public void startPostingBatch(Date month, Date readDate, String schoolCategory, IWContext iwc)
 		throws IDOLookupException, FinderException, SchoolCategoryNotFoundException {
 		//Select correct thread to start
 		SchoolCategoryHome sch = (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
@@ -67,7 +67,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		} else if (sch.findElementarySchoolCategory().getCategory().equals(schoolCategory)) {
 			new PaymentThreadElementarySchool(month, iwc).start();
 		} else if (sch.findHighSchoolCategory().getCategory().equals(schoolCategory)) {
-			new PaymentThreadHighSchool(month, iwc).start();
+			new PaymentThreadHighSchool(readDate, iwc).start();
 		} else {
 			System.out.println("Error: couldn't find any Schoolcategory for billing named " + schoolCategory);
 			throw new SchoolCategoryNotFoundException(
@@ -91,7 +91,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 
 		try {
 			SchoolCategory schoolCategory =
-				((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByLocalizedKey(category);
+				((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(category);
 			headerIter = getInvoiceHeaderHome().findByMonthAndSchoolCategory(month, schoolCategory).iterator();
 			while (headerIter.hasNext()) {
 				header = (InvoiceHeader) headerIter.next();
@@ -266,7 +266,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	public Collection getPaymentRecordsByCategoryProviderAndPeriod(String category, String provider, Date period)
 		throws RemoteException, FinderException {
 		SchoolCategory schoolCategory =
-			((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByLocalizedKey(category);
+			((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(category);
 		School school = ((SchoolHome) IDOLookup.getHome(School.class)).findByPrimaryKey(provider);
 		return getPaymentRecordsByCategoryProviderAndPeriod(schoolCategory, school, period);
 	}

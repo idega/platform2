@@ -16,7 +16,6 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
-import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -26,6 +25,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InputContainer;
+import com.idega.presentation.ui.SubmitButton;
 
 /**
  * @author Joakim
@@ -46,7 +46,7 @@ public class PaymentRecordMaintenance extends AccountingBlock{
 		try {
 			handleAction(iwc);
 		
-			DropdownMenu providerDropdown = new DropdownMenu();
+			DropdownMenu providerDropdown = new DropdownMenu("provider_dropdown");
 			providerDropdown.addMenuElementFirst("",localize(PARAM_NAME,"Name"));
 			String schoolCategory = getSession().getOperationalField();
 			Iterator schoolIter = getSchoolBusiness(iwc).findAllSchoolsByCategory(schoolCategory).iterator();
@@ -65,21 +65,25 @@ public class PaymentRecordMaintenance extends AccountingBlock{
 			table.add(provider,1,2);
 			table.add(month,1,3);
 
-			GenericButton search = new GenericButton(PARAM_SEARCH,localize(PARAM_SEARCH,"Search"));
+//			table.add(search,2,2);
+			add(form);
 			
-			table.add(search,2,2);
 
 			form.add(table);
 
-			add(form);
+			GenericButton search = new SubmitButton(PARAM_SEARCH,localize(PARAM_SEARCH,"Search"));
 			
+			form.add(search);
+
 			//Middle section with the payment list
 			try{
 				
 				Table paymentTable = new Table();
 
 				int row = 2;
-				Collection paymentColl = getInvoiceBusiness(iwc).getPaymentRecordsByCategoryProviderAndPeriod(schoolCategory,providerDropdown.getSelectedValue(),new Date(System.currentTimeMillis()));
+				
+				Collection paymentColl = getInvoiceBusiness(iwc).getPaymentRecordsByCategoryProviderAndPeriod(schoolCategory,iwc.getParameter("provider_dropdown"),new Date(System.currentTimeMillis()));
+				System.out.println("Size of payment list "+paymentColl.size());
 				//TODO (JJ) 
 				Iterator paymentIter = paymentColl.iterator();
 				if(paymentIter.hasNext()){
@@ -93,6 +97,13 @@ public class PaymentRecordMaintenance extends AccountingBlock{
 					while(paymentIter.hasNext()){
 						PaymentRecord paymentRecord = (PaymentRecord)paymentIter.next();
 						paymentTable.add(new Text(""+paymentRecord.getStatus()),1,row);
+						paymentTable.add(new Text(""+paymentRecord.getDateCreated()),2,row);
+						paymentTable.add(new Text(paymentRecord.getPaymentText()),3,row);
+						paymentTable.add(new Text(""+paymentRecord.getPlacements()),4,row);
+						paymentTable.add(new Text(""+paymentRecord.getTotalAmount()),5,row);
+						if(paymentRecord.getNotes()!=null){
+							paymentTable.add(new Text(paymentRecord.getNotes()),6,row);
+						}
 						row++;
 					}
 					add(paymentTable);
@@ -101,6 +112,8 @@ public class PaymentRecordMaintenance extends AccountingBlock{
 				}
 			}catch(FinderException e){
 				add(getLocalizedSmallHeader(PREFIX+"no_payment_records_found","No payment records found."));
+				e.printStackTrace();
+				System.out.println("Problems finding payment records!!!");
 			}
 			
 		} catch (Exception e) {
@@ -113,9 +126,6 @@ public class PaymentRecordMaintenance extends AccountingBlock{
 	 * @param iwc
 	 */
 	private void handleAction(IWContext iwc) {
-		if(iwc.isParameterSet(PARAM_SAVE)){
-			handleSave(iwc);
-		}
 		if(iwc.isParameterSet(PARAM_SEARCH)){
 			handleSearch(iwc);
 		}
@@ -127,19 +137,6 @@ public class PaymentRecordMaintenance extends AccountingBlock{
 	private void handleSearch(IWContext iwc) {
 		//TODO (JJ) create
 		System.out.println("Handle search "+iwc.getCurrentUserId());
-	}
-
-	/**
-	 * @param iwc
-	 */
-	private void handleSave(IWContext iwc) {
-		User user = iwc.getCurrentUser();
-		//TODO (JJ)
-		if(user!=null){
-			add("Save pressed for user: "+user.getName());
-		} else {
-			add("Need to log in again.");
-		}
 	}
 
 	protected PostingBusiness getPostingBusiness(IWApplicationContext iwc) throws RemoteException {

@@ -11,7 +11,6 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
-import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
@@ -49,7 +48,6 @@ import com.idega.util.IWTimestamp;
  */
 public abstract class PaymentThreadSchool extends BillingThread{
 	PaymentHeader paymentHeader;
-	Date currentDate;
 	
 	public PaymentThreadSchool(Date month, IWContext iwc){
 		super(month,iwc);
@@ -60,8 +58,8 @@ public abstract class PaymentThreadSchool extends BillingThread{
 	protected void contracts(){
 		Collection regulationArray = new ArrayList();
 		ArrayList conditions = new ArrayList();
-		boolean first;
-		ExportDataMapping categoryPosting;
+//		boolean first;
+//		ExportDataMapping categoryPosting;
 		PostingDetail postingDetail;
 
 		try {
@@ -72,10 +70,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 
 			RegulationsBusiness regBus = getRegulationsBusiness();
 			
-//			SchoolManagementTypeHome home = (SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class);
-//			SchoolManagementType type = home.findPrivateManagementType();
-//			String privateManagementType = (String)type.getPrimaryKey();
-			Integer privateManagementType = (Integer)((SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class)).findPrivateManagementType().getPrimaryKey();
+			String privateManagementType = (String)((SchoolManagementTypeHome) IDOLookup.getHome(SchoolManagementType.class)).findPrivateManagementType().getPrimaryKey();
 
 			Iterator schoolIter = getSchoolHome().findAllInHomeCommuneByCategory(category).iterator();
 			//Go through all elementary schools
@@ -107,7 +102,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 							);
 
 						System.out.println("Got "+regulationArray.size()+" regulations for "+school.getName());
-						first = true;
+//						first = true;
 						Iterator regulationIter = regulationArray.iterator();
 						while(regulationIter.hasNext())
 						{
@@ -116,7 +111,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 							Iterator contractIter = getChildCareContractHome().findValidContractByProvider(((Integer)school.getPrimaryKey()).intValue(),currentDate).iterator();
 //							Iterator applicationIter = getChildCareApplicationHome().findApplicationsByProviderAndDate(((Integer)school.getPrimaryKey()).intValue(), 
 //									((Integer)school.getPrimaryKey()).intValue(),currentDate).iterator();
-							System.out.println("looking at regulattion");
+							System.out.println("looking at regulation");
 							ChildCareContract contract = null;
 							while(contractIter.hasNext()){
 								try{
@@ -124,6 +119,8 @@ public abstract class PaymentThreadSchool extends BillingThread{
 
 //									ChildCareApplication application = (ChildCareApplication) applicationIter.next();
 									contract = (ChildCareContract) contractIter.next();
+//									Header created in the createPaymentRecord()
+/*
 									if(first){
 										System.out.println("Creating payment header");
 										paymentHeader = (PaymentHeader) IDOLookup.create(PaymentHeader.class);
@@ -137,6 +134,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 										first = false;
 										paymentHeader.store();
 									}
+*/
 //									ChildCareContract contract = getChildCareContractHome().findApplicationByContract(((Integer)application.getPrimaryKey()).intValue());
 									calculateTime(contract.getValidFromDate(),contract.getTerminatedDate());
 									//Get the posting details for the contract
@@ -206,13 +204,9 @@ public abstract class PaymentThreadSchool extends BillingThread{
 		PostingDetail postingDetail = null;
 		
 		try {
-//			RegularPaymentBusiness regularPaymentBusiness = getRegularPaymentBusiness();
-//			Collection regularPayment = regularPaymentBusiness.findRegularPaymentsForPeriode(startPeriod.getDate(), endPeriod.getDate());
-//			Iterator regularPaymentIter = regularPayment.iterator();
 			Iterator regularPaymentIter = getRegularPaymentBusiness().findRegularPaymentsForPeriode(startPeriod.getDate(), endPeriod.getDate()).iterator();
 			//Go through all the regular payments
 			while(regularPaymentIter.hasNext()){
-				//TODO (JJ) change this to RegularPaymentEntry when Roar is done with that
 				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry)regularPaymentIter.next();
 				postingDetail = new PostingDetail(regularPaymentEntry);
 				createPaymentRecord(postingDetail,regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting());

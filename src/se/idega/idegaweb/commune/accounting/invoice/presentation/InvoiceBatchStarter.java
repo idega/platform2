@@ -1,6 +1,7 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 
 import javax.ejb.FinderException;
 
@@ -82,9 +83,7 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		}
 		
 		GenericButton saveButton = this.getSaveButton();
-//		GenericButton cancelButton = this.getCancelButton();
 		form.add(saveButton);
-//		form.add(cancelButton);
 	}
 	
 	/**
@@ -102,7 +101,15 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	private void handleSave(IWContext iwc, String schoolCategory) {
 		try {
 			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
-			invoiceBusiness.startPostingBatch(new IWTimestamp(iwc.getParameter(PARAM_MONTH)).getDate(), schoolCategory, iwc);
+			Date month = null;
+			Date readDate = null;
+			if(iwc.getParameter(PARAM_MONTH)!=null){
+				month = new IWTimestamp(iwc.getParameter(PARAM_MONTH)).getDate();
+			}
+			if(iwc.getParameter(PARAM_READ_DATE)!=null){
+				readDate = new IWTimestamp(iwc.getParameter(PARAM_READ_DATE)).getDate();
+			}
+			invoiceBusiness.startPostingBatch(month, readDate, schoolCategory, iwc);
 		} catch (Exception e) {
 			add(new ExceptionWrapper(e));
 		}

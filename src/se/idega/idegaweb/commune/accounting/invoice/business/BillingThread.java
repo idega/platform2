@@ -93,6 +93,7 @@ public abstract class BillingThread extends Thread{
 			} else {
 				paymentHeader.setStatus(ConstantStatus.PRELIMINARY);
 			}
+			paymentHeader.setPeriod(currentDate);
 			paymentHeader.store();
 		}
 
@@ -109,7 +110,7 @@ public abstract class BillingThread extends Thread{
 			//It didn't exist, so we create it
 			paymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
 			//Set all the values for the payment record
-			paymentRecord.setPaymentHeader(paymentHeader);
+			paymentRecord.setPaymentHeader(((Integer)paymentHeader.getPrimaryKey()).intValue());
 			if(categoryPosting.getProviderAuthorization()){
 				paymentRecord.setStatus(ConstantStatus.BASE);
 			} else {
@@ -128,7 +129,6 @@ public abstract class BillingThread extends Thread{
 			paymentRecord.setDoublePosting(doublePosting);
 			paymentRecord.setVATType(postingDetail.getVatRegulationID());
 			paymentRecord.store();
-			System.out.println("Created payment record");
 		}
 		return paymentRecord;
 	}
