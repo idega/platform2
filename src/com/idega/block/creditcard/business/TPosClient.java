@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.7 2004/10/29 18:15:00 gimmi Exp $
+ *  $Id: TPosClient.java,v 1.8 2004/11/01 14:50:25 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -359,6 +359,64 @@ public class TPosClient implements CreditCardClient{
   	    }
   	
   	    inserted = TPosAuthorisationEntriesHome.getInstance().insert(entry);
+
+//      	String tmpTest;
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_AUTHORAMOUNT);
+//  	    System.out.println("PN_AUTHORAMOUNT : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_AUTHORCURRENCY);
+//  	    System.out.println("PN_AUTHORCURRENCY : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_AUTHORIDENTIFYRSP);
+//  	    System.out.println("PN_AUTHORIDENTIFYRSP : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_AUTHPATHREASONCODE);
+//  	    System.out.println("PN_AUTHPATHREASONCODE : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_BATCHNUMBER);
+//  	    System.out.println("PN_BATCHNUMBER : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_CARDBRANDID);
+//  	    System.out.println("PN_CARDBRANDNAME : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_CARDBRANDNAME);
+//  	    System.out.println("PN_CARDBRANDNAME : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_CARDCHARACTER);
+//  	    System.out.println("PN_CARDCHARACTER : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_EXPIRE);
+//  	    System.out.println("PN_EXPIRE : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_CARDTYPENAME);
+//  	    System.out.println("PN_CARDTYPENAME : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_CARDTYPEID);
+//  	    System.out.println("PN_CARDTYPEID : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_DETAILEXPECTED);
+//  	    System.out.println("PN_DETAILEXPECTED : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_DATE);
+//  	    System.out.println("PN_DATE : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_TIME);
+//  	    System.out.println("PN_TIME : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_ERRORNUMBER);
+//  	    System.out.println("PN_ERRORNUMBER : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_ERRORTEXT);
+//  	    System.out.println("PN_ERRORTEXT : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_LOCATIONNUMBER);
+//  	    System.out.println("PN_LOCATIONNUMBER : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_MERCHANTNUMBERAUTHOR);
+//  	    System.out.println("PN_MERCHANTNUMBEROTHERSERVICES : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_MERCHANTNUMBEROTHERSERVICES);
+//  	    System.out.println("PN_MERCHANTNUMBEROTHERSERVICES : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_MERCHANTNUMBERSUBMISSION);
+//  	    System.out.println("PN_MERCHANTNUMBERSUBMISSION : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_POSNUMBER);
+//  	    System.out.println("PN_POSNUMBER : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_POSSERIAL);
+//  	    System.out.println("PN_POSSERIAL : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_SUBMISSIONAMOUNT);
+//  	    System.out.println("PN_SUBMISSIONAMOUNT : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_SUBMISSIONCURRENCY);
+//  	    System.out.println("PN_SUBMISSIONCURRENCY : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_TOTALRESPONSECODE);
+//  	    System.out.println("PN_TOTALRESPONSECODE : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_TRANSACTIONNUMBER);
+//  	    System.out.println("PN_TRANSACTIONNUMBER : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_VOIDEDAUTHIDRSP);
+//  	    System.out.println("PN_VOIDEDAUTHIDRSP : "+tmpTest.length());
+//  	    tmpTest = _client.getProperty(TPOS3Client.PN_VOIDEDTRANSNUMBER);
+//  	    System.out.println("PN_VOIDEDTRANSNUMBER : "+tmpTest.length());
   	    
       } catch (Exception e) {
       		e.printStackTrace();
