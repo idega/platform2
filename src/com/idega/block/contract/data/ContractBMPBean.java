@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.17 2003/07/01 20:23:06 roar Exp $
+ * $Id: ContractBMPBean.java,v 1.18 2003/07/01 21:31:51 roar Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -274,6 +274,8 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 			Iterator it = root.getContent().iterator();
 			while (it.hasNext()) {
 				Object obj = it.next();
+				System.out.println("### Class name:"+ obj.getClass().getName());
+				
 				if (obj instanceof XMLElement) {
 					String name = ((XMLElement)obj).getName();
 					String value = (String)fieldValues.get(name);
@@ -286,14 +288,15 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 					String text = ((Text)obj).getText();				
 //				else if (obj instanceof String) {
 //					//TODO: (roar) remove dbg code:
-					System.out.println("### setUnsetFields:obj instanceof String: " + text);				
+					System.out.println("### setUnsetFields:obj instanceof Text: " + text);				
 					merged.append(text);
 				}
-				//TODO: (roar) remove dbg code:
-				System.out.println("### setUnsetFields:merged: " + merged.toString());					
-				setText(merged.toString());
-				store();
 			}
+			//TODO: (roar) remove dbg code:
+			System.out.println("### setUnsetFields:merged: " + merged.toString());					
+			setText(merged.toString());
+			store();
+			
 		} catch (XMLException ex) {
 			ex.printStackTrace();
 		}
