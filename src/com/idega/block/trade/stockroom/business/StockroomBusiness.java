@@ -4,11 +4,13 @@ import java.sql.Timestamp;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
 import com.idega.core.data.*;
+import com.idega.data.EntityFinder;
 import com.idega.core.user.data.User;
 import com.idega.data.GenericEntity;
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
+import java.util.List;
 
 /**
  * Title:        IW Trade
@@ -19,7 +21,7 @@ import com.idega.core.accesscontrol.business.NotLoggedOnException;
  * @version 1.0
  */
 
-public class StockroomBusiness implements SupplyManager {
+public class StockroomBusiness /* implements SupplyManager */ {
 
   public StockroomBusiness() {
   }
@@ -43,17 +45,105 @@ public class StockroomBusiness implements SupplyManager {
     /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
     throw new java.lang.UnsupportedOperationException("Method getSupplyStatus() not yet implemented.");
   }
-  public void setPrice(int product_id, Timestamp time) {
-    /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
-    throw new java.lang.UnsupportedOperationException("Method setPrice() not yet implemented.");
+
+
+
+  public void setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price) throws SQLException {
+   ProductPrice prPrice = new ProductPrice();
+
+   prPrice.setProductId(productId);
+   prPrice.setCurrencyId(currencyId);
+   prPrice.setPriceCategoryID(priceCategoryId);
+   prPrice.setPriceDate(time);
+   prPrice.setPrice(price);
+
+   prPrice.insert();
   }
-  public float getPrice(int product_id, Timestamp time) {
+
+  public float getPrice(int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
     /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
-    throw new java.lang.UnsupportedOperationException("Method getPrice() not yet implemented.");
+    /*skila verði ef PRICETYPE_PRICE annars verði með tilliti til afsláttar*/
+    PriceCategory cat = new PriceCategory(priceCategoryId);
+
+
+    if(cat.getType().equals(PriceCategory.PRICETYPE_PRICE)){
+      ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
+      List result = EntityFinder.findAll(ppr,"select * from "+ppr.getEntityName()+" where "+ProductPrice.getColumnNameProductId()+" = "+productId+" and "+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId+" and "+ProductPrice.getColumnNameCurrencyId()+" = "+currencyId+" and "+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"' order by "+ProductPrice.getColumnNamePriceDate());
+      if(result != null && result.size() > 0){
+        return ((ProductPrice)result.get(0)).getPrice();
+      }else{
+        throw new ProductPriceException();
+      }
+    }else if(cat.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
+      ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
+      List result = EntityFinder.findAll(ppr,"select * from "+ppr.getEntityName()+" where "+ProductPrice.getColumnNameProductId()+" = "+productId+" and "+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId+" and "+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"' order by "+ProductPrice.getColumnNamePriceDate());
+      float disc = 0;
+      if(result != null && result.size() > 0){
+        disc = ((ProductPrice)result.get(0)).getPrice();
+      }
+      float pr = this.getPrice(productId,cat.getParentId(),currencyId,time);
+      return pr - pr*disc;
+    }else{
+      throw new ProductPriceException();
+    }
   }
-  public void createPriceCategory() {
-    /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
-    throw new java.lang.UnsupportedOperationException("Method createPriceCategory() not yet implemented.");
+
+  /**
+   * returns 0.0 if pricecategory is not of type PriceCategory.PRICETYPE_DISCOUNT
+   */
+  public float getDiscount(int productId, int priceCategoryId, Timestamp time) throws SQLException{
+    PriceCategory cat = new PriceCategory(priceCategoryId);
+    if(cat.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
+      ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
+      List result = EntityFinder.findAll(ppr,"select * from "+ppr.getEntityName()+" where "+ProductPrice.getColumnNameProductId()+" = "+productId+" and "+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId+" and "+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"' order by "+ProductPrice.getColumnNamePriceDate());
+      if(result != null && result.size() > 0){
+        return ((ProductPrice)result.get(0)).getPrice();
+      }else{
+        return 0;
+      }
+    }else{
+      throw new ProductPriceException();
+    }
+  }
+
+
+  public int createPriceCategory(int supplierId, String name, String description, String extraInfo )throws SQLException {
+    PriceCategory cat = new PriceCategory();
+    cat.setType(PriceCategory.PRICETYPE_PRICE);
+
+    cat.setName(name);
+
+    if(description != null){
+      cat.setDescription(description);
+    }
+
+    if(extraInfo != null){
+      cat.setExtraInfo(extraInfo);
+    }
+
+    cat.insert();
+
+    return cat.getID();
+  }
+
+
+  public void createPriceDiscountCategory(int parentId, int supplierId, String name, String description, String extraInfo) throws SQLException{
+    PriceCategory cat = new PriceCategory();
+    cat.setParentId(parentId);
+    cat.setType(PriceCategory.PRICETYPE_DISCOUNT);
+
+    cat.setName(name);
+
+    if(description != null){
+      cat.setDescription(description);
+    }
+
+    if(extraInfo != null){
+      cat.setExtraInfo(extraInfo);
+    }
+
+    cat.insert();
+
   }
 
 

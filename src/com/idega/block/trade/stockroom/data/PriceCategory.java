@@ -15,6 +15,9 @@ import com.idega.core.data.*;
 
 public class PriceCategory extends GenericEntity{
 
+  public static final String PRICETYPE_PRICE = "sr_pricetype_price";
+  public static final String PRICETYPE_DISCOUNT = "sr_pricetype_discount";
+
   public PriceCategory(){
     super();
   }
@@ -29,8 +32,9 @@ public class PriceCategory extends GenericEntity{
     addAttribute(getColumnNameExtraInfo(), "Aðrar upplysingar", true, true, String.class, 255);
     addAttribute(getColumnNameNetbookingCategory(), "Verðflokkur fyrir netbókun", true, true, Boolean.class, 255);
     addAttribute(getColumnNameSupplierId(),"supplier_id (owner)", true, true, Integer.class, "many_to_one", Supplier.class);
+    addAttribute(getColumnNameParentId(),"parent_id", true, true, Integer.class, "many_to_one", PriceCategory.class);
 
-    this.addTreeRelationShip();
+ //   this.addTreeRelationShip();
   }
 
 
@@ -90,11 +94,20 @@ public class PriceCategory extends GenericEntity{
     return getIntColumnValue(getColumnNameSupplierId());
   }
 
+  public void setParentId(int id){
+    setColumn(getColumnNameParentId(), id);
+  }
+
+  public int getParentId(){
+    return getIntColumnValue(getColumnNameParentId());
+  }
+
   public static String getColumnNameName() {return "CATEGORY_NAME";}
   public static String getColumnNameDescription() {return "DESCRIPTION";}
   public static String getColumnNameType(){return "CATEGORY_TYPE";}
   public static String getColumnNameExtraInfo() {return "EXTRA_INFO";}
   public static String getColumnNameSupplierId() {return "SUPPLIER_ID";}
+  public static String getColumnNameParentId() {return "PARENT_ID";}
   public static String getColumnNameNetbookingCategory() {return "NETBOOKING_CATEGORY";}
 
 
