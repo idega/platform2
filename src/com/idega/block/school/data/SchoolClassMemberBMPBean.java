@@ -137,6 +137,21 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
   	return super.idoFindPKsBySQL(sql.toString());	
   }
   
+	public Collection ejbFindByStudentAndTypes(int studentID, Collection schoolTypes) throws FinderException,RemoteException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelect().append(" m.* ").appendFrom().append(getEntityName()).append(" m, sch_school s, sch_school_sch_school_type st, sch_school_class c");
+		sql.appendWhere().append("m."+MEMBER).appendEqualSign().append(studentID);
+		sql.appendAndEquals("m."+SCHOOLCLASS, "c.sch_school_class_id");
+		sql.appendAndEquals("c.school_id", "s.sch_school_id");
+		sql.appendAndEquals("s.sch_school_id", "st.sch_school_id");
+		sql.appendAnd().append("st.sch_school_type_id").appendIn().appendLeftParenthesis();
+		sql.appendCommaDelimited(schoolTypes);
+		sql.appendRightParenthesis();
+  	
+		System.out.println("SQL: "+sql.toString());
+		return super.idoFindPKsBySQL(sql.toString());	
+	}
+  
   public Integer ejbFindByUserAndSchoolClass(User user, SchoolClass schoolClass) throws FinderException, RemoteException{
 		return ejbFindByUserAndSchoolClass(((Integer)user.getPrimaryKey()).intValue(),((Integer)schoolClass.getPrimaryKey()).intValue());
   }
