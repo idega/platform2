@@ -42,7 +42,6 @@ import is.idega.idegaweb.travel.service.presentation.*;
 
 public class HotelBookingForm extends BookingForm {
 
-
   public HotelBookingForm(IWContext iwc, Product product) throws Exception{
     super(iwc, product);
   }
@@ -111,6 +110,7 @@ public class HotelBookingForm extends BookingForm {
       addressId = ((TravelAddress) addresses.get(0)).getID();
     }
 
+		int bookingDays = 1;
     ProductPrice[] prices = {};
     ProductPrice[] misc = {};
     Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, addressId);
@@ -281,26 +281,31 @@ public class HotelBookingForm extends BookingForm {
 	          table.add(roomNumber,2,row);
 	      }
 	
-        if (_booking == null) {
-          ++row;
-          table.add(fromText, 1, row);
-          table.add(fromDate, 2, row);
+				++row;
+				table.add(fromText, 1, row);
+				table.add(fromDate, 2, row);
+				++row;
+				table.add(manyDaysText, 1, row);
+				table.add(manyDays, 2, row);
 
+        if (_booking != null) {
+//        	fromDate.setDate(_booking.getBookingDate());
+						fromDate.setDisabled(false);
+						if (this._multipleBookings) {
+							bookingDays = super._multipleBookingNumber[1];
+							manyDays.setContent(Integer.toString(bookingDays));	
+						}
 //          ++row;
 //          table.add(toText, 1, row);
 //          table.add(toDate, 2, row);
-
-          ++row;
-          table.add(manyDaysText, 1, row);
-          table.add(manyDays, 2, row);
 //          manyDays.setOnBlur("this.form."+toDate.sety+".value=\"2002-11-23\"");
-        }else {
+        }/*else {
           table.add(new HiddenInput(parameterFromDate, new IWTimestamp(_booking.getBookingDate()).toSQLDateString()), 1, row);
           GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
           GeneralBooking tempBooking = gbHome.findByPrimaryKey(_booking.getPrimaryKey());
           List bookingsJa = gbHome.getMultibleBookings(tempBooking);
           table.add(new HiddenInput(parameterManyDays, Integer.toString(bookingsJa.size())), 1, row);
-        }
+        }*/
 
         Text pPriceCatNameText;
         ResultOutput pPriceText;
@@ -395,7 +400,6 @@ public class HotelBookingForm extends BookingForm {
                 }
 
                 if (_booking != null) {
-        	/** Bokur er med timaramma.... en ekki ferdin... taddara */
                   if (entries != null) {
                     for (int j = 0; j < entries.length; j++) {
                       if (entries[j].getProductPrice().getPriceCategoryID() == pPrices[i].getPriceCategoryID()) {
@@ -414,7 +418,6 @@ public class HotelBookingForm extends BookingForm {
 		                        }
 		                        price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), pTimeframeId, addressId);
 													} catch (IDORelationshipException idoe) {
-                        	System.out.println("[HotelBookingForm] old price NOT found");
 														idoe.printStackTrace(System.err);
 													}
 												}
@@ -472,7 +475,7 @@ public class HotelBookingForm extends BookingForm {
 
         if (_booking != null) {
           TotalPassTextInput.setContent(Integer.toString(totalCount));
-          TotalTextInput.setContent(Integer.toString(totalSum));
+          TotalTextInput.setContent(Integer.toString(totalSum * bookingDays));
         }
         pTable = new Table(3,1);
           pTable.setWidth(1, Integer.toString(pWidthLeft));
@@ -1629,18 +1632,26 @@ public class HotelBookingForm extends BookingForm {
     String manyDays = iwc.getParameter(this.parameterManyDays);
     IWTimestamp fromStamp = null;
     IWTimestamp toStamp = null;
-    int betw = 1;
-    int heildarbokanir = 0;
+//    int betw = 1;
+//    int heildarbokanir = 0;
+    int bookingTotal = 0;
+		int iManyDays = 1;
+		try {
+			iManyDays = Integer.parseInt(manyDays);
+		}catch (NumberFormatException n) {}
     
     try {
       fromStamp = new IWTimestamp(fromDate);
-      
 //      heildarbokanir = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);
 //    	heildarbokanir = getHotelBooker(iwc).getNumberOfReservedRooms(serviceId, fromStamp, null);
-				heildarbokanir = getHotelBooker(iwc).getBookingsTotalCount(serviceId, fromStamp);
-      int iManyDays = Integer.parseInt(manyDays);
-      if (iManyDays < 1) betw = 1;
-      else betw = iManyDays;
+//			heildarbokanir = getHotelBooker(iwc).getBookingsTotalCount(serviceId, fromStamp);
+			if (_booking != null) {
+				bookingTotal = _booking.getTotalCount();
+//				heildarbokanir -= bookingTotal;	
+			}
+
+//      if (iManyDays < 1) betw = 1;
+//      else betw = iManyDays;
     }catch (Exception e) {
     	e.printStackTrace(System.err);
     }
@@ -1667,14 +1678,20 @@ public class HotelBookingForm extends BookingForm {
 		if (!tooMany) {
 	    int iAvailable;
 	    if (totalRooms > 0) {
-//		    iAvailable = totalRooms - heildarbokanir;
-//		    System.out.println("iAvail = totalRooms - heildarbokanir ....."+iAvailable+" = "+totalRooms+" - "+heildarbokanir);
-		    iAvailable = totalRooms - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, null );
-		    if (iMany > iAvailable) {
-//			  if (iAvailable <= 0 ) {
-		    	tooMany = true;
-		    	errorDays.add(fromStamp);
-		    }
+	    	for ( int j = 0; j < iManyDays; j++) {
+	    		if (j != 0) {
+						fromStamp.addDays(1);	    			
+	    		}
+	    		//		    iAvailable = totalRooms - heildarbokanir;
+			    iAvailable = totalRooms + bookingTotal - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, null );
+					//System.out.println("iAvail = totalRooms + bookingTotal - heildarbokanir ....."+iAvailable+" = "+totalRooms+" + " +bookingTotal+ " - "+getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, null ));
+			    if (iMany > iAvailable) {
+	//			  if (iAvailable <= 0 ) {
+			    	tooMany = true;
+			    	errorDays.add(new IWTimestamp(fromStamp));
+			    }
+	    	}
+		    
 	    }
 		}
 

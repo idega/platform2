@@ -100,6 +100,7 @@ public class TourBookingForm extends BookingForm{
       }
 
 
+			int bookingDays = 1;
       ProductPrice[] prices = {};
       ProductPrice[] misc = {};
       Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, addressId);
@@ -269,9 +270,23 @@ public class TourBookingForm extends BookingForm{
               table.add(roomNumber,2,row);
           }
 
-          /**
-           * @todo hondla edit booking ...
-           */
+
+				++row;
+				table.add(fromText, 1, row);
+				table.add(fromDate, 2, row);
+//				++row;
+//				table.add(manyDaysText, 1, row);
+//				table.add(manyDays, 2, row);
+
+				if (_booking != null) {
+//					fromDate.setDate(_booking.getBookingDate());
+						fromDate.setDisabled(false);
+//						if (this._multipleBookings) {
+//							bookingDays = super._multipleBookingNumber[1];
+//							manyDays.setContent(Integer.toString(bookingDays));	
+//						}
+				}
+				/*
           if (_booking == null) {
             ++row;
             table.add(fromText, 1, row);
@@ -287,7 +302,7 @@ public class TourBookingForm extends BookingForm{
             List bookingsJa = gbHome.getMultibleBookings(tempBooking);
             table.add(new HiddenInput(parameterManyDays, Integer.toString(bookingsJa.size())), 1, row);
           }
-
+*/
           Text pPriceCatNameText;
           ResultOutput pPriceText;
           TextInput pPriceMany;
@@ -447,7 +462,7 @@ public class TourBookingForm extends BookingForm{
 
           if (_booking != null) {
             TotalPassTextInput.setContent(Integer.toString(totalCount));
-            TotalTextInput.setContent(Integer.toString(totalSum));
+            TotalTextInput.setContent(Integer.toString(totalSum * bookingDays));
           }
           pTable = new Table(3,1);
             pTable.setWidth(1, Integer.toString(pWidthLeft));
@@ -1587,7 +1602,8 @@ public class TourBookingForm extends BookingForm{
       }catch (NumberFormatException n) {
         n.printStackTrace(System.err);
       }
-      IWTimestamp _fromDate = new IWTimestamp(_stamp);
+      IWTimestamp _fromDate = new IWTimestamp(fromDate);
+//		IWTimestamp _fromDate = new IWTimestamp(_stamp);
 
       String sBookingId = iwc.getParameter(this.parameterBookingId);
 
@@ -1689,12 +1705,12 @@ public class TourBookingForm extends BookingForm{
             //handle multiple...
             List tempBookings = getTourBooker(iwc).getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
             if (tempBookings == null || tempBookings.size() < 2) {
-              lbookingId = getTourBooker(iwc).updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
+              lbookingId = getTourBooker(iwc).updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
             }else {
               GeneralBooking gBooking;
               for (int j = 0; j < tempBookings.size(); j++) {
                 gBooking = (GeneralBooking) tempBookings.get(j);
-                getTourBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, new IWTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
+                getTourBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
               }
               lbookingId = iBookingId;
 

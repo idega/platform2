@@ -54,6 +54,8 @@ public abstract class BookingForm extends TravelManager{
   protected int _contractId;
   protected IWTimestamp _stamp;
   protected Booking _booking;
+  protected int[] _multipleBookingNumber = new  int[] {0, 0, 0};
+  protected boolean _multipleBookings = false;
 
   protected int available = is.idega.idegaweb.travel.presentation.Booking.available;
   protected int availableIfNoLimit = is.idega.idegaweb.travel.presentation.Booking.availableIfNoLimit;
@@ -113,6 +115,10 @@ public abstract class BookingForm extends TravelManager{
     	try {
         int bookingId = Integer.parseInt(sBookingId);
         _booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+        _multipleBookingNumber = getBooker(iwc).getMultipleBookingNumber((GeneralBooking)_booking);
+        if (_multipleBookingNumber[1] > 1 ) {
+        		_multipleBookings = true;
+        }
     	}catch (FinderException fe) {
     		/** not handled */	
     	}
@@ -181,6 +187,7 @@ public abstract class BookingForm extends TravelManager{
     }
 
 
+		int bookingDays = 1;
     ProductPrice[] prices = {};
     ProductPrice[] misc = {};
     Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, addressId);
@@ -321,7 +328,22 @@ public abstract class BookingForm extends TravelManager{
           table.add(new HiddenInput(this.parameterDepartureAddressId, Integer.toString(addressId)));
         }
 
-
+				++row;
+				table.add(fromText, 1, row);
+				table.add(fromDate, 2, row);
+				++row;
+				table.add(manyDaysText, 1, row);
+				table.add(manyDays, 2, row);
+	
+				if (_booking != null) {
+	//				fromDate.setDate(_booking.getBookingDate());
+						fromDate.setDisabled(false);
+						if (this._multipleBookings) {
+							bookingDays = _multipleBookingNumber[1];
+							manyDays.setContent(Integer.toString(bookingDays));	
+						}
+				}
+				/*
         if (_booking == null) {
           ++row;
           table.add(fromText, 1, row);
@@ -336,7 +358,7 @@ public abstract class BookingForm extends TravelManager{
           GeneralBooking tempBooking = gbHome.findByPrimaryKey(_booking.getPrimaryKey());
           List bookingsJa = gbHome.getMultibleBookings(tempBooking);
           table.add(new HiddenInput(parameterManyDays, Integer.toString(bookingsJa.size())), 1, row);
-        }
+        }*/
 
         Text pPriceCatNameText;
         ResultOutput pPriceText;
@@ -1458,6 +1480,7 @@ public abstract class BookingForm extends TravelManager{
         for (int r = 0; r < betw ; r++) {
           if (r != 0)
           fromStamp.addDays(1);
+          System.out.println("[BookingForm] checking date : "+fromStamp);
           iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, addressIds );
           if (iMany > iAvailable) {
               tooMany = true;
@@ -1520,13 +1543,13 @@ public abstract class BookingForm extends TravelManager{
         String manyDays = iwc.getParameter(this.parameterManyDays);
       //TEMP ENDS
 
-
+/*
       try {
         _stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
       }catch (NumberFormatException n) {
         n.printStackTrace(System.err);
-      }
-      IWTimestamp _fromDate = new IWTimestamp(_stamp);
+      }*/
+      IWTimestamp _fromDate = new IWTimestamp(fromDate);
 
       String sBookingId = iwc.getParameter(this.parameterBookingId);
 
@@ -1618,36 +1641,104 @@ public abstract class BookingForm extends TravelManager{
 
         int[] bookingIds = new int[betw];
 
-        for (int i = 0; i < betw; i++) {
-          if (iBookingId == -1) {
-            if (i != 0) {
-              _fromDate.addDays(1);
-            }
-            lbookingId = getBooker(iwc).Book(_service.getID(),country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
-		        if (iPickupId > 0) {
-		            getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
-		        }
-            }else {
-            //handle multiple...
+
+				if (iBookingId == -1) {
+					for (int i = 0; i < betw; i++) {
+						if (i != 0) {
+							_fromDate.addDays(1);
+						}
+						
+						bookingIds[i] = getBooker(iwc).Book(_service.getID(),country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
+						if (iPickupId > 0) {
+								getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+						}
+					}
+					lbookingId = bookingIds[0];
+					
+				} else {				
+            /** Edit booking */
             List tempBookings = getBooker(iwc).getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
-            if (tempBookings == null || tempBookings.size() < 2) {
-              lbookingId = getBooker(iwc).updateBooking(iBookingId, _service.getID(), country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
-            if (iPickupId > 0) {
-                getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+            int tempBookingsSize = 0;
+            if (tempBookings != null) {
+            	tempBookingsSize = tempBookings.size();
             }
+            
+            if (tempBookingsSize < 2 && betw < 2) {
+            	/** Single booking */
+              bookingIds[0] = getBooker(iwc).updateBooking(iBookingId, _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
+            	if (iPickupId > 0) {
+                getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+            	}
+            	lbookingId = bookingIds[0];
             }else {
+							/** Multiple bookings */
               GeneralBooking gBooking;
-              for (int j = 0; j < tempBookings.size(); j++) {
-                gBooking = (GeneralBooking) tempBookings.get(j);
-                getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, new IWTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
-                if (iPickupId > 0) {
-	                getBooker(iwc).setPickup(gBooking.getID(), iPickupId, pickupInfo);
-                }
+              
+              /** Reduce number of days */
+              if (tempBookingsSize > betw) {
+              	bookingIds = new int[tempBookingsSize];
+              	/** Updating the days that will not be deleted */
+              	for ( int j = 0; j < betw; j++) {
+									if (j != 0) {
+										_fromDate.addDays(1);
+									}
+									gBooking = (GeneralBooking) tempBookings.get(j);
+									bookingIds[j] = getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
+									if (iPickupId > 0) {
+											getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+									}
+              	}
+              	/** Deleting the rest of the days */
+              	for (int j = betw; j < tempBookingsSize; j++) {
+              		getBooker(iwc).deleteBooking((GeneralBooking) tempBookings.get(j));	
+              	}
               }
+
+							/** Same number of days */
+							if (tempBookingsSize == betw) {
+								bookingIds = new int[tempBookingsSize];
+								/** Updating the days that will not be deleted */
+								for ( int j = 0; j < betw; j++) {
+									if (j != 0) {
+										_fromDate.addDays(1);
+									}
+									gBooking = (GeneralBooking) tempBookings.get(j);
+									bookingIds[j] = getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
+									if (iPickupId > 0) {
+											getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+									}
+								}
+							}
+
+							/** Increase number of days */
+							if (tempBookingsSize < betw) {
+								bookingIds = new int[betw];
+								/** Updates bookings that existed */
+              	for (int j = 0; j < tempBookingsSize; j++) {
+									if (j != 0) {
+										_fromDate.addDays(1);
+									}
+									gBooking = (GeneralBooking) tempBookings.get(j);
+									bookingIds[j] = getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
+									if (iPickupId > 0) {
+											getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+									}
+              	}
+              	/** Creates new bookins */
+              	for (int j = tempBookingsSize; j < betw; j++) {
+									if (j != 0) {
+										_fromDate.addDays(1);
+									}
+									bookingIds[j] = getBooker(iwc).Book(_service.getID(),country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
+									if (iPickupId > 0) {
+											getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+									}
+              	}
+              	 
+              	
+							}
               lbookingId = iBookingId;
             }
-          }
-          bookingIds[i] = lbookingId;
         }
 
 
@@ -1726,7 +1817,7 @@ public abstract class BookingForm extends TravelManager{
               BookingEntry bEntry;
               ProductPrice price;
               boolean done = false;
-              BookingEntry[] entries = getBooker(iwc).getBookingEntries(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
+              BookingEntry[] entries = getBooker(iwc).getBookingEntries(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingIds[k])));
               for (int i = 0; i < entries.length; i++) {
                 entries[i].remove();
               }
@@ -1768,6 +1859,7 @@ public abstract class BookingForm extends TravelManager{
                   bEntry.store();
                 }
               }
+             
             }
           }
         }
@@ -1955,40 +2047,54 @@ public abstract class BookingForm extends TravelManager{
   }
 
   private Form getTooManyForm(IWContext iwc) {
-    /**
-     * @todo gera fínna (þeas meira fínt)
-     */
-
     Form form = getFormMaintainingAllParameters(false, true);
       Table table = new Table();
+      	table.setColor(super.WHITE);
         form.add(table);
       int row = 1;
       IWTimestamp temp;
+      table.add(super.getHeaderText(iwrb.getLocalizedString("travel.unavailable_days","Unavailable days")), 1, row);
+			table.setRowColor(row, super.backgroundColor);
 
-      table.add(iwrb.getLocalizedString("travel.unavailable_days","Unavailable days"), 1,row);
+      //table.add(iwrb.getLocalizedString("travel.unavailable_days","Unavailable days"), 1,row);
       for (int i = 0; i < errorDays.size(); i++) {
         try {
           ++row;
           temp = new IWTimestamp((IWTimestamp)errorDays.get(i));
+          table.setRowColor(row, super.GRAY);
           table.add(getLocaleDate(temp), 1,row);
         }catch (NullPointerException npe) {
           npe.printStackTrace(System.err);
         }
       }
 
+			String sBookingId = iwc.getParameter(this.parameterBookingId);
+
       ++row;
+			table.setRowColor(row, super.GRAY);
 
       if (supplier != null) {
         table.add(iwrb.getLocalizedString("travel.too_many_book_anyway","Too many. Do you wish to book anyway ?"), 1, row);
-        table.add(new BackButton("Back"), 1, row);
+        ++row;
+				table.setRowColor(row, super.GRAY);
+        table.add(new BackButton(iwrb.getLocalizedString("back","Back")), 1, row);
         table.add(Text.NON_BREAKING_SPACE, 1, row);
-        table.add(new SubmitButton("Book anyway",this.BookingAction, this.parameterBookAnyway), 1, row);
-        table.add(Text.NON_BREAKING_SPACE, 1, row);
-        table.add(new SubmitButton("Send inquiry",this.BookingAction, this.parameterSendInquery), 1, row);
+        table.add(new SubmitButton(iwrb.getLocalizedString("travel.book_anyway","Book anyway"),this.BookingAction, this.parameterBookAnyway), 1, row);
+        if (sBookingId == null) {
+        	table.add(Text.NON_BREAKING_SPACE, 1, row);
+        	table.add(new SubmitButton(iwrb.getLocalizedString("travel.send_inquiry","Send inquiry"),this.BookingAction, this.parameterSendInquery), 1, row);
+        }
       }else if (_reseller != null) {
-        table.add(iwrb.getLocalizedString("travel.too_many_send_inquiry","Too many. Do you wish to send an inquiry ?"), 1, row);
-        table.add(new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.BookingAction, this.parameterSendInquery), 1, row);
-        table.add(new BackButton(iwrb.getImage("buttons/no.gif")), 1, row);
+      	if (sBookingId == null) {
+	        table.add(iwrb.getLocalizedString("travel.too_many_send_inquiry","Too many. Do you wish to send an inquiry ?"), 1, row);
+					++row;
+					table.setRowColor(row, super.GRAY);
+	        table.add(new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.BookingAction, this.parameterSendInquery), 1, row);
+	        table.add(new BackButton(iwrb.getImage("buttons/no.gif")), 1, row);
+      	}else {
+					table.setRowColor(row, super.GRAY);
+					table.add(new BackButton(iwrb.getLocalizedString("back","Back")), 1, row);
+      	}
       }
 
     return form;
