@@ -1190,11 +1190,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (restrict != null) {
 			restrictDates = Boolean.valueOf(restrict).booleanValue();
 		}
-		
-		//todo:(TODO) Remove debug code:
-		System.out.println("Method: " + _method);
-		System.out.println("Action: " + _action);
-		System.out.println("App id: " + _applicationID);
 	}
 	
 	private void alterCareTime(IWContext iwc) throws RemoteException {

@@ -1391,8 +1391,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						if(pdfBuffers !=null && pdfBuffers.size() == 1 && txtBuffers !=null && txtBuffers.size() == 1){
 							String contractText = txtHandler.bufferToString((MemoryFileBuffer)txtBuffers.get(0));
 							contractText= breakString(contractText, 80);
-							//TODO: (roar) remove debug code:
-							System.out.println("CONTRACT TEXT:\n" + contractText);
 							ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)pdfBuffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 							ContractService service = (ContractService) getServiceInstance(ContractService.class);
 							Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),getContractCategory(),validFrom,null,"C",contractText);
