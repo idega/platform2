@@ -184,13 +184,14 @@ public class SchoolUserEditor extends Block {
 			if (users != null && users.size() > 0) {
 				Iterator iter = users.iterator();
 				Table table = new Table();
+				int row = 1;
 				while (iter.hasNext()) {
 					User hm = uHome.findByPrimaryKey(iter.next());
 					int userId = ((Integer) hm.getPrimaryKey()).intValue();
 					if (userId == userToEdit) {
 						table = insertEditableUserIntoTable(hm);
 					}else {
-						table = insertUserIntoTable(hm);
+						row = insertUserIntoTable(table, hm, row);
 					}
 				}
 				contTable.add(table, 1, 2);
@@ -201,13 +202,14 @@ public class SchoolUserEditor extends Block {
 			if (users != null && users.size() > 0) {
 				Iterator iter = users.iterator();
 				Table table = new Table();
+				int row = 1;
 				while (iter.hasNext()) {
 					User hm = uHome.findByPrimaryKey(iter.next());
 					int userId = ((Integer) hm.getPrimaryKey()).intValue();
 					if (userId == userToEdit) {
 						table = insertEditableUserIntoTable(hm);
 					}else {
-						table = insertUserIntoTable(hm);
+						row = insertUserIntoTable(table, hm, row);
 					}
 //						row = insertUserIntoTable(table, row, hm);
 				}
@@ -219,13 +221,14 @@ public class SchoolUserEditor extends Block {
 			if (users != null && users.size() > 0) {
 				Iterator iter = users.iterator();
 				Table table = new Table();
+				int row = 1;
 				while (iter.hasNext()) {
 					User hm = uHome.findByPrimaryKey(iter.next());
 					int userId = ((Integer) hm.getPrimaryKey()).intValue();
 					if (userId == userToEdit) {
 						table = insertEditableUserIntoTable(hm);
 					}else {
-						table = insertUserIntoTable(hm);
+						row = insertUserIntoTable(table, hm, row);
 					}
 //						row = insertUserIntoTable(table, row, hm);
 				}
@@ -237,13 +240,14 @@ public class SchoolUserEditor extends Block {
 			if (users != null && users.size() > 0) {
 				Iterator iter = users.iterator();
 				Table table = new Table();
+				int row = 1;
 				while (iter.hasNext()) {
 					User hm = uHome.findByPrimaryKey(iter.next());
 					int userId = ((Integer) hm.getPrimaryKey()).intValue();
 					if (userId == userToEdit) {
 						table = insertEditableUserIntoTable(hm);
 					}else {
-						table = insertUserIntoTable(hm);
+						row = insertUserIntoTable(table, hm, row);
 					}
 //						row = insertUserIntoTable(table, row, hm);
 				}
@@ -276,18 +280,16 @@ public class SchoolUserEditor extends Block {
 	}
 
 	
-	private Table insertUserIntoTable(User hm) throws RemoteException {
+	private int insertUserIntoTable(Table table, User hm, int row) throws RemoteException {
 		Collection emails;
 		Collection phones;
 		int uRow;
 		int mRow;
-		Table table = new Table();
 		table.setWidth(2, "5");
 		table.setWidth(4, "5");
 		table.setWidth(6, "5");
 		table.setWidth(8, "5");
 		table.setWidth(10, "5");
-		int row = 1;
 
 		uRow = row;
 		String hmId = hm.getPrimaryKey().toString();
@@ -342,13 +344,12 @@ public class SchoolUserEditor extends Block {
 				++row;
 			}
 		}
-		/*
 		if (row >= mRow) {
 			++row;
 		}else {
 			row = mRow + 1;
-		}*/
-		return table;
+		}
+		return row;
 	}
 
 
