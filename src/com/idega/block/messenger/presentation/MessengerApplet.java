@@ -173,21 +173,17 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     }
   }
 
-  public void getMessagesFromDialog(MessageDialog dialog){
+  public void getMessagesFromDialog(MessageDialog dialog){//gets called on and iw-send event action
     if( packetToServlet == null ){
       packetToServlet = new Packet();
     }
     packetToServlet.setSender(sessionId);
-    //System.out.println("In getMessagesFromDialog()");
 
     Vector msg = dialog.getMessages();
     /**@todo make this work for many dialogs..don't clear don't have to check if null*/
-    if( msg!=null ) {
-      packetToServlet.clearMessages();
-      packetToServlet.setMessages(msg);
-      dialog.clearMessageVector();
-      cycle();
-    }
+    packetToServlet.addMessages(msg);
+    dialog.clearMessageVector();
+    cycle();
   }
 
   private URLConnection getURLConnection(){
@@ -383,7 +379,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   }
 
-  public synchronized void cycle(){
+  public void cycle(){
     URLConnection conn = getURLConnection();
     // send the Packet object to the servlet using serialization
     sendPacket(conn);
