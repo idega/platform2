@@ -492,19 +492,21 @@ public class TournamentController{
             form.maintainParameter("action");
             form.add(new HiddenInput("viewOnly",""+viewOnly));
 
-
-
         Table table = new Table();
             if (useBorder) {
-                table.setBorder(5);
+                table.setBorder(0);
             }
             table.setWidth("90%");
-            table.setCellpadding(1);
-            table.setCellspacing(0);
+            table.setCellpadding(2);
+            table.setCellspacing(1);
         form.add(table);
         int row = 1;
-
         int numberOfMember = 0;
+
+        String headerColor = "#336661";
+        String darkColor = "#DCEFDE";
+        String lightColor = "#EAFAEC";
+        String activeColor = darkColor;
 
         TournamentRound[] tourRounds = tournament.getTournamentRounds();
 
@@ -523,6 +525,7 @@ public class TournamentController{
         idegaTimestamp tourDay = null;
 
         DropdownMenu rounds = new DropdownMenu("tournament_round");
+          rounds.setAttribute("style","font-size: 8pt");
           if (!onlineRegistration) {
             for (int i = 0; i < tourRounds.length; i++) {
               tourDay = new idegaTimestamp(tourRounds[i].getRoundDate());
@@ -543,17 +546,51 @@ public class TournamentController{
         table.mergeCells(1,row,6,row);
         table.setAlignment(1,row,"right");
         ++row;
-            table.add("&nbsp;Tími",1,row);
-            table.add("Kennitala",2,row);
-            table.add("Nafn",3,row);
-            table.add("Klúbbur",4,row);
-            table.add("Forgjöf",5,row);
+
+        Text textLook = new Text("");
+          textLook.setFontSize(Text.FONT_SIZE_7_HTML_1);
+        Text headerLook = new Text("");
+          headerLook.setFontColor("#FFFFFF");
+          headerLook.setFontFace(Text.FONT_FACE_VERDANA);
+          headerLook.setFontSize(Text.FONT_SIZE_7_HTML_1);
+          headerLook.setBold();
+
+        Text space = new Text(" ");
+          space.setFontSize(1);
+
+        Text dMemberSsn;
+        Text dMemberName;
+        Text dMemberHand;
+        Text dMemberUnion;
+
+
+            Text tim = (Text) headerLook.clone();
+              tim.setText("&nbsp;Tími");
+            Text sc = (Text) headerLook.clone();
+              sc.setText("Kennitala");
+            Text name = (Text) headerLook.clone();
+              name.setText("Nafn");
+            Text club = (Text) headerLook.clone();
+              club.setText("Klúbbur");
+            Text hc = (Text) headerLook.clone();
+              hc.setText("Forgjöf");
+
+            table.add(tim,1,row);
+            table.add(sc,2,row);
+            table.add(name,3,row);
+            table.add(club,4,row);
+            table.add(hc,5,row);
+
             if (viewOnly || onlineRegistration){
                 table.mergeCells(5,row,6,row);
             }
             else{
-                table.add("Eyða",6,row);
+                Text del = (Text) headerLook.clone();
+                  del.setText("Eyða");
+                table.add(del,6,row);
             }
+            table.setRowColor(row,headerColor);
+
 
         java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
         java.text.DecimalFormat handicapFormat = new java.text.DecimalFormat("0.0");
@@ -573,8 +610,8 @@ public class TournamentController{
         int union_id;
         String abbrevation = "'";
 
-		boolean displayTee = false;
-		if (tournamentRound.getStartingtees() > 1) {
+                boolean displayTee = false;
+                if (tournamentRound.getStartingtees() > 1) {
 			displayTee = true;
 		}
 
@@ -597,12 +634,11 @@ public class TournamentController{
 
 			if (displayTee) {
 				++row;
-				Text startTee = new Text("Rásteigur : "+tee_number);
-					startTee.setFontColor("#FFFFFF");
-					startTee.setBold();
+				Text startTee = (Text) headerLook.clone();
+                                  startTee.setText("Rásteigur : "+tee_number);
 				table.add(startTee,1,row);
-			    table.setRowColor(row,"#336661");
-			    table.mergeCells(1,row,5,row);
+			    table.setRowColor(row,headerColor);
+			    table.mergeCells(1,row,6,row);
 			    table.setAlignment(1,row,"center");
 			}
 
@@ -613,14 +649,23 @@ public class TournamentController{
 
 			StartingtimeView[] sView;
 
-
 			while (endHour.isLaterThan(startHour) ) {
 				++row;
 				++groupCounter;
 				++groupCounterNum;
 				startInGroup = 0;
 
-				table.add("<b>&nbsp;"+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute())+"</b>",1,row);
+                                if (activeColor.equals(darkColor)) {
+                                    activeColor = lightColor;
+                                }
+                                else {
+                                    activeColor = darkColor;
+                                }
+
+				time = new com.idega.jmodule.object.Image("http://clarke.idega.is/time.swt?type=gif&grc=true&time="+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()),extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()));
+				table.add(time,1,row);
+                                table.setAlignment(1,row,"center");
+//				table.add("<b>&nbsp;"+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute())+"</b>",1,row);
 				table.mergeCells(1,row,1,row + (numberInGroup -1));
 				table.setVerticalAlignment(1,row,"top");
 
@@ -629,28 +674,59 @@ public class TournamentController{
 				startInGroup = sView.length;
 
 				for (int i = 0; i < sView.length; i++) {
-						++numberOfMember;
-						if (i != 0) table.add(tooMany,1,row);
-						table.add(sView[i].getSocialSecurityNumber(),2,row);
+                                        table.setHeight(row,"20");
+					table.setColor(1,row,activeColor);
+					table.setColor(2,row,activeColor);
+					table.setColor(3,row,activeColor);
+					table.setColor(4,row,activeColor);
+					table.setColor(5,row,activeColor);
+					table.setColor(6,row,activeColor);
+                                        ++numberOfMember;
+                                        if (i != 0) table.add(tooMany,1,row);
 
+                                        dMemberSsn = (Text) textLook.clone();
+                                        dMemberName = (Text) textLook.clone();
+                                        dMemberHand = (Text) textLook.clone();
+                                        dMemberUnion = (Text) textLook.clone();
+                                          dMemberSsn.setText(sView[i].getSocialSecurityNumber());
+                                          dMemberName.setText(sView[i].getName());
+                                          dMemberUnion.setText(sView[i].getAbbrevation());
+                                          dMemberHand.setText(com.idega.util.text.TextSoap.singleDecimalFormat(sView[i].getHandicap()));
 
-						  abbrevation = sView[i].getAbbrevation();
-
-						table.add(abbrevation,4,row);
-
-						table.add(sView[i].getName() ,3,row);
-						table.add(com.idega.util.text.TextSoap.singleDecimalFormat(sView[i].getHandicap()),5,row);
-						if (!viewOnly) {
-							if (!onlineRegistration) {
-								delete = new CheckBox("deleteMember",Integer.toString(sView[i].getMemberId()));
-								table.add(delete,6,row);
-							}
-						}
-						row++;
+                                        table.add(dMemberSsn,2,row);
+                                        table.add(dMemberName,3,row);
+                                        table.add(dMemberUnion,4,row);
+                                        table.add(dMemberHand,5,row);
+                                        //table.add(sView[i].getSocialSecurityNumber(),2,row);
+                                        //abbrevation = sView[i].getAbbrevation();
+                                        //table.add(sView[i].getName() ,3,row);
+                                        //table.add(abbrevation,4,row);
+                                        //table.add(com.idega.util.text.TextSoap.singleDecimalFormat(sView[i].getHandicap()),5,row);
+                                        if (!viewOnly) {
+                                                if (!onlineRegistration) {
+                                                        delete = new CheckBox("deleteMember",Integer.toString(sView[i].getMemberId()));
+                                                        table.add(delete,6,row);
+                                                }
+                                                else {
+                                                    table.mergeCells(5,row,6,row);
+                                                }
+                                        }
+                                        else {
+                                            table.mergeCells(5,row,6,row);
+                                        }
+                                        row++;
 				}
 
 
 				for (int i = startInGroup; i < (numberInGroup); i++) {
+                                        table.setHeight(row,"20");
+                                        table.add(space,2,row);
+					table.setColor(1,row,activeColor);
+					table.setColor(2,row,activeColor);
+					table.setColor(3,row,activeColor);
+					table.setColor(4,row,activeColor);
+					table.setColor(5,row,activeColor);
+					table.setColor(6,row,activeColor);
 					if ((!viewOnly) && (roundNumber == 1)) {
 						socialNumber = new TextInput("social_security_number_for_group_"+groupCounter);
 						socialNumber.setAttribute("style","font-size: 8pt");
@@ -663,14 +739,22 @@ public class TournamentController{
 					++row;
 				}
 				startHour.addMinutes(minutesBetween);
-				if (endHour.isLaterThan(startHour) ) {
+				/*
+                                if (endHour.isLaterThan(startHour) ) {
 					table.mergeCells(1,row,6,row);
 				}
+                                */
+                                --row;
 			}
 		}
 
+            ++row;
+            table.setHeight(row,"20");
+            table.setRowColor(row,headerColor);
             table.mergeCells(1,row,3,row);
-            table.add("Fjöldi þátttakenda : " +numberOfMember,1,row);
+            Text many = (Text) headerLook.clone();
+                many.setText("Fjöldi þátttakenda : " +numberOfMember);
+            table.add(many,1,row);
 
             table.mergeCells(4,row,6,row);
             if (!viewOnly) {
