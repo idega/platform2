@@ -78,6 +78,11 @@ public class GroupMemberList extends Block {
 		}
 		
 		Table table = new Table();
+		if(showGroup) {
+			table.setColumnWidth(3, "100");
+			table.setColumnWidth(4, "50");
+			table.setNoWrap();
+		}
 		table.setCellspacing(0);
 		Iterator userIter; //group.getChildren();
 		try {
@@ -120,21 +125,21 @@ public class GroupMemberList extends Block {
 					String groupNames = getGroupNamesForTrainer(iwc, user, division);
 					table.setCellpaddingLeft(column, row, 3);
 					table.add(groupNames, column++, row);
-					// adding mobile phone and email, 
-					String phone = getMobilePhone(user);
-					if(phone!=null) {
-						System.out.println("Mobile phone displayd for user " + name);
-						table.add(phone, column, row);
-					} else {
-						System.out.println("Mobile phone not displayd for user " + name);
-					}
-					column++;
+					// adding email and mobile phone
 					PresentationObject emails = getEmailLinkList(user);
 					if(emails!=null && emails.getChildCount()>0) {
 						System.out.println("Emails displayd for user " + name);
 						table.add(emails, column, row);
 					} else {
 						System.out.println("Emails not displayd for user " + name);
+					}
+					column++;
+					String phone = getMobilePhone(user);
+					if(phone!=null) {
+						System.out.println("Mobile phone displayd for user " + name);
+						table.add(phone, column, row);
+					} else {
+						System.out.println("Mobile phone not displayd for user " + name);
 					}
 					column++;
 				}
@@ -180,7 +185,6 @@ public class GroupMemberList extends Block {
 	 */
 	private PresentationObject getEmailLinkList(User user) {
 		PresentationObjectContainer container = new PresentationObjectContainer();
-		//int row = 1;
 		try {
 			// @TODO use email list from business bean
 			Iterator emailIter = user.getEmails().iterator();
@@ -193,6 +197,7 @@ public class GroupMemberList extends Block {
 				}
 				Email email = (Email) emailIter.next();
 				String address = (String) email.getEmailAddress();
+				System.out.println("Adding email " + address + " for user " + user.getName());
 				Link link = new Link(address);
 				link.setURL("mailto:" + address);
 				link.setSessionId(false);
