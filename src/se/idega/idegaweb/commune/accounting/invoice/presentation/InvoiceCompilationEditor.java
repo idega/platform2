@@ -29,10 +29,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/06 09:37:34 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/06 10:34:57 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -51,6 +51,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_KEY = PREFIX + "";
     private static final String CREATE_INVOICE_COMPILATION_DEFAULT = "Skapa fakturaunderlag";
     private static final String CREATE_INVOICE_COMPILATION_KEY = PREFIX + "create_invoice_compilation";
+    private static final String CREATE_INVOICE_RECORD_DEFAULT = "Skapa fakturarad";
+    private static final String CREATE_INVOICE_RECORD_KEY = PREFIX + "create_invoice_record";
     private static final String CREATION_DATE_DEFAULT = "Skapandedag";
     private static final String CREATION_DATE_KEY = PREFIX + "creation_date";
     private static final String DELETE_INVOICE_COMPILATION_DEFAULT = "Ta bort fakturaunderlag";
@@ -121,7 +123,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
             ACTION_SHOW_COMPILATION_LIST = 1,
-            //ACTION_NEW_RECORD = 2,
+            ACTION_NEW_RECORD = 2,
             ACTION_DELETE_COMPILATION = 3,
             ACTION_DELETE_RECORD = 4,
             ACTION_SHOW_RECORD = 5,
@@ -206,8 +208,39 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	}
 
     private void showNewRecordForm (final IWContext context)
-        throws RemoteException {
-        throw new UnsupportedOperationException ();
+        throws RemoteException, FinderException {
+        final int headerId = Integer.parseInt (context.getParameter
+                                               (INVOICE_COMPILATION_KEY));
+        final InvoiceBusiness business = (InvoiceBusiness)
+                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
+        final InvoiceHeaderHome home = business.getInvoiceHeaderHome ();
+        final InvoiceHeader header
+                = home.findByPrimaryKey (new Integer (headerId));
+        final UserBusiness userBusiness = (UserBusiness)
+                IBOLookup.getServiceInstance (context, UserBusiness.class);
+        final UserHome userHome = userBusiness.getUserHome ();
+		final User custodian = userHome.findByPrimaryKey
+		        (new Integer (header.getCustodianId ()));
+
+        final Table table = createTable (4);
+        setColumnWidthsEqual (table);
+        int row = 2;
+        addOperationFieldDropdown (table, row++); 
+        int col = 1;
+        addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
+        addSmallText(table, custodian.getPersonalID (), col++, row);
+        table.setHeight (row++, 12);
+        table.mergeCells (1, row, table.getColumns (), row);
+        table.add (getSubmitButton (ACTION_NEW_RECORD + "",
+                                    CREATE_INVOICE_RECORD_KEY,
+                                    CREATE_INVOICE_RECORD_DEFAULT), 1, row++);
+        final Form form = new Form ();
+        form.setOnSubmit("return checkInfoForm()");
+        form.add (table);
+        final Table outerTable = createTable (1);
+        outerTable.add (form, 1, 1);
+        add (createMainTable (CREATE_INVOICE_RECORD_KEY,
+                              CREATE_INVOICE_RECORD_DEFAULT,  outerTable));
     }
 
     /**
@@ -336,6 +369,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.add (getSubmitButton (ACTION_SHOW_NEW_RECORD_FORM + "", NEW_KEY,
                                     NEW_DEFAULT), 1, row);
         final Form form = new Form ();
+        form.maintainParameter (INVOICE_COMPILATION_KEY);
         form.setOnSubmit("return checkInfoForm()");
         form.add (table);
         final Table outerTable = createTable (1);
