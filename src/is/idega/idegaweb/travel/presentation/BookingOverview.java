@@ -220,11 +220,14 @@ public class BookingOverview extends TravelManager {
               trip.setSelectedElement(Integer.toString(product.getID()));
           }
 
+			IWTimestamp now = IWTimestamp.RightNow();
 
       DateInput active_from = new DateInput("active_from");
           active_from.setDate(fromStamp.getDate());
+          active_from.setYearRange(2001, now.getYear()+4);
       DateInput active_to = new DateInput("active_to");
           active_to.setDate(toStamp.getDate());
+					active_to.setYearRange(2001, now.getYear()+4);
 
       Text tfFromText = (Text) theText.clone();
           tfFromText.setText(iwrb.getLocalizedString("travel.from","from"));

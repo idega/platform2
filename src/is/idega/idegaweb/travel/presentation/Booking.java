@@ -271,6 +271,7 @@ public class Booking extends TravelManager {
 
       DateInput dateInp = new DateInput("IWCalendar");
         dateInp.setDate(stamp.getSQLDate());
+        dateInp.setYearRange(2001, IWTimestamp.RightNow().getYear()+4);
 
       topTable.setColumnAlignment(1,"right");
       topTable.setColumnAlignment(2,"left");

@@ -209,11 +209,15 @@ public class Reports extends TravelManager {
         trip.addMenuElementFirst("-1", _iwrb.getLocalizedString("travel.all_services","All services"));
 
 
+			IWTimestamp now = IWTimestamp.RightNow();
+
       DateInput active_from = new DateInput(PARAMATER_DATE_FROM);
           active_from.setDate(_stamp.getSQLDate());
+					active_from.setYearRange(2001, now.getYear()+4);
 
       DateInput active_to = new DateInput(PARAMATER_DATE_TO);
           active_to.setDate(_toStamp.getSQLDate());
+					active_to.setYearRange(2001, now.getYear()+4);
 
 
       Text nameText = (Text) theText.clone();

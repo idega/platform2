@@ -779,6 +779,9 @@ public class Contracts extends TravelManager {
 
     pFrom = new DateInput("from");
     pTo = new DateInput("to");
+    IWTimestamp now = IWTimestamp.RightNow();
+    pFrom.setYearRange(2001, now.getYear() +5);
+		pTo.setYearRange(2001, now.getYear() +5);
 
     Table infoTable = new Table();
       infoTable.setBorder(0);
