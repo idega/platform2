@@ -4,6 +4,7 @@ import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -573,7 +574,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
 	}
 
-	public boolean moveCitizenFromCommune(User user) throws RemoteException {
+	public boolean moveCitizenFromCommune(User user, Timestamp time) throws RemoteException {
 
 		/*UserTransaction transaction =  getSessionContext().getUserTransaction();
 		
@@ -604,9 +605,9 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
       currentUser = null;
     }
 
-		rootGroup.removeUser(user,currentUser);
+		rootGroup.removeUser(user,currentUser,time);
 		
-		rootSpecialGroup.addGroup(user);
+		rootSpecialGroup.addGroup(user,time);
 
 		/*	transaction.commit();
 		}
@@ -627,7 +628,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return true;
 	}
 
-	public boolean moveCitizenToCommune(User user) throws RemoteException {
+	public boolean moveCitizenToCommune(User user, Timestamp time) throws RemoteException {
 		/*
 			UserTransaction transaction =  getSessionContext().getUserTransaction();
 			
@@ -658,8 +659,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
     catch (Exception ex)  {
       currentUser = null;
     }
-		rootSpecialGroup.removeUser(user,currentUser);
-		rootGroup.addGroup(user);
+		rootSpecialGroup.removeUser(user,currentUser,time);
+		rootGroup.addGroup(user,time);
 		
 		
 		
@@ -684,7 +685,12 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	}
 	
 	
-	public boolean moveCitizenToProtectedCitizenGroup(User user) throws RemoteException {
+	public boolean moveCitizenToCommune(User user) throws RemoteException {
+		return moveCitizenToCommune(user,IWTimestamp.getTimestampRightNow());
+	}
+	
+	
+	public boolean moveCitizenToProtectedCitizenGroup(User user,Timestamp time) throws RemoteException {
 		/*
 			UserTransaction transaction =  getSessionContext().getUserTransaction();
 			
@@ -723,10 +729,10 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
     catch (Exception ex)  {
       currentUser = null;
     }
-		rootSpecialGroup.removeUser(user, currentUser);
-		rootGroup.removeUser(user, currentUser);
+		rootSpecialGroup.removeUser(user, currentUser,time);
+		rootGroup.removeUser(user, currentUser,time);
 		
-		rootProtectedGroup.addGroup(user);
+		rootProtectedGroup.addGroup(user,time);
 		
 		return true;
 		
@@ -948,5 +954,17 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		//TODO add more actions when user registered as deceased 
 		return false;
+	}
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.business.CommuneUserBusiness#moveCitizenFromCommune(com.idega.user.data.User)
+	 */
+	public boolean moveCitizenFromCommune(User user) throws RemoteException {
+		return moveCitizenFromCommune(user,IWTimestamp.getTimestampRightNow());
+	}
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.business.CommuneUserBusiness#moveCitizenToProtectedCitizenGroup(com.idega.user.data.User)
+	 */
+	public boolean moveCitizenToProtectedCitizenGroup(User user) throws RemoteException {
+		return moveCitizenToProtectedCitizenGroup(user,IWTimestamp.getTimestampRightNow());
 	}
  }
