@@ -146,8 +146,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			t.begin();
 			ChildCareApplication appl = null;
-			ChildCareApplication firstApplication = null;
-			ChildCareApplication parent = null;
 			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
 
 			IWTimestamp now = new IWTimestamp();
@@ -181,21 +179,19 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					sendMessageToParents(appl, subject, message);
 					updateQueue(appl);
 				}
-
-				parent = appl;
 			}
 
 			/**
 			 * @todo Bæta við að breyta stöðu á tékkanum sem var notaður
 			 */
 
-			if (!freetimeApplication) {
+			/*if (!freetimeApplication) {
 				CheckBusiness checkBiz = (CheckBusiness) getServiceInstance(CheckBusiness.class);
 				Check check = checkBiz.getCheck(checkId);
 				//			check.setStatus(this.getcases)
 				//			check.store();
 
-			}
+			}*/
 
 			t.commit();
 		} catch (Exception e) {
@@ -228,12 +224,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	private void updateQueue(ChildCareApplication application) {
 		try {
-			User child = application.getChild();
-			Age age = new Age(child.getDateOfBirth());
-			User compareChild;
-			Age compareAge;
+			ChildCareApplication appl;
 			int queueOrder = -1;
-			boolean hasAltered = false;
 			
 			List applications = new Vector(getChildCareApplicationHome().findApplicationsByProviderAndDate(application.getProviderId(), application.getQueueDate()));
 			if (applications.size() > 1) {
@@ -242,9 +234,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				
 				Iterator iter = applications.iterator();
 				while (iter.hasNext()) {
-					ChildCareApplication element = (ChildCareApplication) iter.next();
-					element.setQueueOrder(queueOrder++);
-					element.store();
+					appl = (ChildCareApplication) iter.next();
+					appl.setQueueOrder(queueOrder++);
+					appl.store();
 				}
 			}
 		}
@@ -287,7 +279,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			try {
 				Collection parents = getUserBusiness().getMemberFamilyLogic().getCustodiansFor(child);
 				Iterator iter = parents.iterator();
-				User otherParent = null;
 				while (iter.hasNext()) {
 					User parent = (User) iter.next();
 					if (!getUserBusiness().haveSameAddress(parent, appParent)) {
@@ -328,7 +319,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public int getNumberOfApplicationsByProvider(int providerID) {
 		try {
-			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };
 
 			return getChildCareApplicationHome().getNumberOfApplications(providerID, caseStatus);
@@ -341,7 +331,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public int getNumberOfApplicationsByProvider(int providerID, int sortBy, Date fromDate, Date toDate) {
 		try {
-			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };
 
 			return getChildCareApplicationHome().getNumberOfApplications(providerID, caseStatus, sortBy, fromDate, toDate);

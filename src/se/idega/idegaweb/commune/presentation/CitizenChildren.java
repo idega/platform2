@@ -118,7 +118,6 @@ public class CitizenChildren extends CommuneBlock {
 		if (!childs.isEmpty()) {
 			Iterator iter = childs.iterator();
 			User child;
-			RadioButton rad;
 			ArrayList outOfRangeChilds = new ArrayList();
 			while (iter.hasNext()) {
 				child = (User) iter.next();

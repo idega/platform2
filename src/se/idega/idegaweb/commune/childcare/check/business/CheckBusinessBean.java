@@ -80,8 +80,6 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 	}
 
 	public boolean allRulesVerified(Check check) throws RemoteException {
-		boolean rule1 = check.getRule1();
-		boolean rule2 = check.getRule2();
 		boolean rule3 = check.getRule3();
 		boolean rule4 = check.getRule4();
 		boolean rule5 = check.getRule5();

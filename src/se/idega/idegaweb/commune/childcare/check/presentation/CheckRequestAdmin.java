@@ -446,7 +446,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 	 * @throws Exception
 	 */
 	private void saveCheck(IWContext iwc) throws Exception {
-		Check check = verifyCheckRules(iwc);
+		verifyCheckRules(iwc);
 		viewCheckList(iwc);
 	}
 

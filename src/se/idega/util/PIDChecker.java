@@ -56,8 +56,6 @@ public class PIDChecker {
 		if (personalID.length() != 10)
 			return false;
 	
-		StringBuffer buffer = new StringBuffer(personalID);
-	
 		int values[] = {0,0,0,0,0,0,0,0,0,0};
 		int sum = 0;
 		for (int i = 0; i < 10; i++) {
