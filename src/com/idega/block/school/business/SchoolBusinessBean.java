@@ -1276,7 +1276,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
-	public void storeSchoolClass(int schoolClassID, String className, int schoolID, int schoolSeasonID, int schoolYearID, int teacherID) throws RemoteException {
+	public SchoolClass storeSchoolClass(int schoolClassID, String className, int schoolID, int schoolSeasonID, int schoolYearID, int teacherID) throws RemoteException {
 		try {
 			SchoolClass schoolClass;
 			if (schoolClassID != -1)
@@ -1295,12 +1295,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			schoolClass.setValid(true);
 
 			schoolClass.store();
+			return schoolClass;
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace(System.err);
+			return null;
 		}
 		catch (CreateException ce) {
 			ce.printStackTrace(System.err);
+			return null;
 		}
 	}
 
