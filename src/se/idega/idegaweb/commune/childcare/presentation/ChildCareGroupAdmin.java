@@ -204,7 +204,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		table.add(getSmallHeader(localize("child_care.group","Group")+":"),1,1);
 		table.add(getChildCareGroups(), 3, 1);
 		
-		DropdownMenu statusSort = new DropdownMenu(PARAMETER_STATUS_SORT);
+		DropdownMenu statusSort = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_STATUS_SORT));
 		statusSort.addMenuElement("-1", localize("child_care.show_all_statuses","Show all"));
 		statusSort.addMenuElement(STATUS_ACTIVE, localize("child_care.show_active","Show active"));
 		statusSort.addMenuElement(STATUS_NOT_YET_ACTIVE, localize("child_care.show_not_yet_active","Show not yet active"));
