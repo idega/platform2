@@ -140,8 +140,10 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 	private void viewForm(IWContext iwc) {
 		boolean hasOffers = false;
+		boolean hasPendingApplications = false;
 		if (child != null) {
 			try {
+				hasPendingApplications = getBusiness().hasPendingApplications(((Integer) child.getPrimaryKey()).intValue(), getBusiness().getChildCareCaseCode());
 				hasOffers = getBusiness().hasUnansweredOffers(((Integer) child.getPrimaryKey()).intValue(), null);
 				currentProvider = getBusiness().getCurrentProviderByPlacement(((Integer) child.getPrimaryKey()).intValue());
 				hasActivePlacement = getBusiness().hasActiveApplication(((Integer) child.getPrimaryKey()).intValue());
@@ -151,7 +153,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			}
 		}
 		
-		if (!_noCheckError && !hasOffers) {
+		if (!_noCheckError && !hasOffers && !hasPendingApplications) {
 			Form form = new Form();
 		
 			Table table = new Table();
@@ -198,6 +200,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		else {
 			if (hasOffers)
 				add(getErrorText(localize("child_care.child_has_offers", "Child has offers not yet replied to. New choices can not be made until dealt with.")));
+			else if (hasPendingApplications)
+				add(getErrorText(localize("child_care.child_has_pending_applications", "Child has pending applications that have to be updated or removed. New choices can not be made until dealt with.")));
 			else
 				add(getErrorText(localize("child_care.no_check_selected", "No check or child selected.")));
 			add(new Break(2));
