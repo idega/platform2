@@ -79,13 +79,13 @@ public class ChildCareProviderQueueWindow extends Window {
 				
 				Text queueOrder = style.getSmallText("" + getChildCareBusiness(iwc).getNumberInQueue(app)),
 					queueDate = style.getSmallText(app.getQueueDate().toString()),
-					fromDate = style.getSmallText(app.getFromDate().toString()),
-					currentAppId = style.getSmallText(""+app.getNodeID());
+					fromDate = style.getSmallText(app.getFromDate().toString());
+//					currentAppId = style.getSmallText(""+app.getNodeID());   //debug only
 				
 				appTbl.add(queueOrder, 1, row);
 				appTbl.add(queueDate, 2, row);
 				appTbl.add(fromDate, 3, row);
-				appTbl.add(currentAppId, 4, row);
+//				appTbl.add(currentAppId, 4, row);  //debug only
 			
 				if (app.getNodeID() == new Integer(appId).intValue()){
 					emphasizeText(queueOrder);
