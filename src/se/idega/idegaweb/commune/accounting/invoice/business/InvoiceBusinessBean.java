@@ -1,27 +1,13 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolCategory;
-import com.idega.block.school.data.SchoolCategoryHome;
-import com.idega.block.school.data.SchoolClassMember;
-import com.idega.block.school.data.SchoolClassMemberHome;
-import com.idega.block.school.data.SchoolType;
-import com.idega.block.school.data.SchoolYear;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBORuntimeException;
-import com.idega.business.IBOServiceBean;
-import com.idega.core.file.data.ICFile;
-import com.idega.core.file.data.ICFileHome;
-import com.idega.data.IDOException;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.io.MemoryFileBuffer;
-import com.idega.io.MemoryInputStream;
-import com.idega.user.data.User;
-import com.idega.util.CalendarMonth;
-import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportExportFile;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportExportFileHome;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -29,13 +15,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
 import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunErrorHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
@@ -60,16 +54,39 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberHome;
+import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolYear;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBORuntimeException;
+import com.idega.business.IBOServiceBean;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
+import com.idega.data.IDOException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.io.MemoryFileBuffer;
+import com.idega.io.MemoryInputStream;
+import com.idega.user.data.User;
+import com.idega.util.CalendarMonth;
+import com.idega.util.IWTimestamp;
+
 /**
  * Holds most of the logic for the batchjob that creates the information that is
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/03/16 11:05:55 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/19 15:18:59 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.123 $
+ * @version $Revision: 1.124 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -1107,6 +1124,78 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		//}
 	}
 	
+	/**
+	 * A method to export the work reports to excel for those who are not using the member system.
+	 * 
+	 * @param regionalUnionId The id of the regional union who is to receive the file
+	 * @param year The year we are creating excel files for
+	 * @param templateId The id for the template for the excel files in the IW file system
+	 *  
+	 * @return A Collection of WorkReportExportFile data beans, one for each club in the union.
+	 */
+	public ICFile exportToExcel(IWResourceBundle iwrb, String fileName, BatchRun batchRun, boolean isTestRun) throws FinderException, IOException, CreateException{
+		HSSFWorkbook wb = new HSSFWorkbook();
+		HSSFSheet sheet = wb.createSheet("new sheet");
+
+		
+		
+		BatchRunErrorHome batchRunErrorHome = (BatchRunErrorHome)IDOLookup.getHome(BatchRunError.class);
+		Collection errorColl = batchRunErrorHome.findByBatchRun(batchRun, isTestRun);
+
+		HSSFRow row = sheet.createRow((short)0);
+
+		row.createCell((short)0).setCellValue(iwrb.getLocalizedString("invbr.related_object","Related object"));
+		row.createCell((short)1).setCellValue(iwrb.getLocalizedString("invbr.suspected_error","Suspected error"));
+		
+		System.out.println("Size of table BatchRunError: "+errorColl.size());
+		Iterator errorIter = errorColl.iterator();
+		if(errorIter.hasNext()){
+			System.out.println("Found error description");
+			
+			short rowNr = 1;
+			while(errorIter.hasNext()){
+				BatchRunError batchRunError = (BatchRunError)errorIter.next();
+				
+				// Create a row and put some cells in it. Rows are 0 based.
+				row = sheet.createRow(rowNr);
+
+				row.createCell((short)0).setCellValue(batchRunError.getRelated());
+				row.createCell((short)1).setCellValue(batchRunError.getDescription());
+				rowNr++;
+			}
+		}
+		
+		// Write the output to a file
+		FileOutputStream fileOut = new FileOutputStream(fileName);
+		wb.write(fileOut);
+		fileOut.close();
+		
+		ICFile icfile = ((ICFileHome) IDOLookup.getHome(ICFile.class)).create();
+		icfile.setFileValue(new FileInputStream(fileName));
+		icfile.setMimeType("application/vnd.ms-excel");
+		icfile.setName(fileName);
+		icfile.store();
+
+		File file = new File(fileName);
+		file.delete();
+		
+		return icfile;
+	}
+	
+	private WorkReportExportFileHome workReportExportFileHome;
+	
+	public WorkReportExportFileHome getWorkReportExportFileHome() {
+		if (workReportExportFileHome == null) {
+			try {
+				workReportExportFileHome = (WorkReportExportFileHome) IDOLookup.getHome(WorkReportExportFile.class);
+			}
+			catch (RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return workReportExportFileHome;
+	}
+
 	private Date now () {
 		return new Date (System.currentTimeMillis ());
 	}

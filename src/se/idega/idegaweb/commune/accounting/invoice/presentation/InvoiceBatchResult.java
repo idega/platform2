@@ -16,12 +16,16 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 
 import com.idega.business.IBOLookup;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -34,7 +38,7 @@ import com.idega.util.IWTimestamp;
  * @author Joakim
  */
 public class InvoiceBatchResult extends AccountingBlock{
-	
+	private static final String EXCEL_BUTTON = "Excel file";
 	public void init(IWContext iwc){
 		Form form = new Form();
 		Table table = new Table(2,9);
@@ -44,16 +48,15 @@ public class InvoiceBatchResult extends AccountingBlock{
 		OperationalFieldsMenu opFields = new OperationalFieldsMenu();
 		
 		try {
-			handleAction(iwc);
 		
 			//"Top section"
 			add(opFields);
 
-			add(form);
-			
 			InvoiceBusiness invoiceBusiness = getInvoiceBusiness(iwc);
 			String schoolCategory = getSession().getOperationalField();
 			
+			BatchRun batchRun = invoiceBusiness.getBatchRunByCategory(schoolCategory, isTestRun());
+
 			boolean categoryIsChildCare = invoiceBusiness.isChildCare(schoolCategory);
 			
 			int i = 1;
@@ -74,8 +77,6 @@ public class InvoiceBatchResult extends AccountingBlock{
 				table.add(getLocalizedLabel("invbr.total_Amount_excluding_VAT","Total amount excluding VAT"),1,i++);
 			}
 	
-			BatchRun batchRun = invoiceBusiness.getBatchRunByCategory(schoolCategory, isTestRun());
-
 			IWTimestamp period = new IWTimestamp(batchRun.getPeriod());
 			IWTimestamp start = new IWTimestamp(batchRun.getStart());
 			
@@ -110,7 +111,14 @@ public class InvoiceBatchResult extends AccountingBlock{
 			}
 			table.add(numberFormat.format(invoiceBusiness.getTotAmountWithoutVAT(batchRun)),2,i++);
 		
-			form.add(table);
+			add(table);
+			
+			GenericButton excelButton = this.getButton(new SubmitButton(EXCEL_BUTTON,localize("invoice.Generate_excel_file","Generate excel file")));
+			addBreak();
+			form.add(excelButton);
+			add(form);
+			handleAction(iwc, batchRun);
+			addBreak();
 			
 			int row = 1;
 			BatchRunErrorHome batchRunErrorHome = (BatchRunErrorHome)IDOLookup.getHome(BatchRunError.class);
@@ -137,14 +145,7 @@ public class InvoiceBatchResult extends AccountingBlock{
 					errorTable.setRowColor (row + 1, (row % 2 == 0) ? getZebraColor1 ()
 									   : getZebraColor2 ());
 					errorTable.add(new Text(new Integer(row).toString()),1,row+1);
-//Should not need this anymore. Keep it for a while just in case.
-//					if(batchRunError.getRelated()!=null && batchRunError.getRelated().indexOf("invoice.")==0){
-//						errorTable.add(getLocalizedLabel(batchRunError.getRelated(),batchRunError.getRelated()),2,row+1);
-//						System.out.println("Error "+batchRunError.getRelated());
-//					}else{
-						errorTable.add(new Text(batchRunError.getRelated()),2,row+1);
-//						System.out.println("Error Plain text "+batchRunError.getRelated());
-//					}
+					errorTable.add(new Text(batchRunError.getRelated()),2,row+1);
 					errorTable.add(new Text(batchRunError.getDescription()),3,row+1);
 					row++;
 				}
@@ -164,8 +165,24 @@ public class InvoiceBatchResult extends AccountingBlock{
 	 * Probably remove to handle the navigation outside this presentation block
 	 * @param iwc
 	 */
-	private void handleAction(IWContext iwc) {
-		iwc.toString();	//Dummy line to remove warning
+	private void handleAction(IWContext iwc, BatchRun batchRun) {
+		if(iwc.isParameterSet(EXCEL_BUTTON)){
+			ICFile file;
+			try {
+				file = getInvoiceBusiness(iwc).
+				exportToExcel(getBundle(iwc).getResourceBundle(iwc), localize("invoice.Batchresult","Batchresult")+".xls", batchRun, isTestRun());
+				if (null!=file) {
+					add(new Link(((Integer)file.getPrimaryKey()).intValue(),localize("invoice.Excel_file","Excel file")));
+					addBreak();
+				}
+				else {
+					add(getLocalizedString("invoice.Unable_to_export_file", "Unable to export file",iwc));
+				}
+			} catch (Exception e) {
+				add(getLocalizedString("invoice.Unable_to_export_file", "Unable to export file",iwc));
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	protected PostingBusiness getPostingBusiness(IWApplicationContext iwc) throws RemoteException {
