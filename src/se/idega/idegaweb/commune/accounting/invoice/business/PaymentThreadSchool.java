@@ -66,11 +66,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/06 18:25:38 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/07 00:27:32 $ by $Author: palli $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.87 $
+ * @version $Revision: 1.88 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -273,7 +273,18 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 	}
 	
-	private void createPaymentForSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, boolean schoolIsInDefaultCommuneAndNotPrivate) 
+	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions, Provider provider) throws RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
+		return regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(category.getCategory(), /*The ID that selects barnomsorg in the regulation */ 
+				PaymentFlowConstant.OUT, //The payment flow is out
+				calculationDate, //Current date to select the correct date range
+				RuleTypeConstant.DERIVED, //The conditiontype
+				RegSpecConstant.CHECK, //The ruleSpecType shall be Check
+				conditions, //The conditions that need to fulfilled
+				0, //Sent in to be used for "Specialutrakning"
+				null); //Sent in to be used for "Specialutrakning"
+	}
+	
+	protected void createPaymentForSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, boolean schoolIsInDefaultCommuneAndNotPrivate) 
 			throws FinderException, EJBException, PostingException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 		if (null != schoolClassMember.getStudent()) {
 			errorRelated.append("Student "+schoolClassMember.getStudent().getName());
@@ -289,14 +300,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			School school = schoolClassMember.getSchoolClass().getSchool();
 			errorRelated.append("Category " + category.getCategory() + "<br>" + "PaymentFlowConstant.OUT " + PaymentFlowConstant.OUT + "<br>" + "Date " + calculationDate.toString() + "<br>" + "RuleTypeConstant.DERIVED " + RuleTypeConstant.DERIVED + "<br>" + "#conditions " + conditions.size() + "<br>");
 			//Get the check
-			PostingDetail postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(category.getCategory(), /*The ID that selects barnomsorg in the regulation */ 
-							PaymentFlowConstant.OUT, //The payment flow is out
-							calculationDate, //Current date to select the correct date range
-							RuleTypeConstant.DERIVED, //The conditiontype
-							RegSpecConstant.CHECK, //The ruleSpecType shall be Check
-							conditions, //The conditions that need to fulfilled
-							0, //Sent in to be used for "Specialutrakning"
-							null); //Sent in to be used for "Specialutrakning"
+			PostingDetail postingDetail = getCheck(regBus, conditions, provider); 
 			RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 			String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
 			PlacementTimes placementTimes = getPlacementTimes(schoolClassMember);
@@ -706,7 +710,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		return getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue());
 	}
 
-	private CommuneHome getCommuneHome() throws RemoteException {
+	protected CommuneHome getCommuneHome() throws RemoteException {
 		return (CommuneHome) IDOLookup.getHome(Commune.class);
 	}
 

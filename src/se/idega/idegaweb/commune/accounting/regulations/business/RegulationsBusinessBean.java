@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.107 2004/01/06 14:03:15 tryggvil Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.108 2004/01/07 00:27:32 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -484,6 +484,23 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							e1.printStackTrace();
 							return 0;
 						}
+					}
+				}
+
+				if (!match)
+					return 0;
+			}
+			else if (condition.equals(RuleTypeConstant.CONDITION_ID_COMMUNE)) {
+				Integer value = (Integer) param.getInterval();
+				Iterator i = cond.iterator();
+				boolean match = true;
+				while (i.hasNext() && match) {
+					Condition regCond = (Condition) i.next();
+					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_COMMUNE)) {
+						int id = regCond.getIntervalID();
+						int communeId = value.intValue();
+						if (id != communeId)
+							match = false;
 					}
 				}
 
@@ -1041,10 +1058,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		}
 	}
 
-	public RegulationSpecType findRegulationSpecType (final String name) {
+	public RegulationSpecType findRegulationSpecType(final String name) {
 		try {
-			final RegulationSpecTypeHome home = getRegulationSpecTypeHome ();
-			return home.findByRegulationSpecType (name);
+			final RegulationSpecTypeHome home = getRegulationSpecTypeHome();
+			return home.findByRegulationSpecType(name);
 		}
 		catch (RemoteException e) {
 			return null;
@@ -1590,7 +1607,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					}
 				}
 				else if (match.size() > 1) {
-					TooManyRegulationsException ex = new TooManyRegulationsException("reg_exp_to_many_results", "Too many regulation match conditions"); 
+					TooManyRegulationsException ex = new TooManyRegulationsException("reg_exp_to_many_results", "Too many regulation match conditions");
 					Iterator regIterator = match.iterator();
 					while (regIterator.hasNext()) {
 						Regulation tmpreg = (Regulation) regIterator.next();
@@ -1648,7 +1665,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (d != null) {
 					ret = new PostingDetail();
 					if (placementTimes != null && placementTimes.getMonths() != 0.0f)
-					  total_sum /= placementTimes.getMonths();
+						total_sum /= placementTimes.getMonths();
 					ret.setAmount(d.getAmount() - total_sum);
 					ret.setRuleSpecType(d.getRuleSpecType());
 					ret.setTerm(reg.getName());
@@ -1746,7 +1763,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 				if (child != null) {
 					try {
-						Collection low = getRegularInvoiceBusiness().findRegularLowIncomeInvoicesForPeriodAndCategory(period,((Integer)child.getPrimaryKey()).intValue(), reg.getOperation());
+						Collection low = getRegularInvoiceBusiness().findRegularLowIncomeInvoicesForPeriodAndCategory(period, ((Integer) child.getPrimaryKey()).intValue(), reg.getOperation());
 						if (low != null && !low.isEmpty()) {
 							Iterator lowIt = low.iterator();
 							if (lowIt.hasNext()) {
@@ -1800,11 +1817,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		try {
 			VATBusiness vatBusiness = getVATBusiness();
 			Regulation vatRuleRegulation = reg.getVATRuleRegulation();
-			if(vatRuleRegulation!=null){
+			if (vatRuleRegulation != null) {
 				VATRegulation vatRegulation = vatBusiness.getVATRegulationFromRegulation(reg);
 				ret.setVATPercent(vatRegulation.getVATPercent());
 				ret.setVATRegulation(vatRegulation);
-				int vatRuleRegulationId = ((Number)vatRuleRegulation.getPrimaryKey()).intValue();
+				int vatRuleRegulationId = ((Number) vatRuleRegulation.getPrimaryKey()).intValue();
 				ret.setVatRuleRegulationId(vatRuleRegulationId);
 			}
 		}
@@ -2032,8 +2049,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	protected MainRuleHome getMainRuleHome() throws RemoteException {
 		return (MainRuleHome) com.idega.data.IDOLookup.getHome(MainRule.class);
 	}
-	
-	protected VATBusiness getVATBusiness() throws IBOLookupException{
-		return (VATBusiness)this.getServiceInstance(VATBusiness.class);
+
+	protected VATBusiness getVATBusiness() throws IBOLookupException {
+		return (VATBusiness) this.getServiceInstance(VATBusiness.class);
 	}
 }
