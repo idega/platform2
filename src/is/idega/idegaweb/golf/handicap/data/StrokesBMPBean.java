@@ -41,7 +41,7 @@ public class StrokesBMPBean extends GenericEntity implements Strokes {
 	 * @see com.idega.data.IDOEntityBean#getPrimaryKeyClass()
 	 */
 	public Class getPrimaryKeyClass() {
-		return StrokesPK.class;
+		return StrokesKey.class;
 	}
 
 	protected boolean doInsertInCreate() {
@@ -141,11 +141,11 @@ public class StrokesBMPBean extends GenericEntity implements Strokes {
 		setColumn(COLUMN_HOLE_ID, hole);
 	}
 	
-	public Object ejbFindByPrimaryKey(StrokesPK primaryKey) throws FinderException {
+	public Object ejbFindByPrimaryKey(StrokesKey primaryKey) throws FinderException {
 		return super.ejbFindByPrimaryKey(primaryKey);
 	}
 	
-	public Object ejbCreate(StrokesPK primaryKey) throws CreateException {
+	public Object ejbCreate(StrokesKey primaryKey) throws CreateException {
 		setPrimaryKey(primaryKey);
 		return super.ejbCreate();
 	}

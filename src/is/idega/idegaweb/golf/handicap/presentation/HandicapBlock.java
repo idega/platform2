@@ -19,7 +19,10 @@ public class HandicapBlock extends GolfBlock {
 	protected final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf.handicap";
 
 	public void main(IWContext iwc) throws Exception {
-		getHandicapBusiness(iwc).getStrokesByScorecard(new Integer(1));
+		getHandicapBusiness(iwc).storeStrokes(new Integer(1), new Integer(1), 4, 3, 2, true, false);
+		Strokes strokes = getHandicapBusiness(iwc).getStrokes(new Integer(1), new Integer(1));
+		add("Strokes: "+strokes.getStrokes());
+		add("<br>Points: "+strokes.getPoints());
 	}
 	
 	/* (non-Javadoc)

@@ -16,7 +16,7 @@ import com.idega.data.PrimaryKey;
 /**
  * @author laddi
  */
-public class StrokesPK extends PrimaryKey {
+public class StrokesKey extends PrimaryKey {
 
 	private String COLUMN_SCORECARD = StrokesBMPBean.COLUMN_SCORECARD_ID;
 	private String COLUMN_HOLE = StrokesBMPBean.COLUMN_HOLE_ID;
@@ -25,13 +25,13 @@ public class StrokesPK extends PrimaryKey {
 	 * @param scorecardID
 	 * @param holeID
 	 */
-	public StrokesPK(Object scorecardID, Object holeID) {
+	public StrokesKey(Object scorecardID, Object holeID) {
 		this();
 		setScorecard(scorecardID);
 		setHole(holeID);
 	}
 	
-	public StrokesPK() {
+	public StrokesKey() {
 		super();
 	}
 	

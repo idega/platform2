@@ -7,7 +7,7 @@ public class StrokesHomeImpl extends com.idega.data.IDOFactory implements Stroke
 	  return Strokes.class;
 	}
 
-	public Strokes create(is.idega.idegaweb.golf.handicap.data.StrokesPK p0)throws javax.ejb.CreateException{
+	public Strokes create(is.idega.idegaweb.golf.handicap.data.StrokesKey p0)throws javax.ejb.CreateException{
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		Object pk = ((StrokesBMPBean)entity).ejbCreate(p0);
 		this.idoCheckInPooledEntity(entity);
@@ -29,7 +29,7 @@ public class StrokesHomeImpl extends com.idega.data.IDOFactory implements Stroke
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 	
-	public Strokes findByPrimaryKey(is.idega.idegaweb.golf.handicap.data.StrokesPK p0)throws javax.ejb.FinderException{
+	public Strokes findByPrimaryKey(is.idega.idegaweb.golf.handicap.data.StrokesKey p0)throws javax.ejb.FinderException{
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		Object pk = ((StrokesBMPBean)entity).ejbFindByPrimaryKey(p0);
 		this.idoCheckInPooledEntity(entity);

@@ -9,7 +9,7 @@ import is.idega.idegaweb.golf.handicap.data.Scorecard;
 import is.idega.idegaweb.golf.handicap.data.ScorecardHome;
 import is.idega.idegaweb.golf.handicap.data.Strokes;
 import is.idega.idegaweb.golf.handicap.data.StrokesHome;
-import is.idega.idegaweb.golf.handicap.data.StrokesPK;
+import is.idega.idegaweb.golf.handicap.data.StrokesKey;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
@@ -59,7 +59,7 @@ public class HandicapBusinessBean extends IBOServiceBean implements HandicapBusi
 	}
 	
 	public Strokes getStrokes(Object scorecardID, Object holeID) throws FinderException {
-		StrokesPK key = new StrokesPK(scorecardID, holeID);
+		StrokesKey key = new StrokesKey(scorecardID, holeID);
 		return getStrokesHome().findByPrimaryKey(key);
 	}
 
@@ -108,7 +108,7 @@ public class HandicapBusinessBean extends IBOServiceBean implements HandicapBusi
 	}
 	
 	private Strokes createStrokes(Object scorecardID, Object holeID) throws CreateException {
-		StrokesPK key = new StrokesPK(scorecardID, holeID);
+		StrokesKey key = new StrokesKey(scorecardID, holeID);
 		return getStrokesHome().create(key);
 	}
 	
