@@ -706,4 +706,11 @@ public List getTournamentGroupsRecursive(){
       return (ICTreeNode)getChildAt(index);
     }
 
+    /**
+     * @todo: Implement
+     */
+    public int getSiblingCount(){
+      return 0;
+    }
+
 }
