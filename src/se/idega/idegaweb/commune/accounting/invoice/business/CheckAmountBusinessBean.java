@@ -193,8 +193,8 @@ public class CheckAmountBusinessBean extends IBOServiceBean {
 		float totalVatSum = 0;
 
 		Table table = new Table(5);
-		table.setCellpadding(1);
-		table.setCellspacing(1);
+		table.setPadding(1);
+		table.setSpacing(1);
 		table.setWidths(new int[]{1,3,1,2,3});
 		table.setWidth(100);
 		//table.setBorderColor(Color.WHITE);
