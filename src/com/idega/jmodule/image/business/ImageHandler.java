@@ -369,10 +369,10 @@ return new com.idega.jmodule.object.Image("/pics/ModifiedImagetemp.jpg",this.get
 
 public void writeModifiedImageToDatabase() throws Exception{
 
-  writeModifiedImageToFile("/pics/imagemoduletemp.jpg");//temporary storage
+  writeModifiedImageToFile("/pics/ModifiedImagetemp.jpg");//temporary storage
 
   //debug change so that more than one can use this at once
-  InputStream input = new FileInputStream("/pics/imagemoduletemp.jpg");
+  InputStream input = new FileInputStream("/pics/ModifiedImagetemp.jpg");
   ImageEntity entity = new ImageEntity();
 
   Connection Conn = null;

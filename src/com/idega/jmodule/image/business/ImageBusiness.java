@@ -106,7 +106,6 @@ public static void handleEvent(ModuleInfo modinfo,ImageHandler handler) throws T
         else if ( action.equalsIgnoreCase("Sharpen") ) handler.sharpenModifiedImage();
         else if( action.equalsIgnoreCase("Save") ){
           handler.writeModifiedImageToDatabase();
-         // eyða úr sessions og applications browser.refresh();
         }
         else if( action.equalsIgnoreCase("Undo") ){
           handler.setModifiedImageAsOriginal();

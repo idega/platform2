@@ -621,6 +621,7 @@ public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modin
   Link save = new Link(new Image("/pics/jmodules/image/buttons/save.gif","Save the Image"));
   save.addParameter("action","save");
   save.addParameter("edit","true");
+   save.addParameter("refresh","true");
   toolbarBelow.add(save,4,1);
 
 /*
