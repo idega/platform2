@@ -1400,19 +1400,19 @@ public abstract class BookingForm extends TravelManager{
 		int returner = 0;
 		
 		String fName = iwc.getParameter(PARAMETER_FIRST_NAME);
-		String lName = iwc.getParameter(PARAMETER_LAST_NAME);
+		//String lName = iwc.getParameter(PARAMETER_LAST_NAME);
 		String phone = iwc.getParameter(PARAMETER_PHONE);
 
 		if (fName == null || fName.equals("")) {
 			errorFields.add(PARAMETER_FIRST_NAME);
 			returner = errorFieldsEmpty;
 		}
-
+/*
 		if (lName == null || lName.equals("")) {
 			errorFields.add(PARAMETER_LAST_NAME);
 			returner = errorFieldsEmpty;
 		}
-
+*/
 		if (phone == null || phone.equals("")) {
 			errorFields.add(PARAMETER_PHONE);
 			returner = errorFieldsEmpty;
@@ -1574,8 +1574,16 @@ public abstract class BookingForm extends TravelManager{
     }
   }
 
+	public abstract void saveServiceBooking(IWContext iwc, int bookingId, IWTimestamp stamp) throws RemoteException, IDOException;
+	
+	/** This is here so that Tour can override it... */
+	public IWTimestamp getNextAvailableDay(IWContext iwc, IWTimestamp stamp) throws RemoteException, SQLException{
+		stamp.addDays(1);
+		return stamp;
+	}
 
-  public int saveBooking(IWContext iwc) throws RemoteException, CreateException, RemoveException, FinderException, SQLException, TPosException{
+  public int saveBooking(IWContext iwc) throws CreateException, RemoveException, FinderException, SQLException, TPosException, RemoteException, IDOException{
+  		//System.out.println("[Bookingform] saveBooking");
       String surname = iwc.getParameter("surname");
       String lastname = iwc.getParameter("lastname");
       String address = iwc.getParameter("address");
@@ -1735,13 +1743,15 @@ public abstract class BookingForm extends TravelManager{
 				if (iBookingId == -1) {
 					for (int i = 0; i < betw; i++) {
 						if (i != 0) {
-							_fromDate.addDays(1);
+							_fromDate = getNextAvailableDay(iwc, _fromDate);
+							//_fromDate.addDays(1);
 						}
 						
 						bookingIds[i] = getBooker(iwc).Book(_service.getID(),country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
 						if (iPickupId > 0) {
-								getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+								getBooker(iwc).setPickup(bookingIds[i], iPickupId, pickupInfo);
 						}
+						saveServiceBooking(iwc, bookingIds[i], _fromDate);
 					}
 					lbookingId = bookingIds[0];
 					
@@ -1757,8 +1767,9 @@ public abstract class BookingForm extends TravelManager{
             	/** Single booking */
               bookingIds[0] = getBooker(iwc).updateBooking(iBookingId, _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
             	if (iPickupId > 0) {
-                getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+                getBooker(iwc).setPickup(bookingIds[0], iPickupId, pickupInfo);
             	}
+							saveServiceBooking(iwc, bookingIds[0], _fromDate);
             	lbookingId = bookingIds[0];
             }else {
 							/** Multiple bookings */
@@ -1766,7 +1777,8 @@ public abstract class BookingForm extends TravelManager{
               
               /** Reduce number of days */
               if (tempBookingsSize > betw) {
-              	bookingIds = new int[tempBookingsSize];
+								bookingIds = new int[betw];
+//              	bookingIds = new int[tempBookingsSize];
               	/** Updating the days that will not be deleted */
               	for ( int j = 0; j < betw; j++) {
 									if (j != 0) {
@@ -1775,12 +1787,15 @@ public abstract class BookingForm extends TravelManager{
 									gBooking = (GeneralBooking) tempBookings.get(j);
 									bookingIds[j] = getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
 									if (iPickupId > 0) {
-											getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+											getBooker(iwc).setPickup(bookingIds[j], iPickupId, pickupInfo);
 									}
+									saveServiceBooking(iwc, bookingIds[j], _fromDate);
               	}
               	/** Deleting the rest of the days */
               	for (int j = betw; j < tempBookingsSize; j++) {
-              		getBooker(iwc).deleteBooking((GeneralBooking) tempBookings.get(j));	
+              		gBooking = (GeneralBooking) tempBookings.get(j);
+              		getBooker(iwc).deleteBooking(gBooking);	
+              		
               	}
               }
 
@@ -1795,8 +1810,9 @@ public abstract class BookingForm extends TravelManager{
 									gBooking = (GeneralBooking) tempBookings.get(j);
 									bookingIds[j] = getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
 									if (iPickupId > 0) {
-											getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+											getBooker(iwc).setPickup(bookingIds[j], iPickupId, pickupInfo);
 									}
+									saveServiceBooking(iwc, bookingIds[j], _fromDate);
 								}
 							}
 
@@ -1811,8 +1827,9 @@ public abstract class BookingForm extends TravelManager{
 									gBooking = (GeneralBooking) tempBookings.get(j);
 									bookingIds[j] = getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
 									if (iPickupId > 0) {
-											getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+											getBooker(iwc).setPickup(bookingIds[j], iPickupId, pickupInfo);
 									}
+									saveServiceBooking(iwc, bookingIds[j], _fromDate);
               	}
               	/** Creates new bookins */
               	for (int j = tempBookingsSize; j < betw; j++) {
@@ -1821,8 +1838,9 @@ public abstract class BookingForm extends TravelManager{
 									}
 									bookingIds[j] = getBooker(iwc).Book(_service.getID(),country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
 									if (iPickupId > 0) {
-											getBooker(iwc).setPickup(lbookingId, iPickupId, pickupInfo);
+											getBooker(iwc).setPickup(bookingIds[j], iPickupId, pickupInfo);
 									}
+									saveServiceBooking(iwc, bookingIds[j], _fromDate);
               	}
               	 
               	
