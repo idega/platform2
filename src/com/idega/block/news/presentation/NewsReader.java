@@ -45,6 +45,7 @@ private String sNewsEditorUrl ="/news/editor.jsp";
 private String headlineImageURL = "/pics/jmodules/news/nanar2.gif";
 private boolean showHeadlineImage = false;
 private boolean showMoreButton = false;
+private boolean alignWithHeadline = false;
 private Window adminWindow;
 
 private Text textProxy = new Text();
@@ -145,8 +146,8 @@ public void main(ModuleInfo modinfo)throws Exception{
 
   News[] news = new News[1];
 
-  String news_id = modinfo.getRequest().getParameter("news_id");
-  String news_category_id = modinfo.getRequest().getParameter("news_category_id");
+  String news_id = modinfo.getParameter("news_id");
+  String news_category_id = modinfo.getParameter("news_category_id");
 //added for multiple newsreader support in one page
   boolean showSingleNews = false;
 
@@ -427,10 +428,15 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
   else if( information.getAttribute("size").equals("") )  information.setFontSize(1);
 
   Table newsTable = new Table();
-  newsTable.setWidth("100%");
-  newsTable.add(information, 1, 1);
+    newsTable.setWidth("100%");
+    newsTable.add(information, 1, 1);
+    newsTable.setHeight(2,"15");
+    //newsTable.setHeight(1,3,"100%");
+    newsTable.setRowVerticalAlignment(1,"top");
+    //newsTable.setRowVerticalAlignment(2,"top");
+    newsTable.setRowVerticalAlignment(3,"top");
 
-  if ( this.showHeadlineImage ) {
+  if ( showHeadlineImage ) {
     Image headlineImage = new Image(headlineImageURL,"");
     headlineImage.setAttribute("align","absmiddle");
     newsTable.add(headlineImage, 1, 2);
@@ -447,22 +453,30 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
 
 
   if (image_id!=-1){
-      //System.out.println("ImageID != -1");
-    //debug
     if ( showImages ) {
-      //System.out.println("ImageID != -1 && showImages");
-      Table imageTable = new Table(1, 2);
+      newsTable.mergeCells(1,1,2,1);
+      if ( alignWithHeadline ) {
+        newsTable.mergeCells(2,2,2,3);
+      }
+      else {
+        newsTable.mergeCells(1,2,2,2);
+      }
       Image newsImage = new Image(image_id);
-      imageTable.setAlignment("right");
-      imageTable.setVerticalAlignment("top");
-      imageTable.add(newsImage, 1, 1);
+        newsImage.setVerticalSpacing(3);
+        newsImage.setHorizontalSpacing(3);
 
       if( (LAYOUT!=NEWS_SITE_LAYOUT) ){
-        newsTable.add(imageTable, 1, 3);
+        if ( alignWithHeadline )
+          newsTable.add(newsImage, 2, 2);
+        else
+          newsTable.add(newsImage, 2, 3);
       }
       else{
        if(currentRowPosition==1){
-        newsTable.add(imageTable, 1, 3);
+        if ( alignWithHeadline )
+          newsTable.add(newsImage, 2, 2);
+        else
+          newsTable.add(newsImage, 2, 3);
        }
       }
     }
@@ -470,9 +484,9 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
   }
 
   newsTable.add(newstext, 1, 3);
-  newsTable.setRowVerticalAlignment(3, "Top");
 
   if( backbutton ) {
+        newsTable.mergeCells(1,4,2,4);
          newsTable.add(new BackButton(back), 1, 4);
   }
   else {
@@ -483,6 +497,7 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
         Link moreLink = new Link(more,newsReaderURL);
         moreLink.addParameter("news_id",newsId);
         newsTable.add(moreLink, 1, 4);
+        newsTable.mergeCells(1,4,2,4);
       }
   }
 
@@ -825,11 +840,11 @@ public void showNewsCollectionButton(boolean showNewsCollectionButton){
 }
 
 public void setNewsReaderURLAsSamePage(ModuleInfo modinfo){
-  this.newsReaderURL =  modinfo.getRequest().getRequestURI();
+  this.newsReaderURL =  modinfo.getRequestURI();
 }
 
 public void setNewsCollectionURLAsSamePage(ModuleInfo modinfo){
-  this.newsCollectionURL =  modinfo.getRequest().getRequestURI();
+  this.newsCollectionURL =  modinfo.getRequestURI();
 }
 
 
@@ -848,6 +863,10 @@ public void setShowMoreButton(boolean showMoreButton) {
 
 public void setShowHeadlineImage(boolean showHeadlineImage) {
   this.showHeadlineImage=showHeadlineImage;
+}
+
+public void alignImageWithHeadline() {
+  this.alignWithHeadline=true;
 }
 
 public void setHeadlineAsLink(boolean headlineAsLink) {
