@@ -1119,6 +1119,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		}
 		HashMap postalCodeMap = new HashMap();
 		HashMap mainBoardMap = new HashMap();
+		boolean firstOccurrenceOfMemberInFile = false;
 		for (int i = (firstRow + 1); i <= lastRow; i++) {
 			HSSFRow row = (HSSFRow) members.getRow(i);
 			if (row != null) {
@@ -1167,13 +1168,16 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 							throw new FinderException("SSN shorter than 6 letters");
 						}
 					}
+					WorkReportMember member = null;
+					WorkReportGroup mainBoard = null;
 					try {
-						membHome.findWorkReportMemberByUserIdAndWorkReportId(
-								((Integer) user.getPrimaryKey()).intValue(), workReportId);
+					    member = membHome.findWorkReportMemberByUserIdAndWorkReportId(((Integer) user.getPrimaryKey()).intValue(), workReportId);
+					    firstOccurrenceOfMemberInFile = false;
 					}
 					catch (FinderException e4) {
 						//this should happen, we don't want them created twice
-						WorkReportMember member = getWorkReportBusiness().createWorkReportMember(workReportId, user); //sets
+					    firstOccurrenceOfMemberInFile = true;
+					    member = getWorkReportBusiness().createWorkReportMember(workReportId, user); //sets
 						// basic
 						// data
 						if (streetName != null && !"".equals(streetName)) {
@@ -1201,85 +1205,84 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						}
 						member.store();
 						memberCount++;
-						WorkReportGroup mainBoard = null;
-						String mainBoardLookupString = mainBoardName + String.valueOf(year);
-						if (!mainBoardMap.containsKey(mainBoardLookupString)) {
-							try {
-								mainBoard = getWorkReportBusiness().getWorkReportGroupHome().findWorkReportGroupByNameAndYear(
-										mainBoardName, year);
-								mainBoardMap.put(mainBoardLookupString, mainBoard);
-							}
-							catch (FinderException e1) {
-								throw new WorkReportImportException("workreportimportexception.main_board_not_found");
-							}
-						}
-						else {
-							mainBoard = (WorkReportGroup) mainBoardMap.get(mainBoardLookupString);
-						}
+					}
+					String mainBoardLookupString = mainBoardName + String.valueOf(year);
+					if (!mainBoardMap.containsKey(mainBoardLookupString)) {
 						try {
-							if (reportLeagues != null && !reportLeagues.contains(mainBoard)) {
-								report.addLeague(mainBoard);
-								reportLeagues.add(mainBoard);
+							mainBoard = getWorkReportBusiness().getWorkReportGroupHome().findWorkReportGroupByNameAndYear(
+									mainBoardName, year);
+							mainBoardMap.put(mainBoardLookupString, mainBoard);
+						}
+						catch (FinderException e1) {
+							throw new WorkReportImportException("workreportimportexception.main_board_not_found");
+						}
+					}
+					else {
+						mainBoard = (WorkReportGroup) mainBoardMap.get(mainBoardLookupString);
+					}
+					try {
+						if (reportLeagues != null && !reportLeagues.contains(mainBoard)) {
+							report.addLeague(mainBoard);
+							reportLeagues.add(mainBoard);
+						}
+					}
+					catch (Exception e) {
+						//e.printStackTrace();
+					}
+					//find which leagues the member belongs to
+					//and create the many to many connections
+					boolean firstTimeMemberToBeAddedToMainboard = true;
+					for (int j = 5; j < lastCell; j++) {
+						HSSFCell leagueCell = row.getCell((short) j);
+						if (leagueCell != null) {
+							String check = null;
+							try {
+								check = leagueCell.getStringCellValue();
 							}
-						}
-						catch (Exception e) {
-							//e.printStackTrace();
-						}
-						//find which leagues the member belongs to
-						//and create the many to many connections
-						boolean firstTimeMemberToBeAddedToMainboard = true;
-						for (int j = 5; j < lastCell; j++) {
-							HSSFCell leagueCell = row.getCell((short) j);
-							if (leagueCell != null) {
-								String check = null;
-								try {
-									check = leagueCell.getStringCellValue();
-								}
-								catch (NumberFormatException e) {
-									throw new WorkReportImportException(
-											"workreportimportexception.numberic_value_in_league_cell", i, j, "");
-								}
-								//								boolean isChecked = (check != null &&
-								// !"".equals(check) &&
-								// "X".equals(check.toUpperCase()));
-								check = TextSoap.removeWhiteSpace(check);
-								boolean isChecked = (check != null && !"".equals(check));
-								if (isChecked) {
-									WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(j));
-									if (league != null) {
+							catch (NumberFormatException e) {
+								throw new WorkReportImportException(
+										"workreportimportexception.numberic_value_in_league_cell", i, j, "");
+							}
+							//								boolean isChecked = (check != null &&
+							// !"".equals(check) &&
+							// "X".equals(check.toUpperCase()));
+							check = TextSoap.removeWhiteSpace(check);
+							boolean isChecked = (check != null && !"".equals(check));
+							if (isChecked) {
+								WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(j));
+								if (league != null) {
+									try {
+										league.addEntity(member);
 										try {
-											league.addEntity(member);
-											try {
-												if (reportLeagues != null && !reportLeagues.contains(league)) {
-													report.addLeague(league);
-													reportLeagues.add(league);
-												}
+											if (reportLeagues != null && !reportLeagues.contains(league)) {
+												report.addLeague(league);
+												reportLeagues.add(league);
 											}
-											catch (Exception e) {
-												//e.printStackTrace();
-											}
-											try {
-												if (firstTimeMemberToBeAddedToMainboard) {
-													mainBoard.addEntity(member);
-													firstTimeMemberToBeAddedToMainboard = false;
-												}
-											}
-											catch (Exception e) {
-												e.printStackTrace();
-											}
-											playerCount++;
-											Integer count = (Integer) divPlayerCount.get(new Integer(j));
-											if (count == null)
-												count = new Integer(1);
-											else
-												count = new Integer(count.intValue() + 1);
-											divPlayerCount.put(new Integer(j), count);
 										}
-										catch (IDOAddRelationshipException e5) {
-											e5.printStackTrace();
-											throw new WorkReportImportException(
-													"workreportimportexception.database_error_could_not_add_member_to_group");
+										catch (Exception e) {
+											//e.printStackTrace();
 										}
+										try {
+											if (firstTimeMemberToBeAddedToMainboard && firstOccurrenceOfMemberInFile) {
+												mainBoard.addEntity(member);
+												firstTimeMemberToBeAddedToMainboard = false;
+											}
+										}
+										catch (Exception e) {
+											e.printStackTrace();
+										}
+										playerCount++;
+										Integer count = (Integer) divPlayerCount.get(new Integer(j));
+										if (count == null)
+											count = new Integer(1);
+										else
+											count = new Integer(count.intValue() + 1);
+										divPlayerCount.put(new Integer(j), count);
+									}
+									catch (IDOAddRelationshipException e5) {
+										e5.printStackTrace();
+										throw new WorkReportImportException(
+												"workreportimportexception.database_error_could_not_add_member_to_group");
 									}
 								}
 							}
