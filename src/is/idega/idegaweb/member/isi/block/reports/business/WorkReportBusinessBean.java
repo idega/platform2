@@ -768,9 +768,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 		// does the division board already exist?
 		try {
-			WorkReportDivisionBoardHome workReportDivisionBoardHome = getWorkReportDivisionBoardHome();
+			WorkReportDivisionBoardHome workReportDivisionBoardHomeTemp = getWorkReportDivisionBoardHome();
 			int workReportGroupId = ((Integer)league.getPrimaryKey()).intValue();
-			divisionBoard = workReportDivisionBoardHome.findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(reportId, workReportGroupId);
+			divisionBoard = workReportDivisionBoardHomeTemp.findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(reportId, workReportGroupId);
 			if (divisionBoard != null) {
 				// division board exist be sure that the league was added to the work report
 				WorkReport workReport = getWorkReportById(reportId);
@@ -927,6 +927,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
               }
             }
             catch (NoEmailFoundException ex)  {
+            	// empty block
     		}
         }
         
@@ -1521,7 +1522,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   
   public boolean createWorkReportData(int workReportId) {
     // get year and group id from work report
-    WorkReportBoardMemberHome membHome = getWorkReportBoardMemberHome();
     WorkReport workReport = getWorkReportById(workReportId);
     
 	if(canWeUpdateWorkReportDataFromDatabase(workReport.getYearOfReport().intValue())){
@@ -1597,10 +1597,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	        tm.commit();
 	        return true;
 	      }
-	      else {
-	        tm.rollback();
-	        return false;
-	      }
+         tm.rollback();
+         return false;
 	    }
 	    catch (Exception ex)  {
 	      System.err.println("[WorkReportBusiness]: Couldn't create work report data. Message is: " + 
@@ -1790,9 +1788,14 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   }
   
   public void updateWorkReportData(int workReportId) throws FinderException, IDOException, RemoteException {
-    Collection members;
-    Map groupIdUserIds = new HashMap();
-    members = getAllWorkReportMembersForWorkReportId(workReportId);
+  	/* Some rules:
+  	 * + members all always connected to the work report group ADA
+  	 * + members that are only connected to the work report group ADA aren't players
+  	 * + members that are connected to some other work report groups (leagues) are players
+  	 */
+    // first update work report
+  	String mainBoardName  = getIWApplicationContext().getIWMainApplication().getBundle(ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_MAIN_BOARD_NAME,"ADA");
+    Collection members = getAllWorkReportMembersForWorkReportId(workReportId);
     // create map: member as key, leagues as value 
     Map leagueCountMap = new HashMap();
     int playersCount = 0;
@@ -1801,39 +1804,17 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     while (membersIterator.hasNext())  {
       WorkReportMember member = (WorkReportMember) membersIterator.next();
       Iterator leagues = member.getLeaguesForMember().iterator();
-      boolean isPlayer = false;
       while (leagues.hasNext()) {
-        WorkReportGroup league = (WorkReportGroup) leagues.next();
-        Integer groupId = league.getGroupId();
-        // use caching
-        // get all users that are players of that league
-        List userPks = (List) groupIdUserIds.get(groupId);
-        if (userPks == null) {
-          Group group = getGroupHome().findByPrimaryKey(groupId);
-          Collection groupTypes = new ArrayList(1);
-          groupTypes.add(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
-          Collection users = getGroupBusiness().getUsersFromGroupRecursive(group, groupTypes, true);
-          List userIds = new ArrayList();
-          Iterator userIterator = users.iterator();
-          while (userIterator.hasNext())  {
-            Integer userId = (Integer) ( (User) userIterator.next() ).getPrimaryKey();
-            userIds.add(userId);
-          }
-          groupIdUserIds.put(groupId, userIds);
-          userPks = userIds;
-        }
-        // is the current member a player within the current league?
-        Integer userId = new Integer(member.getUserId());
-        if (userPks.contains(userId)) {
-          isPlayer = true;
-          Integer leagueId = (Integer) league.getPrimaryKey();
-          Integer count = (Integer) leagueCountMap.get(leagueId);
-          count = (count == null) ? new Integer(1) : new Integer( (count.intValue()) + 1 );
-          leagueCountMap.put(leagueId, count);
-        }
-      }
-      if (isPlayer) {
-        playersCount++;
+      	WorkReportGroup league = (WorkReportGroup) leagues.next();
+      	String leagueName = league.getName();
+      	if (! mainBoardName.equals(leagueName)) {
+      		// do not count members connected to the mainboard ADA
+      		playersCount++;
+      		Integer leagueId = (Integer) league.getPrimaryKey();
+      		Integer count = (Integer) leagueCountMap.get(leagueId);
+      		count = (count == null) ? new Integer(1) : new Integer( (count.intValue()) + 1 );
+      		leagueCountMap.put(leagueId, count);
+      	}
       }
     }
     WorkReport workReport = getWorkReportById(workReportId);
@@ -1842,6 +1823,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     workReport.setNumberOfPlayers(playersCount);
     workReport.store();
     
+    // second update work report divisions
     WorkReportDivisionBoardHome home = getWorkReportDivisionBoardHome();
     Collection boards = home.findAllWorkReportDivisionBoardByWorkReportId(workReportId);
     
@@ -1852,7 +1834,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       Integer leagueId = (Integer) workReportGroup.getPrimaryKey();
       Integer number = (Integer) leagueCountMap.get(leagueId);
       if (number == null) {
-        board.setNumberOfPlayers(0);  
+      	board.setNumberOfPlayers(0);  
       }
       else {
         board.setNumberOfPlayers(number.intValue());
@@ -1978,7 +1960,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       }
       try {
         // create WorkReportBoardMember
-        WorkReportBoardMember  member = createWorkReportBoardMember(workReportId, user, league);
+        createWorkReportBoardMember(workReportId, user, league);
         // add the new one to the existing ones
         if (memberLeagues == null)  {
           memberLeagues = new ArrayList();
@@ -4011,7 +3993,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public boolean isThereAYearlyAccountForAnEmptyDivision(int workReportId) {
 		WorkReportClubAccountRecordHome recHome = getWorkReportClubAccountRecordHome();
 		Collection records = null;
-		Collection leagues = null;
 
 		try {
 			records = recHome.findAllRecordsByWorkReportId(workReportId);
@@ -4024,7 +4005,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		WorkReport report = this.getWorkReportById(workReportId);
 
 		try {
-			leagues = report.getLeagues();
+			report.getLeagues();
 		}
 		catch (IDOException e) {
 			System.out.println("No divisions for work report id : " + workReportId);
@@ -4037,34 +4018,28 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			System.out.println("No empty divisions for work report id : " + workReportId);
 			return false;
 		}
-		else {
-			Iterator recs = records.iterator();
-			//the real check happens here
-			while (recs.hasNext()) {
-				WorkReportClubAccountRecord rec = (WorkReportClubAccountRecord)recs.next();
-				if (emptyLeagues.contains(new Integer(rec.getWorkReportGroupId()))) {
-					System.out.println("Empty divisions with account record found! workreportgroupid : " + rec.getWorkReportGroupId());
-					return true;
-				}
+		Iterator recs = records.iterator();
+		//the real check happens here
+		while (recs.hasNext()) {
+			WorkReportClubAccountRecord rec = (WorkReportClubAccountRecord)recs.next();
+			if (emptyLeagues.contains(new Integer(rec.getWorkReportGroupId()))) {
+				System.out.println("Empty divisions with account record found! workreportgroupid : " + rec.getWorkReportGroupId());
+				return true;
 			}
-
-			return false;
-
 		}
-
+		return false;
 	}
 
 	public boolean isBoardMissingForDivisionWithMembersOrYearlyAccount(int workReportId) {
 		WorkReportBoardMemberHome boardHome = getWorkReportBoardMemberHome();
 		WorkReportClubAccountRecordHome recHome = getWorkReportClubAccountRecordHome();
 		Collection records = null;
-		Collection leagues = null;
 		boolean checkForAccount = false;
 
 		WorkReport report = this.getWorkReportById(workReportId);
 
 		try {
-			leagues = report.getLeagues();
+			report.getLeagues();
 		}
 		catch (IDOException e) {
 			System.out.println("No divisions for work report id : " + workReportId);
@@ -4086,9 +4061,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		//the real check happens here
 		while (primaryKeys.hasNext()) {
 			Integer workGroupID = (Integer)primaryKeys.next();
-			Collection boardMembers;
 			try {
-				boardMembers = boardHome.findAllWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(workReportId, workGroupID.intValue());
+				boardHome.findAllWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(workReportId, workGroupID.intValue());
 			}
 			catch (FinderException e2) {
 				System.out.println("Board members missing for a division");
@@ -4107,13 +4081,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 
 			Iterator iter = leaguesMap.keySet().iterator();
-			Collection boardMembers;
-
 			while (iter.hasNext()) {
 				Integer wrGroupId = (Integer)iter.next();
 
 				try {
-					boardMembers = boardHome.findAllWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(workReportId, wrGroupId.intValue());
+					boardHome.findAllWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(workReportId, wrGroupId.intValue());
 				}
 				catch (FinderException e2) {
 					System.out.println("Board members missing for a division with account info");
@@ -4176,13 +4148,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public boolean isYearlyAccountMissingForADivisionWithMembers(int workReportId) {
 
 		WorkReportClubAccountRecordHome recHome = getWorkReportClubAccountRecordHome();
-		Collection records = null;
-		Collection leagues = null;
 
 		WorkReport report = this.getWorkReportById(workReportId);
 
 		try {
-			leagues = report.getLeagues();
+			report.getLeagues();
 		}
 		catch (IDOException e) {
 			System.out.println("No divisions for work report id : " + workReportId);
@@ -4190,7 +4160,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 
 		try {
-			records = recHome.findAllRecordsByWorkReportId(workReportId);
+			recHome.findAllRecordsByWorkReportId(workReportId);
 		}
 		catch (FinderException e1) {
 			System.out.println("No account records for work report id : " + workReportId);
@@ -4203,27 +4173,21 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			System.out.println("No divisions with members for work report id : " + workReportId);
 			return false;
 		}
-		else {
-			Iterator primaryKeys = nonEmptyLeagues.iterator();
+		Iterator primaryKeys = nonEmptyLeagues.iterator();
 
-			//the real check happens here
-			while (primaryKeys.hasNext()) {
-				Integer workGroupID = (Integer)primaryKeys.next();
-				Collection recs;
-				try {
-					recs = recHome.findAllRecordsByWorkReportIdAndWorkReportGroupId(workReportId, workGroupID.intValue());
-				}
-				catch (FinderException e2) {
-
-					System.out.println("Account recs missing for a division");
-					//e2.printStackTrace();
-					return true;
-				}
+		//the real check happens here
+		while (primaryKeys.hasNext()) {
+			Integer workGroupID = (Integer)primaryKeys.next();
+			try {
+				recHome.findAllRecordsByWorkReportIdAndWorkReportGroupId(workReportId, workGroupID.intValue());
 			}
-
-			return false;
-
+			catch (FinderException e2) {
+				System.out.println("Account recs missing for a division");
+				//e2.printStackTrace();
+				return true;
+			}
 		}
+		return false;
 	}
 	public WorkReportDivisionBoardHome getWorkReportDivisionBoardHome() {
 		if (workReportDivisionBoardHome == null) {
