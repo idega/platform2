@@ -1,6 +1,5 @@
 package com.idega.block.creditcard.business;
 
-import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Iterator;
@@ -22,7 +21,6 @@ import com.idega.block.creditcard.data.TPosMerchantHome;
 import com.idega.block.trade.data.CreditCardInformation;
 import com.idega.block.trade.data.CreditCardInformationHome;
 import com.idega.block.trade.stockroom.data.Supplier;
-import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
