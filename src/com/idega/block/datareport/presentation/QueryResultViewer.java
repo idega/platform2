@@ -403,7 +403,7 @@ public class QueryResultViewer extends Block {
 		Iterator iterator = topGroupNodes.iterator();
 		while ( iterator.hasNext())	{
 			Group topGroup = (Group) iterator.next();
-			Collection childGroups = groupBusiness.getChildGroupsRecursiveResultFiltered(topGroup, new ArrayList(), true);
+			Collection childGroups = groupBusiness.getChildGroupsRecursive(topGroup);
 			Iterator childGroupsIterator = childGroups.iterator();
 			while (childGroupsIterator.hasNext())	{
 				Group group = (Group) childGroupsIterator.next();

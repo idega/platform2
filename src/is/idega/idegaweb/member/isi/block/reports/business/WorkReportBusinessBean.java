@@ -1800,7 +1800,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
           Group group = getGroupHome().findByPrimaryKey(groupId);
           Collection groupTypes = new ArrayList(1);
           groupTypes.add(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
-          Collection users = getGroupBusiness().getUsersFromGroupRecursive(group, groupTypes, false);
+          Collection users = getGroupBusiness().getUsersFromGroupRecursive(group, groupTypes, true);
           List userIds = new ArrayList();
           Iterator userIterator = users.iterator();
           while (userIterator.hasNext())  {
