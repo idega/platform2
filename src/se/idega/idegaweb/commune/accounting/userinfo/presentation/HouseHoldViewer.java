@@ -4,6 +4,7 @@
  */
 package se.idega.idegaweb.commune.accounting.userinfo.presentation;
 
+import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCustodianFound;
 import is.idega.idegaweb.member.business.NoSpouseFound;
 import is.idega.idegaweb.member.presentation.UserSearcher;
@@ -119,7 +120,20 @@ public class HouseHoldViewer extends AccountingBlock {
 
 			for (Iterator iter = parents.iterator(); iter.hasNext();) {
 				User parent = (User) iter.next();
-				Collection childs = userService.getChildrenForUser(parent);
+				Vector childs = new Vector();
+				Collection parentialChildren = userService.getChildrenForUser(parent);
+				if(parentialChildren!=null)
+					childs.addAll(parentialChildren);
+				Collection custodianChildren = null;
+				try {
+					 custodianChildren = userService.getMemberFamilyLogic().getChildrenInCustodyOf(parent);
+				}
+				catch (NoChildrenFound e1) {
+					e1.printStackTrace();
+				}
+				if(custodianChildren !=null)
+					childs.addAll(custodianChildren);
+					
 				if (childs != null && !childs.isEmpty()) {
 					for (Iterator iter2 = childs.iterator(); iter2.hasNext();) {
 						User child = (User) iter2.next();
