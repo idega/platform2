@@ -142,6 +142,23 @@ commit;
 select * from IC_ADDRESS;
 commit;
 
+update rdb$fields
+set rdb$field_length = 50,
+    rdb$character_length = 50
+where rdb$field_name =
+   (select rdb$field_source
+   from rdb$relation_fields
+   where rdb$relation_name = 'IC_ADDRESS'
+    and  rdb$field_name = 'PROVIDENCE'
+   );
+
+commit;
+   
+update IC_ADDRESS set PROVIDENCE = PROVIDENCE;
+commit;
+select * from IC_ADDRESS;
+commit;
+
 
 update rdb$fields
 set rdb$field_length = 50,
@@ -150,18 +167,54 @@ where rdb$field_name =
    (select rdb$field_source
    from rdb$relation_fields
    where rdb$relation_name = 'IC_ADDRESS'
-    and  rdb$field_name = 'p_o_box'
+    and  rdb$field_name = 'P_O_BOX'
    );
 
 commit;
    
-update IC_ADDRESS set p_o_box = p_o_box;
+update IC_ADDRESS set P_O_BOX = P_O_BOX;
 commit;
 select * from IC_ADDRESS;
 commit;
 
 
 -----------------------------------------
-
+PostalCode
 -----------------------------------------
+update rdb$fields
+set rdb$field_length = 50,
+    rdb$character_length = 50
+where rdb$field_name =
+   (select rdb$field_source
+   from rdb$relation_fields
+   where rdb$relation_name = 'IC_POSTAL_CODE'
+    and  rdb$field_name = 'POSTAL_CODE'
+   );
+
+commit;
+   
+update IC_POSTAL_CODE set POSTAL_CODE = POSTAL_CODE;
+commit;
+select * from IC_POSTAL_CODE;
+commit;
+
+update rdb$fields
+set rdb$field_length = 50,
+    rdb$character_length = 50
+where rdb$field_name =
+   (select rdb$field_source
+   from rdb$relation_fields
+   where rdb$relation_name = 'IC_POSTAL_CODE'
+    and  rdb$field_name = 'NAME'
+   );
+
+commit;
+   
+update IC_POSTAL_CODE set NAME = NAME;
+commit;
+select * from IC_POSTAL_CODE;
+commit;
+
+
+
 

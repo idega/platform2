@@ -19,3 +19,7 @@ PostalCode
 create index IDX_IC_POSTALCODE on IC_POSTAL_CODE(postal_code);
 commit;
 
+Address
+create index IDX_ADDRESS_TYPE on IC_ADDRESS(IC_ADDRESS_TYPE_ID);
+
+
