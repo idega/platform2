@@ -7,6 +7,11 @@
 package com.idega.block.dataquery.business;
 
 import java.util.StringTokenizer;
+
+import com.idega.data.IDOEntityDefinition;
+import com.idega.data.IDOEntityField;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.xml.XMLElement;
 
 /**
@@ -19,8 +24,10 @@ import com.idega.xml.XMLElement;
  */
 
 public class QueryConditionPart implements QueryPart {
-
+	
+	private IDOEntityField idoField = null;
 	private String field = null;
+	private IDOEntityDefinition entityDef = null;
 	private String entity = null;
 	private String type = null;
 	private String pattern = null;
@@ -80,8 +87,31 @@ public class QueryConditionPart implements QueryPart {
 	/**
 	 * @return
 	 */
-	public String getEntity() {
-		return field;
+	private String getEntityClassName() {
+		return entity;
+	}
+	
+	private IDOEntityDefinition getIDOEntityDefinition() throws IDOLookupException, ClassNotFoundException{
+		if(entityDef==null){
+			entityDef = IDOLookup.getEntityDefinitionForClass(Class.forName(getEntityClassName()));
+		}
+		return entityDef;
+	}
+	
+	public IDOEntityField getIDOEntityField() throws IDOLookupException, ClassNotFoundException{
+		if(idoField==null){
+			IDOEntityDefinition def = getIDOEntityDefinition();
+			if(def != null){
+				IDOEntityField[] fields = def.getFields();
+				for (int i = 0; i < fields.length; i++) {
+					if(fields[i].getUniqueFieldName().equals(field)){
+						idoField = fields[i];
+						return idoField;
+					}
+				}
+			}
+		}
+		return idoField;
 	}
 
 	/**
