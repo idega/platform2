@@ -508,13 +508,25 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			dateInput.setDate(stampNow.getDate());
 		}
 		
-
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
 		table.add(dateInput, 1, row++);
 
+		if (isAlteration) {
+			TextInput textInput = (TextInput) getStyledInterface(new TextInput(this.PARAMETER_CHILDCARE_TIME));
+			textInput.setLength(2);
+			if (application != null)
+				textInput.setContent(String.valueOf(application.getCareTime()));
+			textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
+			textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
+	
+			table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
+			table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
+			table.add(textInput, 1, row++);
+		}
+		
 		SubmitButton changeDate = null;
 		if (isAlteration)
-			changeDate = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.alter_placement_date", "Change placement date"), PARAMETER_ACTION, String.valueOf(ACTION_ALTER_VALID_FROM_DATE)));
+			changeDate = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.alter_placing", "Change placing"), PARAMETER_ACTION, String.valueOf(ACTION_ALTER_VALID_FROM_DATE)));
 		else
 			changeDate = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.change_date", "Change date"), PARAMETER_ACTION, String.valueOf(ACTION_CHANGE_DATE)));
 		table.add(changeDate, 1, row);
@@ -612,6 +624,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			else {
 				dateInput.setDate(new IWTimestamp().getDate());
 				dateInput.setEarliestPossibleDate(stamp.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+			}
+		}
+		else {
+			if (archive.getTerminatedDate() != null) {
+				IWTimestamp terminated = new IWTimestamp(archive.getTerminatedDate());
+				dateInput.setLatestPossibleDate(terminated.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated."));
 			}
 		}
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
@@ -1248,9 +1266,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 
 	private void alterValidFromDate(IWContext iwc) throws RemoteException {
+		System.out.println("Altering valid from date + care time...");
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
+		int careTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
 		getBusiness().alterValidFromDate(_applicationID, validFrom.getDate(), iwc.getCurrentLocale(), iwc.getCurrentUser());
-
+		getBusiness().placeApplication(_applicationID, null, null, careTime, -1, iwc.getCurrentUser(), iwc.getCurrentLocale());
+		
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();
 	}

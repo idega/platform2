@@ -875,17 +875,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			application.setCareTime(childCareTime);
 			alterValidFromDate(application, application.getFromDate(), locale, user);
-			IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
-			/*try {
-				SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByUserAndSchool(application.getChildId(), application.getProviderId());
-				classMember.setSchoolClassId(groupID);
-				classMember.setRegisterDate(fromDate.getTimestamp());
-				classMember.store();
-			}
-			catch (FinderException e) {*/
+			if (groupID != -1) {
+				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
 				getSchoolBusiness().storeSchoolClassMember(application.getChildId(), groupID, fromDate.getTimestamp(), ((Integer)user.getPrimaryKey()).intValue());
-			//}
-			sendMessageToParents(application, subject, body);
+				sendMessageToParents(application, subject, body);
+			}
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
@@ -912,12 +906,22 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
 		List  buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, fromDate, false),getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 	
-			ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
-			int fileID = ((Integer)contractFile.getPrimaryKey()).intValue();
+		ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
+		int fileID = ((Integer)contractFile.getPrimaryKey()).intValue();
 
 		application.setContractFileId(fileID);
+		application.setFromDate(newDate);
 		changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
 		addContractToArchive(oldFileID, application, -1, fromDate.getDate());
+		
+		try {
+			SchoolClassMember member = getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(application.getChildId(), application.getProviderId());
+			member.setRegisterDate(fromDate.getTimestamp());
+			member.store();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void moveToGroup(int childID, int providerID , int schoolClassID) throws RemoteException {
@@ -936,7 +940,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public void removeFromProvider(int childID, int providerID, Timestamp date, boolean parentalLeave, String message) throws RemoteException {
 		try {
-			SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByUserAndSchool(childID, providerID);
+			SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(childID, providerID);
 			classMember.setRemovedDate(date);
 			classMember.setNeedsSpecialAttention(parentalLeave);
 			classMember.setNotes(message);

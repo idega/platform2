@@ -115,6 +115,9 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		Link childInfo;
 		IWTimestamp registered;
 		boolean showComment = false;
+		boolean showNotStartedComment = false;
+		boolean showRemovedComment = false;
+		boolean hasComments = false;
 		
 		IWTimestamp stamp = new IWTimestamp();
 		Collection students = null;
@@ -131,6 +134,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			address = getBusiness().getUserBusiness().getUsersMainAddress(child);
 			phone = getBusiness().getUserBusiness().getChildHomePhone(child);
 			registered = new IWTimestamp(student.getRegisterDate());
+			hasComments = true;
 
 			move = new Link(getEditIcon(localize("child_care.move_to_another_group", "Move child to another group")));
 			move.setWindowToOpen(ChildCareWindow.class);
@@ -144,9 +148,18 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			else
 				table.setRowColor(row, getZebraColor2());
 
+			if (student.getRemovedDate() != null) {
+				showComment = true;
+				showRemovedComment = true;
+				hasComments = true;
+				table.add(getSmallErrorText("+"), column, row);
+			}
+			
 			if (registered.isLaterThan(stamp)) {
 				showComment = true;
-				table.add(getSmallErrorText("*" + Text.NON_BREAKING_SPACE), column, row);
+				showNotStartedComment = true;
+				hasComments = true;
+				table.add(getSmallErrorText("*"), column, row);
 
 				delete = new Link(getDeleteIcon(localize("child_care.delete_from_childcare", "Remove child from child care and cancel contract.")));
 				delete.setWindowToOpen(ChildCareWindow.class);
@@ -162,6 +175,8 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 				delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
 			}
 
+			if (hasComments)
+				table.add(getSmallText(Text.NON_BREAKING_SPACE), column, row);
 			if (getResponsePage() != null) {
 				childInfo = getSmallLink(child.getNameLastFirst(true));
 				childInfo.setEventListener(ChildCareEventListener.class);
@@ -184,14 +199,24 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			table.setWidth(column, row, 12);
 			table.add(move, column++, row);
 			table.setWidth(column, row, 12);
-			table.add(delete, column++, row++);
+			if (student.getRemovedDate() == null)
+				table.add(delete, column++, row++);
+			else
+				row++;
 		}
 		
 		if (showComment) {
 			table.setHeight(2, row++);
-			table.mergeCells(1, row, table.getColumns(), row);
-			table.add(getSmallErrorText("*"), 1, row);
-			table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.not_yet_active_placing","Placing not yet active")), 1, row++);
+			if (showNotStartedComment) {
+				table.mergeCells(1, row, table.getColumns(), row);
+				table.add(getSmallErrorText("*"), 1, row);
+				table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.not_yet_active_placing","Placing not yet active")), 1, row++);
+			}
+			if (showRemovedComment) {
+				table.mergeCells(1, row, table.getColumns(), row);
+				table.add(getSmallErrorText("+"), 1, row);
+				table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.ended_placing","Placing has been ended")), 1, row++);
+			}
 		}
 
 		return table;

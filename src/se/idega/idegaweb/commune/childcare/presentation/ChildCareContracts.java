@@ -51,6 +51,9 @@ public class ChildCareContracts extends ChildCareBlock {
 			table.add(getLocalizedSmallHeader("child_care.care_time","Care time"), column++, row++);
 	
 			boolean showComment = false;
+			boolean showNotActiveComment = false;
+			boolean showRemovedComment = false;
+
 			Collection contracts = getBusiness().getAcceptedApplicationsByProvider(getSession().getChildCareID());
 			if (contracts != null) {
 				ChildCareApplication application;
@@ -63,6 +66,7 @@ public class ChildCareContracts extends ChildCareBlock {
 				Link archive;
 				boolean isCancelled;
 				boolean isNotYetActive;
+				boolean hasComment = false;
 				
 				Iterator iter = contracts.iterator();
 				while (iter.hasNext()) {
@@ -70,6 +74,7 @@ public class ChildCareContracts extends ChildCareBlock {
 					application = (ChildCareApplication) iter.next();
 					contract = getBusiness().getValidContract(((Integer)application.getPrimaryKey()).intValue());
 					child = application.getChild();
+					hasComment = true;
 
 					if (row % 2 == 0)
 						table.setRowColor(row, getZebraColor1());
@@ -109,9 +114,19 @@ public class ChildCareContracts extends ChildCareBlock {
 						
 						if (isNotYetActive) {
 							showComment = true;
-							table.add(getSmallErrorText("*" + Text.NON_BREAKING_SPACE), column, row);
+							hasComment = true;
+							showNotActiveComment = true;
+							table.add(getSmallErrorText("*"), column, row);
+						}
+						if (application.getRejectionDate() != null) {
+							showComment = true;
+							hasComment = true;
+							showRemovedComment = true;
+							table.add(getSmallErrorText("+"), column, row);
 						}
 						
+						if (hasComment)
+							table.add(getSmallErrorText(Text.NON_BREAKING_SPACE), column, row);
 						if (getResponsePage() != null) {
 							archive = getSmallLink(child.getNameLastFirst(true));
 							archive.setEventListener(ChildCareEventListener.class);
@@ -135,7 +150,7 @@ public class ChildCareContracts extends ChildCareBlock {
 						table.setWidth(column, row, 12);
 						table.add(viewContract, column++, row);
 		
-						if (allowAlter && application.getApplicationStatus() == getBusiness().getStatusReady()) {
+						if (allowAlter) {
 							table.setWidth(column, row, 12);
 							if (getBusiness().getNumberOfFutureContracts(((Integer)application.getPrimaryKey()).intValue()) < 2)
 								table.add(alterCareTime, column++, row);
@@ -155,9 +170,16 @@ public class ChildCareContracts extends ChildCareBlock {
 			}
 			if (showComment) {
 				table.setHeight(2, row++);
-				table.mergeCells(1, row, table.getColumns(), row);
-				table.add(getSmallErrorText("*"), 1, row);
-				table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.not_yet_active_placing","Placing not yet active")), 1, row++);
+				if (showNotActiveComment) {
+					table.mergeCells(1, row, table.getColumns(), row);
+					table.add(getSmallErrorText("*"), 1, row);
+					table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.not_yet_active_placing","Placing not yet active")), 1, row++);
+				}
+				if (showRemovedComment) {
+					table.mergeCells(1, row, table.getColumns(), row);
+					table.add(getSmallErrorText("+"), 1, row);
+					table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.contract_ended","Contract has termination date")), 1, row++);
+				}
 			}
 	
 			add(table);		
