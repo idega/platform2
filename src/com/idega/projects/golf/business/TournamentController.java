@@ -779,11 +779,15 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
                                             table.setColor(5,row,activeColor);
                                             table.setColor(6,row,activeColor);
                                             if ((!viewOnly) && (roundNumber == 1)) {
+                                                if (tee_number == 10) {
+                                                    socialNumber = new TextInput("social_security_number_for_group_"+groupCounter+"_");
+                                                }else {
                                                     socialNumber = new TextInput("social_security_number_for_group_"+groupCounter);
-                                                    socialNumber.setAttribute("style","font-size: 8pt");
-                                                    socialNumber.setLength(15);
-                                                    socialNumber.setMaxlength(10);
-                                                    table.add(socialNumber,2,row);
+                                                }
+                                                socialNumber.setAttribute("style","font-size: 8pt");
+                                                socialNumber.setLength(15);
+                                                socialNumber.setMaxlength(10);
+                                                table.add(socialNumber,2,row);
                                             }
                                             table.mergeCells(2,row,6,row);
 
