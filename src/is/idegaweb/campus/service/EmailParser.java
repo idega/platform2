@@ -1,5 +1,5 @@
 /*
- * $Id: EmailParser.java,v 1.2 2001/08/13 12:24:12 palli Exp $
+ * $Id: EmailParser.java,v 1.3 2001/08/13 14:28:44 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -24,28 +24,31 @@ public class EmailParser {
     createTags();
   }
 
-  public String parseAllocatedEmail(String text, int applicantId) {
+  public String parseAllocatedEmail(String text, int applicantId) throws NoSuchTagException {
     return(text);
   }
 
-  public String parseApplicationSentEmail(String text, int applicantId) {
+  public String parseApplicationSentEmail(String text, int applicantId) throws NoSuchTagException {
     return(text);
   }
 
-  public String parseInvalidEmail(String text, int applicantId) {
+  public String parseInvalidEmail(String text, int applicantId) throws NoSuchTagException {
     return(text);
   }
 
-  public String parseApplicationAcceptedtEmail(String text, int applicantId) {
+  public String parseApplicationAcceptedtEmail(String text, int applicantId) throws NoSuchTagException {
     return(text);
   }
 
-  public String parseLostPasswordEmail(String text, int applicantId) {
+  public String parseLostPasswordEmail(String text, int applicantId) throws NoSuchTagException {
     return(text);
   }
 
   public Enumeration getTags() {
     return(tags_.keys());
+  }
+
+  public void setTag(String key, String value) throws NoSuchTagException {
   }
 
   private void createTags() {
