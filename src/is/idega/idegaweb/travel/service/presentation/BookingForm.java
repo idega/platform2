@@ -82,6 +82,8 @@ public abstract class BookingForm extends TravelManager{
   public static String parameterCCYear   = "CCYear";
   public static String parameterPickupId = "bookingPicId";
   public static String parameterPickupInf= "bookingPicInf";
+  public static String parameterPriceCategoryKey = "pcatkey";
+  public static  String parameterCountToCheck = "bf_c2chk";
 
   public static String sAction = "bookingFormAction";
   public static String parameterSaveBooking = "bookingFormSaveBooking";
@@ -1440,6 +1442,13 @@ public abstract class BookingForm extends TravelManager{
 
     int iMany = 0;
 
+		String key = iwc.getParameter(parameterPriceCategoryKey);
+		String count2Chk = iwc.getParameter(parameterCountToCheck);
+		if (count2Chk != null) {
+			try {
+				iMany = Integer.parseInt(count2Chk);
+			}catch (Exception e){}
+		}
     String sAddressId = iwc.getParameter(this.parameterDepartureAddressId);
     int iAddressId = -1;
     int timeframeId = -1;
@@ -1474,18 +1483,19 @@ public abstract class BookingForm extends TravelManager{
       onlineOnly = false;
     }
 
-
-		ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, onlineOnly);
-//    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), timeframeId, iAddressId, onlineOnly);
-    int current = 0;
-    for (int i = 0; i < pPrices.length; i++) {
-      try {
-        current = Integer.parseInt(iwc.getParameter("priceCategory"+pPrices[i].getID()));
-      }catch (NumberFormatException n) {
-        current = 0;
-      }
-      iMany += current;
-    }
+		if (iMany == 0) {
+			ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1, -1, onlineOnly, key);
+	//    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), timeframeId, iAddressId, onlineOnly);
+	    int current = 0;
+	    for (int i = 0; i < pPrices.length; i++) {
+	      try {
+	        current = Integer.parseInt(iwc.getParameter("priceCategory"+pPrices[i].getID()));
+	      }catch (NumberFormatException n) {
+	        current = 0;
+	      }
+	      iMany += current;
+	    }
+		}
 
 		if (!bookIfTooFew && iMany < 1) {
 			return errorTooFew;
@@ -1533,20 +1543,22 @@ public abstract class BookingForm extends TravelManager{
 			e.printStackTrace(System.err);
 		}
 
-    if (supplier != null) {
-	    ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-	    ServiceDay sDay = sDayHome.create();
-	
-	    sDay = sDay.getServiceDay(serviceId, fromStamp.getDayOfWeek());
-	    if (sDay != null) {
-	      totalSeats = sDay.getMax();
-	    }
-    }else if (_reseller != null) {
+     if (_reseller != null) {
 			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
 			if (cont != null) {
 				totalSeats = cont.getAlotment();
 			}	
-    }
+    } else {
+			ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+			ServiceDay sDay = sDayHome.create();
+			
+			sDay = sDay.getServiceDay(serviceId, fromStamp.getDayOfWeek());
+			if (sDay != null) {
+			  totalSeats = sDay.getMax();
+			}
+		}
+
+
 
     iMany -= previousBookings;
 
@@ -1607,6 +1619,8 @@ public abstract class BookingForm extends TravelManager{
       String pickupInfo = iwc.getParameter(parameterPickupInf);
       String sPaymentType = iwc.getParameter("payment_type");
       String comment = iwc.getParameter(PARAMETER_COMMENT);
+      
+      String key = iwc.getParameter(parameterPriceCategoryKey);
 
 			if (phone == null) {
 				phone = "";
@@ -1670,7 +1684,7 @@ public abstract class BookingForm extends TravelManager{
 //      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
       ProductPrice[] prices = {};
       ProductPrice[] misc = {};
-			prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1,iAddressId, onlineOnly);
+			prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), -1,iAddressId, onlineOnly, key);
 			misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), -1, iAddressId, onlineOnly);
 /*      int timeframeId = -1;
       Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, iAddressId);
@@ -2834,6 +2848,10 @@ public abstract class BookingForm extends TravelManager{
 	  }
 		
 		return false;
+	}
+	
+	public String getPriceCategorySearchKey() {
+		return null;
 	}
 		
 }
