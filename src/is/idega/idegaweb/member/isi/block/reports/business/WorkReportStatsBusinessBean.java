@@ -117,6 +117,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String LOCALIZED_MEMBERS = "WorkReportStatsBusiness.members";
 	private static final String LOCALIZED_PLAYERS = "WorkReportStatsBusiness.players";
 	private static final String LOCALIZED_YEAR = "WorkReportStatsBusiness.year";
+	private static final String LOCALIZED_NO_REGIONAL_UNION_NAME = "WorkReportStatsBusiness.no_reg_un_name";
 	
 	
 	// names of reportable fields
@@ -3147,7 +3148,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			WorkReport report = (WorkReport) iter.next();
 			String cName = report.getGroupName();
 			System.out.print("Processing club " + cName);
-			
+
 			boolean showClub = showClubType(report, type) && showClubStatus(report, status);
 			if(!showClub) {
 				System.out.println(" (skipped)");
@@ -5089,11 +5090,9 @@ private String getRegionalUnionIdentifier(WorkReport report) {
 	StringBuffer ruBuf = new StringBuffer();
 	ruBuf.append( (report.getRegionalUnionNumber()!=null)? report.getRegionalUnionNumber()+" " : "" )
 	.append( (report.getRegionalUnionAbbreviation()!=null)? report.getRegionalUnionAbbreviation() : "");
-	//.append("  ")
-	//.append( (report.getRegionalUnionName()!=null)? report.getRegionalUnionName() : "");
 	String regText = ruBuf.toString();
 	if("".equals(regText)){
-		regText = (report.getRegionalUnionName()!=null)? report.getRegionalUnionName() : "No Reg.Un.name!";
+		regText = (report.getRegionalUnionName()!=null)? report.getRegionalUnionName() : _iwrb.getLocalizedString(LOCALIZED_NO_REGIONAL_UNION_NAME, "No Reg.Un. name");
 	}
 	return regText;
 }
