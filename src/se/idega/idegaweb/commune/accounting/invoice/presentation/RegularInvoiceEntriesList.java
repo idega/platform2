@@ -693,7 +693,7 @@ private UserSearcher _userSearcher = null;
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
-		addFloatField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, ""+ entry.getAmount(), 1, row++);
+		addFloatField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, "" + entry.getAmount(), 1, row++);
 		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+entry.getVAT(), 1, row++);
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
@@ -921,7 +921,7 @@ private UserSearcher _userSearcher = null;
 	 */
 	private Table addFloatField(Table table, String parameter, String key, String value, int col, int row){
 		TextInput input = getTextInput(parameter, value);
-		input.setAsFloat(localize(LOCALIZER_PREFIX + "float_format_error", "Format-error: Expecting float:" )+ " " + localize(key, "") ); 
+		input.setAsFloat(localize(LOCALIZER_PREFIX + "float_format_error", "Format-error: Expecting float:" )+ " " + localize(key, ""), 2);
 		return addWidget(table, key, input, col, row);
 	}
 		
