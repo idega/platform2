@@ -16,7 +16,7 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class ReportGeneratorGenderDropDownMenu extends DropdownMenu implements InputHandler {
+public class ReportGeneratorGenderDropDownMenu extends SelectionBox implements InputHandler {
 
 	private static final String MALE = "1"; //same as in workreportmember
 	private static final String FEMALE = "2"; //same as in workreportmember
@@ -73,6 +73,8 @@ public class ReportGeneratorGenderDropDownMenu extends DropdownMenu implements I
 				
 				genders.add(stamp.toString());
 			}
+		} else {
+			values = ALL;
 		}
 		return genders;
 	}
