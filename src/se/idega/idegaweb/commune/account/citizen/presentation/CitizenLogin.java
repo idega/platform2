@@ -84,7 +84,7 @@ public class CitizenLogin extends Login {
 		
 		int numberOfMessages = 0;
 		try {
-			getMessageBusiness(iwc).getNumberOfNewMessages(iwc.getCurrentUser());
+			numberOfMessages = getMessageBusiness(iwc).getNumberOfNewMessages(iwc.getCurrentUser());
 		}
 		catch (IDOException ie) {
 			numberOfMessages = 0;
@@ -92,7 +92,7 @@ public class CitizenLogin extends Login {
 		String message = "";
 		if (numberOfMessages > 0) {
 			Object[] arguments = { String.valueOf(numberOfMessages) };
-			message = MessageFormat.format(getResourceBundle().getLocalizedString("number_of_messages", "You have {0}�new messages"), arguments);
+			message = MessageFormat.format(getResourceBundle().getLocalizedString("number_of_messages", "You have {0} new message(s)"), arguments);
 		}
 		else {
 			message = getResourceBundle().getLocalizedString("no_new_messages", "You have no new messages");
