@@ -1825,7 +1825,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}
 	}
-
+//Malin
+	public Collection getAcceptedApplicationsByProvider(int providerID, Date date, boolean showNotYetActive, int schoolClassID, int sort) {
+		try {
+			String[] caseStatus = { getCaseStatusReady().getStatus(), getCaseStatusCancelled().getStatus()};
+			if (sort == -1)
+				date = null;
+			return getChildCareApplicationHome().findApplicationsByProviderAndStatus(providerID, caseStatus, date, showNotYetActive, schoolClassID, sort);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public Collection getAcceptedApplicationsByProvider(int providerID) {
 		try {
 			String[] caseStatus = { getCaseStatusReady().getStatus(), getCaseStatusCancelled().getStatus()};

@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.8 2004/12/16 12:54:42 laddi Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.9 2004/12/28 14:44:00 malin Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,8 @@ import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassBMPBean;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
@@ -37,6 +39,11 @@ import com.idega.user.data.User;
 public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements ChildCareApplication, Case {
 	public final static String ENTITY_NAME = "comm_childcare";
 	private final static String CASE_CODE_KEY_DESC = "Application for child care";
+	
+	public final static String MEMBER = "ic_user_id";
+	public final static String CLASSMEMBER = "SCH_CLASS_MEMBER_ID";
+	public final static String SCHOOLCLASS = "sch_school_class_id";
+	public final static String REGISTER_DATE = "register_date";
 	
 	public final static String PROVIDER_ID = "provider_id";
 	public final static String FROM_DATE = "from_date";
@@ -567,10 +574,16 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	
 	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String[] caseStatus) throws FinderException {
 		return ejbFindApplicationsByProviderAndStatus(providerID, caseStatus, -1, -1);
-	}	
-	
+	}
+	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String[] caseStatus, Date date, boolean showNotYetActive, int schoolClassID, int sort) throws FinderException {
+		return ejbFindApplicationsByProviderAndStatus(providerID, caseStatus, -1, -1, date, showNotYetActive, schoolClassID, sort);
+	}
 	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String[] caseStatus, String caseCode) throws FinderException {
 		return ejbFindApplicationsByProviderAndStatus(providerID, caseStatus, caseCode, -1, -1);
+	}	
+	
+	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String[] caseStatus, String caseCode, Date date, boolean showNotYetActive, int schoolClassID, int sort) throws FinderException {
+		return ejbFindApplicationsByProviderAndStatus(providerID, caseStatus, caseCode, -1, -1, date, showNotYetActive, schoolClassID, sort);
 	}	
 	
 	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String caseStatus, int numberOfEntries, int startingEntry) throws FinderException {
@@ -582,6 +595,9 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return ejbFindApplicationsByProviderAndStatus(providerID, caseStatus, null, numberOfEntries, startingEntry);
 	}	
 	
+	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String[] caseStatus, int numberOfEntries, int startingEntry, Date date, boolean showNotYetActive, int schoolClassID, int sort) throws FinderException {
+		return ejbFindApplicationsByProviderAndStatus(providerID, caseStatus, null, numberOfEntries, startingEntry, date, showNotYetActive, schoolClassID, sort);
+	}
 	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String[] caseStatus, String caseCode, int numberOfEntries, int startingEntry) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p, ic_user u");
@@ -598,6 +614,44 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		else
 			return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}
+
+	//malin nedan
+	public Collection ejbFindApplicationsByProviderAndStatus(int providerID, String[] caseStatus, String caseCode, int numberOfEntries, int startingEntry, Date date, boolean showNotYetActive, int schoolClassID, int sort) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p, ic_user u, comm_childcare_archive ca, sch_class_member mb, " + SchoolClassBMPBean.SCHOOLCLASS + " cl");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+CHILD_ID, "u.ic_user_id");
+		sql.appendAndEquals("c."+PROVIDER_ID, providerID);
+		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
+		sql.appendAndEquals("c."+getIDColumnName(), "ca.application_id");
+		sql.appendAnd().append(" cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(providerID);
+		//sql.appendAndEquals("u.ic_user_id", "mb." + MEMBER).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendAndEquals("ca." + CLASSMEMBER, "mb." + CLASSMEMBER).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		
+		if (sort != -1 && date != null){
+			if (showNotYetActive) {
+				//sql.appendAnd().append("mb." + REGISTER_DATE).appendGreaterThanSign().append(date);
+				sql.appendAnd().append("ca.VALID_FROM_DATE").appendGreaterThanSign().append(date);
+			}
+			else {
+				//sql.appendAnd().append("mb." + REGISTER_DATE).appendLessThanOrEqualsSign().append(date);
+				sql.appendAnd().append("ca.VALID_FROM_DATE").appendLessThanOrEqualsSign().append(date);
+			}
+		}		
+		
+		if (schoolClassID != -1)
+			sql.appendAndEquals("mb." + SCHOOLCLASS, schoolClassID);
+		
+		if (caseCode != null)
+			sql.appendAnd().appendEqualsQuoted("p.case_code",caseCode);
+		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
+
+		if (numberOfEntries == -1)
+			return idoFindPKsBySQL(sql.toString());
+		else
+			return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
+	}
+	
 	
 	public Collection ejbFindApplicationsByProviderAndStatus(Integer providerID, String[] applicationStatus, Date fromDateOfBirth, Date toDateOfBirth, Date fromDate, Date toDate) throws FinderException {
 		IDOQuery sql = idoQuery();
