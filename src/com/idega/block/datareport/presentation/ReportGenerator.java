@@ -569,12 +569,12 @@ public class ReportGenerator extends Block {
 		_fieldTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
 		
 		//generateButton.setOnClick("this.form.submit()");
-		_busy.addDisabledObject(generateButton);
-		_busy.addBusyObject(generateButton);
-	 	_busy.setBusyBarUrl(coreBundle.getImage("loading.gif").getURL());
-		_fieldTable.add(_busy,1,++row);
-		_fieldTable.mergeCells(1,row,2,row);
-		_fieldTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
+		//_busy.addDisabledObject(generateButton);
+		//_busy.addBusyObject(generateButton);
+	 	//_busy.setBusyBarUrl(coreBundle.getImage("loading.gif").getURL());
+		//_fieldTable.add(_busy,1,++row);
+		//_fieldTable.mergeCells(1,row,2,row);
+		//_fieldTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
 
 		
 	}
