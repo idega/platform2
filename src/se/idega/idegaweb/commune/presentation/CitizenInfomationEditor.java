@@ -42,8 +42,8 @@ public class CitizenInfomationEditor extends CommuneBlock {
 	private User user;
 
 	public void main(IWContext iwc) throws RemoteException {
-		user = iwc.getCurrentUser();		
-		if (user != null) {
+		if (iwc.isLoggedOn()) {
+			user = iwc.getCurrentUser();
 			
 			String action = iwc.getParameter(ACTION_PARAMETER);
 			if (action == null) {

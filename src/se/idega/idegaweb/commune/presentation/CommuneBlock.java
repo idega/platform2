@@ -586,9 +586,10 @@ public class CommuneBlock extends com.idega.presentation.Block {
 			if (isAdministrator(iwc))
 				return true;
 				
-			User user = iwc.getCurrentUser();
-			if (user != null)
+			if (iwc.isLoggedOn()){
+				User user = iwc.getCurrentUser();
 				return getUserBusiness(iwc).isRootCommuneAdministrator(user);
+			}
 			return false;
 		}
 		catch (Exception re) {

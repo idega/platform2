@@ -99,8 +99,8 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @return int
 	 */
 	public int getChildCareID() throws RemoteException {
-		User user = getUserContext().getCurrentUser();
-		if (user != null) {
+		if (getUserContext().isLoggedOn()) {
+			User user = getUserContext().getCurrentUser();
 			int userID = ((Integer)user.getPrimaryKey()).intValue();
 			
 			if (_userID == userID) {

@@ -122,8 +122,8 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
 		//The user logged in is set as the main coach for the ledger
-		User user =iwc.getCurrentUser();
-		if(user != null) {
+		if(iwc.isLoggedOn()) {
+			User user =iwc.getCurrentUser();
 			coachNameField = new Text(user.getName());
 		}
 		//TODO: make more than only the one other coaches

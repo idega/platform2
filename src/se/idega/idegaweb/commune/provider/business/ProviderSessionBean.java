@@ -37,8 +37,8 @@ public class ProviderSessionBean extends IBOSessionBean implements ProviderSessi
 	 * @return int
 	 */
 	public int getProviderID() {
-		User user = getUserContext().getCurrentUser();
-		if (user != null) {
+		if (getUserContext().isLoggedOn()) {
+			User user = getUserContext().getCurrentUser();
 			int userID = ((Integer)user.getPrimaryKey()).intValue();
 			
 			if (_userID == userID) {
