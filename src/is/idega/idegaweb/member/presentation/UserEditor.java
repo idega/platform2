@@ -28,6 +28,7 @@ import com.idega.core.contact.data.PhoneTypeBMPBean;
 import com.idega.core.contact.data.PhoneTypeHome;
 import com.idega.core.location.business.CommuneBusiness;
 import com.idega.core.location.data.Address;
+import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.Country;
 import com.idega.core.location.data.CountryHome;
 import com.idega.core.location.data.PostalCode;
@@ -732,6 +733,19 @@ public class UserEditor extends Block {
 		addressTable.add(tCommune, 1, row++);
 		addressTable.add(tCountry, 1, row++);
 		Country defaultCountry = null;
+		Commune defaultCommune = null;
+		Commune primaryCommune = null;
+		Commune coCommune = null;
+		try {
+			defaultCommune = getCommuneBusiness(iwc).getCommuneHome().findDefaultCommune();
+		} catch (IDOLookupException e3) {
+			e3.printStackTrace();
+		} catch (RemoteException e3) {
+			e3.printStackTrace();
+		} catch (FinderException e3) {
+			System.out.println("[UserEditor] Default Commune not found");
+			//e3.printStackTrace();
+		}			
 		try {
 			defaultCountry =
 				getCountryHome().findByIsoAbbreviation(iwc.getApplicationSettings().getDefaultLocale().getCountry());
@@ -743,7 +757,8 @@ public class UserEditor extends Block {
 			e1.printStackTrace();
 		}
 		catch (FinderException e1) {
-			e1.printStackTrace();
+			System.out.println("[UserEditor] Default Country not found");
+			//e1.printStackTrace();
 		}
 		TextInput primaryStreetAddressInput = new TextInput(prm_mainaddress_street);
 		primaryStreetAddressInput.setStyleClass(interfaceStyleName);
@@ -785,7 +800,11 @@ public class UserEditor extends Block {
 			//primaryPostalAddressInput.setCountry(defaultCountry);
 			//coPostalAddressInput.setCountry(defaultCountry);
 		}
-		//addressTable.add(tPrimary, 2, 2);
+
+		if (defaultCommune != null && user == null) {
+				primaryCommunes.setSelectedElement((defaultCommune).getPrimaryKey().toString());
+				coCommunes.setSelectedElement((defaultCommune).getPrimaryKey().toString());
+		}		//addressTable.add(tPrimary, 2, 2);
 		row = startRow;
 		addressTable.add(primaryStreetAddressInput, 2, row++);
 		addressTable.add(primaryPostalCodeInput, 2, row++);
@@ -820,6 +839,7 @@ public class UserEditor extends Block {
 						primaryCountryInput.setSelectedCountry(country);
 						addressTable.add(getOldParameter(prm_mainaddress_country, country.getPrimaryKey().toString()));
 					}
+					
 					/*else if(defaultCountry != null){
 						//primaryCountryInput.setSelectedElement(defaultCountry.getPrimaryKey().toString());
 						primaryCountryInput.setSelectedCountry(defaultCountry);
@@ -828,6 +848,11 @@ public class UserEditor extends Block {
 				if (primaryAddress.getCommuneID() > 0) {
 					addressTable.add(getOldParameter(prm_maincommune_id, Integer.toString(primaryAddress.getCommuneID())));
 					primaryCommunes.setSelectedElement(primaryAddress.getCommuneID());
+				} else {
+					primaryCommune = getCommune(iwc, user);
+					if (primaryCommune != null) {
+						primaryCommunes.setSelectedElement(primaryCommune.getPrimaryKey().toString());
+					}
 				}
 
 			}
@@ -859,7 +884,12 @@ public class UserEditor extends Block {
 					if (coAddress.getCommuneID() > 0) {
 						addressTable.add(getOldParameter(prm_cocommune_id, Integer.toString(coAddress.getCommuneID())));
 						coCommunes.setSelectedElement(coAddress.getCommuneID());
-					}
+					} else {
+						coCommune = getCommune(iwc, user);
+						if (coCommune != null) {
+							coCommunes.setSelectedElement(coCommune.getPrimaryKey().toString());
+						}
+					} 
 				}
 			}
 			catch (Exception e2) {
@@ -909,6 +939,11 @@ public class UserEditor extends Block {
 		if (iwc.isParameterSet(PRM_SAVE))
 			saveUser(iwc);
 	}
+	
+	protected Commune getCommune(IWContext iwc, User user) {
+		return null;
+	}
+	
 	public User createUser(
 		IWContext iwc,
 		String personalID,

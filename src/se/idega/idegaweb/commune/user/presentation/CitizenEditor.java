@@ -21,12 +21,18 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookup;
+import com.idega.core.location.business.CommuneBusiness;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 /**
@@ -38,6 +44,8 @@ public class CitizenEditor extends UserEditor {
 	/**
 	 * 
 	 */
+	private String PRM_COMMUNE_ID = "p_cm_id";
+	
 	public CitizenEditor() {
 		super();
 		setShowMiddleNameInSearch(false);
@@ -348,13 +356,17 @@ public class CitizenEditor extends UserEditor {
 	/* (non-Javadoc)
 	 * @see is.idega.idegaweb.member.presentation.UserEditor#presentateUserGroup(com.idega.presentation.IWContext)
 	 */
+	
 	protected void presentateUserGroup(IWContext iwc) {
+	}
+	/*
 		// TODO Auto-generated method stub
 		Table groupTable = new Table(2, 3);
-		Text tGroup = new Text(iwrb.getLocalizedString("mbe.citizen_in_commune", "Citizen in commune"));
+		Text tGroup = new Text(iwrb.getLocalizedString("mbe.commune", "Commune"));
 		tGroup.setStyleClass(headerFontStyleName);
 		groupTable.mergeCells(1, 1, 2, 1);
 		groupTable.add(tGroup, 1, 1);
+
 		Group communeGroup = null;
 		try {
 			CommuneUserBusiness communeUserService = getCommuneUserService(iwc);
@@ -364,9 +376,27 @@ public class CitizenEditor extends UserEditor {
 			e.printStackTrace();
 		}
 		Integer ID = communeGroup != null ? (Integer) communeGroup.getPrimaryKey() : new Integer(-1);
+		DropdownMenu communes = new DropdownMenu(PRM_COMMUNE_ID);
+		try {
+			SelectorUtility selUtil = new SelectorUtility();
+			selUtil.getSelectorFromIDOEntities(communes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
+			CommuneHome commHome = (CommuneHome) IDOLookup.getHome(Commune.class);
+//			if (user)
+//			Commune defaultComm = commHome.findDefaultCommune();
+//			if (defailtComm != null) {
+				
+//			}
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		RadioButton rbYes = new RadioButton(prm_primary_group_id, ID.toString());
 		RadioButton rbNo = new RadioButton(prm_primary_group_id, "-1");
 		if (user != null) {
+			if (user.hasRelationTo(communeGroup)) {
+				//communes.setSelectedElement()
+			}
 			if (user.getPrimaryGroupID() == ID.intValue() || user.hasRelationTo(communeGroup))
 				rbYes.setSelected(true);
 			else
@@ -375,16 +405,18 @@ public class CitizenEditor extends UserEditor {
 		else {
 			rbYes.setSelected(true);
 		}
-		groupTable.add(rbYes, 1, 2);
-		Text tYes = new Text(iwrb.getLocalizedString("mbe.citizen_in_commune_yes", "Yes"));
-		tYes.setStyleClass(textFontStyleName);
-		groupTable.add(tYes, 2, 2);
-		groupTable.add(rbNo, 1, 3);
-		Text tNo = new Text(iwrb.getLocalizedString("mbe.citizen_in_commune_no", "No"));
-		tNo.setStyleClass(textFontStyleName);
-		groupTable.add(tNo, 2, 3);
+		groupTable.add(communes, 1, 2);
+		//groupTable.add(rbYes, 1, 2);
+		//Text tYes = new Text(iwrb.getLocalizedString("mbe.citizen_in_commune_yes", "Yes"));
+		//tYes.setStyleClass(textFontStyleName);
+		//groupTable.add(tYes, 2, 2);
+		//groupTable.add(rbNo, 1, 3);
+		//Text tNo = new Text(iwrb.getLocalizedString("mbe.citizen_in_commune_no", "No"));
+		//tNo.setStyleClass(textFontStyleName);
+		//groupTable.add(tNo, 2, 3);
 		addToMainPart(groupTable);
 	}
+	*/
 	/* (non-Javadoc)
 	 * @see is.idega.idegaweb.member.presentation.UserEditor#isAllowPersonalIdEdit(com.idega.user.data.User)
 	 */
@@ -401,4 +433,34 @@ public class CitizenEditor extends UserEditor {
 	protected boolean isValidPersonalID(String string) {
 		return PIDChecker.getInstance().isValid(string);
 	}
+
+	protected CommuneBusiness getCommuneBusiness(IWContext iwc) {
+		try {
+			return (CommuneBusiness) IBOLookup.getServiceInstance(iwc, CommuneBusiness.class);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserEditor#getCommune(com.idega.user.data.User)
+	 */
+	protected Commune getCommune(IWContext iwc, User user) {
+		try {
+			if (user != null) {
+				CommuneUserBusiness communeUserService = getCommuneUserService(iwc);
+				Group communeGroup = communeUserService.getRootCitizenGroup();
+				Integer ID = communeGroup != null ? (Integer) communeGroup.getPrimaryKey() : new Integer(-1);
+				if ( user.getPrimaryGroupID() == ID.intValue() || user.hasRelationTo(communeGroup) ) {
+					return getCommuneBusiness(iwc).getCommuneHome().findDefaultCommune();
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		return null;
+	}
+
 }
