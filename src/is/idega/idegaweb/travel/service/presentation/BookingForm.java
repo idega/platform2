@@ -2819,10 +2819,14 @@ public abstract class BookingForm extends TravelManager{
 	  } else {//if (supplier != null) {
 		  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 		  ServiceDay sDay;// = sDayHome.create();
-		  sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
-		  
-		  if (sDay != null) {
-		  	max = sDay.getMax();
+		  try {
+			  sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
+			  
+			  if (sDay != null) {
+			  	max = sDay.getMax();
+			  }
+		  } catch (Exception e) {
+		  	logDebug("ServiceDay not found for product : "+product.getID());
 		  }
 	  }
 
@@ -2838,8 +2842,12 @@ public abstract class BookingForm extends TravelManager{
 
 	public boolean isUnderBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
 	  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-	  ServiceDay sDay;// = sDayHome.create();
-	  sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
+	  ServiceDay sDay = null;// = sDayHome.create();
+	  try {
+	  	sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
+	  } catch (Exception e) {
+	  	logDebug("ServiceDay not found for product : "+product.getID());
+	  }
 	  
 	  if (sDay != null) {
 	  	int min = sDay.getMin();
