@@ -11,6 +11,7 @@ import is.idega.idegaweb.golf.tournament.business.TournamentBusiness;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -18,6 +19,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 
@@ -33,8 +35,6 @@ public class TournamentRegistrationMobile extends Block {
 	public static final String SEARCH_INTERVAL_WEEK = "w";
 	public static final String SEARCH_INTERVAL_MONTH = "m";
 	
-	public static final String PARAM_NAME_TOURNAMENT = "tr";
-	
 	public static final String LOCALIZATION_KEY_SEARCH_TEXT = "mobile_search_text";
 	public static final String LOCALIZATION_KEY_WEEK = "mobile_oneweek";
 	public static final String LOCALIZATION_KEY_MONTH = "mobile_onemonth";
@@ -42,6 +42,8 @@ public class TournamentRegistrationMobile extends Block {
 	public static final String LOCALIZATION_KEY_TOURNAMENT_SELECTION_TEXT = "mobile_selection_text";
 	
 	private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
+	
+	private ICPage _pageToSubmitTo = null;
 	
 	private IWResourceBundle _iwrb;
 	private TournamentBusiness _biz = null;
@@ -75,7 +77,7 @@ public class TournamentRegistrationMobile extends Block {
 			end.setHour(23);
 			Tournament[] tournaments = getTournamentBusiness(iwc).getTournaments(begin, end);
 			System.out.println("Got " + tournaments.length + " tournaments from " + begin + " to " + end);
-			DropdownMenu menu = new DropdownMenu(PARAM_NAME_TOURNAMENT);
+			DropdownMenu menu = new DropdownMenu(RegistrationForMembers.PRM_TOURNAMENT_ID);
 			for(int i=0; i<tournaments.length; i++) {
 				Tournament t = tournaments[i];
 				String displayStr = t.getStartTime() + " - " + t.getName() + " - " + t.getField().getName();
@@ -83,11 +85,19 @@ public class TournamentRegistrationMobile extends Block {
 			}
 			form.add(selectionLabel);
 			form.add(menu);
+			
+			HiddenInput actionInput = new HiddenInput(RegistrationForMembers.PRM_ACTION, RegistrationForMembers.VAL_ACTION_OPEN);
+			form.add(actionInput);
+			form.setPageToSubmitTo(_pageToSubmitTo);
 		 	return form;
 		} catch(Exception e) {
 			e.printStackTrace();
 			return new Text();
 		}
+	}
+	
+	public void setPageToSubmitTo(ICPage page) {
+		_pageToSubmitTo = page;
 	}
 	
 	private PresentationObject getTimeIntervalForm(IWContext iwc) {

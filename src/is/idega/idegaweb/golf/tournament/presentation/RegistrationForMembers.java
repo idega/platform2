@@ -41,6 +41,7 @@ public class RegistrationForMembers extends GolfBlock {
 
 	public static final String PRM_TOURNAMENT_ID = "tournament_id";
 	public static final String PRM_ACTION = "action";
+	public static final String VAL_ACTION_OPEN = "open";
 
   CloseButton closeButton = new CloseButton();
 
