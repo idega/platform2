@@ -99,8 +99,11 @@ public static final int PAGE = 3;
         else if ( fileID != -1 ) {
           if ( update ) {
             try {
-              link.setColumnAsNull(DocLink.getColumnNamePageID());
-              link.setColumnAsNull(DocLink.getColumnNameURL());
+              //link.setColumnAsNull(DocLink.getColumnNamePageID());
+              //link.setColumnAsNull(DocLink.getColumnNameURL());
+              link.removeFromColumn(DocLink.getColumnNamePageID());
+              link.removeFromColumn(DocLink.getColumnNameURL());
+              link.update();
             }
             catch (SQLException e) {
               e.printStackTrace(System.err);
@@ -110,8 +113,11 @@ public static final int PAGE = 3;
         else if ( pageID != -1 ) {
           if ( update ) {
             try {
-              link.setColumnAsNull(DocLink.getColumnNameFileID());
-              link.setColumnAsNull(DocLink.getColumnNameURL());
+              //link.setColumnAsNull(DocLink.getColumnNameFileID());
+              //link.setColumnAsNull(DocLink.getColumnNameURL());
+              link.removeFromColumn(DocLink.getColumnNameFileID());
+              link.removeFromColumn(DocLink.getColumnNameURL());
+              link.update();
             }
             catch (SQLException e) {
               e.printStackTrace(System.err);
