@@ -123,7 +123,7 @@ public class ClubSelector extends Block {
 		
 		//add breadcrumbs
 		addStepsTable(iwc);
-		addBreak();
+		addBreakLine();
 		
 		
 		
@@ -170,6 +170,12 @@ public class ClubSelector extends Block {
 		
 		
 	}
+    
+    // this method ruins the layout of all editors, therefore this method is overwritten by the editors
+    protected void addBreakLine() {
+      addBreak();      
+    }  
+  
 	
 	protected void addStepsTable(IWContext iwc){
 		if(steps!=null && !steps.isEmpty()){
@@ -276,7 +282,7 @@ public class ClubSelector extends Block {
 	}
 		
 	public String getBundleIdentifier(){
-		return this.IW_BUNDLE_IDENTIFIER;
+		return IW_BUNDLE_IDENTIFIER;
 	}
 	
 	protected void setStepNameLocalizableKey(String stepInWizardNameLocalizedKey){
