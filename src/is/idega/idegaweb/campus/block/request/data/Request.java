@@ -1,5 +1,5 @@
 /*
- * $Id: Request.java,v 1.1 2001/12/29 14:03:15 palli Exp $
+ * $Id: Request.java,v 1.2 2002/01/08 12:45:29 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,7 +10,7 @@
 package is.idega.idegaweb.campus.block.request.data;
 
 import com.idega.data.GenericEntity;
-import com.idega.core.ICUser;
+import com.idega.core.user.data.User;
 import is.idega.idegaweb.campus.block.request.data.RequestType;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -39,7 +39,7 @@ public class Request extends GenericEntity {
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addAttribute(getColumnRequestTypeId(),"Request type id",true,true,Integer.class,GenericEntity.MANY_TO_ONE,RequestType.class);
-    addAttribute(getColumnUserId(),"User id",true,true,Integer.class,GenericEntity.MANY_TO_ONE,ICUser.class);
+    addAttribute(getColumnUserId(),"User id",true,true,Integer.class,GenericEntity.MANY_TO_ONE,User.class);
     addAttribute(getColumnDescription(),"Description",true,true,String.class);
     addAttribute(getColumnDateSent(),"Date sent",true,true,Timestamp.class);
     addAttribute(getColumnDateProcessed(),"Date processed",true,true,Timestamp.class);
