@@ -431,16 +431,20 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_BOARD_MEMBER_POSTAL_CODE);
 		
 				
+					WorkReportMember member;
+					
 					try {
 						//the user must already exist in the database
 						User user = this.getUser(ssn);
 						try {
 							//TODO EIKI find board member
-							membHome.findWorkReportMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
+							member = membHome.findWorkReportMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
+							member.setAsBoardMember(true);
+							member.store();
 						}
 						catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
-							WorkReportMember member = createWorkReportMember(workReportId,ssn,true);//sets basic data
+							member = createWorkReportMember(workReportId,ssn,true);//sets basic data
 							member.setAsBoardMember( true);
 							
 							if(streetName!=null && !"".equals(streetName)){	
