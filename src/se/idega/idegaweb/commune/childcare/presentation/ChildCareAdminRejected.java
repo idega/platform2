@@ -3,19 +3,26 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.business.NoCustodianFound;
+
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
+import com.idega.core.contact.data.Email;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWCalendar;
 import com.idega.util.PersonalIDFormatter;
@@ -117,12 +124,14 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 			SubmitButton activateApplication;
 			int numberOfChildren = applications.size();
 			String name = null;
+			Link emailLink = null;
 			
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
 				column = 1;
 				application = (ChildCareApplication) iter.next();
 				child = application.getChild();
+				
 				if (application.getQueueDate() != null)
 					queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getQueueDate());
 				else	
@@ -149,9 +158,46 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 					else
 						table.setRowColor(row, getZebraColor2());
 				}
-		
+//// email to parent
+				try {
+					Collection parents = getMemberFamilyLogic(iwc).getCustodiansFor(child);
+					String emails = null;
+					if (parents != null && !parents.isEmpty()) {
+						Iterator iterPar = parents.iterator();
+						while (iterPar.hasNext()) {
+							User parent = (User) iterPar.next();
+							
+							try {
+								Email email = getCommuneUserBusiness(iwc).getUsersMainEmail(parent);
+								if (email != null && email.getEmailAddress() != null) {
+									emailLink = this.getSmallLink(email.getEmailAddress());
+									if (emails != null)
+										emails = emails + "; " + email.getEmailAddress();
+									else										
+									emails = email.getEmailAddress();																		
+								}
+								emailLink.setURL("mailto:" + emails);
+							}
+							catch (NoEmailFoundException nef) {
+								log(nef);
+							}
+							
+						}
+					}
+				}catch (NoCustodianFound ncf) {
+				}
+				
+				
+				////
 				name = getBusiness().getUserBusiness().getNameLastFirst(child, true);
-				table.add(getSmallText(name), column++, row);
+				if (emailLink != null){
+					emailLink.setText(name);
+					table.add(emailLink, column++, row);				
+					
+				} else {
+					table.add(getSmallText(name), column++, row);
+				}
+				
 				table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 				table.add(getSmallText(getStatusString(application)), column++, row);
 				if (queueDate != null)
@@ -218,5 +264,11 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 	 */
 	public void setRequiresPrognosis(boolean requiresPrognosis) {
 		this._requiresPrognosis = requiresPrognosis;
+	}
+	private CommuneUserBusiness getCommuneUserBusiness(IWContext iwc) throws RemoteException {
+		return (CommuneUserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
+	}
+	private MemberFamilyLogic getMemberFamilyLogic(IWContext iwc) throws RemoteException {
+		return (MemberFamilyLogic) com.idega.business.IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
 	}
 }
