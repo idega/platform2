@@ -11,9 +11,7 @@ package com.idega.block.websearch.business;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.RemoteException;
 
-import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.block.websearch.data.WebSearchIndex;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
