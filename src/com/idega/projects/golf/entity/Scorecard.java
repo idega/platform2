@@ -137,12 +137,47 @@ public class Scorecard extends GolfEntity{
 		return getStringColumnValue("handicap_correction");
 	}
 
+        public boolean getHandicapCorrectionBoolean(){
+		String correction = getStringColumnValue("handicap_correction");
+                boolean handicapCorrection = true;
+
+                if ( correction.equalsIgnoreCase("n") ) {
+                  handicapCorrection = false;
+                }
+
+                return handicapCorrection;
+	}
+
 	public void setHandicapCorrection(String handicap_correction){
 		setColumn("handicap_correction", handicap_correction);
 	}
 
+	public void setHandicapCorrection(boolean correction){
+		String handicap_correction = "Y";
+
+                if ( correction == true ) {
+                  handicap_correction = "Y";
+                }
+                if ( correction == false ) {
+                  handicap_correction = "N";
+                }
+
+                setColumn("handicap_correction", handicap_correction);
+	}
+
         public String getUpdateHandicap(){
 		return getStringColumnValue("update_handicap");
+	}
+
+        public boolean getUpdateHandicapBoolean(){
+		String update = getStringColumnValue("update_handicap");
+                boolean updateHandicap = true;
+
+                if ( update.equalsIgnoreCase("n") ) {
+                  updateHandicap = false;
+                }
+
+                return updateHandicap;
 	}
 
 	public void setUpdateHandicap(String update_handicap){
