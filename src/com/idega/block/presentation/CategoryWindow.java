@@ -166,7 +166,8 @@ public class CategoryWindow extends IWAdminWindow {
               savedids[i] = Integer.parseInt(sids[i]);
 //            	      System.err.println("save id "+savedids[i]);
             }
-            CategoryBusiness.getInstance().updateCategory(iCategoryId,sName,sDesc, Integer.parseInt(sOrder), iObjectInstanceId);
+            if(iCategoryId>0)
+            	CategoryBusiness.getInstance().updateCategory(iCategoryId,sName,sDesc, Integer.parseInt(sOrder), iObjectInstanceId);
             CategoryBusiness.getInstance().saveRelatedCategories(iObjectInstanceId,savedids);
           }
 				}
