@@ -23,6 +23,8 @@ import com.idega.presentation.ui.Window;
  */
 public class CentralPlacementGroupEditor extends Window {
 
+// THIS SHOULD BE ERASED IS REPLACED BY CentralPlacementSchoolGroupEditor
+
 	// *** Localization keys ***
 	private static final String KP = "central_placement_floating_windows.";
 	private static final String KEY_WINDOW_HEADING_1 = KP + "edit_window_opened_from";
