@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.31 2003/10/02 23:02:56 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.32 2003/10/02 23:20:40 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -913,7 +913,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 			arr.add(new ConditionHolder(
 					RuleTypeConstant.CONDITION_ID_STADSBIDRAG, 
-					"Stadsbidragsberättigad", 
+					"Stadsbidragsber‰ttigad", 
 					LP + "stadsbidragsberattigad", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
 					"getYesNo",
