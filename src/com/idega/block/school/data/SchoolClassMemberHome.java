@@ -5,15 +5,15 @@ public interface SchoolClassMemberHome extends com.idega.data.IDOHome
 {
  public SchoolClassMember create() throws javax.ejb.CreateException;
  public SchoolClassMember findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findAllBySchoolStudyPath(com.idega.block.school.data.SchoolStudyPath p0)throws javax.ejb.FinderException,java.rmi.RemoteException;
- public java.util.Collection findAllBySeasonAndInvoiceCompensation(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException;
+ public java.util.Collection findAllBySchoolStudyPath(com.idega.block.school.data.SchoolStudyPath p0)throws javax.ejb.FinderException;
+ public java.util.Collection findAllBySeasonAndInvoiceCompensation(int p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllByUserAndSeason(int p0,int p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllByUserAndSeason(com.idega.user.data.User p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findAllLastYearStudentsBySeasonAndMaximumAge(com.idega.block.school.data.SchoolSeason p0,int p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllLastYearStudentsBySeasonAndYear(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllLastYearStudentsBySeasonAndYearAndMaximumAge(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1,int p2)throws javax.ejb.FinderException;
- public java.util.Collection findBySchool(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findBySchool(int p0,int p1,java.sql.Date p2)throws javax.ejb.FinderException,java.rmi.RemoteException;
+ public java.util.Collection findBySchool(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findBySchool(int p0,int p1,java.sql.Date p2,boolean p3)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findBySchoolAndSeason(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findBySchoolAndSeasonAndYear(int p0,int p1,int p2)throws javax.ejb.FinderException,java.rmi.RemoteException;
@@ -31,6 +31,7 @@ public interface SchoolClassMemberHome extends com.idega.data.IDOHome
  public SchoolClassMember findByUserAndSeason(com.idega.user.data.User p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public SchoolClassMember findLatestByUser(com.idega.user.data.User p0)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public SchoolClassMember findLatestByUserAndSchool(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
+ public SchoolClassMember findLatestByUserAndSchoolType(com.idega.user.data.User p0,com.idega.block.school.data.SchoolType p1)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection getInvoiceIntervalTypes();
  public int getNumberOfUsersNotAssignedToClassOnGivenDate(com.idega.user.data.Group p0,java.sql.Date p1,java.util.Collection p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException,com.idega.data.IDOLookupException;
 

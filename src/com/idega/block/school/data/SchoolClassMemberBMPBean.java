@@ -27,8 +27,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/10/15 13:36:33 $ by $Author: staffan $
- * @version $Revision: 1.45 $
+ * Last modified: $Date: 2003/10/15 16:11:56 $ by $Author: goranb $
+ * @version $Revision: 1.46 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -281,6 +281,44 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.append(" mb." + SCHOOLCLASS)
 		.appendEqualSign()
 		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		
+		sql.appendOrderBy(REGISTER_DATE + " desc");
+		
+		
+		return (Integer)this.idoFindOnePKBySQL(sql.toString());
+	}
+
+	public Integer ejbFindLatestByUserAndSchoolType(User user, SchoolType type) 
+																					throws FinderException, RemoteException {
+		IDOQuery sql = idoQuery();
+		
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + ", " 
+													+ SchoolClassBMPBean.SCHOOLCLASS + " cl, " 
+													+ SchoolTypeBMPBean.SCHOOLTYPE + "tp")
+		
+		.appendWhere()
+		.append(" mb." + MEMBER)
+		.appendEqualSign()
+		.append(user.getPrimaryKey())
+		
+		.appendAnd()
+		.append("(cl." + SchoolClassBMPBean.COLUMN_VALID)
+		.appendEqualSign()
+		.appendWithinSingleQuotes("Y")
+		
+		.appendOr()
+		.append("cl." + SchoolClassBMPBean.COLUMN_VALID)
+		.append(" is null)")
+		
+		.appendAnd()
+		.append(" mb." + SCHOOLCLASS)
+		.appendEqualSign()
+		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
+
+		.appendAnd()
+		.append("cl." + SchoolClassBMPBean.SCHOOLTYPE + "_id")
+		.appendEqualSign()
+		.append(type.getPrimaryKey());		
 		
 		sql.appendOrderBy(REGISTER_DATE + " desc");
 		

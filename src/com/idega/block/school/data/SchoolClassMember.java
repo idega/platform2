@@ -19,6 +19,7 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
 	public final static String FIELD_COMPENSATION_BY_INVOICE = "comp_by_invoice";
 	public final static String FIELD_INVOICE_INTERVAL = "invoice_int";
 	public final static String FIELD_LATEST_INVOICE_DATE = "latest_invoice_date";
+
 	
  public int getClassMemberId();
  public boolean getHasCompensationByAgreement();
