@@ -362,7 +362,7 @@ private Table _myTable;
       userTable.add(textTable,2,1);
       userTable.setWidth(2,"100%");
       userTable.mergeCells(1,5,2,5);
-      userTable.add(linkTable,2,5);
+      userTable.add(linkTable,1,5);
     }
     else {
       userTable.add(textTable,1,1);
