@@ -1,7 +1,8 @@
 package se.idega.idegaweb.commune.accounting;
 
-import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusinessBean;
 import se.idega.idegaweb.commune.care.business.CareInvoiceBusiness;
+
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
@@ -18,7 +19,7 @@ import com.idega.idegaweb.IWBundleStartable;
 public class IWBundleStarter implements IWBundleStartable {
 	
 	public void start(IWBundle starterBundle) {
-		IBOLookup.registerImplementationForBean(CareInvoiceBusiness.class, InvoiceBusiness.class);		
+		IBOLookup.registerImplementationForBean(CareInvoiceBusiness.class, InvoiceBusinessBean.class);		
 	}
 
 	
