@@ -133,7 +133,7 @@ private String headerTextColor = "#FFFFFF";
 			Text vaegi = new Text(iwrb.getLocalizedString("handicap.slope","Slope/CR"));
 				vaegi.setFontColor(headerTextColor);
 				vaegi.setFontSize("1");
-			Text leikforgjof = new Text(iwrb.getLocalizedString("handicap.Course_handicap","Course"));
+			Text leikforgjof = new Text(iwrb.getLocalizedString("handicap.course_handicap","Course"));
         leikforgjof.addBreak();
         leikforgjof.addToText(iwrb.getLocalizedString("handicap.handicap_lowercase","handicap"));
 				leikforgjof.setFontColor(headerTextColor);
