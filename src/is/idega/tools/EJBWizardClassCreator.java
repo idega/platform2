@@ -47,7 +47,8 @@ public class EJBWizardClassCreator {
       initialize(Class.forName(originalClassName));
     }
     catch(java.lang.NoClassDefFoundError e){
-      System.out.println("ClassNotFound:\""+originalClassName+"\"");
+    	e.printStackTrace();
+//      System.out.println("ClassNotFound:\""+originalClassName+"\"");
       initialize(Class.forName(originalClassName+entityBeanClassSuffix));
     }
   }
