@@ -147,6 +147,8 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
       exporter.setParameter(JRExporterParameter.OUTPUT_FILE_NAME, path);
       exporter.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.TRUE);
+      exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE);
+      exporter.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);
       exporter.exportReport();
     }
     catch (JRException ex)  {
