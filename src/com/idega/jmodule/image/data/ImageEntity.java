@@ -5,9 +5,7 @@ import com.idega.data.*;
 
 
 public class ImageEntity extends GenericEntity{
-  private boolean loadImageValue = true;
-
-	public ImageEntity(){
+  	public ImageEntity(){
 		super();
 	}
 
@@ -15,21 +13,13 @@ public class ImageEntity extends GenericEntity{
 		super(id);
 	}
 
-        public ImageEntity(int id, boolean loadImageValue)throws SQLException{
-          super(id);
-	  this.loadImageValue = loadImageValue;
-	}
-
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
 		addAttribute("content_type","Image type",true,true,"java.lang.String");
-
-		//if( loadImageValue ) addAttribute("image_value","The image",false,false,"com.idega.data.BlobWrapper");
-                //addAttribute("image_value","The image",false,false,"com.idega.data.BlobWrapper");
+		addAttribute("image_value","The image",false,false,"com.idega.data.BlobWrapper");
                 addAttribute("image_name","Image name",true,true,"java.lang.String");
 		addAttribute("date_added","Date added or changed",true,true,"java.sql.Timestamp");
 		addAttribute("from_file","Image from file?",true,true,"java.lang.Boolean");
-                //added november by eiki, idega iceland
                 addAttribute("image_text","Image text",true,true,"java.lang.String");
                 addAttribute("image_link","Image link",true,true,"java.lang.String");
                 addAttribute("image_link_owner","Which has a link the image/text/both/none?",true,true,"java.lang.String");
