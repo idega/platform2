@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.13 2003/10/30 15:30:39 anders Exp $
+ * $Id: ProviderBusinessBean.java,v 1.14 2003/12/22 14:22:52 goranb Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -32,10 +32,10 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderAccountingProper
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2003/10/30 15:30:39 $ by $Author: anders $
+ * Last modified: $Date: 2003/12/22 14:22:52 $ by $Author: goranb $
  *
  * @author Anders Lindman
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
@@ -97,6 +97,7 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 			String communeId,
 			String countryId,
 			String centralizedAdministration,
+			String unvisibleForCitizen,
 			String paymentByInvoice,
 			String stateSubsidyGrant,
 			String postgiro,
@@ -174,7 +175,8 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 					terminationDate,
 					getInteger(communeId),
 					getInt(countryId),
-					getBoolean(centralizedAdministration));
+					getBoolean(centralizedAdministration),
+					getBoolean(unvisibleForCitizen));
 			int id = ((Integer) school.getPrimaryKey()).intValue();
 			ProviderAccountingProperties pap = null;
 			ProviderAccountingPropertiesHome home = getProviderAccountingPropertiesHome();
