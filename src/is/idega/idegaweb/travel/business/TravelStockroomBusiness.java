@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 import com.idega.core.data.*;
 import is.idega.travel.data.HotelPickupPlace;
 import java.sql.SQLException;
-import com.idega.util.idegaTimestamp;
+import com.idega.util.*;
 import java.sql.SQLException;
 import com.idega.data.EntityFinder;
 import com.idega.data.EntityControl;
@@ -18,7 +18,7 @@ import java.sql.Date;
 
 /**
  * Title:        IW Travel
- * Description:
+ * Description:  Stockroom Business
  * Copyright:    Copyright (c) 2001
  * Company:      idega.is
  * @author 2000 - idega team - <br><a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a><br><a href="mailto:gimmi@idega.is">Grímur Jónsson</a>
@@ -154,7 +154,11 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
       boolean isError = false;
 
+      /**
+       * @todo handle isError
+       */
       if (timeframe == null) isError = true;
+      if (activeDays.length == 0) isError = true;
 
       int departureAddressTypeId = AddressType.getId(uniqueDepartureAddressType);
       int arrivalAddressTypeId = AddressType.getId(uniqueArrivalAddressType);
@@ -205,6 +209,18 @@ public class TravelStockroomBusiness extends StockroomBusiness {
             tour.setHotelPickup(false);
           }
           tour.insert();
+
+          if (activeDays.length > 0) {
+            ServiceDay sDay;
+            for (int i = 0; i < activeDays.length; i++) {
+              sDay = new ServiceDay();
+                sDay.setServiceId(serviceId);
+                sDay.setDayOfWeek(activeDays[i]);
+              sDay.insert();
+            }
+          }
+
+
           //tm.commit();
       }catch (Exception e) {
           e.printStackTrace(System.err);
@@ -246,7 +262,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       return products;
   }
 
-  public Product[] getProducts(int supplierId, idegaTimestamp from) {
+  public Product[] getProducts(int supplierId, idegaTimestamp stamp) {
       Product[] products = {};
 
       try {
@@ -254,12 +270,15 @@ public class TravelStockroomBusiness extends StockroomBusiness {
            * @todo Oracle support...
            */
           Product[] tempProducts = this.getProducts(supplierId);
-          if (tempProducts.length > 0) {
 
+          if (tempProducts.length > 0) {
+            idegaCalendar calendar = new idegaCalendar();
+
+            int dayOfWeek = calendar.getDayOfWeek(stamp.getYear(),stamp.getMonth(),stamp.getDay());
             Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
             Supplier supplier = (Supplier) Supplier.getStaticInstance(Supplier.class);
             Service service = (Service) Service.getStaticInstance(Service.class);
-            Product prodcter = (Product) Product.getStaticInstance(Product.class);
+            Product producter = (Product) Product.getStaticInstance(Product.class);
 
             String middleTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class,Service.class);
             String Ttable = Timeframe.getTimeframeTableName();
@@ -271,14 +290,15 @@ public class TravelStockroomBusiness extends StockroomBusiness {
               timeframeSQL.append(" WHERE ");
               timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
               timeframeSQL.append(" AND ");
-              timeframeSQL.append(Ptable+"."+supplier.getIDColumnName()+" = "+middleTable+"."+service.getIDColumnName());
+              timeframeSQL.append(Ptable+"."+producter.getIDColumnName()+" = "+middleTable+"."+service.getIDColumnName());
               timeframeSQL.append(" AND ");
-              timeframeSQL.append(Timeframe.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"'");
+              timeframeSQL.append(Ptable+"."+supplier.getIDColumnName()+" = "+supplierId);
               timeframeSQL.append(" AND ");
-              timeframeSQL.append(Timeframe.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"'");
-              timeframeSQL.append(" ORDER BY "+Timeframe.getTimeframeFromColumnName());
+              timeframeSQL.append(Timeframe.getTimeframeFromColumnName()+" <= '"+stamp.toSQLDateString()+"'");
+              timeframeSQL.append(" AND ");
+              timeframeSQL.append(Timeframe.getTimeframeToColumnName()+" >= '"+stamp.toSQLDateString()+"'");
+              timeframeSQL.append(" ORDER BY "+Ttable+"."+Timeframe.getTimeframeFromColumnName()+","+Ptable+"."+Product.getColumnNameProductName());
 
-            System.err.println(timeframeSQL.toString());
             products = (Product[]) (new Product()).findAll(timeframeSQL.toString());
 
           }
@@ -388,6 +408,11 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     }
     return tour;
   }
+
+  public static boolean getIfDay(int productId, int dayOfWeek) {
+      return ServiceDay.getIfDay(productId, dayOfWeek);
+  }
+
 
 
   public static class ServiceNotFoundException extends Exception{

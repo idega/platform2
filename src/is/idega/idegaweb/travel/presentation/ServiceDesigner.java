@@ -432,26 +432,13 @@ public class ServiceDesigner extends TravelManager {
         TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
           tsb.setTimeframe(activeFromStamp, activeToStamp, yearly);
           tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickupAddress, hotelPickupTimeStamp, activeDays);
+        add("TEMP - Service smíðuð");
       }catch (Exception e) {
         e.printStackTrace(System.err);
+        add("TEMP - Service EKKI smíðuð");
       }
 
-      add("<br>"+name);
-      add("<br>"+description);
-      add("<br>"+imageId);
-      add("<br>"+activeFrom);
-      add("<br>"+activeTo);
-      add("<br>A"+allDays);
-      add("<br>M"+mondays);
-      add("<br>T"+tuesdays);
-      add("<br>W"+wednesdays);
-      add("<br>T"+thursdays);
-      add("<br>F"+fridays);
-      add("<br>S"+saturdays);
-      add("<br>S"+sundays);
-      add("<br>"+departureFrom);
-      add("<br>"+departureTime);
-      add("<br>"+hotelPickup);
+
 
   }
 

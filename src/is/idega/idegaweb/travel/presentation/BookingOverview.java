@@ -151,6 +151,8 @@ public class BookingOverview extends TravelManager {
         sql.printStackTrace(System.err);
         trip = new DropdownMenu(Product.getProductEntityName());
       }
+      trip.addMenuElementFirst("-10","TEMP - ALLAR FERÐIR");
+
           String parTrip = modinfo.getParameter(Product.getProductEntityName());
           if (parTrip != null) {
               trip.setSelectedElement(parTrip);
@@ -266,10 +268,12 @@ public class BookingOverview extends TravelManager {
       String sProductId = modinfo.getParameter(Product.getProductEntityName());
       if (sProductId != null) {
 
+          boolean viewAll = false;
           idegaTimestamp fromStamp = getFromIdegaTimestamp(modinfo);
           idegaTimestamp toStamp = getToIdegaTimestamp(modinfo);
               toStamp.addDays(1);
           int productId = Integer.parseInt(sProductId);
+          if (productId == -10 ) viewAll = true;
 
 
           Text dateText = (Text) theText.clone();
@@ -311,47 +315,68 @@ public class BookingOverview extends TravelManager {
           TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
           Product[] products;
           int supplierId = supplier.getID();
+          idegaCalendar cal = new idegaCalendar();
+          int dayOfWeek;
+          boolean upALine = false;
 
           while (toStamp.isLaterThan(fromStamp)) {
+              dayOfWeek = cal.getDayOfWeek(fromStamp.getYear(), fromStamp.getMonth(), fromStamp.getDay());
+              try {
+                  if (viewAll) {
+                    products = tsb.getProducts(supplierId, fromStamp);
+                  }
+                  else {
+                    products = new Product[1];
+                      products[0] = new Product(productId);
+                  }
+              }catch (SQLException sql) {
+                sql.printStackTrace(System.err);
+                products = tsb.getProducts(supplierId, fromStamp);
+              }
+              upALine = false;
               ++row;
-              products = tsb.getProducts(supplierId, fromStamp);
-
-              add(products.length+"");
-
               dateTextBold = (Text) theSmallBoldText.clone();
                   dateTextBold.setText(fromStamp.getLocaleDate(modinfo));
-              nameTextBold  = (Text) theSmallBoldText.clone();
-                  nameTextBold.setText("Ferð norður og niður");
-              countTextBold = (Text) theSmallBoldText.clone();
-                  countTextBold.setText("30");
-              assignedTextBold = (Text) theSmallBoldText.clone();
-                  assignedTextBold.setText("5");
-              inqTextBold = (Text) theSmallBoldText.clone();
-                  inqTextBold.setText("6");
-              bookedTextBold = (Text) theSmallBoldText.clone();
-                  bookedTextBold.setText("17");
-              availableTextBold = (Text) theSmallBoldText.clone();
-                  availableTextBold.setText("8");
-
-              SubmitButton btnNanar = new SubmitButton("N");
-              SubmitButton btnBook = new SubmitButton("B");
-
-
               table.add(dateTextBold,1,row);
-              table.add(nameTextBold,2,row);
-              table.add(countTextBold,3,row);
-                  table.setColor(3,row,NatBusiness.backgroundColor);
-              table.add(assignedTextBold,4,row);
-                  table.setColor(4,row,NatBusiness.ORANGE);
-              table.add(inqTextBold,5,row);
-                  table.setColor(5,row,NatBusiness.YELLOW);
-              table.add(bookedTextBold,6,row);
-                  table.setColor(6,row,NatBusiness.RED);
-              table.add(availableTextBold,7,row);
-                  table.setColor(7,row,NatBusiness.LIGHTGREEN);
 
-              table.add(btnNanar,8,row);
-              table.add(btnBook,8,row);
+              for (int i = 0; i < products.length; i++) {
+                  if (TravelStockroomBusiness.getIfDay(products[i].getID(),dayOfWeek) ) {
+                      nameTextBold  = (Text) theSmallBoldText.clone();
+                          nameTextBold.setText(products[i].getName());
+                      countTextBold = (Text) theSmallBoldText.clone();
+                          countTextBold.setText("30");
+                      assignedTextBold = (Text) theSmallBoldText.clone();
+                          assignedTextBold.setText("5");
+                      inqTextBold = (Text) theSmallBoldText.clone();
+                          inqTextBold.setText("6");
+                      bookedTextBold = (Text) theSmallBoldText.clone();
+                          bookedTextBold.setText("17");
+                      availableTextBold = (Text) theSmallBoldText.clone();
+                          availableTextBold.setText("8");
+
+                      SubmitButton btnNanar = new SubmitButton("N");
+                      SubmitButton btnBook = new SubmitButton("B");
+
+
+                      table.add(nameTextBold,2,row);
+                      table.add(countTextBold,3,row);
+                          table.setColor(3,row,NatBusiness.backgroundColor);
+                      table.add(assignedTextBold,4,row);
+                          table.setColor(4,row,NatBusiness.ORANGE);
+                      table.add(inqTextBold,5,row);
+                          table.setColor(5,row,NatBusiness.YELLOW);
+                      table.add(bookedTextBold,6,row);
+                          table.setColor(6,row,NatBusiness.RED);
+                      table.add(availableTextBold,7,row);
+                          table.setColor(7,row,NatBusiness.LIGHTGREEN);
+
+                      table.add(btnNanar,8,row);
+                      table.add(btnBook,8,row);
+                      ++row;
+                      upALine = true;
+                  }
+              }
+              if (upALine) --row;
 
               fromStamp.addDays(1);
           }
