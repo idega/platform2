@@ -1178,37 +1178,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 						
 					}
 					
-//					IWTimestamp stampNow = new IWTimestamp();
-//					stampNow.addDays(-1);
-					
-					
 					DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
-					
-//					if (deadlinePeriod != null && deadlinePeriod.getFirstTimestamp() != null) {
-//						DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());						
-						
-						// deadline has passed
-//						if (helper.hasDeadlinePassed()) {
-//							dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + format.format(deadlinePeriod.getFirstTimestamp().getDate()));
-//							dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
-//						}
-						// still within deadline
-//						else {
-//							if (placementDate != null && placementDate.isLaterThan(deadlinePeriod.getFirstTimestamp())) {
-//								today.addDays(2);
-//								dateInput.setEarliestPossibleDate(today.getDate(), localize("childcare.deadline_still_within_no_start_contract", "You can not choose a date back in time. If you want to have the contract removed, please contact Kundvalsgruppen"));
-//								dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
-//							}
-//							else {
-//								dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_still_within", "You can not choose a date back in time."));
-//								dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
-//							}
-//						}
-//					}
-//					else {
-//						dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
-//					}
-					
 					dateInput.setEarliestPossibleDate(earliestTerminationDate.getDate(), earliestPossibleMessage);
 					dateInput.setAsNotEmpty(localize("child_care.must_select_date", "You must select a date."));
 					dateInput.keepStatusOnAction(true);
@@ -2227,36 +2197,26 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void cancelContract(IWContext iwc) throws RemoteException {
 		ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(_userID, getSession().getChildCareID());
 		if (application != null) {
-			if (application.getApplicationStatus() == getBusiness().getStatusReady()) {
-				boolean reason = true;
-				if (iwc.isParameterSet(PARAMETER_CANCEL_REASON))
-					reason = Boolean.valueOf(iwc.getParameter(PARAMETER_CANCEL_REASON)).booleanValue();
+			if (application.getApplicationStatus() == getBusiness().getStatusReady() || application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
 				IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
-	
-				String reasonMessage = "";
-				if (reason)
-					reasonMessage = localize("child_care.parental_leave", "Parental leave");
-				else
-					reasonMessage = localize("child_care.cancellation_other_reason", "Other reason");
-	
-				Object[] arguments = { "{0}", "{1}", reasonMessage, date.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) };
-	
-				String subject = localize("child_care.cancel_contract_subject", "Your child care contract has been terminated.");
-				String body = localize("child_care.cancel_contract_body", "Your contract for {0} at {1} has been terminated because of {2}. The termination will be active on {3}.");
-	
-				getBusiness().cancelContract(application, reason, date, reasonMessage, subject, MessageFormat.format(body, arguments), iwc.getCurrentUser());
-				if (iwc.isParameterSet(PARAMETER_CANCEL_CONTRACT_DIRECTLY)) {
-					getBusiness().createCancelForm(application, date.getDate(), iwc.getCurrentLocale());
+
+				if (application.getApplicationStatus() == getBusiness().getStatusReady()) {
+					boolean parentalLeave = true;
+					if (iwc.isParameterSet(PARAMETER_CANCEL_REASON)) {
+						parentalLeave = Boolean.valueOf(iwc.getParameter(PARAMETER_CANCEL_REASON)).booleanValue();
+					}
+		
+					application = getBusiness().getApplication(_applicationID);
+					application.setApplicationStatus(getBusiness().getStatusParentTerminated());
+					application.setRequestedCancelDate(date.getDate());
+					application.setParentalLeave(parentalLeave);
+					application.store();
 				}
+
+				getBusiness().createCancelForm(application, date.getDate(), iwc.getCurrentLocale());
+				isEndDateSet = true;
 				getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 				getParentPage().close();
-			}
-			else if (application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
-				IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
-				getBusiness().createCancelForm(application, date.getDate(), iwc.getCurrentLocale());
-				//getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
-				//getParentPage().close();
-				isEndDateSet = true;
 			}
 			else if (application.getApplicationStatus() == getBusiness().getStatusWaiting()) {
 				IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
