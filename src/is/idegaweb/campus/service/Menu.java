@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.12 2001/08/27 20:16:47 laddi Exp $
+ * $Id: Menu.java,v 1.13 2001/08/28 23:54:12 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -195,18 +195,6 @@ public class Menu extends JModuleObject{
     row++;
 
     LinkTable.add(iwb.getImage("redtab.gif","",iWidth,iHeight),1,row);
-
-    Window idegaWindow = new Window("Idega","http://www.idega.is");
-    idegaWindow.setMenubar(true);
-    idegaWindow.setResizable(true);
-    idegaWindow.setScrollbar(true);
-    idegaWindow.setToolbar(true);
-    idegaWindow.setTitlebar(true);
-    idegaWindow.setStatus(true);
-    idegaWindow.setHeight(600);
-    idegaWindow.setWidth(800);
-    Link idegaLink = new Link(iwb.getImage("idegaweb.gif"),idegaWindow);
-    LinkTable.add(idegaLink,1,row+1);
 
     Title = getT();
 
