@@ -92,8 +92,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     }
 
     try {
-        faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
-        logoLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_out.gif"));
+        faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"/face_in.gif"));
+        logoLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"/face_out.gif"));
       }
       catch (Exception ex) {
         ex.printStackTrace(System.err);
