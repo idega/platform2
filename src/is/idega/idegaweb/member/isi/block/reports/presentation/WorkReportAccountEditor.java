@@ -453,7 +453,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         buttonTable.add(getFinishButton(resourceBundle), 2, 1);
       }
       else {
-        Text text = new Text(resourceBundle.getLocalizedString("wr_account_editor_account_part_finished", "Account part is finished."));
+        Text text = new Text(resourceBundle.getLocalizedString("wr_account_editor_account_part_finished", "Account part has been finished."));
         text.setBold();
         buttonTable.add(text, 2 , 1);
       }

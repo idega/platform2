@@ -332,7 +332,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
         buttonTable.add(getFinishButton(resourceBundle), 4, 1);
       }
       else {
-        Text text = new Text(resourceBundle.getLocalizedString("wr_division_board_editor_board_part_finished", "Board part is finished."));
+        Text text = new Text(resourceBundle.getLocalizedString("wr_division_board_editor_board_part_finished", "Board part has been finished."));
         text.setBold();
         buttonTable.add(text, 4,1);
       }

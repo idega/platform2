@@ -375,7 +375,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         buttonTable.add(getFinishButton(resourceBundle), 5, 1);
       }
       else {
-        Text text = new Text(resourceBundle.getLocalizedString("wr_member_editor_member_part_finished", "Member part is finished."));
+        Text text = new Text(resourceBundle.getLocalizedString("wr_member_editor_member_part_finished", "Member part has been finished."));
         text.setBold();
         buttonTable.add(text, 5 , 1);
       }
