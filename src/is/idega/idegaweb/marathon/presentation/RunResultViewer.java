@@ -21,6 +21,7 @@ import javax.ejb.FinderException;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.core.location.data.Country;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -32,6 +33,7 @@ import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * Show the results of a run. This block can show results for a specific run,
@@ -122,44 +124,49 @@ public class RunResultViewer extends Block {
 			}
 		}
 
-		Form form = new Form();
-		Table table = new Table();
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setColumns(COLUMN_COUNT);
-		table.setWidth(Table.HUNDRED_PERCENT);
-		int row = 1;
+		Form form = (Form) iwc.getApplicationAttribute("run_result_cache_" + runPK + "_" + year != null ? year.getPrimaryKey() + "_" : "" + distance != null ? distance.getPrimaryKey() + "_" : "" + sortBy);
 		
-		table.setCellpaddingLeft(1, row, 16);
-		table.mergeCells(1, row, table.getColumns(), row);
-		
-		table.add(getYearsDropdown(), 1, row);
-		table.add(getDistanceDropdown(), 1, row);
-		table.add(getSortDropdown(), 1, row++);
-		table.setHeight(row++, 12);
-
-		if (distance != null) {
-				row = insertHeadersIntoTable(table, row);
+		if (form == null) {
+			form = new Form();
+			Table table = new Table();
+			table.setCellpadding(0);
+			table.setCellspacing(0);
+			table.setColumns(COLUMN_COUNT);
+			table.setWidth(Table.HUNDRED_PERCENT);
+			int row = 1;
 			
-				switch (sortBy) {
-					case IWMarathonConstants.RYSDD_TOTAL:
-						getTotalResults(table, row);
-						break;
-					case IWMarathonConstants.RYSDD_GROUPS:
-						getGroupResults(table, row);
-						break;
-					case IWMarathonConstants.RYSDD_GROUPS_COMP:
-						
-						break;
-				}
+			table.setCellpaddingLeft(1, row, 16);
+			table.mergeCells(1, row, table.getColumns(), row);
+			
+			table.add(getYearsDropdown(), 1, row);
+			table.add(getDistanceDropdown(), 1, row);
+			table.add(getSortDropdown(), 1, row++);
+			table.setHeight(row++, 12);
+	
+			if (distance != null) {
+					row = insertHeadersIntoTable(table, row);
+				
+					switch (sortBy) {
+						case IWMarathonConstants.RYSDD_TOTAL:
+							getTotalResults(table, row);
+							break;
+						case IWMarathonConstants.RYSDD_GROUPS:
+							getGroupResults(table, row);
+							break;
+						case IWMarathonConstants.RYSDD_GROUPS_COMP:
+							
+							break;
+					}
+			}
+			
+			for (int a = 2; a < COLUMN_COUNT; a = a + 2) {
+				table.setWidth(a, 2);
+				table.setColumnColor(a, "#FFFFFF");
+			}
+			
+			form.add(table);
+			iwc.setApplicationAttribute("run_result_cache_" + runPK + "_" + year != null ? year.getPrimaryKey() + "_" : "" + distance != null ? distance.getPrimaryKey() + "_" : "" + sortBy, form);
 		}
-		
-		for (int a = 2; a < COLUMN_COUNT; a = a + 2) {
-			table.setWidth(a, 2);
-			table.setColumnColor(a, "#FFFFFF");
-		}
-		
-		form.add(table);
 		add(form);
 	}
 	
@@ -344,11 +351,24 @@ public class RunResultViewer extends Block {
 		table.add(getRunnerRowText(user.getName()), 7, row);
 		table.setStyleClass(7, row, getStyleName(STYLENAME_LIST_ROW));
 
-		table.add(getRunnerRowText(Integer.toString(user.getDateOfBirth().getYear())), 9, row);
+		IWTimestamp birthDate = new IWTimestamp(user.getDateOfBirth());
+		table.add(getRunnerRowText(Integer.toString(birthDate.getYear())), 9, row);
 		table.setStyleClass(9, row, getStyleName(STYLENAME_LIST_ROW));
 		table.setAlignment(9, row, Table.HORIZONTAL_ALIGN_CENTER);
 
-		table.add(getRunnerRowText(run.getUserNationality()), 11, row);
+		Country country = null;
+		try {
+			getRunBiz().getCountryByNationality(run.getUserNationality());
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+		if (country != null) {
+			table.add(getRunnerRowText(country.getName()), 11, row);
+		}
+		else {
+			table.add(getRunnerRowText(run.getUserNationality()), 11, row);
+		}
 		table.setStyleClass(11, row, getStyleName(STYLENAME_LIST_ROW));
 		table.setAlignment(11, row, Table.HORIZONTAL_ALIGN_CENTER);
 
