@@ -68,6 +68,9 @@ public class TournamentStartingtimeList extends GolfBlock {
 	public TournamentStartingtimeList() {
 		viewOnly = true;
 		forPrinting = false;
+		onlineRegistration = false;
+		useBorder = true;
+		form = new Form();
 	}
 
 	/*
