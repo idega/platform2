@@ -26,6 +26,8 @@ public static final String _PARAMETER_DELETE = "delete";
 public static final String _PARAMETER_SAVE = "save";
 public static final String _PARAMETER_CLOSE = "close";
 
+public static final String COOKIE_NAME = "idegaPOLL_";
+
   public static PollEntity[] getPolls(int pollQuestionID) {
     try {
       return (PollEntity[]) PollEntity.getStaticInstance(PollEntity.class).findAllByColumn(PollQuestion.getColumnNameID(),pollQuestionID);
@@ -204,7 +206,6 @@ public static final String _PARAMETER_CLOSE = "close";
 	}
 
 	public static void handleInsert(IWContext iwc, int pollQuestionID) {
-    String URI = iwc.getServerName();
     String pollAnswerID = iwc.getParameter(_PARAMETER_POLL_ANSWER);
 
     PollAnswer answer = null;
@@ -220,23 +221,21 @@ public static final String _PARAMETER_CLOSE = "close";
     if ( answer != null && canVote(iwc, pollQuestionID) ) {
       increaseHits(answer);
 
-      Cookie cookie = new Cookie(URI+"_idega_poll_"+Integer.toString(pollQuestionID),"vote");
-      cookie.setMaxAge(394200000);
-      cookie.setComment("A cookie that checks whether a specific user has already cast a vote for a specific poll");
+      Cookie cookie = new Cookie(COOKIE_NAME+Integer.toString(pollQuestionID),"true");
+      cookie.setMaxAge(31 * 24 * 60 * 60);
+      cookie.setPath("/");
       iwc.addCookies(cookie);
     }
 	}
 
   public static boolean canVote(IWContext iwc, int pollQuestionID) {
     Cookie[] cookies = (Cookie[]) iwc.getCookies();
-    String URI = iwc.getServerName();
     boolean returner = true;
 
     if (cookies != null) {
       if (cookies.length > 0) {
         for (int i = 0 ; i < cookies.length ; i++) {
-          System.out.println(cookies[i]);
-          if ( cookies[i].getName().equals(URI+"_idega_poll_"+Integer.toString(pollQuestionID)) ) {
+          if ( cookies[i].getName().equals(COOKIE_NAME+Integer.toString(pollQuestionID)) ) {
             returner = false;
             continue;
           }

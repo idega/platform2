@@ -1,5 +1,6 @@
 package com.idega.block.banner.presentation;
 
+import javax.servlet.http.Cookie;
 import com.idega.block.IWBlock;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;

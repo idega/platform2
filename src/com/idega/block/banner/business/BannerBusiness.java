@@ -49,6 +49,8 @@ public static final String PARAMETER_SAVE = "save";
 public static final String PARAMETER_TRUE = "true";
 public static final String PARAMETER_URL = "url";
 
+public static final String COOKIE_NAME = "idegaAD_";
+
   public static void saveBanner(int bannerID,int InstanceId,String attribute){
     try {
       boolean update = false;
@@ -380,24 +382,42 @@ public static final String PARAMETER_URL = "url";
   }
 
   public static void updateImpressions(IWContext iwc,AdEntity ad) {
-    try {
-      String URI = iwc.getServerName();
+    if ( notSeenBefore(iwc,ad.getID()) ) {
+      /*String cookieString = COOKIE_NAME+Integer.toString(ad.getID());
+      System.out.println(cookieString);
 
-      Cookie cookie = new Cookie(URI+"_idega_ad_"+Integer.toString(ad.getID()),"seen");
-      cookie.setMaxAge(394200000);
-      iwc.addCookies(cookie);
-    }
-    catch (Exception e) {
-      e.printStackTrace(System.err);
-    }
+      Cookie cookie = new Cookie(cookieString,"true");
+      cookie.setMaxAge(31 * 24 * 60 * 60);
+      cookie.setPath("/");
+      iwc.addCookies(cookie);*/
 
-    try {
-      ad.setImpressions(ad.getImpressions()+1);
-      ad.update();
+      try {
+        ad.setImpressions(ad.getImpressions()+1);
+        ad.update();
+      }
+      catch (SQLException e) {
+        e.printStackTrace(System.err);
+      }
     }
-    catch (SQLException e) {
-      e.printStackTrace(System.err);
-    }
+  }
+
+  public static boolean notSeenBefore(IWContext iwc, int adID) {
+    /*Cookie[] cookies = iwc.getCookies();
+    String cookieString = COOKIE_NAME+adID;*/
+
+    boolean returner = true;
+
+    /*if (cookies != null && cookies.length > 0) {
+      for (int i = 0 ; i < cookies.length ; i++) {
+        System.out.println("Cookie: "+cookies[i].getName()+"="+cookies[i].getValue());
+        if ( cookies[i].getName().equals(cookieString) ) {
+          returner = false;
+          continue;
+        }
+      }
+    }*/
+
+    return returner;
   }
 
   public static String updateHits(int adID) {
@@ -433,26 +453,6 @@ public static final String PARAMETER_URL = "url";
     }
 
     return drp;
-  }
-
-  public static boolean notSeenBefore(IWContext iwc, int adID) {
-    Cookie[] cookies = (Cookie[]) iwc.getCookies();
-    String URI = iwc.getServerName();
-    boolean returner = true;
-
-    if (cookies != null) {
-      if (cookies.length > 0) {
-        for (int i = 0 ; i < cookies.length ; i++) {
-          System.out.println("Cookie: "+cookies[i].getName());
-          if ( cookies[i].getName().equals(URI+"_idega_ad_"+adID) ) {
-            returner = false;
-            continue;
-          }
-        }
-      }
-    }
-
-    return returner;
   }
 
   public static boolean isRelated(int bannerID,int adID) {
