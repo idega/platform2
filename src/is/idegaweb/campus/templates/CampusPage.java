@@ -1,5 +1,5 @@
 /*
- * $Id: CampusPage.java,v 1.2 2001/08/23 23:44:13 laddi Exp $
+ * $Id: CampusPage.java,v 1.3 2001/08/24 10:30:42 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -61,6 +61,7 @@ public class CampusPage extends MainPage{
     ref.setStyle("font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
     ref.setInputLength(14);
     ref.setSubmitButtonAlignment("right");
+    ref.addHelpButton();
 
     addMenuTitle(new Image("/pics/titles/IS/menutitle.gif"));
     addRightTitle(new Image("/pics/titles/IS/logintitle.gif"));

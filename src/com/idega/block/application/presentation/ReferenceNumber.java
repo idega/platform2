@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.1 2001/07/24 16:06:53 palli Exp $
+ * $Id: ReferenceNumber.java,v 1.2 2001/08/24 10:28:09 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import com.idega.jmodule.object.interfaceobject.Form;
 import com.idega.jmodule.object.interfaceobject.TextInput;
 import com.idega.jmodule.object.interfaceobject.SubmitButton;
 import com.idega.jmodule.object.interfaceobject.Parameter;
+import com.idega.jmodule.object.interfaceobject.HelpButton;
 import com.idega.jmodule.object.textObject.Text;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
@@ -44,6 +45,8 @@ public class ReferenceNumber extends JModuleObject {
   private String referenceTextColor_;
   private String styleAttribute_ = "font-size: 10pt";
   private String submitButtonAlignment_;
+  private boolean hasHelpButton = false;
+
   private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.application";
 
   private Table outerTable_;
@@ -86,6 +89,8 @@ public class ReferenceNumber extends JModuleObject {
     referenceTable.setCellpadding(0);
     referenceTable.setCellspacing(0);
     referenceTable.setBackgroundImage(new Image(backgroundImageUrl_));
+
+    HelpButton helpButton = new HelpButton(iwrb_.getLocalizedString("help_headline","Reference number"),iwrb_.getLocalizedString("help"));
 
     Text referenceTexti = new Text(referenceText_);
     if ( referenceTextSize_ != -1 ) {
@@ -166,16 +171,29 @@ public class ReferenceNumber extends JModuleObject {
 		}
 
 		Table submitTable = new Table(1,1);
+    if ( hasHelpButton ) {
+      submitTable = new Table(2,1);
+    }
     submitTable.setBorder(0);
     if (!(color_.equals(""))) {
       submitTable.setColor(color_);
     }
-    submitTable.setVerticalAlignment(1,1,"middle");
-    submitTable.setAlignment(1,1,submitButtonAlignment_);
+    submitTable.setRowVerticalAlignment(1,"middle");
+    if ( !hasHelpButton ) {
+      submitTable.setAlignment(1,1,submitButtonAlignment_);
+    }
+    else {
+      submitTable.setAlignment(2,1,"right");
+    }
     submitTable.setWidth("100%");
-    submitTable.setHeight("100%");
 
-    submitTable.add(new SubmitButton(referenceImage_,"tengja"),1,1);
+    if ( !hasHelpButton ) {
+      submitTable.add(new SubmitButton(referenceImage_,"tengja"),1,1);
+    }
+    else {
+      submitTable.add(new SubmitButton(referenceImage_,"tengja"),2,1);
+      submitTable.add(helpButton,1,1);
+    }
 
     referenceTable.add(submitTable,1,2);
     myForm_.add(referenceTable);
@@ -183,6 +201,10 @@ public class ReferenceNumber extends JModuleObject {
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
+  }
+
+  public void addHelpButton() {
+    hasHelpButton = true;
   }
 
   public void setLayout(int layout) {
