@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.22 2002/11/13 22:22:44 gimmi Exp $
+ * $Id: CitizenAccountApplication.java,v 1.23 2002/11/14 10:03:17 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -23,32 +23,42 @@ import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 /**
- * This is the presentation class for the CitizenAccount application
- * 
- * 
+ * CitizenAccountApplication is an IdegaWeb block that inputs and handles
+ * applications for citizen accounts. It is based on session ejb classes in
+ * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
+ * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
+ * <p>
+ * Last modified: $Date: 2002/11/14 10:03:17 $ by $Author: staffan $
+ *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version 1.0
+ * @version $Revision: 1.23 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
 	private final static int ACTION_SUBMIT_SIMPLE_FORM = 1;
 	private final static int ACTION_SUBMIT_UNKNOWN_CITIZEN_FORM_1 = 2;
 	private final static int ACTION_SUBMIT_UNKNOWN_CITIZEN_FORM_2 = 3;
-
- 
-    private final static String COHABITANT_KEY = "caa_cohabitant";
-    private final static String COHABITANT_DEFAULT = "Sammanboende";
-    private final static String APPLICATION_REASON_DEFAULT = "Orsak till ansökan om medborgarkonto?";
-    private final static String APPLICATION_REASON_KEY = "caa_application_reason";
+    
+    private final static String APPLICATION_REASON_DEFAULT
+        = "Orsak till ansökan om medborgarkonto?";
+    private final static String APPLICATION_REASON_KEY
+        = "caa_application_reason";
+    private final static String CHILDREN_COUNT_DEFAULT
+        = "Antal barn i familjen?";
+    private final static String CHILDREN_COUNT_KEY = "caa_children_count";
     private final static String CHILDREN_DEFAULT = "Barn i familjen";
     private final static String CHILDREN_KEY = "caa_children";
-    private final static String CHILDREN_COUNT_DEFAULT = "Antal barn i familjen?";
-    private final static String CHILDREN_COUNT_KEY = "caa_children_count";
     private final static String CITY_DEFAULT = "Postort";
     private final static String CITY_KEY = "caa_city";
     private final static String CIVIL_STATUS_DEFAULT = "Civilstånd";
     private final static String CIVIL_STATUS_KEY = "caa_civil_status";
+    private final static String COHABITANT_DEFAULT = "Sammanboende";
+    private final static String COHABITANT_KEY = "caa_cohabitant";
+    private final static String CURRENT_KOMMUN_DEFAULT = "Nuvarande kommun";
+    private final static String CURRENT_KOMMUN_KEY = "caa_current_kommun";
+    private final static String DETACHED_HOUSE_DEFAULT = "Villa";
+    private final static String DETACHED_HOUSE_KEY = "caa_detached_house";
     private final static String EMAIL_DEFAULT = "E-post";
     private final static String EMAIL_KEY = "caa_email";
     private final static String FIRST_NAME_DEFAULT = "Förnamn";
@@ -57,9 +67,19 @@ public class CitizenAccountApplication extends CommuneBlock {
     private final static String GENDER_KEY = "caa_gender";
     private final static String HAS_COHABITANT_DEFAULT = "Är du sammanboende?";
     private final static String HAS_COHABITANT_KEY = "caa_has_cohabitant";
+    private final static String HAS_SCHOOL_CHECK_DEFAULT
+        = "Har du beviljats skolpeng av din hemkommun för att studera i Nacka?";
+    private final static String HAS_SCHOOL_CHECK_KEY = "caa_has_school_check";
+    private final static String HOUSING_TYPE_KEY = "caa_housing_type";
     private final static String LAST_NAME_DEFAULT = "Efternamn";
     private final static String LAST_NAME_KEY = "caa_last_name";
-    private final static String MOVING_TO_NACKA_DEFAULT = "Jag flyttar till Nacka kommun";
+    private final static String MOVING_IN_ADDRESS_DEFAULT
+        = "Inflyttningsadress";
+    private final static String MOVING_IN_ADDRESS_KEY = "caa_moving_in_address";
+    private final static String MOVING_IN_DATE_DEFAULT = "Inflyttningsdatum";
+    private final static String MOVING_IN_DATE_KEY = "caa_moving_in_date";
+    private final static String MOVING_TO_NACKA_DEFAULT
+        = "Jag flyttar till Nacka kommun";
     private final static String MOVING_TO_NACKA_KEY = "caa_moving_to_nacka";
     private final static String NO_DEFAULT = "Nej";
     private final static String NO_KEY = "caa_no";
@@ -67,13 +87,23 @@ public class CitizenAccountApplication extends CommuneBlock {
     private final static String PHONE_HOME_KEY = "caa_phone_home";
     private final static String PHONE_WORK_DEFAULT = "Telefon (arbete/mobil)";
     private final static String PHONE_WORK_KEY = "caa_phone_work";
-    private final static String PUT_CHILDREN_IN_NACKA_DEFAULT = "Jag vill ha plats för mitt barn i en skola i Nacka kommun";
-    private final static String PUT_CHILDREN_IN_NACKA_KEY = "caa_put_children_in_nacka";
+    private final static String PROPERTY_TYPE_DEFAULT = "Fastighetsbeteckning (endast villa)";
+    private final static String PROPERTY_TYPE_KEY = "caa_property_type";
+    private final static String PUT_CHILDREN_IN_NACKA_DEFAULT
+        = "Jag vill ha plats för mitt barn i en skola i Nacka kommun";
+    private final static String PUT_CHILDREN_IN_NACKA_KEY
+        = "caa_put_children_in_nacka";
     private final static String SSN_DEFAULT = "Personnummer";
     private final static String SSN_KEY = "caa_ssn";
     private final static String STREET_DEFAULT = "Gatuadress";
     private final static String STREET_KEY = "caa_street";
-   private final static String UNKNOWN_CITIZEN_DEFAULT
+    private final static String TENANCY_AGREEMENT_DEFAULT = "Hyreskontrakt";
+    private final static String TENANCY_AGREEMENT_KEY = "caa_tenancy_agreement";
+	private final static String TEXT_APPLICATION_SUBMITTED_DEFAULT
+        = "Ansökan är mottagen.";
+	private final static String TEXT_APPLICATION_SUBMITTED_KEY
+        = "caa_app_submitted";
+    private final static String UNKNOWN_CITIZEN_DEFAULT
         = "Du finns inte registrerad som medborgare i Nacka. Du har ändå"
         + " möjlighet att registrera dig för ett användarkonto om du har"
         + " planerat att flytta till Nacka eller vill att ditt barn ska gå i"
@@ -83,7 +113,7 @@ public class CitizenAccountApplication extends CommuneBlock {
     private final static String YES_KEY = "caa_yes";
     private final static String ZIP_CODE_DEFAULT = "Postnummer";
     private final static String ZIP_CODE_KEY = "caa_zip_code";
-
+    
 	private final static String SIMPLE_FORM_SUBMIT_KEY = "caa_simpleSubmit";
 	private final static String SIMPLE_FORM_SUBMIT_DEFAULT = "Skicka ansökan";
 	private final static String UNKNOWN_CITIZEN_FORM_1_SUBMIT_KEY
@@ -95,26 +125,13 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static String UNKNOWN_CITIZEN_FORM_2_SUBMIT_DEAFULT
         = "Skicka ansökan";
 
-	private final static String ERROR_NOT_EMAIL_DEFAULT
-        = "Felaktigt inmatad e-postadress";
-	private final static String ERROR_NOT_EMAIL_KEY = "caa_err_email";
-	private final static String ERROR_PHONE_HOME_DEFAULT
-        = "Felaktigt inmatat hemtelefonnummer";
-	private final static String ERROR_PHONE_HOME_KEY = "caa_error_phone_home";
-	private final static String ERROR_SSN_DEFAULT
-        = "Felaktigt inmatat personnummer (ååååmmddxxxx)";
-	private final static String ERROR_SSN_KEY = "caa_ssn_error";
     private final static String ERROR_NO_INSERT_DEFAULT
         = "Kunde inte lagra ansökan."; 
     private final static String ERROR_NO_INSERT_KEY = "caa_unable_to_insert";
-	private final static String TEXT_APPLICATION_SUBMITTED_DEFAULT
-        = "Ansökan är mottagen.";
-	private final static String TEXT_APPLICATION_SUBMITTED_KEY
-        = "caa_app_submitted";
-
+    
 	public void main (final IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
-
+        
 		try {
 			int action = parseAction(iwc);
 			switch (action) {
@@ -135,7 +152,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 			super.add(new ExceptionWrapper(e, this));
 		}    
 	}
-
+    
 	private void viewSimpleApplicationForm (final IWContext iwc) {
 		final Table table = createTable (this);
         addSimpleInputs (this, table, iwc);
@@ -145,61 +162,70 @@ public class CitizenAccountApplication extends CommuneBlock {
 		accountForm.add(table);
 		add(accountForm);
 	}
-
+    
 	private void submitSimpleForm (final IWContext iwc) {
-        final Collection mandatoryParametersNames = new HashSet ();
-        mandatoryParametersNames.add (SSN_KEY);
-        mandatoryParametersNames.add (EMAIL_KEY);
-        mandatoryParametersNames.add (PHONE_HOME_KEY);
-        final Collection stringParameterNames = new HashSet ();
-        stringParameterNames.add (EMAIL_KEY);
-        stringParameterNames.add (PHONE_HOME_KEY);
-        stringParameterNames.add (PHONE_WORK_KEY);
-        final Collection ssnParameterNames = new HashSet ();
-        ssnParameterNames.add (SSN_KEY);
-
+        final Collection mandatoryParametersNames = Arrays.asList (new String []
+            { SSN_KEY, EMAIL_KEY, PHONE_WORK_KEY });
+        final Collection stringParameterNames = Arrays.asList (new String [] {
+            EMAIL_KEY, PHONE_HOME_KEY, PHONE_WORK_KEY });
+        final Collection ssnParameterNames = Collections.singleton (SSN_KEY);
+        final Collection integerParameters = Collections.EMPTY_LIST;
+        
         try {
-            final Map parameters = parseParameters(getResourceBundle (), iwc, mandatoryParametersNames, stringParameterNames, ssnParameterNames, new HashSet ());
+            final Map parameters = parseParameters
+                    (getResourceBundle (), iwc, mandatoryParametersNames,
+                     stringParameterNames, ssnParameterNames,
+                     integerParameters);
             final String ssn = parameters.get (SSN_KEY).toString ();
             final String email = parameters.get (EMAIL_KEY).toString ();
-            final String phoneHome = parameters.get (PHONE_HOME_KEY).toString ();
-            final String phoneWork = parameters.get (PHONE_WORK_KEY).toString ();
-						final CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
+            final String phoneHome
+                    = parameters.get (PHONE_HOME_KEY).toString ();
+            final String phoneWork
+                    = parameters.get (PHONE_WORK_KEY).toString ();
+            final CitizenAccountBusiness business
+                    = (CitizenAccountBusiness) IBOLookup.getServiceInstance
+                    (iwc, CitizenAccountBusiness.class);
             final User user = business.getUser (ssn);
             if (user == null) {
                 // unknown user applies
-                final Text text = new Text (localize (UNKNOWN_CITIZEN_KEY,UNKNOWN_CITIZEN_DEFAULT));
+                final Text text = new Text (localize (UNKNOWN_CITIZEN_KEY,
+                                                      UNKNOWN_CITIZEN_DEFAULT));
                 text.setFontColor ("#ff0000");
                 add (text);
                 viewUnknownCitizenApplicationForm1 (iwc);
-            } else if (!business.insertApplication(user, ssn, email, phoneHome, phoneWork)) {
+            } else if (!business.insertApplication(user, ssn, email, phoneHome,
+                                                   phoneWork)) {
                 // known user applied, but couldn't be submitted
-                throw new Exception (localize(ERROR_NO_INSERT_KEY, ERROR_NO_INSERT_DEFAULT));
+                throw new Exception (localize(ERROR_NO_INSERT_KEY,
+                                              ERROR_NO_INSERT_DEFAULT));
             } else {
                 // known user applied and was submitted
                 if (getResponsePage() != null) {
                     iwc.forwardToIBPage(getParentPage(), getResponsePage());
                 } else {
-                    add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY, "Ansökan är skickad")));
+                    add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY,
+                                          "Ansökan är skickad")));
                 }
             }            
         } catch (UserHasLoginException uhle) {
-            final Text text = new Text(localize("user_already_has_a_login","User already has a login"), true, false, false);
+            final Text text = new Text
+                    (localize("user_already_has_a_login",
+                              "Du har redan ett konto"), true, false, false);
             text.setFontColor ("#ff0000");
             add (text);
             add (Text.getBreak ());
-						viewSimpleApplicationForm(iwc);
+            viewSimpleApplicationForm(iwc);
         } catch (final Exception e) {
             final Text text = new Text(e.getMessage (), true, false, false);
             text.setFontColor ("#ff0000");
             add (text);
             add (Text.getBreak ());
-						viewSimpleApplicationForm(iwc);
+            viewSimpleApplicationForm(iwc);
         }
     }
-
+    
 	private void viewUnknownCitizenApplicationForm1 (final IWContext iwc) {
-		Table table = createTable (this);
+		final Table table = createTable (this);
         addSimpleInputs (this, table, iwc);
         int row = 5;
         addHeader (this, table, 1, row,
@@ -252,69 +278,28 @@ public class CitizenAccountApplication extends CommuneBlock {
 		accountForm.add(table);
 		add(accountForm);
     }
-
+    
     private void submitUnknownCitizenForm1 (final IWContext iwc) {
-        final Collection mandatoryParametersNames = new HashSet ();
-        mandatoryParametersNames.add (SSN_KEY);
-        mandatoryParametersNames.add (EMAIL_KEY);
-        mandatoryParametersNames.add (PHONE_HOME_KEY);
-        mandatoryParametersNames.add (FIRST_NAME_KEY);
-        mandatoryParametersNames.add (LAST_NAME_KEY);
-        mandatoryParametersNames.add (STREET_KEY);
-        mandatoryParametersNames.add (ZIP_CODE_KEY);
-        mandatoryParametersNames.add (CITY_KEY);
-        mandatoryParametersNames.add (GENDER_KEY);
-        final Collection stringParameterNames = new HashSet ();
-        stringParameterNames.add (EMAIL_KEY);
-        stringParameterNames.add (PHONE_HOME_KEY);
-        stringParameterNames.add (PHONE_WORK_KEY);
-        stringParameterNames.add (FIRST_NAME_KEY);
-        stringParameterNames.add (LAST_NAME_KEY);
-        stringParameterNames.add (STREET_KEY);
-        stringParameterNames.add (ZIP_CODE_KEY);
-        stringParameterNames.add (CITY_KEY);
-        stringParameterNames.add (CIVIL_STATUS_KEY);
-        stringParameterNames.add (HAS_COHABITANT_KEY);
-        stringParameterNames.add (APPLICATION_REASON_KEY);
-        final Collection ssnParameterNames = new HashSet ();
-        ssnParameterNames.add (SSN_KEY);
-        final Collection integerParameters = new HashSet ();
-        integerParameters.add (GENDER_KEY);
-        integerParameters.add (CHILDREN_COUNT_KEY);        
-
+        final Collection mandatoryParameterNames = Arrays.asList (new String []
+            { SSN_KEY, EMAIL_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY, LAST_NAME_KEY,
+              STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY,
+              HAS_COHABITANT_KEY, APPLICATION_REASON_KEY, GENDER_KEY,
+              CHILDREN_COUNT_KEY });
+        final Collection stringParameterNames  = Arrays.asList (new String [] {
+            EMAIL_KEY, PHONE_HOME_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY,
+            LAST_NAME_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY,
+            HAS_COHABITANT_KEY, APPLICATION_REASON_KEY });
+        final Collection ssnParameterNames = Collections.singleton (SSN_KEY);
+        final Collection integerParameters = Arrays.asList (new String [] {
+            GENDER_KEY, CHILDREN_COUNT_KEY });
+        
         try {
             final Map parameters = parseParameters
-                    (getResourceBundle (), iwc, mandatoryParametersNames,
+                    (getResourceBundle (), iwc, mandatoryParameterNames,
                      stringParameterNames, ssnParameterNames,
                      integerParameters);
-
-            /*
-            final String ssn = parameters.get (SSN_KEY).toString ();
-            final String email = parameters.get (EMAIL_KEY).toString ();
-            final String phoneHome
-                    = parameters.get (PHONE_HOME_KEY).toString ();
-            final String phoneWork
-                    = parameters.get (PHONE_WORK_KEY).toString ();
-            final String name = parameters.get (FIRST_NAME_KEY) + " "
-                    + parameters.get (LAST_NAME_KEY);
-            final Integer genderIdAsInteger
-                    = (Integer) parameters.get (GENDER_KEY);
-            final int genderId = genderIdAsInteger.intValue ();
-            final String street = parameters.get (STREET_KEY).toString ();
-            final String zipCode = parameters.get (ZIP_CODE_KEY).toString ();
-            final String city = parameters.get (CITY_KEY).toString ();
-            final String hasCohabitantAsString
-                    = parameters.get (HAS_COHABITANT_KEY).toString ();
-            final boolean hasCohabitant
-                    = hasCohabitantAsString.equals (YES_KEY);
-            final Integer childrenCountAsInteger
-                    = (Integer) parameters.get (CHILDREN_COUNT_KEY);
-            final int childrenCount = childrenCountAsInteger.intValue ();
-            final String applicationReason
-                    = parameters.get (APPLICATION_REASON_KEY).toString ();
-            */
             viewUnknownCitizenApplicationForm2 (iwc);
-
+            
         } catch (final Exception e) {
             final Text text = new Text(e.getMessage (), true, false, false);
             text.setFontColor ("#ff0000");
@@ -323,7 +308,33 @@ public class CitizenAccountApplication extends CommuneBlock {
 			viewUnknownCitizenApplicationForm1 (iwc);
         }
     }
-
+            
+            /*
+              final String ssn = parameters.get (SSN_KEY).toString ();
+              final String email = parameters.get (EMAIL_KEY).toString ();
+              final String phoneHome
+              = parameters.get (PHONE_HOME_KEY).toString ();
+              final String phoneWork
+              = parameters.get (PHONE_WORK_KEY).toString ();
+              final String name = parameters.get (FIRST_NAME_KEY) + " "
+              + parameters.get (LAST_NAME_KEY);
+              final Integer genderIdAsInteger
+              = (Integer) parameters.get (GENDER_KEY);
+              final int genderId = genderIdAsInteger.intValue ();
+              final String street = parameters.get (STREET_KEY).toString ();
+              final String zipCode = parameters.get (ZIP_CODE_KEY).toString ();
+              final String city = parameters.get (CITY_KEY).toString ();
+              final String hasCohabitantAsString
+              = parameters.get (HAS_COHABITANT_KEY).toString ();
+              final boolean hasCohabitant
+              = hasCohabitantAsString.equals (YES_KEY);
+              final Integer childrenCountAsInteger
+              = (Integer) parameters.get (CHILDREN_COUNT_KEY);
+              final int childrenCount = childrenCountAsInteger.intValue ();
+              final String applicationReason
+              = parameters.get (APPLICATION_REASON_KEY).toString ();
+            */
+    
 	private void viewUnknownCitizenApplicationForm2 (final IWContext iwc) {
 		final Form form = new Form();
         copyParameterToHidden (iwc, form, SSN_KEY);
@@ -339,7 +350,7 @@ public class CitizenAccountApplication extends CommuneBlock {
         copyParameterToHidden (iwc, form, HAS_COHABITANT_KEY);
         copyParameterToHidden (iwc, form, CHILDREN_COUNT_KEY);
         copyParameterToHidden (iwc, form, APPLICATION_REASON_KEY);
-
+        
         final Table table = createTable (this);
         int row = 1;
         if (iwc.getParameter (HAS_COHABITANT_KEY).equals (YES_KEY)) {
@@ -366,7 +377,7 @@ public class CitizenAccountApplication extends CommuneBlock {
             addSingleInput (this, table, 1, row++, iwc,
                             PHONE_WORK_KEY + COHABITANT_KEY, 40);
         }
-
+        
         final int childrenCount = getIntParameter (iwc, CHILDREN_COUNT_KEY);
         if (childrenCount > 0) {
             // applicant has children
@@ -388,7 +399,7 @@ public class CitizenAccountApplication extends CommuneBlock {
                                 SSN_KEY + CHILDREN_KEY + i, 12);
             }
         }
-
+        
         final String applicationReason
                 = iwc.getParameter (APPLICATION_REASON_KEY);
         if (applicationReason.equals (MOVING_TO_NACKA_KEY)) {
@@ -398,22 +409,53 @@ public class CitizenAccountApplication extends CommuneBlock {
                                           MOVING_TO_NACKA_DEFAULT);
             table.mergeCells (1, row, 2, row);
             table.add (movingToNackaHeader, 1, row++);
+            addHeader (this, table, 1, row, MOVING_IN_ADDRESS_KEY,
+                       MOVING_IN_ADDRESS_DEFAULT);
+            addHeader (this, table, 2, row++, MOVING_IN_DATE_KEY,
+                       MOVING_IN_DATE_DEFAULT);
+            addSingleInput (this, table, 1, row, iwc, MOVING_IN_ADDRESS_KEY,
+                            40);
+            addSingleInput (this, table, 2, row++, iwc, MOVING_IN_DATE_KEY, 20);
+            final RadioGroup housingType
+                    = new RadioGroup (HOUSING_TYPE_KEY);
+            addRadioInput (this, iwc, housingType, TENANCY_AGREEMENT_KEY,
+                           TENANCY_AGREEMENT_DEFAULT);
+            addRadioInput (this, iwc, housingType, DETACHED_HOUSE_KEY,
+                           DETACHED_HOUSE_DEFAULT);
+            housingType.setSelected (DETACHED_HOUSE_KEY);
+            table.mergeCells (1, row, 1, row + 1);
+            table.add (housingType, 1, row);
+            addHeader (this, table, 2, row++, PROPERTY_TYPE_KEY,
+                       PROPERTY_TYPE_DEFAULT);
+            addSingleInput (this, table, 2, row++, iwc, PROPERTY_TYPE_KEY, 20);
         } else if (applicationReason.equals (PUT_CHILDREN_IN_NACKA_KEY)) {
-            // applicant wnats to put children in Nacka
+            // applicant wants to put children in Nacka
             final Text putChildrenInNackaHeader
                     = getLocalizedHeader (PUT_CHILDREN_IN_NACKA_KEY,
                                           PUT_CHILDREN_IN_NACKA_DEFAULT);
             table.mergeCells (1, row, 2, row);
             table.add (putChildrenInNackaHeader, 1, row++);
+            addHeader (this, table, 1, row++, CURRENT_KOMMUN_KEY,
+                       CURRENT_KOMMUN_DEFAULT);
+            addSingleInput (this, table, 1, row++, iwc, CURRENT_KOMMUN_KEY, 30);
+            table.mergeCells (1, row, 2, row);
+            addHeader (this, table, 1, row++, HAS_SCHOOL_CHECK_KEY,
+                       HAS_SCHOOL_CHECK_DEFAULT);
+            final RadioGroup hasSchoolCheck
+                    = new RadioGroup (HAS_SCHOOL_CHECK_KEY);
+            addRadioInput (this, iwc, hasSchoolCheck, YES_KEY, YES_DEFAULT);
+            addRadioInput (this, iwc, hasSchoolCheck, NO_KEY, NO_DEFAULT);
+            hasSchoolCheck.setSelected (YES_KEY);
+            table.add (hasSchoolCheck, 1, row++);
         }
-
+        
         addSubmitButton (this, table, row + 1, iwc,
                          UNKNOWN_CITIZEN_FORM_2_SUBMIT_KEY,
                          UNKNOWN_CITIZEN_FORM_2_SUBMIT_DEAFULT );
 		form.add (table);
 		add (form);
     }
-
+    
     private static void copyParameterToHidden
         (final IWContext iwc, final Form form, final String key) {
         if (iwc.isParameterSet (key)) {
@@ -422,7 +464,7 @@ public class CitizenAccountApplication extends CommuneBlock {
             form.add (hiddenInput);
         }
     }
-
+    
     private void submitUnknownCitizenForm2 (final IWContext iwc) {
         add (new Text ("SSN_KEY=" + iwc.getParameter (SSN_KEY) + "<br>"));
         add (new Text ("EMAIL_KEY=" + iwc.getParameter (EMAIL_KEY) + "<br>"));
@@ -437,48 +479,48 @@ public class CitizenAccountApplication extends CommuneBlock {
         add (new Text ("HAS_COHABITANT_KEY=" + iwc.getParameter (HAS_COHABITANT_KEY) + "<br>"));
         add (new Text ("CHILDREN_COUNT_KEY=" + iwc.getParameter (CHILDREN_COUNT_KEY) + "<br>"));
         add (new Text ("APPLICATION_REASON_KEY=" + iwc.getParameter (APPLICATION_REASON_KEY) + "<br>"));
-
-        /*
-		boolean isInserted = false;
-		try {
-			final CitizenAccountBusiness business
-                    = (CitizenAccountBusiness) IBOLookup.getServiceInstance
-                    (iwc, CitizenAccountBusiness.class);
-            final User user = business.getUser (ssn);
-            if (user != null) {
-                viewSimpleApplicationForm (iwc);
-                return;
-            }
-            final Calendar birth = Calendar.getInstance ();
-            birth.set (new Integer (ssn.substring (0, 4)).intValue (),
-                       new Integer (ssn.substring (4, 6)).intValue () - 1,
-                       new Integer (ssn.substring (6, 8)).intValue ());
-			isInserted = business.insertApplication
-                    (name, genderId, ssn, birth.getTime (), email,
-                     phoneHome, phoneWork,
-                     "", "", "", "", street, zipCode, city);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			isInserted = false;
-		}
-
-		if (!isInserted) {
-			_isError = true;
-			addErrorString(localize(ERROR_NO_INSERT_KEY,
-                                    ERROR_NO_INSERT_DEFAULT));
-			viewUnknownCitizenApplicationForm1 (iwc);
-			return;
-		}
         
-		if (getResponsePage() != null)
-			iwc.forwardToIBPage(getParentPage(), getResponsePage());
-		else
-			add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY,
-                                  TEXT_APPLICATION_SUBMITTED_DEFAULT)));
+        /*
+          boolean isInserted = false;
+          try {
+          final CitizenAccountBusiness business
+          = (CitizenAccountBusiness) IBOLookup.getServiceInstance
+          (iwc, CitizenAccountBusiness.class);
+          final User user = business.getUser (ssn);
+          if (user != null) {
+          viewSimpleApplicationForm (iwc);
+          return;
+          }
+          final Calendar birth = Calendar.getInstance ();
+          birth.set (new Integer (ssn.substring (0, 4)).intValue (),
+          new Integer (ssn.substring (4, 6)).intValue () - 1,
+          new Integer (ssn.substring (6, 8)).intValue ());
+          isInserted = business.insertApplication
+          (name, genderId, ssn, birth.getTime (), email,
+          phoneHome, phoneWork,
+          "", "", "", "", street, zipCode, city);
+          }
+          catch (Exception e) {
+          e.printStackTrace();
+          isInserted = false;
+          }
+          
+          if (!isInserted) {
+          _isError = true;
+          addErrorString(localize(ERROR_NO_INSERT_KEY,
+          ERROR_NO_INSERT_DEFAULT));
+          viewUnknownCitizenApplicationForm1 (iwc);
+          return;
+          }
+          
+          if (getResponsePage() != null)
+          iwc.forwardToIBPage(getParentPage(), getResponsePage());
+          else
+          add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY,
+          TEXT_APPLICATION_SUBMITTED_DEFAULT)));
         */
     }
-
+    
     private static Table createTable (final CommuneBlock communeblock) {
         final Table table = new Table ();
 		table.setCellspacing (2);
@@ -486,7 +528,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.setColor (communeblock.getBackgroundColor ());
         return table;
     }
-                                   
+    
     private static void addSimpleInputs (final CommuneBlock communeBlock,
                                          final Table table,
                                          final IWContext iwc) {
@@ -502,7 +544,7 @@ public class CitizenAccountApplication extends CommuneBlock {
                    PHONE_WORK_KEY, PHONE_WORK_DEFAULT);
         addSingleInput (communeBlock, table, 2, 4, iwc, PHONE_WORK_KEY, 20);
     }
-
+    
     private static void addGenderDropdownInput
         (final CommuneBlock communeBlock, final Table table, final int row,
          final IWContext iwc) {
@@ -531,7 +573,7 @@ public class CitizenAccountApplication extends CommuneBlock {
             e.printStackTrace ();
         }
     }
-                                   
+    
     private static void addRadioInput
         (final CommuneBlock communeBlock, final IWContext iwc,
          final RadioGroup group, final String paramId,
@@ -539,7 +581,7 @@ public class CitizenAccountApplication extends CommuneBlock {
         final String name = communeBlock.localize (paramId, defaultText);
         group.addRadioButton (paramId, communeBlock.getSmallText (name));
     }
-
+    
     private static void addSingleInput
         (final CommuneBlock communeBlock, final Table table,
          final int col, final int row ,final IWContext iwc,
@@ -562,7 +604,7 @@ public class CitizenAccountApplication extends CommuneBlock {
         final Text text = communeBlock.getSmallText (header);
         table.add (text, col, row);
     }
-
+    
     private static void addSubmitButton
         (final CommuneBlock communeBlock, final Table table, final int row,
          final IWContext iwc, final String submitId, final String defaultText) {
@@ -570,9 +612,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 		final SubmitButton submitButton = new SubmitButton
                 (communeBlock.getBundle(iwc).getImageButton (text), submitId);
 		submitButton.setStyleClass (communeBlock.getLinkFontStyle());
-		//table.add (submitButton, 2, row);
-		//table.setAlignment (2, row, "right");
-		/** Gimmi 13.11.2002 */
 		table.setAlignment (1, row, Table.HORIZONTAL_ALIGN_LEFT);
 		table.add (submitButton, 1, row);
     }
@@ -634,7 +673,7 @@ public class CitizenAccountApplication extends CommuneBlock {
     
     private static Map parseParameters
         (final IWResourceBundle bundle, final IWContext iwc,
-         final Collection mandatoryParametersNames,
+         final Collection mandatoryParameterNames,
          final Collection stringParameterNames,
          final Collection ssnParameterNames,
          final Collection integerParameterNames) throws ParseException {
@@ -645,7 +684,7 @@ public class CitizenAccountApplication extends CommuneBlock {
             final String value = iwc.getParameter (key);
             final int length = value == null ? 0 : value.trim ().length ();
             if (length == 0) {
-                if (mandatoryParametersNames.contains (key)) {
+                if (mandatoryParameterNames.contains (key)) {
                     throw new ParseException (bundle, key);
                 } else {
                     result.put (key, "");
@@ -659,7 +698,7 @@ public class CitizenAccountApplication extends CommuneBlock {
             final String key = i.next ().toString ();
             final String value = getSsn (iwc, key);
             if (value == null) {
-                if (mandatoryParametersNames.contains (key)) {
+                if (mandatoryParameterNames.contains (key)) {
                     throw new ParseException (bundle, key);
                 } else {
                     result.put (key, "");
@@ -675,7 +714,7 @@ public class CitizenAccountApplication extends CommuneBlock {
                 final String valueAsString = iwc.getParameter (key);
                 if ((valueAsString == null
                      || valueAsString.trim ().length () == 0)
-                    && !mandatoryParametersNames.contains (key)) {
+                    && !mandatoryParameterNames.contains (key)) {
                     result.put (key, new Integer (0));
                 } else {
                     final Integer value = new Integer (valueAsString);
@@ -696,7 +735,7 @@ public class CitizenAccountApplication extends CommuneBlock {
             super (createMessage (bundle, key));
             this.key = key;
         }
-
+        
         static String createMessage (final IWResourceBundle bundle,
                                      final String key) {
             final String displayName = bundle.getLocalizedString (key);
@@ -733,4 +772,4 @@ public class CitizenAccountApplication extends CommuneBlock {
       }
     */
 }
-        
+
