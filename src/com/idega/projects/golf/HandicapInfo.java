@@ -291,7 +291,17 @@ private void drawTable() throws IOException,SQLException {
 
         imageTable.add(memberImage);
 
+        Table handicapTable = new Table(1,1);
+          handicapTable.setCellspacing(3);
+          handicapTable.setCellpadding(6);
+          handicapTable.setAlignment("center");
+          handicapTable.setAlignment(1,1,"center");
+          handicapTable.setColor("#6E9173");
+          handicapTable.setColor(1,1,"#FFFFFF");
+          handicapTable.add(handicapText,1,1);
+
         myTable.add(imageTable,1,1);
+        myTable.add(handicapTable,1,1);
 }
 
 public String getBundleIdentifier(){
