@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.5 2003/09/11 14:34:58 kjell Exp $
+ * $Id: RegulationList.java,v 1.6 2003/09/22 01:31:09 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.5 2003/09/11 14:34:58 kjell Exp $
+ * $Id: RegulationList.java,v 1.6 2003/09/22 01:31:09 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class RegulationList extends AccountingBlock {
 
@@ -335,7 +335,7 @@ public class RegulationList extends AccountingBlock {
 		DropdownMenu menu = null;
 		try {
 			menu = (DropdownMenu) getStyledInterface(
-					getDropdownMenuLocalized(name, getSchoolBusiness(iwc).getSchoolManagementTypes(),"getLocalizationKey"));
+					getDropdownMenuLocalized(name, getSchoolBusiness(iwc).getSchoolCategories(),"getLocalizationKey"));
 		} catch (Exception e) {
 		}
 		menu.addMenuElementFirst("0", localize(KEY_MENU_OPERATION_HEADER, "Välj Huvudverksamhet"));

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.14 2003/09/12 00:15:50 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.15 2003/09/22 01:29:57 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTyp
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.14 2003/09/12 00:15:50 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.15 2003/09/22 01:29:57 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -86,10 +86,10 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		addAttribute(COLUMN_COMMUNE_BELONGING_ID, "Kommuntillhörighet", true, true, 
 						Integer.class, "many-to-one", CommuneBelongingType.class);
 
-		addAttribute(COLUMN_SCHOOL_YEAR1_ID, "SkolŒr 1", true, true, 
+		addAttribute(COLUMN_SCHOOL_YEAR1_ID, "Skolår 1", true, true, 
 						Integer.class, "many-to-one", SchoolYear.class);
 
-		addAttribute(COLUMN_SCHOOL_YEAR2_ID, "SkolŒr 2", true, true, 
+		addAttribute(COLUMN_SCHOOL_YEAR2_ID, "Skolår 2", true, true, 
 						Integer.class, "many-to-one", SchoolYear.class);
 	
 		addAttribute(COLUMN_OWN_POSTING_STRING, "Egen konteringsstring", true, true, String.class);

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.6 2003/09/11 21:09:46 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.7 2003/09/22 01:31:09 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -44,10 +44,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.6 2003/09/11 21:09:46 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.7 2003/09/22 01:31:09 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -272,13 +272,13 @@ public class RegulationListEditor extends AccountingBlock {
 		User user = iwc.getCurrentUser();
 		String userName = "";
 		
-		int mainOpPK = 0;
+		String mainOpPK = "";
 		int payStreamPK = 0;
 		int condTypePK = 0;
 		int regSpecTypePK = 0;
 		if (r != null) {
-			mainOpPK = Integer.parseInt(r.getOperation() != null ? 
-					r.getOperation().getPrimaryKey().toString() : "0");	
+			mainOpPK = r.getOperation() != null ? 
+					r.getOperation().getPrimaryKey().toString() : "0";	
 			payStreamPK = Integer.parseInt(r.getPaymentFlowType() != null ? 
 					r.getPaymentFlowType().getPrimaryKey().toString() : "0");
 			condTypePK = Integer.parseInt(r.getConditionType() != null ? 
@@ -618,12 +618,12 @@ public class RegulationListEditor extends AccountingBlock {
 	 * @param refIndex The initial position to set the selector to 
 	 * @return the drop down menu
 	 */
-	private DropdownMenu mainOperationSelector(IWContext iwc, String name, int refIndex) {
+	private DropdownMenu mainOperationSelector(IWContext iwc, String name, String refIndex) {
 		
 		DropdownMenu menu = null;
 		try {
 			menu = (DropdownMenu) getStyledInterface(
-					getDropdownMenuLocalized(name, getSchoolBusiness(iwc).getSchoolManagementTypes(),"getLocalizationKey"));
+				getDropdownMenuLocalized(name, getSchoolBusiness(iwc).getSchoolCategories(),"getLocalizationKey"));
 		} catch (Exception e) {
 		}
 		menu.addMenuElementFirst("0", localize(KEY_MENU_OPERATION_HEADER, "Välj Huvudverksamhet"));

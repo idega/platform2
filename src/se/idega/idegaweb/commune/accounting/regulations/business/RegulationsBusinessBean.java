@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.27 2003/09/17 08:57:04 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.28 2003/09/22 01:30:33 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -123,7 +123,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		Regulation r = null;
 		int amountVal = 0;
 		float discountVal = 0;
-		Integer operationID = null;  
 		Integer conditionOrderID = null; 
 		Integer regSpecTypeID = null;  
 		Integer conditionTypeID = null;  
@@ -140,7 +139,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			if (amount == null) amount = "0"; 
 			if (discount == null) discount = "0"; 
 			
-			if (operation == null) operation = ""; 
 			if (conditionOrder == null) conditionOrder = ""; 
 			if (regSpecType == null) regSpecType = ""; 
 			if (conditionType == null) conditionType = ""; 
@@ -155,7 +153,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				discountVal = Float.parseFloat(discount);
 			}
 			
-			operationID = operation.length() != 0 ? new Integer(operation) : null;  
 			conditionOrderID = conditionOrder.length() != 0 ? new Integer(conditionOrder) : null;  
 			regSpecTypeID = regSpecType.length() != 0 ? new Integer(regSpecType) : null;  
 			conditionTypeID = conditionType.length() != 0 ? new Integer(conditionType) : null;  
@@ -191,9 +188,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			if (paymentFlowType != null) {
 				r.setPaymentFlowType(Integer.parseInt(paymentFlowType));
 			}
-			if (operationID != null) {
-			// No data in the bean.				
-//					r.setOperation(operationID.intValue());
+			if (operation != null) {
+					r.setOperation(operation);
 			}
 			if (conditionOrderID != null) {
 				r.setConditionOrder(conditionOrderID.intValue());

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.5 2003/09/11 14:33:52 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.6 2003/09/22 01:30:52 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -16,12 +16,12 @@ import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
-import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolCategory;
 
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.5 2003/09/11 14:33:52 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.6 2003/09/22 01:30:52 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -72,7 +72,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		addAttribute(COLUMN_VAT_ELIGIBLE, "VAT Eligible", true, true, java.lang.Integer.class);
 		
 		addAttribute(COLUMN_OPERATION_ID, "Operation ID", true, true, 
-						Integer.class, "many-to-one", SchoolType.class);
+						String.class, "many-to-one", SchoolCategory.class);
 						
 		addAttribute(COLUMN_PAYMENT_FLOW_TYPE_ID, "Flow type relation ID", true, true,
 						Integer.class, "many-to-one", PaymentFlowType.class);
@@ -110,8 +110,8 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	public Integer getConditionOrder() { return getIntegerColumnValue(COLUMN_CONDITION_ORDER); }
 	public Integer getVATEligible() { return getIntegerColumnValue(COLUMN_VAT_ELIGIBLE); }
 
-	public SchoolType getOperation() { 
-		return (SchoolType) getColumnValue(COLUMN_OPERATION_ID); 
+	public SchoolCategory getOperation() { 
+		return (SchoolCategory) getColumnValue(COLUMN_OPERATION_ID); 
 	}
 	public PaymentFlowType getPaymentFlowType() { 
 		return (PaymentFlowType) getColumnValue(COLUMN_PAYMENT_FLOW_TYPE_ID); 
@@ -139,7 +139,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	public void setAmount(int amount) { setColumn(COLUMN_AMOUNT, amount); }	
 	public void setConditionOrder(int value) { setColumn(COLUMN_CONDITION_ORDER, value); }	
 	public void setVATEligible(int value) { setColumn(COLUMN_VAT_ELIGIBLE, value); }	
-	public void setOperation(int value) { setColumn(COLUMN_OPERATION_ID, value); }	
+	public void setOperation(String value) { setColumn(COLUMN_OPERATION_ID, value); }	
 	public void setPaymentFlowType(int value) { setColumn(COLUMN_PAYMENT_FLOW_TYPE_ID, value); }	
 	public void setRegSpecType(int value) { setColumn(COLUMN_REG_SPEC_TYPE_ID, value); }	
 	public void setConditionType(int value) { setColumn(COLUMN_CONDITION_TYPE_ID, value); }	

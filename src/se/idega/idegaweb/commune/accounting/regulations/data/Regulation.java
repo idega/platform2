@@ -11,7 +11,7 @@ public interface Regulation extends com.idega.data.IDOEntity
  public float getDiscount();
  public java.lang.String getLocalizationKey();
  public java.lang.String getName();
- public com.idega.block.school.data.SchoolType getOperation();
+ public com.idega.block.school.data.SchoolCategory getOperation();
  public se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowType getPaymentFlowType();
  public java.sql.Date getPeriodFrom();
  public java.sql.Date getPeriodTo();
@@ -28,7 +28,7 @@ public interface Regulation extends com.idega.data.IDOEntity
  public void setDiscount(float p0);
  public void setLocalizationKey(java.lang.String p0);
  public void setName(java.lang.String p0);
- public void setOperation(int p0);
+ public void setOperation(java.lang.String p0);
  public void setPaymentFlowType(int p0);
  public void setPeriodFrom(java.sql.Date p0);
  public void setPeriodTo(java.sql.Date p0);
