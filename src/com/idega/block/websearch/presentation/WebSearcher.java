@@ -18,6 +18,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.websearch.business.*;
 import com.idega.block.websearch.data.*;
+import com.idega.core.builder.data.ICPage;
 
 public class WebSearcher extends Block {
 
@@ -50,6 +51,7 @@ public class WebSearcher extends Block {
 	private boolean exact = false;
 	private boolean detailed = false;
 	private boolean canEdit = false;
+	private boolean showOnlySearch = false;
 
 	private String queryString = null;
 	private String direction = null;
@@ -67,6 +69,15 @@ public class WebSearcher extends Block {
 
 	private IWBundle iwb = null;
 	private IWResourceBundle iwrb = null;
+	
+	private static final int VERTICAL_LAYOUT = 1;
+	private static final int HORIZONTAL_LAYOUT = 2;
+	
+	private int layout = HORIZONTAL_LAYOUT;
+	private String searchStyleClass;
+	private String arrowStyleClass;
+	private ICPage submitPage;
+	private String inputStyle;
 
 	public WebSearcher() {
 	}
@@ -95,6 +106,10 @@ public class WebSearcher extends Block {
 			if (sReport != null)
 				report = Integer.parseInt(sReport);
 
+		}
+		
+		if (showOnlySearch) {
+			showResults = false;
 		}
 
 		canEdit = this.hasEditPermission();
@@ -145,26 +160,64 @@ public class WebSearcher extends Block {
 
 	private Form getSearchForm() {
 		Form searchForm = new Form();
-		Table table = new Table(3, 1);
+		if (submitPage != null) {
+			searchForm.setPageToSubmitTo(submitPage);
+		}
+		Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(0);
 		TextInput search = new TextInput(SEARCH_PARAM);
 		if (queryString != null) {
 			search.setContent(queryString);
 		}
+		if (inputStyle != null) {
+			search.setStyleAttribute(inputStyle);
+		}
+		Link crawl = null;
+		if (canEdit) {
+			crawl = new Link(iwrb.getLocalizedString("index.this.site", "Index this site (done every 24h)"));
+			crawl.addParameter(CRAWL_PARAM, "true");
+			crawl.addParameter(CRAWL_REPORT_PARAM, INDEX_NORMAL_REPORT);
+		}
 
-		SubmitButton button = new SubmitButton(iwrb.getLocalizedString("search", "Search"));
-		//button.setAsImageButton(true);
+		if (layout == HORIZONTAL_LAYOUT) {
+			table.setCellpadding(3);
+			SubmitButton button = new SubmitButton(iwrb.getLocalizedString("search", "Search"));
+	
+			table.add(search, 1, 1);
+			table.add(button, 2, 1);
+			if (crawl != null) {
+				table.add(crawl, 3, 1);
+			}
+		}
+		else if (layout == VERTICAL_LAYOUT) {
+			table.add(search, 1, 1);
+			table.setHeight(2, 3);
+			
+			Link link = new Link(iwrb.getLocalizedString("search", "Search"));
+			link.setToFormSubmit(searchForm);
+			if (searchStyleClass != null) {
+				link.setStyle(searchStyleClass);
+			}
 
-		table.add(search, 1, 1);
-		table.add(button, 2, 1);
+			Link arrow = new Link("&gt;&gt;");
+			arrow.setToFormSubmit(searchForm);
+			if (arrowStyleClass != null) {
+				arrow.setStyle(arrowStyleClass);
+			}
+			
+			table.add(link, 1, 3);
+			table.add(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE, 1, 3);
+			table.add(arrow, 1, 3);
+			
+			if (crawl != null) {
+				table.setHeight(4, 6);
+				table.add(crawl, 1, 5);
+			}
+		}
 
 		searchForm.add(table);
 
-		if (canEdit) {
-			Link crawl = new Link(iwrb.getLocalizedString("index.this.site", "Index this site (done every 24h)"));
-			crawl.addParameter(CRAWL_PARAM, "true");
-			crawl.addParameter(CRAWL_REPORT_PARAM, INDEX_NORMAL_REPORT);
-			table.add(crawl, 3, 1);
-		}
 
 		return searchForm;
 
@@ -384,4 +437,43 @@ public class WebSearcher extends Block {
 		getSessionMap(iwc).put(value,wshi);
 	}
 
+	/**
+	 * @param showOnlySearch The showOnlySearch to set.
+	 */
+	public void setShowOnlySearch(boolean showOnlySearch) {
+		this.showOnlySearch = showOnlySearch;
+	}
+	/**
+	 * @param arrowStyleClass The arrowStyleClass to set.
+	 */
+	public void setArrowStyleClass(String arrowStyleClass) {
+		this.arrowStyleClass = arrowStyleClass;
+	}
+	/**
+	 * @param inputStyle The inputStyle to set.
+	 */
+	public void setInputStyle(String inputStyle) {
+		this.inputStyle = inputStyle;
+	}
+	/**
+	 * @param searchStyleClass The searchStyleClass to set.
+	 */
+	public void setSearchStyleClass(String searchStyleClass) {
+		this.searchStyleClass = searchStyleClass;
+	}
+	/**
+	 * @param submitPage The submitPage to set.
+	 */
+	public void setSubmitPage(ICPage submitPage) {
+		this.submitPage = submitPage;
+	}
+	
+	public void setVerticalLayout(boolean vertical) {
+		if (vertical) {
+			layout = VERTICAL_LAYOUT;
+		}
+		else {
+			layout = HORIZONTAL_LAYOUT;
+		}
+	}
 }
