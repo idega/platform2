@@ -1,5 +1,7 @@
 package se.idega.idegaweb.commune.childcare.business;
 
+import java.rmi.RemoteException;
+
 
 public interface AfterSchoolBusiness extends ChildCareBusiness
 {
@@ -10,4 +12,5 @@ public interface AfterSchoolBusiness extends ChildCareBusiness
   public java.util.Collection findChoicesByProvider(int p0) throws java.rmi.RemoteException;
  public java.util.Collection findChoicesByProvider(int p0, String p1) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.care.data.AfterSchoolChoice getAfterSchoolChoice(java.lang.Object p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
+ public java.util.Collection createContractsForChildrenWithSchoolPlacement(int p0, com.idega.user.data.User p1, java.util.Locale p2) throws RemoteException;
 }

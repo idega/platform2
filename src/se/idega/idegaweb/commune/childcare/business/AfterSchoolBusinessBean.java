@@ -9,13 +9,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoiceHome;
+import se.idega.idegaweb.commune.care.data.ChildCareApplication;
+
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
@@ -245,5 +250,23 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			log(ire);
 		}
 		return false;
+	}
+	
+	public Collection createContractsForChildrenWithSchoolPlacement(int providerId, User user, Locale locale) {
+		Collection users = new ArrayList();
+		Collection applications = findChoicesByProvider(providerId, "c.QUEUE_DATE");
+		Iterator iter = applications.iterator();
+		while (iter.hasNext()) {
+			ChildCareApplication application = (ChildCareApplication) iter.next();
+			boolean hasSchoolPlacement = false;
+			try { 
+				hasSchoolPlacement = getSchoolBusiness().hasActivePlacement(application.getChildId(), providerId, getSchoolBusiness().getCategoryElementarySchool());
+			} catch (RemoteException e) {}
+			if (hasSchoolPlacement && (application.getApplicationStatus() == getStatusSentIn())) {
+				users.add(application.getChild());
+				assignContractToApplication(((Integer) application.getPrimaryKey()).intValue(), -1, null, null, -1, user, locale, true);
+			}
+		}
+		return users;
 	}
 }
