@@ -1,25 +1,50 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
+import is.idega.idegaweb.member.presentation.UserSearcher;
+
+import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.ListTable;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
+
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.*;
-import is.idega.idegaweb.member.presentation.UserSearcher;
-import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
-import se.idega.idegaweb.commune.accounting.invoice.data.*;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
-import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
-import se.idega.idegaweb.commune.accounting.presentation.*;
-import se.idega.idegaweb.commune.accounting.regulations.data.*;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 
 /**
  * InvoiceCompilationEditor is an IdegaWeb block were the user can search, view
@@ -34,10 +59,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/11 10:35:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/11 13:37:51 $ by $Author: goranb $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
