@@ -536,7 +536,6 @@ public class ProductEditorWindow extends IWAdminWindow {
 		List files = _business.getFiles(_product);
 
 		if (files != null && files.size() > 0) {
-			System.out.println("Files are not null");
 			RadioButton radio;
 			int imageId = _product.getFileId();
 
