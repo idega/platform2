@@ -110,27 +110,27 @@ public class ManagerView extends CommuneBlock {
 				
 				String sManagerName = manager.getNameLastFirst();
 				Text tManagerName = getSmallText(sManagerName);
-				mainTable.add(tManagerName,1,1);
+				leftTable.add(tManagerName,1,1);
 				
 				String sWorkGroup = getWorkGroupName(manager,iwc);
 				Text tWorkGroup = getSmallText(sWorkGroup);
-				mainTable.add(tWorkGroup,1,2);
+				leftTable.add(tWorkGroup,1,2);
 				
 				String sWorkGroupArea = "";
 				Text tWorkGroupArea = getSmallText(sWorkGroupArea);
-				mainTable.add(tWorkGroupArea,1,3);
+				leftTable.add(tWorkGroupArea,1,3);
 				
 				String sWorkGroupDescription = getWorkGroupDescription(manager,iwc);
 				Text tWorkGroupDescription = getSmallText(sWorkGroupDescription);
-				mainTable.add(tWorkGroupDescription,1,4);
+				leftTable.add(tWorkGroupDescription,1,4);
 				
 				String sManagerEmail = getManagerEmail(manager,iwc);
 				Text tManagerEmail = getSmallText(sManagerEmail);
-				mainTable.add(tManagerEmail,1,6);
+				leftTable.add(tManagerEmail,1,6);
 				
 				String sManagerTelephone = getManagerTelephone(manager,iwc);
 				Text tManagerTelephone = getSmallText(sManagerTelephone);
-				mainTable.add(tManagerTelephone,1,7);
+				leftTable.add(tManagerTelephone,1,7);
 				
 				
 			} else {
@@ -146,7 +146,7 @@ public class ManagerView extends CommuneBlock {
 	 * @return String
 	 */
 	private String getManagerTelephone(User manager,IWContext iwc) {
-		return null;
+		return "-";
 	}
 
 
@@ -158,7 +158,7 @@ public class ManagerView extends CommuneBlock {
 	private String getManagerEmail(User manager,IWContext iwc) {
 		try{
 			getUserBusiness(iwc).getUsersMainAddress(manager);
-			return null;
+			return "-";
 		}
 		catch(Exception e){
 			//e.printStackTrace();
@@ -178,7 +178,7 @@ public class ManagerView extends CommuneBlock {
 			return getWorkGroup(manager,iwc).getDescription();
 		} catch (Exception e)
 		{
-			return "";
+			return "-";
 		}
 	}
 
@@ -210,7 +210,7 @@ public class ManagerView extends CommuneBlock {
 			return getWorkGroup(manager,iwc).getName();
 		} catch (Exception e)
 		{
-			return "";
+			return "-";
 		}
 	}
 

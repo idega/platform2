@@ -4,12 +4,13 @@ import java.util.*;
 import javax.ejb.EJBException;
 import se.idega.idegaweb.commune.message.data.*;
 import se.idega.idegaweb.commune.business.CommuneCaseBusiness;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.*;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.builder.data.IBPage;
-import com.idega.core.user.data.User;
+import com.idega.user.data.User;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
@@ -22,47 +23,30 @@ import com.idega.util.IWTimestamp;
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class UserCases extends CommuneBlock {
+public class ManagerListView extends CommuneBlock {
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
-	private final static int ACTION_VIEW_CASE_LIST = 1;
-	/*
-	private final static int ACTION_VIEW_MESSAGE = 2;
-	private final static int ACTION_SHOW_DELETE_INFO = 3;
-	private final static int ACTION_DELETE_MESSAGE = 4;
-	
-	private final static String PARAM_VIEW_MESSAGE = "msg_view_msg";
-	private final static String PARAM_VIEW_MESSAGE_LIST = "msg_view_msg_list";
-	private final static String PARAM_MESSAGE_ID = "msg_id";
-	private final static String PARAM_SHOW_DELETE_INFO = "msg_s_delete_i";
-	private final static String PARAM_DELETE_MESSAGE = "msg_delete_message";
-	*/
-	private final static String PARAM_CASE_ID = "USC_CASE_ID";
+	private final static int ACTION_VIEW_MANAGER_LIST = 2;
+	private final static int ACTION_VIEW_MANAGER = 3;
+
 	private final static String PARAM_MANAGER_ID = ManagerView.PARAM_MANAGER_ID;
 	private Table mainTable = null;
-	private int manager_page_id = -1;
-	public UserCases() {
-	}
+	private int managerPageID = -1;
+
+
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
-	public void main(IWContext iwc) {
-		//this.setResourceBundle(getResourceBundle(iwc));
+	public void main(IWContext iwc)throws Exception {
 		try {
 			int action = parseAction(iwc);
+			//System.out.println("main: action="+action);
 			switch (action) {
-				case ACTION_VIEW_CASE_LIST :
-					viewCaseList(iwc);
-					/*   break;
-					 case ACTION_VIEW_MESSAGE:
-					   viewMessage(iwc);
-					   break;
-					 case ACTION_SHOW_DELETE_INFO:
-					   showDeleteInfo(iwc);
-					   break;
-					 case ACTION_DELETE_MESSAGE:
-					   deleteMessage(iwc);
-					   viewMessageList(iwc);
-					   break;*/
+				case ACTION_VIEW_MANAGER_LIST :
+					viewManagerList(iwc);
+					break;
+				case ACTION_VIEW_MANAGER :
+					viewManager(iwc);
+					break;
 				default :
 					break;
 			}
@@ -71,6 +55,15 @@ public class UserCases extends CommuneBlock {
 			super.add(new ExceptionWrapper(e, this));
 		}
 	}
+	
+	public Object clone(){
+		ManagerListView view = (ManagerListView)super.clone();
+		if(mainTable!=null){
+			view.mainTable=(Table)mainTable.clone();
+		}
+		return view;
+	}
+	
 	public void add(PresentationObject po) {
 		if (mainTable == null) {
 			mainTable = new Table();
@@ -82,102 +75,43 @@ public class UserCases extends CommuneBlock {
 		mainTable.add(po);
 	}
 	private int parseAction(IWContext iwc) {
-		int action = ACTION_VIEW_CASE_LIST;
-		/*if(iwc.isParameterSet(PARAM_VIEW_MESSAGE)){
-		  action = ACTION_VIEW_MESSAGE;
+		int action = ACTION_VIEW_MANAGER_LIST;
+		if(iwc.isParameterSet(PARAM_MANAGER_ID)){
+		  action = ACTION_VIEW_MANAGER;
 		}
-		if(iwc.isParameterSet(PARAM_SHOW_DELETE_INFO)){
-		  action = ACTION_SHOW_DELETE_INFO;
-		}
-		if(iwc.isParameterSet(PARAM_DELETE_MESSAGE)){
-		  action = ACTION_DELETE_MESSAGE;
-		}*/
 		return action;
 	}
-	private void viewCaseList(IWContext iwc) throws Exception {
-		add(getLocalizedHeader("usercases.my_cases", "My cases"));
+	private void viewManagerList(IWContext iwc) throws Exception {
+		//System.out.println("viewManagerList()");
+		add(getLocalizedHeader("managerlistview.managers", "Managers:"));
 		add(new Break(2));
-		if (iwc.isLoggedOn()) {
-			Collection cases = getCommuneCaseBusiness(iwc).getAllCasesDefaultVisibleForUser(Converter.convertToNewUser(iwc.getUser()));
-			if (cases != null & !cases.isEmpty()) {
+		//if (iwc.isLoggedOn()) {
+			Collection users = getCommuneUserBusiness(iwc).getAllCommuneAdministrators();
+			if (users != null & !users.isEmpty()) {
 				Form f = new Form();
-				ColumnList messageList = new ColumnList(6);
+				ColumnList messageList = new ColumnList(3);
 				f.add(messageList);
 				messageList.setBackroundColor("#e0e0e0");
-				messageList.setHeader(localize("usercases.case_number", "Case number"), 1);
-				messageList.setHeader(localize("usercases.concerning", "Concerning"), 2);
-				messageList.setHeader(localize("usercases.name", "Name"), 3);
-				messageList.setHeader(localize("usercases.date", "Date"), 4);
-				messageList.setHeader(localize("usercases.manager", "Manager"), 5);
-				messageList.setHeader(localize("usercases.status", "Status"), 6);
-				Collection messages = getCaseBusiness(iwc).getAllCasesForUser(Converter.convertToNewUser(iwc.getUser()));
-				Text caseNumber = null;
-				Text caseType = null;
-				Text caseOwnerName = null;
-				Text date = null;
-				Text manager = null;
-				Text status = null;
+				messageList.setHeader(localize("managerlistview.name", "Name"), 1);
+
+				PresentationObject userName = null;
+
 				//CheckBox deleteCheck = null;
 				boolean isRead = false;
-				DateFormat dateFormat = com.idega.util.CustomDateFormat.getDateTimeInstance(iwc.getCurrentLocale());
-				if (cases != null) {
-					Collection casesVector = cases;
-					//Collection casesVector = new Vector(cases);
-					//Collections.sort(messageVector,new MessageComparator());
-					Iterator iter = casesVector.iterator();
+				if (users != null) {
+					Iterator iter = users.iterator();
 					while (iter.hasNext()) {
 						try {
-							Case theCase = (Case) iter.next();
-							Date caseDate = new Date(theCase.getCreated().getTime());
-							//isRead = getCaseBusiness(iwc).isMessageRead(msg);
-							caseNumber = getSmallText(theCase.getPrimaryKey().toString());
-							caseType =
-								getSmallText(
-									getCaseBusiness(iwc).getCaseBusiness(theCase.getCaseCode()).getLocalizedCaseDescription(
-										theCase,
-										iwc.getCurrentLocale()));
-							//subject.addParameter(PARAM_VIEW_MESSAGE,"true");
-							//subject.addParameter(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
-							/*if ( !isRead )
-								subject.setBold();
-							date = this.getSmallText(dateFormat.format(msgDate));
-							if ( !isRead )
-								date.setBold();
-							*/
-							date = this.getSmallText(dateFormat.format(caseDate));
-							String managerName = null;
-							int managerID = -1;
-							try {
-								Group handler = theCase.getHandler();
-								managerID = ((Integer)handler.getPrimaryKey()).intValue();
-								managerName = getUserBusiness(iwc).getNameOfGroupOrUser(handler);
-							} catch (Exception e) {
-								//manager = this.getSmallText("-");
+							User user = (User) iter.next();
+							Text tUserName = getSmallText(user.getName());
+							Link lUserName = new Link(tUserName);
+							userName = lUserName;
+							if(managerPageID!=-1){
+								lUserName.setPage(managerPageID);
 							}
-							if (managerName == null) {
-								manager = this.getSmallText("-");
-							} else {
-								manager = this.getSmallText(managerName);
-								if (getManagerPage() != -1) {
-									Link managerLink = new Link(manager);
-									managerLink.setPage(getManagerPage());
-									managerLink.addParameter(PARAM_MANAGER_ID, managerID);
-									manager = managerLink;
-								}
-							}
-							//deleteCheck = new CheckBox(PARAM_CASE_ID,msg.getPrimaryKey().toString());
-							caseOwnerName = getSmallText(theCase.getOwner().getFirstName());
-							status =
-								getSmallText(
-									getCaseBusiness(iwc).getLocalizedCaseStatusDescription(
-										theCase.getCaseStatus(),
-										iwc.getCurrentLocale()));
-							messageList.add(caseNumber);
-							messageList.add(caseType);
-							messageList.add(caseOwnerName);
-							messageList.add(date);
-							messageList.add(manager);
-							messageList.add(status);
+							lUserName.addParameter(PARAM_MANAGER_ID,user.getPrimaryKey().toString());
+							messageList.add(userName);
+
 						} catch (Exception e) {
 							add(e);
 							e.printStackTrace();
@@ -185,19 +119,21 @@ public class UserCases extends CommuneBlock {
 						//messageList.add(deleteCheck);
 					}
 				}
-				//SubmitButton deleteButton = new SubmitButton(this.getLocalizedString("message.delete", "Delete", iwc));
-				//deleteButton.setAsImageButton(true);
 				messageList.skip(2);
-				//PresentationObject[] bottomRow = new PresentationObject[3];
-				//bottomRow[2] = deleteButton;
-				//messageList.addBottomRow(bottomRow);
 				add(f);
 			} else {
-				add(getSmallText(localize("usercases.no_ongoing_cases", "No ongoing cases")));
+				add(getSmallText(localize("managerlistview.no_managers", "No managers")));
 			}
-		}
-		//f.addParameter(PARAM_SHOW_DELETE_INFO,"true");
+		//}
 	}
+	
+	
+	private void viewManager(IWContext iwc) throws Exception {
+		//System.out.println("viewManager()");
+		add(new ManagerView());
+	}
+	
+	
 	/*
 	  private void viewCase(IWContext iwc)throws Exception{
 	    Message msg = getMessage(iwc.getParameter(PARAM_MESSAGE_ID),iwc);
@@ -295,20 +231,20 @@ public class UserCases extends CommuneBlock {
 	}
 	private UserBusiness getUserBusiness(IWContext iwc) throws Exception {
 		return (UserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+	}
+	
+	private CommuneUserBusiness getCommuneUserBusiness(IWContext iwc) throws Exception {
+		return (CommuneUserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
 	}	
 	
-	private Case getCase(String id, IWContext iwc) throws Exception {
-		int msgId = Integer.parseInt(id);
-		Case msg = getCaseBusiness(iwc).getCase(msgId);
-		return msg;
+	
+	public void setManagerViewPage(IBPage page) {
+		setManagerViewPage(page.getID());
 	}
-	public void setManagerPage(IBPage page) {
-		manager_page_id = page.getID();
+	public void setManagerViewPage(int ib_page_id) {
+		managerPageID = ib_page_id;
 	}
-	public void setManagerPage(int ib_page_id) {
-		manager_page_id = ib_page_id;
-	}
-	public int getManagerPage() {
-		return manager_page_id;
+	public int getManagerViewPage() {
+		return managerPageID;
 	}
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.idega.builder.data.IBPage;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.InterfaceObject;
@@ -70,7 +71,12 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	public void setResourceBundle(IWResourceBundle iwrb) {
 		this.iwrb = iwrb;
 	}
-
+	
+	public void _main(IWContext iwc)throws Exception{
+		this.setResourceBundle(getResourceBundle(iwc));
+		super._main(iwc);
+	}
+	
 	public IWResourceBundle getResourceBundle() {
 		return this.iwrb;
 	}
