@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.118 2003/07/02 18:19:41 laddi Exp $
+ * $Id: NewsReader.java,v 1.119 2003/07/02 20:16:18 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -44,6 +44,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Parameter;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 /**
  * Title:
@@ -104,6 +105,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
   private boolean showMoreText = false;
   private boolean showCollectionText = true;
   private boolean showTeaserText = true;
+  private boolean addImageInfo = true;
   private String outerTableWidth = "100%";
   private String sObjectAlign = "center";
   private String headlineImageURL;
@@ -1231,7 +1233,8 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 						newsImage.setMaxImageWidth(ImageWidth);
 					Link L = new Link(newsImage);
 					L.addParameter(ImageWindow.prmImageId,imid);
-					L.addParameter(ImageWindow.prmInfo,headline);
+					if (addImageInfo)
+						L.addParameter(ImageWindow.prmInfo,TextSoap.convertSpecialCharacters(headline));
 					L.setWindowToOpen(ImageWindow.class);
 					return L;
 				}
@@ -1242,4 +1245,11 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 		}
 		return null;
   }
+/**
+ * @param addImageInfo
+ */
+public void setShowImageInfo(boolean showImageInfo) {
+	addImageInfo = showImageInfo;
+}
+
 }
