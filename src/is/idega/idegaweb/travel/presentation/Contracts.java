@@ -854,10 +854,11 @@ public class Contracts extends TravelManager {
       }else {
       	if (contract.getFrom() != null) {
       		useTimeframes = true;
-					//System.out.println("[Contract] getting contract from date : "+new IWTimestamp(contract.getFrom()).getSQLDate());
-	        pFrom.setDate(new IWTimestamp(contract.getFrom()).getSQLDate());
-					//System.out.println("[Contract] getting contract to date :"+new IWTimestamp(contract.getTo()).getSQLDate());
-	        pTo.setDate(new IWTimestamp(contract.getTo()).getSQLDate());
+//					System.out.println("[Contract] getting contract from date : "+new IWTimestamp(contract.getFrom()));
+//	        pFrom.setDate(new IWTimestamp(contract.getFrom()).toSQLDate());
+	        pFrom.setDate(new IWTimestamp(contract.getFrom()).getDate());
+//					System.out.println("[Contract] getting contract to date :"+new IWTimestamp(contract.getTo()).getSQLDate());
+	        pTo.setDate(new IWTimestamp(contract.getTo()).getDate());
       	}
       }
     }catch (TimeframeNotFoundException tnfe) {
