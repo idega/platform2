@@ -167,8 +167,10 @@ private ModuleObject getTreeLines(ICTreeNode node,boolean nodeOpen, int[] parent
   Image image;
   if(isLeafNode(node)){
       if( startNode!=node ) image = bundle.getImage(TREEVIEW_PREFIX+TREEVIEW_LINE+typeOfNode+GIF_SUFFIX);
-      else image = bundle.getImage("transparentcell.gif");//if it is the top node
-
+      else{
+        image = bundle.getImage("transparentcell.gif");//if it is the top node
+        image.setWidth(17);
+      }
       return image;
   }
   else{
