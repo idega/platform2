@@ -1,7 +1,6 @@
 package com.idega.block.dataquery.data.sql;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.idega.block.dataquery.data.xml.QueryXMLConstants;
@@ -37,12 +36,7 @@ public class SimpleFunctionExpression extends FunctionExpression {
   protected void initialize(SQLQuery sqlQuery) {
     String function = queryField.getFunction();
     sqlFunctionName = (String) FUNCTION_SQL.get(function);
-    List fieldValueList = sqlQuery.getUniqueNameForField(queryField);
-    if (fieldValueList.size() != 1) {
-      // something wrong
-      return;
-    }
-    fieldValue = (String) fieldValueList.get(0);
+    fieldValue = sqlQuery.getUniqueNameForField(queryField);
   }
     
   

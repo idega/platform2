@@ -221,6 +221,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 
   public void synchronizeResultAndDesign(QueryResult result, Map parameterMap, DesignBox designBox)  {
   	JasperDesign reportDesign = designBox.getDesign();
+  	Map designParameterMap = designBox.getParameterMap();
     List designFieldsToRemove = new ArrayList();
     // get fields of the report design
     List fields = reportDesign.getFieldsList();
@@ -238,13 +239,26 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       else {
         result.mapDesignIdToFieldId(designFieldId, field.getId());
         String display = field.getValue(QueryResultField.DISPLAY);
-        StringBuffer buffer = new StringBuffer(REPORT_COLUMN_PARAMETER_NAME);
-        buffer.append(orderNumber);
-        parameterMap.put(buffer.toString(), display);
+        String displayKey = getColumnParameter(orderNumber);
+        // be sure that the display key is set. Usually a default value is set by the design box! If not, set it now.
+        if (display == null || display.length() == 0)  {
+        	if (! designParameterMap.containsKey(displayKey))	{
+        		parameterMap.put(displayKey, "");
+        	}
+        }
+        else {
+        	parameterMap.put(displayKey, display);
+        }
       }
       orderNumber++;
     }
     removeFields(designFieldsToRemove, reportDesign);
+  }
+  
+  private String getColumnParameter(int orderNumber) {
+  	 StringBuffer buffer = new StringBuffer(REPORT_COLUMN_PARAMETER_NAME);
+     buffer.append(orderNumber);
+     return buffer.toString();
   }
     
     
@@ -350,13 +364,19 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   		design.setPageHeight(DynamicReportDesign.PAGE_HEIGHT_LANDSCAPE_A4);
   	}
   	// set fields
+  	int orderNumber = 1;
   	Iterator fieldIterator = fields.iterator();
   	while (fieldIterator.hasNext()) {
   		QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
   		String fieldName =  fieldPart.getName();
+  		String localizedFieldName = resourceBundle.getLocalizedString(fieldName, fieldName);
   		String type = fieldPart.getTypeClass();
-  		parameterMap.put(fieldName, resourceBundle.getLocalizedString(fieldName, fieldName));
-  		design.addField(fieldName, type, columnWidth);
+      String displayParameter = getColumnParameter(orderNumber);
+      // !!! do not store it with the key field name but with the alias name
+      String aliasName = fieldPart.getAliasName();
+  		parameterMap.put(displayParameter, localizedFieldName);
+  		design.addField(aliasName, displayParameter, type, columnWidth);
+  		orderNumber++;
   	}
   	// add fields for values and descriptions of the dynamic fields to header
   	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();

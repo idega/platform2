@@ -3,7 +3,6 @@ package com.idega.block.dataquery.data.sql;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import com.idega.block.dataquery.data.xml.QueryConditionPart;
@@ -72,12 +71,7 @@ public class CriterionExpression implements DynamicExpression {
   	// set Handler 
   	String inputHandlerDescription = sqlQuery.getHandlerDescriptionForField(path, field); 
   	String inputHandlerClass = sqlQuery.getInputHandlerForField(path, field);
-  	List fieldValueList = sqlQuery.getUniqueNameForField(path,field);
-  	if (fieldValueList.size() != 1)	{
-  		// something wrong
-  		return;
-  	}
-  	valueField = (String) fieldValueList.get(0);
+  	valueField =  sqlQuery.getUniqueNameForField(path,field);
     String type = condition.getType();
     comparison = (String) typeSQL.get(type);
     // set pattern
@@ -95,13 +89,8 @@ public class CriterionExpression implements DynamicExpression {
 		 	identifierValueMap.put(identifier, pattern);
   	}
   	else {
-  		 List patternFieldValueList = sqlQuery.getUniqueNameForField(patternPath,patternFieldName);
-  		 if (patternFieldValueList.size() != 1)	{
-  		 	// something wrong
-  		 	return;
-  		 }
-  		 patternField = (String) patternFieldValueList.get(0);
-  	}
+  		patternField = sqlQuery.getUniqueNameForField(patternPath,patternFieldName);
+   	}
    	identifierInputDescriptionMap = new HashMap();
    	String description = condition.getDescription();
    	if (description == null || description.length() == 0)	{

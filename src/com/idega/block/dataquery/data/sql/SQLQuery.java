@@ -237,15 +237,27 @@ public class SQLQuery implements DynamicExpression {
   	return fieldOrder;
   }
   
+    
   public List getDisplayNames() {
     List displayNames = new ArrayList();
     Iterator fieldOrderIterator = fieldOrder.iterator();
     while (fieldOrderIterator.hasNext())  {
       QueryFieldPart queryField = (QueryFieldPart) fieldOrderIterator.next();
-      String display = queryField.getDisplay(); 
-      displayNames.add(display);
+      String displayName = queryField.getDisplay(); 
+      displayNames.add(displayName);
     }
     return displayNames;
+  }
+  
+  public List getAliasFieldNames() {
+    List fieldNames = new ArrayList();
+    Iterator fieldOrderIterator = fieldOrder.iterator();
+    while (fieldOrderIterator.hasNext())  {
+      QueryFieldPart queryField = (QueryFieldPart) fieldOrderIterator.next();
+      String fieldName = queryField.getAliasName(); 
+      fieldNames.add(fieldName);
+    }
+    return fieldNames;
   }
 
 	public String getPath()	{
@@ -495,26 +507,19 @@ public class SQLQuery implements DynamicExpression {
     return tableName;
   }
   
-  protected List getUniqueNameForField(QueryFieldPart queryFieldPart)	{
-  	List result = new ArrayList();
+  protected String getUniqueNameForField(QueryFieldPart queryFieldPart)	{
   	if (queryFieldPart == null) 	{
-  		return result;
+  		return null;
   	}
-
 		String entityPath = queryFieldPart.getPath();
 		String uniqueName = getUniqueNameForEntity(entityPath);
-		String[] columns = queryFieldPart.getColumns();
-		for (int i = 0; i < columns.length; i++) {
-			String columnName = columns[i];
-			StringBuffer buffer = new StringBuffer(uniqueName);
-			buffer.append(DOT).append(columnName);
-			String uniqueColumnName = buffer.toString();
-			result.add(uniqueColumnName);
-		}
-		return result;
+		String fieldName = queryFieldPart.getName();
+		StringBuffer buffer = new StringBuffer(uniqueName);
+		buffer.append(DOT).append(fieldName);
+		return buffer.toString();
   }
 
-  protected List getUniqueNameForField(String path, String fieldName)  {
+  protected String getUniqueNameForField(String path, String fieldName)  {
     QueryFieldPart field = getField(path, fieldName);
     return getUniqueNameForField(field);
   }

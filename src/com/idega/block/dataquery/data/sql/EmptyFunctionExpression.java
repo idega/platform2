@@ -1,9 +1,5 @@
 package com.idega.block.dataquery.data.sql;
 
-import java.util.Iterator;
-import java.util.List;
-
-import com.idega.util.StringHandler;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -16,32 +12,19 @@ import com.idega.util.StringHandler;
  */
 public class EmptyFunctionExpression extends FunctionExpression {
 
-  private List fieldValues = null;
+  private String fieldValue = null;
   
   protected void initialize(SQLQuery sqlQuery) {
-    fieldValues = sqlQuery.getUniqueNameForField(queryField);
+    fieldValue = sqlQuery.getUniqueNameForField(queryField);
   }
     
   
   public String toSQLString() {
-    StringBuffer buffer = new StringBuffer();
-    Iterator fieldValuesIterator = fieldValues.iterator();
-    boolean useComma = false;
-    while (fieldValuesIterator.hasNext()) {
-      String value = (String) fieldValuesIterator.next();
-      if (useComma)   {
-        buffer.append(", ");
-      }
-      else {
-        useComma = true;
-      }
-      buffer.append(value).append(' ');
-    }
-    return buffer.toString();  
+  	return fieldValue;
   }
     
   public boolean isValid() {
-    return StringHandler.elementsAreNotEmpty(fieldValues);
+    return (fieldValue != null && fieldValue.length() != 0);
   } 
   
 

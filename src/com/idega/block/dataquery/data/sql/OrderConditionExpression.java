@@ -1,7 +1,5 @@
 package com.idega.block.dataquery.data.sql;
 
-import java.util.List;
-
 import com.idega.block.dataquery.data.xml.QueryOrderConditionPart;
 
 /**
@@ -26,8 +24,6 @@ public class OrderConditionExpression implements Expression {
 	private String valueField = null;
 	private String path = null;
 	
-	private int orderPriority = 0;
-	
   public OrderConditionExpression(QueryOrderConditionPart orderConditionPart, SQLQuery sqlQuery) {
   	initialize(orderConditionPart, sqlQuery);
   }
@@ -36,13 +32,7 @@ public class OrderConditionExpression implements Expression {
   	String field = orderConditionPart.getField();
   	path = orderConditionPart.getPath();
   	isAscendant = orderConditionPart.isAscendant();
-  	List fieldValueList = sqlQuery.getUniqueNameForField(path,field);
-  	if (fieldValueList.size() != 1)	{
-  		// something wrong
-  		return;
-  	}
-  	valueField = (String) fieldValueList.get(0);
-  	orderPriority = orderConditionPart.getOrderPriority();
+  	valueField = sqlQuery.getUniqueNameForField(path,field);
   }
   
    	
