@@ -21,6 +21,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.RadioButton;
@@ -28,6 +29,7 @@ import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
+import com.idega.util.LocaleUtil;
 
 /**
  * Description: <br>
@@ -53,14 +55,13 @@ public class RunRegistration extends Block{
   private Text redStar;
   private Text infoRedStarText;
   //texts step one
+  private Text distanceText;
   private Text primaryDDLable;
   private Text secondaryDDLable;
   private Text nameText;
   private Text nationalityText;
   private Text ssnText;
   private Text genderText;
-  private Text femaleText;
-  private Text maleText;
   private Text addressText;
   private Text postalText;
   private Text cityText;
@@ -88,9 +89,8 @@ public class RunRegistration extends Block{
   private TextInput nameField;
   private DropdownMenu nationalityField;
   private TextInput ssnISField;
-  private TextInput ssnField;
-  private RadioButton femaleField;
-  private RadioButton maleField;
+  private DateInput ssnField;
+  private DropdownMenu genderField;
   private TextInput addressField;
   private TextInput postalField;
   private TextInput cityField;
@@ -147,14 +147,13 @@ public class RunRegistration extends Block{
     redStar.setFontColor("#ff0000");
     infoRedStarText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_INFO_RED_STAR,"These fields must be filled out"));
     //step one texts begin
+    distanceText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_PRIMARY_DD,"Run") + "/" + iwrb.getLocalizedString(IWMarathonConstants.RR_SECONDARY_DD,"Distance"));
     primaryDDLable = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_PRIMARY_DD,"Run"));
     secondaryDDLable = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_SECONDARY_DD,"Distance"));
     nameText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_NAME,"Name "));
     nationalityText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_NATIONALITY,"Nationality "));
     ssnText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_SSN,"SSN "));
     genderText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_GENDER,"Gender "));
-    femaleText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_FEMALE,"Female"));
-    maleText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_MALE, "Male"));
     addressText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_ADDRESS,"Address"));
     postalText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_POSTAL,"Postal Code"));
     cityText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_CITY,"City"));
@@ -183,22 +182,22 @@ public class RunRegistration extends Block{
     iwrb = getResourceBundle(iwc);
     
     //step one fields begin
-    runDisDropdownField = new RunDistanceDropdownDouble();
+    runDisDropdownField = (RunDistanceDropdownDouble) getStyleObject(new RunDistanceDropdownDouble(), STYLENAME_INTERFACE);
     runDisDropdownField.setPrimaryLabel(primaryDDLable);
     runDisDropdownField.setSecondaryLabel(secondaryDDLable);
     if(iwc.isParameterSet(IWMarathonConstants.GROUP_TYPE_RUN)) {
       runDisDropdownField.setSelectedValues(iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN),"");
     }
     
-    nameField = new TextInput(IWMarathonConstants.PARAMETER_NAME);
+    nameField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_NAME), STYLENAME_INTERFACE);
     nameField.setAsAlphabeticText(iwrb.getLocalizedString("run_reg.name_err_msg","Your name may only contain alphabetic characters"));
     nameField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.name_not_empty","Name field cannot be empty"));
     nameField.setInFocusOnPageLoad(true);
     
     Collection countries = getRunBiz(iwc).getCountries();
     
-    nationalityField = new DropdownMenu(IWMarathonConstants.PARAMETER_NATIONALITY);
-    countryField = new DropdownMenu(IWMarathonConstants.PARAMETER_COUNTRY);
+    nationalityField = (DropdownMenu) getStyleObject(new DropdownMenu(IWMarathonConstants.PARAMETER_NATIONALITY), STYLENAME_INTERFACE);
+    countryField = (DropdownMenu) getStyleObject(new DropdownMenu(IWMarathonConstants.PARAMETER_COUNTRY), STYLENAME_INTERFACE);
     SelectorUtility util = new SelectorUtility();
     if (countries != null && !countries.isEmpty()) {
       nationalityField = (DropdownMenu) util.getSelectorFromIDOEntities(
@@ -210,34 +209,35 @@ public class RunRegistration extends Block{
       nationalityField.setSelectedElement("104");
       countryField.setSelectedElement("104");
     }
-    ssnISField = new TextInput(IWMarathonConstants.PARAMETER_SSN_IS);
+    ssnISField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_SSN_IS), STYLENAME_INTERFACE);
     ssnISField.setAsIcelandicSSNumber(iwrb.getLocalizedString("run_reg.ssn_is_err_msg","Your ssn is not a valid Icelandic ssn"));
     ssnISField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.ssnIS_not_empty","ssnIS may not be empty"));
     
-    ssnField = new TextInput(IWMarathonConstants.PARAMETER_SSN);
+    ssnField = (DateInput) getStyleObject(new DateInput(IWMarathonConstants.PARAMETER_SSN), STYLENAME_INTERFACE);
     //TODO: set the ssnField as either dateInput or set a error check on the TextInput... 
-    ssnField.setAsNotEmpty("ssn may not be empty");
+    ssnField.setAsNotEmpty("Date of birth can not be empty");
     
-    femaleField = new RadioButton(IWMarathonConstants.PARAMETER_GENDER,IWMarathonConstants.PARAMETER_FEMALE);
-    maleField = new RadioButton(IWMarathonConstants.PARAMETER_GENDER,IWMarathonConstants.PARAMETER_MALE);
+    genderField = (DropdownMenu) getStyleObject(new DropdownMenu(IWMarathonConstants.PARAMETER_GENDER), STYLENAME_INTERFACE);
+    genderField.addMenuElement(IWMarathonConstants.PARAMETER_MALE, iwrb.getLocalizedString(IWMarathonConstants.RR_MALE, "Male"));
+    genderField.addMenuElement(IWMarathonConstants.PARAMETER_FEMALE, iwrb.getLocalizedString(IWMarathonConstants.RR_FEMALE, "Female"));
     
-    addressField = new TextInput(IWMarathonConstants.PARAMETER_ADDRESS);
+    addressField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_ADDRESS), STYLENAME_INTERFACE);
     
-    postalField = new TextInput(IWMarathonConstants.PARAMETER_POSTAL);
+    postalField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_POSTAL), STYLENAME_INTERFACE);
     postalField.setMaxlength(7);
     
-    cityField = new TextInput(IWMarathonConstants.PARAMETER_CITY);
+    cityField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_CITY), STYLENAME_INTERFACE);
     
-    telField = new TextInput(IWMarathonConstants.PARAMETER_TEL);
+    telField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_TEL), STYLENAME_INTERFACE);
     telField.setAsIntegers(iwrb.getLocalizedString("run_reg.tel_err_msg","Phonenumber must be integers"));
     
-    mobileField = new TextInput(IWMarathonConstants.PARAMETER_MOBILE);
+    mobileField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_MOBILE), STYLENAME_INTERFACE);
     mobileField.setAsIntegers(iwrb.getLocalizedString("run_reg.mob_err_msg","Mobilephonenumber must be integers"));
     
-    emailField = new TextInput(IWMarathonConstants.PARAMETER_EMAIL);
+    emailField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_EMAIL), STYLENAME_INTERFACE);
     emailField.setAsEmail(iwrb.getLocalizedString("run_reg.email_err_msg","Not a valid email address"));
     
-    tShirtField = new DropdownMenu(IWMarathonConstants.PARAMETER_TSHIRT);
+    tShirtField = (DropdownMenu) getStyleObject(new DropdownMenu(IWMarathonConstants.PARAMETER_TSHIRT), STYLENAME_INTERFACE);
     small = new SelectOption(iwrb.getLocalizedString("run_reg.small","Small"),IWMarathonConstants.PARAMETER_TSHIRT_S);
     medium = new SelectOption(iwrb.getLocalizedString("run_reg.medium","Medium"),IWMarathonConstants.PARAMETER_TSHIRT_M);
     large = new SelectOption(iwrb.getLocalizedString("run_reg.large","Large"),IWMarathonConstants.PARAMETER_TSHIRT_L);
@@ -250,32 +250,27 @@ public class RunRegistration extends Block{
     tShirtField.addOption(xlarge);
     tShirtField.addOption(xxlarge);
     
-    stepOneButton = new SubmitButton(iwrb.getLocalizedString("run_reg.submit_step_one","Next step"),PARAMETER_ACTION,String.valueOf(ACTION_STEP_TWO));
-    
     //step one fields end
     
     //step two fields begin
-    ownChipField = new RadioButton(IWMarathonConstants.PARAMETER_CHIP,IWMarathonConstants.PARAMETER_OWN_CHIP);
+    ownChipField = (RadioButton) getStyleObject(new RadioButton(IWMarathonConstants.PARAMETER_CHIP,IWMarathonConstants.PARAMETER_OWN_CHIP), STYLENAME_CHECKBOX);
     
-    buyChipField = new RadioButton(IWMarathonConstants.PARAMETER_CHIP,IWMarathonConstants.PARAMETER_BUY_CHIP);
+    buyChipField = (RadioButton) getStyleObject(new RadioButton(IWMarathonConstants.PARAMETER_CHIP,IWMarathonConstants.PARAMETER_BUY_CHIP), STYLENAME_CHECKBOX);
     
-    rentChipField = new RadioButton(IWMarathonConstants.PARAMETER_CHIP,IWMarathonConstants.PARAMETER_RENT_CHIP);
+    rentChipField = (RadioButton) getStyleObject(new RadioButton(IWMarathonConstants.PARAMETER_CHIP,IWMarathonConstants.PARAMETER_RENT_CHIP), STYLENAME_CHECKBOX);
     
-    chipNumberField = new TextInput(IWMarathonConstants.PARAMETER_CHIP_NUMBER);
+    chipNumberField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_CHIP_NUMBER), STYLENAME_INTERFACE);
     
-    groupCompetitionField = new CheckBox(IWMarathonConstants.PARAMETER_GROUP_COMP);
+    groupCompetitionField = (CheckBox) getStyleObject(new CheckBox(IWMarathonConstants.PARAMETER_GROUP_COMP), STYLENAME_CHECKBOX);
     
-    groupNameField = new TextInput(IWMarathonConstants.PARAMETER_GROUP_NAME);
+    groupNameField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_GROUP_NAME), STYLENAME_INTERFACE);
     
-    bestTimeField = new TextInput(IWMarathonConstants.PARAMETER_BEST_TIME);
+    bestTimeField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_BEST_TIME), STYLENAME_INTERFACE);
     
-    goalTimeField = new TextInput(IWMarathonConstants.PARAMETER_GOAL_TIME);
-    
-    stepTwoButton = new SubmitButton(iwrb.getLocalizedString("run_reg.submit_step_two","Next step"));
+    goalTimeField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_GOAL_TIME), STYLENAME_INTERFACE);
     
     //step two fields end
     
-    backButton = new BackButton(iwrb.getLocalizedString("run_reg.back","Back to previous step"));
     backGreen = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.submit_step_two","Next step")), STYLENAME_GREEN_TEXT);
     backGreen.setAsBackLink();
     backBlue = getStyleLink(new Link("&gt;&gt;"), STYLENAME_BLUE_TEXT);
@@ -284,141 +279,118 @@ public class RunRegistration extends Block{
   
   private void stepOne(IWContext iwc) {
     Table t = new Table();
+    t.setColumns(3);
     t.setCellpadding(0);
     t.setCellspacing(0);
-    t.setWidth(600);
+    t.setWidth(Table.HUNDRED_PERCENT);
     f.add(t);
+    int row = 1;
+    int column = 1;
+    int formRow = -1;
     
-    Table ddTable = new Table();
-    ddTable.setCellpadding(0);
-    ddTable.setCellspacing(0);
-    ddTable.add(runDisDropdownField,1,1);
+    t.mergeCells(column, row, t.getColumns(), row);
+    t.add(redStar, column, row);
+    t.add(Text.getNonBrakingSpace(), column, row);
+    t.add(infoRedStarText, column, row++);
     
-    Table infoTable = new Table();
-    infoTable.setCellpadding(0);
-    infoTable.setCellspacing(0);
-    infoTable.add(redStar,1,1);
-    infoTable.add(Text.NON_BREAKING_SPACE,1,1);
-    infoTable.add(infoRedStarText,1,1);
+    t.setHeight(row++, 12);
     
-    Table nameTable = new Table();
-    nameTable.setCellpadding(0);
-    nameTable.setCellspacing(0);
-    nameTable.add(nameText,1,1);
-    nameTable.add(redStar,1,1);
-    nameTable.add(nameField,1,2);
+    t.mergeCells(column, row, t.getColumns(), row);
+    t.add(distanceText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(runDisDropdownField, column, row++);
     
-    Table nationTable = new Table();
-    nationTable.setCellpadding(0);
-    nationTable.setCellspacing(0);
-    nationTable.add(nationalityText,1,1);
-    nationTable.add(redStar,1,1);
-    nationTable.add(nationalityField,1,2);
+    t.setHeight(row++, 6);
     
-    Table ssnTable = new Table();
-    ssnTable.setCellpadding(0);
-    ssnTable.setCellspacing(0);
-    ssnTable.add(ssnText,1,1);
-    ssnTable.add(redStar,1,1);
-    if(iwc.getCurrentLocale().getLanguage().equals("is_IS")) {
-      ssnTable.add(ssnISField,1,2);
+    formRow = row;
+    t.add(nameText, column, row);
+    t.add(redStar, column, row++);
+    t.setHeight(row++, 3);
+    t.add(nameField, column, row++);
+    
+    t.setHeight(row++, 6);
+    
+    t.add(ssnText, column, row);
+    t.add(redStar, column, row++);
+    t.setHeight(row++, 3);
+    if(iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())) {
+      t.add(ssnISField, column, row++);
     }
     else {
-      ssnTable.add(ssnField,1,2);
+      t.add(ssnField, column, row++);
     }
     
-    Table genderTable = new Table();
-    genderTable.setCellpadding(0);
-    genderTable.setCellspacing(0);
-    genderTable.mergeCells(1,1,2,1);
-    genderTable.add(genderText,1,1);
-    genderTable.add(redStar,1,1);
-    genderTable.add(femaleField,1,2);
-    genderTable.add(Text.NON_BREAKING_SPACE,1,2);
-    genderTable.add(femaleText,1,2);
-    genderTable.add(maleField,2,2);
-    genderTable.add(Text.NON_BREAKING_SPACE,2,2);
-    genderTable.add(maleText,2,2);
+    t.setHeight(row++, 6);
     
-    Table addressTable = new Table();
-    addressTable.setCellpadding(0);
-    addressTable.setCellspacing(0);
-    addressTable.add(addressText,1,1);
-    addressTable.add(addressField,1,2);
+    t.add(addressText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(addressField, column, row++);
     
-    Table postalTable = new Table();
-    postalTable.setCellpadding(0);
-    postalTable.setCellspacing(0);
-    postalTable.add(postalText,1,1);
-    postalTable.add(postalField,1,2);
+    t.setHeight(row++, 6);
     
-    Table cityTable = new Table();
-    cityTable.setCellpadding(0);
-    cityTable.setCellspacing(0);
-    cityTable.add(cityText,1,1);
-    cityTable.add(cityField,1,2);
+    t.add(cityText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(cityField, column, row++);
     
-    Table countryTable = new Table();
-    countryTable.setCellpadding(0);
-    countryTable.setCellspacing(0);
-    countryTable.add(countryText,1,1);
-    countryTable.add(countryField,1,2);
+    t.setHeight(row++, 6);
     
-    Table telTable = new Table();
-    telTable.setCellpadding(0);
-    telTable.setCellspacing(0);
-    telTable.add(telText,1,1);
-    telTable.add(telField,1,2);
+    t.add(postalText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(postalField, column, row++);
     
-    Table mobileTable = new Table();
-    mobileTable.setCellpadding(0);
-    mobileTable.setCellspacing(0);
-    mobileTable.add(mobileText,1,1);
-    mobileTable.add(mobileField,1,2);
+    t.setHeight(row++, 6);
+
+    t.add(countryText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(countryField, column, row++);
     
-    Table emailTable = new Table();
-    emailTable.setCellpadding(0);
-    emailTable.setCellspacing(0);
-    emailTable.add(emailText,1,1);
-    emailTable.add(emailField,1,2);
+    row = formRow;
     
-    Table tShirtTable = new Table();
-    tShirtTable.setCellpadding(0);
-    tShirtTable.setCellspacing(0);
-    tShirtTable.add(tShirtText,1,1);
-    tShirtTable.add(tShirtField,1,2);
+    t.add(genderText, column, row);
+    t.add(redStar, column, row++);
+    t.setHeight(row++, 3);
+    t.add(genderField, column, row++);
     
-    Table buttonTable = new Table(3, 1);
-    buttonTable.setCellpadding(0);
-    buttonTable.setCellspacing(0);
-    buttonTable.setWidth(Table.HUNDRED_PERCENT);
-    buttonTable.setAlignment(1,1,Table.HORIZONTAL_ALIGN_RIGHT);
+    t.setHeight(row++, 6);
+    
+    t.add(nationalityText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(nationalityField, column, row++);
+    
+    t.setHeight(row++, 6);
+
+    t.add(emailText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(emailField, column, row++);
+    
+    t.setHeight(row++, 6);
+
+    t.add(telText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(telField, column, row++);
+    
+    t.setHeight(row++, 6);
+
+    t.add(mobileText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(mobileField, column, row++);
+    
+    t.setHeight(row++, 6);
+
+    t.add(tShirtText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(tShirtField, column, row++);
+    
+    t.setHeight(row++, 12);
+
     Link stepTwoGreen = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.submit_step_one","Next step")), STYLENAME_GREEN_TEXT);
     stepTwoGreen.setToFormSubmit(f);
     Link stepTwoBlue = getStyleLink(new Link("&gt;&gt;"), STYLENAME_BLUE_TEXT);
     stepTwoGreen.setToFormSubmit(f);
     
-    buttonTable.add(stepTwoGreen,1,1);
-    buttonTable.add(stepTwoBlue,3,1);
-    
-    t.mergeCells(1,1,2,1);
-    t.mergeCells(1,2,2,2);
-    t.add(ddTable,1,1);
-    t.add(infoTable,1,2);
-    t.add(nameTable,1,3);
-    t.add(nationTable,2,3);
-    t.add(ssnTable,1,4);
-    t.add(genderTable,2,4);
-    t.add(addressTable,1,5);
-    t.add(postalTable,2,5);
-    t.add(cityTable,1,6);
-    t.add(countryTable,2,6);
-    t.add(telTable,1,7);
-    t.add(mobileTable,2,7);
-    t.add(emailTable,1,8);
-    t.add(tShirtTable,2,8);
-    t.mergeCells(1,9,2,9);
-    t.add(buttonTable,1,9);
+    t.add(stepTwoGreen, 1, row);
+    t.add(Text.getNonBrakingSpace(), 1, row);
+    t.add(stepTwoBlue, 1, row);
     
     f.addParameter(PARAMETER_ACTION,ACTION_STEP_TWO);
     f.keepStatusOnAction();

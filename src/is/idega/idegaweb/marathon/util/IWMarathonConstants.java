@@ -116,4 +116,19 @@ public class IWMarathonConstants {
   public static final String MALE_50 = "male_50";
   public static final String MALE_50_59 = "male_50_59";
   public static final String MALE_60 = "male_60";
+  
+  public static int MAX_NUMBER_DISTANCE_55 = 0;
+  public static int MIN_NUMBER_DISTANCE_55 = 0;
+  public static int MAX_NUMBER_DISTANCE_42 = 0;
+  public static int MIN_NUMBER_DISTANCE_42 = 0;
+  public static int MAX_NUMBER_DISTANCE_21 = 0;
+  public static int MIN_NUMBER_DISTANCE_21 = 0;
+  public static int MAX_NUMBER_DISTANCE_10 = 0;
+  public static int MIN_NUMBER_DISTANCE_10 = 0;
+  public static int MAX_NUMBER_DISTANCE_7 = 0;
+  public static int MIN_NUMBER_DISTANCE_7 = 0;
+  public static int MAX_NUMBER_DISTANCE_5 = 0;
+  public static int MIN_NUMBER_DISTANCE_5 = 0;
+  public static int MAX_NUMBER_DISTANCE_3 = 0;
+  public static int MIN_NUMBER_DISTANCE_3 = 0;
 }

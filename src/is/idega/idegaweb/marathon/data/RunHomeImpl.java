@@ -18,5 +18,12 @@ public class RunHomeImpl extends com.idega.data.IDOFactory implements RunHome
  }
 
 
+public int getNextAvailableParticipantNumber(int p0,int p1)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((RunBMPBean)entity).ejbHomeGetNextAvailableParticipantNumber(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 
 }
