@@ -500,10 +500,6 @@ public class ResultsViewer extends GolfBlock {
 		}
 	}
 	
-	public void addHiddenInput(String name, String value) {
-		myForm.add(new HiddenInput(name, value));
-	}
-
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}

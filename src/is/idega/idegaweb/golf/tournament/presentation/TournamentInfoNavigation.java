@@ -122,7 +122,6 @@ public class TournamentInfoNavigation extends GolfBlock {
 				String tournament_round = modinfo.getParameter("tournament_round");
 
 				TournamentStartingtimeList form = TournamentController.getStartingtimeTable(tournament, tournament_round, true, false);
-				form.maintainParameter("action");
 				table2.add(form);
 				table2.setAlignment(1, 1, "center");
 			}
@@ -139,7 +138,6 @@ public class TournamentInfoNavigation extends GolfBlock {
 					String order = modinfo.getParameter("order");
 
 					ResultsViewer result = new ResultsViewer();
-					result.addHiddenInput("action", action);
 					result.setCacheable("ResView1_"+action+"_"+getTournamentSession(modinfo).getTournamentID()+"_"+gender+"_"+t_g_id+"_"+t_r_id+"_"+sort+"_"+order,1800000);
 					table2.add(result, 1, 1);
 				}
@@ -157,7 +155,6 @@ public class TournamentInfoNavigation extends GolfBlock {
 					String order = modinfo.getParameter("order");
 
 					ResultsViewer result = new ResultsViewer();
-					result.addHiddenInput("action", action);
 					result.setCacheable("ResView_" + action + "_" + getTournamentSession(modinfo).getTournamentID() + "_" + gender + "_" + t_g_id + "_" + t_r_id + "_" + sort + "_" + order, 1800000);
 					table2.add(result, 1, 1);
 				}

@@ -62,7 +62,6 @@ public class TournamentStartingtimeList extends GolfBlock {
 		this.onlineRegistration = onlineRegistration;
 		this.useBorder = useBorder;
 		this.forPrinting = forPrinting;
-		form = new Form();
 	}
 	
 	public TournamentStartingtimeList() {
@@ -70,7 +69,6 @@ public class TournamentStartingtimeList extends GolfBlock {
 		forPrinting = false;
 		onlineRegistration = false;
 		useBorder = true;
-		form = new Form();
 	}
 
 	/*
@@ -101,7 +99,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 			add(cachedForm);
 		}
 		else {
-			form.maintainParameter("action");
+			form = new Form();
 			form.add(new HiddenInput("viewOnly", "" + viewOnly));
 
 			Table table = new Table();
@@ -480,9 +478,5 @@ public class TournamentStartingtimeList extends GolfBlock {
 		catch (IBOLookupException ile) {
 			throw new IBORuntimeException(ile);
 		}
-	}
-
-	public void maintainParameter(String parameter) {
-		form.maintainParameter(parameter);
 	}
 }
