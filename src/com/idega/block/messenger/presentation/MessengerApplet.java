@@ -187,7 +187,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     cycle();
   }
 
-  private synchronized URLConnection getURLConnection(){
+  private URLConnection getURLConnection(){
     URLConnection servletConnection = null;
 
     try{
@@ -276,7 +276,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
           packetFromServlet = (Packet) theInputFromServlet.readObject();
           theInputFromServlet.close();
           System.out.println("Finished reading data.");
-          conn=null;
 
         }
         catch (IOException e){
@@ -377,7 +376,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   }
 
-  public void cycle(){
+  public synchronized void cycle(){
     URLConnection conn = getURLConnection();
     // send the Packet object to the servlet using serialization
     sendPacket(conn);
@@ -387,6 +386,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
     // get messages, perform processes change properties
     processPacket();
+
+    conn = null;
   }
 
   public Packet getPacketToServlet(){
