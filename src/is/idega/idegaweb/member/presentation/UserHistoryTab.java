@@ -13,6 +13,11 @@ import com.idega.presentation.IWContext;
  */
 public class UserHistoryTab extends UserTab {
 
+  public UserHistoryTab() {
+    super();
+    super.setName("History");
+  }
+
 	/**
 	 * @see com.idega.core.user.presentation.UserTab#initializeFieldNames()
 	 */
@@ -53,14 +58,14 @@ public class UserHistoryTab extends UserTab {
 	 * @see com.idega.util.datastructures.Collectable#collect(IWContext)
 	 */
 	public boolean collect(IWContext iwc) {
-		return false;
+		return true;
 	}
 
 	/**
 	 * @see com.idega.util.datastructures.Collectable#store(IWContext)
 	 */
 	public boolean store(IWContext iwc) {
-		return false;
+		return true;
 	}
 
 	/**

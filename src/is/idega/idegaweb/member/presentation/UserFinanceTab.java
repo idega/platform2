@@ -13,7 +13,12 @@ import com.idega.presentation.IWContext;
  */
 public class UserFinanceTab extends UserTab {
 
-	/**
+  public UserFinanceTab() {
+    super();
+    super.setName("Finance");
+  }
+
+ 	/**
 	 * @see com.idega.core.user.presentation.UserTab#initializeFieldNames()
 	 */
 	public void initializeFieldNames() {
@@ -53,14 +58,14 @@ public class UserFinanceTab extends UserTab {
 	 * @see com.idega.util.datastructures.Collectable#collect(IWContext)
 	 */
 	public boolean collect(IWContext iwc) {
-		return false;
+		return true;
 	}
 
 	/**
 	 * @see com.idega.util.datastructures.Collectable#store(IWContext)
 	 */
 	public boolean store(IWContext iwc) {
-		return false;
+		return true;
 	}
 
 	/**
