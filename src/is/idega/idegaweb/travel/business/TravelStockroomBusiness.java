@@ -414,6 +414,25 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       return ServiceDay.getIfDay(productId, dayOfWeek);
   }
 
+  public static boolean getIfDay(Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException{
+      boolean isDay = false;
+
+      int dayOfWeek = stamp.getDayOfWeek();
+      boolean isValidWeekDay = TravelStockroomBusiness.getIfDay(product.getID(), dayOfWeek);
+      Timeframe timeframe = TravelStockroomBusiness.getTimeframe(product);
+
+      if (isValidWeekDay) {
+          idegaTimestamp from = new idegaTimestamp(timeframe.getFrom());
+          idegaTimestamp to = new idegaTimestamp(timeframe.getTo());
+          if (stamp.isLaterThan(from) && to.isLaterThan(stamp)  ) {
+              isDay = true;
+          }else if (stamp.toSQLDateString().equals(from.toSQLDateString()) || stamp.toSQLDateString().equals(to.toSQLDateString())) {
+              isDay = true;
+          }
+      }
+
+      return isDay;
+  }
 
 
   public static class ServiceNotFoundException extends Exception{

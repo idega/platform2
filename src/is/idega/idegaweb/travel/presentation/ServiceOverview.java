@@ -33,8 +33,9 @@ public class ServiceOverview extends TravelManager {
   private IWBundle bundle;
   private IWResourceBundle iwrb;
 
-  String tableBackgroundColor = "#FFFFFF";
-  int numberOfTripsToDiplay = 3;
+  private String actionParameter = "service_overview_action";
+  private String deleteParameter = "service_to_delete_id";
+
 
   public ServiceOverview() {
   }
@@ -49,10 +50,13 @@ public class ServiceOverview extends TravelManager {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
 
-      String action = modinfo.getParameter("action");
+      String action = modinfo.getParameter(actionParameter);
       if (action == null) {action = "";}
 
       if (action.equals("")) {
+          displayForm(modinfo);
+      }else if (action.equals("delete")) {
+          deleteServices(modinfo);
           displayForm(modinfo);
       }
 
@@ -101,6 +105,16 @@ public class ServiceOverview extends TravelManager {
       return topTable;
   }
 
+  public void deleteServices(ModuleInfo modinfo) throws SQLException{
+    String[] serviceIds = (String[]) modinfo.getParameterValues(deleteParameter);
+    Service serviceToDelete;
+    for (int i = 0; i < serviceIds.length; i++) {
+        serviceToDelete = new Service(Integer.parseInt(serviceIds[i]));
+        serviceToDelete.delete();
+    }
+
+  }
+
 
   public void displayForm(ModuleInfo modinfo) {
       add(Text.getBreak());
@@ -125,6 +139,8 @@ public class ServiceOverview extends TravelManager {
       int row = 0;
       idegaTimestamp stamp = idegaTimestamp.RightNow();
 
+
+      Link delete;
 
 
       Text nameText = (Text) theText.clone();
@@ -208,7 +224,11 @@ public class ServiceOverview extends TravelManager {
             ++row;
             table.mergeCells(2,row,5,row);
             table.setAlignment(2,row,"right");
-            table.add("Takkar hér",2,row);
+
+            delete = new Link("delete");
+              delete.addParameter(actionParameter,"delete");
+              delete.addParameter(deleteParameter,service.getID());
+            table.add(delete,2,row);
             table.setColor(2,row,NatBusiness.backgroundColor);
 
             ++row;

@@ -36,6 +36,34 @@ public class Service extends GenericEntity{
     this.addManyToManyRelationShip(Timeframe.class ,"TB_SERVICE_TIMEFRAME");
   }
 
+  public void delete() throws SQLException {
+      HotelPickupPlace[] hpp = (HotelPickupPlace[]) this.findRelated(HotelPickupPlace.getStaticInstance(HotelPickupPlace.class));
+      for (int i = 0; i < hpp.length; i++) {
+          hpp[i].removeFrom(this);
+          hpp[i].delete();
+      }
+
+      Address[] add = (Address[]) this.findRelated(Address.getStaticInstance(Address.class));
+      for (int i = 0; i < add.length; i++) {
+        add[i].removeFrom(this);
+        add[i].delete();
+      }
+
+      Timeframe[] tf = (Timeframe[]) this.findRelated(Timeframe.getStaticInstance(Timeframe.class));
+      for (int i = 0; i < tf.length; i++) {
+        tf[i].removeFrom(this);
+        tf[i].delete();
+      }
+
+      ServiceDay.deleteService(this.getID());
+
+      Product product = new Product(this.getID());
+
+      super.delete();
+      product.delete();
+
+  }
+
   public Product getProduct()  {
     if (this.product == null) {
       try {

@@ -273,7 +273,7 @@ public class SmallCalendar extends JModuleObject{
     }
 
     public void setDayColor(idegaTimestamp timestamp, String color) {
-        this.setDayColor(stamp.getYear() ,stamp.getMonth(),stamp.getDate() ,color);
+        this.setDayColor(timestamp.getYear() ,timestamp.getMonth(),timestamp.getDay() ,color);
     }
 
 

@@ -254,19 +254,41 @@ public class Booking extends TravelManager {
 
       int row = 1;
 
-      table.mergeCells(1,row,5,row);
-      table.add(getInqueries(),1,row);
-      table.setColor(1,row,NatBusiness.YELLOW);
+      try {
+          if (TravelStockroomBusiness.getIfDay(this.product, this.stamp)) {
+              table.mergeCells(1,row,5,row);
+              table.add(getInqueries(),1,row);
+              table.setColor(1,row,NatBusiness.YELLOW);
 
-      table.setColor(6,row,NatBusiness.backgroundColor);
-      table.setVerticalAlignment(6,row,"top");
-      table.add(getCalendar(modinfo),6,row);
+              table.setColor(6,row,NatBusiness.backgroundColor);
+              table.setVerticalAlignment(6,row,"top");
+              table.add(getCalendar(modinfo),6,row);
 
-      ++row;
-      table.mergeCells(1,row,5,row);
-      table.setColor(1,row,NatBusiness.backgroundColor );
-      table.mergeCells(6,1,6,row);
-      table.add(getBookingFormTable(),1,row);
+              ++row;
+              table.mergeCells(1,row,5,row);
+              table.setColor(1,row,NatBusiness.backgroundColor );
+              table.mergeCells(6,1,6,row);
+              table.add(getBookingFormTable(),1,row);
+
+          }else {
+              table.add("TEMP - Ferð ekki farinn þennan dag : " + stamp.getLocaleDate(modinfo));
+              table.mergeCells(1,row,5,row);
+              table.setAlignment(1,row, "center");
+
+              table.setColor(6,row,NatBusiness.backgroundColor);
+              table.setVerticalAlignment(6,row,"top");
+              table.add(getCalendar(modinfo),6,row);
+
+              ++row;
+              table.mergeCells(1,row,5,row);
+              table.setColor(1,row,NatBusiness.backgroundColor );
+              table.mergeCells(6,1,6,row);
+          }
+      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+            snfe.printStackTrace(System.err);
+      }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+            tfnfe.printStackTrace(System.err);
+      }
 
       return table;
 
@@ -389,46 +411,25 @@ public class Booking extends TravelManager {
           sm.setInActiveCellColor(NatBusiness.BLUE);
           sm.useColorToday(false);
 
-      int[] availableDays = ServiceDay.getDaysOfWeek(service.getID());
 
-      idegaTimestamp from = new idegaTimestamp(timeframe.getFrom());
-      idegaTimestamp to = new idegaTimestamp(timeframe.getTo());
-      if (to.isLaterThan(stamp) && stamp.isLaterThan(from)) {
-          int lengthOfMonth = cal.getLengthOfMonth(stamp.getMonth(), stamp.getYear());
-          idegaTimestamp temp = new idegaTimestamp(lengthOfMonth, stamp.getMonth(), stamp.getYear());
-          if (temp.isLaterThan(to)) {
-              int dayOfWeek;
-              for (int i = 1; i <= to.getDay(); i++) {
-                  dayOfWeek = cal.getDayOfWeek(stamp.getYear(), stamp.getMonth(), i);
-                  for (int j = 0; j < availableDays.length; j++) {
-                      if (dayOfWeek == availableDays[j]) {
-                          sm.setDayColor(stamp.getYear() , stamp.getMonth(),i , colorForAvailableDay);
-                      }
-                  }
-              }
+      int month = stamp.getMonth();
+      int year = stamp.getYear();
+      int lengthOfMonth = cal.getLengthOfMonth(month, year);
 
+      idegaTimestamp temp = new idegaTimestamp(1, month , year);
 
-          }else {
-              for (int i = 0; i < availableDays.length; i++) {
-                  sm.setDayOfWeekColor(availableDays[i],colorForAvailableDay);
-              }
+      try {
+        for (int i = 1; i <= lengthOfMonth; i++) {
+          if (TravelStockroomBusiness.getIfDay(product,temp)) {
+            sm.setDayColor(temp, colorForAvailableDay);
           }
-
-      }else {
-          idegaTimestamp temp = new idegaTimestamp(timeframe.getFrom());
-          int dayOfWeek;
-
-          while (temp.getMonth() == stamp.getMonth()) {
-            dayOfWeek = cal.getDayOfWeek(temp.getYear(), temp.getMonth(), temp.getDay());
-            for (int i = 0; i < availableDays.length; i++) {
-                if (dayOfWeek == availableDays[i]) {
-                    sm.setDayColor(temp.getYear() , temp.getMonth(),temp.getDay(), colorForAvailableDay);
-                }
-            }
-            temp.addDays(1);
-          }
+          temp.addDays(1);
+        }
+      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+        snfe.printStackTrace(System.err);
+      }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+        tfnfe.printStackTrace(System.err);
       }
-
 
       table.mergeCells(1,5,4,5);
       table.add(sm,1,5);
@@ -527,14 +528,21 @@ public class Booking extends TravelManager {
 
       Text dateTextBold = (Text) theSmallBoldText.clone();
       Text nameTextBold = (Text) theSmallBoldText.clone();
-
       Text countTextBold = (Text) theSmallBoldText.clone();
-        countTextBold.setText(Integer.toString(tour.getTotalSeats()));
-
       Text assignedTextBold = (Text) theSmallBoldText.clone();
       Text inqTextBold = (Text) theSmallBoldText.clone();
       Text bookedTextBold = (Text) theSmallBoldText.clone();
       Text availableTextBold = (Text) theSmallBoldText.clone();
+
+      try {
+          if (TravelStockroomBusiness.getIfDay(this.product, this.stamp)) {
+            countTextBold.setText(Integer.toString(tour.getTotalSeats()));
+          }
+      }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
+            snfe.printStackTrace(System.err);
+      }catch (TravelStockroomBusiness.TimeframeNotFoundException tfnfe) {
+            tfnfe.printStackTrace(System.err);
+      }
 
 
 

@@ -93,6 +93,13 @@ public class ServiceDay extends GenericEntity {
     return returner;
   }
 
+  public static void deleteService(int serviceId) throws SQLException{
+      ServiceDay[] days = (ServiceDay[]) (new ServiceDay()).findAllByColumn(getColumnNameServiceId(), serviceId);
+      for (int i = 0; i < days.length; i++) {
+          days[i].delete();
+      }
+
+  }
 
 
   public static String getServiceDaysTableName() {return "TB_SERVICE_DAY";}
