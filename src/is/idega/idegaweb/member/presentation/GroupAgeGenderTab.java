@@ -330,7 +330,7 @@ public class GroupAgeGenderTab extends UserGroupTab {
         ageGenderPluginBusiness.setFemale(group);
       else
         // male and female are either both true or both false 
-        ageGenderPluginBusiness.setNeuter(group);
+        ageGenderPluginBusiness.setNeutral(group);
       
       boolean ageLimitIsStringentCondition = ((Boolean) fieldValues.get(ageLimitIsStringentConditionFieldName)).booleanValue();
       ageGenderPluginBusiness.setAgeLimitIsStringentCondition(group, ageLimitIsStringentCondition);  
