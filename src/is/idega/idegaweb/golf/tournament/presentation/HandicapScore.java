@@ -26,7 +26,6 @@ import java.math.BigDecimal;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
@@ -56,6 +55,7 @@ public class HandicapScore extends GolfWindow {
 
 			Tournament tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(Integer.parseInt(tournament_id));
 			int field_id = tournament.getFieldId();
+			int numberOfRounds = tournament.getNumberOfRounds();
 
 			Scorecard[] scorecard = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard s, tournament_round tr where s.tournament_round_id = tr.tournament_round_id and member_id = " + member_id + " and tournament_id = " + tournament_id + " and scorecard_date is not null order by round_number");
 			int rounds = scorecard.length + 4;
@@ -66,6 +66,7 @@ public class HandicapScore extends GolfWindow {
 			TeeColor tee_color = group_id.getTeeColor();
 			int tee_color_id = tee_color.getID();
 			String litur = "";
+			Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumn("field_id", String.valueOf(field_id), "tee_color_id", String.valueOf(tee_color_id));
 
 			switch (tee_color_id) {
 				case 1:
@@ -94,105 +95,86 @@ public class HandicapScore extends GolfWindow {
 			}
 
 			Table myTable = new Table();
+			myTable.setRows((numberOfRounds * 3) + 4);
+			myTable.setColumns(20);
+			
+			myTable.setBorder(0);
+			myTable.setAlignment("center");
+			myTable.setCellpadding(getCellpadding());
+			myTable.setCellspacing(0);
+			myTable.mergeCells(1, 1, 20, 1);
+			for (int z = 1; z <= myTable.getRows(); z++) {
+				myTable.setRowAlignment(z, "center");
+			}
+			myTable.setRowAlignment(1, "left");
+			myTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_LEFT);
+			
+			myTable.setHorizontalZebraColored(getZebraColor1(), getZebraColor2());
+			myTable.setRowColor(1, "FFFFFF");
+			myTable.setRowColor(2, getHeaderColor());
+			myTable.setRowColor(3, litur);
+			myTable.setWidth("600");
 
-			Text hola = new Text(iwrb.getLocalizedString("handicap.hole", "Hole"));
-			hola.setBold();
-			hola.setFontColor("FFFFFF");
-			hola.setFontSize("1");
-			Text lengd = new Text(iwrb.getLocalizedString("handicap.length", "Length"));
-			lengd.setFontSize("1");
-			Text par_texti = new Text(iwrb.getLocalizedString("handicap.par", "Par"));
-			par_texti.setFontSize("1");
-			Text strokeText = new Text(iwrb.getLocalizedString("handicap.strokes", "Strokes"));
-			strokeText.setFontSize("1");
-			Text pointText = new Text(iwrb.getLocalizedString("handicap.points", "Points"));
-			pointText.setFontSize("1");
-			Text differenceTexti = new Text(iwrb.getLocalizedString("handicap.differnce", "Difference"));
-			differenceTexti.setFontSize("1");
-			Text samtals = new Text(iwrb.getLocalizedString("handicap.total", "Total"));
-			samtals.setBold();
-			samtals.setFontColor("FFFFFF");
-			samtals.setFontSize("1");
 
-			Table statTable = new Table(rounds - 2, 13);
+			Text hola = getSmallHeader(iwrb.getLocalizedString("handicap.hole", "Hole"));
+			Text lengd = getSmallBoldText(iwrb.getLocalizedString("handicap.length", "Length"));
+			Text par_texti = getSmallBoldText(iwrb.getLocalizedString("handicap.par", "Par"));
+			Text strokeText = getSmallBoldText(iwrb.getLocalizedString("handicap.strokes", "Strokes"));
+			Text pointText = getSmallBoldText(iwrb.getLocalizedString("handicap.points", "Points"));
+			Text differenceTexti = getSmallBoldText(iwrb.getLocalizedString("handicap.differnce", "Difference"));
+			Text samtals = getSmallHeader(iwrb.getLocalizedString("handicap.total", "Total"));
+
+			Table statTable = new Table(rounds - 2, 11);
 			statTable.setWidth("50%");
 			statTable.setBorder(0);
 			statTable.setColor("FFFFFF");
-			statTable.setCellpadding(3);
-			statTable.setCellspacing(1);
-			statTable.mergeCells(1, 4, rounds - 2, 4);
-			statTable.mergeCells(1, 10, rounds - 2, 10);
-			statTable.setHorizontalZebraColored("99cc99", "8ab490");
-			statTable.setRowColor(1, "336666");
-			statTable.setRowColor(4, "FFFFFF");
-			statTable.setRowColor(10, "FFFFFF");
+			statTable.setCellpadding(getCellpadding());
+			statTable.setCellspacing(0);
+			statTable.setHorizontalZebraColored(getZebraColor2(), getZebraColor1());
+			statTable.setRowColor(1, getHeaderColor());
 			statTable.setAlignment("center");
+			statTable.setRows(11);
+			int statRow = 1;
 
-			statTable.add(new Image("/pics/tournament/samtals.gif"), rounds - 2, 1);
+			statTable.add(getSmallHeader(iwrb.getLocalizedString("handicap.total", "Total")), rounds - 2, statRow);
 
 			for (int a = 1; a <= rounds - 4; a++) {
-				statTable.add(new Image("/pics/tournament/no" + a + ".gif"), a + 1, 1);
+				statTable.add(getSmallHeader(String.valueOf(a)), a + 1, statRow++);
 			}
 
 			for (int a = 1; a <= statTable.getRows(); a++) {
 				statTable.setRowAlignment(a, "center");
 			}
 
-			for (int a = 2; a <= myTable.getRows(); a++) {
-				myTable.setRowAlignment(a, "center");
-			}
-
 			statTable.setColumnAlignment(1, "left");
 
-			Text hogg_texti = new Text(iwrb.getLocalizedString("handicap.strokes", "Strokes"));
-			hogg_texti.setFontSize("1");
-			Text ernir_texti = new Text(iwrb.getLocalizedString("handicap.eagles", "Eagles"));
-			ernir_texti.setFontSize("1");
-			Text fuglar_texti = new Text(iwrb.getLocalizedString("handicap.birdies", "Birdies"));
-			fuglar_texti.setFontSize("1");
-			Text por_texti = new Text(iwrb.getLocalizedString("handicap.pars", "Pars"));
-			por_texti.setFontSize("1");
-			Text skollar_texti = new Text(iwrb.getLocalizedString("handicap.bogeys", "Bogeys"));
-			skollar_texti.setFontSize("1");
-			Text skrambar_texti = new Text(iwrb.getLocalizedString("handicap.double_bogeys", "Double bogeys"));
-			skrambar_texti.setFontSize("1");
-			Text abraut_texti = new Text("% " + iwrb.getLocalizedString("handicap.fairways", "Fairways"));
-			abraut_texti.setFontSize("1");
-			Text aflot_texti = new Text("% " + iwrb.getLocalizedString("handicap.gir", "GIR"));
-			aflot_texti.setFontSize("1");
-			Text putt_texti = new Text(iwrb.getLocalizedString("handicap.putts", "putts"));
-			putt_texti.setFontSize("1");
+			Text hogg_texti = getSmallBoldText(iwrb.getLocalizedString("handicap.strokes", "Strokes"));
+			Text ernir_texti = getSmallBoldText(iwrb.getLocalizedString("handicap.eagles", "Eagles"));
+			Text fuglar_texti = getSmallBoldText(iwrb.getLocalizedString("handicap.birdies", "Birdies"));
+			Text por_texti = getSmallBoldText(iwrb.getLocalizedString("handicap.pars", "Pars"));
+			Text skollar_texti = getSmallBoldText(iwrb.getLocalizedString("handicap.bogeys", "Bogeys"));
+			Text skrambar_texti = getSmallBoldText(iwrb.getLocalizedString("handicap.double_bogeys", "Double bogeys"));
+			Text abraut_texti = getSmallBoldText("% " + iwrb.getLocalizedString("handicap.fairways", "Fairways"));
+			Text aflot_texti = getSmallBoldText("% " + iwrb.getLocalizedString("handicap.gir", "GIR"));
+			Text putt_texti = getSmallBoldText(iwrb.getLocalizedString("handicap.putts", "putts"));
 
-			statTable.add(hogg_texti, 1, 2);
-			statTable.add(par_texti, 1, 3);
-			statTable.add(new Image("/pics/tournament/spot.gif", "spot", 10, 2), 1, 4);
-			statTable.setRowColor(4, "336666");
-			statTable.add(ernir_texti, 1, 5);
-			statTable.add(fuglar_texti, 1, 6);
-			statTable.add(por_texti, 1, 7);
-			statTable.add(skollar_texti, 1, 8);
-			statTable.add(skrambar_texti, 1, 9);
-			statTable.add(new Image("/pics/tournament/spot.gif", "spot", 10, 2), 1, 10);
-			statTable.setRowColor(10, "336666");
-			statTable.add(abraut_texti, 1, 11);
-			statTable.add(aflot_texti, 1, 12);
-			statTable.add(putt_texti, 1, 13);
+			statTable.add(hogg_texti, 1, statRow++);
+			statTable.add(par_texti, 1, statRow);
+			statTable.setRowStyle(statRow++, "border-bottom", "1px " + this.getLineSeperatorColor() + " solid;");
+			statTable.add(ernir_texti, 1, statRow++);
+			statTable.add(fuglar_texti, 1, statRow++);
+			statTable.add(por_texti, 1, statRow++);
+			statTable.add(skollar_texti, 1, statRow++);
+			statTable.add(skrambar_texti, 1, statRow);
+			statTable.setRowStyle(statRow++, "border-bottom", "1px " + this.getLineSeperatorColor() + " solid;");
+			statTable.add(abraut_texti, 1, statRow++);
+			statTable.add(aflot_texti, 1, statRow++);
+			statTable.add(putt_texti, 1, statRow++);
 
 			myTable.add(hola, 1, 2);
 			myTable.add(lengd, 1, 3);
 			myTable.add(par_texti, 1, 4);
 			myTable.add(samtals, 20, 2);
-
-			Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_id));
-
-			Text score_head = new Text(member.getName());
-			score_head.setFontColor("000000");
-			score_head.setBold();
-			score_head.setFontSize("3");
-
-			myTable.add(score_head, 1, 1);
-
-			Tee[] tee = (Tee[]) ((Tee) IDOLookup.instanciateEntity(Tee.class)).findAllByColumn("field_id", String.valueOf(field_id), "tee_color_id", String.valueOf(tee_color_id));
 
 			int total_length = 0;
 			int total_par = 0;
@@ -209,16 +191,12 @@ public class HandicapScore extends GolfWindow {
 			int rounds_played = 0;
 
 			for (int a = 0; a < tee.length; a++) {
-				Text hole = new Text(String.valueOf(a + 1));
-				hole.setFontSize(1);
-				hole.setFontColor("FFFFFF");
+				Text hole = getSmallHeader(String.valueOf(a + 1));
 
 				int holelength = tee[a].getIntColumnValue("tee_length");
-
 				total_length += holelength;
 
-				Text hole_length = new Text(String.valueOf(holelength));
-				hole_length.setFontSize(1);
+				Text hole_length = getSmallText(String.valueOf(holelength));
 
 				myTable.add(hole, a + 2, 2);
 				myTable.add(hole_length, a + 2, 3);
@@ -244,20 +222,11 @@ public class HandicapScore extends GolfWindow {
 			int roundPar = 0;
 
 			for (int b = 0; b < scorecard.length; b++) {
-
 				row += 3;
 
-				String color = "";
-				if (b % 2 != 0) {
-					color = "99cc99";
+				if ((b + 1) < scorecard.length) {
+					myTable.setRowStyle(row + 2, "border-bottom", "1px " + this.getLineSeperatorColor() + " solid;");
 				}
-				else {
-					color = "8ab490";
-				}
-
-				myTable.setRowColor(row, color);
-				myTable.setRowColor(row + 1, color);
-				myTable.setRowColor(row + 2, color);
 				myTable.add(strokeText, 1, row);
 				myTable.add(pointText, 1, row + 1);
 				myTable.add(differenceTexti, 1, row + 2);
@@ -332,53 +301,44 @@ public class HandicapScore extends GolfWindow {
 					total_strokes += strokes;
 					gameDifference += (strokes - par3);
 
-					Text hole_par = new Text(String.valueOf(par3));
-					hole_par.setFontSize(1);
+					Text hole_par = getSmallText(String.valueOf(par3));
 					if (b == 0) {
 						myTable.add(hole_par, c + 2, 4);
 						total_par += par3;
 					}
 
-					Text strokes_text = new Text(String.valueOf(strokes));
-					strokes_text.setFontSize(1);
-					strokes_text.setBold();
-					strokes_text.setFontFace("Verdana,Arial,sans serif");
-					Text pointsText = new Text(String.valueOf(points));
-					pointsText.setFontSize(1);
+					Text strokes_text = getSmallText(String.valueOf(strokes));
+					Text pointsText = getSmallText(String.valueOf(points));
 
-					Text differenceText = new Text();
+					Text differenceText = getSmallText("");
 					if (gameDifference > 0) {
 						differenceText.setText("+" + gameDifference);
 					}
 					else {
 						differenceText.setText(gameDifference + "");
 					}
-					differenceText.setFontSize(1);
 
 					myTable.add(strokes_text, c + 2, row);
 					myTable.add(pointsText, c + 2, row + 1);
 					myTable.add(differenceText, c + 2, row + 2);
 
 					if (birdie >= 2) {
-						myTable.setColor(c + 2, row, "51787E");
+						myTable.setColor(c + 2, row, "#51787E");
 						dbogey_total++;
 					}
 					else if (birdie == 1) {
-						myTable.setColor(c + 2, row, "AACFCF");
+						myTable.setColor(c + 2, row, "#AACFCF");
 						bogey_total++;
 					}
 					else if (birdie == 0) {
-						strokes_text.setBold();
 						par_total++;
 					}
 					else if (birdie == -1) {
-						myTable.setColor(c + 2, row, "F5D6CD");
-						strokes_text.setBold();
+						myTable.setColor(c + 2, row, "#F5D6CD");
 						birdie_total++;
 					}
 					else if (birdie == -2) {
-						myTable.setColor(c + 2, row, "F6A690");
-						strokes_text.setBold();
+						myTable.setColor(c + 2, row, "#F6A690");
 						eagle_total++;
 					}
 				}
@@ -411,37 +371,21 @@ public class HandicapScore extends GolfWindow {
 					rounds_played++;
 				}
 
-				Text total_strokes_text = new Text(String.valueOf(total_strokes));
-				total_strokes_text.setFontSize(1);
-				total_strokes_text.setBold();
-				total_strokes_text.setFontFace("Verdana,Arial,sans serif");
-				Text totalPointsText = new Text(scorecard[b].getTotalPoints() + "");
-				totalPointsText.setFontSize(1);
-				Text difference_text = new Text(String.valueOf(difference));
-				difference_text.setFontSize(1);
-				Text eagle_text = new Text(String.valueOf(eagle_total));
-				eagle_text.setFontSize(1);
-				Text birdie_text = new Text(String.valueOf(birdie_total));
-				birdie_text.setFontSize(1);
-				Text par_text = new Text(String.valueOf(par_total));
-				par_text.setFontSize(1);
-				Text bogey_text = new Text(String.valueOf(bogey_total));
-				bogey_text.setFontSize(1);
-				Text dbogey_text = new Text(String.valueOf(dbogey_total));
-				dbogey_text.setFontSize(1);
-				Text fairway_text = new Text(String.valueOf(fairway));
-				fairway_text.setFontSize(1);
-				Text greens_text = new Text(String.valueOf(greens));
-				greens_text.setFontSize(1);
-				Text putts_text = new Text(String.valueOf(putts));
-				putts_text.setFontSize(1);
+				Text total_strokes_text = getSmallBoldText(String.valueOf(total_strokes));
+				Text totalPointsText = getSmallText(scorecard[b].getTotalPoints() + "");
+				Text difference_text = getSmallText(String.valueOf(difference));
+				Text eagle_text = getSmallText(String.valueOf(eagle_total));
+				Text birdie_text = getSmallText(String.valueOf(birdie_total));
+				Text par_text = getSmallText(String.valueOf(par_total));
+				Text bogey_text = getSmallText(String.valueOf(bogey_total));
+				Text dbogey_text = getSmallText(String.valueOf(dbogey_total));
+				Text fairway_text = getSmallText(String.valueOf(fairway));
+				Text greens_text = getSmallText(String.valueOf(greens));
+				Text putts_text = getSmallText(String.valueOf(putts));
 
 				if (total_strokes != 0) {
 					myTable.add(total_strokes_text, 20, row);
 					myTable.add(totalPointsText, 20, row + 1);
-					myTable.addText("", 20, row + 2);
-					myTable.addText("", 1, row + 1);
-					myTable.addText("", 1, row + 2);
 					statTable.add(total_strokes_text, b + 2, 2);
 					statTable.add(difference_text, b + 2, 3);
 
@@ -485,26 +429,16 @@ public class HandicapScore extends GolfWindow {
 				all_putts = scale_decimals((all_putts / rounds_played), 2);
 			}
 
-			Text all_strokes_text = new Text(String.valueOf(all_strokes));
-			all_strokes_text.setFontSize(1);
-			Text all_difference_text = new Text(String.valueOf(all_difference));
-			all_difference_text.setFontSize(1);
-			Text all_eagle_text = new Text(String.valueOf(all_eagle));
-			all_eagle_text.setFontSize(1);
-			Text all_birdie_text = new Text(String.valueOf(all_birdie));
-			all_birdie_text.setFontSize(1);
-			Text all_par_text = new Text(String.valueOf(all_par));
-			all_par_text.setFontSize(1);
-			Text all_bogey_text = new Text(String.valueOf(all_bogey));
-			all_bogey_text.setFontSize(1);
-			Text all_dbogey_text = new Text(String.valueOf(all_dbogey));
-			all_dbogey_text.setFontSize(1);
-			Text all_fairway_text = new Text(String.valueOf(all_fairway));
-			all_fairway_text.setFontSize(1);
-			Text all_greens_text = new Text(String.valueOf(all_greens));
-			all_greens_text.setFontSize(1);
-			Text all_putts_text = new Text(String.valueOf(all_putts));
-			all_putts_text.setFontSize(1);
+			Text all_strokes_text = getSmallText(String.valueOf(all_strokes));
+			Text all_difference_text = getSmallText(String.valueOf(all_difference));
+			Text all_eagle_text = getSmallText(String.valueOf(all_eagle));
+			Text all_birdie_text = getSmallText(String.valueOf(all_birdie));
+			Text all_par_text = getSmallText(String.valueOf(all_par));
+			Text all_bogey_text = getSmallText(String.valueOf(all_bogey));
+			Text all_dbogey_text = getSmallText(String.valueOf(all_dbogey));
+			Text all_fairway_text = getSmallText(String.valueOf(all_fairway));
+			Text all_greens_text = getSmallText(String.valueOf(all_greens));
+			Text all_putts_text = getSmallText(String.valueOf(all_putts));
 
 			if (all_strokes != 0) {
 				statTable.add(all_strokes_text, rounds - 2, 2);
@@ -549,46 +483,23 @@ public class HandicapScore extends GolfWindow {
 				out_differ = String.valueOf(all_difference);
 			}
 
-			Text total_length_text = new Text(String.valueOf(total_length));
-			total_length_text.setFontSize(1);
-			Text total_par_text = new Text(String.valueOf(total_par));
-			total_par_text.setFontSize(1);
+			Text total_length_text = getSmallText(String.valueOf(total_length));
+			Text total_par_text = getSmallText(String.valueOf(total_par));
 
 			myTable.add(total_length_text, 20, 3);
 			myTable.add(total_par_text, 20, 4);
 
+			Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_id));
+			Text score_head = getHeader(member.getName());
+			myTable.add(score_head, 1, 1);
+
 			Handicap handicap = new Handicap(handicapBefore);
 			gameHandicap = handicap.getLeikHandicap(slope, CR, (double) field.getFieldPar());
 
-			Text handicapText = new Text("&nbsp;&nbsp;-&nbsp;&nbsp;");
-			handicapText.setBold();
-			handicapText.addToText(iwrb.getLocalizedString("handicap.handicap_abbrevation", "Hcp") + ". ");
+			Text handicapText = getHeader("&nbsp;&nbsp;-&nbsp;&nbsp;");
+			handicapText.addToText(iwrb.getLocalizedString("handicap.handicap_abbrevation", "Hcp"));
 			handicapText.addToText(Integer.toString(gameHandicap));
-
 			myTable.add(handicapText, 1, 1);
-			myTable.setBorder(0);
-			myTable.setColor("FFFFFF");
-			myTable.setAlignment("center");
-			myTable.setCellpadding(3);
-			myTable.setCellspacing(1);
-			myTable.setHeight(1, "1");
-			myTable.mergeCells(1, 1, 20, 1);
-			for (int z = 1; z <= myTable.getRows(); z++) {
-				myTable.setRowAlignment(z, "center");
-			}
-			myTable.setRowAlignment(1, "left");
-			//myTable.setHorizontalZebraColored("99cc99","8ab490");
-			myTable.setRowColor(1, "FFFFFF");
-			myTable.setRowColor(2, "336666");
-			myTable.setRowColor(3, litur);
-			myTable.setRowColor(4, "8ab490");
-			myTable.setWidth("600");
-
-			for (int x = 1; x <= statTable.getColumns(); x++) {
-				for (int y = 1; y <= statTable.getRows(); y++) {
-					statTable.addText("", x, y);
-				}
-			}
 
 			add("<br>");
 			add(myTable);
@@ -598,7 +509,7 @@ public class HandicapScore extends GolfWindow {
 			add("<br>");
 
 			add("<center>");
-			add(new CloseButton(iwrb.getImage("buttons/close.gif")));
+			add(new CloseButton(iwrb.getLocalizedString("close", "Close")));
 			add("</center>");
 
 		}
