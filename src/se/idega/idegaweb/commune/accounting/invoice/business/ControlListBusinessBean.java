@@ -1,5 +1,5 @@
 /*
- * $Id: ControlListBusinessBean.java,v 1.18 2004/05/05 09:42:16 sigtryggur Exp $
+ * $Id: ControlListBusinessBean.java,v 1.19 2004/06/30 16:29:08 sigtryggur Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,11 +39,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * from the payment records.
  * It does this for the "compare month" and "with month".
  * <p>
- * Last modified: $Date: 2004/05/05 09:42:16 $ by $Author: sigtryggur $
+ * Last modified: $Date: 2004/06/30 16:29:08 $ by $Author: sigtryggur $
  *
  * @author <a href="mailto:kjell@lindman.se">Kjell Lindman</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  *
  */
 public class ControlListBusinessBean extends IBOServiceBean implements ControlListBusiness {
@@ -119,10 +119,10 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 
 			final PaymentSummary currentSummary = getPaymentSummary (invoiceBusiness, opField, school, withMonth, mainRuleStringValues);
 			currentMonthIndividualsCount = currentSummary.getIndividualsCount ();
-			currentMonthTotalAmount = currentSummary.getTotalAmountVatExcluded ();
+			currentMonthTotalAmount = currentSummary.getTotalAmountVatExcluded () + currentSummary.getTotalAmountVat();
 			final PaymentSummary compareSummary = getPaymentSummary (invoiceBusiness, opField, school, compareMonth, mainRuleStringValues);
 			compareMonthIndividualsCount = compareSummary.getIndividualsCount ();
-			compareMonthTotalAmount = compareSummary.getTotalAmountVatExcluded ();
+			compareMonthTotalAmount = compareSummary.getTotalAmountVatExcluded () + compareSummary.getTotalAmountVat();
 			
 			arr.add(new Object[] {
 				new Integer(cnt++), 
