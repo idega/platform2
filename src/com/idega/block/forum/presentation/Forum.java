@@ -3,11 +3,12 @@ package com.idega.block.forum.presentation;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
-import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.forum.business.ForumBusiness;
 import com.idega.block.forum.business.ForumTree;
 import com.idega.block.forum.data.ForumData;
@@ -25,6 +26,7 @@ import com.idega.event.IWPresentationState;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWUserContext;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -69,7 +71,16 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private int _openLevel = 0;
 	private Table _myTable;
 
-	private boolean _styles = true;
+	protected static final String HEADER_STYLE = "HeaderStyle";
+	protected static final String LINK_STYLE = "LinkStyle";
+	protected static final String TOPIC_LINK_STYLE = "TopicLinkStyle";
+	protected static final String THREAD_LINK_STYLE = "ThreadLinkStyle";
+	protected static final String TEXT_STYLE = "TextStyle";
+	protected static final String SMALL_TEXT_STYLE = "SmallTextStyle";
+	protected static final String HEADING_STYLE = "HeadingStyle";
+	protected static final String INFORMATION_STYLE = "InformationStyle";
+
+	/*private boolean _styles = true;
 	private String _headerStyle;
 	private String _linkStyle;
 	private String _linkHoverStyle;
@@ -79,7 +90,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private String _threadLinkHoverStyle;
 	protected String _textStyle;
 	protected String _headingStyle;
-	private String _informationStyle;
+	private String _informationStyle;*/
 
 	private String _headingColor;
 
@@ -88,9 +99,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private ICPage _threadPage;
 	private Image _threadImage;
 
-	protected String _topicName;
+	/*protected String _topicName;
 	private String _threadName;
-	private String _linkName;
+	private String _linkName;*/
 
 	protected static String AddPermission = "add";
 	protected static String ReplyPermission = "reply";
@@ -177,10 +188,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 
 	private Table getForum(IWContext iwc) {
 		Table table = new Table();
-		table.setCellspacing(2);
-		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setCellpadding(2);
 		table.setWidth(Table.HUNDRED_PERCENT);
-		setStyles();
 
 		switch (_state) {
 			case ForumBusiness.FORUM_TOPICS :
@@ -204,12 +214,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		iwc.removeSessionAttribute(ForumBusiness.PARAMETER_FIRST_THREAD + "_" + _objectID);
 		iwc.removeSessionAttribute(ForumBusiness.PARAMETER_LAST_THREAD + "_" + _objectID);
 
-		Text topicText = new Text(_iwrb.getLocalizedString("topics", "Topics"));
-		topicText.setFontStyle(_headingStyle);
-		Text threadsText = new Text(_iwrb.getLocalizedString("threads", "Threads"));
-		threadsText.setFontStyle(_headingStyle);
-		Text updatedText = new Text(_iwrb.getLocalizedString("last_updated", "Last updated"));
-		updatedText.setFontStyle(_headingStyle);
+		Text topicText = getStyleText(_iwrb.getLocalizedString("topics", "Topics"), HEADING_STYLE);
+		Text threadsText = getStyleText(_iwrb.getLocalizedString("threads", "Threads"), HEADING_STYLE);
+		Text updatedText = getStyleText(_iwrb.getLocalizedString("last_updated", "Last updated"), HEADING_STYLE);
 
 		table.setWidth(2, "60");
 		table.setWidth(3, "90");
@@ -232,14 +239,13 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 				topic = (ICCategory) list.get(a);
 
 				if (topic != null) {
-					topicLink = new Link(topic.getName());
-					topicLink.setStyle(_topicName);
+					topicLink = getStyleLink(topic.getName(), TOPIC_LINK_STYLE);
 					topicLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, topic.getID());
 					topicLink.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
 					topicLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
 
 					int numberOfThreads = forumBusiness.getNumberOfThreads(topic);
-					numberOfThreadsText = formatText(String.valueOf(numberOfThreads), _textStyle);
+					numberOfThreadsText = formatText(String.valueOf(numberOfThreads), TEXT_STYLE);
 
 					ForumData newestThread = forumBusiness.getNewestThreads(topic);
 					if (newestThread != null) {
@@ -283,7 +289,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 
 		if (topic != null) {
 			if (_showTopicName) {
-				Text topicText = formatText(topic.getName(), _headerStyle);
+				Text topicText = formatText(topic.getName(), HEADER_STYLE);
 				table.add(topicText, 1, row++);
 				table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
 			}
@@ -332,7 +338,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 				table.add(formatText("," + Text.NON_BREAKING_SPACE), 1, row);
 				table.add(getThreadDate(iwc, thread), 1, row);
 				table.add(Text.getBreak(), 1, row);
-				table.add(getThreadLink(thread, _topicName), 1, row);
+				table.add(getThreadLink(thread, TOPIC_LINK_STYLE), 1, row);
 				if (_showResponses) {
 					table.add(formatText(Text.NON_BREAKING_SPACE), 1, row);
 					table.add(getThreadResponses(thread), 1, row++);
@@ -377,7 +383,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 							_threadImage.setHorizontalSpacing(2);
 							threadTable.add(_threadImage, 1, threadRow);
 						}
-						threadTable.add(getThreadLink(thread, _threadName), 1, threadRow);
+						threadTable.add(getThreadLink(thread, THREAD_LINK_STYLE), 1, threadRow);
 						threadTable.add(formatText(Text.NON_BREAKING_SPACE), 1, threadRow);
 						threadTable.add(getThreadResponses(thread), 1, threadRow++);
 					}
@@ -390,8 +396,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	}
 
 	private Link getTopicLink(ICCategory category) {
-		Link link = new Link(category.getName());
-		link.setStyle(_topicName);
+		Link link = getStyleLink(category.getName(), TOPIC_LINK_STYLE);
 		if (_page != null)
 			link.setPage(_page);
 		link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, category.getID());
@@ -403,7 +408,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 
 	private Text getTopicThreadsText(ICCategory topic) {
 		int numberOfThreads = forumBusiness.getNumberOfThreads(topic);
-		return formatText("(" + String.valueOf(numberOfThreads) + Text.NON_BREAKING_SPACE + _iwrb.getLocalizedString("threads_lc", "threads") + ")", _informationStyle);
+		return formatText("(" + String.valueOf(numberOfThreads) + Text.NON_BREAKING_SPACE + _iwrb.getLocalizedString("threads_lc", "threads") + ")", INFORMATION_STYLE);
 	}
 
 	private Link getThreadLink(ForumData thread, String styleName) {
@@ -411,8 +416,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		if (headline == null)
 			headline = "";
 
-		Link link = new Link(headline);
-		link.setStyle(styleName);
+		Link link = getStyleLink(headline, styleName);
 		if (_page != null)
 			link.setPage(_page);
 		link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, thread.getTopicID());
@@ -424,7 +428,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	}
 
 	private Text getThreadResponses(ForumData thread) {
-		return formatText("(" + String.valueOf(thread.getNumberOfResponses()) + Text.NON_BREAKING_SPACE + _iwrb.getLocalizedString("replies_lc", "replies") + ")", _informationStyle);
+		return formatText("(" + String.valueOf(thread.getNumberOfResponses()) + Text.NON_BREAKING_SPACE + _iwrb.getLocalizedString("replies_lc", "replies") + ")", INFORMATION_STYLE);
 	}
 
 	private PresentationObject getUser(ForumData thread) {
@@ -436,25 +440,23 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 				String name = user.getName();
 				if (user.getDisplayName() != null && user.getDisplayName().length() > 0)
 					name = user.getDisplayName();
-				Link link = new Link(name);
-				link.setStyle(_threadName);
+				Link link = getStyleLink(name, THREAD_LINK_STYLE);
 				link.setURL("mailto:" + mail.getEmailAddress());
 				return link;
 			}
 			else if (user != null) {
-				Text userText = formatText(user.getName(), _textStyle);
+				Text userText = formatText(user.getName(), TEXT_STYLE);
 				return userText;
 			}
 		}
 		else if (thread.getUserName() != null && thread.getUserEMail() != null) {
-			Link link = new Link(thread.getUserName());
-			link.setStyle(_threadName);
+			Link link = getStyleLink(thread.getUserName(), THREAD_LINK_STYLE);
 			if (thread.getUserEMail() != null)
 				link.setURL("mailto:" + thread.getUserEMail());
 			return link;
 		}
 		else if (thread.getUserName() != null) {
-			Text userText = formatText(thread.getUserName(), _textStyle);
+			Text userText = formatText(thread.getUserName(), TEXT_STYLE);
 			return userText;
 		}
 		return text;
@@ -493,15 +495,15 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		tree.setExtraColumnWidth(2, _replyWidth);
 		tree.setExtraColumnWidth(3, _dateWidth);
 		tree.setIconDimensions("15", "12");
-		tree.setTreeHeading(1, formatText(_iwrb.getLocalizedString("thread", "Thread"), _headingStyle));
-		tree.setExtraColumnHeading(1, formatText(_iwrb.getLocalizedString("author", "Author"), _headingStyle));
-		tree.setExtraColumnHeading(2, formatText(_iwrb.getLocalizedString("replies", "Replies"), _headingStyle));
-		tree.setExtraColumnHeading(3, formatText(_iwrb.getLocalizedString("date", "Date"), _headingStyle));
+		tree.setTreeHeading(1, formatText(_iwrb.getLocalizedString("thread", "Thread"), HEADING_STYLE));
+		tree.setExtraColumnHeading(1, formatText(_iwrb.getLocalizedString("author", "Author"), HEADING_STYLE));
+		tree.setExtraColumnHeading(2, formatText(_iwrb.getLocalizedString("replies", "Replies"), HEADING_STYLE));
+		tree.setExtraColumnHeading(3, formatText(_iwrb.getLocalizedString("date", "Date"), HEADING_STYLE));
 		tree.setExtraColumnHorizontalAlignment(2, "center");
 		tree.setToShowHeaderRow(true);
 		tree.setTreePadding(2);
-		tree.setTextStyle(_textStyle);
-		tree.setLinkStyleName(_threadName);
+		tree.setTextStyleName(getStyleName(TEXT_STYLE));
+		tree.setLinkStyleName(THREAD_LINK_STYLE);
 		tree.setLinkPage(getThreadPage());
 		tree.setObjectInstanceID(_objectID);
 		tree.setThreadImage(_threadImage);
@@ -527,7 +529,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		String headlineString = thread.getThreadSubject();
 		if (headlineString == null)
 			headlineString = "";
-		Text headline = formatText(headlineString, _headingStyle);
+		Text headline = formatText(headlineString, HEADING_STYLE);
 
 		IWTimestamp stamp = new IWTimestamp(thread.getThreadDate());
 		DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, iwc.getCurrentLocale());
@@ -616,16 +618,14 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		table.add(replyImage, column, 1);
 
 		if (_hasReplyPermission) {
-			Link reply = new Link(_iwrb.getLocalizedString("reply", "Reply"));
-			reply.setStyle(_linkName);
+			Link reply = getStyleLink(_iwrb.getLocalizedString("reply", "Reply"), LINK_STYLE);
 			reply.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
 			reply.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getID());
 			reply.setWindowToOpen(ForumThreadEditor.class);
 			table.add(reply, column++, 1);
 		}
 		else {
-			Text text = new Text(_iwrb.getLocalizedString("reply", "Reply"));
-			text.setFontStyle(_linkStyle);
+			Text text = getStyleText(_iwrb.getLocalizedString("reply", "Reply"), SMALL_TEXT_STYLE);
 			table.add(text, column++, 1);
 		}
 
@@ -635,8 +635,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			editImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 			table.add(editImage, column, 1);
 
-			Link edit = new Link(_iwrb.getLocalizedString("edit", "Edit"));
-			edit.setStyle(_linkName);
+			Link edit = getStyleLink(_iwrb.getLocalizedString("edit", "Edit"), LINK_STYLE);
 			edit.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
 			edit.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
 			edit.addParameter(ForumBusiness.PARAMETER_PARENT_THREAD_ID, thread.getParentThreadID());
@@ -650,8 +649,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			deleteImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 			table.add(deleteImage, column, 1);
 
-			Link delete = new Link(_iwrb.getLocalizedString("delete", "Delete"));
-			delete.setStyle(_linkName);
+			Link delete = getStyleLink(_iwrb.getLocalizedString("delete", "Delete"), LINK_STYLE);
 			delete.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
 			delete.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getID());
 			delete.addParameter(ForumBusiness.PARAMETER_MODE, ForumBusiness.PARAMETER_DELETE);
@@ -673,15 +671,13 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			table.add(newImage, column, 1);
 
 			if (_hasAddPermission) {
-				Link newLink = new Link(_iwrb.getLocalizedString("new_thread"));
-				newLink.setStyle(_linkName);
+				Link newLink = getStyleLink(_iwrb.getLocalizedString("new_thread"), LINK_STYLE);
 				newLink.setWindowToOpen(ForumThreadEditor.class);
 				newLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
 				table.add(newLink, column++, 1);
 			}
 			else {
-				Text newText = new Text(_iwrb.getLocalizedString("new_thread"));
-				newText.setFontStyle(_linkStyle);
+				Text newText = getStyleText(_iwrb.getLocalizedString("new_thread"), SMALL_TEXT_STYLE);
 				table.add(newText, column++, 1);
 			}
 		}
@@ -698,8 +694,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	}
 
 	private Link getOverviewLink() {
-		Link overView = new Link(_iwrb.getLocalizedString("topic_overview", "Topic overview"));
-		overView.setStyle(_linkName);
+		Link overView = getStyleLink(_iwrb.getLocalizedString("topic_overview", "Topic overview"), LINK_STYLE);
 		overView.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_TOPICS);
 		if (_page != null)
 			overView.setPage(_page);
@@ -747,34 +742,6 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		iwc.setSessionAttribute(ForumBusiness.PARAMETER_LAST_THREAD + "_" + _objectID, Integer.toString(_lastThread));
 	}
 
-	private void setStyles() {
-		if (_topicName == null) {
-			_topicName = "forumTopic_" + _objectID;
-		}
-
-		if (_threadName == null) {
-			_threadName = "forumThread_" + _objectID;
-		}
-
-		if (_linkName == null) {
-			_linkName = "forumLink_" + _objectID;
-		}
-
-		if (getParentPage() != null) {
-			getParentPage().setStyleDefinition("A." + _topicName, _topicLinkStyle);
-			getParentPage().setStyleDefinition("A." + _topicName + ":hover", _topicLinkHoverStyle);
-
-			getParentPage().setStyleDefinition("A." + _threadName, _threadLinkStyle);
-			getParentPage().setStyleDefinition("A." + _threadName + ":hover", _threadLinkHoverStyle);
-
-			getParentPage().setStyleDefinition("A." + _linkName, _linkStyle);
-			getParentPage().setStyleDefinition("A." + _linkName + ":hover", _linkHoverStyle);
-		}
-		else {
-			_styles = false;
-		}
-	}
-
 	private void getParameters(IWContext iwc) {
 		try {
 			_selectedObjectID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID));
@@ -801,29 +768,35 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	}
 
 	protected Text formatText(String textString) {
-		return formatText(textString, _textStyle);
+		return formatText(textString, TEXT_STYLE);
 	}
 
 	protected Text formatText(String textString, String style) {
-		Text text = new Text(textString);
-		text.setFontStyle(style);
+		Text text = getStyleText(textString, style);
 		return text;
 	}
 
 	private void setDefaultValues() {
 		_width = Table.HUNDRED_PERCENT;
 		_headingColor = "#eeeeee";
+	}
+	
+	public Map getStyleNames() {
+		Map map = new HashMap();
+		map.put(HEADER_STYLE, "font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold");
+		map.put(TEXT_STYLE, "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000;");
+		map.put(SMALL_TEXT_STYLE, "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000;");
+		map.put(HEADING_STYLE, "font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: bold");
+		map.put(INFORMATION_STYLE, "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #999999;");
 
-		_headerStyle = "font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold";
-		_linkStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000; text-decoration: none;";
-		_linkHoverStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000; text-decoration: underline;";
-		_topicLinkStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline; font-weight:bold;";
-		_topicLinkHoverStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline; font-weight:bold;";
-		_threadLinkStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline;";
-		_threadLinkHoverStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline;";
-		_headingStyle = "font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: bold";
-		_textStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: none;";
-		_informationStyle = "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #999999;";
+		map.put(LINK_STYLE, "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000; text-decoration: none;");
+		map.put(LINK_STYLE+":hover", "font-family: Arial, Helvetica,sans-serif; font-size: 10px; color: #000000; text-decoration: underline;");
+		map.put(TOPIC_LINK_STYLE, "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline; font-weight:bold;");
+		map.put(TOPIC_LINK_STYLE+":hover", "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline; font-weight:bold;");
+		map.put(THREAD_LINK_STYLE, "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline;");
+		map.put(THREAD_LINK_STYLE+":hover", "font-family: Arial, Helvetica,sans-serif; font-size: 11px; color: #000000; text-decoration: underline;");
+		
+		return map;
 	}
 
 	public void setNumberOfDisplayedThreads(int numberOfThreads) {
@@ -864,19 +837,15 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	}
 
 	public void setHeaderStyle(String style) {
-		_headerStyle = style;
 	}
 
 	public void setHeadingStyle(String style) {
-		_headingStyle = style;
 	}
 
 	public void setInformationStyle(String style) {
-		_informationStyle = style;
 	}
 
 	public void setTextStyle(String style) {
-		_textStyle = style;
 	}
 
 	public void setDefaultOpenLevel(int openLevel) {
@@ -884,18 +853,12 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	}
 
 	public void setLinkStyles(String style, String hoverStyle) {
-		_linkStyle = style;
-		_linkHoverStyle = hoverStyle;
 	}
 
 	public void setThreadLinkStyles(String style, String hoverStyle) {
-		_threadLinkStyle = style;
-		_threadLinkHoverStyle = hoverStyle;
 	}
 
 	public void setTopicLinkStyles(String style, String hoverStyle) {
-		_topicLinkStyle = style;
-		_topicLinkHoverStyle = hoverStyle;
 	}
 
 	public void setHeadingColor(String color) {

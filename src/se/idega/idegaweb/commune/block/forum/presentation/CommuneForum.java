@@ -48,18 +48,12 @@ public class CommuneForum extends Forum {
 		iwc.removeSessionAttribute(ForumBusiness.PARAMETER_FIRST_THREAD + "_" + _objectID);
 		iwc.removeSessionAttribute(ForumBusiness.PARAMETER_LAST_THREAD + "_" + _objectID);
 
-		Text topicText = new Text(_iwrb.getLocalizedString("topics", "Topics"));
-		topicText.setFontStyle(_headingStyle);
-		Text threadsText = new Text(_iwrb.getLocalizedString("threads", "Threads"));
-		threadsText.setFontStyle(_headingStyle);
-		Text updatedText = new Text(_iwrb.getLocalizedString("last_updated", "Last updated"));
-		updatedText.setFontStyle(_headingStyle);
-		Text moderatorText = new Text(_iwrb.getLocalizedString("moderator","Moderator"));
-		moderatorText.setFontStyle(_headingStyle);
-		Text filesText = new Text(_iwrb.getLocalizedString("files","Files"));
-		filesText.setFontStyle(_headingStyle);
-		Text closesOn = new Text(_iwrb.getLocalizedString("closes_on_date","Closes"));
-		closesOn.setFontStyle(_headingStyle);
+		Text topicText = getStyleText(_iwrb.getLocalizedString("topics", "Topics"), HEADING_STYLE);
+		Text threadsText = getStyleText(_iwrb.getLocalizedString("threads", "Threads"), HEADING_STYLE);
+		Text updatedText = getStyleText(_iwrb.getLocalizedString("last_updated", "Last updated"), HEADING_STYLE);
+		Text moderatorText = getStyleText(_iwrb.getLocalizedString("moderator","Moderator"), HEADING_STYLE);
+		Text filesText = getStyleText(_iwrb.getLocalizedString("files","Files"), HEADING_STYLE);
+		Text closesOn = getStyleText(_iwrb.getLocalizedString("closes_on_date","Closes"), HEADING_STYLE);
 
 		table.setWidth(2, "60");
 		table.setWidth(3, "90");
@@ -91,8 +85,7 @@ public class CommuneForum extends Forum {
 					throw new RuntimeException(r.getMessage());
 				}
 				if (topic != null) {
-					topicLink = new Link(topic.getName());
-					topicLink.setStyle(_topicName);
+					topicLink = getStyleLink(topic.getName(), TOPIC_LINK_STYLE);
 					topicLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, ((Integer)topic.getPrimaryKey()).intValue());
 					topicLink.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
 					if (_addICObjectID)
@@ -101,7 +94,7 @@ public class CommuneForum extends Forum {
 						topicLink.setPage(getPage());
 
 					int numberOfThreads = forumBusiness.getNumberOfThreads(topic);
-					numberOfThreadsText = formatText(String.valueOf(numberOfThreads), _textStyle);
+					numberOfThreadsText = formatText(String.valueOf(numberOfThreads), TEXT_STYLE);
 
 					ForumData newestThread = forumBusiness.getNewestThreads(topic);
 					if (newestThread != null) {
@@ -116,7 +109,7 @@ public class CommuneForum extends Forum {
 						table.add(lastUpdatedText, 3, row);
 
 					if (user != null) {
-						table.add(formatText(user.getName(), _textStyle), 4, row);
+						table.add(formatText(user.getName(), TEXT_STYLE), 4, row);
 						User admin = iwc.getCurrentUser();
 						if (admin != null && ((Integer)user.getPrimaryKey()).intValue() == ((Integer)admin.getPrimaryKey()).intValue())
 							isModerator = true;
@@ -129,19 +122,19 @@ public class CommuneForum extends Forum {
 					Timestamp stamp = topic.getInvalidationDate();
 					
 					if (stamp!=null) {
-						table.add(formatText(new IWTimestamp(stamp.getTime()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), _textStyle), 5, row);
+						table.add(formatText(new IWTimestamp(stamp.getTime()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), TEXT_STYLE), 5, row);
 					}
 					
 					try {
 						int fileCount = getCommuneForumBusiness(iwc).getFileCount(topic);
 						if (isModerator || iwc.hasEditPermission(this)) {
-							Link file = new Link(formatText(Integer.toString(fileCount), _textStyle));
+							Link file = new Link(formatText(Integer.toString(fileCount), TEXT_STYLE));
 							file.setWindowToOpen(CommuneForumTopicFiles.class);
 							file.addParameter(CommuneForumTopicFiles.prmTopicId, ((Integer)topic.getPrimaryKey()).intValue());
 							table.add(file,6,row);
 						}
 						else
-							table.add(formatText(Integer.toString(fileCount), _textStyle),6,row);
+							table.add(formatText(Integer.toString(fileCount), TEXT_STYLE),6,row);
 					}
 					catch (RemoteException e) {
 						e.printStackTrace(System.err);
@@ -220,16 +213,16 @@ public class CommuneForum extends Forum {
 			
 			ICFile file;
 			if (coll != null && !coll.isEmpty()) {
-				fileTable.add(formatText(_iwrb.getLocalizedString("attached_documents","Attached documents")+":", _headingStyle), 1, 1);
+				fileTable.add(formatText(_iwrb.getLocalizedString("attached_documents","Attached documents")+":", HEADING_STYLE), 1, 1);
 				Iterator iter = coll.iterator();
 				while (iter.hasNext()) {
 					file = (ICFile) iter.next();
-					Link preview = new Link(formatText(file.getName(), _textStyle));
+					Link preview = new Link(formatText(file.getName(), TEXT_STYLE));
 					preview.setURL(MediaBusiness.getMediaURL(file,iwc.getIWMainApplication()));
 					preview.setTarget(Link.TARGET_NEW_WINDOW);
 					fileTable.add(preview, 3, 1);
 					if (iter.hasNext())
-						fileTable.add(formatText(","+Text.NON_BREAKING_SPACE, _textStyle), 3, 1);
+						fileTable.add(formatText(","+Text.NON_BREAKING_SPACE, TEXT_STYLE), 3, 1);
 				}
 				//fileTable.add(formatText(Text.BREAK, _headingStyle), 1, row);
 			}
