@@ -3566,13 +3566,22 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			else
 				archive.setTerminatedDate(null);
 			archive.store();
+			SchoolClassMember member = archive.getSchoolClassMember();
 			int memberID = archive.getSchoolClassMemberId();
+			try {
+				SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(member, archive.getValidFromDate());
+				log.setEndDate(archive.getTerminatedDate());
+				log.store();
+			}
+			catch (FinderException fe) {
+				//Nothing done...
+			}
 
 			Collection contracts = getChildCareContractArchiveHome().findFutureContractsByApplication(applicationID, date);
 			Iterator iter = contracts.iterator();
 			while (iter.hasNext()) {
 				archive = (ChildCareContract) iter.next();
-				SchoolClassMember member = archive.getSchoolClassMember();
+				member = archive.getSchoolClassMember();
 				try {
 					Contract contract = archive.getContract();
 					contract.setStatus("T");
