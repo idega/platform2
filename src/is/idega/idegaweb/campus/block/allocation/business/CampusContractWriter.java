@@ -8,6 +8,7 @@ import com.idega.util.text.TextSoap;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.EntityFinder;
 import com.idega.block.application.data.*;
+import com.idega.core.data.ICFile;
 
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
@@ -24,6 +25,10 @@ import java.util.Hashtable;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.sql.SQLException;
+
+import com.idega.io.MemoryOutputStream;
+import com.idega.io.MemoryInputStream;
+import com.idega.io.MemoryFileBuffer;
 
 /**
  * Title:        idegaclasses
@@ -72,19 +77,21 @@ public class CampusContractWriter{
   public final static String TIIS = "TIS";
   public final static String TIEN = "TEN";
 
-  public static boolean writePDF(int[] ids,IWResourceBundle iwrb,String realpath,
-  Font nameFont ,Font titleFont,Font paragraphFont, Font tagFont,Font textFont){
-    boolean returner = false;
+  public static int writePDF(int[] ids,IWResourceBundle iwrb,Font nameFont ,Font titleFont,Font paragraphFont, Font tagFont,Font textFont){
+    int returner = -1;
     boolean bEntity = false;
     if(ids != null &&  ids.length > 0){
       bEntity = true;
     }
     try {
 
-        String file = realpath;
-        FileOutputStream fos = new FileOutputStream(file);
+				MemoryFileBuffer buffer = new MemoryFileBuffer();
+        MemoryOutputStream mos = new MemoryOutputStream(buffer);
+				MemoryInputStream mis = new MemoryInputStream(buffer);
+
+       //FileOutputStream fos = new FileOutputStream(file);
         Document document = new Document(PageSize.A4, 50, 50, 50, 50);
-        PdfWriter.getInstance(document, fos);
+        PdfWriter.getInstance(document, mos);
         document.addAuthor("Idegaweb Campus");
         document.addSubject("");
         document.open();
@@ -129,51 +136,85 @@ public class CampusContractWriter{
               }
               P2 = new Paragraph(phrase);
               subSection.add(P2);
-
-            }
-            if(bEntity){
-              try {
-                Contract eContract = new Contract(ids[j]);
-                if(eContract.getStatus().equalsIgnoreCase(eContract.statusCreated)){
-                  eContract.setStatusPrinted();
-                  eContract.update();
-                }
-              }
-              catch (SQLException ex) {
-                ex.printStackTrace();
-              }
             }
           }
           document.add(chapter);
-
           document.newPage();
-
 
         }
         document.close();
+
+				ICFile pdfFile = null;
+				Contract eContract = null;
+				String fileName = "test.pdf";
+				if(bEntity ){
+          try {
+						//System.err.println("instanciating Contract "+ids[0]);
+            eContract = new Contract(ids[0]);
+						Applicant A = new Applicant(eContract.getApplicantId().intValue());
+						fileName = A.getSSN();
+						if(!"".equals(fileName))
+							fileName = A.getFirstName();
+          }
+          catch (SQLException ex) {
+            ex.printStackTrace();
+          }
+        }
+
+				try {
+					pdfFile = new ICFile();
+					//System.err.println("available "+mis.available());
+					pdfFile.setFileValue(mis);
+					pdfFile.setMimeType("application/x-pdf");
+					pdfFile.setName(fileName+".pdf");
+					pdfFile.setFileSize(buffer.length());
+					pdfFile.insert();
+					returner = pdfFile.getID();
+				}
+				catch (SQLException ex) {
+				  ex.printStackTrace();
+				}
+
+				if(eContract !=null && returner > 0){
+          try {
+							//System.err.println("updating Contract ");
+						boolean update = false;
+            if(eContract.getStatus().equalsIgnoreCase(eContract.statusCreated)){
+							eContract.setStatusPrinted();
+							update = true;
+						}
+						if(returner > 0){
+							eContract.setFileId(returner);
+							update = true;
+						}
+						if(update)
+            eContract.update();
+          }
+          catch (SQLException ex) {
+            ex.printStackTrace();
+          }
+        }
+
         try {
-          fos.close();
+          mos.close();
         }
         catch (Exception ex) {
           ex.printStackTrace();
         }
-        returner = true;
     }
     catch (Exception ex) {
       ex.printStackTrace();
-      returner = false;
+      returner = -1;
     }
     return returner;
   }
 
-  public static boolean writeTestPDF(IWResourceBundle iwrb,String realpath,
-    Font nameFont, Font titleFont,Font paragraphFont, Font tagFont,Font textFont){
-    return writePDF(new int[0],iwrb,realpath,nameFont, titleFont, paragraphFont, tagFont, textFont);
+  public static int writeTestPDF(IWResourceBundle iwrb,Font nameFont, Font titleFont,Font paragraphFont, Font tagFont,Font textFont){
+    return writePDF(new int[0],iwrb,nameFont, titleFont, paragraphFont, tagFont, textFont);
   }
-  public static boolean writePDF(int id,IWResourceBundle iwrb,String realpath,
-    Font nameFont, Font titleFont,Font paragraphFont, Font tagFont,Font textFont){
+  public static int writePDF(int id,IWResourceBundle iwrb,Font nameFont, Font titleFont,Font paragraphFont, Font tagFont,Font textFont){
       int[] ids = {id};
-    return writePDF(ids,iwrb,realpath,nameFont, titleFont, paragraphFont, tagFont, textFont);
+    return writePDF(ids,iwrb,nameFont, titleFont, paragraphFont, tagFont, textFont);
   }
 
   private static List listOfTexts(){

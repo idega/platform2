@@ -10,6 +10,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
+import com.idega.core.user.business.UserBusiness;
 import com.idega.block.application.business.ApplicationFinder;
 import com.idega.block.application.data.*;
 import com.idega.block.application.business.ApplicationHolder;
@@ -872,19 +873,15 @@ public class CampusAllocator extends PresentationObjectContainer{
     }
   }
 
-  private User makeNewUser(Applicant eApplicant){
-    User U = new User();
-    //U.setDisplayName(eApplicant.getFullName());
-    U.setFirstName(eApplicant.getFirstName());
-    U.setMiddleName(eApplicant.getMiddleName());
-    U.setLastName(eApplicant.getLastName());
-    try{
-      U.insert();
-    }
-    catch(SQLException ex){
-      U = null;
-    }
-    return U;
+  private User makeNewUser(Applicant A){
+    UserBusiness ub = new UserBusiness();
+		try{
+		return ub.insertUser(A.getFirstName(),A.getMiddleName(),A.getLastName(),A.getFirstName(),"",null,null,null);
+		}
+		catch(SQLException ex){
+		  ex.printStackTrace();
+		}
+		return null;
   }
 
   private boolean makeNewContract(User eUser,Applicant eApplicant,int iApartmentId,idegaTimestamp from,idegaTimestamp to){

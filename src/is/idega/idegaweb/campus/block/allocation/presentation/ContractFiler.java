@@ -51,7 +51,7 @@ public class ContractFiler extends Block {
       //Page p = getPage();
       if(iwc.getParameter(prmOneId)!=null){
         int id = Integer.parseInt(iwc.getParameter(prmOneId));
-        boolean filewritten = CampusContractWriter.writePDF(id,iwrb,path+filename, nameFont,titleFont, paraFont, tagFont, textFont);
+        boolean filewritten = false;//CampusContractWriter.writePDF(id,iwrb,path+filename, nameFont,titleFont, paraFont, tagFont, textFont);
 
         if(filewritten)
           p.setToRedirect("/servlet/pdf?&dir="+path+filename,1);
@@ -61,7 +61,7 @@ public class ContractFiler extends Block {
       }
       else if(iwc.getParameter(prmTest)!=null){
 
-        boolean filewritten = CampusContractWriter.writeTestPDF(iwrb,path+filetest,  nameFont,titleFont, paraFont, tagFont, textFont);
+       boolean filewritten = false;//CampusContractWriter.writeTestPDF(iwrb,path+filetest,  nameFont,titleFont, paraFont, tagFont, textFont);
         if(filewritten)
           p.setToRedirect("/servlet/pdf?&dir="+path+filetest,1);
         else
@@ -88,7 +88,7 @@ public class ContractFiler extends Block {
         String fname = f.toString();
         */
 
-        boolean filewritten = CampusContractWriter.writePDF(ids,iwrb,path+filetest,  nameFont,titleFont, paraFont, tagFont, textFont);
+        boolean filewritten = false;//CampusContractWriter.writePDF(ids,iwrb,path+filetest,  nameFont,titleFont, paraFont, tagFont, textFont);
         if(filewritten)
           p.setToRedirect("/servlet/pdf?&dir="+path+filetest,1);
         else

@@ -287,7 +287,7 @@ public class CampusContracts extends PresentationObjectContainer{
           A = new Apartment(C.getApartmentId().intValue());
           T.add(Edit.formatText(i+1),col++,row);
           //if(C.getStatus().equalsIgnoreCase(Contract.statusCreated) || C.getStatus().equalsIgnoreCase(Contract.statusPrinted) )
-            T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col,row);
+          T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col,row);
           if(C.getStatus().equalsIgnoreCase(Contract.statusSigned))
             T.add(getReSignLink(resignImage,C.getID()),col,row);
           col++;

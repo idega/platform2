@@ -1,5 +1,5 @@
 /*
- * $Id: Contract.java,v 1.1 2001/11/08 14:43:05 aron Exp $
+ * $Id: Contract.java,v 1.2 2001/11/19 13:48:55 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,6 +32,7 @@ public class Contract extends GenericEntity {
   private static final String resignInfo_ = "resign_info";
   private static final String statusDate_ = "status_date";
   private static final String movingDate_ = "moving_date";
+	private static final String file_ = "ic_file_id";
 
   public static final String statusCreated = "C";
   public static final String statusPrinted = "P";
@@ -50,7 +51,9 @@ public class Contract extends GenericEntity {
   public static String getResignInfoColumnName(){return resignInfo_ ;}
   public static String getStatusDateColumnName(){return movingDate_ ;}
   public static String getMovingDateColumnName(){return movingDate_ ;}
+	public static String getFileColumnName(){return file_;}
   public static String getContractEntityName(){return name_;}
+
 
   public Contract() {
   }
@@ -67,9 +70,9 @@ public class Contract extends GenericEntity {
     addAttribute(validTo_,"Valid to",true,true,java.sql.Date.class);
     addAttribute(statusDate_,"Resign date",true,true,java.sql.Date.class);
     addAttribute(movingDate_,"Moving date",true,true,java.sql.Date.class);
-    addAttribute(status_,"Status",true,true,java.lang.String.class);
+    addAttribute(status_,"Status",true,true,java.lang.String.class,1);
     addAttribute(resignInfo_,"Resign info",true,true,java.lang.String.class,4000);
-    setMaxLength(status_,1);
+    addAttribute(file_,"File id",true,true,java.lang.Integer.class);
   }
 
   public String getEntityName() {
@@ -93,6 +96,17 @@ public class Contract extends GenericEntity {
 
   public void setApplicantId(Integer id) {
     setColumn(applicantId_,id);
+  }
+
+	public Integer getFileId() {
+    return(getIntegerColumnValue(file_));
+  }
+  public void setFileId(int id) {
+    setColumn(file_,id);
+  }
+
+  public void setFileId(Integer id) {
+    setColumn(file_,id);
   }
 
   public Integer getApplicantId() {
