@@ -87,6 +87,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	private static final short COLUMN_MEMBER_STREET_NAME = 2;
 	private static final short COLUMN_MEMBER_POSTAL_CODE = 3;
 
+	private static final short COLUMN_BOARD_MEMBER_LEAGUE = 2;
 	private static final short COLUMN_BOARD_MEMBER_NAME = 2;
 	private static final short COLUMN_BOARD_MEMBER_SSN = 3;
 	private static final short COLUMN_BOARD_MEMBER_STREET_NAME = 4;
@@ -636,7 +637,30 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				if (nameCell == null) {
 					break; //stop
 				}
-
+				
+				HSSFCell leagueCell = row.getCell(COLUMN_BOARD_MEMBER_LEAGUE);
+				String league = null;
+				WorkReportGroup group = null;
+				if (leagueCell != null) {
+					league = leagueCell.getStringCellValue();
+					if (league != null) {
+						try {
+							group = getWorkReportGroupHome().findWorkReportGroupByShortNameAndYear(league, year);
+						}
+						catch (FinderException e) {
+							e.printStackTrace();
+							System.err.println("WorkReportGroup not found by short name : " + league + " trying group name");
+	
+							try {
+								group = getWorkReportGroupHome().findWorkReportGroupByNameAndYear(league, year);
+							}
+							catch (FinderException e1) {
+								throw new WorkReportImportException("workreportimportexception.league_not_found");
+							}
+						}
+					}
+				}
+				
 				String name = nameCell.getStringCellValue();
 				if (name == null || name.indexOf("##") != -1) {
 					break; //stop
@@ -659,8 +683,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					}
 					catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
-            //TODO: Palli where is the league?
-						member = createWorkReportBoardMember(workReportId, ssn, null); //sets basic data
+						member = createWorkReportBoardMember(workReportId, ssn, group); //sets basic data
 
 						if (streetName != null && !"".equals(streetName)) {
 							member.setStreetName(streetName);
