@@ -357,7 +357,7 @@ public class ProductCatalog extends CategoryBlock{
     if (_fontStyle != null) {
       text.setFontStyle(_fontStyle);
     }
-    text.setHorizontalAlignment(Paragraph.HORIZONTAL_ALIGN_JUSTIFY);
+    //text.setHorizontalAlignment(Paragraph.HORIZONTAL_ALIGN_JUSTIFY);
     return text;
   }
 
@@ -533,11 +533,14 @@ public class ProductCatalog extends CategoryBlock{
 
   protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
     Product prod =getSelectedProduct(iwc);
-    if (prod == null) {
-      return cacheStatePrefix+getICObjectInstanceID();
-    }else {
-      return cacheStatePrefix+getICObjectInstanceID()+prod.getID();
+    String returnString = cacheStatePrefix+getICObjectInstanceID();
+    if ( iwc.isParameterSet(CATEGORY_ID) ) {
+      returnString = returnString+"_"+iwc.getParameter(CATEGORY_ID);
     }
+    if (prod != null) {
+      returnString = returnString+"_"+prod.getID();
+    }
+    return returnString;
   }
 
   public void setAddCategoryID(boolean addID) {
