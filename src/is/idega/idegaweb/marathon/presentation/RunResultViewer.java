@@ -35,6 +35,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.Counter;
@@ -78,6 +79,7 @@ public class RunResultViewer extends Block {
 
 	private RunBusiness _runBiz;
 	private GroupBusiness _groupBiz;
+	private UserBusiness _userBiz;
 
 	private String runPK;
 	private Group run;
@@ -349,7 +351,6 @@ public class RunResultViewer extends Block {
 	}
 
 	private int insertRunIntoTable(Table table, int row, Run run, int num, int participantRow) {
-		User user = run.getUser();
 		table.add(getRunnerRowText(Integer.toString(num)), 1, row);
 		table.setStyleClass(1, row, getStyleName(STYLENAME_LIST_ROW));
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
@@ -364,14 +365,20 @@ public class RunResultViewer extends Block {
 		table.setStyleClass(5, row, getStyleName(STYLENAME_LIST_ROW));
 		table.setAlignment(5, row, Table.HORIZONTAL_ALIGN_CENTER);
 
-		table.add(getRunnerRowText(user.getName()), 7, row);
-		table.setStyleClass(7, row, getStyleName(STYLENAME_LIST_ROW));
-
-		IWTimestamp birthDate = new IWTimestamp(user.getDateOfBirth());
-		table.add(getRunnerRowText(Integer.toString(birthDate.getYear())), 9, row);
-		table.setStyleClass(9, row, getStyleName(STYLENAME_LIST_ROW));
-		table.setAlignment(9, row, Table.HORIZONTAL_ALIGN_CENTER);
-
+		try {
+			User user = getUserBiz().getUser(run.getUserID());
+			table.add(getRunnerRowText(user.getName()), 7, row);
+			table.setStyleClass(7, row, getStyleName(STYLENAME_LIST_ROW));
+	
+			IWTimestamp birthDate = new IWTimestamp(user.getDateOfBirth());
+			table.add(getRunnerRowText(Integer.toString(birthDate.getYear())), 9, row);
+			table.setStyleClass(9, row, getStyleName(STYLENAME_LIST_ROW));
+			table.setAlignment(9, row, Table.HORIZONTAL_ALIGN_CENTER);
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+		
 		Country country = null;
 		try {
 			country = getRunBiz().getCountryByNationality(run.getUserNationality());
@@ -473,6 +480,18 @@ public class RunResultViewer extends Block {
 			}
 		}
 		return _groupBiz;
+	}
+
+	private UserBusiness getUserBiz() {
+		if (_userBiz == null) {
+			try {
+				_userBiz = (UserBusiness) IBOLookup.getServiceInstance(_iwc, UserBusiness.class);
+			}
+			catch (IBOLookupException e) {
+				e.printStackTrace();
+			}
+		}
+		return _userBiz;
 	}
 
 	public String getBundleIdentifier() {
