@@ -17,7 +17,6 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
-import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeader;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeaderHome;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckRecord;
