@@ -1,6 +1,7 @@
 package is.idega.idegaweb.travel.business;
 
 import is.idega.idegaweb.travel.data.Contract;
+import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.data.ResellerDay;
 import is.idega.idegaweb.travel.data.ResellerDayHome;
 import is.idega.idegaweb.travel.data.Service;
@@ -8,6 +9,8 @@ import is.idega.idegaweb.travel.data.ServiceDay;
 import is.idega.idegaweb.travel.data.ServiceDayBMPBean;
 import is.idega.idegaweb.travel.data.ServiceDayHome;
 import is.idega.idegaweb.travel.data.ServiceDayPK;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -15,6 +18,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -45,6 +49,8 @@ import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.block.trade.stockroom.data.TravelAddressBMPBean;
 import com.idega.block.trade.stockroom.data.TravelAddressHome;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.location.data.Address;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOException;
@@ -66,13 +72,14 @@ import com.idega.util.datastructures.HashtableDoubleKeyed;
  * @version 1.0
  */
 
-public class TravelStockroomBusinessBean extends StockroomBusinessBean implements TravelStockroomBusiness {
+public class TravelStockroomBusinessBean extends StockroomBusinessBean implements TravelStockroomBusiness, ActionListener {
 
   private String resellerDayHashtableSessionName = "resellerDayHashtable";
   private String resellerDayOfWeekHashtableSessionName = "resellerDayOfWeekHashtable";
   private String serviceDayHashtableSessionName = "serviceDayHashtable";
 
   protected Timeframe timeframe;
+	private HashMap maxDaysMap = new HashMap();
 
   public TravelStockroomBusinessBean() {
   }
@@ -1281,32 +1288,45 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   
 	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException{
 		try {
-			if (stamp != null) {
-				if (supportsSupplyPool()) {
-					try {
-						SupplyPool pool = ((SupplyPoolHome) IDOLookup.getHome(SupplyPool.class)).findByProduct(product);
-						SupplyPoolDay pDay = 	((SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class)).findByPrimaryKey(new SupplyPoolDayPK(pool.getPrimaryKey(), new Integer(stamp.getDayOfWeek())));
-						int max = pDay.getMax();
-
-						int iBookingExtra = getBooker().getBookingsTotalCountByOthersInPool(product, stamp);
-						max -= iBookingExtra;
-						
-						return max;
-					} catch (FinderException fe) {
-						//fe.printStackTrace();
-					} catch (Exception e) {
-						e.printStackTrace();
+			HashMap subMap = (HashMap) maxDaysMap.get((Integer) product.getPrimaryKey());
+			if (subMap == null) {
+				subMap = new HashMap();
+			}
+			Integer returner = (Integer) subMap.get(stamp.toSQLDateString()); 
+			if ( returner == null ) {
+				if (stamp != null) {
+					if (supportsSupplyPool()) {
+						try {
+							SupplyPool pool = ((SupplyPoolHome) IDOLookup.getHome(SupplyPool.class)).findByProduct(product);
+							SupplyPoolDay pDay = 	((SupplyPoolDayHome) IDOLookup.getHome(SupplyPoolDay.class)).findByPrimaryKey(new SupplyPoolDayPK(pool.getPrimaryKey(), new Integer(stamp.getDayOfWeek())));
+							int max = pDay.getMax();
+	
+							int iBookingExtra = getBooker().getBookingsTotalCountByOthersInPool(product, stamp);
+							max -= iBookingExtra;
+							returner = new Integer(max);
+						} catch (FinderException fe) {
+							//fe.printStackTrace();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
-				}
-				
-			  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-			  ServiceDay sDay;
-			  sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
-			  if (sDay != null) {
-			    return sDay.getMax();
+					
+					if (returner == null) {
+					  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+					  ServiceDay sDay;
+					  sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
+					  if (sDay != null) {
+					    returner = new Integer(sDay.getMax());
+					  }
+				  }
+					subMap.put(stamp.toSQLDateString(), returner);
+					maxDaysMap.put((Integer) product.getPrimaryKey(), subMap);
 			  }
-		  }
-			return 0;
+				//System.out.println("Getting max for product = "+product.getPrimaryKey()+" stamp = "+stamp.toSQLString()+" = MAX = "+returner.intValue());
+			} else {
+				//System.out.println("Found max for product = "+product.getPrimaryKey()+" stamp = "+stamp.toSQLString()+" = MAX = "+returner.intValue());
+			}
+			return returner.intValue();
 
 		} catch (Exception e) {
 			return 0;
@@ -1344,6 +1364,39 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 		}
 	}
 
+	public void initializeBean() {
+		getBooker().addActionListener(this);
+		getInquirer().addActionListener(this);
+	}
+
+
+	public void actionPerformed(ActionEvent event) {
+		if (event != null) {
+			if (event.getActionCommand().equals(BookerBean.COMMAND_BOOKING)) {
+				try {
+					GeneralBooking booking = getBooker().getGeneralBookingHome().findByPrimaryKey(new Integer(event.getID()));
+					Product product = booking.getService().getProduct();
+					Collection products = this.getProductsSharingPool(product);
+					maxDaysMap.remove( (Integer) product.getPrimaryKey());
+					System.out.println("[ServiceSearchBusinessBean] Invalidating max days cache for product = "+product.getPrimaryKey());
+					if (products != null) {
+						Iterator iter = products.iterator();
+						while (iter.hasNext()) {
+							product = (Product) iter.next();
+							maxDaysMap.remove( (Integer) product.getPrimaryKey());
+							System.out.println("[ServiceSearchBusinessBean] Invalidating max days cache for product = "+product.getPrimaryKey());
+						}
+					}
+				}
+				catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 	/*
 	 * override me please
 	 */
@@ -1355,10 +1408,24 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
   }
 
-  private Booker getBooker() throws RemoteException {
-    return (Booker) IBOLookup.getServiceInstance(getIWApplicationContext(), Booker.class);
+  private Booker getBooker() {
+    try {
+			return (Booker) IBOLookup.getServiceInstance(getIWApplicationContext(), Booker.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
   }
 
+  private Inquirer getInquirer() {
+    try {
+			return (Inquirer) IBOLookup.getServiceInstance(getIWApplicationContext(), Inquirer.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+  }  
+  
   private StockroomBusiness getStockroomBusiness() throws RemoteException {
     return (StockroomBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), StockroomBusiness.class);
   }
