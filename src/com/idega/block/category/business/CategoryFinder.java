@@ -17,6 +17,8 @@ import com.idega.core.data.ICFile;
 import com.idega.core.data.ICCategory;
 import com.idega.core.data.ICBusiness;
 import com.idega.data.GenericEntity;
+import com.idega.data.CategoryEntity;
+import com.idega.data.EntityControl;
 import com.idega.data.IDOFinderException;
 
 /**
@@ -29,6 +31,8 @@ import com.idega.data.IDOFinderException;
  */
 
 public class CategoryFinder {
+
+  private static CategoryFinder categoryFinder;
 
   public static ICCategory getCategory(int iCategoryId){
     if( iCategoryId > 0){
@@ -206,6 +210,19 @@ public class CategoryFinder {
     return sql.toString();
   }
 
+  private static String getRelatedEntitySQL(String tablename,int iObjectInstanceId){
+    StringBuffer sql = new StringBuffer("select ");
+    sql.append(tablename).append(".* from ").append(tablename).append(",");
+    String middletable = EntityControl.getManyToManyRelationShipTableName(ICCategory.class,ICObjectInstance.class);
+    sql.append(middletable);
+    sql.append(" where ").append(((ICObjectInstance)ICObjectInstance.getStaticInstance(ICObjectInstance.class)).getIDColumnName());
+    sql.append(" = ").append(iObjectInstanceId);
+    String idname = ((ICCategory)ICCategory.getStaticInstance(ICCategory.class)).getIDColumnName();
+    sql.append(" and ").append( middletable).append(".").append(idname );
+    sql.append(" = ").append(tablename).append(".").append(idname);
+    return sql.toString();
+  }
+
   /**
    *  Returns a Collection of ICCategory entities
    *  with specified type
@@ -258,5 +275,47 @@ public class CategoryFinder {
     }
 
     return null;
+  }
+
+  public Collection listOfCategoryEntity(Class categoryEntityClass,int iCategoryId){
+    if(categoryEntityClass.getSuperclass().equals(CategoryEntity.class)){
+      try{
+        return EntityFinder.getInstance().findAllByColumn(categoryEntityClass,CategoryEntity.getColumnCategoryId(),iCategoryId);
+      }
+      catch(IDOFinderException ex){
+
+      }
+    }
+    return null;
+  }
+/*
+  public Collection listOfCategoryEntity(Class categoryEntityClass,int[] iCategoryIds){
+    if(categoryEntityClass.getSuperclass().equals(CategoryEntity.class)){
+      return EntityFinder.getInstance().findAllByColumn(categoryEntityClass,CategoryEntity.getColumnCategoryId(),iCategoryId);
+    }
+    else return null;
+  }
+*/
+  public Collection listOfCategoryEntityByInstanceId(Class categoryEntityClass,int ObjectInstanceId){
+    if(categoryEntityClass.getSuperclass().equals(CategoryEntity.class)){
+
+      try{
+         String entityName = ((CategoryEntity) categoryEntityClass.newInstance()).getEntityName();
+        return EntityFinder.getInstance().findAll(categoryEntityClass,getRelatedEntitySQL(entityName,ObjectInstanceId));
+      }
+      catch(IDOFinderException ex){
+
+      }
+      catch(Exception ex){
+
+      }
+    }
+   return null;
+  }
+
+  public static CategoryFinder getInstance(){
+    if(categoryFinder== null)
+      categoryFinder = new CategoryFinder();
+    return categoryFinder;
   }
 }

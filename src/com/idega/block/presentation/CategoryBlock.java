@@ -118,8 +118,9 @@ public abstract class CategoryBlock extends Block{
     return L;
   }
 
-  public String getCategoryType(){
-    return "no_type";
-  }
+  public abstract String getCategoryType();
+  //{
+  //  return "no_type";
+  //}
 
 }
