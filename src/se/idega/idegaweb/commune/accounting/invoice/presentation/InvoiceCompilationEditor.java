@@ -85,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/09 09:12:03 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/09 13:47:39 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.111 $
+ * @version $Revision: 1.112 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -385,6 +385,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				(columnNames, business, records, lightBlue);
 		outerTable.addCell (recordTable);
 
+		// add summary
+		addPhrase (outerTable, "\n");
+		final PdfPTable summaryTable = getSummaryPdfTable (records);
+		outerTable.addCell (summaryTable);
+
 		// add posting info to document
 		addPhrase (outerTable, "\n");
 		addPhrase (outerTable,
@@ -392,11 +397,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final PdfPTable postingTable
 				= getOwnPostingPdfTable (context, records, lightBlue);
 		outerTable.addCell (postingTable);
-
-		// add summary
-		addPhrase (outerTable, "\n");
-		final PdfPTable summaryTable = getSummaryPdfTable (records);
-		outerTable.addCell (summaryTable);
 
 		// close and store document
 		document.add (outerTable);
@@ -428,8 +428,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final OutputStream outStream = new MemoryOutputStream (buffer);
 		final PdfWriter writer = PdfWriter.getInstance (document, outStream);
 		writer.setViewerPreferences
-				(PdfWriter.HideMenubar | PdfWriter.PageLayoutOneColumn |
-				 PdfWriter.PageModeUseNone | PdfWriter.FitWindow
+				(PdfWriter.HideMenubar | PdfWriter.PageLayoutOneColumn
+				 | PdfWriter.PageModeUseNone | PdfWriter.FitWindow
 				 | PdfWriter.CenterWindow);
 		document.addTitle (title);
 		document.addCreationDate ();
