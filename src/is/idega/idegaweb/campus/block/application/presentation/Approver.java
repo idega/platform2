@@ -4,8 +4,11 @@
  */
 package is.idega.idegaweb.campus.block.application.presentation;
 
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.ejb.FinderException;
 
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.business.BuildingFinder;
@@ -197,15 +200,23 @@ public class Approver extends CampusBlock {
 	
 	private int createApartmentFields(IWContext iwc,Table table,int rowStart){
 		int row = rowStart;
-		java.util.Collection types = BuildingFinder.getAllApartmentTypesComplex();
-		table.mergeCells(col1,row,col2,row);
-		table.add(getSmallHeader(localize("applied_apartments","Applied for apartments")),col1,row++);
-		for (int i = 1; i <= numberOfApartments; i++) {
-			table.add(getSmallHeader(localize("choice_"+i,i+".Choice")),col1,row);
-			table.add(getTypeSelect(types,"type_sel"+i,"",i>1),col2,row);
-			table.mergeCells(col2,row,col4,row);
-			row++;
+		try {
+			java.util.Collection types = getBuildingService(iwc).getApartmentTypeHome().findAll();
+			table.mergeCells(col1,row,col2,row);
+			table.add(getSmallHeader(localize("applied_apartments","Applied for apartments")),col1,row++);
+			for (int i = 1; i <= numberOfApartments; i++) {
+				table.add(getSmallHeader(localize("choice_"+i,i+".Choice")),col1,row);
+				table.add(getTypeSelect(types,"type_sel"+i,"",i>1),col2,row);
+				table.mergeCells(col2,row,col4,row);
+				row++;
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
 		}
+		
+		
 		int typeRow = row;
 		
 		row = rowStart+1;
