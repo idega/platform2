@@ -385,6 +385,17 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}
 
 	/**
+	 * Returns a copy icon with the tooltip specified.
+	 * @param toolTip	The tooltip to display on mouse over.
+	 * @return Image	The copy icon.
+	 */
+	protected Image getCopyIcon(String toolTip) {
+		Image copyImage = iwb.getImage("shared/copy.gif", 12, 12);
+		copyImage.setToolTip(toolTip);
+		return copyImage;
+	}
+
+	/**
 	 * Returns a question icon with the tooltip specified.
 	 * @param toolTip	The tooltip to display on mouse over.
 	 * @return Image	The question icon.
