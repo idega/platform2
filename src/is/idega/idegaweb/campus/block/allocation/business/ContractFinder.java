@@ -47,9 +47,9 @@ public abstract class ContractFinder {
 
   public static List listOfContracts(){
     try {
-      return(EntityFinder.findAll(((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy()));
+      return EntityFinder.getInstance().findAll(Contract.class);
     }
-    catch(SQLException e){
+    catch(Exception e){
       return(null);
     }
   }
@@ -61,9 +61,9 @@ public abstract class ContractFinder {
     sql.append(" and c.bu_apartment_id = ");
     sql.append(iApartmentId );
     try {
-      return EntityFinder.findAll(((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).createLegacy(),sql.toString());
+      return EntityFinder.getInstance().findAll(User.class,sql.toString());
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       ex.printStackTrace();
     }
     return null;
@@ -85,54 +85,54 @@ public abstract class ContractFinder {
 
   public static List listOfApartmentContracts(int iApartmentId){
     try {
-      return(EntityFinder.findAllByColumnDescendingOrdered( ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getApartmentIdColumnName(),String.valueOf(iApartmentId ),is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getValidToColumnName()));
+      return EntityFinder.getInstance().findAllByColumnDescendingOrdered( Contract.class,ContractBMPBean.getApartmentIdColumnName(),String.valueOf(iApartmentId ),ContractBMPBean.getValidToColumnName());
     }
-    catch(SQLException e){
+    catch(Exception e){
       return(null);
     }
   }
 
   public static List listOfApartmentContracts(int iApartmentId,String status){
     try {
-      return(EntityFinder.findAllByColumnDescendingOrdered( ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getApartmentIdColumnName(),String.valueOf(iApartmentId ),is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getStatusColumnName(),status,is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getValidToColumnName()));
+      return EntityFinder.getInstance().findAllByColumnDescendingOrdered( Contract.class,ContractBMPBean.getApartmentIdColumnName(),String.valueOf(iApartmentId ),ContractBMPBean.getStatusColumnName(),status,ContractBMPBean.getValidToColumnName());
     }
-    catch(SQLException e){
+    catch(Exception e){
       return(null);
     }
   }
 
    public static List listOfApartmentContracts(int iApartmentId,boolean rented){
     try {
-      return EntityFinder.findAllByColumnDescendingOrdered( ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getApartmentIdColumnName(),String.valueOf(iApartmentId ),is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getRentedColumnName(),(rented? "Y":"N"),is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getValidToColumnName());
+      return EntityFinder.getInstance().findAllByColumnDescendingOrdered( Contract.class,ContractBMPBean.getApartmentIdColumnName(),String.valueOf(iApartmentId ),ContractBMPBean.getRentedColumnName(),(rented? "Y":"N"),ContractBMPBean.getValidToColumnName());
     }
-    catch(SQLException e){
+    catch(Exception e){
       return(null);
     }
   }
 
   public static List listOfStatusContracts(String S){
     try {
-      return(EntityFinder.findAllByColumn(((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getStatusColumnName(),S));
+      return(EntityFinder.getInstance().findAllByColumn(Contract.class,ContractBMPBean.getStatusColumnName(),S));
     }
-    catch(SQLException e){
+    catch(Exception e){
       return(null);
     }
   }
 
 	public static List listOfStatusContracts(String S,String s){
     try {
-      return(EntityFinder.findAllByColumn(((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getStatusColumnName(),S));
+      return(EntityFinder.getInstance().findAllByColumn(Contract.class,ContractBMPBean.getStatusColumnName(),S));
     }
-    catch(SQLException e){
+    catch(Exception e){
       return(null);
     }
   }
 
    public static List listOfStatusContractUsers(String S){
     try {
-      return(EntityFinder.findAllByColumn(((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).createLegacy(),is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getStatusColumnName(),S));
+      return EntityFinder.getInstance().findAllByColumn(User.class,ContractBMPBean.getStatusColumnName(),S);
     }
-    catch(SQLException e){
+    catch(Exception e){
       return(null);
     }
   }
@@ -217,19 +217,19 @@ public abstract class ContractFinder {
 
   public static List listOfApplicantContracts(int iApplicantId){
     try {
-      Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
-      return EntityFinder.findAllByColumn(C,is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getApplicantIdColumnName(),iApplicantId);
+
+      return EntityFinder.getInstance().findAllByColumn(Contract.class,ContractBMPBean.getApplicantIdColumnName(),iApplicantId);
     }
-    catch(SQLException e){
+    catch(Exception e){
       return(null);
     }
   }
 
   public static List listOfApplicantContracts(int iApplicantId,String status){
     try {
-      Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
+
       return EntityFinder.getInstance().findAll(Contract.class,"select * from "+ContractBMPBean.getContractEntityName()+" where "+ContractBMPBean.getApplicantIdColumnName()+" = "+iApplicantId+" and "+ContractBMPBean.getStatusColumnName()+" = '"+status+"'");
-      //return EntityFinder.findAllByColumn(C,is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getApplicantIdColumnName(),iApplicantId);
+
     }
     catch(Exception e){
       return(null);
@@ -298,9 +298,9 @@ public abstract class ContractFinder {
     String sSQL = sql.toString();
     //System.err.println(sSQL);
     try{
-      return  EntityFinder.findAll(((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),sql.toString());
+      return  EntityFinder.getInstance().findAll(Contract.class,sql.toString());
     }
-    catch(SQLException ex){
+    catch(Exception ex){
       return null;
     }
   }
@@ -317,16 +317,16 @@ public abstract class ContractFinder {
     sql.append(" and b.bu_building_id = ");
     sql.append(sBuildingId);
     sql.append(" and a.name = '");
-		sql.append(sAprtName);    
+		sql.append(sAprtName);
 		sql.append("'");
 /*    sql.append(" order by ");
     sql.append(order);*/
     String sSQL = sql.toString();
     System.err.println(sSQL);
     try {
-      return EntityFinder.findAll(((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),sql.toString());
+      return EntityFinder.getInstance().findAll(Contract.class,sql.toString());
     }
-    catch(SQLException ex){
+    catch(Exception ex){
       return null;
     }
   }
@@ -352,13 +352,13 @@ public abstract class ContractFinder {
     }
     String sSQL = sql.toString();
     try{
-      List list = EntityFinder.findAll(((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),sql.toString());
+      List list = EntityFinder.getInstance().findAll(Contract.class,sql.toString());
       if ( list != null ) {
         return list;
       }
       return null;
     }
-    catch(SQLException ex){
+    catch(Exception ex){
       return null;
     }
   }
@@ -390,13 +390,13 @@ public abstract class ContractFinder {
     String sSQL = sql.toString();
     //System.err.println(sSQL);
     try{
-      List list = EntityFinder.findAll(((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),sql.toString());
+      List list = EntityFinder.getInstance().findAll(Contract.class,sql.toString());
       if ( list != null ) {
         return list;
       }
       return null;
     }
-    catch(SQLException ex){
+    catch(Exception ex){
       return null;
     }
   }
@@ -422,9 +422,9 @@ public abstract class ContractFinder {
     sql.append(cmplxId);
     int count = 0;
     try{
-      count = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy().getNumberOfRecords(sql.toString());
+      count = ((Contract)IDOLookup.createLegacy(Contract.class)).getNumberOfRecords(sql.toString());
     }
-    catch(SQLException ex){}
+    catch(Exception ex){}
     if(count < 0)
       count = 0;
     return count;
@@ -440,9 +440,9 @@ public abstract class ContractFinder {
     }
     int count = 0;
     try{
-      count = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy().getNumberOfRecords(sql.toString());
+      count = ((Contract)IDOLookup.createLegacy(Contract.class)).getNumberOfRecords(sql.toString());
     }
-    catch(SQLException ex){}
+    catch(Exception ex){}
     if(count < 0)
       count = 0;
     return count;
@@ -454,7 +454,7 @@ public abstract class ContractFinder {
   public static Contract findApplicant(int userID){
     Contract contract = null;
     try {
-      List L = EntityFinder.findAllByColumn(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getStaticInstance(Contract.class),is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getUserIdColumnName(),userID);
+      List L = EntityFinder.getInstance().findAllByColumn(ContractBMPBean.getStaticInstance(Contract.class),ContractBMPBean.getUserIdColumnName(),userID);
       if(L!= null)
         contract = (Contract) L.get(0);
     }
@@ -472,7 +472,7 @@ public abstract class ContractFinder {
     sql.append(" and c.ic_user_id =  ");
     sql.append(eUser.getID());
     try {
-      List L = EntityFinder.findAll(((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy(),sql.toString());
+      List L = EntityFinder.getInstance().findAll(((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy(),sql.toString());
       if(L!= null)
         eApplicant = (Applicant) L.get(0);
     }
@@ -499,7 +499,7 @@ public abstract class ContractFinder {
     sql.append(" and c.app_applicant_id =  ");
     sql.append(eApplicant.getID());
     try {
-      List L = EntityFinder.findAll(((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).createLegacy(),sql.toString());
+      List L = EntityFinder.getInstance().findAll(((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).createLegacy(),sql.toString());
       if(L!= null)
         eUser = (User) L.get(0);
     }
@@ -566,9 +566,9 @@ public abstract class ContractFinder {
     }
     //System.err.println(sql.toString());
     try{
-      return  EntityFinder.findAll(((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),sql.toString());
+      return  EntityFinder.getInstance().findAll(Contract.class,sql.toString());
     }
-    catch(SQLException ex){
+    catch(Exception ex){
       ex.printStackTrace();
       return null;
     }
@@ -609,9 +609,9 @@ public abstract class ContractFinder {
     try{
       List L = null;
       if(entity == CONTRACT)
-        L =  EntityFinder.findAll(((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),sql.toString());
+        L =  EntityFinder.getInstance().findAll(Contract.class,sql.toString());
       else if(entity== APARTMENT)
-        L =  EntityFinder.findAll(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy(),sql.toString());
+        L =  EntityFinder.getInstance().findAll(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy(),sql.toString());
       /*
       if(entity == APARTMENT){
         List A = listOfNonContractApartments(iApartmentTypeId,iComplexId);
@@ -621,7 +621,7 @@ public abstract class ContractFinder {
 
       return L;
     }
-    catch(SQLException ex){
+    catch(Exception ex){
       ex.printStackTrace();
       return null;
     }
@@ -633,7 +633,7 @@ public abstract class ContractFinder {
   public static Contract findByApplicant(int applicantId){
     Contract contract = null;
     try {
-      List L = EntityFinder.findAllByColumn(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getStaticInstance(Contract.class),is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getApplicantIdColumnName(),applicantId);
+      List L = EntityFinder.getInstance().findAllByColumn(ContractBMPBean.getStaticInstance(Contract.class),ContractBMPBean.getApplicantIdColumnName(),applicantId);
       if(L!= null)
         contract = (Contract) L.get(0);
     }
@@ -650,7 +650,7 @@ public abstract class ContractFinder {
   public static Contract findByUser(int user){
     Contract contract = null;
     try {
-      List L = EntityFinder.findAllByColumn(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getStaticInstance(Contract.class),is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getUserIdColumnName(),user);
+      List L = EntityFinder.getInstance().findAllByColumn(ContractBMPBean.getStaticInstance(Contract.class),ContractBMPBean.getUserIdColumnName(),user);
       if(L!= null)
         contract = (Contract) L.get(0);
     }
@@ -723,7 +723,7 @@ public abstract class ContractFinder {
    public static ApartmentTypePeriods getPeriod(int aprt_type_id){
     try {
       ApartmentTypePeriods A = ((is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentTypePeriods.class)).createLegacy();
-      List L = EntityFinder.findAllByColumn(A,is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsBMPBean.getApartmentTypeIdColumnName(),aprt_type_id);
+      List L = EntityFinder.getInstance().findAllByColumn(A,is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsBMPBean.getApartmentTypeIdColumnName(),aprt_type_id);
       if(L!=null)
         return (ApartmentTypePeriods) L.get(0);
       else
