@@ -156,9 +156,11 @@ public class ProductCatalog extends CategoryBlock {
 			Link createLink = ProductEditorWindow.getEditorLink(-1);
 			createLink.setImage(iCreate);
 			createLink.addParameter(ProductEditorWindow.PRODUCT_CATALOG_OBJECT_INSTANCE_ID, getICObjectInstanceID());
+			createLink.setToolTip(iwrb.getLocalizedString("trade.product_catalog.create_new_product", "Create new product"));
 			Link detachLink = getCategoryLink(com.idega.block.trade.stockroom.data.ProductCategoryBMPBean.CATEGORY_TYPE_PRODUCT);
 			detachLink.addParameter(CategoryWindow.prmObjInstId, getICObjectInstanceID());
 			detachLink.setImage(iDetach);
+			detachLink.setToolTip(iwrb.getLocalizedString("trade.product_catalog.select_categories", "Select categories"));
 			if (hasEditPermission()) {
 				add(createLink);
 				add(detachLink);
@@ -465,12 +467,14 @@ public class ProductCatalog extends CategoryBlock {
 		Link link = ProductEditorWindow.getEditorLink(product.getID());
 		link.setImage(this.iEdit);
 		link.addParameter(ProductEditorWindow.PRODUCT_CATALOG_OBJECT_INSTANCE_ID, this.getICObjectInstanceID());
+		link.setToolTip(iwrb.getLocalizedString("trade.product_catalog.edit_this_product", "Edit this product ("+product.getProductName(this._currentLocaleId)+")"));
 		return link;
 	}
 	Link getProductCategoryEditorLink(ICCategory productCategory) {
 		Link link = new Link(this.iDetach);
 		link.addParameter(ProductCategoryEditor.SELECTED_CATEGORY, productCategory.getID());
 		link.addParameter(ProductCategoryEditor.prmCacheClearKey, super.getDerivedCacheKey());
+		link.setToolTip(iwrb.getLocalizedString("trade.product_catalog.select_products_for_this_category", "Select products for this category ("+productCategory.getName(this._currentLocale)+")"));
 		link.setWindowToOpen(ProductCategoryEditor.class);
 		return link;
 	}
