@@ -1069,8 +1069,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	
 			IWTimestamp stampNow = new IWTimestamp();
 			stampNow.addDays(-1);
-			IWTimestamp stamp = new IWTimestamp();
-			stamp.addMonths(2);
+			//IWTimestamp stamp = new IWTimestamp();
+			//stamp.addMonths(2);
 			
 			PlacementHelper helper = getPlacementHelper();
 			TimePeriod deadlinePeriod = null;
@@ -1097,7 +1097,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			}
 			else{
 			    ///dateInput.setDate(stamp.getDate());
-			    dateInput.setEarliestPossibleDate(stamp.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
+			    dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
 			}
 			dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
 			dateInput.keepStatusOnAction(true);
