@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -57,6 +58,7 @@ import com.idega.util.IWTimestamp;
  * @see se.idega.idegaweb.commune.accounting.invoice.business.BillingThread
  */
 public abstract class PaymentThreadSchool extends BillingThread{
+	Logger log = Logger.getLogger(this.getClass().getName());
 	PaymentHeader paymentHeader;
 
 	//This is a horrible solution... This class should not have to know the localization keys!!!	
@@ -77,7 +79,21 @@ public abstract class PaymentThreadSchool extends BillingThread{
 	private CommuneHome getCommuneHome() throws RemoteException {
 		return (CommuneHome) IDOLookup.getHome(Commune.class);
 	}
-									
+
+	long start, stop, time;
+	private void timerStart(){
+		start = System.currentTimeMillis();
+		stop = start;
+	}
+	
+	private void dispTime(String s){
+		long t = System.currentTimeMillis();
+		time = t - start;
+		log.info(s+"  total time:"+((float)time/1000f));
+		time = t - stop;
+		log.info(s+"  from last stop, time:"+((float)time/1000f));
+		stop = t;
+	}
 
 	protected void contracts(){
 		Collection regulationArray = new ArrayList();
@@ -90,6 +106,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 		PostingDetail postingDetail;
 
 		try {
+			timerStart();
 			//Set the category parameter to ElementarySchool
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).
 					findByPrimaryKeyIDO(category.getPrimaryKey());
@@ -99,12 +116,13 @@ public abstract class PaymentThreadSchool extends BillingThread{
 			int privateType = ((Integer)providerType.getPrimaryKey()).intValue();
 
 			RegulationsBusiness regBus = getRegulationsBusiness();
-			
 			Iterator schoolIter = getSchoolHome().findAllInHomeCommuneByCategory(category).iterator();
 			//Go through all elementary schools
 			while(schoolIter.hasNext()){
+				dispTime("Enter main loop");
 				try{
 					school = (School) schoolIter.next();
+					dispTime("Gotten School"+school.getName());
 					System.out.println("About to create payments for school "+school.getName());
 					Provider provider = new Provider(((Integer)school.getPrimaryKey()).intValue());
 					//Only look at those not "payment by invoice"
@@ -112,6 +130,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 					if(school.getCommune().getIsDefault()||
 							(provider.getProviderTypeId() == privateType &&
 							!provider.getPaymentByInvoice())){
+//						dispTime("looking for regulations");
 						
 						
 						//*****************
@@ -126,18 +145,20 @@ public abstract class PaymentThreadSchool extends BillingThread{
 //							Iterator contractIter = getChildCareContractHome().findValidContractByProvider(((Integer)school.getPrimaryKey()).intValue(),currentDate).iterator();
 //							Iterator applicationIter = getChildCareApplicationHome().findApplicationsByProviderAndDate(((Integer)school.getPrimaryKey()).intValue(), 
 //									((Integer)school.getPrimaryKey()).intValue(),currentDate).iterator();
-							System.out.println("looking at regulation");
+//							dispTime("looking at regulations");
 //							ChildCareContract contract = null;
 							while(schoolClassMemberIter.hasNext()){
 								SchoolClassMember schoolClassMember = null;
 //								try{
-									System.out.println("looking at school class memeber");
+//									dispTime("Gotten class memeber");
+//									System.out.println("looking at school class memeber");
 
 //									ChildCareApplication application = (ChildCareApplication) applicationIter.next();
 
 									schoolClassMember = (SchoolClassMember) schoolClassMemberIter.next();
 									
-									System.out.println("Found "+schoolClassMember.getStudent().getName());
+									dispTime("Gotten "+schoolClassMember.getStudent().getName());
+//									System.out.println("Found "+schoolClassMember.getStudent().getName());
 									if( getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent()) ){
 										
 										
@@ -145,6 +166,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 
 										conditions = new ArrayList();
 										conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,schoolClassMember.getSchoolClass().getSchoolType().getLocalizationKey()));
+										conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR,schoolClassMember.getSchoolYear().getName()));
 
 										System.out.println("Getting regulations for school "+school.getName()+" with "
 												+category.getCategory()
@@ -162,6 +184,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 											conditions						//The conditions that need to fulfilled
 											);
 
+//										dispTime("Got new regulation");
 										System.out.println("Got "+regulationArray.size()+" regulations for "+school.getName());
 //										first = true;
 										Iterator regulationIter = regulationArray.iterator();
@@ -208,10 +231,12 @@ public abstract class PaymentThreadSchool extends BillingThread{
 										}
 										calculateTime(sDate,eDate);
 										//Get the posting details for the contract
+										dispTime("about to get posting detail");
 										postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
+										dispTime("Gotten posting detail");
 										RegulationSpecType regSpecType = getRegulationSpecTypeHome().
 												findByRegulationSpecType(postingDetail.getRuleSpecType());
-
+//										dispTime("Gotten regspec type");
 										System.out.println("Getting posting string for"+
 												" category: "+category.getCategory()+
 												"  Type "+schoolClassMember.getSchoolType()+
@@ -219,9 +244,9 @@ public abstract class PaymentThreadSchool extends BillingThread{
 												"  provider "+provider.getSchool().getName()+
 												"  Date "+currentDate.toString()+"\n");
 										String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,currentDate);
-										System.out.println("about to create payment record");
+//										dispTime("about to create payment record");
 										createPaymentRecord(postingDetail,postings[0],postings[1]);
-										System.out.println("created payment record");
+										dispTime("created payment record");
 										
 										//Find the oppen verksamhet and fritidsklubb
 										try{
@@ -251,8 +276,6 @@ public abstract class PaymentThreadSchool extends BillingThread{
 															createPaymentRecord(postingDetail,postings[0],postings[1]);
 															System.out.println("created payment info for oppen verksamhet "+schoolClassMember.getStudent().getName());
 														}
-
-														//TODO (JJ) Supposed to do something here... Waiting for info from Lotta
 													}
 												}
 											} else if(schoolYear<=6){
@@ -260,7 +283,6 @@ public abstract class PaymentThreadSchool extends BillingThread{
 												while (typeIter.hasNext()) {
 													SchoolType schoolType = (SchoolType) typeIter.next();
 													if(schoolType.getLocalizationKey().equalsIgnoreCase(FRITIDSKLUBB)){
-														//TODO (JJ) Supposed to do something here... Waiting for info from Lotta
 														ArrayList oppenConditions = new ArrayList();
 														oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,FRITIDSKLUBB));
 														Collection regulationForTypeArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
@@ -286,10 +308,13 @@ public abstract class PaymentThreadSchool extends BillingThread{
 										}catch(NumberFormatException e){
 											//That's OK I only want years 1-6
 										}
+										dispTime("Done with oppen verksamhet + fritidsverksamhet");
 
+										//Get all the resources for the child
 										Iterator resourceIter = getResourceBusiness().getResourcePlacementsByMemberId((Integer)schoolClassMember.getStudent().getPrimaryKey()).iterator();
 										while (resourceIter.hasNext()) {
 											Resource resource = (Resource) resourceIter.next();
+											dispTime("Gotten resource "+resource.getResourceName());
 											ArrayList resourceConditions = new ArrayList();
 											resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_RESOURCE,resource.getResourceName()));
 											
@@ -301,6 +326,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 												resourceConditions				//The conditions that need to fulfilled
 												);
 
+											dispTime("Getting regulations for resource");
 											Iterator regulationForResourceIter = regulationForResourceArray.iterator();
 											while(regulationForResourceIter.hasNext())
 											{
@@ -310,6 +336,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 													findByRegulationSpecType(postingDetail.getRuleSpecType());
 												createPaymentRecord(postingDetail,postings[0],postings[1]);
 											}
+											dispTime("Done regulations for resource");
 										}
 									}
 /*								}catch(NullPointerException e){
@@ -336,6 +363,8 @@ public abstract class PaymentThreadSchool extends BillingThread{
 					e.printStackTrace();
 					createNewErrorMessage(school.getName(),"invoice.PostingString");
 				}
+				dispTime("Getting regulations for resource");
+				timerStart();
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();

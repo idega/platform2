@@ -35,10 +35,14 @@ public class PaymentThreadElementarySchool extends PaymentThreadSchool{
 			createBatchRunLogger(category);
 			//Create all the billing info derrived from the contracts
 			contracts();
+			System.out.println("Done with Contracts loop");
 			//Create all the billing info derrived from the regular payments
 			regularPayment();
+			System.out.println("Done with Payment loop");
 			//VAT
 			calcVAT();
+			System.out.println("Done with VAT loop");
+			batchRunLoggerDone();
 		} catch (Exception e) {
 			//This is a spawned off thread, so we cannot report back errors to the browser, just log them
 			e.printStackTrace();

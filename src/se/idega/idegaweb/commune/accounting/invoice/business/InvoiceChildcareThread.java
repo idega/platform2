@@ -90,6 +90,7 @@ public class InvoiceChildcareThread extends BillingThread{
 			regularInvoice();
 			//VAT
 			calcVAT();
+			batchRunLoggerDone();
 		} catch (Exception e) {
 			//This is a spawned off thread, so we cannot report back errors to the browser, just log them
 			e.printStackTrace();
