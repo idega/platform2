@@ -47,6 +47,7 @@ public class ProductBusiness {
   public ProductBusiness() {
   }
 
+
   public static int updateProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
     return createProduct(productId,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId, -1);
   }
