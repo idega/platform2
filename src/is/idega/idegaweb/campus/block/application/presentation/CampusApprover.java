@@ -882,7 +882,7 @@ public class CampusApprover extends Block{
     eCampusApplication.setSpouseStudyTrack(sSpStTr);
     eCampusApplication.setSpouseSchool(sSpSchl);
 
-    if(sSpName.length()>0){
+    if(sSpName !=null && sSpName.length()>0){
       boolean update = true;
       if(spouse == null){
         spouse = new Applicant();
