@@ -76,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/02/09 13:02:33 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/09 13:36:11 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.120 $
+ * @version $Revision: 1.121 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -285,6 +285,15 @@ public class InvoiceChildcareThread extends BillingThread{
 						throw new CommuneChildcareOutsideHomeCommuneException ();
 					}
 					
+					// if provider has payment by invoice set, then ignore this silently
+					if (provider.getPaymentByInvoice ()) {
+						log.info ("Provider " + school.getName ()
+											+ " has payment by invoice, school class member "
+										 + schoolClassMember.getPrimaryKey ()
+										 + " will be ignored in childcare batch.");
+						continue;
+					}
+
 					// **Fetch invoice receiver
 					//					custodian = contract.getApplication().getOwner();
 					custodian = getInvoiceReceiver(contract);
