@@ -3,11 +3,14 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
+
+import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
@@ -19,6 +22,7 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.business.MessageComparator;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.PrintMessage;
+import se.idega.idegaweb.commune.message.data.PrintMessageHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.presentation.ColumnList;
@@ -28,7 +32,9 @@ import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 
 
 import com.idega.business.IBOLookup; 
+import com.idega.business.IBORuntimeException;
 import com.idega.core.data.Address;
+import com.idega.data.IDOHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
@@ -36,13 +42,17 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
+import com.idega.presentation.text.HorizontalRule;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.PrintButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
@@ -56,7 +66,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.5 2003/03/25 12:03:17 roar Exp $
+ * @version $Id: EventList.java,v 1.6 2003/03/25 16:01:48 roar Exp $
  * @since 17.3.2003 
  */
 
@@ -153,7 +163,7 @@ public class EventList extends CommuneBlock {
 */				
 		case ACTION_PRINT_SELECTED:
 			printSelected(iwc);
-			viewMessages(iwc);
+//			viewMessages(iwc);
 		break;
 
 		default:
@@ -214,7 +224,7 @@ public class EventList extends CommuneBlock {
 		msgID = Integer.parseInt(iwc.getParameter(PARAM_MESSAGE_ID));
 	}
 	
-	add(new Text("Action: " + action + "<br>"));
+//	add(new Text("Action: " + action + "<br>"));
 	return action;
   }
   
@@ -264,13 +274,19 @@ public class EventList extends CommuneBlock {
   }
   
   private void printSelected(IWContext iwc) throws Exception {
-	  int userID = ((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue();
+/*	  int userID = ((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue();
 	  boolean bulk = iwc.isParameterSet("prv_bulk");
 	  boolean flag = !iwc.isParameterSet("prv_mark");
-	  String[] ids = iwc.getParameterValues(PRM_U_CHK);
-	  if(ids !=null && ids.length >0){
-			getDocumentBusiness(iwc).writeBulkPDF(ids,iwc.getCurrentUser(),"BulkLetterPDF",iwc.getApplicationSettings().getDefaultLocale(),currentType,true,flag,bulk);
+*/
+ 	  String[] ids = iwc.getParameterValues(PRM_U_CHK);
+ 	  if (ids == null || ids.length == 0){ //no messages selected
+ 	  	addMessagesList(iwc);
+ 	  	
+ 	  } else if(ids !=null && ids.length >0){
+	  	viewMessages(iwc, ids);
+//			getDocumentBusiness(iwc).writeBulkPDF(ids,iwc.getCurrentUser(),"BulkLetterPDF",iwc.getApplicationSettings().getDefaultLocale(),currentType,true,flag,bulk);
 	  }
+ 	  
 	 
 	  /*
 	  if(msgID>0){
@@ -281,6 +297,103 @@ public class EventList extends CommuneBlock {
 	  }
 	  */
 	}
+
+	
+  private void viewMessages(IWContext iwc, String[] ids) throws FinderException, RemoteException{
+	Table layout = new Table();
+	Collection selectedLetters = getPrintedLetter(iwc).findLetters(ids);
+
+	Iterator iter = selectedLetters.iterator();
+			
+	int bulkId;
+	int layoutRow = 1;
+	while (iter.hasNext()) {
+		int row = 1;
+		
+		Table message = new Table(2, 7);
+		PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
+
+		addField(message, "Id", String.valueOf(msg.getNodeID()), row++);
+		addField(message, "Date", msg.getCreated().toString(), row++);
+//		addField(message, "From", msg.getSenderName(), row++);
+		addField(message, localize("printdoc.receiver","Receiver"), msg.getOwner().getName(), row++);
+		addField(message, "SSN", msg.getOwner().getPersonalID(), row++);
+//		addField(layout, "Type:", msg.getMessageType(), row++);
+//		addField(layout, "Type:", msg.msg.getLetterType(), row++);
+		addField(message, "Subject", msg.getSubject(), row++);
+		message.add("", 1, row++);
+		//Body
+		message.mergeCells(1, row, 2, row);
+		message.add(getSmallText(msg.getBody()), 1, row++);
+		
+
+		layout.add(message, 1, layoutRow++);
+		layout.add(new HorizontalRule(), 1, layoutRow);
+		layout.setHeight(layoutRow++, 1, "70");
+	}
+
+	Table toolbar = new Table();
+	toolbar.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
+	toolbar.setCellpadding(2);
+	GenericButton printBtn = getButton(new PrintButton());
+	GenericButton backBtn = getButton(new BackButton());
+	
+/*	CheckBox mark = new CheckBox("prv_mark");
+	CheckBox bulk = new CheckBox("prv_bulk");
+	T.add(mark,1,1);
+	T.add(getLocalizedHeader("printdoc.keep_unprinted", "Keep unprinted status"),2,1);
+	T.add(bulk,3,1);
+	T.add(getLocalizedHeader("printdoc.create_bulk_letter", "Bulk letter"),4,1);
+	
+*/
+	toolbar.add(backBtn,1,1);
+	toolbar.add(printBtn,2,1);
+		
+	layout.add(toolbar, 1, layoutRow);
+	add(layout);
+  }
+	
+private void addField(Table layout, String label, String value, int row){
+	Text lbl = getSmallText(label+ ":");
+	lbl.setStyleAttribute("font-weight:bold");
+	layout.add(lbl, 1, row);		
+	layout.add(getSmallText(value), 2, row);
+	layout.setColor(1, row, "grey");		
+	layout.setColor(2, row, "grey");		
+}
+
+
+
+  		
+  
+  
+  public Collection getPrintedMessagesByPrimaryKeys(String[] primaryKeys,String type)
+			  throws RemoteException, FinderException {
+		  PrintMessageHome msgHome = null;
+		  PrintMessage msg;
+		  ArrayList coll = new ArrayList(primaryKeys.length);
+		  msgHome =  getPrintedLetterMessageHome();
+		  if(msgHome!=null){
+			  for (int i = 0; i < primaryKeys.length; i++) {
+				  msg = (PrintMessage) msgHome.findByPrimaryKey(primaryKeys[i]);
+				  coll.add(msg);
+			  }
+		  }
+		  return coll;
+  }  
+  
+  public PrintedLetterMessageHome getPrintedLetterMessageHome() {
+	  try {
+		  return (PrintedLetterMessageHome) getIDOHome(
+			  PrintedLetterMessage.class);
+	  } catch (Exception e) {
+		  throw new IBORuntimeException(e);
+	  }
+  }
+  
+  protected IDOHome getIDOHome(Class beanClass)throws RemoteException{
+  		return IDOLookup.getHome(beanClass);
+  }  
   
   private void viewMessages(IWContext iwc) throws Exception{
   
@@ -408,29 +521,30 @@ RS*/
   private PresentationObject getSearchForm(IWContext iwc){
   	
 	Table T = new Table();
-	TextInput ssn = new TextInput(PRM_SSN);
-	ssn = (TextInput) getStyledInterface(ssn);
-	if (iwc.getParameter(PRM_SSN) != null){
-		ssn.setValue(iwc.getParameter(PRM_SSN));
-	}
-
 
 	TextInput msgid = new TextInput(PRM_MSGID);
 	msgid = (TextInput) getStyledInterface(msgid);
 	if (iwc.getParameter(PRM_MSGID) != null){
 		msgid.setValue(iwc.getParameter(PRM_MSGID));
 	}
+		
+	TextInput ssn = new TextInput(PRM_SSN);
+	ssn = (TextInput) getStyledInterface(ssn);
+	if (iwc.getParameter(PRM_SSN) != null){
+		ssn.setValue(iwc.getParameter(PRM_SSN));
+	}
+
 	
 	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch","Fetch"));
 	search = (SubmitButton)getButton(search);
 
-	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.ssn","SSN:")),1,1);
-	T.add(ssn,2,1);
-	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.msgid","Message ID:")),3,1);
-	T.add(msgid,4,1);
+	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.msgid","Message ID:")),1,1);
+	T.add(msgid,2,1);
+	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.ssn","SSN:")),4,1);
+	T.add(ssn,5,1);
 	//T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.count","Count")),5,1);
-	T.add(getCountDrop(PRM_U_COUNT,count_u),6,1);
-	T.add(search,7,1);
+	T.add(getCountDrop(PRM_U_COUNT,count_u),7,1);
+	T.add(search,8,1);
 	T.setTopLine(true);
 	T.setBottomLine(true);
 	T.setHeight(25);
@@ -443,13 +557,15 @@ RS*/
 	T.setCellpadding(2);
 	SubmitButton print = new SubmitButton(PRM_PRINT_SELECTED,getResourceBundle().getLocalizedString("printdoc.print","Print"));
 	print = (SubmitButton)getButton(print);
-	CheckBox mark = new CheckBox("prv_mark");
+/*	CheckBox mark = new CheckBox("prv_mark");
 	CheckBox bulk = new CheckBox("prv_bulk");
 	T.add(mark,1,1);
 	T.add(getLocalizedHeader("printdoc.keep_unprinted", "Keep unprinted status"),2,1);
 	T.add(bulk,3,1);
 	T.add(getLocalizedHeader("printdoc.create_bulk_letter", "Bulk letter"),4,1);
-	T.add(print,5,1);
+	
+*/
+	T.add(print,1,1);
 	return T;
   }
   
@@ -586,11 +702,10 @@ private void addMessagesList(IWContext iwc)throws Exception{
   	
 	int urow = 1;
 	int childCareId = getChildCareSession(iwc).getChildCareID();
-	uForm.add(new Text("ChildcareId:" + childCareId));
+//	uForm.add(new Text("ChildcareId:" + childCareId));
 	//Collection unprintedLetters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType,uFrom,uTo);
 	Collection unprintedLetters = getPrintedLetter(iwc).findLetterByChildcare(childCareId, searchSsn, searchMsgId);
 	
-	System.out.println("### ok1");
 	
 /*RS	uT.add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"),1,urow++);  RS*/
 //	uT.add(getUnPrintedDatesForm(iwc),1,urow++);
@@ -599,11 +714,11 @@ private void addMessagesList(IWContext iwc)throws Exception{
 	uT.add(getPrintButton(),1,urow++);
 	uT.add(getCursorLinks(iwc,unprintedLetters.size(),cursor_u,PRM_CURSOR_U,count_u),1,urow++);
   	
-  
+
 		unPrintedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 		unPrintedLetterDocs.setBackroundColor("#e0e0e0");
 		unPrintedLetterDocs.setHeader(localize("printdoc.event","Event"),1);
-		unPrintedLetterDocs.setHeader("No",2);
+		unPrintedLetterDocs.setHeader(localize("printdoc.msgid","Message ID:"),2);
 		unPrintedLetterDocs.setHeader(localize("printdoc.receiver","Receiver"),3);
 		unPrintedLetterDocs.setHeader(localize("printdoc.ssn","SSN"),4);
 		unPrintedLetterDocs.setHeader(localize("printdoc.created_date","Message created"),5);
