@@ -648,12 +648,17 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     }
     else if (pathShortKey.equals(LEAGUE)) {
       // special case, sometimes there is not a previous value
-      Object previousValue = valueContainer.getPreviousValue();
-      String oldWorkGroupName = (previousValue == null) ? null : previousValue.toString();
-      String newWorkGroupName = value.toString();
+//      Object previousValue = valueContainer.getPreviousValue();
+//      String oldWorkGroupName = (previousValue == null) ? null : previousValue.toString();
+      String newWorkReportGroupName = value.toString();
       int year = getYear();
       try {
-        workReportBusiness.changeWorkReportGroupOfEntity(getWorkReportId(), oldWorkGroupName, year, newWorkGroupName, year, member);
+        //workReportBusiness.changeWorkReportGroupOfEntity(getWorkReportId(), oldWorkGroupName, year, newWorkGroupName, year, member);
+        WorkReportGroup workReportGroup = workReportBusiness.findWorkReportGroupByNameAndYear(newWorkReportGroupName, year);
+        if (workReportGroup != null)  {
+          Integer pk = (Integer) workReportGroup.getPrimaryKey();
+         member.setWorkReportGroupID(pk.intValue());
+        }
       }
       catch (RemoteException ex) {
         System.err.println(

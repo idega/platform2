@@ -57,7 +57,7 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_NAME_REPORT_ID, "Id of the work report",true,true,Integer.class,"many-to-one",WorkReport.class);
-		addAttribute(COLUMN_NAME_USER_ID, "User id",true,true,Integer.class,"one-to-one",User.class);
+		addAttribute(COLUMN_NAME_USER_ID, "User id",true,true,Integer.class,"many-to-one",User.class);
 		addAttribute(COLUMN_NAME_PERSONAL_ID,"Personal id",true,true,String.class,10);
 		addAttribute(COLUMN_NAME_NAME,"Name from file",true,true,String.class,180);	
 		addAttribute(COLUMN_NAME_DATE_OF_BIRTH,"Date of birth",true,true,Timestamp.class);
@@ -258,4 +258,13 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 	public String getStatus(){
 		return getStringColumnValue(COLUMN_NAME_STATUS);
 	}
+  
+  public void setWorkReportGroupID(int workReportGroupID) {
+    setColumn(COLUMN_NAME_WORK_REPORT_GROUP_ID, workReportGroupID);
+  }
+  
+  public int getWorkReportGroupID() {
+    return getIntColumnValue(COLUMN_NAME_WORK_REPORT_GROUP_ID);
+  }
+  
 }

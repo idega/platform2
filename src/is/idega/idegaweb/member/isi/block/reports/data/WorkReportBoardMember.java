@@ -18,6 +18,7 @@ public interface WorkReportBoardMember extends com.idega.data.IDOEntity
  public java.lang.String getStreetName();
  public int getUserId();
  public java.lang.String getWorkPhone();
+ public int getWorkReportGroupID();
  public void initializeAttributes();
  public boolean isBoardMember();
  public boolean isFemale();
@@ -40,4 +41,5 @@ public interface WorkReportBoardMember extends com.idega.data.IDOEntity
  public void setStreetName(java.lang.String p0);
  public void setUserId(int p0);
  public void setWorkPhone(java.lang.String p0);
+ public void setWorkReportGroupID(int p0);
 }
