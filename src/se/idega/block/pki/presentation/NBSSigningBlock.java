@@ -219,7 +219,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 			String signedData = new String(result.getSignedData().getEncoded());
 			entity.setXmlSignedData(signedData);	
 			entity.setSignedFlag(true);	
-			entity.setSignedBy(iwc.getCurrentUser().getID());
+			entity.setSignedBy(((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue());
 			entity.setSignedDate(new java.sql.Date( java.lang.System.currentTimeMillis()));
 			entity.store();
 		} catch(ClassCastException ex){
@@ -242,7 +242,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 
 	protected void forwardToIBPage(IWContext iwc,Page fromPage,IBPage pageTo){
 		StringBuffer URL = new StringBuffer();
-		URL.append(BuilderLogic.getInstance().getIBPageURL(iwc.getApplicationContext(), ((Integer) pageTo.getPrimaryKeyValue()).intValue()));
+		URL.append(BuilderLogic.getInstance().getIBPageURL(iwc.getApplicationContext(), ((Integer) pageTo.getPrimaryKey()).intValue()));
 		//URL.append('&');
 		//URL.append(getRequest().getQueryString());
 		fromPage.setToRedirect(URL.toString());

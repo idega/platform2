@@ -9,7 +9,6 @@
 package se.idega.idegaweb.commune.block.forum.presentation;
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -268,14 +267,14 @@ public class CommuneCategoryWindow extends CategoryWindow {
 
 				}
 				if (multi) {
-					box = new CheckBox("id_box", String.valueOf(cat.getID()));
-					box.setChecked(coll != null && coll.contains(new Integer(cat.getID())));
+					box = new CheckBox("id_box", String.valueOf(((Integer)cat.getPrimaryKey()).intValue()));
+					box.setChecked(coll != null && coll.contains(new Integer(((Integer)cat.getPrimaryKey()).intValue())));
 					//setStyle(box);
 					T.add(box, 1, row);
 				}
 				else {
-					rad = new RadioButton("id_box", String.valueOf(cat.getID()));
-					if (coll != null && coll.contains(new Integer(cat.getID())))
+					rad = new RadioButton("id_box", String.valueOf(((Integer)cat.getPrimaryKey()).intValue()));
+					if (coll != null && coll.contains(new Integer(((Integer)cat.getPrimaryKey()).intValue())))
 						rad.setSelected();
 					//setStyle(rad);
 					T.add(rad, 1, row);
@@ -298,12 +297,10 @@ public class CommuneCategoryWindow extends CategoryWindow {
 				ICCategory cat = cHome.findByPrimaryKey(new Integer(iCategoryId));
 				if (userId > 0) {
 					cat.setOwnerGroupId(userId);
-					cat.update();	
+					cat.store();	
 				}
 
 			} catch (FinderException e) {
-				e.printStackTrace(System.err);
-			} catch (SQLException e) {
 				e.printStackTrace(System.err);
 			}
 		}catch (NumberFormatException n) {}

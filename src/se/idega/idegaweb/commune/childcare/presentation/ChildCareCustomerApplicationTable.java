@@ -41,7 +41,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.47 2003/06/30 23:02:11 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.48 2003/07/01 14:35:20 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -498,7 +498,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 			boolean hasBankId = false;
 			try{
-				hasBankId = new NBSLoginBusinessBean().hasBankLogin(acceptedApplication.getOwner().getID());
+				hasBankId = new NBSLoginBusinessBean().hasBankLogin(((Integer)acceptedApplication.getOwner().getPrimaryKey()).intValue());
 			}catch(SQLException ex){
 				//ignore
 			}

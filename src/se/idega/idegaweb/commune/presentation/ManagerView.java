@@ -148,7 +148,7 @@ public class ManagerView extends CommuneBlock {
 	 */
 	private String getManagerTelephone(User manager,IWContext iwc) {
 		try{
-			int managerId = manager.getID();
+			int managerId = ((Integer)manager.getPrimaryKey()).intValue();
 			Phone[] phones = getUserBusiness(iwc).getUserPhones(managerId);
 			//Try to take the first phone
 			Phone phone = phones[0];

@@ -209,7 +209,7 @@ public class ManagerGroupListView extends CommuneBlock {
 	
 	
 	public void setManagerListViewPage(IBPage page) {
-		setManagerListViewPage(page.getID());
+		setManagerListViewPage(((Integer)page.getPrimaryKey()).intValue());
 	}
 	public void setManagerListViewPage(int ib_page_id) {
 		managerListPageID = ib_page_id;

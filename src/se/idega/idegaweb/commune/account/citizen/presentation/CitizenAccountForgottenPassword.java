@@ -170,7 +170,7 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
    * @throws CreateException
    */
   private void handleKnownUser(User user, IWContext iwc) throws RemoteException, CreateException {
-    int userID = user.getID();
+    int userID = ((Integer)user.getPrimaryKey()).intValue();
     LoginTable loginTable = LoginDBHandler.getUserLogin(userID);
     if (loginTable == null) {
       viewCitizienAccountApplication();
@@ -179,7 +179,7 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
     
     IWResourceBundle bundle = getResourceBundle();    
     // check if user has ever logged in
-    int loginID = loginTable.getID();
+    int loginID = ((Integer)loginTable.getPrimaryKey()).intValue();
     boolean lastLoginRecordWasFound;
     try {
       ((LoginRecordHome) com.idega.data.IDOLookup.getHomeLegacy(LoginRecord.class)).findByLoginID(loginID);

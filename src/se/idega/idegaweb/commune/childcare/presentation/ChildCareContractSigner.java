@@ -77,7 +77,7 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 		ContractHome home = service.getContractHome();
 		ContractCategoryHome catHome = service.getContractCategoryHome();
 		
-		Collection contracts = home.findAllByUser(iwc.getCurrentUser().getID());
+		Collection contracts = home.findAllByUser(((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue());
 		if (contracts == null){
 			return new Form();
 		}

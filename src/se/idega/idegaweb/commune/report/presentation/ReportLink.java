@@ -16,10 +16,10 @@ import se.idega.idegaweb.commune.report.business.Fetcher;
 /**
  * IdegaWeb presentation class for wizard input of a new Report Generator
  * <p>
- * Last modified: $Date: 2003/05/02 08:46:14 $ by $Author: laddi $
+ * Last modified: $Date: 2003/07/01 14:35:20 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @see com.idega.block.reports.data.Report
  */
 public class ReportLink extends CommuneBlock {
@@ -106,7 +106,7 @@ public class ReportLink extends CommuneBlock {
                 (se.idega.idegaweb.commune.report.presentation
                  .ReportGenerator.class);
         link.addParameter ("wrcls", encryptedClassName);
-        link.addParameter (ReportGenerator.REPORT_ID, report.getID ());
+        link.addParameter (ReportGenerator.REPORT_ID, ((Integer)report.getPrimaryKey()).intValue());
         add (link);
    }
 
@@ -222,7 +222,7 @@ public class ReportLink extends CommuneBlock {
         if (category == null) {
             category = ReportBusiness.createReportCategory (objectInstanceId);
         }
-        final int categoryId = category.getID ();
+        final int categoryId = ((Integer)category.getPrimaryKey()).intValue();
 
         // 3. save report
         final ReportEntityHandler business = new ReportEntityHandler ();
@@ -259,7 +259,7 @@ public class ReportLink extends CommuneBlock {
             final ICCategory category = findCategory (getICObjectInstanceID ());
             if (category != null) {
                 // a category were found, let's look for reports in it
-                final int categoryId = category.getID ();
+                final int categoryId = ((Integer)category.getPrimaryKey()).intValue();
                 final Report [] reports
                         = ReportEntityHandler.findReports (categoryId);
                 if (reports.length > 0) {

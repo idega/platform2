@@ -166,7 +166,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 	private String[] addToTable(IWContext iwc, int row, ChildCareApplication app, boolean isOffer, boolean offerPresented, boolean disableAccept) throws RemoteException {
 
 		int providerId = app.getProviderId();
-		int ownerId = app.getOwner().getID();
+		int ownerId = ((Integer)app.getOwner().getPrimaryKey()).intValue();
 
 		School provider = app.getProvider();
 		String name = app.getChoiceNumber() + ": " + provider.getName() + _page.getDebugInfo(app);

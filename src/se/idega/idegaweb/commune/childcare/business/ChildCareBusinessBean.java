@@ -53,7 +53,7 @@ import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
-import com.idega.block.contract.data.ContractHome;
+//import com.idega.block.contract.data.ContractHome;
 import com.idega.block.pdf.ITextXMLHandler;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
@@ -1357,7 +1357,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 			boolean hasBankId = false;
 			try{
-				hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner().getID());
+				hasBankId = new NBSLoginBusinessBean().hasBankLogin(((Integer)application.getOwner().getPrimaryKey()).intValue());
 			}catch(SQLException ex){
 				//ignore
 			}

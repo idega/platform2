@@ -86,7 +86,7 @@ public class CitizenInfomationEditor extends CommuneBlock {
 		if (LoginDBHandler.verifyPassword(loginOld, currPass)) {
 			/** Checking if new passwords are the same, and not "" */
 			if (newPass1.equals(newPass2) && !newPass1.equals("")) {
-				LoginDBHandler.updateLogin(user.getID(), login, newPass1);
+				LoginDBHandler.updateLogin(((Integer)user.getPrimaryKey()).intValue(), login, newPass1);
 				return null;
 			}	else {
 				return getResourceBundle().getLocalizedString("passwords_not_the_same_or_invalid","Passwords not the same or invalid");

@@ -41,10 +41,10 @@ public class CommuneForumBusinessBean extends IBOServiceBean implements CommuneF
 		int userId = -1; 
 		int currUserId = -2;
 		if (user != null) {
-			userId = user.getID();
+			userId = ((Integer)user.getPrimaryKey()).intValue();
 		}
 		if (currentUser != null) {
-			currUserId = currentUser.getID();	
+			currUserId = ((Integer)currentUser.getPrimaryKey()).intValue();	
 		}
 				
 		return userId == currUserId;	
@@ -56,10 +56,10 @@ public class CommuneForumBusinessBean extends IBOServiceBean implements CommuneF
 		int userId = -1; 
 		int currUserId = -2;
 		if (user != null) {
-			userId = user.getID();
+			userId = ((Integer)user.getPrimaryKey()).intValue();
 		}
 		if (currentUser != null) {
-			currUserId = currentUser.getID();	
+			currUserId = ((Integer)currentUser.getPrimaryKey()).intValue();	
 		}
 				
 		return userId == currUserId;	

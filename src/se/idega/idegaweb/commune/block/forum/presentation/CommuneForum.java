@@ -93,7 +93,7 @@ public class CommuneForum extends Forum {
 				if (topic != null) {
 					topicLink = new Link(topic.getName());
 					topicLink.setStyle(_topicName);
-					topicLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, topic.getID());
+					topicLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, ((Integer)topic.getPrimaryKey()).intValue());
 					topicLink.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
 					if (_addICObjectID)
 						topicLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
@@ -137,7 +137,7 @@ public class CommuneForum extends Forum {
 						if (isModerator || iwc.hasEditPermission(this)) {
 							Link file = new Link(formatText(Integer.toString(fileCount), _textStyle));
 							file.setWindowToOpen(CommuneForumTopicFiles.class);
-							file.addParameter(CommuneForumTopicFiles.prmTopicId, topic.getID());
+							file.addParameter(CommuneForumTopicFiles.prmTopicId, ((Integer)topic.getPrimaryKey()).intValue());
 							table.add(file,6,row);
 						}
 						else
@@ -152,7 +152,7 @@ public class CommuneForum extends Forum {
 						table.setColumns(7);
 						Link editTopic = new Link(_iwcb.getImage("shared/edit.gif"));
 						editTopic.setWindowToOpen(CommuneForumTopicWindow.class);
-						editTopic.addParameter(CommuneForumTopicEditor.PARAMETER_TOPIC_ID, topic.getID());
+						editTopic.addParameter(CommuneForumTopicEditor.PARAMETER_TOPIC_ID, ((Integer)topic.getPrimaryKey()).intValue());
 						table.add(editTopic, 7, row);
 					}
 					

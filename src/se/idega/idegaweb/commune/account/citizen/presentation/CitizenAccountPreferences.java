@@ -259,7 +259,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		String valueNewPasswordRepeated = iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED) != null ? iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED) : "";
 		String valuePhoneHome = iwc.getParameter(PARAMETER_PHONE_HOME);
 		if (valuePhoneHome == null) {
-			Phone p = ub.getUserPhone(user.getID(), 1);
+			Phone p = ub.getUserPhone(((Integer)user.getPrimaryKey()).intValue(), 1);
 			if (p != null) {
 				valuePhoneHome = p.getNumber();
 			} else {
@@ -268,7 +268,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		}
 		String valuePhoneWork = iwc.getParameter(PARAMETER_PHONE_WORK);
 		if (valuePhoneWork == null) {
-			Phone p = ub.getUserPhone(user.getID(), 2);
+			Phone p = ub.getUserPhone(((Integer)user.getPrimaryKey()).intValue(), 2);
 			if (p != null) {
 				valuePhoneWork = p.getNumber();
 			} else {
@@ -579,16 +579,16 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 
 			if (updatePassword) {
-				LoginDBHandler.updateLogin(user.getID(), login, newPassword1);
+				LoginDBHandler.updateLogin(((Integer)user.getPrimaryKey()).intValue(), login, newPassword1);
 			}
 			if (updateEmail) {
-				ub.updateUserMail(user.getID(), sEmail);
+				ub.updateUserMail(((Integer)user.getPrimaryKey()).intValue(), sEmail);
 //				Email email = getUserEmail(iwc);
 //				email.setEmailAddress(sEmail);
 //				email.store();
 			}
-			ub.updateUserPhone(user.getID(), 1, phoneHome);
-			ub.updateUserPhone(user.getID(), 2, phoneWork);
+			ub.updateUserPhone(((Integer)user.getPrimaryKey()).intValue(), 1, phoneHome);
+			ub.updateUserPhone(((Integer)user.getPrimaryKey()).intValue(), 2, phoneWork);
 			if (updateCOAddress) {
 				Address coAddress = getCOAddress(iwc);
 				coAddress.setStreetName(coStreetAddress);
@@ -639,7 +639,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			while (iter.hasNext()) {
 				Address address = (Address) iter.next();
 				int typeID = address.getAddressTypeID();
-				if (typeID == coType.getID()) {
+				if (typeID == ((Integer)coType.getPrimaryKey()).intValue()) {
 					return address;
 				}				
 			}
