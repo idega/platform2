@@ -1,6 +1,6 @@
 /*
- * $Id: WorkReportBusiness.java,v 1.60 2004/11/26 17:41:05 eiki Exp $
- * Created on Nov 26, 2004
+ * $Id: WorkReportBusiness.java,v 1.61 2004/12/07 15:58:30 eiki Exp $
+ * Created on Dec 3, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -42,10 +42,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 17:41:05 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/12/07 15:58:30 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.60 $
+ * @version $Revision: 1.61 $
  */
 public interface WorkReportBusiness extends IBOService, MemberUserBusiness, UserGroupPlugInBusiness {
 
@@ -616,11 +616,6 @@ public interface WorkReportBusiness extends IBOService, MemberUserBusiness, User
 	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException;
 
 	/**
-	 * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#getPresentationObjectClass
-	 */
-	public Class getPresentationObjectClass() throws RemoteException;
-
-	/**
 	 * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#instanciateEditor
 	 */
 	public PresentationObject instanciateEditor(Group group) throws RemoteException;
@@ -649,17 +644,6 @@ public interface WorkReportBusiness extends IBOService, MemberUserBusiness, User
 	 * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#getGroupToolbarElements
 	 */
 	public List getGroupToolbarElements(Group group) throws RemoteException;
-
-	/**
-	 * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#getListViewerFields
-	 */
-	public Collection getListViewerFields() throws RemoteException;
-
-	/**
-	 * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#findGroupsByFields
-	 */
-	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators,
-			Collection listViewerFieldValues) throws RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#isUserAssignableFromGroupToGroup

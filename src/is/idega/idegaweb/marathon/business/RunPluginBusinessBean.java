@@ -6,15 +6,11 @@ package is.idega.idegaweb.marathon.business;
 
 import is.idega.idegaweb.marathon.presentation.CreateYearWindowPlugin;
 import is.idega.idegaweb.marathon.presentation.UserRunTab;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
-
 import com.idega.business.IBOServiceBean;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserGroupPlugInBusiness;
@@ -49,28 +45,9 @@ public class RunPluginBusinessBean extends IBOServiceBean implements RunPluginBu
 	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
 	}
 	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(java.util.Collection, java.util.Collection, java.util.Collection)
-	 */
-	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators,
-			Collection listViewerFieldValues) throws RemoteException {
-		return null;
-	}
-	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupPropertiesTabs(com.idega.user.data.Group)
 	 */
 	public List getGroupPropertiesTabs(Group group) throws RemoteException {
-		return null;
-	}
-	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
-	 */
-	public Collection getListViewerFields() throws RemoteException {
-		return null;
-	}
-	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
-	 */
-	public Class getPresentationObjectClass() throws RemoteException {
 		return null;
 	}
 	/* (non-Javadoc)
@@ -120,6 +97,13 @@ public class RunPluginBusinessBean extends IBOServiceBean implements RunPluginBu
 			list.add(new CreateYearWindowPlugin());
 			return list;
 		}
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group)
+	 */
+	public String canCreateSubGroup(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

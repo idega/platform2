@@ -1,17 +1,31 @@
+/*
+ * $Id$
+ * Created on Dec 7, 2004
+ *
+ * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package is.idega.idegaweb.member.business.plugins;
 
-
-public class ClubInformationPluginBusinessHomeImpl extends com.idega.business.IBOHomeImpl implements ClubInformationPluginBusinessHome
-{
- protected Class getBeanInterfaceClass(){
-  return ClubInformationPluginBusiness.class;
- }
+import com.idega.business.IBOHomeImpl;
 
 
- public ClubInformationPluginBusiness create() throws javax.ejb.CreateException{
-  return (ClubInformationPluginBusiness) super.createIBO();
- }
+/**
+ * 
+ *  Last modified: $Date$ by $Author$
+ * 
+ * @author <a href="mailto:eiki@idega.com">eiki</a>
+ * @version $Revision$
+ */
+public class ClubInformationPluginBusinessHomeImpl extends IBOHomeImpl implements ClubInformationPluginBusinessHome {
 
+	protected Class getBeanInterfaceClass() {
+		return ClubInformationPluginBusiness.class;
+	}
 
-
+	public ClubInformationPluginBusiness create() throws javax.ejb.CreateException {
+		return (ClubInformationPluginBusiness) super.createIBO();
+	}
 }

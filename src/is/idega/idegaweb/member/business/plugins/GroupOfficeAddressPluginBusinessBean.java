@@ -1,15 +1,11 @@
 package is.idega.idegaweb.member.business.plugins;
 
 import is.idega.idegaweb.member.presentation.GroupOfficeAddressTab;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
-
 import com.idega.business.IBOServiceBean;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserGroupPlugInBusiness;
@@ -46,33 +42,12 @@ public class GroupOfficeAddressPluginBusinessBean extends IBOServiceBean impleme
 	}
 
 	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(java.util.Collection, java.util.Collection, java.util.Collection)
-	 */
-	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators, Collection listViewerFieldValues) throws RemoteException {
-		return null;
-	}
-
-	/**
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupPropertiesTabs(com.idega.user.data.Group)
 	 */
 	public List getGroupPropertiesTabs(Group group) throws RemoteException {
     List list = new ArrayList();
     list.add(new GroupOfficeAddressTab(group));  
     return list;  
-	}
-
-	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
-	 */
-	public Collection getListViewerFields() throws RemoteException {
-		return null;
-	}
-
-	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
-	 */
-	public Class getPresentationObjectClass() throws RemoteException {
-		return null;
 	}
 
 	/**
@@ -114,6 +89,14 @@ public List getMainToolbarElements() throws RemoteException {
  * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupToolbarElements(com.idega.user.data.Group)
  */
 public List getGroupToolbarElements(Group group) throws RemoteException {
+	return null;
+}
+
+/* (non-Javadoc)
+ * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group)
+ */
+public String canCreateSubGroup(Group group) throws RemoteException {
+	// TODO Auto-generated method stub
 	return null;
 }
 

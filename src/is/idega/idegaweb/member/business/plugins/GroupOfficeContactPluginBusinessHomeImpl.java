@@ -1,17 +1,32 @@
+/*
+ * $Id: GroupOfficeContactPluginBusinessHomeImpl.java,v 1.2 2004/12/07 15:58:30 eiki Exp $
+ * Created on Dec 7, 2004
+ *
+ * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package is.idega.idegaweb.member.business.plugins;
 
-
-public class GroupOfficeContactPluginBusinessHomeImpl extends com.idega.business.IBOHomeImpl implements GroupOfficeContactPluginBusinessHome
-{
- protected Class getBeanInterfaceClass(){
-  return GroupOfficeContactPluginBusiness.class;
- }
+import com.idega.business.IBOHomeImpl;
 
 
- public GroupOfficeContactPluginBusiness create() throws javax.ejb.CreateException{
-  return (GroupOfficeContactPluginBusiness) super.createIBO();
- }
+/**
+ * 
+ *  Last modified: $Date: 2004/12/07 15:58:30 $ by $Author: eiki $
+ * 
+ * @author <a href="mailto:eiki@idega.com">eiki</a>
+ * @version $Revision: 1.2 $
+ */
+public class GroupOfficeContactPluginBusinessHomeImpl extends IBOHomeImpl implements
+		GroupOfficeContactPluginBusinessHome {
 
+	protected Class getBeanInterfaceClass() {
+		return GroupOfficeContactPluginBusiness.class;
+	}
 
-
+	public GroupOfficeContactPluginBusiness create() throws javax.ejb.CreateException {
+		return (GroupOfficeContactPluginBusiness) super.createIBO();
+	}
 }

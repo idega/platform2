@@ -406,31 +406,7 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		throws RemoveException, RemoteException {
 	}
 
-	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(Collection, Collection, Collection)
-	 */
-	public Collection findGroupsByFields(
-		Collection listViewerFields,
-		Collection finderOperators,
-		Collection listViewerFieldValues)
-		throws RemoteException {
-		return null;
-	}
-
-	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
-	 */
-	public Collection getListViewerFields() throws RemoteException {
-		return null;
-	}
-
-	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
-	 */
-	public Class getPresentationObjectClass() throws RemoteException {
-		return null;
-	}
-
+	
 	/**
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateEditor(Group)
 	 */
@@ -484,6 +460,14 @@ public List getMainToolbarElements() throws RemoteException {
  * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupToolbarElements(com.idega.user.data.Group)
  */
 public List getGroupToolbarElements(Group group) throws RemoteException {
+	return null;
+}
+
+/* (non-Javadoc)
+ * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group)
+ */
+public String canCreateSubGroup(Group group) throws RemoteException {
+	// TODO Auto-generated method stub
 	return null;
 }
 

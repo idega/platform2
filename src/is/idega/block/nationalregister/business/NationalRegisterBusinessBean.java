@@ -333,14 +333,6 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 	}
 
 	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
-	 */
-	public Class getPresentationObjectClass() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateEditor(com.idega.user.data.Group)
 	 */
 	public PresentationObject instanciateEditor(Group group) throws RemoteException {
@@ -390,22 +382,6 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 	}
 
 	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
-	 */
-	public Collection getListViewerFields() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(java.util.Collection, java.util.Collection, java.util.Collection)
-	 */
-	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators, Collection listViewerFieldValues) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserAssignableFromGroupToGroup(com.idega.user.data.User, com.idega.user.data.Group, com.idega.user.data.Group)
 	 */
 	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) throws RemoteException {
@@ -423,6 +399,38 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 
 	public FamilyLogic getFamilyLogic() throws RemoteException {
 		return (FamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), FamilyLogic.class);
+	}
+
+	/* (non-Javadoc)
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusiness#getPresentationObjectClass()
+	 */
+	public Class getPresentationObjectClass() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusiness#getListViewerFields()
+	 */
+	public Collection getListViewerFields() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see is.idega.block.nationalregister.business.NationalRegisterBusiness#findGroupsByFields(java.util.Collection, java.util.Collection, java.util.Collection)
+	 */
+	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators, Collection listViewerFieldValues) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group)
+	 */
+	public String canCreateSubGroup(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

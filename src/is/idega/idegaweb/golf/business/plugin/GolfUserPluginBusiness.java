@@ -1,6 +1,6 @@
 /*
- * $Id: GolfUserPluginBusiness.java,v 1.2 2004/11/17 19:16:45 eiki Exp $
- * Created on Nov 16, 2004
+ * $Id: GolfUserPluginBusiness.java,v 1.3 2004/12/07 15:58:30 eiki Exp $
+ * Created on Dec 7, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -17,6 +17,7 @@ import javax.ejb.RemoveException;
 import com.idega.business.IBOService;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -24,10 +25,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/17 19:16:45 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/12/07 15:58:30 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface GolfUserPluginBusiness extends IBOService, UserGroupPlugInBusiness {
 
@@ -52,12 +53,6 @@ public interface GolfUserPluginBusiness extends IBOService, UserGroupPlugInBusin
 	public void beforeUserRemove(User user) throws RemoveException, RemoteException;
 
 	/**
-	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#findGroupsByFields
-	 */
-	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators,
-			Collection listViewerFieldValues) throws RemoteException;
-
-	/**
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#getGroupPropertiesTabs
 	 */
 	public List getGroupPropertiesTabs(Group group) throws RemoteException;
@@ -68,19 +63,9 @@ public interface GolfUserPluginBusiness extends IBOService, UserGroupPlugInBusin
 	public List getGroupToolbarElements(Group group) throws RemoteException;
 
 	/**
-	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#getListViewerFields
-	 */
-	public Collection getListViewerFields() throws RemoteException;
-
-	/**
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#getMainToolbarElements
 	 */
 	public List getMainToolbarElements() throws RemoteException;
-
-	/**
-	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#getPresentationObjectClass
-	 */
-	public Class getPresentationObjectClass() throws RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#getUserPropertiesTabs
@@ -117,4 +102,14 @@ public interface GolfUserPluginBusiness extends IBOService, UserGroupPlugInBusin
 	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#getGroupBusiness
 	 */
 	public GroupBusiness getGroupBusiness() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#getUserBusiness
+	 */
+	public UserBusiness getUserBusiness() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.business.plugin.GolfUserPluginBusinessBean#canCreateSubGroup
+	 */
+	public String canCreateSubGroup(Group group) throws RemoteException;
 }

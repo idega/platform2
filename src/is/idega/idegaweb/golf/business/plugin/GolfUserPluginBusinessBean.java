@@ -1,5 +1,5 @@
 /*
- * $Id: GolfUserPluginBusinessBean.java,v 1.4 2004/11/19 18:06:44 eiki Exp $
+ * $Id: GolfUserPluginBusinessBean.java,v 1.5 2004/12/07 15:58:30 eiki Exp $
  * Created on Nov 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.user.data.User;
 
 /**
  * A user application plugin for various golf specific stuff such as the Golfer Info tab.
- *  Last modified: $Date: 2004/11/19 18:06:44 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/12/07 15:58:30 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">Eirikur S. Hrafnsson</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGroupPlugInBusiness, GolfUserPluginBusiness{
 
@@ -74,14 +74,8 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
 		// TODO Auto-generated method stub
 	}
-	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(java.util.Collection, java.util.Collection, java.util.Collection)
-	 */
-	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators,
-			Collection listViewerFieldValues) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
+	
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupPropertiesTabs(com.idega.user.data.Group)
 	 */
@@ -96,13 +90,8 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 		// TODO Auto-generated method stub
 		return null;
 	}
-	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
-	 */
-	public Collection getListViewerFields() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
+	
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getMainToolbarElements()
 	 */
@@ -110,13 +99,7 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 		// TODO Auto-generated method stub
 		return null;
 	}
-	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
-	 */
-	public Class getPresentationObjectClass() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getUserPropertiesTabs(com.idega.user.data.User)
 	 */
@@ -230,6 +213,14 @@ public class GolfUserPluginBusinessBean extends IBOServiceBean implements UserGr
 			}
 		}
 		return userBiz;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group)
+	 */
+	public String canCreateSubGroup(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

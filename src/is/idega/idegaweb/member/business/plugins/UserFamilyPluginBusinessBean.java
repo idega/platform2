@@ -1,5 +1,5 @@
 /*
- * $Id: UserFamilyPluginBusinessBean.java,v 1.3 2004/10/28 12:02:55 eiki Exp $
+ * $Id: UserFamilyPluginBusinessBean.java,v 1.4 2004/12/07 15:58:30 eiki Exp $
  * Created on Aug 31, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,7 +12,6 @@ package is.idega.idegaweb.member.business.plugins;
 import is.idega.idegaweb.member.presentation.UserFamilyTab;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
@@ -25,10 +24,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/28 12:02:55 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/12/07 15:58:30 $ by $Author: eiki $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class UserFamilyPluginBusinessBean extends IBOServiceBean implements UserFamilyPluginBusiness, UserGroupPlugInBusiness {
 
@@ -62,14 +61,6 @@ public class UserFamilyPluginBusinessBean extends IBOServiceBean implements User
 	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
 		// TODO Auto-generated method stub
 		
-	}
-
-	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
-	 */
-	public Class getPresentationObjectClass() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/* (non-Javadoc)
@@ -121,21 +112,6 @@ public class UserFamilyPluginBusinessBean extends IBOServiceBean implements User
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
-	 */
-	public Collection getListViewerFields() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(java.util.Collection, java.util.Collection, java.util.Collection)
-	 */
-	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators, Collection listViewerFieldValues) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserAssignableFromGroupToGroup(com.idega.user.data.User, com.idega.user.data.Group, com.idega.user.data.Group)
@@ -149,6 +125,14 @@ public class UserFamilyPluginBusinessBean extends IBOServiceBean implements User
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserSuitedForGroup(com.idega.user.data.User, com.idega.user.data.Group)
 	 */
 	public String isUserSuitedForGroup(User user, Group targetGroup) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group)
+	 */
+	public String canCreateSubGroup(Group group) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -1,8 +1,25 @@
+/*
+ * $Id$
+ * Created on Dec 7, 2004
+ *
+ * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package is.idega.idegaweb.member.business.plugins;
 
+import com.idega.business.IBOHome;
 
-public interface GroupBoardPluginBusinessHome extends com.idega.business.IBOHome
-{
- public GroupBoardPluginBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 
+/**
+ * 
+ *  Last modified: $Date$ by $Author$
+ * 
+ * @author <a href="mailto:eiki@idega.com">eiki</a>
+ * @version $Revision$
+ */
+public interface GroupBoardPluginBusinessHome extends IBOHome {
+
+	public GroupBoardPluginBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 }

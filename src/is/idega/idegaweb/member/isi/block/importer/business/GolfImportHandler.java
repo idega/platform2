@@ -1,5 +1,5 @@
 /*
- * $Id: GolfImportHandler.java,v 1.2 2004/10/28 12:03:53 eiki Exp $
+ * $Id: GolfImportHandler.java,v 1.3 2004/12/07 15:58:30 eiki Exp $
  * Created on Oct 11, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,7 +10,6 @@
 package is.idega.idegaweb.member.isi.block.importer.business;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
 import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
@@ -25,10 +24,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/28 12:03:53 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/12/07 15:58:30 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface GolfImportHandler extends IBOSession, ImportFileHandler, UserGroupPlugInBusiness {
 
@@ -73,11 +72,6 @@ public interface GolfImportHandler extends IBOSession, ImportFileHandler, UserGr
 	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException;
 
 	/**
-	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#getPresentationObjectClass
-	 */
-	public Class getPresentationObjectClass() throws RemoteException;
-
-	/**
 	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#instanciateEditor
 	 */
 	public PresentationObject instanciateEditor(Group group) throws RemoteException;
@@ -106,17 +100,6 @@ public interface GolfImportHandler extends IBOSession, ImportFileHandler, UserGr
 	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#getGroupToolbarElements
 	 */
 	public List getGroupToolbarElements(Group group) throws RemoteException;
-
-	/**
-	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#getListViewerFields
-	 */
-	public Collection getListViewerFields() throws RemoteException;
-
-	/**
-	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#findGroupsByFields
-	 */
-	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators,
-			Collection listViewerFieldValues) throws RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#isUserAssignableFromGroupToGroup

@@ -1,27 +1,22 @@
 package is.idega.idegaweb.member.business.plugins;
 
 import is.idega.idegaweb.member.presentation.GroupAgeGenderTab;
-
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
 import com.idega.business.IBOServiceBean;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
-
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Gender;
@@ -236,13 +231,6 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
 	}
 
 	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(java.util.Collection, java.util.Collection, java.util.Collection)
-	 */
-	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators, Collection listViewerFieldValues) throws RemoteException {
-		return null;
-	}
-
-	/**
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupPropertiesTabs(com.idega.user.data.Group)
 	 */
 	public List getGroupPropertiesTabs(Group group) throws RemoteException {
@@ -251,20 +239,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     return list;  
 	}
 
-	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
-	 */
-	public Collection getListViewerFields() throws RemoteException {
-		return null;
-	}
-
-	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
-	 */
-	public Class getPresentationObjectClass() throws RemoteException {
-		return null;
-	}
-
+	
 	/**
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getUserPropertiesTabs(com.idega.user.data.User)
 	 */
@@ -419,6 +394,14 @@ public List getMainToolbarElements() throws RemoteException {
  * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupToolbarElements(com.idega.user.data.Group)
  */
 public List getGroupToolbarElements(Group group) throws RemoteException {
+	return null;
+}
+
+/* (non-Javadoc)
+ * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group)
+ */
+public String canCreateSubGroup(Group group) throws RemoteException {
+	// TODO Auto-generated method stub
 	return null;
 } 
   

@@ -252,13 +252,6 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 		
 	}
 	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
-	 */
-	public Class getPresentationObjectClass() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateEditor(com.idega.user.data.Group)
 	 */
 	public PresentationObject instanciateEditor(Group group) throws RemoteException {
@@ -302,20 +295,6 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 		return list;
 	}
 	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
-	 */
-	public Collection getListViewerFields() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(java.util.Collection, java.util.Collection, java.util.Collection)
-	 */
-	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators, Collection listViewerFieldValues) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserAssignableFromGroupToGroup(com.idega.user.data.User, com.idega.user.data.Group, com.idega.user.data.Group)
 	 */
 	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
@@ -326,6 +305,13 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserSuitedForGroup(com.idega.user.data.User, com.idega.user.data.Group)
 	 */
 	public String isUserSuitedForGroup(User user, Group targetGroup) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group)
+	 */
+	public String canCreateSubGroup(Group group) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
