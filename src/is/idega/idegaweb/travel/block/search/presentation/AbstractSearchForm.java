@@ -6,6 +6,17 @@
  */
 package is.idega.idegaweb.travel.block.search.presentation;
 
+import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusiness;
+import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.data.GeneralBookingHome;
+import is.idega.idegaweb.travel.presentation.LinkGenerator;
+import is.idega.idegaweb.travel.presentation.PublicBooking;
+import is.idega.idegaweb.travel.presentation.TravelCurrencyCalculatorWindow;
+import is.idega.idegaweb.travel.presentation.VoucherWindow;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
+
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -14,27 +25,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.ejb.FinderException;
-
-import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusiness;
-import is.idega.idegaweb.travel.business.TravelSessionManager;
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
-import is.idega.idegaweb.travel.data.GeneralBooking;
-import is.idega.idegaweb.travel.data.GeneralBookingHome;
-import is.idega.idegaweb.travel.presentation.LinkGenerator;
-import is.idega.idegaweb.travel.presentation.PublicBooking;
-import is.idega.idegaweb.travel.presentation.TravelCurrencyCalculatorWindow;
-import is.idega.idegaweb.travel.presentation.VoucherWindow;
-import is.idega.idegaweb.travel.service.business.ServiceHandler;
-import is.idega.idegaweb.travel.service.presentation.BookingForm;
-import is.idega.idegaweb.travel.service.presentation.ServiceOverview;
-
 import com.idega.block.text.data.TxText;
 import com.idega.block.text.presentation.TextReader;
 import com.idega.block.tpos.presentation.ReceiptWindow;
 import com.idega.block.trade.data.Currency;
-import com.idega.block.trade.stockroom.business.ProductBusiness;
-import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
@@ -46,13 +40,9 @@ import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.business.IBOLookup;
-import com.idega.core.location.data.PostalCode;
-import com.idega.core.location.data.PostalCodeHome;
 import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -65,13 +55,10 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.InterfaceObject;
-import com.idega.presentation.ui.ResultOutput;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.TimeInput;
-import com.idega.presentation.ui.TimestampInput;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -134,7 +121,8 @@ public abstract class AbstractSearchForm extends Block{
 	protected Image windowHeaderImage;
 	
 	protected IWResourceBundle iwrb;
-
+	protected ServiceSearchEngine engine = null;
+	
 	protected Image headerImage;
 	protected Table formTable = new Table();
 	int row = 1;
@@ -159,7 +147,6 @@ public abstract class AbstractSearchForm extends Block{
 
 	public void main(IWContext iwc) throws Exception {
 		this.iwc = iwc;
-		System.out.println("ReferalUrl = "+PublicBooking.getRefererUrl(iwc));
 		iwrb = getSearchBusiness(iwc).getTravelSessionManager(iwc).getIWResourceBundle();
 
 		formTable.setWidth("100%");
@@ -179,6 +166,7 @@ public abstract class AbstractSearchForm extends Block{
 		
 		Form form = new Form();
 		form.maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM);
+		form.addParameter(BookingForm.PARAMETER_CODE, engine.getCode());
 		form.addParameter(BookingForm.parameterPriceCategoryKey, getPriceCategoryKey());
 		form.add(getHeader());
 		form.add(getLinks());
@@ -546,6 +534,7 @@ public abstract class AbstractSearchForm extends Block{
 			
 			if (bookingId > 0) {
 				gBooking = gBookingHome.findByPrimaryKey(new Integer(bookingId));	
+				gBooking.setCode(this.engine.getCode());
 			}
 			
 			if (gBooking != null) {
@@ -743,6 +732,7 @@ public abstract class AbstractSearchForm extends Block{
 		link.addParameter(ACTION, ACTION_BOOKING_FORM);
 		link.addParameter(PARAMETER_PRODUCT_ID, productId);
 		link.addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
+		link.setHttps(LinkGenerator.getIsHttps());
 		return link;
 	}
 
@@ -923,6 +913,10 @@ public abstract class AbstractSearchForm extends Block{
 		}		
 	}
 
+	public void setServiceSearchEngine(ServiceSearchEngine engine) {
+		this.engine = engine;
+	}
+	
 	public ServiceSearchBusiness getSearchBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (ServiceSearchBusiness) IBOLookup.getServiceInstance(iwac, ServiceSearchBusiness.class);
 	}
