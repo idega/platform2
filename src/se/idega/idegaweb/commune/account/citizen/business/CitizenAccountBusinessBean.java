@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.57 2003/11/10 19:15:06 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.58 2003/11/21 01:42:08 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -72,11 +72,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2003/11/10 19:15:06 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/21 01:42:08 $ by $Author: tryggvil $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.57 $
+ * @version $Revision: 1.58 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
@@ -420,7 +420,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			final CommuneUserBusiness userBusiness = getUserBusiness();
 			final String applicationReason = applicant.getApplicationReason();
 			final boolean notNackaResident = applicationReason != null && (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY) || applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY));
-			final User user = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(firstName, "", lastName, ssn, gender, timestamp) : userBusiness.createCitizenByPersonalIDIfDoesNotExist(firstName, "", lastName, ssn, gender, timestamp);
+			final User user = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(firstName, "", lastName, ssn, gender, timestamp) : userBusiness.createOrUpdateCitizenByPersonalID(firstName, "", lastName, ssn, gender, timestamp);
 
 			final String streetName = applicant.getStreet();
 			final String postalCode = applicant.getZipCode();
@@ -473,7 +473,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 					final Gender cohabitantGender = pidChecker.isFemale(ssn) ? genderHome.getFemaleGender() : genderHome.getMaleGender();
 					final Date cohabitantBirth = pidChecker.getDateFromPersonalID(ssn);
 					final IWTimestamp cohabitantTimestamp = cohabitantBirth != null ? new IWTimestamp(cohabitantBirth.getTime()) : null;
-					final User cohabitantUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp) : userBusiness.createCitizenByPersonalIDIfDoesNotExist(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp);
+					final User cohabitantUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp) : userBusiness.createOrUpdateCitizenByPersonalID(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp);
 					familyLogic.setAsSpouseFor(user, cohabitantUser);
 					final Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
 					phone.setNumber(cohabitant.getPhoneWork());
@@ -494,7 +494,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 						final Gender childrenGender = pidChecker.isFemale(ssn) ? genderHome.getFemaleGender() : genderHome.getMaleGender();
 						final Date childrenBirth = pidChecker.getDateFromPersonalID(childrenSsn);
 						final IWTimestamp childrenTimestamp = childrenBirth != null ? new IWTimestamp(childrenBirth.getTime()) : null;
-						final User childrenUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(children[i].getFirstName(), "", children[i].getLastName(), childrenSsn, childrenGender, childrenTimestamp) : userBusiness.createCitizenByPersonalIDIfDoesNotExist(children[i].getFirstName(), "", children[i].getLastName(), childrenSsn, childrenGender, childrenTimestamp);
+						final User childrenUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(children[i].getFirstName(), "", children[i].getLastName(), childrenSsn, childrenGender, childrenTimestamp) : userBusiness.createOrUpdateCitizenByPersonalID(children[i].getFirstName(), "", children[i].getLastName(), childrenSsn, childrenGender, childrenTimestamp);
 						familyLogic.setAsParentFor(user, childrenUser);
 						familyLogic.setAsCustodianFor(user, childrenUser);
 						if (homePhone != null) {
@@ -594,7 +594,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		final Date birthDate = pidChecker.getDateFromPersonalID(ssn);
 		final IWTimestamp timestamp = birthDate != null ? new IWTimestamp(birthDate.getTime()) : null;
 		final CommuneUserBusiness userBusiness = getUserBusiness();
-		final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist(firstName, "", lastName, ssn, gender, timestamp);
+		final User user = userBusiness.createOrUpdateCitizenByPersonalID(firstName, "", lastName, ssn, gender, timestamp);
 
 		return user;
 	}
