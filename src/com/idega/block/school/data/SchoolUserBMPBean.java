@@ -76,7 +76,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	/**
 	 * Returns a Collection of UserPrimaryKeys NOT SchoolUserPrimaryKeys	 * @param school School	 * @param userType User type	 * @return Collection	 * @throws FinderException	 * @throws RemoteException
 	 */
-	public Collection ejbHomeFindBySchoolAndType(School school, int userType) throws FinderException, RemoteException {
+	public Collection ejbFindBySchoolAndType(School school, int userType) throws FinderException {
 		IDOQuery sql = idoQuery();
 			sql.appendSelect()
 			 .append("*")
@@ -98,14 +98,22 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		SchoolUser sUser;
 		Iterator iter = coll.iterator();
 		while (iter.hasNext()) {
-			sUser = getHome().findByPrimaryKey(iter.next());
-			userPks.add(new Integer(sUser.getUserId()));
+			try
+			{
+				sUser = getHome().findByPrimaryKey(iter.next());
+				userPks.add(new Integer(sUser.getUserId()));
+			}
+			catch (RemoteException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 				
 		return userPks;
 	}
 	
-	public Collection ejbHomeFindByUser(User user) throws FinderException {
+	public Collection ejbFindByUser(User user) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this)
 		.appendWhere()
@@ -116,7 +124,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		return this.idoFindIDsBySQL(sql.toString());
 	}
 	
-	public Collection ejbHomeFindBySchoolAndUser(School school, User user) throws FinderException {
+	public Collection ejbFindBySchoolAndUser(School school, User user) throws FinderException {
 		IDOQuery sql = idoQuery();
 			sql.appendSelect()
 			 .append("*")
@@ -133,7 +141,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		return this.idoFindIDsBySQL(sql.toString());		
 	}
 	
-	public Collection ejbHomeFindBySchool(School school) throws FinderException {
+	public Collection ejbFindBySchool(School school) throws FinderException {
 		IDOQuery sql = idoQuery();
 			sql.appendSelect()
 			 .append("*")
