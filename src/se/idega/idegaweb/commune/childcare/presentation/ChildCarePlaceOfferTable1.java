@@ -135,16 +135,12 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 		//Cannot use DateInput.setAsNotEmpty because we doesn't want this requirement 
 		//unless the user has selected the actual radio button.		
-		System.out.print("Am here...");
-
 		Page page = parent.getParentPage();
 		Script script = null;
 		if (page != null) {
-			System.out.println("Adding script to parent page");
 			script = page.getAssociatedScript();
 		}
 		else {
-			System.out.println("Adding script to parent page");
 			script = new Script();
 			parent.add(script);
 		}
