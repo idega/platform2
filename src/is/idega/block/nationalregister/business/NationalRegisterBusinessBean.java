@@ -145,6 +145,7 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 				id = (Integer)poCode.getPrimaryKey();
 
 			userBiz.updateUsersMainAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, id, null, null, null, null);
+			userBiz.updateUsersCoAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, id, null, null, null, null);
 		}
 		catch (CreateException e) {
 			e.printStackTrace();
