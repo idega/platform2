@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.8 2002/11/04 11:27:47 staffan Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.9 2002/11/06 10:00:32 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -84,6 +84,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
     // get methods for bean properties
 
 	public String getApplicantName () {
+        System.out.println ("¤¤¤ Getting: " + getStringColumnValue (NAME));
 		return getStringColumnValue (NAME);
 	}
 
@@ -143,6 +144,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
     // set methods for bean properties
 
 	public void setApplicantName (final String name) {
+        System.out.println ("¤¤¤ Storing: " + name);
 		setColumn (NAME, name);
 	}
 

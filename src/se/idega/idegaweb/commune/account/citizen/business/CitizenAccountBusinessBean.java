@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.17 2002/11/04 11:27:47 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.18 2002/11/06 10:00:32 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -29,12 +29,12 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
 
-	public boolean insertApplication(User user, String pid, String email, String phoneHome, String phoneWork) {
+	public boolean insertApplication(User performer, String pid, String email, String phoneHome, String phoneWork) {
 		try {
 			CitizenAccount application = ((CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class)).create();
 			application.setPID(pid);
-			if (user != null)
-				application.setOwner(user);
+			if (performer != null)
+				application.setOwner(performer);
 			application.setPhoneHome(phoneHome);
 			if (email != null)
 				application.setEmail(email);
@@ -46,7 +46,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 
 			int applicationID = ((Integer) application.getPrimaryKey()).intValue();
 			if (acceptApplicationOnCreation) {
-				acceptApplication(applicationID, user);
+                //				acceptApplication(applicationID, performer);
 			}
 		}
 		catch (Exception e) {
@@ -216,14 +216,16 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
         throws RemoteException, CreateException, FinderException {
         final CitizenAccount applicant = getAccount (applicationID);
         final String name = applicant.getApplicantName();
-        final int spaceIndex = name.indexOf(" ");
+        final int spaceIndex = name != null ? name.indexOf(" ") : -1;
 		final String firstName
                 = spaceIndex != -1 ? name.substring(0, spaceIndex) : "";
 		final String lastName = spaceIndex != -1
-                ? name.substring(spaceIndex + 1, name.length ()) : name;
-        final CommuneUserBusiness business = getUserBusiness ();
+                ? name.substring(spaceIndex + 1, name.length ())
+                : (name != null ? name : "");
+
+        final CommuneUserBusiness userBusiness = getUserBusiness ();
         //final User user = business.createCitizen (firstName, null, lastName, applicant.getPID ());
-        final User user = business.createCitizenByPersonalIDIfDoesNotExist
+        final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist
         (firstName, "", lastName, applicant.getPID ());
 		applicant.setOwner (performer);
 		super.acceptApplication (applicationID, performer);

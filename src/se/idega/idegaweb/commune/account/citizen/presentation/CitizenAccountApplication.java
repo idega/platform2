@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.13 2002/11/06 09:13:44 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.14 2002/11/06 10:00:32 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -32,35 +32,35 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_SUBMIT_SIMPLE_FORM = 1;
 	private final static int ACTION_SUBMIT_UNKNOWN_CITIZEN_FORM = 2;
 
-	private final static String FIRST_NAME_KEY = "caa_first_name";
-    private final static String FIRST_NAME_DEFAULT = "Förnamn";
-	private final static String LAST_NAME_KEY = "caa_last_name";
-    private final static String LAST_NAME_DEFAULT = "Efternamn";
-	private final static String BIRTH_YEAR_KEY = "caa_birth_year";
-	private final static String BIRTH_MONTH_KEY = "caa_birth_month";
 	private final static String BIRTH_DAY_KEY = "caa_birth_day";
-	private final static String GENDER_KEY = "caa_gender";
-    private final static String GENDER_DEFAULT = "Kön";
+	private final static String BIRTH_MONTH_KEY = "caa_birth_month";
+	private final static String BIRTH_YEAR_KEY = "caa_birth_year";
 	private final static String EMAIL_KEY = "caa_email";
-    private final static String EMAIL_DEFAULT = "E-post";
+	private final static String FIRST_NAME_KEY = "caa_first_name";
+	private final static String GENDER_KEY = "caa_gender";
+	private final static String LAST_NAME_KEY = "caa_last_name";
 	private final static String PHONE_HOME_KEY = "caa_phone_home";
-    private final static String PHONE_HOME_DEFAULT = "Telefon (hem)";
 	private final static String PHONE_WORK_KEY = "caa_phone_work";
-    private final static String PHONE_WORK_DEFAULT = "Telefon (arbete/mobil)";
-    private final static String STREET_KEY = "caa_street";
-    private final static String STREET_DEFAULT = "Gatuadress";
-    private final static String ZIP_CODE_KEY = "caa_zip_code";
-    private final static String ZIP_CODE_DEFAULT = "Postnummer";
-    private final static String CITY_KEY = "caa_city";
     private final static String CITY_DEFAULT = "Postort";
-    private final static String CIVIL_STATUS_KEY = "caa_civil_status";
+    private final static String CITY_KEY = "caa_city";
     private final static String CIVIL_STATUS_DEFAULT = "Civilstånd";
-    private final static String SSN_KEY = "caa_ssn";
+    private final static String CIVIL_STATUS_KEY = "caa_civil_status";
+    private final static String CUSTODIAN_DEFAULT = "Vårdnadshavare";
+    private final static String CUSTODIAN_KEY = "caa_custodian";
+    private final static String EMAIL_DEFAULT = "E-post";
+    private final static String FIRST_NAME_DEFAULT = "Förnamn";
+    private final static String GENDER_DEFAULT = "Kön";
+    private final static String LAST_NAME_DEFAULT = "Efternamn";
+    private final static String PHONE_HOME_DEFAULT = "Telefon (hem)";
+    private final static String PHONE_WORK_DEFAULT = "Telefon (arbete/mobil)";
+    private final static String PID_KEY = "caa_pid";
     private final static String SSN_DEFAULT
         = "Personnummer (år/månad/dag - fyra sist siffror)";
-    private final static String CUSTODIAN_KEY = "caa_custodian";
-    private final static String CUSTODIAN_DEFAULT = "Vårdnadshavare";
-    private final static String PID_KEY = "caa_pid";
+    private final static String SSN_KEY = "caa_ssn";
+    private final static String STREET_DEFAULT = "Gatuadress";
+    private final static String STREET_KEY = "caa_street";
+    private final static String ZIP_CODE_DEFAULT = "Postnummer";
+    private final static String ZIP_CODE_KEY = "caa_zip_code";
 
 	private final static String SIMPLE_FORM_SUBMIT_KEY = "caa_simpleSubmit";
 	private final static String SIMPLE_FORM_SUBMIT_DEFAULT = "Skicka ansökan";
@@ -207,18 +207,17 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 		boolean isInserted = false;
 		try {
+            final String ssn = getSsn (iwc);
 			final CitizenAccountBusiness business
                     = (CitizenAccountBusiness) IBOLookup.getServiceInstance
                     (iwc, CitizenAccountBusiness.class);
-            final User user = business.getUser(pidString);
+            final User user = business.getUser (ssn);
             if (user == null) {
                 viewUnknownCitizenApplicationForm (iwc);
                 return;
             }
-            final String ssn = getSsn (iwc);
 			isInserted = business.insertApplication
-                    (user, ssn, emailString, phoneHomeString,
-                     phoneWorkString);
+                    (user, ssn, emailString, phoneHomeString, phoneWorkString);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
