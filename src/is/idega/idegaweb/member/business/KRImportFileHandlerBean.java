@@ -49,7 +49,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements ImportFil
   private AddressBusiness addressBiz;
   private MemberFamilyLogic relationBiz;
   private GroupHome groupHome;
-  private Group nackaGroup;
+  private Group rootGroup;
   private ImportFile file;
   private UserTransaction transaction;
   private UserTransaction transaction2;
@@ -236,6 +236,11 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements ImportFil
         if(addAddress){
           user.addAddress(address);
         }
+        
+        
+        
+        if( rootGroup!=null)
+        	rootGroup.addGroup(user);
 
     }
      catch(Exception e){
@@ -308,5 +313,21 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements ImportFil
   	else return null;
 
   }
+
+/**
+ * Returns the rootGroup.
+ * @return Group
+ */
+public Group getRootGroup() {
+	return rootGroup;
+}
+
+/**
+ * Sets the rootGroup.
+ * @param rootGroup The rootGroup to set
+ */
+public void setRootGroup(Group rootGroup) {
+	this.rootGroup = rootGroup;
+}
 
   }

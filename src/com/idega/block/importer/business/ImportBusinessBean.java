@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import com.idega.block.importer.data.ImportFile;
 import com.idega.business.IBOServiceBean;
+import com.idega.user.data.Group;
 
 /**
  * <p>Title: IdegaWeb classes</p>
@@ -34,6 +35,38 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
       boolean status = false;
       ImportFileHandler handler = getHandlerForImportFile(file.getClass().getName());
       handler.setImportFile(file);
+      /**@todo temporary workaround**/
+      //((NackaImportFileHandler)handler).setOnlyImportRelations(true);
+      //((NackaImportFileHandler)handler).setStartRecord(52000);
+      //((NackaImportFileHandler)handler).setImportRelations(false);
+      status = handler.handleRecords();
+
+      /*Collection col = file.getRecords();
+      if( col == null ) return false;
+      status = handler.handleRecords(col);*/
+
+
+
+      return status;
+    }
+    catch(NoRecordsException ex){
+     ex.printStackTrace();
+     return false;
+    }
+    catch(ClassNotFoundException ex){
+     ex.printStackTrace();
+     return false;
+    }
+  }
+  
+   public boolean importRecords(Group group, ImportFile file) throws RemoteException{
+    try{
+      boolean status = false;
+      //ImportFileHandler handler = getHandlerForImportFile(file.getClass().getName());
+      is.idega.idegaweb.member.business.KRImportFileHandlerBean handler = is.idega.idegaweb.member.business.KRImportFileHandlerBean();
+      handler.setImportFile(file);
+      handler.setRootGroup(group);
+      
       /**@todo temporary workaround**/
       //((NackaImportFileHandler)handler).setOnlyImportRelations(true);
       //((NackaImportFileHandler)handler).setStartRecord(52000);
