@@ -32,7 +32,6 @@ import com.idega.block.contract.data.ContractTagHome;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolType;
-import com.idega.block.school.data.SchoolYear;
 import com.idega.block.school.presentation.SchoolClassDropdownDouble;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.business.IBOLookup;
@@ -751,35 +750,33 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		/* New requirements: Add Schooltype and Group dropdowns */
 		
 		// Schooltype change :
-		DropdownMenu schoolTypes = new DropdownMenu(PARAMETER_SCHOOL_TYPES);
+		//DropdownMenu schoolTypes = new DropdownMenu(PARAMETER_SCHOOL_TYPES);
 		Collection types = null;
 		try {
 			types = application.getProvider().findRelatedSchoolTypes();
-			Iterator iter = types .iterator();
-			while (iter.hasNext()) {
-				SchoolType element = (SchoolType) iter.next();
-				schoolTypes.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolTypeName());
-			}
+			
 		} catch (IDORelationshipException e) {
 			e.printStackTrace();
 		} catch (EJBException e) {
 			e.printStackTrace();
 		}
+		/*
 		int presentSchoolTypeId = archive.getSchoolClassMember().getSchoolTypeId();
 		if (presentSchoolTypeId != -1)
 			schoolTypes.setSelectedElement(presentSchoolTypeId);
 		
 		schoolTypes = (DropdownMenu) getStyledInterface(schoolTypes);	
-		
-		table.add(getSmallText(localize("child_care.school_type", "School type")),1,row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(schoolTypes, 1, row++);
-		
+		*/
+
 		// Group change, (school class)
 		
-		SchoolClassDropdownDouble schoolClassess = new SchoolClassDropdownDouble(PARAMETER_SCHOOL_TYPES,PARAMETER_SCHOOL_CLASS);
-		schoolClassess = (SchoolClassDropdownDouble) getStyledInterface(schoolClassess);	
-		//int classID = archive.getSchoolClassMember().getSchoolClassId();
+		SchoolClassDropdownDouble schoolClasses = new SchoolClassDropdownDouble(PARAMETER_SCHOOL_TYPES,PARAMETER_SCHOOL_CLASS);
+		schoolClasses.setLayoutVertical(true);
+		schoolClasses.setPrimaryLabel(getSmallText(localize("child_care.school_type", "School type")));
+		schoolClasses.setSecondaryLabel(getSmallText(localize("child_care.school_class", "School class")));
+		schoolClasses = (SchoolClassDropdownDouble) getStyledInterface(schoolClasses);	
+		int classID = archive.getSchoolClassMember().getSchoolClassId();
+
 		
 		if (getChildcareID() != -1) {
 			
@@ -789,16 +786,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				if (typeGroupMap != null) {
 					Iterator iter = typeGroupMap.keySet().iterator();
 					while (iter.hasNext()) {
-						SchoolYear year = (SchoolYear) iter.next();
-						schoolClassess.addMenuElement(year.getPrimaryKey().toString(), year.getSchoolYearName(), (Map) typeGroupMap.get(year));
+						SchoolClass schoolClass = (SchoolClass) iter.next();
+						schoolClasses.addMenuElement(schoolClass.getPrimaryKey().toString(), schoolClass.getSchoolClassName(), (Map) typeGroupMap.get(schoolClass));
 					}
 				}
 			}
 		}
 		
-		table.add(getSmallText(localize("child_care.school_class", "School class")),1,row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(schoolClassess, 1, row++);
+		table.add(schoolClasses, 1, row++);
 		
 
 		DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
