@@ -5,6 +5,20 @@ import com.idega.block.process.business.CaseBusiness;
 
 public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBusiness
 {
+	public final static char STATUS_SENT_IN = 'A';
+	public final static char STATUS_PRIORITY = 'B';
+	public final static char STATUS_ACCEPTED = 'C';
+	public final static char STATUS_PARENTS_ACCEPT = 'D';
+	public final static char STATUS_CONTRACT = 'E';
+	public final static char STATUS_READY = 'F';
+	public final static char STATUS_DELETED = 'T';
+	public final static char STATUS_DENIED = 'U';
+	public final static char STATUS_CANCELLED = 'V';
+	public final static char STATUS_MOVED = 'W';
+	public final static char STATUS_NEW_CHOICE = 'X';
+	public final static char STATUS_NOT_ANSWERED = 'Y';
+	public final static char STATUS_REJECTED = 'Z';
+	
  public boolean acceptApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
  public boolean acceptApplication(int p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
  public void addMissingGrantedChecks() throws java.rmi.RemoteException;
@@ -162,4 +176,6 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean alterContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract childcareContract, int careTime, java.sql.Date fromDate, java.sql.Date endDate, java.util.Locale locale, com.idega.user.data.User performer) throws java.rmi.RemoteException;
  public boolean removeContract(int childcareContractID, com.idega.user.data.User performer) throws java.rmi.RemoteException;
  public boolean removeContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract childcareContract, com.idega.user.data.User performer) throws java.rmi.RemoteException;
+ public boolean changeApplicationStatus(int applicationID, char newStatus, com.idega.user.data.User performer) throws IllegalArgumentException, java.rmi.RemoteException;
+ public boolean changeApplicationStatus(se.idega.idegaweb.commune.childcare.data.ChildCareApplication application, char newStatus, com.idega.user.data.User performer) throws IllegalArgumentException, java.rmi.RemoteException;
 }
