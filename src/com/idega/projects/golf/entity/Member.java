@@ -603,4 +603,19 @@ public class Member extends com.idega.data.genericentity.Member {
 	}
 
 
+        public static com.idega.data.genericentity.Member getMember(String socialSecurityNumber) {
+            com.idega.data.genericentity.Member returner = null;
+            try {
+                java.util.List members = com.idega.data.EntityFinder.findAllByColumn(new com.idega.projects.golf.entity.Member(),"SOCIAL_SECURITY_NUMBER",socialSecurityNumber);
+                if (members != null) {
+                    if (members.size()  > 0) returner = (com.idega.data.genericentity.Member) members.get(0);
+                }
+            }
+            catch (SQLException sq) {
+                sq.printStackTrace(System.err);
+            }
+
+            return returner;
+        }
+
 }
