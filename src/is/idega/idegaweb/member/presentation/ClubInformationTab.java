@@ -312,16 +312,16 @@ public class ClubInformationTab extends UserGroupTab {
 		t.add(_statusField, 1, 4);
 		
 		t.mergeCells(1, 5, 2, 5);
-		t.add(_memberUMFIText, 1, 5);
 		t.add(_memberUMFIField, 1, 5);
+		t.add(_memberUMFIText, 1, 5);
 		
 		t.mergeCells(1, 6, 2, 6);
-		t.add(_inOperationText, 1, 6);
 		t.add(_inOperationField, 1, 6);
+		t.add(_inOperationText, 1, 6);
 		
 		t.mergeCells(1, 7, 2, 7);
-		t.add(_usingMemberSystemText, 1, 7);
 		t.add(_usingMemberSystemField, 1, 7);
+		t.add(_usingMemberSystemText, 1, 7);
 
 		add(t);
 	}

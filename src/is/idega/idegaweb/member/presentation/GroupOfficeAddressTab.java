@@ -166,29 +166,39 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 		table.setCellspacing(0);
 
 		table.add(streetText, 1, 1);
+		table.add(Text.getBreak(), 1, 1);
 		table.add(streetField, 1, 1);
+		
 		table.add(cityText, 2, 1);
+		table.add(Text.getBreak(), 2, 1);
 		table.add(cityField, 2, 1);
-		table.add(provinceText, 2, 2);
-		table.add(provinceField, 2, 2);
-		table.add(countryText, 1, 3);
-		table.add(countryField, 1, 3);
 
-		add(table);
+		table.add(provinceText, 1, 2);
+		table.add(Text.getBreak(), 1, 2);
+		table.add(provinceField, 1, 2);
+
+		table.add(countryText, 2, 2);
+		table.add(Text.getBreak(), 2, 2);
+		table.add(countryField, 2, 2);
+
 		//    fpane.add(addressTable);
-		table.add(postalCodeText, 2, 3);
+		table.add(postalCodeText, 1, 3);
+		table.add(Text.getBreak(), 1, 3);
 		Table postalTable = new Table();
 		postalTable.setCellpaddingAndCellspacing(0);
 		postalTable.add(postalCodeField,1,1);
-		table.add(postalTable, 2, 3);
+		table.add(postalTable, 1, 3);
 		GenericButton addPostal = new GenericButton("add_postal", iwrb.getLocalizedString("GroupOfficeAddressTab.postalcodewindow.add","Add"));
 		addPostal.setWindowToOpen(PostalCodeEditorWindow.class);
 		StyledButton button = new StyledButton(addPostal);
 		postalTable.setWidth(2, 3);
 		postalTable.add(button, 3, 1);
 				
-		table.add(poBoxText, 1, 4);
-		table.add(poBoxField, 1, 4);
+		table.add(poBoxText, 2, 3);
+		table.add(Text.getBreak(), 2, 3);
+		table.add(poBoxField, 2, 3);
+
+		add(table);
 	}
 
 	public void main(IWContext iwc) {

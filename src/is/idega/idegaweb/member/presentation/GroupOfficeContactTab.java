@@ -119,13 +119,13 @@ public class GroupOfficeContactTab extends UserGroupTab {
 			}
 		}
 		homePhoneField = new TextInput(homePhoneFieldName);
-		homePhoneField.setLength(24);
+		homePhoneField.setLength(12);
 		workPhoneField = new TextInput(workPhoneFieldName);
-		workPhoneField.setLength(24);
+		workPhoneField.setLength(12);
 		mobilePhoneField = new TextInput(mobilePhoneFieldName);
-		mobilePhoneField.setLength(24);
+		mobilePhoneField.setLength(12);
 		faxPhoneField = new TextInput(faxPhoneFieldName);
-		faxPhoneField.setLength(24);
+		faxPhoneField.setLength(12);
 		homepageField = new TextInput(homepageFieldName);
 		homepageField.setLength(24);
 		homePhoneMenu = new DropdownMenu(phoneTypes, homePhoneMenuName);
@@ -173,7 +173,7 @@ public class GroupOfficeContactTab extends UserGroupTab {
 		
 		Table table = new Table(2, 4);
 		table.setWidth("100%");
-		table.setCellpadding(0);
+		table.setCellpadding(5);
 		table.setCellspacing(0);
 
 		table.add(homePhoneText, 1, 1);
