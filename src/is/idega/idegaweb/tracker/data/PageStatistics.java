@@ -1,4 +1,4 @@
-package com.idega.idegaweb.tracker.data;
+package is.idega.idegaweb.tracker.data;
 
 import com.idega.core.data.ICLanguage;
 import java.sql.Timestamp;
@@ -33,6 +33,7 @@ public class PageStatistics extends GenericEntity {
     addAttribute(getColumnNameHits(),"Number of hits on page",true,true,java.lang.Integer.class);
     addAttribute(getColumnNameSessions(),"Number of unique hits",true,true,java.lang.Integer.class);
     addAttribute(getColumnNameDate(),"Date of record",true,true, java.sql.Timestamp.class);
+    addAttribute(getColumnNameGenerationTime(),"Average time to generate xml",true,true,java.lang.Integer.class);
   }
 
   public String getEntityName() {
@@ -46,6 +47,7 @@ public class PageStatistics extends GenericEntity {
   public static String getColumnNameHits(){return "HITS";}
   public static String getColumnNameSessions(){return "SESSIONS";}
   public static String getColumnNameDate(){return "MODIFICATION_DATE";}
+  public static String getColumnNameGenerationTime(){return "GENERATION_TIME";}
 
   public int getPageId(){
     return getIntColumnValue(getColumnNamePageId());
@@ -95,5 +97,8 @@ public class PageStatistics extends GenericEntity {
     setColumn(getColumnNameDate(), date);
   }
 
+  public void setGenerationTime(int milliseconds){
+    setColumn(getColumnNameGenerationTime(), milliseconds);
+  }
 
 }

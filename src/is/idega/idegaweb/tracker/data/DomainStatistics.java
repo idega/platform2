@@ -1,4 +1,4 @@
-package com.idega.idegaweb.tracker.data;
+package is.idega.idegaweb.tracker.data;
 
 import com.idega.core.data.ICLanguage;
 import java.sql.Timestamp;

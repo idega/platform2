@@ -1,4 +1,4 @@
-package com.idega.idegaweb.tracker.data;
+package is.idega.idegaweb.tracker.data;
 
 import java.sql.Timestamp;
 import java.sql.SQLException;
