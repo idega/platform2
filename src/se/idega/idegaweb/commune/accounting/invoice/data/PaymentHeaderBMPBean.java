@@ -55,8 +55,8 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	public School getSchool() {
 		return (School)getColumnValue(COLUMN_SCHOOL_ID);
 	}
-	public int getSchoolCategoryID() {
-		return getIntColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
+	public String getSchoolCategoryID() {
+		return getStringColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
 	}
 	public int getSignatureID() {
 		return getIntColumnValue(COLUMN_SIGNATURE);
