@@ -534,10 +534,7 @@ public class HouseHoldViewer extends AccountingBlock {
 	//  some clever calculation
 	private int getCalculatedAge(IWContext iwc, User user) {
 		try {
-			if (user.getDateOfBirth() != null)
-				return getAgeService(iwc).getChildAge(user.getPersonalID(), user.getDateOfBirth());
-			else
-				return getAgeService(iwc).getChildAge(user.getPersonalID());
+			return getAgeService(iwc).getChildAge(user.getPersonalID());
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
