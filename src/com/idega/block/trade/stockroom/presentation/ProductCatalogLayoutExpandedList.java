@@ -42,12 +42,6 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
   Product selectedProduct = productCatalog.getSelectedProduct(iwc);
   Product product;
 
-  if (selectedProduct == null) {
-    debug("selected product id == null");
-  }else {
-    debug("selected product id = "+selectedProduct.getID());
-  }
-
   boolean addedRow = false;
   Link editLink;
   Text nameText;
@@ -156,10 +150,8 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
       table.mergeCells(1, row, 3, row);
       table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
       String viewerIm = productCatalog.iwrb.getLocalizedString("more","more");
-/*      Link viewerLn = new Link(viewerIm);
-        viewerLn.setWindowToOpen(ProductViewerWindow.class);
-        viewerLn.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
-*/      Link po = productCatalog.getNameLink(product, productCatalog.getText(productCatalog.iwrb.getLocalizedString("more","more")));
+
+      Link po = productCatalog.getNameLink(product, productCatalog.getText(productCatalog.iwrb.getLocalizedString("more","more")));
       table.add(po, 1, row);
     }
 

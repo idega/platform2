@@ -264,7 +264,7 @@ public class ProductCatalog extends CategoryBlock{
     this._windowString = windowString;
   }
 
-  public void setExpandSelectedOnyl(boolean expaneSelectedOnly) {
+  public void setExpandSelectedOnly(boolean expaneSelectedOnly) {
     this._expandSelectedOnly = expaneSelectedOnly;
   }
 
@@ -368,7 +368,6 @@ public class ProductCatalog extends CategoryBlock{
       if (_productLinkPage != null) {
         productLink.setPage(_productLinkPage);
       }else if (this._windowString != null) {
-        debug("Repps : windowString != null");
         productLink.setWindowToOpenScript(_windowString);
       }
       return productLink;
@@ -404,9 +403,7 @@ public class ProductCatalog extends CategoryBlock{
 
   void sortList(List products) {
     if (this._orderProductsBy != -1) {
-      debug("BEFORE SORT , orderBy : "+this._orderProductsBy+" ... "+idegaTimestamp.RightNow().toString());
       Collections.sort(products, new ProductComparator(this._orderProductsBy, this._currentLocaleId));
-      debug("AFTER SORT "+idegaTimestamp.RightNow().toString());
     }
   }
 }
