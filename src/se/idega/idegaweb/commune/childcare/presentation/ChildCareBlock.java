@@ -35,7 +35,8 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	public static final String ACCEPTED_COLOR = "#FFE0E0";
 	public static final String PARENTS_ACCEPTED_COLOR = "#E0FFE0";
 	public static final String CONTRACT_COLOR = "#E0E0FD";
-	public static final String PENDING_COLOR = "#FDFFDD";
+	//public static final String PENDING_COLOR = "#FDFFDD";
+	public static final String PENDING_COLOR = "#FFEBDD";
 	
 	public static final String STATUS_ALL = "status_all";
 	
