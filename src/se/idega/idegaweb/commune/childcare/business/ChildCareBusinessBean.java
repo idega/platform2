@@ -1307,6 +1307,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				application.setRejectionDate(new IWTimestamp().getDate());
 				changeCaseStatus(application, getCaseStatusDeleted().getStatus(), performer);
 			}
+			else if (newStatus == getStatusSentIn()) {
+				t.begin();
+				application.setApplicationStatus(getStatusSentIn());
+				application.setRejectionDate(null);
+				changeCaseStatus(application, getCaseStatusOpen().getStatus(), performer);
+			}
 			else {
 				throw new IllegalArgumentException("Changing to application status '" + newStatus + "' is not supported.");
 			}
