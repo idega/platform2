@@ -104,17 +104,15 @@ public class UserStatusTab extends UserTab {
 		_parent3StatusField.setChecked(((Boolean) fieldValues.get(_parent3StatusFieldName)).booleanValue());
 	}
 
+
+	
 	/* (non-Javadoc)
 	 * @see com.idega.user.presentation.UserTab#initializeFields()
 	 */
 	public void initializeFields() {
 		_inactiveField = new CheckBox(_inactiveFieldName);
 		
-		Group selectedGroup = this.getGroup();
-		if(selectedGroup!=null){
-			_groupField = new Text(selectedGroup.getName());
-		}
-		else _groupField = new Text("No selected group");
+		_groupField = new Text("No selected group");//see initFieldContents
 		
 		_parent1StatusField = new CheckBox(_parent1StatusFieldName);
 		_parent2StatusField = new CheckBox(_parent2StatusFieldName);
@@ -222,6 +220,13 @@ public class UserStatusTab extends UserTab {
 	 * @see com.idega.user.presentation.UserTab#initFieldContents()
 	 */
 	public void initFieldContents() {
+		if(this.getGroupID()>0){
+			Group selectedGroup = this.getGroup();
+			if(selectedGroup!=null){
+				_groupField = new Text(selectedGroup.getName());
+			}
+		}
+		else _groupField = new Text("No selected group");
 
 	}
 }
