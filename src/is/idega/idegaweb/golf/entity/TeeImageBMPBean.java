@@ -3,6 +3,12 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import is.idega.idegaweb.golf.block.image.data.ImageEntity;
+
 import com.idega.core.file.data.ICFile;
 import com.idega.data.GenericEntity;
 
@@ -12,6 +18,7 @@ public class TeeImageBMPBean extends GenericEntity implements TeeImage{
 		addAttribute(getIDColumnName());
 		addAttribute("field_id", "Völlur", true, true, "java.lang.Integer");
 		addAttribute("hole_number", "Holunúmer", true, true, "java.lang.Integer");
+		addManyToOneRelationship("image_id",ImageEntity.class); //Old Image
     addManyToOneRelationship("image", ICFile.class);
   }
 
@@ -46,4 +53,12 @@ public class TeeImageBMPBean extends GenericEntity implements TeeImage{
 	public void setImageID(Integer imageID){
 		setColumn("image", imageID);
 	}
+	
+	public ImageEntity getOldImage() {
+		return (ImageEntity)getColumnValue("image_id");
+	}
+	
+    public Collection ejbFindAll() throws FinderException {
+		return idoFindPKsByQuery(idoQueryGetSelect());
+    }
 }

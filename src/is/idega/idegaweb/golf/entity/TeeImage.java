@@ -1,5 +1,7 @@
 package is.idega.idegaweb.golf.entity;
 
+import is.idega.idegaweb.golf.block.image.data.ImageEntity;
+
 
 public interface TeeImage extends is.idega.idegaweb.golf.entity.GolfEntity
 {
@@ -10,4 +12,5 @@ public interface TeeImage extends is.idega.idegaweb.golf.entity.GolfEntity
  public void setHoleNumber(int p0);
  public void setImageID(int p0);
  public void setImageID(Integer p0);
+ public ImageEntity getOldImage();
 }

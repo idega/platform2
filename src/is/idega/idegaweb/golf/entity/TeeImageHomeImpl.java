@@ -39,5 +39,11 @@ public class TeeImageHomeImpl extends com.idega.data.IDOFactory implements TeeIm
 
  }
 
+ public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((TeeImageBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
 }

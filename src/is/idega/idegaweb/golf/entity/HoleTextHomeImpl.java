@@ -38,6 +38,13 @@ public class HoleTextHomeImpl extends com.idega.data.IDOFactory implements HoleT
 	}
 
  }
+ 
+ public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((HoleTextBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
 
 }

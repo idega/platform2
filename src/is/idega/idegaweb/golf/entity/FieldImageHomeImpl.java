@@ -39,5 +39,14 @@ public class FieldImageHomeImpl extends com.idega.data.IDOFactory implements Fie
 
  }
 
+ 
+ public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((FieldImageBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+ 
+ 
 
 }

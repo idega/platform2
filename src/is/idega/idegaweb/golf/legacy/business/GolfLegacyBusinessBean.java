@@ -3,8 +3,16 @@
  */
 package is.idega.idegaweb.golf.legacy.business;
 
+import is.idega.idegaweb.golf.block.image.data.ImageEntity;
+import is.idega.idegaweb.golf.block.text.data.TextModule;
+import is.idega.idegaweb.golf.entity.FieldImage;
+import is.idega.idegaweb.golf.entity.FieldImageHome;
+import is.idega.idegaweb.golf.entity.HoleText;
+import is.idega.idegaweb.golf.entity.HoleTextHome;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
+import is.idega.idegaweb.golf.entity.TeeImage;
+import is.idega.idegaweb.golf.entity.TeeImageHome;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.member.util.IWMemberConstants;
@@ -17,13 +25,21 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
+import com.idega.block.media.business.MediaBusiness;
+import com.idega.block.text.business.TextService;
+import com.idega.block.text.data.TxText;
+import com.idega.block.text.data.TxTextHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.LoginTableHome;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
+import com.idega.core.file.data.ICMimeTypeBMPBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
@@ -160,6 +176,142 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 		
 		System.out.println("[GOLF] Finish: Copy all unions to Group");
 		
+	}
+	
+	
+	public void copyHoleTextForFieldOverview(IWContext iwc) {
+		try {
+			HoleTextHome hth = (HoleTextHome)IDOLookup.getHome(HoleText.class);
+			TxTextHome txth = (TxTextHome)IDOLookup.getHome(TxText.class);
+			TextService ts = (TextService)IBOLookup.getServiceInstance(iwc,TextService.class);
+			
+			Collection hTexts = hth.findAll();
+			for (Iterator iter = hTexts.iterator(); iter.hasNext();) {
+				HoleText ht = (HoleText) iter.next();
+				TextModule oldText = ht.getOldText();
+				if(ht.getTextID()<1 && oldText != null) {
+					try {
+						TxText newText = ts.storeText(null,null,new Integer(iwc.getCurrentLocaleId()),new Integer(iwc.getUserId()),oldText.getTextHeadline(),null,oldText.getTextBody());
+						ht.setTextID(newText.getID());
+						ht.store();
+					} catch (RemoteException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		} catch (IBOLookupException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void copyFieldImagesForFieldOverview(IWContext iwc) {
+		try {
+			FieldImageHome fih = (FieldImageHome)IDOLookup.getHome(FieldImage.class);
+			ICFileHome fh = (ICFileHome)IDOLookup.getHome(ICFile.class);
+			
+			
+			ICFile folder = fh.create();
+			folder.setName("Vallarmyndir");
+			folder.setMimeType(com.idega.core.file.data.ICMimeTypeBMPBean.IC_MIME_TYPE_FOLDER);
+			folder.setDescription("This is folder for imported images from old golf ImageEntity");
+			folder.store();
+
+			MediaBusiness.saveMediaToDB(folder,-1,iwc);
+			
+			int folderID = ((Integer)folder.getPrimaryKey()).intValue();
+
+			
+			Collection fImages = fih.findAll();
+			for (Iterator iter = fImages.iterator(); iter.hasNext();) {
+				FieldImage fi = (FieldImage) iter.next();
+				ImageEntity oldImage = fi.getOldImage();
+				if(fi.getImageID()<1 && oldImage != null) {
+					try {
+						ICFile newImage = fh.create();
+						newImage.setFileValue(oldImage.getImageValue());
+						String name = oldImage.getName();
+						if(name != null) {
+							newImage.setName(name);
+							newImage.setMimeType((name.indexOf(".gif")>-1)?"image/gif":"image/jpeg");
+						}
+						newImage.setDescription("This is imported from old golf ImageEntity");
+						newImage.store();
+						
+						MediaBusiness.saveMediaToDB(newImage,folderID,iwc);
+						
+						fi.setImageID((Integer)newImage.getPrimaryKey());
+						fi.store();
+						
+					} catch (CreateException e1) {
+						e1.printStackTrace();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		} catch (CreateException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void copyTeeImagesForFieldOverview(IWContext iwc) {
+		try {
+			TeeImageHome fih = (TeeImageHome)IDOLookup.getHome(TeeImage.class);
+			ICFileHome fh = (ICFileHome)IDOLookup.getHome(ICFile.class);
+			
+			ICFile folder = fh.create();
+			folder.setName("Brautarmyndir");
+			folder.setMimeType(com.idega.core.file.data.ICMimeTypeBMPBean.IC_MIME_TYPE_FOLDER);
+			folder.setDescription("This is folder for imported images from old golf ImageEntity");
+			folder.store();
+			
+			MediaBusiness.saveMediaToDB(folder,-1,iwc);
+			
+			int folderID = ((Integer)folder.getPrimaryKey()).intValue();
+			
+			Collection fImages = fih.findAll();
+			for (Iterator iter = fImages.iterator(); iter.hasNext();) {
+				TeeImage fi = (TeeImage) iter.next();
+				ImageEntity oldImage = fi.getOldImage();
+				if(fi.getImageID()<1 && oldImage != null) {
+					try {
+						ICFile newImage = fh.create();
+						newImage.setFileValue(oldImage.getImageValue());
+						String name = oldImage.getName();
+						if(name != null) {
+							newImage.setName(name);
+							newImage.setMimeType((name.indexOf(".gif")>-1)?"image/gif":"image/jpeg");
+						}
+						newImage.setDescription("This is imported from old golf ImageEntity");
+						newImage.store();
+						
+						MediaBusiness.saveMediaToDB(newImage,folderID,iwc);
+						
+						fi.setImageID((Integer)newImage.getPrimaryKey());
+						fi.store();
+						
+					} catch (CreateException e1) {
+						e1.printStackTrace();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		} catch (CreateException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	
