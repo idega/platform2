@@ -6,12 +6,15 @@
  */
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
+import java.util.Collection;
+import java.sql.Date;
+
+import javax.ejb.FinderException;
+
 /**
  * @author Roar
  *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
+*/
 public class RegularInvoiceEntryHomeImpl  extends com.idega.data.IDOFactory implements RegularInvoiceEntryHome{
 
 	/* (non-Javadoc)
@@ -20,5 +23,25 @@ public class RegularInvoiceEntryHomeImpl  extends com.idega.data.IDOFactory impl
 	protected Class getEntityInterfaceClass() {
 		return RegularInvoiceEntry.class;
 	}
+	
+	public RegularInvoiceEntry create() throws javax.ejb.CreateException{
+	 return (RegularInvoiceEntry) super.createIDO();
+	}	
+	
+	public Collection findRegularInvoicesForPeriodeAndUser(Date from, Date to, int userId) throws FinderException{
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((RegularInvoiceEntryBMPBean)entity).ejbFindByPeriodeAndUser(from, to, userId);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findRegularInvoicesForPeriode(Date from, Date to){
+		
+		return null;		
+	}
+	
+	public RegularInvoiceEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
+	 return (RegularInvoiceEntry) super.findByPrimaryKeyIDO(pk);
+	}	
 
 }
