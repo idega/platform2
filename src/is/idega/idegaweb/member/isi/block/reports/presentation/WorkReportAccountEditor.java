@@ -74,6 +74,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
 //  private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
   private static final String SUBMIT_FINISH_KEY = "submit_finish_key";
+  private static final String SUBMIT_REOPEN_KEY = "submit_reopen_key";
   
   private static final String LEAGUE_NAME = "FIN_league_name";
   
@@ -91,6 +92,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private List specialFieldList;
   private Map specialFieldColorMap;
   private boolean editable = true;
+  private boolean isReadOnly = false;
   private boolean accountOutOfBalance = false;
   
   // this number format is shared by the converters
@@ -166,11 +168,17 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   
   private String parseAction(IWContext iwc) {
     String action = "";
+    // does the user want to close the report?
     if (iwc.isParameterSet(SUBMIT_FINISH_KEY))  {
       accountOutOfBalance = isAccountOutOfBalance();
       if (! accountOutOfBalance) {
-        setWorkReportAsFinished(iwc);
+        setWorkReportAsFinished(true, iwc);
       }
+      return action;
+    }
+    // does the user want to reopen the report?
+    if (iwc.isParameterSet(SUBMIT_REOPEN_KEY))  {
+      setWorkReportAsFinished(false, iwc);
       return action;
     }
     // does the user want to cancel something?
@@ -383,7 +391,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     // get work report 
     try {
       workReport = workReportBusiness.getWorkReportById(workReportId);
-      editable = ! workReportBusiness.isWorkReportReadOnly(workReportId);
+      isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportId);
+      editable = ! (isReadOnly || workReport.isAccountPartDone());    
     }
     catch (RemoteException ex) {
       String message =
@@ -439,19 +448,20 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     // define entity browser
     EntityBrowser browser = getEntityBrowser(workReportAccountGroupHelpers, resourceBundle, form);
     // put browser into a table
-    Table mainTable = new Table(1,2);
-    mainTable.add(browser, 1,1);
-    if (editable) {
-      if (! workReport.isAccountPartDone()) {
+    if (! isReadOnly) {
+      Table mainTable = new Table(1,2);
+      mainTable.add(browser, 1,1);
+      if (editable) {
         mainTable.add(getFinishButton(resourceBundle), 1, 2);
       }
       else {
-        Text text = new Text(resourceBundle.getLocalizedString("wr_account_editor_account_part_finished", "Account part has been finished."));
-        text.setBold();
-        mainTable.add(text,1,2);
+//        Text text = new Text(resourceBundle.getLocalizedString("wr_account_editor_account_part_finished", "Account part has been finished."));
+//        text.setBold();
+        mainTable.add(getReopenButton(resourceBundle),1,2);
       }
+      return mainTable;
     }
-    return mainTable;
+    return browser;
   }
   
   private void addKeys(List accountKeys, String accountArea)  {
@@ -478,6 +488,13 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private PresentationObject getFinishButton(IWResourceBundle resourceBundle) {
     String finishText = resourceBundle.getLocalizedString("wr_account_editor_finish", "Finish");
     SubmitButton button = new SubmitButton(finishText, SUBMIT_FINISH_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
+  }
+  
+  private PresentationObject getReopenButton(IWResourceBundle resourceBundle) {
+    String reopenText = resourceBundle.getLocalizedString("wr_account_editor_reopen", "Reopen");
+    SubmitButton button = new SubmitButton(reopenText, SUBMIT_REOPEN_KEY, "dummy_value");
     button.setAsImageButton(true);
     return button;
   }
@@ -665,12 +682,12 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     record.store();
   }
   
-  private void setWorkReportAsFinished(IWContext iwc)  {
+  private void setWorkReportAsFinished(boolean setAsFinished, IWContext iwc)  {
     int workReportId = getWorkReportId();
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     try {
       WorkReport workReport = workReportBusiness.getWorkReportById(workReportId);
-      workReport.setAccountPartDone(true);
+      workReport.setAccountPartDone(setAsFinished);
       workReport.store();
     }
     catch (RemoteException ex) {

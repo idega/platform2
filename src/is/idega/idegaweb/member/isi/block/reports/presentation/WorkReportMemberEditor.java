@@ -78,6 +78,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
   private static final String SUBMIT_FINISH_KEY = "submit_finish_key";
+  private static final String SUBMIT_REOPEN_KEY = "submit_reopen_key";
 
   private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
   
@@ -97,6 +98,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private boolean personalIdnotCorrect = false;
   private boolean memberAlreadyExist = false;
   private boolean editable = true;
+  private boolean isReadOnly = false;
   
   private boolean updateWorkReportData = false;
   
@@ -181,7 +183,12 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private String parseAction(IWContext iwc, IWResourceBundle resourceBundle) {
     String action = "";
     if (iwc.isParameterSet(SUBMIT_FINISH_KEY))  {
-      setWorkReportAsFinished(iwc);
+      setWorkReportAsFinished(true, iwc);
+      return action;
+    }
+    // does the user want to reopen the report?
+    if (iwc.isParameterSet(SUBMIT_REOPEN_KEY))  {
+      setWorkReportAsFinished(false, iwc);
       return action;
     }
     // does the user want to cancel something?
@@ -298,29 +305,21 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   
   private PresentationObject getContent(IWContext iwc, IWResourceBundle resourceBundle, Form form, String action) {
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    WorkReport workReport = null;
     try {
       // create data from the database
       int workReportId = getWorkReportId();
-      editable = ! workReportBusiness.isWorkReportReadOnly(workReportId);
-    } catch (RemoteException ex) {
+      workReport = workReportBusiness.getWorkReportById(getWorkReportId()); 
+      isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportId);   
+      editable = ! (isReadOnly || workReport.isMembersPartDone());
+    } 
+    catch (RemoteException ex) {
       System.err.println(
         "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
           + ex.getMessage());
       ex.printStackTrace(System.err);
       throw new RuntimeException("[WorkReportMemberEditor]: Can't retrieve WorkReportBusiness.");
     } 
-    WorkReport workReport = null;
-    try {
-      workReport = workReportBusiness.getWorkReportById(getWorkReportId()); 
-    }
-    catch (RemoteException ex) {
-      String message =
-        "[WorkReportMemberEditor]: Can't retrieve WorkReportBusiness.";
-      System.err.println(message + " Message is: " + ex.getMessage());
-      ex.printStackTrace(System.err);
-      throw new RuntimeException(message);
-    }
-
     // get members
     Collection members;
     try {
@@ -400,27 +399,30 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       add(text);
     }
     // put browser into a table
-    Table mainTable = new Table(1,2);
-    mainTable.add(browser, 1,1);
-    if (editable) {
-      PresentationObject inputField = getPersonalIdInputField(resourceBundle);
-      PresentationObject newEntryButton = getCreateNewEntityButton(resourceBundle);
-      PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
+
+    if (! isReadOnly) {
+      Table mainTable = new Table(1,2);
+      mainTable.add(browser, 1,1);
       Table buttonTable = new Table(4,1);
-      buttonTable.add(inputField,1,1);
-      buttonTable.add(newEntryButton,2,1);
-      buttonTable.add(deleteEntriesButton,3,1);
-      if (! workReport.isMembersPartDone()) {
+      if (editable) {
+        PresentationObject inputField = getPersonalIdInputField(resourceBundle);
+        PresentationObject newEntryButton = getCreateNewEntityButton(resourceBundle);
+        PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
+
+        buttonTable.add(inputField,1,1);
+        buttonTable.add(newEntryButton,2,1);
+        buttonTable.add(deleteEntriesButton,3,1);
         buttonTable.add(getFinishButton(resourceBundle), 4, 1);
       }
       else {
-        Text text = new Text(resourceBundle.getLocalizedString("wr_member_editor_member_part_finished", "Member part has been finished."));
-        text.setBold();
-        buttonTable.add(text, 4 , 1);
+//        Text text = new Text(resourceBundle.getLocalizedString("wr_member_editor_member_part_finished", "Member part has been finished."));
+//        text.setBold();
+        buttonTable.add(getReopenButton(resourceBundle), 4 , 1);
       }
       mainTable.add(buttonTable,1,2);
+      return mainTable;
     }
-    return mainTable;    
+    return browser;    
   }
   
   private PresentationObject getPersonalIdInputField(IWResourceBundle resourceBundle) {
@@ -452,6 +454,13 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private PresentationObject getFinishButton(IWResourceBundle resourceBundle) {
     String finishText = resourceBundle.getLocalizedString("wr_member_editor_finish", "Finish");
     SubmitButton button = new SubmitButton(finishText, SUBMIT_FINISH_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
+  }
+
+  private PresentationObject getReopenButton(IWResourceBundle resourceBundle) {
+    String reopenText = resourceBundle.getLocalizedString("wr_member_editor_reopen", "Reopen");
+    SubmitButton button = new SubmitButton(reopenText, SUBMIT_REOPEN_KEY, "dummy_value");
     button.setAsImageButton(true);
     return button;
   }
@@ -779,12 +788,12 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
   }  
 
-  private void setWorkReportAsFinished(IWContext iwc)  {
+  private void setWorkReportAsFinished(boolean setAsFinished, IWContext iwc)  {
     int workReportId = getWorkReportId();
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     try {
       WorkReport workReport = workReportBusiness.getWorkReportById(workReportId);
-      workReport.setMembersPartDone(true);
+      workReport.setMembersPartDone(setAsFinished);
       workReport.store();
     }
     catch (RemoteException ex) {

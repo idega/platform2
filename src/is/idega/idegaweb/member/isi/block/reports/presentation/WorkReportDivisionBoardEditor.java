@@ -67,6 +67,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
 //  private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
   private static final String SUBMIT_FINISH_KEY = "submit_finish_key";
+  private static final String SUBMIT_REOPEN_KEY = "submit_reopen_key";
 
 //  private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
 //  private static final String NO_LEAGUE_VALUE = "no_league_value";
@@ -104,6 +105,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   }
   
   private boolean editable = true;
+  private boolean isReadOnly = false;
   
   public WorkReportDivisionBoardEditor() {
     super();
@@ -130,8 +132,12 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   private String parseAction(IWContext iwc) {
     String action = "";
     if (iwc.isParameterSet(SUBMIT_FINISH_KEY))  {
-      setWorkReportAsFinished(iwc);
+      setWorkReportAsFinished(true, iwc);
       return action;
+    }
+    
+    if (iwc.isParameterSet(SUBMIT_REOPEN_KEY))  {
+      setWorkReportAsFinished(false, iwc);
     }
     // does the user want to cancel something?
     if (iwc.isParameterSet(SUBMIT_CANCEL_KEY)) {
@@ -232,7 +238,8 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       int workReportId = getWorkReportId();
       workReport = workReportBusiness.getWorkReportById(workReportId); 
       // should the data be editable?
-      editable = ! workReportBusiness.isWorkReportReadOnly(workReportId);
+      isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportId);
+      editable = !( isReadOnly || workReport.isBoardPartDone());
     }
     catch (RemoteException ex) {
       String message =
@@ -271,7 +278,13 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
         ex.printStackTrace(System.err);
         throw new RuntimeException("[WorkReportDivsionBoardEditor]: Can't retrieve league.");
       }
-      String leagueName = league.getShortName();
+      String leagueName;
+      if (league == null) {
+        leagueName = "error: no league defined";
+      }
+      else {
+        leagueName = league.getShortName();
+      }
 //      referencedLeagues.add(league.getPrimaryKey());
       WorkReportDivisionBoardHelper helper = new WorkReportDivisionBoardHelper(leagueName, board);
       list.add(helper);
@@ -327,25 +340,33 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     Collections.sort(list, comparator);
     EntityBrowser browser = getEntityBrowser(list, resourceBundle, form);
     // put browser into a table
-    Table mainTable = new Table(1,2);
-    mainTable.add(browser, 1,1);
     // do not show the buttons if not editable
-    if (editable) {
-      if (! workReport.isBoardPartDone()) {
+    if (! isReadOnly) {
+      Table mainTable = new Table(1,2);
+      mainTable.add(browser, 1,1);
+      if (editable) {
         mainTable.add(getFinishButton(resourceBundle), 1, 2);
       }
       else {
-        Text text = new Text(resourceBundle.getLocalizedString("wr_division_board_editor_board_part_finished", "Board part has been finished."));
-        text.setBold();
-        mainTable.add(text, 1,2);
+//        Text text = new Text(resourceBundle.getLocalizedString("wr_division_board_editor_board_part_finished", "Board part has been finished."));
+//        text.setBold();
+        mainTable.add(getReopenButton(resourceBundle), 1,2);
       }
+      return mainTable;
     }
-    return mainTable;    
+    return browser;    
   }
   
   private PresentationObject getFinishButton(IWResourceBundle resourceBundle) {
     String finishText = resourceBundle.getLocalizedString("wr_division_board_editor_finish", "Finish");
     SubmitButton button = new SubmitButton(finishText, SUBMIT_FINISH_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
+  }
+  
+  private PresentationObject getReopenButton(IWResourceBundle resourceBundle) {
+    String reopenText = resourceBundle.getLocalizedString("wr_division_board_editor_reopen", "Reopen");
+    SubmitButton button = new SubmitButton(reopenText, SUBMIT_REOPEN_KEY, "dummy_value");
     button.setAsImageButton(true);
     return button;
   }
@@ -606,12 +627,12 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
 //    }
   }
 
-  private void setWorkReportAsFinished(IWContext iwc)  {
+  private void setWorkReportAsFinished(boolean setAsFinished, IWContext iwc)  {
     int workReportId = getWorkReportId();
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     try {
       WorkReport workReport = workReportBusiness.getWorkReportById(workReportId);
-      workReport.setBoardPartDone(true);
+      workReport.setBoardPartDone(setAsFinished);
       workReport.store();
     }
     catch (RemoteException ex) {

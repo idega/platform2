@@ -127,6 +127,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   private boolean personalIdnotCorrect = false;
   private String newMemberMessage = null;
   private boolean editable = true;
+  private boolean isReadOnly = false;
     
   public WorkReportBoardMemberEditor() {
     super();
@@ -237,7 +238,9 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     try {
       // create data from the database
       int workReportId = getWorkReportId();
-      editable = ! workReportBusiness.isWorkReportReadOnly(workReportId);
+      WorkReport workReport = workReportBusiness.getWorkReportById(workReportId);
+      isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportId);
+      editable = ! (isReadOnly || workReport.isBoardPartDone());
     } catch (RemoteException ex) {
       System.err.println(
         "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
@@ -332,10 +335,10 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     Collections.sort(list, comparator);
     EntityBrowser browser = getEntityBrowser(list, resourceBundle, form);
     // put browser into a table
-    Table mainTable = new Table(1,2);
-    mainTable.add(browser, 1,1);
     // add buttons
     if (editable) {
+      Table mainTable = new Table(1,2);
+      mainTable.add(browser, 1,1);
       PresentationObject inputField = getPersonalIdInputField(resourceBundle);
       PresentationObject dropDownMenu = getLeagueDropDownMenu(resourceBundle, iwc);
       PresentationObject newEntryButton = getCreateNewEntityButton(resourceBundle);
@@ -349,8 +352,9 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       buttonTable.add(deleteEntriesButton,4,1);
       buttonTable.add(cancelButton, 5,1);
       mainTable.add(buttonTable,1,2);
+      return mainTable;
     }
-    return mainTable;
+    return browser;
     
   }
   
