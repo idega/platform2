@@ -184,9 +184,9 @@ public class ClubInformationTab extends UserGroupTab {
 		_memberUMFIField = new CheckBox(_memberUMFIFieldName);
 		_makeField = new DropdownMenu(_makeFieldName);
 		_connectionToSpecialField = new DropdownMenu(_connectionToSpecialFieldName);
-		_connectionToSpecialField.setOnChange("alert('"+ iwrb.getLocalizedString("clubinformationtab.alert_connection_to_special","Are you sure you want to change the Regional Union")+"')");
-		
-				
+		_connectionToSpecialField.setOnClick("var index = document.tab_form.cit_special.selectedIndex;");
+		String js = "if (!confirm('"+iwrb.getLocalizedString("clubinformationtab.reg_union_warning_change","Are you sure you want to change the Regional Union?")+"')) document.tab_form.cit_special.selectedIndex = index;";
+		_connectionToSpecialField.setOnChange(js);
 		_regionalUnionField = new Text();
 		_statusField = new DropdownMenu(_statusFieldName);
 		_inOperationField = new CheckBox(_inOperationFieldName);
