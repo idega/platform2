@@ -243,7 +243,7 @@ public class MailBusiness {
         eEmail.setEmailAddress(email);
         eEmail.insert();
       }
-		
+
       for (int i = 0; i < ListIds.length; i++) {
         try{
         //System.err.println("adding "+eEmail.getEmailAddress()+" to "+ListIds[i]);
@@ -258,11 +258,12 @@ public class MailBusiness {
       //ex.printStackTrace();
     }
   }
-  
+
   public void sendWelcomeLetters(MailTopic topic,String email)throws RemoteException,FinderException{
   	Collection letters = MailFinder.getInstance().getEmailLetters(((Integer)topic.getPrimaryKey()).intValue(),EmailLetter.TYPE_SUBSCRIPTION);
   	if(letters!=null &&!letters.isEmpty()){
-  		this.sendLetter((EmailLetter)letters.iterator().next(),topic);
+		Email eEmail =MailFinder.getInstance().lookupEmail(email);
+  		this.sendLetter((EmailLetter)letters.iterator().next(),topic,eEmail);
   	}
   }
 
@@ -281,7 +282,7 @@ public class MailBusiness {
       ex.printStackTrace();
     }
   }
-  
+
   public void deleteLetter(int id) {
     try {
 
@@ -394,7 +395,22 @@ public class MailBusiness {
       System.err.println("unable to send mail: no account");
     }
   }
-  
+
+  public void sendLetter(EmailLetter letter, MailTopic topic, Email email)throws RemoteException{
+	 Collection accounts = MailFinder.getInstance().getTopicAccounts(((Integer)topic.getPrimaryKey()).intValue(), MailProtocol.SMTP);
+	 if (accounts != null && accounts.size() > 0) {
+	   Collection emails = new java.util.ArrayList(1);
+	   emails.add(email);
+	   Iterator iter = accounts.iterator();
+	   EmailAccount account = iter.hasNext() ? ((EmailAccount) iter.next()) : null;
+	   if (account != null) {
+	   	 sendMailLetter(letter, account, emails);
+	   }
+	 } else {
+	   System.err.println("unable to send mail: no account");
+    }
+  }
+
   public void sendMailLetter(EmailLetter letter,EmailAccount account,Collection emails){
   	ListServer server = new ListServer();
     server.sendMailLetter(letter, account, emails);
