@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathEditor.java,v 1.1 2003/09/08 15:50:35 anders Exp $
+ * $Id: StudyPathEditor.java,v 1.2 2003/09/09 07:37:57 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -33,10 +33,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/08 15:50:35 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/09 07:37:57 $ by $Author: laddi $
  *
  * @author Anders Lindman
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class StudyPathEditor extends AccountingBlock {
 
@@ -52,7 +52,7 @@ public class StudyPathEditor extends AccountingBlock {
 	private final static String PARAMETER_STUDY_PATH_CODE = PP + "study_path_code";
 	private final static String PARAMETER_DESCRIPTION = PP + "description";
 	private final static String PARAMETER_DELETE_ID = PP + "delete_id";
-	private final static String PARAMETER_SEARCH = PP + "search";
+	//private final static String PARAMETER_SEARCH = PP + "search";
 	private final static String PARAMETER_NEW = PP + "new";
 	private final static String PARAMETER_SAVE = PP + "save";
 	private final static String PARAMETER_CANCEL = PP + "cancel";
@@ -139,7 +139,7 @@ public class StudyPathEditor extends AccountingBlock {
 	private void handleDefaultAction(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Studievägskoder");
-		app.setSearchPanel(getSearchPanel(iwc));
+		app.setSearchPanel(getSearchPanel());
 		app.setMainPanel(getStudyPathList(iwc));
 		app.setButtonPanel(getButtonPanel());
 		add(app);
@@ -242,7 +242,7 @@ public class StudyPathEditor extends AccountingBlock {
 	/*
 	 * Returns the search panel for this block.
 	 */
-	private Table getSearchPanel(IWContext iwc) {
+	private Table getSearchPanel() {
 		Table table = new Table();
 		table.add(getLocalizedLabel(KEY_MAIN_ACTIVITY, "Huvudverksamhet"), 1, 1);
 		table.add(getLocalizedText(KEY_UPPER_SECONDARY_SCHOOL, "Gymnasieskola"), 2, 1);
