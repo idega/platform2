@@ -49,6 +49,7 @@ private String headlineColor = "#000000";
 private String tableAlignment = "top";
 private String textWidth = "100%";
 private String textStyle = "";
+private String textAlignment = "left";
 private String headlineStyle = "";
 private String spaceBetweenHeadlineAndBody = null;
 private boolean displayHeadline=true;
@@ -218,7 +219,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       T.setRowColor(headerRow,headlineBgColor);
     if( textBgColor != null )
       T.setRowColor(bodyRow,textBgColor);
-
+    T.setAlignment(1,bodyRow,textAlignment);
 
     return T;
   }
@@ -305,6 +306,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
   public void setTextStyle(String textStyle) {
     this.textStyle=textStyle;
+  }
+
+  public void setTextAlignment(String alignment) {
+    textAlignment = alignment;
   }
 
   public void setHeadlineStyle(String headlineStyle) {
