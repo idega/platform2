@@ -39,6 +39,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	private boolean showParentsAgree = false;
 	private boolean showRecreateContract = false;
 	private boolean showEmplDrop = true;
+	private boolean showPreSchool = true;
 
 	private static final String PARAMETER_COMMENTS = "cc_comments";
 	private static final String PARAMETER_CREATE_CONTRACT = "cc_create_contract";
@@ -595,6 +596,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		button.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
 		button.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, method);
 		button.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+		button.addParameterToWindow(ChildCareAdminWindow.PARAMETER_SHOW_PRE_SCHOOL, String.valueOf(showPreSchool));
 		
 		return button;
 	}
@@ -667,5 +669,9 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	
 	public void setShowEmploymentDropDown(boolean show){
 		showEmplDrop = show;
+	}
+	
+	public void setShowPreSchool(boolean show){
+		showPreSchool= show;
 	}
 }
