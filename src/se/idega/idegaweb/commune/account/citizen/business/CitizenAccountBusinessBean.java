@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.37 2002/12/12 16:20:34 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.38 2002/12/19 15:50:50 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -27,11 +27,11 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2002/12/12 16:20:34 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/19 15:50:50 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.37 $
+ * @version $Revision: 1.38 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
     implements CitizenAccountBusiness, AccountBusiness {
@@ -328,10 +328,13 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 					Address address = null;
 					if (it2.hasNext())
 						address = (Address) it2.next();
-					if (address != null) {
-						StringBuffer fullAddress = new StringBuffer(address.getStreetName());
-						fullAddress.append(" ");
-						fullAddress.append(address.getStreetNumber());
+					if (address != null && address.getStreetName() != null) {
+						StringBuffer fullAddress
+                                = new StringBuffer(address.getStreetName());
+                        if (address.getStreetNumber() != null) {
+                            fullAddress.append(" ");
+                            fullAddress.append(address.getStreetNumber());
+                        }
 						apps.setAddress(fullAddress.toString());
 					}
 				}
