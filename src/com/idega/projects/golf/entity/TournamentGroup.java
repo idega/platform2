@@ -36,9 +36,14 @@ public class TournamentGroup extends Group{
 		addAttribute("gender","Kyn", true, true, "com.idega.util.Gender");
 		//addAttribute("name","Nafn", true, true, "java.lang.String");
 
+                addAttribute("name","Nafn",true,true,"java.lang.String");
+                addAttribute("description","Lýsing",true,true,"java.lang.String");
+                addAttribute("extra_info","Aðrar upplýsingar",false,false,"java.lang.String");
+                addAttribute("group_type","Gerð hóps",false,false,"java.lang.String");
 
-		setVisible("group_type",false);
-		setVisible("extra_info",false);
+
+		//setVisible("group_type",false);
+		//setVisible("extra_info",false);
 	}
 
 	public String getEntityName(){
@@ -55,8 +60,41 @@ public class TournamentGroup extends Group{
                 setMaxAge(99);
 	}
 
-        public int getRegistrationFee(int tournament_id) {
 
+
+        public void setName(String name) {
+            setColumn("name",name);
+        }
+
+        public String getDescription() {
+            return getStringColumnValue("description");
+        }
+
+        public void setDescription(String description) {
+            setColumn("description",description);
+        }
+
+        public String getExtraInfo() {
+            return getStringColumnValue("extra_info");
+        }
+
+        public void setExtraInfo(String extra_info) {
+            setColumn("extra_info",extra_info);
+        }
+        public String getGroupType() {
+            return getStringColumnValue("group_type");
+        }
+
+        public void setGroupType(String group_type) {
+            setColumn("group_type",group_type);
+        }
+
+
+        public int getRegistrationFee(Tournament tournament) {
+            return getRegistrationFee(tournament.getID());
+        }
+
+        public int getRegistrationFee(int tournament_id) {
 		Connection conn= null;
 		Statement Stmt= null;
                 String SQLString = null;
@@ -131,6 +169,10 @@ public class TournamentGroup extends Group{
           setColumn("age_max",age);
         }
 
+        public void setGender(String gender) {
+            setColumn("gender",gender);
+        }
+
 	public char getGender(){
             return getStringColumnValue("gender").charAt(0);
 	}
@@ -151,9 +193,17 @@ public class TournamentGroup extends Group{
 		return (TeeColor)getColumnValue("tee_color_id");
 	}
 
+        public int getTeeColorID() {
+            return getIntColumnValue("tee_color_id");
+        }
+
 	public void setTeeColor(TeeColor color){
 		setColumn("tee_color_id",color);
 	}
+
+        public void setTeeColor(int tee_color_id) {
+            setColumn("tee_color_id",tee_color_id);
+        }
 
         public void setUnion(Union union){
           setColumn("union_id",union);
@@ -165,6 +215,10 @@ public class TournamentGroup extends Group{
 
         public Union getUnion(){
           return (Union)getColumnValue("union_id");
+        }
+
+        public int getUnionID() {
+            return getIntColumnValue("union_id");
         }
 
 
