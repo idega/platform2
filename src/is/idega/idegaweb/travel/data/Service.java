@@ -15,6 +15,7 @@ import com.idega.block.trade.stockroom.data.Product;
  */
 
 public class Service extends GenericEntity{
+  private Product product;
 
   public Service(){
           super();
@@ -35,19 +36,29 @@ public class Service extends GenericEntity{
     this.addManyToManyRelationShip(Timeframe.class ,"TB_SERVICE_TIMEFRAME");
   }
 
+  public Product getProduct()  {
+    if (this.product == null) {
+      try {
+      product = new Product(this.getID());
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+      }
+    }
+    return product;
+  }
 
   public String getEntityName(){
     return getServiceTableName();
   }
-/*
+
   public String getName(){
-    return getNameColumnName();
+    return getProduct().getName();
   }
 
-  public void setName(String name){
-    setColumn(getNameColumnName(),name);
+  public String getDescription() {
+    return getProduct().getProdcutDescription();
   }
-*/
+
   public Timestamp getArrivalTime() {
     return (Timestamp) getColumnValue(getArrivalTimeColumnName());
   }
@@ -63,6 +74,36 @@ public class Service extends GenericEntity{
   public void setDepartureTime(Timestamp timestamp) {
     setColumn(getDepartureTimeColumnName(),timestamp);
   }
+
+  public Timeframe[] getTimeframes() throws SQLException  {
+    return (Timeframe[]) this.findRelated(Timeframe.getStaticInstance(Timeframe.class));
+  }
+
+  public Timeframe getTimeframe() throws SQLException{
+    Timeframe[] temp = getTimeframes();
+    if (temp.length > 0) {
+      return temp[temp.length -1];
+    }
+    else {
+      return null;
+    }
+  }
+
+  public Address[] getAddresses() throws SQLException  {
+    return (Address[]) this.findRelated(Address.getStaticInstance(Address.class));
+  }
+
+  public Address getAddress() throws SQLException{
+    Address[] temp = getAddresses();
+    if (temp.length > 0) {
+      return temp[temp.length -1];
+    }
+    else {
+      return null;
+    }
+  }
+
+
 /*
   public boolean getIsHotelPickup() {
     return getHotelPickup();

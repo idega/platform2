@@ -19,6 +19,10 @@ public class Tour extends GenericEntity {
     super();
   }
 
+  public Tour(int id) throws SQLException{
+    super(id);
+  }
+
   public void initializeAttributes() {
     addAttribute(getIDColumnName(),"Service_id",true,true,Integer.class,"one-to-one",Service.class);
     addAttribute(getHotelPickupColumnName(), "Hotel pick-up", true, true, Boolean.class);
@@ -55,7 +59,7 @@ public class Tour extends GenericEntity {
   }
 
 
-  public static String getTripTableName() {return "TB_TRIP";}
+  public static String getTripTableName() {return "TB_TOUR";}
   public static String getHotelPickupColumnName() {return "HOTEL_PICKUP";}
   public static String getHotelPickupTimeColumnName() {return "HOTEL_PICKUP_TIME";}
 //  public static String getColumnName() {return "";}

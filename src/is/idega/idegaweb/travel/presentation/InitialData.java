@@ -317,7 +317,7 @@ public class InitialData extends TravelManager {
 
   public void createSupplier(ModuleInfo modinfo)  {
       add(Text.getBreak());
-      javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
+//      javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
 
       try {
           String name = modinfo.getParameter("supplier_name");
@@ -342,7 +342,7 @@ public class InitialData extends TravelManager {
                   add("TEMP - Unimplemented");
               }
               else {
-                  tm.begin();
+//                  tm.begin();
 
                   Vector phoneIDS = new Vector();
                   if (phone.length() > 0) {
@@ -382,7 +382,7 @@ public class InitialData extends TravelManager {
                   Supplier supplier = suppMan.createSupplier(name, userName, passOne, description, addressIds, phoneIds, emailIds);
 
 
-                  tm.commit();
+//                  tm.commit();
                   add(iwrb.getLocalizedString("travel.supplier_created","Supplier was created"));
               }
           }else {
@@ -392,13 +392,13 @@ public class InitialData extends TravelManager {
 
       }
       catch (Exception sql) {
-        try {
-          tm.rollback();
+//        try {
+//          tm.rollback();
           add(iwrb.getLocalizedString("travel.supplier_not_created","Supplier was not created"));
-        }
-        catch (javax.transaction.SystemException se) {
-          se.printStackTrace(System.err);
-        }
+//        }
+//        catch (javax.transaction.SystemException se) {
+//          se.printStackTrace(System.err);
+//        }
         sql.printStackTrace(System.err);
       }
   }

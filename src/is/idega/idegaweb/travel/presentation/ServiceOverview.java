@@ -10,9 +10,14 @@ import com.idega.block.trade.stockroom.data.*;
 import com.idega.jmodule.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
+import com.idega.util.text.TextSoap;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.projects.nat.business.NatBusiness;
+import is.idega.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
+
+import is.idega.travel.data.*;
+import com.idega.core.data.*;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -112,44 +117,90 @@ public class ServiceOverview extends TravelManager {
 
       Image image = new Image("/pics/mynd.gif");
 
-      for (int i = 0; i < numberOfTripsToDiplay; i++) {
-          Text flipp = (Text) theBoldText.clone();
-              flipp.setText("Flipp");
+      Supplier supplier = super.getSupplier();
+      if (supplier != null) {
+        TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+        Product[] products = tsb.getProducts(supplier.getID(), stamp);
 
-          ++row;
-          table.mergeCells(1,row,1,row+3);
-          table.add(image,1,row);
-          table.add(nameText,2,row);
-          table.add(timeframeText,4,row);
-          table.setAlignment(2,row,"right");
-          table.setAlignment(3,row,"left");
-          table.setAlignment(4,row,"right");
-          table.setAlignment(5,row,"left");
-          table.add(flipp,3,row);
-          table.add(flipp,5,row);
+        Service service;
+        Timeframe timeframe;
+        Address address;
 
-          ++row;
-          table.add(departureFromText,2,row);
-          table.add(departureTimeText,4,row);
-          table.setAlignment(2,row,"right");
-          table.setAlignment(3,row,"left");
-          table.setAlignment(4,row,"right");
-          table.setAlignment(5,row,"left");
-          table.add(flipp,3,row);
-          table.add(flipp,5,row);
+//        Tour tour;
 
-          ++row;
+        for (int i = 0; i < products.length; i++) {
+          try {
+            service = TravelStockroomBusiness.getService(products[i]);
+            timeframe = TravelStockroomBusiness.getTimeframe(products[i]);
+            address = service.getAddress();
+//            tour = TravelStockroomBusiness.getTour(products[i]);
 
-          ++row;
-          table.mergeCells(2,row,5,row);
-          table.setAlignment(2,row,"right");
-          table.add("Takkar hér",2,row);
-          table.setColor(2,row,NatBusiness.backgroundColor);
 
-          ++row;
-          table.mergeCells(1,row,5,row);
+            Text prodName = (Text) theBoldText.clone();
+                prodName.setText(service.getName());
+
+            Text timeframeTxt = (Text) theBoldText.clone();
+                timeframeTxt.setText(new idegaTimestamp(timeframe.getFrom()).getLocaleDate(modinfo) + " - " +new idegaTimestamp(timeframe.getTo()).getLocaleDate(modinfo));
+
+            Text depFrom = (Text) theBoldText.clone();
+                depFrom.setText(address.getStreetName());
+
+            idegaTimestamp depTimeStamp = new idegaTimestamp(service.getDepartureTime());
+            Text depTime = (Text) theBoldText.clone();
+                depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
+
+
+            ++row;
+            table.mergeCells(1,row,1,row+3);
+            table.add(image,1,row);
+            table.add(nameText,2,row);
+            table.add(timeframeText,4,row);
+            table.setVerticalAlignment(2,row,"top");
+            table.setVerticalAlignment(3,row,"top");
+            table.setVerticalAlignment(4,row,"top");
+            table.setVerticalAlignment(5,row,"top");
+            table.setAlignment(2,row,"right");
+            table.setAlignment(3,row,"left");
+            table.setAlignment(4,row,"right");
+            table.setAlignment(5,row,"left");
+            table.add(prodName,3,row);
+            table.add(timeframeTxt,5,row);
+
+            ++row;
+            table.setVerticalAlignment(2,row,"top");
+            table.setVerticalAlignment(3,row,"top");
+            table.setVerticalAlignment(4,row,"top");
+            table.setVerticalAlignment(5,row,"top");
+            table.add(departureFromText,2,row);
+            table.add(departureTimeText,4,row);
+            table.setAlignment(2,row,"right");
+            table.setAlignment(3,row,"left");
+            table.setAlignment(4,row,"right");
+            table.setAlignment(5,row,"left");
+            table.add(depFrom,3,row);
+            table.add(depTime,5,row);
+
+            ++row;
+
+            ++row;
+            table.mergeCells(2,row,5,row);
+            table.setAlignment(2,row,"right");
+            table.add("Takkar hér",2,row);
+            table.setColor(2,row,NatBusiness.backgroundColor);
+
+            ++row;
+            table.mergeCells(1,row,5,row);
+          }catch (TravelStockroomBusiness.ServiceNotFoundException snf) {
+            snf.printStackTrace(System.err);
+          }catch (TravelStockroomBusiness.TimeframeNotFoundException tnf) {
+            tnf.printStackTrace(System.err);
+          }catch (SQLException sql) {
+            sql.printStackTrace(System.err);
+          }
+        }
 
       }
+
 
       topTable.setAlignment(1,1,"right");
       topTable.add(tframeText);

@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
 import com.idega.data.EntityFinder;
+import com.idega.data.EntityControl;
 import java.util.List;
 import com.idega.transaction.IdegaTransactionManager;
 import javax.transaction.TransactionManager;
@@ -115,9 +116,9 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   public int createService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival) throws Exception{
 
 
-    TransactionManager transaction = IdegaTransactionManager.getInstance();
+//    TransactionManager transaction = IdegaTransactionManager.getInstance();
     try{
-      transaction.begin();
+      //transaction.begin();
 
       int id = StockroomBusiness.createProduct(supplierId,fileId,serviceName,serviceDescription,isValid);
       Service service = new Service();
@@ -136,20 +137,20 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           service.addTo(timeframe);
       }
       service.insert();
-      transaction.commit();
+      //transaction.commit();
 
       return id;
     }catch(SQLException e){
-      transaction.rollback();
+      //transaction.rollback();
       throw new RuntimeException("IWE226TB89");
     }
   }
 
 
   /**
-   * @todo createTripService
+   * @todo createTourService
    */
-  public int createTripService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String pickupPlace, idegaTimestamp pickupTime, int[] activeDays) throws Exception {
+  public int createTourService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, String departureFrom, idegaTimestamp departureTime, String arrivalAt, idegaTimestamp arrivalTime, String pickupPlace, idegaTimestamp pickupTime, int[] activeDays) throws Exception {
 
       boolean isError = false;
 
@@ -185,19 +186,30 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
       int serviceId = createService(supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
 
-      Service service = new Service(serviceId);
-      Trip trip = new Trip();
-        trip.setID(serviceId);
+//      javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
+      try {
+          //tm.begin();
+          Service service = new Service(serviceId);
 
-      if(hotePickupPlaceIds.length > 0){
-        for (int i = 0; i < hotePickupPlaceIds.length; i++) {
-          service.addTo(HotelPickupPlace.class, hotePickupPlaceIds[i]);
-        }
-        trip.setHotelPickup(true);
-      }else{
-        trip.setHotelPickup(false);
+          Tour tour = new Tour();
+            tour.setID(serviceId);
+
+
+          if(hotePickupPlaceIds.length > 0){
+            for (int i = 0; i < hotePickupPlaceIds.length; i++) {
+              service.addTo(HotelPickupPlace.class, hotePickupPlaceIds[i]);
+            }
+            tour.setHotelPickup(true);
+            tour.setHotelPickupTime(pickupTime.getTimestamp());
+          }else{
+            tour.setHotelPickup(false);
+          }
+          tour.insert();
+          //tm.commit();
+      }catch (Exception e) {
+          e.printStackTrace(System.err);
+          //tm.rollback();
       }
-
 
       return serviceId;
   }
@@ -211,5 +223,138 @@ public class TravelStockroomBusiness extends StockroomBusiness {
             timeframe.insert();
         }
   }
+
+  public Product[] getProducts(int supplierId) {
+      Product[] products ={};
+
+      try {
+        products = (Product[]) (new Product()).findAllByColumn(Product.getColumnNameSupplierId(),supplierId);
+      }catch(SQLException sql) {
+        sql.printStackTrace(System.err);
+      }
+
+      return products;
+  }
+
+  public Product[] getProducts(int supplierId, idegaTimestamp from) {
+      return getProducts(supplierId, from, idegaTimestamp.RightNow());
+  }
+
+  public Product[] getProducts(int supplierId, idegaTimestamp from, idegaTimestamp to) {
+      Product[] products ={};
+
+      try {
+          /**
+           * @todo Oracle support...
+           */
+          Product[] tempProducts = this.getProducts(supplierId);
+          if (tempProducts.length > 0) {
+
+              Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
+              Service service = (Service) Service.getStaticInstance(Service.class);
+
+              String middleTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class,Service.class);
+              String Ttable = Timeframe.getTimeframeTableName();
+              String Stable = Service.getServiceTableName();
+
+
+              StringBuffer timeframeSQL = new StringBuffer();
+                timeframeSQL.append("SELECT "+Stable+".* FROM "+Stable+", "+Ttable+", "+middleTable);
+                timeframeSQL.append(" WHERE ");
+                timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
+                timeframeSQL.append(" AND ");
+                timeframeSQL.append(Stable+"."+service.getIDColumnName()+" = "+middleTable+"."+service.getIDColumnName());
+                  timeframeSQL.append(" AND ");
+                  timeframeSQL.append(middleTable+"."+service.getIDColumnName()+" in (");
+                  for (int i = 0; i < tempProducts.length; i++) {
+                    if (i == 0) {
+                      timeframeSQL.append(tempProducts[i].getID());
+                    }else {
+                      timeframeSQL.append(","+tempProducts[i].getID());
+                    }
+                  }
+                  timeframeSQL.append(")");
+
+                timeframeSQL.append(" AND ");
+                timeframeSQL.append("(");
+                timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" > '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeFromColumnName()+" <= '"+to.toSQLDateString()+"')");
+                timeframeSQL.append(" OR ");
+                timeframeSQL.append(" ("+Timeframe.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" < '"+to.toSQLDateString()+"')");
+                timeframeSQL.append(" OR ");
+                timeframeSQL.append(" ("+Timeframe.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+to.toSQLDateString()+"' AND "+Timeframe.getTimeframeFromColumnName()+" <= '"+to.toSQLDateString()+"')");
+                timeframeSQL.append(")");
+                timeframeSQL.append(" ORDER BY "+Timeframe.getTimeframeFromColumnName());
+
+              Service[] services = (Service[]) (new Service()).findAll(timeframeSQL.toString());
+              products = new Product[services.length];
+              for (int i = 0; i < products.length; i++) {
+                products[i] = new Product(services[i].getID());
+              }
+          }
+
+
+      }catch(SQLException sql) {
+        sql.printStackTrace(System.err);
+      }
+
+      return products;
+  }
+
+
+  public static Service getService(Product product) throws ServiceNotFoundException {
+    Service service = null;
+    try {
+      service = new Service(product.getID());
+    }
+    catch (SQLException sql) {
+      throw new ServiceNotFoundException();
+    }
+    return service;
+  }
+
+  public static Timeframe getTimeframe(Product product) throws ServiceNotFoundException, TimeframeNotFoundException {
+    Timeframe timeFrame = null;
+    try {
+      Service service = TravelStockroomBusiness.getService(product);
+      timeFrame = service.getTimeframe();
+    }
+    catch (SQLException sql) {
+      throw new TimeframeNotFoundException();
+    }
+    catch (ServiceNotFoundException snf) {
+      throw new ServiceNotFoundException();
+    }
+    return timeFrame;
+  }
+
+  public static Tour getTour(Product product) throws TourNotFoundException{
+    Tour tour = null;
+    try {
+      tour = new Tour(product.getID());
+    }
+    catch (SQLException sql) {
+      throw new TourNotFoundException();
+    }
+    return tour;
+  }
+
+
+  public static class ServiceNotFoundException extends Exception{
+    ServiceNotFoundException(){
+      super("Service not found");
+    }
+  }
+  public static class TimeframeNotFoundException extends Exception{
+    TimeframeNotFoundException(){
+      super("Timeframe not found");
+    }
+  }
+
+  public static class TourNotFoundException extends Exception{
+    TourNotFoundException(){
+      super("Tour not found");
+    }
+  }
+
 
 }

@@ -428,7 +428,7 @@ public class ServiceDesigner extends TravelManager {
       try {
         TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
           tsb.setTimeframe(activeFromStamp, activeToStamp, yearly);
-          tsb.createTripService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickupAddress, hotelPickupTimeStamp, activeDays);
+          tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickupAddress, hotelPickupTimeStamp, activeDays);
       }catch (Exception e) {
         e.printStackTrace(System.err);
       }
