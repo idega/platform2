@@ -102,48 +102,67 @@ public class LetterParser implements ContentParsable {
      */
     public String getParsedString(IWApplicationContext iwac,String tag) {
         try {
-            if (tag.equals(tenant_name)) {
-                return holder.getApplicant().getName();
-            } else if (tag.equals(tenant_address)) {
-                return holder.getApplicant().getResidence();
-            } else if (tag.equals(tenant_id)) {
-                return holder.getApplicant().getSSN();
-            } else if (tag.equals(contract_starts)) {
-                return holder.getContract().getValidFrom().toString();
-            } else if (tag.equals(contract_ends)) {
-                return holder.getContract().getValidTo().toString();
-            } else if (tag.equals(today)) {
-                return idegaTimestamp.RightNow().getISLDate();
-            } else if (tag.equals(aprt_name)) {
-                return holder.getApartmentHolder().getApartment().getName();
-            } else if (tag.equals(aprt_desc)) {
-                return holder.getApartmentHolder().getApartment().getInfo();
-            } else if (tag.equals(floor_name)) {
-                return holder.getApartmentHolder().getFloor().getName();
-            } else if (tag.equals(bldg_name)) {
-                return holder.getApartmentHolder().getBuilding().getName();
-            } else if (tag.equals(bldg_desc)) {
-                return holder.getApartmentHolder().getBuilding().getInfo();
-            } else if (tag.equals(camp_name)) {
-                return holder.getApartmentHolder().getComplex().getName();
-            } else if (tag.equals(camp_info)) {
-                return holder.getApartmentHolder().getComplex().getInfo();
-            } else if (tag.equals(type_name)) {
-                return holder.getApartmentHolder().getApartmentType().getInfo();
-            } else if (tag.equals(type_desc)) {
-                return holder.getApartmentHolder().getApartmentType().getInfo();
-            } else if (tag.equals(type_area)) {
-                return String.valueOf(holder.getApartmentHolder().getApartmentType().getArea());
-            } else if (tag.equals(cat_name)) {
-                return holder.getApartmentHolder().getApartmentCategory().getName();
-            } else if (tag.equals(cat_desc)) {
-                return holder.getApartmentHolder().getApartmentCategory().getInfo();
-            } else if (tag.equals(reference_number)) {
-                int id = holder.getApplication().getID();
-                return ReferenceNumberFinder.getInstance(iwac).lookup(id);
+            // Applicant part
+            if(holder.getApplicant()!=null){
+              if (tag.equals(tenant_name)) {
+                  return holder.getApplicant().getName();
+              } else if (tag.equals(tenant_address)) {
+                  return holder.getApplicant().getResidence();
+              } else if (tag.equals(tenant_id)) {
+                  return holder.getApplicant().getSSN();
+              }
             }
-        } catch (NullPointerException ex) {
-            //  do nothing
+            // Contract section
+            if(holder.getContract()!=null){
+              if (tag.equals(contract_starts)) {
+                  return holder.getContract().getValidFrom().toString();
+              } else if (tag.equals(contract_ends)) {
+                  return holder.getContract().getValidTo().toString();
+              } else if (tag.equals(today)) {
+                  return idegaTimestamp.RightNow().getISLDate();
+              }
+            }
+
+            // Apartment section
+            if(holder.getApartmentHolder() !=null){
+              if (tag.equals(aprt_name)) {
+                  return holder.getApartmentHolder().getApartment().getName();
+              } else if (tag.equals(aprt_desc)) {
+                  return holder.getApartmentHolder().getApartment().getInfo();
+              } else if (tag.equals(floor_name)) {
+                  return holder.getApartmentHolder().getFloor().getName();
+              } else if (tag.equals(bldg_name)) {
+                  return holder.getApartmentHolder().getBuilding().getName();
+              } else if (tag.equals(bldg_desc)) {
+                  return holder.getApartmentHolder().getBuilding().getInfo();
+              } else if (tag.equals(camp_name)) {
+                  return holder.getApartmentHolder().getComplex().getName();
+              } else if (tag.equals(camp_info)) {
+                  return holder.getApartmentHolder().getComplex().getInfo();
+              } else if (tag.equals(type_name)) {
+                  return holder.getApartmentHolder().getApartmentType().getInfo();
+              } else if (tag.equals(type_desc)) {
+                  return holder.getApartmentHolder().getApartmentType().getInfo();
+              } else if (tag.equals(type_area)) {
+                  return String.valueOf(holder.getApartmentHolder().getApartmentType().getArea());
+              }else if (tag.equals(cat_name)) {
+                  return holder.getApartmentHolder().getApartmentCategory().getName();
+              } else if (tag.equals(cat_desc)) {
+                  return holder.getApartmentHolder().getApartmentCategory().getInfo();
+              }
+            }
+            // Application part
+            if(holder.getApplication()!=null){
+              if (tag.equals(reference_number)) {
+                  int id = holder.getApplication().getID();
+                  String refnum = ReferenceNumberFinder.getInstance(iwac).lookup(id);
+                  System.err.println(reference_number+" = "+refnum);
+                  return refnum;
+              }
+            }
+        }
+        catch (NullPointerException ex) {
+            ex.printStackTrace();
         }
         return null;
     }

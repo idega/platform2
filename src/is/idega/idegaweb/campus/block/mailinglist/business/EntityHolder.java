@@ -27,6 +27,7 @@ import java.util.Vector;
 public class EntityHolder {
 
   User eUser;
+  int applicantID = -1;
   Applicant eApplicant;
   Application eApplication;
   CampusApplication eCampusApplication;
@@ -36,11 +37,13 @@ public class EntityHolder {
 
   public EntityHolder(Contract eContract) {
     this.eContract = eContract;
+    applicantID = eContract.getApplicantId().intValue();
     init();
   }
   public EntityHolder(int iContractId){
     try {
       eContract  = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
+      applicantID = eContract.getApplicantId().intValue();
       init();
     }
     catch (Exception ex) {
@@ -51,14 +54,18 @@ public class EntityHolder {
 
   private void init(){
     try {
-      CampusApplicationHolder appHolder = CampusApplicationFinder.getApplicantInfo(eContract.getApplicantId().intValue());
+      CampusApplicationHolder appHolder = CampusApplicationFinder.getApplicantInfo(applicantID);
       eApplicant = appHolder.getApplicant();
       eApplication = appHolder.getApplication();
       eCampusApplication = appHolder.getCampusApplication();
 
-      eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
-      emails = UserBusiness.listOfUserEmails(eUser.getID());
-      apartmentHolder = new ApartmentHolder(eContract.getApartmentId().intValue());
+      if(eContract!=null){
+        eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
+        if(eUser!=null)
+          emails = UserBusiness.listOfUserEmails(eUser.getID());
+        apartmentHolder = new ApartmentHolder(eContract.getApartmentId().intValue());
+      }
+
       if(emails==null){
         String[] sEmails = CampusApplicationFinder.getApplicantEmail(eApplicant.getID());
         if(sEmails!=null && sEmails.length >0){
@@ -68,19 +75,13 @@ public class EntityHolder {
       }
     }
     catch (Exception ex) {
-
+      ex.printStackTrace();
     }
   }
 
   public EntityHolder(Applicant eApplicant) {
-    this.eContract = null;
-    this.eApplicant = eApplicant;
-    this.eUser = null;
-    String[] sEmails = CampusApplicationFinder.getApplicantEmail(eApplicant.getID());
-    if(sEmails!=null && sEmails.length >0){
-      emails = new Vector();
-      emails.add(sEmails[0]);
-    }
+    this.applicantID = eApplicant.getID();
+    init();
   }
   public User getUser(){
     return this.eUser;

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.13 2002/06/20 15:42:52 aron Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.14 2002/06/24 14:52:19 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -135,7 +135,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
         applied3.setApplicationId(campusApplication.getID());
         applied3.insert();
       }
-
+/*
       ReferenceNumberHandler h = new ReferenceNumberHandler();
       String key = h.getCypherKey(iwc);
       CypherText ct = new CypherText();
@@ -145,27 +145,10 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
         id = "0" + id;
 
       cypher = ct.doCyper(id,key);
+*/
 
-      String receiver = "aron@idega.is";
-      String e_mail = campusApplication.getEmail();
-      if ( e_mail != null ) {
-        if ( e_mail.length() > 0 ) {
-          MailingListBusiness.processMailEvent(iwc,new EntityHolder(applicant),LetterParser.SUBMISSION);
-          /*
-          try {
-            new javax.mail.internet.InternetAddress(e_mail);
-            receiver = e_mail;
-            String body = new String("Umsókn þín hefur verið skráð. Tilvísunarnúmer þitt er : " + cypher);
-//             sp = SysPropsSetter.seekProperties();
+      cypher = ReferenceNumberFinder.getInstance(iwc).lookup((application.getID()));
 
-            SendMail.send("postmaster@studentagardar.is",receiver,"",null,"edison.idega.is","Umsókn skráð",body);
-          }
-          catch (Exception ex) {
-            ex.printStackTrace();
-          }
-          */
-        }
-      }
 
       t.commit();
       iwc.removeSessionAttribute("applicant");
@@ -188,6 +171,14 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
       e.printStackTrace();
       return(null);
     }
+
+     String receiver = "aron@idega.is";
+      String e_mail = campusApplication.getEmail();
+      if ( e_mail != null ) {
+        if ( e_mail.length() > 0 ) {
+          MailingListBusiness.processMailEvent(iwc,new EntityHolder(applicant),LetterParser.SUBMISSION);
+        }
+      }
 
     return(cypher);
   }

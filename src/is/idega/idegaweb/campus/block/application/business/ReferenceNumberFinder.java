@@ -21,7 +21,7 @@ public class ReferenceNumberFinder {
   private ReferenceNumberHandler refHandler;
 
   private ReferenceNumberFinder(IWApplicationContext iwac){
-    System.err.println("Creating Finder");
+    //System.err.println("Creating Finder");
     refHandler = new ReferenceNumberHandler();
     cypherText = new CypherText();
     key = refHandler.getCypherKey(iwac);
@@ -38,7 +38,9 @@ public class ReferenceNumberFinder {
     String id = Integer.toString(applicationId);
     while(id.length() < 6)
       id = "0"+id;
-    return cypherText.doCyper(id,key);
+    String refNum = cypherText.doCyper(id,key);
+    //System.err.println("Referencenumber lookup : ID = "+id+" REFNUM = "+refNum);
+    return refNum;
   }
 
 }
