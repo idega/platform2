@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.13 2002/12/12 13:06:59 staffan Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.14 2002/12/23 08:52:28 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -30,11 +30,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/12/12 13:06:59 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/23 08:52:28 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -124,6 +124,7 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			applications = business.getListOfUnapprovedApplications();
 		}
 		catch (RemoteException e) {
+            e.printStackTrace ();
 		}
 
 		if (applications != null && !applications.isEmpty()) {
