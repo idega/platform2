@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.14 2003/08/28 12:55:34 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.15 2003/08/28 18:35:59 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -43,10 +43,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.14 2003/08/28 12:55:34 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.15 2003/08/28 18:35:59 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -64,6 +64,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String KEY_COM_BEL_HEADER = "posting_parm_edit.com_bel_header";
 
 	private final static String KEY_HEADER = "posting_parm_edit.header";
+	private final static String KEY_HEADER_OWN_ENTRY = "posting_parm_edit.header_own_entry";
+	private final static String KEY_HEADER_DOUBLE_ENTRY = "posting_parm_edit.header_double_entry";
 	private final static String KEY_FROM_DATE = "posting_parm_edit.from_date";
 	private final static String KEY_TO_DATE = "posting_parm_edit.to_date";
 	private final static String KEY_CHANGE_DATE = "posting_parm_edit.change_date";
@@ -154,9 +156,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 	}
 		 
 	private boolean saveData(IWContext iwc) {
+
+			generateStrings(iwc);
 		
 			try {
-
 				String id = null;
 				if(iwc.isParameterSet(PARAM_EDIT_ID)) {
 					id = iwc.getParameter(PARAM_EDIT_ID);
@@ -172,8 +175,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 				iwc.getParameter(PARAM_SELECTOR_REGSPEC),					
 				iwc.getParameter(PARAM_SELECTOR_COMPANY_TYPE),					
 				iwc.getParameter(PARAM_SELECTOR_COM_BELONGING),
-				iwc.getParameter(_theOwnString),
-				iwc.getParameter(_theDoubleString)
+				_theOwnString,
+				_theDoubleString
 				);
 			} catch (PostingParametersException e) {
 				_errorText = localize(e.getTextKey(), e.getDefaultText());
@@ -186,6 +189,31 @@ public class PostingParameterListEditor extends AccountingBlock {
 			closeMe(iwc);
 			return true;
 	}
+
+	private void generateStrings(IWContext iwc) {
+
+		_theOwnString = "";
+		_theDoubleString = "";
+		
+		try {
+			int index = 1;
+			PostingBusiness pBiz = getPostingBusiness(iwc);
+			Collection fields = pBiz.getAllPostingFieldsByDate(parseDate(iwc.getParameter(PARAM_PERIODE_FROM)));
+			int size = fields.size();
+			Iterator iter = fields.iterator();
+			int readPointer = 0;
+			while (iter.hasNext()) {
+				PostingField field = (PostingField) iter.next();
+				_theOwnString += pBiz.pad(iwc.getParameter(PARAM_OWN_STRING + "_" + index), field);
+				_theDoubleString += pBiz.pad(iwc.getParameter(PARAM_DOUBLE_STRING + "_" + index), field);
+				index++;
+			}
+			
+		} catch (RemoteException e) {
+		}
+	}
+
+
 
 	private void closeMe(IWContext iwc) {
 		getParentPage().setToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _responsePage.getID()));
@@ -286,46 +314,44 @@ public class PostingParameterListEditor extends AccountingBlock {
 		Table accounts = new Table();
 		ListTable list1 = null;
 		ListTable list2 = null;
+		
 		try {
 			int index = 1;
-			Collection fields = getPostingBusiness(iwc).getAllPostingFieldsByDate(pp.getPeriodeFrom());
+			PostingBusiness pBiz = getPostingBusiness(iwc);
+			Date defaultDate;
+			if (pp == null) {
+				defaultDate = new Date(System.currentTimeMillis());
+			} else  {
+				defaultDate = pp.getPeriodeFrom();
+			}
+			Collection fields = pBiz.getAllPostingFieldsByDate(defaultDate);
 			int size = fields.size();
-			
 			list1 = new ListTable(this, size);
 			list2 = new ListTable(this, size);
 			Iterator iter = fields.iterator();
+			int readPointer = 0;
 			while (iter.hasNext()) {
 				PostingField field = (PostingField) iter.next();
 				list1.setHeader(field.getFieldTitle(), index);
 				list2.setHeader(field.getFieldTitle(), index);
-				list1.add(getTextInput(PARAM_OWN_STRING+"_"+index, getFieldData(field, pp.getPostingString()), 60, field.getLen()));
-				list1.add(getTextInput(PARAM_DOUBLE_STRING+"_"+index, getFieldData(field, pp.getDoublePostingString()), 60, field.getLen()));
+
+				int fieldLength = field.getLen();
+				String theData1 = "";
+				String theData2 = "";
+				if (pp != null) {
+					theData1 = pBiz.extractField(pp.getPostingString(),readPointer, fieldLength, field);
+				theData2 = pBiz.extractField(pp.getDoublePostingString(),readPointer, fieldLength, field);
+				}
+				readPointer += fieldLength;
+				
+				list1.add(getTextInput(PARAM_OWN_STRING+"_"+index, theData1, 60, field.getLen()));
+				list2.add(getTextInput(PARAM_DOUBLE_STRING+"_"+index, theData2, 60, field.getLen()));
 				index++;
 			}
 			
 		} catch (RemoteException e) {
 		}
 
-
-		/*
-		list1.add(getTextInput(PARAM_ACCOUNT, pp != null ? pp.getPostingAccount() : "", 60, 6));
-		list1.add(getTextInput(PARAM_LIABILITY, pp != null ? pp.getPostingLiability() : "", 60, 10));
-		list1.add(getTextInput(PARAM_RESOURCE, pp != null ? pp.getPostingResource() : "", 60, 6));
-		list1.add(getTextInput(PARAM_ACTIVITY_CODE, pp != null ? pp.getPostingActivityCode() : "", 60, 4));
-		list1.add(getTextInput(PARAM_DOUBLE_ENTRY_CODE, pp != null ? pp.getPostingDoubleEntry() : "", 60, 6));
-		list1.add(getTextInput(PARAM_ACTIVITY_FIELD, pp != null ? pp.getPostingActivity() : "", 80, 20));
-		list1.add(getTextInput(PARAM_PROJECT, pp != null ? pp.getPostingProject() : "", 80, 20));
-		list1.add(getTextInput(PARAM_OBJECT, pp != null ? pp.getPostingObject() : "", 80, 20));
-
-		list2.add(getTextInput(PARAM_DOUBLE_ACCOUNT, pp != null ? pp.getDoublePostingAccount() : "", 60, 6));
-		list2.add(getTextInput(PARAM_DOUBLE_LIABILITY, pp != null ? pp.getDoublePostingLiability() : "", 60, 10));
-		list2.add(getTextInput(PARAM_DOUBLE_RESOURCE, pp != null ? pp.getDoublePostingResource() : "", 60, 6));
-		list2.add(getTextInput(PARAM_DOUBLE_ACTIVITY_CODE, pp != null ? pp.getDoublePostingActivityCode() : "", 60, 4));
-		list2.add(getTextInput(PARAM_DOUBLE_DOUBLE_ENTRY_CODE, pp != null ? pp.getDoublePostingDoubleEntry() : "", 60, 6));
-		list2.add(getTextInput(PARAM_DOUBLE_ACTIVITY_FIELD, pp != null ? pp.getDoublePostingActivity() : "", 80, 20));
-		list2.add(getTextInput(PARAM_DOUBLE_PROJECT, pp != null ? pp.getDoublePostingProject() : "", 80, 20));
-		list2.add(getTextInput(PARAM_DOUBLE_OBJECT, pp != null ? pp.getDoublePostingObject() : "", 80, 20));
-*/
 		try {
 			selectors.add(getLocalizedLabel(KEY_ACTIVITY, "Verksamhet"), 1, 1);
 			selectors.add(activitySelector(iwc, PARAM_SELECTOR_ACTIVITY, 
@@ -349,9 +375,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 			super.add(new ExceptionWrapper(e, this));
 		}	
 
-		accounts.add(getLocalizedText(KEY_OWN_ENTRY, "Egen kontering"), 1, 1);
+		accounts.add(getLocalizedText(KEY_HEADER_OWN_ENTRY, "Egen kontering"), 1, 1);
 		accounts.add(list1, 1, 2);
-		accounts.add(getLocalizedText(KEY_DOUBLE_ENTRY, "Mot kontering"), 1, 3);
+		accounts.add(getLocalizedText(KEY_HEADER_DOUBLE_ENTRY, "Mot kontering"), 1, 3);
 		accounts.add(list2, 1, 4);
 		
 		table.add(getLocalizedLabel(KEY_CONDITIONS, "Villkor"), 1, 1);
@@ -359,12 +385,6 @@ public class PostingParameterListEditor extends AccountingBlock {
 		table.add(accounts, 1, 3);
 		
 		return table;
-	}
-
-
-	private String getFieldData(PostingField pf, String s ) {
-		// dummy
-		return "";	
 	}
 
 

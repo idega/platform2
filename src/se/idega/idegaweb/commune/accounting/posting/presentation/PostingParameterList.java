@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.13 2003/08/28 12:55:34 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.14 2003/08/28 18:35:59 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.13 2003/08/28 12:55:34 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.14 2003/08/28 18:35:59 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -250,11 +250,9 @@ public class PostingParameterList extends AccountingBlock {
 					}
 		
 
-//					list.add(p.getPostingAccount());
-//					list.add(p.getPostingDoubleEntry());
+					list.add(p.getPostingString().substring(0, 7));
+					list.add(p.getDoublePostingString().substring(0, 7));
 
-					list.add("");
-					list.add("");
 
 					Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera")));
 					edit.addParameter(PARAM_EDIT_ID, p.getPrimaryKey().toString());

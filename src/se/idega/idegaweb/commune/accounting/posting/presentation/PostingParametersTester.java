@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersTester.java,v 1.2 2003/08/28 12:55:03 kjell Exp $
+ * $Id: PostingParametersTester.java,v 1.3 2003/08/28 18:35:59 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * PostingParametersTest is an idegaWeb block that is used to test the Posting parameters retrieval 
  *  
  * <p>
- * $Id: PostingParametersTester.java,v 1.2 2003/08/28 12:55:03 kjell Exp $
+ * $Id: PostingParametersTester.java,v 1.3 2003/08/28 18:35:59 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version $Version$
@@ -100,10 +100,10 @@ public class PostingParametersTester extends AccountingBlock {
 		table.add(getSmallText(""),1 ,row);
 		
 		table.add(getSmallText("Egen konteringssträng"),1 ,row);
-		table.add(getSmallText(pp.getPostingString()),2 ,row);
+		table.add(getSmallText(pp.getPostingString()),2 ,row++);
 
 		table.add(getSmallText("Motkonteringsträng"),1 ,row);
-		table.add(getSmallText(pp.getDoublePostingString()),2 ,row);
+		table.add(getSmallText(pp.getDoublePostingString()),2 ,row++);
 
 		mainForm.add(table);
 	}
@@ -112,44 +112,53 @@ public class PostingParametersTester extends AccountingBlock {
 		Table table = new Table();
 		Timestamp rightNow = IWTimestamp.getTimestampRightNow();
 		Date dd = new Date(System.currentTimeMillis());
+
+		RegulationsBusiness rBiz = null;;
 		
-		table.add(getLocalizedLabel("posting_test_date", "Datum"),1 ,1);
-		table.add(getTextInput(PARAM_FIELD_DATE, formatDate(dd, 10)), 2, 1);
+		try {
+			rBiz = getRegulationsBusiness(iwc);
 		
-		table.add(getLocalizedLabel("posting_test_activity", "Verksamhet"),1 ,2);
-		table.add(getTextInput(
-				PARAM_FIELD_ACTIVITY, 
-				iwc.isParameterSet(PARAM_FIELD_ACTIVITY) ?
-				iwc.getParameter(PARAM_FIELD_ACTIVITY) : ""), 2, 2);
-		table.add(getLocalizedText("posting_test_demo1", "keys: skola, forskola"), 3, 2);
-
-
-
-		table.add(getLocalizedLabel("posting_test_regspec", "Regelspec. typ"),1 ,3);
-		table.add(getTextInput(
-				PARAM_FIELD_REGSPEC, 
-				iwc.isParameterSet(PARAM_FIELD_REGSPEC) ?
-				iwc.getParameter(PARAM_FIELD_REGSPEC) : ""), 2, 3);
-		table.add(getLocalizedText("posting_test_demo2", "keys: check, modersmal"), 3, 3);
-
-
-					 
-		table.add(getLocalizedLabel("posting_test_company_type", "Bolagstyp"),1 ,4);
-		table.add(getTextInput(
-				PARAM_FIELD_COMPANY_TYPE, 
-				iwc.isParameterSet(PARAM_FIELD_COMPANY_TYPE) ?
-				iwc.getParameter(PARAM_FIELD_COMPANY_TYPE) : ""), 2, 4);
-		table.add(getLocalizedText("posting_test_demo3", "keys: kommun, stiftelse, ab, ovr_foretag"), 3, 4);
-
-
-		table.add(getLocalizedLabel("posting_test_com_bel_type", "Kommuntillhörighet"),1 ,5);
-		table.add(getTextInput(
-				PARAM_FIELD_COM_BELONGING, 
-				iwc.isParameterSet(PARAM_FIELD_COM_BELONGING) ?
-				iwc.getParameter(PARAM_FIELD_COM_BELONGING) : ""), 2, 5);
-		table.add(getLocalizedText("posting_test_demo4", "keys: nacka, ej_nacka"), 3, 5);
-
-		table.add(getLocalizedButton(PARAM_BUTTON_SEARCH, "posting_test_search", "Sök"), 2, 6);
+			table.add(getLocalizedLabel("posting_test_date", "Datum"),1 ,1);
+			table.add(getTextInput(PARAM_FIELD_DATE, formatDate(dd, 10)), 2, 1);
+			
+			table.add(getLocalizedLabel("posting_test_activity", "Verksamhet"),1 ,2);
+			table.add(getTextInput(
+					PARAM_FIELD_ACTIVITY, 
+					iwc.isParameterSet(PARAM_FIELD_ACTIVITY) ?
+					iwc.getParameter(PARAM_FIELD_ACTIVITY) : ""), 2, 2);
+			table.add(getLocalizedText("posting_test_demo1", "keys: " +rBiz.getActivityTypesAsString()), 3, 2);
+	
+	
+	
+			table.add(getLocalizedLabel("posting_test_regspec", "Regelspec. typ"),1 ,3);
+			table.add(getTextInput(
+					PARAM_FIELD_REGSPEC, 
+					iwc.isParameterSet(PARAM_FIELD_REGSPEC) ?
+					iwc.getParameter(PARAM_FIELD_REGSPEC) : ""), 2, 3);
+			table.add(getLocalizedText("posting_test_demo2", "keys: "+rBiz.getRegulationSpecTypesAsString()), 3, 3);
+	
+	
+						 
+			table.add(getLocalizedLabel("posting_test_company_type", "Bolagstyp"),1 ,4);
+			table.add(getTextInput(
+					PARAM_FIELD_COMPANY_TYPE, 
+					iwc.isParameterSet(PARAM_FIELD_COMPANY_TYPE) ?
+					iwc.getParameter(PARAM_FIELD_COMPANY_TYPE) : ""), 2, 4);
+			table.add(getLocalizedText("posting_test_demo3", "keys: "+rBiz.getCompanyTypesAsString()), 3, 4);
+	
+	
+			table.add(getLocalizedLabel("posting_test_com_bel_type", "Kommuntillhörighet"),1 ,5);
+			table.add(getTextInput(
+					PARAM_FIELD_COM_BELONGING, 
+					iwc.isParameterSet(PARAM_FIELD_COM_BELONGING) ?
+					iwc.getParameter(PARAM_FIELD_COM_BELONGING) : ""), 2, 5);
+			table.add(getLocalizedText("posting_test_demo4", "keys: "+rBiz.getCommuneBelongingsAsString()), 3, 5);
+	
+			table.add(getLocalizedButton(PARAM_BUTTON_SEARCH, "posting_test_search", "Sök"), 2, 6);
+		} catch (Exception e) {
+			_errorMessage = e.getMessage();
+			return;
+		}	
 
 		mainForm.add(table);		
 	}
