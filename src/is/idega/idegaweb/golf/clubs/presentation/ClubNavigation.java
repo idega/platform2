@@ -17,6 +17,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.user.data.Group;
 
 /**
  * @author laddi
@@ -136,8 +137,8 @@ public class ClubNavigation extends GolfBlock {
 		table.setWidth("100%");
 		table.setBorder(0);
 
-		Link link;
-		Text header = new Text(getLocationName(location));
+		Text link;
+		Text header = getText(getLocationName(location));
 		header.setFontSize(3);
 		header.setBold();
 
@@ -145,16 +146,20 @@ public class ClubNavigation extends GolfBlock {
 
 		for (int i = 0; i < unions.size(); i++) {
 			union = ((Union) unions.elementAt(i));
-			link = new Link(union.getName());
-			if (getPage() != null) {
-			  link.setPage(getPage());
+			
+			Group grUnion = union.getUnionFromIWMemberSystem();
+			ICPage clubPage = grUnion.getHomePage();
+			if(clubPage!=null) {
+				link = getLink(grUnion.getName());
+				((Link)link).setPage(clubPage);
+			} else {
+				link = getText(grUnion.getName());
 			}
-			link.addParameter("union_id", union.getID());
 
 			table.setVerticalAlignment(1, i + 1, "top");
 			table.setVerticalAlignment(2, i + 1, "top");
 
-			table.add(union.getAbbrevation(), 1, i + 1);
+			table.add(grUnion.getAbbrevation(), 1, i + 1);
 			table.add(" - ", 2, i + 1);
 			table.add(link, 2, i + 1);
 		}
@@ -327,17 +332,4 @@ public class ClubNavigation extends GolfBlock {
 		table.add(" ] ", x_pos, y_pos);
 	}
 
-  /**
-   * @return Returns the page.
-   */
-  private ICPage getPage() {
-    return this.iPage;
-  }
-  
-  /**
-   * @param page The page to set.
-   */
-  public void setClubPage(ICPage page) {
-    this.iPage = page;
-  }
 }
