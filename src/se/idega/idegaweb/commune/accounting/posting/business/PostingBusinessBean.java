@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.33 2003/11/12 13:02:31 anders Exp $
+ * $Id: PostingBusinessBean.java,v 1.34 2003/11/17 12:19:59 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -194,12 +194,12 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @author Kjell
 	 */
 	public PostingParameters getPostingParameter(Date date, int act_id, 
-			int reg_id, int com_id, int com_bel_id) throws PostingParametersException {
+			int reg_id, String com_id, int com_bel_id) throws PostingParametersException {
 			return getPostingParameter(date, act_id, reg_id, com_id, com_bel_id, 0, 0);
 	}
 	
 	public PostingParameters getPostingParameter(Date date, int act_id, 
-			int reg_id, int com_id, int com_bel_id, int schoolYear1_id, int schoolYear2_id) throws PostingParametersException {
+			int reg_id, String com_id, int com_bel_id, int schoolYear1_id, int schoolYear2_id) throws PostingParametersException {
 		
 		try {
 			int match;
@@ -239,9 +239,9 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 					match++; 
 				}
 
-				if (com_id == 0) { 
+				if (com_id == null) { 
 					match++;
-				} else if (Integer.parseInt(the_com_id) == com_id) { 
+				} else if (the_com_id.equals(com_id)) { 
 					match++; 
 				}
 
