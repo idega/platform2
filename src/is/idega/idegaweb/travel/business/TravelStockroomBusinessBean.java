@@ -197,8 +197,12 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 //        service.setID(id);
       }
 
+      if (departure != null) {
         service.setDepartureTime(departure);
+      }
+      if (arrival != null) {
         service.setAttivalTime(arrival);
+      }
 
       service.store();
 /*      if (serviceId == -1) {
