@@ -386,14 +386,12 @@ public class RunRegistration extends Block {
 		SelectOption mediumKids = new SelectOption("- " + iwrb.getLocalizedString("run_reg.medium_kids", "Medium"), IWMarathonConstants.PARAMETER_TSHIRT_M + "_kids");
 		SelectOption largeKids = new SelectOption("- " + iwrb.getLocalizedString("run_reg.large_kids", "Large"), IWMarathonConstants.PARAMETER_TSHIRT_L + "_kids");
 		SelectOption xlargeKids = new SelectOption("- " + iwrb.getLocalizedString("run_reg.xlarge_kids", "Larger"), IWMarathonConstants.PARAMETER_TSHIRT_XL + "_kids");
-		SelectOption xxlargeKids = new SelectOption("- " + iwrb.getLocalizedString("run_reg.xxlarge_kids", "Largest"), IWMarathonConstants.PARAMETER_TSHIRT_XXL + "_kids");
 
 		tShirtField.addOption(selectKids);
 		tShirtField.addOption(smallKids);
 		tShirtField.addOption(mediumKids);
 		tShirtField.addOption(largeKids);
 		tShirtField.addOption(xlargeKids);
-		tShirtField.addOption(xxlargeKids);
 
 		tShirtField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.must_select_shirt_size", "You must select tee-shirt size"), "-1");
 
@@ -803,10 +801,10 @@ public class RunRegistration extends Block {
 				Link payGreen = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
 				if (runGroup != null && distanceGroup != null) {
 					String travelURL = "travelURL_"+runGroup.getName()+"_"+distanceGroup.getName()+"_"+year+"_"+iwc.getCurrentLocale().toString();
-					if (chip.equals(IWMarathonConstants.RR_BUY_CHIP)) {
+					if (chip.equals(IWMarathonConstants.PARAMETER_BUY_CHIP)) {
 						travelURL += "_buy";
 					}
-					else if (chip.equals(IWMarathonConstants.RR_RENT_CHIP)) {
+					else if (chip.equals(IWMarathonConstants.PARAMETER_RENT_CHIP)) {
 						travelURL += "_rent";
 					}
 					if (Integer.parseInt(distance) == sevenKM && ssnIS != null) {
@@ -844,7 +842,7 @@ public class RunRegistration extends Block {
 					t.add(payBlue, 1, row);
 					t.add(Text.getNonBrakingSpace(), 1, row);
 					t.add(payGreen, 1, row++);
-					t.setHeight(row++, 6);
+					t.setHeight(row++, 12);
 				}
 				t.add(TextFormatter.formatText(message), 1, row++);
 				t.setHeight(row++, 8);
