@@ -11,12 +11,12 @@ package se.idega.idegaweb.commune.message.data;
  * 
  */
 public interface PrintMessage extends Message {
-	public String getPrintType() throws java.rmi.RemoteException;
-	public void setMessageData(com.idega.core.file.data.ICFile p0)throws java.rmi.RemoteException;
- 	public void setMessageData(int p0)throws java.rmi.RemoteException;
-	public void setMessageBulkData(com.idega.core.file.data.ICFile p0)throws java.rmi.RemoteException;
-	public void setMessageBulkData(int p0)throws java.rmi.RemoteException;
- 	public int getMessageDataFileID()throws java.rmi.RemoteException, java.rmi.RemoteException;
-	public int getMessageBulkDataFileID()throws java.rmi.RemoteException, java.rmi.RemoteException;
+	public String getPrintType();
+	public void setMessageData(com.idega.core.file.data.ICFile p0);
+ 	public void setMessageData(int p0);
+	public void setMessageBulkData(com.idega.core.file.data.ICFile p0);
+	public void setMessageBulkData(int p0);
+ 	public int getMessageDataFileID();
+	public int getMessageBulkDataFileID();
  	
 }

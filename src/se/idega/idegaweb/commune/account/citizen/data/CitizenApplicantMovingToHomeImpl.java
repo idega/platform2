@@ -6,10 +6,10 @@ import java.util.*;
 import javax.ejb.*;
 
 /**
- * Last modified: $Date: 2003/01/14 14:19:37 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/05 20:03:03 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CitizenApplicantMovingToHomeImpl extends IDOFactory
     implements CitizenApplicantMovingToHome {
@@ -23,7 +23,7 @@ public class CitizenApplicantMovingToHomeImpl extends IDOFactory
     }
 
     public CitizenApplicantMovingTo findByApplicationId
-        (final int applicationId) throws FinderException, RemoteException {
+        (final int applicationId) throws FinderException {
         final IDOEntity entity = idoCheckOutPooledEntity();
         final Collection ids = ((CitizenApplicantMovingToBMPBean) entity)
                 .ejbFindByApplicationId(applicationId);

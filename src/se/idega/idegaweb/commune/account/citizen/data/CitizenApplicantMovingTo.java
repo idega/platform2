@@ -4,24 +4,23 @@ import com.idega.data.IDOEntity;
 import java.rmi.RemoteException;
 
 /**
- * Last modified: $Date: 2002/12/12 13:06:59 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/05 20:03:03 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface CitizenApplicantMovingTo extends IDOEntity {
-    int getApplicationId () throws RemoteException;
-    String getAddress () throws RemoteException;
-    String getMovingInDate () throws RemoteException;
-    String getHousingType () throws RemoteException;
-    String getPropertyType () throws RemoteException;
-    String getLandlord () throws RemoteException;
+    int getApplicationId ();
+    String getAddress ();
+    String getMovingInDate ();
+    String getHousingType ();
+    String getPropertyType ();
+    String getLandlord ();
 
-    void setApplicationId (int applicationId) throws RemoteException;
-    void setAddress (String address) throws RemoteException;
-    void setMovingInDate (String movingInDate) throws RemoteException;
-    void setHousingType (String housingType) throws RemoteException;
-    void setPropertyType (String propertyType) throws RemoteException;
-    void setLandlord (String name, String phone, String address)
-        throws RemoteException;
+    void setApplicationId (int applicationId);
+    void setAddress (String address);
+    void setMovingInDate (String movingInDate);
+    void setHousingType (String housingType);
+    void setPropertyType (String propertyType);
+    void setLandlord (String name, String phone, String address);
 }

@@ -1,7 +1,5 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
-import java.rmi.RemoteException;
-
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 
 import com.idega.block.process.data.Case;
@@ -12,32 +10,32 @@ public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
 	final static String PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY = "caa_put_children_in_nacka_childcare";
 	final static String MOVING_TO_NACKA_KEY = "caa_moving_to_nacka";
 
-    String getCaseCodeDescription () throws RemoteException;
-    String getCaseCodeKey () throws RemoteException;
+    String getCaseCodeDescription ();
+    String getCaseCodeKey ();
 
-    String getApplicantName () throws RemoteException;
-    String getSsn () throws RemoteException;
-    String getEmail () throws RemoteException;
-    String getPhoneHome () throws RemoteException;
-    String getPhoneWork () throws RemoteException;
-    String getStreet () throws RemoteException;
-    String getZipCode () throws RemoteException;
-    String getCity () throws RemoteException;
-    String getCivilStatus () throws RemoteException;
-    boolean hasCohabitant () throws RemoteException;
-    int getChildrenCount () throws RemoteException;
-    String getApplicationReason () throws RemoteException;
+    String getApplicantName ();
+    String getSsn ();
+    String getEmail ();
+    String getPhoneHome ();
+    String getPhoneWork ();
+    String getStreet ();
+    String getZipCode ();
+    String getCity ();
+    String getCivilStatus ();
+    boolean hasCohabitant ();
+    int getChildrenCount ();
+    String getApplicationReason ();
 
-    void setApplicantName (String name)throws RemoteException;
-    void setSsn (String ssn) throws RemoteException;
-    void setEmail (String email) throws RemoteException;
-    void setPhoneHome (String phoneHome) throws RemoteException;
-    void setPhoneWork (String phoneWork) throws RemoteException;
-    void setStreet (String street) throws RemoteException;
-    void setZipCode (String zipCode) throws RemoteException;
-    void setCity (String city) throws RemoteException;
-    void setCivilStatus (String civilStatus) throws RemoteException;
-    void setHasCohabitant (boolean hasCohabitant) throws RemoteException;
-    void setChildrenCount (int childrenCount) throws RemoteException;
-    void setApplicationReason (String applicationReason) throws RemoteException;
+    void setApplicantName (String name);
+    void setSsn (String ssn);
+    void setEmail (String email);
+    void setPhoneHome (String phoneHome);
+    void setPhoneWork (String phoneWork);
+    void setStreet (String street);
+    void setZipCode (String zipCode);
+    void setCity (String city);
+    void setCivilStatus (String civilStatus);
+    void setHasCohabitant (boolean hasCohabitant);
+    void setChildrenCount (int childrenCount);
+    void setApplicationReason (String applicationReason);
 }

@@ -4,15 +4,15 @@ import com.idega.data.IDOEntity;
 import java.rmi.RemoteException;
 
 /**
- * Last modified: $Date: 2002/11/15 08:34:29 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/05 20:03:03 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface CitizenApplicantPutChildren extends IDOEntity {
-    int getApplicationId () throws RemoteException;
-    String getCurrentKommun () throws RemoteException;
+    int getApplicationId ();
+    String getCurrentKommun ();
 
-    void setApplicationId (int applicationId) throws RemoteException;
-    void setCurrentKommun (String currentKommun) throws RemoteException;
+    void setApplicationId (int applicationId);
+    void setCurrentKommun (String currentKommun);
 }

@@ -12,14 +12,14 @@ public class UserMessageHomeImpl extends com.idega.data.IDOFactory implements Us
  }
 
 
-public java.util.Collection findMessages(com.idega.user.data.User p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findMessages(com.idega.user.data.User p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((UserMessageBMPBean)entity).ejbFindMessages(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findMessages(com.idega.user.data.User p0, String[] status)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findMessages(com.idega.user.data.User p0, String[] status)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((UserMessageBMPBean)entity).ejbFindMessagesByStatus(p0, status);
 	this.idoCheckInPooledEntity(entity);

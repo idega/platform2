@@ -3,6 +3,6 @@ package se.idega.idegaweb.commune.message.data;
 
 public interface PrintMessageHome extends MessageHome
 {
- public String[] getPrintMessageTypes()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public String[] getPrintMessageTypes();
  
 }

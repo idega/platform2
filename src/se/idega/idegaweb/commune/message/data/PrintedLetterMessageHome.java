@@ -12,11 +12,11 @@ public interface PrintedLetterMessageHome extends PrintMessageHome
  //public PrintedLetterMessage create() throws javax.ejb.CreateException;
  //public PrintedLetterMessage findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public java.util.Collection findPrintedDefaultLetters()throws javax.ejb.FinderException;
- public java.util.Collection findAllUnPrintedLetters()throws javax.ejb.FinderException,java.rmi.RemoteException;
- public java.util.Collection findAllPrintedLetters()throws javax.ejb.FinderException,java.rmi.RemoteException;
+ public java.util.Collection findAllUnPrintedLetters()throws javax.ejb.FinderException;
+ public java.util.Collection findAllPrintedLetters()throws javax.ejb.FinderException;
  public java.util.Collection findUnPrintedPasswordLetters()throws javax.ejb.FinderException;
  public java.util.Collection findPrintedPasswordLetters()throws javax.ejb.FinderException;
- public java.util.Collection findMessages(com.idega.user.data.User p0)throws javax.ejb.FinderException,java.rmi.RemoteException;
+ public java.util.Collection findMessages(com.idega.user.data.User p0)throws javax.ejb.FinderException;
  public java.util.Collection findUnPrintedDefaultLetters()throws javax.ejb.FinderException;
  public java.util.Collection findPrintedLettersByType(java.lang.String p0)throws javax.ejb.FinderException;
  public java.util.Collection findUnPrintedLettersByType(java.lang.String p0)throws javax.ejb.FinderException;

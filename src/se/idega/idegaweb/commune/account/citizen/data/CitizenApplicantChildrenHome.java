@@ -8,14 +8,12 @@ import javax.ejb.FinderException;
 import com.idega.data.IDOHome;
 
 /**
- * Last modified: $Date: 2003/04/02 16:12:21 $ by $Author: laddi $
+ * Last modified: $Date: 2003/10/05 20:03:03 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface CitizenApplicantChildrenHome extends IDOHome {
-    public CitizenApplicantChildren create() throws CreateException,
-                                                       RemoteException;
-    public CitizenApplicantChildren [] findByApplicationId (int applicantId)
-        throws FinderException, RemoteException;
+    public CitizenApplicantChildren create() throws CreateException;
+    public CitizenApplicantChildren [] findByApplicationId (int applicantId) throws FinderException;
 }

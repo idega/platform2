@@ -26,14 +26,14 @@ public java.util.Collection findPrintedDefaultLetters()throws javax.ejb.FinderEx
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllUnPrintedLetters()throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findAllUnPrintedLetters()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindAllUnPrintedLetters();
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllPrintedLetters()throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findAllPrintedLetters()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindAllPrintedLetters();
 	this.idoCheckInPooledEntity(entity);
@@ -54,14 +54,14 @@ public java.util.Collection findPrintedPasswordLetters()throws javax.ejb.FinderE
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findMessages(com.idega.user.data.User p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findMessages(com.idega.user.data.User p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindMessages(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findMessages(com.idega.user.data.User p0, String[] status)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findMessages(com.idega.user.data.User p0, String[] status)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((UserMessageBMPBean)entity).ejbFindMessagesByStatus(p0, status);
 	this.idoCheckInPooledEntity(entity);

@@ -30,19 +30,8 @@ public class MessageComparator implements Comparator {
     IWTimestamp one;
     IWTimestamp two;
 
-    try {
-      one = new IWTimestamp(p1.getCreated());
-    }
-    catch (RemoteException e) {
-      one = null;
-    }
-
-    try {
-      two = new IWTimestamp(p2.getCreated());
-    }
-    catch (RemoteException e) {
-      two = null;
-    }
+    one = new IWTimestamp(p1.getCreated());
+    two = new IWTimestamp(p2.getCreated());
     
     if ( one != null && two != null ) {
     	if ( one.isLaterThan(two) )

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.20 2003/04/02 16:12:21 laddi Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.21 2003/10/05 20:03:03 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,6 @@
  */
 package se.idega.idegaweb.commune.account.citizen.data;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
@@ -167,11 +166,11 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 		setColumn (PHONE_WORK, phone);
 	}
 
-    public void setStreet (final String street) throws RemoteException {
+    public void setStreet (final String street) {
         setColumn (STREET, street);
     }
     
-    public void setZipCode (final String rawZipCode) throws RemoteException {
+    public void setZipCode (final String rawZipCode) {
 		final StringBuffer digitOnlyZipCode = new StringBuffer();
 		for (int i = 0; i < rawZipCode.length (); i++) {
 			if (Character.isDigit (rawZipCode.charAt (i))) {
@@ -181,7 +180,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
         setColumn (ZIP_CODE, digitOnlyZipCode.toString ());
     }
     
-    public void setCity (final String city) throws RemoteException {
+    public void setCity (final String city) {
         setColumn (CITY, city);
     }
     
@@ -206,7 +205,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
      * associated caseCode
 	 */
 	public Collection ejbFindAllCasesByStatus(CaseStatus caseStatus)
-        throws FinderException, RemoteException {
+        throws FinderException {
 		return super.ejbFindAllCasesByStatus(caseStatus.getStatus());
 	}
 	

@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplicationView.java,v 1.6 2003/04/02 20:47:26 laddi Exp $
+ * $Id: ProviderAccountApplicationView.java,v 1.7 2003/10/05 20:03:03 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -34,28 +34,22 @@ public class ProviderAccountApplicationView extends ProviderAccountApplication
 	
 	
 	public void setProviderApplication(ProviderApplication appl){
-		try{
-			setApplicationID((Integer)appl.getPrimaryKey());
-			setProviderName(appl.getName());
-			setManagerName(appl.getManagerName());
-			setNumberOfPlaces(appl.getNumberOfPlaces());
-			setAddress(appl.getAddress());
-			setAdditionalInfo(appl.getAdditionalInfo());
-			setPhone(appl.getPhone());
-			setEmail(appl.getEmail());
-			IDOUtil idoUtil = IDOUtil.getInstance();
-			int postalCodeID = idoUtil.getID(appl.getPostalCode());
-			setPostalCode(postalCodeID);
-			int schoolAreaID = idoUtil.getID(appl.getSchoolArea());
-			setSchoolArea(schoolAreaID);
-		
-			int[] schoolTypeIDs=idoUtil.getIDs(appl.getSchoolTypes());
-			setSchoolTypes(schoolTypeIDs);
-		}
-		catch(RemoteException e){
-			e.printStackTrace();
-			add("Error: "+e.getMessage());
-		}	
+		setApplicationID((Integer)appl.getPrimaryKey());
+		setProviderName(appl.getName());
+		setManagerName(appl.getManagerName());
+		setNumberOfPlaces(appl.getNumberOfPlaces());
+		setAddress(appl.getAddress());
+		setAdditionalInfo(appl.getAdditionalInfo());
+		setPhone(appl.getPhone());
+		setEmail(appl.getEmail());
+		IDOUtil idoUtil = IDOUtil.getInstance();
+		int postalCodeID = idoUtil.getID(appl.getPostalCode());
+		setPostalCode(postalCodeID);
+		int schoolAreaID = idoUtil.getID(appl.getSchoolArea());
+		setSchoolArea(schoolAreaID);
+
+		int[] schoolTypeIDs=idoUtil.getIDs(appl.getSchoolTypes());
+		setSchoolTypes(schoolTypeIDs);	
 	}
 	
 	/**

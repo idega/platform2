@@ -127,28 +127,28 @@ public class ProviderApplicationBMPBean
 	/**
 	 * @see se.idega.idegaweb.commune.account.data.AccountApplication#getApplicantName()
 	 */
-	public String getApplicantName() throws RemoteException
+	public String getApplicantName()
 	{
 		return getManagerName();
 	}
 	/**
 	 * @see se.idega.idegaweb.commune.account.data.AccountApplication#getEmail()
 	 */
-	public String getEmail() throws RemoteException
+	public String getEmail()
 	{
 		return this.getEmailAddress();
 	}
 	/**
 	 * @see se.idega.idegaweb.commune.account.data.AccountApplication#setApplicantName(String)
 	 */
-	public void setApplicantName(String p0) throws RemoteException
+	public void setApplicantName(String p0)
 	{
 		setManagerName(p0);
 	}
 	/**
 	 * @see se.idega.idegaweb.commune.account.data.AccountApplication#setEmail(String)
 	 */
-	public void setEmail(String p0) throws RemoteException
+	public void setEmail(String p0)
 	{
 		setEmailAddress(p0);
 	}
@@ -264,7 +264,7 @@ public class ProviderApplicationBMPBean
 	/**
 	 *Sets the postal code according to this application
 	 */
-	public void setPostalCode(PostalCode code) throws RemoteException
+	public void setPostalCode(PostalCode code)
 	{
 		setColumn(COLUMN_POSTAL_CODE,code);
 	}
@@ -272,7 +272,7 @@ public class ProviderApplicationBMPBean
 	/**
 	 *Gets the postal code according to this application
 	 */
-	public void setPostalCode(int postalCodeID) throws RemoteException
+	public void setPostalCode(int postalCodeID)
 	{
 		setColumn(COLUMN_POSTAL_CODE,postalCodeID);
 	}
@@ -288,7 +288,7 @@ public class ProviderApplicationBMPBean
 	/**
 	 *Sets the school area according to this application
 	 */
-	public void setSchoolArea(SchoolArea area) throws RemoteException
+	public void setSchoolArea(SchoolArea area)
 	{
 		setColumn(COLUMN_SCHOOL_AREA,area);
 	}
@@ -296,7 +296,7 @@ public class ProviderApplicationBMPBean
 	/**
 	 *Sets the school area according to this application
 	 */
-	public void setSchoolArea(int areaID) throws RemoteException
+	public void setSchoolArea(int areaID)
 	{
 		setColumn(COLUMN_SCHOOL_AREA,areaID);
 	}
@@ -311,38 +311,17 @@ public class ProviderApplicationBMPBean
 
 	public Collection ejbFindAllPendingApplications() throws FinderException
 	{
-		try
-		{
-			return super.ejbFindAllCasesByStatus(this.getCaseStatusOpen().toString());
-		}
-		catch (RemoteException e)
-		{
-			throw new IDOFinderException(e);
-		}
+		return super.ejbFindAllCasesByStatus(this.getCaseStatusOpen().toString());
 		//return null;
 	}
 	public Collection ejbFindAllRejectedApplications() throws FinderException
 	{
-		try
-		{
-			return super.ejbFindAllCasesByStatus(this.getCaseStatusDenied().toString());
-		}
-		catch (RemoteException e)
-		{
-			throw new IDOFinderException(e);
-		}
+		return super.ejbFindAllCasesByStatus(this.getCaseStatusDenied().toString());
 		//return null;
 	}
 	public Collection ejbFindAllApprovedApplications() throws FinderException
 	{
-		try
-		{
-			return super.ejbFindAllCasesByStatus(this.getCaseStatusGranted().toString());
-		}
-		catch (RemoteException e)
-		{
-			throw new IDOFinderException(e);
-		}
+		return super.ejbFindAllCasesByStatus(this.getCaseStatusGranted().toString());
 		//return null;
 	}
 }

@@ -51,19 +51,19 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
     return CASE_CODE_DESCRIPTION;
   }
 
-  public void setSubject(String subject)throws java.rmi.RemoteException{
+  public void setSubject(String subject){
     this.setColumn(COLUMN_SUBJECT,subject);
   }
 
-  public String getSubject()throws java.rmi.RemoteException{
+  public String getSubject(){
     return this.getStringColumnValue(COLUMN_SUBJECT);
   }
 
-  public void setBody(String body)throws java.rmi.RemoteException{
+  public void setBody(String body){
     this.setColumn(COLUMN_BODY,body);
   }
 
-  public String getBody()throws java.rmi.RemoteException{
+  public String getBody(){
     return this.getStringColumnValue(COLUMN_BODY);
   }
 
@@ -83,11 +83,11 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
 		this.setColumn(COLUMN_SENDER,user.getPrimaryKey());
 	}
 
-  public Collection ejbFindMessages(User user)throws FinderException,java.rmi.RemoteException{
+  public Collection ejbFindMessages(User user)throws FinderException{
     return super.ejbFindAllCasesByUser(user);
   }
  
-	public Collection ejbFindMessagesByStatus(User user, String[] status)throws FinderException,java.rmi.RemoteException{
+	public Collection ejbFindMessagesByStatus(User user, String[] status)throws FinderException{
 		return super.ejbFindAllCasesByUserAndStatusArray(user, status);
 	}
  

@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.message.data;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 
 import javax.ejb.EJBException;
@@ -112,69 +111,64 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	public int getSenderID() { throw new UnsupportedOperationException(); }
 	public void setSenderID(int senderID){ throw new UnsupportedOperationException(); }
 
-	public void setSubject(String subject) throws java.rmi.RemoteException {
+	public void setSubject(String subject) {
 		this.setColumn(COLUMN_SUBJECT, subject);
 	}
 
-	public String getSubject() throws java.rmi.RemoteException {
+	public String getSubject() {
 		return this.getStringColumnValue(COLUMN_SUBJECT);
 	}
 
-	public void setBody(String body) throws java.rmi.RemoteException {
+	public void setBody(String body) {
 		this.setColumn(COLUMN_BODY, body);
 	}
 
-	public String getBody() throws java.rmi.RemoteException {
+	public String getBody() {
 		return this.getStringColumnValue(COLUMN_BODY);
 	}
 
-	public String getMessageType() throws java.rmi.RemoteException {
+	public String getMessageType() {
 		return this.getStringColumnValue(COLUMN_MESSAGE_TYPE);
 	}
 
-	public void setMessageType(String type) throws java.rmi.RemoteException {
+	public void setMessageType(String type) {
 		this.setColumn(COLUMN_MESSAGE_TYPE, type);
 	}
 
-	public ICFile getMessageData() throws java.rmi.RemoteException {
+	public ICFile getMessageData() {
 		return (ICFile) this.getColumnValue(COLUMN_MESSAGE_DATA); //Replace this later
 	}
 
-	public int getMessageDataFileID() throws java.rmi.RemoteException {
+	public int getMessageDataFileID() {
 		return this.getIntColumnValue(COLUMN_MESSAGE_DATA);
 	}
 
-	public void setMessageData(ICFile file) throws java.rmi.RemoteException { //Temp (test) method
+	public void setMessageData(ICFile file) { //Temp (test) method
 		this.setColumn(COLUMN_MESSAGE_DATA, file);
 	}
 
-	public void setMessageData(int fileID) throws java.rmi.RemoteException { //Temp (test) method
+	public void setMessageData(int fileID) { //Temp (test) method
 		this.setColumn(COLUMN_MESSAGE_DATA, fileID);
 	}
 	
-	public ICFile getMessageBulkData() throws java.rmi.RemoteException {
+	public ICFile getMessageBulkData() {
 			return (ICFile) this.getColumnValue(COLUMN_BULK_DATA); //Replace this later
 		}
 
-		public int getMessageBulkDataFileID() throws java.rmi.RemoteException {
+		public int getMessageBulkDataFileID() {
 			return this.getIntColumnValue(COLUMN_BULK_DATA);
 		}
 
-		public void setMessageBulkData(ICFile file) throws java.rmi.RemoteException { //Temp (test) method
+		public void setMessageBulkData(ICFile file) { //Temp (test) method
 			this.setColumn(COLUMN_BULK_DATA, file);
 		}
 
-		public void setMessageBulkData(int fileID) throws java.rmi.RemoteException { //Temp (test) method
+		public void setMessageBulkData(int fileID) { //Temp (test) method
 			this.setColumn(COLUMN_BULK_DATA, fileID);
 		}
 
 	public String getSenderName() {
-		try {
-			return getOwner().getName();
-		}
-		catch (RemoteException e) {
-			return "";
-		}
+		return getOwner().getName();
 	}
 
 	public String getDateString() {
@@ -197,19 +191,19 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	}
 
 
-	public Collection ejbFindMessages(User user) throws FinderException, java.rmi.RemoteException {
+	public Collection ejbFindMessages(User user) throws FinderException {
 		return super.ejbFindAllCasesByUser(user);
 	}
 
-	public Collection ejbFindMessagesByStatus(User user, String[] status)throws FinderException,java.rmi.RemoteException{
+	public Collection ejbFindMessagesByStatus(User user, String[] status)throws FinderException{
 		return super.ejbFindAllCasesByUserAndStatusArray(user, status);
 	}
 
-	public Collection ejbFindAllUnPrintedLetters() throws FinderException, java.rmi.RemoteException {
+	public Collection ejbFindAllUnPrintedLetters() throws FinderException {
 		return super.ejbFindAllCasesByStatus(super.getCaseStatusOpen());
 	}
 
-	public Collection ejbFindAllPrintedLetters() throws FinderException, java.rmi.RemoteException {
+	public Collection ejbFindAllPrintedLetters() throws FinderException {
 		return super.ejbFindAllCasesByStatus(super.getCaseStatusReady());
 	}
 	
@@ -223,12 +217,12 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	
 	
 	
-	public String getUnPrintedCaseStatusForType(String type)throws RemoteException{
+	public String getUnPrintedCaseStatusForType(String type) {
 	  	return getCaseStatusOpen();
 	  	
 	}
 	
-	public String getPrintedCaseStatusForType(String type)throws RemoteException{
+	public String getPrintedCaseStatusForType(String type) {
 		return getCaseStatusReview();
 	}
 	
@@ -239,10 +233,6 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		try{
 			IDOQuery sql = idoQueryGetLettersCountByStatusAndType(getUnPrintedCaseStatusForType(letterType),letterType);				
 			return super.idoGetNumberOfRecords(sql);
-		}
-		catch (RemoteException rme)
-		{
-			throw new EJBException(rme.getMessage());
 		}
 		catch (IDOException sqle)
 		{
@@ -257,10 +247,6 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		try{
 			IDOQuery sql = idoQueryGetLettersCountByStatusAndType(getUnPrintedCaseStatusForType(letterType),letterType);				
 			return super.idoGetNumberOfRecords(sql);
-		}
-		catch (RemoteException rme)
-		{
-			throw new EJBException(rme.getMessage());
 		}
 		catch (IDOException sqle)
 		{
@@ -296,10 +282,6 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 			IDOQuery sql = idoQueryGetCountPasswordLettersWithStatus(getCaseStatusOpen());
 			return super.idoGetNumberOfRecords(sql);
 		}
-		catch (RemoteException rme)
-		{
-			throw new EJBException(rme.getMessage());
-		}
 		catch (IDOException sqle)
 		{
 			throw new EJBException(sqle.getMessage());
@@ -315,10 +297,6 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		{
 			IDOQuery sql = idoQueryGetCountPasswordLettersWithStatus(getCaseStatusReview());
 			return super.idoGetNumberOfRecords(sql);
-		}
-		catch (RemoteException rme)
-		{
-			throw new EJBException(rme.getMessage());
 		}
 		catch (IDOException sqle)
 		{
@@ -338,10 +316,6 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 			IDOQuery sql = idoQueryGetCountDefaultLettersWithStatus(getCaseStatusOpen());
 			return super.idoGetNumberOfRecords(sql);
 		}
-		catch (RemoteException rme)
-		{
-			throw new EJBException(rme.getMessage());
-		}
 		catch (IDOException sqle)
 		{
 			throw new EJBException(sqle.getMessage());
@@ -357,10 +331,6 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		{
 			IDOQuery sql = idoQueryGetCountDefaultLettersWithStatus(getCaseStatusReview());
 			return super.idoGetNumberOfRecords(sql);
-		}
-		catch (RemoteException rme)
-		{
-			throw new EJBException(rme.getMessage());
 		}
 		catch (IDOException sqle)
 		{
@@ -523,7 +493,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		return ejbFindPrintedLettersByType(letterType);
 	}
 	
-	public String getPrintType()throws RemoteException{
+	public String getPrintType() {
 		return getMessageType();
 	}
 	

@@ -8,7 +8,6 @@ import com.idega.user.data.User;
 
 import se.idega.idegaweb.commune.complaint.business.ComplaintBusinessBean;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
@@ -172,7 +171,7 @@ public class ComplaintBMPBean extends AbstractCaseBMPBean implements Complaint,C
 	 * @param complaintType
 	 * @throws RemoteException
 	 */
-	public void setComplaintType(CaseCode complaintType) throws RemoteException {
+	public void setComplaintType(CaseCode complaintType) {
 		setComplaintType((String)complaintType.getPrimaryKey());
 	}
 	
@@ -192,7 +191,7 @@ public class ComplaintBMPBean extends AbstractCaseBMPBean implements Complaint,C
 	 * @throws FinderException
 	 * @throws RemoteException
 	 */
-	public Collection ejbFindAllComplaintsByUser(User user) throws FinderException,RemoteException {
+	public Collection ejbFindAllComplaintsByUser(User user) throws FinderException {
 		return super.ejbFindAllCasesByUser(user);
 	}
 	
@@ -203,7 +202,7 @@ public class ComplaintBMPBean extends AbstractCaseBMPBean implements Complaint,C
 	 * @throws FinderException
 	 * @throws RemoteException
 	 */
-	public Collection ejbFindAllComplaintsByStatus(CaseStatus status) throws FinderException,RemoteException {
+	public Collection ejbFindAllComplaintsByStatus(CaseStatus status) throws FinderException {
 		return super.ejbFindAllCasesByStatus(status);
 	}
 	
@@ -214,7 +213,7 @@ public class ComplaintBMPBean extends AbstractCaseBMPBean implements Complaint,C
 	 * @throws FinderException
 	 * @throws RemoteException
 	 */
-	public Collection ejbFindAllComplaintsByManager(User user) throws FinderException,RemoteException {
+	public Collection ejbFindAllComplaintsByManager(User user) throws FinderException {
 		return this.idoFindPKsBySQL("select * from "+getEntityName()+" where "+COLUMN_MANAGER_ID+" = "+(user.getPrimaryKey()).toString());	
 	}
 
@@ -225,7 +224,7 @@ public class ComplaintBMPBean extends AbstractCaseBMPBean implements Complaint,C
 	 * @throws FinderException
 	 * @throws RemoteException
 	 */
-	public Collection ejbFindAllComplaintsByType(CaseCode type) throws FinderException,RemoteException {
+	public Collection ejbFindAllComplaintsByType(CaseCode type) throws FinderException {
 		return this.idoFindPKsBySQL("select * from "+getEntityName()+" where "+COLUMN_COMPLAINT_TYPE+" = "+(type.getPrimaryKey()).toString());	
 	}
 }

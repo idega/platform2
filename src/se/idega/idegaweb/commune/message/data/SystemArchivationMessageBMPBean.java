@@ -1,5 +1,5 @@
 package se.idega.idegaweb.commune.message.data;
-import java.rmi.RemoteException;
+
 import java.util.Collection;
 
 import javax.ejb.EJBException;
@@ -56,23 +56,23 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 	{
 		return CASE_CODE_DESCRIPTION;
 	}
-	public void setSubject(String subject) throws java.rmi.RemoteException
+	public void setSubject(String subject)
 	{
 		this.setColumn(COLUMN_SUBJECT, subject);
 	}
-	public String getSubject() throws java.rmi.RemoteException
+	public String getSubject()
 	{
 		return this.getStringColumnValue(COLUMN_SUBJECT);
 	}
-	public void setBody(String body) throws java.rmi.RemoteException
+	public void setBody(String body)
 	{
 		this.setColumn(COLUMN_BODY, body);
 	}
-	public String getBody() throws java.rmi.RemoteException
+	public String getBody()
 	{
 		return this.getStringColumnValue(COLUMN_BODY);
 	}
-	public String getMessageType() throws java.rmi.RemoteException
+	public String getMessageType()
 	{
 		return this.getStringColumnValue(COLUMN_MESSAGE_TYPE);
 	}
@@ -80,52 +80,52 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 	{
 		this.setColumn(COLUMN_MESSAGE_TYPE, type);
 	}
-	public ICFile getMessageData() throws java.rmi.RemoteException
+	public ICFile getMessageData()
 	{
 		return (ICFile) this.getColumnValue(COLUMN_MESSAGE_DATA); //Replace this later
 	}
-	public int getMessageDataFileID() throws java.rmi.RemoteException
+	public int getMessageDataFileID()
 	{
 		return this.getIntColumnValue(COLUMN_MESSAGE_DATA);
 	}
-	public void setMessageData(ICFile file) throws java.rmi.RemoteException
+	public void setMessageData(ICFile file)
 	{ //Temp (test) method
 		this.setColumn(COLUMN_MESSAGE_DATA, file);
 	}
-	public void setMessageData(int fileID) throws java.rmi.RemoteException
+	public void setMessageData(int fileID)
 	{ //Temp (test) method
 		this.setColumn(COLUMN_MESSAGE_DATA, fileID);
 	}
-	public void setAttachedFile(ICFile file) throws java.rmi.RemoteException
+	public void setAttachedFile(ICFile file)
 	{ //Temp (test) method
 		this.setColumn(COLUMN_ATTATCHED_FILE_ID, file);
 	}
-	public void setAttachedFile(int fileID) throws java.rmi.RemoteException
+	public void setAttachedFile(int fileID)
 	{ //Temp (test) method
 		this.setColumn(COLUMN_ATTATCHED_FILE_ID, fileID);
 	}
-	public ICFile getAttachedFile() throws java.rmi.RemoteException
+	public ICFile getAttachedFile()
 	{
 		return (ICFile) this.getColumnValue(COLUMN_ATTATCHED_FILE_ID); //Replace this later
 	}
-	public int getAttachedFileID() throws java.rmi.RemoteException
+	public int getAttachedFileID()
 	{
 		return this.getIntColumnValue(COLUMN_ATTATCHED_FILE_ID);
 	}
 	
-	public ICFile getMessageBulkData() throws java.rmi.RemoteException {
+	public ICFile getMessageBulkData() {
 			return (ICFile) this.getColumnValue(COLUMN_BULK_DATA); //Replace this later
 		}
 
-		public int getMessageBulkDataFileID() throws java.rmi.RemoteException {
+		public int getMessageBulkDataFileID() {
 			return this.getIntColumnValue(COLUMN_BULK_DATA);
 		}
 
-		public void setMessageBulkData(ICFile file) throws java.rmi.RemoteException { //Temp (test) method
+		public void setMessageBulkData(ICFile file) { //Temp (test) method
 			this.setColumn(COLUMN_BULK_DATA, file);
 		}
 
-		public void setMessageBulkData(int fileID) throws java.rmi.RemoteException { //Temp (test) method
+		public void setMessageBulkData(int fileID) { //Temp (test) method
 			this.setColumn(COLUMN_BULK_DATA, fileID);
 		}
 	
@@ -136,14 +136,7 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 
 	public String getSenderName()
 	{
-		try
-		{
-			return getOwner().getName();
-		}
-		catch (RemoteException e)
-		{
-			return "";
-		}
+		return getOwner().getName();
 	}
 	public String getDateString()
 	{
@@ -152,31 +145,31 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 		 */
 		return "";
 	}
-	public Collection ejbFindMessages(User user) throws FinderException, java.rmi.RemoteException
+	public Collection ejbFindMessages(User user) throws FinderException
 	{
 		return super.ejbFindAllCasesByUser(user);
 	}
 	
-	public Collection ejbFindMessagesByStatus(User user, String[] status)throws FinderException,java.rmi.RemoteException{
+	public Collection ejbFindMessagesByStatus(User user, String[] status)throws FinderException{
 		return super.ejbFindAllCasesByUserAndStatusArray(user, status);
 	}
 
-	public Collection ejbFindPrintedMessages()throws FinderException,RemoteException{
+	public Collection ejbFindPrintedMessages()throws FinderException{
 		return super.idoFindPKsByQuery(super.idoQueryGetAllCasesByStatusOrderedByCreation(getCaseStatusReady()));
 	}
 	
-	public Collection ejbFindUnPrintedMessages()throws FinderException,RemoteException{
+	public Collection ejbFindUnPrintedMessages()throws FinderException{
 		return super.idoFindPKsByQuery(super.idoQueryGetAllCasesByStatusOrderedByCreation(getCaseStatusOpen()));
 	}
 	
-	public Collection ejbFindPrintedMessages(IWTimestamp from, IWTimestamp to) throws FinderException,RemoteException {
+	public Collection ejbFindPrintedMessages(IWTimestamp from, IWTimestamp to) throws FinderException {
 		IDOQuery query = super.idoQueryGetAllCasesByStatus(getCaseStatusReady(),from,to);
 		query.append(" order by g.").append(getSQLGeneralCaseCreatedColumnName());
 		query.append(" desc ");
 		return super.idoFindPKsByQuery(query);
 	}
 	
-	public Collection ejbFindUnPrintedMessages(IWTimestamp from, IWTimestamp to) throws FinderException,RemoteException {
+	public Collection ejbFindUnPrintedMessages(IWTimestamp from, IWTimestamp to) throws FinderException {
 		IDOQuery query = super.idoQueryGetAllCasesByStatus(getCaseStatusOpen(),from,to);
 		query.append(" order by g.").append(getSQLGeneralCaseCreatedColumnName());
 		query.append(" desc ");
@@ -192,10 +185,6 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 		{
 			IDOQuery sql = super.idoQueryGetCountCasesWithStatus(getCaseStatusOpen());
 			return super.idoGetNumberOfRecords(sql);
-		}
-		catch (RemoteException rme)
-		{
-			throw new EJBException(rme.getMessage());
 		}
 		catch (IDOException sqle)
 		{
