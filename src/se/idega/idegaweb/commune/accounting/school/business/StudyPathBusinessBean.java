@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathBusinessBean.java,v 1.1 2003/09/08 15:50:35 anders Exp $
+ * $Id: StudyPathBusinessBean.java,v 1.2 2003/09/09 08:53:27 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,22 +21,26 @@ import com.idega.block.school.data.SchoolStudyPath;
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/08 15:50:35 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/09 08:53:27 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean implements StudyPathBusiness  {
 
+	private final static int MAX_STUDY_PATH_CODE_LENGTH = 10;
+	
 	private final static String KP = "study_path_error."; // key prefix 
 
 	public final static String KEY_STUDY_PATH_CODE_MISSING = KP + "study_path_code_missing";
+	public final static String KEY_STUDY_PATH_CODE_TOO_LONG = KP + "study_path_code_too_long";
 	public final static String KEY_DESCRIPTION_MISSING = KP + "description_missing";
 	public final static String KEY_CANNOT_SAVE_STUDY_PATH = KP + "cannot_save_study_path";
 	public final static String KEY_CANNOT_DELETE_STUDY_PATH = KP + "cannot_delete_study_path";
 	public final static String KEY_CANNOT_FIND_STUDY_PATH = KP + "cannot_find_study_path";
 
 	public final static String DEFAULT_STUDY_PATH_CODE_MISSING = "Koden fšr studievŠgen mŒste fyllas i.";
+	public final static String DEFAULT_STUDY_PATH_CODE_TOO_LONG = "Koden fšr studievŠgen fŒr hšgst innehŒlla " + MAX_STUDY_PATH_CODE_LENGTH + " tecken.";
 	public final static String DEFAULT_DESCRIPTION_MISSING = "Beskrivning av studievŠgen mŒste fyllas i.";
 	public final static String DEFAULT_CANNOT_SAVE_STUDY_PATH = "StudievŠgen kunde inte sparas pŒ grund av tekniskt fel.";
 	public final static String DEFAULT_CANNOT_DELETE_STUDY_PATH = "StudievŠgen kunde inte tas bort pŒ grund av tekniskt fel.";
@@ -77,9 +81,11 @@ public class StudyPathBusinessBean extends com.idega.business.IBOServiceBean imp
 			String description) throws StudyPathException {
 
 		// Study path code
-		String s = studyPathCode.trim();
+		String s = studyPathCode.trim().toUpperCase();
 		if (s.equals("")) {
 			throw new StudyPathException(KEY_STUDY_PATH_CODE_MISSING, DEFAULT_STUDY_PATH_CODE_MISSING);
+		} else if (s.length() > MAX_STUDY_PATH_CODE_LENGTH) {
+				throw new StudyPathException(KEY_STUDY_PATH_CODE_TOO_LONG, DEFAULT_STUDY_PATH_CODE_TOO_LONG);
 		} else {
 			studyPathCode = s;
 		}
