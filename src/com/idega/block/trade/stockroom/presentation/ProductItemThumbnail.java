@@ -13,7 +13,9 @@ import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.block.presentation.ImageWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.util.text.TextSoap;
 
 /**
  *  Title: idegaWeb TravelBooking Description: Copyright: Copyright (c) 2001
@@ -29,7 +31,7 @@ public class ProductItemThumbnail extends ProductItem {
   private Image defaultImage = _defaultImage;
   private int _width = 0;
   private int _height = 0;
-  private boolean _clickableThumbnail;
+  private boolean _clickableThumbnail = true;
 
   /**
    *  Constructor for the ProductItemThumbnail object
@@ -56,8 +58,10 @@ public class ProductItemThumbnail extends ProductItem {
    *  Description of the Method
    */
   private void drawObject() throws RemoteException {
+    ICFile file = null;
     Image image = defaultImage;
     if ( _product != null ) {
+      file = _product.getFile();
       int fileId = _product.getFileId();
       if ( fileId != -1 ) {
         image = getImage( fileId );
@@ -65,6 +69,16 @@ public class ProductItemThumbnail extends ProductItem {
     }
 
     if ( image != null ) {
+			String att = file.getMetaData(ProductEditorWindow.imageAttributeKey);
+	
+			if (att != null) {
+				image.setAttributes(getAttributeMap(att));
+				if (!getAttributeMap(att).containsKey("align"))
+					image.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
+			}
+			else
+				image.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
+
       if ( _width > 0 ) {
         image.setWidth( _width );
       }
@@ -96,6 +110,7 @@ public class ProductItemThumbnail extends ProductItem {
 					Link imageLink = new Link(image);
 					imageLink.setWindowToOpen(ImageWindow.class);
 					imageLink.addParameter(ImageWindow.prmImageId, ((ICFile) images.get(0)).getPrimaryKey().toString());
+					imageLink.addParameter(ImageWindow.prmInfo, TextSoap.convertSpecialCharacters(_product.getProductName(this._localeId)));
 					add(imageLink);
 				}
 				else

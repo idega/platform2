@@ -69,7 +69,7 @@ public class ProductViewer extends Block {
   boolean _showThumbnail = false;
   boolean _showPrice = false;
   boolean _showCurrency = false;
-  String _spaceBetween = "3";
+  int _spaceBetween = 3;
   boolean _showImages = true;
   boolean _addCategoryID = false;
 
@@ -298,7 +298,7 @@ public class ProductViewer extends Block {
   }
 
   public void setSpaceBetweenTitleAndBody(String spaceBetween) {
-    _spaceBetween = spaceBetween;
+    _spaceBetween = Integer.parseInt(spaceBetween);
   }
 
   public void setShowNewestProduct(boolean showNewest) {

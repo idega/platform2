@@ -15,6 +15,7 @@ public interface Product extends com.idega.data.IDOEntity, com.idega.data.MetaDa
  public java.util.List getDepartureAddresses(boolean p0)throws com.idega.data.IDOFinderException, java.rmi.RemoteException;
  public int getDiscountTypeId() throws java.rmi.RemoteException;
  public java.sql.Timestamp getEditDate() throws java.rmi.RemoteException;
+ public com.idega.core.data.ICFile getFile() throws java.rmi.RemoteException;
  public int getFileId() throws java.rmi.RemoteException;
  public java.util.Collection getICFile()throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
  public int getID() throws java.rmi.RemoteException;

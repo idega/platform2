@@ -104,6 +104,11 @@ public class ProductItemMetaData extends ProductItem {
 						}
 						multiTable.add(getHeaderText(_iwrb.getLocalizedString(METADATA + key, key)), 1, 1);
 					}
+					else if (type.equals(IWMetaDataConstants.METADATA_TYPE_LINK)) {
+						metaTable.add(getHeaderText(_iwrb.getLocalizedString(METADATA + key, key) + ":"), 1, row);
+						metaTable.add(getLink(meta, meta), 3, row++);
+						metaTable.setHeight(row++, 1);
+					}
 					else {
 						metaTable.add(getHeaderText(_iwrb.getLocalizedString(METADATA + key, key) + ":"), 1, row);
 						if (type.equals(IWMetaDataConstants.METADATA_TYPE_MULTIVALUED_SINGLE_SELECT))

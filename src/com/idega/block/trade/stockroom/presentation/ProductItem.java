@@ -19,6 +19,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 
 /**
@@ -41,8 +42,8 @@ public class ProductItem extends Block {
   protected IWResourceBundle _iwrb;
   protected IWBundle _iwb;
 
-  private String _fontStyle;
-  private String _headerFontStyle;
+  protected String _fontStyle;
+  protected String _headerFontStyle;
 
   public ProductItem() {
   }
@@ -90,6 +91,15 @@ public class ProductItem extends Block {
       text.setFontStyle(this._fontStyle);
     }
     return text;
+  }
+
+  protected Link getLink(String content, String URL) {
+		Link link = new Link(content, URL);
+		link.setTarget(Link.TARGET_NEW_WINDOW);
+		if (this._fontStyle != null) {
+			link.setFontStyle(this._fontStyle);
+		}
+		return link;
   }
 
   protected Text getHeaderText(String content) {

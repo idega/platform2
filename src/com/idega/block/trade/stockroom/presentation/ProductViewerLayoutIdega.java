@@ -124,7 +124,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 				table.add(productViewer._seperator, 1, row++);
 			}
 			else {
-				table.setHeight(1, row++, productViewer._spaceBetween);
+				table.setHeight(1, row++, String.valueOf(productViewer._spaceBetween));
 			}
 		}
 
@@ -164,12 +164,12 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 		table.add(description, 1, row);
 		
 		if (productViewer._showMetaData && _product != null) {
-			table.setHeight(1, ++row, productViewer._spaceBetween);
+			table.setHeight(1, ++row, String.valueOf(productViewer._spaceBetween));
 			table.add(_metadata, 1, ++row);
 		}
 
 		if (productViewer._showProductLink && _product != null) {
-			table.setHeight(1, ++row, productViewer._spaceBetween);
+			table.setHeight(1, ++row, String.valueOf(productViewer._spaceBetween));
 
 			Link link = new Link();
 			if (productViewer._productImage != null)

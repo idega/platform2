@@ -23,44 +23,48 @@ import com.idega.presentation.text.Text;
 
 public class ProductItemPrice extends ProductItem {
 
-  private String defaultText = "Product Price";
-  private boolean showCurrency = false;
+	private String defaultText = "Product Price";
+	private boolean showCurrency = false;
 
-  public ProductItemPrice() { }
-  public ProductItemPrice(int productId) throws RemoteException, FinderException{
-    super(productId);
-  }
-  public ProductItemPrice(Product product) throws RemoteException{
-    super(product);
-  }
-
-  public void main(IWContext iwc) throws Exception{
-    super.main(iwc);
-    drawObject(iwc);
-  }
-
-  private void drawObject(IWContext iwc) throws RemoteException{
-    Text text = getText(defaultText);
-    if ( _product != null ) {
-      ProductPrice pPrice = getStockroomBusiness(iwc).getPrice(_product);
-      if (pPrice != null && pPrice.getPrice() > 0 ) {
-	NumberFormat format = NumberFormat.getInstance(iwc.getCurrentLocale());
-	text.setText(format.format((double)pPrice.getPrice()));
-	if (this.showCurrency) {
-	  try {
-	    text.addToText(Text.NON_BREAKING_SPACE);
-	    text.addToText(((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId()).getCurrencyAbbreviation());
-	  }catch (SQLException sql) {}
+	public ProductItemPrice() {
 	}
-      }else {
-	text.setText("");
-      }
-    }
-    add(text);
-  }
+	public ProductItemPrice(int productId) throws RemoteException, FinderException {
+		super(productId);
+	}
+	public ProductItemPrice(Product product) throws RemoteException {
+		super(product);
+	}
 
-  public void setShowCurrency(boolean show) {
-    this.showCurrency = show;
-  }
+	public void main(IWContext iwc) throws Exception {
+		super.main(iwc);
+		drawObject(iwc);
+	}
+
+	private void drawObject(IWContext iwc) throws RemoteException {
+		Text text = getText(defaultText);
+		if (_product != null) {
+			ProductPrice pPrice = getStockroomBusiness(iwc).getPrice(_product);
+			if (pPrice != null && pPrice.getPrice() > 0) {
+				NumberFormat format = NumberFormat.getInstance(iwc.getCurrentLocale());
+				text.setText(format.format((double) pPrice.getPrice()));
+				if (this.showCurrency) {
+					try {
+						text.addToText(Text.NON_BREAKING_SPACE);
+						text.addToText(((com.idega.block.trade.data.CurrencyHome) com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId()).getCurrencyAbbreviation());
+					}
+					catch (SQLException sql) {
+					}
+				}
+			}
+			else {
+				text.setText("");
+			}
+		}
+		add(text);
+	}
+
+	public void setShowCurrency(boolean show) {
+		this.showCurrency = show;
+	}
 
 }
