@@ -7,7 +7,6 @@ import com.idega.presentation.*;
 import com.idega.block.building.data.*;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.business.BuildingBusiness;
-import com.idega.block.media.presentation.SimpleChooserWindow;
 import java.sql.SQLException;
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -530,8 +529,6 @@ public class BuildingEditor extends com.idega.presentation.Block{
     imageInsert.setHasUseBox(false);
     imageInsert.setMaxImageWidth(140);
     imageInsert.setHiddenInputName(name);
-    //imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
-    //imageInsert.setDefaultImageURL(sMemberImageURL);
     imageObject = imageInsert;
     return imageObject;
   }

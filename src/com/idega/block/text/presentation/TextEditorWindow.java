@@ -263,7 +263,6 @@ public class TextEditorWindow extends AbstractChooserWindow{
     ImageInserter imageInsert = new ImageInserter();
     imageInsert.setImSessionImageName(prmImageId);
     imageInsert.setUseBoxParameterName(prmUseImage);
-    //imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
     imageInsert.setMaxImageWidth(130);
     imageInsert.setHasUseBox(false);
     imageInsert.setSelected(false);

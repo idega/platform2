@@ -506,7 +506,6 @@ private IWResourceBundle iwrb;
 /*
     ImageInserter imageInsert = new ImageInserter();
     imageInsert.setImSessionImageName(prmImageId);
-    imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
     Link propslink = null;
 */
 
@@ -569,7 +568,6 @@ private IWResourceBundle iwrb;
       ImageInserter imageInsert = new ImageInserter();
       imageInsert.setImSessionImageName(prmImageId);
       imageInsert.setUseBoxParameterName(prmUseImage);
-      //imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
       imageInsert.setMaxImageWidth(130);
       imageInsert.setHasUseBox(false);
       imageInsert.setSelected(false);

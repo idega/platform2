@@ -158,7 +158,6 @@ public CalendarTypeEditor(){
     addLeft(_iwrb.getLocalizedString("name","Name")+":",nameInput,true);
 
     ImageInserter image = new ImageInserter(CalendarBusiness.PARAMETER_FILE_ID);
-      image.setWindowClassToOpen(com.idega.block.media.presentation.SimpleChooserWindow.class);
       image.setHasUseBox(false);
       if ( type != null && type.getImageID() != -1 )
         image.setImageId(type.getImageID());

@@ -234,7 +234,6 @@ public BannerEditorWindow(){
     addLeft(_iwrb.getLocalizedString("valid_to","Valid to")+": ",endDate,true);
 
     ImageInserter image = new ImageInserter(BannerBusiness.PARAMETER_FILE_ID);
-      image.setWindowClassToOpen(com.idega.block.media.presentation.SimpleChooserWindow.class);
       image.setHasUseBox(false);
     addRight(_iwrb.getLocalizedString("new_image","New image")+":",image,true,false);
 
