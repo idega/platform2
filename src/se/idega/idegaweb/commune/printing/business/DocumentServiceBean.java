@@ -1,5 +1,5 @@
 /*
- * $Id: DocumentServiceBean.java,v 1.1 2004/11/04 20:34:48 aron Exp $
+ * $Id: DocumentServiceBean.java,v 1.2 2004/11/16 08:22:39 aron Exp $
  * Created on 15.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -45,10 +45,10 @@ import com.lowagie.text.pdf.PdfReader;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/04 20:34:48 $ by $Author: aron $
+ *  Last modified: $Date: 2004/11/16 08:22:39 $ by $Author: aron $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DocumentServiceBean extends IBOServiceBean  implements DocumentService{
     
@@ -136,7 +136,6 @@ public class DocumentServiceBean extends IBOServiceBean  implements DocumentServ
                    ++i;
                    page = writer.getImportedPage(reader, i);
                    writer.addPage(page);
-                   System.out.println("Processed page " + i);
                }
                lettersProcessed++;
                storeStreamToICFile(iwuc,msgBuiz,msg,mis,fileName,buffer.length(),flagPrinted);
