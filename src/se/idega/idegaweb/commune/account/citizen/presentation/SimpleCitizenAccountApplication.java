@@ -46,12 +46,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/03/20 14:41:50 $ by $Author: laddi $
+ * Last modified: $Date: 2005/03/20 15:35:40 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -221,7 +221,7 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 		table.add(getHeader(SSN_KEY, SSN_DEFAULT), 1, row);
 		table.add(getErrorText("*"), 1, row++);
 		TextInput ssnInput = getSingleInput(iwc, SSN_KEY, 25, true);
-		ssnInput.setAsPersonalID(iwc.getApplication().getDefaultLocale(), localize(ERROR_NOT_VALID_PERSONAL_ID, ERROR_NOT_VALID_PERSONAL_ID_DEFAULT));
+		ssnInput.setAsPersonalID(iwc.getApplicationSettings().getDefaultLocale(), localize(ERROR_NOT_VALID_PERSONAL_ID, ERROR_NOT_VALID_PERSONAL_ID_DEFAULT));
 		table.add(ssnInput, 1, row++);
 
 		table.add(getHeader(EMAIL_KEY, EMAIL_DEFAULT), 1, row++);
