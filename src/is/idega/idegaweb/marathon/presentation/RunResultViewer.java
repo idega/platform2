@@ -25,6 +25,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Form;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -68,6 +69,8 @@ public class RunResultViewer extends Block {
 		} catch (FinderException e) {
 			e.printStackTrace();
 		}
+		
+		Form form = new Form();
 		Table table = new Table();
 
 		RunDistanceDropdownDouble runDisDropdownField = (RunDistanceDropdownDouble) getStyleObject(new RunDistanceDropdownDouble(), STYLENAME_INTERFACE);
@@ -97,7 +100,8 @@ public class RunResultViewer extends Block {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		add(table);
+		form.add(table);
+		add(form);
 	}
 	
 	/**
