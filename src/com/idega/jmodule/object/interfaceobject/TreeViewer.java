@@ -78,18 +78,42 @@ public void main(ModuleInfo modinfo){
     int[] parentArray = {};
     addNode(modinfo,tab,1,1,startNode,parentArray,'F',0,bundle);
 }
+/**@todo : find a better and faster way to store the Parent id's and use them to
+ * keep the tree open
+ *
+ */
+private ICTreeNode getParent(ICTreeNode node){
+ return node.getParentNode();
+}
 
 private ModuleObject getNodeText(ICTreeNode node,boolean nodeIsOpen,IWBundle bundle){
   Link proto = (Link)getLinkPrototype().clone();
   String nodeName = node.getNodeName();
   proto.setText(nodeName);
+
+  ICTreeNode parentNode = getParent(node);//change this method to optimize this procedure
+
   if(usesOnClick){
     proto.setURL("#");
     proto.setOnClick(ONCLICK_FUNCTION_NAME+"('"+nodeName+"','"+node.getNodeID()+"')");
-
   }
   else{
     proto.addParameter(nodeActionParameter,node.getNodeID());
+
+    /**@todo : find a better and faster way to store the Parent id's and use them here to
+     * keep the tree open
+     *
+     */
+    boolean useNodeActionOpenParameter = true;
+    while( parentNode!=null ){
+      if(useNodeActionOpenParameter){
+        proto.addParameter(NODE_ACTION_OPEN_PARAMETER,parentNode.getNodeID());
+      }
+      else proto.addParameter(NODE_PARAMETER,parentNode.getNodeID());
+
+      useNodeActionOpenParameter = false;
+      parentNode=getParent(parentNode);//change this method to optimize this procedure
+    }
   }
   return proto;
 }
@@ -97,8 +121,13 @@ private ModuleObject getNodeText(ICTreeNode node,boolean nodeIsOpen,IWBundle bun
 private ModuleObject getNodeIcon(ICTreeNode node,boolean nodeIsOpen,IWBundle bundle){
   Link proto = (Link)getLinkPrototype().clone();
   Image image = null;
+
+  ICTreeNode parentNode = getParent(node);//change this method to optimize this procedure
+
+
   if(this.isLeafNode(node)){
-    image = bundle.getImage(TREEVIEW_PREFIX+TREEVIEWER_NODE_LEAF+GIF_SUFFIX);
+    if( startNode!= node ) image = bundle.getImage(TREEVIEW_PREFIX+TREEVIEWER_NODE_LEAF+GIF_SUFFIX);
+    else image = bundle.getImage(TREEVIEW_PREFIX+TREEVIEWER_NODE_CLOSED+GIF_SUFFIX);
   }
   else if(nodeIsOpen){
     image = bundle.getImage(TREEVIEW_PREFIX+TREEVIEWER_NODE_OPEN+GIF_SUFFIX);
@@ -114,20 +143,37 @@ private ModuleObject getNodeIcon(ICTreeNode node,boolean nodeIsOpen,IWBundle bun
   }
   else{
     proto.addParameter(nodeActionParameter,node.getNodeID());
+    /**@todo : find a better and faster way to store the Parent id's and use them here to
+     * keep the tree open
+     *
+     */
+    boolean useNodeActionOpenParameter = true;
+    while( parentNode!=null ){
+      if(useNodeActionOpenParameter){
+        proto.addParameter(NODE_ACTION_OPEN_PARAMETER,parentNode.getNodeID());
+      }
+      else proto.addParameter(NODE_PARAMETER,parentNode.getNodeID());
+
+      useNodeActionOpenParameter = false;
+      parentNode=getParent(parentNode);//change this method to optimize this procedure
+    }
+
   }
   return proto;
 }
 
 
 private ModuleObject getTreeLines(ICTreeNode node,boolean nodeOpen, int[] parentarray,char typeOfNode,IWBundle bundle){
-
+  Image image;
   if(isLeafNode(node)){
-      Image image = bundle.getImage(TREEVIEW_PREFIX+TREEVIEW_LINE+typeOfNode+GIF_SUFFIX);
+      if( startNode!=node ) image = bundle.getImage(TREEVIEW_PREFIX+TREEVIEW_LINE+typeOfNode+GIF_SUFFIX);
+      else image = bundle.getImage("transparentcell.gif");//if it is the top node
+
       return image;
   }
   else{
     if(nodeOpen){
-      Image image = bundle.getImage(TREEVIEW_PREFIX+TREEVIEW_MINUS+typeOfNode+GIF_SUFFIX);
+      image = bundle.getImage(TREEVIEW_PREFIX+TREEVIEW_MINUS+typeOfNode+GIF_SUFFIX);
       Link link = getLinesLinkCloned();
       link.setModuleObject(image);
       link.setToMaintainGlobalParameters();
@@ -136,7 +182,7 @@ private ModuleObject getTreeLines(ICTreeNode node,boolean nodeOpen, int[] parent
       return link;
     }
     else{
-      Image image = bundle.getImage(TREEVIEW_PREFIX+TREEVIEW_PLUS+typeOfNode+GIF_SUFFIX);
+      image = bundle.getImage(TREEVIEW_PREFIX+TREEVIEW_PLUS+typeOfNode+GIF_SUFFIX);
       Link link = getLinesLinkCloned();
       link.setModuleObject(image);
       link.setToMaintainGlobalParameters();
@@ -171,7 +217,15 @@ private int addNode(ModuleInfo modinfo,Table table,int xpos,int ypos,ICTreeNode 
     getTable().resize(tableColumns,tableRows);
   }
   table.add(getNodeIcon(node,nodeIsOpen,bundle),xpos+1,ypos);
+
+  table.setAlignment(xpos+1,ypos,"left");
+  table.setVerticalAlignment(xpos+1,ypos,"top");
+
   table.add(getNodeText(node,nodeIsOpen,bundle),xpos+2,ypos);
+
+  table.setAlignment(xpos+2,ypos,"left");
+  table.setVerticalAlignment(xpos+1,ypos,"top");
+
   table.mergeCells(xpos+2,tableRows,tableColumns,tableRows);
 
 
@@ -180,6 +234,10 @@ private int addNode(ModuleInfo modinfo,Table table,int xpos,int ypos,ICTreeNode 
     int dummy = recurseLevel-1;;
     while(dummy>0){
         table.add(getSimpleTreeLine(bundle),xpos-dummy,ypos);
+
+        table.setAlignment(xpos-dummy,ypos,"left");
+        table.setVerticalAlignment(xpos-dummy,ypos,"top");
+
         dummy--;
     }
   }
@@ -240,8 +298,7 @@ private Link getLinkPrototype(){
 }
 
 private boolean isLeafNode(ICTreeNode node){
-  boolean theReturn = node.isLeaf();
-  return theReturn;
+  return node.isLeaf();
 }
 
 private boolean isNodeOpen(ICTreeNode node,int nestLevel,ModuleInfo modinfo){
