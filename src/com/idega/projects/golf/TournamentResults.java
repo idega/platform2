@@ -188,6 +188,10 @@ public class TournamentResults extends JModuleObject {
                 seeScores.addParameter("member_id",collector.getMemberId());
                 seeScores.addParameter("tournament_id",tournamentId_);
                 seeScores.addParameter("tournament_group_id",collector.getTournamentGroupId());
+        Link seeScoresMember = new Link(memberText);
+                seeScoresMember.addParameter("member_id",collector.getMemberId());
+                seeScoresMember.addParameter("tournament_id",tournamentId_);
+                seeScoresMember.addParameter("tournament_group_id",collector.getTournamentGroupId());
 
         Text positionText = new Text(Integer.toString(a+1));
           positionText.setFontSize(Text.FONT_SIZE_7_HTML_1);
@@ -319,7 +323,7 @@ public class TournamentResults extends JModuleObject {
 
         myTable.add(positionText,1,a+3);
         myTable.add(seeScores,2,a+3);
-        myTable.add(memberText,2,a+3);
+        myTable.add(seeScoresMember,2,a+3);
         myTable.add(clubText,3,a+3);
         if ( finalScore > 0 ) {
           myTable.add(handicapText,4,a+3);
