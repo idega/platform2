@@ -19,7 +19,6 @@ import java.util.List;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
@@ -276,7 +275,8 @@ public class RegistrationForMembers extends GolfBlock {
             table.add("2",1,2);
             table.add(getText(localize("tournament.press_the","Press the")+" \""+localize("tournament.save","Save")+"\" "+localize("tournament.button_located_at_the_bottom_of_the_page","button located at the bottom of the page.")),2,2);
 
-          PresentationObject form = TournamentController.getStartingtimeTable(tournament,tournament_round_id,false,true);
+          TournamentStartingtimeList form = TournamentController.getStartingtimeTable(tournament,tournament_round_id,false,true,false,true);
+          form.setSubmitButtonParameter("action", "directRegistrationMembersChosen");
 
           add(table);
           add("<hr>");
