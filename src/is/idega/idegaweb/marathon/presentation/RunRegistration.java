@@ -365,17 +365,20 @@ public class RunRegistration extends Block {
 		}
 		
 		tShirtField = (DropdownMenu) getStyleObject(new DropdownMenu(IWMarathonConstants.PARAMETER_TSHIRT), STYLENAME_INTERFACE);
+		SelectOption empty = new SelectOption(iwrb.getLocalizedString("run_reg.select_tee_shirt_size", "Select tee-shirt size"), IWMarathonConstants.PARAMETER_TSHIRT_S);
 		small = new SelectOption(iwrb.getLocalizedString("run_reg.small", "Small"), IWMarathonConstants.PARAMETER_TSHIRT_S);
 		medium = new SelectOption(iwrb.getLocalizedString("run_reg.medium", "Medium"), IWMarathonConstants.PARAMETER_TSHIRT_M);
 		large = new SelectOption(iwrb.getLocalizedString("run_reg.large", "Large"), IWMarathonConstants.PARAMETER_TSHIRT_L);
 		xlarge = new SelectOption(iwrb.getLocalizedString("run_reg.xlarge", "Larger"), IWMarathonConstants.PARAMETER_TSHIRT_XL);
 		xxlarge = new SelectOption(iwrb.getLocalizedString("run_reg.xxlarge", "Largest"), IWMarathonConstants.PARAMETER_TSHIRT_XXL);
 
+		tShirtField.addOption(empty);
 		tShirtField.addOption(small);
 		tShirtField.addOption(medium);
 		tShirtField.addOption(large);
 		tShirtField.addOption(xlarge);
 		tShirtField.addOption(xxlarge);
+		tShirtField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.must_select_shirt_size", "You must select tee-shirt size"));
 
 		//step one fields end
 
@@ -548,10 +551,7 @@ public class RunRegistration extends Block {
 		t.setHeight(row++, 8);
 
 		t.add(tShirtText, column, row);
-		if (!isIcelandic) {
-			t.add(redStar, column, row++);
-		}
-		row++;
+		t.add(redStar, column, row++);
 		t.setHeight(row++, 3);
 		t.add(tShirtField, column, row++);
 
@@ -592,7 +592,8 @@ public class RunRegistration extends Block {
 			Currency ISK = Currency.getInstance("ISK");
 			Currency EUR = Currency.getInstance("EUR");
 	
-			t.add(chipText, column, row++);
+			t.add(chipText, column, row);
+			t.add(redStar, column, row++);
 			t.setHeight(row++, 3);
 			t.add(ownChipField, column, row);
 			t.add(ownChipText, column, row);
@@ -620,32 +621,36 @@ public class RunRegistration extends Block {
 			}
 			
 			t.setHeight(row++, 8);
+			
+			Text groupCompetitionText = new Text(iwrb.getLocalizedString("run_reg.group_competition_info", "Information about group competition."));
+
+			t.add(groupCompetitionText, column, row++);
+			t.setHeight(row++, 3);
+			t.add(groupCompetitionField, column, row);
+			t.add(Text.getNonBrakingSpace(), column, row);
+			t.add(groupCompetitionText, column, row++);
+
+			t.setHeight(row++, 8);
+
+			t.add(groupNameText, column, row++);
+			t.setHeight(row++, 3);
+			t.add(groupNameField, column, row++);
+
+			t.setHeight(row++, 8);
+
+			t.add(bestTimeText, column, row++);
+			t.setHeight(row++, 3);
+			t.add(bestTimeField, column, row++);
+
+			t.setHeight(row++, 8);
+
+			t.add(goalTimeText, column, row++);
+			t.setHeight(row++, 3);
+			t.add(goalTimeField, column, row++);
+			
+			t.setHeight(row++, 8);
 		}
 
-		t.add(groupCompetitionField, column, row);
-		t.add(Text.getNonBrakingSpace(), column, row);
-		t.add(groupCompetitionText, column, row++);
-
-		t.setHeight(row++, 8);
-
-		t.add(groupNameText, column, row++);
-		t.setHeight(row++, 3);
-		t.add(groupNameField, column, row++);
-
-		t.setHeight(row++, 8);
-
-		t.add(bestTimeText, column, row++);
-		t.setHeight(row++, 3);
-		t.add(bestTimeField, column, row++);
-
-		t.setHeight(row++, 8);
-
-		t.add(goalTimeText, column, row++);
-		t.setHeight(row++, 3);
-		t.add(goalTimeField, column, row++);
-		
-		t.setHeight(row++, 8);
-		
 		agreeField.setMustBeSelected(iwrb.getLocalizedString("run_reg.must_agree_registration", "You have to agree/disagree on being fit to participate."));
 		t.add(agreementText,column,row++);
 		t.setHeight(row++, 3);
