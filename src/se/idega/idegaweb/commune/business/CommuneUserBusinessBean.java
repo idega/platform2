@@ -13,6 +13,7 @@ import java.util.StringTokenizer;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import se.idega.block.pki.business.NBSLoginBusinessBean;
+import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.user.business.DeceasedUserBusiness;
 import com.idega.block.school.business.SchoolBusiness;
@@ -20,7 +21,6 @@ import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
-import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.LoginInfoHome;
 import com.idega.core.accesscontrol.data.LoginTable;
@@ -79,8 +79,10 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	private Group rootProtectedCitizenGroup;
 	private Group rootCustomerChoiceGroup;
 	private Group rootDeceasedCitizensGroup;
-
+	
 	CommuneBusiness cBiz = null;
+	
+	private CareBusiness careBusiness = null;
 
 	private CommuneBusiness getCommuneBusiness() throws IBOLookupException {
 		if(null==cBiz) {
@@ -247,7 +249,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public User createProviderAdministrator(String firstname, String middlename, String lastname, School school) throws javax.ejb.FinderException, CreateException, RemoteException {
 		User newUser;
 		//SchoolBusiness schlBuiz = (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
-		Group rootSchoolAdminGroup = getRootProviderAdministratorGroup();
+		Group rootSchoolAdminGroup = getCareBusiness().getRootProviderAdministratorGroup();
 		Group schoolGroup = getGroupBusiness().getGroupHome().findByPrimaryKey(new Integer(school.getHeadmasterGroupId()));
 		newUser = createUser(firstname, middlename, lastname, rootSchoolAdminGroup);
 		//rootSchoolAdminGroup.addGroup(newUser);
@@ -260,7 +262,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public User createSchoolAdministrator(String firstname, String middlename, String lastname, School school) throws javax.ejb.FinderException, CreateException, RemoteException {
 		User newUser;
 		//SchoolBusiness schlBuiz = (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
-		Group rootSchoolAdminGroup = getRootSchoolAdministratorGroup();
+		Group rootSchoolAdminGroup = getCareBusiness().getRootSchoolAdministratorGroup();
 		Group schoolGroup = getGroupBusiness().getGroupHome().findByPrimaryKey(new Integer(school.getHeadmasterGroupId()));
 		newUser = createUser(firstname, middlename, lastname, rootSchoolAdminGroup);
 		//rootSchoolAdminGroup.addGroup(newUser);
@@ -428,73 +430,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return rootProtectedCitizenGroup;
 	}
 
-	/**
-	* Returns or creates (if not available) the default usergroup all ChildCare(provider) administors have as their primary group.
-	* @throws CreateException if it failed to create the group.
-	* @throws FinderException if it failed to locate the group.
-	*/
-	public Group getRootProviderAdministratorGroup() throws CreateException, FinderException, RemoteException {
-		return getSchoolBusiness().getRootProviderAdministratorGroup();
-		/*
-		Group rootGroup = null;
-		//create the default group
-		String ROOT_SCHOOL_ADMINISTRATORS_GROUP = "provider_administrators_group_id";
-		IWBundle bundle = getCommuneBundle();
-		String groupId = bundle.getProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP);
-		if (groupId != null)
-		{
-			rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
-		} else
-		{
-			System.err.println("trying to store Commune Root school administrators group");
-			//@todo this seems a wrong way to do things
-			GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
-			GroupType type = typeHome.create();
-			rootGroup =
-				getUserBusiness().getGroupBusiness().createGroup(
-					"Provider Administrators",
-					"The Commune Root Provider Administrators Group.",
-					typeHome.getGeneralGroupTypeString());
-			bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
-		}
-		return rootGroup;
-		*/
-	}
-	public Group getRootMusicSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException {
-		return getSchoolBusiness().getRootMusicSchoolAdministratorGroup();
-	}
-	/**
-	* Returns or creates (if not available) the default usergroup all school administors have as their primary group.
-	* @throws CreateException if it failed to create the group.
-	* @throws FinderException if it failed to locate the group.
-	*/
-	public Group getRootSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException {
-		return getSchoolBusiness().getRootSchoolAdministratorGroup();
-		/*		
-				Group rootGroup = null;
-				//create the default group
-				String ROOT_SCHOOL_ADMINISTRATORS_GROUP = "school_administrators_group_id";
-				IWBundle bundle = getCommuneBundle();
-				String groupId = bundle.getProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP);
-				if (groupId != null)
-				{
-					rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
-				} else
-				{
-					System.err.println("trying to store Commune Root school administrators group");
-					//@todo this seems a wrong way to do things
-					GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
-					GroupType type = typeHome.create();
-					rootGroup =
-						getUserBusiness().getGroupBusiness().createGroup(
-							"School Administrators",
-							"The Commune Root School Administrators Group.",
-							typeHome.getGeneralGroupTypeString());
-					bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
-				}
-				return rootGroup;
-		*/
-	}
+
+
 	/**
 	* Returns or creates (if not available) the default usergroup all commune administors have as their primary group.
 	* @throws CreateException if it failed to create the group.
@@ -558,7 +495,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 */
 	public School getFirstManagingSchoolForUser(User user) throws FinderException, RemoteException {
 		try {
-			Group rootGroup = getRootSchoolAdministratorGroup();
+			Group rootGroup = getCareBusiness().getRootSchoolAdministratorGroup();
 			if (user.getPrimaryGroup().equals(rootGroup)) {
 				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
 				Collection schoolIds = sub.getSchools(user);
@@ -595,7 +532,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 */
 	public School getFirstManagingMusicSchoolForUser(User user) throws FinderException, RemoteException {
 		try {
-			Group rootGroup = getRootMusicSchoolAdministratorGroup();
+			Group rootGroup = getCareBusiness().getRootMusicSchoolAdministratorGroup();
 			if (user.getPrimaryGroupID() != -1 && user.getPrimaryGroup().equals(rootGroup)) {
 				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
 				Collection schoolIds = sub.getSchools(user);
@@ -625,7 +562,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 
 	public School getFirstManagingChildCareForUser(User user) throws FinderException, RemoteException {
 		try {
-			Group rootGroup = getRootProviderAdministratorGroup();
+			Group rootGroup = getCareBusiness().getRootProviderAdministratorGroup();
 			if (user.getPrimaryGroup().equals(rootGroup)) {
 				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
 				Collection schoolIds = sub.getSchools(user);
@@ -653,45 +590,6 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		throw new FinderException("No childcare found that " + user.getName() + " manages");
 	}
 	
-	public School getProviderForUser(User user) throws FinderException {
-		Group primaryGroup = user.getPrimaryGroup();
-		try {
-			if (primaryGroup.equals(getRootProviderAdministratorGroup()) || primaryGroup.equals(getRootSchoolAdministratorGroup()) || primaryGroup.equals(getRootMusicSchoolAdministratorGroup())) {
-				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
-				Collection schoolIds = sub.getSchools(user);
-				if (!schoolIds.isEmpty()) {
-					Iterator iter = schoolIds.iterator();
-					while (iter.hasNext()) {
-						School school = sub.getSchoolHome().findByPrimaryKey(iter.next());
-						return school;
-					}
-				}
-			}
-		}
-		catch (CreateException ce) {
-			ce.printStackTrace();
-		}
-		catch (RemoteException e) {
-			throw new IBORuntimeException(e.getMessage());
-		}
-		catch (FinderException e) {
-			Collection schools;
-			try {
-				schools = ((SchoolBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), SchoolBusiness.class)).getSchoolHome().findAllBySchoolGroup(user);
-			}
-			catch (RemoteException e1) {
-				throw new IBORuntimeException(e1.getMessage());
-			}
-			if (!schools.isEmpty()) {
-				Iterator iter = schools.iterator();
-				while (iter.hasNext()) {
-					return (School) iter.next();
-				}
-			}
-		}
-		throw new FinderException("No provider found for user: "+user.getPrimaryKey().toString());
-	}
-	
 	public boolean hasCitizenAccount(User user) throws RemoteException {
 		return hasUserLogin(user);
 	}
@@ -705,13 +603,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		return NBSLoginBusinessBean.createNBSLoginBusiness().hasBankLogin(user);			
 	}
-	
 
-	public SchoolBusiness getSchoolBusiness() throws RemoteException {
-		return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
-	}
-	
-		public boolean moveCitizenFromCommune(User user, Timestamp time, User performer) {
+	public boolean moveCitizenFromCommune(User user, Timestamp time, User performer) {
 		/*UserTransaction transaction =  getSessionContext().getUserTransaction();
 		
 		try{
@@ -1243,4 +1136,10 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
         return addr;
     }
 
+	private CareBusiness getCareBusiness() throws RemoteException {
+		if (careBusiness == null) {
+			careBusiness = (CareBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CareBusiness.class);
+		}
+		return careBusiness;
+	}
 }

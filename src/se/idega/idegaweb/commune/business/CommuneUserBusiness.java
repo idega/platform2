@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneUserBusiness.java,v 1.42 2004/10/05 14:49:07 thomas Exp $
+ * $Id: CommuneUserBusiness.java,v 1.43 2004/10/13 15:29:57 thomas Exp $
  * Created on 18.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -30,10 +30,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/05 14:49:07 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/13 15:29:57 $ by $Author: thomas $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.42 $
+ * @version $Revision: 1.43 $
  */
 public interface CommuneUserBusiness extends IBOService, UserBusiness {
     /**
@@ -148,24 +148,6 @@ public interface CommuneUserBusiness extends IBOService, UserBusiness {
             FinderException, RemoteException;
 
     /**
-     * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getRootProviderAdministratorGroup
-     */
-    public Group getRootProviderAdministratorGroup() throws CreateException,
-            FinderException, RemoteException;
-
-    /**
-     * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getRootMusicSchoolAdministratorGroup
-     */
-    public Group getRootMusicSchoolAdministratorGroup() throws CreateException,
-            FinderException, RemoteException;
-
-    /**
-     * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getRootSchoolAdministratorGroup
-     */
-    public Group getRootSchoolAdministratorGroup() throws CreateException,
-            FinderException, RemoteException;
-
-    /**
      * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getRootCommuneAdministratorGroup
      */
     public Group getRootCommuneAdministratorGroup() throws CreateException,
@@ -201,12 +183,6 @@ public interface CommuneUserBusiness extends IBOService, UserBusiness {
             throws FinderException, RemoteException;
 
     /**
-     * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getProviderForUser
-     */
-    public School getProviderForUser(User user) throws FinderException,
-            java.rmi.RemoteException;
-
-    /**
      * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#hasCitizenAccount
      */
     public boolean hasCitizenAccount(User user) throws RemoteException;
@@ -220,11 +196,6 @@ public interface CommuneUserBusiness extends IBOService, UserBusiness {
      * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#hasBankLogin
      */
     public boolean hasBankLogin(User user) throws java.rmi.RemoteException;
-
-    /**
-     * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getSchoolBusiness
-     */
-    public SchoolBusiness getSchoolBusiness() throws RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#moveCitizenFromCommune

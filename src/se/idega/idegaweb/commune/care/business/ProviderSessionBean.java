@@ -7,11 +7,7 @@
 package se.idega.idegaweb.commune.care.business;
 
 import java.rmi.RemoteException;
-
 import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
@@ -67,7 +63,7 @@ public class ProviderSessionBean extends IBOSessionBean implements ProviderSessi
 		_provider = null;
 		if (user != null) {
 			try {
-				School school = getUserBusiness().getProviderForUser(user);
+				School school = getCareBusiness().getProviderForUser(user);
 				if (school != null) {
 					_provider = school;
 					_providerID = ((Integer) school.getPrimaryKey()).intValue();
@@ -84,10 +80,6 @@ public class ProviderSessionBean extends IBOSessionBean implements ProviderSessi
 		return _providerID;
 	}
 
-	public CommuneUserBusiness getUserBusiness() throws RemoteException {
-		return (CommuneUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CommuneUserBusiness.class);
-	}
-	
 	/**
 	 * @return Returns the provider.
 	 */
@@ -158,5 +150,9 @@ public class ProviderSessionBean extends IBOSessionBean implements ProviderSessi
 	 */
 	public void setStudyPathID(int pathID) {
 		this._studyPathID = pathID;
+	}
+	
+	private 	CareBusiness getCareBusiness() throws RemoteException {
+		return (CareBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CareBusiness.class);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderSession.java,v 1.1 2004/10/12 18:05:19 thomas Exp $
+ * $Id: ProviderSession.java,v 1.2 2004/10/13 15:29:57 thomas Exp $
  * Created on 28.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -20,21 +20,16 @@ import com.idega.business.IBOSession;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/12 18:05:19 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/13 15:29:57 $ by $Author: thomas $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface ProviderSession extends IBOSession {
     /**
      * @see se.idega.idegaweb.commune.care.business.ProviderSessionBean#getProviderID
      */
     public int getProviderID() throws java.rmi.RemoteException;
-
-    /**
-     * @see se.idega.idegaweb.commune.care.business.ProviderSessionBean#getUserBusiness
-     */
-    public CommuneUserBusiness getUserBusiness() throws RemoteException;
 
     /**
      * @see se.idega.idegaweb.commune.care.business.ProviderSessionBean#getProvider

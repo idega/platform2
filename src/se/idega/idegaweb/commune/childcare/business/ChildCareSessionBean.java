@@ -1,12 +1,10 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import java.rmi.RemoteException;
-
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
-
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
@@ -129,7 +127,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 		_childcareID = -1;
 		if (user != null) {
 			try {
-				School school = getCommuneUserBusiness().getProviderForUser(user);
+				School school = getCareBusiness().getProviderForUser(user);
 				if (school != null) {
 					_provider = school;
 					_childcareID = ((Integer) school.getPrimaryKey()).intValue();
@@ -418,5 +416,9 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 */
 	public void setCaseCode(String caseCode) {
 		_caseCode = caseCode;
+	}
+	
+	private CareBusiness getCareBusiness() throws RemoteException {
+		return (CareBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CareBusiness.class);
 	}
 }

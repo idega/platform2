@@ -1,5 +1,5 @@
 /*
- * $Id: PaymentAuthorizationBusinessBean.java,v 1.5 2004/10/07 13:42:10 thomas Exp $
+ * $Id: PaymentAuthorizationBusinessBean.java,v 1.6 2004/10/13 15:29:57 thomas Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -13,9 +13,7 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
@@ -25,8 +23,8 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.presentation.ManuallyPaymentEntriesList;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
-
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
@@ -44,7 +42,7 @@ import com.idega.user.data.User;
  * This business handles the logic for Payment authorisation
  * 
  * <p>
- * $Id: PaymentAuthorizationBusinessBean.java,v 1.5 2004/10/07 13:42:10 thomas Exp $
+ * $Id: PaymentAuthorizationBusinessBean.java,v 1.6 2004/10/13 15:29:57 thomas Exp $
  *
  * @author Kelly
  */
@@ -65,7 +63,7 @@ public class PaymentAuthorizationBusinessBean extends IBOServiceBean implements 
 		try {
 			int providerID = -1;
 			try{
-				School provider = getCommuneUserBusiness().getProviderForUser(user);
+				School provider = getCareBusiness().getProviderForUser(user);
 				providerID = Integer.parseInt(provider.getPrimaryKey().toString());
 			} catch(FinderException ex){
 				//If no provider for current user, and current user is administrator, read from the parameter set in the PaymentRecordMaintenance class
@@ -103,7 +101,7 @@ public class PaymentAuthorizationBusinessBean extends IBOServiceBean implements 
 		try {
 			int providerID = -1;		
 			try{
-				School provider = getCommuneUserBusiness().getProviderForUser(user);
+				School provider = getCareBusiness().getProviderForUser(user);
 				providerID = Integer.parseInt(provider.getPrimaryKey().toString());				
 			} catch(FinderException ex){
 				//If no provider for current user, and current user is administrator, read from the parameter set in the PaymentRecordMaintenance class
@@ -140,8 +138,7 @@ public class PaymentAuthorizationBusinessBean extends IBOServiceBean implements 
 			return true; }
 
 			// since no cert were cached, check current users group instaed
-			final int groupId = getCommuneUserBusiness()
-					.getRootAdministratorGroupID();
+			final int groupId = getCommuneUserBusiness().getRootAdministratorGroupID();
 			final GroupHome home = (GroupHome) IDOLookup.getHome(Group.class);
 			final Group communeGroup = home.findByPrimaryKey(new Integer(
 					groupId));
@@ -165,7 +162,7 @@ public class PaymentAuthorizationBusinessBean extends IBOServiceBean implements 
 	public String getProviderNameForUser(User user) {
 		String name = ""; 
 		try {
-			School provider = getCommuneUserBusiness().getProviderForUser(user);
+			School provider = getCareBusiness().getProviderForUser(user);
 			name = provider.getName();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -220,6 +217,13 @@ public class PaymentAuthorizationBusinessBean extends IBOServiceBean implements 
 	 */	
 	protected MessageBusiness getMessageBusiness() throws RemoteException {
 		return (MessageBusiness) this.getServiceInstance(MessageBusiness.class);
+	}
+	
+	/**	
+	 * Returns school commune business 
+	 */	
+	protected CareBusiness getCareBusiness() throws RemoteException {
+			return (CareBusiness) getServiceInstance(CareBusiness.class);
 	}
 	
 	/**	
