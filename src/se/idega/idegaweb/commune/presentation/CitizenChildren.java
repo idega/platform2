@@ -38,6 +38,8 @@ public class CitizenChildren extends CommuneBlock {
 	private static final String prmChildId = "comm_child_id";
 	private static final String prmChildSSN = "comm_child_ssn";
 	private String prmSubmitName = "submit_cits_child";
+	private boolean showSSNSearchForm = true;
+	
 
 	public CitizenChildren() {
 		buttonLabel = getText("");
@@ -63,7 +65,8 @@ public class CitizenChildren extends CommuneBlock {
 				}
 				row++;
 			}
-			T.add(getChildrenForm(iwc));
+			if(showSSNSearchForm)
+				T.add(getChildrenForm(iwc));
 			add(T);
 		}
 		else
@@ -150,5 +153,9 @@ public class CitizenChildren extends CommuneBlock {
 		catch (NoChildrenFound e) {
 		}
 		return new Vector();
+	}
+	
+	public void setShowSSNSearchForm( boolean showForm){
+		this.showSSNSearchForm = showForm;
 	}
 }
