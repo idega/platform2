@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import com.idega.block.user.business.UserInfoBusiness;
 import com.idega.block.user.business.UserInfoBusinessBean;
+import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.contact.data.PhoneType;
 import com.idega.core.location.data.Address;
@@ -213,7 +214,8 @@ public class GroupInfo extends Block {
 				} else {
 					container.add(", ");
 				}
-				String address = (String) emailIter.next();
+				Email email = (Email) emailIter.next();
+				String address = email.getEmailAddress();
 				Link link = new Link(address);
 				link.setURL("mailto:" + address);
 				link.setSessionId(false);
