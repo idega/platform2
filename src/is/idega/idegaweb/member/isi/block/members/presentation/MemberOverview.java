@@ -110,8 +110,8 @@ public class MemberOverview extends Block {
 		table.setColumns(4);
 		int row = 1;
 		
-		Image minusImg = comUserBundle.getImage("minus.gif");
-		Image plusImg = comUserBundle.getImage("plus.gif");
+		Image minusImg = _iwrb.getImage("minus.gif");
+		Image plusImg = _iwrb.getImage("plus.gif");
 
 		Link statusLink = new Link(showStatus?minusImg:plusImg);
 		statusLink.setBold();
@@ -356,6 +356,7 @@ public class MemberOverview extends Block {
 												   // value to last column
 												   // (notice that the first
 												   // column is the '+' or '-')
+		table.add(link, 1, row);
 		for (int i = 0; i < length; i++) {
 			if (headers[i] != null) {
 				Text histText = getStyleText(headers[i], STYLENAME_HEADER);
@@ -368,7 +369,7 @@ public class MemberOverview extends Block {
 			}
 		}
 		
-		table.add(link, 1, row);
+		
 
 		table.setCellpaddingLeft(1, row, 20);
 		table.setCellpaddingRight(table.getColumns(), row, 20);
