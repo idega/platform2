@@ -63,7 +63,7 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		addAttribute(COLUMN_NAME_CREATION_FROM_DATABASE_DONE, "Has the data been created from database?", true, true, Boolean.class);
     addAttribute(COLUMN_NAME_STATUS, "Status",true,true,String.class,30);
 		addAttribute(COLUMN_NAME_SENT, "Has the workreport been sent, finalized", true, true, Boolean.class);
-		addAttribute(COLUMN_NAME_SENT_REPORT, "Results from report check",true,true,String.class,10000);
+		addAttribute(COLUMN_NAME_SENT_REPORT, "Results from report check",true,true,String.class,3500);
 		
 		
 		addManyToManyRelationShip(WorkReportGroup.class);//so we can get the clubs related to leagues/divisions
