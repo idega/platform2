@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.24 2003/10/07 10:55:59 anders Exp $
+ * $Id: VATEditor.java,v 1.25 2003/10/10 12:45:19 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -23,6 +23,8 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Break;
 
+import com.idega.block.school.data.SchoolCategory;
+
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
@@ -39,10 +41,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATEditor is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/10/07 10:55:59 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/10 12:45:19 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -53,11 +55,13 @@ public class VATEditor extends AccountingBlock {
 	private final static int ACTION_OPEN = 4;
 	private final static int ACTION_SAVE = 5;
 	private final static int ACTION_DELETE = 6;
+	private final static int ACTION_COPY = 7;
 	
 	private final static String PP = "cacc_vat_"; // Parameter prefix 
 
 	private final static String PARAMETER_SEARCH_PERIOD_FROM = PP + "period_search_from";
 	private final static String PARAMETER_SEARCH_PERIOD_TO = PP + "period_search_to";
+	private final static String PARAMETER_OPERATIONAL_FIELD = PP + "operational_field";
 	private final static String PARAMETER_PERIOD_FROM = PP + "period_from";
 	private final static String PARAMETER_PERIOD_TO = PP + "period_to";
 	private final static String PARAMETER_DESCRIPTION = PP + "description";
@@ -66,6 +70,7 @@ public class VATEditor extends AccountingBlock {
 	private final static String PARAMETER_PROVIDER_TYPE_ID = PP + "provider_type_id";
 	private final static String PARAMETER_VAT_REGULATION_ID = PP + "vat_regulation_id";
 	private final static String PARAMETER_DELETE_ID = PP + "delete_id";
+	private final static String PARAMETER_COPY_ID = PP + "copy_id";
 	private final static String PARAMETER_SEARCH = PP + "search";
 	private final static String PARAMETER_NEW = PP + "new";
 	private final static String PARAMETER_SAVE = PP + "save";
@@ -85,17 +90,19 @@ public class VATEditor extends AccountingBlock {
 	private final static String KEY_PAYMENT_FLOW_TYPE = KP + "payment_flow_type";
 	private final static String KEY_PROVIDER_TYPE = KP + "provider_type";
 	private final static String KEY_OPERATIONAL_FIELD = KP + "operational_field";
-	private final static String KEY_OPERATIONAL_FIELD_MISSING = KP + "operational_field_missing";
+	private final static String KEY_OPERATIONAL_FIELD_SELECTOR_HEADER = KP+ "operational_field_selector_header";
 	private final static String KEY_PAYMENT_FLOW_TYPE_HEADER = KP + "payment_flow_type_header";
 	private final static String KEY_PROVIDER_TYPE_HEADER = KP + "provider_type_header";
 	private final static String KEY_SEARCH = KP + "search";
 	private final static String KEY_NEW = KP + "new";
 	private final static String KEY_SAVE = KP + "save";
 	private final static String KEY_EDIT = KP + "edit";
+	private final static String KEY_COPY = KP + "copy";
 	private final static String KEY_CANCEL = KP + "cancel";
 	private final static String KEY_DELETE = KP + "delete";
 	private final static String KEY_DELETE_CONFIRM = KP + "delete_confirm";
 	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
+	private final static String KEY_BUTTON_COPY = KP + "button_copy";
 	private final static String KEY_BUTTON_DELETE = KP + "button_delete";	
 
 	/**
@@ -118,7 +125,10 @@ public class VATEditor extends AccountingBlock {
 					handleNewAction(iwc);
 					break;
 				case ACTION_OPEN:
-					handleOpenAction(iwc);
+					handleOpenAction(iwc, false);
+					break;
+				case ACTION_COPY:
+					handleOpenAction(iwc, true);
 					break;
 				case ACTION_SAVE:
 					handleSaveAction(iwc);
@@ -150,6 +160,8 @@ public class VATEditor extends AccountingBlock {
 			action = ACTION_SAVE;
 		} else if (iwc.isParameterSet(PARAMETER_DELETE_ID)) {
 			action = ACTION_DELETE;
+		} else if (iwc.isParameterSet(PARAMETER_COPY_ID)) {
+			action = ACTION_COPY;
 		} else if (iwc.isParameterSet(PARAMETER_VAT_REGULATION_ID)) {
 			action = ACTION_OPEN;
 		}
@@ -208,13 +220,20 @@ public class VATEditor extends AccountingBlock {
 	/*
 	 * Handles the open action (link clicked in the list) for this block.
 	 */	
-	private void handleOpenAction(IWContext iwc) {
+	private void handleOpenAction(IWContext iwc, boolean isCopy) {
 		try {
+			int id = getIntParameter(iwc, PARAMETER_VAT_REGULATION_ID);
+			boolean isNew = false;
+			if (isCopy) {
+				id = getIntParameter(iwc, PARAMETER_COPY_ID);
+				isNew = true;
+			}
 			VATBusiness vb = getVATBusiness(iwc);
-			VATRegulation vr = vb.getVATRegulation(getIntParameter(iwc, PARAMETER_VAT_REGULATION_ID));
+			VATRegulation vr = vb.getVATRegulation(id);
+			id = isCopy ? -1 : id;
 			add(getVATRegulationForm(
 					iwc,
-					vr.getPrimaryKey().toString(),
+					"" + id,
 					formatDate(vr.getPeriodFrom(), 4),
 					formatDate(vr.getPeriodTo(), 4),
 					vr.getDescription(),
@@ -222,7 +241,7 @@ public class VATEditor extends AccountingBlock {
 					vr.getPaymentFlowTypeId(),
 					vr.getProviderTypeId(),
 					null,
-					false)
+					isNew)
 			);
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
@@ -238,24 +257,30 @@ public class VATEditor extends AccountingBlock {
 		String errorMessage = null;
 
 		try {
-			String operationalField = getSession().getOperationalField();
 			VATBusiness vb = getVATBusiness(iwc);
 			vb.saveVATRegulation(
 					getIntParameter(iwc, PARAMETER_VAT_REGULATION_ID),
 					parseDate(iwc.getParameter(PARAMETER_PERIOD_FROM)),
 					parseDate(iwc.getParameter(PARAMETER_PERIOD_TO)),
-					iwc.getParameter(PARAMETER_PERIOD_FROM),
-					iwc.getParameter(PARAMETER_PERIOD_TO),
-					iwc.getParameter(PARAMETER_DESCRIPTION),
-					iwc.getParameter(PARAMETER_VAT_PERCENT),
-					iwc.getParameter(PARAMETER_PAYMENT_FLOW_TYPE_ID),
-					iwc.getParameter(PARAMETER_PROVIDER_TYPE_ID),
-					operationalField);
+					getParameter(iwc, PARAMETER_PERIOD_FROM),
+					getParameter(iwc, PARAMETER_PERIOD_TO),
+					getParameter(iwc, PARAMETER_DESCRIPTION),
+					getParameter(iwc, PARAMETER_VAT_PERCENT),
+					getParameter(iwc, PARAMETER_PAYMENT_FLOW_TYPE_ID),
+					getParameter(iwc, PARAMETER_PROVIDER_TYPE_ID),
+					getParameter(iwc, PARAMETER_OPERATIONAL_FIELD));
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 			return;
 		} catch (VATException e) {
 			errorMessage = localize(e.getTextKey(), e.getDefaultText());
+		}
+
+		String operationalField = getParameter(iwc, PARAMETER_OPERATIONAL_FIELD);
+		if (operationalField.length() > 0) {
+			try {
+				getSession().setOperationalField(operationalField);
+			} catch (RemoteException e) {}
 		}
 		
 		if (errorMessage != null) {
@@ -335,6 +360,7 @@ public class VATEditor extends AccountingBlock {
 			Date periodFrom = parseDate(periodFromString);
 			Date periodTo = parseDate(periodToString);
 			String operationalField = getSession().getOperationalField();
+			operationalField = operationalField == null ? "" : operationalField;
 			try {
 				if (search == true) {
 					vatRegulations = vb.findVATRegulations(periodFrom, periodTo, periodFromString, periodToString, operationalField);
@@ -350,14 +376,15 @@ public class VATEditor extends AccountingBlock {
 			return t;
 		}
 
-		ListTable list = new ListTable(this, 7);
+		ListTable list = new ListTable(this, 8);
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
 		list.setLocalizedHeader(KEY_DESCRIPTION, "BenŠmning", 2);
 		list.setLocalizedHeader(KEY_VAT_PERCENT, "Procentsats", 3);
 		list.setLocalizedHeader(KEY_PAYMENT_FLOW_TYPE, "Stršm", 4);
 		list.setLocalizedHeader(KEY_PROVIDER_TYPE, "Anordnartyp", 5);
 		list.setLocalizedHeader(KEY_EDIT, "Redigera", 6);
-		list.setLocalizedHeader(KEY_DELETE, "Ta bort", 7);
+		list.setLocalizedHeader(KEY_COPY, "Kopiera", 7);
+		list.setLocalizedHeader(KEY_DELETE, "Ta bort", 8);
 
 		list.setColumnWidth(2, "27%");
 		list.setColumnWidth(6, "60");
@@ -378,6 +405,10 @@ public class VATEditor extends AccountingBlock {
 				Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera denna momssats")));
 				edit.addParameter(PARAMETER_VAT_REGULATION_ID, vr.getPrimaryKey().toString());
 				list.add(edit);
+
+				Link copy = new Link(getCopyIcon(localize(KEY_BUTTON_COPY, "Kopiera denna Œldersregel")));
+				copy.addParameter(PARAMETER_COPY_ID, vr.getPrimaryKey().toString());
+				list.add(copy);
 
 				SubmitButton delete = new SubmitButton(getDeleteIcon(localize(KEY_DELETE, "Radera")));
 				delete.setDescription(localize(KEY_BUTTON_DELETE, "Klicka här för att ta bort denna momssats"));
@@ -445,11 +476,7 @@ public class VATEditor extends AccountingBlock {
 		try {
 			operationalField = getSession().getOperationalField();
 		} catch (RemoteException e) {}
-		if (operationalField == null) {
-			table.add(getErrorText(localize(KEY_OPERATIONAL_FIELD_MISSING, "Ingen huvudverskamhet vald")), 2, row++);
-		} else {
-			table.add(getText(localizeOperationalField(iwc, operationalField)), 2, row++);
-		}
+		table.add(getOperationalFieldDropdownMenu(PARAMETER_OPERATIONAL_FIELD, operationalField), 2, row++); 
 		table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, row);
 		table.add(getTextInput(PARAMETER_PERIOD_FROM, periodFrom, 60), 2, row);
 		table.add(getText(" - "), 2, row);
@@ -541,16 +568,28 @@ public class VATEditor extends AccountingBlock {
 	}
 
 	/*
-	 * Returns a localized string for the specified operational field
+	 * Returns a DropdownMenu for operational fields. 
 	 */
-	private String localizeOperationalField(IWContext iwc, String operationalField) {
-		String localizedText = "";
+	private DropdownMenu getOperationalFieldDropdownMenu(String parameter, String operationalField) {
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
+		menu.addMenuElement("", localize(KEY_OPERATIONAL_FIELD_SELECTOR_HEADER, "Choose operational field"));
 		try {
-			VATBusiness vb = getVATBusiness(iwc);
-			String localizationKey = vb.getOperationalFieldLocalizationKey(operationalField);
-			localizedText = localize(localizationKey, localizationKey);
-		} catch (RemoteException e) {}
-		return localizedText;
+			Collection c = getBusiness().getExportBusiness().getAllOperationalFields();
+			if (c != null) {
+				Iterator iter = c.iterator();
+				while (iter.hasNext()) {
+					SchoolCategory sc = (SchoolCategory) iter.next();
+					String id = sc.getPrimaryKey().toString();
+					menu.addMenuElement(id, localize(sc.getLocalizedKey(), sc.getLocalizedKey()));
+				}
+				if (operationalField != null) {
+					menu.setSelectedElement(operationalField);
+				}
+			}		
+		} catch (Exception e) {
+			add(new ExceptionWrapper(e));
+		}
+		return menu;	
 	}
 	
 	/*
