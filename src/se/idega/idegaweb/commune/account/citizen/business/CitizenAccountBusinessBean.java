@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.83 2005/01/11 14:18:05 malin Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.84 2005/01/11 14:50:33 laddi Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -38,7 +38,6 @@ import se.idega.idegaweb.commune.account.citizen.data.CitizenApplicantPutChildre
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.message.business.MessageSession;
 import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookupException;
@@ -73,11 +72,11 @@ import com.idega.util.LocaleUtil;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/01/11 14:18:05 $ by $Author: malin $
+ * Last modified: $Date: 2005/01/11 14:50:33 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.83 $
+ * @version $Revision: 1.84 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -116,7 +115,6 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		UserTransaction transaction = null;
 		NBSLoginBusinessBean loginBusiness = new NBSLoginBusinessBean();
 		NBSLoggedOnInfo info = loginBusiness.getBankIDLoggedOnInfo(iwc);
-		MessageSession messageSession = null;
 				
 		try {
 			transaction = getSessionContext().getUserTransaction();
