@@ -27,6 +27,8 @@ private String parameterName;
 private String parameterValue;
 private String headerText;
 
+private static final String emptyString = "";
+
 public SubmitButton(){
 	this("","Submit");
 	setName(getDefaultName());
@@ -35,10 +37,12 @@ public SubmitButton(){
 public SubmitButton(Image defaultImage){
 	this(defaultImage,"");
 	setName(getDefaultName());
+  this.parameterName=getDefaultName();
 }
 
 public SubmitButton(Image defaultImage, String name){
 	this(defaultImage,name,"Submit");
+
 }
 
 public SubmitButton(Image defaultImage, String name, String value){
@@ -145,8 +149,10 @@ public void setStyle(String style) {
 public void main(ModuleInfo modinfo){
 
   if (usingControlParameter){
-    this.getParentForm().setControlParameter(parameterName,"");
-    this.setOnClick("this.form."+parameterName+".value='"+parameterValue+"'");
+    if(!parameterName.equals(emptyString)){
+      this.getParentForm().setControlParameter(parameterName,"");
+      this.setOnClick("this.form."+parameterName+".value='"+parameterValue+"'");
+    }
   }
 
 }
