@@ -64,10 +64,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/19 08:55:34 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/19 11:53:27 $ by $Author: staffan $
  *
- * @author <a href="http://www.staffannoteberg.com">Staffan Nï¿½teberg</a>
- * @version $Revision: 1.46 $
+ * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @version $Revision: 1.47 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -83,7 +83,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String CHECK_PERIOD_DEFAULT = "Checkperiod";
     private static final String CHECK_PERIOD_KEY = PREFIX + "check_period";
     private static final String CHECK_START_PERIOD_KEY = PREFIX + "check_start_period";
-    private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT = "Det gick inte att at bort fakturaunderlaget eller nï¿½gon av dess fakturarader";
+    private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT = "Det gick inte att at bort fakturaunderlaget eller någon av dess fakturarader";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY = PREFIX + "could_not_remove_invoice_compilation_or_records";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT = "Kunde inte ta bort fakturarad";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_KEY = PREFIX + "";
@@ -100,22 +100,22 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String DELETE_ROW_KEY = PREFIX + "delete_invoice_compilation";
     private static final String DOUBLE_POSTING_DEFAULT = "Motkontering";
     private static final String DOUBLE_POSTING_KEY = PREFIX + "double_posting";
-    private static final String EDIT_INVOICE_RECORD_DEFAULT = "ï¿½ndra fakturarad";
+    private static final String EDIT_INVOICE_RECORD_DEFAULT = "Ändra fakturarad";
     private static final String EDIT_INVOICE_RECORD_KEY = PREFIX + "edit_invoice_record";
-    private static final String EDIT_ROW_DEFAULT = "ï¿½ndra rad";
+    private static final String EDIT_ROW_DEFAULT = "Ändra rad";
     private static final String EDIT_ROW_KEY = PREFIX + "edit_row";
     private static final String END_PERIOD_DEFAULT = "T o m ";
     private static final String END_PERIOD_KEY = PREFIX + "end_period";
-    private static final String FIRST_NAME_DEFAULT = "Fï¿½rnamn";
+    private static final String FIRST_NAME_DEFAULT = "Förnamn";
     private static final String FIRST_NAME_KEY = PREFIX + "first_name";
     private static final String GO_BACK_DEFAULT = "Tillbaka";
     private static final String GO_BACK_KEY = PREFIX + "go_back";
     private static final String HEADER_KEY = PREFIX + "header";
     private static final String INVOICE_ADDRESS_DEFAULT = "Faktureringsadress";
     private static final String INVOICE_ADDRESS_KEY = PREFIX + "invoice_address";
-    private static final String INVOICE_COMPILATION_AND_RECORDS_REMOVED_DEFAULT = "Fakturaunderlaget och dess fakturarader ï¿½r nu borttagna";
+    private static final String INVOICE_COMPILATION_AND_RECORDS_REMOVED_DEFAULT = "Fakturaunderlaget och dess fakturarader är nu borttagna";
     private static final String INVOICE_COMPILATION_AND_RECORDS_REMOVED_KEY = PREFIX + "invoice_compilation_and_records_removed";
-    private static final String INVOICE_COMPILATION_CREATED_DEFAULT = "Fakturaunderlaget ï¿½r nu skapat";
+    private static final String INVOICE_COMPILATION_CREATED_DEFAULT = "Fakturaunderlaget är nu skapat";
     private static final String INVOICE_COMPILATION_CREATED_KEY = PREFIX + "invoice_compilation_created";
     private static final String INVOICE_COMPILATION_DEFAULT = "Faktureringsunderlag";
     private static final String INVOICE_COMPILATION_KEY = PREFIX + "invoice_compilation";
@@ -123,15 +123,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String INVOICE_COMPILATION_LIST_KEY = PREFIX + "invoice_compilation_list";
     private static final String INVOICE_RECEIVER_DEFAULT = "Fakturamottagare";
     private static final String INVOICE_RECEIVER_KEY = PREFIX + "invoice_receiver";
-    private static final String INVOICE_RECORD_CREATED_DEFAULT = "Fakturaraden ï¿½r nu skapad";
+    private static final String INVOICE_RECORD_CREATED_DEFAULT = "Fakturaraden är nu skapad";
     private static final String INVOICE_RECORD_CREATED_KEY = PREFIX + "invoice_record_created";
     private static final String INVOICE_RECORD_DEFAULT = "Fakturarad";
     private static final String INVOICE_RECORD_KEY = PREFIX + "invoice_record";
-    private static final String INVOICE_RECORD_REMOVED_DEFAULT = "Fakturaraden ï¿½r borttagen";
+    private static final String INVOICE_RECORD_REMOVED_DEFAULT = "Fakturaraden är borttagen";
     private static final String INVOICE_RECORD_REMOVED_KEY = PREFIX + "";
     private static final String INVOICE_TEXT_DEFAULT  = "Fakturatext";
     private static final String INVOICE_TEXT_KEY = PREFIX + "invoice_text";
-    private static final String JOURNAL_ENTRY_DATE_DEFAULT = "Bokfï¿½ringsdag";
+    private static final String JOURNAL_ENTRY_DATE_DEFAULT = "Bokföringsdag";
     private static final String JOURNAL_ENTRY_DATE_KEY = PREFIX + "journal_entry_date";
     private static final String LAST_NAME_DEFAULT = "Efternamn";
     private static final String LAST_NAME_KEY = PREFIX + "last_name";
@@ -141,9 +141,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String NAME_KEY = PREFIX + "name";
     private static final String NEW_DEFAULT = "Ny";
     private static final String NEW_KEY = PREFIX + "new";
-    private static final String NOTE_DEFAULT = "Anmï¿½rkning";
+    private static final String NOTE_DEFAULT = "Anmärkning";
     private static final String NOTE_KEY = PREFIX + "note";
-    private static final String NO_COMPILATION_FOUND_DEFAULT = "Ingen faktura hittades fï¿½r denna vï¿½rdnadshavare eller barn";
+    private static final String NO_COMPILATION_FOUND_DEFAULT = "Ingen faktura hittades för denna vårdnadshavare eller barn";
     private static final String NO_COMPILATION_FOUND_KEY = PREFIX + "no_compilation_found";
     private static final String NUMBER_OF_DAYS_DEFAULT = "Antal dagar";
     private static final String NUMBER_OF_DAYS_KEY = PREFIX + "number_of_days";
@@ -161,11 +161,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
     private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
-    private static final String REMARK_DEFAULT = "Anmï¿½rkning";
+    private static final String REMARK_DEFAULT = "Anmärkning";
     private static final String REMARK_KEY = PREFIX + "remark";
     private static final String RULE_TEXT_KEY = PREFIX + "rule_text";
-    private static final String SEARCH_DEFAULT = "Sï¿½k";
-    private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sï¿½k efter fakturamottagare";
+    private static final String SEARCH_DEFAULT = "Sök";
+    private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sök efter fakturamottagare";
     private static final String SEARCH_INVOICE_RECEIVER_KEY = PREFIX + "search_invoice_receiver";
     private static final String SEARCH_KEY = PREFIX + "search";
     private static final String SIGNATURE_DEFAULT = "Sigantur";
@@ -176,7 +176,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String START_PERIOD_KEY = PREFIX + "start_period";
     private static final String STATUS_DEFAULT = "Status";
     private static final String STATUS_KEY = PREFIX + "status";
-    private static final String TOO_MANY_RESULTS_DEFAULT = "Fï¿½r mï¿½nga sï¿½ktrï¿½ffar - fï¿½rsï¿½k att begrï¿½nsa dina sï¿½kkriterier";
+    private static final String TOO_MANY_RESULTS_DEFAULT = "För många sökträffar - försök att begränsa dina sökkriterier";
     private static final String TOO_MANY_RESULTS_KEY = PREFIX + "too_many_results";
     private static final String TOTAL_AMOUNT_DEFAULT = "Tot.belopp";
     private static final String TOTAL_AMOUNT_KEY = PREFIX + "total_amount";
@@ -193,7 +193,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String VAT_RULE_DEFAULT = "Momstyp";
     private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
     private static final String INVOICE_RECORD_UPDATED_KEY = PREFIX + "invoice_record_updated";
-    private static final String INVOICE_RECORD_UPDATED_DEFAULT = "Fakturaraden ï¿½r nu uppdaterad";
+    private static final String INVOICE_RECORD_UPDATED_DEFAULT = "Fakturaraden är nu uppdaterad";
 
     private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
@@ -327,9 +327,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                  new java.sql.Date (placementEndPeriod.getTime ()),
                  providerId, regulationSpecType, vatAmount, vatRule, ruleText,
                  placementId);
+        final String [][] parameters =
+                {{ACTION_KEY, ACTION_SHOW_COMPILATION + "" },
+                { INVOICE_COMPILATION_KEY, invoiceCompilation + "" }};
         final Table table = getConfirmTable
                 (INVOICE_RECORD_CREATED_KEY,
-                 INVOICE_RECORD_CREATED_DEFAULT);
+                 INVOICE_RECORD_CREATED_DEFAULT, parameters);
         add (createMainTable (CREATE_INVOICE_RECORD_KEY,
                               CREATE_INVOICE_RECORD_DEFAULT, table));
     }
@@ -404,43 +407,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         record.store ();
 
         //render
+        final String [][] parameters =
+                {{ACTION_KEY, ACTION_SHOW_COMPILATION + "" },
+                { INVOICE_COMPILATION_KEY, record.getInvoiceHeader () + ""}};
         final Table table = getConfirmTable
                 (INVOICE_RECORD_UPDATED_KEY,
-                 INVOICE_RECORD_UPDATED_DEFAULT);
+                 INVOICE_RECORD_UPDATED_DEFAULT, parameters);
         add (createMainTable (EDIT_INVOICE_RECORD_KEY,
                               EDIT_INVOICE_RECORD_DEFAULT, table));
-    }
-
-    private InvoiceHeader getInvoiceHeader (final IWContext context)
-        throws RemoteException, FinderException {
-        final InvoiceBusiness business = (InvoiceBusiness)
-                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
-        Integer headerId = getIntegerParameter (context,
-                                                INVOICE_COMPILATION_KEY);
-        if (null == headerId) {
-            final InvoiceRecord record = getInvoiceRecord (context);
-            headerId = new Integer (record.getInvoiceHeader ());
-        }
-        final InvoiceHeaderHome headerHome = business.getInvoiceHeaderHome ();
-        return headerHome.findByPrimaryKey (headerId);
-    }
-
-    private InvoiceRecord getInvoiceRecord (final IWContext context)
-        throws RemoteException, FinderException {
-        final InvoiceBusiness business = (InvoiceBusiness)
-                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
-        final Integer recordId = getIntegerParameter (context,
-                                                      INVOICE_RECORD_KEY);
-        final InvoiceRecordHome recordHome = business.getInvoiceRecordHome ();
-        return null != recordId ? recordHome.findByPrimaryKey (recordId) : null;
-    }
-    
-    private String getSignature (final User user) {
-        if (null == user) return "";
-        final String firstName = user.getFirstName ();
-        final String lastName = user.getLastName ();
-        return (firstName != null ? firstName.charAt (0) : ' ') + ""
-                + (lastName != null ? lastName.charAt (0) : ' ');
     }
 
     private void showNewRecordForm (final IWContext context)
@@ -599,157 +573,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             details.put (VAT_RULE_KEY, getSmallText (""));
         }
         addSmallText (details, RULE_TEXT_KEY, record.getRuleText ());
-        details.put (ACTION_KEY, getConfirmTable ("Tillbaka", "Tillbaka", new String [0][0]));
         details.put (HEADER_KEY, localize (INVOICE_RECORD_KEY,
                     INVOICE_RECORD_DEFAULT));
         renderRecordDetailsOrForm (context, details);
-    }
-
-    private User getUser (final IWContext context, final Integer id) {
-        try {
-            final UserBusiness userBusiness = (UserBusiness)
-                    IBOLookup.getServiceInstance (context, UserBusiness.class);
-            final UserHome userHome = userBusiness.getUserHome ();
-            return userHome.findByPrimaryKey (id);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private void renderRecordDetailsOrForm
-        (final IWContext context, final java.util.Map presentationObjects)
-        throws RemoteException, FinderException {
-        final InvoiceHeader header = getInvoiceHeader (context);
-		final User custodian
-                = getUser  (context, new Integer (header.getCustodianId ()));
-
-        // render form/details
-        final Table table = createTable (4);
-        setColumnWidthsEqual (table);
-        int row = 2;
-        int col = 1;
-        addOperationFieldRow (table, context, header, row++);
-        col = 1;
-        addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
-        addSmallText (table, formatSsn (custodian.getPersonalID ()), col++,
-                      row);
-        addSmallHeader (table, col++, row, NAME_KEY, NAME_DEFAULT, ":");
-        addSmallText (table, getUserName (custodian), col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, PLACEMENT_KEY, PLACEMENT_DEFAULT,
-                        ":");
-        table.mergeCells (col, row, table.getColumns (), row);
-        table.add ((PresentationObject) presentationObjects.get (RULE_TEXT_KEY),
-                   col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
-        table.mergeCells (col, row, table.getColumns (), row);
-        table.add ((PresentationObject) presentationObjects.get (PROVIDER_KEY),
-                   col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, INVOICE_TEXT_KEY,
-                        INVOICE_TEXT_DEFAULT, ":");
-        table.mergeCells (col, row, table.getColumns (), row);
-        table.add ((PresentationObject) presentationObjects.get
-                   (INVOICE_TEXT_KEY), col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, NUMBER_OF_DAYS_KEY,
-                        NUMBER_OF_DAYS_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get
-                   (NUMBER_OF_DAYS_KEY), col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, CHECK_PERIOD_KEY,
-                        CHECK_PERIOD_DEFAULT, ":");
-        addSmallHeader (table, col, row, START_PERIOD_KEY,
-                        START_PERIOD_DEFAULT);
-        table.add ((PresentationObject) presentationObjects.get
-                   (CHECK_START_PERIOD_KEY), col++,
-                   row);
-        addSmallHeader (table, col, row, END_PERIOD_KEY, END_PERIOD_DEFAULT);
-        table.add ((PresentationObject) presentationObjects.get
-                   (CHECK_END_PERIOD_KEY), col++,
-                   row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, PLACEMENT_PERIOD_KEY,
-                        PLACEMENT_PERIOD_DEFAULT, ":");
-        addSmallHeader (table, col, row, START_PERIOD_KEY,
-                        START_PERIOD_DEFAULT);
-        table.add ((PresentationObject) presentationObjects.get
-                   (PLACEMENT_START_PERIOD_KEY), col++, row);
-        addSmallHeader (table, col, row, END_PERIOD_KEY, END_PERIOD_DEFAULT);
-        table.add ((PresentationObject) presentationObjects.get
-                   (PLACEMENT_END_PERIOD_KEY), col++,
-                   row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, DATE_CREATED_KEY,
-                        DATE_CREATED_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get
-                   (DATE_CREATED_KEY), col++, row);
-        addSmallHeader (table, col++, row, SIGNATURE_KEY, SIGNATURE_DEFAULT,
-                        ":");
-        table.add ((PresentationObject) presentationObjects.get
-                   (CREATED_SIGNATURE_KEY), col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, DATE_ADJUSTED_KEY,
-                        DATE_ADJUSTED_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get
-                   (DATE_ADJUSTED_KEY), col++, row);
-        addSmallHeader (table, col++, row, SIGNATURE_KEY, SIGNATURE_DEFAULT,
-                        ":");
-        table.add ((PresentationObject) presentationObjects.get
-                   (ADJUSTED_SIGNATURE_KEY), col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, AMOUNT_KEY, AMOUNT_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get (AMOUNT_KEY),
-                   col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, VAT_AMOUNT_KEY, VAT_AMOUNT_DEFAULT,
-                        ":");
-        table.add ((PresentationObject) presentationObjects.get
-                   (VAT_AMOUNT_KEY), col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, NOTE_KEY, NOTE_DEFAULT, ":");
-        table.add ((PresentationObject) presentationObjects.get (NOTE_KEY),
-                   col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, REGULATION_SPEC_TYPE_KEY,
-                        REGULATION_SPEC_TYPE_DEFAULT, ":");
-        table.mergeCells (col, row, table.getColumns (), row);
-        table.add ((PresentationObject) presentationObjects.get
-                   (REGULATION_SPEC_TYPE_KEY), col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, VAT_RULE_KEY, VAT_RULE_DEFAULT, ":");
-        table.mergeCells (col, row, table.getColumns (), row);
-        table.add ((PresentationObject) presentationObjects.get (VAT_RULE_KEY),
-                   col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, OWN_POSTING_KEY, OWN_POSTING_DEFAULT,
-                        ":");
-        col = 1; row++;
-        table.mergeCells (col, row, table.getColumns (), row);
-        table.add ((PresentationObject) presentationObjects.get
-                   (OWN_POSTING_KEY), col, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, DOUBLE_POSTING_KEY,
-                        DOUBLE_POSTING_DEFAULT, ":");
-        col = 1; row++;
-        table.mergeCells (col, row, table.getColumns (), row);
-        table.add ((PresentationObject) presentationObjects.get
-                   (DOUBLE_POSTING_KEY), col, row);
-        col = 1; row++;
-        table.setHeight (row++, 12);
-        table.mergeCells (col, row, table.getColumns (), row);
-        table.add ((PresentationObject) presentationObjects.get (ACTION_KEY), 1,
-                   row++);
-        final Form form = new Form ();
-        form.maintainParameter (INVOICE_COMPILATION_KEY);
-        form.maintainParameter (INVOICE_RECORD_KEY);
-        form.setOnSubmit("return checkInfoForm()");
-        form.add (table);
-        final Table outerTable = createTable (1);
-        outerTable.add (form, 1, 1);
-        add (createMainTable (presentationObjects.get (HEADER_KEY).toString (),
-                              outerTable));
     }
 
     /**
@@ -766,7 +592,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addOperationFieldDropdown (table, row++);
         addUserSearcherForm (table, row++, context, searcher);
         table.mergeCells (2, row, table.getColumns () - 1, row);
-        addPeriodForm (table, row);
+        addPeriodForm (table, row, context);
         table.setAlignment (table.getColumns (), row,
                             Table.HORIZONTAL_ALIGN_RIGHT);
         table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST + "",
@@ -1004,16 +830,199 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                                        DOUBLE_POSTING_KEY);
         final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
                 .getServiceInstance (context, InvoiceBusiness.class);
-        business.createInvoiceHeader
+        final InvoiceHeader header = business.createInvoiceHeader
                 (operationalField, currentUser, custodianId,  ownPosting,
                  doublePosting, new java.sql.Date (period.getTime ()));
+        final String [][] parameters =
+                {{ACTION_KEY, ACTION_SHOW_COMPILATION + "" },
+                { INVOICE_COMPILATION_KEY,
+                  header.getPrimaryKey ().toString () }};
         final Table table = getConfirmTable
                 (INVOICE_COMPILATION_CREATED_KEY,
-                 INVOICE_COMPILATION_CREATED_DEFAULT);
+                 INVOICE_COMPILATION_CREATED_DEFAULT, parameters);
         add (createMainTable (CREATE_INVOICE_COMPILATION_KEY,
                               CREATE_INVOICE_COMPILATION_DEFAULT, table));
     }
 	
+    private void renderRecordDetailsOrForm
+        (final IWContext context, final java.util.Map presentationObjects)
+        throws RemoteException, FinderException {
+        final InvoiceHeader header = getInvoiceHeader (context);
+		final User custodian
+                = getUser  (context, new Integer (header.getCustodianId ()));
+
+        // render form/details
+        final Table table = createTable (4);
+        setColumnWidthsEqual (table);
+        int row = 2;
+        int col = 1;
+        addOperationFieldRow (table, context, header, row++);
+        col = 1;
+        addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
+        addSmallText (table, formatSsn (custodian.getPersonalID ()), col++,
+                      row);
+        addSmallHeader (table, col++, row, NAME_KEY, NAME_DEFAULT, ":");
+        addSmallText (table, getUserName (custodian), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, PLACEMENT_KEY, PLACEMENT_DEFAULT,
+                        ":");
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, RULE_TEXT_KEY, col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, PROVIDER_KEY, col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, INVOICE_TEXT_KEY,
+                        INVOICE_TEXT_DEFAULT, ":");
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, INVOICE_TEXT_KEY, col++,
+                         row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, NUMBER_OF_DAYS_KEY,
+                        NUMBER_OF_DAYS_DEFAULT, ":");
+        addPresentation (table, presentationObjects, NUMBER_OF_DAYS_KEY, col++,
+                         row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, CHECK_PERIOD_KEY,
+                        CHECK_PERIOD_DEFAULT, ":");
+        addSmallHeader (table, col, row, START_PERIOD_KEY,
+                        START_PERIOD_DEFAULT);
+        addPresentation (table, presentationObjects, CHECK_START_PERIOD_KEY,
+                         col++,
+                   row);
+        addSmallHeader (table, col, row, END_PERIOD_KEY, END_PERIOD_DEFAULT);
+        addPresentation (table, presentationObjects, CHECK_END_PERIOD_KEY,
+                         col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, PLACEMENT_PERIOD_KEY,
+                        PLACEMENT_PERIOD_DEFAULT, ":");
+        addSmallHeader (table, col, row, START_PERIOD_KEY,
+                        START_PERIOD_DEFAULT);
+        addPresentation (table, presentationObjects, PLACEMENT_START_PERIOD_KEY,
+                         col++, row);
+        addSmallHeader (table, col, row, END_PERIOD_KEY, END_PERIOD_DEFAULT);
+        addPresentation (table, presentationObjects, PLACEMENT_END_PERIOD_KEY,
+                         col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, DATE_CREATED_KEY,
+                        DATE_CREATED_DEFAULT, ":");
+        addPresentation (table, presentationObjects, DATE_CREATED_KEY, col++,
+                         row);
+        addSmallHeader (table, col++, row, SIGNATURE_KEY, SIGNATURE_DEFAULT,
+                        ":");
+        addPresentation (table, presentationObjects, CREATED_SIGNATURE_KEY,
+                         col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, DATE_ADJUSTED_KEY,
+                        DATE_ADJUSTED_DEFAULT, ":");
+        addPresentation (table, presentationObjects, DATE_ADJUSTED_KEY, col++,
+                         row);
+        addSmallHeader (table, col++, row, SIGNATURE_KEY, SIGNATURE_DEFAULT,
+                        ":");
+        addPresentation (table, presentationObjects, ADJUSTED_SIGNATURE_KEY,
+                         col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, AMOUNT_KEY, AMOUNT_DEFAULT, ":");
+        addPresentation (table, presentationObjects, AMOUNT_KEY, col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, VAT_AMOUNT_KEY, VAT_AMOUNT_DEFAULT,
+                        ":");
+        addPresentation (table, presentationObjects, VAT_AMOUNT_KEY, col++,
+                         row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, NOTE_KEY, NOTE_DEFAULT, ":");
+        addPresentation (table, presentationObjects, NOTE_KEY, col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, REGULATION_SPEC_TYPE_KEY,
+                        REGULATION_SPEC_TYPE_DEFAULT, ":");
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, REGULATION_SPEC_TYPE_KEY,
+                         col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, VAT_RULE_KEY, VAT_RULE_DEFAULT, ":");
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, VAT_RULE_KEY, col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, OWN_POSTING_KEY, OWN_POSTING_DEFAULT,
+                        ":");
+        col = 1; row++;
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, OWN_POSTING_KEY, col, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, DOUBLE_POSTING_KEY,
+                        DOUBLE_POSTING_DEFAULT, ":");
+        col = 1; row++;
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, DOUBLE_POSTING_KEY, col,
+                         row);
+        col = 1; row++;
+        table.setHeight (row++, 12);
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, ACTION_KEY, 1, row++);
+        final Form form = new Form ();
+        form.maintainParameter (INVOICE_COMPILATION_KEY);
+        form.maintainParameter (INVOICE_RECORD_KEY);
+        form.setOnSubmit("return checkInfoForm()");
+        form.add (table);
+        final Table outerTable = createTable (1);
+        outerTable.add (form, 1, 1);
+        add (createMainTable (presentationObjects.get (HEADER_KEY).toString (),
+                              outerTable));
+    }
+
+    private void addPresentation
+        (final Table table, final java.util.Map map, final String key,
+         final int col, final int row) {
+        final PresentationObject object = (PresentationObject) map.get (key);
+        if (null != object) {
+            table.add (object, col, row);
+        }
+    }
+
+    private InvoiceHeader getInvoiceHeader (final IWContext context)
+        throws RemoteException, FinderException {
+        final InvoiceBusiness business = (InvoiceBusiness)
+                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
+        Integer headerId = getIntegerParameter (context,
+                                                INVOICE_COMPILATION_KEY);
+        if (null == headerId) {
+            final InvoiceRecord record = getInvoiceRecord (context);
+            headerId = new Integer (record.getInvoiceHeader ());
+        }
+        final InvoiceHeaderHome headerHome = business.getInvoiceHeaderHome ();
+        return headerHome.findByPrimaryKey (headerId);
+    }
+
+    private InvoiceRecord getInvoiceRecord (final IWContext context)
+        throws RemoteException, FinderException {
+        final InvoiceBusiness business = (InvoiceBusiness)
+                IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
+        final Integer recordId = getIntegerParameter (context,
+                                                      INVOICE_RECORD_KEY);
+        final InvoiceRecordHome recordHome = business.getInvoiceRecordHome ();
+        return null != recordId ? recordHome.findByPrimaryKey (recordId) : null;
+    }
+    
+    private String getSignature (final User user) {
+        if (null == user) return "";
+        final String firstName = user.getFirstName ();
+        final String lastName = user.getLastName ();
+        return (firstName != null ? firstName.charAt (0) : ' ') + ""
+                + (lastName != null ? lastName.charAt (0) : ' ');
+    }
+
+    private User getUser (final IWContext context, final Integer id) {
+        try {
+            final UserBusiness userBusiness = (UserBusiness)
+                    IBOLookup.getServiceInstance (context, UserBusiness.class);
+            final UserHome userHome = userBusiness.getUserHome ();
+            return userHome.findByPrimaryKey (id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private Table getSearcherResultTable (final Collection users,
                                           int actionId) {
         final Table table = createTable (1);
@@ -1088,8 +1097,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         // get some business objects
         final InvoiceBusiness invoiceBusiness = (InvoiceBusiness)
                 IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
-        //final UserBusiness userBusiness = (UserBusiness) IBOLookup.getServiceInstance (context, UserBusiness.class);
-        //final UserHome userHome = userBusiness.getUserHome ();
 
         // show each invoice header in a row
         for (int i = 0; i < headers.length; i++) {
@@ -1475,9 +1482,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return result.toString ();
 	}
 
-    static boolean isManualRecord (final InvoiceRecord record) {
+    private static boolean isManualRecord (final InvoiceRecord record) {
         final String createdBy = record.getCreatedBy ();
-        return null != createdBy && 2 == createdBy.length ();
+        return null == createdBy || 0 == createdBy.length ()
+                || 2 == createdBy.length ();
     }
 
 	/**
@@ -1548,15 +1556,20 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                    col++, row);
     }
 
-    private void addPeriodForm (final Table table, final int row) {
+    private void addPeriodForm (final Table table, final int row,
+                                final IWContext context) {
         int col = 1;
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
         final Date now = new Date ();
-        table.add (getStyledInput (START_PERIOD_KEY, periodFormatter.format
-                                   (now)), col, row);
+        final Date fromDate = getPeriodParameter (context, START_PERIOD_KEY);
+        final Date endDate = getPeriodParameter (context, END_PERIOD_KEY);
+        table.add (getStyledInput
+                   (START_PERIOD_KEY, periodFormatter.format
+                    (null != fromDate ? fromDate : now)), col, row);
         table.add (new Text (" - "), col, row);
-        table.add (getStyledInput (END_PERIOD_KEY, periodFormatter.format
-                                   (now)), col, row);
+        table.add (getStyledInput
+                   (END_PERIOD_KEY, periodFormatter.format
+                    (null != endDate ? endDate : now)), col, row);
     }
 
     private String getFormattedPeriod (final Date date) {
@@ -1701,7 +1714,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                 + context.getParameter (key) + "'");
         }
         exception.printStackTrace ();
-        add ("Det intrï¿½ffade ett fel. Fï¿½rsï¿½k igen senare.");
+        add ("Det inträffade ett fel. Försök igen senare.");
     }
 
     private static String getUserName (final User user) {
