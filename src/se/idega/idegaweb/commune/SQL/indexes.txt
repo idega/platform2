@@ -85,6 +85,9 @@ commit;
 
 Address
 create index IDX_ADDRESS_TYPE on IC_ADDRESS(IC_ADDRESS_TYPE_ID);
+commit;
+create index IDX_ADDRESS_STREET_NAME on IC_ADDRESS(STREET_NAME);
+
 
 Case
 create index IDX_PROC_CASE_1 on PROC_CASE(PROC_CASE_ID);
