@@ -34,14 +34,14 @@ public java.util.Collection findByCustodianOrChild(java.lang.String p0,com.idega
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findByMonth(java.sql.Date p0)throws javax.ejb.FinderException{
+public java.util.Collection findByMonth(com.idega.util.CalendarMonth p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((InvoiceHeaderBMPBean)entity).ejbFindByMonth(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findByMonthAndSchoolCategory(java.sql.Date p0,com.idega.block.school.data.SchoolCategory p1)throws javax.ejb.FinderException{
+public java.util.Collection findByMonthAndSchoolCategory(com.idega.util.CalendarMonth p0,com.idega.block.school.data.SchoolCategory p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((InvoiceHeaderBMPBean)entity).ejbFindByMonthAndSchoolCategory(p0,p1);
 	this.idoCheckInPooledEntity(entity);

@@ -256,7 +256,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			if (user != null){
 				try{
 					SchoolCategory category = getCurrentSchoolCategory(iwc);					
-					invoices = invoiceBusiness.findRegularInvoicesForPeriodeUserAndCategory(from, to, user.getNodeID(), category.getPrimaryKey().toString());
+					invoices = invoiceBusiness.findRegularInvoicesForPeriodAndChildAndCategory(from, to, user.getNodeID(), category.getPrimaryKey().toString());
 
 				}catch(FinderException ex){
 					ex.printStackTrace(); 
@@ -369,7 +369,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			entry.setSchoolId(new Integer(iwc.getParameter(PAR_PROVIDER)).intValue());
 		}
 		entry.setRegSpecTypeId(new Integer(iwc.getParameter(PAR_REGULATION_TYPE)).intValue());
-		entry.setUser(user);
+		entry.setChild(user);
 		entry.setVatRuleId(new Integer(iwc.getParameter(PAR_VAT_RULE)).intValue());
 		
 
@@ -851,11 +851,11 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 				return _reg != null ? _reg.getName() : getValue(PAR_PLACING);
 			}
 		
-			public User getUser() {
+			public User getChild() {
 				return null;
 			}
 		
-			public int getUserID() {
+			public int getChildId() {
 				return -1;
 			}
 		
@@ -965,7 +965,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			public void setFrom(Date from) {}
 			public void setTo(Date to) {}
 			public void setPlacing(String plascint) {}
-			public void setUser(User user) {}
+			public void setChild(User user) {}
 			public void setRegSpecType(RegulationSpecType regType) {}
 			public void setRegSpecTypeId(int regTypeId) {}
 			public void setSchoolId(int schoolId) {}

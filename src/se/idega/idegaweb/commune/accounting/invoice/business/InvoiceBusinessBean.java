@@ -49,17 +49,18 @@ import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
+import com.idega.util.CalendarMonth;
 
 /**
  * Holds most of the logic for the batchjob that creates the information that is
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/12/16 13:18:55 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/16 22:09:25 $ by $Author: tryggvil $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.62 $
+ * @version $Revision: 1.63 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -111,10 +112,11 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * 
 	 * @param month
 	 */
-	public void removePreliminaryInvoice(Date month, String category) throws RemoveException {
+	public void removePreliminaryInvoice(Date dateInMonth, String category) throws RemoveException {
 		PaymentRecord paymentRecord;
 		Iterator headerIter;
 		InvoiceHeader header;
+		CalendarMonth month = new CalendarMonth(dateInMonth);
 
 		try {
 			SchoolCategory schoolCategory =

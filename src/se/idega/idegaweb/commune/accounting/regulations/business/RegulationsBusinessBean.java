@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.97 2003/12/16 10:54:04 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.98 2003/12/16 22:09:25 tryggvil Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1690,7 +1690,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					System.out.println("LOW: DATE = " + period);
 					System.out.println("LOW: OPERATION = " + (String) reg.getOperation().getPrimaryKey());
 					try {
-						Collection low = getRegularInvoiceBusiness().findRegularLowIncomeInvoicesForPeriodeAndCategory(period, ((Integer) child.getPrimaryKey()).intValue(), reg.getOperation());
+						Collection low = getRegularInvoiceBusiness().findRegularLowIncomeInvoicesForPeriodAndCategory(period,((Integer)child.getPrimaryKey()).intValue(), reg.getOperation());
 						if (low != null && !low.isEmpty()) {
 							Iterator lowIt = low.iterator();
 							if (lowIt.hasNext()) {

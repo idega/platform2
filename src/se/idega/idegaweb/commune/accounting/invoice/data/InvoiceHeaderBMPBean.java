@@ -7,7 +7,7 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 import com.idega.user.data.UserBMPBean;
-import com.idega.util.IWTimestamp;
+import com.idega.util.CalendarMonth;
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.Collection;
@@ -132,32 +132,25 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		return (Integer)idoFindOnePKByQuery(sql);
 	}
 	
-	public Collection ejbFindByMonth(Date month) throws FinderException {
-		IWTimestamp start = new IWTimestamp(month);
-		start.setAsDate();
-		start.setDay(1);
-		IWTimestamp end = new IWTimestamp(start);
-		end.addMonths(1);
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this);
-		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
-		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
-		return idoFindPKsByQuery(sql);
+	protected IDOQuery idoQueryFindByMonth(CalendarMonth month){
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getLastDateOfMonth();
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start);
+		query.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanOrEqualsSign().append(end);
+		return query;
 	}
 	
-	public Collection ejbFindByMonthAndSchoolCategory(Date month, SchoolCategory schoolCategory) throws FinderException {
-		IWTimestamp start = new IWTimestamp(month);
-		start.setAsDate();
-		start.setDay(1);
-		IWTimestamp end = new IWTimestamp(start);
-		end.addMonths(1);
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this);
-		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
-		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
-		sql.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, (String)schoolCategory.getPrimaryKey());
-		
-		return idoFindPKsByQuery(sql);
+	public Collection ejbFindByMonth(CalendarMonth month) throws FinderException {
+		IDOQuery query = idoQueryFindByMonth(month);
+		return idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindByMonthAndSchoolCategory(CalendarMonth month, SchoolCategory schoolCategory) throws FinderException {
+		IDOQuery query = idoQueryFindByMonth(month);
+		query.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, (String)schoolCategory.getPrimaryKey());
+		return idoFindPKsByQuery(query);
 	}
 
     /**

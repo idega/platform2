@@ -14,7 +14,6 @@ public interface InvoiceHeader extends com.idega.data.IDOEntity
  public com.idega.block.school.data.SchoolCategory getSchoolCategory();
  public java.lang.String getSchoolCategoryID();
  public char getStatus();
- public void initializeAttributes();
  public void setChangedBy(java.lang.String p0);
  public void setCreatedBy(java.lang.String p0);
  public void setCustodian(com.idega.user.data.User p0);

@@ -13,7 +13,7 @@ public class PaymentRecordHomeImpl extends com.idega.data.IDOFactory implements 
  }
 
 
-public java.util.Collection findByMonth(java.sql.Date p0)throws javax.ejb.FinderException{
+public java.util.Collection findByMonth(com.idega.util.CalendarMonth p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((PaymentRecordBMPBean)entity).ejbFindByMonth(p0);
 	this.idoCheckInPooledEntity(entity);
@@ -41,9 +41,9 @@ public PaymentRecord findByPostingStrings(java.lang.String p0,java.lang.String p
 	return this.findByPrimaryKey(pk);
 }
 
-public PaymentRecord findByPostingStringsAndRuleSpecType(java.lang.String p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.FinderException{
+public PaymentRecord findByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,com.idega.util.CalendarMonth p4)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPostingStringsAndRuleSpecType(p0,p1,p2);
+	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(p0,p1,p2,p3,p4);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }
@@ -53,7 +53,7 @@ public PaymentRecord findByPostingStringsAndRuleSpecType(java.lang.String p0,jav
  }
 
 
-public int getCountForMonthAndStatusLH(java.sql.Date p0)throws javax.ejb.FinderException,com.idega.data.IDOException{
+public int getCountForMonthAndStatusLH(com.idega.util.CalendarMonth p0)throws javax.ejb.FinderException,com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((PaymentRecordBMPBean)entity).ejbHomeGetCountForMonthAndStatusLH(p0);
 	this.idoCheckInPooledEntity(entity);

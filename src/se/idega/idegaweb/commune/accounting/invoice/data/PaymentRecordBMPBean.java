@@ -9,6 +9,7 @@ import javax.ejb.FinderException;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.util.CalendarMonth;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -228,22 +229,24 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		return (Integer)idoFindOnePKByQuery(sql);
 	}
 	
+
 	/**
 	 * Finds a payment record for the given posting strings and the rule specification type
 	 * @param ownPostingString
 	 * @param doublePostingString 
 	 * @param ruleSpecType
+	 * @param month The month to find in.
 	 * @return
 	 * @throws FinderException if none was found
 	 */
-	public Integer ejbFindByPostingStringsAndRuleSpecType(String ownPostingString,String doublePostingString,String ruleSpecType) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this);
-		sql.appendWhereEqualsQuoted(COLUMN_OWN_POSTING,ownPostingString);
+	public Integer ejbFindByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(String ownPostingString,String doublePostingString,String ruleSpecType,String text,CalendarMonth month) throws FinderException {
+		IDOQuery sql = idoQueryFindByMonth(month);
+		sql.appendAndEqualsQuoted(COLUMN_OWN_POSTING,ownPostingString);
 		sql.appendAndEqualsQuoted(COLUMN_DOUBLE_POSTING,doublePostingString);
 		sql.appendAndEqualsQuoted(COLUMN_RULE_SPEC_TYPE,ruleSpecType);
+		sql.appendAndEqualsQuoted(COLUMN_PAYMENT_TEXT,text);
 		return (Integer)idoFindOnePKByQuery(sql);
-	}
+	}	
 	
 	/**
 	 * Gets a Collection of payment records for the specified month
@@ -251,18 +254,24 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @return Collection of payment records
 	 * @throws FinderException
 	 */
-	public Collection ejbFindByMonth(Date month) throws FinderException {
-		IWTimestamp start = new IWTimestamp(month);
+	public Collection ejbFindByMonth(CalendarMonth month) throws FinderException {
+		/*IWTimestamp start = new IWTimestamp(month);
 		start.setAsDate();
 		start.setDay(1);
 		IWTimestamp end = new IWTimestamp(start);
-		end.addMonths(1);
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this);
-		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
-		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
-
-		return idoFindPKsByQuery(sql);
+		end.addMonths(1);*/
+		IDOQuery query = idoQueryFindByMonth(month);
+		return idoFindPKsByQuery(query);
+	}
+	
+	protected IDOQuery idoQueryFindByMonth(CalendarMonth month){
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getLastDateOfMonth();
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start);
+		query.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanOrEqualsSign().append(end);
+		return query;
 	}
 
 	/**
@@ -271,16 +280,13 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @return
 	 * @throws FinderException
 	 */
-	public int ejbHomeGetCountForMonthAndStatusLH(Date month) throws FinderException, IDOException {
-		IWTimestamp start = new IWTimestamp(month);
-		start.setAsDate();
-		start.setDay(1);
-		IWTimestamp end = new IWTimestamp(start);
-		end.addMonths(1);
+	public int ejbHomeGetCountForMonthAndStatusLH(CalendarMonth month) throws FinderException, IDOException {
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getLastDateOfMonth();
 		IDOQuery sql = idoQuery();
 		sql.append("select count(*) from "+getEntityName());
-		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start.getDate());
-		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanSign().append(end.getDate());
+		sql.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start);
+		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanOrEqualsSign().append(end);
 		sql.appendAnd().append("(").appendEqualsQuoted(COLUMN_STATUS,""+ConstantStatus.LOCKED);
 		sql.appendOrEqualsQuoted(COLUMN_STATUS,""+ConstantStatus.HISTORY).append(")");
 

@@ -44,6 +44,7 @@ import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
+import com.idega.util.CalendarMonth;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -61,6 +62,7 @@ public abstract class BillingThread extends Thread{
 	protected Logger log = Logger.getLogger(this.getClass().getName());
 	protected static final String BATCH_TEXT = "invoice.batchrun";		//Localize this text in the user interface
 	protected int errorOrder;
+	protected CalendarMonth month;	//Holds working month
 	protected IWTimestamp startPeriod;	//Holds first day of period
 	protected IWTimestamp endPeriod;		//Holds last day of period
 	protected IWContext iwc;
@@ -70,14 +72,10 @@ public abstract class BillingThread extends Thread{
 	protected BatchRun batchRunLogger=null;
 	protected ErrorLogger errorRelated = null;
 	
-	public BillingThread(Date month, IWContext iwc){
-		startPeriod = new IWTimestamp(month);
-		startPeriod.setAsDate();
-		startPeriod.setDay(1);
-		endPeriod = new IWTimestamp(startPeriod);
-		endPeriod.setAsDate();
-		endPeriod.addMonths(1);
-		endPeriod.addDays(-1);
+	public BillingThread(Date dateInMonth, IWContext iwc){
+		month = new CalendarMonth(dateInMonth);
+		startPeriod = month.getFirstTimestamp();
+		endPeriod = month.getLastTimestamp();
 		this.iwc = iwc;
 	}
 	
@@ -95,6 +93,7 @@ public abstract class BillingThread extends Thread{
 	 */
 	protected PaymentRecord createPaymentRecord(PostingDetail postingDetail, String ownPosting, String doublePosting, float months, School school) 
 			throws CreateException, IDOLookupException {
+
 		PaymentHeader paymentHeader;
 		PaymentRecord paymentRecord;
 		System.out.println("About to create payment record");
@@ -122,14 +121,17 @@ public abstract class BillingThread extends Thread{
 			paymentHeader.store();
 		}
 		//Update or create the payment record
+		String ruleText = postingDetail.getTerm();
+		String ruleSpecType = postingDetail.getRuleSpecType();
+		
 		try {
 			PaymentRecordHome prechome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
-			
-		System.err.println ("%%% find payment record");
-			paymentRecord = prechome.findByPostingStringsAndRuleSpecType(ownPosting,doublePosting,postingDetail.getRuleSpecType());
+			System.err.println ("%%% find payment record");
+			paymentRecord = prechome.findByPostingStringsAndRuleSpecTypeAndPaymentTextAndMonth(ownPosting,doublePosting,ruleSpecType,ruleText,month);
 			
 			//If it already exists, just update the changes needed.
 			paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
+
 			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()+postingDetail.getAmount()*months);
 			paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()+postingDetail.getVat()*months);
 			System.err.println ("%%% store updated record");
@@ -146,14 +148,14 @@ public abstract class BillingThread extends Thread{
 				paymentRecord.setStatus(ConstantStatus.PRELIMINARY);
 			}
 			paymentRecord.setPeriod(startPeriod.getDate());
-			paymentRecord.setPaymentText(postingDetail.getTerm());
+			paymentRecord.setPaymentText(ruleText);
 			paymentRecord.setDateCreated(currentDate);
 			paymentRecord.setCreatedBy(BATCH_TEXT);
 			paymentRecord.setPlacements(1);
 			paymentRecord.setPieceAmount(postingDetail.getAmount());
 			paymentRecord.setTotalAmount(postingDetail.getAmount()*months);
 			paymentRecord.setTotalAmountVAT(postingDetail.getVat()*months);
-			paymentRecord.setRuleSpecType(postingDetail.getRuleSpecType());
+			paymentRecord.setRuleSpecType(ruleSpecType);
 			paymentRecord.setOwnPosting(ownPosting);
 			paymentRecord.setDoublePosting(doublePosting);
 			paymentRecord.setVATType(postingDetail.getVatRegulationID());
