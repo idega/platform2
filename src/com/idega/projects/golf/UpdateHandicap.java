@@ -22,8 +22,6 @@ public class UpdateHandicap {
 
                 if ( scorecard[m].getHandicapCorrection().equalsIgnoreCase("N") ) {
 
-                    Stroke[] stroke = (Stroke[]) (new Stroke()).findAllByColumn("scorecard_id",scorecard[m].toString());
-
                             float slope = (float) scorecard[m].getSlope();
                             float course_rating = scorecard[m].getCourseRating();
                             int field_id = scorecard[m].getFieldID();
@@ -31,11 +29,10 @@ public class UpdateHandicap {
                     Field field = new Field(field_id);
                             float field_par = (float) field.getIntColumnValue("field_par");
 
-                    if ( scorecard[m].getTournamentRoundId() > 1 && round.getRoundNumber() == 1 ) {
-                      grunn = (double) scorecard[m].getHandicapBefore();
-                    }
-
                     Handicap leikForgjof = new Handicap(grunn);
+                      if ( scorecard[m].getTournamentRoundId() > 1 ) {
+                        leikForgjof = new Handicap((double) scorecard[m].getHandicapBefore());
+                      }
                             int leik = leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
 
                     int leikpunktar = leik + 36;
@@ -47,7 +44,7 @@ public class UpdateHandicap {
                     int hole_handicap = 0;
                     int hole_par = 0;
 
-                    Stroke[] stroke2 = (Stroke[]) (new Stroke()).findAllByColumn("scorecard_id",scorecard[m].toString());
+                    Stroke[] stroke2 = (Stroke[]) (new Stroke()).findAllByColumn("scorecard_id",scorecard[m].getID());
 
                     for (int c = 0 ; c < stroke2.length; c++ ) {
 
@@ -87,13 +84,10 @@ public class UpdateHandicap {
                             heildarpunktar *= 2;
                     }
 
-                    if ( scorecard[m].getTournamentRoundId() > 1 && scorecard[m].getTotalPoints() > 0 ) {
-                      heildarpunktar = scorecard[m].getTotalPoints();
-                    }
+                    scorecard[m].setTotalPoints(heildarpunktar);
 
                     if ( scorecard[m].getTournamentRoundId() == 1 ) {
                       scorecard[m].setHandicapBefore((float) grunn);
-                      scorecard[m].setTotalPoints(heildarpunktar);
                     }
 
                     if ( scorecard[m].getUpdateHandicap().equalsIgnoreCase("Y") ) {
