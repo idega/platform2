@@ -303,7 +303,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 
 			LoginTable lTable = this.chooseLoginRecord(iwc, login_table, user);
 			if (lTable != null) {
-				returner = logIn(iwc, lTable, lTable.getUserLogin());
+				returner = logIn(iwc, lTable);
 				if (returner)
 					onLoginSuccessful(iwc);
 			} else {

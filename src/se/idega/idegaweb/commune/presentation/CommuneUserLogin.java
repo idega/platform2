@@ -174,7 +174,7 @@ public class CommuneUserLogin extends CommuneBlock {
 	private void logIn(IWContext iwc) {
 		LoginBusinessBean business = new LoginBusinessBean();
 		try {
-			boolean canLogIn = business.logInByPersonalID(iwc, personalID);
+			boolean canLogIn = business.logInAsAnotherUser(iwc, personalID);
 			
 			if (canLogIn) {
 				User user = getUserBusiness(iwc).getUser(personalID);
