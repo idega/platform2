@@ -69,6 +69,7 @@ public class ProductCatalog extends CategoryBlock{
   boolean _showTeaser = false;
   boolean _showThumbnail = false;
   boolean _useAnchor = false;
+  Image _linkImage = null;
   int _orderProductsBy = -1;
   boolean _addCategoryID = false;
   int _spaceBetween = 0;
@@ -416,7 +417,7 @@ public class ProductCatalog extends CategoryBlock{
       _useAnchor = false;
      }
 
-    if (_productIsLink) {
+    if (_productIsLink && _linkImage == null) {
       productLink = getNameLink(product, nameText, _useAnchor);
       if (productLink != null) {
 	return productLink;
@@ -428,7 +429,7 @@ public class ProductCatalog extends CategoryBlock{
     }
   }
 
-  Link getNameLink(Product product, Text nameText, boolean useAnchor) {
+  public Link getNameLink(Product product, PresentationObject nameText, boolean useAnchor) {
     Link productLink;
     if (_productIsLink) {
       if (useAnchor) {
@@ -576,4 +577,12 @@ public class ProductCatalog extends CategoryBlock{
   public void setUseParameterCategory(boolean useParameterCategory) {
     _useParameterCategory = useParameterCategory;
   }
+/**
+ * Sets the _linkImage.
+ * @param _linkImage The _linkImage to set
+ */
+public void set_linkImage(Image _linkImage) {
+	this._linkImage = _linkImage;
+}
+
 }

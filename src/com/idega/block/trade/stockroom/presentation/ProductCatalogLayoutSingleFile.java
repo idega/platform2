@@ -98,12 +98,22 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 		table.setWidth(1, row, "100%");
 	    if (productCatalog._showThumbnail) {
 	      if (fileId != -1) {
+			ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(fileId);  
+			String attributes = file.getMetaData(ProductEditorWindow.imageAttributeKey);
 			image = new Image(fileId);
+			if ( attributes != null )
+				image.setAttributes(getAttributeMap(attributes));
 			table.add(image, 1, row);
 	      }
 	    }
 
 		table.add(productCatalog.getTeaserText(teaser), 1,row);
+		if ( productCatalog._linkImage != null ) {
+			table.setHeight(++row, 3);
+			table.mergeCells(1, row, 3, row);
+			table.add(productCatalog.getNameLink(product, productCatalog._linkImage, false),1,row);
+		}
+		
 		table.setHeight(++row,"12");
 	      }
 	    }
