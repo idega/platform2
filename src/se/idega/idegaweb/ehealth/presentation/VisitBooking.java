@@ -104,9 +104,7 @@ public class VisitBooking extends EHealthBlock {
 			age = new Age(user.getDateOfBirth());
 		else if (user.getPersonalID() != null)
 			age = new Age(PIDChecker.getInstance().getDateFromPersonalID(user.getPersonalID()));
-		else 
-
-		
+	
 		
 		
 		if (age != null && age.getYears() >= 70){
@@ -253,7 +251,7 @@ public class VisitBooking extends EHealthBlock {
 			}
 			SubmitButton confirm = (SubmitButton) getStyledInterface(new SubmitButton(prmChoose));
 			
-			if (userID == 1)
+			if (age != null && age.getYears() >= 70)
 				confirm.setValue(localize(prmConfirm,"Confirm"));
 			else
 				confirm.setValue(localize(prmSend,"Send"));
