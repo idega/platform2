@@ -247,13 +247,14 @@ public class ResultComparator implements Comparator {
         else
           result = 1;
       }
-
+/*
       if ( r1.getTotalScore() == 0 && r2.getTotalScore() > 0 )
         result = 1;
       if ( r1.getTotalScore() > 0 && r2.getTotalScore() == 0 )
         result = -1;
       if ( r1.getTotalScore() == 0 && r2.getTotalScore() == 0 )
         result = 0;
+*/
     }
     else {
       if ( r1.getDismissal() == 0 && r2.getDismissal() > 0 ) {
