@@ -928,31 +928,11 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		
 		Address userAddress = getUsersMainAddress(user);
 		Address otherUserAddress = getUsersMainAddress(compareUser);
-		return userAddress.isEqualTo(otherUserAddress);
-		/*
 		if (userAddress != null && otherUserAddress != null) {
-			if(userAddress.getStreetAddress().equalsIgnoreCase(otherUserAddress.getStreetAddress() )) {
-				PostalCode userPostal = null;
-				PostalCode otherUserPostal = null;
-
-				userPostal = userAddress.getPostalCode();
-				otherUserPostal = otherUserAddress.getPostalCode();
-
-				if (userPostal != null && otherUserPostal != null) {
-					if (userPostal.getPostalCode().equalsIgnoreCase(otherUserPostal.getPostalCode())) {
-						return true;
-					}
-				}
-				else if (userPostal == null && otherUserPostal == null) {
-					return true;
-				}
-					
-				return false;
-			}
+			return userAddress.isEqualTo(otherUserAddress);
 		}
 		
 		return false;
-		*/
 	}
 
 	private IWTimestamp getBirthDateFromPin(String pin){
