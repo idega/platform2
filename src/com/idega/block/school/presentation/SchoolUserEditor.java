@@ -189,7 +189,7 @@ public class SchoolUserEditor extends Block {
 					User hm = uHome.findByPrimaryKey(iter.next());
 					int userId = ((Integer) hm.getPrimaryKey()).intValue();
 					if (userId == userToEdit) {
-						table = insertEditableUserIntoTable(hm);
+						row = insertEditableUserIntoTable(table, hm, row);
 					}else {
 						row = insertUserIntoTable(table, hm, row);
 					}
@@ -207,7 +207,7 @@ public class SchoolUserEditor extends Block {
 					User hm = uHome.findByPrimaryKey(iter.next());
 					int userId = ((Integer) hm.getPrimaryKey()).intValue();
 					if (userId == userToEdit) {
-						table = insertEditableUserIntoTable(hm);
+						row = insertEditableUserIntoTable(table, hm, row);
 					}else {
 						row = insertUserIntoTable(table, hm, row);
 					}
@@ -226,7 +226,7 @@ public class SchoolUserEditor extends Block {
 					User hm = uHome.findByPrimaryKey(iter.next());
 					int userId = ((Integer) hm.getPrimaryKey()).intValue();
 					if (userId == userToEdit) {
-						table = insertEditableUserIntoTable(hm);
+						row = insertEditableUserIntoTable(table, hm, row);
 					}else {
 						row = insertUserIntoTable(table, hm, row);
 					}
@@ -245,7 +245,7 @@ public class SchoolUserEditor extends Block {
 					User hm = uHome.findByPrimaryKey(iter.next());
 					int userId = ((Integer) hm.getPrimaryKey()).intValue();
 					if (userId == userToEdit) {
-						table = insertEditableUserIntoTable(hm);
+						row = insertEditableUserIntoTable(table, hm, row);
 					}else {
 						row = insertUserIntoTable(table, hm, row);
 					}
@@ -354,19 +354,16 @@ public class SchoolUserEditor extends Block {
 
 
 
-	private Table insertEditableUserIntoTable(User hm) throws RemoteException {
+	private int insertEditableUserIntoTable(Table table, User hm, int row) throws RemoteException {
 		String sname = PARAMETER_SCHOOL_USER_NAME;
 		String semail = PARAMETER_SCHOOL_USER_EMAIL;
 		String sphone = PARAMETER_SCHOOL_USER_TELEPHONE;
 		String sid = PARAMETER_SCHOOL_USER_ID;
 
-		Table table = new Table();
-		int row = 1;
 		Collection emails;
 		Collection phones;
-		int uRow;
+		int uRow = row;
 		int mRow;
-							uRow = row;
 							String hmId = hm.getPrimaryKey().toString();
 							emails = hm.getEmails();
 							phones = hm.getPhones();
@@ -379,7 +376,7 @@ public class SchoolUserEditor extends Block {
 							
 							
 							table.add(inp, 1, row);
-							table.add(login, 4, row);
+							table.add(login, 7, row);
 							
 							table.add(pName, 1, row);
 							if (emails != null) {
@@ -391,16 +388,16 @@ public class SchoolUserEditor extends Block {
 										email = eHome.findByPrimaryKey(iEm.next());
 										TextInput pEmail = new TextInput(semail+"_"+hmId+"_"+email.getPrimaryKey() , email.getEmailAddress() );
 										this.setTextInputStyle(pEmail);
-										table.add(pEmail, 2, row);
+										table.add(pEmail, 3, row);
 									} catch (FinderException e) {
-										table.add(getTextNormal(_iwrb.getLocalizedString("school.not_fount","Not found")), 2, row);
+										table.add(getTextNormal(_iwrb.getLocalizedString("school.not_fount","Not found")), 3, row);
 									}
 									++row;
 								}
 							}
 							TextInput pEmail = new TextInput(semail+"_"+hmId );
 							this.setTextInputStyle(pEmail);
-							table.add(pEmail, 2, row);
+							table.add(pEmail, 3, row);
 		//					this.addLeft(_iwrb.getLocalizedString("school.add_email","Add E-mail"), pEmail, true);
 		
 							mRow = row;
@@ -414,23 +411,23 @@ public class SchoolUserEditor extends Block {
 										phone = pHome.findByPrimaryKey(iPh.next());
 										TextInput pPhone = new TextInput(sphone+"_"+hmId+"_"+phone.getPrimaryKey(), phone.getNumber());
 										this.setTextInputStyle(pPhone);
-										table.add(pPhone, 3, row);
+										table.add(pPhone, 5, row);
 									} catch (FinderException e) {
-										table.add(getTextNormal(_iwrb.getLocalizedString("school.not_fount","Not found")), 3, row);
+										table.add(getTextNormal(_iwrb.getLocalizedString("school.not_fount","Not found")), 5, row);
 									}
 									++row;
 								}
 							}
 							TextInput pPhone = new TextInput(sphone+"_"+hmId);
 							this.setTextInputStyle(pPhone);
-							table.add(pPhone, 3, row);
+							table.add(pPhone, 5, row);
 		//					this.addLeft(_iwrb.getLocalizedString("school.add_phone","Add Phone"), pPhone, true);
 							if (row >= mRow) {
 								++row;
 							}else {
 								row = mRow + 1;
 							}
-		return table;
+		return row;
 	}
 
 
