@@ -1,6 +1,5 @@
 package com.idega.block.calendar.presentation;
 
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Enumeration;
 import java.util.Hashtable;
