@@ -29,10 +29,10 @@ private String textColor = "#999966";
 private String highlightedText = "#660000";
 private String headerTextColor = "#000000";
 private String dayTextColor = headerTextColor;
-private String headerColor = "#FFFFFF";
-private String dayCellColor = headerColor;
-private String bodyColor = "#FFFFFF";
-private String inactiveCellColor = bodyColor;
+private String headerColor = null;
+private String dayCellColor = null;
+private String bodyColor = null;
+private String inactiveCellColor = null;
 private String backgroundColor = null;
 private String todayColor = headerColor;
 private String selectedColor = "#CCCCCC";
@@ -150,7 +150,9 @@ public SmallCalendar(int year,int month) {
         T.setAlignment(a,1,"center");
         T.add(t,a,1);
       }
-      T.setRowColor(1,dayCellColor);
+
+      if( dayCellColor != null) T.setRowColor(1,dayCellColor);
+
     }
 
     int n = 1;
@@ -192,8 +194,9 @@ public SmallCalendar(int year,int month) {
       t.setFontStyle("font-face: Arial, Helvetica, sans-serif; color: "+dayColor+"; font-size: 10px; text-decoration: none;");
       T.setAlignment(xpos,ypos,"center");
 
-      if ((n == today.getDay() && shadow) && (!todayColor.equals("")))
+      if ( (todayColor!=null) && ( (n == today.getDay()) && shadow)){
         T.setColor(xpos,ypos,todayColor);
+      }
 
       if ( _highlight ) {
         if ( n == stamp.getDay() && month == stamp.getMonth() && year == stamp.getYear() ) {
@@ -223,10 +226,12 @@ public SmallCalendar(int year,int month) {
       n++;
     }
 
-    for ( int a = 1; a <= T.getRows(); a++ ) {
-      for ( int b = 1; b <= T.getColumns(); b++ ) {
-        if ( T.getColor(b,a) == null )
-          T.setColor(b,a,inactiveCellColor);
+    if( inactiveCellColor != null ){
+      for ( int a = 1; a <= T.getRows(); a++ ) {
+        for ( int b = 1; b <= T.getColumns(); b++ ) {
+          if ( T.getColor(b,a) == null )
+            T.setColor(b,a,inactiveCellColor);
+        }
       }
     }
 
