@@ -46,7 +46,6 @@ public class TextFinder {
       return TH;
     }
     else{
-      System.err.println("no text");
       return null;
     }
   }

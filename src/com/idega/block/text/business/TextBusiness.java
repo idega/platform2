@@ -3,6 +3,7 @@ package com.idega.block.text.business;
 import java.sql.*;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.block.text.data.*;
+import com.idega.core.data.ICObjectInstance;
 import com.idega.util.idegaTimestamp;
 import java.util.List;
 
@@ -155,7 +156,7 @@ public class TextBusiness{
           text.update();
         }
         catch (SQLException e) {
-          System.out.println("Text not updated.");
+          e.printStackTrace();
         }
       }
       else {
@@ -163,17 +164,26 @@ public class TextBusiness{
           text.insert();
         }
         catch (SQLException e) {
-          System.out.println("Text not inserted.");
+          e.printStackTrace();
         }
       }
     }
 
   }
 
+   public static void saveText(int iTxTextId,int iLocalizedTextId,
+            String sHeadline,String sTitle,String sBody,
+            int iImageId,boolean useImage,int iLocaleId ,int iUserId){
+
+     saveText( iTxTextId, iLocalizedTextId,
+             sHeadline, sTitle,sBody,iImageId, useImage, iLocaleId , iUserId,-1);
+
+   }
+
 
   public static void saveText(int iTxTextId,int iLocalizedTextId,
             String sHeadline,String sTitle,String sBody,
-            int iImageId,boolean useImage,int iLocaleId ,int iUserId){
+            int iImageId,boolean useImage,int iLocaleId ,int iUserId,int InstanceId){
 
 
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
@@ -189,12 +199,10 @@ public class TextBusiness{
         if(iLocalizedTextId > 0){
           locUpdate = true;
           locText = new LocalizedText(iLocalizedTextId);
-          System.err.println("locText update");
         }
         else{
           locUpdate = false;
           locText = new LocalizedText();
-          System.err.println("locText insert");
         }
       }
       else{
@@ -233,7 +241,13 @@ public class TextBusiness{
         locText.setCreated(idegaTimestamp.getTimestampRightNow());
         locText.insert();
         locText.addTo(txText);
+        if(InstanceId > 0){
+          ICObjectInstance objIns = new ICObjectInstance(InstanceId);
+          txText.addTo(objIns);
+        }
       }
+
+
       t.commit();
     }
     catch(Exception e) {

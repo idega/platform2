@@ -28,6 +28,7 @@ public class TextEditorWindow extends IWAdminWindow{
   private boolean update = false;
   private boolean save = false;
   private int iUserId = -1;
+  private int iObjInsId = -1;
   private static String prmAttribute = "txe.attribute";
   public static String prmTextId = "txep.txtextid";
   public static String prmDelete = "txep.txdeleteid";
@@ -84,6 +85,9 @@ public class TextEditorWindow extends IWAdminWindow{
       sTextId = modinfo.getParameter(prmDelete);
       confirmDelete(sTextId);
       doView = false;
+    }
+    else if(modinfo.getParameter(prmObjInstId)!= null){
+      iObjInsId = Integer.parseInt(modinfo.getParameter(prmObjInstId ) );
     }
 
 
@@ -207,7 +211,7 @@ public class TextEditorWindow extends IWAdminWindow{
       int iLocaleId = sLocaleId != null ? Integer.parseInt(sLocaleId):-1;
       int iImageId = sImageId != null ? Integer.parseInt(sImageId):-1;
       boolean bUseImage = sUseImage!= null?true:false;
-      TextBusiness.saveText(iTxTextId,iLocalizedTextId,sHeadline,"",sBody,iImageId,bUseImage,iLocaleId,iUserId);
+      TextBusiness.saveText(iTxTextId,iLocalizedTextId,sHeadline,"",sBody,iImageId,bUseImage,iLocaleId,iUserId,iObjInsId);
     }
     setParentToReload();
     close();

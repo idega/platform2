@@ -70,7 +70,6 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     iwb = getBundle(modinfo);
     iwrb = getResourceBundle(modinfo);
     Locale locale = modinfo.getCurrentLocale();
-    System.err.println(locale.toString());
     if(iTextId < 0){
       String sTextId = modinfo.getParameter(prmTextId );
       if(sTextId != null)
@@ -185,7 +184,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
         }
       }
       if(newobjinst){
-        Link newObjectInstanceLink = new Link();
+        Link newObjectInstanceLink = new Link(iwrb.getImage("new.gif"));
         newObjectInstanceLink.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
         myTable.add(newObjectInstanceLink,1,3);
       }
