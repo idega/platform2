@@ -312,10 +312,21 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
     return dob;
   }
   
-  private String getUserProperty(int columnIndex){
-  	if( userValues!=null ) return (String)userValues.get(columnIndex);
-  	else return null;
-
+	private String getUserProperty(int columnIndex){
+		String value = null;
+		
+		if( userValues!=null ){
+		
+			try {
+				value = (String)userValues.get(columnIndex);
+			} catch (RuntimeException e) {
+				return null;
+			}
+	 			//System.out.println("Index: "+columnIndex+" Value: "+value);
+	 		if( file.getEmptyValueString().equals( value ) ) return null;
+		 	else return value;
+  		}
+  		else return null;
   }
 
 /**
