@@ -193,7 +193,7 @@ public class NewsLetter extends CategoryBlock {
       TextInput email = new TextInput("nl_email");
       email.setStyleAttribute(_inputStyle);
       email.setLength(_inputLength);
-      email.setContent("Enter e-mail here");
+      email.setContent(iwrb.getLocalizedString("enter_email_here","Enter e-mail here"));
       email.setOnFocus("this.value=''");
 			SubmitButton send,cancel;
 			if (submitImage != null) {
