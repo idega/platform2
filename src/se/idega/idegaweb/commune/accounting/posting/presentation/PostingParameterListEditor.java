@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.20 2003/09/11 21:16:22 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.21 2003/09/12 00:16:21 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -23,6 +23,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.util.IWTimestamp;
+import com.idega.block.school.business.SchoolBusiness;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
@@ -42,10 +43,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.20 2003/09/11 21:16:22 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.21 2003/09/12 00:16:21 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -77,6 +78,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String KEY_REG_SPEC = "posting_parm_edit.reg_spec";
 	private final static String KEY_COMPANY_TYPE = "posting_parm_edit.company_type";
 	private final static String KEY_COMMUNE_BELONGING = "posting_parm_edit.commune_belonging";
+	private final static String KEY_SCHOOL_YEAR = "posting_parm_edit.school_yearfrom";
+	private final static String KEY_SCHOOL_YEAR_TO = "posting_parm_edit.school_year_to";
 
 /*
 	private final static String KEY_OWN_ENTRY = "posting_parm_edit.own_entry";
@@ -118,7 +121,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String PARAM_SELECTOR_REGSPEC = "selector_regspec";
 	private final static String PARAM_SELECTOR_COMPANY_TYPE = "selector_company_type";
 	private final static String PARAM_SELECTOR_COM_BELONGING = "selector_com_belonging";
-
+	private final static String PARAM_SELECTOR_SCHOOL_YEAR1 = "selector_school_year1";
+	private final static String PARAM_SELECTOR_SCHOOL_YEAR2 = "selector_school_year2";
+	
+	
 	private IBPage _responsePage;
 	private String _errorText = "";
 	private String _theOwnString = "";
@@ -178,6 +184,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 				iwc.getParameter(PARAM_SELECTOR_REGSPEC),					
 				iwc.getParameter(PARAM_SELECTOR_COMPANY_TYPE),					
 				iwc.getParameter(PARAM_SELECTOR_COM_BELONGING),
+				iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR1),
+				iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR2),
 				_theOwnString,
 				_theDoubleString
 				);
@@ -358,6 +366,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 			int regPK = 0;
 			int comPK = 0;
 			int comBelPK = 0;
+			int schoolYearPK1 = 0;
+			int schoolYearPK2 = 0;
+			
 			if (pp != null) {
 				actPK = Integer.parseInt(pp.getActivity() != null ? 
 						pp.getActivity().getPrimaryKey().toString() : "0");	
@@ -367,7 +378,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 						pp.getCompanyType().getPrimaryKey().toString() : "0");
 				comBelPK = Integer.parseInt(pp.getCommuneBelonging() != null ? 
 						pp.getCommuneBelonging().getPrimaryKey().toString() : "0");
-				
+				schoolYearPK1 = Integer.parseInt(pp.getSchoolYear1() != null ? 
+						pp.getSchoolYear1().getPrimaryKey().toString() : "0");
+				schoolYearPK2 = Integer.parseInt(pp.getSchoolYear2() != null ? 
+						pp.getSchoolYear2().getPrimaryKey().toString() : "0");				
 			}
 			selectors.add(getLocalizedLabel(KEY_ACTIVITY, "Verksamhet"), 1, 1);
 			selectors.add(activitySelector(iwc, PARAM_SELECTOR_ACTIVITY, actPK), 2, 1);
@@ -380,6 +394,12 @@ public class PostingParameterListEditor extends AccountingBlock {
 	
 			selectors.add(getLocalizedLabel(KEY_COMMUNE_BELONGING, "Kommuntillhörighet:"), 1, 4);
 			selectors.add(communeBelongingSelector(iwc, PARAM_SELECTOR_COM_BELONGING, comBelPK), 2, 4);
+
+			selectors.add(getLocalizedLabel(KEY_SCHOOL_YEAR, "SkolŒr fr om"), 1, 5);
+			selectors.add(schoolYearSelector(iwc, PARAM_SELECTOR_SCHOOL_YEAR1, schoolYearPK1), 2, 5);
+			selectors.add(getLocalizedLabel(KEY_SCHOOL_YEAR_TO, "t o m"), 3, 5);
+			selectors.add(schoolYearSelector(iwc, PARAM_SELECTOR_SCHOOL_YEAR2, schoolYearPK2), 4, 5);
+
 		} catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}	
@@ -423,6 +443,24 @@ public class PostingParameterListEditor extends AccountingBlock {
 		}	
 		return pp;
 	}
+
+	/*
+	 * Generates a DropDownSelector for school years that is collected from the school business 
+	 *    
+	 * @param iwc Idega Web Context 
+	 * @param name HTML Parameter ID for this selector
+	 * @param refIndex The initial position to set the selector to 
+	 * @see com.idega.block.school.data.SchoolType#
+	 * @return the drop down menu
+	 */
+	private DropdownMenu schoolYearSelector(IWContext iwc, String name, int refIndex) throws Exception {
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(
+					getDropdownMenuLocalized(name, getSchoolBusiness(iwc).findAllSchoolYears(), 
+					"getLocalizationKey"));
+		menu.setSelectedElement(refIndex);
+		return menu;
+	}
+
 	
 	/*
 	 * Generates a DropDownSelector for activites that is collected from the regulation framework. 
@@ -503,9 +541,13 @@ public class PostingParameterListEditor extends AccountingBlock {
 		return menu;
 	}
 
+	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {
+		return (SchoolBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
+	}
 	private RegulationsBusiness getRegulationsBusiness(IWContext iwc) throws RemoteException {
 		return (RegulationsBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
 	}
+
 	private PostingBusiness getPostingBusiness(IWContext iwc) throws RemoteException {
 		return (PostingBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.19 2003/09/11 21:14:05 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.20 2003/09/12 00:16:21 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.19 2003/09/11 21:14:05 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.20 2003/09/12 00:16:21 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -61,8 +61,6 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String KEY_HEADER = "posting_def_list.header";
 	private final static String KEY_PERIOD = "posting_def_list.periode";
 	private final static String KEY_PERIOD_SEARCH = "posting_def_list.periode_search";
-//	private final static String KEY_FROM_DATE = "posting_parm_list.from_date";
-//	private final static String KEY_TO_DATE = "posting_parm_list.to_date";
 	private final static String KEY_ACTIVITY = "posting_parm_list.activity";
 	private final static String KEY_REG_SPEC = "posting_parm_list.reg_spec";
 	private final static String KEY_COMPANY_TYPE = "posting_parm_list.company_type";
@@ -78,22 +76,15 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String KEY_REMOVE = "posting_parm_list.remove";
 	private final static String KEY_REMOVE_CONFIRM = "posting_parm_list.remove_confirm";
 	private final static String KEY_CLICK_REMOVE = "posting_parm_list.click_to_remove";
-//	private final static String KEY_CLICK_COPY = "posting_parm_list.click_to_copy";
-//	private final static String KEY_CLICK_EDIT = "posting_parm_list.click_to_edit";
-//	private final static String KEY_CANCEL = "posting_parm_list.cancel";
-//	private final static String KEY_CONFIRM_REMOVE_MESSAGE = "posting_parm_list.confirm_remove_message";
 	private final static String KEY_DEFAULT_BLANK = "posting_parm_list.blank";
+	private final static String KEY_SCHOOL_YEAR = "posting_parm_list.school_year";
 
 	private final static String PARAM_SEARCH = "button_search";
-//	private final static String PARAM_COPY = "button_copy";
 	private final static String PARAM_NEW = "button_new";
-//	private final static String PARAM_REMOVE = "button_remove";
 
 	private final static String PARAM_MODE_COPY = "mode_copy";
-//	private final static String PARAM_CHECKED_FOR_DELETE = "param_checked_for_delete";
 	private final static String PARAM_FROM = "param_from";
 	private final static String PARAM_TO = "param_to";
-//	private final static String PARAM_POSTING_ID = "param_posting_id";
 	private final static String PARAM_DELETE_ID = "param_delete_id";
 	private final static String PARAM_EDIT_ID = "param_edit_id";
 
@@ -201,18 +192,19 @@ public class PostingParameterList extends AccountingBlock {
 		PostingBusiness pBiz;
 		
 		
-		ListTable list = new ListTable(this, 10);
+		ListTable list = new ListTable(this, 11);
 
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
 		list.setLocalizedHeader(KEY_ACTIVITY, "Verksamhet", 2);
 		list.setLocalizedHeader(KEY_REG_SPEC, "Regelspec. typ", 3);
 		list.setLocalizedHeader(KEY_COMPANY_TYPE, "Bolagstyp", 4);
 		list.setLocalizedHeader(KEY_COMMUNE_BELONGING, "Kommuntillhörighet", 5);
-		list.setLocalizedHeader(KEY_OWN_ENTRY, "Egen kontering", 6);
-		list.setLocalizedHeader(KEY_DOUBLE_ENTRY, "Motkontering", 7);
-		list.setLocalizedHeader(KEY_EDIT, "", 8);
-		list.setLocalizedHeader(KEY_COPY, "", 9);
-		list.setLocalizedHeader(KEY_REMOVE, "", 10);
+		list.setLocalizedHeader(KEY_SCHOOL_YEAR, "SkolŒr", 6);
+		list.setLocalizedHeader(KEY_OWN_ENTRY, "Egen kontering", 7);
+		list.setLocalizedHeader(KEY_DOUBLE_ENTRY, "Motkontering", 8);
+		list.setLocalizedHeader(KEY_EDIT, "", 9);
+		list.setLocalizedHeader(KEY_COPY, "", 10);
+		list.setLocalizedHeader(KEY_REMOVE, "", 11);
 		
 		try {
 			pBiz = getPostingBusiness(iwc);
@@ -250,6 +242,11 @@ public class PostingParameterList extends AccountingBlock {
 					} else {
 						list.add(p.getCommuneBelonging().getLocalizationKey(), 
 								p.getCommuneBelonging().getLocalizationKey());
+					}
+					if (p.getSchoolYear1() != null && p.getSchoolYear2() != null) {
+						list.add(p.getSchoolYear1().getSchoolYearName() + "-" + p.getSchoolYear2().getSchoolYearName()); 
+					} else {
+						list.add(KEY_DEFAULT_BLANK, "");					
 					}
 		
 
