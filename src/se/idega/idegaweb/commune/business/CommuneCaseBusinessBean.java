@@ -10,6 +10,7 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.CaseCode;
 import com.idega.business.IBOServiceBean;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 /**
@@ -54,5 +55,10 @@ public class CommuneCaseBusinessBean extends IBOServiceBean implements CommuneCa
 		Collection cases = getCaseBusiness().getAllCasesForUserExceptCodes(user,getUserHiddenCaseCodes());
 		return cases;	
 	}
+	
+	public Collection getAllCasesDefaultVisibleForGroup(Group group) throws RemoteException, FinderException{
+		Collection cases = getCaseBusiness().getAllCasesForGroupExceptCodes(group,getUserHiddenCaseCodes());
+		return cases;	
+	}	
 
 }
