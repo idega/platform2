@@ -32,6 +32,7 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 import javax.transaction.UserTransaction;
 
@@ -46,6 +47,7 @@ import com.idega.core.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
 import com.idega.data.IDOLookup;
+import com.idega.transaction.IdegaTransactionManager;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -1084,13 +1086,93 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     return changeWorkReportGroupOfEntity(null, newGroup, entity);
   }
   
-  public void createWorkReportBoardData(WorkReport workReport) {
-    Integer clubId = workReport.getClubId();
-    Integer workReportId = (Integer) workReport.getPrimaryKey();
-    
+  public boolean createWorkReportBoardData(int workReportId) {
+    // get year and club id from work report
+    WorkReportBoardMemberHome membHome = getWorkReportBoardMemberHome();
+    WorkReport workReport = getWorkReportById(workReportId);
+    // has the data already been created?
+    if (workReport.isCreationFromDatabaseDone())  {
+      return true;
+    }
+    // get the corresponding club 
+    int clubId = workReport.getClubId().intValue();
+    // get group business
+    GroupBusiness groupBusiness;
+    try {
+      groupBusiness = getGroupBusiness();
+    }
+    catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportBusiness]: Can't retrieve GroupBusiness. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve GroupBusiness.");
+    }
+
+    // do we have to create the data at all?
+    try {
+      Group club = groupBusiness.getGroupByGroupID(clubId);
+      if (! isClubUsingTheMemberSystem(club))  {
+        // the club does not use the member system. The data has to be imported by a file.
+        // returns true because this is not an error.
+        return true;
+      }
+    }
+    catch (FinderException finderException) {
+      System.err.println("[WorkReportBusiness]: Can't find club. Message is: "
+        + finderException.getMessage());
+      return false;
+    }
+    catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportBusiness]: Can't retrieve WorkReportBusiness. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve WorkReportBusiness.");
+    }
+    // update leagues
+    int year = workReport.getYearOfReport().intValue();
+    createOrUpdateLeagueWorkReportGroupsForYear(year);
+    //
+    // start transaction
+    //
+    TransactionManager tm = IdegaTransactionManager.getInstance();
+    try {
+      tm.begin();
+      if (createWorkReportDataWithoutAnyChecks(workReportId, clubId, groupBusiness)) {
+        // mark the sucessfull creation
+        workReport.setCreationFromDatabaseDone(true);
+        workReport.store();
+        //tm.commit();
+        tm.rollback();
+        return true;
+      }
+      else {
+        tm.rollback();
+        return false;
+      }
+    }
+    catch (Exception ex)  {
+      System.err.println("[WorkReportBusiness]: Couldn't create work report data. Message is: " + 
+        ex.getMessage());
+      ex.printStackTrace(System.err);
+      try {
+        tm.rollback();
+        return false;
+      }
+      catch (SystemException sysEx) {
+        System.err.println("[WorkReportBusiness]: Couldn't rollback. Message is: " + 
+          sysEx.getMessage());
+        sysEx.printStackTrace(System.err);
+        return false;
+      }
+    }
+  }
+   
+  private boolean createWorkReportDataWithoutAnyChecks(int workReportId, int clubId, GroupBusiness groupBusiness)  {
     Map idExistingMemberMap = new HashMap();
     // find all existing work report members
-    Collection existingWorkReportBoardMembers = getAllWorkReportBoardMembersForWorkReportId(workReportId.intValue());
+    Collection existingWorkReportBoardMembers = getAllWorkReportBoardMembersForWorkReportId(workReportId);
     // create a map with ids as keys and members as values
     Iterator existingWorkReportBoardMembersIterator = existingWorkReportBoardMembers.iterator();
     while (existingWorkReportBoardMembersIterator.hasNext()) {
@@ -1099,22 +1181,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       idExistingMemberMap.put(id, member);
     }
     
-    // get group business
-    GroupBusiness groupBusiness;
-    try {
-      groupBusiness = getGroupBusiness();
-    }
-    catch (RemoteException ex) {
-      System.err.println(
-        "[WorkReportBoardBusiness]: Can't retrieve GroupBusiness. Message is: "
-          + ex.getMessage());
-      ex.printStackTrace(System.err);
-      throw new RuntimeException("[WorkReportBoardBusiness]: Can't retrieve GroupBusiness.");
-    }
     // get all children of the club group (not recursively)
     Collection childGroups;
     try {
-      childGroups = groupBusiness.getChildGroups(clubId.intValue());
+      childGroups = groupBusiness.getChildGroups(clubId);
     }
     catch (RemoteException ex) {
       System.err.println(
@@ -1173,7 +1243,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
         //
         if (isDivision) {
           try {
-            createWorkReportDivisionBoard(workReportId.intValue(), group, league);
+            createWorkReportDivisionBoard(workReportId, group, league);
           }
           catch (CreateException ex)  {
             System.err.println("[WorkreportBusiness] WorkReportDivisionBoard could not be created. Message is: " 
@@ -1183,6 +1253,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
         }
       }
     }
+    return true;
   }
   
   private Collection getBoardUsersFromCommittee(Group committee, GroupBusiness groupBusiness)  {
@@ -1258,7 +1329,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   }
        
     
-  private boolean createWorkReportBoardMembers(Collection users, Integer workReportId, WorkReportGroup league, Map idExistingMemberMap) {
+  private boolean createWorkReportBoardMembers(Collection users, int workReportId, WorkReportGroup league, Map idExistingMemberMap) {
     if (users == null)  {
       return false;
     }
@@ -1271,7 +1342,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       if (member == null) {
         try {
           // create WorkReportBoardMember
-          member = createWorkReportBoardMember(workReportId.intValue(), user);
+          member = createWorkReportBoardMember(workReportId, user);
           Integer id = (Integer) member.getPrimaryKey();
           // add the new one to the existing ones
           idExistingMemberMap.put(id, member);
