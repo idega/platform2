@@ -89,7 +89,11 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
 
   private StatefullPresentationImplHandler stateHandler = null;
 
-  public Forum() {
+  private String _authorWidth = "160";
+	private String _replyWidth = "60";
+	private String _dateWidth = "100";
+	
+	public Forum() {
 
     /**
      * @todo implement Statehandling for Forum
@@ -450,9 +454,9 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
       tree.setNestLevelAtOpen(_openLevel);
       tree.setToShowTreeIcons(false);
       tree.setWidth("100%");
-      tree.setExtraColumnWidth(1,"150");
-      tree.setExtraColumnWidth(2,"60");
-      tree.setExtraColumnWidth(3,"100");
+      tree.setExtraColumnWidth(1,_authorWidth);
+      tree.setExtraColumnWidth(2,_replyWidth);
+      tree.setExtraColumnWidth(3,_dateWidth);
       tree.setIconDimensions("15","12");
       tree.setTreeHeading(1,formatText(_iwrb.getLocalizedString("thread","Thread"),_headingStyle));
       tree.setExtraColumnHeading(1,formatText(_iwrb.getLocalizedString("author","Author"),_headingStyle));
@@ -878,5 +882,29 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
   }
 
   public boolean getMultible(){ return true; }
+
+	/**
+	 * Sets the authorWidth.
+	 * @param authorWidth The authorWidth to set
+	 */
+	public void setAuthorWidth(String authorWidth) {
+		_authorWidth = authorWidth;
+	}
+
+	/**
+	 * Sets the dateWidth.
+	 * @param dateWidth The dateWidth to set
+	 */
+	public void setDateWidth(String dateWidth) {
+		_dateWidth = dateWidth;
+	}
+
+	/**
+	 * Sets the replyWidth.
+	 * @param replyWidth The replyWidth to set
+	 */
+	public void setReplyWidth(String replyWidth) {
+		_replyWidth = replyWidth;
+	}
 
 } // Class Forum
