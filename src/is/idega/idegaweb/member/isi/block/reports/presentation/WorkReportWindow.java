@@ -111,10 +111,10 @@ public class WorkReportWindow extends IWAdminWindow {
 				table.add(new WorkReportMemberImporter(),2,1);
 			}
 			else if( action.equals(ACTION_IMPORT_ACCOUNT) ){
-				table.add(new WorkReportImporter(),2,1);
+				table.add(new WorkReportAccountImporter(),2,1);
 			}
 			else if( action.equals(ACTION_IMPORT_BOARD) ){
-				table.add(new WorkReportImporter(),2,1);
+				table.add(new WorkReportBoardImporter(),2,1);
 			}
 			else if( action.equals(ACTION_REPORT_OVERVIEW) ){
 				table.add(new WorkReportSelector(),2,1);	
