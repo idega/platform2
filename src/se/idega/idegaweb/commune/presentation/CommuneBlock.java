@@ -1,6 +1,7 @@
 package se.idega.idegaweb.commune.presentation;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.idega.builder.data.IBPage;
 import com.idega.idegaweb.IWResourceBundle;
@@ -238,7 +239,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	/**
 	 * @see com.idega.presentation.Block#getStyleNames()
 	 */
-	public HashMap getStyleNames() {
+	public Map getStyleNames() {
   	HashMap map = new HashMap();
   	String[] styleNames = {STYLENAME_TEXT,STYLENAME_SMALL_TEXT,STYLENAME_HEADER,STYLENAME_SMALL_HEADER,
   												 STYLENAME_LINK,STYLENAME_LIST_HEADER,STYLENAME_LIST_TEXT,STYLENAME_LIST_LINK,
