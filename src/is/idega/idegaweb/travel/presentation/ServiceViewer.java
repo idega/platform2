@@ -24,6 +24,7 @@ import is.idega.idegaweb.travel.business.TravelStockroomBusiness.*;
 import is.idega.idegaweb.travel.service.tour.business.TourBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.text.business.TextFinder;
+import com.idega.block.text.data.*;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 
 import java.sql.SQLException;
@@ -261,7 +262,10 @@ public class ServiceViewer extends Window {
       numberAndName.setBold(true);
       content.add(numberAndName,1,i);
       //description
-      content.add(new TextReader(product.getText().getID()),1,2);//insert a textreader
+      TxText descriptionText = product.getText();
+      if (descriptionText != null) {
+        content.add(new TextReader(product.getText().getID()),1,2);//insert a textreader
+      }
       //content.add(ProductBusiness.getProductDescription(product),1,++i);/** @todo insert a textreader**/
       content.add("META DATA",1,++i);
 
