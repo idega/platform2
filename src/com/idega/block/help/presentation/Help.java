@@ -40,13 +40,15 @@ public class Help extends Block {
 	protected String _helpTextKey = null;
 	protected String _helpTextBundle = null;
 
-	protected boolean _showAsText = true; //false;
+	protected boolean _showAsText = false;
 	protected boolean _showInNewWindow = true;
 	protected Link _helpLink = null;
 
 	private IWBundle _iwb = null;
 	private IWBundle _iwbCore = null;
 	private IWResourceBundle _iwrbCore = null;
+	
+	private Image image = null;
 
 	public Help() {
 		_helpLink = new Link();
@@ -75,7 +77,10 @@ public class Help extends Block {
 					_helpLink.setImage(_iwrbCore.getImage(DEFAULT_HELP_IMAGE));				
 			}
 			else {
-				_helpLink.setImage(_iwrbCore.getImage(DEFAULT_HELP_IMAGE));
+				if(image != null)
+				_helpLink.setImage(image);
+				else
+					_helpLink.setImage(_iwrbCore.getImage(DEFAULT_HELP_IMAGE));
 			}			
 		}
 
@@ -133,6 +138,7 @@ public class Help extends Block {
 	}
 	
 	public void setImage(Image image) {
+		this.image = image;
 		_helpLink.setImage(image);
 	}
 	
