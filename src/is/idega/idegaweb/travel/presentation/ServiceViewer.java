@@ -528,7 +528,7 @@ public class ServiceViewer extends Window {
 
     }
 
-    pTable.setCellspacing(1);
+    pTable.setCellspacing(0);
     return pTable;
   }
 
