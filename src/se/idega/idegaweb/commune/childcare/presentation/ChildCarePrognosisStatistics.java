@@ -28,7 +28,24 @@ import com.idega.util.IWTimestamp;
  * @author laddi
  */
 public class ChildCarePrognosisStatistics extends ChildCareBlock {
+    
+    
 
+    /**
+     * 
+     */
+    public ChildCarePrognosisStatistics() {
+        // cache for 30 minutes
+        setCacheable(getCacheKey(),30*60*1000);
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see com.idega.presentation.Block#getCacheKey()
+     */
+    public String getCacheKey() {
+        return "comm_cc_prv_stat";
+    }
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
