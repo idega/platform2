@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReport.java,v 1.2 2004/12/06 21:30:34 laddi Exp $ Created on
+ * $Id: MeetingReport.java,v 1.3 2004/12/07 07:40:57 laddi Exp $ Created on
  * 24.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -35,7 +35,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 24.11.2004 13:46:01 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class MeetingReport extends MeetingFeeBlock {
 
@@ -154,10 +154,12 @@ public class MeetingReport extends MeetingFeeBlock {
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants", "Participants")), 1, row++);
 		table.mergeCells(1, row, table.getColumns(), row);
 		table.add(participantsMenu, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getNewGroupButton(), 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);
-		table.add(getEditButton(), 1, row++);
+		if (getPage() != null) {
+			table.add(Text.getNonBrakingSpace(), 1, row);
+			table.add(getNewGroupButton(), 1, row);
+			table.add(Text.getNonBrakingSpace(), 1, row);
+			table.add(getEditButton(), 1, row);
+		}
 
 		table.setWidth(1, iHeaderColumnWidth);
 		table.setCellpaddingLeft(1, 0);
