@@ -27,6 +27,7 @@ import com.idega.block.trade.stockroom.data.ProductPrice;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.block.trade.stockroom.data.TravelAddressBMPBean;
 import com.idega.block.trade.stockroom.data.TravelAddressHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
@@ -525,6 +526,31 @@ public class BookerBean extends IBOServiceBean implements Booker{
 
       return currency;
   }
+  
+  public TravelAddress getDepartureAddress(Booking _booking) throws RemoteException, FinderException {
+  	
+	  if (_booking != null) {
+			Collection coll;
+			try {
+				coll = _booking.getTravelAddresses();
+				if (coll != null) {
+					boolean cont = true;
+					TravelAddress ta;
+					Iterator iter = coll.iterator();
+					while (iter.hasNext() && cont) {
+						ta = ((TravelAddressHome) IDOLookup.getHome(TravelAddress.class)).findByPrimaryKey(iter.next());
+							if (ta.getAddressType() == TravelAddressBMPBean.ADDRESS_TYPE_DEPARTURE) {
+								return ta;
+							}
+					}
+				}
+			} catch (IDORelationshipException e) {
+				e.printStackTrace();
+			} 
+	  }
+  	return null;	  	
+  
+	}
 /*
   public  List getMultibleBookings(Booking booking) {
     List list = new Vector();
