@@ -135,15 +135,17 @@ public String getVariable(String variableName) {
 
 public String getVariables(){
 	String returnString="";
-	for (Enumeration e = variables.keys(); e.hasMoreElements(); ) {
-		Object function=e.nextElement();
-		String variableName = (String) function;
-		String variableValue = (String) getVariable(variableName);
+	if ( variables != null ) {
+		for (Enumeration e = variables.keys(); e.hasMoreElements(); ) {
+			Object function=e.nextElement();
+			String variableName = (String) function;
+			String variableValue = (String) getVariable(variableName);
 
-		if ( variableValue != null )
-      returnString = "var " + variableName + " = " + variableValue + ";\n\n";
-    else
-      returnString = "var " + variableName + ";\n\n";
+			if ( variableValue != null )
+			      returnString = "var " + variableName + " = " + variableValue + ";\n\n";
+			else
+			      returnString = "var " + variableName + ";\n\n";
+		}
 	}
 
 	return returnString;
@@ -163,12 +165,14 @@ public String getMethod(String methodName) {
 
 public String getMethods(){
 	String returnString="";
-	for (Enumeration e = methods.keys(); e.hasMoreElements(); ) {
-		Object function=e.nextElement();
-		String methodName = (String) function;
-		String methodValue = (String) getMethod(methodName);
+	if ( methods != null ) {	
+		for (Enumeration e = methods.keys(); e.hasMoreElements(); ) {
+			Object function=e.nextElement();
+			String methodName = (String) function;
+			String methodValue = (String) getMethod(methodName);
 
-    returnString = methodName + " = " + methodValue + ";\n\n";
+    			returnString = methodName + " = " + methodValue + ";\n\n";
+		}
 	}
 
 	return returnString;
