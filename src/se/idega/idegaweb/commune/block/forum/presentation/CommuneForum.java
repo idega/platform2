@@ -127,13 +127,18 @@ public class CommuneForum extends Forum {
 						table.add(getFormattedDate(new IWTimestamp(stamp.getTime()),iwc),5,row);
 					}
 					
-					Link file;
 					try {
-						file = new Link(formatText(Integer.toString(getCommuneForumBusiness(iwc).getFileCount(topic)), _textStyle));
-						file.setWindowToOpen(CommuneForumTopicFiles.class);
-						file.addParameter(CommuneForumTopicFiles.prmTopicId, topic.getID());
-						table.add(file,6,row);
-					} catch (RemoteException e) {
+						int fileCount = getCommuneForumBusiness(iwc).getFileCount(topic);
+						if (isModerator || iwc.hasEditPermission(this)) {
+							Link file = new Link(formatText(Integer.toString(fileCount), _textStyle));
+							file.setWindowToOpen(CommuneForumTopicFiles.class);
+							file.addParameter(CommuneForumTopicFiles.prmTopicId, topic.getID());
+							table.add(file,6,row);
+						}
+						else
+							table.add(formatText(Integer.toString(fileCount), _textStyle),6,row);
+					}
+					catch (RemoteException e) {
 						e.printStackTrace(System.err);
 						throw new RuntimeException(e.getMessage());
 					}
