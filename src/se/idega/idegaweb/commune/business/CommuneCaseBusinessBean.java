@@ -51,8 +51,8 @@ public class CommuneCaseBusinessBean extends IBOServiceBean implements CommuneCa
 		return userHiddenCaseCodes;
 	}
 	
-	public Collection getAllCasesDefaultVisibleForUser(User user) throws RemoteException, FinderException{
-		Collection cases = getCaseBusiness().getAllCasesForUserExceptCodes(user,getUserHiddenCaseCodes());
+	public Collection getAllCasesDefaultVisibleForUser(User user, int startingCase, int numberOfCases) throws RemoteException, FinderException{
+		Collection cases = getCaseBusiness().getAllCasesForUserExceptCodes(user,getUserHiddenCaseCodes(), startingCase, numberOfCases);
 		return cases;	
 	}
 	
