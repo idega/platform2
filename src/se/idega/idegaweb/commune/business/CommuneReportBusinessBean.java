@@ -34,6 +34,7 @@ import com.idega.business.IBOSessionBean;
 import com.idega.core.data.Address;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.business.UserStatusBusiness;
@@ -356,8 +357,9 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
 		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
-		DateFormat dataFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
-	
+		DateFormat dataFormat = SimpleDateFormat.getDateInstance(DateFormat.DEFAULT,currentLocale);
+		DateFormat dateTimeFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
+
 	
 		//Child - Fields
 		ReportableField childPersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
@@ -459,6 +461,10 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 			
 		//Creating report data and adding to collection 
 		Iterator iter = citizenCollection.iterator();
+		String reasonPrifixChild = _iwrb.getLocalizedString("CommuneReportBusiness.child","Child ");
+		String reasonPrifixParent1 = _iwrb.getLocalizedString("CommuneReportBusiness.parent1","Parent1 ");
+		String reasonPrifixparent2 = _iwrb.getLocalizedString("CommuneReportBusiness.parent2","Parent2 ");
+		
 		while (iter.hasNext()) {
 			boolean addToList = false;
 			User child = (User)iter.next();
@@ -470,7 +476,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 				//e.printStackTrace();
 			}
 			
-			Object[][] childConditions = getFulFilledConditionsForReportAndTheirOccurrenceTime(child, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+			Object[][] childConditions = getFulFilledConditionsForReportAndTheirOccurrenceTime(child, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode,reasonPrifixChild);
 			Object[][] parent1Conditions = null;
 			Object[][] parent2Conditions = null;
 			if(parents!= null){
@@ -478,13 +484,13 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 				if(parConditionIter.hasNext()){
 					User parent1 = (User)parConditionIter.next();
 					if(parent1 !=null){
-						parent1Conditions = getFulFilledConditionsForReportAndTheirOccurrenceTime(parent1,firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+						parent1Conditions = getFulFilledConditionsForReportAndTheirOccurrenceTime(parent1,firstDateOfContitionInPeriode, lastDateOfConditionInPeriode,reasonPrifixParent1);
 					}
 				}
 				if(parConditionIter.hasNext()){
 					User parent2 = (User)parConditionIter.next();
 					if(parent2 !=null){
-						parent2Conditions = getFulFilledConditionsForReportAndTheirOccurrenceTime(parent2, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+						parent2Conditions = getFulFilledConditionsForReportAndTheirOccurrenceTime(parent2, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode,reasonPrifixparent2);
 					}
 				}
 			}
@@ -500,9 +506,15 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					if(!firstFulfilledCondition){
 						reasonString += " / ";
 						actionDateString += " / ";
+					} else {
+						firstFulfilledCondition=false;
 					}
 					reasonString += (String)childConditions[i][0];  //Reason
-					actionDateString += dataFormat.format((java.util.Date)childConditions[i][1]); //Time
+					if(childConditions[i][1] instanceof java.util.Date){
+						actionDateString += dataFormat.format((java.util.Date)childConditions[i][1]); //Time
+					} else {
+						actionDateString += childConditions[i][1].toString();
+					}
 				}
 			}
 			
@@ -512,10 +524,15 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					if(!firstFulfilledCondition){
 						reasonString += " / ";
 						actionDateString += " / ";
+					} else {
+						firstFulfilledCondition=false;
 					}
 					reasonString += (String)parent1Conditions[i][0];  //Reason
-					actionDateString += dataFormat.format((java.util.Date)parent1Conditions[i][1]); //Time
-				}
+					if(childConditions[i][1] instanceof java.util.Date){
+						actionDateString += dataFormat.format((java.util.Date)parent1Conditions[i][1]); //Time
+					} else {
+						actionDateString += parent1Conditions[i][1].toString();
+					}				}
 			}
 			
 			if(parent2Conditions != null){
@@ -524,10 +541,15 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 					if(!firstFulfilledCondition){
 						reasonString += " / ";
 						actionDateString += " / ";
+					} else {
+						firstFulfilledCondition=false;
 					}
 					reasonString += (String)parent2Conditions[i][0];  //Reason
-					actionDateString += dataFormat.format((java.util.Date)parent2Conditions[i][1]); //Time
-				}
+					if(childConditions[i][1] instanceof java.util.Date){
+						actionDateString += dataFormat.format((java.util.Date)parent2Conditions[i][1]); //Time
+					} else {
+						actionDateString += parent2Conditions[i][1].toString();
+					}				}
 			}
 			
 			
@@ -635,7 +657,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 			}
 		}
 		
-		reportData.addExtraHeaderParameter("label_current_date",_iwrb.getLocalizedString("CommuneReportBusiness.label_current_date","Current date"),"current_date",dataFormat.format(IWTimestamp.getTimestampRightNow()));
+		reportData.addExtraHeaderParameter("label_current_date",_iwrb.getLocalizedString("CommuneReportBusiness.label_current_date","Current date"),"current_date",dateTimeFormat.format(IWTimestamp.getTimestampRightNow()));
 
 		
 		return reportData;
@@ -647,14 +669,14 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	 * @return Returns array of Objects that is Object[x][2], null if no conditions are fulfilled
 	 * Object[x][0] = condition Key (String), Object[x][1]=date of occurrance (java.util.Date or it's subclasses)
 	 */
-	private Object[][] getFulFilledConditionsForReportAndTheirOccurrenceTime(User usr,Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException{
+	private Object[][] getFulFilledConditionsForReportAndTheirOccurrenceTime(User usr,Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode, String resonPrifix) throws RemoteException, CreateException, FinderException{
 		initializeBundlesIfNeeded();
-		initializeContitionStrings();
+//		initializeContitionStrings();
 					
 		java.util.Date deceased = hasDeceasedInTimePeriode(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
 		boolean livesNotInCommune = livesNotInCommune(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
 		java.util.Date hasMoved = hasMovedFromCommune(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
-		java.util.Date hiddenAddress = hasChangedAddressToHidden(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+		java.util.Date hiddenAddress = hasChangedAddressToProtected(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
 		
 		int arraySize = 0;
 		if(deceased != null){
@@ -681,25 +703,25 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		
 		int index = 0;
 		if(deceased != null){
-			toReturn[index][0] = _iwrb.getLocalizedString("CommuneReportBusiness.is_deceased","Deceased");
+			toReturn[index][0] = resonPrifix +" "+_iwrb.getLocalizedString("CommuneReportBusiness.is_deceased","is deceased");
 			toReturn[index][1] = deceased;
 			index++;
 		}
 
 		if(livesNotInCommune){
-			toReturn[index][0] = _iwrb.getLocalizedString("CommuneReportBusiness.does_not_live_in_the_commune","Does not live in the commune");
+			toReturn[index][0] = resonPrifix +" "+_iwrb.getLocalizedString("CommuneReportBusiness.does_not_live_in_the_commune","does not live in the commune");
 			toReturn[index][1] = "-";
 			index++;
 		}
 
 		if(hasMoved != null){
-			toReturn[index][0] = _iwrb.getLocalizedString("CommuneReportBusiness.has_moved","Has moved");
+			toReturn[index][0] = resonPrifix +" "+_iwrb.getLocalizedString("CommuneReportBusiness.has_moved","has moved");
 			toReturn[index][1] = hasMoved;
 			index++;
 		}
 
 		if(hiddenAddress != null){
-			toReturn[index][0] = _iwrb.getLocalizedString("CommuneReportBusiness.hidden_address","Has hidden address");
+			toReturn[index][0] = resonPrifix +" "+_iwrb.getLocalizedString("CommuneReportBusiness.hidden_address","has protected address");
 			toReturn[index][1] = hiddenAddress;
 			index++;
 		}
@@ -709,13 +731,13 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	
 
 
-	/**
-	 * 
-	 */
-	private void initializeContitionStrings() {
-		// TODO Auto-generated method stub
-		
-	}
+//	/**
+//	 * 
+//	 */
+//	private void initializeContitionStrings() {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 	/**
 	 * @param usr
@@ -723,7 +745,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	 * @param lastDateOfConditionInPeriode
 	 * @return Returns time of the event or null if condition is not fulfilled
 	 */
-	private java.util.Date hasChangedAddressToHidden(User usr, Date firstDateOfConditionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException {
+	private java.util.Date hasChangedAddressToProtected(User usr, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException {
 		//Collection protectedUserColl = getProtectedUsersCollection(firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
 		
 		GroupRelationHome gRelationHome = ((GroupRelationHome)IDOLookup.getHome(GroupRelation.class));
@@ -731,7 +753,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		Group protectedUserGroup = _communeUserService.getRootProtectedCitizenGroup();
 		Collection relToProtectedGroup = gRelationHome.findGroupsRelationshipsContaining(protectedUserGroup,usr);
 		if(relToProtectedGroup != null){
-			long first = firstDateOfConditionInPeriode.getTime();
+			long first = firstDateOfContitionInPeriode.getTime();
 			long last = lastDateOfConditionInPeriode.getTime()+millisecondsInOneDay-1;
 			Iterator iter = relToProtectedGroup.iterator();
 			while (iter.hasNext()) {
@@ -753,9 +775,35 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	 * @param lastDateOfConditionInPeriode
 	 * @return Returns time of the event or null if condition is not fulfilled
 	 */
-	private java.util.Date hasMovedFromCommune(User usr, Date firstDateOfConditionInPeriode, Date lastDateOfConditionInPeriode) {
-		// TODO Auto-generated method stub
-		return null;
+	private java.util.Date hasMovedFromCommune(User usr, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException {
+		Group rootCitizenGroup = _communeUserService.getRootCitizenGroup();
+		
+		Timestamp timestampFDOCIP = new Timestamp(firstDateOfContitionInPeriode.getTime());
+		final long millisecondsInOneDay = 8640000;
+		Timestamp timestampLDOCIP = new Timestamp(lastDateOfConditionInPeriode.getTime()+millisecondsInOneDay-1);
+
+		
+		String[] status = new String[1];
+		status[0] = GroupRelation.STATUS_ACTIVE;
+		try {
+			Collection childs = ((GroupRelationHome)IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsTerminatedWithinSpecifiedTimePeriod(rootCitizenGroup,usr,timestampFDOCIP,timestampLDOCIP,status);
+			
+			if(!childs.isEmpty()){
+				Iterator iter =  childs.iterator();
+				if(iter.hasNext()){
+					return ((GroupRelation)iter.next()).getTerminationDate();
+				}else {
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
+			
+		
 	}
 
 	/**
@@ -764,9 +812,27 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	 * @param lastDateOfConditionInPeriode
 	 * @return Returns true if user lives in nacka the whole time periode
 	 */
-	private boolean livesNotInCommune(User usr, Date firstDateOfConditionInPeriode, Date lastDateOfConditionInPeriode) {
+	private boolean livesNotInCommune(User usr, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException {
 		// TODO Auto-generated method stub
-		return false;
+		Group rootSpecialCitizenGroup = _communeUserService.getRootSpecialCitizenGroup();
+		
+		Timestamp timestampFDOCIP = new Timestamp(firstDateOfContitionInPeriode.getTime());
+		final long millisecondsInOneDay = 8640000;
+		Timestamp timestampLDOCIP = new Timestamp(lastDateOfConditionInPeriode.getTime()+millisecondsInOneDay-1);
+
+		
+		String[] status = new String[1];
+		status[0] = GroupRelation.STATUS_ACTIVE;
+		
+		Collection childs;
+		try {
+			childs = ((GroupRelationHome)IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsValidWithinSpecifiedTimePeriod(rootSpecialCitizenGroup, usr, timestampFDOCIP, timestampLDOCIP, status);
+		} catch (FinderException e) {
+			e.printStackTrace();
+			return false;
+		}
+			
+		return !childs.isEmpty();
 	}
 
 	/**
