@@ -38,7 +38,6 @@ public interface Tournament extends is.idega.idegaweb.golf.entity.GolfEntity
  public java.lang.String getRegistrationType();
  public java.sql.Timestamp getStartTime();
  public is.idega.idegaweb.golf.entity.TeeColor[] getTeeColors()throws java.sql.SQLException;
- public is.idega.idegaweb.golf.entity.TournamentDay[] getTournamentDays()throws java.sql.SQLException;
  public is.idega.idegaweb.golf.entity.TournamentForm getTournamentForm()throws java.sql.SQLException;
  public int getTournamentFormId();
  public int getTournamentGroupId(is.idega.idegaweb.golf.entity.Member p0)throws java.sql.SQLException;

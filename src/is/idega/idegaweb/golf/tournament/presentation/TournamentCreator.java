@@ -10,7 +10,6 @@ import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
 import is.idega.idegaweb.golf.entity.TeeColor;
 import is.idega.idegaweb.golf.entity.Tournament;
-import is.idega.idegaweb.golf.entity.TournamentDay;
 import is.idega.idegaweb.golf.entity.TournamentForm;
 import is.idega.idegaweb.golf.entity.TournamentGroup;
 import is.idega.idegaweb.golf.entity.TournamentGroupHome;
@@ -862,11 +861,6 @@ public class TournamentCreator extends TournamentBlock {
 	        }
 	        if (bIsUpdate) {
 	            tournament.update();
-
-	            TournamentDay[] tempTournamentDays = tournament.getTournamentDays();
-	            for (int i = 0; i < tempTournamentDays.length; i++) {
-	                tempTournamentDays[i].delete();
-	            }
 
 	            TournamentGroup[] tempTournamentGroup = tournament.getTournamentGroups();
 	            for (int i = 0; i < tempTournamentGroup.length; i++) {

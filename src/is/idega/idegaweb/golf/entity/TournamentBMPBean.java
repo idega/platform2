@@ -359,10 +359,6 @@ public class TournamentBMPBean extends GenericEntity implements Tournament{
     }
 
 
-   public TournamentDay[] getTournamentDays()throws SQLException{
-      return (TournamentDay[])((TournamentDay) IDOLookup.instanciateEntity(TournamentDay.class)).findAllByColumn("tournament_id",this.getID());
-   }
-
    public TeeColor[] getTeeColors()throws SQLException{
       return (TeeColor[])findRelated((TeeColor) IDOLookup.instanciateEntity(TeeColor.class));
    }
@@ -437,17 +433,7 @@ public class TournamentBMPBean extends GenericEntity implements Tournament{
             }
             catch (Exception e) {e.printStackTrace(System.err);}
 
-            try {
-                TournamentDay[] days = this.getTournamentDays();
-                if(days!=null){
-                  for(int i=0;i<days.length;i++){
-                          days[i].delete();
-                  }
-                }
-            }
-            catch (Exception e) {e.printStackTrace(System.err);}
-
-            try {
+             try {
                 StartingtimeFieldConfig[] sFieldConfig = (StartingtimeFieldConfig[]) ((StartingtimeFieldConfig) IDOLookup.instanciateEntity(StartingtimeFieldConfig.class)).findAllByColumn("tournament_id",this.getID()+"") ;
                 for (int i = 0; i < sFieldConfig.length; i++) {
                     sFieldConfig[i].delete();
