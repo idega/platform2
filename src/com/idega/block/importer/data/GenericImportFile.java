@@ -59,7 +59,7 @@ public class GenericImportFile implements ImportFile{
 	 // public Object getRecordAtIndex(int i){return null;}
 	
 	 /**
-	  * This method works like an iterator but
+	  * This method works like an iterator. When the end of the file is reached it returns Null
 	  */
 	 public Object getNextRecord(){
 	  String line;
