@@ -583,7 +583,11 @@ public class GroupScorecard extends GolfBlock {
 	}
 
 	public void close(IWContext iwc) {
-		getParentPage().setParentToReloadWithURL(getParentReloadURL(iwc));
+		if(hasParentToReloadURL()) {
+			getParentPage().setParentToReloadWithURL(getParentReloadURL(iwc));
+		} else {
+			getParentPage().setParentToReload();
+		}
 		getParentPage().close();
 	}
 	

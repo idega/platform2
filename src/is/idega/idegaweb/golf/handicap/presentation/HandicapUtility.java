@@ -3,18 +3,6 @@
  */
 package is.idega.idegaweb.golf.handicap.presentation;
 
-import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.CloseButton;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.RadioButton;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.text.Text;
 import is.idega.idegaweb.golf.UpdateHandicap;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.MemberInfo;
@@ -31,6 +19,17 @@ import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 
@@ -174,7 +173,7 @@ public class HandicapUtility extends GolfWindow {
 			myTable.add(getHeader(_iwrb.getLocalizedString("handicap.choose_tees", "Choose tees") + ":"), 1, 1);
 			myTable.add(menu, 1, 2);
 			myTable.add(getButton(new SubmitButton(_iwrb.getLocalizedString("handicap.confirm", "Confirm"))), 2, 3);
-			myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("handicap.back", "Back"))), 1, 3);
+			myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("handicap.close", "Close"))), 1, 3);
 
 			myForm.add(myTable);
 
@@ -196,7 +195,7 @@ public class HandicapUtility extends GolfWindow {
 
 			myTable.add(getHeader(_iwrb.getLocalizedString("handicap.scorecard_delete", "Delete scorecard") + "?"), 1, 1);
 			myTable.add(getButton(new SubmitButton(_iwrb.getLocalizedString("handicap.confirm", "Confirm"))), 2, 2);
-			myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("handicap.back", "Back"))), 1, 2);
+			myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("handicap.close", "Close"))), 1, 2);
 
 			myForm.add(myTable);
 			Text breakText = new Text("<br>");
@@ -252,7 +251,7 @@ public class HandicapUtility extends GolfWindow {
 
 			myTable.add(confirmText, 1, 1);
 			myTable.add(getButton(new SubmitButton(_iwrb.getLocalizedString("handicap.confirm", "Confirm"))), 2, 3);
-			myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("handicap.back", "Back"))), 1, 3);
+			myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("handicap.close", "Close"))), 1, 3);
 
 			myForm.add(myTable);
 			add("<br>");
@@ -263,7 +262,7 @@ public class HandicapUtility extends GolfWindow {
 			getParentPage().setTitle(_iwrb.getLocalizedString("handicap.update_handicap", "Update handicap"));
 			addHeading(_iwrb.getLocalizedString("handicap.update_handicap", "Update handicap"));
 
-			Table myTable = new Table(2, 5);
+			Table myTable = new Table(2, 3);
 			myTable.mergeCells(1, 1, 2, 1);
 			myTable.mergeCells(1, 2, 2, 2);
 			myTable.setCellpadding(5);
@@ -275,14 +274,10 @@ public class HandicapUtility extends GolfWindow {
 			myForm.add(new HiddenInput(PARAMETER_TOURNAMENT_ID, String.valueOf(_tournamentID)));
 			myForm.add(new HiddenInput(PARAMETER_ACTION, String.valueOf(ACTION_UPDATE_HANDICAP)));
 
-			RadioButton update = getRadioButton("action", "update");
-			update.setSelected();
-			RadioButton correction = getRadioButton("action", "correct");
-
 			myTable.add(getHeader(_iwrb.getLocalizedString("handicap.enter_handicap", "Enter handicap") + ":"), 1, 1);
 			myTable.add(new TextInput(PARAMETER_HANDICAP), 1, 2);
 			myTable.add(getButton(new SubmitButton(_iwrb.getLocalizedString("handicap.confirm", "Confirm"))), 2, 3);
-			myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("handicap.back", "Back"))), 1, 3);
+			myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("handicap.close", "Close"))), 1, 3);
 
 			myForm.add(myTable);
 			add(Text.getBreak());

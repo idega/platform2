@@ -31,6 +31,7 @@ public class TournamentCheckerWindow extends GolfWindow {
 		public TournamentCheckerWindow(String name, int width, int height) {
 			super(name, width, height);
 			this.setGolfClassToInstanciate(TournamentChecker.class);
+			this.setScrollbar(true);
 		}
 
 	}

@@ -1043,9 +1043,11 @@ public class HandicapRegister extends GolfBlock {
 
 			UpdateHandicap.update(Integer.parseInt(member_id), stampur);
 
-			//if (update) {
+			if(hasParentToReloadURL()) {
 				getParentPage().setParentToReloadWithURL(getParentReloadURL(modinfo));
-			//}
+			} else {
+				getParentPage().setParentToReload();
+			}
 
 			getParentPage().close();
 		}

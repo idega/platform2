@@ -43,6 +43,7 @@ public abstract class GolfBlock extends Block {
 	
 	private String parentReloadURL = "http://www.golf.is";
 	public static String PRM_PARENT_PREFIX = "parent_";
+	private boolean hasParentToReloadURL = false;
 	
 	protected static String LOCALIZATION_SAVE_KEY="save";
 	protected static String PARAM_SAVE="go_save";
@@ -178,7 +179,7 @@ public abstract class GolfBlock extends Block {
 		if (modinfo.isParameterSet("union_id")) {
 		  modinfo.setSessionAttribute("golf_union_id",modinfo.getParameter("union_id"));
 		}
-
+		initParentReloadURL(modinfo);
 		super._main(modinfo);
 	}
 	
@@ -770,11 +771,16 @@ public abstract class GolfBlock extends Block {
 			if(pName != null && pName.startsWith(PRM_PARENT_PREFIX)) {
 				String value = iwc.getParameter(pName);
 				myForm.addParameter(pName,value);
+				hasParentToReloadURL = true;
 			}
 		}
 	}
 
 	public String getParentReloadURL(IWContext iwc){
+		return parentReloadURL;
+	}
+	
+	protected void initParentReloadURL(IWContext iwc) {
 		String parentClass = iwc.getParameter(PRM_PARENT_PREFIX+IWMainApplication.classToInstanciateParameter);
 		if(parentClass != null) {
 			URLUtil url = new URLUtil(iwc.getIWMainApplication().getObjectInstanciatorURI(IWMainApplication.decryptClassName(parentClass)));
@@ -788,12 +794,16 @@ public abstract class GolfBlock extends Block {
 				}
 			}
 			parentReloadURL=url.toString();
+			hasParentToReloadURL = true;
 		}
-		return parentReloadURL;
 	}
 	
 	public void setDefaultParentReloadURL(String url) {
 		parentReloadURL=url;
+	}
+	
+	public boolean hasParentToReloadURL() {
+		return hasParentToReloadURL;
 	}
 	
 	
