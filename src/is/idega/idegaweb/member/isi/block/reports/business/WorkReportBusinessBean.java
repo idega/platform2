@@ -143,6 +143,17 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		return count;
 	}
+	
+	
+	/**
+	 * Returns the number of players that are equal or older than age 
+	 * and registered to a league(WRGroup) for the specified club(WR) 
+	 *	
+	 **/
+	public int getCountOfPlayersOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age, WorkReport report , WorkReportGroup wrGroup){
+		return getWorkReportMemberHome().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age,report,wrGroup);
+	}
+	
 
 	/**
 	 * This method gets you the id of the workreport of the club and year specified. It will create a new report if it does not exist already.
@@ -3829,14 +3840,13 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return workReportClubAccountRecordHome;
 	}
   
-	public Collection getWorkReportsByYearRegionalUnionsClubsAndLeaguesFiltering(int year, Collection regionalUnionsFilter, Collection clubsFilter, Collection leaguesFilter){
-		//try {
-			return null;//getWorkReportHome().findAllWorkReportsByYearRegionalUnionsClubsAndLeaguesFilteringOrderedByRegionalUnionNameAndClubName(year,regionalUnionsFilter,clubsFilter, leaguesFilter);
-		//}
-		//catch (FinderException e) {
-		//	return ListUtil.getEmptyList();
-		//}
-		
+	public Collection getWorkReportsByYearRegionalUnionsAndClubs(int year, Collection regionalUnionsFilter, Collection clubsFilter){
+		try {
+			return getWorkReportHome().findAllWorkReportsByYearRegionalUnionsAndClubsOrderedByRegionalUnionNameAndClubName(year,regionalUnionsFilter,clubsFilter);
+		}
+		catch (FinderException e) {
+			return ListUtil.getEmptyList();
+		}
 	}
 
 } //end of class
