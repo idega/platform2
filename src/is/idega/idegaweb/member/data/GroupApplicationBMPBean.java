@@ -9,6 +9,7 @@ import java.util.List;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -87,6 +88,10 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
           return getIntColumnValue(COLUMN_USER_ID);
   }
   
+  public User getUser(){
+  	return (User) getColumnValue(COLUMN_USER_ID);
+  }
+  
   public void setApplicationGroupId(int id){
   	setColumn(COLUMN_APPLICATION_GROUP_ID,id);
   }
@@ -126,6 +131,14 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
   public void setCreated(Timestamp created) {
     setColumn(this.COLUMN_CREATED,created);
   }
+  
+  public Timestamp getModified() {
+    return((Timestamp)getColumnValue(COLUMN_MODIFIED));
+  }
+
+  public void setModified(Timestamp modified) {
+    setColumn(this.COLUMN_MODIFIED,modified);
+  }
 
   public String ejbHomeGetPendingStatusString() throws RemoteException{
     return this.STATUS_PENDING;
@@ -145,6 +158,19 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
   
   public void removeAllGroups() throws IDORemoveRelationshipException{
   	this.idoRemoveFrom(Group.class);	
+  }
+  
+  public Collection getGroups(){
+   Collection groups = null;
+   
+   try {
+		groups = idoGetRelatedEntities(Group.class);	
+	
+	} catch (IDORelationshipException e) {
+		e.printStackTrace();
+	}	
+	
+	return groups;
   } 
 	
   public void addGroups(List groups) throws IDOAddRelationshipException {
@@ -157,11 +183,11 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
   }	
 
   public Collection ejbFindAllApplicationsByStatus(String status) throws FinderException,RemoteException{
-   return  super.idoFindAllIDsByColumnBySQL(COLUMN_STATUS,status);
+   return  idoFindAllIDsByColumnBySQL(COLUMN_STATUS,status);
   }
   
   public Collection ejbFindAllApplicationsByStatusOrderedByCreationDate(String status) throws FinderException,RemoteException{
-   return  super.idoFindAllIDsByColumnOrderedBySQL(COLUMN_STATUS,status,COLUMN_CREATED);
+   return  idoFindAllIDsByColumnOrderedBySQL(COLUMN_STATUS,status,COLUMN_CREATED);
   }
   
    public Collection ejbFindAllApplicationsByStatusAndApplicationGroup(String status, Group applicationGroup) throws FinderException,RemoteException{

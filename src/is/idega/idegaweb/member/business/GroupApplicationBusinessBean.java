@@ -4,6 +4,8 @@ import is.idega.idegaweb.member.data.GroupApplication;
 import is.idega.idegaweb.member.data.GroupApplicationHome;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.CreateException;
@@ -37,6 +39,8 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		User user = userBiz.createUserByPersonalIDIfDoesNotExist(name,pin,getGender(gender), getBirthDateFromPin(pin));
 		
 		user.setGender((Integer) this.getGender(gender).getPrimaryKey() );
+		
+		//email, address, phone
 				
 		List groups = null;
 
@@ -68,16 +72,98 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		return appl;
  
 	}
+	
+	public boolean changeGroupApplicationStatus(GroupApplication app, String status){
+		try{
+			GroupApplicationHome gHome = getGroupApplicationHome();
+	    	String approved = gHome.getApprovedStatusString();
+	    	String pending = gHome.getPendingStatusString();
+	    	String denied = gHome.getDeniedStatusString();
+			
+			
+			app.setModified(IWTimestamp.getTimestampRightNow());
+			
+			if( approved.equals(status) ){
+				
+				Collection groups = app.getGroups();
+				User user = app.getUser();
+				
+				Iterator iter = groups.iterator();
+				
+				while (iter.hasNext()) {
+					Group group = (Group) iter.next();
+					group.addGroup(user);
+				}
+				
+			}
+			else if( pending.equals(status) ){
+				//extra stuff?
+			}
+			else if( denied.equals(status) ){
+				//extra stuff?				
+			}
+			
+			
+			
+			app.store();		
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public String getPendingStatusString() throws RemoteException{
+		return getGroupApplicationHome().getPendingStatusString();
+	}
+	
+	public String getApprovedStatusString()throws RemoteException{
+		return getGroupApplicationHome().getApprovedStatusString();
+	}
+	
+	public String getDeniedStatusString()throws RemoteException{
+		return getGroupApplicationHome().getDeniedStatusString();
+	}
+	
+	public boolean changeGroupApplicationStatus(int groupApplicationId, String status){
+		try{
+			GroupApplicationHome gHome = getGroupApplicationHome();
+			GroupApplication app = gHome.findByPrimaryKey(new Integer(groupApplicationId));
+			return changeGroupApplicationStatus(app,status);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return false;
+		}
+			
+	}
+	
+	public Collection getGroupApplicationsByStatusAndApplicationGroup(String status, Group applicationGroup){
+		Collection apps = null;
+		try {
+			GroupApplicationHome grHome = getGroupApplicationHome();
+			apps =  grHome.findAllApplicationsByStatusAndApplicationGroup(status, applicationGroup);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return apps;
+	
+	}
 
-	private UserBusiness getUserBusiness() throws RemoteException {
+	public UserBusiness getUserBusiness() throws RemoteException {
 		return (UserBusiness) getServiceInstance(UserBusiness.class);	
 	}
 	
-	private GroupBusiness getGroupBusiness() throws RemoteException {
+	public GroupBusiness getGroupBusiness() throws RemoteException {
 		return (GroupBusiness) getServiceInstance(GroupBusiness.class);	
 	}
 
-	private GroupApplicationHome getGroupApplicationHome() throws RemoteException {
+	public GroupApplicationHome getGroupApplicationHome() throws RemoteException {
 		return (GroupApplicationHome) getIDOHome(GroupApplication.class);	
 	}	
 

@@ -12,6 +12,6 @@ public class GroupApplicationBusinessHomeImpl extends com.idega.business.IBOHome
   return (GroupApplicationBusiness) super.createIBO();
  }
 
- 
+
 
 }

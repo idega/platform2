@@ -12,7 +12,6 @@ public class GroupApplicationHomeImpl extends com.idega.data.IDOFactory implemen
   return (GroupApplication) super.createIDO();
  }
 
-
 public java.util.Collection findAllApplicationsByStatusOrderedByCreationDate(java.lang.String p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((GroupApplicationBMPBean)entity).ejbFindAllApplicationsByStatusOrderedByCreationDate(p0);
