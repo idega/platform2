@@ -1340,7 +1340,7 @@ public class ReportQueryBuilder extends Block {
 			table.add(equators, 4, row);
 		}
 		else {
-			table.add(iwrb.getLocalizedString("conditions." + part.getType(), part.getType()), 4, row);
+			table.add(iwrb.getLocalizedString(QueryConstants.LOCALIZATION_CONDITION_TYPE_PREFIX + part.getType(), part.getType()), 4, row);
 		}
 	}
 

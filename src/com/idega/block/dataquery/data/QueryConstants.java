@@ -19,5 +19,6 @@ public abstract class QueryConstants {
 	public final static String COUNTER_TOKEN = "_";
 	public final static int MAX_NUMBER_OF_ROWS_IN_RESULT =  200;
 	public final static String QUERY_BUNDLE_IDENTIFIER = "com.idega.block.dataquery";
+	public final static String LOCALIZATION_CONDITION_TYPE_PREFIX = "conditions.";
 
 }

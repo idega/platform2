@@ -11,6 +11,7 @@ import com.idega.block.dataquery.data.xml.QueryConditionPart;
 import com.idega.business.InputHandler;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.util.StringHandler;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -100,8 +101,8 @@ public class CriterionExpression implements DynamicExpression {
    	if (description == null || description.length() == 0)	{
    	IWResourceBundle iwrb = getResourceBundle(iwc);
    		// localization
-   		String localizedField = iwrb.getLocalizedString(valueField, valueField);
-   		String localizedType = iwrb.getLocalizedString(type, type);
+   		String localizedType = iwrb.getLocalizedString(StringHandler.concat(QueryConstants.LOCALIZATION_CONDITION_TYPE_PREFIX, type), type);
+   		String localizedField = iwrb.getLocalizedString(field, field);
   		StringBuffer buffer = new StringBuffer(localizedField).append(" ").append(localizedType);
   		description =  buffer.toString();
    	}
