@@ -19,7 +19,7 @@ import is.idega.idegaweb.project.business.ProjectBusiness;
 
 public class ProjectInvalidationLink extends Block {
 
-  protected Link modifyProjectLink = null;
+  protected Link invalidateProjectLink = null;
   protected Image optionalImage = null;
   public static final String _PROJECT_BUNDLE_IDENTIFIER = "is.idega.idegaweb.project";
   private int pageId = -1;
@@ -47,25 +47,25 @@ public class ProjectInvalidationLink extends Block {
 
 
     if(optionalImage != null){
-      modifyProjectLink = new Link(optionalImage);
+      invalidateProjectLink = new Link(optionalImage);
     } else {
       IWResourceBundle iwrb = this.getResourceBundle(iwc);
       Image tmp = iwrb.getImage("delete_project.gif","delete project");
       if(tmp != null){
-        modifyProjectLink = new Link(tmp);
+        invalidateProjectLink = new Link(tmp);
       } else {
-        modifyProjectLink = new Link("*");
+        invalidateProjectLink = new Link("*");
       }
     }
 
-    modifyProjectLink.setName("delete project");
-    modifyProjectLink.setWindowToOpen(IPDeleteProjectWindow.class);
-    modifyProjectLink.addParameter(IPDeleteProjectWindow._PRM_DELETE,"true");
-    modifyProjectLink.addParameter(IPDeleteProjectWindow._PRM_INSTANCE_ID, ProjectBusiness.getCurrentProjectId(iwc));
+    invalidateProjectLink.setName("delete project");
+    invalidateProjectLink.setWindowToOpen(IPDeleteProjectWindow.class);
+    invalidateProjectLink.addParameter(IPDeleteProjectWindow._PRM_DELETE,"true");
+    invalidateProjectLink.addParameter(IPDeleteProjectWindow._PRM_INSTANCE_ID, ProjectBusiness.getCurrentProjectId(iwc));
     if(pageId != -1){
-      modifyProjectLink.addParameter(IPDeleteProjectWindow._PRM_PAGE_ID,pageId);
+      invalidateProjectLink.addParameter(IPDeleteProjectWindow._PRM_PAGE_ID,pageId);
     }
-    this.add(modifyProjectLink);
+    this.add(invalidateProjectLink);
 
   }
 

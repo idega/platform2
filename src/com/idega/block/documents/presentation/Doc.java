@@ -99,6 +99,14 @@ public class Doc extends FolderBlock implements IWBlock {
 
     private String _target;
 
+    private static String _addPermisson = "add";
+    //private static String _infoPermission = "info";
+
+    private boolean _hasEditPermission = false;
+    private boolean _hasAddPermission = false;
+    //private boolean _hasInfoPermission = false;
+
+
 
     /**
      *  Constructor for the Doc object
@@ -130,6 +138,12 @@ public class Doc extends FolderBlock implements IWBlock {
     }
 
 
+    public void registerPermissionKeys(){
+      registerPermissionKey(_addPermisson);
+      //registerPermissionKey(_infoPermission);
+    }
+
+
     /**
      *  Description of the Method
      *
@@ -147,6 +161,16 @@ public class Doc extends FolderBlock implements IWBlock {
         _detachImage = _iwb.getImage("shared/detach.gif");
 
         _isAdmin = iwc.hasEditPermission(this);
+
+        _hasEditPermission = iwc.hasEditPermission(this);
+
+        if(_hasEditPermission){
+          _hasAddPermission = true;
+        } else {
+          _hasAddPermission = iwc.hasPermission(_addPermisson,this);
+        }
+
+
         //_isAdmin = true;
         _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
@@ -216,7 +240,7 @@ public class Doc extends FolderBlock implements IWBlock {
         }
 
         int row = 1;
-        if (_isAdmin) {
+        if (_hasEditPermission) {
             _myTable.add(getAdminPart(), 1, row);
             row++;
         }
@@ -304,7 +328,7 @@ public class Doc extends FolderBlock implements IWBlock {
                 Table linksTable = new Table();
                 linksTable.setRows(_numberOfDisplayed + 1);
                 linksTable.setWidth("100%");
-                if (_isAdmin) {
+                if (_hasEditPermission) {
                     linksTable.setHeight("100%");
                 }
                 table.add(linksTable, 1, 2);
@@ -324,15 +348,15 @@ public class Doc extends FolderBlock implements IWBlock {
                             linksTable.add(link, 1, linkRow);
                             linksTable.setWidth(1, linkRow, "100%");
 
-                            if (_isAdmin) {
-                                linksTable.add(getEditLink(links[b].getID()), 2, linkRow);
-                                linksTable.add(getDeleteLink(links[b].getID()), 2, linkRow);
+                            if (_hasEditPermission || _hasAddPermission) {
+                              linksTable.add(getEditLink(links[b].getID()), 2, linkRow);
+                              linksTable.add(getDeleteLink(links[b].getID()), 2, linkRow);
                             }
                             linkRow++;
                         }
                     }
 
-                    if (_isAdmin) {
+                    if (_hasAddPermission) {
                         linksTable.add(getAddLink(categories[a].getID()), 1, _numberOfDisplayed + 1);
                         linksTable.setHeight(1, _numberOfDisplayed + 1, "100%");
                         linksTable.setVerticalAlignment(1, _numberOfDisplayed + 1, "bottom");
@@ -438,7 +462,7 @@ public class Doc extends FolderBlock implements IWBlock {
                         dateText.setFontStyle(_linkStyle);
                         linksTable.add(dateText, 2, linkRow);
 
-                        if (_isAdmin) {
+                        if (_hasEditPermission || _hasAddPermission) {
                             linksTable.add(getEditLink(links[b].getID()), 3, linkRow);
                             linksTable.add(getDeleteLink(links[b].getID()), 3, linkRow);
                         }
@@ -449,7 +473,7 @@ public class Doc extends FolderBlock implements IWBlock {
                 row++;
             }
         }
-        if (_isAdmin && _catID != -1) {
+        if (_hasAddPermission && _catID != -1) {
             boxTable.add(getAddLink(category.getID()), 1, row);
         }
     }
@@ -498,7 +522,7 @@ public class Doc extends FolderBlock implements IWBlock {
                         table.add(link, 1, linkRow);
                         table.setWidth(1, linkRow, "100%");
 
-                        if (_isAdmin) {
+                        if (_hasEditPermission || _hasAddPermission) {
                             table.add(getEditLink(links[b].getID()), 2, linkRow);
                             table.add(getDeleteLink(links[b].getID()), 2, linkRow);
                         }
@@ -506,7 +530,7 @@ public class Doc extends FolderBlock implements IWBlock {
                     }
                 }
 
-                if (_isAdmin) {
+                if (_hasAddPermission) {
                     table.add(getAddLink(categories[a].getID()), 1, linkRow);
                 }
             }

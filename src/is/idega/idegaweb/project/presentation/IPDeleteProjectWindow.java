@@ -9,8 +9,11 @@ import com.idega.presentation.Table;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.text.Text;
-import com.idega.builder.presentation.IBAdminWindow;
+import com.idega.idegaweb.presentation.IWAdminWindow;
 import is.idega.idegaweb.project.business.ProjectBusiness;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWConstants;
 
 /**
  * Title:        idegaclasses
@@ -21,7 +24,7 @@ import is.idega.idegaweb.project.business.ProjectBusiness;
  * @version 1.0
  */
 
-public class IPDeleteProjectWindow extends IBAdminWindow{
+public class IPDeleteProjectWindow extends IWAdminWindow{
 
   protected final static String _PRM_CONFIRM = "ip_delete_confirm";
   public final static String _PRM_DELETE = ProjectBusiness._PRM_DELETE;
@@ -31,12 +34,15 @@ public class IPDeleteProjectWindow extends IBAdminWindow{
 
 
   public IPDeleteProjectWindow() {
-    setWidth(300);
-    setHeight(200);
+    setWidth(250);
+    setHeight(135);
+  }
+
+  public String getBundleIdentifier(){
+    return ProjectBusiness.IW_PROJECT_IDENTIFIER;
   }
 
   public void main(IWContext iwc){
-
       setTitle("Confirm delete");
 
       String ib_parent_id = iwc.getParameter(_PRM_INSTANCE_ID);
@@ -79,26 +85,42 @@ public class IPDeleteProjectWindow extends IBAdminWindow{
     Table t = new Table(1,2);
     Form f = new Form();
 
+    IWBundle iwb = this.getBundle(iwc);
+    IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
+
+
     f.maintainParameter(_PRM_DELETE);
     f.maintainParameter(_PRM_INSTANCE_ID);
     f.maintainParameter(_PRM_PAGE_ID);
 
     f.add(t);
     t.setWidth("100%");
-    t.setHeight("150");
-//    t.setAlignment(com.idega.idegaweb.IWConstants.CENTER_ALIGNMENT);
+    t.setAlignment(1,1,IWConstants.CENTER_ALIGNMENT);
+    t.setVerticalAlignment(1,1,IWConstants.MIDDLE_ALIGNMENT);
+    //t.setHeight("100");
+    t.setHeight(1,"70");
+    t.setHeight(2,"20");
+    t.setAlignment(IWConstants.CENTER_ALIGNMENT);
 
-    Text confirmText = new Text("Are you sure you want to delete this project?");
+    Text confirmText = new Text(iwrb.getLocalizedString("confirm_invalidate_project","Are you sure you want to delete this project?"));
+    this.formatText(confirmText,true);
     t.add(confirmText,1,1);
 
-    SubmitButton button = new SubmitButton(this._PRM_CONFIRM,"Yes");
-    CloseButton closebutton = new CloseButton("Cancel");
+    SubmitButton button = new SubmitButton(iwrb.getLocalizedImageButton("yes", "YES"), _PRM_CONFIRM);
+    CloseButton closebutton = new CloseButton(iwrb.getLocalizedImageButton("cancel", "CANCEL"));
 
-    Table innerTable = new Table(2,1);
-    innerTable.setAlignment(com.idega.idegaweb.IWConstants.CENTER_ALIGNMENT);
+    Table innerTable = new Table(3,1);
+    innerTable.setAlignment(IWConstants.CENTER_ALIGNMENT);
     innerTable.add(button,1,1);
-    innerTable.add(closebutton,2,1);
+    innerTable.add(closebutton,3,1);
+    innerTable.setHeight(20);
+    innerTable.setWidth(2,"5");
+    innerTable.setCellpadding(0);
+    innerTable.setCellspacing(0);
     t.add(innerTable,1,2);
+
+//    t.setBorder(1);
+//    innerTable.setBorder(1);
 
     return f;
   }
