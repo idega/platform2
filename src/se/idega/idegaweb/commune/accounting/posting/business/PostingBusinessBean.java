@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.32 2003/10/24 10:29:37 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.33 2003/11/12 13:02:31 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -421,8 +421,18 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		try {
 			if (ownPosting == null || doublePosting == null) {
 				return false;
-			}
+			}			
 			PostingParametersHome home = getPostingParametersHome();
+			PostingParameters pp = null;
+			try {
+				pp = home.findPostingParameter(from, to, ownPosting, doublePosting, 
+						code1, code2, code3, code4, code5, code6, code7);
+			} catch (FinderException e) {}
+			
+			if (pp != null) {
+				return true;
+			}
+/*			
 			Iterator iter = null;
 			
 			try {
@@ -521,6 +531,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 					return true;
 				}
 			}
+*/
 		} catch (RemoteException e) {
 			return false;
 		}
