@@ -48,12 +48,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/05/19 12:46:52 $ by $Author: laddi $
+ * Last modified: $Date: 2004/05/24 23:04:07 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -194,14 +194,14 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 			Text text = new Text(localize(USER_ALLREADY_HAS_A_LOGIN_KEY, USER_ALLREADY_HAS_A_LOGIN_DEFAULT) + ". " + localize(GOTO_FORGOT_PASSWORD_KEY, GOTO_FORGOT_PASSWORD_DEFAULT) + '.', true, false, false);
 			text.setFontColor(COLOR_RED);
 			add(text);
-			add(Text.getBreak());
+			add(new Break(2));
 			viewSimpleApplicationForm(iwc);
 		}
 		catch (Exception e) {
 			Text text = new Text(e.getMessage(), true, false, false);
 			text.setFontColor(COLOR_RED);
 			add(text);
-			add(Text.getBreak());
+			add(new Break(2));
 			viewSimpleApplicationForm(iwc);
 		}
 	}

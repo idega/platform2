@@ -331,7 +331,6 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
     table.setCellspacing(getCellpadding());
     table.setCellpadding(0);
     table.setWidth(2, "12");
-    table.setWidth(1, "180");
     return table;
 	}
 
