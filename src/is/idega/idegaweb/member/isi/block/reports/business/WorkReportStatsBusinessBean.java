@@ -184,6 +184,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_PLAYERS = "players";
 	private static final String FIELD_NAME_YEAR = "year";
 	
+	private static final int DEFAULT_SPLIT_AGE = 16;
 	
 	/**
 	 *  
@@ -214,12 +215,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			final Integer year,
 			Collection regionalUnionsFilter,
 			Collection clubsFilter,
-			Collection leaguesFilter)
+			Collection leaguesFilter,
+			Integer splitAge)
 	throws RemoteException {
 		
 		
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -438,11 +440,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	public ReportableCollection getStatisticsForLeaguesByYearRegionalUnionsAndLeaguesFiltering(
 			final Integer year,
 			Collection regionalUnionsFilter,
-			Collection leaguesFilter)
+			Collection leaguesFilter,
+			Integer splitAge)
 	throws RemoteException {
 		
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -586,10 +589,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	/*
 	 * Report B12.1.3 of the ISI Specs
 	 */
-	public ReportableCollection getStatisticsForLeaguesByYearAndLeaguesFiltering(final Integer year,Collection leaguesFilter)throws RemoteException {
+	public ReportableCollection getStatisticsForLeaguesByYearAndLeaguesFiltering(final Integer year,Collection leaguesFilter, Integer splitAge)throws RemoteException {
 	
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -713,10 +716,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	/*
 	 * Report B12.1.4 of the ISI Specs
 	 */
-	public ReportableCollection getStatisticsForLeaguesByYearAndLeaguesFilteringComparedWithLastYear(final Integer year,Collection leaguesFilter)throws RemoteException {
+	public ReportableCollection getStatisticsForLeaguesByYearAndLeaguesFilteringComparedWithLastYear(final Integer year,Collection leaguesFilter, Integer splitAge)throws RemoteException {
 	
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -1071,11 +1074,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	 */
 	public ReportableCollection getStatisticsForRegionalUnionsByYearAndRegionalUnionsFilter (
 			final Integer year,
-			Collection regionalUnionsFilter)
+			Collection regionalUnionsFilter,
+			Integer splitAge)
 	throws RemoteException {
 
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -1167,10 +1171,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	 */
 	public ReportableCollection getGenderStatisticsForRegionalUnionsByYearAndRegionalUnionsFilter (
 			final Integer year,
-			Collection regionalUnionsFilter)
+			Collection regionalUnionsFilter,
+			Integer splitAge)
 	throws RemoteException {
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -1305,11 +1310,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	*/
 	public ReportableCollection getPlayerStatisticsForClubsByYearAndRegionalUnionsFiltering(
 			final Integer year,
-			Collection regionalUnionsFilter)
+			Collection regionalUnionsFilter,
+			Integer splitAge)
 			throws RemoteException {
 
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -1474,10 +1480,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	 */
 	public ReportableCollection getMemberStatisticsForClubsByYearAndRegionalUnionsFilter (
 			final Integer year,
-			Collection regionalUnionsFilter)
+			Collection regionalUnionsFilter,
+			Integer splitAge)
 	throws RemoteException {
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -1580,10 +1587,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	 */
 	public ReportableCollection getPlayersForRegionalUnionsByYearAndRegionalUnionsFilter (
 			final Integer year,
-			Collection regionalUnionsFilter)
+			Collection regionalUnionsFilter,
+			Integer splitAge)
 	throws RemoteException {
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -1717,10 +1725,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	/*
 	 * Report B12.2.6 of the ISI Specs
 	 */
-	public ReportableCollection getStatisticsForLeaguesByYearAndLeaguesAndRegionalUnionsFiltering(final Integer year,Collection regionalUnionsFilter,Collection leaguesFilter)throws RemoteException {
+	public ReportableCollection getStatisticsForLeaguesByYearAndLeaguesAndRegionalUnionsFiltering(final Integer year,Collection regionalUnionsFilter,Collection leaguesFilter,Integer splitAge)throws RemoteException {
 
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -1868,10 +1876,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			final Integer year,
 			Collection regionalUnionsFilter, 
 			Collection umfiClubsFilter, 
-			String type)
+			String type,
+			Integer splitAge)
 	throws RemoteException {
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -2021,10 +2030,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			final Integer year, 
 			Collection regionalUnionsFilter, 
 			Collection umfiClubsFilter, 
-			String type)
+			String type,
+			Integer splitAge)
 	throws RemoteException {
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -2174,10 +2184,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			final Integer year,
 			Collection clubsFilter, 
 			Collection umfiClubsFilter, 
-			String type)
+			String type,
+			Integer splitAge)
 	throws RemoteException {
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -2324,10 +2335,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			final Integer year,
 			Collection clubsFilter, 
 			Collection umfiClubsFilter, 
-			String type)
+			String type,
+			Integer splitAge)
 	throws RemoteException {
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -2993,7 +3005,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			String status)
 	throws RemoteException {
 		//initialize stuff
-		int age = 16;
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -3102,7 +3113,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			final Integer year,
 			Collection regionalUnionsFilter,
 			Collection clubsFilter,
-			String onlyTotals)
+			String onlyTotals,
+			Integer splitAge)
 	throws RemoteException {
 		
 		boolean showAll = true;
@@ -3114,7 +3126,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		}
 		
 		//initialize stuff
-		int age = 16;
+		int age = splitAge==null?DEFAULT_SPLIT_AGE:splitAge.intValue();
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -3463,7 +3475,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	throws RemoteException {
 
 		//initialize stuff
-		int age = 16;
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -4904,16 +4915,28 @@ private ReportableData addToIntegerCountFromFieldInAnotherReportableData(Reporta
 }
 
 private String getLeagueIdentifier(WorkReportGroup league) {
-	//for the page separations
 	StringBuffer leagueBuf = new StringBuffer();
-	leagueBuf.append( (league.getNumber()!=null)? league.getNumber()+" " : "" )
-	.append( (league.getShortName()!=null)? league.getShortName() : "");
+	String number = league.getNumber();
+	if(number==null) {
+		number = "";
+	} else {
+		number += " ";
+	}
+	String shortName = league.getShortName();
+	if(shortName==null) {
+		shortName = "";
+	}
+	leagueBuf.append(number).append(shortName);
 	
 	//.append( (league.getName()!=null)? league.getName() : "");
 	String leagueText=league.toString();
 	
 	if("".equals(leagueText)){
-		leagueText = (league.getName()!=null)? league.getName() : "No League name!";
+		String name = league.getName();
+		if(name==null) {
+			name = "Nafn ekki sett";
+		}
+		leagueText = name;
 	}
 	return leagueText;
 }
