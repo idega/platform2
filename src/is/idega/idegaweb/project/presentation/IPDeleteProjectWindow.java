@@ -48,6 +48,8 @@ public class IPDeleteProjectWindow extends IWAdminWindow{
       String ib_parent_id = iwc.getParameter(_PRM_INSTANCE_ID);
       //this.setParentToReload();
 
+      //this.debugParameters(iwc);
+
 
       boolean doConfirm = (iwc.getParameter(_PRM_CONFIRM)==null);
       if(doConfirm){
