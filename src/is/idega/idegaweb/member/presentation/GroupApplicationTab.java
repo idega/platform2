@@ -11,7 +11,7 @@ import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
-import com.idega.presentation.text.Text;
+import com.idega.presentation.text.*;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
@@ -31,10 +31,7 @@ import com.idega.user.presentation.UserTab;
 
 public class GroupApplicationTab extends UserTab {
 
-    private Text spouseText;
-    private Text childrenText;
-    private Text custodiansText;
-    private Text siblingsText;
+    private GroupApplication app;
 
 	private User user;
 	private Table frameTable;
@@ -43,7 +40,8 @@ public class GroupApplicationTab extends UserTab {
 	private UserBusiness userBiz;
 	private GroupBusiness groupBiz;
 	private GroupApplicationBusiness appBiz;
-	private static final String SELECTED_GROUPS = GroupSelectionDoubleBox.selectedGroupsParameterDefaultValue;
+	private static final String SELECTED_GROUPS_PARAM = GroupSelectionDoubleBox.selectedGroupsParameterDefaultValue;
+	private static final String ADMIN_COMMENT_PARAM = "iwme_admin_comment";
 	
 	
 	
@@ -70,19 +68,17 @@ public class GroupApplicationTab extends UserTab {
   
   public boolean collect(IWContext iwc) { initFieldContents(); return true; }
   public boolean store(IWContext iwc) { 
-  	
-  	String[] groupsIds = iwc.getParameterValues(SELECTED_GROUPS);
-  	
-  	if(groupsIds!=null){
-	  	for (int i = 0; i < groupsIds.length; i++) {
-			String string = groupsIds[i];
-			System.out.println("Group id: "+string);
-					
-		}
-  	}
-  	
   		
-  	return true; 
+  	String adminComment = iwc.getParameter(ADMIN_COMMENT_PARAM);
+  	
+  	String[] groupIds = iwc.getParameterValues(SELECTED_GROUPS_PARAM);
+  	
+  	try {
+		return getGroupApplicationBusiness().changeGroupApplicationAdminCommentAndGroups(app,adminComment,groupIds) ;
+	} catch (RemoteException e) {
+		e.printStackTrace();
+		return false;
+	}
   }
   
   public void initFieldContents() {
@@ -102,8 +98,14 @@ public class GroupApplicationTab extends UserTab {
 		
 		if( apps!=null && !apps.isEmpty()){
 			Iterator iter = apps.iterator();
+			int counter = 1;
 			while (iter.hasNext()) {
-				GroupApplication app = (GroupApplication) iter.next();
+				if(counter>1){
+					addBreak();
+					add("User has more applications pending. Only one can be viewed at a time.");	
+					break;
+				}
+				app = (GroupApplication) iter.next();
 				add("Status. "+app.getStatus());
 				addBreak();
 				
@@ -127,10 +129,22 @@ public class GroupApplicationTab extends UserTab {
 				add( groupSelection );	
 				
 				//add(new HiddenInput(
-				add( "User comment: "+app.getUserComment());
+				String userComment = app.getUserComment();
+				if( userComment!=null ){ 
+					add( "User comment: "+userComment); 
+				}
 				addBreak();
+				String adminComment = app.getAdminComment();
 				
-				add("Admin comment: "+app.getAdminComment());
+				TextArea comment = new TextArea(ADMIN_COMMENT_PARAM);
+				
+				if( adminComment!=null){
+					comment.setContent(adminComment);	
+				}
+				add("Admin comment:");
+				addBreak();
+				add(comment);
+				counter++;
 				
 			}
 	
