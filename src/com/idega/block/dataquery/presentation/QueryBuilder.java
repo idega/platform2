@@ -8,6 +8,7 @@ package com.idega.block.dataquery.presentation;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,6 +49,10 @@ import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TreeViewer;
+import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
 //import com.idega.util.IWColor;
 
 /**
@@ -67,6 +72,9 @@ public class QueryBuilder extends Block {
 	private boolean hasEditPermission = false, hasTemplatePermission = false, hasCreatePermission = false;
 	
 	//thomas added:
+	// this parameter describes the mode of the query builder
+	// -1 means: simple mode
+	// 0,1,2 means expert mode and sets the investigation level
 	public static final String SHOW_WIZARD = "show_wizard";
 	
 	private static final String PARAM_STEP = "step";
@@ -87,6 +95,7 @@ public class QueryBuilder extends Block {
 	private static final String PARAM_COND_TYPE = "field_type";
 	private static final String PARAM_COND_FIELD = "field";
 	private static final String PARAM_COND_ENTITY = "entity";
+	private static final String PARAM_COND_DESCRIPTION = "description";
 	public static final String PARAM_QUERY_FOLDER_ID = "qb_fid";
 	public static final String PARAM_LAYOUT_FOLDER_ID ="qb_layoutId";
 	public static final String PARAM_QUERY_ID = "qb_qid";
@@ -150,6 +159,10 @@ public class QueryBuilder extends Block {
 	public void control(IWContext iwc) {
 		if (hasEditPermission || hasTemplatePermission || hasCreatePermission) {
 			try {
+				if (iwc.isParameterSet(SHOW_WIZARD))	{
+					investigationLevel = Integer.parseInt(iwc.getParameter(SHOW_WIZARD));
+					expertMode = (investigationLevel > -1);
+				}
 
 				if (iwc.isParameterSet(PARAM_QUERY_FOLDER_ID)) {
 					queryFolderID = Integer.parseInt(iwc.getParameter(PARAM_QUERY_FOLDER_ID));
@@ -192,7 +205,7 @@ public class QueryBuilder extends Block {
 				// thomas added:
 				// this parameter serves as a flag for the outer window to continue showing the wizard
 				// the outer window checks also if PARAM_CANCEL or PARAM_QUIT exist
-				form.addParameter(SHOW_WIZARD, SHOW_WIZARD);
+				form.addParameter(SHOW_WIZARD, Integer.toString(investigationLevel));
 				if (iwc.isParameterSet(PARAM_LAYOUT_FOLDER_ID)) {
 					layoutFolderID = iwc.getParameter(PARAM_LAYOUT_FOLDER_ID);
 					form.addParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderID);
@@ -271,13 +284,14 @@ public class QueryBuilder extends Block {
 			String field = iwc.getParameter(PARAM_COND_FIELD);
 			String equator = iwc.getParameter(PARAM_COND_TYPE);
 			String pattern = iwc.getParameter(PARAM_CONDITION);
+			String description = iwc.getParameter(PARAM_COND_DESCRIPTION);
 			if (!"".equals(pattern) || iwc.isParameterSet(PARAM_DYNAMIC)){
 				QueryFieldPart fieldPart = QueryFieldPart.decode(field);
 				helper.addField(fieldPart);
 				if(pattern ==null || "".equals(pattern)){
 					pattern = defaultDynamicPattern;
 				}
-				QueryConditionPart part = new QueryConditionPart(fieldPart.getEntity(), fieldPart.getPath(), fieldPart.getName(), equator, pattern);
+				QueryConditionPart part = new QueryConditionPart(fieldPart.getEntity(), fieldPart.getPath(), fieldPart.getName(), equator, pattern, description);
 				part.setLocked(iwc.isParameterSet(PARAM_LOCK));
 				part.setDynamic(iwc.isParameterSet(PARAM_DYNAMIC));
 				helper.addCondition(part);
@@ -314,7 +328,13 @@ public class QueryBuilder extends Block {
 		else if (iwc.isParameterSet(PARAM_NEXT)) {
 			boolean proceed = processNextStep(iwc);
 			if (proceed) {
-				step++;
+				// in the simple mode skip the second step
+				if (! expertMode && step == 1) {
+					step = 3;
+				}
+				else {
+					step++;
+				}
 				//System.out.println(" proceed to next step");
 			}
 			//else
@@ -422,6 +442,7 @@ public class QueryBuilder extends Block {
 			QueryHelper queryHelperAsSource = sessionBean.getQueryService().getQueryHelper(Integer.parseInt(queryId));
 			helper.addQuery(queryHelperAsSource);
 		}
+		// do not use else if 
 		if (iwc.isParameterSet(PARAM_SOURCE)) {
 			String sourceEntity = iwc.getParameter(PARAM_SOURCE);
 			if (sourceEntity.length() > 0 && !sourceEntity.equalsIgnoreCase("empty")) {
@@ -437,13 +458,17 @@ public class QueryBuilder extends Block {
 						QueryEntityPart entityPart = (QueryEntityPart) iterator.next();
 						helper.addRelatedEntity(entityPart);
 					}
-					step = 2;
 				}
 				// added by thomas: end
 			}
+		}
+		// either an entity as source or a query as source
+		if (expertMode) {
 			return helper.hasSourceEntity();
 		}
-		return false;
+		else {
+		 return helper.hasSourceEntity() || helper.hasPreviousQuery();
+		}
 	}
 	
 	private boolean processStep5(IWContext iwc) throws IOException	{
@@ -596,37 +621,39 @@ public class QueryBuilder extends Block {
 		int row = 1;
 
 		//TODO get available source entities with permissions !!!
-		Collection sourceEntities = getQueryService(iwc).getSourceQueryEntityParts();
-		if (showSourceEntityInSelectBox) {
-			SelectionBox select = new SelectionBox(PARAM_SOURCE);
-			select.setMaximumChecked(1, iwrb.getLocalizedString("maximum_select_msg", "Select only one"));
-			select.setHeight("20");
-			select.setWidth("300");
-			Iterator iter = sourceEntities.iterator();
-			while (iter.hasNext()) {
-				QueryEntityPart element = (QueryEntityPart) iter.next();
-				select.addMenuElement(element.encode(), iwrb.getLocalizedString(element.getName(), element.getName()));
+		if (expertMode)	{
+			Collection sourceEntities = getQueryService(iwc).getSourceQueryEntityParts();
+			if (showSourceEntityInSelectBox) {
+				SelectionBox select = new SelectionBox(PARAM_SOURCE);
+				select.setMaximumChecked(1, iwrb.getLocalizedString("maximum_select_msg", "Select only one"));
+				select.setHeight("20");
+				select.setWidth("300");
+				Iterator iter = sourceEntities.iterator();
+				while (iter.hasNext()) {
+					QueryEntityPart element = (QueryEntityPart) iter.next();
+					select.addMenuElement(element.encode(), iwrb.getLocalizedString(element.getName(), element.getName()));
+				}
+				if (helper.hasSourceEntity()) {
+					QueryEntityPart source = helper.getSourceEntity();
+					select.setSelectedElement(source.encode());
+				}
+				table.add(select, 2, row++);
 			}
-			if (helper.hasSourceEntity()) {
-				QueryEntityPart source = helper.getSourceEntity();
-				select.setSelectedElement(source.encode());
+			else {
+				DropdownMenu drp = new DropdownMenu(PARAM_SOURCE);
+				drp.addMenuElement("empty", "Entity");
+				Iterator iter = sourceEntities.iterator();
+				while (iter.hasNext()) {
+					QueryEntityPart element = (QueryEntityPart) iter.next();
+					drp.addMenuElement(element.encode(), iwrb.getLocalizedString(element.getName(), element.getName()));
+				}
+				if (helper.hasSourceEntity()) {
+					QueryEntityPart source = helper.getSourceEntity();
+					drp.setSelectedElement(source.encode());
+				}
+				table.add(drp, 2, row++);
+	
 			}
-			table.add(select, 1, row++);
-		}
-		else {
-			DropdownMenu drp = new DropdownMenu(PARAM_SOURCE);
-			drp.addMenuElement("empty", "Entity");
-			Iterator iter = sourceEntities.iterator();
-			while (iter.hasNext()) {
-				QueryEntityPart element = (QueryEntityPart) iter.next();
-				drp.addMenuElement(element.encode(), iwrb.getLocalizedString(element.getName(), element.getName()));
-			}
-			if (helper.hasSourceEntity()) {
-				QueryEntityPart source = helper.getSourceEntity();
-				drp.setSelectedElement(source.encode());
-			}
-			table.add(drp, 1, row++);
-
 		}
 		if (showQueries)	{
 			SelectionBox select = new SelectionBox(PARAM_QUERY_AS_SOURCE);
@@ -634,26 +661,76 @@ public class QueryBuilder extends Block {
 			select.setHeight("20");
 			select.setWidth("300");
 			ICTreeNode rootNode;
-			try {
-				rootNode = (ICTreeNode) getFile(getQueryFolderID());
-				Iterator iterator = rootNode.getChildren();
-				if (iterator == null) {
-					iterator = new ArrayList(0).iterator();
-				} 
-				while (iterator.hasNext())	{
-					ICTreeNode node = (ICTreeNode) iterator.next();
-					String name = node.getNodeName();
-  				int id = node.getNodeID();
-					select.addMenuElement(Integer.toString(id), name);
-				}
-				table.add(select, 2, row - 1 );
-			}
-			catch (FinderException ex) {
-				String message =
-					"[QueryBuilder]: Can't retrieve folder.";
-				System.err.println(message + " Message is: " + ex.getMessage());
-				ex.printStackTrace(System.err);
-			}
+
+/// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	  	User currentUser = iwc.getCurrentUser();
+	  	GroupBusiness groupBusiness = getGroupBusiness();
+	  	UserBusiness userBusiness = getUserBusiness();
+	  	String[] groupTypes = 
+				{ "general", "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
+			Group topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), iwc);
+	  	Collection parentGroups = new ArrayList();
+	  	parentGroups.add(topGroup);
+	  	try {
+	  		// brilliant implementation in GroupBusiness!!!!!!
+	  		// null is returned instead of an empty collection!!!! This is really brilliant.
+	  		//TODO: implement a better version of that method
+	  	Collection coll  = groupBusiness.getParentGroupsRecursive(topGroup);
+	  	if (coll != null) {
+	  		parentGroups.addAll(coll);
+	  	}
+	  	//TODO thi: handle exception in the right way
+	  	}
+	  	catch (Exception ex) {
+	  		parentGroups = new ArrayList();
+	  	}
+	  	List queryRepresentations = new ArrayList();
+	  	Iterator parentGroupsIterator = parentGroups.iterator();
+			while (parentGroupsIterator.hasNext()) {
+	  		Group group = (Group) parentGroupsIterator.next();
+	  		String groupName = group.getName();
+	  		String groupId = group.getPrimaryKey().toString();
+	  		StringBuffer buffer = new StringBuffer(groupId).append("_").append("public");
+	  		ICFile folderFile = getFile(buffer.toString());
+	  		if (folderFile != null) {
+	  			// bad implementation:
+	  			// if the children list is empty null is returned. 
+	  			//TODO: thi: change the implementation
+	  			Iterator iterator = folderFile.getChildren();
+	  			if (iterator == null) {
+	  				iterator = (new ArrayList(0)).iterator();
+	  			}
+					while (iterator.hasNext())	{
+	  				ICTreeNode node = (ICTreeNode) iterator.next();
+	  				int id = node.getNodeID();
+	  				String name = node.getNodeName();
+	  				String displayName = new StringBuffer(name).append(" ( ").append(groupName).append(" ) ").toString();
+	  				select.addMenuElement(Integer.toString(id), displayName);
+	//  				// show only the query with a specified id if desired 
+	//  				if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
+	//  					QueryRepresentation representation = new QueryRepresentation(id, name, groupName);
+	//  					queryRepresentations.add(representation);
+	  				}
+					}
+	  		}
+	  		
+	  		
+	  		
+	  	
+				
+/// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++				
+//				
+//				rootNode = (ICTreeNode) getFile(getQueryFolderID());
+//				Iterator iterator = rootNode.getChildren();
+//				if (iterator == null) {
+//					iterator = new ArrayList(0).iterator();
+//				} 
+//				while (iterator.hasNext())	{
+//					ICTreeNode node = (ICTreeNode) iterator.next();
+//					String name = node.getNodeName();
+//  				int id = node.getNodeID();
+///					select.addMenuElement(Integer.toString(id), name);
+				table.add(select, 1, (row == 1) ? 1 : row - 1 );
 		}
 		if (hasTemplatePermission) {
 			CheckBox lockCheck = new CheckBox(PARAM_LOCK, "true");
@@ -674,12 +751,12 @@ public class QueryBuilder extends Block {
 		tree.setUI(tree._UI_WIN);
 		Link treeLink = new Link();
 		treeLink.addParameter(PARAM_STEP, step);
-		treeLink.addParameter(SHOW_WIZARD, SHOW_WIZARD);
+		treeLink.addParameter(SHOW_WIZARD, Integer.toString(investigationLevel));
 		treeLink.addParameter(PARAM_QUERY_FOLDER_ID, queryFolderID);
 		treeLink.addParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderID);
 		tree.setLinkOpenClosePrototype(treeLink);
 		tree.addOpenCloseParameter(PARAM_STEP, Integer.toString(step));
-		tree.addOpenCloseParameter(SHOW_WIZARD, SHOW_WIZARD);
+		tree.addOpenCloseParameter(SHOW_WIZARD, Integer.toString(investigationLevel));
 		tree.addOpenCloseParameter(PARAM_QUERY_FOLDER_ID, Integer.toString(queryFolderID));
 		tree.addOpenCloseParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderID);
 		tree.setInitOpenLevel();
@@ -701,10 +778,6 @@ public class QueryBuilder extends Block {
 
 		int row = 2;
 		
-			
-			
-
-		QueryEntityPart entityPart = helper.getSourceEntity();
 		List entities = helper.getListOfRelatedEntities();
 		if (entities == null)
 			entities = new Vector();
@@ -722,7 +795,13 @@ public class QueryBuilder extends Block {
 		box.getRightBox().setHeight("20");
 		box.getLeftBox().setHeight("20");
 		box.getRightBox().selectAllOnSubmit();
-		fillFieldSelectionBox(service, entityPart, fieldMap, box);
+		
+		// in simple mode source entity is not set
+		QueryEntityPart entityPart;
+		if (helper.hasSourceEntity()) {
+			entityPart = helper.getSourceEntity();
+			fillFieldSelectionBox(service, entityPart, fieldMap, box);
+		}
 		
 		if (helper.hasPreviousQuery())	{
 			List resultFields = new ArrayList();
@@ -891,9 +970,10 @@ public class QueryBuilder extends Block {
 		table.add(getMsgText(iwrb.getLocalizedString("field_display", "Display")), 3, row);
 		table.add(getMsgText(iwrb.getLocalizedString("field_equator", "Equator")), 4, row);
 		table.add(getMsgText(iwrb.getLocalizedString("field_pattern", "Pattern")), 5, row);
+		table.add(getMsgText(iwrb.getLocalizedString("field_description", "Description")), 6, row);
 		if (hasTemplatePermission) {
-			table.add(getMsgText(iwrb.getLocalizedString("field_lock", "Lock")), 7, row);
-			table.add(getMsgText(iwrb.getLocalizedString("field_dynamic","Dynamic")),8,row);
+			table.add(getMsgText(iwrb.getLocalizedString("field_lock", "Lock")), 8, row);
+			table.add(getMsgText(iwrb.getLocalizedString("field_dynamic","Dynamic")),9,row);
 		}
 
 		row++;
@@ -909,17 +989,18 @@ public class QueryBuilder extends Block {
 				}
 				table.add(iwrb.getLocalizedString("conditions." + part.getType(), part.getType()), 4, row);
 				table.add(part.getPattern(), 5, row);
+				table.add(part.getDescription(), 6, row);
 				
 								
 				if (hasTemplatePermission){ 
 					if(	part.isLocked()) 
-						table.add("x", 7, row);
+						table.add("x", 8, row);
 					if(part.isDynamic())
-						table.add("x",8,row);
-					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	6,	row);
+						table.add("x",9,row);
+					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	7,	row);
 				}
 				else if(!(part.isLocked() || part.isDynamic())){
-					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	6,	row);
+					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	7,	row);
 				}
 				row++;
 			}
@@ -932,13 +1013,15 @@ public class QueryBuilder extends Block {
 		table.add(equators, 4, row);
 		TextInput pattern = new TextInput(PARAM_CONDITION);
 		table.add(pattern, 5, row);
-		table.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), PARAM_ADD), 6, row);
+		TextInput description = new TextInput(PARAM_COND_DESCRIPTION);
+		table.add(description, 6, row);
+		table.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), PARAM_ADD), 7, row);
 		if(hasTemplatePermission){
 		
 			CheckBox lock = new CheckBox(PARAM_LOCK);	
 			CheckBox dynamic = new CheckBox(PARAM_DYNAMIC);
-			table.add(lock,7,row);
-			table.add(dynamic,8,row);
+			table.add(lock,8,row);
+			table.add(dynamic,9,row);
 		}
 
 		return table;
@@ -1193,15 +1276,18 @@ public class QueryBuilder extends Block {
 				drp.addMenuElement(part.encode(),	iwrb.getLocalizedString(part.getEntity(), part.getEntity()) + " -> " + part.getDisplay());
 			}
 		}
-		
-		
-		QueryEntityPart entityPart = helper.getSourceEntity();
+
 		List entities = helper.getListOfRelatedEntities();
 		if (entities == null)
 			entities = new Vector();
 		Iterator iterator = entities.iterator();
 		
-		filldropdown(service, entityPart,drpMap,drp);
+		// in simple mode source entity is not set
+		QueryEntityPart entityPart;
+		if (helper.hasSourceEntity()) {
+			entityPart = helper.getSourceEntity();
+			filldropdown(service, entityPart,drpMap,drp);
+		}
 		while (iterator.hasNext()) {
 			entityPart = (QueryEntityPart) iterator.next();
 			filldropdown(service, entityPart,drpMap,drp);
@@ -1330,6 +1416,43 @@ public class QueryBuilder extends Block {
       throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
     }
   }     
+  
+  
+  private ICFile getFile(String name)	{
+  	try {
+      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
+      ICFile file = (ICFile) home.findByFileName(name);
+      return file;
+    }
+    catch(RemoteException ex){
+      throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
+    }
+    catch (FinderException ex) {
+			return null;
+		}
+  }	
+ 
+  
+
+	public UserBusiness getUserBusiness()	{
+		try {
+			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+		}
+		catch (RemoteException ex)	{
+      System.err.println("[ReportOverview]: Can't retrieve UserBusiness. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportOverview]: Can't retrieve UserBusiness");
+		}
+	}
+
+	public GroupBusiness getGroupBusiness()	{
+		try {
+			return (GroupBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), GroupBusiness.class);
+		}
+		catch (RemoteException ex)	{
+      System.err.println("[ReportOverview]: Can't retrieve GroupBusiness. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportOverview]: Can't retrieve GroupBusiness");
+		}
+	}
 
 
 }

@@ -32,6 +32,7 @@ public class QueryConditionPart implements QueryPart {
 	private String path = null;
 	private String type = null;
 	private String pattern = null;
+	private String description = null;
 	private boolean lock = false;
 	private boolean dynamic = false;
 	
@@ -48,12 +49,13 @@ public class QueryConditionPart implements QueryPart {
 		return   TYPES;
 	}
 	
-	public QueryConditionPart(String entity,String path, String field, String type, String pattern){
+	public QueryConditionPart(String entity,String path, String field, String type, String pattern, String description){
 		this.entity = entity;
 		this.path = path;
 		this.field = field;
 		this.type = type;
 		this.pattern = pattern;
+		this.description = description;
 	}
 	
 	public QueryConditionPart(XMLElement xml){
@@ -68,6 +70,8 @@ public class QueryConditionPart implements QueryPart {
 			lock = xmlLock!=null;
 			XMLElement xmlDyna = xml.getChild(QueryXMLConstants.DYNAMIC);
 			dynamic = xmlDyna!=null;
+			XMLElement xmlDescription = xml.getChild(QueryXMLConstants.DESCRIPTION);
+			description = (xmlDescription == null) ? "" : xmlDescription.getTextTrim();
 		}
 	}
 	
@@ -80,6 +84,11 @@ public class QueryConditionPart implements QueryPart {
 		XMLElement xmlPattern = new XMLElement(QueryXMLConstants.PATTERN);
 		xmlPattern.addContent(pattern);
 		el.addContent(xmlPattern);
+		if (description != null) 	{
+			XMLElement descriptionElement = new XMLElement(QueryXMLConstants.DESCRIPTION);
+			descriptionElement.addContent(description);
+			el.addContent(descriptionElement);
+		}
 		if(lock){
 			el.addContent(new XMLElement(QueryXMLConstants.LOCK));
 		}
@@ -136,6 +145,10 @@ public class QueryConditionPart implements QueryPart {
 		return pattern;
 	}
 
+	public String getDescription()	{
+		return description;
+	} 
+
 	/**
 	 * @return
 	 */
@@ -165,6 +178,10 @@ public class QueryConditionPart implements QueryPart {
 		pattern = string;
 	}
 
+	public void setDescription(String description)	{
+		this.description = description;
+	}
+
 	/**
 	 * @param string
 	 */
@@ -178,14 +195,15 @@ public class QueryConditionPart implements QueryPart {
 		buffer.append(path).append(';');
 		buffer.append(field).append(';');
 		buffer.append(type).append(';');
-		buffer.append(pattern);
+		buffer.append(pattern).append(';');
+		buffer.append(description);
 		return buffer.toString();
 	}
 	
 	public static QueryConditionPart decode(String encoded){
 		StringTokenizer toker = new StringTokenizer(encoded,";");
-		if(toker.countTokens()==5){
-			return new QueryConditionPart(toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken());
+		if(toker.countTokens()==6){
+			return new QueryConditionPart(toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken(), toker.nextToken());
 		}
 		return null;
 	}

@@ -2,6 +2,7 @@ package com.idega.block.datareport.presentation;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +83,7 @@ public class ReportOverview extends Block {
   
   public static final String DESIGN_LAYOUT_KEY = "design_layout_key";
   public static final String NAME_KEY = "name_key";
+  public static final String GROUP_NAME_KEY = "group_name_key";
   
   public static final String VALUES_COMMITTED_KEY = "value_committed_key";
   public static final String SHOW_LIST_KEY = "show_list_key";
@@ -94,7 +96,14 @@ public class ReportOverview extends Block {
 	
 	private static final String REPORT_HEADLINE_KEY = "ReportTitle";
 	
-	private static String USER_ACCESS_VARIABLE = "user_access_variable";
+	private static final String USER_ACCESS_VARIABLE = "user_access_variable";
+	
+	// sets the investigation level of the query builder (-1 means, that the query builder is shown in the simple mode)
+	private static final int SIMPLE_MODE = -1; 
+	
+	// sets the investigation level of the query builder (0,1,2,3... means that the query builder is shown in the expert mode)
+	// be careful: high numbers need much performance and time!
+	private static final int EXPERT_MODE = 6;
 
 	private ICFile queryFolder;
 	private ICFile designFolder;
@@ -125,7 +134,7 @@ public class ReportOverview extends Block {
     	getSingleQueryView(bundle, resourceBundle, action, iwc);
     }
     else {
-    	getListOfQueries(bundle, resourceBundle);
+    	getListOfQueries(bundle, resourceBundle, iwc);
     }
   }
 
@@ -215,23 +224,54 @@ public class ReportOverview extends Block {
 		    
     
     
-  private void  getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle) {
-  	List queryRepresentations = new ArrayList();
-  	// bad implementation:
-  	// if the children list is empty null is returned. 
-  	//TODO: thi: change the implementation
-  	Iterator iterator = queryFolder.getChildren();
-  	if (iterator == null) {
-  		iterator = (new ArrayList(0)).iterator();
+  private void  getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle, IWContext iwc ) throws RemoteException {
+  	User currentUser = iwc.getCurrentUser();
+  	GroupBusiness groupBusiness = getGroupBusiness();
+  	UserBusiness userBusiness = getUserBusiness();
+  	String[] groupTypes = 
+			{ "general", "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
+		Group topGroup = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), iwc);
+  	Collection parentGroups = new ArrayList();
+  	parentGroups.add(topGroup);
+  	try {
+  		// brilliant implementation in GroupBusiness!!!!!!
+  		// null is returned instead of an empty collection!!!! This is really brilliant.
+  		//TODO: implement a better version of that method
+  	Collection coll  = groupBusiness.getParentGroupsRecursive(topGroup);
+  	if (coll != null) {
+  		parentGroups.addAll(coll);
   	}
-  	while (iterator.hasNext())	{
-  		ICTreeNode node = (ICTreeNode) iterator.next();
-  		String name = node.getNodeName();
-  		int id = node.getNodeID();
-  		// show only the query with a specified id if desired 
-  		if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
-  			QueryRepresentation representation = new QueryRepresentation(id, name);
-  			queryRepresentations.add(representation);
+  	//TODO thi: handle exception in the right way
+  	}
+  	catch (Exception ex) {
+  		parentGroups = new ArrayList();
+  	}
+  	List queryRepresentations = new ArrayList();
+  	Iterator parentGroupsIterator = parentGroups.iterator();
+		while (parentGroupsIterator.hasNext()) {
+  		Group group = (Group) parentGroupsIterator.next();
+  		String groupName = group.getName();
+  		String groupId = group.getPrimaryKey().toString();
+  		StringBuffer buffer = new StringBuffer(groupId).append("_").append("public");
+  		ICFile folderFile = getFile(buffer.toString());
+  		if (folderFile != null) {
+  			// bad implementation:
+  			// if the children list is empty null is returned. 
+  			//TODO: thi: change the implementation
+  			Iterator iterator = folderFile.getChildren();
+  			if (iterator == null) {
+  				iterator = (new ArrayList(0)).iterator();
+  			}
+				while (iterator.hasNext())	{
+  				ICTreeNode node = (ICTreeNode) iterator.next();
+  				int id = node.getNodeID();
+  				String name = node.getNodeName();
+  				// show only the query with a specified id if desired 
+  				if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
+  					QueryRepresentation representation = new QueryRepresentation(id, name, groupName);
+  					queryRepresentations.add(representation);
+  				}
+				}
   		}
   	}
   	Form form = new Form();
@@ -254,15 +294,25 @@ public class ReportOverview extends Block {
   }
   	
 	private PresentationObject getButtonBar(IWResourceBundle resourceBundle )	{
-		Table table = new Table(4,1);
-		// new button
-		String newText = resourceBundle.getLocalizedString("ro_create", "New");
-		Link newLink = new Link(newText);
-		//newLink.setWindowToOpen(com.idega.user.presentation.QueryBuilderWindow.class);
-		newLink.addParameter(QueryBuilder.SHOW_WIZARD, QueryBuilder.SHOW_WIZARD);
-		newLink.addParameter(QueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-		newLink.addParameter(QueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
-		newLink.setAsImageButton(true);
+		Table table = new Table(5,1);
+		// new button for query builder (simple mode)
+		String simpleModeText = resourceBundle.getLocalizedString("ro_create_simple_mode", "New (simple mode)");
+		Link simpleModeLink = new Link(simpleModeText);
+
+		simpleModeLink.addParameter(QueryBuilder.SHOW_WIZARD, Integer.toString(SIMPLE_MODE));
+		simpleModeLink.addParameter(QueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+		simpleModeLink.addParameter(QueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+		simpleModeLink.setAsImageButton(true);
+
+		// new button for query builder (expert mode)
+		String expertModeText = resourceBundle.getLocalizedString("ro_create_expert_mode", "New (expert mode)");
+		Link expertModeLink = new Link(expertModeText);
+
+		expertModeLink.addParameter(QueryBuilder.SHOW_WIZARD, Integer.toString(EXPERT_MODE));
+		expertModeLink.addParameter(QueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+		expertModeLink.addParameter(QueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+		expertModeLink.setAsImageButton(true);
+		
 		// delete button
 		String deleteText = resourceBundle.getLocalizedString("ro_delete", "Delete");
   	SubmitButton delete = new SubmitButton(deleteText, DELETE_ITEMS_KEY, DELETE_ITEMS_KEY);
@@ -273,13 +323,14 @@ public class ReportOverview extends Block {
   	close.addParameter(CLOSE_KEY, CLOSE_KEY);
   	close.setAsImageButton(true);
   	close.setOnClick("window.close()");
-  	table.add(newLink,1,1);
-  	table.add(delete,2,1);
-  	table.add(close, 3,1);
+  	table.add(simpleModeLink,1,1);
+  	table.add(expertModeLink,2,1);
+  	table.add(delete,3,1);
+  	table.add(close, 4,1);
   	// special button if only one query was shown
   	if (showOnlyOneQueryWithId != -1)	{
   		PresentationObject goBack = getGoBackButton(resourceBundle);
-  		table.add(goBack, 4,1);
+  		table.add(goBack, 5,1);
   	}
   	return table;
 	}
@@ -313,13 +364,14 @@ public class ReportOverview extends Block {
 
 		browser.setMandatoryColumnWithConverter(1, DELETE_KEY, new CheckBoxConverter(DELETE_KEY));
 		browser.setMandatoryColumn(2, NAME_KEY);
-		browser.setMandatoryColumnWithConverter(3, DESIGN_LAYOUT_KEY, dropDownLayoutConverter);
+		browser.setMandatoryColumn(3, GROUP_NAME_KEY);
+		browser.setMandatoryColumnWithConverter(4, DESIGN_LAYOUT_KEY, dropDownLayoutConverter);
 		
-		browser.setMandatoryColumnWithConverter(4, HTML_KEY, htmlConverter);
-		browser.setMandatoryColumnWithConverter(5, PDF_KEY, pdfConverter);
-		browser.setMandatoryColumnWithConverter(6, EXCEL_KEY, excelConverter);
+		browser.setMandatoryColumnWithConverter(5, HTML_KEY, htmlConverter);
+		browser.setMandatoryColumnWithConverter(6, PDF_KEY, pdfConverter);
+		browser.setMandatoryColumnWithConverter(7, EXCEL_KEY, excelConverter);
 		
-		browser.setMandatoryColumnWithConverter(7, EDIT_QUERY_KEY, editQueryConverter);
+		browser.setMandatoryColumnWithConverter(8, EDIT_QUERY_KEY, editQueryConverter);
 		return browser;
 	}		
   		
@@ -373,7 +425,10 @@ public class ReportOverview extends Block {
 			//
 	    if (query.isDynamic()) {
 	    	Map identifierValueMap = query.getIdentifierValueMap();
-	    	if (SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action)) {
+	    	boolean containsOnlyAccessVariable = 
+	    		identifierValueMap.containsKey(USER_ACCESS_VARIABLE) && identifierValueMap.size() == 1;
+	    	if (SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action) &&
+	    			! containsOnlyAccessVariable) {
 	    		// show input fields
 					showInputFields(query, identifierValueMap, resourceBundle);
 	    	}
@@ -393,7 +448,12 @@ public class ReportOverview extends Block {
 	     		if (errorMessage != null)	{
 	     			addErrorMessage(errorMessage);
 	     		}
-	    		showInputFields(query, modifiedValues, resourceBundle);	
+	     		if ( ! containsOnlyAccessVariable) {
+	    			showInputFields(query, modifiedValues, resourceBundle);
+	     		}
+	     		else {
+	     			getListOfQueries(bundle, resourceBundle, iwc);
+	     		}	
 	    	}
 	    	//
 	    	// good bye - query is dynamic
@@ -416,7 +476,7 @@ public class ReportOverview extends Block {
 		if (errorMessage != null) {
 			addErrorMessage(errorMessage);
 		}
-		getListOfQueries(bundle, resourceBundle);
+		getListOfQueries(bundle, resourceBundle, iwc);
 	}
 	
 	private void addErrorMessage(String errorMessage)	{
@@ -640,6 +700,20 @@ public class ReportOverview extends Block {
       throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
     }
   }     
+  
+  private ICFile getFile(String name)	{
+  	try {
+      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
+      ICFile file = (ICFile) home.findByFileName(name);
+      return file;
+    }
+    catch(RemoteException ex){
+      throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
+    }
+    catch (FinderException ex) {
+			return null;
+		}
+  }	
 
 	private void deleteQueries(List idsToDelete)	{
 		Iterator iterator = idsToDelete.iterator();
@@ -730,13 +804,21 @@ public class ReportOverview extends Block {
   	
   	private int id;
   	private String name;
+  	private String groupName;
   	
-  	public QueryRepresentation(int id, String name)	{
+  	public QueryRepresentation(int id, String name, String groupName)	{
   		this.id = id;
   		this.name = name;
+  		this.groupName = groupName;
   	}
   	
 		public Object getColumnValue(String columnName) {
+			if (NAME_KEY.equals(columnName))	{
+				return name;
+			}
+			else if (GROUP_NAME_KEY.equals(columnName))	{
+				return groupName;
+			} 
 			return name;
 		}
   

@@ -98,51 +98,51 @@ public class QueryHelper {
 				XMLElement entity = source.getChild(QueryXMLConstants.ENTITY);
 				if (entity != null) {
 					sourceEntity = new QueryEntityPart(entity);
+				}
+			}
 					// RELATED PART ( STEP 2)
-					if (sourceEntity != null) {
-						XMLElement related = root.getChild(QueryXMLConstants.RELATED_ENTITIES);
-						if (related != null) {
-							XMLAttribute entLock = related.getAttribute(QueryXMLConstants.LOCK);
-							entitiesLock = (entLock != null && Boolean.getBoolean(entLock.getValue()));
-						}
-						if (related != null && related.hasChildren()) {
-							listOfRelatedEntities = new ArrayList();
-							Iterator entities = related.getChildren().iterator();
-							while (entities.hasNext()) {
-								XMLElement xmlEntity = (XMLElement) entities.next();
-								listOfRelatedEntities.add(new QueryEntityPart(xmlEntity));
-							}
-						}
-						// FIELD PART (STEP 3)
-						XMLElement fields = root.getChild(QueryXMLConstants.FIELDS);
+			//		if (sourceEntity != null) {
+			XMLElement related = root.getChild(QueryXMLConstants.RELATED_ENTITIES);
+			if (related != null) {
+				XMLAttribute entLock = related.getAttribute(QueryXMLConstants.LOCK);
+				entitiesLock = (entLock != null && Boolean.getBoolean(entLock.getValue()));
+			}
+			if (related != null && related.hasChildren()) {
+				listOfRelatedEntities = new ArrayList();
+				Iterator entities = related.getChildren().iterator();
+				while (entities.hasNext()) {
+					XMLElement xmlEntity = (XMLElement) entities.next();
+					listOfRelatedEntities.add(new QueryEntityPart(xmlEntity));
+				}
+			}
+			// FIELD PART (STEP 3)
+			XMLElement fields = root.getChild(QueryXMLConstants.FIELDS);
 
-						XMLAttribute fieldLock = null;
-						if (related != null)
-							related.getAttribute(QueryXMLConstants.LOCK);
-						fieldsLock = (fieldLock != null && Boolean.getBoolean(fieldLock.getValue()));
-						if (fields != null && fields.hasChildren()) {
-							Iterator iter = fields.getChildren().iterator();
-							while (iter.hasNext()) {
-								XMLElement xmlField = (XMLElement) iter.next();
-								listOfFields.add(new QueryFieldPart(xmlField));
-							}
+			XMLAttribute fieldLock = null;
+			if (related != null)
+				related.getAttribute(QueryXMLConstants.LOCK);
+			fieldsLock = (fieldLock != null && Boolean.getBoolean(fieldLock.getValue()));
+			if (fields != null && fields.hasChildren()) {
+				Iterator iter = fields.getChildren().iterator();
+				while (iter.hasNext()) {
+					XMLElement xmlField = (XMLElement) iter.next();
+					listOfFields.add(new QueryFieldPart(xmlField));
+				}
 
-							// CONDITION PART (STEP 4)
-							XMLElement conditions = root.getChild(QueryXMLConstants.CONDITIONS);
-							if (conditions != null && conditions.hasChildren()) {
-								listOfConditions = new ArrayList();
-								Iterator conds = conditions.getChildren().iterator();
-								while (conds.hasNext()) {
-									XMLElement xmlCondition = (XMLElement) conds.next();
-									listOfConditions.add(new QueryConditionPart(xmlCondition));
-								}
-							}
-						}
-
+				// CONDITION PART (STEP 4)
+				XMLElement conditions = root.getChild(QueryXMLConstants.CONDITIONS);
+				if (conditions != null && conditions.hasChildren()) {
+					listOfConditions = new ArrayList();
+					Iterator conds = conditions.getChildren().iterator();
+					while (conds.hasNext()) {
+						XMLElement xmlCondition = (XMLElement) conds.next();
+						listOfConditions.add(new QueryConditionPart(xmlCondition));
 					}
 				}
-				checkStep();
 			}
+
+//
+			checkStep();
 
 		}
 	}
@@ -191,40 +191,39 @@ public class QueryHelper {
 			XMLElement sourceElement = getSourceEntityElement();
 			sourceElement.addContent(sourceEntity.getQueryElement());
 			root.addContent(sourceElement);
-			//	RELATED PART ( STEP 2)
-			if (listOfRelatedEntities != null && !listOfRelatedEntities.isEmpty()) {
-				Iterator iter = listOfRelatedEntities.iterator();
-				XMLElement related = new XMLElement(QueryXMLConstants.RELATED_ENTITIES);
-				if (entitiesLock)
-					related.setAttribute(QueryXMLConstants.LOCK, String.valueOf(entitiesLock));
-				while (iter.hasNext()) {
-					related.addContent(((QueryPart) iter.next()).getQueryElement());
-				}
-				root.addContent(related);
+		}
+		//	RELATED PART ( STEP 2)
+		if (listOfRelatedEntities != null && !listOfRelatedEntities.isEmpty()) {
+			Iterator iter = listOfRelatedEntities.iterator();
+			XMLElement related = new XMLElement(QueryXMLConstants.RELATED_ENTITIES);
+			if (entitiesLock)
+				related.setAttribute(QueryXMLConstants.LOCK, String.valueOf(entitiesLock));
+			while (iter.hasNext()) {
+				related.addContent(((QueryPart) iter.next()).getQueryElement());
 			}
+			root.addContent(related);
+		}
 
-			//	FIELD PART (STEP 3)
-			if (listOfFields != null && !listOfFields.isEmpty()) {
-				Iterator iter = listOfFields.iterator();
-				XMLElement fields = new XMLElement(QueryXMLConstants.FIELDS);
-				if (fieldsLock)
-					fields.setAttribute(QueryXMLConstants.LOCK, String.valueOf(entitiesLock));
-				while (iter.hasNext()) {
-					fields.addContent(((QueryPart) iter.next()).getQueryElement());
-				}
-				root.addContent(fields);
-
-				//	CONDITION PART (STEP 4)
-				if (listOfConditions != null && !listOfConditions.isEmpty()) {
-					iter = listOfConditions.iterator();
-					XMLElement conditions = new XMLElement(QueryXMLConstants.CONDITIONS);
-					while (iter.hasNext()) {
-						conditions.addContent(((QueryPart) iter.next()).getQueryElement());
-					}
-					root.addContent(conditions);
-				}
+		//	FIELD PART (STEP 3)
+		if (listOfFields != null && !listOfFields.isEmpty() && sqlPart == null) {
+			Iterator iter = listOfFields.iterator();
+			XMLElement fields = new XMLElement(QueryXMLConstants.FIELDS);
+			if (fieldsLock)
+				fields.setAttribute(QueryXMLConstants.LOCK, String.valueOf(entitiesLock));
+			while (iter.hasNext()) {
+				fields.addContent(((QueryPart) iter.next()).getQueryElement());
 			}
-			
+			root.addContent(fields);
+
+			//	CONDITION PART (STEP 4)
+			if (listOfConditions != null && !listOfConditions.isEmpty()) {
+				iter = listOfConditions.iterator();
+				XMLElement conditions = new XMLElement(QueryXMLConstants.CONDITIONS);
+				while (iter.hasNext()) {
+					conditions.addContent(((QueryPart) iter.next()).getQueryElement());
+				}
+				root.addContent(conditions);
+			}
 		}
 	}
 
@@ -498,7 +497,7 @@ public class QueryHelper {
 			step = 3;
 		else if (hasRelatedEntities())
 			step = 2;
-		else if (hasSourceEntity())
+		else if (hasSourceEntity() || hasPreviousQuery())
 			step = 1;
 		else
 			step = 0;

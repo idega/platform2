@@ -5,14 +5,21 @@
 package com.idega.block.dataquery.business;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Arrays;
 
 import javax.ejb.FinderException;
 
 //import com.idega.block.dataquery.data.Query;
 import com.idega.block.media.business.MediaBusiness;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
+import com.idega.data.IDOLookup;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
 import com.idega.util.xml.XMLData;
 /**
  * <p>Title: idegaWeb</p>
@@ -55,7 +62,7 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 	public void setXmlFileID(int i){
 		xmlFileID = i;
 	}
-	public ICFile storeQuery(String name,int folderID)  throws IOException{
+	public ICFile storeQuery(String name,int folderID)  throws IOException {
 		XMLData data = XMLData.getInstanceWithoutExistingFile();
 		if(xmlFileID>0){
 			data.setXmlFileId(xmlFileID);
@@ -66,14 +73,47 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 		data.setDocument(helper.createDocument());
 		data.setName(name);
 		ICFile query =  data.store();
-		if(folderID>0 && query !=null)
-			MediaBusiness.moveMedia(((Integer)query.getPrimaryKey()).intValue(),folderID);
-			
+		User currentUser = getUserContext().getCurrentUser();
+		UserBusiness userBusiness = getUserBusiness();
+		String[] groupTypes = 
+			{ "general", "iwme_federation", "iwme_union", "iwme_regional_union",  "iwme_league", "iwme_club", "iwme_club_division"};
+		Group group = userBusiness.getUsersHighestTopGroupNode(currentUser, Arrays.asList(groupTypes), getUserContext());
+		String groupName = group.getPrimaryKey().toString();
+		if(folderID>0 && query !=null) {
+			String folderName = new StringBuffer(groupName).append("_public").toString();
+			ICFile subFolder = getFile(folderName);
+			if (subFolder == null) {
+				try {
+					subFolder = MediaBusiness.createSubFolder(folderID, folderName);
+				}
+				catch (Exception ex)	{
+					//TODO: thi solve this exception problem in a right way
+					throw new IOException("Subfolder couldn't be created");
+				}
+			}
+			int subFolderInt = Integer.parseInt(subFolder.getPrimaryKey().toString());
+			MediaBusiness.moveMedia(((Integer)query.getPrimaryKey()).intValue(), subFolderInt);
+		}			
 		// add id to current id and render the document from it
 		createQuery(((Integer)query.getPrimaryKey()).intValue());
 		return query;
 	
 	}
+	
+	private ICFile getFile(String name)	{
+  	try {
+      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
+      ICFile file = (ICFile) home.findByFileName(name);
+      return file;
+    }
+    catch(RemoteException ex){
+      throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
+    }
+    catch (FinderException ex) {
+			return null;
+		}
+  }	
+
 	
 	public ICFile getXMLFile(int id)throws RemoteException{
 		try {
@@ -83,4 +123,30 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 			throw new RemoteException(e.getMessage());
 		}
 	}
+	
+  private ICFile getNewXMLFile()  {
+    try {
+      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
+      ICFile xmlFile = (ICFile) home.create();
+      return xmlFile;
+    }
+    // FinderException, RemoteException
+    catch (Exception ex)  {
+      throw new RuntimeException("[XMLData]: Message was: " + ex.getMessage());
+    }
+    
+  }
+	
+	
+	
+	public UserBusiness getUserBusiness()	{
+		try {
+			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+		}
+		catch (RemoteException ex)	{
+      System.err.println("[ReportOverview]: Can't retrieve UserBusiness. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportOverview]: Can't retrieve UserBusiness");
+		}
+	}
+	
 }

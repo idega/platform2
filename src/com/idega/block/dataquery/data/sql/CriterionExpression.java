@@ -70,9 +70,13 @@ public class CriterionExpression implements DynamicExpression {
     isDynamic = condition.isDynamic();
   	identifierValueMap = new HashMap();
    	identifierValueMap.put(identifier, pattern);
-  	StringBuffer buffer = new StringBuffer(valueField).append(" ").append(type);
-  	identifierDescriptionMap = new HashMap();
-   	identifierDescriptionMap.put(identifier, buffer.toString());
+   	String description = condition.getDescription();
+   	identifierDescriptionMap = new HashMap();
+   	if (description == null || description.length() == 0)	{
+  		StringBuffer buffer = new StringBuffer(valueField).append(" ").append(type);
+  		description =  buffer.toString();
+   	}
+		identifierDescriptionMap.put(identifier, description);
   }
 
   public String toSQLString() {
