@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReport.java,v 1.6 2004/12/13 14:35:10 anna Exp $ Created on
+ * $Id: MeetingReport.java,v 1.7 2004/12/14 02:01:17 laddi Exp $ Created on
  * 24.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,8 +12,11 @@ package se.agura.applications.meeting.fee.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+
 import javax.ejb.CreateException;
+
 import se.agura.applications.meeting.fee.data.MeetingFeeFormula;
+
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -24,7 +27,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
-import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.TextArea;
 import com.idega.user.app.UserApplication;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -34,7 +37,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 24.11.2004 13:46:01 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class MeetingReport extends MeetingFeeBlock {
 
@@ -127,9 +130,12 @@ public class MeetingReport extends MeetingFeeBlock {
 
 		DropdownMenu congregMenu = getCongregationMenu(iwc);
 		RadioButton meetingPlaceIn = (RadioButton) getRadioButton(new RadioButton(PARAMETER_MEETING_FEE_MEETING_LOCATION, Boolean.TRUE.toString()));
+		meetingPlaceIn.setMustBeSelected(getResourceBundle().getLocalizedString("meeting.fee.place_not_empty", "Meeting place can not be empty"));
 		RadioButton meetingPlaceOut = (RadioButton) getRadioButton(new RadioButton(PARAMETER_MEETING_FEE_MEETING_LOCATION, Boolean.FALSE.toString()));
 		DropdownMenu participantsMenu = getParticipantsMenu(iwc, iwc.getCurrentUser());
-		TextInput comment = new TextInput(PARAMETER_MEETING_FEE_COMMENT);
+		TextArea comment = new TextArea(PARAMETER_MEETING_FEE_COMMENT);
+		comment.setWidth(Table.HUNDRED_PERCENT);
+		comment.setRows(4);
 
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.congregation", "Congregation")), 1, row);
 		table.add(congregMenu, 2, row++);
@@ -154,6 +160,7 @@ public class MeetingReport extends MeetingFeeBlock {
 		table.setHeight(row++, 12);
 		
 		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.comment", "Comment")), 1, row);
+		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 		table.add(comment, 2, row++);
 		table.setHeight(row++, 12);
 
@@ -248,7 +255,7 @@ public class MeetingReport extends MeetingFeeBlock {
 	// Hvernig geri Žg hann?
 
 	private DropdownMenu getHoursDropdown(IWContext iwc, User user, int maxHours) {
-		DropdownMenu menu = new DropdownMenu(PARAMETER_HOURS + "_" + user.getPrimaryKey());
+		DropdownMenu menu = (DropdownMenu) getInput(new DropdownMenu(PARAMETER_HOURS + "_" + user.getPrimaryKey()));
 		menu.addMenuElement(0, "0");
 		for (int a = 1; a <= maxHours; a++) {
 			menu.addMenuElement(a, String.valueOf(a));
@@ -260,7 +267,7 @@ public class MeetingReport extends MeetingFeeBlock {
 	}
 
 	private DropdownMenu getMinutesDropdown(IWContext iwc, User user) {
-		DropdownMenu menu = new DropdownMenu(PARAMETER_MINUTES + "_" + user.getPrimaryKey());
+		DropdownMenu menu = (DropdownMenu) getInput(new DropdownMenu(PARAMETER_MINUTES + "_" + user.getPrimaryKey()));
 		menu.addMenuElement(0, "00");
 		menu.addMenuElement(30, "30");
 		if (iwc.isParameterSet(PARAMETER_MINUTES + "_" + user.getPrimaryKey())) {
