@@ -384,7 +384,7 @@ public class DynamicReportDesign {
 		checkHeaderBoundaries(prmLableWidth,prmValueWidth);
 		
 		addParameterToPageHeader(prmLableName,prmLableWidth, String.class,false, true);
-		addParameterToPageHeader(prmValueName,prmValueWidth, prmValueClass,false, true);
+		addParameterToPageHeader(prmValueName,prmValueWidth, prmValueClass,false, false);
 		_headerParametersXCoordinate += _extraspaceBetweenParameterGroupsInHeader;
 	}
 	
