@@ -30,6 +30,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.TextSoap;
 /**
  * UserSearcher small adjustable search block, used to search for users in database.
@@ -466,7 +467,7 @@ private Table presentateFoundUsers(IWContext iwc) {
 						
 		while (iter.hasNext()) {
 			User u = (User) iter.next();
-			T.add(u.getPersonalID(), colAdd, row);
+			T.add(PersonalIDFormatter.format(u.getPersonalID(),iwc.getCurrentLocale()), colAdd, row);
 			userLink = new Link(u.getName());
 			
 			//Added by Roar 29.10.03
