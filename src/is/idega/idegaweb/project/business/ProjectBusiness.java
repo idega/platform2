@@ -618,13 +618,13 @@ public class ProjectBusiness {
   }
 
 
-  public boolean invalidateProject(int projectId, int userId){
+  public boolean invalidateProject(IWContext iwc,int projectId, int userId){
     try {
       IPProject p = new IPProject(projectId);
 
       List l = EntityFinder.findRelated(p,PageLink.getStaticInstance(PageLink.class));
       if(l != null && l.size() > 0){
-        boolean b = DPTTriggerBusiness.getInstance().invalidatePageLink((PageLink)l.get(0),userId);
+        boolean b = DPTTriggerBusiness.getInstance().invalidatePageLink( iwc, (PageLink)l.get(0),userId);
         if(!b){
           return false;
         }

@@ -56,7 +56,7 @@ public class IPDeleteProjectWindow extends IBAdminWindow{
           // not logged on
         }
 
-        ProjectBusiness.getInstance().invalidateProject(Integer.parseInt(iwc.getParameter(_PRM_INSTANCE_ID)),userID);
+        ProjectBusiness.getInstance().invalidateProject(iwc,Integer.parseInt(iwc.getParameter(_PRM_INSTANCE_ID)),userID);
         //deleteObject(ib_page_id,ib_parent_id,ic_object_id);
         String page = iwc.getParameter(_PRM_PAGE_ID);
         if(page != null){
