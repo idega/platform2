@@ -20,7 +20,7 @@ import com.idega.business.IBOHomeImpl;
 public class ApplicationServiceHomeImpl extends IBOHomeImpl implements
         ApplicationServiceHome {
     protected Class getBeanInterfaceClass() {
-        return ApplicationServiceHomeImpl.class;
+        return ApplicationService.class;
     }
 
     public ApplicationService create() throws javax.ejb.CreateException {
