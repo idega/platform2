@@ -60,8 +60,8 @@ implements SchoolClassSchoolTypeBusiness {
 							if(year!=null){
 								schoolTypeId = year.getSchoolTypeId();
 							}
-							else{
-								addMessage("Could not find any schooltype for Class "+schoolClass.getName()+"  School="+provider.getName()+
+							if(schoolTypeId==-1){
+								addMessage("Could not find any schooltype for Class="+schoolClass.getName()+"  School="+provider.getName()+
 																		"  PK="+schoolClass.getPrimaryKey());
 							}
 						} else if(schoolTypes.size()>1){
@@ -69,9 +69,9 @@ implements SchoolClassSchoolTypeBusiness {
 							if(year!=null){
 								schoolTypeId = year.getSchoolTypeId();
 							}
-							else{
+							if(schoolTypeId==-1){
 								for(int i=0; i<schoolTypes.size();i++){
-									addMessage("Several schooltypes for Class "+schoolClass.getName()+"  School="+provider.getName()+"  SchoolType="+
+									addMessage("Several schooltypes for Class="+schoolClass.getName()+"  School="+provider.getName()+"  SchoolType="+
 											((SchoolType)schoolTypes.get(i)).getName()+"  PK="+schoolClass.getPrimaryKey());
 								}
 							}
@@ -187,7 +187,7 @@ implements SchoolClassSchoolTypeBusiness {
 							Iterator iter = members.iterator();
 							while(iter.hasNext()){
 								SchoolClassMember mem = (SchoolClassMember)iter.next();
-								str = "\n\t\t - SchoolClassMemberId="+mem.getPrimaryKey();
+								str += "\n\t\t - SchoolClassMemberId="+mem.getPrimaryKey();
 							}
 
 							addMessage(str);
