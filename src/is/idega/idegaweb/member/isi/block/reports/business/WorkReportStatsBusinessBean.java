@@ -5044,7 +5044,7 @@ private String getClubTypeString(WorkReport report) {
 
 
 private ReportableData addToIntegerCount(ReportableField reportableField, ReportableData reportableData, int intToAdd) {
-	if(intToAdd>0 && reportableData!=null){//update count
+	if(reportableData!=null){//update count
 		Integer count = (Integer)reportableData.getFieldValue(reportableField);
 		if(count!=null) {
 			count = new Integer(count.intValue()+intToAdd);
