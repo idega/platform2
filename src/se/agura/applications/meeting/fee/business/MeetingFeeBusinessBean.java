@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.15 2005/03/10 09:10:47 laddi Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.16 2005/03/11 08:10:07 anna Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -44,7 +44,7 @@ import com.idega.util.text.Name;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
@@ -265,6 +265,9 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 			Group userParish = getUserParish(user);
 			Group parish = meetingFee.getCongregationGroup();
 			Group participantGroup = meetingFee.getParticipantGroup();
+			
+			User speaker = getSupervisor(parish);
+			String speakerName = speaker.getName();
 
 			String comment = meetingFee.getComment();
 			String location = null;
@@ -274,6 +277,7 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 			else {
 				location = getLocalizedString("meeting.fee.outside_commune", "Outside commune");
 			}
+			
 			
 			StringBuffer participants = new StringBuffer();
 			try {
@@ -299,12 +303,12 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 			}
 			catch (FinderException fe) {
 				log(fe);
-			}
-			
-			Object[] arguments = { user.getName(), userParish.getName(), parish.getName(), participantGroup.getName(), from.getLocaleDate(locale, IWTimestamp.SHORT), comment, location, participants.toString() };
+			}				
 
-			sendMessage(email, cc, getLocalizedString("meeting_fee.accepted_subject", "Meeting fee report accepted"), MessageFormat.format(getLocalizedString("meeting_fee.accepted_body", "{0} in parish {1} has sent in the following meeting report.\n\nParish: {2}\nDate: {4}\nMeeting group: {3}\nLocation: {6}\nComment: {5}\n\nParticipants:\n{7}"), arguments), null);
-		}
+			Object[] arguments = { user.getName(), userParish.getName(), parish.getName(), participantGroup.getName(), from.getLocaleDate(locale, IWTimestamp.SHORT), comment, speakerName, location, participants.toString() };
+
+			sendMessage(email, cc, getLocalizedString("meeting_fee.accepted_subject", "Meeting fee report accepted"), MessageFormat.format(getLocalizedString("meeting_fee.accepted_body", "{0} in parish {1} has sent in the following meeting report.\n\nParish: {2}\nDate:\t {4}\nMeeting group: {3}\nLocation: {5}\nSpeaker: {6}\nComment: {7}\n\nParticipants:\n{8}"), arguments), null);
+			}
 	}
 
 	public void rejectApplication(MeetingFee meetingFee, User performer) {

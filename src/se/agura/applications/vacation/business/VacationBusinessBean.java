@@ -14,12 +14,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
 import se.agura.applications.business.ApplicationsBusinessBean;
 import se.agura.applications.vacation.data.VacationRequest;
 import se.agura.applications.vacation.data.VacationRequestHome;
@@ -27,8 +25,8 @@ import se.agura.applications.vacation.data.VacationTime;
 import se.agura.applications.vacation.data.VacationTimeHome;
 import se.agura.applications.vacation.data.VacationType;
 import se.agura.applications.vacation.data.VacationTypeHome;
-
 import com.idega.block.process.data.Case;
+import com.idega.block.process.data.CaseLog;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Email;
@@ -47,10 +45,9 @@ import com.idega.util.PersonalIDFormatter;
 public class VacationBusinessBean extends ApplicationsBusinessBean implements VacationBusiness {
 
 	protected static final String IW_VACATION_BUNDLE_IDENTIFIER = "se.agura.applications.vacation";
-	
 	private static String PROP_SALARY_DEPARTMENT_EMAIL = "salary_department_mailaddress";
 	private static String PROP_SALARY_DEPARTMENT_EMAIL_CC = "salary_department_mailaddress_cc";
-	
+
 	protected String getBundleIdentifier() {
 		return IW_VACATION_BUNDLE_IDENTIFIER;
 	}
@@ -59,7 +56,6 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		VacationRequest request = getVacationApplicationInstance(theCase);
 		VacationType type = request.getVacationType();
 		Object[] arguments = { getLocalizedString(type.getLocalizedKey(), type.getTypeName()) };
-
 		String desc = super.getLocalizedCaseDescription(theCase, locale);
 		return MessageFormat.format(desc, arguments);
 	}
@@ -78,13 +74,15 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		throw new ClassCastException("Case with casecode: " + caseCode + " cannot be converted to a vacation request");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.idega.block.process.business.CaseBusiness#getPrimaryKeyParameter()
 	 */
 	public String getPrimaryKeyParameter() {
 		return VacationConstants.PARAMETER_PRIMARY_KEY;
 	}
-	
+
 	private VacationRequestHome getVacationRequestHome() {
 		try {
 			return (VacationRequestHome) IDOLookup.getHome(VacationRequest.class);
@@ -129,17 +127,19 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		}
 	}
 
-	public void storeApplication(User user, Date fromDate, Date toDate, int ordinaryWorkingHours, VacationType type, String[] workingHours, Collection extraInfo, String comment, Locale locale) throws CreateException {
+	public void storeApplication(User user, Date fromDate, Date toDate, int ordinaryWorkingHours, VacationType type,
+			String[] workingHours, Collection extraInfo, String comment, Locale locale) throws CreateException {
 		storeApplication(null, user, fromDate, toDate, ordinaryWorkingHours, type, workingHours, extraInfo, comment, locale);
 	}
 
-	public void storeApplication(Object pk, User user, Date fromDate, Date toDate, int ordinaryWorkingHours, VacationType type, String[] workingHours, Collection extraInfo, String comment, Locale locale) throws CreateException {
+	public void storeApplication(Object pk, User user, Date fromDate, Date toDate, int ordinaryWorkingHours,
+			VacationType type, String[] workingHours, Collection extraInfo, String comment, Locale locale)
+			throws CreateException {
 		VacationRequest application = null;
 		if (pk != null) {
 			try {
 				application = getVacationRequestHome().findByPrimaryKey(pk);
 				application.removeAllExtraTypeInformation();
-
 				Collection times = getVacationTimeHome().findAllByVacationRequest(application);
 				Iterator iter = times.iterator();
 				while (iter.hasNext()) {
@@ -181,7 +181,6 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 			}
 		}
 		application.store();
-
 		if (workingHours != null) {
 			stamp = new IWTimestamp(locale, fromDate);
 			VacationTime time = null;
@@ -233,10 +232,9 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		}
 	}
 
-	public void approveApplication(VacationRequest vacation, User performer, String comment, boolean hasCompensation) {
+public void approveApplication(VacationRequest vacation, User performer, String comment, boolean hasCompensation) {
 		vacation.setSalaryCompensation(hasCompensation);
 		changeCaseStatus(vacation, getCaseStatusGranted().getStatus(), comment, performer, null);
-
 		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 		String email = iwb.getProperty(PROP_SALARY_DEPARTMENT_EMAIL, "helen.overgaard@svenskakyrkan.se");
 		String cc = iwb.getProperty(PROP_SALARY_DEPARTMENT_EMAIL_CC, "ylva.jacobsson@svenskakyrkan.se");
@@ -246,14 +244,97 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 			Locale locale = getIWApplicationContext().getApplicationSettings().getDefaultLocale();
 			IWTimestamp from = new IWTimestamp(vacation.getFromDate());
 			IWTimestamp to = new IWTimestamp(vacation.getToDate());
+			IWTimestamp created = new IWTimestamp(vacation.getCreatedDate());
+			String vacationComment = vacation.getComment();
 			Group parish = getUserParish(user);
+			Map extraInfo = getExtraVacationTypeInformation(type);
+			Collection times = getVacationTimes(vacation);
 			
-			Object[] arguments = { user.getName(), PersonalIDFormatter.format(user.getPersonalID(), locale), getLocalizedString(type.getLocalizedKey(), type.getTypeName()), from.getLocaleDate(locale, IWTimestamp.SHORT), to.getLocaleDate(locale, IWTimestamp.SHORT), parish != null ? parish.getName() : "xxx" };
-			sendMessage(email, cc, getLocalizedString("vacation_application.accepted_subject", "Vacation application accepted"), MessageFormat.format(getLocalizedString("vacation_application.accepted_body", "A vacation application has been accepted for {0}, {1}, that works in {5}.\n\nThe vacation type is {2} from {3} to {4}."), arguments), null);
-		}
-	}
+			StringBuffer metadata = new StringBuffer();
+			if (extraInfo != null && extraInfo.size() > 0) {
+				Iterator iter = extraInfo.keySet().iterator();
+				while (iter.hasNext()) {
+					String key = (String) iter.next();
+					String metaType = getExtraInformationType(type, key);
+					String value = vacation.getExtraTypeInformation(key);
+					if (value != null) {
+						if (!metaType.equals("com.idega.block.media.presentation.FileChooser")) {
+							metadata.append(getLocalizedString("vacation_type_metadata." + key, key)).append(": ");
+						}
+						if (metaType.equals("com.idega.presentation.ui.TextArea")
+								|| metaType.equals("com.idega.presentation.ui.TextInput")) {
+							metadata.append(value);
+						}
+						else if (metaType.equals("com.idega.presentation.ui.RadioButton")) {
+							metadata.append(getLocalizedString("vacation_type_metadata_boolean." + value, value));
+						}
+						else if (metaType.equals("com.idega.block.media.presentation.FileChooser")) {
+						}
+						if (iter.hasNext()) {
+							metadata.append("\n");
+						}
+					}
+				}
+			}
+			
+			StringBuffer hoursAndDays = new StringBuffer();
+			if (times.size() > 0) {
+				hoursAndDays.append(getLocalizedString("vacation.time.week", "Week")).append("\t");
+				hoursAndDays.append(getLocalizedString("vacation.time.monday", "Mo")).append("\t");
+				hoursAndDays.append(getLocalizedString("vacation.time.tuesday", "Tu")).append("\t");
+				hoursAndDays.append(getLocalizedString("vacation.time.wednesday", "We")).append("\t");
+				hoursAndDays.append(getLocalizedString("vacation.time.thursday", "th")).append("\t");
+				hoursAndDays.append(getLocalizedString("vacation.time.friday", "Fr")).append("\t");
+				hoursAndDays.append(getLocalizedString("vacation.time.saturday", "Sa")).append("\t");
+				hoursAndDays.append(getLocalizedString("vacation.time.sunday", "Su")).append("\n");
+				Iterator iter = times.iterator();
+				while (iter.hasNext()) {
+					VacationTime time = (VacationTime) iter.next();
+					hoursAndDays.append(time.getWeekNumber()).append("\t");
+					hoursAndDays.append(time.getMonday() > 0 ? time.getMonday() : 0).append("\t");
+					hoursAndDays.append(time.getTuesday() > 0 ? time.getTuesday() : 0).append("\t");
+					hoursAndDays.append(time.getWednesday() > 0 ? time.getWednesday() : 0).append("\t");
+					hoursAndDays.append(time.getThursday() > 0 ? time.getThursday() : 0).append("\t");
+					hoursAndDays.append(time.getFriday() > 0 ? time.getFriday() : 0).append("\t");
+					hoursAndDays.append(time.getSaturday() > 0 ? time.getSaturday() : 0).append("\t");
+					hoursAndDays.append(time.getSunday() > 0 ? time.getSunday() : 0).append("\t");
+					hoursAndDays.append("\n");
+				}
+			}
+			
+			StringBuffer logBuffer = new StringBuffer();
+			hoursAndDays.append(getLocalizedString("vacation.message_to_employee", "Messages to employee")).append(":\n");
+			Collection logs = getLogs(vacation);
+			if (logs != null) {
+				Iterator iter = logs.iterator();
+				while (iter.hasNext()) {
+					CaseLog log = (CaseLog) iter.next();
+					User commenter = log.getPerformer();
+					String logComment = log.getComment();
+					
+					logBuffer.append(logComment).append("\n").append("- ").append(commenter.getName());
+					if (iter.hasNext()) {
+						logBuffer.append("\n\n");
+					}
+				}
+			}
 
-	public void rejectApplication(VacationRequest vacation, User performer, String comment) {
+			Object[] arguments = { user.getName(), PersonalIDFormatter.format(user.getPersonalID(), locale),
+					getLocalizedString(type.getLocalizedKey(), type.getTypeName()),
+					from.getLocaleDate(locale, IWTimestamp.SHORT), to.getLocaleDate(locale, IWTimestamp.SHORT),
+					parish != null ? parish.getName() : "xxx", hoursAndDays.toString(), 
+					vacationComment, created.getLocaleDate(locale, IWTimestamp.SHORT), metadata.toString(), logBuffer.toString() };
+			sendMessage(
+					email,
+					cc,
+					getLocalizedString("vacation_application.accepted_subject", "Vacation application accepted"),
+					MessageFormat.format(
+							getLocalizedString(
+									"vacation_application.accepted_body",
+									"A vacation application has been accepted for:\nName:\t\t {0},\nPersonal number:\t\t {1},\nParish:\t\t {5}.\n\nThe vacation period is:\t\tfrom\t {3}\n\t\t to \t{4}\n\nVacation type:\t{2}\n\nExtra information:\n{9}\n\nMotivation:\t{7}\nRequested for vacation:\t{8}\nComment to employee:\t{10}"),
+							arguments), null);
+		}
+	}	public void rejectApplication(VacationRequest vacation, User performer, String comment) {
 		changeCaseStatus(vacation, getCaseStatusDenied().getStatus(), comment, performer, null);
 	}
 
@@ -261,14 +342,16 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		changeCaseStatus(vacation, getCaseStatusInactive().getStatus(), performer);
 	}
 
-	public void forwardApplication(VacationRequest vacation, User performer, Group handlerGroup, User handler, String comment, boolean hasCompensation) {
+	public void forwardApplication(VacationRequest vacation, User performer, Group handlerGroup, User handler,
+			String comment, boolean hasCompensation) {
 		vacation.setSalaryCompensation(hasCompensation);
 		changeCaseStatus(vacation, getCaseStatusMoved().getStatus(), comment, performer, handlerGroup);
-
 		try {
 			Email email = getUserBusiness().getUsersMainEmail(handler);
 			if (email != null) {
-				sendMessage(email.getEmailAddress(), null, getLocalizedString("vacation_application.forwarded_subject", "Acceptance of a vacation application forwarded to you"), getLocalizedString("vacation_application.forward_body", "You have to handle it on 'My page' on the intranet."), null);
+				sendMessage(email.getEmailAddress(), null, getLocalizedString("vacation_application.forwarded_subject",
+						"Acceptance of a vacation application forwarded to you"), getLocalizedString(
+						"vacation_application.forward_body", "You have to handle it on 'My page' on the intranet."), null);
 			}
 		}
 		catch (NoEmailFoundException nefe) {
@@ -312,10 +395,11 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 	public String getExtraInformationType(VacationType type, String key) {
 		return (String) type.getMetaDataTypes().get(key);
 	}
-	
+
 	public boolean canDeleteCase(Case theCase) {
 		CaseStatus status = theCase.getCaseStatus();
-		if (status.getStatus().equals(getCaseStatusOpenString()) || status.getStatus().equals(getCaseStatusMoved().getStatus())) {
+		if (status.getStatus().equals(getCaseStatusOpenString())
+				|| status.getStatus().equals(getCaseStatusMoved().getStatus())) {
 			return true;
 		}
 		return false;
