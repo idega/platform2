@@ -578,12 +578,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}
 		
 		//Pre-school
-		table.add(getSmallHeader(localize("child_care.pre_school", "Specify pre-school:")), 1, row++);
-		TextInput preSchool = (TextInput) getStyledInterface(new TextInput(PARAMETER_PRE_SCHOOL));
-		preSchool.setLength(40);
-		if (application.getPreSchool() != null)
-			preSchool.setContent(application.getPreSchool());
-		table.add(preSchool, 1, row++);
+		if (!getBusiness().isAfterSchoolApplication(application)) {
+			table.add(getSmallHeader(localize("child_care.pre_school", "Specify pre-school:")), 1, row++);
+			TextInput preSchool = (TextInput) getStyledInterface(new TextInput(PARAMETER_PRE_SCHOOL));
+			preSchool.setLength(40);
+			if (application.getPreSchool() != null)
+				preSchool.setContent(application.getPreSchool());
+			table.add(preSchool, 1, row++);
+		}
 		
 		SubmitButton changeDate = null;
 		if (isAlteration)
