@@ -171,9 +171,6 @@ public class ServiceViewer extends Block {
   private Table getServiceListTable(IWContext iwc){
     List prodlist;
     Table content = new Table();
-    if( (color1!=null) && (color2!=null) ){
-      content.setHorizontalZebraColored(color1,color2);
-    }
 
     if( (dateFrom!=null) && (dateTo!=null) ){
       prodlist = ProductBusiness.getProducts(supplier.getID(),dateFrom,dateTo);
@@ -218,14 +215,15 @@ public class ServiceViewer extends Block {
           price.setText(getServicePrice(serv));
           content.add(price,++x,y);
         //Info and buy buttons
-          Link more = (Link)link.clone();
-          more.setWindowToOpen(ServiceViewer.class);
+          Link more = new Link(ServiceViewer.class);
+          more.setTarget(Link.TARGET_NEW_WINDOW);
           more.addParameter(IW_TRAVEL_SERVICE_ID,prod.getID());
-          more.setText("more");
+          more.setText("more");/**@todo localize **/
           content.add(more,++x,y);
 
           Link buy = LinkGenerator.getLink(iwc,prod.getID());
           buy.setText("buy");
+          buy.setAsImageButton(true);
           content.add(buy,++x,y);
 
 
@@ -237,6 +235,10 @@ public class ServiceViewer extends Block {
         y++;
         x = 1;
       }
+    }
+
+    if( (color1!=null) && (color2!=null) ){
+      content.setHorizontalZebraColored(color1,color2);
     }
 
     return content;
