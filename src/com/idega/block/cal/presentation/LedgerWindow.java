@@ -46,7 +46,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.PrintButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.GroupBusiness;
@@ -73,16 +72,20 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	public static final String GROUP ="group";
 	public static final String LEDGER ="ledger";
 	
+	public static final String PRINT_LEDGER = "led_pr";
+	public static final String PRINT_WITH_DATA = "0";
+	public static final String PRINT_EMPTY = "1";
+	
 	//parameter names
-	private static String creatorFieldParameterName = "creator";
-	private static String otherCoachesFieldParameterName = "otherCoaches";
-	private static String groupFieldParameterName = "group";
-	private static String dateFieldParameterName = "date";
-	private static String saveButtonParameterName = "save";
-	private static String saveButtonParameterValue = "save";
-	private static String clubNameParameterName = "clubName";
-	private static String divisionNameParameterName = "divisionName";
-		
+	public static String creatorFieldParameterName = "creator";
+	public static String otherCoachesFieldParameterName = "otherCoaches";
+	public static String groupFieldParameterName = "group";
+	public static String dateFieldParameterName = "date";
+	public static String saveButtonParameterName = "save";
+	public static String saveButtonParameterValue = "save";
+	public static String clubFieldParameterName = "clubName";
+	public static String divisionFieldParameterName = "divisionName";
+	
 	//display texts 
 	private Text creatorText;
 	private Text otherCoachesText;
@@ -104,7 +107,9 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	//buttons
 	private SubmitButton saveButton;
 	private CloseButton closeButton;
-	private PrintButton printButton;
+	private Link printableLedger;
+	private Link printableEmptyLedger;
+//	private PrintButton printButton;
 	private Link deleteLink;
 	
 	private CalBusiness calBiz = null;
@@ -128,7 +133,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 	private Integer ledgerID = null;
 	
 	public LedgerWindow() {
-		setHeight(400);
+		setHeight(650);
 		setWidth(800);
 		setResizable(true);
 	}
@@ -147,9 +152,9 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		groupText.setStyleClass(bold);
 		dateText = new Text(iwrb.getLocalizedString(dateFieldParameterName,"Start Date"));
 		dateText.setStyleClass(bold);
-		clubNameText = new Text(iwrb.getLocalizedString(clubNameParameterName,"Club name"));
+		clubNameText = new Text(iwrb.getLocalizedString(clubFieldParameterName,"Club name"));
 		clubNameText.setStyleClass(bold);
-		divisionNameText = new Text(iwrb.getLocalizedString(divisionNameParameterName, "Division name"));
+		divisionNameText = new Text(iwrb.getLocalizedString(divisionFieldParameterName, "Division name"));
 		divisionNameText.setStyleClass(bold);
 		allowedMarksText = new Text(iwrb.getLocalizedString("ledgerwindow.allowed_marks", "Allowed marks"));
 		allowedMarksText.setStyleClass(bold);
@@ -256,9 +261,23 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		//closes the window
 		closeButton = new CloseButton(iwrb.getLocalizedString("ledgerwindow.close","Close"));
 		
-		Image print = iwb.getImage("printer2.gif");
-		print.setAlt(iwrb.getLocalizedString("ledger_window.print","Print"));
-		printButton = new PrintButton(print);
+		printableLedger = new Link(iwrb.getLocalizedString("ledger_window.printable_ledger","Printable Ledger"));
+		printableLedger.setWindowToOpen(PrintableLedgerWindow.class);
+		printableLedger.setStyleClass(styledLink);
+		printableLedger.addParameter(LEDGER,lIDString);
+		printableLedger.addParameter(CalendarParameters.PARAMETER_YEAR,iwc.getParameter(CalendarParameters.PARAMETER_YEAR));
+		printableLedger.addParameter(CalendarParameters.PARAMETER_MONTH,iwc.getParameter(CalendarParameters.PARAMETER_MONTH));
+		printableLedger.addParameter(PRINT_LEDGER,PRINT_WITH_DATA);
+		
+		printableEmptyLedger = new Link(iwrb.getLocalizedString("ledger_window.printable_empty_ledger","Printable Empty Ledger"));
+		printableEmptyLedger.setWindowToOpen(PrintableLedgerWindow.class);
+		printableEmptyLedger.setStyleClass(styledLink);
+		printableEmptyLedger.addParameter(LEDGER,lIDString);
+		printableEmptyLedger.addParameter(CalendarParameters.PARAMETER_YEAR,iwc.getParameter(CalendarParameters.PARAMETER_YEAR));
+		printableEmptyLedger.addParameter(CalendarParameters.PARAMETER_MONTH,iwc.getParameter(CalendarParameters.PARAMETER_MONTH));
+		printableEmptyLedger.addParameter(PRINT_LEDGER,PRINT_EMPTY);
+		
+//		printButton = new PrintButton(print);
 		
 		deleteLink = new Link(iwrb.getLocalizedString("delete","Delete"));
 		deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
@@ -267,7 +286,8 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		deleteLink.addParameter(ConfirmDeleteWindow.PRM_ENTRY_OR_LEDGER,LEDGER);
 		Image del = iwb.getImage("delete2.gif");
 		del.setAlt(iwrb.getLocalizedString("ledger_window.close_ledger","Close Ledger"));
-		deleteLink.setImage(del);
+		deleteLink.setAsImageButton(true);
+//		deleteLink.setImage(del);
 		
 	}
 
@@ -293,7 +313,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		else {
 			timeStamp = IWTimestamp.RightNow();
 		}
-				
+		
 		Link right = c.getRightLink(iwc);
 		Link left = c.getLeftLink(iwc);
 		addNextMonthPrm(right, timeStamp, iwc);
@@ -335,20 +355,28 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		headerTable.add(allowedMarksText ,3,1);
 		headerTable.add(allowedMarksField,4,1);
 
-		headerTable.setVerticalAlignment(5,4,"bottom");
-		headerTable.setAlignment(5,4,"right");
-		headerTable.add(printButton,5,4);
-		headerTable.add(deleteLink,5,4);
+//		headerTable.setVerticalAlignment(5,4,"bottom");
+//		headerTable.setAlignment(5,4,"right");
+//		headerTable.add(deleteLink,5,4);
 		
 		mainTable.add(headerTable,1,1);
-				
+		
 //		mainTable.mergeCells(1,8,5,8);
 		mainTable.add(getUserList(iwc),1,2);
-	
-		mainTable.setAlignment(1,3,"right");
-		mainTable.add(saveButton,1,3);
-		mainTable.add(Text.NON_BREAKING_SPACE,1,3);
-		mainTable.add(closeButton,1,3);
+		
+		Table bottomTable = new Table();
+		bottomTable.setWidth(Table.HUNDRED_PERCENT);
+		bottomTable.add(printableLedger,1,1);
+		bottomTable.add(Text.NON_BREAKING_SPACE,1,1);
+		bottomTable.add(printableEmptyLedger,1,1);
+		bottomTable.setAlignment(2,1,"right");
+		bottomTable.add(saveButton,2,1);
+		bottomTable.add(Text.NON_BREAKING_SPACE,2,1);
+		bottomTable.add(closeButton,2,1);
+		bottomTable.add(Text.NON_BREAKING_SPACE,2,1);
+		bottomTable.add(deleteLink,2,1);
+		
+		mainTable.add(bottomTable,1,3);
 		
 		form.add(mainTable);		
 	}
@@ -399,7 +427,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 						}
 					}					
 				}
-		
+				
 				
 				Link aLink = new Link(text);
 				if(isInGroup == false) {
@@ -496,8 +524,14 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				}catch(Exception ex) {
 					ex.printStackTrace(System.err);
 				}
+				Collections.sort(entryList,new Comparator() {
+					public int compare(Object arg0, Object arg1) {
+						return ((CalendarEntry) arg0).getDate().compareTo(((CalendarEntry) arg1).getDate());
+					}				
+				});
+				
 				Iterator entryIter = entryList.iterator();
-								
+				
 				int column = 1;
 				while(entryIter.hasNext()) {
 					
@@ -606,26 +640,26 @@ public class LedgerWindow extends StyledIWAdminWindow{
 			}
 		};
 		/*EntityToPresentationObjectConverter converterParent = new EntityToPresentationObjectConverter() {
-			public PresentationObject getHeaderPresentationObject(EntityPath entityPath, EntityBrowser browser, IWContext iwc) {
-				return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);
-			}
-			
-			public PresentationObject getPresentationObject(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
-				User user = (User) entity;
-				Collection parents = null;
-				try {
-					parents = user.getReverseRelatedBy("FAM_PARENT"); //getLedgerVariationsHandler(iwc).getParentGroupRelation(iwc, user);
-				}
-				catch (Exception ex) {
-					System.err.println("[LedgerWindow]: Parents could not be retrieved.Message was :" + ex.getMessage());
-					ex.printStackTrace(System.err);
-				}
+		 public PresentationObject getHeaderPresentationObject(EntityPath entityPath, EntityBrowser browser, IWContext iwc) {
+		 return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);
+		 }
+		 
+		 public PresentationObject getPresentationObject(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
+		 User user = (User) entity;
+		 Collection parents = null;
+		 try {
+		 parents = user.getReverseRelatedBy("FAM_PARENT"); //getLedgerVariationsHandler(iwc).getParentGroupRelation(iwc, user);
+		 }
+		 catch (Exception ex) {
+		 System.err.println("[LedgerWindow]: Parents could not be retrieved.Message was :" + ex.getMessage());
+		 ex.printStackTrace(System.err);
+		 }
 //				int i = 1;
-				Table table = new Table();
-					table.add(parents.toString(),1,1);
-				return table;
-			}
-		};*/
+		 Table table = new Table();
+		 table.add(parents.toString(),1,1);
+		 return table;
+		 }
+		 };*/
 		
 		
 		
@@ -687,7 +721,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		
 		entityBrowser.setEntityToPresentationConverter(completeAddressKey, converterCompleteAddress);
 		entityBrowser.setEntityToPresentationConverter(Phone.class.getName(), converterPhone);
-				
+		
 		entityBrowser.addEntity(CalendarEntry.class.getName());
 		entityBrowser.addEntity(Address.class.getName());
 		entityBrowser.addEntity(Phone.class.getName());
@@ -703,15 +737,18 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		entityBrowser.addPresentationObjectToBottom(deleteButton);
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		Link addUserLink = new Link(iwrb.getLocalizedString("ledgerwindow.add_user","Add user"));
-		addUserLink.setStyleClass(styledLink);
+		addUserLink.setAsImageButton(true);
+//		addUserLink.setStyleClass(styledLink);
 		addUserLink.setParameter(LEDGER,ledgerString);
 		addUserLink.setWindowToOpen(CreateUserInLedger.class);
 		Link statisticsLink = new Link(iwrb.getLocalizedString("ledgerwindow.statistics","Statistics"));
-		statisticsLink.setStyleClass(styledLink);
+		statisticsLink.setAsImageButton(true);
+//		statisticsLink.setStyleClass(styledLink);
 		statisticsLink.addParameter(LEDGER,ledgerString);
 		statisticsLink.setWindowToOpen(UserStatisticsWindow.class);
 		Link addNewMarkLink = new Link(iwrb.getLocalizedString("ledgerwindow.add_mark","Add mark"));
-		addNewMarkLink.setStyleClass(styledLink);
+		addNewMarkLink.setAsImageButton(true);
+//		addNewMarkLink.setStyleClass(styledLink);
 		addNewMarkLink.addParameter(LEDGER,ledgerString);
 		addNewMarkLink.setWindowToOpen(NewMarkWindow.class);
 		
@@ -728,7 +765,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		while (iterator.hasNext()) {
 			String userIDString = (String) iterator.next();
 			int userID = Integer.parseInt(userIDString);
-		
+			
 			try {
 				getCalendarBusiness(iwc).deleteUserFromLedger(userID,ledID,iwc);
 			}
@@ -748,6 +785,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		initializeTexts(iwc);
 		initializeFields(iwc);
 		
+		
 		ledgerString = iwc.getParameter(LEDGER);		
 		ledgerID =new Integer(ledgerString);
 
@@ -755,7 +793,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		
 		int i = ledger.getGroupID();
 		groupID = new Integer(i);
-				
+		
 		Collection users = null;
 		List entries = null;
 		List marks = null;
@@ -831,6 +869,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 						if(mark.equals("")) {
 							Text emptyWarning = new Text(iwrb.getLocalizedString("ledgerWindow.emptyCellWarning","There is a empty cell, to you want to go on?"));
 							setOnLoad("confirm('"+emptyWarning+"')");
+							biz.saveAttendance(userID.intValue(),ledgerID.intValue(),entry,"");
 						}
 						//data validation
 						//if mark is a part of the allowable marks: match is true!
@@ -891,7 +930,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		}
 	}
 	
-	public LedgerVariationsHandler getLedgerVariationsHandler(IWContext iwc) {
+	public static LedgerVariationsHandler getLedgerVariationsHandler(IWContext iwc) {
 		// the class used to handle ledgerVariations is an applicationProperty... 
 		String bClass = null;
 		try {

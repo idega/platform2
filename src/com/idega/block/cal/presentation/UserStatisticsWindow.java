@@ -201,6 +201,8 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 	public void lineUp(IWContext iwc, int ledID, Collection users) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
+		CalBusiness calBiz = getCalendarBusiness(iwc);
+		
 		table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -211,8 +213,8 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		underTable.setCellspacing(2);
 		underTable.setWidth("100%");
 		underTable.setStyleClass(grayBackground);
-		Collection marks = getCalendarBusiness(iwc).getAllMarks();
-		Collection practices = getCalendarBusiness(iwc).getPracticesByLedgerID(ledID);
+		Collection marks = calBiz.getAllMarks();
+		Collection practices = calBiz.getPracticesByLedgerID(ledID);
 		
 		Table tpTable = new Table();
 		tpTable.setCellpadding(1);
@@ -265,7 +267,9 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 					markTable.add(markName,1,1);
 					underTable.add(markTable,column,1);
 				}		
-				Table stat = getStatsForUser(iwc,userID.intValue(),ledID,attendanceMark.getMark(),practices.size());
+				Collection markedEntries = calBiz.getMarkedEntriesByUserIDandLedgerID(userID.intValue(),ledID);
+				Table stat = getStatsForUser(iwc,userID.intValue(),ledID,attendanceMark.getMark(),markedEntries.size());
+				System.out.println("markedEntries.size: " + markedEntries.size());
 				statsTable.add(stat,1,1);
 				underTable.setWidth(column,row,50);
 				underTable.setHeight(column,row,"25");
@@ -288,6 +292,7 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 	 * @return
 	 */
 	public Table getStatsForUser(IWContext iwc, int userID, int ledID, String mark, float totalPractices) {
+		System.out.println("totalprac: " + totalPractices);
 		Table t = new Table();
 		t.setWidth("100%");
 		t.setHeight("100%");

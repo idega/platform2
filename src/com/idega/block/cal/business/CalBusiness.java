@@ -52,6 +52,7 @@ public interface CalBusiness extends com.idega.business.IBOService {
 	public Collection getEntriesByLedgerID(int ledgerID);
 	public Collection getEntriesByEntryGroupID(int entryGroupID);
 	public Collection getPracticesByLedgerID(int ledgerID);
+	public Collection getMarkedEntriesByUserIDandLedgerID(int userID, int ledgerID);
 	public Collection getPracticesByLedIDandMonth(int ledgerID, int month, int year);
 	public java.util.List getAllMarks();
 }
