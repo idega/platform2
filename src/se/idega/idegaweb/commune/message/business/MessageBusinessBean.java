@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.61 2004/04/13 14:05:07 anders Exp $
+ * $Id: MessageBusinessBean.java,v 1.62 2004/05/20 12:53:08 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -37,6 +37,7 @@ import com.idega.core.component.data.ICObject;
 import com.idega.core.contact.data.Email;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOCreateException;
+import com.idega.data.IDOException;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
@@ -175,6 +176,16 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	public int getNumberOfMessages(User user) throws Exception {
 		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
 		return getMessageHome(TYPE_USER_MESSAGE).getNumberOfMessages(user,validStatuses);
+	}
+	
+	public int getNumberOfNewMessages(User user) throws IDOException {
+		try {
+			String[] validStatuses = { getCaseStatusOpen().getStatus() };
+			return getMessageHome(TYPE_USER_MESSAGE).getNumberOfMessages(user,validStatuses);
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
 	}
 	
 	public int getNumberOfMessages(User user, Collection groups) throws Exception {

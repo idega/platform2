@@ -66,6 +66,7 @@ public interface MessageBusiness extends CaseBusiness
  public Collection getLettersByBulkFile(int file, String type , String status)throws FinderException;
  public se.idega.idegaweb.commune.message.data.Message getMessage(java.lang.String p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public int getNumberOfMessages(User user) throws Exception;
+ public int getNumberOfNewMessages(User user) throws com.idega.data.IDOException;
  public int getNumberOfMessages(User user,Collection groups) throws Exception;
  public java.util.Collection getPrintedLetterMessages()throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection getPrintedLetterMessagesByType(java.lang.String p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
