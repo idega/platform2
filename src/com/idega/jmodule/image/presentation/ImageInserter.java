@@ -41,6 +41,7 @@ private boolean openInWindow = false;
 private Class windowClass = SimpleChooserWindow.class;
 private Image setImage;
 private boolean limitWidth = true;
+public final String sessionImageParameterName = "im_image_session_name";
 
 private IWBundle iwb;
 private IWResourceBundle iwrb;
@@ -95,7 +96,8 @@ public ImageInserter(Class WindowToOpen) {
       sUseBoxString = iwrb.getLocalizedString("use_image","Use image");
 
       String imageSessionId = (String) modinfo.getSession().getAttribute(imSessionImageName);
-
+      // debug
+      //add(imSessionImageName + " "+imageSessionId);
 
       if ( imageSessionId != null ) {
         imageId = Integer.parseInt(imageSessionId);
@@ -124,7 +126,7 @@ public ImageInserter(Class WindowToOpen) {
         imageAdmin = new Link(image,insertNewsImageWindow);
       }
       imageAdmin.addParameter("submit","new");
-      imageAdmin.addParameter("im_image_session_name",imSessionImageName);
+      imageAdmin.addParameter(sessionImageParameterName,imSessionImageName);
       if ( imageId != -1 )
         imageAdmin.addParameter(imSessionImageName,imageId);
 

@@ -58,6 +58,7 @@ import com.idega.util.idegaTimestamp;
      public void checkParameterName(ModuleInfo modinfo){
        if(modinfo.getParameter(sessImageParameterName)!=null){
         sessImageParameter = modinfo.getParameter(sessImageParameterName);
+        //add(sessImageParameter);
         modinfo.setSessionAttribute(sessImageParameterName,sessImageParameter);
       }
       else if(modinfo.getSessionAttribute(sessImageParameterName)!=null)
@@ -91,10 +92,9 @@ import com.idega.util.idegaTimestamp;
     }
 
     public Link getNewImageLink(String mo){
-      //Link L = new Link(mo,"/image/insertimage.jsp");
       Link L = new Link(mo,SimpleUploaderWindow.class);
+      L.addParameter("action","upload");
       L.addParameter("submit","new");
-      L.addParameter(sessImageParameterName,sessImageParameter);
       L.setTarget(target2);
       return L;
     }

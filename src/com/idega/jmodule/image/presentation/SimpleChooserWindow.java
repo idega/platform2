@@ -19,8 +19,6 @@ import com.idega.util.idegaTimestamp;
 
  public class SimpleChooserWindow extends IWAdminWindow {
 
-    public String sessImageParameter = "image_id";
-
     public SimpleChooserWindow(){
       super();
       setResizable(true);

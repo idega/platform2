@@ -95,13 +95,13 @@ public class SimpleViewer extends ModuleObjectContainer{
       else if(modinfo.getSessionAttribute(sessImageParameterName)!=null){
         sessImageParameter = (String) modinfo.getSessionAttribute(sessImageParameterName);
       }
+      //add(sessImageParameter);
       String s = null;
       if(modinfo.getParameter(sessImageParameter)!=null){
         s = modinfo.getParameter(sessImageParameter);
       }
       else if(modinfo.getSessionAttribute(sessImageParameter)!=null)
         s = (String) modinfo.getSessionAttribute(sessImageParameter);
-
       return s;
     }
 

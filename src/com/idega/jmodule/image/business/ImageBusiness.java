@@ -339,6 +339,7 @@ public static void makeDefaultSizes(ModuleInfo modinfo){
         String fileName = filePart.getFileName();
         if (fileName != null) {
           webPath += fileName;
+          webPath = webPath.replace('\\','/');
           realFile =  realPath+webPath;
           File file = new File(realFile);
           long size = filePart.writeTo(file);
