@@ -801,11 +801,13 @@ public class RunRegistration extends Block {
 				Link payGreen = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
 				if (runGroup != null && distanceGroup != null) {
 					String travelURL = "travelURL_"+runGroup.getName()+"_"+distanceGroup.getName()+"_"+year+"_"+iwc.getCurrentLocale().toString();
-					if (chip.equals(IWMarathonConstants.PARAMETER_BUY_CHIP)) {
-						travelURL += "_buy";
-					}
-					else if (chip.equals(IWMarathonConstants.PARAMETER_RENT_CHIP)) {
-						travelURL += "_rent";
+					if (chip != null) {
+						if (chip.equals(IWMarathonConstants.PARAMETER_BUY_CHIP)) {
+							travelURL += "_buy";
+						}
+						else if (chip.equals(IWMarathonConstants.PARAMETER_RENT_CHIP)) {
+							travelURL += "_rent";
+						}
 					}
 					if (Integer.parseInt(distance) == sevenKM && ssnIS != null) {
 						int age = getRunBiz(iwc).getAgeFromPersonalID(ssnIS);
