@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.48 2003/04/02 16:12:22 laddi Exp $
+ * $Id: CitizenAccountApplication.java,v 1.49 2003/04/02 20:47:26 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -50,11 +50,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/04/02 16:12:22 $ by $Author: laddi $
+ * Last modified: $Date: 2003/04/02 20:47:26 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.48 $
+ * @version $Revision: 1.49 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -168,8 +168,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 	}
 
 	private void viewSimpleApplicationForm(final IWContext iwc) {
-		final Table table = createTable(this);
-		addSimpleInputs(this, table, iwc);
+		final Table table = createTable();
+		addSimpleInputs(table, iwc);
 		table.setHeight(table.getRows() + 1, 12);
 		table.add(getSubmitButton(SIMPLE_FORM_SUBMIT_KEY, SIMPLE_FORM_SUBMIT_DEFAULT), 1, table.getRows() + 1);
 		final Form accountForm = new Form();
@@ -239,8 +239,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 	}
 
 	private void viewUnknownCitizenApplicationForm1(final IWContext iwc) {
-		final Table table = createTable(this);
-		addSimpleInputs(this, table, iwc);
+		final Table table = createTable();
+		addSimpleInputs(table, iwc);
 		int row = table.getRows() + 1;
 
 		table.add(getHeader(FIRST_NAME_KEY, FIRST_NAME_DEFAULT), 1, row);
@@ -332,7 +332,7 @@ private void viewUnknownCitizenApplicationForm2(final IWContext iwc) {
 	form.maintainParameter(APPLICATION_REASON_KEY);
 	form.maintainParameter(CIVIL_STATUS_KEY);
 	form.add(new HiddenInput(UNKNOWN_CITIZEN_FORM_2_SUBMIT_KEY, UNKNOWN_CITIZEN_FORM_2_SUBMIT_DEAFULT));
-	final Table table = createTable(this);
+	final Table table = createTable();
 	int row = 1;
 	if (getBooleanParameter(iwc, HAS_COHABITANT_KEY)) {
 		// applicant has cohabitant
@@ -546,7 +546,7 @@ private void submitUnknownCitizenForm2(final IWContext iwc) {
 		add(new Text(localize(TEXT_APPLICATION_SUBMITTED_KEY, TEXT_APPLICATION_SUBMITTED_DEFAULT)));
 }
 
-private Table createTable(final CommuneBlock communeblock) {
+private Table createTable() {
 	final Table table = new Table();
 	table.setCellspacing(getCellpadding());
 	table.setCellpadding(0);
@@ -555,7 +555,7 @@ private Table createTable(final CommuneBlock communeblock) {
 	return table;
 }
 
-private void addSimpleInputs(final CommuneBlock communeBlock, final Table table, final IWContext iwc) {
+private void addSimpleInputs(final Table table, final IWContext iwc) {
 	table.add(getHeader(SSN_KEY, SSN_DEFAULT), 1, 1);
 	table.add(getSingleInput(iwc, SSN_KEY, 12, true), 3, 1);
 	table.add(getHeader(EMAIL_KEY, EMAIL_DEFAULT), 1, 2);

@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplication.java,v 1.9 2003/04/02 16:12:22 laddi Exp $
+ * $Id: ProviderAccountApplication.java,v 1.10 2003/04/02 20:47:26 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -570,7 +570,7 @@ public class ProviderAccountApplication extends CommuneBlock {
 						"Application submitted")));
 	}
 	
-	public void viewSubmission(IWContext iwc){
+	public void viewSubmission(){
 		if(bSubmissionSuccessful){
 			
 		}

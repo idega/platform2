@@ -3,7 +3,6 @@ package se.idega.idegaweb.commune.account.citizen.business;
 import com.idega.business.IBOSessionBean;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.user.business.UserProperties;
-import com.idega.user.data.User;
 
 /**
  * @author alindman
@@ -18,14 +17,14 @@ public class CitizenAccountSessionBean extends IBOSessionBean implements Citizen
 	public static final String CITIZEN_ACCOUNT_PROPERTIES = "citizen_account_properties";
 	public static final String USER_PROPERTY_USE_CO_ADDRESS = "msg_send_box";
 	
-	protected UserProperties getUserPreferences(User user) throws Exception {
+	protected UserProperties getUserPreferences() throws Exception {
 		UserProperties property = getUserContext().getUserProperties();
 		return property;
 	}
 	
-	protected IWPropertyList getUserMessagePreferences(User user) {
+	protected IWPropertyList getUserMessagePreferences() {
 		try{
-			return getUserPreferences(user).getProperties(CITIZEN_ACCOUNT_PROPERTIES);
+			return getUserPreferences().getProperties(CITIZEN_ACCOUNT_PROPERTIES);
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -33,8 +32,8 @@ public class CitizenAccountSessionBean extends IBOSessionBean implements Citizen
 		}
 	}
 
-	public boolean getIfUserUsesCOAddress(User user){
-		IWPropertyList propertyList = getUserMessagePreferences(user);
+	public boolean getIfUserUsesCOAddress(){
+		IWPropertyList propertyList = getUserMessagePreferences();
 		if (propertyList != null) {
 			String property = propertyList.getProperty(USER_PROPERTY_USE_CO_ADDRESS);
 			if (property!=null) {
@@ -44,8 +43,8 @@ public class CitizenAccountSessionBean extends IBOSessionBean implements Citizen
 		return true;
 	}
 
-	public void setIfUserUsesCOAddress(User user, boolean preference){
-		IWPropertyList propertyList = getUserMessagePreferences(user);
+	public void setIfUserUsesCOAddress(boolean preference){
+		IWPropertyList propertyList = getUserMessagePreferences();
 		propertyList.setProperty(USER_PROPERTY_USE_CO_ADDRESS, new Boolean(preference));
 	}
 }

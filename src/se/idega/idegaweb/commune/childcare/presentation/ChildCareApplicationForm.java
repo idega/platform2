@@ -290,7 +290,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		inputTable.add(date, 3, row++);
 
 		for (int i = 1; i < 6; i++) {
-			DropdownMenu areaDrop = getAreaDrop(iwc, PARAM_AREA + "_" + i);
+			DropdownMenu areaDrop = getAreaDrop(PARAM_AREA + "_" + i);
 			areaDrop.setOnChange(getFilterCallerScript(PARAM_AREA + "_" + i, PARAM_PROVIDER + "_" + i));
 			DropdownMenu providerDrop = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAM_PROVIDER + "_" + i));
 			providerDrop.addMenuElementFirst("-1", _iwrb.getLocalizedString("school.school_first", "School........................."));
@@ -410,7 +410,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		return null;
 	}
 
-	private DropdownMenu getAreaDrop(IWContext iwc, String name) {
+	private DropdownMenu getAreaDrop(String name) {
 		DropdownMenu drp = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
 		drp.addMenuElement("-1", _iwrb.getLocalizedString("cca_area", "Area"));
 		Iterator iter = _areas.iterator();

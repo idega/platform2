@@ -16,10 +16,10 @@ import se.idega.idegaweb.commune.report.business.Fetcher;
 /**
  * IdegaWeb presentation class for wizard input of a new Report Generator
  * <p>
- * Last modified: $Date: 2003/04/02 16:45:53 $ by $Author: laddi $
+ * Last modified: $Date: 2003/04/02 20:47:26 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @see com.idega.block.reports.data.Report
  */
 public class ReportLink extends CommuneBlock {
@@ -62,9 +62,9 @@ public class ReportLink extends CommuneBlock {
         } else if (context.isParameterSet (TRY_SQL_ACTION)) {
             trySql (context);
         } else if (context.isParameterSet (EDIT_GENERATOR_ACTION)) {
-            editGenerator (context, report);
+            editGenerator ();
         } else if (report != null) {
-            showReportLink (context, report);
+            showReportLink (report);
         } else {
             showSqlForm (context);
         }
@@ -74,8 +74,7 @@ public class ReportLink extends CommuneBlock {
      * Edits an allready saved report generator
      * @param reportInfo current report generator properties to edit
      */
-    private void editGenerator (final IWContext context,
-                                final Report reportInfo) {
+    private void editGenerator () {
         add ("administrateReport");
     }
 
@@ -84,8 +83,7 @@ public class ReportLink extends CommuneBlock {
      * dynammically generated as soon as the link is clicked.
      * @param reportInfo current report generator properties
      */
-    private void showReportLink (final IWContext context,
-                                     final Report report) {
+    private void showReportLink (final Report report) {
         final Window window = new Window ("Report", "/servlet/MediaServlet");
         window.setResizable (true);
         window.setMenubar (true);

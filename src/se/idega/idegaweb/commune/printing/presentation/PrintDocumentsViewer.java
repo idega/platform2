@@ -394,7 +394,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 	}
 
-	private PresentationObject getPrintedDatesForm(IWContext iwc) {
+	private PresentationObject getPrintedDatesForm() {
 
 		Table T = new Table();
 		T.setWidth(T.HUNDRED_PERCENT);
@@ -444,7 +444,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		return drp;
 	}
 
-	private DropdownMenu getStatusDrop(IWContext iwc, String name, String selected) {
+	private DropdownMenu getStatusDrop(String name, String selected) {
 		DropdownMenu drp = new DropdownMenu(name);
 		drp.addMenuElement(statusUnprinted, localize("printdoc.unprinted", "Unprinted"));
 		drp.addMenuElement(statusPrinted, localize("printdoc.printed", "Printed"));
@@ -454,7 +454,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		return drp;
 	}
 
-	private PresentationObject getUnPrintedDatesForm(IWContext iwc, boolean showStatus)
+	private PresentationObject getUnPrintedDatesForm(boolean showStatus)
 		throws RemoteException {
 
 		Table T = new Table();
@@ -484,7 +484,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		//T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.count","Count")),5,1);
 		T.add(getCountDrop(PRM_U_COUNT, count_u), col++, 1);
 		if (showStatus)
-			T.add(getStatusDrop(iwc, PARAM_LETTER_STATUS, currentStatus), col++, 1);
+			T.add(getStatusDrop(PARAM_LETTER_STATUS, currentStatus), col++, 1);
 		T.add(search, col++, 1);
 		//T.add(new HiddenInput(PRM_STAMP_P_FROM, pFrom.toString()));
 		//T.add(new HiddenInput(PRM_STAMP_P_TO, pTo.toString()));
@@ -549,7 +549,6 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	}
 
 	private PresentationObject getCursorLinks(
-		IWContext iwc,
 		int totalsize,
 		int cursor,
 		String cursorPrm,
@@ -634,9 +633,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 		int prow = 1;
 		pT.add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"), 1, prow++);
-		pT.add(getPrintedDatesForm(iwc), 1, prow++);
+		pT.add(getPrintedDatesForm(), 1, prow++);
 		pT.add(printedLetterDocs, 1, prow++);
-		pT.add(getCursorLinks(iwc, printDocs.size(), cursor_p, PRM_CURSOR_P, count_p), 1, prow++);
+		pT.add(getCursorLinks(printDocs.size(), cursor_p, PRM_CURSOR_P, count_p), 1, prow++);
 
 		printedLetterDocs.setHeader("#", 1);
 		printedLetterDocs.setHeader(localize("printdoc.printed_date", "Printing date"), 2);
@@ -909,10 +908,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		hT.add(getViewLink(), 2, 1);
 		pT.add(hT, 1, prow++);
 
-		pT.add(getPrintedDatesForm(iwc), 1, prow++);
+		pT.add(getPrintedDatesForm(), 1, prow++);
 		pT.add(printedLetterDocs, 1, prow++);
 		pT.add(
-			getCursorLinks(iwc, printedLetters.size(), cursor_p, PRM_CURSOR_P, count_p),
+			getCursorLinks(printedLetters.size(), cursor_p, PRM_CURSOR_P, count_p),
 			1,
 			prow++);
 
@@ -974,9 +973,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		hT.add(getViewLink(), 2, 1);
 
 		T.add(hT, 1, prow++);
-		T.add(getPrintedDatesForm(iwc), 1, prow++);
+		T.add(getPrintedDatesForm(), 1, prow++);
 		T.add(printedLetterDocs, 1, prow++);
-		T.add(getCursorLinks(iwc, printDocs.size(), cursor_p, PRM_CURSOR_P, count_p), 1, prow++);
+		T.add(getCursorLinks(printDocs.size(), cursor_p, PRM_CURSOR_P, count_p), 1, prow++);
 
 		printedLetterDocs.setHeader("#", 1);
 		printedLetterDocs.setHeader(localize("printdoc.printed_date", "Printing date"), 2);
@@ -1061,10 +1060,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		hT.add(singleMsgs, 2, 1);
 		*/
 		T.add(getLocalizedHeader("printdoc.unprinted_letters", "Unprinted letters"), 1, row++);
-		T.add(getUnPrintedDatesForm(iwc, true), 1, row++);
+		T.add(getUnPrintedDatesForm(true), 1, row++);
 		T.add(letterList, 1, row++);
 		T.add(getPrintButton(), 1, row++);
-		T.add(getCursorLinks(iwc, letters.size(), cursor_u, PRM_CURSOR_U, count_u), 1, row++);
+		T.add(getCursorLinks(letters.size(), cursor_u, PRM_CURSOR_U, count_u), 1, row++);
 
 		letterList.setWidth(Table.HUNDRED_PERCENT);
 		letterList.setBackroundColor("#e0e0e0");

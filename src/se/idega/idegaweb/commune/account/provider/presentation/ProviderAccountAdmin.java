@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountAdmin.java,v 1.4 2003/04/02 16:45:53 laddi Exp $
+ * $Id: ProviderAccountAdmin.java,v 1.5 2003/04/02 20:47:26 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -63,7 +63,7 @@ public class ProviderAccountAdmin extends CommuneBlock
 					viewDetails(iwc);
 					break;
 				case ACTION_SUBMIT :
-					submit(iwc);
+					submit();
 					break;
 			}
 		}
@@ -167,7 +167,7 @@ public class ProviderAccountAdmin extends CommuneBlock
 			e.printStackTrace();
 		}
 	}
-	private void submit(IWContext iwc)
+	private void submit()
 	{}
 	private void viewDetails(IWContext iwc)
 	{

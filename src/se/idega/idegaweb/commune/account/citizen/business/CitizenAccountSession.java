@@ -2,8 +2,6 @@ package se.idega.idegaweb.commune.account.citizen.business;
 
 import java.rmi.RemoteException;
 
-import com.idega.user.data.User;
-
 /**
  * @author alindman
  *
@@ -14,6 +12,6 @@ import com.idega.user.data.User;
  */
 public interface CitizenAccountSession {
 
-	public boolean getIfUserUsesCOAddress(User user) throws RemoteException;
-	public void setIfUserUsesCOAddress(User user, boolean preference) throws RemoteException;
+	public boolean getIfUserUsesCOAddress() throws RemoteException;
+	public void setIfUserUsesCOAddress(boolean preference) throws RemoteException;
 }

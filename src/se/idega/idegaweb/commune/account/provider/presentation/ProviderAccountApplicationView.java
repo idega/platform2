@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplicationView.java,v 1.5 2003/04/02 17:55:51 laddi Exp $
+ * $Id: ProviderAccountApplicationView.java,v 1.6 2003/04/02 20:47:26 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -64,8 +64,8 @@ public class ProviderAccountApplicationView extends ProviderAccountApplication
 	 */
 	protected void addButtons(IWContext iwc)
 	{
-		addButton(getAcceptButton(iwc));
-		addButton(getRejectButton(iwc));
+		addButton(getAcceptButton());
+		addButton(getRejectButton());
 		addButton(new Parameter(PARAM_APPLICATION_ID,Integer.toString(getApplicationID())));
 	}
 	/**
@@ -73,7 +73,7 @@ public class ProviderAccountApplicationView extends ProviderAccountApplication
 	 * @param iwc
 	 * @return PresentationObject
 	 */
-	private PresentationObject getRejectButton(IWContext iwc)
+	private PresentationObject getRejectButton()
 	{
 		SubmitButton butt = new SubmitButton(localize(PARAM_FORM_REJECT,"Reject"),PARAM_ACTION,PARAM_FORM_REJECT);
 		butt.setAsImageButton(true);
@@ -86,7 +86,7 @@ public class ProviderAccountApplicationView extends ProviderAccountApplication
 	 * @param iwc
 	 * @return PresentationObject
 	 */
-	private PresentationObject getAcceptButton(IWContext iwc)
+	private PresentationObject getAcceptButton()
 	{
 		SubmitButton butt = new SubmitButton(localize(PARAM_FORM_ACCEPT,"Accept"),PARAM_ACTION,PARAM_FORM_ACCEPT);
 		butt.setAsImageButton(true);

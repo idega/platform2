@@ -113,10 +113,10 @@ public class ColumnList extends CommuneBlock {
   }
 
   public void main(IWContext iwc)throws Exception{
-    super.add(createListTable(iwc));
+    super.add(createListTable());
   }
 
-  private Table createListTable(IWContext iwc){
+  private Table createListTable(){
     //IWResourceBundle iwrb = this.getResourceBundle(iwc);
 
     int rows = 1 + rowList.size();

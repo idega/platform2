@@ -34,12 +34,12 @@ public abstract class ChildCareBlock extends CommuneBlock {
 		setResourceBundle(getResourceBundle(iwc));
 		business = getChildCareBusiness(iwc);
 		session = getChildCareSession(iwc);
-		initialize(iwc);
+		initialize();
 
 		init(iwc);
 	}
 	
-	private void initialize(IWContext iwc) throws RemoteException {
+	private void initialize() throws RemoteException {
 		_childCareID = session.getChildCareID();	
 	}
 	

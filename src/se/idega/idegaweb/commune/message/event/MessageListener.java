@@ -6,7 +6,6 @@ import se.idega.idegaweb.commune.message.business.MessageSession;
 import com.idega.business.IWEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
-import com.idega.user.data.User;
 
 /**
  * @author Laddi
@@ -47,19 +46,18 @@ public class MessageListener implements IWEventListener {
 
   private void saveSettings(IWContext iwc) throws Exception {
   	MessageSession session = getMessageSession(iwc);
-  	User user = iwc.getCurrentUser();
 
   	if (iwc.isParameterSet(PARAM_TO_MSG_BOX)) {
-  		session.setIfUserPreferesMessageInMessageBox(user,true);
+  		session.setIfUserPreferesMessageInMessageBox(true);
   	}
   	else {
-  		session.setIfUserPreferesMessageInMessageBox(user,false);
+  		session.setIfUserPreferesMessageInMessageBox(false);
   	}
   		
   	if (iwc.isParameterSet(PARAM_TO_EMAIL))
-  		session.setIfUserPreferesMessageByEmail(user,true);
+  		session.setIfUserPreferesMessageByEmail(true);
   	else
-  		session.setIfUserPreferesMessageByEmail(user,false);
+  		session.setIfUserPreferesMessageByEmail(false);
   }
   
   private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {

@@ -365,7 +365,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			if (iwc.getParameter(PARAMETER_FORM_SUBMIT) == null) {
 				try {
 					CitizenAccountSession cas = getCitizenAccountSession(iwc);
-					cbCOAddressSelect.setChecked(cas.getIfUserUsesCOAddress(user));
+					cbCOAddressSelect.setChecked(cas.getIfUserUsesCOAddress());
 				} catch (Exception e) {}
 			} else {
 				cbCOAddressSelect.setChecked(false);
@@ -378,7 +378,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			if (iwc.getParameter(PARAMETER_FORM_SUBMIT) == null) {
 				try {
 					MessageSession messageSession = getMessageSession(iwc);
-					cbMessagesViaEmail.setChecked(messageSession.getIfUserPreferesMessageByEmail(user));
+					cbMessagesViaEmail.setChecked(messageSession.getIfUserPreferesMessageByEmail());
 				} catch (Exception e) {}
 			} else {
 				cbMessagesViaEmail.setChecked(false);
@@ -604,9 +604,9 @@ public class CitizenAccountPreferences extends CommuneBlock {
 				coAddress.store();
 			}
 			MessageSession messageSession = getMessageSession(iwc);
-			messageSession.setIfUserPreferesMessageByEmail(user, messagesViaEmail);
+			messageSession.setIfUserPreferesMessageByEmail(messagesViaEmail);
 			CitizenAccountSession cas = getCitizenAccountSession(iwc);
-			cas.setIfUserUsesCOAddress(user, useCOAddress);
+			cas.setIfUserUsesCOAddress(useCOAddress);
 		}
 		drawForm(iwc);
 		if (errorMessage == null) {

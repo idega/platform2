@@ -2,8 +2,6 @@ package se.idega.idegaweb.commune.message.business;
 
 import java.rmi.RemoteException;
 
-import com.idega.user.data.User;
-
 /**
  * @author Laddi
  *
@@ -14,8 +12,8 @@ import com.idega.user.data.User;
  */
 public interface MessageSession {
 
-	public boolean getIfUserPreferesMessageByEmail(User user)throws RemoteException;
-	public boolean getIfUserPreferesMessageInMessageBox(User user)throws RemoteException;
-	public void setIfUserPreferesMessageByEmail(User user,boolean preference)throws RemoteException;
-	public void setIfUserPreferesMessageInMessageBox(User user,boolean preference)throws RemoteException;
+	public boolean getIfUserPreferesMessageByEmail()throws RemoteException;
+	public boolean getIfUserPreferesMessageInMessageBox()throws RemoteException;
+	public void setIfUserPreferesMessageByEmail(boolean preference)throws RemoteException;
+	public void setIfUserPreferesMessageInMessageBox(boolean preference)throws RemoteException;
 }

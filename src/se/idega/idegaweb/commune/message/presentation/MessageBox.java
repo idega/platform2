@@ -146,11 +146,11 @@ public class MessageBox extends CommuneBlock {
 				messageTable.mergeCells(1, row, messageTable.getColumns(), row);
 				messageTable.add(settingsTable, 1, row++);
 	
-				boolean toMessageBox = messageSession.getIfUserPreferesMessageInMessageBox(user);
+				boolean toMessageBox = messageSession.getIfUserPreferesMessageInMessageBox();
 				CheckBox msgBox = getCheckBox(PARAM_TO_MSG_BOX,"true");
 				msgBox.setChecked(toMessageBox);
 				
-				boolean toEmail = messageSession.getIfUserPreferesMessageByEmail(user);
+				boolean toEmail = messageSession.getIfUserPreferesMessageByEmail();
 				CheckBox email = getCheckBox(PARAM_TO_EMAIL,"true");
 				email.setChecked(toEmail);
 				

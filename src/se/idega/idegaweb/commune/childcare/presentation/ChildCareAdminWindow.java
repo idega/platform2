@@ -95,7 +95,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		parse(iwc);
 		switch (_action) {
 			case ACTION_CLOSE :
-				close(iwc);
+				close();
 				break;
 			case ACTION_GRANT_PRIORITY :
 				grantPriority(iwc);
@@ -183,11 +183,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case METHOD_CHANGE_DATE :
 				headerTable.add(getHeader(localize("child_care.change_date", "Change date")));
-				contentTable.add(getChangeDateForm(iwc));
+				contentTable.add(getChangeDateForm());
 				break;
 			case METHOD_PLACE_IN_GROUP :
 				headerTable.add(getHeader(localize("child_care.place_in_group", "Place in group")));
-				contentTable.add(getPlaceInGroupForm(iwc));
+				contentTable.add(getPlaceInGroupForm());
 				break;
 			case METHOD_MOVE_TO_GROUP :
 				headerTable.add(getHeader(localize("child_care.move_to_group", "Move to group")));
@@ -198,15 +198,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					headerTable.add(getHeader(localize("child_care.change_group", "Change group")));
 				else
 					headerTable.add(getHeader(localize("child_care.create_group", "Create group")));
-				contentTable.add(getCreateGroupForm(iwc));
+				contentTable.add(getCreateGroupForm());
 				break;
 			case METHOD_UPDATE_PROGNOSIS :
 				headerTable.add(getHeader(localize("child_care.set_prognosis", "Set prognosis")));
-				contentTable.add(getUpdatePrognosisForm(iwc));
+				contentTable.add(getUpdatePrognosisForm());
 				break;
 			case METHOD_ALTER_CARE_TIME :
 				headerTable.add(getHeader(localize("child_care.alter_care_time", "Alter care time")));
-				contentTable.add(getAlterCareTimeForm(iwc));
+				contentTable.add(getAlterCareTimeForm());
 				break;
 			case METHOD_CANCEL_CONTRACT :
 				headerTable.add(getHeader(localize("child_care.cancel_contract", "Cancel contract")));
@@ -277,7 +277,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getChangeDateForm(IWContext iwc) throws RemoteException {
+	private Table getChangeDateForm() throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -303,7 +303,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getPlaceInGroupForm(IWContext iwc) throws RemoteException {
+	private Table getPlaceInGroupForm() throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -336,7 +336,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getAlterCareTimeForm(IWContext iwc) throws RemoteException {
+	private Table getAlterCareTimeForm() throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -419,7 +419,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getCreateGroupForm(IWContext iwc) throws RemoteException {
+	private Table getCreateGroupForm() throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -481,7 +481,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getUpdatePrognosisForm(IWContext iwc) throws RemoteException {
+	private Table getUpdatePrognosisForm() throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -548,7 +548,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
 		getBusiness().assignContractToApplication(_applicationID, childCareTime, validFrom, iwc.getCurrentUser(), iwc.getCurrentLocale(), false);
 
-		close(iwc);
+		close();
 	}
 
 	private void makeOffer(IWContext iwc) throws RemoteException {
@@ -557,7 +557,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		IWTimestamp validUntil = new IWTimestamp(iwc.getParameter(PARAMETER_OFFER_VALID_UNTIL));
 		getBusiness().acceptApplication(_applicationID, validUntil, messageHeader, messageBody, iwc.getCurrentUser());
 
-		close(iwc);
+		close();
 	}
 	
 	private void changeDate(IWContext iwc) throws RemoteException {
@@ -565,7 +565,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		IWTimestamp stamp = new IWTimestamp(placingDate);
 		getBusiness().changePlacingDate(_applicationID, stamp.getDate());
 
-		close(iwc);
+		close();
 	}
 	
 	private void grantPriority(IWContext iwc) throws RemoteException {
@@ -573,7 +573,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		String messageBody = iwc.getParameter(PARAMETER_PRIORITY_MESSAGE);
 		getBusiness().setAsPriorityApplication(_applicationID, messageHeader, messageBody);
 
-		close(iwc);
+		close();
 	}
 	
 	private void parentsAgree(IWContext iwc) throws RemoteException {
@@ -582,13 +582,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		getBusiness().parentsAgree(_applicationID, iwc.getCurrentUser(), subject, message);
 
-		close(iwc);
+		close();
 	}
 	
 	private void createContract(IWContext iwc) throws RemoteException {
 		getBusiness().assignContractToApplication(_applicationID, -1, null, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
 
-		close(iwc);
+		close();
 	}
 	
 	private void createGroup(IWContext iwc) throws RemoteException {
@@ -607,7 +607,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		String body = localize("child_care.placing_body","{0} has been placed in a group at {1}.");
 		getBusiness().placeApplication(getSession().getApplicationID(), subject, body, childCareTime, groupID, iwc.getCurrentUser());
 
-		close(iwc);
+		close();
 	}
 	
 	private void cancelContract(IWContext iwc) throws RemoteException {
@@ -654,7 +654,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		getParentPage().close();
 	}
 	
-	private void close(IWContext iwc) {
+	private void close() {
 		getParentPage().setParentToReload();
 		getParentPage().close();
 	}

@@ -32,7 +32,7 @@ public class ManagerView extends CommuneBlock {
 	public void main(IWContext iwc) {
 		this.setResourceBundle(getResourceBundle(iwc));
 		try {
-			int action = parseAction(iwc);
+			int action = parseAction();
 			switch (action) {
 				case ACTION_VIEW_MANAGER :
 					viewManagerInfo(iwc);
@@ -55,7 +55,7 @@ public class ManagerView extends CommuneBlock {
 		}
 		mainTable.add(po);
 	}
-	private int parseAction(IWContext iwc) {
+	private int parseAction() {
 		int action = ACTION_VIEW_MANAGER;
 		return action;
 	}
@@ -104,7 +104,7 @@ public class ManagerView extends CommuneBlock {
 				Text tManagerName = getSmallHeader(sManagerName);
 				leftTable.add(tManagerName,1,1);
 				
-				String sWorkGroup = getWorkGroupName(manager,iwc);
+				String sWorkGroup = getWorkGroupName(manager);
 				Text tWorkGroup = getSmallText(sWorkGroup);
 				leftTable.add(tWorkGroup,1,2);
 				
@@ -112,7 +112,7 @@ public class ManagerView extends CommuneBlock {
 				Text tWorkGroupArea = getSmallText(sWorkGroupArea);
 				leftTable.add(tWorkGroupArea,1,3);
 				
-				String sManagerDescription = getManagerDescription(manager,iwc);
+				String sManagerDescription = getManagerDescription(manager);
 				Text tManagerDescription = getSmallText(sManagerDescription);
 				leftTable.add(tManagerDescription,1,4);
 				
@@ -212,7 +212,7 @@ public class ManagerView extends CommuneBlock {
 	 * @param manager
 	 * @return String
 	 */
-	private String getManagerDescription(User manager,IWContext iwc) {
+	private String getManagerDescription(User manager) {
 		try
 		{	
 			String s =manager.getDescription();
@@ -231,7 +231,7 @@ public class ManagerView extends CommuneBlock {
 	 * @param manager
 	 * @return String
 	 */
-	private Group getWorkGroup(User manager,IWContext iwc) {
+	private Group getWorkGroup(User manager) {
 		try
 		{
 			return manager.getPrimaryGroup();
@@ -247,10 +247,10 @@ public class ManagerView extends CommuneBlock {
 	 * @param manager
 	 * @return String
 	 */
-	private String getWorkGroupName(User manager,IWContext iwc) {
+	private String getWorkGroupName(User manager) {
 		try
 		{
-			return getWorkGroup(manager,iwc).getName();
+			return getWorkGroup(manager).getName();
 		} catch (Exception e)
 		{
 			return "-";

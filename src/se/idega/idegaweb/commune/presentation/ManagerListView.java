@@ -46,10 +46,10 @@ public class ManagerListView extends CommuneBlock {
 					viewManagerList(iwc);
 					break;
 				case ACTION_VIEW_MANAGER :
-					viewManager(iwc);
+					viewManager();
 					break;
 				default :
-					viewNoGroup(iwc);
+					viewNoGroup();
 					break;
 			}
 			super.add(mainTable);
@@ -106,7 +106,7 @@ public class ManagerListView extends CommuneBlock {
 	 * Method viewNoGroups.
 	 * @param iwc
 	 */
-	private void viewNoGroup(IWContext iwc) {
+	private void viewNoGroup() {
 		add(getSmallText(localize("managerlistview.no_group_set", "No group selected")));
 	}
 
@@ -169,7 +169,7 @@ public class ManagerListView extends CommuneBlock {
 	}
 	
 	
-	private void viewManager(IWContext iwc) throws Exception {
+	private void viewManager() throws Exception {
 		//System.out.println("viewManager()");
 		add(new ManagerView());
 	}

@@ -43,7 +43,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.11 2003/04/02 17:55:51 laddi Exp $
+ * @version $Id: EventList.java,v 1.12 2003/04/02 20:47:26 laddi Exp $
  * @since 17.3.2003 
  */
 
@@ -217,7 +217,7 @@ public class EventList extends CommuneBlock {
 			addMessagesList(iwc);
 
 		} else {
-			viewMessages(iwc, new String[] { id });
+			viewMessages(new String[] { id });
 		}
 	}
 
@@ -227,14 +227,14 @@ public class EventList extends CommuneBlock {
 			addMessagesList(iwc);
 
 		} else if (ids != null && ids.length > 0) {
-			viewMessages(iwc, ids);
+			viewMessages(ids);
 		}
 	}
 
-	private void viewMessages(IWContext iwc, String[] ids)
+	private void viewMessages(String[] ids)
 		throws FinderException, RemoteException {
 		Table layout = new Table();
-		Collection selectedLetters = getPrintedLetter(iwc).findLetters(ids);
+		Collection selectedLetters = getPrintedLetter().findLetters(ids);
 
 		Iterator iter = selectedLetters.iterator();
 
@@ -310,8 +310,7 @@ public class EventList extends CommuneBlock {
 	}
 
 	public Collection getPrintedMessagesByPrimaryKeys(
-		String[] primaryKeys,
-		String type)
+		String[] primaryKeys)
 		throws RemoteException, FinderException {
 		PrintMessageHome msgHome = null;
 		PrintMessage msg;
@@ -457,7 +456,6 @@ public class EventList extends CommuneBlock {
 	}
 
 	private PresentationObject getCursorLinks(
-		IWContext iwc,
 		int totalsize,
 		int cursor,
 		String cursorPrm,
@@ -506,7 +504,7 @@ public class EventList extends CommuneBlock {
 		int urow = 1;
 		int childCareId = getChildCareSession(iwc).getChildCareID();
 		Collection unprintedLetters =
-			getPrintedLetter(iwc).findLetterByChildcare(
+			getPrintedLetter().findLetterByChildcare(
 				childCareId,
 				searchSsn,
 				searchMsgId,
@@ -520,7 +518,6 @@ public class EventList extends CommuneBlock {
 		uT.add(getPrintButton(), 1, urow++);
 		uT.add(
 			getCursorLinks(
-				iwc,
 				unprintedLetters.size(),
 				cursor_u,
 				PRM_CURSOR_U,
@@ -598,7 +595,7 @@ public class EventList extends CommuneBlock {
 		this.defaultDays = number;
 	}
 
-	private PrintedLetterMessageHome getPrintedLetter(IWContext iwc) {
+	private PrintedLetterMessageHome getPrintedLetter() {
 		try {
 			return (PrintedLetterMessageHome) IDOLookup.getHome(
 				PrintedLetterMessage.class);
