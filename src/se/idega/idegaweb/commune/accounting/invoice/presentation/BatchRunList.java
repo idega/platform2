@@ -1,7 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 import java.util.Iterator;
 
 import se.idega.idegaweb.commune.accounting.invoice.business.BatchRunQueue;
@@ -23,7 +22,7 @@ import com.idega.presentation.ui.SubmitButton;
  *
  */
 public class BatchRunList extends AccountingBlock{
-	private static String KEY = "key"; 
+	private static String KEY = "removeKey"; 
 	public void init(IWContext iwc){
 		handleAction(iwc);
 		Form form = new Form();
@@ -63,7 +62,8 @@ public class BatchRunList extends AccountingBlock{
 	 */
 	private void handleAction(IWContext iwc) {
 		if(iwc.isParameterSet(KEY)){
-			System.out.println(iwc.getParameter(KEY));	//Dummy line to remove warning
+			BatchRunQueue.removeBatchRunFromQueue(iwc.getParameter(KEY));
+			System.out.println(iwc.getParameter(KEY));
 		}
 	}
 	

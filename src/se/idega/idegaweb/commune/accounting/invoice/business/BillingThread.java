@@ -76,6 +76,7 @@ public abstract class BillingThread extends Thread{
 	protected ExportDataMapping categoryPosting = null;
 	protected BatchRun batchRunLogger=null;
 	protected ErrorLogger errorRelated = null;
+	protected boolean running;
 	
 	public BillingThread(Date dateInMonth, IWContext iwc){
 		month = new CalendarMonth(dateInMonth);
@@ -83,10 +84,15 @@ public abstract class BillingThread extends Thread{
 		endPeriod = month.getLastTimestamp();
 		calculationDate=dateInMonth;
 		this.iwc = iwc;
+		running = true;
 	}
 	
 	public static String getBatchRunSignatureKey () {
 		return BATCH_TEXT;
+	}
+	
+	public void terminate(){
+		running = false;
 	}
 
 	protected PaymentHeader getPaymentHeader(School school)throws CreateException, IDOLookupException{

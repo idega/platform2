@@ -68,7 +68,7 @@ public class BatchRunQueue {
 					System.out.println("Removing current thread "+s);
 					if(runningThread!=null){
 						runningThread.terminate();
-						queue.remove(batchRunObject);
+//						queue.remove(batchRunObject);
 						runningThread = null;
 						return;
 					}
