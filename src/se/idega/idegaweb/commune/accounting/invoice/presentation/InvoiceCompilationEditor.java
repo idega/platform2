@@ -81,10 +81,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/01 14:27:44 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/01 19:45:41 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.76 $
+ * @version $Revision: 1.77 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -254,18 +254,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	 */
 	public void init (final IWContext context) {
 		try {
-            int actionId = ACTION_SHOW_COMPILATION_LIST;
-
-            try {
-                actionId = Integer.parseInt (context.getParameter (ACTION_KEY));
-            } catch (final Exception dummy) {
-                try {
-                    actionId = Integer.parseInt (context.getParameter
-                                                 (LAST_ACTION_KEY));
-                } catch (final Exception dummy2) {
-                    // do nothing, actionId is default
-                }
-            }
+            final int actionId = getActionId (context);
 
 			switch (actionId) {
 				case ACTION_SHOW_COMPILATION:
@@ -321,6 +310,22 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             logUnexpectedException (context, exception);
 		}
 	}
+
+    private int getActionId (final IWContext context) {
+        int actionId = ACTION_SHOW_COMPILATION_LIST;
+        
+        try {
+            actionId = Integer.parseInt (context.getParameter (ACTION_KEY));
+        } catch (final Exception dummy) {
+            try {
+                actionId = Integer.parseInt (context.getParameter
+                                             (LAST_ACTION_KEY));
+            } catch (final Exception dummy2) {
+                // do nothing, actionId is default
+            }
+        }
+        return actionId;
+    }
 
 	private void generateCompilationPdf (final IWContext context)
         throws RemoteException, FinderException, DocumentException {
@@ -536,16 +541,19 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final String nowPeriod = periodFormatter.format (new Date ());
         final InvoiceHeader header = getInvoiceHeader (context);
         final User custodian = header.getCustodian ();
-        final Integer actionId = getIntegerParameter (context, ACTION_KEY);
         final InvoiceBusiness business = getInvoiceBusiness (context);
         final String searchString = context.getParameter (RULE_TEXT_KEY);
         final java.sql.Date period = header.getPeriod ();
         final String categoryId =  header.getSchoolCategoryID ();
         final Collection regulations = new ArrayList ();
+        inputs.put (PLACEMENT_KEY, getPlacementsDropdown (context, header));
+        final SchoolClassMember placement = (SchoolClassMember)
+                context.getSessionAttribute (PLACEMENT_KEY);
         final Provider provider
-                = (Provider) context.getSessionAttribute (PROVIDER_KEY);
+                = (null != placement ? new Provider
+                   (placement.getSchoolClass ().getSchool ()) : null); 
         if (null != searchString && null != period && null != categoryId
-            && null != provider && actionId.intValue ()
+            && null != provider && getActionId (context)
             == ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT) {
             final RegulationHome home = getRegulationHome ();
             try {
@@ -559,14 +567,19 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         if (1 == regulations.size ()) {
             final Regulation regulation
                     = (Regulation) regulations.iterator ().next ();
-            addPresentationObjectsForNewRecordForm(context, inputs, header, business, period, provider, regulation);
+            addPresentationObjectsForNewRecordForm
+                    (context, inputs, header, business, period, provider,
+                     regulation);
         } else {
             if (!regulations.isEmpty ()) {
-                addRegulationLinkListForNewRecordForm(context, inputs, regulations);
+                // regulations.size > 1
+                addRegulationLinkListForNewRecordForm (context, inputs,
+                                                       regulations);
             }
-            inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY,
-                                                       searchString));
-            inputs.put (INVOICE_TEXT_KEY, getStyledInput (INVOICE_TEXT_KEY));
+            inputs.put (RULE_TEXT_KEY, getStyledWideInput (RULE_TEXT_KEY,
+                                                           searchString));
+            inputs.put (INVOICE_TEXT_KEY, getStyledWideInput
+                        (INVOICE_TEXT_KEY));
             inputs.put (AMOUNT_KEY, getStyledInput (AMOUNT_KEY));
             inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
             inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
@@ -594,74 +607,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                      CREATE_INVOICE_RECORD_DEFAULT));
         inputs.put (HEADER_KEY, localize (CREATE_INVOICE_RECORD_KEY,
                                           CREATE_INVOICE_RECORD_DEFAULT));
-        inputs.put (SEARCH_RULE_TEXT_KEY, getSubmitButton
-                    (ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT,
-                     SEARCH_RULE_TEXT_KEY, SEARCH_RULE_TEXT_DEFAULT));
-        inputs.put (PLACEMENT_KEY, getPlacementsDropdown (context, header));
+        if (null != period && null != categoryId && null != provider) {
+            inputs.put (SEARCH_RULE_TEXT_KEY, getSubmitButton
+                        (ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT,
+                         SEARCH_RULE_TEXT_KEY, SEARCH_RULE_TEXT_DEFAULT));
+        }
         renderRecordDetailsOrForm (context, inputs);
     }
-
-    private void addRegulationLinkListForNewRecordForm(final IWContext context, final java.util.Map inputs, final Collection regulations) {
-		final Table table = createTable (1);
-		int row = 1;
-		for (Iterator i = regulations.iterator (); i.hasNext ();) {
-		    final Regulation regulation = (Regulation) i.next ();
-		    final Link link = getSmallLink (regulation.getName ());
-		    link.addParameter (ACTION_KEY,
-		                       context.getParameter (ACTION_KEY));
-		    link.addParameter (RULE_TEXT_KEY, regulation.getName ());
-		    link.addParameter
-		            (INVOICE_COMPILATION_KEY, context.getParameter
-		             (INVOICE_COMPILATION_KEY));
-		    table.add (link, 1, row++);
-		}
-		inputs.put (RULE_TEXT_LINK_LIST_KEY, table);
-	}
-
-	private void addPresentationObjectsForNewRecordForm(final IWContext context, final java.util.Map inputs, final InvoiceHeader header, final InvoiceBusiness business, final java.sql.Date period, final Provider provider, final Regulation regulation) throws EJBException, RemoteException {
-		final String regulationName = regulation.getName ();
-		final RegulationSpecType regSpecType = regulation.getRegSpecType ();
-		final Integer regSpecTypeId
-		        = (Integer) regSpecType.getPrimaryKey ();
-		final VATRule vatRule = regulation.getVATRegulation ();
-		final SchoolCategory category = header.getSchoolCategory ();
-		final RegulationsBusiness regulationsBusiness
-		        = getRegulationsBusiness (context);
-		final SchoolType schoolType
-		        = regulationsBusiness.getSchoolType (regulation);
-		final PostingBusiness postingBusiness
-		        = getPostingBusiness (context);
-		inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY,
-		                                           regulationName));
-		inputs.put (INVOICE_TEXT_KEY, getStyledInput (INVOICE_TEXT_KEY,
-		                                              regulationName));
-		inputs.put (AMOUNT_KEY, getStyledInput
-		            (AMOUNT_KEY, regulation.getAmount () + ""));
-		inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
-		inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
-		            (business.getAllRegulationSpecTypes (), regSpecType));
-		inputs.put (VAT_RULE_KEY,  getLocalizedDropdown
-		            (business.getAllVatRules (), vatRule));
-		try {
-		    final String [] postings = postingBusiness.getPostingStrings
-		            (category, schoolType, regSpecTypeId.intValue (),
-		             provider, period);	
-		    final PresentationObject ownPostingForm
-		            = getPostingParameterForm (context, OWN_POSTING_KEY,
-		                                       postings [0]);
-		    inputs.put (OWN_POSTING_KEY, ownPostingForm);
-		    final PresentationObject doublePostingForm
-		            = getPostingParameterForm (context, DOUBLE_POSTING_KEY,
-		                                       postings [1]);
-		    inputs.put (DOUBLE_POSTING_KEY, doublePostingForm);
-		} catch (PostingException e) {
-		    e.printStackTrace ();
-		    inputs.put (OWN_POSTING_KEY, getPostingParameterForm
-		                (context, OWN_POSTING_KEY));
-		    inputs.put (DOUBLE_POSTING_KEY, getPostingParameterForm
-		                (context, DOUBLE_POSTING_KEY));
-		}
-	}
 
 	private void showEditRecordForm (final IWContext context)
         throws RemoteException, FinderException {
@@ -672,7 +624,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final User custodian = header.getCustodian ();
         inputs.put (INVOICE_RECEIVER_KEY, getSmallText (getUserInfo
                                                         (custodian)));
-        inputs.put (INVOICE_TEXT_KEY, getStyledInput
+        inputs.put (INVOICE_TEXT_KEY, getStyledWideInput
                     (INVOICE_TEXT_KEY, record.getInvoiceText ()));
         inputs.put (CHECK_START_PERIOD_KEY, getStyledInput
                     (CHECK_START_PERIOD_KEY, getFormattedPeriod
@@ -952,6 +904,71 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                   INVOICE_RECORD_DEFAULT, table));
         }
     }
+
+    private void addRegulationLinkListForNewRecordForm
+        (final IWContext context, final java.util.Map inputs,
+         final Collection regulations) {
+		final Table table = createTable (1);
+		int row = 1;
+		for (Iterator i = regulations.iterator (); i.hasNext ();) {
+		    final Regulation regulation = (Regulation) i.next ();
+		    final Link link = getSmallLink (regulation.getName ());
+		    link.addParameter (ACTION_KEY, context.getParameter (ACTION_KEY));
+		    link.addParameter (RULE_TEXT_KEY, regulation.getName ());
+		    link.addParameter (INVOICE_COMPILATION_KEY, context.getParameter
+		             (INVOICE_COMPILATION_KEY));
+            link.addParameter (PLACEMENT_KEY, context.getSessionAttribute
+                               (PLACEMENT_KEY) + "");
+		    table.add (link, 1, row++);
+		}
+		inputs.put (RULE_TEXT_LINK_LIST_KEY, table);
+	}
+
+	private void addPresentationObjectsForNewRecordForm
+        (final IWContext context, final java.util.Map inputs,
+         final InvoiceHeader header, final InvoiceBusiness business,
+         final java.sql.Date period, final Provider provider,
+         final Regulation regulation) throws EJBException, RemoteException {
+		final String regulationName = regulation.getName ();
+		final RegulationSpecType regSpecType = regulation.getRegSpecType ();
+		final Integer regSpecTypeId
+		        = (Integer) regSpecType.getPrimaryKey ();
+		final VATRule vatRule = regulation.getVATRegulation ();
+		final SchoolCategory category = header.getSchoolCategory ();
+		final RegulationsBusiness regulationsBusiness
+		        = getRegulationsBusiness (context);
+		final SchoolType schoolType
+		        = regulationsBusiness.getSchoolType (regulation);
+		final PostingBusiness postingBusiness = getPostingBusiness (context);
+		inputs.put (RULE_TEXT_KEY, getStyledWideInput (RULE_TEXT_KEY,
+                                                       regulationName));
+		inputs.put (INVOICE_TEXT_KEY, getStyledWideInput (INVOICE_TEXT_KEY,
+                                                          regulationName));
+		inputs.put (AMOUNT_KEY, getStyledInput
+		            (AMOUNT_KEY, regulation.getAmount () + ""));
+		inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
+		inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
+		            (business.getAllRegulationSpecTypes (), regSpecType));
+		inputs.put (VAT_RULE_KEY,  getLocalizedDropdown
+		            (business.getAllVatRules (), vatRule));
+		try {
+		    final String [] postings = postingBusiness.getPostingStrings
+		            (category, schoolType, regSpecTypeId.intValue (),
+		             provider, period);	
+		    final PresentationObject ownPostingForm = getPostingParameterForm
+                    (context, OWN_POSTING_KEY, postings [0]);
+		    inputs.put (OWN_POSTING_KEY, ownPostingForm);
+		    final PresentationObject doublePostingForm = getPostingParameterForm
+                    (context, DOUBLE_POSTING_KEY, postings [1]);
+		    inputs.put (DOUBLE_POSTING_KEY, doublePostingForm);
+		} catch (PostingException e) {
+		    e.printStackTrace ();
+		    inputs.put (OWN_POSTING_KEY, getPostingParameterForm
+		                (context, OWN_POSTING_KEY));
+		    inputs.put (DOUBLE_POSTING_KEY, getPostingParameterForm
+		                (context, DOUBLE_POSTING_KEY));
+		}
+	}
 
     private String getUserInfo (final User user) {
         return user == null ? "" : getUserName (user) + " (" + formatSsn
@@ -1849,6 +1866,17 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return input;
     }
 
+    private TextInput getStyledWideInput (final String key) {
+        return getStyledWideInput (key, null);
+    }
+
+    private TextInput getStyledWideInput (final String key,
+                                          final String value) {
+        final TextInput input = getStyledInput (key, value);
+        input.setLength (36);
+        return input;
+    }
+
     private void addSmallText (final Table table, final String string,
                                final int col, final int row) {
         table.add (getSmallText (null != string && !string.equals (null + "")
@@ -2176,8 +2204,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final InvoiceBusiness business = getInvoiceBusiness (context);
         final SchoolClassMember [] placements
                 = business.getSchoolClassMembers (header);
-
-        context.setSessionAttribute (PROVIDER_KEY, null);
+        context.setSessionAttribute (PLACEMENT_KEY, null);
         if (1 == placements.length) {
             final Table table = createTable (1);
             final SchoolClassMember placement = placements [0];
@@ -2185,9 +2212,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                         placement.getPrimaryKey () + ""), 1, 1);
             addSmallText (table, getProviderName (placement), 1, 1);
             result = table;
-            context.setSessionAttribute
-                    (PROVIDER_KEY,
-                     new Provider (placement.getSchoolClass ().getSchool ())); 
+            context.setSessionAttribute (PLACEMENT_KEY, placement); 
         } else if (1 < placements.length) {
             final Integer oldPlacementId = getIntegerParameter (context,
                                                                 PLACEMENT_KEY);
@@ -2199,15 +2224,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                         = (Integer) placement.getPrimaryKey ();
                 dropdown.addMenuElement (placementId + "",
                                          getProviderName (placement));
-                if (null == context.getSessionAttribute (PROVIDER_KEY) ||
+                if (null == context.getSessionAttribute (PLACEMENT_KEY) ||
                     (null != oldPlacementId
                      && placementId.equals (oldPlacementId))) {
                     dropdown.setSelectedElement (placementId + "") ;
-                    context.setSessionAttribute
-                            (PROVIDER_KEY, new Provider
-                             (placement.getSchoolClass ().getSchool ())); 
+                    context.setSessionAttribute (PLACEMENT_KEY, placement); 
                 }
             }
+            dropdown.setOnChange ("this.form.submit()");
             result = dropdown;
         }
 
