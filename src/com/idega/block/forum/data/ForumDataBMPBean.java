@@ -71,6 +71,10 @@ public class ForumDataBMPBean extends TreeableEntityBMPBean implements ForumData
     return getIntColumnValue(getColumnNameParentThreadID());
   }
 
+  public ICCategory getTopic(){
+    return (ICCategory) getColumnValue(getColumnNameTopicID());
+  }
+
   public int getTopicID(){
     return getIntColumnValue(getColumnNameTopicID());
   }

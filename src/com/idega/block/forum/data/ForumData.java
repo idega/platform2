@@ -1,5 +1,6 @@
 package com.idega.block.forum.data;
 
+import com.idega.block.category.data.ICCategory;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.TreeableEntity;
 
@@ -15,6 +16,7 @@ public interface ForumData extends TreeableEntity,IDOLegacyEntity
  public java.lang.String getThreadSubject();
  public void setUserID(int p0);
  public java.lang.String getUserName();
+ public ICCategory getTopic();
  public int getTopicID();
  public void setNumberOfResponses(int p0);
  public void setParentThreadID(int p0);

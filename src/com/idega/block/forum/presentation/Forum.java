@@ -66,6 +66,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private boolean _showOverviewLink = true;
 	protected boolean _showTopicName = false;
 	private boolean _showResponses = true;
+	private boolean iShowTopicInCollection = false;
 
 	protected int _state = ForumBusiness.FORUM_TOPICS;
 	private int _initialState = ForumBusiness.FORUM_TOPICS;
@@ -359,6 +360,11 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			while (iter.hasNext()) {
 				ForumData thread = (ForumData) iter.next();
 
+				if (iShowTopicInCollection) {
+					ICCategory topic = thread.getTopic();
+					table.add(getTopicLink(topic), 1, row);
+					table.add(Text.getBreak(), 1, row);
+				}
 				table.add(getUser(thread), 1, row);
 				table.add(formatText("," + Text.NON_BREAKING_SPACE), 1, row);
 				table.add(getThreadDate(iwc, thread, TEXT_STYLE), 1, row);
@@ -1030,5 +1036,8 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	}
 	public void setShowForumLinks(boolean showForumLinks) {
 		iShowForumLinks = showForumLinks;
+	}
+	public void setShowTopicInCollection(boolean showTopicInCollection) {
+		iShowTopicInCollection = showTopicInCollection;
 	}
 } // Class Forum
