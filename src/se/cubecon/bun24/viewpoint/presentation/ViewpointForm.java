@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/06/11 09:06:59 $ by $Author: laddi $
+ * Last modified: $Date: 2003/07/01 18:35:15 $ by $Author: eiki $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.44 $
+ * @version $Revision: 1.45 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -839,8 +839,7 @@ public class ViewpointForm extends CommuneBlock {
         return result;
     }
 
-    private User getUserBySsn (final IWContext context, final String ssn)
-        throws FinderException {
+    private User getUserBySsn (final IWContext context, final String ssn) throws FinderException{
         User result = null;
         try {
             final UserBusiness userBusiness = (UserBusiness)
@@ -848,13 +847,11 @@ public class ViewpointForm extends CommuneBlock {
             result = userBusiness.getUser (ssn);
         } catch (RemoteException dummy) {
             // nothing, since algorithm is in finally clause
-        } finally {
-            if (null == result) {
-                throw new FinderException (null != ssn
-                                           ? "Hittade inte användaren " + ssn
-                                           : "Felaktigt personnummer");
-            }
+        } catch(FinderException ex){
+        	System.err.println("Hittade inte anvandaren " + ssn +" Felaktigt personnummer");
+        	throw ex;
         }
+        
         return result;
     }
 
