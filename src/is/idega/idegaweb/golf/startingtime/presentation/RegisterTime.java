@@ -1,7 +1,7 @@
 package is.idega.idegaweb.golf.startingtime.presentation;
 
 import is.idega.idegaweb.golf.GolfField;
-import is.idega.idegaweb.golf.business.AccessControl;
+import is.idega.idegaweb.golf.access.AccessControl;
 import is.idega.idegaweb.golf.business.GolfCacher;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberBMPBean;
@@ -209,9 +209,9 @@ public class RegisterTime extends GolfBlock {
               String unionAbbrevation = null;
 
               if(memberAvailable){
-                admin = is.idega.idegaweb.golf.business.AccessControl.isAdmin(modinfo);
-                clubadmin = is.idega.idegaweb.golf.business.AccessControl.isClubAdmin(modinfo);
-                clubworker = is.idega.idegaweb.golf.business.AccessControl.isClubWorker(modinfo);
+                admin = is.idega.idegaweb.golf.access.AccessControl.isAdmin(modinfo);
+                clubadmin = is.idega.idegaweb.golf.access.AccessControl.isClubAdmin(modinfo);
+                clubworker = is.idega.idegaweb.golf.access.AccessControl.isClubWorker(modinfo);
                 unionAbbrevation = member.getMainUnion().getAbbrevation();
               }
 

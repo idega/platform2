@@ -5,8 +5,8 @@
 
 package is.idega.idegaweb.golf.block.login.business;
 
-import is.idega.idegaweb.golf.block.login.data.LoginTable;
-import is.idega.idegaweb.golf.business.AccessControl;
+import is.idega.idegaweb.golf.access.AccessControl;
+import is.idega.idegaweb.golf.access.LoginTable;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import java.io.IOException;
@@ -120,7 +120,7 @@ public class GolfLoginBusiness extends LoginBusinessBean implements IWPageEventL
     }
 
     public boolean isAdmin(IWContext modinfo) throws SQLException {
-        return is.idega.idegaweb.golf.business.AccessControl.isAdmin(modinfo);
+        return is.idega.idegaweb.golf.access.AccessControl.isAdmin(modinfo);
     }
 
     public boolean isDeveloper(IWContext modinfo) throws SQLException {

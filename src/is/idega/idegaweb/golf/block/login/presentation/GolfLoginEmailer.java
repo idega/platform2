@@ -4,8 +4,8 @@
 
 package is.idega.idegaweb.golf.block.login.presentation;
 
+import is.idega.idegaweb.golf.access.LoginTable;
 import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
-import is.idega.idegaweb.golf.block.login.data.LoginTable;
 import is.idega.idegaweb.golf.entity.Member;
 
 import com.idega.idegaweb.IWBundle;

@@ -5,8 +5,9 @@
 
 package is.idega.idegaweb.golf.block.login.business;
 
-import is.idega.idegaweb.golf.block.login.data.LoginTable;
-import is.idega.idegaweb.golf.block.login.data.LoginTableHome;
+import is.idega.idegaweb.golf.access.AccessControl;
+import is.idega.idegaweb.golf.access.LoginTable;
+import is.idega.idegaweb.golf.access.LoginTableHome;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 
@@ -22,7 +23,6 @@ import com.idega.event.IWPageEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
-import is.idega.idegaweb.golf.business.AccessControl;
 
 /**
  * Title: LoginBusiness Description: Copyright: Copyright (c) 2000-2001 idega.is

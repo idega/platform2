@@ -64,13 +64,13 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 	}	
 	
 	
-	public Collection getLogin(is.idega.idegaweb.golf.block.login.data.LoginTable golfLogin) throws IDOLookupException, FinderException{
+	public Collection getLogin(is.idega.idegaweb.golf.access.LoginTable golfLogin) throws IDOLookupException, FinderException{
 		return ((LoginTableHome)IDOLookup.getHome(LoginTable.class)).findLoginsForUser(golfLogin.getMember().getICUser());
 	}
 	
-	public is.idega.idegaweb.golf.block.login.data.LoginTable getGolfLogin(LoginTable login) throws EJBException, IDOLookupException, FinderException {
+	public is.idega.idegaweb.golf.access.LoginTable getGolfLogin(LoginTable login) throws EJBException, IDOLookupException, FinderException {
 		Member member = ((MemberHome)IDOLookup.getHome(Member.class)).findMemberByIWMemberSystemUser(Converter.convertToNewUser(login.getUser()));
-		return ((is.idega.idegaweb.golf.block.login.data.LoginTableHome)IDOLookup.getHomeLegacy(is.idega.idegaweb.golf.block.login.data.LoginTable.class)).findByMember(member);
+		return ((is.idega.idegaweb.golf.access.LoginTableHome)IDOLookup.getHomeLegacy(is.idega.idegaweb.golf.access.LoginTable.class)).findByMember(member);
 	}
 	
 //	public Group getGroup(is.idega.idegaweb.golf.entity.Group golfGroup) {

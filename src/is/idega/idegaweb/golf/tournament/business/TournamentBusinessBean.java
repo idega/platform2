@@ -1,6 +1,6 @@
 package is.idega.idegaweb.golf.tournament.business;
 
-import is.idega.idegaweb.golf.business.AccessControl;
+import is.idega.idegaweb.golf.access.AccessControl;
 import is.idega.idegaweb.golf.entity.DisplayScores;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.Member;

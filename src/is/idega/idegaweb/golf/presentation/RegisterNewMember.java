@@ -1,8 +1,8 @@
 package is.idega.idegaweb.golf.presentation;
 
+import is.idega.idegaweb.golf.access.LoginTable;
+import is.idega.idegaweb.golf.access.LoginTableHome;
 import is.idega.idegaweb.golf.block.login.business.LoginBusiness;
-import is.idega.idegaweb.golf.block.login.data.LoginTable;
-import is.idega.idegaweb.golf.block.login.data.LoginTableHome;
 import is.idega.idegaweb.golf.entity.Address;
 import is.idega.idegaweb.golf.entity.AddressHome;
 import is.idega.idegaweb.golf.entity.Country;

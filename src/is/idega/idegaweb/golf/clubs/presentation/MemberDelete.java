@@ -3,7 +3,7 @@
  */
 package is.idega.idegaweb.golf.clubs.presentation;
 
-import is.idega.idegaweb.golf.block.login.data.LoginTable;
+import is.idega.idegaweb.golf.access.LoginTable;
 import is.idega.idegaweb.golf.business.GolfCacher;
 import is.idega.idegaweb.golf.entity.Address;
 import is.idega.idegaweb.golf.entity.Card;

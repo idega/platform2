@@ -6,8 +6,8 @@
 package is.idega.idegaweb.golf.block.login.presentation;
 
 
+import is.idega.idegaweb.golf.access.AccessControl;
 import is.idega.idegaweb.golf.block.login.business.LoginBusiness;
-import is.idega.idegaweb.golf.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Member;
 
 import com.idega.presentation.Block;

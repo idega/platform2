@@ -9,7 +9,7 @@ package is.idega.idegaweb.golf.service;
  * @version 1.0
  */
 
-import is.idega.idegaweb.golf.block.login.data.LoginTable;
+import is.idega.idegaweb.golf.access.LoginTable;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.UnionMemberInfo;
