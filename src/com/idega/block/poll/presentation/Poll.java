@@ -202,7 +202,7 @@ private int _layout = RADIO_BUTTON_VIEW;
         pollTable.mergeCells(1,1,2,1);
         pollTable.mergeCells(1,2,2,2);
         pollTable.setWidth(_pollWidth);
-        pollTable.setAlignment(1,1,"center");
+        pollTable.setAlignment(1,1,_questionAlignment);
         pollTable.setAlignment(2,3,"right");
       form.add(pollTable);
 
