@@ -1709,7 +1709,16 @@ public class HotelBookingForm extends BookingForm {
 		}
 	
 		if (max > 0) {
-			int currentBookings = getHotelBooker(iwc).getBookingsTotalCount(product.getID(), stamp);
+	    List addresses;
+	    try {
+	      addresses = product.getDepartureAddresses(false);
+	    }catch (IDOFinderException ido) {
+	      ido.printStackTrace(System.err);
+	      addresses = new Vector();
+	    }
+	    
+	    int addressId = super.getAddressIDToUse(iwc, addresses);
+			int currentBookings = getHotelBooker(iwc).getBookingsTotalCount(product.getID(), stamp, addressId);
 			return (currentBookings >= max);
 		}
 		

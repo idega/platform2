@@ -337,10 +337,10 @@ public class Statistics extends TravelManager {
           seatNrText.setFontColor(super.BLACK);
           usageNrText.setFontColor(super.BLACK);
 
-      int iNetBooking = getBooker(iwc).getBookingsTotalCount(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING);
-      int iInqBooking = getBooker(iwc).getBookingsTotalCount(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_INQUERY_BOOKING);
-      int iSupBooking = getBooker(iwc).getBookingsTotalCount(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING);
-      int i3rdBooking = getBooker(iwc).getBookingsTotalCount(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING);
+      int iNetBooking = getBooker(iwc).getBookingsTotalCount(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING, null);
+      int iInqBooking = getBooker(iwc).getBookingsTotalCount(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, null);
+      int iSupBooking = getBooker(iwc).getBookingsTotalCount(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, null);
+      int i3rdBooking = getBooker(iwc).getBookingsTotalCount(service.getID() ,fromStamp, toStamp, Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING, null);
 
 
       int total = iNetBooking + iInqBooking + iSupBooking + i3rdBooking;

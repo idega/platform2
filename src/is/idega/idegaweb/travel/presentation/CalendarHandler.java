@@ -58,6 +58,7 @@ public class CalendarHandler extends TravelManager {
   private Reseller _reseller;
   private IWTimestamp _fromStamp;
   private IWTimestamp _toStamp;
+  private int addressId = -1;
   private Class _class = Booking.class;
 
   private int _productId;
@@ -420,7 +421,7 @@ public class CalendarHandler extends TravelManager {
         else if (_reseller != null) {
           for (int i = 0; i < depDays.size(); i++) {
             temp = (IWTimestamp) depDays.get(i);
-            iBookings = getBooker(iwc).getBookingsTotalCount(_productId, temp);
+            iBookings = getBooker(iwc).getBookingsTotalCount(_productId, temp, addressId);
             if (seats > 0 && seats <= iBookings ) {
               sm.setDayColor(temp, colorForFullyBooked);
               sm.setDayFontColor(temp, colorForFullyBookedText);
@@ -627,6 +628,10 @@ public class CalendarHandler extends TravelManager {
 
   public List getDepartureDays(IWContext iwc) throws RemoteException, FinderException{
     return getDepartureDays(iwc, _showPast);
+  }
+  
+  public void setAddressId(int addressID) {
+  		this.addressId = addressID;
   }
 
   public List getDepartureDays(IWContext iwc, boolean showPast) throws RemoteException, FinderException {

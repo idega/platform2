@@ -29,6 +29,7 @@ import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.block.trade.stockroom.data.TravelAddressHome;
+import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
@@ -349,7 +350,7 @@ public class Booking extends TravelManager {
 //          }
           if (supplier == null) {
             if (isDayVisible) {
-              iBookings = getBooker(iwc).getBookingsTotalCount(productId, stamp);
+              iBookings = getBooker(iwc).getBookingsTotalCount(productId, stamp,-1);
               /*if (iBookings < tour.getMinimumSeats() || iBookings > tour.getTotalSeats()) {
                 isDayVisible = false;
               }*/ /** @todo setja í calendarHandler */
@@ -998,7 +999,7 @@ public class Booking extends TravelManager {
           //table.add(printCCReceipt, 1, 2);
           table.add(printCCReceipt, 1, 5);
         }
-		  } catch (Exception e) {
+    		} catch (Exception e) {
 		  		e.printStackTrace(System.err);
 		  }
 

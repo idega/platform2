@@ -152,7 +152,7 @@ public class CarRentalBookingOverview extends AbstractBookingOverview {
                 }
 
 //                iCount = _tour.getTotalSeats();
-                iBooked = getBooker(iwc).getBookingsTotalCount(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
+                iBooked = getBooker(iwc).getBookingsTotalCount(((Integer) service.getPrimaryKey()).intValue(), tempStamp, -1);
                 iAssigned = getAssigner(iwc).getNumberOfAssignedSeats(prod, tempStamp);
 
                 int resellerBookings = getBooker(iwc).getBookingsTotalCountByResellers(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
@@ -349,7 +349,7 @@ public class CarRentalBookingOverview extends AbstractBookingOverview {
 			iInqueries = getInquirer(iwc).getInqueredSeats(product.getID() , stamp, true);
 //			booked = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);
 //			guests = getHotelBooker(iwc).getBookingsTotalCount(product.getID() , stamp, null);
-			booked = getBooker(iwc).getBookingsTotalCount(product.getID() , stamp, null);
+			booked = getBooker(iwc).getBookingsTotalCount(product.getID() , stamp, null, null);
 			available = seats - booked;
 		}else if (_reseller != null) {
 			seats = contract.getAlotment();

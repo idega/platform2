@@ -1,6 +1,6 @@
 package is.idega.idegaweb.travel.business;
 
-import javax.ejb.*;
+import java.util.Collection;
 
 public interface Booker extends com.idega.business.IBOService
 {
@@ -30,13 +30,13 @@ public interface Booker extends com.idega.business.IBOService
  public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(java.util.List p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public is.idega.idegaweb.travel.interfaces.Booking[] getBookings(java.util.List p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,java.lang.String p3,java.lang.String p4)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  
- public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1, int travelAddressID)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getBookingsTotalCount(com.idega.block.trade.stockroom.data.ProductPrice p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3,boolean p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,int p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getBookingsTotalCount(java.util.List p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2, Collection travelAddresses)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3, Collection travelAddresses)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3,Collection travelAddresses, boolean p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public int getBookingsTotalCount(int p0,com.idega.util.IWTimestamp p1,int p2, Collection travelAddresses)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public int getBookingsTotalCount(java.util.List p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2,int p3, Collection travelAddresses)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getBookingsTotalCountByReseller(int p0,int p1,com.idega.util.IWTimestamp p2,com.idega.block.trade.stockroom.data.TravelAddress p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getBookingsTotalCountByReseller(int p0,int p1,com.idega.util.IWTimestamp p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getBookingsTotalCountByResellers(int[] p0,int p1,com.idega.util.IWTimestamp p2)throws java.rmi.RemoteException, java.rmi.RemoteException;

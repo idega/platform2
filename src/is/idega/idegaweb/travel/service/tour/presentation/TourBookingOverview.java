@@ -176,7 +176,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
 
 //                iCount = _tour.getTotalSeats();
 
-                iBooked = getTourBooker(iwc).getBookingsTotalCount(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
+                iBooked = getTourBooker(iwc).getBookingsTotalCount(((Integer) service.getPrimaryKey()).intValue(), tempStamp, -1);
                 iAssigned = getAssigner(iwc).getNumberOfAssignedSeats(prod, tempStamp);
 
                 int resellerBookings = getBooker(iwc).getBookingsTotalCountByResellers(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
@@ -366,7 +366,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
 //      seats = _tour.getTotalSeats();
       assigned = getAssigner(iwc).getNumberOfAssignedSeats(((Integer) product.getPrimaryKey()).intValue(), stamp);
       iInqueries = getInquirer(iwc).getInqueredSeats(product.getID() , stamp, true);
-      booked = getBooker(iwc).getBookingsTotalCount(product.getID(), stamp);
+      booked = getBooker(iwc).getBookingsTotalCount(product.getID(), stamp, -1);
       available = seats - booked;
     }else if (_reseller != null) {
       seats = contract.getAlotment();

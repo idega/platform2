@@ -572,7 +572,17 @@ public class TourBookingForm extends BookingForm{
 
 
   public Form getPublicBookingForm(IWContext iwc, Product product) throws RemoteException, FinderException {
-    int bookings = getTourBooker(iwc).getBookingsTotalCount(_productId, this._stamp);
+    List addresses;
+    try {
+      addresses = product.getDepartureAddresses(false);
+    }catch (IDOFinderException ido) {
+      ido.printStackTrace(System.err);
+      addresses = new Vector();
+    }
+    
+    int addressId = super.getAddressIDToUse(iwc, addresses);
+    
+  		int bookings = getTourBooker(iwc).getBookingsTotalCount(_productId, this._stamp, addressId);
     int max = 0;
     int min = 0;
 
@@ -1927,7 +1937,16 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 			}
 		}
 		if (max > 0) {
-			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp);
+	    List addresses;
+	    try {
+	      addresses = product.getDepartureAddresses(false);
+	    }catch (IDOFinderException ido) {
+	      ido.printStackTrace(System.err);
+	      addresses = new Vector();
+	    }
+	    
+	    int addressId = super.getAddressIDToUse(iwc, addresses);
+			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp, addressId);
 			if (currentBookings >= max) {
 				_useInquiryForm = true;
 				return true;	
@@ -1940,7 +1959,16 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 		Tour tour = getTourHome().findByPrimaryKey(product.getPrimaryKey());
 		int min = tour.getMinimumSeats();
 		if (min > 0) {
-			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp);
+	    List addresses;
+	    try {
+	      addresses = product.getDepartureAddresses(false);
+	    }catch (IDOFinderException ido) {
+	      ido.printStackTrace(System.err);
+	      addresses = new Vector();
+	    }
+	    
+	    int addressId = super.getAddressIDToUse(iwc, addresses);
+			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp, addressId);
 			if (currentBookings < min) {
 				_useInquiryForm = true;
 				return true;	

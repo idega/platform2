@@ -732,7 +732,16 @@ public abstract class BookingForm extends TravelManager{
   }
 
   public Form getPublicBookingForm(IWContext iwc, Product product) throws RemoteException, FinderException {
-    int bookings = getBooker(iwc).getBookingsTotalCount(_productId, this._stamp);
+    List addresses;
+    try {
+      addresses = product.getDepartureAddresses(false);
+    }catch (IDOFinderException ido) {
+      ido.printStackTrace(System.err);
+      addresses = new Vector();
+    }
+    int addressId = getAddressIDToUse(iwc, addresses);
+
+    int bookings = getBooker(iwc).getBookingsTotalCount(_productId, this._stamp, addressId);
     int max = 0;
     int min = 0;
 
@@ -788,18 +797,12 @@ public abstract class BookingForm extends TravelManager{
 
       List addresses;
       try {
-        addresses = _product.getDepartureAddresses(false);
+        addresses = product.getDepartureAddresses(false);
       }catch (IDOFinderException ido) {
         ido.printStackTrace(System.err);
         addresses = new Vector();
       }
-      int addressId = -1;
-      String sAddressId = iwc.getParameter(parameterDepartureAddressId);
-      if (sAddressId != null) {
-        addressId = Integer.parseInt(sAddressId);
-      }else if (addresses.size() > 0) {
-        addressId = ((TravelAddress) addresses.get(0)).getID();
-      }
+      int addressId = getAddressIDToUse(iwc, addresses);
 
       ProductPrice[] prices = {};
       ProductPrice[] misc = {};
@@ -1288,7 +1291,23 @@ public abstract class BookingForm extends TravelManager{
     return form;
   }
 
- public Form getFormMaintainingAllParameters(IWContext iwc) {
+ /**
+ * @param iwc
+ * @param addresses
+ * @return
+ */
+protected int getAddressIDToUse(IWContext iwc, List addresses) {
+	int addressId = -1;
+      String sAddressId = iwc.getParameter(parameterDepartureAddressId);
+      if (sAddressId != null) {
+        addressId = Integer.parseInt(sAddressId);
+      }else if (addresses.size() > 0) {
+        addressId = ((TravelAddress) addresses.get(0)).getID();
+      }
+	return addressId;
+}
+
+public Form getFormMaintainingAllParameters(IWContext iwc) {
     return getFormMaintainingAllParameters(iwc, true);
  }
  public Form getFormMaintainingAllParameters(IWContext iwc, boolean withBookingAction) {
@@ -2885,7 +2904,15 @@ public abstract class BookingForm extends TravelManager{
 	  }
 
 	  	if (max > 0 ) {
-				int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp);
+	      List addresses;
+	      try {
+	        addresses = product.getDepartureAddresses(false);
+	      }catch (IDOFinderException ido) {
+	        ido.printStackTrace(System.err);
+	        addresses = new Vector();
+	      }
+	      int addressId = getAddressIDToUse(iwc, addresses);
+				int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp, addressId);
 				if (currentBookings >= max) {
 					_useInquiryForm = true;
 					return true;	
@@ -2907,7 +2934,15 @@ public abstract class BookingForm extends TravelManager{
 	  if (sDay != null) {
 	  	int min = sDay.getMin();
 	  	if (min > 0 ) {
-				int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp);
+	      List addresses;
+	      try {
+	        addresses = product.getDepartureAddresses(false);
+	      }catch (IDOFinderException ido) {
+	        ido.printStackTrace(System.err);
+	        addresses = new Vector();
+	      }
+	      int addressId = getAddressIDToUse(iwc, addresses);
+				int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp, addressId);
 				if (currentBookings < min) {
 					_useInquiryForm = true;
 					return true;	

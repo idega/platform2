@@ -264,38 +264,48 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 */
 
-  public int getBookingsTotalCount(List products, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType) throws RemoteException {
+  public int getBookingsTotalCount(List products, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, Collection travelAddresses) throws RemoteException {
     int counter = 0;
     Iterator iter = products.iterator();
     while (iter.hasNext()) {
-      counter += getBookingsTotalCount( ( (Product) iter.next() ).getID(), fromStamp, toStamp, bookingType);
+      counter += getBookingsTotalCount( ( (Product) iter.next() ).getID(), fromStamp, toStamp, bookingType, travelAddresses);
     }
 
     return counter;
   }
 
 
-  public  int getBookingsTotalCount(int serviceId, IWTimestamp stamp)throws RemoteException{
-      return getBookingsTotalCount(serviceId, stamp, null);
+  public  int getBookingsTotalCount(int serviceId, IWTimestamp stamp, int travelAddressID)throws RemoteException{
+  		if (travelAddressID > 0) {
+  			try {
+	  			//TravelAddress travelAddress = ((TravelAddressHome) IDOLookup.getHome(TravelAddress.class)).findByPrimaryKey(travelAddressID);
+	  			Vector vector = new Vector();
+	  			vector.add(new Integer(travelAddressID));
+		    return getBookingsTotalCount(serviceId, stamp, null, vector);
+  			} catch (Exception e) {
+  				e.printStackTrace(System.err);
+  			}
+  		}
+	    return getBookingsTotalCount(serviceId, stamp, null, null);
   }
 
-  public  int getBookingsTotalCount(int serviceId, IWTimestamp stamp, int bookingType) throws RemoteException{
-      return getBookingsTotalCount(serviceId, stamp, null, bookingType);
+  public  int getBookingsTotalCount(int serviceId, IWTimestamp stamp, int bookingType, Collection travelAddresses) throws RemoteException{
+      return getBookingsTotalCount(serviceId, stamp, null, bookingType, travelAddresses);
   }
 
-  public  int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp)throws RemoteException{
-      return getBookingsTotalCount(serviceId, fromStamp, toStamp, -1);
+  public  int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, Collection travelAddresses)throws RemoteException{
+      return getBookingsTotalCount(serviceId, fromStamp, toStamp, -1, travelAddresses);
   }
 
-  public  int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType) throws RemoteException{
-    return getBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, false);//, new int[] {});
+  public  int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, Collection travelAddresses) throws RemoteException{
+    return getBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, travelAddresses, false);//, new int[] {});
   }
 
-  public  int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, boolean orderByDateOfBooking) throws RemoteException{
+  public  int getBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, Collection travelAddresses, boolean orderByDateOfBooking) throws RemoteException{
     if (!orderByDateOfBooking) {
-      return getGeneralBookingHome().getBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, new int[] {});
+      return getGeneralBookingHome().getBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, new int[] {}, travelAddresses);
     } else {
-      return getGeneralBookingHome().getBookingsTotalCountByDateOfBooking(serviceId, fromStamp, toStamp, bookingType, new int[] {}, null);
+      return getGeneralBookingHome().getBookingsTotalCountByDateOfBooking(serviceId, fromStamp, toStamp, bookingType, new int[] {}, travelAddresses);
     }
   }
 

@@ -862,7 +862,12 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   }
 
   public Collection getTravelAddressIdsFromRefill(Product product, TravelAddress tAddress) throws RemoteException, IDOFinderException {
-    List list = getTravelAddressesFromRefill(product, tAddress);
+    List list = null;
+	  	if (tAddress == null) {
+	  		list = getProductBusiness().getDepartureAddresses(product, true);
+	  	} else {
+	    list = getTravelAddressesFromRefill(product, tAddress);
+	  	}
     Collection coll = new Vector();
     Iterator iter = list.iterator();
     while (iter.hasNext()) {
@@ -906,30 +911,6 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     }
 
     return list;
-  }
-
-
-  public int getTotalSeats(Product product, ServiceDay sDay, TravelAddress tAddress, IWTimestamp stamp) throws RemoteException, IDOFinderException{
-    Booker booker = (Booker) IBOLookup.getServiceInstance(this.getIWApplicationContext(), Booker.class);
-    if (sDay != null) {
-      int sDayMax = sDay.getMax();
-      int temp = sDayMax;
-      List addresses = getTravelAddressesFromRefill(product, tAddress);
-//      List addresses = ProductBusiness.getDepartureAddresses(product, true);
-      TravelAddress tempAddress;
-      int addressesSize = addresses.size();
-      int bookings = 0;
-      for (int i = 0; i < addressesSize; i++) {
-        tempAddress = (TravelAddress) addresses.get(i);
-
-        /** @todo fall getNumberOfBookings() sem tekur inn í sig travelAddress....ætti að vera auðvelt... */
-
-        //bookings = booker.getNumberOfBookings();
-      }
-
-    }
-
-    return 0;
   }
 
   protected boolean setActiveDaysAll(int serviceId) throws RemoteException {
