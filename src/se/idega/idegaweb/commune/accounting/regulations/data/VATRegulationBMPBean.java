@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulationBMPBean.java,v 1.10 2003/09/08 08:10:07 laddi Exp $
+ * $Id: VATRegulationBMPBean.java,v 1.11 2003/09/08 15:49:10 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOQuery;
 /**
  * Entity bean for VATRegulation entries.
  * <p>
- * Last modified: $Date: 2003/09/08 08:10:07 $ by $Author: laddi $
+ * Last modified: $Date: 2003/09/08 15:49:10 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class VATRegulationBMPBean extends GenericEntity implements VATRegulation {
 
@@ -36,8 +36,6 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	private static final String COLUMN_VAT_PERCENT = "vat_percent";
 	private static final String COLUMN_PAYMENT_FLOW_TYPE_ID = "payment_flow_type_id";
 	private static final String COLUMN_PROVIDER_TYPE_ID = "provider_type_id";
-
-	private static float PERCENT_DECIMAL_DIVIDER = 100; // Two decimals in percent values
 		
 	/**
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -61,7 +59,7 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 		addAttribute(COLUMN_PERIOD_FROM, "From period", true, true, Date.class);
 		addAttribute(COLUMN_PERIOD_TO, "To period", true, true, Date.class);
 		addAttribute(COLUMN_DESCRIPTION, "Description of the VAT regulation", true, true, java.lang.String.class);
-		addAttribute(COLUMN_VAT_PERCENT, "VAT percent value", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_VAT_PERCENT, "VAT percent value", true, true, java.lang.Float.class);
 		addAttribute(COLUMN_PAYMENT_FLOW_TYPE_ID, "Direction of payment flow (foreign key)", true, true, 
 				Integer.class, "many-to-one", PaymentFlowType.class);
 		addAttribute(COLUMN_PROVIDER_TYPE_ID, "Provider type (foreign key)", true, true, 
@@ -82,7 +80,7 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	}
 
 	public float getVATPercent() {
-		return getFloatColumnValue(COLUMN_VAT_PERCENT) / PERCENT_DECIMAL_DIVIDER;	
+		return getFloatColumnValue(COLUMN_VAT_PERCENT);	
 	}
 	
 	public PaymentFlowType getPaymentFlowType() {
@@ -114,7 +112,7 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	}
 
 	public void setVATPercent(float percent) { 
-		setColumn(COLUMN_VAT_PERCENT, (int) (percent * PERCENT_DECIMAL_DIVIDER)); 
+		setColumn(COLUMN_VAT_PERCENT, percent); 
 	}
 
 	public void setProviderTypeId(int id) { 
