@@ -466,12 +466,15 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
   }
 
   public DropdownMenu getDropdownMenuWithProducts(IWContext iwc, int supplierId, String parameterName) throws RemoteException{
-    List list = getProducts(iwc, supplierId);
+  	List list = getProducts(iwc, supplierId);
+  	return getDropdownMenuWithProducts(iwc, list, parameterName);
+  }	
+  public DropdownMenu getDropdownMenuWithProducts(IWContext iwc, List products, String parameterName) throws RemoteException{
     DropdownMenu menu = new DropdownMenu(parameterName);
     Product product;
-    if (list != null && list.size() > 0) {
-      for (int i = 0; i < list.size(); i++) {
-	product = (Product) list.get(i);
+    if (products != null && products.size() > 0) {
+      for (int i = 0; i < products.size(); i++) {
+	product = (Product) products.get(i);
 	menu.addMenuElement(product.getPrimaryKey().toString() , getProductNameWithNumber(product));
       }
     }
