@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.38 2003/11/18 23:03:58 palli Exp $
+ * $Id: PostingBusinessBean.java,v 1.39 2003/11/19 00:36:46 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -115,7 +115,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * 
 	 * @param postingString The posting string we are searching through
 	 * @param name The name of the field we are trying to find
-	 * @return The value of the field or null if not found
+	 * @return The value of the field or "" if not found
 	 */
 	public String findFieldInStringByName(String postingString, String name) {
 		String temp;
@@ -148,7 +148,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			e.printStackTrace();
 		}
 		
-		return null;
+		return "";
 	}
 	
 	/**

@@ -7,8 +7,12 @@
  */
 package se.idega.idegaweb.commune.accounting.export.ifs.business;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -17,13 +21,20 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeader;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeaderHome;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckRecord;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckRecordHome;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLog;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLogHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 
+import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
@@ -176,6 +187,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 	 */
 	public void createFiles(String schoolCategory, String paymentDate, String periodText, User user) {
 		UserTransaction trans = null;
+
 		try {
 			trans = getSessionContext().getUserTransaction();
 			trans.begin();
@@ -187,17 +199,17 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			log.setEventDate(now.getTimestamp());
 			log.setUser(user);
 			log.store();
-			
+
 			IFSCheckHeader header = getIFSCheckHeaderBySchoolCategory(schoolCategory);
 			if (header == null) {
 				header = ((IFSCheckHeaderHome) IDOLookup.getHome(IFSCheckHeader.class)).create();
 			}
 			else {
-				Collection col = this.getIFSCheckRecordByHeaderId(((Integer)header.getPrimaryKey()).intValue());
+				Collection col = this.getIFSCheckRecordByHeaderId(((Integer) header.getPrimaryKey()).intValue());
 				if (col != null && !col.isEmpty()) {
 					Iterator it = col.iterator();
 					while (it.hasNext()) {
-						IFSCheckRecord rec = (IFSCheckRecord)it.next();
+						IFSCheckRecord rec = (IFSCheckRecord) it.next();
 						rec.remove();
 					}
 				}
@@ -208,12 +220,117 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			header.store();
 
 			//Create files in folder A. Must get folder info from ExportMappingBean!!!
-			//ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
+			ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
+			String folder = mapping.getFileCreationFolder();
+			SchoolCategory childCare = getSchoolBusiness().getCategoryChildcare();
+			SchoolCategory school = getSchoolBusiness().getCategoryElementarySchool();
+			SchoolCategory highSchool = getSchoolBusiness().getCategoryHighSchool();
 
+			GregorianCalendar cal = new GregorianCalendar();
+			int year = cal.get(GregorianCalendar.YEAR);
+			int month = cal.get(GregorianCalendar.MONTH);
+			int day = cal.get(GregorianCalendar.DAY_OF_MONTH);
+			int hour = cal.get(GregorianCalendar.HOUR_OF_DAY);
+			int min = cal.get(GregorianCalendar.MINUTE);
+
+			String sYear = Integer.toString(year);
+			String sLongYear = sYear;
+			if (sYear.length() == 4)
+				sYear = sYear.substring(2);
+
+			String sMonth = Integer.toString(month);
+			if (sMonth.length() < 2)
+				sMonth = "0" + sMonth;
+
+			String sDay = Integer.toString(day);
+			if (sDay.length() < 2)
+				sDay = "0" + sDay;
+
+			String sHour = Integer.toString(hour);
+			if (sHour.length() < 2)
+				sHour = "0" + sHour;
+
+			String sMin = Integer.toString(min);
+			if (sMin.length() < 2)
+				sMin = "0" + sMin;
+
+			if (schoolCategory.equals((String) childCare.getPrimaryKey())) {
+				StringBuffer fileName1 = new StringBuffer(folder);
+				fileName1.append("N24IFS_BOM_HVD_");
+				StringBuffer fileName2 = new StringBuffer(folder);
+				fileName2.append("N24IFS_BOM_LEV_");
+				StringBuffer fileName3 = new StringBuffer(folder);
+				fileName3.append("N24IFS_BOM_KND_");
+				fileName1.append(sYear);
+				fileName1.append(sMonth);
+				fileName1.append(sDay);
+				fileName1.append("_");
+				fileName1.append(sHour);
+				fileName1.append(sMin);
+				fileName2.append(sYear);
+				fileName2.append(sMonth);
+				fileName2.append(sDay);
+				fileName2.append("_");
+				fileName2.append(sHour);
+				fileName2.append(sMin);
+				fileName3.append(sYear);
+				fileName3.append(sMonth);
+				fileName3.append(sDay);
+				fileName3.append("_");
+				fileName3.append(sHour);
+				fileName3.append(sMin);
+
+				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, sLongYear, sMonth, sDay);
+				createInvoiceFiles(fileName3.toString(), schoolCategory);
+			}
+			else if (schoolCategory.equals((String) school.getPrimaryKey())) {
+				StringBuffer fileName1 = new StringBuffer(folder);
+				fileName1.append("N24IFS_GSK_HVD_");
+				StringBuffer fileName2 = new StringBuffer(folder);
+				fileName2.append("N24IFS_GSK_LEV_");
+				fileName1.append(sYear);
+				fileName1.append(sMonth);
+				fileName1.append(sDay);
+				fileName1.append("_");
+				fileName1.append(sHour);
+				fileName1.append(sMin);
+				fileName2.append(sYear);
+				fileName2.append(sMonth);
+				fileName2.append(sDay);
+				fileName2.append("_");
+				fileName2.append(sHour);
+				fileName2.append(sMin);
+
+				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, sLongYear, sMonth, sDay);
+			}
+			else if (schoolCategory.equals((String) highSchool.getPrimaryKey())) {
+				StringBuffer fileName1 = new StringBuffer(folder);
+				fileName1.append("N24IFS_GYM_HVD_");
+				StringBuffer fileName2 = new StringBuffer(folder);
+				fileName2.append("N24IFS_GYM_LEV_");
+				fileName1.append(sYear);
+				fileName1.append(sMonth);
+				fileName1.append(sDay);
+				fileName1.append("_");
+				fileName1.append(sHour);
+				fileName1.append(sMin);
+				fileName2.append(sYear);
+				fileName2.append(sMonth);
+				fileName2.append(sDay);
+				fileName2.append("_");
+				fileName2.append(sHour);
+				fileName2.append(sMin);
+
+				createPaymentFiles(fileName1.toString(), fileName2.toString(), schoolCategory, sLongYear, sMonth, sDay);
+			}
+			else {
+				//What to do then?
+			}
 
 			trans.commit();
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 			if (trans != null) {
 				try {
 					trans.rollback();
@@ -223,6 +340,175 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				}
 			}
 		}
+	}
+
+	private void createPaymentFiles(String fileName1, String fileName2, String schoolCategory, String year, String month, String day) throws FinderException, IOException {
+		Collection phInCommune = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).findBySchoolCategoryStatusInCommuneWithCommunalManagement(schoolCategory, 'P');
+		Collection phOutsideCommune = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).findBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(schoolCategory, 'P');
+
+		if (phInCommune != null && !phInCommune.isEmpty()) {
+			Collection rec = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeaders(phInCommune);
+			Iterator it = rec.iterator();
+			FileWriter writer = new FileWriter(fileName1.toString());
+			BufferedWriter bWriter = new BufferedWriter(writer);
+
+			PostingBusiness pb = getPostingBusiness();
+
+			while (it.hasNext()) {
+				PaymentRecord pRec = (PaymentRecord) it.next();
+				if (pRec.getTotalAmount() != 0.0f) {
+					bWriter.write(";");
+					bWriter.write(year);
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Konto"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Ansvar"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Resurs"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Verksamhet"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Aktivitet"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Projekt"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Objekt"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getOwnPosting(),"Motpart"));
+					bWriter.write(";");
+					//anlaggningsnummer
+					bWriter.write(";");
+					//internranta
+					bWriter.write(";");
+					bWriter.write("SEK");
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					bWriter.write((int)pRec.getTotalAmount());
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					bWriter.write((int)pRec.getTotalAmount());					
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					bWriter.write(year.substring(2) + month + " " + pRec.getPaymentText());
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					bWriter.write(year + "-" + month + "-" + day);
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					bWriter.newLine();
+
+					bWriter.write(";");
+					bWriter.write(year);
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),"Konto"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),"Ansvar"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),"Resurs"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),"Verksamhet"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),"Aktivitet"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),"Projekt"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),"Objekt"));
+					bWriter.write(";");
+					bWriter.write(pb.findFieldInStringByName(pRec.getDoublePosting(),"Motpart"));
+					bWriter.write(";");
+					//anlaggningsnummer
+					bWriter.write(";");
+					//internranta
+					bWriter.write(";");
+					bWriter.write("SEK");
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					bWriter.write((int)pRec.getTotalAmount());
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					bWriter.write((int)pRec.getTotalAmount());					
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					bWriter.write(year.substring(2) + month + " " + pRec.getPaymentText());
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					bWriter.write(year + "-" + month + "-" + day);
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					//empty
+					bWriter.write(";");
+					bWriter.newLine();
+				}
+				
+				pRec.setStatus('L');
+				pRec.store();
+			}
+			
+			bWriter.close();
+			
+			Iterator itor = phInCommune.iterator();
+			while (itor.hasNext()) {
+				PaymentHeader head = (PaymentHeader)it.next();
+				head.setStatus('L');
+				head.store();
+			}
+		}
+	}
+
+	private void createInvoiceFiles(String fileName, String schoolCategory) {
+
 	}
 
 	/**
@@ -246,14 +532,14 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			log.setEventDate(now.getTimestamp());
 			log.setUser(user);
 			log.store();
-			
+
 			IFSCheckHeader header = getIFSCheckHeaderBySchoolCategory(schoolCategory);
 			if (header != null) {
-				Collection col = this.getIFSCheckRecordByHeaderId(((Integer)header.getPrimaryKey()).intValue());
+				Collection col = this.getIFSCheckRecordByHeaderId(((Integer) header.getPrimaryKey()).intValue());
 				if (col != null && !col.isEmpty()) {
 					Iterator it = col.iterator();
 					while (it.hasNext()) {
-						IFSCheckRecord rec = (IFSCheckRecord)it.next();
+						IFSCheckRecord rec = (IFSCheckRecord) it.next();
 						rec.remove();
 					}
 				}
@@ -261,7 +547,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 			//Delete files in folder A. Must get folder info from ExportMappingBean!!!
 			//ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
-			
+
 			trans.commit();
 		}
 		catch (Exception e) {
@@ -297,10 +583,10 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			log.setEventDate(now.getTimestamp());
 			log.setUser(user);
 			log.store();
-			
+
 			//copy files from folder A to folder B. Must get folder info from ExportMappingBean!!!
 			//ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
-			
+
 			trans.commit();
 		}
 		catch (Exception e) {
@@ -315,7 +601,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 		}
 
 	}
-	
+
 	public ExportBusiness getExportBusiness() {
 		try {
 			return (ExportBusiness) getServiceInstance(ExportBusiness.class);
@@ -324,6 +610,22 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			throw new IBORuntimeException(e.getMessage());
 		}
 	}
-			
+
+	public SchoolBusiness getSchoolBusiness() {
+		try {
+			return (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
 	
+	public PostingBusiness getPostingBusiness() {
+		try {
+			return (PostingBusiness) getServiceInstance(PostingBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}	
 }
