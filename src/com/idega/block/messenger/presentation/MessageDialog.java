@@ -44,11 +44,6 @@ public class MessageDialog extends Dialog implements ActionListener{
 
 
   void jbInit() throws Exception {
-    /*URL url = MessageDialog.class.getResource("/com/idega/block/messenger/presentation/idegalogo.gif");
-    Image img=Toolkit.getDefaultToolkit().getImage(url);
-    if(img!=null) logo = new ImageLabel(img);
-    else System.err.println("MessageDialog: image is NULL");*/
-
     recipientName = message.getRecipientName();
     panel.setBackground(Color.white);
     panel.setFont(new java.awt.Font("Arial", 0, 12));
@@ -72,11 +67,11 @@ public class MessageDialog extends Dialog implements ActionListener{
     sendButton.setLabel("Send");
     sendButton.setBounds(new Rectangle(206, 222, 79, 31));
     sendButton.addActionListener(this);*/
-    /*
+
     if(logo!=null){
       logo.setBounds(new Rectangle(6, 0, 126, 52));
       panel.add(logo, null);
-    }*/
+    }
 
 
     panel.add(replyMessage, null);
@@ -127,6 +122,16 @@ public class MessageDialog extends Dialog implements ActionListener{
     replyMessage.setText("");
     lastMessageString = "";
   }
+
+  public void setLogoImage(Image image){
+    this.logo = new ImageLabel(image);
+  }
+
+  public void setLogoImageLabel(ImageLabel imageLabel){
+    this.logo = imageLabel;
+  }
+
+
 
   public void paint(Graphics g){
     int iWidth = this.getBounds().width-20;
