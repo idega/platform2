@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/13 13:47:52 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/17 08:21:26 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.108 $
+ * @version $Revision: 1.109 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -690,7 +690,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 							= createPaymentRecord
 							(school, schoolCategory, period, createdBySignature, now,
 							 ruleText, amount, pieceAmount, vatRule, ownPaymentPosting,
-							 doublePaymentPosting, regSpecTypeName);
+							 doublePaymentPosting, regSpecTypeName, orderId);
 					record.setPaymentRecord (paymentRecord);
 					record.store ();
 					// inte till kommun landsting, stat
@@ -807,7 +807,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		 final Integer vatType,
 		 final String ownPosting,
 		 final String doublePosting,
-		 final String regSpecTypeName) throws RemoteException, CreateException {
+		 final String regSpecTypeName,
+		 final Integer orderId) throws RemoteException, CreateException {
 		final char status = ConstantStatus.PRELIMINARY;
 		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader(school, schoolCategory, period, status);
 		final PaymentRecord paymentRecord = getPaymentRecordHome ().create ();
@@ -821,6 +822,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 																	: 0);
 		paymentRecord.setPieceAmount (null != pieceAmount ? pieceAmount.intValue ()
 																	: 0);
+		if (null != orderId) paymentRecord.setOrderId (orderId.intValue ());
 		if (null != vatType) {
 			paymentRecord.setVATRuleRegulationId(vatType.intValue ());
 		}
