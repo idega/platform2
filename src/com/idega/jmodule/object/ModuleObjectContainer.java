@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObjectContainer.java,v 1.5 2001/05/16 18:58:06 palli Exp $
+ * $Id: ModuleObjectContainer.java,v 1.6 2001/05/18 14:36:16 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -172,13 +172,20 @@ public class ModuleObjectContainer extends ModuleObject {
     this.theObjects = objects;
   }
 
-  protected void prepareClone(ModuleObject newObjToCreate) {
-    int number = numberOfObjects();
-    for (int i = 0; i < number; i++) {
-      ModuleObject tempObj = this.objectAt(i);
-      ((ModuleObjectContainer)newObjToCreate).add((ModuleObject)tempObj.clone());
-    }
-  }
+
+
+  /*protected void prepareClone(ModuleObject newObjToCreate){
+      int number = numberOfObjects();
+      for (int i = 0; i < number; i++) {
+        ModuleObject tempObj = this.objectAt(i);
+        ((ModuleObjectContainer)newObjToCreate).add((ModuleObject)tempObj.clone());
+      }
+
+     // if (this.theObjects!=null){
+    //((ModuleObjectContainer)newObjToCreate).setObjects((Vector)this.theObjects.clone());
+     // }
+  }*/
+
 
   public void print(ModuleInfo modinfo) throws IOException {
     goneThroughMain = false;
@@ -335,4 +342,21 @@ public class ModuleObjectContainer extends ModuleObject {
       }
     }
   }
+
+  public synchronized Object clone() {
+    ModuleObjectContainer obj = null;
+    try {
+      obj = (ModuleObjectContainer)super.clone();
+      if (this.theObjects != null) {
+          obj.setObjects((Vector)this.theObjects.clone());
+      }
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
+
 }

@@ -60,7 +60,7 @@ public class GolfCacher {
     Union union;
     for(int i = 0; i < myUnions.size(); i++){
       union = (Union)myUnions.get(i);
-      mydropdown.addMenuElement(union.getAbbrevation(), union.getAbbrevation());
+      mydropdown.addMenuElement(union.getID(), union.getAbbrevation());
     }
     return mydropdown;
   }

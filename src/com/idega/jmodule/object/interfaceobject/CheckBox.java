@@ -73,6 +73,18 @@ public void print(ModuleInfo modinfo)throws IOException{
 
 }
 
+  public synchronized Object clone() {
+    CheckBox obj = null;
+    try {
+      obj = (CheckBox)super.clone();
+      obj.checkedString = this.checkedString;
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
+  }
+
 
 }
 

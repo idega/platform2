@@ -169,7 +169,9 @@ public void main(ModuleInfo modinfo) throws Exception {
 		if ( displayHeadline ) {
                 //added haffi
                     if ( headline.getText() != null ) {
-                      myTable.add(new Anchor(headline,headline.getText()) ,1,1);
+                      Anchor headlineAnchor = new Anchor(headline,headline.getText());
+                      headlineAnchor.setFontColor(headlineColor);
+                      myTable.add(headlineAnchor ,1,1);
                       myTable.add(body,1,2);
                     }
 		}

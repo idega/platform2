@@ -6,6 +6,9 @@ import com.idega.projects.golf.entity.*;
 import com.idega.util.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import java.io.*;
+import com.idega.util.text.TextSoap;
+import com.idega.data.EntityFinder;
+import java.util.List;
 
 /**
  * Title:        Golf<p>
@@ -64,6 +67,14 @@ public class StartService{
 //    return (Startingtime[])startTime.findAll("SELECT * FROM " + startTime.getEntityName() + " WHERE startingtime_date = '" + date + " 00:00:00.0' and grup_num >= " + first_group + " and grup_num < " + last_group + " and field_id = " + field_id + " order by grup_num DESC");
   }
 
+  public synchronized List getStartingtimeTableEntries(idegaTimestamp date, String field_id )throws SQLException{
+    date.setHour(0);
+    date.setMinute(0);
+    date.setSecond(0);
+    return EntityFinder.findAll(startTime,"SELECT * FROM " + startTime.getEntityName() + " WHERE startingtime_date = '" + date.toSQLDateString() + "' and field_id = " + field_id + " order by grup_num DESC, startingtime_id");
+  }
+
+
   public synchronized Field[] getFields(String union_id)throws SQLException{
     return (Field[])field.findAll("SELECT * FROM " + field.getEntityName() + " WHERE union_id = " + union_id + " AND  ONLINE_STARTINGTIME='Y' ORDER BY " + field.getIDColumnName());
   }
@@ -71,6 +82,14 @@ public class StartService{
 
   public synchronized StartingtimeFieldConfig getFieldConfig(int field_id, String date)throws SQLException{
     StartingtimeFieldConfig[] temp = (StartingtimeFieldConfig[])fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " WHERE begin_date <= '"+ date +" 23:59:59.0' and field_id = " + field_id + " ORDER BY begin_date DESC");
+    return temp[0];
+  }
+
+  public synchronized StartingtimeFieldConfig getFieldConfig(int field_id, idegaTimestamp date)throws SQLException{
+    date.setHour(23);
+    date.setMinute(59);
+    date.setSecond(59);
+    StartingtimeFieldConfig[] temp = (StartingtimeFieldConfig[])fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " WHERE begin_date <= '"+ date.toSQLString() +"' and field_id = " + field_id + " ORDER BY begin_date DESC");
     return temp[0];
   }
 
@@ -88,34 +107,54 @@ public class StartService{
     insert.insert();
   }
 
-  public synchronized void setStartingtime(int group_num, String date, String field_id, String member_id, String player_name, String handicap, String union, String card, String card_no )throws SQLException{
+  public synchronized void setStartingtime(int group_num, idegaTimestamp date, String field_id, String member_id, String player_name, String handicap, String union, String card, String card_no )throws SQLException{
     Startingtime insert = new Startingtime();
 
-    String handic = handicap;
-
-    for (int i = 0; i < handic.length(); i++){
-      if  ( handic.charAt(i) == ',' ) {
-        handic = handicap.substring(0,i);
-        if(handicap.substring(i+1,i+2) != null)
-         handic = handic + "." + handicap.substring(i+1,i+2);
-        continue;
-      }
+    if(card != null){
+      insert.setCardName(card);
     }
-//hér
-    insert.setCardName(card);
-    insert.setCardNum(card_no);
-    insert.setClubName(union);
-    insert.setFieldID( new Integer(field_id) );
+    if(card_no != null){
+      insert.setCardNum(card_no);
+    }
+
+    if(union != null){
+      insert.setClubName(union);
+    }else{
+      insert.setClubName("-");
+    }
+
+//    if(field_id != null){
+      insert.setFieldID( new Integer(field_id) );
+//    }
+
     insert.setGroupNum(new Integer(group_num));
-    insert.setHandicap(new Float(handic));
-    insert.setMemberID(new Integer(member_id));
-    insert.setPlayerName(player_name);
-    insert.setStartingtimeDate( new idegaTimestamp(date).getSQLDate() );
+
+    try{
+      insert.setHandicap(Float.parseFloat(TextSoap.findAndReplace(handicap,",",".")));
+    }catch(NumberFormatException e){
+      //System.err.println("forgjöf röng : "  );
+    }catch(NullPointerException  e){
+      //System.err.println("forgjöf null");
+    }
+
+    if(member_id != null){
+      insert.setMemberID(new Integer(member_id));
+    }
+
+//    if(date != null){
+      insert.setPlayerName(player_name);
+//    }
+//    if(date != null){
+      insert.setStartingtimeDate( date.getSQLDate() );
+//    }
 
     insert.insert();
   }
 
 
+  public synchronized void setStartingtime(int group_num, String date, String field_id, String member_id, String player_name, String handicap, String union, String card, String card_no )throws SQLException{
+     setStartingtime(group_num, new idegaTimestamp(date), field_id, member_id, player_name, handicap, union, card, card_no );
+  }
 
 
 

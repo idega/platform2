@@ -11,6 +11,8 @@ import com.idega.data.*;
 
 public class LoginTable extends GenericEntity{
 
+        public static String className = "com.idega.jmodule.login.data.LoginTable";
+
 	public LoginTable(){
 		super();
 	}
@@ -23,7 +25,7 @@ public class LoginTable extends GenericEntity{
 		addAttribute(getIDColumnName());
 		//addAttribute("member_id","Meðlimur",true,true,"java.lang.Integer","one-to-one","com.idega.projects.lv.entity.Member");
 		//Breytt 13.03.2001 TL:
-                addAttribute("member_id","Notandi",true,true,"java.lang.Integer","one-to-one","com.idega.data.genericentity.Member");
+                addAttribute(getMemberIdColumnName(),"Notandi",true,true,"java.lang.Integer","one-to-one","com.idega.data.genericentity.Member");
                 //
                 addAttribute("user_login","Notandanafn",true,true,"java.lang.String");
 		addAttribute("user_password","Lykilorð",true,true,"java.lang.String");
@@ -36,6 +38,14 @@ public class LoginTable extends GenericEntity{
 	public String getEntityName(){
 		return "login_table";
 	}
+
+        public static LoginTable getStaticInstance(){
+          return (LoginTable)LoginTable.getStaticInstance(className);
+        }
+
+
+
+
 
 	public String getUserPassword(){
 		return (String) getColumnValue("user_password");
@@ -51,12 +61,16 @@ public class LoginTable extends GenericEntity{
 		return (String) getColumnValue("user_login");
 	}
 
+        public static String getMemberIdColumnName(){
+          return "member_id";
+        }
+
 	public int getMemberId(){
-		return getIntColumnValue("member_id");
+		return getIntColumnValue(getMemberIdColumnName());
 	}
 
 	public void setMemberId(Integer memberId){
-		setColumn("member_id", memberId);
+		setColumn(getMemberIdColumnName(), memberId);
 	}
 	public void setMemberId(int memberId) {
 		setMemberId((new Integer(memberId)));

@@ -202,4 +202,36 @@ public void print(ModuleInfo modinfo)throws IOException{
 }
 
 
+
+  public synchronized Object clone() {
+    TextInput obj = null;
+    try {
+      obj = (TextInput)super.clone();
+      if(this.script != null){
+        obj.script = (Script)this.script.clone();
+      }
+      obj.isSetAsIntegers = this.isSetAsIntegers;
+      obj.isSetAsFloat = this.isSetAsFloat;
+      obj.isSetAsAlphabetical = this.isSetAsAlphabetical;
+      obj.isSetAsEmail = this.isSetAsEmail;
+      obj.isSetAsNotEmpty = this.isSetAsNotEmpty;
+
+
+      obj.integersErrorMessage = this.integersErrorMessage;
+      obj.floatErrorMessage = this.floatErrorMessage;
+      obj.alphabetErrorMessage = this.alphabetErrorMessage;
+      obj.emailErrorMessage = this.emailErrorMessage;
+      obj.notEmptyErrorMessage = this.notEmptyErrorMessage;
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
+
+
+
+
 }

@@ -218,5 +218,19 @@ public void print(ModuleInfo modinfo)throws IOException{
 }
 
 
+  public synchronized Object clone() {
+    InterfaceObject obj = null;
+    try {
+      obj = (InterfaceObject)super.clone();
+      obj.keepStatus = this.keepStatus;
+      obj.precedingText = this.precedingText;
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
 }
 

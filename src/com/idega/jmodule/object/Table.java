@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.4 2001/05/16 18:58:06 palli Exp $
+ * $Id: Table.java,v 1.5 2001/05/18 14:36:16 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -971,10 +971,25 @@ public class Table extends ModuleObjectContainer {
             return ret;
           }
         }
-      }
-
+     }
     return(null);
   }
+
+
+public boolean isEmpty(int x, int y){
+  if (theObjects != null){
+    if(theObjects[x-1][y-1] == null){
+      return true;
+    }else{
+      return false;
+    }
+  }
+  else{
+    return true;
+  }
+}
+
+
 
   public void setProperty(String key, String values[]) {
     if (key.equalsIgnoreCase("border"))
@@ -992,4 +1007,44 @@ public class Table extends ModuleObjectContainer {
       setRows(Integer.parseInt(values[0]));
     }
   }
+
+
+  public synchronized Object clone() {
+    Table obj = null;
+    try {
+      obj = (Table)super.clone();
+      if (this.theObjects != null) {
+       obj.theObjects=new ModuleObjectContainer[cols][rows];
+	for (int x = 0;x<theObjects.length;x++){
+		for(int y = 0; y < theObjects[x].length;y++){
+			if (theObjects[x][y] != null){
+				obj.theObjects[x][y]=(ModuleObjectContainer)this.theObjects[x][y].clone();
+			}
+		}
+	}
+
+      }
+      obj.cols = this.cols;
+      obj.rows = this.rows;
+      if (this.beginMergedxpos != null) {
+        obj.beginMergedxpos = (Vector)this.beginMergedxpos.clone();
+      }
+      if (this.beginMergedypos != null) {
+        obj.beginMergedypos = (Vector)this.beginMergedypos.clone();
+      }
+      if (this.endMergedxpos != null) {
+        obj.endMergedxpos = (Vector)this.endMergedxpos.clone();
+      }
+      if (this.endMergedypos != null) {
+        obj.endMergedypos = (Vector)this.endMergedypos.clone();
+      }
+      obj.isResizable = this.isResizable;
+      obj.cellsAreMerged = this.cellsAreMerged;
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
+  }
+
 }

@@ -139,4 +139,20 @@ public void print(ModuleInfo modinfo)throws IOException{
 }
 
 
+  public synchronized Object clone() {
+    Script obj = null;
+    try {
+      obj = (Script)super.clone();
+      obj.scriptType = this.scriptType;
+      if(this.scriptCode != null){
+        obj.scriptCode = (Hashtable)this.scriptCode.clone();
+      }
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
 }//End class

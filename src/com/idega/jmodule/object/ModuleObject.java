@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.6 2001/05/16 18:58:06 palli Exp $
+ * $Id: ModuleObject.java,v 1.7 2001/05/18 14:36:16 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -346,7 +346,7 @@ public class ModuleObject extends Object implements Cloneable {
   protected void prepareClone(ModuleObject newObjToCreate) {
   }
 
-  public Object clone() {
+  public synchronized Object clone() {
     ModuleObject obj = null;
     try {
       //This is forbidden in clone i.e. "new":
@@ -358,6 +358,8 @@ public class ModuleObject extends Object implements Cloneable {
       obj.setName(this.name);
       //obj.setParentObject(this.parentObject);
       this.prepareClone(obj);
+      Vector vector;
+
     }
     catch(Exception ex) {
       ex.printStackTrace(System.err);

@@ -4,7 +4,7 @@
  * Description:  <p>
  * Copyright:    Copyright (c) idega 2000 - idega team - gummi<p>
  * Company:      idega margmiðlun<p>
- * @author idega 2000 - idega team - gummi
+ * @author idega 2000 - idega team
  * @version 1.0
  */
 package com.idega.projects.golf.entity;
@@ -37,6 +37,11 @@ public class Startingtime extends GolfEntity{
 
   public String getEntityName(){
     return "startingtime";
+  }
+
+  public void setDefaultValues(){
+    this.setHandicap(Float.parseFloat("-1.0"));
+    this.setMemberID(1);
   }
 
 
@@ -133,7 +138,7 @@ public class Startingtime extends GolfEntity{
   public void setGroupNum( int group_num){
     setColumn("grup_num",group_num);
   }
-  
+
   public Member getMember()throws SQLException{
   	Member member = null;
 	try

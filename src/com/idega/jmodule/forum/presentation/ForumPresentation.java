@@ -220,6 +220,7 @@ public abstract class ForumPresentation extends JModuleObject {
   }
 
   protected void addProperState() throws Exception{
+
     if (modinfo.getRequest().getParameter("state") == null){
       State1();
     } else {

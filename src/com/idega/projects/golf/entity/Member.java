@@ -26,7 +26,7 @@ public class Member extends com.idega.data.genericentity.Member {
 		addAttribute("date_of_birth","Fæðingardagur",true,true,"java.sql.Date");
 		addAttribute("gender","Kyn",true,true,"java.lang.String");
 		//addAttribute("active_member","Staða meðlims",true,true,"java.lang.String");
-		addAttribute("social_security_number","Kennitala",true,true,"java.lang.String");
+		addAttribute(getSocialSecurityNumberColumnName(),"Kennitala",true,true,"java.lang.String");
 		//addAttribute("member_number","Númer meðlims",true,true,"java.lang.Integer");
 		//addAttribute("family_id","Fjölskylda",false,false,"java.lang.Integer","one-to-many","com.idega.projects.golf.entity.Family");
                 addAttribute("email","Tölvupóstur",true,true,"java.lang.String");
@@ -60,6 +60,10 @@ public class Member extends com.idega.data.genericentity.Member {
 	public void setEmail(String email) {
 		setColumn("email",email);
 	}
+
+        public static String getSocialSecurityNumberColumnName(){
+          return "social_security_number";
+        }
 
 
 	public String getName(){
@@ -144,11 +148,11 @@ public class Member extends com.idega.data.genericentity.Member {
 	}
 
 	public String getSocialSecurityNumber(){
-		return getStringColumnValue("social_security_number");
+		return getStringColumnValue(getSocialSecurityNumberColumnName());
 	}
 
 	public void setSocialSecurityNumber(String social_security_number){
-		setColumn("social_security_number",social_security_number);
+		setColumn(getSocialSecurityNumberColumnName(),social_security_number);
 	}
 
 	public int getMemberNumber(){
@@ -618,6 +622,10 @@ public class Member extends com.idega.data.genericentity.Member {
             }
 
             return returner;
+        }
+
+        public static com.idega.data.genericentity.Member getStaticInstance(){
+          return (com.idega.data.genericentity.Member)getStaticInstance("com.idega.projects.golf.entity.Member");
         }
 
 }

@@ -21,6 +21,7 @@ import com.idega.projects.golf.entity.Member;
 import com.idega.jmodule.object.interfaceobject.CloseButton;
 import com.idega.jmodule.object.interfaceobject.BackButton;
 import com.idega.projects.golf.entity.StartingtimeFieldConfig;
+import com.idega.projects.golf.business.GolfCacher;
 
 import java.sql.SQLException;
 import java.io.IOException;
@@ -38,10 +39,12 @@ import java.util.List;
 public class RegisterTime extends ModuleObjectContainer {
 
   private StartService business;
+  private DropdownMenu unionDropdown;
 
   public RegisterTime() {
     super();
     business = new StartService();
+    unionDropdown = (DropdownMenu)GolfCacher.getUnionAbbreviationDropdown("club").clone();
   }
 
 
@@ -73,7 +76,14 @@ public class RegisterTime extends ModuleObjectContainer {
 
 
     public DropdownMenu insertUnionDropdown(String name, String text, int size) throws SQLException{
-      DropdownMenu mydropdown = new DropdownMenu(name);
+      DropdownMenu mydropdown = (DropdownMenu)unionDropdown.clone();
+
+      mydropdown.setSelectedElement(text);
+      mydropdown.keepStatusOnAction();
+      return mydropdown;
+
+
+      /*DropdownMenu mydropdown = new DropdownMenu(name);
 
         Union union = Union.getStaticInstance();
         List unions = EntityFinder.findAll(union,"Select * from " +union.getEntityName() + " order by abbrevation");
@@ -83,7 +93,7 @@ public class RegisterTime extends ModuleObjectContainer {
         }
         mydropdown.setSelectedElement(text);
         mydropdown.keepStatusOnAction();
-      return mydropdown;
+      return mydropdown;*/
     }
 
 
@@ -135,17 +145,9 @@ public class RegisterTime extends ModuleObjectContainer {
 
     public void drawTable(int skraMarga, Form myForm, ModuleInfo modinfo)throws IOException
     {
-//            PrintWriter out = modinfo.getResponse().getWriter();
-            //String picUrl_5 = "/pics/rastimask/Rastimaskraning/BorderTiler.gif";
+
             String btnSkraUrl = "/pics/formtakks/boka.gif";
             String btnCancelUrl = "/pics/formtakks/cancel.gif";
-
-            String txtNameUrl = "/pics/rastimask/Heiti-Graphic/Gnafn.gif";
-            String txtTimeUrl = "/pics/rastimask/Heiti-Graphic/Gtimi.gif";
-            String txtHandycapUrl = "/pics/rastimask/Heiti-Graphic/Gforgjof.gif";
-            String txtClubUrl = "/pics/rastimask/Heiti-Graphic/Gklubbur.gif";
-            String txtCardUrl = "/pics/rastimask/Heiti-Graphic/Gserkort.gif";
-            String txtCardNoUrl = "/pics/rastimask/Heiti-Graphic/Gkortnumer.gif";
 
             int memberId = -1;
             boolean memberAvailable = false;
@@ -154,7 +156,7 @@ public class RegisterTime extends ModuleObjectContainer {
                     memberId = Integer.parseInt((String)modinfo.getSession().getAttribute("member_id"));
                     memberAvailable = true;
             }
-            //out.print(memberId);
+
 
 
             String lines[] = new String[skraMarga];
@@ -173,7 +175,7 @@ public class RegisterTime extends ModuleObjectContainer {
                             int Line = Integer.parseInt(modinfo.getRequest().getParameter("line"));
 
                             int max = checkLine(Line, FieldID, Date, modinfo);
-                            //out.print(max);
+
                             for(int j = 0; j < skraMarga ; j++)
                             {
 
@@ -193,12 +195,6 @@ public class RegisterTime extends ModuleObjectContainer {
                             myTable.setWidth(2, "40");
                             myTable.setHeight(1,"30");
 
-                            /*myTable.add(new Image(txtTimeUrl), 2, 1);
-                            myTable.add(new Image(txtNameUrl), 3, 1);
-                            myTable.add(new Image(txtClubUrl), 4, 1);
-                            myTable.add(new Image(txtHandycapUrl), 5, 1);
-                            myTable.add(new Image(txtCardUrl), 6, 1);
-                            myTable.add(new Image(txtCardNoUrl), 7, 1);*/
 
                             myTable.addText("Tími", 2, 1);
                             myTable.addText("Nafn", 3, 1);
@@ -212,26 +208,22 @@ public class RegisterTime extends ModuleObjectContainer {
                             myTable.setAlignment(6,1,"center");
                             myTable.setAlignment(7,1,"center");
 
-                            //myTable.setBorder(1);
 
                             boolean admin = false;
                             boolean clubadmin = false;
                             boolean clubworker = false;
                             String unionAbbrevation = null;
-                            //int unionId = -1;
 
                             if(memberAvailable){
                               admin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
                               clubadmin = com.idega.jmodule.login.business.AccessControl.isClubAdmin(modinfo);
                               clubworker = com.idega.jmodule.login.business.AccessControl.isClubWorker(modinfo);
                               unionAbbrevation = member.getMainUnion().getAbbrevation();
-                              //unionId = member.getMainUnion().getID();
                             }
 
                             int i = 1;
                             for ( ;i < skraMarga+1 ; i++)
                             {
-                                    //myTable.add(new Image(picUrl_5, "", 51, skraMarga*3), 1, i+1);
                                     myTable.setWidth(1, "25");
                                     myTable.addText(lines[i-1], 2, i+1);
                                     myTable.setAlignment(2, i+1, "left");
@@ -279,7 +271,6 @@ public class RegisterTime extends ModuleObjectContainer {
 
     public boolean setPlayers(ModuleInfo modinfo)throws SQLException, IOException
     {
-//            PrintWriter out = modinfo.getResponse().getWriter();
             int i = 0;
 
             String FieldID = modinfo.getSession().getAttribute("field_id").toString();
@@ -342,80 +333,9 @@ public class RegisterTime extends ModuleObjectContainer {
             return totalLines;
     }
 
-/*    public void output(String text, ModuleInfo modinfo)throws IOException
-    {
-            PrintWriter out = modinfo.getResponse().getWriter();
-            out.print(text);
-    }
-*/
-    /*
-    public void setGraphic(Form myForm)
-    {
-            String picUrl_1 = "/pics/rastimask/Rastimaskraning/Rastimaskraning_01.gif";
-            String picUrl_2 = "/pics/rastimask/Rastimaskraning/Rastimaskraning_02.gif";
-            String picUrl_3 = "/pics/rastimask/Rastimaskraning/Rastimaskraning_03.gif";
-            String picUrl_4 = "/pics/rastimask/Rastimaskraning/Rastimaskraning_04.gif";
-            String picUrl_6 = "/pics/rastimask/Rastimaskraning/Rastimaskraning_06.gif";
-
-            Table Header = new Table(4, 1);
-
-            Header.setHeight("112");
-            Header.setWidth(1, "96");
-            Header.setWidth(2, "205");
-            Header.setWidth(3, "112");
-
-            Header.setBorder(1);
-
-            Header.setCellpadding(0);
-            Header.setCellspacing(0);
-            this.setMarginWidth(0);
-            this.setMarginHeight(0);
-            this.setLeftMargin(0);
-            this.setTopMargin(0);
-            this.setScrollbar(true);
-
-            Header.setBackgroundImage(1, 1, new Image(picUrl_1));
-            Header.setBackgroundImage(2, 1, new Image(picUrl_2));
-            Header.setBackgroundImage(3, 1, new Image(picUrl_3));
-            Header.setBackgroundImage(4, 1, new Image(picUrl_4));
-
-            Header.setWidth("100%");
-
-            myForm.add(Header);
-
-            this.setBackgroundImage(new Image(picUrl_6, ""));
-    }
-    */
-
-/*    public void setGraphic(Form myForm)
-    {
-            String picUrl_1 = "/pics/rastima_popup/skraning.gif";
-            String picUrl_2 = "/pics/rastima_popup/tile.gif";
-
-            Table Header = new Table(2, 1);
-            //Header.setBorder(1);
-
-            Header.setHeight("90");
-            Header.setWidth(1, "10");
-
-            Header.setCellpadding(0);
-            Header.setCellspacing(0);
-
-
-            Header.setBackgroundImage(2, 1, new Image(picUrl_1));
-            Header.setBackgroundImage(1, 1, new Image(picUrl_2));
-
-            Header.setWidth("100%");
-
-            myForm.add(Header);
-
-//            this.setBackgroundColor("#8ab490");
-    }
-*/
 
     public void setErroResponse(Form myForm, boolean inputErr)
     {
-            //String borderPicUrl = "/pics/rastimask/Rastimaskraning/BorderTiler.gif";
             String btnCloseUrl = "/pics/rastimask/Takkar/TLoka1.gif";
             String btnBackUrl = "/pics/rastimask/Takkar/Ttilbaka1.gif";
 
@@ -425,9 +345,6 @@ public class RegisterTime extends ModuleObjectContainer {
             }
             else
                     myTable.addText("Þetta holl er því miður fullt. Gjörðu svo vel að velja þér nýjan tíma", 2, 1);
-            //myTable.add(new Image(borderPicUrl), 1, 1);
-            //myTable.add(new Image(borderPicUrl), 1, 2);
-            //myTable.add(new Image(borderPicUrl), 1, 3);
             if(inputErr){
                     myTable.add(new BackButton(new Image(btnBackUrl)), 2, 3);
             }
@@ -497,7 +414,6 @@ public class RegisterTime extends ModuleObjectContainer {
         }else{
           Form myForm = new Form();
           this.add(myForm);
-          //setGraphic( myForm);
           Text dayReserved = new Text("Dagur frátekinn fyrir mót");
           dayReserved.setFontSize(4);
           Table AlignmentTable = new Table();
@@ -526,13 +442,10 @@ public class RegisterTime extends ModuleObjectContainer {
             this.add(myForm);
 
             int line = Integer.parseInt(modinfo.getRequest().getParameter("line"));
-            //out.println("lina "+line+" ");
-            //out.println("field "+field_id+" ");
-            //out.println("date "+date+" ");
+
 
             try
             {
-                    //setGraphic( myForm);
 
                     int check = checkLine(line, field_id, date, modinfo);
 
@@ -584,6 +497,7 @@ public class RegisterTime extends ModuleObjectContainer {
 
 
   } // method main() ends
+
 
 
 

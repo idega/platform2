@@ -268,5 +268,25 @@ public void print(ModuleInfo modinfo)throws IOException{
 }
 
 
+  public synchronized Object clone() {
+    DropdownMenu obj = null;
+    try {
+      obj = (DropdownMenu)super.clone();
+      if(this.theElements != null){
+        obj.theElements = (Vector)this.theElements.clone();
+      }
+      obj.keepStatus = this.keepStatus;
+      obj.selectedElementValue = this.selectedElementValue;
+      if(this.script != null){
+        obj.script = (Script)this.script.clone();
+      }
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
 }
 
