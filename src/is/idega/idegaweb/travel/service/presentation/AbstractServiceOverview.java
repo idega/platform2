@@ -3,6 +3,8 @@ package is.idega.idegaweb.travel.service.presentation;
 import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
 import is.idega.idegaweb.travel.business.ServiceNotFoundException;
 import java.sql.SQLException;
+import java.util.Locale;
+
 import com.idega.data.IDOFinderException;
 import com.idega.block.trade.stockroom.data.Product;
 import java.rmi.RemoteException;
@@ -48,13 +50,14 @@ public abstract class AbstractServiceOverview extends TravelManager implements S
   protected void initialize(IWContext iwc) throws RemoteException{
     _iwrb = super.getResourceBundle();
     iwCal = new IWCalendar();
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY ,iwc).substring(0,3);
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY ,iwc).substring(0,3);
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY ,iwc).substring(0,3);
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY ,iwc).substring(0,3);
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY ,iwc).substring(0,3);
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY ,iwc).substring(0,3);
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY ,iwc).substring(0,3);
+    Locale locale = iwc.getCurrentLocale();
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY ,locale).substring(0,3);
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY ,locale).substring(0,3);
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY ,locale).substring(0,3);
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY ,locale).substring(0,3);
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY ,locale).substring(0,3);
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY ,locale).substring(0,3);
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY] = iwCal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY ,locale).substring(0,3);
   }
 
 

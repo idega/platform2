@@ -312,7 +312,7 @@ private Form myForm;
 
         for ( int m = 1 ; m <= 12 ; m++ ) {
 
-          select_month.addMenuElement(String.valueOf(m),dagatal.getNameOfMonth(m,iwc).toLowerCase());
+          select_month.addMenuElement(String.valueOf(m),dagatal.getNameOfMonth(m,iwc.getCurrentLocale()).toLowerCase());
 
         }
 

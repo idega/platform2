@@ -115,13 +115,14 @@ public class ServiceViewer extends Window {
     boldText = new Text();
     boldText.setBold(true);
 
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY ,iwc).substring(0,3);
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY ,iwc).substring(0,3);
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY ,iwc).substring(0,3);
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY ,iwc).substring(0,3);
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY ,iwc).substring(0,3);
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY ,iwc).substring(0,3);
-    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY ,iwc).substring(0,3);
+    Locale locale = iwc.getCurrentLocale();
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY ,locale).substring(0,3);
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY ,locale).substring(0,3);
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY ,locale).substring(0,3);
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY ,locale).substring(0,3);
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY ,locale).substring(0,3);
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY ,locale).substring(0,3);
+    dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY ,locale).substring(0,3);
   }
 
   public void main(IWContext iwc) throws Exception{

@@ -170,42 +170,43 @@ public class CalendarHandler extends TravelManager {
         ++row;
 //      }
 
+      Locale locale = iwc.getCurrentLocale();
       Text jan = (Text) theText.clone();
         jan.setFontStyle("text-decoration: none;");
-        jan.setText(cal.getShortNameOfMonth(1,iwc).substring(0,3));
+        jan.setText(cal.getShortNameOfMonth(1,locale).substring(0,3));
       Text feb = (Text) theText.clone();
         feb.setFontStyle("text-decoration: none;");
-        feb.setText(cal.getShortNameOfMonth(2,iwc).substring(0,3));
+        feb.setText(cal.getShortNameOfMonth(2,locale).substring(0,3));
       Text mar = (Text) theText.clone();
         mar.setFontStyle("text-decoration: none;");
-        mar.setText(cal.getShortNameOfMonth(3,iwc).substring(0,3));
+        mar.setText(cal.getShortNameOfMonth(3,locale).substring(0,3));
       Text apr = (Text) theText.clone();
         apr.setFontStyle("text-decoration: none;");
-        apr.setText(cal.getShortNameOfMonth(4,iwc).substring(0,3));
+        apr.setText(cal.getShortNameOfMonth(4,locale).substring(0,3));
       Text may = (Text) theText.clone();
         may.setFontStyle("text-decoration: none;");
-        may.setText(cal.getShortNameOfMonth(5,iwc).substring(0,3));
+        may.setText(cal.getShortNameOfMonth(5,locale).substring(0,3));
       Text jun = (Text) theText.clone();
         jun.setFontStyle("text-decoration: none;");
-        jun.setText(cal.getShortNameOfMonth(6,iwc).substring(0,3));
+        jun.setText(cal.getShortNameOfMonth(6,locale).substring(0,3));
       Text jul = (Text) theText.clone();
         jul.setFontStyle("text-decoration: none;");
-        jul.setText(cal.getShortNameOfMonth(7,iwc).substring(0,3));
+        jul.setText(cal.getShortNameOfMonth(7,locale).substring(0,3));
       Text aug = (Text) theText.clone();
         aug.setFontStyle("text-decoration: none;");
-        aug.setText(cal.getShortNameOfMonth(8,iwc).substring(0,3));
+        aug.setText(cal.getShortNameOfMonth(8,locale).substring(0,3));
       Text sep = (Text) theText.clone();
         sep.setFontStyle("text-decoration: none;");
-        sep.setText(cal.getShortNameOfMonth(9,iwc).substring(0,3));
+        sep.setText(cal.getShortNameOfMonth(9,locale).substring(0,3));
       Text oct = (Text) theText.clone();
         oct.setFontStyle("text-decoration: none;");
-        oct.setText(cal.getShortNameOfMonth(10,iwc).substring(0,3));
+        oct.setText(cal.getShortNameOfMonth(10,locale).substring(0,3));
       Text nov = (Text) theText.clone();
         nov.setFontStyle("text-decoration: none;");
-        nov.setText(cal.getShortNameOfMonth(11,iwc).substring(0,3));
+        nov.setText(cal.getShortNameOfMonth(11,locale).substring(0,3));
       Text dec = (Text) theText.clone();
         dec.setFontStyle("text-decoration: none;");
-        dec.setText(cal.getShortNameOfMonth(12,iwc).substring(0,3));
+        dec.setText(cal.getShortNameOfMonth(12,locale).substring(0,3));
 
       if (this._fontColor != null) {
         jan.setFontColor(_fontColor);

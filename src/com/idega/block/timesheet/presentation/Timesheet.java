@@ -663,9 +663,9 @@ public class Timesheet extends Block{
 			myDags.setFontSize(3);
                         myDags.setBold();
 			if ( (dagur - daysShown) < 1) {
-				myDags.addToText(FunctColl.getNameOfMonth((manudur-1),iwc)+"/");
+				myDags.addToText(FunctColl.getNameOfMonth((manudur-1),iwc.getCurrentLocale())+"/");
 			}
-			myDags.addToText(FunctColl.getNameOfMonth(manudur,iwc)+" "+ar);
+			myDags.addToText(FunctColl.getNameOfMonth(manudur,iwc.getCurrentLocale())+" "+ar);
 
 
 
@@ -878,7 +878,7 @@ public class Timesheet extends Block{
 					}
 					else {
 					}
-					myText1.addToText(FunctColl.getNameOfDay(vikuDagurNr,iwc).substring(0,3)+" "+(dagur-u)+".");
+					myText1.addToText(FunctColl.getNameOfDay(vikuDagurNr,iwc.getCurrentLocale()).substring(0,3)+" "+(dagur-u)+".");
 				myTable.add(myText1,1,current_row);
 				}
 				skrifaDags=false;
@@ -1003,7 +1003,7 @@ public class Timesheet extends Block{
 							}
 							else {
 							}
-							myTextAuka1.addToText(FunctColl.getNameOfDay(vikuDagurNr,iwc).substring(0,3)+" "+(dagur-u)+".");
+							myTextAuka1.addToText(FunctColl.getNameOfDay(vikuDagurNr,iwc.getCurrentLocale()).substring(0,3)+" "+(dagur-u)+".");
 						myTable.add(myTextAuka1,1,current_row);
 						}
 						skrifaDags=false;
@@ -1222,7 +1222,7 @@ public class Timesheet extends Block{
 //                  header.setFontSize(5);
 //                add(header);
 
-                        Text nafnPaMoned = new Text("Unnir tímar í "+FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
+                        Text nafnPaMoned = new Text("Unnir tímar í "+FunctColl.getNameOfMonth(manudur, iwc.getCurrentLocale()) + " " +ar);
                             nafnPaMoned.setFontSize(3);
                             nafnPaMoned.setBold();
                             nafnPaMoned.setFontColor(this.header_text_color);
@@ -1532,7 +1532,7 @@ public class Timesheet extends Block{
 
           Table headerTable = this.getHeaderTable();
 
-                Text nafnPaMoned = new Text("Verkskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
+                Text nafnPaMoned = new Text("Verkskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +FunctColl.getNameOfMonth(manudur, iwc.getCurrentLocale()) + " " +ar);
                       nafnPaMoned.setFontSize(3);
                       nafnPaMoned.setBold();
                       nafnPaMoned.setFontColor(this.header_text_color);
@@ -1738,7 +1738,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
 
 		Table headerTable = this.getHeaderTable();
 
-                        Text nafnPaMoned = new Text(FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
+                        Text nafnPaMoned = new Text(FunctColl.getNameOfMonth(manudur, iwc.getCurrentLocale()) + " " +ar);
                             nafnPaMoned.setFontSize(3);
                             nafnPaMoned.setBold();
                             nafnPaMoned.setFontColor(this.header_text_color);
@@ -2034,7 +2034,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
 
             Table headerTable = this.getHeaderTable();
                   headerTable.setWidth(tableWidth);
-                    Text nafnPaMoned = new Text("Tímaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
+                    Text nafnPaMoned = new Text("Tímaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + FunctColl.getNameOfMonth(manudur, iwc.getCurrentLocale()) + " " +ar);
                         nafnPaMoned.setFontSize(3);
                         nafnPaMoned.setBold();
                         nafnPaMoned.setFontColor(this.header_text_color);
@@ -2431,7 +2431,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
             }
             */
 		Table headerTable = this.getHeaderTable();
-                        Text nafnPaMoned = new Text("Tímaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
+                        Text nafnPaMoned = new Text("Tímaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +FunctColl.getNameOfMonth(manudur, iwc.getCurrentLocale()) + " " +ar);
                             nafnPaMoned.setFontSize(3);
                             nafnPaMoned.setBold();
                             nafnPaMoned.setFontColor(this.header_text_color);
@@ -2613,7 +2613,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                       memName.setFontSize(3);
                       memName.setBold();
                       memName.setFontColor(this.header_text_color);
-                    Text monthName = new Text(FunctColl.getNameOfMonth(manudur,iwc)+" "+this.ar);
+                    Text monthName = new Text(FunctColl.getNameOfMonth(manudur,iwc.getCurrentLocale())+" "+this.ar);
                       if (viewPrevious) {
                           monthName.setText("fyrir " + monthName.getText());
                           add(monthName.getText());
@@ -2852,7 +2852,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                       memName.setFontSize(3);
                       memName.setBold();
                       memName.setFontColor(this.header_text_color);
-                    Text monthName = new Text(FunctColl.getNameOfMonth(manudur,iwc)+" "+this.ar);
+                    Text monthName = new Text(FunctColl.getNameOfMonth(manudur,iwc.getCurrentLocale())+" "+this.ar);
                       monthName.setFontSize(3);
                       monthName.setBold();
                       monthName.setFontColor(this.header_text_color);

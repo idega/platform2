@@ -759,10 +759,15 @@ public class TournamentBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityB
 		//System.out.println("Er i insert i Tournament");
 
 		//System.out.println("rounds:"+getNumberOfRounds());
+		Timestamp startTime = getStartTime();
+		Timestamp roundTime;
 
 			for (int i = 1; i <= getNumberOfRounds();i++){
 
 				//System.out.println("Er i insert i Tournament og round med i: "+i);
+				long milliseconds = startTime.getTime();
+				milliseconds = milliseconds + (i+1) * 24 * 60 * 60 * 1000;
+				roundTime = new Timestamp(milliseconds);
 
 				TournamentRound round = ((is.idega.idegaweb.golf.entity.TournamentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(TournamentRound.class)).createLegacy();
 
@@ -770,13 +775,13 @@ public class TournamentBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityB
 
 				round.setTournament(this);
 
-				round.setRoundDate(com.idega.util.IWCalendar.getTimestampAfter(getStartTime(),i+1));
+				round.setRoundDate(roundTime);
 
-                                round.setIncreaseHandicap(true);
+        round.setIncreaseHandicap(true);
 
-                                round.setDecreaseHandicap(true);
+        round.setDecreaseHandicap(true);
 
-                                round.setRoundEndDate(com.idega.util.IWCalendar.getTimestampAfter(getStartTime(),i+1));
+        round.setRoundEndDate(roundTime);
 
 				round.insert();
 

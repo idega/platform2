@@ -97,12 +97,12 @@ public SmallCalendar() {
 	if (shadow) shadow = (today.getYear() == stamp.getYear()) ?true:false;
     int daycount = cal.getLengthOfMonth(stamp.getMonth(),stamp.getYear());
     int daynr = cal.getDayOfWeek(stamp.getYear(),stamp.getMonth(),1);
-    String sMonth = cal.getShortNameOfMonth(stamp.getMonth(),iwc);
+    String sMonth = cal.getShortNameOfMonth(stamp.getMonth(),iwc.getCurrentLocale());
     try {
       sMonth = sMonth.substring(0,1).toUpperCase() + sMonth.substring(1);
     }
     catch (Exception e) {
-      sMonth = cal.getShortNameOfMonth(stamp.getMonth(),iwc);
+      sMonth = cal.getShortNameOfMonth(stamp.getMonth(),iwc.getCurrentLocale());
     }
     String sYear = String.valueOf(stamp.getYear());
     Text tMonth = new Text(sMonth+" "+sYear);
@@ -164,7 +164,7 @@ public SmallCalendar() {
     t.setFontSize(1);
     if (this.showNameOfDays) {
       for( int a = 1; a < 8; a++ ){
-	t = new Text(cal.getNameOfDay(a,iwc).substring(0,1).toUpperCase());
+	t = new Text(cal.getNameOfDay(a,iwc.getCurrentLocale()).substring(0,1).toUpperCase());
 	t.setFontStyle("font-family: Verdana,Arial, Helvetica, sans-serif; font-weight: bold; color: "+dayTextColor+"; font-size: 10px; text-decoration: none;");
 	T.setAlignment(a,1,"center");
 	T.add(t,a,1);

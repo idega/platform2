@@ -695,8 +695,8 @@ private Link textLink = new Link();
 				start_day = String.valueOf(day);
 			}
 
-			if ( Integer.parseInt(start_day) > dagatalid.getLengthOfMonth(start_month,start_year) ) {
-				start_day = String.valueOf(dagatalid.getLengthOfMonth(start_month,start_year));
+			if ( Integer.parseInt(start_day) > dagatalid.getLengthOfMonth(Integer.parseInt(start_month),Integer.parseInt(start_year)) ) {
+				start_day = String.valueOf(dagatalid.getLengthOfMonth(Integer.parseInt(start_month),Integer.parseInt(start_year)));
 			}
 
 		this.end_year = iwc.getParameter("end_year");
@@ -712,8 +712,8 @@ private Link textLink = new Link();
 				end_day = String.valueOf(day);
 			}
 
-			if ( Integer.parseInt(end_day) > dagatalid.getLengthOfMonth(end_month,end_year) ) {
-				end_day = String.valueOf(dagatalid.getLengthOfMonth(end_month,end_year));
+			if ( Integer.parseInt(end_day) > dagatalid.getLengthOfMonth(Integer.parseInt(end_month),Integer.parseInt(end_year)) ) {
+				end_day = String.valueOf(dagatalid.getLengthOfMonth(Integer.parseInt(end_month),Integer.parseInt(end_year)));
 			}
 
 		String start_time = start_year+"-"+start_month+"-"+start_day;
