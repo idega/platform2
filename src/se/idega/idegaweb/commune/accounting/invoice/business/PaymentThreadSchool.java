@@ -64,15 +64,15 @@ import com.idega.util.IWTimestamp;
  * Abstract class that holds all the logic that is common for the shool billing
  * 
 <<<<<<< PaymentThreadSchool.java
- * Last modified: $Date: 2003/12/16 16:29:55 $ by $Author: palli $
+ * Last modified: $Date: 2003/12/16 16:42:02 $ by $Author: joakim $
  * 
 =======
- * Last modified: $Date: 2003/12/16 16:29:55 $ by $Author: palli $
+ * Last modified: $Date: 2003/12/16 16:42:02 $ by $Author: joakim $
  *
 >>>>>>> 1.59
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.60 $
+ * @version $Revision: 1.61 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -300,8 +300,11 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 			String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
 			PlacementTimes placementTimes = getPlacementTimes(schoolClassMember);
+			log.info("About to create payment record");
 			final PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
+			log.info("About to create invoice record");
 			createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
+			log.info("Done creating invoice record");
 			SchoolType schoolType = null;
 			//Find the oppen verksamhet and fritidsklubb
 			try {

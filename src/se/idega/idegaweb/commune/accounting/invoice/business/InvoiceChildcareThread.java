@@ -1,9 +1,6 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
-import is.idega.idegaweb.member.business.NoChildrenFound;
-import is.idega.idegaweb.member.business.NoCohabitantFound;
-import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -12,7 +9,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeSet;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -25,7 +21,6 @@ import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
-import se.idega.idegaweb.commune.accounting.invoice.data.SortableSibling;
 import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
@@ -56,12 +51,10 @@ import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
-import com.idega.core.location.data.Address;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.Age;
 
@@ -340,9 +333,29 @@ public class InvoiceChildcareThread extends BillingThread{
 						catch (LowIncomeException e) {
 							//No low income registered...
 						}
+						catch (CreateException e1) {
+							e1.printStackTrace();
+							createNewErrorMessage(errorRelated.toString(),"invoice.CreateException");
+						}
 						catch (RegulationException e1) {
 							e1.printStackTrace();
 							createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingRegulationWhenItWasExpected");
+						}
+						catch (PostingParametersException e1) {
+							e1.printStackTrace();
+							createNewErrorMessage(errorRelated.toString(),"invoice.PostingParametersException");
+						}
+						catch (PostingException e1) {
+							e1.printStackTrace();
+							createNewErrorMessage(errorRelated.toString(),"invoice.PostingException");
+						}
+						catch (RemoteException e1) {
+							e1.printStackTrace();
+							createNewErrorMessage(errorRelated.toString(),"invoice.RemoteException");
+						}
+						catch (MissingMandatoryFieldException e1) {
+							e1.printStackTrace();
+							createNewErrorMessage(errorRelated.toString(),"invoice.MissingMandatoryFieldException");
 						}
 						catch(MissingConditionTypeException e) {
 							e.printStackTrace();
@@ -461,6 +474,12 @@ public class InvoiceChildcareThread extends BillingThread{
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingTooManyRegulations");
 					}
+				} catch (RemoteException e) {
+					e.printStackTrace();
+					createNewErrorMessage("invoice.severeError","invoice.SeriousErrorBatchrunTerminated");
+				} catch (FinderException e) {
+					e.printStackTrace();
+					createNewErrorMessage("invoice.severeError","invoice.NoContractsFound");
 				}
 			}
 		} catch (RemoteException e) {
@@ -696,12 +715,14 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @param contract
 	 * @return the sibling order for the child connected to the contract
 	 */
+
 	private int getSiblingOrder(ChildCareContract contract, Map siblingOrders) throws EJBException, UserInfoService.SiblingOrderException, IDOLookupException, RemoteException, CreateException{
 			User contractChild = contract.getChild ();	
 			UserInfoService userInfo = (UserInfoService) IBOLookup.getServiceInstance(iwc, UserInfoService.class);
 			return userInfo.getSiblingOrder(contractChild, siblingOrders, startPeriod);
 	}
 
+/*
 	private int getSiblingOrder(ChildCareContract contract) throws EJBException, SiblingOrderException, IDOLookupException, RemoteException, CreateException{
 		UserBusiness userBus = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 	
@@ -801,7 +822,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		//This should really never happen
 		throw new SiblingOrderException("Could not find the sibling order.");
 	}
-
+*/
 	/**
 	 * Creates an invoice record with the specific descriptive text for the check.
 	 * @param invoiceHeader
