@@ -6,12 +6,14 @@ import java.sql.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.idegaweb.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.business.*;
 
 public class TournamentBox extends ModuleObjectContainer{
 
 private String header;
+private String headerT;
 private HeaderTable mainTable;
 private Table innerTable;
 private String headerColor;
@@ -19,18 +21,27 @@ private String mainColor;
 private Image headerImage;
 private boolean goneThrough_main=false;
 
+private final String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+private IWBundle iwb;
+private IWResourceBundle iwrb;
+
+        public String getBundleIdentifier(){
+            return IW_BUNDLE_IDENTIFIER;
+        }
+
 	public TournamentBox(){
 		this("Mót");
 	}
 
 	public TournamentBox(String header){
-              initialize(header);
+              this.headerT = header;
+              //initialize(header);
 	}
 
 
 	public TournamentBox(Image headerImage){
                 this.headerImage=headerImage;
-		initialize(headerImage);
+		//initialize(headerImage);
 	}
 
 
@@ -38,10 +49,24 @@ private boolean goneThrough_main=false;
          * Workaround so that this object doesn't call the main() function of HeaderTable
          */
         public void _main(ModuleInfo modinfo) throws Exception {
+          iwb = getBundle(modinfo);
+          iwrb = iwb.getResourceBundle(modinfo.getCurrentLocale());
+
+
+
+
+          if (this.headerImage != null) {
+              initialize(headerImage);
+          }
+          else {
+              initialize(headerT);
+          }
+
           if(!goneThrough_main){
               goneThrough_main=true;
               super._main(modinfo);
           }
+
         }
 
         /*public void main(ModuleInfo modinfo){
@@ -70,7 +95,7 @@ private boolean goneThrough_main=false;
 		mainTable.setRightHeader(false);
                 mainTable.setHeadlineAlign("left");
 		mainTable.setHeadlineSize(1);
-                mainTable.setHeaderText("Mót");
+                mainTable.setHeaderText(iwrb.getLocalizedString("tournament.tournaments","Tournaments") );
                 super.add(mainTable);
 
                 Tournament[] recent = null;
@@ -86,7 +111,7 @@ private boolean goneThrough_main=false;
                 catch (Exception e) {
                 }
 
-                Text nextones=new Text("Mót í dag:");
+                Text nextones=new Text(iwrb.getLocalizedString("tournament.tournaments_today","Tournaments today")+":");
                   nextones.setFontSize(1);
                   nextones.setBold();
                   nextones.setFontFace("Verdana,Arial,sans-serif");
@@ -102,14 +127,14 @@ private boolean goneThrough_main=false;
                   }
                   if ( coming.length == 0 ) {
                       ++row;
-                     Text noCom = new Text("Engin mót í dag");
+                     Text noCom = new Text(iwrb.getLocalizedString("tournament.no_tournaments_today","No tournaments today"));
                       noCom.setFontSize(1);
                       innerTable.add(noCom,1,row);
                   }
 
                 }else{
                     ++row;
-                   Text noCom = new Text("Engin mót í dag");
+                   Text noCom = new Text(iwrb.getLocalizedString("tournament.no_tournaments_today","No tournaments today"));
                     noCom.setFontSize(1);
                     innerTable.add(noCom,1,row);
                 }
@@ -120,7 +145,7 @@ private boolean goneThrough_main=false;
                 innerTable.setHeight(row,"10");
 
                 ++row;
-                Text lastones=new Text("Nýjustu úrslit:");
+                Text lastones=new Text(iwrb.getLocalizedString("tournament.latest_results","Latest results")+":");
                   lastones.setFontSize(1);
                   lastones.setBold();
                   lastones.setFontFace("Verdana,Arial,sans-serif");
@@ -136,14 +161,14 @@ private boolean goneThrough_main=false;
                   }
                   if ( recent.length == 0 ) {
                       ++row;
-                     Text noLast = new Text("Engin mót búin");
+                     Text noLast = new Text(iwrb.getLocalizedString("tournament.no_tournaments_done","No tournaments done"));
                       noLast.setFontSize(1);
                       innerTable.add(noLast,1,row);
                   }
                 }
                 else {
                 ++row;
-                 Text noLast = new Text("Engin mót búin");
+                 Text noLast = new Text(iwrb.getLocalizedString("tournament.no_tournaments_done","No tournaments done"));
                   noLast.setFontSize(1);
                   innerTable.add(noLast,1,row);
                 }
