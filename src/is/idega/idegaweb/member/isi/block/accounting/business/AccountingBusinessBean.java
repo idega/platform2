@@ -700,9 +700,9 @@ public class AccountingBusinessBean extends IBOServiceBean implements
             Map users = equalizeBasket(basket, amount, iwuc);
             Iterator it = users.values().iterator();
             while (it.hasNext()) {
-                Map divisions = (HashMap) it.next();
+                Map groups = (HashMap) it.next();
 
-                Iterator it2 = divisions.values().iterator();
+                Iterator it2 = groups.values().iterator();
                 while (it2.hasNext()) {
                     PaymentInfo info = (PaymentInfo) it2.next();
 
@@ -927,7 +927,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 
                     if (groups.containsKey(entry.getGroup())) {
                         PaymentInfo paymentInfo = (PaymentInfo) groups
-                                .get(entry.getDivision());
+                                .get(entry.getGroup());
                         int am = paymentInfo.getAmount();
                         paymentInfo.setAmount(am
                                 + (int) entry.getItemPrice().doubleValue());
@@ -936,7 +936,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
                                 .getUser(), entry.getClub(), entry
                                 .getDivision(), entry.getGroup(), (int) entry.getItemPrice()
                                 .doubleValue());
-                        groups.put(entry.getDivision(), paymentInfo);
+                        groups.put(entry.getGroup(), paymentInfo);
                     }
 
                     amount -= entry.getItemPrice().doubleValue();
@@ -962,14 +962,14 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 
                     if (groups.containsKey(entry.getGroup())) {
                         PaymentInfo paymentInfo = (PaymentInfo) groups
-                                .get(entry.getDivision());
+                                .get(entry.getGroup());
                         int am = paymentInfo.getAmount();
                         paymentInfo.setAmount(am + (int) amount);
                     } else {
                         PaymentInfo paymentInfo = new PaymentInfo(entry
                                 .getUser(), entry.getClub(), entry
                                 .getDivision(), entry.getGroup(), (int) amount);
-                        groups.put(entry.getDivision(), paymentInfo);
+                        groups.put(entry.getGroup(), paymentInfo);
                     }
 
                     entry.setAmountEqualized(entry.getAmountEqualized()

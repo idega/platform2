@@ -557,7 +557,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
     }
     
     private void updateDivision(Group division, Group divisionTemplate, Group club, Group specialPlayerAliasGroupParent, IWContext iwc) {
-        
+        Collection divisionTemplateGroups = divisionTemplate.getChildren();
     }
 
     private void updatePlayerGroupsConnectedTo(Group parent, IWContext iwc) {
