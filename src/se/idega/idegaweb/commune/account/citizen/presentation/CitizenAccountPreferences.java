@@ -367,7 +367,8 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		}
 		CheckBox cbCOAddressSelect = getCheckBox(PARAMETER_CO_ADDRESS_SELECT, "true");
 		if (valueCOAddressSelect != null) {
-			cbCOAddressSelect.setChecked(true);
+			if (valueCOAddressSelect.length() > 0)
+				cbCOAddressSelect.setChecked(true);
 		} else {
 			if (iwc.getParameter(PARAMETER_FORM_SUBMIT) == null) {
 				try {
