@@ -1540,7 +1540,6 @@ public class IFSFileCreationThread extends Thread {
 			row = sheet.createRow(rowNumber++);
 			cell = row.createCell(cellNumber-=3);
 			if (!signingFooter) {
-				System.out.println("Fyrri = "+fileName);
 				setInCommuneSum(totalAmount);
 			}
 			else {
