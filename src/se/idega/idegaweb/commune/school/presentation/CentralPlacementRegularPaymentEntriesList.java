@@ -90,6 +90,7 @@ public class CentralPlacementRegularPaymentEntriesList extends Window {
 		mainTable.setColor(col+3, 2, FRAME_COLOR);
 		// row 3		
 		mainTable.setRowColor(3, FRAME_COLOR);
+		mainTable.setRowHeight(3, "2px");
 
 		//  *** WINDOW HEADING ***
 		Text heading1 = new Text(iwrb.getLocalizedString(KEY_WINDOW_HEADING_1, 
