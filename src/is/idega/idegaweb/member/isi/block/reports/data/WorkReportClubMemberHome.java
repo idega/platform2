@@ -1,0 +1,9 @@
+package is.idega.idegaweb.member.isi.block.reports.data;
+
+
+public interface WorkReportClubMemberHome extends com.idega.data.IDOHome
+{
+ public WorkReportClubMember create() throws javax.ejb.CreateException;
+ public WorkReportClubMember findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
+
+}
