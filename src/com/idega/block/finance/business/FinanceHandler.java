@@ -22,5 +22,6 @@ public interface FinanceHandler {
   public boolean rollbackAssessment(int iAssessmentRoundId);
   public Map getAttributeMap();
   public Collection listOfAssessmentTariffPreviews(int iTariffGroupId,IWTimestamp start,IWTimestamp end)throws java.rmi.RemoteException;
+  public Collection getTariffsForAccountInGroup(Integer accountID,Integer tariffGroupID);
 
 }
