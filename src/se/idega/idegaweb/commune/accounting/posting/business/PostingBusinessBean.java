@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.12 2003/08/28 12:53:21 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.13 2003/08/28 13:01:45 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -416,7 +416,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * Gets a posting fields for a specific date
 	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingField# 
 	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString# 
-	 * @return PostingField
+	 * @return Collection PostingField 
 	 * @author Kjell
 	 */
 	public Collection getAllPostingFieldsByDate(Date date) {
