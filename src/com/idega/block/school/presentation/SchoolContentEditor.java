@@ -34,7 +34,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
-import com.idega.user.data.User;
+//import com.idega.user.data.User;
 
 /**
  * @author gimmi
@@ -373,7 +373,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 				* Headmasters and school personell shall not be able to change the info.
 				*/
 				
-				User currentUser = iwc.getCurrentUser();
+				//User currentUser = iwc.getCurrentUser();
 				_school.setLocalizedText( information, iwc.getCurrentLocaleId() );
 
 				if (!school_name.equals("")) {
