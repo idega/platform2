@@ -108,6 +108,10 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		IWTimestamp stampNow = new IWTimestamp();
 		
 		Collection contracts = null;
+		// preventing overruling the child parameter when session got application reference
+		if(iwc.isParameterSet(PARAMETER_CHILD_ID)){
+			contracts = getBusiness().getContractsByChild(getChildID(iwc));
+		}
 		if (getSession().getApplicationID() != -1)
 			contracts = getBusiness().getContractsByApplication(getSession().getApplicationID());
 		else
