@@ -425,9 +425,9 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			row++;
 			table.add(tNewPasswordRepeated, 1, row);
 			table.add(tiNewPasswordRepeated, 2, row);
+			row++;
+			table.setHeight(row, 12);
 		}
-		row++;
-		table.setHeight(row, 12);
 		row++;
 		table.add(tEmail, 1, row);
 		table.add(tiEmail, 2, row);

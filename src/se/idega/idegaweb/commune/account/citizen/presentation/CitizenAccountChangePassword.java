@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountChangePassword.java,v 1.1 2005/03/24 11:29:15 laddi Exp $ Created on
+ * $Id: CitizenAccountChangePassword.java,v 1.2 2005/03/25 11:22:33 laddi Exp $ Created on
  * 24.3.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -45,7 +45,6 @@ public class CitizenAccountChangePassword extends CommuneBlock {
 	private int MIN_PASSWORD_LENGTH = 8;
 	
 	private final static String KEY_PREFIX = "citizen.";
-	private final static String KEY_CHANGE_PASSWORD = KEY_PREFIX + "change_password";
 	private final static String KEY_CURRENT_PASSWORD = KEY_PREFIX + "current_password";
 	private final static String KEY_NEW_PASSWORD = KEY_PREFIX + "new_password";
 	private final static String KEY_NEW_PASSWORD_REPEATED = KEY_PREFIX + "new_password_repeated";
@@ -59,7 +58,6 @@ public class CitizenAccountChangePassword extends CommuneBlock {
 	private final static String KEY_PASSWORD_CHAR_ILLEGAL = KEY_PREFIX + "password_char_illegal";	
 	private final static String KEY_PASSWORD_SAVED = KEY_PREFIX + "password_saved";	
 
-	private final static String DEFAULT_CHANGE_PASSWORD = "Change password";	
 	private final static String DEFAULT_CURRENT_PASSWORD = "Current password";	
 	private final static String DEFAULT_NEW_PASSWORD = "New password";	
 	private final static String DEFAULT_NEW_PASSWORD_REPEATED = "Repeat new password";	
@@ -121,8 +119,6 @@ public class CitizenAccountChangePassword extends CommuneBlock {
 		form.add(table);
 		int row = 1;
 
-		table.add(getSmallHeader(localize(KEY_CHANGE_PASSWORD, DEFAULT_CHANGE_PASSWORD)), 1, row++);
-
 		UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 
 		String valueCurrentPassword = iwc.getParameter(PARAMETER_CURRENT_PASSWORD) != null ? iwc.getParameter(PARAMETER_CURRENT_PASSWORD) : "";
@@ -150,8 +146,6 @@ public class CitizenAccountChangePassword extends CommuneBlock {
 
 		SubmitButton sbUpdate = (SubmitButton) getButton(new SubmitButton(localize(KEY_UPDATE, DEFAULT_UPDATE), PARAMETER_FORM_SUBMIT, "true"));
 		
-		table.setHeight(row++, 12);
-
 		table.add(tCurrentPassword, 1, row);
 		table.add(tiCurrentPassword, 2, row++);
 
