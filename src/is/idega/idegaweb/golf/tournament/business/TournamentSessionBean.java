@@ -29,7 +29,7 @@ public class TournamentSessionBean extends IBOSessionBean implements TournamentS
 	private static final String PARAMETER_END_DATE = "end_date";
 	
 	private Tournament tournament;
-	private int tournamentID;
+	private int tournamentID = -1;
 	private Date startDate;
 	private Date endDate;
 	
