@@ -812,7 +812,7 @@ public class FinanceFinder  {
 
   public List listOfAccountUsersByRoundId(int roundId){
     StringBuffer sql = new StringBuffer("select distinct u.* ");
-    sql.append(" from fin_account a,fin_acc_entry e,fin_assessment_round r ");
+    sql.append(" from fin_account a,fin_acc_entry e,fin_assessment_round r ,ic_user u ");
     sql.append(" where a.fin_account_id = e.fin_account_id ");
     sql.append(" and e.fin_assessment_round_id = r.fin_assessment_round_id ");
     sql.append(" and a.ic_user_id = u.ic_user_id");
