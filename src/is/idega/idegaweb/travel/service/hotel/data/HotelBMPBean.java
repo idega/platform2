@@ -88,69 +88,72 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 	public Collection ejbHomeFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] postalCodeId) throws FinderException {
 		
 		boolean postalCode = (postalCodeId != null && postalCodeId.length > 0); 
-		boolean timefame = (fromStamp == null && toStamp == null);
+		boolean timeframe = (fromStamp != null && toStamp != null);
 		boolean roomType = (roomTypeId != null && roomTypeId.length > 0);
-		
-		String addressSupplierMiddleTableName = EntityControl.getManyToManyRelationShipTableName(Address.class, Supplier.class);
 
-		String postalCodeTableName = ((PostalCodeBMPBean)PostalCodeBMPBean.getStaticInstance(PostalCode.class)).getEntityName();
-		String addressTableName = ((AddressBMPBean)AddressBMPBean.getStaticInstance(Address.class)).getEntityName();
-		String serviceTableName = ServiceBMPBean.getServiceTableName();
-		String productTableName = ProductBMPBean.getProductEntityName();
-		String supplierTableName = SupplierBMPBean.getSupplierTableName();
-
-		String postalCodeTableIDColumnName = postalCodeTableName+"_id";
-		String addressTableIDColumnName = addressTableName+"_id";
-		String serviceTableIDColumnName = serviceTableName+"_id";
-		String productTableIDColumnName = productTableName+"_id";
-		String supplierTableIDColumnName = supplierTableName+"_id";
-		
-		StringBuffer sql = new StringBuffer();
-		sql.append("select distinct h.* from ").append(getHotelTableName()).append(" h, ")
-		.append(serviceTableName).append(" s, ")
-		.append(productTableName).append(" p, ");
-		if (postalCode) {
-			sql.append(addressSupplierMiddleTableName).append(" asm, ")
-			.append(addressTableName).append(" a, ")
-			.append(supplierTableName).append(" su, ")
-			.append(postalCodeTableName).append(" pc ");
-		}
-		
-		sql.append(" where ")
-		.append(" h.").append(getIDColumnName()).append(" = s.").append(serviceTableIDColumnName)
-		.append(" AND s.").append(serviceTableIDColumnName).append(" = p.").append(productTableIDColumnName);
-		
-		if (postalCode) {
-			sql.append(" AND asm.").append(supplierTableIDColumnName).append(" = su.").append(supplierTableIDColumnName)
-			.append(" AND asm.").append(addressTableIDColumnName).append(" = a.").append(addressTableIDColumnName)
-			.append(" AND p.").append(ProductBMPBean.getColumnNameSupplierId()).append(" = su.").append(supplierTableIDColumnName)
-			// HARDCODE OF DEATH ... courtesy of AddressBMPBean
-			.append(" AND a.postal_code_id = pc.").append(postalCodeTableIDColumnName)
-			.append(" AND pc.").append(postalCodeTableIDColumnName).append(" in (");
-			for (int i = 0; i < postalCodeId.length; i++) {
-				if (i != 0) {
-					sql.append(", ");
-				}
-				sql.append(postalCodeId[i]);
+		try {		
+			String addressSupplierMiddleTableName = EntityControl.getManyToManyRelationShipTableName(Address.class, Supplier.class);
+	
+			String postalCodeTableName = IDOLookup.getEntityDefinitionForClass(PostalCode.class).getSQLTableName();//  PostalCodeBMPBean.getEntityName();
+			String addressTableName = IDOLookup.getEntityDefinitionForClass(Address.class).getSQLTableName();
+			String serviceTableName = ServiceBMPBean.getServiceTableName();
+			String productTableName = ProductBMPBean.getProductEntityName();
+			String supplierTableName = SupplierBMPBean.getSupplierTableName();
+	
+			String postalCodeTableIDColumnName = postalCodeTableName+"_id";
+			String addressTableIDColumnName = addressTableName+"_id";
+			String serviceTableIDColumnName = serviceTableName+"_id";
+			String productTableIDColumnName = productTableName+"_id";
+			String supplierTableIDColumnName = supplierTableName+"_id";
+			
+			StringBuffer sql = new StringBuffer();
+			sql.append("select distinct h.* from ").append(getHotelTableName()).append(" h, ")
+			.append(serviceTableName).append(" s, ")
+			.append(productTableName).append(" p");
+			if (postalCode) {
+				sql.append(", ").append(addressSupplierMiddleTableName).append(" asm, ")
+				.append(addressTableName).append(" a, ")
+				.append(supplierTableName).append(" su, ")
+				.append(postalCodeTableName).append(" pc ");
 			}
-			sql.append(")");
-		}
-		
-		if (roomType) {
-			sql.append(" AND h.").append(getColumnNameRoomTypeId()).append(" in (");
-			for (int i = 0; i < roomTypeId.length; i++) {
-				if (i != 0) {
-					sql.append(", ");
+			
+			sql.append(" where ")
+			.append(" h.").append(getIDColumnName()).append(" = s.").append(serviceTableIDColumnName)
+			.append(" AND s.").append(serviceTableIDColumnName).append(" = p.").append(productTableIDColumnName);
+			
+			if (postalCode) {
+				sql.append(" AND asm.").append(supplierTableIDColumnName).append(" = su.").append(supplierTableIDColumnName)
+				.append(" AND asm.").append(addressTableIDColumnName).append(" = a.").append(addressTableIDColumnName)
+				.append(" AND p.").append(ProductBMPBean.getColumnNameSupplierId()).append(" = su.").append(supplierTableIDColumnName)
+				// HARDCODE OF DEATH ... courtesy of AddressBMPBean
+				.append(" AND a.postal_code_id = pc.").append(postalCodeTableIDColumnName)
+				.append(" AND pc.").append(postalCodeTableIDColumnName).append(" in (");
+				for (int i = 0; i < postalCodeId.length; i++) {
+					if (i != 0) {
+						sql.append(", ");
+					}
+					sql.append(postalCodeId[i]);
 				}
-				sql.append(roomTypeId[i]);
-			}			sql.append(")");
+				sql.append(")");
+			}
+			
+			if (roomType) {
+				sql.append(" AND h.").append(getColumnNameRoomTypeId()).append(" in (");
+				for (int i = 0; i < roomTypeId.length; i++) {
+					if (i != 0) {
+						sql.append(", ");
+					}
+					sql.append(roomTypeId[i]);
+				}			sql.append(")");
+			}
+			//sql.append(" order by ").append();
+			
+			
+			System.out.println(sql.toString());
+			return this.idoFindPKsBySQL(sql.toString());
+		}catch (IDOLookupException e) {
+			return null;
 		}
-		//sql.append(" order by ").append();
-		
-		
-		System.out.println(sql.toString());
-		
-		return this.idoFindPKsBySQL(sql.toString());
 	}
 
 
