@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.data.IDOFinderException;
+import com.idega.core.business.CategoryFinder;
 import com.idega.core.localisation.business.*;
 import com.idega.core.data.*;
 import com.idega.block.category.business.CategoryBusiness;
@@ -31,6 +33,7 @@ public class ProductCatalog extends CategoryBlock{
   private static final String _VIEW_PAGE = "prod_cat_view_page";
   private static final String _ORDER_BY ="prod_cat_order_by";
   public static final String CACHE_KEY ="prod_cat_cache_key";
+  public static final String CATEGORY_ID = "pr_cat_id";
 
 
   int productsPerPage = 10;
@@ -65,6 +68,7 @@ public class ProductCatalog extends CategoryBlock{
   boolean _showThumbnail = false;
   boolean _useAnchor = false;
   int _orderProductsBy = -1;
+  boolean _addCategoryID = false;
 
   Locale _currentLocale = null;
   int _currentLocaleId = -1;
@@ -146,13 +150,22 @@ public class ProductCatalog extends CategoryBlock{
       layout = (AbstractProductCatalogLayout) this._layoutClass.newInstance();
 
       List productCategories = new Vector();
-      try {
-	productCategories = (List) getCategories();
-	if (productCategories == null) {
-	  productCategories = new Vector();
+      if ( iwc.isParameterSet(CATEGORY_ID) ) {
+	String[] categoryIDs = iwc.getParameterValues(CATEGORY_ID);
+	for ( int a = 0; a < categoryIDs.length; a++ ) {
+	  productCategories.add(CategoryFinder.getInstance().getCategory(Integer.parseInt(categoryIDs[a])));
 	}
-      }catch (Exception e) {
-	e.printStackTrace(System.err);
+      }
+
+      if ( productCategories.size() == 0 ) {
+	try {
+	  productCategories = (List) getCategories();
+	  if (productCategories == null) {
+	    productCategories = new Vector();
+	  }
+	}catch (Exception e) {
+	  e.printStackTrace(System.err);
+	}
       }
 
       Table table = new Table();
@@ -408,6 +421,23 @@ public class ProductCatalog extends CategoryBlock{
       }else if (this._windowString != null) {
 	productLink.setWindowToOpenScript(_windowString);
       }
+
+      if ( _addCategoryID ) {
+	try {
+	  List list = ProductBusiness.getProductCategories(product);
+	  if ( list != null ) {
+	    Iterator iter = list.iterator();
+	    while (iter.hasNext()) {
+	      productLink.addParameter(CATEGORY_ID,((ProductCategory)iter.next()).getID());
+	    }
+	  }
+	}
+	catch (IDOFinderException e) {
+
+	}
+	//productLink.addParameter(CATEGORY_ID,product.g);
+      }
+
       return productLink;
     }else{
       return null;
@@ -475,5 +505,9 @@ public class ProductCatalog extends CategoryBlock{
     }else {
       return cacheStatePrefix+getICObjectInstanceID()+prod.getID();
     }
+  }
+
+  public void setAddCategoryID(boolean addID) {
+    _addCategoryID = addID;
   }
 }
