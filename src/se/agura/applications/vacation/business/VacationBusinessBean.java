@@ -90,15 +90,6 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 		return VacationConstants.PARAMETER_PRIMARY_KEY;
 	}
 	
-	protected UserBusiness getUserBusiness() {
-		try {
-			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
-		}
-		catch (IBOLookupException ible) {
-			throw new IBORuntimeException(ible);
-		}
-	}
-
 	private VacationRequestHome getVacationRequestHome() {
 		try {
 			return (VacationRequestHome) IDOLookup.getHome(VacationRequest.class);

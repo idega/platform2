@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.6 2004/12/14 00:29:06 laddi Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.7 2004/12/21 15:11:57 laddi Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -30,12 +30,9 @@ import se.agura.applications.meeting.fee.data.MeetingFeeInfo;
 import se.agura.applications.meeting.fee.data.MeetingFeeInfoHome;
 
 import com.idega.block.process.data.Case;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
@@ -44,7 +41,7 @@ import com.idega.user.data.User;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements MeetingFeeBusiness{
 	
@@ -86,15 +83,6 @@ public class MeetingFeeBusinessBean extends ApplicationsBusinessBean  implements
 		return MeetingFeeConstants.PARAMETER_PRIMARY_KEY;
 	}
 	
-	private UserBusiness getUserBusiness() {
-		try {
-			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
-		}
-		catch (IBOLookupException ible) {
-			throw new IBORuntimeException(ible);
-		}
-	}
-
   private MeetingFeeHome getMeetingFeeHome() {
 		try {
 			return (MeetingFeeHome) IDOLookup.getHome(MeetingFee.class);
