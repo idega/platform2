@@ -32,7 +32,7 @@ public class PostingDetail {
 //		setRuleSpecType(regularPaymentEntry.getRegSpecType().getRegSpecType());
 		setTerm(regularPaymentEntry.getPlacing());
 		setVat(regularPaymentEntry.getVAT());
-		setVatRegulationID(regularPaymentEntry.getVatRegulationId());
+		setVatRegulationID(regularPaymentEntry.getVatRuleId());
 	}
 	
 	public PostingDetail(String t, float a, float v, int vID, String rst){
