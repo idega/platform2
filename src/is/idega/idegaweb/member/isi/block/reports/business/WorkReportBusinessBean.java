@@ -12,6 +12,8 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountReco
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecordHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoardHome;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportExportFile;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportExportFileHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroupHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportHome;
@@ -23,6 +25,7 @@ import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -31,6 +34,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -87,7 +92,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	private WorkReportMemberHome workReportMemberHome;
 	private WorkReportBoardMemberHome workReportBoardMemberHome;
 	private WorkReportDivisionBoardHome workReportDivisionBoardHome;
-
+	private WorkReportExportFileHome workReportExportFileHome;
+	
 	private static final short COLUMN_MEMBER_NAME = 0;
 	private static final short COLUMN_MEMBER_SSN = 1;
 	private static final short COLUMN_MEMBER_STREET_NAME = 2;
@@ -255,6 +261,18 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 		}
 		return workReportClubAccountRecordHome;
+	}
+
+	public WorkReportExportFileHome getWorkReportExportFileHome() {
+		if (workReportExportFileHome == null) {
+			try {
+				workReportExportFileHome = (WorkReportExportFileHome)IDOLookup.getHome(WorkReportExportFile.class);
+			}
+			catch (RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return workReportExportFileHome;
 	}
 
 	public WorkReportMember createWorkReportMember(int reportID, String personalID) throws CreateException {
@@ -1063,12 +1081,71 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 
 	/**
-	 * A method to import the account part of the ISI workreports. A bit of a hack, since the format 
-	 * of the Excel file is "constant", and so this import assumes that the positions of the keys won't 
-	 * change. This cou
+	 * A method to export the work reports to excel for those who are not using the member system.
+	 * 
+	 * @param regionalUnionId The id of the regional union who is to receive the file
+	 * @param year The year we are creating excel files for
+	 * @param templateId The id for the template for the excel files in the IW file system
+	 *  
+	 * @return The primary key of the ICFile entry created for the zip file, or -1 if nothing was created.
 	 */
 	public int exportToExcel(int regionalUnionId, int year, int templateId) throws WorkReportImportException {
-		return -1;
+		WorkReportExportFile export = null;
+
+		try {
+			export = getWorkReportExportFileHome().findWorkReportExportFileByGroupIdAndYear(regionalUnionId,year);
+			
+			if (export.getFileId() > 0) {
+				return export.getFileId();
+			}
+		}
+		catch (FinderException e) {
+			System.out.println("[WorkReportBusinessBean] No report for groupId : " + regionalUnionId + " ann year : " + year + " creating a new one.");
+			
+			try {
+				export = getWorkReportExportFileHome().create();
+			}
+			catch (CreateException e1) {
+				e1.printStackTrace();
+			}
+		}		
+		
+		if (export != null) {
+//			try {
+//					// Create the ZIP file
+//					String outFilename = "outfile.zip";
+//					ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outFilename));
+//
+//					// Compress the files
+//					for (int i=0; i<filenames.length; i++) {
+//							FileInputStream in = new FileInputStream(filenames[i]);
+//
+//							// Add ZIP entry to output stream.
+//							out.putNextEntry(new ZipEntry(filenames[i]));
+//
+//							// Transfer bytes from the file to the ZIP file
+//							int len;
+//							while ((len = in.read(buf)) > 0) {
+//									out.write(buf, 0, len);
+//							}
+//
+//							// Complete the entry
+//							out.closeEntry();
+//							in.close();
+//					}
+//
+//					// Complete the ZIP file
+//					out.close();
+//			} 
+//			catch (IOException e) {
+//			}
+
+			return -1;			
+//			return export.getFileId();
+		}
+		else {
+			return -1;
+		}
 	}
 
 	/**
