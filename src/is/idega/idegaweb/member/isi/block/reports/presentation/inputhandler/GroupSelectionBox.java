@@ -43,6 +43,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	private String userType;
 	private WorkReportBusiness workBiz;
+	private boolean isInitialized = false; 
 
 	/**
 	 * Creates a new <code>GroupSelectionBox</code> with all groups.
@@ -89,7 +90,11 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 		super();
 	}
 
-	public void main(IWContext iwc) {
+	private void initialize(IWContext iwc) {
+		if (isInitialized) {
+			return;
+		}
+		isInitialized = true;
 		try {
 			groupBiz = getGroupBusiness(iwc);
 
@@ -130,6 +135,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 			}
 		}
 		catch (RemoteException e) {
+			isInitialized = false;
 			e.printStackTrace();
 		}
 	}
@@ -199,9 +205,10 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	 *      java.lang.String, com.idega.presentation.IWContext)
 	 */
 	public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
+		initialize(iwc);
 		this.setName(name);
 		if (value != null) {
-			this.setContent(value);
+			this.setSelectedElement(value);
 		}
 		return this;
 	}
