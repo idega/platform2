@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+//import java.util.List;
 import java.util.Vector;
 
 import org.jdom.DocType;
@@ -22,6 +23,7 @@ import org.jdom.DocType;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLOutput;
+
 
 /**
  * Title:		DesignDocument
@@ -63,7 +65,7 @@ public class DesignDocument extends XMLDocument {
 	private static final String ATTRIBUTE_SCRIPTLET_CLASS = "scriptletClass"; //NMTOKEN #IMPLIED
 	
 	
-	private Vector _parameters = new Vector();
+	private Vector _parameters = null;
 	private Vector _fields = new Vector();
 	private Title _title=null;
 	private PageHeader _pageHeader=null;
@@ -107,6 +109,9 @@ public class DesignDocument extends XMLDocument {
 	//Adders
 	
 	public void addParameter(Parameter parm){
+		if(_parameters == null){
+			_parameters = new Vector();
+		}
 		_parameters.add(parm);
 		//this.getRootElement().addContent(parm);
 	}
@@ -516,5 +521,22 @@ public class DesignDocument extends XMLDocument {
 			this.getRootElement().addContent(_summary);
 		}
 	}
+	
+//	public List getParameters(){
+//		if(_parameters == null){
+//			_parameters = new Vector();
+//			Iterator iter = getRootElement().getContent().iterator();
+//			while (iter.hasNext()) {
+//				XMLElement element = (XMLElement)iter.next();
+//				if(element.getName().equals(Parameter.ELEMENT_NAME)){
+//					Parameter prm = new Parameter();
+//					//Vantar að geta búið til parameter klasa út frá XMLElement
+//				}
+//					
+//			}
+//		}
+//		return _parameters;
+//	}
+	
 
 }

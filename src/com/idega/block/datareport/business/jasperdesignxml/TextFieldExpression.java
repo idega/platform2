@@ -40,8 +40,13 @@ public class TextFieldExpression extends XMLElement {
 		this.addContent(cData);
 	}
 	
-	public void addField(String prmName){
-		XMLCDATA cData = new XMLCDATA("$F{"+prmName+"}");
+	public void addField(String fieldName){
+		XMLCDATA cData = new XMLCDATA("$F{"+fieldName+"}");
+		this.addContent(cData);
+	}
+	
+	public void addVariable(String var){
+		XMLCDATA cData = new XMLCDATA("$V{"+var+"}");
 		this.addContent(cData);
 	}
 	

@@ -21,12 +21,14 @@ public class Parameter extends XMLElement {
 	private static final String ATTRIBUTE_NAME = "name"; //#REQUIRED
 	private static final String ATTRIBUTE_CLASS = "class";
 	private static final String ATTRIBUTE_IS_FOR_PROMPTING = "isForPrompting"; //(true | false) "true"
-
+	
+	public static final String ELEMENT_NAME = "parameter";
+	
 	/**
 	 * @param name
 	 */
 	public Parameter(String name) {
-		super("parameter");
+		super(ELEMENT_NAME);
 		setName(name);
 	}
 	

@@ -17,7 +17,9 @@ import com.idega.block.datareport.business.jasperdesignxml.Font;
 import com.idega.block.datareport.business.jasperdesignxml.PageFooter;
 import com.idega.block.datareport.business.jasperdesignxml.PageHeader;
 import com.idega.block.datareport.business.jasperdesignxml.ReportElement;
+import com.idega.block.datareport.business.jasperdesignxml.StaticText;
 import com.idega.block.datareport.business.jasperdesignxml.Summary;
+import com.idega.block.datareport.business.jasperdesignxml.Text;
 import com.idega.block.datareport.business.jasperdesignxml.TextElement;
 import com.idega.block.datareport.business.jasperdesignxml.TextField;
 import com.idega.block.datareport.business.jasperdesignxml.TextFieldExpression;
@@ -88,7 +90,7 @@ public class DynamicReportDesign {
 		_designDoc.setColumnCount(1);
 		_designDoc.setPrintOrderVertical();
 		_designDoc.setOrientationPortrait();
-		_designDoc.setWhenNoDataTypeAsNoPages();
+		_designDoc.setWhenNoDataTypeAsAllSectionNoDetail();
 		_designDoc.setIsTitleNewPage(false);
 		_designDoc.setIsSummaryNewPage(false);
 	
@@ -180,6 +182,44 @@ public class DynamicReportDesign {
 		PageFooter pFooter = new PageFooter();
 		pFooter.setHeight(15);
 		//pFooter.setIsSplitAllowed(true);
+			StaticText sText = new StaticText();
+				ReportElement rElement = new ReportElement(0,0,40,15);
+				rElement.setPositionTypeAsFloat();
+				rElement.setIsPrintRepeatedValues(true);
+				rElement.setIsRemoveLineWhenBlank(false);
+				rElement.setIsPrintInFirstWholeBand(false);
+				rElement.setIsPrintWhenDetailOverflows(false);
+			sText.addContent(rElement);
+				Text text = new Text("Page:  ");
+			sText.addContent(text);
+		pFooter.addContent(sText);
+		
+		
+		TextField tField = new TextField();
+			tField.setIsStretchWithOverflow(false);
+			tField.setEvaluationTimeAsNow();
+			tField.setIsBlankWhenNull(false);
+			tField.setHyperlinkTypeAsNone();
+				ReportElement rElement2 = new ReportElement(40,0,100,15);
+				rElement2.setPositionTypeAsFloat();
+				rElement2.setIsPrintRepeatedValues(true);
+				rElement2.setIsRemoveLineWhenBlank(false);
+				rElement2.setIsPrintInFirstWholeBand(false);
+				rElement2.setIsPrintWhenDetailOverflows(false);
+			tField.addContent(rElement2);
+				TextElement tElement = new TextElement();
+				tElement.setTextAlignmentAsLeft();
+				tElement.setVerticalAlignmentAsTop();
+				tElement.setLineSpacingAsSingle();
+			tField.addContent(tElement);
+				TextFieldExpression tfExpression = new TextFieldExpression();
+				tfExpression.setClassType(Integer.class);
+				tfExpression.addVariable("PAGE_NUMBER");
+			tField.addContent(tfExpression);
+		pFooter.addContent(tField);
+
+		
+		
 		_designDoc.setPageFooter(pFooter);
 	}
 	

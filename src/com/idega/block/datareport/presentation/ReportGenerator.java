@@ -18,6 +18,7 @@ import java.util.Vector;
 
 import com.idega.block.dataquery.business.QueryConditionPart;
 import com.idega.block.dataquery.business.QueryHelper;
+import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.data.Query;
 import com.idega.block.dataquery.data.QueryHome;
 import com.idega.block.dataquery.data.QueryResult;
@@ -121,21 +122,25 @@ public class ReportGenerator extends FolderBlock {
 		_design = designTemplate.getJasperDesign(iwc);
 	}
 	
-	private void generateDataSource() throws XMLException, Exception{
-		if(_queryParser == null){
-			Query query = (Query)((QueryHome)IDOLookup.getHome(Query.class)).findByPrimaryKey(_queryPK);
-			_queryParser = new QueryHelper(query);
-		}
-		
-		_dataSource = QueryResult.getInstanceForDocument(_queryParser.getDoc());
+	private void generateDataSource(IWContext iwc) throws XMLException, Exception{
+//		if(_queryParser == null){
+//			Query query = (Query)((QueryHome)IDOLookup.getHome(Query.class)).findByPrimaryKey(_queryPK);
+//			_queryParser = new QueryHelper(query);
+//		}
+		QueryService service = (QueryService)(IBOLookup.getServiceInstance(iwc,QueryService.class));
+		_dataSource = service.generateQueryResult(_queryPK);
 
 	}
 	
 	private void generateReport(IWContext iwc) throws RemoteException, JRException{
 		if(_dataSource != null && _design != null){
 			JasperReportBusiness business = (JasperReportBusiness)IBOLookup.getServiceInstance(iwc,JasperReportBusiness.class);
-			JasperPrint print = business.getReport(_dataSource,new HashMap(),_design);
+			HashMap _parameterMap = new HashMap();
+			_parameterMap.put(DynamicReportDesign.PRM_REPORT_NAME,"Test Report");
+			JasperPrint print = business.getReport(_dataSource,_parameterMap,_design);
 			_reportFilePath = business.getExcelReport(print,_reportName);
+			//business.getPdfReport(print,_reportName);
+			//business.getHtmlReport(print,_reportName);
 		}
 	}
 	
@@ -157,7 +162,7 @@ public class ReportGenerator extends FolderBlock {
 				submForm.add(_fieldTable);
 				this.add(submForm);
 			} else {
-				generateDataSource();
+				generateDataSource(iwc);
 				generateLayout(iwc);
 				generateReport(iwc);
 				this.add(getReportLink(iwc));
