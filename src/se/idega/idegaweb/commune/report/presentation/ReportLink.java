@@ -16,10 +16,10 @@ import se.idega.idegaweb.commune.report.business.Fetcher;
 /**
  * IdegaWeb presentation class for wizard input of a new Report Generator
  * <p>
- * Last modified: $Date: 2003/11/24 07:45:07 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/12 09:57:32 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @see com.idega.block.reports.data.Report
  */
 public class ReportLink extends CommuneBlock {
@@ -225,8 +225,8 @@ public class ReportLink extends CommuneBlock {
         final int categoryId = ((Integer)category.getPrimaryKey()).intValue();
 
         // 3. save report
-        final ReportEntityHandler business = new ReportEntityHandler ();
-        final Report report = business.saveReport
+        //final ReportEntityHandler business = new ReportEntityHandler ();
+        final Report report = ReportEntityHandler.saveReport
                 (reportName, null, columnHeaders, sql, categoryId);
 
         // 4. show feedback to user
