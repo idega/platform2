@@ -40,8 +40,9 @@ import com.idega.transaction.IdegaTransactionManager;
 
 public class PhoneFinanceHandler implements FinanceHandler {
 
-	public static float tax = 1.245f;
-
+//	public static float tax = 1.245f;
+	public static float tax = 1.0f;
+	
 	int count = 0;
 	public PhoneFinanceHandler() {
 	}
@@ -166,11 +167,15 @@ public class PhoneFinanceHandler implements FinanceHandler {
 		if (listOfAccounts != null) {
 			System.err.println("Accounts not null");
 			Map M = getMapOfContractsAccountsByPhoneAccountId(listOfAccounts);
+			System.err.println("Got map of contracts by phone");
 			Map E = new HashMap(listOfAccounts.size());
+			System.err.println("Created Hashmap of accounts");
 			List entries = FinanceFinder.getInstance().listOfUnBilledPhoneEntries(-1, start, end);
+			System.err.println("Got entries");
 
 			AccountPhoneEntry ape;
 			ContractAccounts accounts;
+			System.out.println("entries = " + entries);
 			if (entries != null) {
 				System.err.println("Entries not null size = " + entries.size());
 				AssessmentRound AR = null;
