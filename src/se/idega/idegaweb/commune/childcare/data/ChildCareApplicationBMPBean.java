@@ -9,13 +9,15 @@
  */
 package se.idega.idegaweb.commune.childcare.data;
 
-import java.rmi.RemoteException;
-import java.sql.Date;
-
-import se.idega.idegaweb.commune.account.data.AccountApplication;
-
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolType;
+import com.idega.user.data.User;
+
+import se.idega.idegaweb.commune.childcare.check.data.Check;
+
+import java.sql.Date;
 
 /**
  * This class does something very clever.....
@@ -37,6 +39,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	protected final static String METHOD = "method";
 	protected final static String CARE_TIME = "care_time";
 	protected final static String CHOICE_NUMBER = "choice_number";
+	protected final static String CHECK_ID = "check_id";
 
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
@@ -64,23 +67,33 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(CHILDREN_CARE_TYPE,"",true,true,java.lang.Integer.class);
-		addAttribute(PROVIDER_ID,"",true,true,java.lang.Integer.class);
 		addAttribute(FROM_DATE,"",true,true,java.sql.Date.class);
-		addAttribute(CHILD_ID,"",true,true,java.lang.Integer.class);
 		addAttribute(PARENTS_AGREE,"",true,true,java.lang.Boolean.class);
 		addAttribute(QUEUE_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(METHOD,"",true,true,java.lang.Integer.class);
 		addAttribute(CARE_TIME,"",true,true,java.lang.Integer.class);
 		addAttribute(CHOICE_NUMBER,"",true,true,java.lang.Integer.class);
+		
+		addManyToOneRelationship(CHILDREN_CARE_TYPE,SchoolType.class);
+		addManyToOneRelationship(PROVIDER_ID,School.class);
+		addManyToOneRelationship(CHILD_ID,User.class);
+		addManyToOneRelationship(CHECK_ID,Check.class);
 	}
 	
-	public int getChildrenCareType() {
+	public int getChildrenCareTypeId() {
 		return getIntColumnValue(CHILDREN_CARE_TYPE);	
+	}
+	
+	public SchoolType getChildrenCareType() {
+		return (SchoolType)getColumnValue(CHILDREN_CARE_TYPE);	
 	}
 	
 	public int getProviderId() {
 		return getIntColumnValue(PROVIDER_ID);
+	}
+	
+	public School getProvider() {
+		return (School)getColumnValue(PROVIDER_ID);			
 	}
 	
 	public Date getFromDate() {
@@ -89,6 +102,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	
 	public int getChildId() {
 		return getIntColumnValue(CHILD_ID);	
+	}
+	
+	public User getChild() {
+		return (User) getColumnValue(CHILD_ID);	
 	}
 	
 	public boolean getParentsAgree() {
@@ -110,13 +127,29 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public int getChoiceNumber() {
 		return getIntColumnValue(CHOICE_NUMBER);	
 	}
+	
+	public int getCheckId() {
+		return getIntColumnValue(CHECK_ID);	
+	}
+	
+	public Check getCheck() {
+		return (Check)getColumnValue(CHECK_ID);	
+	}
 		
-	public void setChildrenCareType(int type) {
+	public void setChildrenCareTypeId(int type) {
+		setColumn(CHILDREN_CARE_TYPE,type);	
+	}
+
+	public void setChildrenCareType(SchoolType type) {
 		setColumn(CHILDREN_CARE_TYPE,type);	
 	}
 	
 	public void setProviderId(int id) {
 		setColumn(PROVIDER_ID,id);
+	}
+
+	public void setProvider(School provider) {
+		setColumn(PROVIDER_ID,provider);
 	}
 	
 	public void setFromDate(Date date) {
@@ -125,6 +158,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	
 	public void setChildId(int id) {
 		setColumn(CHILD_ID,id);	
+	}
+
+	public void setChild(User child) {
+		setColumn(CHILD_ID,child);	
 	}
 	
 	public void setParentsAgree(boolean agree) {
@@ -145,5 +182,13 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	
 	public void setChoiceNumber(int number) {
 		setColumn(CHOICE_NUMBER,number);	
+	}
+	
+	public void setCheckId(int checkId) {
+		setColumn(CHECK_ID,checkId);	
+	}
+	
+	public void setCheck(Check check) {
+		setColumn(CHECK_ID,check);	
 	}	
 }

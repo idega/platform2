@@ -34,6 +34,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.Converter;
 import com.idega.user.data.User;
 
+import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -90,6 +91,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	private final static String PARAM_FORM_NAME = "cca_form";
 	private final static String PARAM_TYPE_DROP = "cca_type_drop";
 	private final static String PARAM_CHECK_ID = "cca_check_id";
+	private final static String PARAM_CHILD_ID = "cca_child_id";
 	private final static String PARAM_GUARDIAN_APPROVES = "cca_guardian_approves";
 
 	private final static String NOT_LOGGED_IN = "cca_not_logged_in";
@@ -304,6 +306,12 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				nameTable1.add(getSmallText(child.getFirstName()), 2, 2);
 			}
 			catch (RemoteException e) {
+			}
+			
+			try {
+				form.addParameter(PARAM_CHILD_ID,((Integer)child.getPrimaryKey()).intValue());
+			}
+			catch (RemoteException e) {
 			}			
 		}
 
@@ -424,9 +432,27 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	}
 
 	private void submitForm(IWContext iwc) {
-		String checkId = iwc.getParameter(this.PARAM_CHECK_ID);
-		System.out.println("Check_id = " + checkId);
-		add("Done");
+		String checkId = iwc.getParameter(PARAM_CHECK_ID);
+		String childId = iwc.getParameter(PARAM_CHILD_ID);
+//		System.out.println("Check_id = " + checkId);
+		ChildCareBusiness business = getChildCareBusiness(iwc);
+		boolean done = false;
+		if (business != null) {
+			int providers[] = {valProvider1,valProvider2,valProvider3,valProvider4,valProvider5};
+			String dates[] = {valDate1,valDate2,valDate3,valDate4,valDate5};
+			try {
+				done = business.insertApplications(_user,valType,providers,dates,new Integer(checkId).intValue(),new Integer(childId).intValue(),valCustodianAgree);
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+				done = false;
+			}
+		}
+
+		if (done)
+			add("Done");
+		else
+			add("Unable to insert application");
 	}
 
 	public void setProviderPresentationLink(IBPage page) {
@@ -750,6 +776,15 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	private CheckBusiness getCheckBusiness(IWContext iwc) throws Exception {
 		return (CheckBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, CheckBusiness.class);
 	}	
+
+	private ChildCareBusiness getChildCareBusiness(IWContext iwc) {
+		try {
+			return (ChildCareBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, ChildCareBusiness.class);
+		}
+		catch (RemoteException e) {
+			return null;
+		}
+	}
 	
 	private boolean checkParameters(IWContext iwc) {
 		valProvider1 = iwc.isParameterSet(PARAM_PROVIDER_1)?Integer.parseInt(iwc.getParameter(PARAM_PROVIDER_1)):-1;
@@ -767,7 +802,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		valDate3 = iwc.getParameter(PARAM_DATE_3);
 		valDate4 = iwc.getParameter(PARAM_DATE_4);
 		valDate5 = iwc.getParameter(PARAM_DATE_5);
-		valType = -1;
+		valType = iwc.isParameterSet(PARAM_TYPE_DROP)?Integer.parseInt(iwc.getParameter(PARAM_TYPE_DROP)):-1;
 		valCustodianAgree = iwc.isParameterSet(PARAM_GUARDIAN_APPROVES);
 		/**
 		 * @todo Setja inn tékk á þessum breytum
