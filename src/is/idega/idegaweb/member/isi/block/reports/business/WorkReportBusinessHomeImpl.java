@@ -1,6 +1,6 @@
 /*
- * $Id: WorkReportBusinessHomeImpl.java,v 1.3 2004/11/25 23:38:41 eiki Exp $
- * Created on Nov 25, 2004
+ * $Id: WorkReportBusinessHomeImpl.java,v 1.4 2004/11/26 17:41:05 eiki Exp $
+ * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -14,10 +14,10 @@ import com.idega.business.IBOHomeImpl;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/25 23:38:41 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/11/26 17:41:05 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class WorkReportBusinessHomeImpl extends IBOHomeImpl implements WorkReportBusinessHome {
 

@@ -392,6 +392,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			wrId = ((Integer) report.getPrimaryKey()).intValue();
 			if (!isWorkReportReadOnly(wrId)) {
 				createOrUpdateLeagueWorkReportGroupsForYear(year);
+				//this may only be temporarely needed, goes through all workreports and stores them
+				fixMissingInfoForAllWorkReports(year);
 				if (!justCreated) {
 					updateAndStoreWorkReport(report);
 				}
@@ -437,7 +439,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				report.setRegionalUnionGroupId((Integer) regionalUnion.getPrimaryKey());
 				report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
 				String abbr = regionalUnion.getAbbrevation();
-				if (abbr == null) {
+				if (abbr == null || "".equals(abbr)) {
 					abbr = regionalUnion.getShortName();
 					if (abbr == null) {
 						abbr = regionalUnion.getName();
@@ -446,11 +448,14 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				report.setRegionalUnionAbbreviation(abbr);
 				report.setRegionalUnionName(regionalUnion.getName());
 			}
-			else if(club.getGroupType().equals(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION)){
+			else if(club.getGroupType().equals(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION)){			
 				report.setRegionalUnionNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
 				String abbr = club.getAbbrevation();
-				if (abbr == null) {
+				if (abbr == null || "".equals(abbr)) {
 					abbr = club.getShortName();
+					if (abbr == null) {
+						abbr = club.getName();
+					}
 				}
 				report.setRegionalUnionAbbreviation(abbr);
 				report.setRegionalUnionName(club.getName());
@@ -709,6 +714,115 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			return null;
 		}
 		return createWorkReportBoardMember(reportID, user, workReportGroup);
+	}
+	
+	/**
+	 * Goes through all the workreports of the supplied year and tries to find the short,abbr,name and abbr of the regional union/clubs/leagues and adds it to the workreports
+	 *
+	 */
+	public void fixMissingInfoForAllWorkReports(int year){
+		Collection reports = getAllWorkReportsForYear(year);
+		GroupBusiness groupBiz;
+		try {
+			groupBiz = getGroupBusiness();
+			
+			if(reports!=null && !reports.isEmpty()){
+				Iterator iter = reports.iterator();
+				
+				while (iter.hasNext()) {
+					
+					WorkReport report = (WorkReport) iter.next();
+					String type = report.getGroupType();
+					try {
+						if(IWMemberConstants.GROUP_TYPE_CLUB.equals(type)){
+							
+							int ruId = report.getRegionalUnionGroupId().intValue();
+							
+							Group club = groupBiz.getGroupByGroupID(report.getGroupId().intValue());
+							
+							if(ruId>0){
+								
+								Group regionalUnion = groupBiz.getGroupByGroupID(ruId);
+								
+								report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
+								String abbr = regionalUnion.getAbbrevation();
+								if (abbr == null || "".equals(abbr)) {
+									abbr = regionalUnion.getShortName();
+									if (abbr == null) {
+										abbr = regionalUnion.getName();
+									}
+								}
+								report.setRegionalUnionAbbreviation(abbr);
+								report.setRegionalUnionName(regionalUnion.getName());
+								
+								
+							}
+							
+							report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
+							report.setGroupName(club.getName());
+							report.setGroupShortName(club.getShortName());
+							
+							report.store();
+							
+							
+							
+							
+						}
+						else if(IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(type)){
+							
+							Group regionalUnion = groupBiz.getGroupByGroupID(report.getGroupId().intValue());
+							String number = regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
+							report.setRegionalUnionGroupId((Integer) regionalUnion.getPrimaryKey());
+							report.setRegionalUnionNumber(number);
+							String abbr = regionalUnion.getAbbrevation();
+							if (abbr == null || "".equals(abbr)) {
+								abbr = regionalUnion.getShortName();
+								if (abbr == null) {
+									abbr = regionalUnion.getName();
+								}
+							}
+							report.setRegionalUnionAbbreviation(abbr);
+							report.setRegionalUnionName(regionalUnion.getName());
+							
+							report.setGroupNumber(number);
+							report.setGroupName(regionalUnion.getName());
+							report.setGroupShortName(regionalUnion.getShortName());
+							
+							report.store();
+							
+							
+							
+						}
+						else if(IWMemberConstants.GROUP_TYPE_LEAGUE.equals(type)){
+							Group league = groupBiz.getGroupByGroupID(report.getGroupId().intValue());
+							String number = league.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
+							
+							
+							report.setGroupNumber(number);
+							report.setGroupName(league.getName());
+							report.setGroupShortName(league.getShortName());
+							
+							report.store();
+						}
+					}
+					catch (IDOStoreException e1) {
+						e1.printStackTrace();
+					}
+					catch (EJBException e1) {
+						e1.printStackTrace();
+					}
+					catch (FinderException e1) {
+						e1.printStackTrace();
+					}
+					
+				}
+				
+			}
+			
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public WorkReportBoardMember createWorkReportBoardMember(int reportID, User user, WorkReportGroup workReportGroup)

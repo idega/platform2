@@ -1,6 +1,6 @@
 /*
- * $Id: WorkReportBusiness.java,v 1.59 2004/11/25 23:38:41 eiki Exp $
- * Created on Nov 25, 2004
+ * $Id: WorkReportBusiness.java,v 1.60 2004/11/26 17:41:05 eiki Exp $
+ * Created on Nov 26, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -42,10 +42,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/25 23:38:41 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/11/26 17:41:05 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.59 $
+ * @version $Revision: 1.60 $
  */
 public interface WorkReportBusiness extends IBOService, MemberUserBusiness, UserGroupPlugInBusiness {
 
@@ -326,6 +326,11 @@ public interface WorkReportBusiness extends IBOService, MemberUserBusiness, User
 	 */
 	public WorkReportBoardMember createWorkReportBoardMember(int reportID, String personalID,
 			WorkReportGroup workReportGroup) throws CreateException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#fixMissingInfoForAllWorkReports
+	 */
+	public void fixMissingInfoForAllWorkReports(int year) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#createWorkReportBoardMember
