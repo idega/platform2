@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.55 2001/12/10 21:15:20 aron Exp $
+ * $Id: NewsReader.java,v 1.56 2001/12/10 21:18:17 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -59,8 +59,8 @@ public class NewsReader extends Block implements IWBlock {
   private int numberOfExpandedNews = 3;
   private int numberOfCollectionNews = 5;
   private int iSpaceBetween = 1;
-  private int iSpaceBetweenNews = 30;
-  private int iSpaceBetweenNewsAndBody = 10;
+  private int iSpaceBetweenNews = 20;
+  private int iSpaceBetweenNewsAndBody = 5;
   private int cellPadding = 0;
   private int cellSpacing = 0;
   private int viewPageId = -1;
