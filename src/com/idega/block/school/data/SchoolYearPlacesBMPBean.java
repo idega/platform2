@@ -16,7 +16,7 @@ public class SchoolYearPlacesBMPBean extends GenericEntity implements SchoolYear
 
   public final static String SCHOOLYEARPLACES = "sch_year_places";
   public final static String SCHOOL = "school_id";
-  public final static String SCHOOLYEAR = "school_year_id";
+  public final static String SCHOOLYEAR = "school_year";
   public final static String PLACES = "places";
 
   public void initializeAttributes() {
@@ -45,5 +45,9 @@ public class SchoolYearPlacesBMPBean extends GenericEntity implements SchoolYear
   }
   public void setPlaces(int places){
     this.setColumn(PLACES,places);
+  }
+
+  public java.util.Collection ejbFindAllBySchool(int schoolId) throws javax.ejb.FinderException{
+    return super.idoFindPKsBySQL("select * from "+getEntityName()+" where "+SCHOOL+" = "+schoolId);
   }
 }

@@ -21,14 +21,18 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear{
   public final static String AGE = "year_age";
 
   public void initializeAttributes() {
-    addAttribute(this.getIDColumnName());
-    addAttribute(NAME,"Name",true,true,String.class);
+    addAttribute(getIDColumnName());
+    addAttribute(NAME,"Name",true,true,String.class,3);
     addAttribute(INFO,"Info",true,true,String.class);
     addAttribute(AGE,"Age",true,true,Integer.class);
-    addManyToManyRelationShip(School.class);
+    setUnique(NAME,true);
   }
+
   public String getEntityName() {
     return SCHOOLYEAR;
+  }
+  public String getName(){
+    return getSchoolYearName();
   }
   public void setSchoolYearName(String name){
     this.setColumn(NAME,name);
@@ -47,6 +51,14 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear{
   }
   public int getSchoolYearAge(){
     return getIntColumnValue(AGE);
+  }
+
+  public Collection ejbFindAllSchoolYears()throws javax.ejb.FinderException{
+    return super.idoFindAllIDsBySQL();
+  }
+
+  public Collection ejbFindAllByAge(int age) throws javax.ejb.FinderException{
+    return super.idoFindPKsBySQL("select * from "+getEntityName()+" where "+AGE+" = "+age);
   }
 
 }

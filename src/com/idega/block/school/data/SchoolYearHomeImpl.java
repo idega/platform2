@@ -13,6 +13,20 @@ public class SchoolYearHomeImpl extends com.idega.data.IDOFactory implements Sch
  }
 
 
+public java.util.Collection findAllSchoolYears()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolYearBMPBean)entity).ejbFindAllSchoolYears();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllByAge(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolYearBMPBean)entity).ejbFindAllByAge(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public SchoolYear findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (SchoolYear) super.findByPrimaryKeyIDO(pk);
  }

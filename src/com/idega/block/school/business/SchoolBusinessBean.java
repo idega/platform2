@@ -75,7 +75,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
               String latitude,
               String longitude,
               int area_id,
-              int[] type_ids
+              int[] type_ids,
+              int[] year_ids
       ) throws java.rmi.RemoteException{
 
       SchoolHome shome = (SchoolHome) IDOLookup.getHome(School.class);
@@ -106,7 +107,11 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
       newSchool.setSchoolZipCode(zipcode);
       newSchool.store();
 
-      newSchool.addSchoolTypesRemoveOther(type_ids);
+      if(type_ids!=null)
+        newSchool.addSchoolTypesRemoveOther(type_ids);
+      if(year_ids!=null)
+         newSchool.addSchoolYearsRemoveOther(year_ids);
+
     }
 
     public Map getSchoolRelatedSchoolTypes(School school){
@@ -128,4 +133,46 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
       }
       return null;
     }
+
+     public Map getSchoolRelatedSchoolYears(School school){
+      try{
+        Collection years = school.findRelatedSchoolYears();
+        if(years!=null && !years.isEmpty()){
+          HashMap map = new HashMap(years.size());
+          Iterator iter = years.iterator();
+          SchoolYear year;
+          while(iter.hasNext()){
+            year = (SchoolYear) iter.next();
+            map.put(year.getPrimaryKey(),year);
+          }
+          return map;
+        }
+      }
+      catch(Exception ex){
+        ex.printStackTrace();
+      }
+      return null;
+    }
+
+     public Map getMapOfSchools(){
+      try{
+        Collection schools = findAllSchools();
+        if(schools!=null && !schools.isEmpty()){
+          HashMap map = new HashMap(schools.size());
+          Iterator iter = schools.iterator();
+          School school;
+          while(iter.hasNext()){
+            school = (School) iter.next();
+            map.put(school.getPrimaryKey(),school);
+          }
+          return map;
+        }
+      }
+      catch(Exception ex){
+        ex.printStackTrace();
+      }
+      return null;
+    }
+
+
 }

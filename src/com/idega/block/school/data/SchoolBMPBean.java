@@ -46,10 +46,16 @@ public class SchoolBMPBean extends GenericEntity implements School {
     this.addAttribute(LONGITUDE,"longitude",true,true,String.class,20);
     this.addAttribute(HEADMASTER,"Headmaster",true,true,Integer.class,this.MANY_TO_ONE,Group.class);
     this.addManyToManyRelationShip(SchoolType.class);
+    this.addManyToManyRelationShip(SchoolYear.class);
   }
   public String getEntityName() {
     return SCHOOL;
   }
+
+  public String getName(){
+    return getSchoolName();
+  }
+
   public int getSchoolTypeId(){
     return this.getIntColumnValue(SCHOOLTYPE);
   }
@@ -146,8 +152,25 @@ public class SchoolBMPBean extends GenericEntity implements School {
       super.addTo(SchoolType.class,ids);
     }
     catch(java.sql.SQLException sql){
+      sql.printStackTrace();
+    }
+  }
+
+  public void addSchoolYears(int[] ids){
+    try{
+      super.addTo(SchoolYear.class,ids);
+    }
+    catch(java.sql.SQLException sql){
 
     }
+  }
+
+  public void addSchoolYearsRemoveOther(int[] ids){
+    try{
+      super.removeFrom(SchoolYear.class);
+    }
+    catch(java.sql.SQLException ex){}
+    this.addSchoolYears(ids);
   }
 
   public void addSchoolTypesRemoveOther(int[] ids){
@@ -160,6 +183,10 @@ public class SchoolBMPBean extends GenericEntity implements School {
 
   public Collection findRelatedSchoolTypes()throws com.idega.data.IDORelationshipException{
     return super.idoGetRelatedEntities(SchoolType.class);
+  }
+
+  public Collection findRelatedSchoolYears()throws com.idega.data.IDORelationshipException{
+    return super.idoGetRelatedEntities(SchoolYear.class);
   }
 
   public Collection ejbFindAllByAreaAndType(int area,int type) throws javax.ejb.FinderException{

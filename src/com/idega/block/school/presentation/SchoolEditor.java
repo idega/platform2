@@ -89,11 +89,20 @@ public class SchoolEditor extends Block {
       String lon = iwc.getParameter("sch_lon");
       String lat = iwc.getParameter("sch_lat");
       String[] type_ids = iwc.getParameterValues("sch_type_ids");
+      String[] year_ids = iwc.getParameterValues("sch_year_ids");
       int[] types = null;
+      int[] years = null;
       if(type_ids!=null && type_ids.length > 0){
         types = new int[type_ids.length];
         for (int i = 0; i < type_ids.length; i++) {
           types[i] = Integer.parseInt(type_ids[i]);
+        }
+
+      }
+      if(year_ids!=null && year_ids.length > 0){
+        years = new int[year_ids.length];
+        for (int i = 0; i < year_ids.length; i++) {
+          years[i] = Integer.parseInt(year_ids[i]);
         }
 
       }
@@ -103,7 +112,7 @@ public class SchoolEditor extends Block {
       if(area!=null)
         areaId = Integer.parseInt(area);
 
-      sabBean.storeSchool(sid,name,info,address,zipcode,ziparea,phone,keycode,lat,lon,areaId,types);
+      sabBean.storeSchool(sid,name,info,address,zipcode,ziparea,phone,keycode,lat,lon,areaId,types,years);
     }
   }
 
@@ -167,7 +176,8 @@ public class SchoolEditor extends Block {
   }
 
   public PresentationObject getInputTable(IWContext iwc,School ent)throws java.rmi.RemoteException{
-    Table T = new Table(3,15);
+    int last = 16;
+    Table T = new Table(3,last);
     T.mergeCells(1,1,3,1);
 
     TextInput inputName = new TextInput("sch_name");
@@ -182,12 +192,13 @@ public class SchoolEditor extends Block {
     TextInput inputLAT = new TextInput("sch_lat");
     DropdownMenu drpType = new DropdownMenu(getSchoolTypes(iwc),"sch_type_id");
     DropdownMenu drpArea = new DropdownMenu(getSchoolAreas(iwc),"sch_area_id");
-    Map schooltypes = null;
+    Map schooltypes = null,schoolyears = null;
     int Id = -1;
     if(ent!=null){
 
       try{
       schooltypes = getSchoolRelatedSchoolTypes(iwc,ent);
+      schoolyears = getSchoolRelatedSchoolYears(iwc,ent);
 
       Id = ((Integer)ent.getPrimaryKey()).intValue();
       inputName.setContent(ent.getSchoolName());
@@ -210,17 +221,17 @@ public class SchoolEditor extends Block {
     int row = 1;
 
     //T.add(tFormat.format(iwrb.getLocalizedString("type","Type")),1,row++);
-    T.add(tFormat.format(iwrb.getLocalizedString("area","Area")),1,row++);
-    T.add(tFormat.format(iwrb.getLocalizedString("name","Name")),1,row++);
-    T.add(tFormat.format(iwrb.getLocalizedString("address","Address")),1,row++);
-    T.add(tFormat.format(iwrb.getLocalizedString("zipcode","Zipcode")),1,row++);
-    T.add(tFormat.format(iwrb.getLocalizedString("ziparea","Ziparea")),1,row++);
-    T.add(tFormat.format(iwrb.getLocalizedString("phone","Phone")),1,row++);
-    T.add(tFormat.format(iwrb.getLocalizedString("info","Info")),1,row++);
-    T.add(tFormat.format(iwrb.getLocalizedString("keycode","Keycode")),1,row++);
-    T.add(tFormat.format(iwrb.getLocalizedString("latitude","Latitude")),1,row++);
-    T.add(tFormat.format(iwrb.getLocalizedString("longitude","Longitude")),1,row++);
-    T.add(tFormat.format(iwrb.getLocalizedString("school_area","SchoolArea"),tFormat.TITLE),1,row++);
+    T.add(tFormat.format(iwrb.getLocalizedString("area","Area"),tFormat.HEADER),1,row++);
+    T.add(tFormat.format(iwrb.getLocalizedString("name","Name"),tFormat.HEADER),1,row++);
+    T.add(tFormat.format(iwrb.getLocalizedString("address","Address"),tFormat.HEADER),1,row++);
+    T.add(tFormat.format(iwrb.getLocalizedString("zipcode","Zipcode"),tFormat.HEADER),1,row++);
+    T.add(tFormat.format(iwrb.getLocalizedString("ziparea","Ziparea"),tFormat.HEADER),1,row++);
+    T.add(tFormat.format(iwrb.getLocalizedString("phone","Phone"),tFormat.HEADER),1,row++);
+    T.add(tFormat.format(iwrb.getLocalizedString("info","Info"),tFormat.HEADER),1,row++);
+    T.add(tFormat.format(iwrb.getLocalizedString("keycode","Keycode"),tFormat.HEADER),1,row++);
+    T.add(tFormat.format(iwrb.getLocalizedString("latitude","Latitude"),tFormat.HEADER),1,row++);
+    T.add(tFormat.format(iwrb.getLocalizedString("longitude","Longitude"),tFormat.HEADER),1,row++);
+    T.add(tFormat.format(iwrb.getLocalizedString("school_area","SchoolArea"),tFormat.HEADER),1,row++);
 
     row = 2;
     //T.add(drpType,3,row++);
@@ -264,14 +275,45 @@ public class SchoolEditor extends Block {
 
     T.add(typeTable,1,13);
 
+    Table yearTable = new Table();
 
-    T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_school","true"),3,14);
+    Collection years = getSchoolYears(iwc);
+    if(years!=null && !years.isEmpty()){
+      java.util.Iterator iter = years.iterator();
+      boolean hasMap = schoolyears!=null;
+      SchoolYear year;
+      CheckBox chk = new CheckBox("sch_year_ids");
+      CheckBox tjk;
+      Integer primaryKey;
+      int col3=1;
+      int row3 = 1;
+      while(iter.hasNext()){
+        year = (SchoolYear) iter.next();
+        primaryKey = (Integer) year.getPrimaryKey();
+        tjk = (CheckBox) chk.clone();
+        tjk.setValue(primaryKey.intValue());
+        if(hasMap && schoolyears.containsKey(primaryKey)){
+          tjk.setChecked(true);
+        }
+        yearTable.add(tjk,col3,row3++);
+        yearTable.add(year.getSchoolYearName(),col3++,row3);
+        row3=1;
+
+      }
+
+    }
+
+    T.mergeCells(1,15,3,15);
+    T.add(yearTable,1,15);
+
+
+    T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_school","true"),3,last);
     Link cancel = new Link(iwrb.getLocalizedImageButton("cancel","Cancel"));
-    T.add(cancel,3,14);
+    T.add(cancel,3,last);
     if(Id > 0){
       Link delete = new Link(iwrb.getLocalizedImageButton("delete","Delete"));
       delete.addParameter("sch_delete_school",Id);
-      T.add(delete,3,14);
+      T.add(delete,3,last);
     }
 
     return T;
@@ -282,9 +324,19 @@ public class SchoolEditor extends Block {
     return sbuiz.getSchoolRelatedSchoolTypes(school);
   }
 
+  private Map getSchoolRelatedSchoolYears(IWContext iwc,School school)throws java.rmi.RemoteException{
+    SchoolBusiness sbuiz = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
+    return sbuiz.getSchoolRelatedSchoolYears(school);
+  }
+
   private Collection getSchoolTypes(IWContext iwc)throws java.rmi.RemoteException{
     SchoolTypeBusiness sbuiz = (SchoolTypeBusiness)IBOLookup.getServiceInstance(iwc,SchoolTypeBusiness.class);
     return sbuiz.findAllSchoolTypes();
+  }
+
+   private Collection getSchoolYears(IWContext iwc)throws java.rmi.RemoteException{
+    SchoolYearBusiness sbuiz = (SchoolYearBusiness)IBOLookup.getServiceInstance(iwc,SchoolYearBusiness.class);
+    return sbuiz.findAllSchoolYears();
   }
 
   private Collection getSchoolAreas(IWContext iwc)throws java.rmi.RemoteException{
