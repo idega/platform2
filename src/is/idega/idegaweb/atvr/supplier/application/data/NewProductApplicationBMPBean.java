@@ -18,7 +18,6 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import oracle.net.ano.SupervisorService;
 
 /**
  * This class does something very clever.....
