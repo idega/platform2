@@ -1,17 +1,18 @@
 package com.idega.block.trade.stockroom.business;
 
-
-public class ProductBusinessHomeImpl extends com.idega.business.IBOHomeImpl implements ProductBusinessHome
-{
- protected Class getBeanInterfaceClass(){
-  return ProductBusiness.class;
- }
+import com.idega.business.IBOHomeImpl;
 
 
- public ProductBusiness create() throws javax.ejb.CreateException{
-  return (ProductBusiness) super.createIBO();
- }
+/**
+ * @author gimmi
+ */
+public class ProductBusinessHomeImpl extends IBOHomeImpl implements ProductBusinessHome {
 
+	protected Class getBeanInterfaceClass() {
+		return ProductBusiness.class;
+	}
 
-
+	public ProductBusiness create() throws javax.ejb.CreateException {
+		return (ProductBusiness) super.createIBO();
+	}
 }

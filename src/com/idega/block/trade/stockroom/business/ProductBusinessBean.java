@@ -394,40 +394,42 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
   public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered) throws RemoteException, IDOFinderException  {
   		return getDepartureAddresses(product, stamp, ordered, null);
   }
-  
   public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key) throws RemoteException, IDOFinderException  {
-		List list = getDepartureAddresses(product, ordered);
-		List returner = new Vector();
-		try {
-			Timeframe[] timeframes = product.getTimeframes();
-			ProductPrice[] pPrices;
-			TravelAddress ta;
-			boolean add = false;
-			if (list != null) {
-				Iterator iter = list.iterator();
-				while (iter.hasNext()) {
-					ta = (TravelAddress) iter.next();
-					add = false;
-					for (int i = 0; i < timeframes.length; i++) {
-						if (getStockroomBusiness().isInTimeframe(new IWTimestamp(timeframes[i].getFrom()), new IWTimestamp(timeframes[i].getTo()), stamp, timeframes[i].getYearly())) {
-							if (key == null) {
-								pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false);
-							} else {
-								pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false, key);
-							}
-							if (pPrices.length > 0) {
-								add = true;
-								break;
-							}
-						}
-					}
-					if (add) {
-						returner.add(ta);	
-					}
-				}
-			}
+  	try{
+	  	return getDepartureAddresses(product, stamp, ordered, key, product.getTimeframes());
 		}catch (SQLException sql) {
 			throw new IDOFinderException(sql);
+		}
+  }  
+  public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key, Timeframe[] timeframes) throws RemoteException, IDOFinderException  {
+		List list = getDepartureAddresses(product, ordered);
+		List returner = new Vector();
+
+		ProductPrice[] pPrices;
+		TravelAddress ta;
+		boolean add = false;
+		if (list != null) {
+			Iterator iter = list.iterator();
+			while (iter.hasNext()) {
+				ta = (TravelAddress) iter.next();
+				add = false;
+				for (int i = 0; i < timeframes.length; i++) {
+					if (getStockroomBusiness().isInTimeframe(new IWTimestamp(timeframes[i].getFrom()), new IWTimestamp(timeframes[i].getTo()), stamp, timeframes[i].getYearly())) {
+						if (key == null) {
+							pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false);
+						} else {
+							pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false, key);
+						}
+						if (pPrices.length > 0) {
+							add = true;
+							break;
+						}
+					}
+				}
+				if (add) {
+					returner.add(ta);	
+				}
+			}
 		}
 	
 		return returner;
