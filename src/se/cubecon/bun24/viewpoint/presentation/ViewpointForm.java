@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/13 07:38:32 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/15 10:14:36 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -50,6 +50,7 @@ public class ViewpointForm extends CommuneBlock {
 	public final static String PARAM_ANSWER = "vp_answer";
     public final static String PARAM_SSN = "vp_ssn";
 	public final static String PARAM_VIEWPOINT_ID = "vp_viewpoint_id";
+	public final static String PARAM_ROAD_ID = "vp_road_id";
 
 	private final static String SHOWTOPCATEGORIESFORM_ACTION
         = "vp_showtopcategoriesform_action";
@@ -104,6 +105,10 @@ public class ViewpointForm extends CommuneBlock {
         = "viewpoint.enterSubCategory";
 	private final static String ENTERSUBCATEGORY_DEFAULT
         = "Vilket underområde vill du ge synpunkter om?";
+	private final static String ENTERROAD_KEY
+        = "viewpoint.enterRoad";
+	private final static String ENTERROAD_DEFAULT
+        = "Gata - om relevant";
 	private final static String ENTERTOPCATEGORY_KEY
         = "viewpoint.enterTopCategory";
 	private final static String ENTERTOPCATEGORY_DEFAULT
@@ -133,6 +138,8 @@ public class ViewpointForm extends CommuneBlock {
         + " en synpunkt måste du antingen ha matat in den själv, vara"
         + " synpunktens handläggare eller ha rättigheter att bli synpunktens"
         + " handläggare.";
+	private final static String ROADINFO_KEY = "viewpoint.roadInfo";
+	private final static String ROADINFO_DEFAULT = "Gata";
 	private final static String SSN_KEY = "viewpoint.ssn";
 	private final static String SSN_DEFAULT = "Personnummer";
 	private final static String SENDANSWERTOCITIZEN_KEY
@@ -272,15 +279,28 @@ public class ViewpointForm extends CommuneBlock {
 			return;
 		}
 		final Form form = new Form();
-		final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
+		final DropdownMenu categoryDropdown = (DropdownMenu) getStyledInterface
                 (new DropdownMenu (PARAM_CATEGORY));
+		final DropdownMenu roadDropdown = (DropdownMenu) getStyledInterface
+                (new DropdownMenu (PARAM_ROAD_ID));
 		final int topCategoryId
                 = Integer.parseInt (context.getParameter (PARAM_CATEGORY));
-		final SubCategory [] categories = getViewpointBusiness
-                (context).findSubCategories (topCategoryId);
+        final ViewpointBusiness viewpointBusiness
+                = getViewpointBusiness (context);
+		final SubCategory [] categories
+                = viewpointBusiness.findSubCategories (topCategoryId);
 		for (int i = 0; i < categories.length; i++) {
 			final String id = categories [i].getPrimaryKey ().toString();
-			dropdown.addMenuElement (id, categories [i].getName ());
+			categoryDropdown.addMenuElement (id, categories [i].getName ());
+		}
+		final RoadResponsible [] roads
+                = viewpointBusiness.findAllRoadResponsible ();
+        roadDropdown.addMenuElement ("-1", "Ej relevant");
+		for (int i = 0; i < roads.length; i++) {
+            final RoadResponsible road = roads [i];
+			final String id = road.getPrimaryKey ().toString();
+			roadDropdown.addMenuElement (id, road.getRoad () + " ("
+                                     + road.getArea () + ")");
 		}
 		final TextInput textInput = (TextInput) getStyledInterface
                 (new TextInput (PARAM_SUBJECT));
@@ -300,7 +320,11 @@ public class ViewpointForm extends CommuneBlock {
 		int row = 1;
 		table.add (getLocalizedSmallHeader
                    (ENTERSUBCATEGORY_KEY, ENTERSUBCATEGORY_DEFAULT), 1, row++);
-		table.add (dropdown, 1, row++);
+		table.add (categoryDropdown, 1, row++);
+		table.setHeight (row++, 12);
+		table.add (getLocalizedSmallHeader (ENTERROAD_KEY, ENTERROAD_DEFAULT),
+                   1, row++);
+		table.add (roadDropdown, 1, row++);
 		table.setHeight (row++, 12);
 		table.add (getLocalizedSmallHeader (SUBJECT_KEY, SUBJECT_DEFAULT), 1,
                    row++);
@@ -352,7 +376,7 @@ public class ViewpointForm extends CommuneBlock {
         } else if (isCurrentUserOriginator || isCurrentUserHandler) {
             // user just wants to see the viewpoint
             final Table table = createViewpointTable (viewpoint, context);
-            int row = 5;
+            int row = 6;
             if (viewpoint.isAnswered ()) {
                 table.add (getLocalizedSmallHeader (ANSWER_KEY, ANSWER_DEFAULT),
                            1, row);
@@ -383,9 +407,9 @@ public class ViewpointForm extends CommuneBlock {
                 = getSubmitButton (ACCEPTTOHANDLEVIEWPOINT_ACTION,
                                    IACCEPTTOHANDLETHISVIEWPOINT_KEY,
                                    IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT);
-		table.add (submit, 1, 5);
+		table.add (submit, 1, 6);
 		table.add (getSubmitButton (CANCEL_ACTION, CANCEL_KEY, CANCEL_DEFAULT),
-                   1, 6);
+                   1, 7);
 		form.add(table);
 		add(form);
 	}
@@ -444,7 +468,7 @@ public class ViewpointForm extends CommuneBlock {
         final SubmitButton forwardButton = getSubmitButton
                 (FORWARDVIEWPOINT_ACTION, FORWARD_KEY, FORWARD_DEFAULT);
         final Table table = createViewpointTable (viewpoint, context);
-        int row = 5;
+        int row = 6;
 		table.add (getLocalizedHeader(ANSWER_KEY, ANSWER_DEFAULT), 1, row);
 		table.add (new Break(), 1, row);
 		table.add (textArea, 1, row++);
@@ -503,10 +527,12 @@ public class ViewpointForm extends CommuneBlock {
 		final Group handlerGroup = subCategory.getHandlerGroup ();
 		final int handlerGroupId
                 = ((Integer) handlerGroup.getPrimaryKey()).intValue();
+		final int roadId = new Integer
+                (context.getParameter (PARAM_ROAD_ID)).intValue();
 		viewpointBusiness.createViewpoint
                 (getCurrentUser (context), context.getParameter (PARAM_SUBJECT),
                  context.getParameter (PARAM_MESSAGE), topCategory.getName ()
-                 + "/" + subCategory.getName (), handlerGroupId);
+                 + "/" + subCategory.getName (), handlerGroupId, roadId);
 		final Text text1
                 = new Text (getLocalizedString (CONFIRMENTERVIEWPOINT_KEY,
                                                 CONFIRMENTERVIEWPOINT_DEFAULT));
@@ -693,6 +719,25 @@ public class ViewpointForm extends CommuneBlock {
                    row);
 		table.add (new Break (), 1, row);
 		table.add (new Text (viewpoint.getSubject ()), 1, row++);
+		table.add (getLocalizedSmallHeader (ROADINFO_KEY, ROADINFO_DEFAULT), 1,
+                   row);
+		table.add (new Break (), 1, row);
+        final Integer roadInfoId = viewpoint.getRoadResponsibleId ();
+        String road = "-";
+        if (roadInfoId != null) {
+            try {
+                final ViewpointBusiness viewpointBusiness
+                        = getViewpointBusiness(context);
+                final RoadResponsible roadResponsible
+                        = viewpointBusiness.findRoadResponsible
+                        (roadInfoId.intValue ());
+                road = roadResponsible.getRoad () + " ("
+                        + roadResponsible.getArea () + ")";
+            } catch (FinderException e) {
+                e.printStackTrace ();
+            }
+        }
+        table.add (new Text (road), 1, row++);
 		table.add (getLocalizedSmallHeader (MESSAGE_KEY, MESSAGE_DEFAULT), 1,
                    row);
 		table.add (new Break (), 1, row);

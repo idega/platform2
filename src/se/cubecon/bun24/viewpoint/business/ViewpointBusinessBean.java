@@ -1,32 +1,21 @@
 package se.cubecon.bun24.viewpoint.business;
 
+import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.process.data.*;
+import com.idega.business.IBOLookup;
+import com.idega.data.*;
+import com.idega.user.data.*;
 import java.rmi.RemoteException;
-
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-
-import se.cubecon.bun24.viewpoint.data.SubCategory;
-import se.cubecon.bun24.viewpoint.data.SubCategoryHome;
-import se.cubecon.bun24.viewpoint.data.TopCategory;
-import se.cubecon.bun24.viewpoint.data.TopCategoryHome;
-import se.cubecon.bun24.viewpoint.data.Viewpoint;
-import se.cubecon.bun24.viewpoint.data.ViewpointHome;
+import javax.ejb.*;
+import se.cubecon.bun24.viewpoint.data.*;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
-import com.idega.block.process.business.CaseBusinessBean;
-import com.idega.block.process.data.CaseStatus;
-import com.idega.block.process.data.CaseStatusHome;
-import com.idega.business.IBOLookup;
-import com.idega.data.IDOLookup;
-import com.idega.user.data.Group;
-import com.idega.user.data.User;
-
 /**
- * Last modified: $Date: 2003/04/02 16:12:22 $ by $Author: laddi $
+ * Last modified: $Date: 2003/05/15 10:14:36 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ViewpointBusinessBean extends CaseBusinessBean
     implements ViewpointBusiness {
@@ -46,7 +35,8 @@ public class ViewpointBusinessBean extends CaseBusinessBean
 
     public void createViewpoint (final User user, final String subject,
                                  final String body, final String category,
-                                 final int handlerGroupId)
+                                 final int handlerGroupId,
+                                 final int roadResponsibleId)
         throws CreateException, RemoteException {
 		final Viewpoint viewpoint = getViewpointHome ().create ();
         
@@ -55,6 +45,9 @@ public class ViewpointBusinessBean extends CaseBusinessBean
 		viewpoint.setMessage (body);
 		viewpoint.setCategory (category);
   		viewpoint.setHandlerGroupId (handlerGroupId);
+        if (roadResponsibleId >= 0) {
+            viewpoint.setRoadResponsibleId (roadResponsibleId);
+        }
 		viewpoint.store();
 
         final String messageBody
@@ -159,9 +152,31 @@ public class ViewpointBusinessBean extends CaseBusinessBean
 		try {
 			final SubCategoryHome subCategoryHome = (SubCategoryHome) IDOLookup.getHome (SubCategory.class);
 			return subCategoryHome.findSubCategoryByName(name);
-		}
-		catch (FinderException fe) {
+		} catch (FinderException fe) {
 			return null;
 		}
 	}
+
+    public RoadResponsible findRoadResponsible (final int id)
+        throws FinderException {
+		try {
+			final RoadResponsibleHome roadResponsibleHome
+                    = (RoadResponsibleHome) IDOLookup.getHome
+                    (RoadResponsible.class);
+			return roadResponsibleHome.findByPrimaryKey (new Integer (id));
+		} catch (final IDOLookupException e) {
+			throw new FinderException (e.getMessage ());
+		}
+    }
+
+    public RoadResponsible [] findAllRoadResponsible () throws FinderException {
+		try {
+            final RoadResponsibleHome roadResponsibleHome
+                    = (RoadResponsibleHome) IDOLookup.getHome
+                    (RoadResponsible.class);
+            return roadResponsibleHome.findAll ();
+		} catch (final IDOLookupException e) {
+			throw new FinderException (e.getMessage ());
+		}
+    }
 }

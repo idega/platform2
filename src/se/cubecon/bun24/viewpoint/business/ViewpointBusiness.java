@@ -14,10 +14,10 @@ import se.cubecon.bun24.viewpoint.data.*;
  * in order to help the system to chose what handler group should be responsible
  * for answering the entered viewpoint.
  * <p>
- * Last modified: $Date: 2002/12/28 11:52:17 $ by $Author: laddi $
+ * Last modified: $Date: 2003/05/15 10:14:36 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @see com.idega.block.process.business
  * @see com.idega.business
  * @see com.idega.user.data
@@ -40,9 +40,9 @@ public interface ViewpointBusiness extends IBOService, CaseBusiness {
      * @param handlerGroupId group responsible for answering the viewpoint
      */
     void createViewpoint (User user, String subject, String message,
-                          String category, int handlerGroupId)
+                          String category, int handlerGroupId,
+                          int roadResponsibleId)
         throws CreateException, RemoteException;
-
 	Viewpoint findViewpoint (int viewpointID)
         throws RemoteException, FinderException;
     Viewpoint [] findUnhandledViewpointsInGroups (Group [] groups)
@@ -59,4 +59,7 @@ public interface ViewpointBusiness extends IBOService, CaseBusiness {
     SubCategory findSubCategory (int subCategoryId)
         throws RemoteException, FinderException;
 	public SubCategory findSubCategory(String name) throws RemoteException;
+    RoadResponsible findRoadResponsible (int RoadResponsibleId)
+        throws FinderException;
+    RoadResponsible [] findAllRoadResponsible () throws FinderException;
 }

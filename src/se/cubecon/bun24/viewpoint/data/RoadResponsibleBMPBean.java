@@ -5,10 +5,10 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2003/05/15 06:58:34 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/15 10:14:36 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RoadResponsibleBMPBean extends GenericEntity
     implements RoadResponsible {
@@ -18,6 +18,7 @@ public class RoadResponsibleBMPBean extends GenericEntity
 	private static final String COLUMN_ROAD = "road";
     private static final String COLUMN_AREA = "area";
     private static final String COLUMN_RESPONSIBLE = "responsible";
+    private static boolean isInitialized = false;
 
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -25,7 +26,7 @@ public class RoadResponsibleBMPBean extends GenericEntity
 
     public void insertStartData () throws Exception {
         super.insertStartData ();
-        System.out.println ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
+        System.out.println (ENTITY_NAME + ".insertStartData () invoked");
 
         final String [][] startData = {
             { "Abborrvägen", "B", "Tp" },
@@ -54,8 +55,8 @@ public class RoadResponsibleBMPBean extends GenericEntity
             { "Aspvägen", "B", "Kåktorps Fastighetsägarförening" },
             { "Atlasvägen", "S", "Tp" },
             { "Atlevägen", "B", "Kummelnäs Vägförening" },
-            { "August Plyms Väg", "F/S", "" },
-            { "Augustendalstorget", "S", "" },
+            { "August Plyms Väg", "F/S", "?" },
+            { "Augustendalstorget", "S", "?" },
             { "Augustendalsvägen", "S", "Tp" },
             { "Automobilgatan", "S", "Nacka Strand" },
             { "Axens Väg", "B", "Björknäs Vägförening" },
@@ -90,7 +91,7 @@ public class RoadResponsibleBMPBean extends GenericEntity
             { "Bergbacken", "S", "Tp" },
             { "Bergdalsvägen", "B", "Björknäs Vägförening + tp" },
             { "Berghemsvägen", "F/S", "Älgö Vägförening" },
-            { "Bergholmen", "B", "" },
+            { "Bergholmen", "B", "?" },
             { "Bergkantstigen", "S", "Tp" },
             { "Bergliden", "S", "Tp" },
             { "Bergparksvägen", "S", "Tp" },
@@ -101,13 +102,13 @@ public class RoadResponsibleBMPBean extends GenericEntity
             { "Bergåsavägen", "S", "Storheden" },
             { "Betsövägen", "B", "Tp" },
             { "Birkavägen", "S", "Tp" },
-            { "Bivägen", "B", "" },
+            { "Bivägen", "B", "?" },
             { "Björkhagsvägen", "S", "Tp" },
             { "Björkholmsvägen", "B", "Tp" },
             { "Björknäs Skolväg", "B", "Björknäs Vägförening" },
             { "Björknäs Strandpromenad", "B", "Björknäs Vägförening" },
             { "Björknäs Torg", "B", "Folke Eriksson Byggnads Ab" },
-            { "Björkstigen", "F/S", "" },
+            { "Björkstigen", "F/S", "?" },
             { "Björkuddsvägen", "B", "Vikingshills Samfällighet" },
             { "Björkvägen", "Ä", "Tp" },
             { "Björnbacken", "F/S", "Tp" },
@@ -320,7 +321,7 @@ public class RoadResponsibleBMPBean extends GenericEntity
             { "Genvägen", "F/S", "Tp" },
             { "Gillevägen", "S", "Tp" },
             { "Gjutarvägen", "B", "Tp" },
-            { "Gjuterigränd", "S", "" },
+            { "Gjuterigränd", "S", "?" },
             { "Glasbruksvägen", "B", "Björknäs Vägförening" },
             { "Gnejsvägen", "B", "Boo Gårds Vägförening" },
             { "Granbacken", "F/S", "Park och idrott" },
@@ -383,7 +384,7 @@ public class RoadResponsibleBMPBean extends GenericEntity
             { "Hedenströms Väg", "B", "Tollare, Pk-BANKEN" },
             { "Hedevägen", "B", "Kummelnäs Vägförening" },
             { "Hedvigslundsvägen", "Ä", "Tp" },
-            { "Hedvägen", "B", "" },
+            { "Hedvägen", "B", "?" },
             { "Heimdalsvägen", "B", "Björknäs Vägförening" },
             { "Helgesons Väg", "S", "Tp" },
             { "Hemvägen", "B", "Boo Gårds Vägförening" },
@@ -411,7 +412,7 @@ public class RoadResponsibleBMPBean extends GenericEntity
             { "Håvgatan", "F/S", "Fiskarhöjden" },
             { "Häckvägen", "B", "Kåktorps Fastighetsägarförening" },
             { "Hägervägen", "S", "Tp" },
-            { "Hällbrinken", "B", "" },
+            { "Hällbrinken", "B", "?" },
             { "Hälsingevägen", "B", "Lännersta Vägförening" },
             { "Hämplingevägen", "Ä", "Tp" },
             { "Häroldsvägen", "F/S", "Tp" },
@@ -482,7 +483,7 @@ public class RoadResponsibleBMPBean extends GenericEntity
             { "Kaptensstigen", "B", "Boo Gårds Vägförening" },
             { "Kaptensvägen", "B", "Boo Gårds Vägförening" },
             { "Karbovägen", "B", "Risets Tomtägarförening" },
-            { "Karl Gerhards Väg", "F/S", "" },
+            { "Karl Gerhards Väg", "F/S", "?" },
             { "Karpgatan", "F/S", "Stena Fastigheter" },
             { "Kastanjevägen", "B", "Lännersta Vägförening" },
             { "Kastövägen", "B", "Tp" },
@@ -665,7 +666,7 @@ public class RoadResponsibleBMPBean extends GenericEntity
             { "Myrsjövägen", "B", "Myrsjöns Vägklubb" },
             { "Måbärsvägen", "B", "Gustavsviks Fastighetsägarförening" },
             { "Månbacken", "B", "Tp" },
-            { "Månskensvägen", "B", "" },
+            { "Månskensvägen", "B", "?" },
             { "Mårdgränd", "S", "Tp + Park och idrott trappan" },
             { "Mårdvägen", "S", "Tp" },
             { "Måsungevägen", "S", "Tp" },
@@ -743,7 +744,7 @@ public class RoadResponsibleBMPBean extends GenericEntity
             { "Pilrisvägen", "B", "Risets Tomtägarförening" },
             { "Pilstigen", "Ä", "Tp" },
             { "Pilvägen", "Ä", "Tp" },
-            { "Piongränd", "B", "" },
+            { "Piongränd", "B", "?" },
             { "Planetbacken", "B", "Tp" },
             { "Planiavägen", "S", "Tp Järlaleden, Saltsjöbanan + vägverket Järlaleden, Nackanäsvägen" },
             { "Plantvägen", "B", "Björknäs Vägförening" },
@@ -767,7 +768,7 @@ public class RoadResponsibleBMPBean extends GenericEntity
             { "Regentvägen", "B", "Kummelnäs Vägförening" },
             { "Reginavägen", "S", "Tp" },
             { "Rensättra Allé", "B", "Tp" },
-            { "Rensättra Gränd", "B", "" },
+            { "Rensättra Gränd", "B", "?" },
             { "Rensättravägen", "B", "Kummelnäs Vägförening" },
             { "Rensättravägen", "B", "Tp fr Hasseluddsv-Tessinvägen" },
             { "Renvägen", "B", "Lännersta Vägförening" },
@@ -845,7 +846,7 @@ public class RoadResponsibleBMPBean extends GenericEntity
             { "Sigunvägen", "S", "Tp" },
             { "Sikgatan", "F/S", "Stena Fastigheter" },
             { "Siktvägen", "S", "Finnberget-KVARNHOLMENS Väghållarförening" },
-            { "Simbagatan", "S", "" },
+            { "Simbagatan", "S", "?" },
             { "Siriusvägen", "F/S", "Tp" },
             { "Sjusovarbacken", "S", "Tp" },
             { "Sjöbacken", "S", "Tp" },
@@ -1175,34 +1176,34 @@ public class RoadResponsibleBMPBean extends GenericEntity
             { "Östra Promenaden", "B", "Sommarbo-TEGELÖ Vägförening" },
             { "Östra Uppfartsvägen", "B", "Privat" },
             { "Överstebacken", "F/S", "Tp" },
-            { "Annelundsvägen", "B", "" },
-            { "Bageribacken", "S", "" },
-            { "Buddes Gränd", "S", "" },
-            { "Elevhemsvägen", "B", "" },
-            { "Fyrgränd", "S", "" },
-            { "Gustav De Lavals Torg", "S", "" },
-            { "Hebbes Gränd", "S", "" },
-            { "Herrgårdsparken", "S", "" },
-            { "Järla Gårdsväg", "S", "" },
+            { "Annelundsvägen", "B", "?" },
+            { "Bageribacken", "S", "?" },
+            { "Buddes Gränd", "S", "?" },
+            { "Elevhemsvägen", "B", "?" },
+            { "Fyrgränd", "S", "?" },
+            { "Gustav De Lavals Torg", "S", "?" },
+            { "Hebbes Gränd", "S", "?" },
+            { "Herrgårdsparken", "S", "?" },
+            { "Järla Gårdsväg", "S", "?" },
             { "Kanholmsvägen", "B", "Tp + info - p" },
-            { "Karbidgränd", "S", "" },
-            { "Knarrnäsvägen", "B", "" },
+            { "Karbidgränd", "S", "?" },
+            { "Knarrnäsvägen", "B", "?" },
             { "Lagårdsvägen", "S", "Tp" },
-            { "Lillsvängen", "B", "" },
-            { "Marcusplatsen", "S", "" },
-            { "Måndans Väg", "B", "" },
-            { "Rutger Fuchsvägen", "F/S", "" },
-            { "Siroccogatan", "S", "" },
-            { "Skidbacksvägen", "F/S", "" },
-            { "Smedjegatan", "S", "" },
-            { "Snöbärsvägen", "S", "" },
-            { "Svartmesvägen", "B", "" },
-            { "Syrenparken", "F/S", "" },
-            { "Torsparksvägen", "S", "" },
-            { "Vackra Kullans Väg", "S", "" },
-            { "Vingelvägen", "B", "" },
-            { "Vinkelhaksvägen", "Ä", "" },
-            { "värmdöleden", "S B", "Vägverket" },
+            { "Lillsvängen", "B", "?" },
+            { "Marcusplatsen", "S", "?" },
+            { "Måndans Väg", "B", "?" },
+            { "Rutger Fuchsvägen", "F/S", "?" },
+            { "Siroccogatan", "S", "?" },
+            { "Skidbacksvägen", "F/S", "?" },
+            { "Smedjegatan", "S", "?" },
+            { "Snöbärsvägen", "S", "?" },
+            { "Svartmesvägen", "B", "?" },
+            { "Syrenparken", "F/S", "?" },
+            { "Torsparksvägen", "S", "?" },
+            { "Vackra Kullans Väg", "S", "?" },
+            { "Vingelvägen", "B", "?" },
+            { "Vinkelhaksvägen", "Ä", "?" },
+            { "Värmdöleden", "S B", "Vägverket" },
         };
 
        RoadResponsibleHome roadResponsibleHome
@@ -1219,6 +1220,8 @@ public class RoadResponsibleBMPBean extends GenericEntity
            roadResponsible.setResponsible (responsible);
            roadResponsible.store ();
        }
+
+        System.out.println (ENTITY_NAME + ".insertStartData () done");
     }
 
     public void initializeAttributes () {
@@ -1227,18 +1230,38 @@ public class RoadResponsibleBMPBean extends GenericEntity
 		addAttribute (COLUMN_ROAD, "Road", String.class);
 		addAttribute (COLUMN_AREA, "Area", String.class);
 		addAttribute (COLUMN_RESPONSIBLE, "Responsible", String.class);
+
+        synchronized (this) {
+            System.out.println (ENTITY_NAME + ".isInitialized = "
+                                + isInitialized);
+            if (!isInitialized) {
+                int rowCount = 0;
+                try {
+                    rowCount = ejbFindAll ().size ();
+                    if (0 >= rowCount) {
+                        insertStartData ();
+                        isInitialized = true;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace ();
+                }
+            }
+        }
     }
 
     public String getRoad () {
-		return getStringColumnValue (COLUMN_ROAD);
+        final String road = getStringColumnValue (COLUMN_ROAD);
+		return road != null ? road : "";
     }
 
     public String getArea () {
-		return getStringColumnValue (COLUMN_AREA);
+		final String area = getStringColumnValue (COLUMN_AREA);
+        return area != null ? area : "";
     }
 
     public String getResponsible () {
-		return getStringColumnValue (COLUMN_RESPONSIBLE);
+		final String responsible = getStringColumnValue (COLUMN_RESPONSIBLE);
+        return responsible != null ? responsible : "";
     }
 
     public void setRoad (final String road) {
@@ -1254,7 +1277,8 @@ public class RoadResponsibleBMPBean extends GenericEntity
     }
 
     public Collection ejbFindAll () throws FinderException{
-        final String sql = "select * from " + ENTITY_NAME;
+        final String sql = "select * from " + ENTITY_NAME + " order by "
+                + COLUMN_ROAD;
         return idoFindPKsBySQL (sql);
     }
 }

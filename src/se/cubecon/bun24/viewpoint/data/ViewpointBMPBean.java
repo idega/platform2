@@ -7,10 +7,10 @@ import java.util.*;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2003/04/02 17:55:51 $ by $Author: laddi $
+ * Last modified: $Date: 2003/05/15 10:14:36 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ViewpointBMPBean extends AbstractCaseBMPBean
     implements Viewpoint, Case {
@@ -25,6 +25,8 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
 	private static final String COLUMN_SUBJECT = "SUBJECT";
 	private static final String COLUMN_MESSAGE = "BODY";
     private static final String COLUMN_ANSWER = "ANSWER";
+    private static final String COLUMN_ROADRESPONSIBLE_ID
+        = "ROADRESPONSIBLE_ID";
 
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -61,6 +63,8 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
 		addAttribute (COLUMN_SUBJECT, "Subject", String.class);
 		addAttribute (COLUMN_MESSAGE, "Message", String.class, 10000);
 		addAttribute (COLUMN_ANSWER, "Answer", String.class, 10000);
+       	addAttribute (COLUMN_ROADRESPONSIBLE_ID, "RoadResponsible", true, true,
+                      Integer.class, "many-to-one", RoadResponsible.class);
     }
 
     public Group getHandlerGroup () {
@@ -84,11 +88,15 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
     }
 
     public int getUserId () {
-        return getIntegerColumnValue (COLUMN_USER_ID). intValue ();
+        return getIntegerColumnValue (COLUMN_USER_ID).intValue ();
     }
 
     public boolean isAnswered () throws RemoteException {
         return getStatus ().equalsIgnoreCase (STATUSKEY_ANSWERED);
+    }
+
+    public Integer getRoadResponsibleId () {
+        return getIntegerColumnValue (COLUMN_ROADRESPONSIBLE_ID);
     }
 
     public void setHandlerGroupId (final int handlerGroupId) {
@@ -117,6 +125,10 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
 
     public void setHandler (final User user) throws RemoteException {
         setOwner (user);
+    }
+
+    public void setRoadResponsibleId (final int id) {
+        setColumn (COLUMN_ROADRESPONSIBLE_ID, new Integer (id));
     }
 
     public Collection ejbFindUnhandledViewpointsInGroups
