@@ -47,7 +47,6 @@ public class ServiceViewer extends Window {
   public static final String IW_TRAVEL_SERVICE_ID = "iw_tr_serv_id";
   public static final String IW_TRAVEL_SUPPLIER_ID = "iw_tr_suppl_id";
 
-
   private IWBundle iwb;
   private IWResourceBundle iwrb;
 
@@ -223,6 +222,10 @@ public class ServiceViewer extends Window {
         Product prod = (Product) iter.next();
         try{
           serv = tsb.getService(prod);
+          /**
+           * @todo Laga fyrir multi timeframes...
+           */
+           Timeframe timeframe = prod.getTimeframe();
         //number
           Text number = (Text) text.clone();
           number.setText(prod.getNumber());
@@ -243,12 +246,15 @@ public class ServiceViewer extends Window {
           content.add(duration,++x,y);
         //Price
           Text price = (Text) text.clone();
-          price.setText(getServicePrice(serv));
+          price.setText(getServicePrice(serv, timeframe.getID()));
           content.add(price,++x,y);
         //Info and buy buttons
           if( showMoreButton){
-            Link more = new Link(iwrb.getLocalizedString("travel.more.button","more"));
-            more.setWindowToOpen(ServiceViewer.class);
+            ServiceViewer viewer = new ServiceViewer();
+            viewer.showBuyButton(showBuyButton);
+            viewer.showMoreButton(showMoreButton);
+            Link more = new Link(viewer,iwrb.getLocalizedString("travel.more.button","more"));
+            //more.setWindowToOpen(ServiceViewer.class);
             more.addParameter(IW_TRAVEL_SERVICE_ID,prod.getID());
             more.setAsImageButton(true);
             content.add(more,++x,y);
@@ -311,9 +317,13 @@ public class ServiceViewer extends Window {
         content.add(dur,1,++y);
         content.add(duration,2,y);
       //Price
+          /**
+           * @todo Laga fyrir multi timeframes...
+           */
+        Timeframe timeframe = product.getTimeframe();
         Text price = (Text) boldText.clone();
         price.setText(iwrb.getLocalizedString("travel.serviceviewer.info.price","Price: "));
-        Text prices = new Text(getServicePrice(service));
+        Text prices = new Text(getServicePrice(service, timeframe.getID()));
         content.add(price,1,++y);
         content.add(prices,2,y);
 
@@ -392,14 +402,14 @@ public class ServiceViewer extends Window {
    this.showBuyButton = showBuyButton;
   }
 
-  public void showMoreButton(boolean showBMoreButton){
+  public void showMoreButton(boolean showMoreButton){
    this.showMoreButton = showMoreButton;
   }
 
 
-  private String getServicePrice(Service service){
+  private String getServicePrice(Service service, int timeframeId){
     StringBuffer price = new StringBuffer();
-    ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
+    ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), timeframeId, false);
     Currency currency;
 
     for (int j = 0; j < prices.length; j++) {
