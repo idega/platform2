@@ -657,8 +657,8 @@ public class Booking extends TravelManager {
         }
         }
         else {
-          try {
-          if (TravelStockroomBusiness.getIfDay(iwc, this.product, this.product.getTimeframes(),this.stamp)) {
+           try {
+          if (TravelStockroomBusiness.getIfDay(iwc, this.product, this.product.getTimeframes(),this.stamp, false, true)) {
             iCount = tour.getTotalSeats();
             iBooked = Booker.getNumberOfBookings(service.getID(), this.stamp);
             iInquery = Inquirer.getInqueredSeats(service.getID(), this.stamp, true);
@@ -800,7 +800,6 @@ public class Booking extends TravelManager {
       tbf.setTimestamp(stamp);
 
       int returner = tbf.handleInsert(iwc);
-      debug("RETURNER = "+returner);
 
       if (returner == tbf.inquirySent) {
         /** @todo Cleara form eftir að inquiry hefur att ser stad  */

@@ -416,7 +416,7 @@ public class TravelManager extends Block {
 
     }
 
-    protected Table getTable() {
+    public static Table getTable() {
       Table table = new Table();
         table.setCellpaddingAndCellspacing(1);
         table.setColor(WHITE);

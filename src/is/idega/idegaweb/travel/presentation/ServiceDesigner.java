@@ -209,6 +209,9 @@ public class ServiceDesigner extends TravelManager {
             addAdder.addParameter(AddressAdder._parameterProductId, product.getID());
             addAdder.setWindowToOpen(AddressAdder.class);
 
+          Link servDaySetter = new Link(iwrb.getLocalizedImageButton("travel.active_dats","Active days"));
+            servDaySetter.addParameter(ServiceDaySetter.PARAMETER_SERVICE_ID,  product.getID());
+            servDaySetter.setWindowToOpen(ServiceDaySetter.class);
 
           Timeframe[] tFrames = product.getTimeframes();
           List addresses = com.idega.util.ListUtil.getEmptyList();
@@ -239,10 +242,10 @@ public class ServiceDesigner extends TravelManager {
           table.setRowColor(row, super.GRAY);
           table.mergeCells(1,row,4,row);
           ++row;
-          table.add(Text.NON_BREAKING_SPACE,1,row);
-          table.setRowColor(row, super.GRAY);
-          table.mergeCells(1,row,4,row);
-          ++row;
+          //table.add(servDaySetter,1,row);
+          //table.setRowColor(row, super.GRAY);
+          //table.mergeCells(1,row,4,row);
+          //++row;
 
 
           Text addrText;

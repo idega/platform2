@@ -90,26 +90,25 @@ public class TravelWindow extends Window {
 
     Image logo = iwb.getImage("buttons/iWTravel.gif");
 
-/*
-    Text header1 = new Text("idega");
-      header1.setFontColor(TravelManager.LIGHTORANGE);
-      header1.setBold();
-      header1.setFontSize(Text.FONT_SIZE_12_HTML_3);
-    Text header2 = new Text("Web");
-      header2.setFontColor("WHITE");
-      header2.setBold();
-      header2.setFontSize(Text.FONT_SIZE_12_HTML_3);
-
-    table.add(header1,2,1);
-    table.add(header2,2,1);
-*/
     table.mergeCells(1,1,2,1);
     table.add(logo,1,1);
 
     text.setFontColor(TravelManager.BLACK);
     text.setFontSize(Text.FONT_SIZE_10_HTML_2);
+  }
 
+  protected Text getText(String content) {
+    Text text = new Text(content);
+      text.setFontStyle(TravelManager.theTextStyle);
+      text.setFontColor(TravelManager.BLACK);
+    return text;
+  }
 
+  protected Text getTextHeader(String content) {
+    Text text = getText(content);
+      text.setBold(true);
+      text.setFontColor(TravelManager.WHITE);
+    return text;
   }
 
 }

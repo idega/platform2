@@ -83,6 +83,9 @@ public interface Booking {
   public int getOwnerId();
   public void setOwnerId(int ownerId);
 
+  public String getComment();
+  public void setComment(String comment);
+
   public void insert() throws SQLException;
   public void update() throws SQLException;
   public void delete() throws SQLException;

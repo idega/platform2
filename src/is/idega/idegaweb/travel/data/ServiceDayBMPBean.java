@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.data;
 
+import javax.ejb.FinderException;
+import java.util.Collection;
 import com.idega.data.*;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
@@ -29,6 +31,9 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
   public void initializeAttributes() {
     addAttribute(getIDColumnName(),"Service_id",true,true,Integer.class,"one-to-one",Service.class);
     addAttribute(getColumnNameDayOfWeek(), "Day of week", true, true, Integer.class);
+    addAttribute(getColumnNameMax(), "max", true, true, Integer.class);
+    addAttribute(getColumnNameMin(), "min", true, true, Integer.class);
+    addAttribute(getColumnNameEstimated(), "estimated", true, true, Integer.class);
   }
 
   public String getEntityName() {
@@ -60,6 +65,34 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
     return getIntColumnValue(getIDColumnName());
   }
 
+  public int getMax() {
+    return getIntColumnValue(getColumnNameMax());
+  }
+
+  public void setMax(int max) {
+    setColumn(getColumnNameMax(), max);
+  }
+
+  public int getMin() {
+    return getIntColumnValue(getColumnNameMin());
+  }
+
+  public void setMin(int min) {
+    setColumn(getColumnNameMin(), min);
+  }
+
+  public int getEstimated() {
+    return getIntColumnValue(getColumnNameEstimated());
+  }
+
+  public void setEstimated(int estimated) {
+    setColumn(getColumnNameEstimated(), estimated);
+  }
+
+  public Collection getServiceDays(int serviceId) throws FinderException{
+    return super.idoFindAllIDsByColumnOrderedBySQL(getColumnNameServiceId(),serviceId,getColumnNameDayOfWeek());
+  }
+
   public static int[] getDaysOfWeek(int serviceId) {
     int[] returner = {};
     try {
@@ -74,6 +107,9 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
     return returner;
   }
 
+  /**
+   * @deprecated
+   */
   public static boolean getIfDay(int serviceId, int dayOfWeek) {
     boolean returner = false;
     try {
@@ -101,5 +137,8 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
   public static String getServiceDaysTableName() {return "TB_SERVICE_DAY";}
   public static String getColumnNameServiceId() {return "SERVICE_ID";}
   public static String getColumnNameDayOfWeek() {return "DAY_OF_WEEK";}
+  public static String getColumnNameMax() {return "SD_MAX";}
+  public static String getColumnNameMin() {return "SD_MIN";}
+  public static String getColumnNameEstimated() {return "SD_ESTIMATED";}
 
 }

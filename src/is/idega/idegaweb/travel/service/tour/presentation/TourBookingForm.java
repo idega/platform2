@@ -136,6 +136,7 @@ public class TourBookingForm extends TravelManager {
       }
 
       if (pPrices.length > 0) {
+
           int row = 1;
           int textInputSizeLg = 38;
           int textInputSizeMd = 18;
@@ -173,6 +174,8 @@ public class TourBookingForm extends TravelManager {
               fromText.setText(iwrb.getLocalizedString("travel.from","From"));
           Text manyDaysText = (Text) theText.clone();
               manyDaysText.setText(iwrb.getLocalizedString("travel.number_of_days","Number of days"));
+          Text commentText = (Text) theText.clone();
+              commentText.setText(iwrb.getLocalizedString("travel.comment","Comment"));
 
           DropdownMenu depAddr = new DropdownMenu(addresses, this.parameterDepartureAddressId);
             depAddr.setToSubmit();
@@ -204,6 +207,10 @@ public class TourBookingForm extends TravelManager {
           TextInput country = new TextInput("country");
               country.setSize(textInputSizeMd);
               country.keepStatusOnAction();
+          TextArea comment = new TextArea("comment");
+              comment.setWidth(textInputSizeLg);
+              comment.setHeight(4);
+              comment.keepStatusOnAction();
 
           DropdownMenu usersDrop = null;
           DropdownMenu payType = Booker.getPaymentTypeDropdown(iwrb, "payment_type");
@@ -399,7 +406,7 @@ public class TourBookingForm extends TravelManager {
                     txtPrice.setText(Integer.toString(price));
 //                  table.add(Text.NON_BREAKING_SPACE,2,row);
 
-                  pTable = new Table(3,1);
+                  pTable = new Table(4,1);
                     pTable.setWidth(1, Integer.toString(pWidthLeft));
                     pTable.setWidth(2, Integer.toString(pWidthCenter));
                     pTable.setWidth(3, Integer.toString(pWidthRight));
@@ -407,6 +414,10 @@ public class TourBookingForm extends TravelManager {
                     pTable.add(pPriceMany,1,1);
                     pTable.add(txtPrice,2,1);
                     pTable.add(pPriceText, 3,1);
+
+
+//                    pTable.add();
+
                   table.add(pTable, 2, row);
 
               }catch (SQLException sql) {
@@ -420,6 +431,7 @@ public class TourBookingForm extends TravelManager {
           ++row;
 
           table.add(totalText,1,row);
+
           if (_booking != null) {
             TotalPassTextInput.setContent(Integer.toString(totalCount));
             TotalTextInput.setContent(Integer.toString(totalSum));
@@ -459,6 +471,13 @@ public class TourBookingForm extends TravelManager {
             payText.setText(iwrb.getLocalizedString("travel.payment_type","Payment type"));
           table.add(payText, 1, row);
           table.add(payType, 2, row);
+
+
+//          ++row;
+//          table.add(commentText, 1, row);
+//          table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+//          table.add(comment, 2, row);
+
           // Virkar, vantar HTTPS
 
           /*  TextInput ccNumber = new TextInput(this.parameterCCNumber);
@@ -498,6 +517,7 @@ public class TourBookingForm extends TravelManager {
           */
 
 
+
           if (_booking != null) {
             form.addParameter(this.parameterBookingId,_booking.getID());
             surname.setContent(_booking.getName());
@@ -521,10 +541,11 @@ public class TourBookingForm extends TravelManager {
               usersDrop.setSelectedElement(Integer.toString(_booking.getUserId()));
             }
             payType.setSelectedElement(Integer.toString(_booking.getPaymentTypeId()));
+            if (_booking.getComment() != null) {
+              comment.setContent(_booking.getComment());
+            }
 
           }
-
-
 
           ++row;
           if (_booking != null) {
@@ -657,6 +678,8 @@ public class TourBookingForm extends TravelManager {
               fromText.setText(iwrb.getLocalizedString("travel.from","From"));
           Text manyDaysText = (Text) theText.clone();
               manyDaysText.setText(iwrb.getLocalizedString("travel.number_of_days","Number of days"));
+          Text commentText = (Text) theText.clone();
+              commentText.setText(iwrb.getLocalizedString("travel.comment","Comment"));
 
           DropdownMenu depAddr = new DropdownMenu(addresses, this.parameterDepartureAddressId);
             depAddr.setToSubmit();
@@ -691,6 +714,10 @@ public class TourBookingForm extends TravelManager {
           TextInput manyDays = new TextInput(parameterManyDays);
             manyDays.setContent("1");
             manyDays.setSize(5);
+
+          TextArea comment = new TextArea("comment");
+              comment.setWidth(60);
+              comment.setHeight(5);
 
           ++row;
           table.mergeCells(1,row,6,row);
@@ -912,6 +939,17 @@ public class TourBookingForm extends TravelManager {
           table.setAlignment(3,row,"right");
           table.setAlignment(4,row,"left");
           table.mergeCells(4,row,6,row);
+
+/*          ++row;
+          table.add(commentText,1,row);
+          table.add(comment,2,row);
+          table.mergeCells(2, row, 6, row);
+
+          table.setAlignment(1,row,"right");
+          table.setVerticalAlignment(1,row,"top");
+          table.setAlignment(2,row,"left");
+*/
+
 
 
           HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this._service);
@@ -1356,6 +1394,7 @@ public class TourBookingForm extends TravelManager {
       String hotelPickupPlaceId = iwc.getParameter(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
       String roomNumber = iwc.getParameter("room_number");
       String sPaymentType = iwc.getParameter("payment_type");
+      String comment = iwc.getParameter("comment");
 
       String sAddressId = iwc.getParameter(this.parameterDepartureAddressId);
       int iAddressId = Integer.parseInt(sAddressId);
@@ -1470,17 +1509,17 @@ public class TourBookingForm extends TravelManager {
                 _fromDate.addDays(1);
               }
             }
-            lbookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId);
+            lbookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
           }else {
             //handle multiple...
             List tempBookings = Booker.getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(iBookingId));
             if (tempBookings == null || tempBookings.size() < 2) {
-              lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId);
+              lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
             }else {
               GeneralBooking gBooking;
               for (int j = 0; j < tempBookings.size(); j++) {
                 gBooking = (GeneralBooking) tempBookings.get(j);
-                TourBooker.updateBooking(gBooking.getID(), _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, new idegaTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId);
+                TourBooker.updateBooking(gBooking.getID(), _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, new idegaTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
               }
               lbookingId = iBookingId;
 

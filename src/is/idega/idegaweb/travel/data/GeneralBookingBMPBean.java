@@ -47,6 +47,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     addAttribute(getReferenceNumberColumnName(), "reference number", true, true, String.class);
     addAttribute(getOwnerIdColumnName(), "owner id", true, true, Integer.class);
     addAttribute(getUserIdColumnName(), "user id", true, true, Integer.class);
+    addAttribute(getCommentColumnName(), "comment", true, true, String.class);
     addAttribute(getCreditcardAuthorizationNumberColumnName(), "cc auth", true, true, String.class);
 
     this.addManyToManyRelationShip(Reseller.class);
@@ -219,6 +220,14 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     setColumn(getOwnerIdColumnName(), ownerId);
   }
 
+  public String getComment() {
+    return getStringColumnValue(getCommentColumnName());
+  }
+
+  public void setComment(String comment) {
+    setColumn(getCommentColumnName(), comment);
+  }
+
   public String getCreditcardAuthorizationNumber() {
     return getStringColumnValue(getCreditcardAuthorizationNumberColumnName());
   }
@@ -259,6 +268,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   public static String getReferenceNumberColumnName() {return "REFERENCE_NUMBER";}
   public static String getOwnerIdColumnName() {return "OWNER_ID";}
   public static String getUserIdColumnName() {return "IC_USER_ID";}
+  public static String getCommentColumnName() {return "BK_COMMENT";}
   public static String getCreditcardAuthorizationNumberColumnName() {return "CC_AUTH_NUMBER";}
 
 

@@ -10,6 +10,7 @@ public interface GeneralBooking extends com.idega.data.IDOLegacyEntity,is.idega.
  public is.idega.idegaweb.travel.data.BookingEntry[] getBookingEntries()throws java.sql.SQLException;
  public int getBookingTypeID();
  public java.lang.String getCity();
+ public java.lang.String getComment();
  public java.lang.String getCountry();
  public java.lang.String getCreditcardAuthorizationNumber();
  public java.sql.Timestamp getDateOfBooking();
@@ -30,6 +31,7 @@ public interface GeneralBooking extends com.idega.data.IDOLegacyEntity,is.idega.
  public void setBookingDate(java.sql.Timestamp p0);
  public void setBookingTypeID(int p0);
  public void setCity(java.lang.String p0);
+ public void setComment(java.lang.String p0);
  public void setCountry(java.lang.String p0);
  public void setCreditcardAuthorizationNumber(java.lang.String p0);
  public void setDateOfBooking(java.sql.Timestamp p0);

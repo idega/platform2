@@ -37,19 +37,19 @@ public class Booker {
   public Booker() {
   }
 
-  public static int BookBySupplier(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId) throws SQLException {
-    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType, userId, ownerId, addressId);
+  public static int BookBySupplier(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws SQLException {
+    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType, userId, ownerId, addressId, comment);
   }
 
-  public static int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType, int userId, int ownerId, int addressId) throws SQLException {
-    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode, paymentType, userId, ownerId, addressId);
+  public static int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws SQLException {
+    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode, paymentType, userId, ownerId, addressId, comment);
   }
 
-  public static int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId) throws SQLException {
-    return Book(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode, paymentType, userId, ownerId, addressId);
+  public static int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws SQLException {
+    return Book(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode, paymentType, userId, ownerId, addressId, comment);
   }
 
-  private static int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentTypeId, int userId, int ownerId, int addressId) throws SQLException {
+  private static int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode, int paymentTypeId, int userId, int ownerId, int addressId, String comment) throws SQLException {
     Booking booking = null;
     int returner = bookingId;
     Object type = getServiceType(serviceId);
@@ -72,6 +72,11 @@ public class Booker {
         booking.setTotalCount(totalCount);
         booking.setUserId(userId);
         booking.setOwnerId(ownerId);
+        if (comment == null) {
+          booking.setComment("");
+        }else {
+          booking.setComment(comment);
+        }
       booking.insert();
 
       returner =  booking.getID();
@@ -93,6 +98,11 @@ public class Booker {
         booking.setTotalCount(totalCount);
         booking.setUserId(userId);
         booking.setOwnerId(ownerId);
+        if (comment == null) {
+          booking.setComment("");
+        }else {
+          booking.setComment(comment);
+        }
       booking.update();
       /** @todo fixa þetta getInstance() crap */
       removeBookingPriceApplication(IWContext.getInstance(), booking);
@@ -279,6 +289,10 @@ public class Booker {
   }
 
   public static int getNumberOfBookings(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp, int bookingType){
+    return getNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, new int[] {});
+  }
+
+  public static int getNumberOfBookings(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp, int bookingType, int[] productPriceIds){
     int returner = 0;
     //Connection conn = null;
     try {
@@ -727,6 +741,13 @@ public class Booker {
 
     return list;
   }
+
+
+
+  public static int getAvailableItems(ProductPrice pPrice, idegaTimestamp stamp) {
+    return -1;
+  }
+
 
   /**
    * returns int[], int[0] is number of current booking, int[1] is total bookings number
