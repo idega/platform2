@@ -392,7 +392,12 @@ public abstract class BillingThread extends Thread{
 				lastCheckDay = time;
 			}
 		}
-		return new PlacementTimes (firstCheckDay, lastCheckDay);
+		PlacementTimes placementTimes = new PlacementTimes (firstCheckDay, lastCheckDay);
+		if(placementTimes.getDays()<0f){
+			errorRelated.append("PlacementDays"+placementTimes.getDays());
+			createNewErrorMessage(errorRelated, "invoice.WarningNegativePlacementTimeFound");
+		}
+		return placementTimes;
 	}
 	
 	public static void main(String[] arg){
