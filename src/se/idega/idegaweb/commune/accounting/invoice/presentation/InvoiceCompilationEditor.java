@@ -77,10 +77,10 @@ import com.lowagie.text.pdf.PdfWriter;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/30 11:58:09 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/30 14:09:56 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.68 $
+ * @version $Revision: 1.69 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1040,7 +1040,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         (final IWContext context, final java.util.Map presentationObjects)
         throws RemoteException, FinderException {
         final InvoiceHeader header = getInvoiceHeader (context);
-        //final User custodian = header.getCustodian ();
 
         // render form/details
         final Table table = createTable (4);
