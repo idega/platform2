@@ -13,6 +13,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
+import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.Block;
@@ -46,6 +47,7 @@ public class SchoolAreaSelector extends Block {
 	private String _expandedSelStyle;
 	private String _expandedSelColor;
 	private String _spaceBetween = "5";
+	private IBPage _page;
 	private int _spaceBeforeExpanded = 2;
 
 
@@ -180,6 +182,9 @@ public class SchoolAreaSelector extends Block {
 		if (_maintainSchoolTypeId) {
 			link.addParameter( PARAMETER_SCHOOL_TYPE_ID, _schoolTypeId);	
 		}
+		if (_page != null) {
+			link.setPage(_page);	
+		}
 		link.addParameter(PARAMETER_SCHOOL_ID, schoolId);
 		return link;
 	}
@@ -285,5 +290,9 @@ public class SchoolAreaSelector extends Block {
 	
 	public void setSpaceBeforeExpanded(int numberOfSpaces) {
 		_spaceBeforeExpanded = numberOfSpaces;	
+	}
+	
+	public void setPage(IBPage page) {
+		_page = page;	
 	}
 }
