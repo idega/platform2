@@ -1,12 +1,11 @@
 /*
- * $Id: ChildCareContractHome.java,v 1.14 2004/09/07 19:21:27 aron Exp $
- * Created on 6.9.2004
+ * Copyright (C) 2004 Idega software. All Rights Reserved.
  *
- * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
+ * This software is the proprietary information of Idega software.
  * Use is subject to license terms.
+ *
  */
+
 package se.idega.idegaweb.commune.childcare.data;
 
 import java.sql.Date;
@@ -22,11 +21,7 @@ import com.idega.user.data.User;
 import com.idega.util.TimePeriod;
 
 /**
- * 
- *  Last modified: $Date: 2004/09/07 19:21:27 $ by $Author: aron $
- * 
- * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.14 $
+ * @author palli
  */
 public interface ChildCareContractHome extends IDOHome {
     public ChildCareContract create() throws javax.ejb.CreateException;
