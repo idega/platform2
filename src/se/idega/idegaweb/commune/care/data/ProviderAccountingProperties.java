@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.school.data;
+package se.idega.idegaweb.commune.care.data;
 
 
 public interface ProviderAccountingProperties extends com.idega.data.IDOEntity
@@ -9,7 +9,7 @@ public interface ProviderAccountingProperties extends com.idega.data.IDOEntity
  public java.lang.String getOwnPosting();
  public boolean getPaymentByInvoice();
  public java.lang.String getPostgiro();
- public se.idega.idegaweb.commune.accounting.regulations.data.ProviderType getProviderType();
+ public se.idega.idegaweb.commune.care.data.ProviderType getProviderType();
  public int getProviderTypeId();
  public com.idega.block.school.data.School getSchool();
  public int getSchoolId();

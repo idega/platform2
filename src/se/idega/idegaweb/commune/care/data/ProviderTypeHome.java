@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.regulations.data;
+package se.idega.idegaweb.commune.care.data;
 
 
 public interface ProviderTypeHome extends com.idega.data.IDOHome

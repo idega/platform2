@@ -1,5 +1,5 @@
 /*
- * $Id: Provider.java,v 1.8 2004/02/19 13:35:36 tryggvil Exp $
+ * $Id: Provider.java,v 1.9 2004/10/15 10:36:38 thomas Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -12,7 +12,9 @@ package se.idega.idegaweb.commune.accounting.school.data;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
+import se.idega.idegaweb.commune.care.data.ProviderAccountingProperties;
+import se.idega.idegaweb.commune.care.data.ProviderAccountingPropertiesHome;
+import se.idega.idegaweb.commune.care.data.ProviderType;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolHome;
@@ -20,10 +22,10 @@ import com.idega.block.school.data.SchoolHome;
 /**
  * This class is a holder for a school bean and provider accounting information.
  * <p>
- * Last modified: $Date: 2004/02/19 13:35:36 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/10/15 10:36:38 $ by $Author: thomas $
  *
  * @author Anders Lindman
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class Provider {
 

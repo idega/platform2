@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.133 2004/10/14 14:54:15 thomas Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.134 2004/10/15 10:36:38 thomas Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -43,8 +43,6 @@ import se.idega.idegaweb.commune.accounting.regulations.data.MainRuleHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowType;
 import se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
-import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
-import se.idega.idegaweb.commune.accounting.regulations.data.ProviderTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
@@ -57,6 +55,8 @@ import se.idega.idegaweb.commune.accounting.regulations.data.YesNoHome;
 import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
+import se.idega.idegaweb.commune.care.data.ProviderType;
+import se.idega.idegaweb.commune.care.data.ProviderTypeHome;
 import se.idega.idegaweb.commune.care.resource.data.Resource;
 import se.idega.idegaweb.commune.care.resource.data.ResourceHome;
 
@@ -1041,7 +1041,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * Gets all provider types.
 	 * 
 	 * @return collection of provider types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ProviderType
+	 * @see se.idega.idegaweb.commune.care.data.ProviderType
 	 * @author anders
 	 */
 	public Collection findAllProviderTypes() {

@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.31 2004/08/12 12:38:45 aron Exp $
+ * $Id: ProviderEditor.java,v 1.32 2004/10/15 10:36:38 thomas Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -24,12 +24,12 @@ import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
-import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
 import se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness;
 import se.idega.idegaweb.commune.accounting.school.business.ProviderException;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.accounting.school.data.ProviderStatisticsType;
 import se.idega.idegaweb.commune.accounting.school.data.ProviderStatisticsTypeHome;
+import se.idega.idegaweb.commune.care.data.ProviderType;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
@@ -62,10 +62,10 @@ import com.idega.presentation.ui.TextArea;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2004/08/12 12:38:45 $ by $Author: aron $
+ * Last modified: $Date: 2004/10/15 10:36:38 $ by $Author: thomas $
  *
  * @author Anders Lindman
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  */
 public class ProviderEditor extends AccountingBlock {
 

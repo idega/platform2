@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulationBMPBean.java,v 1.14 2004/01/05 13:01:24 kjell Exp $
+ * $Id: VATRegulationBMPBean.java,v 1.15 2004/10/15 10:36:38 thomas Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.care.data.ProviderType;
 
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.data.GenericEntity;
@@ -22,10 +23,10 @@ import com.idega.util.CalendarMonth;
 /**
  * Entity bean for VATRegulation entries.
  * <p>
- * Last modified: $Date: 2004/01/05 13:01:24 $ by $Author: kjell $
+ * Last modified: $Date: 2004/10/15 10:36:38 $ by $Author: thomas $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class VATRegulationBMPBean extends GenericEntity implements VATRegulation {
 

@@ -30,14 +30,14 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstan
 import se.idega.idegaweb.commune.accounting.regulations.business.TooManyRegulationsException;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
-import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
-import se.idega.idegaweb.commune.accounting.regulations.data.ProviderTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareApplicationHome;
+import se.idega.idegaweb.commune.care.data.ProviderType;
+import se.idega.idegaweb.commune.care.data.ProviderTypeHome;
 import se.idega.idegaweb.commune.care.resource.business.ResourceBusiness;
 import se.idega.idegaweb.commune.care.resource.data.ResourceClassMember;
 import se.idega.util.ErrorLogger;
@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/10/14 14:54:15 $ by $Author: thomas $
+ * Last modified: $Date: 2004/10/15 10:36:38 $ by $Author: thomas $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.139 $
+ * @version $Revision: 1.140 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool

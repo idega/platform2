@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderTypeBMPBean.java,v 1.11 2004/01/15 15:00:20 palli Exp $
+ * $Id: ProviderTypeBMPBean.java,v 1.1 2004/10/15 10:36:38 thomas Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -7,7 +7,7 @@
  * Use is subject to license terms.
  * 
  */
-package se.idega.idegaweb.commune.accounting.regulations.data;
+package se.idega.idegaweb.commune.care.data;
 
 import java.util.Collection;
 
@@ -20,10 +20,10 @@ import com.idega.data.IDOLookup;
 /**
  * Entity bean for the provider type (childcare, school, e t c).
  * <p>
- * Last modified: $Date: 2004/01/15 15:00:20 $ by $Author: palli $
+ * Last modified: $Date: 2004/10/15 10:36:38 $ by $Author: thomas $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.1 $
  */
 public class ProviderTypeBMPBean  extends GenericEntity implements ProviderType {
 

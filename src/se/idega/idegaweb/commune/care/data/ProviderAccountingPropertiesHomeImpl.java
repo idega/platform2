@@ -1,4 +1,4 @@
-package se.idega.idegaweb.commune.accounting.school.data;
+package se.idega.idegaweb.commune.care.data;
 
 
 public class ProviderAccountingPropertiesHomeImpl extends com.idega.data.IDOFactory implements ProviderAccountingPropertiesHome

@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.17 2004/07/13 17:39:09 roar Exp $
+ * $Id: ProviderBusinessBean.java,v 1.18 2004/10/15 10:36:39 thomas Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,16 +26,16 @@ import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.business.SchoolBusiness;
 
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
-import se.idega.idegaweb.commune.accounting.school.data.ProviderAccountingProperties;
-import se.idega.idegaweb.commune.accounting.school.data.ProviderAccountingPropertiesHome;
+import se.idega.idegaweb.commune.care.data.ProviderAccountingProperties;
+import se.idega.idegaweb.commune.care.data.ProviderAccountingPropertiesHome;
 
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2004/07/13 17:39:09 $ by $Author: roar $
+ * Last modified: $Date: 2004/10/15 10:36:39 $ by $Author: thomas $
  *
  * @author Anders Lindman
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
