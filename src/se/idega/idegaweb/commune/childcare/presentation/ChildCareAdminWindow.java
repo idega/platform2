@@ -277,7 +277,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case METHOD_CHANGE_DATE :
 				headerTable.add(getHeader(localize("child_care.change_date", "Change date")));
-				contentTable.add(getChangeDateForm(false));
+				contentTable.add(getChangeDateForm(iwc, false));
 				break;
 			case METHOD_PLACE_IN_GROUP :
 				headerTable.add(getHeader(localize("child_care.place_in_group", "Place in group")));
@@ -316,7 +316,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case METHOD_ALTER_VALID_FROM_DATE :
 				headerTable.add(getHeader(localize("child_care.alter_valid_from_date", "Change placement date")));
-				contentTable.add(getChangeDateForm(true));
+				contentTable.add(getChangeDateForm(iwc, true));
 				break;
 			case METHOD_VIEW_PROVIDER_QUEUE :
 				headerTable.add(getHeader(localize("child_care.view_provider_queue", "Provider queue")));			
@@ -507,7 +507,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getChangeDateForm(boolean isAlteration) throws RemoteException {
+	private Table getChangeDateForm(IWContext iwc, boolean isAlteration) throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -518,15 +518,21 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
 		IWTimestamp stampNow = new IWTimestamp();
+		boolean oldPlacementTerminated = false;
+		IWTimestamp terminationDate = null;
 		if (restrictDates) {
 			if (earliestDate != null) {
 				dateInput.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.contract_dates_overlap", "You can not choose a date which overlaps another contract."));
 				dateInput.setDate(earliestDate.getDate());
+				terminationDate = new IWTimestamp(earliestDate);
+				oldPlacementTerminated = true;
 			}
 			else {
 				ChildCareContract archive = getBusiness().getLatestContract(_userID);
 				if (archive != null && archive.getTerminatedDate() != null) {
 					IWTimestamp stamp = new IWTimestamp(archive.getTerminatedDate());
+					terminationDate = new IWTimestamp(stamp);
+					oldPlacementTerminated = true;
 					stamp.addDays(1);
 					if (stamp.isEarlierThan(stampNow)) {
 						dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
@@ -563,6 +569,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}
 		table.add(getSmallHeader(dateHeader), 1, row++);
 		table.add(dateInput, 1, row++);
+		if (oldPlacementTerminated) {
+			table.add(getSmallHeader(localize("child_care.old_placement_terminated", "Old placement terminated") + ":"), 1, row);
+			table.add(Text.getNonBrakingSpace(), 1, row);
+			table.add(getSmallErrorText(terminationDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)));
+		}
 
 		if (isAlteration) {
 			TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
