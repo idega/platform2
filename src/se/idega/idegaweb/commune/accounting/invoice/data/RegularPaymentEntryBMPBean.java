@@ -12,7 +12,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 
 import com.idega.block.school.data.School;
 import com.idega.data.GenericEntity;
@@ -32,7 +32,7 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 	private static final String COLUMN_DOUBLE_POSTING = "double_posting";
 	private static final String COLUMN_NOTE = "note";
 	private static final String COLUMN_VAT = "vat";
-	private static final String COLUMN_VAT_REG_ID = "vat_reg_id";
+	private static final String COLUMN_VAT_RULE_ID = "vat_rule_id";
 	private static final String COLUMN_AMOUNT = "amount";
 	private static final String COLUMN_SCHOOL_ID = "school_id";
 	private static final String COLUMN_REG_SPEC_TYPE_ID = "reg_spec_type";
@@ -53,7 +53,7 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 		addAttribute(COLUMN_DOUBLE_POSTING, "", true, true, java.lang.String.class);
 		addAttribute(COLUMN_NOTE, "", true, true, java.lang.String.class);
 		addAttribute(COLUMN_VAT, "", true, true, java.lang.Float.class);
-		addAttribute(COLUMN_VAT_REG_ID, "", true, true, java.lang.Integer.class, 1);
+		addAttribute(COLUMN_VAT_RULE_ID, "", true, true, java.lang.Integer.class, 1);
 		addAttribute(COLUMN_AMOUNT, "", true, true, java.lang.Float.class);
 		addAttribute(COLUMN_SCHOOL_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_REG_SPEC_TYPE_ID, "", true, true, java.lang.Integer.class);
@@ -64,7 +64,8 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 
 		addManyToOneRelationship(COLUMN_USER_ID, User.class);
 		addManyToOneRelationship(COLUMN_SCHOOL_ID, School.class);
-		addManyToOneRelationship(COLUMN_REG_SPEC_TYPE_ID, RegulationSpecType.class);				
+		addManyToOneRelationship(COLUMN_REG_SPEC_TYPE_ID, RegulationSpecType.class);
+		addManyToOneRelationship(COLUMN_VAT_RULE_ID, VATRule.class);						
 	}
 	
 
@@ -174,16 +175,16 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getVatRegulation()
 	 */
-	public VATRegulation getVatRegulation() {
-		return (VATRegulation) getColumnValue(COLUMN_VAT_REG_ID);
+	public VATRule getVatRule() {
+		return (VATRule) getColumnValue(COLUMN_VAT_RULE_ID);
 	}
 	
 
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getVatRegulationID()
 	 */
-	public int getVatRegulationId() {
-		return getIntColumnValue(COLUMN_VAT_REG_ID);
+	public int getVatRuleId() {
+		return getIntColumnValue(COLUMN_VAT_RULE_ID);
 	}
 
 
@@ -305,15 +306,15 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setVatRegulation(se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation)
 	 */
-	public void setVatRegulation(VATRegulation vatRegulation) {
-		setColumn(COLUMN_VAT_REG_ID, vatRegulation);
+	public void setVatRule(VATRule vatRule) {
+		setColumn(COLUMN_VAT_RULE_ID, vatRule);
 	}
 
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setVatRegulationId(int)
 	 */
-	public void setVatRegulationId(int vatRegId){
-		setColumn(COLUMN_VAT_REG_ID, vatRegId);		
+	public void setVatRuleId(int vatRuleId){
+		setColumn(COLUMN_VAT_RULE_ID, vatRuleId);		
 	}
 	
 	/* (non-Javadoc)

@@ -8,7 +8,7 @@ package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import java.sql.Date;
 
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 
 import com.idega.block.school.data.School;
 import com.idega.data.IDOEntity;
@@ -32,8 +32,8 @@ public interface RegularPaymentEntry extends IDOEntity {
 	String getNote();	
 	String getOwnPosting();
 	String getDoublePosting();
-	VATRegulation getVatRegulation();	
-	int getVatRegulationId();	
+	VATRule getVatRule();	
+	int getVatRuleId();	
 	User getUser();	
 	int getUserId();		
 	
@@ -46,7 +46,7 @@ public interface RegularPaymentEntry extends IDOEntity {
 	void setNote(String note);	
 	void setOwnPosting(String ownPosting);
 	void setDoublePosting(String doublePosting);
-	void setVatRegulationId(int vatRegId);	
+	void setVatRuleId(int vatRuleId);	
 	void setUser(User user);
 	
 	void delete()throws java.sql.SQLException;	
