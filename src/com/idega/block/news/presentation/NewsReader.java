@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.103 2002/10/27 11:49:47 laddi Exp $
+ * $Id: NewsReader.java,v 1.104 2002/12/06 12:58:53 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -577,8 +577,10 @@ public class NewsReader extends CategoryBlock implements IWBlock {
       sTeaser = locText.getTitle();
     }
     // shortening headlinestext
+    boolean needMoreButton = false;
     if(!showAll && numberOfHeadlineLetters > -1 && sHeadline.length() >= numberOfHeadlineLetters ){
       sHeadline=sHeadline.substring(0,numberOfHeadlineLetters)+"...";
+      needMoreButton = true;
     }
 
     Text headLine = new Text(sHeadline);
@@ -630,6 +632,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
         // shortening newstext
         if(!showAll && sNewsBody.length() >= numberOfLetters){
           sNewsBody=sNewsBody.substring(0,numberOfLetters)+"...";
+          needMoreButton = true;
         }
 
         sNewsBody = TextFormatter.formatText(sNewsBody,1,Table.HUNDRED_PERCENT);
@@ -700,7 +703,8 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 
       ////////// MORE LINK ///////////////
 
-      if(!showAll){
+	
+      if(!showAll && needMoreButton){
         T.setHeight(row++,String.valueOf(iSpaceBetweenNewsAndBody));
         if(showMoreButton){
           T.add(getMoreLink(moreImage,news.getID(),iwc), 1, row);
