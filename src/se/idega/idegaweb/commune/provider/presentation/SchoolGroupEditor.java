@@ -70,6 +70,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 	protected School _provider;
 	
 	private boolean showStudyPaths = false;
+	private boolean useStyleNames = false;
 
 	//public final String PARAMETER_PROVIDER_ID = "Goran please fix this, ACTION_VIEW and PARAMETER_ACTION";
 	
@@ -146,7 +147,6 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.setColumns(7);
 		table.setWidth(6, 12);
 		table.setWidth(7, 12);
-		table.setRowColor(1, getHeaderColor());
 		int row = 1;
 		int column = 1;
 		boolean canDelete = true;
@@ -155,7 +155,14 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.add(getLocalizedSmallHeader("group_type","Type"), column++, row);
 		table.add(getLocalizedSmallHeader("school_season","Season"), column++, row);
 		table.add(getLocalizedSmallHeader("school_years","Years"), column++, row);
-		table.add(getLocalizedSmallHeader("teachers","Teachers"), column++, row++);
+		table.add(getLocalizedSmallHeader("teachers","Teachers"), column++, row);
+		if (useStyleNames) {
+			table.setRowStyleClass(row, getHeaderRow2Class());
+			table.setCellpaddingLeft(1, row, 12);
+		}
+		else {
+			table.setRowColor(row++, getHeaderColor());
+		}
 		
 		Iterator iter = getSchoolGroups().iterator();
 		while (iter.hasNext()) {
@@ -176,10 +183,19 @@ public class SchoolGroupEditor extends ProviderBlock {
 				e1.printStackTrace();
 			}
 				
-			if (row % 2 == 0)
-				table.setRowColor(row, getZebraColor1());
-			else
-				table.setRowColor(row, getZebraColor2());
+			if (useStyleNames) {
+				table.setCellpaddingLeft(1, row, 12);
+				if (row % 2 == 0)
+					table.setRowStyleClass(row, getLightRowClass());
+				else
+					table.setRowStyleClass(row, getDarkRowClass());
+			}
+			else {
+				if (row % 2 == 0)
+					table.setRowColor(row, getZebraColor1());
+				else
+					table.setRowColor(row, getZebraColor2());
+			}
 
 			table.add(getSmallText(group.getSchoolClassName()), column++, row);
 			if (group.getSchoolTypeId() != -1)
@@ -541,5 +557,11 @@ public class SchoolGroupEditor extends ProviderBlock {
 	 */
 	public void setShowStudyPaths(boolean showStudyPaths) {
 		this.showStudyPaths = showStudyPaths;
+	}
+	/**
+	 * @param useStyleNames The useStyleNames to set.
+	 */
+	public void setUseStyleNames(boolean useStyleNames) {
+		this.useStyleNames = useStyleNames;
 	}
 }
