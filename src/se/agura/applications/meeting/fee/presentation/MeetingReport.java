@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReport.java,v 1.14 2005/02/14 10:57:56 laddi Exp $ Created on
+ * $Id: MeetingReport.java,v 1.15 2005/02/15 15:49:58 laddi Exp $ Created on
  * 24.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -16,6 +16,7 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.agura.AguraConstants;
 import se.agura.applications.meeting.fee.data.MeetingFeeFormula;
 
 import com.idega.presentation.IWContext;
@@ -40,7 +41,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 24.11.2004 13:46:01 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class MeetingReport extends MeetingFeeBlock {
 
@@ -56,18 +57,28 @@ public class MeetingReport extends MeetingFeeBlock {
 			action = "";
 		}
 
-		if (action.equals(ACTION_NEXT)) {
-			add(formPageTwo(iwc));
-		}
-		else if (action.equals(ACTION_SHOW_REPORT)) {
-			add(formPageThree(iwc));
-		}
-		else if (action.equals(ACTION_SAVE)) {
-			save(iwc);
-			showMessage(getResourceBundle().getLocalizedString("meeting.fee.application_sent", "Your application has been sent."));
-		}
-		else {
-			add(formPageOne(iwc));
+		if (iwc.isLoggedOn()) {
+			User owner = iwc.getCurrentUser();
+			Group parent = owner.getPrimaryGroup();
+
+			if (parent != null && !parent.getGroupType().equals(AguraConstants.GROUP_TYPE_EMPLOYEES) && !parent.getGroupType().equals(AguraConstants.GROUP_TYPE_SUBSTITUTES)) {
+				if (action.equals(ACTION_NEXT)) {
+					add(formPageTwo(iwc));
+				}
+				else if (action.equals(ACTION_SHOW_REPORT)) {
+					add(formPageThree(iwc));
+				}
+				else if (action.equals(ACTION_SAVE)) {
+					save(iwc);
+					showMessage(getResourceBundle().getLocalizedString("meeting.fee.application_sent", "Your application has been sent."));
+				}
+				else {
+					add(formPageOne(iwc));
+				}
+			}
+			else {
+				add(getResourceBundle().getLocalizedString("can_not_create_meeting_report", "You don't have permission to create meeting reports."));
+			}
 		}
 	}
 
