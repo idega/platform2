@@ -385,21 +385,7 @@ public class ReportQueryBuilder extends Block {
 			editId = Integer.parseInt(iwc.getParameter(PARAM_COND_EDIT_MODE));
 		}
 		else if (iwc.isParameterSet(PARAM_SAVE)) {
-			String description = iwc.getParameter(PARAM_QUERY_DESCRIPTION);
-			helper.setDescription(description);
-			helper.setTemplate(iwc.isParameterSet(PARAM_ASTEMPLATE));
-			String name = iwc.getParameter(PARAM_QUERY_NAME);
-			String saveMode = iwc.getParameter(PARAM_SAVE_MODE);
-			boolean isPrivate = PRIVATE.equals(iwc.getParameter(PARAM_IS_PRIVATE_QUERY));
-			boolean overwriteQuery = OVERWRITE_QUERY.equals(saveMode);
-			if (name == null) {
-				name = iwrb.getLocalizedString("step_5_default_queryname", "My query");
-			}
-			UserQuery userQuery = sessionBean.storeQuery(name, isPrivate, overwriteQuery);
-			if (userQuery != null) {
-				userQueryID = ((Integer) userQuery.getPrimaryKey()).intValue();
-				helper.setUserQuery(userQuery);
-			}
+			storeQuery(iwc);
 		}
 		else if (iwc.isParameterSet(PARAM_NEXT)) {
 			boolean proceed = processNextStep(iwc);
@@ -427,6 +413,32 @@ public class ReportQueryBuilder extends Block {
 //			//add("Query was not saved");
 //		}
 
+	}
+
+	/**
+	 * @param iwc
+	 * @throws RemoteException
+	 * @throws IOException
+	 * @throws CreateException
+	 * @throws SQLException
+	 * @throws FinderException
+	 */
+	private void storeQuery(IWContext iwc) throws RemoteException, IOException, CreateException, SQLException, FinderException {
+		String description = iwc.getParameter(PARAM_QUERY_DESCRIPTION);
+		helper.setDescription(description);
+		helper.setTemplate(iwc.isParameterSet(PARAM_ASTEMPLATE));
+		String name = iwc.getParameter(PARAM_QUERY_NAME);
+		String saveMode = iwc.getParameter(PARAM_SAVE_MODE);
+		boolean isPrivate = PRIVATE.equals(iwc.getParameter(PARAM_IS_PRIVATE_QUERY));
+		boolean overwriteQuery = OVERWRITE_QUERY.equals(saveMode);
+		if (name == null) {
+			name = iwrb.getLocalizedString("step_5_default_queryname", "My query");
+		}
+		UserQuery userQuery = sessionBean.storeQuery(name, isPrivate, overwriteQuery);
+		if (userQuery != null) {
+			userQueryID = ((Integer) userQuery.getPrimaryKey()).intValue();
+			helper.setUserQuery(userQuery);
+		}
 	}
 
 	private boolean processNextStep(IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException  {
@@ -585,8 +597,7 @@ public class ReportQueryBuilder extends Block {
 			return helper.hasRelatedEntities();
 		}
 		// if we allow to  work with source entity fields alone
-		else
-			return helper.hasSourceEntity();
+		return helper.hasSourceEntity();
 	}
 	private boolean processStep1(IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException {
 		if (iwc.isParameterSet(PARAM_QUERY_AS_SOURCE))	{
@@ -620,9 +631,7 @@ public class ReportQueryBuilder extends Block {
 		if (expertMode) {
 			return helper.hasSourceEntity()  || helper.hasPreviousQuery();
 		}
-		else {
-		 return helper.hasPreviousQuery();
-		}
+		return helper.hasPreviousQuery();
 	}
 	
 
