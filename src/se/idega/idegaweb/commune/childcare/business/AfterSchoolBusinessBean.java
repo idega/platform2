@@ -258,29 +258,28 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		Collection users = new ArrayList();
 		Collection applications = findChoicesByProvider(providerId, "c.QUEUE_DATE");
 		Iterator iter = applications.iterator();
-		SchoolSeason season = null;
-		try { 
-			season = getCareBusiness().getCurrentSeason();
-		} catch (Exception e) {}
 		while (iter.hasNext()) {
 			ChildCareApplication application = (ChildCareApplication) iter.next();
 			boolean hasSchoolPlacement = false;
 			try { 
-				hasSchoolPlacement = getSchoolBusiness().hasActivePlacement(application.getChildId(), providerId, season, getSchoolBusiness().getCategoryElementarySchool());
+				hasSchoolPlacement = getSchoolBusiness().hasActivePlacement(application.getChildId(), providerId, getSchoolBusiness().getCategoryElementarySchool());
 			} catch (RemoteException e) {}
 			if (hasSchoolPlacement && (application.getApplicationStatus() == getStatusSentIn())) {
 				if (!application.getHasDateSet()) {
 					SchoolClassMember placement = null;
 					try {
 						SchoolClassMemberHome home = getSchoolBusiness().getSchoolClassMemberHome();
-						placement = home.findNotTerminatedByStudentSeasonSchoolAndCategory(application.getChildId(), season, providerId, getSchoolBusiness().getCategoryElementarySchool());
+						placement = home.findNotTerminatedByStudentSchoolAndCategory(application.getChildId(), providerId, getSchoolBusiness().getCategoryElementarySchool());
 					} catch (Exception e) {}
 					if (placement != null) {
 						application.setFromDate(new Date(placement.getRegisterDate().getTime()));
 					}
 				}
-				users.add(application.getChild());
-				assignContractToApplication(((Integer) application.getPrimaryKey()).intValue(), -1, null, null, -1, user, locale, true);
+				if (!hasActivePlacementNotWithProvider(application.getChildId(), providerId)) {
+					if (assignContractToApplication(((Integer) application.getPrimaryKey()).intValue(), -1, null, null, -1, user, locale, true)) {
+						users.add(application.getChild());
+					}
+				}
 			}
 		}
 		return users;
