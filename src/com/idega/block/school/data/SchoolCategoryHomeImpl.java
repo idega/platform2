@@ -20,6 +20,13 @@ public java.util.Collection findAllCategories()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public SchoolCategory findByLocalizedKey(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolCategoryBMPBean)entity).ejbFindByLocalizedKey(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public SchoolCategory findChildcareCategory()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((SchoolCategoryBMPBean)entity).ejbFindChildcareCategory();

@@ -112,6 +112,13 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 		return idoFindPKsByQuery(query);
 	}
 	
+	public String ejbFindByLocalizedKey(String key) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_LOCALIZED_KEY, key);
+		
+		return (String) idoFindOnePKByQuery(query);
+	}
+
 	public String ejbFindChildcareCategory() throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_CATEGORY, CATEGORY_CHILD_CARE);
