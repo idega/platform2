@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.util.text.TextSoap;
 import java.sql.SQLException;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.presentation.text.*;
@@ -21,7 +22,6 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
   private String _number = "Number";
   private String _teaser = "Teaser";
   private String _description = "Desription";
-  private Image _seperator = null;
   private Image _image = null;
 
   public ProductViewerLayoutIdega() { }
@@ -41,6 +41,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
   public PresentationObject getViewer(ProductViewer productViewer, Product product, IWContext iwc) {
     _name = ProductBusiness.getProductName(product, productViewer._localeId);
     _description = ProductBusiness.getProductDescription(product, productViewer._localeId);
+    _description = TextSoap.formatText(_description);
 
     int fileId = product.getFileId();
     if (fileId != -1) {
@@ -60,12 +61,8 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 
     Text header = productViewer.getHeaderText(this._name);
     Text description = productViewer.getText(this._description);
-    Table poc = new Table(1,1);
-      poc.unlock();
 
     table.add(header, 1, 1);
-    table.add(productViewer.getText("reppS"), 2, 1);
-    table.add(poc, 2, 1);
 
     table.mergeCells(1, 2, 2, 2);
 
