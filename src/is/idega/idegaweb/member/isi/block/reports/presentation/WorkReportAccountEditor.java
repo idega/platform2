@@ -453,6 +453,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
     
     // add error message
+    Table errorMessageTable = getErrorMessageTable();
     if (! leagueNamesWhereTheAccountIsOutOfBalance.isEmpty()) {
       String message = resourceBundle.getLocalizedString("wr_account_editor_account_out_of_balance", "Account is out of balance");
       StringBuffer buffer = new StringBuffer(message);
@@ -465,10 +466,11 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         comma = ", ";
       }
       Text text = new Text(buffer.toString());
-      text.setBold();
-      text.setFontColor("#FF0000");
-      add(text);
+//      text.setBold();
+//      text.setFontColor("#FF0000");
+      errorMessageTable.add(text);
     }
+    add(errorMessageTable);
     
     // define entity browser
     EntityBrowser browser = getEntityBrowser(workReportAccountGroupHelpers, resourceBundle, form);
@@ -490,6 +492,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
     return browser;
   }
+	public Table getErrorMessageTable() {
+		Table errorMessageTable = new Table(1,1);
+		errorMessageTable.setCellpaddingAndCellspacing(0);
+		errorMessageTable.setWidth(Table.HUNDRED_PERCENT);
+		errorMessageTable.setAlignment("center");
+  	
+		return errorMessageTable;
+	}
   
   private void addKeys(List accountKeys, String accountArea)  {
     List minus = new ArrayList();

@@ -93,6 +93,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   
   private static final String SSN = "ssn";
   
+  private String errorMessageFontStyle = "errorMessageFont";
+  
   private List fieldList;
   
   private boolean personalIdnotCorrect = false;
@@ -379,6 +381,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         ex.printStackTrace(System.err);
       }
     }
+    
       
     EntityBrowser browser = getEntityBrowser(members, resourceBundle, form, iwc);
     // get new entry message 
@@ -388,20 +391,23 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       add(text);
     }
     // get error message
+		Table errorMessageTable = getErrorMessageTable();
     if (personalIdnotCorrect) {
       String message = resourceBundle.getLocalizedString("wr_editor_ssn_not_valid", "The input of the social security number is not valid");
       Text text = new Text(message);
-      text.setBold();
-      text.setFontColor("#FF0000");
-      add(text);
+      text.setStyleClass(errorMessageFontStyle);
+//      text.setBold();
+//      text.setFontColor("#FF0000");
+			errorMessageTable.add(text);
     }
     if (memberAlreadyExist) {
       String message = resourceBundle.getLocalizedString("wr_account_member_member_with_ssn_already_exist", "The member with the specified social security number does already exist");
       Text text = new Text(message);
-      text.setBold();
-      text.setFontColor("#FF0000");
-      add(text);
+//      text.setBold();
+//      text.setFontColor("#FF0000");
+			errorMessageTable.add(text);
     }
+    add(errorMessageTable);
     // put browser into a table
 
     if (! isReadOnly) {
@@ -429,6 +435,14 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       return mainTable;
     }
     return browser;    
+  }
+  public Table getErrorMessageTable() {
+  	Table errorMessageTable = new Table(1,1);
+  	errorMessageTable.setCellpaddingAndCellspacing(0);
+  	errorMessageTable.setWidth(Table.HUNDRED_PERCENT);
+  	errorMessageTable.setAlignment("center");
+  	
+  	return errorMessageTable;
   }
   
   private PresentationObject getPersonalIdInputField(IWResourceBundle resourceBundle) {

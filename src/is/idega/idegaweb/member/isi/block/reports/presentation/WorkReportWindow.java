@@ -43,6 +43,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 	private String userType = null;
 	private WorkReportBusiness workBiz = null;
 	private String styledLink = "styledLinkGeneral";
+	private boolean selectorIsSet = false;
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
@@ -104,7 +105,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		}
 		
 		setTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"));
-		addTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+		
+		
 		String action = iwc.getParameter(ACTION);
 
 		Table table = new Table(2, 1);
@@ -126,50 +128,60 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		//add the main content
 		if (action != null) {
 			WorkReportSelector selector = null;
+			
 
 			//depending on the user type set the currect stuff
 			if (action.equals(ACTION_WORK_SELECT_REPORT)) {
 				selector = new WorkReportSelector();
+				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_REPORT, "Select report"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_REPORT, "Select report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			if (action.equals(ACTION_EDIT_MEMBER_LIST)) {
 				selector = new WorkReportMemberEditor();
+				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_MEMBER_LIST, "Edit members"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_MEMBER_LIST, "Edit members"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_EDIT_ACCOUNT)) {
 				selector = new WorkReportAccountEditor();
+				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_ACCOUNT, "Edit account info"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_ACCOUNT, "Edit account info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_EDIT_BOARD)) {
 				selector = new WorkReportBoardMemberEditor();
+				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_BOARD, "Edit board info"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_BOARD, "Edit board info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_EDIT_DIVISION_BOARD)) {
 				selector = new WorkReportDivisionBoardEditor();
+				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_DIVISION_BOARD, "Edit division info"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_DIVISION_BOARD, "Edit division info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_SEND_REPORT)) {
 				selector = new WorkReportSender();
+				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_SEND_REPORT, "Send report"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_SEND_REPORT, "Send report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_IMPORT_MEMBERS)) {
 				selector = new WorkReportMemberImporterConfirm();
+				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_MEMBERS, "Import members"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_MEMBERS, "Import members"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_IMPORT_ACCOUNT)) {
 				selector = new WorkReportAccountImporter();
+				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_ACCOUNT, "Import account info"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_ACCOUNT, "Import account info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_IMPORT_BOARD)) {
 				selector = new WorkReportBoardImporter();
+				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_BOARD, "Import board info"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_BOARD, "Import board info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
@@ -183,6 +195,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				WorkReportOverViewStats stats = new WorkReportOverViewStats();
 				stats.setYear(year);
 				menuTable.add(stats,1,15);
+				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
@@ -197,11 +210,13 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				WorkReportOverViewStats stats = new WorkReportOverViewStats();
 				stats.setYear(year);
 				menuTable.add(stats,1,15);
+				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_CLOSE_REPORT)) {
 				table.add(new WorkReportCloser(),2,1);	//not a selector
+				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_CLOSE_REPORT, "Close work report"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_CLOSE_REPORT, "Close work report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
@@ -237,11 +252,13 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				}
 				
 				table.add(repGen,2,1);	//not a selector
+				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_STATISTICS, "View statistics"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_STATISTICS, "View statistics"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_CREATE_REPORTS)) {
 				table.add(new WorkReportExporter(),2,1);	//not a selector
+				selectorIsSet = true;
 				addTitle(iwrb.getLocalizedString(ACTION_CREATE_REPORTS,"Generate reports"));
 				addTitle(iwrb.getLocalizedString(ACTION_CREATE_REPORTS,"Generate reports"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
@@ -256,6 +273,9 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				selector.setUserType(getUserType());
 				table.add(selector, 2, 1);
 			}
+		}
+		if(!selectorIsSet) {
+			addTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"), IWConstants.BUILDER_FONT_STYLE_TITLE);		
 		}
 	}
 

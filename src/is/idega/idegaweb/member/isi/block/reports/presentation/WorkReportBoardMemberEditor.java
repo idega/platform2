@@ -333,13 +333,15 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       add(text);
     }
     // get error message
+    Table errorMessageTable = getErrorMessageTable();
     if (personalIdnotCorrect) {
       String message = resourceBundle.getLocalizedString("wr_editor_ssn_not_valid", "The input of the social security number is not valid");
       Text text = new Text(message);
-      text.setBold();
-      text.setFontColor("#FF0000");
-      add(text);
+//      text.setBold();
+//      text.setFontColor("#FF0000");
+      errorMessageTable.add(text);
     }
+    add(errorMessageTable);
 
     Collections.sort(list, comparator);
     EntityBrowser browser = getEntityBrowser(list, resourceBundle, form);
@@ -368,6 +370,14 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     return browser;
     
   }
+	public Table getErrorMessageTable() {
+		Table errorMessageTable = new Table(1,1);
+		errorMessageTable.setCellpaddingAndCellspacing(0);
+		errorMessageTable.setWidth(Table.HUNDRED_PERCENT);
+		errorMessageTable.setAlignment("center");
+  	
+		return errorMessageTable;
+	}
   
   private PresentationObject getCreateNewEntityButton(IWResourceBundle resourceBundle) {
     String createNewEntityText = resourceBundle.getLocalizedString("wr_board_member_editor_create_new_entry", "New entry");

@@ -3,8 +3,8 @@ package com.idega.block.datareport.presentation;
 import com.idega.block.dataquery.presentation.QueryBuilder;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
+import com.idega.user.presentation.StyledIWAdminWindow;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -15,7 +15,7 @@ import com.idega.presentation.IWContext;
  * @version 1.0
  * Created on Jun 12, 2003
  */
-public class ReportOverviewWindow extends IWAdminWindow {
+public class ReportOverviewWindow extends StyledIWAdminWindow {
   
   public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.dataquery";
   
@@ -35,7 +35,7 @@ public class ReportOverviewWindow extends IWAdminWindow {
     	// do not show wizard even if the parameter show wizard is set
     	QueryBuilder.cleanSession(iwc);
     	ReportOverview overview = new ReportOverview();
-    	add(overview);
+    	add(overview,iwc);
     }
     else if (iwc.isParameterSet(QueryBuilder.PARAM_SAVE)) {
     	QueryBuilder queryBuilder = new QueryBuilder();
@@ -45,15 +45,15 @@ public class ReportOverviewWindow extends IWAdminWindow {
     	QueryBuilder.cleanSession(iwc);
     	ReportOverview overview = new ReportOverview();
     	overview.setShowOnlyOneQueryWithId(queryId);
-    	add(overview);
+    	add(overview,iwc);
     }
     else if (iwc.isParameterSet(QueryBuilder.SHOW_WIZARD))	{
     	QueryBuilder queryBuilder = new QueryBuilder();
-    	add(queryBuilder);
+    	add(queryBuilder,iwc);
     }
     else {
 	   	ReportOverview overview = new ReportOverview();
-    	add(overview);
+    	add(overview,iwc);
     }
   }
     

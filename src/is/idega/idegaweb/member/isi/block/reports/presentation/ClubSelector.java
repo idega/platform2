@@ -181,7 +181,7 @@ public class ClubSelector extends Block {
 		if(steps!=null && !steps.isEmpty()){
 			stepTable = new Table();
 			stepTable.setWidth(Table.HUNDRED_PERCENT);
-			stepTable.setColor("#DFDFDF");
+			stepTable.setColor("#dfdfdf");//setHorizontalZebraColored("#dfdfdf","#efefef");   
 			stepTable.setCellspacing(0);
 			
 			Iterator iter = steps.iterator();
@@ -297,6 +297,10 @@ public class ClubSelector extends Block {
 	protected void addToStepsExtraInfo(String stepLocalizableKey, PresentationObject obj){
 		Integer column = (Integer)localizedStepKeyOrder.get(stepLocalizableKey);
 		stepTable.add(obj,column.intValue(),2);
+		stepTable.setColor(column.intValue(),2,"#efefef");
+		stepTable.setColor(column.intValue()+1,2,"#efefef");
+		stepTable.setColor(column.intValue()+2,2,"#efefef");
+		stepTable.setColor(column.intValue()+3,2,"#efefef");
 	}
 	
 	protected List getSteps(){
