@@ -57,7 +57,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   private AudioClip alertSound;
 
-
   private Thread t;
 
   private String keyPressed=null;
@@ -104,6 +103,16 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         ex.printStackTrace(System.err);
       }
 
+    ImageLabel imageLabel = new ImageLabel(getImage(getCodeBase(),"idegalogo.gif"));
+System.out.println("BEFORE RESIZE");
+    imageLabel.resize(220, 202);
+    System.out.println("BEFORE BORDER");
+    imageLabel.setBorder(5);
+    System.out.println("BORDER COLOR");
+    imageLabel.setBorderColor(Color.lightGray);
+System.out.println("ADD");
+    add(imageLabel);
+
   }
 
   public void run(){
@@ -119,7 +128,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
     while(runThread){
       //message checking is done in another thread
-      repaint();
+      refresh();
 
       try {
         //getToolkit().sync();
@@ -347,7 +356,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
     System.out.println("DONE! processing the packet");
 
-    repaint();
+    refresh();
 
     packetToServlet = null;
 
@@ -378,7 +387,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   }
 
   private void refresh(){
-      doLayout();
+     // doLayout();
       repaint();
   }
 
@@ -423,7 +432,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     }*/
 
 
-    repaint();
+    refresh();
 
   }
 
