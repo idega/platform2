@@ -1,5 +1,9 @@
 package is.idega.idegaweb.member.presentation;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+
 import com.idega.event.IWLinkEvent;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -8,8 +12,10 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.IFrame;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.GroupRelationHome;
+import com.idega.user.data.User;
 import com.idega.user.data.UserStatus;
 import com.idega.user.data.UserStatusHome;
 import com.idega.user.presentation.UserGroupList;
@@ -108,21 +114,33 @@ public class UserHistoryTab extends UserTab {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		Object obj = ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(getUserId(),"GROUP_PARENT");
-		Object obj2 = ((UserStatusHome) com.idega.data.IDOLookup.getHome(UserStatus.class)).findAllByUserId(getUserId());
-		if (obj != null) {
+		User user = getUser();
+		boolean isAdmin = iwc.isSuperAdmin();
+		boolean isSameUser = iwc.getUser().getPrimaryKey().equals(user.getPrimaryKey());
+		boolean checkNeeded = !(isAdmin || isSameUser);
+		
+		Collection groupRelations = ((GroupRelationHome) com.idega.data.IDOLookup.getHome(GroupRelation.class)).findAllGroupsRelationshipsByRelatedGroup(getUserId(),"GROUP_PARENT");
+		if(checkNeeded) {
+			filterGroupRelations(iwc, groupRelations, user);
+		}
+		if (groupRelations != null) {
 			iwc.setSessionAttribute(
 				UserHistoryTab.SESSIONADDRESS_USERGROUPS_HISTORY,
-				obj);
+				groupRelations);
 		}
 		else {
 			iwc.removeSessionAttribute(
 				UserHistoryTab.SESSIONADDRESS_USERGROUPS_HISTORY);
 		}
-		if (obj2 != null) {
+		
+		Collection statuses = ((UserStatusHome) com.idega.data.IDOLookup.getHome(UserStatus.class)).findAllByUserId(getUserId());
+		if(checkNeeded) {
+			filterStatuses(iwc, statuses, user);
+		}
+		if (statuses != null) {
 			iwc.setSessionAttribute(
 				UserHistoryTab.SESSIONADDRESS_USERGROUPS_STATUS,
-				obj2);
+				statuses);
 		}
 		else {
 			iwc.removeSessionAttribute(
@@ -130,6 +148,46 @@ public class UserHistoryTab extends UserTab {
 		}
 		
 	}
+	
+	private void filterStatuses(IWContext iwc, Collection statuses, User user) {
+		UserBusiness userBusiness = this.getUserBusiness(iwc);
+		Iterator statusIter = statuses.iterator();
+		while(statusIter.hasNext()) {
+			UserStatus status = (UserStatus) statusIter.next();
+			boolean ok = false;
+			try {
+				ok = userBusiness.isGroupUnderUsersTopGroupNode(iwc, status.getGroup(), user);
+			} catch (RemoteException e) {
+				System.out.println("Could not check if group in user status is a descendant of a users top group, status for group not shown");
+				e.printStackTrace();
+			}
+			if(!ok) {
+				System.out.println("User status in group " + status.getGroup().getName() + " not shown");
+				statuses.remove(status);
+			}
+		}
+	}
+	
+	private void filterGroupRelations(IWContext iwc, Collection groupRelations, User user) {
+		UserBusiness userBusiness = this.getUserBusiness(iwc);
+		Iterator groupRelationIter = groupRelations.iterator();
+		while(groupRelationIter.hasNext()) {
+			GroupRelation rel = (GroupRelation) groupRelationIter.next();
+			boolean ok = false;
+			try {
+				ok = userBusiness.isGroupUnderUsersTopGroupNode(iwc, rel.getGroup(), user) &&
+				     userBusiness.isGroupUnderUsersTopGroupNode(iwc, rel.getRelatedGroup(), user);
+			} catch (RemoteException e) {
+				System.out.println("Could not check if groups in relation were descendants of a users top group, group relation not shown");
+				e.printStackTrace();
+			}
+			if(!ok) {
+				System.out.println("Group relation between " + rel.getGroup().getName() + " and " + rel.getRelatedGroup().getName() + " not shown");
+				groupRelations.remove(rel);
+			}
+		}
+	}
+	
 	public Help getHelpButton() {
 		IWContext iwc = IWContext.getInstance();
 		IWBundle iwb = getBundle(iwc);
