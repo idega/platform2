@@ -229,7 +229,7 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
 				.append(" AND pc.").append(postalCodeTableIDColumnName).append(" in (");
 				Iterator iter = postalCodes.iterator();
 				while (iter.hasNext()) {
-					sql.append(((GenericEntity) iter.next()).getPrimaryKey());
+					sql.append(iter.next().toString());
 					if (iter.hasNext()) {
 						sql.append(", ");
 					}
