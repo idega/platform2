@@ -21,7 +21,7 @@ import com.idega.user.presentation.UserGroupTab;
 public class GroupOfficeAddressTab extends UserGroupTab {
 	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 
-	private static final String TAB_NAME = "grp_ocon_tab_name";
+	private static final String TAB_NAME = "grp_oaddr_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Address";
 
 	private TextInput streetField;
