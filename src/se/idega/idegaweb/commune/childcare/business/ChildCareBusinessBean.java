@@ -2326,7 +2326,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				return getSchoolBusiness().getSchoolTypeHome().findAllFreetimeTypes();
 			}
 			else {
-				return getSchoolBusiness().findAllSchoolTypesInCategory(getSchoolBusiness().getChildCareSchoolCategory());
+				return getSchoolBusiness().findAllSchoolTypesInCategory(getSchoolBusiness().getChildCareSchoolCategory(), false);
 			}
 		}
 		catch (RemoteException e) {
