@@ -1,5 +1,5 @@
 /*
- * $Id: Applicant.java,v 1.7 2001/07/23 11:02:00 aron Exp $
+ * $Id: Applicant.java,v 1.8 2001/07/23 11:02:55 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -39,8 +39,8 @@ public class Applicant extends GenericEntity {
   }
 
   public void initializeAttributes() {
-    addAttribute(getIDColumnName();
-    addAttribute(firstName_,"First name",true,true,"java.lang.String"");
+    addAttribute(getIDColumnName());
+    addAttribute(firstName_,"First name",true,true,"java.lang.String");
     addAttribute(middleName_,"Middle name",true,true,"java.lang.String");
     addAttribute(lastName_,"Last name",true,true,"java.lang.String");
     addAttribute(ssn_,"Social security number",true,true,"java.lang.String");
