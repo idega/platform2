@@ -11,6 +11,7 @@ import com.idega.block.messenger.data.Message;
 import com.idega.block.messenger.data.Packet;
 import com.idega.block.messenger.data.Property;
 import com.idega.block.messenger.business.MessageListener;
+import com.idega.presentation.awt.ImageLabel;
 
 import com.idega.presentation.awt.SingleLineItem;
 
@@ -79,23 +80,20 @@ public class MessengerApplet extends Applet implements Runnable{
       hostURL = new URL(this.getParameter(SERVER_ROOT_URL, "http://iw.idega.is"));
       resourceURL = this.getParameter(RESOURCE_URL,"/idegaweb/bundles/com.idega.block.messenger.bundle/resources/");
 
-    java.net.URL url;
-    Image img;
-
+      ImageLabel lb = null;
     try {
-      url = SingleLineItem.class.getResource("face_in.gif");
-      img=Toolkit.getDefaultToolkit().getImage(url);
+      lb = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
+      System.out.println("AAAAARRGG:"+hostURL+resourceURL);
     }
     catch (Exception ex) {
-      img = getImage(new URL(hostURL+resourceURL),"face_in.gif");
-      System.out.println("AAAAARRGG:"+hostURL+resourceURL);
+      ex.printStackTrace(System.err);
     }
 
 
 
       SingleLineItem test = new SingleLineItem();
       test.setWindowToOpen(new Dialog(new Frame(),"test1"));
-      test.add(img);
+      if( lb!= null ) test.add(lb);
       add(test);
 
       SingleLineItem test2 = new SingleLineItem();
