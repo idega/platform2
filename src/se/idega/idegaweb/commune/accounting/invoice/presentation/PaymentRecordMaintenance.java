@@ -65,16 +65,13 @@ public class PaymentRecordMaintenance extends AccountingBlock{
 			table.add(provider,1,2);
 			table.add(month,1,3);
 
-//			table.add(search,2,2);
+			GenericButton search = new SubmitButton(PARAM_SEARCH,localize(PARAM_SEARCH,"Search"));
+			table.add(search,2,2);
 			add(form);
 			
 
 			form.add(table);
-
-			GenericButton search = new SubmitButton(PARAM_SEARCH,localize(PARAM_SEARCH,"Search"));
 			
-			form.add(search);
-
 			//Middle section with the payment list
 			try{
 				
