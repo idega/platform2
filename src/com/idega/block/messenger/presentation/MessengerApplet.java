@@ -55,8 +55,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   private AudioClip alertSound;
 
-  //debug
- private Panel userPanel;
 
   private Thread t;
 
@@ -95,23 +93,19 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
     try {
         //faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
-        faceLabel = new ImageLabel(getImage(getCodeBase(),"face_in.gif"));
+        Image face = getImage(getCodeBase(),"face_in.gif");
+        prepareImage(face, this);
+        faceLabel = new ImageLabel(face);
         System.out.println("CODEBASE = "+getCodeBase());
-        logoLabel = new ImageLabel(getImage(getCodeBase(),"idegalogo.gif"));
+        Image logo = getImage(getCodeBase(),"idegalogo.gif");
+        logoLabel = new ImageLabel(logo);
+        prepareImage(logo, this);
         //alertSound = getAudioClip(getCodeBase(),"notify.wav");
 
       }
       catch (Exception ex) {
         ex.printStackTrace(System.err);
       }
-
-
-
-    userPanel = new Panel();
-    userPanel.setSize(400,400);
-    userPanel.setLayout(new BorderLayout());
-    userPanel.repaint();
-    add(userPanel);
 
   }
 
@@ -383,11 +377,11 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.add(new Label(name));
       item.setSize(18,150);
 
-      userPanel.add(item,BorderLayout.NORTH);
-//      item.repaint();
-userPanel.repaint();
+
+      item.repaint();
+      add(item);
+
       repaint();
- //     item.repaint();
 
 
   }
