@@ -84,5 +84,10 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason{
     return super.idoFindPKsBySQL(sql.toString());
   }
 
-
+	public Integer ejbFindSeasonByDate(Date date)throws FinderException, RemoteException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhere().append(START).appendLessThanOrEqualsSign().append(date);
+		sql.appendAnd().append(END).appendGreaterThanOrEqualsSign().append(date);
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
 }

@@ -27,6 +27,13 @@ public java.util.Collection findAllSchoolSeasons()throws javax.ejb.FinderExcepti
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public SchoolSeason findSeasonByDate(java.sql.Date p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolSeasonBMPBean)entity).ejbFindSeasonByDate(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public SchoolSeason findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (SchoolSeason) super.findByPrimaryKeyIDO(pk);
  }
