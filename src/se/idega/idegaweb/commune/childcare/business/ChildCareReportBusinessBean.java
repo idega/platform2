@@ -381,7 +381,7 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 		reportCollection.addField(personalId);
 
 		ReportableField message = new ReportableField(FIELD_MESSAGE, String.class);
-		personalId.setLocalizedName(getLocalizedString(FIELD_MESSAGE, "Message"), currentLocale);
+		message.setLocalizedName(getLocalizedString(FIELD_MESSAGE, "Message"), currentLocale);
 		reportCollection.addField(message);
 
 		int numberOfApplications = 0;
