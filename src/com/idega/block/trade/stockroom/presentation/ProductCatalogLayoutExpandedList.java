@@ -70,6 +70,7 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
     for (int i = 0; i < products.size(); i++) {
       productTable = new Table();
       productTable.setCellpaddingAndCellspacing(0);
+      productTable.setWidth("100%");
       product = (Product) products.get(i);
       if (productCatalog._hasEditPermission) {
 	editLink = productCatalog.getProductEditorLink(product);
@@ -129,7 +130,7 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
     }
 
     table.add(productTable,1,row++);
-    table.setHeight(1,row++,"10");
+    table.setHeight(1,row++,"16");
 
     return row;
   }

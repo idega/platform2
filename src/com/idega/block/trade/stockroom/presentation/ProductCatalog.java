@@ -334,6 +334,7 @@ public class ProductCatalog extends CategoryBlock{
     if (_fontStyle != null) {
       text.setFontStyle(_fontStyle);
     }
+    text.setHorizontalAlignment(Paragraph.HORIZONTAL_ALIGN_JUSTIFY);
     return text;
   }
 
