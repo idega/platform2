@@ -37,6 +37,7 @@ public class ProviderAccountBusinessBean
 	extends AccountApplicationBusinessBean
 	implements ProviderAccountBusiness, AccountBusiness
 {
+	
 	protected Class getCaseEntityClass()
 	{
 		return ProviderApplication.class;
@@ -288,9 +289,18 @@ public class ProviderAccountBusinessBean
 
 	/**
 	 * Returns a collection of com.idega.block.school.data.SchoolType
+	 * @return Only Childcare schoolTypes
 	 */
 	public Collection getAvailableSchoolTypes() throws java.rmi.RemoteException{
-		return getSchoolTypeBusiness().findAllSchoolTypes();
+		return getAvailableChildCareSchoolTypes();
+	}
+	
+	
+	/**
+	 * Returns a collection of com.idega.block.school.data.SchoolType
+	 */
+	public Collection getAvailableChildCareSchoolTypes() throws java.rmi.RemoteException{
+		return getSchoolTypeBusiness().findAllSchoolTypesForChildCare();
 	}
 	
 	/**
