@@ -705,8 +705,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	public ReportableCollection getLatePaymentListByDivisionsGroupsAndDateIntervalFiltering(
 			Collection divisionsFilter,
 			Collection groupsFilter,
-			String order,
-			String personalIDFilter)
+			String personalIDFilter,
+			String order)
 	throws RemoteException {
 		//initialize stuff
 		initializeBundlesIfNeeded();
