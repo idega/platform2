@@ -124,8 +124,8 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
 		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
-		DateFormat dateFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
-		DateFormat dateTimeFormat = SimpleDateFormat.getDateInstance(DateFormat.DEFAULT,currentLocale);
+		DateFormat dateFormat = SimpleDateFormat.getDateInstance(DateFormat.SHORT,currentLocale);
+		DateFormat dateTimeFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,currentLocale);
 		
 		
 		//Child - Fields
@@ -361,9 +361,9 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
 		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
-		DateFormat dataFormat = SimpleDateFormat.getDateInstance(DateFormat.DEFAULT,currentLocale);
-		DateFormat dateTimeFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
-
+		DateFormat dataFormat = SimpleDateFormat.getDateInstance(DateFormat.SHORT,currentLocale);
+		DateFormat dateTimeFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,currentLocale);
+		
 	
 		//Child - Fields
 		ReportableField childPersonalID = new ReportableField(userDef.findFieldByUniqueName(User.FIELD_PERSONAL_ID));
