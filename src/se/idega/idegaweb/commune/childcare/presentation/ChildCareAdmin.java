@@ -182,7 +182,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 				}
 				else {
 					if (application.getCaseStatus().equals(getBusiness().getCaseStatusPending())) {
-						
+						applicationTable.setRowColor(row, PENDING_COLOR);
 					}
 					else if (row % 2 == 0)
 						applicationTable.setRowColor(row, getZebraColor1());
