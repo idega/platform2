@@ -245,7 +245,21 @@ public class CommuneForum extends Forum {
 		return (CommuneForumBusiness) IBOLookup.getServiceInstance(iwc, CommuneForumBusiness.class);
 	}
 	
+	public boolean hasDeletePermission(IWContext iwc) {
+		if (iwc.hasEditPermission(this))
+			return true;
 
+		if (getTopicID() != -1) {
+			try {
+				return getCommuneForumBusiness(iwc).isModerator(getTopicID(), iwc.getCurrentUser());
+			}
+			catch (RemoteException e) {
+				return false;
+			}
+		}
+
+		return false;
+	}
 	
 	/**
 	 * @param b
