@@ -222,7 +222,7 @@ public class GenericImportFile implements ImportFile{
 	 * @param recordString
 	 * @return The value at the selected index or null.
 	 */
-	public String getValueAtIndexFromRecordString(int index, String recordString){		
+	public String getValueAtIndexFromRecordString(int index , String recordString){		
 		int i = 1;
 		recordString = TextSoap.findAndReplace(recordString,valueSeparator+valueSeparator,valueSeparator+ignoreIfFoundValue+valueSeparator);
 		StringTokenizer tokens = new StringTokenizer(recordString,valueSeparator);
