@@ -98,7 +98,7 @@ public class GolfLogin extends GolfBlock {
 			loginLink.setToFormSubmit(myForm);
 			myTable.add(loginLink, 5, 1);
 			
-			myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "login"));
+			myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameterForGolf, "login"));
 			myForm.add(myTable);
 			add(myForm);
 		}
@@ -143,7 +143,7 @@ public class GolfLogin extends GolfBlock {
 		myForm.add(passw);
 		myForm.add(loginButton);
 		
-		myForm.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "login"));
+		myForm.add(new Parameter(GolfLoginBusiness.LoginStateParameterForGolf, "login"));
 
 		add(myForm);
 
@@ -307,7 +307,7 @@ public class GolfLogin extends GolfBlock {
 			/*GenericButton button = getSubmitButton();
 			button.setContent(localize("login.logout","Log out"));
 			myTable.add(button, 2, 1);*/
-			myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "logoff"));
+			myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameterForGolf, "logoff"));
 	
 			myForm.add(myTable);
 			add(myForm);
@@ -368,7 +368,7 @@ public class GolfLogin extends GolfBlock {
 			
 			myForm.add(logout);
 
-			myForm.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "logoff"));
+			myForm.add(new Parameter(GolfLoginBusiness.LoginStateParameterForGolf, "logoff"));
 			myTable.add(myForm, 1,row++);
 			add(myTable);
 	}
@@ -413,7 +413,7 @@ public class GolfLogin extends GolfBlock {
 			/*GenericButton tryAgain = getSaveButton();
 			tryAgain.setContent(localize("login.try_again","Try again"));
 			myTable.add(tryAgain, 3, 1);*/
-			myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "tryagain"));
+			myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameterForGolf, "tryagain"));
 	
 			myForm.add(myTable);
 			add(myForm);
@@ -451,7 +451,7 @@ public class GolfLogin extends GolfBlock {
 		myTable.add(p,1,row++);
 		myTable.add(loginButton,1,row++);
 		
-		myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "tryagain"));
+		myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameterForGolf, "tryagain"));
 		myForm.add(myTable);
 		add(myForm);
 
