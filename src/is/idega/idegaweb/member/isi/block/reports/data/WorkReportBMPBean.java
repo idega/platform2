@@ -398,6 +398,52 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 		}
 	}
 
+	public int ejbHomeGetTotalCountOfMembersForWorkReportYear(int year) {
+	    IDOQuery subQuery = idoQuery();
+	    subQuery.appendSelect().append(WorkReportMemberBMPBean.COLUMN_NAME_REPORT_ID).appendFrom().append(this.getEntityName()).appendWhereEquals(COLUMN_NAME_WORK_REPORT_YEAR, year)
+	    .appendAnd().appendEqualsQuoted(COLUMN_NAME_GROUP_TYPE, IWMemberConstants.GROUP_TYPE_CLUB);
+
+	    IDOQuery sql = idoQuery();
+			
+		sql.appendSelectCountFrom(WorkReportMemberBMPBean.ENTITY_NAME).append(" memb ")
+		.appendWhere()
+		.append("memb."+WorkReportMemberBMPBean.COLUMN_NAME_REPORT_ID).appendIn(subQuery);
+
+		try {
+			return idoGetNumberOfRecords(sql);
+		}
+		catch (IDOException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	public int ejbHomeGetTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(int year, Integer mainBoardGroupID) {
+	    IDOQuery subQuery = idoQuery();
+	    subQuery.appendSelect().append(WorkReportMemberBMPBean.COLUMN_NAME_REPORT_ID).appendFrom().append(this.getEntityName()).appendWhereEquals(COLUMN_NAME_WORK_REPORT_YEAR, year)
+	    .appendAnd().appendEqualsQuoted(COLUMN_NAME_GROUP_TYPE, IWMemberConstants.GROUP_TYPE_CLUB);
+
+	    IDOQuery sql = idoQuery();
+		String IDColumnName = WorkReportMemberBMPBean.ENTITY_NAME+"_ID";
+		String leagueIDColumnName =  "ISI_WR_GROUP_ID";
+		
+		sql.appendSelectCountFrom().append(WorkReportMemberBMPBean.ENTITY_NAME).append(" memb, ")
+		.append("ISI_WR_CLUB_MEMB_ISI_WR_GROUP").append(" middle ").appendWhere()
+		.append("memb.").append(IDColumnName).appendEqualSign().append("middle.").append(IDColumnName)
+		.appendAnd().append("memb."+WorkReportMemberBMPBean.COLUMN_NAME_REPORT_ID).appendIn(subQuery);
+		if (mainBoardGroupID != null) {
+		    sql.appendAnd().append("middle.").append(leagueIDColumnName).appendNOTEqual().append(mainBoardGroupID);
+		}
+
+		try {
+			return idoGetNumberOfRecords(sql);
+		}
+		catch (IDOException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
 	public Collection getLeagues() throws IDOException {
 		return idoGetRelatedEntities(WorkReportGroup.class);
 	}

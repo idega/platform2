@@ -91,38 +91,45 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
 	public int getTotalCountOfMembersForWorkReportYear(int year) {
-		//TODO use sql to get number!
-		int count = 0;
-		try {
-			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
-			Iterator iter = reports.iterator();
-			while (iter.hasNext()) {
-				WorkReport report = (WorkReport) iter.next();
-				int add = report.getNumberOfMembers();
-				count += (add > 0) ? add : 0; //add to sum if more than 0
-			}
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
+	    int count = this.getWorkReportHome().getTotalCountOfMembersForWorkReportYear(year);
+//		int count = 0;
+//		try {
+//			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
+//			Iterator iter = reports.iterator();
+//			while (iter.hasNext()) {
+//				WorkReport report = (WorkReport) iter.next();
+//				int add = report.getNumberOfMembers();
+//				count += (add > 0) ? add : 0; //add to sum if more than 0
+//			}
+//		}
+//		catch (FinderException e) {
+//			e.printStackTrace();
+//		}
 		return count;
 	}
 
 	public int getTotalCountOfPlayersForWorkReportYear(int year) {
-		//TODO use sql to get number!
-		int count = 0;
-		try {
-			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
-			Iterator iter = reports.iterator();
-			while (iter.hasNext()) {
-				WorkReport report = (WorkReport) iter.next();
-				int add = report.getNumberOfPlayers();
-				count += (add > 0) ? add : 0; //add to sum if more than 0
-			}
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
+//		Now the number is fetched with one sql statement instead of iterating through collection and getting the members for each report
+	    WorkReportGroup mainBoard =  getMainBoardWorkReportGroup(year);
+	    Integer mainBoardID = null;
+	    if (mainBoard != null) {
+	        mainBoardID = (Integer)mainBoard.getPrimaryKey();
+	    }
+	    int count = getWorkReportHome().getTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(year, mainBoardID);
+//		Now the number is fetched with one sql statement instead of iterating through collection and getting the members for each report
+//		int count = 0;
+//		try {
+//			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
+//			Iterator iter = reports.iterator();
+//			while (iter.hasNext()) {
+//				WorkReport report = (WorkReport) iter.next();
+//				int add = report.getNumberOfPlayers();
+//				count += (add > 0) ? add : 0; //add to sum if more than 0
+//			}
+//		}
+//		catch (FinderException e) {
+//			e.printStackTrace();
+//		}
 		return count;
 	}
 

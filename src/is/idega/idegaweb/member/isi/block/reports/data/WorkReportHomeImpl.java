@@ -60,5 +60,18 @@ public int getCountOfWorkReportsByStatusAndYear(java.lang.String p0,int p1){
 	return theReturn;
 }
 
+public int getTotalCountOfMembersForWorkReportYear(int p0) {
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((WorkReportBMPBean) entity).ejbHomeGetTotalCountOfMembersForWorkReportYear(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+	}
+
+public int getTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(int p0, java.lang.Integer p1) {
+    com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+    int theReturn = ((WorkReportBMPBean) entity).ejbHomeGetTotalCountOfPlayersForWorkReportYearWithMainboardExcluded(p0, p1);
+    this.idoCheckInPooledEntity(entity);
+    return theReturn;
+}
 
 }
