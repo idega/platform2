@@ -40,7 +40,7 @@ public class CitizenAccountSessionBean extends IBOSessionBean implements Citizen
 				return Boolean.valueOf(property).booleanValue();
 			}
 		}
-		return true;
+		return false;
 	}
 
 	public void setIfUserUsesCOAddress(boolean preference){
