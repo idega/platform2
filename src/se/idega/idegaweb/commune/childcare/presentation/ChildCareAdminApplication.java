@@ -4,8 +4,8 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
 import com.idega.block.school.data.School;

@@ -1,5 +1,5 @@
 /*
- * $Id: PlacementHelper.java,v 1.2 2004/10/07 13:42:31 thomas Exp $
+ * $Id: PlacementHelper.java,v 1.3 2004/10/07 14:08:09 thomas Exp $
  * Created on 5.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -13,15 +13,15 @@ import java.util.Date;
 
 import com.idega.idegaweb.IWResourceMessage;
 
+import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/07 13:42:31 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/07 14:08:09 $ by $Author: thomas $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface PlacementHelper {
 

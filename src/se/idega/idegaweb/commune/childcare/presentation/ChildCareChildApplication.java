@@ -10,10 +10,10 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
+import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;

@@ -10,11 +10,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
+import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
@@ -41,7 +41,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.70 2004/10/07 13:42:31 thomas Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.71 2004/10/07 14:08:32 thomas Exp $
  * @since 12.2.2003 
  */
 

@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 
+import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
 import com.idega.block.school.data.School;
 import com.idega.presentation.IWContext;

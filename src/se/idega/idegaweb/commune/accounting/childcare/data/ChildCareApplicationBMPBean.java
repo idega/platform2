@@ -1,5 +1,5 @@
 /*
- * $Id:$
+ * $Id: ChildCareApplicationBMPBean.java,v 1.1 2004/10/07 14:08:09 thomas Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -7,7 +7,7 @@
  * Use is subject to license terms.
  *
  */
-package se.idega.idegaweb.commune.childcare.data;
+package se.idega.idegaweb.commune.accounting.childcare.data;
 
 import java.sql.Date;
 import java.util.Collection;

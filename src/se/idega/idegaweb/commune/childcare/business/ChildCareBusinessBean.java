@@ -37,6 +37,8 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
+import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareApplicationHome;
 import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.accounting.childcare.data.EmploymentType;
@@ -48,8 +50,6 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosisHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
