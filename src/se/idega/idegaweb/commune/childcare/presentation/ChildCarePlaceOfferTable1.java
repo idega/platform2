@@ -7,6 +7,7 @@ import java.util.SortedSet;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
+import com.idega.presentation.IWContext;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -59,7 +60,7 @@ class ChildCarePlaceOfferTable1 extends Table{
 		}
 	}
 	
-	public ChildCarePlaceOfferTable1(ChildCareCustomerApplicationTable page, SortedSet applications) throws RemoteException {
+	public ChildCarePlaceOfferTable1(IWContext iwc, ChildCareCustomerApplicationTable page, SortedSet applications) throws RemoteException {
 		super(7, applications.size() + 1);
 		initConstants(page);
 	
@@ -86,12 +87,16 @@ class ChildCarePlaceOfferTable1 extends Table{
 			}
 			String prognosis = app.getPrognosis() != null ? app.getPrognosis() : "";
 			
+//			System.out.println("REQ_BTN: " + iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID()));
+			boolean disableReqBtn = iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID()) != null;
+			
+			
 			//Adding row to the table
-			validateDateScript += addToTable(row, id, app.getChoiceNumber() + ": " + name 
-			+ " (Id:" + app.getNodeID()   //DEBUG
-			+ " - " + app.getStatus()   //DEBUG
-			+ " - " + app.getApplicationStatus() + ")"   //DEBUG
-				, offerText, prognosis, offer && ! offerPresented, offerPresented || app.getApplicationStatus() == _page.childCarebusiness.getStatusRejected());
+			validateDateScript += addToTable(row, id, app.getChoiceNumber() + ": " + name +
+			    _page.getDebugInfo(app)
+				, offerText, prognosis, offer && ! offerPresented, 
+				offerPresented || app.getApplicationStatus() == _page.childCarebusiness.getStatusRejected(),
+				disableReqBtn);
 				
 			if (offer){
 				offerPresented = true;
@@ -106,6 +111,7 @@ class ChildCarePlaceOfferTable1 extends Table{
 			
 		}
 		
+//Cannot use DateInput.setAsNotEmpty because we doesn't want this requirement unless the user have selected the actual radio button.		
 		validateDateScript = "function validateDates() { if(" + validateDateScript + ") { alert('Please select a valid date'); return false; } else {return true;}}";
 		
 		Script script = new Script("javascript");
@@ -116,6 +122,7 @@ class ChildCarePlaceOfferTable1 extends Table{
 
 		
 	}
+
 	
 	public String getOnSubmitHandler(){
 		return _onSubmitHandler;
@@ -129,7 +136,7 @@ class ChildCarePlaceOfferTable1 extends Table{
 	 * @param status
 	 * @param prognosis
 	 */
-	private String addToTable(int row, String id, String name, String status, String prognosis, boolean presentOffer, boolean disable) {
+	private String addToTable(int row, String id, String name, String status, String prognosis, boolean presentOffer, boolean disable, boolean disableReqBtn) {
 		int index = row - 1; //row=2 for first row because of heading is in row 1
 		add(new HiddenInput(CCConstants.APPID + index, id)); 
 		String textColor = disable ? "gray":"black";
@@ -151,13 +158,19 @@ class ChildCarePlaceOfferTable1 extends Table{
 		}
 		//add(prognosis, 3, row);
 		//SubmitButton reqBtn = new SubmitButton(_page.localize(REQUEST_INFO), CCConstants.APPID, id);
-		Link reqBtn = new Link(_page.localize(REQUEST_INFO));
-		reqBtn.addParameter(CCConstants.ACTION, CCConstants.ACTION_REQUEST_INFO);
-		reqBtn.addParameter(CCConstants.APPID, id);
+
 		
-		reqBtn.setName(REQUEST_INFO[0]);
-		reqBtn.setAsImageButton(true);
-			
+	
+		if (! disableReqBtn) {
+			Link reqBtn = new Link(_page.localize(REQUEST_INFO));
+			reqBtn.addParameter(CCConstants.ACTION, CCConstants.ACTION_REQUEST_INFO);
+			reqBtn.addParameter(CCConstants.APPID, id);
+		
+			reqBtn.setName(REQUEST_INFO[0]);
+			reqBtn.setAsImageButton(true);			
+			add(reqBtn, 4, row);
+		}
+		
 
 		
 //		System.out.println("DATE ID" + date.getID());		
@@ -172,7 +185,7 @@ class ChildCarePlaceOfferTable1 extends Table{
 //		ti.setWidth("10");
 
 //        if (!disable){
-		add(reqBtn, 4, row);
+
 //        }
 
 		String validateDateScript = "false";
@@ -188,12 +201,12 @@ class ChildCarePlaceOfferTable1 extends Table{
 			rb1.setSelected();
 			DateInput date = (DateInput) _page.getStyledInterface(new DateInput(CCConstants.NEW_DATE + index, true));
 			date.setStyleAttribute("style", _page.getSmallTextFontStyle());
-		
+
 //			System.out.println("DATE ID" + date.getIDForDay());
 						
 			add(rb1, 5, row);
-			add(rb2, 6, row);
 			add(new Text("<NOBR>"), 6, row);
+			add(rb2, 6, row);
 			add(date, 6, row);
 			add(new Text("</NOBR>"), 6, row);
 			add(rb3, 7, row);

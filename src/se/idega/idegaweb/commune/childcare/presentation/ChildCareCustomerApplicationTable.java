@@ -29,7 +29,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.20 2003/04/23 13:27:43 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.21 2003/04/23 17:08:16 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -45,6 +45,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 //	public final static String STATUS_UBEH = "UBEH";
 	public final static String STATUS_BVJD = "BVJD";
 	public final static String STATUS_PREL = "PREL";
+	final static String REQ_BUTTON = "REQ_BUTTON"; //Session variable for disabling used request-buttons
 	
 	private String CHILD_ID = CitizenChildren.getChildIDParameterName();	
 	
@@ -70,7 +71,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				handleAcceptStatus(iwc, getAcceptedStatus(iwc));  
 				applications = findApplications(iwc); 
 			    if (hasOffer(applications)) {
-					createPagePhase1(layoutTbl, applications); 			    	
+					form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications)); 			    	
 			    } else {
 					createPagePhase2(layoutTbl, applications);
 			    } 
@@ -105,7 +106,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			case CCConstants.ACTION_REQUEST_INFO: 
 				/**@todo: How do i 'connect' to the message editor block? */ 
 			    ChildCareApplication application = getChildCareBusiness(iwc).getApplicationByPrimaryKey(iwc.getParameter(CCConstants.APPID));
-			    getChildCareBusiness(iwc).sendMessageToProvider(application, "Requst for information", "Requesting information...", application.getOwner()); //TODO: internationalize 
+			    getChildCareBusiness(iwc).sendMessageToProvider(application, "Requst for information", "Requesting information...", application.getOwner()); //TODO: internationalize
+				iwc.setSessionAttribute(REQ_BUTTON + application.getNodeID(), new Boolean(true));			     
 			    createRequestInfoConfirmPage(layoutTbl); 
 
 				
@@ -125,7 +127,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 			default: 
 				/**@todo: What should happen here? */ 
-				form.setOnSubmit(createPagePhase1(layoutTbl, applications)); 		
+				form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications)); 		
 				
 
 		}
@@ -436,7 +438,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @return
 	 * @throws RemoteException
 	 */
-	private String createPagePhase1(Table layoutTbl, Collection applications) throws RemoteException{
+	private String createPagePhase1(IWContext iwc, Table layoutTbl, Collection applications) throws RemoteException{
 		if (applications.size() == 0){
 			layoutTbl.add(new Text("No application found")); //TODO format better
 			return "";
@@ -444,7 +446,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		
 		}else{
 			Table appTable = new ChildCarePlaceOfferTable1(
-				this, sortApplications(applications, false)); //sorted by order number
+				iwc, this, sortApplications(applications, false)); //sorted by order number
 	
 			SubmitButton submitBtn = new SubmitButton(localize(SUBMIT), CCConstants.ACTION, new Integer(CCConstants.ACTION_SUBMIT_1).toString());
 		
@@ -641,6 +643,25 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		tbl.add(t);
 		return tbl;
 	}
+
+	
+	private boolean _debug = false;
+	
+//property	
+	public void setDebug(boolean debug){
+		_debug = debug;
+	}
+	
+	public boolean getDebug(){
+		return _debug;
+	}	
+	
+	
+	String getDebugInfo(ChildCareApplication app) throws RemoteException{
+		return (getDebug()) 
+			? " (Id:" + app.getNodeID() + " - " + app.getStatus() + " - " + app.getApplicationStatus() + ")" 
+			: "";  
+	}	
 		
 
 	

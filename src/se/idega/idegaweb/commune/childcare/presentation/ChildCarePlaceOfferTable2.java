@@ -79,9 +79,7 @@ class ChildCarePlaceOfferTable2 extends Table{
 			String prognosis = app.getPrognosis() != null ? app.getPrognosis() : "";
 	
 			resetOtherScript += addToTable(row, id, app.getChoiceNumber() + ": " + name 
-				+ " (Id:" + app.getNodeID()   //DEBUG
-				+ " - " + app.getStatus()   //DEBUG
-				+ " - " + app.getApplicationStatus() + ")"   //DEBUG			
+				+ _page.getDebugInfo(app)		
 				, offerText, prognosis, offer, disable, selectOne);
 	
 			row++;
