@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE invoke >
 <invoke>
 <method_description name="getStatisticsForLeaguesByYearAndLeaguesAndRegionalUnionsFiltering">
@@ -6,15 +6,15 @@
 </class_description>
 <input>
 <class_description class="java.lang.Integer" default_display_name="Work report year" name="workReportYear">
-<localized_name name="Ar" locale="is_IS"/>
+<localized_name name="Ár" locale="is_IS"/>
 <class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.WorkReportYearDropDownMenu" />
 </class_description>
 <class_description class="java.util.Collection" default_display_name="Regional unions" name="regUnions">
-<localized_name name="Heradssambond" locale="is_IS"/>
+<localized_name name="Héraðssambönd" locale="is_IS"/>
 <class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.RegionalUnionSelectionBox" />
 </class_description>
 <class_description class="java.util.Collection" default_display_name="Leagues" name="league">
-<localized_name name="Sersambond" locale="is_IS"/>
+<localized_name name="Sérsambönd" locale="is_IS"/>
 <class_handler class="is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.LeagueSelectionBox" />
 </class_description>
 </input>
