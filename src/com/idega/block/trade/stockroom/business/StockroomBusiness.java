@@ -49,15 +49,26 @@ public class StockroomBusiness /* implements SupplyManager */ {
 
 
 
-  public void setPrice(int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType) throws SQLException {
-   ProductPrice prPrice = new ProductPrice();
-     prPrice.setProductId(productId);
-     prPrice.setCurrencyId(currencyId);
-     prPrice.setPriceCategoryID(priceCategoryId);
-     prPrice.setPriceDate(time);
-     prPrice.setPrice(price);
-     prPrice.setPriceType(priceType);
-   prPrice.insert();
+  public void setPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time, float price, int priceType) throws SQLException {
+    if (productPriceId == -1) {
+       ProductPrice prPrice = new ProductPrice();
+         prPrice.setProductId(productId);
+         prPrice.setCurrencyId(currencyId);
+         prPrice.setPriceCategoryID(priceCategoryId);
+         prPrice.setPriceDate(time);
+         prPrice.setPrice(price);
+         prPrice.setPriceType(priceType);
+       prPrice.insert();
+    }else if (productPriceId != -1) {
+       ProductPrice prPrice = new ProductPrice(productPriceId);
+         prPrice.setProductId(productId);
+         prPrice.setCurrencyId(currencyId);
+         prPrice.setPriceCategoryID(priceCategoryId);
+         prPrice.setPriceDate(time);
+         prPrice.setPrice(price);
+         prPrice.setPriceType(priceType);
+       prPrice.update();
+    }
   }
 
   public static float getPrice(int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
@@ -154,14 +165,10 @@ public class StockroomBusiness /* implements SupplyManager */ {
     if(gr != null){
       Iterator iter = gr.iterator();
       while (iter.hasNext()) {
-        System.err.println("Inni i iter");
         GenericGroup item = (GenericGroup)iter.next();
-        System.err.println("item.groupType() : "+item.getGroupType());
         if(item.getGroupType().equals(((SupplierStaffGroup)SupplierStaffGroup.getStaticInstance(SupplierStaffGroup.class)).getGroupTypeValue())){
-        System.err.println("if 1");
           GenericEntity[] supp = ((Supplier)Supplier.getStaticInstance(Supplier.class)).findAllByColumn(Supplier.getColumnNameGroupID(),item.getID());
           if(supp != null && supp.length > 0){
-          System.err.println("If 2");
             return supp[0].getID();
           }
         }
@@ -226,19 +233,35 @@ public class StockroomBusiness /* implements SupplyManager */ {
     throw new RuntimeException("Does not belong to any reseller");
   }
 
+  public static int updateProduct(int productId, int supplierId, Integer fileId, String productName, String productDescription, boolean isValid) throws Exception{
+    return createProduct(productId,supplierId, fileId, productName, productDescription, isValid);
+  }
 
-  public static int createProduct(int supplierId, Integer fileId, String productName, String ProductDescription, boolean isValid) throws Exception{
-    Product product = new Product();
+  public static int createProduct(int supplierId, Integer fileId, String productName, String productDescription, boolean isValid) throws Exception{
+    return createProduct(-1,supplierId, fileId, productName, productDescription, isValid);
+  }
+
+  private static int createProduct(int productId, int supplierId, Integer fileId, String productName, String productDescription, boolean isValid) throws Exception{
+    Product product= null;
+    if (productId == -1) {
+      product = new Product();
+    }else {
+      product = new Product(productId);
+    }
 
     product.setSupplierId(supplierId);
     if(fileId != null){
       product.setFileId(fileId);
     }
     product.setProductName(productName);
-    product.setProdcutDescription(ProductDescription);
+    product.setProdcutDescription(productDescription);
     product.setIsValid(isValid);
 
-    product.insert();
+    if (productId == -1) {
+      product.insert();
+    }else {
+      product.update();
+    }
 
     return product.getID();
 
