@@ -50,6 +50,7 @@ public class ContentBusiness{
         }
       }
       eContent.delete();
+
      t.commit();
      return true;
     }
@@ -133,6 +134,19 @@ public class ContentBusiness{
         locText.setCreated(idegaTimestamp.getTimestampRightNow());
         locText.insert();
         locText.addTo(eContent);
+      }
+
+      if(listOfFiles != null){
+        Iterator I = listOfFiles.iterator();
+        while(I.hasNext()){
+          ICFile file = (ICFile) I.next();
+          try {
+            file.addTo(eContent);
+          }
+          catch (SQLException ex) {
+
+          }
+        }
       }
       t.commit();
       return eContent;

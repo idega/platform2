@@ -26,6 +26,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.block.IWBlock;
+import com.idega.core.data.ICFile;
 
 
 public class TextReader extends Block implements IWBlock{
@@ -85,6 +86,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
     TxText txText = null;
     LocalizedText locText = null;
+    ContentHelper ch = null;
     Table T = new Table(1,2);
     T.setCellpadding(0);
     T.setCellspacing(0);
@@ -116,12 +118,14 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
     if(txText != null){
       iTextId = txText.getID();
-      locText = TextFinder.getLocalizedText(txText.getID(),iLocaleId);
+      ch = ContentFinder.getContentHelper(txText.getContentId(),iLocaleId);
+      locText = ch.getLocalizedText();
+      //locText = TextFinder.getLocalizedText(txText.getID(),iLocaleId);
       hasId = true;
     }
 
-    if(locText != null){
-       T.add(getTextTable(txText,locText),1,1);
+    if(ch!= null){
+       T.add(getTextTable(txText,locText,ch),1,1);
 
     }
     if(isAdmin){
@@ -133,7 +137,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     add(T);
   }
 
-  public PresentationObject getTextTable(TxText txText,LocalizedText locText) throws IOException,SQLException {
+  public PresentationObject getTextTable(TxText txText,LocalizedText locText,ContentHelper contentHelper) throws IOException,SQLException {
     Table T = new Table(2,2);
 
     T.setCellpadding(3);
@@ -171,6 +175,29 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
     Image bodyImage;
 
+    ///////////////// Image /////////////////////
+
+    List files = contentHelper.getFiles();
+    if(files!=null){
+      try{
+      Table imageTable = new Table(1, 2);
+      ICFile imagefile = (ICFile)files.get(0);
+      int imid = imagefile.getID();
+      String att = imagefile.getMetaData(TextEditorWindow.imageAttributeKey);
+
+      Image textImage = new Image(imid);
+      if(att != null)
+        textImage.setAttributes(getAttributeMap(att));
+      //newsImage.setAlignment("right");
+      //imageTable.setAlignment("right");
+      //imageTable.setVerticalAlignment("top");
+      //imageTable.add(newsImage, 1, 1);
+      T.add(textImage,1,2);
+      }
+      catch(SQLException ex){
+        ex.printStackTrace();
+      }
+    }
     //if ( text.getIncludeImage().equals("Y") ) {
       //bodyImage = new Image(text.getImageId());
     /* image dót
@@ -188,6 +215,8 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       }
     }
     */
+
+    ////////////////////////////////////////////
     if ( displayHeadline ) {
       if ( headline.getText() != null ) {
         Anchor headlineAnchor = new Anchor(headline,headline.getText());

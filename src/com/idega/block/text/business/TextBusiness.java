@@ -55,9 +55,9 @@ public class TextBusiness{
           ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
           txText.removeFrom(obj);
       }
-      if(ContentBusiness.deleteContent( txText.getContentId() ) ){
-        txText.delete();
-      }
+      int contentId = txText.getContentId();
+      txText.delete();
+      ContentBusiness.deleteContent( contentId) ;
     }
     catch(Exception e) {
       e.printStackTrace();
