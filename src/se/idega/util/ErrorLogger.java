@@ -92,6 +92,18 @@ public class ErrorLogger {
 	}
 
 	/**
+	 * Appends the stacktrace of an exception to the logging string
+	 * @param e
+	 */	
+	public void append(Exception e){
+		message.add("Stacktrace:");
+		StackTraceElement[] stackTraceElement = e.getStackTrace();
+		for(int i=0; i<stackTraceElement.length;i++){
+			message.add(stackTraceElement[i].toString());
+		}
+	}
+
+	/**
 	 * Returns all the loggging strings, with linebreak between each line
 	 */
 	public String toString(){
