@@ -1,8 +1,5 @@
 package com.idega.block.messenger.business;
 
-import com.idega.block.messenger.presentation.MessengerApplet;
-import com.idega.block.messenger.presentation.MessageDialog;
-import java.util.Vector;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.AWTEventMulticaster;
