@@ -22,24 +22,42 @@ import com.idega.jmodule.image.presentation.ImageInserter;
  * @version 1.0
  */
 
-public class BuildingEditor extends Editor{
+public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContainer{
 
-  private String sAction = "be_action";
-  private String styleAttribute = "font-size: 8pt";
-  private final int COMPLEX = 1,BUILDING = 2,FLOOR = 3, APARTMENT = 4,
+  protected boolean isAdmin = false;
+  protected String TextFontColor = "#000000";
+  public String sAction = "be_action";
+  private String styleAttribute = "font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000";
+  private String styleAttribute2 = "font-family:arial; font-size:8pt; color:#000000; text-align: justify;";
+  public final int COMPLEX = 1,BUILDING = 2,FLOOR = 3, APARTMENT = 4,
                     CATEGORY = 5,TYPE = 6;
   private int eId = 0;
+  protected int fontSize = 1;
+  protected boolean fontBold = false;
+  private Table outerTable;
 
   protected void control(ModuleInfo modinfo){
-    this.makeView();
-    this.addLinks(this.makeLinkTable(1));
+    outerTable = new Table(1,2);
+      outerTable.setCellpadding(0);
+      outerTable.setCellspacing(0);
+      outerTable.setWidth("100%");
+      outerTable.setHeight("100%");
+      outerTable.setHeight(2,"100%");
+      outerTable.setColor(1,1,"#0E2456");
+
     int iAction = BUILDING;
     if(modinfo.getParameter(sAction)!= null){
       iAction = Integer.parseInt(modinfo.getParameter(sAction));
     }
+
     if(modinfo.getParameter("dr_id")!=null){
        eId = Integer.parseInt(modinfo.getParameter("dr_id"));
     }
+    else if ( (String) modinfo.getSessionAttribute("dr_id") != null ) {
+       eId = Integer.parseInt((String) modinfo.getSessionAttribute("dr_id"));
+       modinfo.removeSessionAttribute("dr_id");
+    }
+
     if(modinfo.getParameter("save")!=null){
       if(modinfo.getParameter("bm_choice")!=null){
         int i = Integer.parseInt(modinfo.getParameter("bm_choice"));
@@ -67,6 +85,7 @@ public class BuildingEditor extends Editor{
         eId = 0;
       }
     }
+    outerTable.add(makeLinkTable(iAction),1,1);
     switch (iAction) {
       case COMPLEX  : doComplex(modinfo);   break;
       case BUILDING : doBuilding(modinfo);  break;
@@ -75,43 +94,41 @@ public class BuildingEditor extends Editor{
       case CATEGORY : doCategory(modinfo);  break;
       case TYPE     : doType(modinfo);   break;
     }
+    add(outerTable);
   }
   private void doMain(ModuleInfo modinfo,boolean ifMulti,int choice) {
     doBuilding(modinfo);
 
   }
   private void doComplex(ModuleInfo modinfo){
-    addMain(new Text("Complex"));
     try{
       Complex eComplex = eId > 0 ? new Complex(eId) : null;
-      addMain(makeComplexFields(eComplex));
+      outerTable.add(makeComplexFields(eComplex),1,2);
     }
     catch(SQLException sql){}
   }
   private void doBuilding(ModuleInfo modinfo){
-    addMain(new Text("Building"));
     try{
       Building eBuilding = eId > 0 ? new Building(eId) : null;
-      addMain(makeBuildingFields(eBuilding));
+      outerTable.add(makeBuildingFields(eBuilding),1,2);
     }
     catch(SQLException sql){}
   }
   private void doFloor(ModuleInfo modinfo){
-    addMain(new Text("Floor"));
     try{
       Floor eFloor = eId > 0 ? new Floor(eId) : null;
-      addMain(makeFloorFields(eFloor));
+      outerTable.add(makeFloorFields(eFloor),1,2);
     }
     catch(SQLException sql){}
   }
   private void doApartment(ModuleInfo modinfo){
     try{
       Apartment eApartment = eId > 0 ? new Apartment(eId) : null;
-      addMain(makeApartmentFields(eApartment));
+      outerTable.add(makeApartmentFields(eApartment),1,2);
 
     }
     catch(SQLException sql){}
-    addMain(getApartments());
+    //add(getApartments());
   }
   private void doType(ModuleInfo modinfo){
     // Dirty job below
@@ -131,16 +148,15 @@ public class BuildingEditor extends Editor{
     }
     try{
       ApartmentType eApartmentType = eId > 0 ? new ApartmentType(eId) : null;
-      addMain(makeTypeFields(eApartmentType,iPhotoId,iPlanId));
+      outerTable.add(makeTypeFields(eApartmentType,iPhotoId,iPlanId),1,2);
     }
     catch(SQLException sql){sql.printStackTrace();}
-    addMain(getTypes());
+    //add(getTypes());
   }
   private void doCategory(ModuleInfo modinfo){
-    addMain(new Text("ApartmentCategory"));
     try{
       ApartmentCategory eApartmentCategory = eId > 0 ? new ApartmentCategory(eId) : null;
-      addMain(makeCategoryFields(eApartmentCategory));
+      outerTable.add(makeCategoryFields(eApartmentCategory),1,2);
     }
     catch(SQLException sql){}
   }
@@ -504,31 +520,75 @@ public class BuildingEditor extends Editor{
   }
 
   protected ModuleObject makeLinkTable(int i){
+    Table headerTable = new Table(2,2);
+      headerTable.setCellpadding(0);
+      headerTable.setCellspacing(0);
+      headerTable.setWidth("100%");
+      headerTable.mergeCells(1,2,2,2);
+      headerTable.setAlignment(1,2,"center");
+      headerTable.setAlignment(2,1,"right");
+
+    Image idegaweb = new Image("/pics/idegaweb.gif","idegaWeb");
+      headerTable.add(idegaweb,1,1);
+    Text tEditor = new Text("Building Editor&nbsp;&nbsp;");
+      tEditor.setBold();
+      tEditor.setFontColor("#FFFFFF");
+      tEditor.setFontSize("3");
+      headerTable.add(tEditor,2,1);
+
     Table LinkTable = new Table();
-    LinkTable.setBorder(0);
-    LinkTable.setCellpadding(0);
-    LinkTable.setCellspacing(0);
+      LinkTable.setBorder(0);
+      LinkTable.setCellpadding(3);
+      LinkTable.setCellspacing(3);
+      headerTable.add(LinkTable,1,2);
 
-    Link B1 = new Link("Garður ");
-    B1.addParameter(sAction,COMPLEX);
-    Link B2 = new Link("Hús  ");
-    B2.addParameter(sAction,BUILDING);
-    Link B3 = new Link("Hæð  ");
-    B3.addParameter(sAction,FLOOR);
-    Link B4 = new Link("Flokkur  ");
-    B4.addParameter(sAction,CATEGORY);
-    Link B5 = new Link("Gerð ");
-    B5.addParameter(sAction,TYPE);
-    Link B6 = new Link("Íbúð  ");
-    B6.addParameter(sAction,APARTMENT);
+    Link B1 = new Link("Garður");
+      B1.setFontStyle("text-decoration: none");
+      B1.setFontColor("#FFFFFF");
+      B1.setBold();
+      B1.addParameter(sAction,COMPLEX);
+    Link B2 = new Link("Hús");
+      B2.setFontStyle("text-decoration: none");
+      B2.setFontColor("#FFFFFF");
+      B2.setBold();
+      B2.addParameter(sAction,BUILDING);
+    Link B3 = new Link("Hæð");
+      B3.setFontStyle("text-decoration: none");
+      B3.setFontColor("#FFFFFF");
+      B3.setBold();
+      B3.addParameter(sAction,FLOOR);
+    Link B4 = new Link("Flokkur");
+      B4.setFontStyle("text-decoration: none");
+      B4.setFontColor("#FFFFFF");
+      B4.setBold();
+      B4.addParameter(sAction,CATEGORY);
+    Link B5 = new Link("Gerð");
+      B5.setFontStyle("text-decoration: none");
+      B5.setFontColor("#FFFFFF");
+      B5.setBold();
+      B5.addParameter(sAction,TYPE);
+    Link B6 = new Link("Íbúð");
+      B6.setFontStyle("text-decoration: none");
+      B6.setFontColor("#FFFFFF");
+      B6.setBold();
+      B6.addParameter(sAction,APARTMENT);
 
-    LinkTable.add(B1);
-    LinkTable.add(B2);
-    LinkTable.add(B3);
-    LinkTable.add(B4);
-    LinkTable.add(B5);
-    LinkTable.add(B6);
-    return LinkTable;
+    switch (i) {
+      case COMPLEX  : B1.setFontColor("#FF9933");   break;
+      case BUILDING : B2.setFontColor("#FF9933");  break;
+      case FLOOR    : B3.setFontColor("#FF9933");     break;
+      case APARTMENT: B6.setFontColor("#FF9933"); break;
+      case CATEGORY : B4.setFontColor("#FF9933");  break;
+      case TYPE     : B5.setFontColor("#FF9933");   break;
+    }
+
+    LinkTable.add(B1,1,1);
+    LinkTable.add(B2,2,1);
+    LinkTable.add(B3,3,1);
+    LinkTable.add(B4,4,1);
+    LinkTable.add(B5,5,1);
+    LinkTable.add(B6,6,1);
+    return headerTable;
   }
 
   private ModuleObject makeTextArea(String sInit){
@@ -559,7 +619,7 @@ public class BuildingEditor extends Editor{
       imageInsert = new ImageInserter(name);
     }
     imageInsert.setHasUseBox(false);
-    imageInsert.setMaxImageWidth(200);
+    imageInsert.setMaxImageWidth(140);
     imageInsert.setHiddenInputName(name);
     imageInsert.setAdminURL("/image/imagesaver.jsp");
     //imageInsert.setDefaultImageURL(sMemberImageURL);
@@ -574,12 +634,26 @@ public class BuildingEditor extends Editor{
 
     Form form = new Form();
     Table Frame = new Table(2,1);
+      Frame.setRowVerticalAlignment(1,"top");
       Frame.setCellpadding(0);
       Frame.setCellspacing(0);
+      Frame.setColor(2,1,"#EFEFEF");
+      Frame.setWidth("100%");
+      Frame.setWidth(2,1,"160");
+      Frame.setHeight("100%");
     Table T = new Table();
-      T.setCellpadding(0);
-      T.setCellspacing(0);
+      T.setCellpadding(8);
+      T.setAlignment("center");
+      T.setWidth("100%");
+    Table T2 = new Table(1,1);
+      T2.setCellpadding(8);
+      T2.setAlignment("center");
+      T2.setHeight("100%");
+      T2.setWidth("100%");
+      T2.setVerticalAlignment(1,1,"bottom");
+      T2.setAlignment(1,1,"center");
     Frame.add(T,1,1);
+    Frame.add(T2,2,1);
 
     TextInput name = new TextInput("bm_name",sName);
     DropdownMenu categories = drpLodgings(new Complex(),"dr_id","Complex",sId);
@@ -591,13 +665,15 @@ public class BuildingEditor extends Editor{
     name.setLength(30);
     T.add(HI);
     T.add(HA);
-    T.add(categories,1,2);
-    T.add(formatText("Name:"),1,3);
-    T.add(name,1,4);
-    T.add(formatText("Info:"),1,5);
-    T.add( makeTextArea(sInfo),1,6);
-    Frame.add(new SubmitButton("save","Save"));
-    Frame.add(new SubmitButton("del","Delete"));
+    T.add(categories,1,1);
+    T.add(formatText("Name:"),1,2);
+    T.add(Text.getBreak(),1,2);
+    T.add(name,1,2);
+    T.add(formatText("Info:"),1,3);
+    T.add(Text.getBreak(),1,3);
+    T.add( makeTextArea(sInfo),1,3);
+    T2.add(new SubmitButton("save","Save"),1,1);
+    T2.add(new SubmitButton("del","Delete"),1,1);
     form.add(Frame);
     return form;
   }
@@ -614,14 +690,26 @@ public class BuildingEditor extends Editor{
 
     Form form = new Form();
     Table Frame = new Table(2,1);
+      Frame.setRowVerticalAlignment(1,"top");
       Frame.setCellpadding(0);
       Frame.setCellspacing(0);
+      Frame.setColor(2,1,"#EFEFEF");
+      Frame.setWidth("100%");
+      Frame.setWidth(1,1,"100%");
+      Frame.setHeight("100%");
     Table T = new Table();
-      T.setCellpadding(0);
-      T.setCellspacing(0);
+      T.setCellpadding(8);
+      T.setAlignment("center");
+      T.setWidth("100%");
     Table T2 = new Table(1,2);
-      T2.setCellpadding(0);
-      T2.setCellspacing(0);
+      T2.setCellpadding(8);
+      T2.setAlignment("center");
+      T2.setHeight("100%");
+      T2.setHeight(2,"100%");
+      T2.setWidth("100%");
+      T2.setVerticalAlignment(1,1,"top");
+      T2.setVerticalAlignment(1,2,"bottom");
+      T2.setAlignment(1,2,"center");
     Frame.add(T2,2,1);
     Frame.add(T,1,1);
     TextInput name = new TextInput("bm_name",sName);
@@ -641,23 +729,28 @@ public class BuildingEditor extends Editor{
     address.setLength(30);
     serie.setLength(5);
     serie.setMaxlength(5);
-    T.add(houses,1,2);
-    T.add(formatText("Name:"),1,3);
-    T.add(name,1,4);
-    T.add(formatText("Address:"),1,5);
-    T.add(address,1,6);
-    T.add(formatText("Complex"),1,7);
-    T.add(complex,1,8);
-    T.add(formatText("Serie"),1,9);
-    T.add(serie,1,10);
-    T.add(formatText("Info:"),1,11);
-    T.add( makeTextArea(sInfo),1,12);
+    T.add(houses,1,1);
+    T.add(formatText("Name:"),1,2);
+    T.add(Text.getBreak(),1,2);
+    T.add(name,1,2);
+    T.add(formatText("Address:"),1,3);
+    T.add(Text.getBreak(),1,3);
+    T.add(address,1,3);
+    T.add(formatText("Complex:"),1,4);
+    T.add(Text.getBreak(),1,4);
+    T.add(complex,1,4);
+    T.add(formatText("Serie: "),1,5);
+    T.add(serie,1,5);
+    T.add(formatText("Info:"),1,6);
+    T.add(Text.getBreak(),1,6);
+    T.add( makeTextArea(sInfo),1,6);
 
     T2.add(formatText("Photo:"),1,1);
-    T2.add(this.makeImageInput(iPhotoId,"photoid"),1,2);
+    T2.add(Text.getBreak(),1,1);
+    T2.add(this.makeImageInput(iPhotoId,"photoid"),1,1);
     Frame.add(HI);
-    Frame.add(new SubmitButton("save","Save"));
-    Frame.add(new SubmitButton("del","Delete"));
+    T2.add(new SubmitButton("save","Save"),1,2);
+    T2.add(new SubmitButton("del","Delete"),1,2);
     form.add(Frame);
     return form;
   }
@@ -669,14 +762,26 @@ public class BuildingEditor extends Editor{
     String sId = e ? String.valueOf(eFloor.getID()):"";
     Form form = new Form();
     Table Frame = new Table(2,1);
+      Frame.setRowVerticalAlignment(1,"top");
       Frame.setCellpadding(0);
       Frame.setCellspacing(0);
+      Frame.setColor(2,1,"#EFEFEF");
+      Frame.setWidth("100%");
+      Frame.setWidth(1,1,"100%");
+      Frame.setHeight("100%");
     Table T = new Table();
-      T.setCellpadding(0);
-      T.setCellspacing(0);
+      T.setCellpadding(8);
+      T.setAlignment("center");
+      T.setWidth("100%");
     Table T2 = new Table(1,2);
-      T2.setCellpadding(0);
-      T2.setCellspacing(0);
+      T2.setCellpadding(8);
+      T2.setAlignment("center");
+      T2.setHeight("100%");
+      T2.setHeight(2,"100%");
+      T2.setWidth("100%");
+      T2.setVerticalAlignment(1,1,"top");
+      T2.setVerticalAlignment(1,2,"bottom");
+      T2.setAlignment(1,2,"center");
     Frame.add(T2,2,1);
     Frame.add(T,1,1);
     TextInput name = new TextInput("bm_name",sName);
@@ -690,20 +795,24 @@ public class BuildingEditor extends Editor{
     setStyle(buildings);
     name.setLength(30);
 
-    T.add(floors,1,2);
+    T.add(floors,1,1);
 
-    T.add(formatText("Name:"),1,3);
-    T.add(name,1,4);
-    T.add(formatText("Building:"),1,5);
-    T.add(buildings,1,6);
-    T.add(formatText("Info:"),1,7);
-    T.add( makeTextArea(sInfo),1,8);
+    T.add(formatText("Name:"),1,2);
+    T.add(Text.getBreak(),1,2);
+    T.add(name,1,2);
+    T.add(formatText("Building:"),1,3);
+    T.add(Text.getBreak(),1,3);
+    T.add(buildings,1,3);
+    T.add(formatText("Info:"),1,4);
+    T.add(Text.getBreak(),1,4);
+    T.add( makeTextArea(sInfo),1,4);
     T2.add(formatText("Photo:"),1,1);
-    T2.add(this.makeImageInput(1,"photoid"),1,2);
+    T2.add(Text.getBreak(),1,1);
+    T2.add(this.makeImageInput(1,"photoid"),1,1);
     Frame.add(HI);
     Frame.add(HA);
-    Frame.add(new SubmitButton("save","Save"));
-    Frame.add(new SubmitButton("del","Delete"));
+    T2.add(new SubmitButton("save","Save"),1,2);
+    T2.add(new SubmitButton("del","Delete"),1,2);
     form.add(Frame);
     return form;
   }
@@ -714,12 +823,26 @@ public class BuildingEditor extends Editor{
     String sId = e ? String.valueOf(eApartmentCategory.getID()) : "";
      Form form = new Form();
     Table Frame = new Table(2,1);
+      Frame.setRowVerticalAlignment(1,"top");
       Frame.setCellpadding(0);
       Frame.setCellspacing(0);
+      Frame.setColor(2,1,"#EFEFEF");
+      Frame.setWidth("100%");
+      Frame.setWidth(2,1,"160");
+      Frame.setHeight("100%");
     Table T = new Table();
-      T.setCellpadding(0);
-      T.setCellspacing(0);
+      T.setCellpadding(8);
+      T.setAlignment("center");
+      T.setWidth("100%");
+    Table T2 = new Table(1,1);
+      T2.setCellpadding(8);
+      T2.setAlignment("center");
+      T2.setHeight("100%");
+      T2.setWidth("100%");
+      T2.setVerticalAlignment(1,1,"bottom");
+      T2.setAlignment(1,1,"center");
     Frame.add(T,1,1);
+    Frame.add(T2,2,1);
 
     String s;
     TextInput name = new TextInput("bm_name",sName);
@@ -732,13 +855,15 @@ public class BuildingEditor extends Editor{
     name.setLength(30);
     T.add(HI);
     T.add(HA);
-    T.add(categories,1,2);
-    T.add(formatText("Name:"),1,3);
-    T.add(name,1,4);
-    T.add(formatText("Info:"),1,5);
-    T.add( makeTextArea(sInfo),1,6);
-    Frame.add(new SubmitButton("save","Save"));
-    Frame.add(new SubmitButton("del","Delete"));
+    T.add(categories,1,1);
+    T.add(formatText("Name:"),1,2);
+    T.add(Text.getBreak(),1,2);
+    T.add(name,1,2);
+    T.add(formatText("Info:"),1,3);
+    T.add(Text.getBreak(),1,3);
+    T.add( makeTextArea(sInfo),1,3);
+    T2.add(new SubmitButton("save","Save"),1,1);
+    T2.add(new SubmitButton("del","Delete"),1,1);
     form.add(Frame);
     return form;
   }
@@ -769,17 +894,27 @@ public class BuildingEditor extends Editor{
     Table Frame = new Table(2,1);
       Frame.setCellpadding(0);
       Frame.setCellspacing(0);
+      Frame.setWidth("100%");
+      Frame.setHeight("100%");
+      Frame.setWidth(1,1,"100%");
+      Frame.setColor(2,1,"#EFEFEF");
+      Frame.setRowVerticalAlignment(1,"top");
     Table T = new Table();
-      T.setCellpadding(0);
-      T.setCellspacing(0);
-    Table T2 = new Table(2,6);
-      T2.setCellpadding(0);
-      T2.setCellspacing(0);
-      T2.mergeCells(1,2,2,2);
-      T2.mergeCells(1,4,2,4);
+      T.setCellpadding(8);
+      T.setAlignment("center");
+      T.setWidth("100%");
+    Table T2 = new Table(1,3);
+      T2.setCellpadding(8);
+      T2.setWidth("100%");
+      T2.setHeight("100%");
+      T2.setHeight(3,"100%");
+      T2.setAlignment("center");
+      T2.setAlignment(1,3,"center");
+      T2.setVerticalAlignment(1,3,"bottom");
     Frame.add(T2,2,1);
     Frame.add(T,1,1);
     Table InnerTable = new Table();
+      InnerTable.setWidth("100%");
     TextInput name = new TextInput("bm_name",sName);
     DropdownMenu roomcount = drpCount("bm_roomcount","--",sRoomCount,6);
     TextInput area = new TextInput("bm_area",sArea);
@@ -810,57 +945,62 @@ public class BuildingEditor extends Editor{
     setStyle(area);
     setStyle(rent);
     setStyle(roomcount);
-    setStyle(kitch);
-    setStyle(bath);
-    setStyle(stor);
-    setStyle(balc);
-    setStyle(study);
-    setStyle(loft);
-    setStyle(furni);
+    setStyle2(kitch);
+    setStyle2(bath);
+    setStyle2(stor);
+    setStyle2(balc);
+    setStyle2(study);
+    setStyle2(loft);
+    setStyle2(furni);
     setStyle(apartmenttypes);
     setStyle(categories);
     T.add(HI);
     T.add(HA);
 
-    T.add(apartmenttypes,1,2);
-    T.add(formatText("Name:"),1,3);
-    T.add(name,1,4);
-    T.add(formatText("Category:"),1,5);
-    T.add(categories,1,5);
+    T.add(formatText("Type:"),1,1);
+    T.add(Text.getBreak(),1,1);
+    T.add(apartmenttypes,1,1);
+    T.add(formatText("Name:"),1,2);
+    T.add(Text.getBreak(),1,2);
+    T.add(name,1,2);
+    T.add(formatText("Category: "),1,3);
+    T.add(categories,1,3);
     InnerTable.add(formatText("Room count"),1,1);
     InnerTable.add(roomcount,2,1);
-    InnerTable.add(formatText("Area(m2)"),1,2);
-    InnerTable.add(area,2,2);
-    InnerTable.add(formatText("Kitchen"),1,3);
-    InnerTable.add(kitch,2,3);
-    InnerTable.add(formatText("Bathroom"),1,4);
-    InnerTable.add(bath,2,4);
-    InnerTable.add(formatText("Storage"),1,5);
-    InnerTable.add(stor,2,5);
-    InnerTable.add(formatText("Study"),1,6);
-    InnerTable.add(study,2,6);
-    InnerTable.add(formatText("Loft"),1,7);
-    InnerTable.add(loft,2,7);
-    InnerTable.add(formatText("Furniture"),1,8);
-    InnerTable.add(furni,2,8);
-    InnerTable.add(formatText("Balcony"),1,9);
-    InnerTable.add(balc,2,9);
-    InnerTable.add(formatText("Rent"),1,10);
-    InnerTable.add(rent,2,10);
-    T.add(InnerTable,1,6);
-    T2.add(formatText("Info:"),1,1);
-    T2.add( makeTextArea(sInfo),1,2);
-    T2.add(formatText("ExtraInfo:"),1,3);
-    T2.add( makeTextArea("extra_info",sExtraInfo),1,4);
-    T2.add(formatText("Photo:"),1,5);
-    T2.add(this.makeImageInput(iImageId,"tphotoid"),1,6);
-    T2.add(formatText("Plan:"),2,5);
-    T2.add(this.makeImageInput(iPlanId,"tplanid"),2,6);
+    InnerTable.add(formatText("Area(m2)"),3,1);
+    InnerTable.add(area,4,1);
+    InnerTable.add(formatText("Kitchen"),1,2);
+    InnerTable.add(kitch,2,2);
+    InnerTable.add(formatText("Bathroom"),3,2);
+    InnerTable.add(bath,4,2);
+    InnerTable.add(formatText("Storage"),1,3);
+    InnerTable.add(stor,2,3);
+    InnerTable.add(formatText("Study"),3,3);
+    InnerTable.add(study,4,3);
+    InnerTable.add(formatText("Loft"),1,4);
+    InnerTable.add(loft,2,4);
+    InnerTable.add(formatText("Furniture"),3,4);
+    InnerTable.add(furni,4,4);
+    InnerTable.add(formatText("Balcony"),1,5);
+    InnerTable.add(balc,2,5);
+    InnerTable.add(formatText("Rent"),1,6);
+    InnerTable.add(rent,2,6);
+    T.add(InnerTable,1,4);
+    T.add(formatText("Info:"),1,5);
+    T.add(Text.getBreak(),1,5);
+    T.add( makeTextArea(sInfo),1,5);
+    T.add(formatText("ExtraInfo:"),1,6);
+    T.add(Text.getBreak(),1,6);
+    T.add( makeTextArea("extra_info",sExtraInfo),1,6);
+    T2.add(formatText("Photo:"),1,1);
+    T2.add(this.makeImageInput(iImageId,"tphotoid"),1,1);
+    T2.add(formatText("Plan:"),1,2);
+    T2.add(this.makeImageInput(iPlanId,"tplanid"),1,2);
     form.maintainParameter("tphotoid");
     form.maintainParameter("tplanid");
     Frame.add(HI);
-    Frame.add(new SubmitButton("save","Save"));
-    Frame.add(new SubmitButton("del","Delete"));
+    T2.add(new SubmitButton("save","Save"),1,3);
+    T2.add(new SubmitButton("del","Delete"),1,3);
     form.add(Frame);
     return form;
   }
@@ -875,22 +1015,31 @@ public class BuildingEditor extends Editor{
      String sSerie = e ? eApartment.getSerie():"";
     boolean bRentable = e ? eApartment.getRentable() : false ;
     Form form = new Form();
-    Table Frame = new Table(3,1);
+
+    Table Frame = new Table(2,1);
       Frame.setRowVerticalAlignment(1,"top");
-      Frame.setCellpadding(2);
+      Frame.setCellpadding(0);
       Frame.setCellspacing(0);
-    Table T = new Table();
-      T.setCellpadding(0);
-      T.setCellspacing(0);
+      Frame.setColor(2,1,"#EFEFEF");
+      Frame.setWidth("100%");
+      Frame.setWidth(1,1,"100%");
+      Frame.setHeight("100%");
+    Table T = new Table(1,6);
+      T.setCellpadding(8);
+      T.setAlignment("center");
+      T.setWidth("100%");
     Table T2 = new Table(1,2);
-      T2.setCellpadding(0);
-      T2.setCellspacing(0);
-    Table T3 = new Table(1,2);
-      T3.setCellpadding(0);
-      T3.setCellspacing(0);
-    Frame.add(T3,3,1);
-    Frame.add(T2,2,1);
+      T2.setCellpadding(8);
+      T2.setAlignment("center");
+      T2.setHeight("100%");
+      T2.setHeight(2,"100%");
+      T2.setWidth("100%");
+      T2.setVerticalAlignment(1,1,"top");
+      T2.setVerticalAlignment(1,2,"bottom");
+      T2.setAlignment(1,2,"center");
     Frame.add(T,1,1);
+    Frame.add(T2,2,1);
+
     TextInput name = new TextInput("bm_name",sName);
     TextInput serie = new TextInput("bm_serie",sSerie);
     DropdownMenu apartments = drpLodgings(new Apartment(),"dr_id","Apartment",sId);
@@ -903,7 +1052,13 @@ public class BuildingEditor extends Editor{
     HiddenInput HA = new HiddenInput(sAction,String.valueOf(APARTMENT));
     HiddenInput HID = new HiddenInput("dr_id",sId);
 
-    T.add(HI);
+    Window chooserWindow = new Window("b_editor",ApartmentChooser.class,Page.class);
+      chooserWindow.setWidth(550);
+      chooserWindow.setHeight(500);
+      chooserWindow.setResizable(true);
+    Link chooser = new Link(new Image("/pics/list.gif","Select appartment",13,13),chooserWindow);
+
+    form.add(HI);
     setStyle(name);
     setStyle(types);
     setStyle(floors);
@@ -913,26 +1068,32 @@ public class BuildingEditor extends Editor{
     name.setLength(30);
     //T.add(apartments,1,2);
     int a = 1;
-    T.add(formatText("Name:"),1,a++);
-    T.add(name,1,a++);
-    T.add(formatText("Floor:"),1,a++);
-    T.add(floors,1,a++);
-    T.add(formatText("Type:"),1,a++);
-    T.add(types,1,a++);
-    T.add(formatText("Serie"),1,a++);
-    T.add(serie,1,a++);
-    T.add(formatText("Rentable"),1,a++);
-    T.add(rentable,1,a++);
-    T2.add(formatText("Info:"),1,1);
-    T2.add( makeTextArea(sInfo),1,2);
-    T3.add(formatText("Photo:"),1,1);
-    T3.add(this.makeImageInput(1,"photoid"),1,2);
-    Frame.add(HI);
-    Frame.add(HA);
+    T.add(formatText("Name:"),1,1);
+    T.add(Text.getBreak(),1,1);
+    T.add(name,1,1);
+    T.add(formatText("&nbsp;&nbsp;"));
+    T.add(chooser,1,1);
+    T.add(formatText("Floor:"),1,2);
+    T.add(Text.getBreak(),1,2);
+    T.add(floors,1,2);
+    T.add(formatText("Type:"),1,3);
+    T.add(Text.getBreak(),1,3);
+    T.add(types,1,3);
+    T.add(formatText("Serie: "),1,4);
+    T.add(serie,1,4);
+    T.add(formatText("Rentable: "),1,5);
+    T.add(rentable,1,5);
+    T.add(formatText("Info:"),1,6);
+    T.add(Text.getBreak(),1,6);
+    T.add( makeTextArea(sInfo),1,6);
+    T2.add(formatText("Photo:"),1,1);
+    T2.add(this.makeImageInput(1,"photoid"),1,1);
+    form.add(HI);
+    form.add(HA);
     if(e)
-      Frame.add(HID);
-    Frame.add(new SubmitButton("save","Save"));
-    Frame.add(new SubmitButton("del","Delete"));
+      form.add(HID);
+    T2.add(new SubmitButton("save","Save"),1,2);
+    T2.add(new SubmitButton("del","Delete"),1,2);
     form.add(Frame);
     return form;
   }
@@ -1175,12 +1336,38 @@ public class BuildingEditor extends Editor{
     return drp;
   }
 
+  public Text formatText(String s){
+    Text T= new Text();
+    if(s!=null){
+      T= new Text(s);
+      //if(this.fontBold)
+      T.setBold();
+      T.setFontColor(this.TextFontColor);
+      T.setFontSize(this.fontSize);
+      T.setFontFace(Text.FONT_FACE_VERDANA);
+    }
+    return T;
+  }
+
+  public Text formatText(int i){
+    return formatText(String.valueOf(i));
+  }
+
   public void main(ModuleInfo modinfo)  {
     try{
     isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+    this.getParentPage().setName("b_editor");
+    this.getParentPage().setTitle("Building Editor");
+    this.getParentPage().setAllMargins(0);
     }
     catch(SQLException sql){ isAdmin = false;}
     /** @todo: fixa Admin*/
     control(modinfo);
+  }
+  protected void setStyle(InterfaceObject O){
+    O.setAttribute("style",this.styleAttribute);
+  }
+  protected void setStyle2(InterfaceObject O){
+    O.setAttribute("style",this.styleAttribute2);
   }
 }// class BuildingEditor

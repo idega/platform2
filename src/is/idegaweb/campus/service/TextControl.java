@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl.java,v 1.3 2001/07/12 21:23:12 laddi Exp $
+ * $Id: TextControl.java,v 1.4 2001/08/20 17:16:16 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -79,30 +79,42 @@ public class TextControl extends JModuleObject {
   }
 
   public void doMenu(){
+    Table T = new Table(3,1);
+     T.setWidth("100%");
+     T.setBorder(0);
+     T.setWidth(1,"50%");
+     T.setWidth(3,"50%");
+     T.setWidth(2,"20");
+     T.setVerticalAlignment(1,1,"top");
+     T.setVerticalAlignment(3,1,"top");
+
     try {
-      Table T = new Table();
-        T.setWidth(400);
-        T.setWidth(1,"50%");
-        T.setWidth(2,"50%");
-        T.setBorder(0);
+      for ( int a = 5; a < 13; a++ ) {
+        TextModule text = new TextModule(a);
+        if ( text.getTextHeadline() == null || text.getIncludeImage() == null ) {
+            text.setDefaultValues();
+            text.insert();
+        }
 
-      TextModule[] text = (TextModule[]) TextModule.getStaticInstance("com.idega.block.data.TextModule").findAll();
+        TextReader texti = new TextReader(a);
+          texti.setWidth("100%");
+          texti.setEnableDelete(false);
 
-      for ( int a = 0; a < text.length; a++ ) {
-        Link L = new Link(text[a].getID());
-        L.addParameter(strAction,iAct);
-
-        int column = ( ( a + 2 ) % 2 ) + 1;
-        int row = ( a + 2 ) / 2;
-
-        T.add(L,column,row);
+        if ( a < 8 ) {
+          T.add(texti,1,1);
+          T.addBreak(1,1);
+        }
+        else {
+          T.add(texti,3,1);
+          T.addBreak(3,1);
+        }
       }
-
-      add(T);
     }
-    catch (Exception e) {
+    catch (SQLException e) {
       e.printStackTrace(System.err);
     }
+
+    add(T);
   }
 
   public void doText(int action) {
