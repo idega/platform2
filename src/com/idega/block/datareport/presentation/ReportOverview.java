@@ -296,12 +296,12 @@ public class ReportOverview extends Block {
   	} 
   	Table table = new Table(1,2);
   	table.add(browser, 1,1);
-  	table.add(getButtonBar(resourceBundle), 1,2);
+  	table.add(getButtonBar(resourceBundle, iwc), 1,2);
   	form.add(table);
   	add(form);
   }
   	
-	private PresentationObject getButtonBar(IWResourceBundle resourceBundle )	{
+	private PresentationObject getButtonBar(IWResourceBundle resourceBundle, IWContext iwc )	{
 		Table table = new Table(5,1);
 		// new button for query builder (simple mode)
 		String simpleModeText = resourceBundle.getLocalizedString("ro_create_simple_mode", "New (simple mode)");
@@ -311,16 +311,17 @@ public class ReportOverview extends Block {
 		simpleModeLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
 		simpleModeLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
 		simpleModeLink.setAsImageButton(true);
-
-		// new button for query builder (expert mode)
-		String expertModeText = resourceBundle.getLocalizedString("ro_create_expert_mode", "New (expert mode)");
-		Link expertModeLink = new Link(expertModeText);
-
-		expertModeLink.addParameter(ReportQueryBuilder.SHOW_WIZARD, Integer.toString(EXPERT_MODE));
-		expertModeLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-		expertModeLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
-		expertModeLink.setAsImageButton(true);
 		
+		boolean isAdmin = false;
+		try {
+			isAdmin = iwc.getAccessController().isAdmin(iwc);
+		} 
+		catch (Exception ex) {
+			String message =
+				"[ReportOverview]: Can't retrieve AccessController.";
+			System.err.println(message + " Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
 		// delete button
 		String deleteText = resourceBundle.getLocalizedString("ro_delete", "Delete");
   	SubmitButton delete = new SubmitButton(deleteText, DELETE_ITEMS_KEY, DELETE_ITEMS_KEY);
@@ -331,14 +332,26 @@ public class ReportOverview extends Block {
   	close.addParameter(CLOSE_KEY, CLOSE_KEY);
   	close.setAsImageButton(true);
   	close.setOnClick("window.close()");
-  	table.add(simpleModeLink,1,1);
-  	table.add(expertModeLink,2,1);
-  	table.add(delete,3,1);
-  	table.add(close, 4,1);
+  	int column = 1;
+  	table.add(simpleModeLink,column++,1);
+  	if (isAdmin) {
+	  	// new button for query builder (expert mode)
+			String expertModeText = resourceBundle.getLocalizedString("ro_create_expert_mode", "New (expert mode)");
+			Link expertModeLink = new Link(expertModeText);
+	
+			expertModeLink.addParameter(ReportQueryBuilder.SHOW_WIZARD, Integer.toString(EXPERT_MODE));
+			expertModeLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+			expertModeLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+			expertModeLink.setAsImageButton(true);
+			
+	  	table.add(expertModeLink,column++,1);
+  	}
+  	table.add(delete,column++,1);
+  	table.add(close, column++,1);
   	// special button if only one query was shown
   	if (showOnlyOneQueryWithId != -1)	{
   		PresentationObject goBack = getGoBackButton(resourceBundle);
-  		table.add(goBack, 5,1);
+  		table.add(goBack, column++,1);
   	}
   	return table;
 	}
