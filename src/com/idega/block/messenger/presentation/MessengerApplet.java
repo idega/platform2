@@ -471,7 +471,8 @@ public class MessengerApplet extends Applet implements ActionListener{
     }
 */
     if(cycler==null){
-     cycler = new MessageListener(this,checkTimer);
+     cycler = new MessageListener(checkTimer);
+     cycler.addActionListener(this);
     }
 
    // cycler.start();
