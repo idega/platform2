@@ -80,6 +80,17 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	public void init(IWContext iwc) throws Exception {
 		parseAction(iwc);
 		
+		if (child != null) {
+			try {
+				currentProvider = getBusiness().getCurrentProviderByPlacement(((Integer) child.getPrimaryKey()).intValue());
+				hasActivePlacement = getBusiness().hasActiveApplication(((Integer) child.getPrimaryKey()).intValue(), getBusiness().getChildCareCaseCode());
+			}
+			catch (RemoteException re) {
+				currentProvider = null;
+				hasActivePlacement = false;
+			}
+		}
+		
 		switch (_action) {
 			case ACTION_VIEW_FORM :
 				viewForm(iwc);
@@ -145,8 +156,6 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			try {
 				hasPendingApplications = getBusiness().hasPendingApplications(((Integer) child.getPrimaryKey()).intValue(), getBusiness().getChildCareCaseCode());
 				hasOffers = getBusiness().hasUnansweredOffers(((Integer) child.getPrimaryKey()).intValue(), null);
-				currentProvider = getBusiness().getCurrentProviderByPlacement(((Integer) child.getPrimaryKey()).intValue());
-				hasActivePlacement = getBusiness().hasActiveApplication(((Integer) child.getPrimaryKey()).intValue());
 			}
 			catch (RemoteException e) {
 				hasOffers = false;
