@@ -41,17 +41,24 @@ public class MessageManager implements PacketManager{
         for (int i = 0; i < length; i++) {
           Message msg = (Message) messages.elementAt(i);
           System.out.println("MessageManager : getting sender name from ClientManager");
-          senderName = ClientManager.getClientName(msg.getSender()) ;
-          if ( senderName != null ) msg.setSenderName(senderName);
+          senderName = ClientManager.getClientName(msg.getSender());
+                      System.out.println("MessageManager : msg.getsender"+msg.getSender());
+
+          if ( senderName != null ){
+             msg.setSenderName(senderName);
+            System.out.println("MessageManager : "+senderName);
+          }
           else {
-            msg.setSenderName("MessageManager : Unknown sender");
+            msg.setSenderName("Unknown sender");
             System.out.println("MessageManager : Unknown sender");
           }
+
+           System.out.println("MessageManager : msg.getRecipient"+msg.getRecipient());
 
           recipientName = ClientManager.getClientName(msg.getRecipient());
           if ( recipientName != null ) msg.setRecipientName(recipientName);
           else {
-            msg.setRecipientName("MessageManager : Unknown recipient");
+            msg.setRecipientName("Unknown recipient");
             System.out.println("MessageManager : Unknown recipient");
           }
 
