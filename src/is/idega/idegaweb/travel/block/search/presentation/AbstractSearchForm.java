@@ -78,7 +78,7 @@ import com.idega.util.SendMail;
  */
 public abstract class AbstractSearchForm extends TravelBlock{
 
-	private boolean debug = true;
+	private boolean debug = false;
 	
 	protected String ACTION = "bsf_a";
 	protected String ACTION_SEARCH = "bsf_as";
@@ -1029,20 +1029,22 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			
 			Table innerTable;
 			int resultsRow = 1;
-			int topProduct = productsSize -1;
-			int bottomProduct = 0;
+//			int topProduct = productsSize -1;
+//			int bottomProduct = 0;
+			int topProduct = 0;
+			int bottomProduct = productsSize -1;
 			if (currentPageNumber > 0) {
-				//topProduct = 0 + ( (currentPageNumber-1) * resultsPerPage);
-				//topProduct -= topProduct - ((currentPageNumber - 1) * resultsPerPage);
-				topProduct = topProduct - ( (currentPageNumber -1) * resultsPerPage);
+				topProduct = topProduct + ( (currentPageNumber -1) * resultsPerPage);
+//				topProduct = topProduct - ( (currentPageNumber -1) * resultsPerPage);
 				
-				if ( (topProduct - resultsPerPage + 1) >= 0 ) {
-				//bottomProduct = topProduct + resultsPerPage;
-					bottomProduct= topProduct - resultsPerPage + 1;
-				//bottomProduct = (productsSize);
+				if ( (topProduct + resultsPerPage -1) < bottomProduct) {
+					bottomProduct= topProduct + resultsPerPage - 1;
 				}
+//				if ( (topProduct + resultsPerPage) >= (bottomProduct) ) {
+//					bottomProduct= topProduct + resultsPerPage - 1;
+//				}
 			}
-			for (int i = (topProduct); i >= bottomProduct ; i--) {
+			for (int i = (topProduct); i <= bottomProduct ; i++) {
 				try {
 					product = (Product)tmp.get(i);
 					productId = product.getID();

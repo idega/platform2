@@ -99,8 +99,8 @@ public class ProductComparator implements Comparator {
 
     String one = p1.getProductName(localeId)!=null?p1.getProductName(localeId):"";
     String two = p2.getProductName(localeId)!=null?p2.getProductName(localeId):"";
-    Collator.getInstance(locale);
-    return collator.compare(two,one);
+
+    return collator.compare(one, two);
   }
   
   private int supplierSort(Object o1, Object o2) throws RemoteException {
@@ -109,7 +109,7 @@ public class ProductComparator implements Comparator {
 
     String one = p1.getSupplier().getName() != null ? p1.getSupplier().getName(): "";
     String two = p2.getSupplier().getName() != null ? p2.getSupplier().getName(): "";
-    return collator.compare(two, one);
+    return collator.compare(one, two);
   	
   }
 
