@@ -64,7 +64,7 @@ public class CommuneEditor extends CommuneBlock {
 			}
 		} else if (action.equals(ACTION_PARAMETER_SAVE)) {
 			if (!saveCommune(iwc)) {
-				add(getErrorText(iwrb.getLocalizedString("commune.commune_not_saved","Commune was not saved")));
+				//add(getErrorText(iwrb.getLocalizedString("commune.commune_not_saved","Commune was not saved")));
 			}
 		} else if (action.equals(ACTION_PARAMETER_NEW)) {
 			addInputs = true;
@@ -96,38 +96,34 @@ public class CommuneEditor extends CommuneBlock {
 		while (iter.hasNext()) {
 			commune = (Commune) iter.next();
 			communePK = commune.getPrimaryKey();
-			++row;
-			table.add(getSmallText(commune.getCommuneName()), 1, row);
-			table.add(getSmallText(commune.getCommuneCode()), 2, row);
-			rad = new RadioButton(PARAMETER_DEFAULT, communePK.toString());
-			if (communePK.toString().equals(defaultCommunePK.toString())) {
-				rad.setSelected(true);
+			if (communeId == Integer.parseInt(commune.getPrimaryKey().toString()) && addInputs) {
+				row = addInputFields(iwc, table, communeId, row);
+			} else {
+				++row;
+				editLink = new Link(getSmallText(commune.getCommuneName()));
+				editLink.addParameter(ACTION, ACTION_PARAMETER_EDIT);
+				editLink.addParameter(PARAMETER_COMMUNE_ID, communePK.toString());
+				table.add(editLink, 1, row);
+				table.add(getSmallText(commune.getCommuneCode()), 2, row);
+				rad = new RadioButton(PARAMETER_DEFAULT, communePK.toString());
+				if (communePK.toString().equals(defaultCommunePK.toString())) {
+					rad.setSelected(true);
+				}
+				table.add(rad, 3, row);
+				
+				delLink = new Link(super.getDeleteIcon(iwrb.getLocalizedString("commune.delete","Delete")));
+				delLink.addParameter(ACTION, ACTION_PARAMETER_DELETE);
+				delLink.addParameter(PARAMETER_COMMUNE_ID, commune.getPrimaryKey().toString());
+				editLink = new Link(super.getEditIcon(iwrb.getLocalizedString("commune.edit","Edit")));
+				editLink.addParameter(ACTION, ACTION_PARAMETER_EDIT);
+				editLink.addParameter(PARAMETER_COMMUNE_ID, communePK.toString());
+				table.add(editLink, 4, row);
+				table.add(delLink, 4, row);
 			}
-			table.add(rad, 3, row);
-			
-			delLink = new Link(super.getDeleteIcon(iwrb.getLocalizedString("commune.delete","Delete")));
-			delLink.addParameter(ACTION, ACTION_PARAMETER_DELETE);
-			delLink.addParameter(PARAMETER_COMMUNE_ID, commune.getPrimaryKey().toString());
-			editLink = new Link(super.getEditIcon(iwrb.getLocalizedString("commune.edit","Edit")));
-			editLink.addParameter(ACTION, ACTION_PARAMETER_EDIT);
-			editLink.addParameter(PARAMETER_COMMUNE_ID, communePK.toString());
-			table.add(editLink, 4, row);
-			table.add(delLink, 4, row);
 		}
-		if (addInputs) {
-			++row;
-			TextInput nameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_NAME));
-			TextInput codeInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CODE));
-			nameInput.setAsNotEmpty(iwrb.getLocalizedString("commune.name_input_empty","The NAME input field cannot be empty"));
-			codeInput.setAsNotEmpty(iwrb.getLocalizedString("commune.code_input_empty","The CODE input field cannot be empty"));
-			table.add(nameInput, 1, row);
-			table.add(codeInput, 2, row);
-			if (communeId > 0) {
-				Commune comm = getCommuneBusiness(iwc).getCommune(communeId);
-				nameInput.setContent(comm.getCommuneName());
-				codeInput.setContent(comm.getCommuneCode());
-				table.add(new HiddenInput(PARAMETER_COMMUNE_ID, Integer.toString(communeId)));
-			}
+		
+		if (communeId <= 0 && addInputs) {
+			row = addInputFields(iwc, table, communeId, row);
 		}
 		
 		++row;
@@ -147,6 +143,23 @@ public class CommuneEditor extends CommuneBlock {
 		add(form);
 	}
 	
+	private int addInputFields(IWContext iwc, Table table, int communeId, int row) throws RemoteException, Exception {
+		++row;
+		TextInput nameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_NAME));
+		TextInput codeInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CODE));
+		nameInput.setAsNotEmpty(iwrb.getLocalizedString("commune.name_input_empty","The NAME input field cannot be empty"));
+		codeInput.setAsNotEmpty(iwrb.getLocalizedString("commune.code_input_empty","The CODE input field cannot be empty"));
+		table.add(nameInput, 1, row);
+		table.add(codeInput, 2, row);
+		if (communeId > 0) {
+			Commune comm = getCommuneBusiness(iwc).getCommune(communeId);
+			nameInput.setContent(comm.getCommuneName());
+			codeInput.setContent(comm.getCommuneCode());
+			table.add(new HiddenInput(PARAMETER_COMMUNE_ID, Integer.toString(communeId)));
+		}
+		return row;
+	}
+
 	private boolean saveCommune(IWContext iwc) {
 		String name = iwc.getParameter(PARAMETER_NAME);
 		String code = iwc.getParameter(PARAMETER_CODE);
@@ -155,12 +168,27 @@ public class CommuneEditor extends CommuneBlock {
 		
 		if (name != null && code != null && !code.equals("") && !name.equals("")) {
 			try {
+				if (code.length() != 4) {
+					add(getErrorText(iwrb.getLocalizedString("commune.code_must_be_of_the_length_4", "Code must be of the length 4")));
+					return true;
+				}
+				
 				CommuneHome cHome = getCommuneBusiness(iwc).getCommuneHome();
+				Commune codeComm = getCommuneBusiness(iwc).getCommune(code);
 				Commune comm;
 				if (commId != null) {
 					comm = cHome.findByPrimaryKey(new Integer(commId));
+					if (codeComm != null && !codeComm.getPrimaryKey().equals(comm.getPrimaryKey())) {
+						add(getErrorText(iwrb.getLocalizedString("commune.code_already_exists","Code already exists, please enter a new code.")));
+						return false;
+					}
+						
 				} else {
 					comm = cHome.create();
+					if (codeComm != null) {
+						add(getErrorText(iwrb.getLocalizedString("commune.code_already_exists","Code already exists, please enter a new code.")));
+						return false;
+					}
 				}
 				comm.setCommuneName(name);
 				comm.setCommuneCode(code);
@@ -168,6 +196,7 @@ public class CommuneEditor extends CommuneBlock {
 				return true;
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
+				add(getErrorText(iwrb.getLocalizedString("commune.commune_not_saved","Commune was not saved")));
 				return false;
 			}
 		} else if (newDefaultComm != null) {
@@ -190,6 +219,7 @@ public class CommuneEditor extends CommuneBlock {
 				return true;
 			} catch (Exception e) {
 				e.printStackTrace();
+				add(getErrorText(iwrb.getLocalizedString("commune.commune_not_saved","Commune was not saved")));
 				return false;
 			}
 		}
