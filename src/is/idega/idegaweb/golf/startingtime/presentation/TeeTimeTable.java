@@ -239,7 +239,7 @@ public class TeeTimeTable extends GolfBlock {
 			if ((isAdmin() || (isClubAdmin() && iwc.getSessionAttribute("member_main_union_id").equals(iwc.getSessionAttribute("union_id"))) || (isClubWorker() && iwc.getSessionAttribute("member_main_union_id").equals(iwc.getSessionAttribute("union_id"))))) {
 
 				Link l = getLink(localize("start.reserve","Reserve"));
-				l.setWindowToOpen(AdminRegisterTimeWindow.class);
+				l.setWindowToOpen(AdminRegisterTime.class);
 				l.addParameter("daytime", (String) iwc.getSessionAttribute("when"));
 				l.addParameter("mode", "1");
 				
@@ -819,7 +819,7 @@ public class TeeTimeTable extends GolfBlock {
 		
 		if (admin) {
 			mainForm = new Form();
-			mainForm.setWindowToOpen(AdminRegisterTimeWindow.class);
+			mainForm.setWindowToOpen(AdminRegisterTime.class);
 			plainUser = false;
 			mainForm.add(reserveButton);
 			insertHiddenInput("mode", "1", mainForm);

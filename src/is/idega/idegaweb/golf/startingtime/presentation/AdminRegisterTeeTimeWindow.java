@@ -1,12 +1,13 @@
 package is.idega.idegaweb.golf.startingtime.presentation;
 
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
+
 import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.Window;
 
 /**
  * @author gimmi
  */
-public class AdminRegisterTeeTimeWindow extends Window{
+public class AdminRegisterTeeTimeWindow extends GolfWindow{
 
 	public AdminRegisterTeeTimeWindow() {
 		super.setAllMargins(0);

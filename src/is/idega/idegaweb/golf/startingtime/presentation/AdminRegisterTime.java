@@ -83,8 +83,11 @@ public class AdminRegisterTime extends GolfWindow {
 	private boolean forPrinting = false;
 
 	public AdminRegisterTime() {
-		super();
+		super("Gluggi",600,600);
+		
 		this.setResizable(true);
+		this.setScrollbar(true);	   
+		
 		myForm = new Form();
 		frameTable = new Table();
 		frameTable.setAlignment("center");
