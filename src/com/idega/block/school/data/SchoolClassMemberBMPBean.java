@@ -26,7 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * @version 1.0
+ * Last modified: $Date: 2003/10/13 09:09:13 $ by $Author: staffan $
+ * @version $Revision: 1.41 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -180,6 +181,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(getEntityName()).appendWhere();
 		sql.append(this.SCHOOLCLASS).appendEqualSign().append(schoolClassID);
+        sql.appendAndIsNull(REMOVED_DATE);
 
 		return super.idoFindPKsBySQL(sql.toString());
 	}
