@@ -300,15 +300,12 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		mainTable.add(deleteLink,5,4);
 				
 		mainTable.mergeCells(1,7,5,7);
-		EntityBrowser eBr = getUserList(iwc);
-		Form f = new Form();
-		f.add(eBr);
-		mainTable.add(f,1,7);
+		mainTable.add(getUserList(iwc),1,7);
 	
-		mainTable.setAlignment(3,8,"right");
-		mainTable.add(saveButton,3,8);
+		mainTable.setAlignment(5,8,"right");
+		mainTable.add(saveButton,5,8);
 		mainTable.add(Text.NON_BREAKING_SPACE,3,8);
-		mainTable.add(closeButton,3,8);
+		mainTable.add(closeButton,5,8);
 		
 		form.add(mainTable);		
 	}
@@ -747,7 +744,9 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		if(deleteUsers != null) {
 			String[] userIds;
 			userIds = iwc.getParameterValues(SELECTED_USERS_KEY);
-			removeUsersFromLedger(Arrays.asList(userIds),ledgerID.intValue(),iwc);
+			if(userIds != null) {
+				removeUsersFromLedger(Arrays.asList(userIds),ledgerID.intValue(),iwc);
+			}
 		}
 
 		String save = iwc.getParameter(saveButtonParameterName);
