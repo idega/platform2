@@ -549,8 +549,9 @@ public class CampusAllocator extends PresentationObjectContainer{
   private PresentationObject getFreeApartments(ApartmentType AT,Complex CX,int applicant_id,Contract C){
 
     java.util.Map M =  ContractFinder.mapOfAvailableApartmentContracts(AT.getID() ,CX.getID() );
-    List L = ContractFinder.listOfAvailable(ContractFinder.APARTMENT,AT.getID() ,CX.getID() );
-    //List L = BuildingFinder.listOfApartmentsInTypeAndComplex(AT.getID() ,CX.getID());
+    //List L = ContractFinder.listOfAvailable(ContractFinder.APARTMENT,AT.getID() ,CX.getID() );
+		//List l = ContractFinder.listOfNonContractApartments(AT.getID() ,CX.getID());
+    List L = BuildingFinder.listOfApartmentsInTypeAndComplex(AT.getID() ,CX.getID());
 
     boolean hasContract = C!= null?true:false;
     int iContractId = hasContract ? C.getID():-1;
