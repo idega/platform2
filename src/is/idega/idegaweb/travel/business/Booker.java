@@ -604,36 +604,36 @@ public class Booker {
       StringBuffer buff = new StringBuffer();
         buff.append("SELECT * FROM "+booking.getBookingTableName());
         buff.append(" WHERE ");
-        buff.append(booking.getNameColumnName()+" = '"+booking.getName()+"'");
+        buff.append(GeneralBooking.getNameColumnName()+" = '"+booking.getName()+"'");
         buff.append(" AND ");
-        buff.append(booking.getAddressColumnName()+" = '"+booking.getAddress()+"'");
+        buff.append(GeneralBooking.getAddressColumnName()+" = '"+booking.getAddress()+"'");
         buff.append(" AND ");
-        buff.append(booking.getAttendanceColumnName()+" = '"+booking.getAttendance()+"'");
+        buff.append(GeneralBooking.getAttendanceColumnName()+" = '"+booking.getAttendance()+"'");
         buff.append(" AND ");
-        buff.append(booking.getBookingTypeIDColumnName()+" = '"+booking.getBookingTypeID()+"'");
+        buff.append(GeneralBooking.getBookingTypeIDColumnName()+" = '"+booking.getBookingTypeID()+"'");
         buff.append(" AND ");
-        buff.append(booking.getCityColumnName()+" = '"+booking.getCity()+"'");
+        buff.append(GeneralBooking.getCityColumnName()+" = '"+booking.getCity()+"'");
         buff.append(" AND ");
-        buff.append(booking.getCountryColumnName()+" = '"+booking.getCountry()+"'");
+        buff.append(GeneralBooking.getCountryColumnName()+" = '"+booking.getCountry()+"'");
         buff.append(" AND ");
-        buff.append(booking.getEmailColumnName()+" = '"+booking.getEmail()+"'");
+        buff.append(GeneralBooking.getEmailColumnName()+" = '"+booking.getEmail()+"'");
         buff.append(" AND ");
         if (booking.getIsValid()) {
-          buff.append(booking.getIsValidColumnName()+" = 'Y'");
+          buff.append(GeneralBooking.getIsValidColumnName()+" = 'Y'");
         }else {
-          buff.append(booking.getIsValidColumnName()+" = 'N'");
+          buff.append(GeneralBooking.getIsValidColumnName()+" = 'N'");
         }
         buff.append(" AND ");
-        buff.append(booking.getPaymentTypeIdColumnName()+" = '"+booking.getPaymentTypeId()+"'");
+        buff.append(GeneralBooking.getPaymentTypeIdColumnName()+" = '"+booking.getPaymentTypeId()+"'");
         buff.append(" AND ");
-        buff.append(booking.getPostalCodeColumnName()+" = '"+booking.getPostalCode()+"'");
+        buff.append(GeneralBooking.getPostalCodeColumnName()+" = '"+booking.getPostalCode()+"'");
         buff.append(" AND ");
-        buff.append(booking.getServiceIDColumnName()+" = '"+booking.getServiceID()+"'");
+        buff.append(GeneralBooking.getServiceIDColumnName()+" = '"+booking.getServiceID()+"'");
         buff.append(" AND ");
-        buff.append(booking.getTelephoneNumberColumnName()+" = '"+booking.getTelephoneNumber()+"'");
+        buff.append(GeneralBooking.getTelephoneNumberColumnName()+" = '"+booking.getTelephoneNumber()+"'");
         buff.append(" AND ");
-        buff.append(booking.getTotalCountColumnName()+" = '"+booking.getTotalCount()+"'");
-        buff.append(" ORDER BY "+booking.getBookingDateColumnName());
+        buff.append(GeneralBooking.getTotalCountColumnName()+" = '"+booking.getTotalCount()+"'");
+        buff.append(" ORDER BY "+GeneralBooking.getBookingDateColumnName());
       list = EntityFinder.findAll(booking, buff.toString());
 
       if (list.size() < 2) {

@@ -18,6 +18,7 @@ import com.idega.transaction.IdegaTransactionManager;
 import javax.transaction.TransactionManager;
 import java.sql.Date;
 import com.idega.data.SimpleQuerier;
+import com.idega.block.trade.data.Currency;
 
 /**
  * Title:        IW Travel
@@ -67,7 +68,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
   public float getSupplyStatus(int productId) throws SQLException {
     Supplies supplies = (Supplies)Supplies.getStaticInstance(Supplies.class);
-    List lSupplies = EntityFinder.findAllByColumnOrdered(supplies,supplies.getColumnNameProductId(),Integer.toString(productId),Supplies.getColumnNameRecordTime());
+    List lSupplies = EntityFinder.findAllByColumnOrdered(supplies,Supplies.getColumnNameProductId(),Integer.toString(productId),Supplies.getColumnNameRecordTime());
     if(lSupplies != null && lSupplies.size() > 0){
       return ((Supplies)lSupplies.get(0)).getCurrentSupplies();
     }else{
@@ -77,7 +78,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
   public float getSupplyStatus(int productId, Date date) throws SQLException {
     Supplies supplies = (Supplies)Supplies.getStaticInstance(Supplies.class);
-    List lSupplies = EntityFinder.findAll(supplies,"SELECT * FROM  "+supplies.getEntityName()+" WHERE "+supplies.getColumnNameProductId()+" = "+Integer.toString(productId)+" AND "+Supplies.getColumnNameRecordTime()+" <= '"+date.toString()+"' ORDER BY "+ Supplies.getColumnNameRecordTime(),1);
+    List lSupplies = EntityFinder.findAll(supplies,"SELECT * FROM  "+supplies.getEntityName()+" WHERE "+Supplies.getColumnNameProductId()+" = "+Integer.toString(productId)+" AND "+Supplies.getColumnNameRecordTime()+" <= '"+date.toString()+"' ORDER BY "+ Supplies.getColumnNameRecordTime(),1);
     if(lSupplies != null && lSupplies.size() > 0){
       return ((Supplies)lSupplies.get(0)).getCurrentSupplies();
     }else{
@@ -288,7 +289,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
         StringBuffer buffer = new StringBuffer();
           buffer.append("select h.* from ");
-          buffer.append(service.getServiceTableName()+" s,");
+          buffer.append(Service.getServiceTableName()+" s,");
           buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Service.class,HotelPickupPlace.class)+" smh, ");
           buffer.append(HotelPickupPlace.getHotelPickupPlaceTableName() +" h ");
           buffer.append(" WHERE ");
@@ -316,7 +317,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
         StringBuffer buffer = new StringBuffer();
           buffer.append("select h.* from ");
-          buffer.append(supplier.getSupplierTableName()+" s,");
+          buffer.append(Supplier.getSupplierTableName()+" s,");
           buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Supplier.class,HotelPickupPlace.class)+" smh, ");
           buffer.append(HotelPickupPlace.getHotelPickupPlaceTableName() +" h ");
           buffer.append(" WHERE ");
@@ -572,13 +573,13 @@ public class TravelStockroomBusiness extends StockroomBusiness {
    * @todo skoða betur
    */
   public static int getCurrencyIdForIceland(){
-      com.idega.block.trade.data.Currency curr = new com.idega.block.trade.data.Currency();
+      Currency curr = new Currency();
       int returner = -1;
       try {
         String iceKr = "Íslenskar Krónur";
-        String[] id = com.idega.data.SimpleQuerier.executeStringQuery("Select "+curr.getIDColumnName()+" from "+curr.getEntityName()+" where "+curr.getColumnNameCurrencyName() +" = '"+iceKr+"'");
+        String[] id = com.idega.data.SimpleQuerier.executeStringQuery("Select "+curr.getIDColumnName()+" from "+curr.getEntityName()+" where "+Currency.getColumnNameCurrencyName() +" = '"+iceKr+"'");
         if (id == null || id.length == 0) {
-            curr = new com.idega.block.trade.data.Currency();
+            curr = new Currency();
             curr.setCurrencyName(iceKr);
             curr.setCurrencyAbbreviation("ISK");
             curr.insert();

@@ -43,7 +43,7 @@ public class Inquirer {
       String middleTable = EntityControl.getManyToManyRelationShipTableName(Inquery.class, Reseller.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT sum(i."+inq.getNumberOfSeatsColumnName()+") FROM "+Inquery.getInqueryTableName()+" i");
+        buffer.append("SELECT sum(i."+Inquery.getNumberOfSeatsColumnName()+") FROM "+Inquery.getInqueryTableName()+" i");
         if (resellerId != -1) {
           buffer.append(", "+Reseller.getResellerTableName()+" r, "+middleTable+" mi");
         }
@@ -56,13 +56,13 @@ public class Inquirer {
         }
 
         if (unansweredOnly) {
-        buffer.append("i."+inq.getAnsweredColumnName() +" = 'N'");
+        buffer.append("i."+Inquery.getAnsweredColumnName() +" = 'N'");
         }
 
         buffer.append(" AND ");
-        buffer.append("i."+inq.getServiceIDColumnName()+" = "+serviceId);
+        buffer.append("i."+Inquery.getServiceIDColumnName()+" = "+serviceId);
         buffer.append(" AND ");
-        buffer.append("i."+inq.getInqueryDateColumnName() +" like '"+stamp.toSQLDateString()+"%'");
+        buffer.append("i."+Inquery.getInqueryDateColumnName() +" like '"+stamp.toSQLDateString()+"%'");
         if (resellerId != -1) {
           buffer.append(" AND ");
           buffer.append("r."+res.getIDColumnName()+" = "+resellerId);
@@ -113,13 +113,13 @@ public class Inquirer {
         }
 
         if (unansweredOnly) {
-        buffer.append("i."+inq.getAnsweredColumnName() +" = 'N'");
+        buffer.append("i."+Inquery.getAnsweredColumnName() +" = 'N'");
         }
 
         buffer.append(" AND ");
-        buffer.append("i."+inq.getServiceIDColumnName()+" = "+serviceId);
+        buffer.append("i."+Inquery.getServiceIDColumnName()+" = "+serviceId);
         buffer.append(" AND ");
-        buffer.append("i."+inq.getInqueryDateColumnName() +" like '"+stamp.toSQLDateString()+"%'");
+        buffer.append("i."+Inquery.getInqueryDateColumnName() +" like '"+stamp.toSQLDateString()+"%'");
         if (resellerId != -1) {
           buffer.append(" AND ");
           buffer.append("r."+res.getIDColumnName()+" = "+resellerId);
@@ -307,32 +307,32 @@ public class Inquirer {
     try {
 
       StringBuffer buff = new StringBuffer();
-        buff.append("SELECT * FROM "+inquiry.getInqueryTableName());
+        buff.append("SELECT * FROM "+Inquery.getInqueryTableName());
         buff.append(" WHERE ");
         if (inquiry.getAnswerDate() != null) {
-          buff.append(inquiry.getAnswerDateColumnName()+" = '"+inquiry.getAnswerDate()+"'");
+          buff.append(Inquery.getAnswerDateColumnName()+" = '"+inquiry.getAnswerDate()+"'");
         }else {
-          buff.append(inquiry.getAnswerDateColumnName()+" is null");
+          buff.append(Inquery.getAnswerDateColumnName()+" is null");
         }
         buff.append(" AND ");
         if (inquiry.getAnswered()) {
-          buff.append(inquiry.getAnsweredColumnName()+" = 'Y'");
+          buff.append(Inquery.getAnsweredColumnName()+" = 'Y'");
         }else {
-          buff.append(inquiry.getAnsweredColumnName()+" = 'N'");
+          buff.append(Inquery.getAnsweredColumnName()+" = 'N'");
         }
         buff.append(" AND ");
-        buff.append(inquiry.getEmailColumnName()+" = '"+inquiry.getEmail()+"'");
+        buff.append(Inquery.getEmailColumnName()+" = '"+inquiry.getEmail()+"'");
         buff.append(" AND ");
-        buff.append(inquiry.getInqueryColumnName()+" = '"+inquiry.getInquery()+"'");
+        buff.append(Inquery.getInqueryColumnName()+" = '"+inquiry.getInquery()+"'");
         buff.append(" AND ");
-        buff.append(inquiry.getInqueryPostDateColumnName()+" = '"+inquiry.getInqueryPostDate()+"'");
+        buff.append(Inquery.getInqueryPostDateColumnName()+" = '"+inquiry.getInqueryPostDate()+"'");
         buff.append(" AND ");
-        buff.append(inquiry.getNameColumnName()+" = '"+inquiry.getName()+"'");
+        buff.append(Inquery.getNameColumnName()+" = '"+inquiry.getName()+"'");
         buff.append(" AND ");
-        buff.append(inquiry.getNumberOfSeatsColumnName()+" = "+inquiry.getNumberOfSeats());
+        buff.append(Inquery.getNumberOfSeatsColumnName()+" = "+inquiry.getNumberOfSeats());
         buff.append(" AND ");
-        buff.append(inquiry.getServiceIDColumnName()+" = "+inquiry.getServiceID());
-        buff.append(" ORDER BY "+inquiry.getInqueryDateColumnName());
+        buff.append(Inquery.getServiceIDColumnName()+" = "+inquiry.getServiceID());
+        buff.append(" ORDER BY "+Inquery.getInqueryDateColumnName());
 
         //System.err.println(buff.toString());
       list = EntityFinder.findAll(inquiry, buff.toString());

@@ -1230,9 +1230,9 @@ public class Contracts extends TravelManager {
             infoTable.add(pDiscount,3,infoRow);
             if (product != null) {
               Text what = (Text) theText.clone();
-              if (product.getDiscountTypeId() == product.DISCOUNT_TYPE_ID_PERCENT) {
+              if (product.getDiscountTypeId() == Product.DISCOUNT_TYPE_ID_PERCENT) {
                 what.setText(" %");
-              }else if (product.getDiscountTypeId() == product.DISCOUNT_TYPE_ID_AMOUNT) {
+              }else if (product.getDiscountTypeId() == Product.DISCOUNT_TYPE_ID_AMOUNT) {
                 pDiscount.setSize(10);
                 what.setText(" "+new Currency(tsb.getCurrencyIdForIceland()).getCurrencyAbbreviation());
               }
