@@ -762,7 +762,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						rec.setAmount((float)val);
 						rec.store();
 						
-						getWorkReportById(workReportId).addLeague(league);
+						try {
+							getWorkReportById(workReportId).addLeague(league);
+						}
+						catch(Exception e ) {
+							//Do nothing
+						}
 					}
 					catch(Exception e) {
 						e.printStackTrace();
@@ -808,7 +813,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						rec.setReportId(workReportId);
 						rec.setAmount((float)val);
 						rec.store();
-						getWorkReportById(workReportId).addLeague(league);
+						try {
+							getWorkReportById(workReportId).addLeague(league);
+						}
+						catch(Exception e ) {
+							//Do nothing
+						}
 					}
 					catch(Exception e) {
 						e.printStackTrace();
@@ -854,7 +864,13 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						rec.setReportId(workReportId);
 						rec.setAmount((float)val);
 						rec.store();
-						getWorkReportById(workReportId).addLeague(league);
+						try {
+							getWorkReportById(workReportId).addLeague(league);
+						}
+						catch(Exception e ) {
+							//Do nothing
+						}
+					
 					}
 					catch(Exception e) {
 						e.printStackTrace();
@@ -900,7 +916,13 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						rec.setReportId(workReportId);
 						rec.setAmount((float)val);
 						rec.store();
-						getWorkReportById(workReportId).addLeague(league);
+						try {
+							getWorkReportById(workReportId).addLeague(league);
+						}
+						catch(Exception e ) {
+							//Do nothing
+						}
+							
 					}
 					catch(Exception e) {
 						e.printStackTrace();
