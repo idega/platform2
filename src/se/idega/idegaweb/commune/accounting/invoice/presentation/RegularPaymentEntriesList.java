@@ -67,6 +67,7 @@ import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author Roar
@@ -427,8 +428,13 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	
 			Date from = parseDate(iwc.getParameter(PAR_FROM));
 			Date to = parseDate(iwc.getParameter(PAR_TO));
+			//Setting date to last day in month.
+			IWTimestamp lastDay = new IWTimestamp(to);
+			lastDay.addMonths(1);
+			lastDay.addDays(-1);
+			
 			entry.setFrom(from);
-			entry.setTo(to);
+			entry.setTo(lastDay.getDate());
 			
 			String note = iwc.getParameter(PAR_REMARK);
 			if (note == null || note.length() == 0){
@@ -1204,7 +1210,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 				// TODO Auto-generated method stub
 				
 			}
-			public Object decode(String string){return null;}
+//			public Object decode(String string){return null;}
 		};
 	}
 	
