@@ -42,6 +42,8 @@ public class ChildCareAdmin extends ChildCareBlock {
 	
 	public Boolean _queueCleaned = null;
 
+	private boolean _showQueueCleaning = false;
+
 	/*
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
@@ -238,28 +240,30 @@ public class ChildCareAdmin extends ChildCareBlock {
 			}
 		}
 		
-		Form form = new Form();
-		form.maintainParameter(CollectionNavigator.PARAMETER_CURRENT_PAGE);
-		form.setEventListener(ChildCareEventListener.class);
-		form.add(new HiddenInput(PARAMETER_CLEAN_QUEUE, Boolean.TRUE.toString()));
-		
-		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.clean_queue", "Clean queue")));
-		form.setToDisableOnSubmit(button, true);
-		form.add(button);
-		
-		if (_queueCleaned != null) {
-			button.setDisabled(true);
-			form.add(Text.getNonBrakingSpace());
-			if (_queueCleaned.booleanValue()) {
-				form.add(getSmallText(localize("child_care.clean_queue_successful", "Cleaning of queue ran successfully!")));
+		if (_showQueueCleaning) {
+			Form form = new Form();
+			form.maintainParameter(CollectionNavigator.PARAMETER_CURRENT_PAGE);
+			form.setEventListener(ChildCareEventListener.class);
+			form.add(new HiddenInput(PARAMETER_CLEAN_QUEUE, Boolean.TRUE.toString()));
+			
+			SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.clean_queue", "Clean queue")));
+			form.setToDisableOnSubmit(button, true);
+			form.add(button);
+			
+			if (_queueCleaned != null) {
+				button.setDisabled(true);
+				form.add(Text.getNonBrakingSpace());
+				if (_queueCleaned.booleanValue()) {
+					form.add(getSmallText(localize("child_care.clean_queue_successful", "Cleaning of queue ran successfully!")));
+				}
+				else {
+					form.add(getSmallErrorText(localize("child_care.clean_queue_failed", "Cleaning of queue failed!")));
+				}
 			}
-			else {
-				form.add(getSmallErrorText(localize("child_care.clean_queue_failed", "Cleaning of queue failed!")));
-			}
+		
+			applicationTable.setHeight(row++, 12);
+			applicationTable.add(form, 1, row);
 		}
-		
-		applicationTable.setHeight(row++, 12);
-		applicationTable.add(form, 1, row);
 		
 		return applicationTable;
 	}
@@ -315,5 +319,12 @@ public class ChildCareAdmin extends ChildCareBlock {
 		table.add(submit, 7, 2);
 		
 		return form;
+	}
+	
+	/**
+	 * @param showQueueCleaning The showQueueCleaning to set.
+	 */
+	public void setShowQueueCleaning(boolean showQueueCleaning) {
+		_showQueueCleaning = showQueueCleaning;
 	}
 }
