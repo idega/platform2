@@ -118,7 +118,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		 reportCollection.addField(amountField);
 		 
-		 ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, Date.class);
+		 ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, Integer.class);
 		 entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
 		 reportCollection.addField(entryDateField);
 		 
