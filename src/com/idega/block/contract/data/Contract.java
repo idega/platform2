@@ -1,5 +1,7 @@
 package com.idega.block.contract.data;
 
+import com.idega.data.IDORemoveRelationshipException;
+
 
 public interface Contract extends com.idega.data.IDOLegacyEntity
 {
@@ -42,4 +44,5 @@ public interface Contract extends com.idega.data.IDOLegacyEntity
  public void setValidFrom(java.sql.Date p0);
  public void setValidTo(java.sql.Date p0);
  public void setXmlSignedData(java.lang.String p0);
+ public void removeAllFiles() throws IDORemoveRelationshipException;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.23 2003/10/03 01:41:54 tryggvil Exp $
+ * $Id: ContractBMPBean.java,v 1.24 2004/02/13 13:56:08 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -393,5 +393,9 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 	
 	public void removeFileFromContract(ICFile file) throws IDORemoveRelationshipException{
 		idoRemoveFrom(file);
+	}
+	
+	public void removeAllFiles() throws IDORemoveRelationshipException {
+		this.idoRemoveFrom(ICFile.class);
 	}
 }
