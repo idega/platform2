@@ -169,9 +169,18 @@ public class InvoiceChildcareThread extends BillingThread{
 					User adult = (User)custIter.next();
 					Address childAddress = userBus.getUsersMainAddress(child);
 					Address custodianAddress = userBus.getUsersMainAddress(adult);
-					if (childAddress.isEqualTo (custodianAddress)) {
-						if(invoiceReceiver == null || adult.getGenderID() == femaleKey){
-							invoiceReceiver = adult;
+					if(childAddress!=null && custodianAddress!=null){
+						if (childAddress.isEqualTo (custodianAddress)) {
+							if(invoiceReceiver == null || adult.getGenderID() == femaleKey){
+								invoiceReceiver = adult;
+							}
+						}
+					}else{
+						if(childAddress==null){
+							createNewErrorMessage(errorRelated,"invoice.ChildAddressNotSet");
+						}
+						if(custodianAddress==null){
+							createNewErrorMessage(errorRelated,"invoice.CustodianAddressNotSet");
 						}
 					}
 				}
