@@ -8,9 +8,11 @@ import java.util.StringTokenizer;
 import java.util.List;
 import java.util.Vector;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOFinderException;
 import is.idega.idegaweb.campus.data.ContractAccountApartment;
 import is.idega.idegaweb.campus.data.ContractAccounts;
 import com.idega.block.finance.data.TariffIndex;
+import com.idega.block.finance.data.Account;
 
 /**
  *
@@ -216,6 +218,31 @@ public class CampusAccountFinder  {
       ti = null;
     }
     return ti;
+  }
+
+  public static List getSSNAccounts(String ssn,String type){
+    /*
+      select f.fin_account_id
+      from cam_contract c,fin_account f,app_applicant a
+      where a.ssn = '0606795419'
+      and a.app_applicant_id = c.app_applicant_id
+      and f.ic_user_id = c.ic_user_id
+      and f.account_type = 'FINANCE'
+    */
+    StringBuffer sql = new StringBuffer("select f.* " );
+    sql.append(" from cam_contract c,fin_account f,app_applicant a " );
+    sql.append(" where a.app_applicant_id = c.app_applicant_id ");
+    sql.append(" and f.ic_user_id = c.ic_user_id ");
+    sql.append(" and f.account_type = ").append(type);
+    sql.append(" and a.ssn = '").append(ssn).append("'");
+
+    try {
+      return EntityFinder.getInstance().findAll(Account.class,sql.toString());
+    }
+    catch (IDOFinderException ex) {
+      ex.printStackTrace();
+    }
+    return null;
   }
 
   /*
