@@ -28,15 +28,13 @@ public class QueryGenerationException extends Exception {
 	
 	}
 
-/* Commented out because of JDK1.3 compliance...
 	public QueryGenerationException(String message, Throwable cause) {
-		super(message, cause);
+		super(message + " : "+ cause.toString());
 		
 	}
 
 	public QueryGenerationException(Throwable cause) {
-		super(cause);
+		super(cause.toString());
 		
 	}
-*/
 }
