@@ -158,7 +158,7 @@ public class AlbumCollectionBusiness {
       Iterator iter = types.iterator();
       while (iter.hasNext()) {
         AlbumType item = (AlbumType)iter.next();
-        st.add(item.getID(),item.getName());
+        st.set(item.getID(),item.getName());
       }
       return st;
     } else{

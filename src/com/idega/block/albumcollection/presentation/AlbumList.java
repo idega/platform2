@@ -54,7 +54,7 @@ public class AlbumList extends Block {
       contentTable = new Table(1,albumList.size()*2+1);
       contentTable.setAlignment("center");
       contentTable.setHeight(1,"30");
-      List albumTypes = AlbumCollectionBusiness.getAlbumTypeNames();
+      //List albumTypes = AlbumCollectionBusiness.getAlbumTypeNames();
       int index = 2;
       Iterator iter = albumList.iterator();
       while (iter.hasNext()) {
@@ -89,10 +89,11 @@ public class AlbumList extends Block {
           myLayout.setAlbumPublishingDay(Integer.toString(new idegaTimestamp(item.getPublishingDay()).getYear()));
         }
 
-        String type = (String)albumTypes.get(item.getAlbumTypeId());
+        /*String type = (String)albumTypes.get(item.getAlbumTypeId());
         if(type != null){
           myLayout.setAlbumType(type);
         }
+        */
         if(hasEditPermission()){
           Link update = (Link)updateAlbumLinkTemplate.clone();
           update.addParameter(AlbumCollectionBusiness._PRM_ALBUM_ID,item.getID());
