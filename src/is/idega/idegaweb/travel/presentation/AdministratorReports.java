@@ -85,6 +85,9 @@ public class AdministratorReports extends Reports {
       _supplier = suppHome.findByPrimaryKey(new Integer(suppId));
       _usedSuppliers = new Vector();
       _usedSuppliers.add(_supplier);
+    }else if (_allSuppliers == null) {
+    	SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+    	_usedSuppliers = (List) suppHome.findAll(); 
     }else { //if (suppId != null && suppId.equals("-1") && _allSuppliers != null) {
     	_usedSuppliers = _allSuppliers;
     } /*else {
