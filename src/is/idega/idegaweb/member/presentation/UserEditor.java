@@ -569,7 +569,7 @@ public class UserEditor extends Block {
 		}
 		int col = 1;
 		nameTable.add(tPersonalID, col, 1);
-		if (isAllowPersonalIdEdit() || user == null)
+		if (isAllowPersonalIdEdit(user) || user == null)
 			nameTable.add(personalIdInput, col++, 2);
 		else if (user != null) {
 			Text tPid = new Text(user.getPersonalID());
@@ -952,7 +952,7 @@ public class UserEditor extends Block {
 					|| isNewValue(iwc, prm_primary_group_id)) {
 					String pid = null, first = null, middle = null, last = null;
 					Integer groupID = null;
-					if (isNewValue(iwc, prm_personal_id)) {
+					if (isNewValue(iwc, prm_personal_id) && isValidPersonalID(iwc.getParameter(prm_personal_id))) {
 						pid = iwc.getParameter(prm_personal_id);
 					}
 					if (isNewValue(iwc, prm_first_name)) {
@@ -1232,6 +1232,14 @@ public class UserEditor extends Block {
 			throw new RemoteException(e.getMessage());
 		}
 	}
+	/**
+	 * @param string
+	 * @return
+	 */
+	protected boolean isValidPersonalID(String string) {
+		return true;
+	}
+	
 	public void initUser(IWContext iwc) {
 	}
 	private void initRelationTypes(IWContext iwc) throws RemoteException {
@@ -1695,7 +1703,7 @@ public class UserEditor extends Block {
 	/**
 	 * @return
 	 */
-	public boolean isAllowPersonalIdEdit() {
+	public boolean isAllowPersonalIdEdit(User user) {
 		return allowPersonalIdEdit;
 	}
 	/**
