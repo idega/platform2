@@ -149,8 +149,14 @@ public class BannerFinder {
 
 
   public static int getRelatedEntityId(ICObjectInstance eObjectInstance){
-    ICObjectBusiness bis = ICObjectBusiness.getInstance();
-    return bis.getRelatedEntityId(eObjectInstance,BannerEntity.class);
+  	try {
+	    ICObjectBusiness bis = ICObjectBusiness.getInstance();
+	    return bis.getRelatedEntityId(eObjectInstance,BannerEntity.class);
+  	} catch (NullPointerException n) {
+  		System.err.println("[BannerFinder] Exception caught...returning -1");
+  		n.printStackTrace();
+  		return -1;
+  	}
   }
 
   public static int getObjectInstanceIdFromID(int bannerID){
