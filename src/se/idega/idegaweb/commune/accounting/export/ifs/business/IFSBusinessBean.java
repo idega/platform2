@@ -733,7 +733,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 //				style.setDataFormat(wb.createDataFormat().getFormat("#,##0.00"));
 				cell = row.createCell(cellNumber++);
 				cell.setCellStyle(style);
-				cell.setCellValue((double)pRec.getTotalAmount());
+				cell.setCellValue(pRec.getTotalAmount());
 				row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());						
 			}
 			FileOutputStream out = new FileOutputStream(fileName);
