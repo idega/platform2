@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/02/17 14:24:38 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/19 12:11:36 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.122 $
+ * @version $Revision: 1.123 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -240,7 +240,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 						errorRelated = new ErrorLogger(tmpErrorRelated);
 						SchoolClassMember schoolClassMember = (SchoolClassMember) j.next();
 						if(schoolClassMember.getSchoolClass().getSchoolSeasonId() == validSchoolSeasonId){
-							createPaymentForSchoolClassMember(regBus, provider, schoolClassMember, schoolIsInDefaultCommune && !schoolIsPrivate);
+							createPaymentForSchoolClassMember(regBus, provider, schoolClassMember, 
+									schoolIsInDefaultCommune, schoolIsPrivate);
 						}
 					}
 					catch (NullPointerException e) {
@@ -288,6 +289,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					catch (CreateException e) {
 						e.printStackTrace();
 						createNewErrorMessage(errorRelated, "invoice.CreateException");
+					} catch (NotDefaultCommuneException e) {
+						e.printStackTrace();
+						createNewErrorMessage(errorRelated, "invoice.BothStudentAndSchoolOutsideDefaultCommmune");
 					}
 				}
 			}else{
@@ -343,8 +347,15 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	}
 	
 
-	protected void createPaymentForSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, boolean schoolIsInDefaultCommuneAndNotPrivate) 
-			throws FinderException, EJBException, PostingException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
+	protected void createPaymentForSchoolClassMember(RegulationsBusiness regBus, 
+			Provider provider, SchoolClassMember schoolClassMember, 
+			boolean schoolIsInDefaultCommune, boolean schoolIsPrivate
+//			boolean schoolIsInDefaultCommuneAndNotPrivate
+			) 
+			throws FinderException, EJBException, PostingException, CreateException, 
+			RegulationException, MissingFlowTypeException, MissingConditionTypeException, 
+			MissingRegSpecTypeException, TooManyRegulationsException, RemoteException, 
+			NotDefaultCommuneException {
 
 		errorRelated.append("SchoolClassMemeber:"+schoolClassMember.getPrimaryKey());
 		if (null != schoolClassMember.getStudent()) {
@@ -358,8 +369,11 @@ public abstract class PaymentThreadSchool extends BillingThread {
 //		errorRelated.append("Default Commune "+userIsInDefaultCommune);
 //		errorRelated.append("Valid group "+placementIsInValidGroup);
 //		errorRelated.append("Comp by agreement "+comp_by_agreement);
+		if(!schoolIsInDefaultCommune && !userIsInDefaultCommune){
+			throw new NotDefaultCommuneException("School:"+provider.getSchool().getName()+"; Student:"+schoolClassMember.getStudent().getName());
+		}
 		if (placementIsInValidGroup && placementIsInPeriod
-				&& (userIsInDefaultCommune || schoolIsInDefaultCommuneAndNotPrivate)
+				&& (userIsInDefaultCommune || (schoolIsInDefaultCommune && !schoolIsPrivate))
 				&& !comp_by_agreement) {
 
 			ArrayList conditions = getConditions(schoolClassMember, provider);
