@@ -1,5 +1,6 @@
 package is.idega.experimental.pdftest;
 
+import java.awt.Graphics2D;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,13 +18,17 @@ import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
+import com.lowagie.text.Graphic;
 import com.lowagie.text.HeaderFooter;
 import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.BaseFont;
+import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 
 /**
@@ -93,6 +98,26 @@ public class PDFTest {
 					cell2.setBorder(0);
 					cell2.setNoWrap(true);
 					
+					BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+					PdfContentByte cb = writer.getDirectContent();
+					PdfTemplate template = cb.createTemplate(100f, 60f);
+					template.rectangle(0f, 0f, 100f, 60f);
+					template.moveTo(0f, 0f);
+					template.lineTo(100f, 60f);
+					template.moveTo(100f, 0f);
+					template.lineTo(0f, 60f);
+					template.stroke();
+					template.beginText();
+					template.setFontAndSize(bf, 11f);
+					template.setTextMatrix(5f, 45f);
+					template.showText("Nacka komun");
+					template.endText();
+					template.beginText();
+					template.setFontAndSize(bf, 11f);
+					template.setTextMatrix(5f, 30f);
+					template.showText("131 81 NACKA");
+					template.endText();
+
 					Image image = Image.getInstance("porto_betalt.jpg");
 					image.scaleAbsolute(148f, 60f);
 					PdfPCell cell3 = new PdfPCell(image);
@@ -113,6 +138,7 @@ public class PDFTest {
 					Phrase newlines = new Phrase("\n\n\n\n\n\n",textFont);
 
 					outerDocument.newPage();
+					cb.addTemplate(template, getPointsFromMM(30f), 755f);
 					outerDocument.add(headerTable);
 					outerDocument.add(newlines);
 					outerDocument.add(P1);
