@@ -60,22 +60,7 @@ public class AllocationMenu extends KeyEditor{
     Frame.add(myForm,1,1);
     Frame.setWidth(2,"40");
     Frame.add(Right,3,1);
-/*
-    if(L != null){
-      String sParameter = "app_sub_id";
-      ApplicationSubject AS;
-      int len = L.size();
-      for (int i = 0; i < len; i++) {
-        AS = (ApplicationSubject) L.get(i);
-        RadioButton R = new RadioButton(sParameter,String.valueOf(AS.getID()));
-        Left.add(R,1,i+1);
-        Left.add(AS.getDescription(),2,i+1);
-      }
-    }
-    else{
-      Left.add(new Text("Ekkert úthlutunartímabil til"));
-    }
-*/
+
 
     Link Approve = new Link("Samþykkja nýskráðar umsóknir","/allocation/approve.jsp");
     Link Contracts = new Link("Samningar","/allocation/contracts.jsp");

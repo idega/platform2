@@ -77,7 +77,15 @@ public class CampusContracts extends KeyEditor{
 
     if(isAdmin){
         add(statusForm());
-        add(getContractTable(modinfo));
+        if(modinfo.getParameter("sign")!=null){
+          doSignContract(modinfo);
+          add(getContractTable(modinfo));
+        }
+        else if(modinfo.getParameter("signed_id")!=null){
+          add(getSignatureTable(modinfo));
+        }
+        else
+          add(getContractTable(modinfo));
       }
 
     else
@@ -150,6 +158,7 @@ public class CampusContracts extends KeyEditor{
     Table T = new Table();
     if(L!=null){
       Image printImage = new Image("/pics/print.gif");
+      Image registerImage = new Image("/pics/register.gif");
       int len = L.size();
       int row = 2;
       for (int i = 0; i < len; i++) {
@@ -161,6 +170,8 @@ public class CampusContracts extends KeyEditor{
           A = new Apartment(C.getApartmentId().intValue());
           if(C.getStatus().equalsIgnoreCase(Contract.statusCreated))
             T.add(getPDFLink(printImage,C.getID()),1,row);
+          else if(C.getStatus().equalsIgnoreCase(Contract.statusPrinted))
+            T.add(getSignedLink(registerImage,C.getID()),1,row);
           T.add(formatText(Ap.getFullName()),2,row);
           T.add(formatText(Ap.getSSN()),3,row);
           T.add((getApartmentTable(A)),4,row);
@@ -190,6 +201,38 @@ public class CampusContracts extends KeyEditor{
     else
       add(formatText(iwrb.getLocalizedString("no_contracts","No contracts")));
     return T;
+  }
+
+  private ModuleObject getSignatureTable(ModuleInfo modinfo){
+    int iContractId = Integer.parseInt( modinfo.getParameter("signed_id"));
+    try {
+      Contract eContract = new Contract(iContractId);
+      Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
+      Table T = new Table();
+      T.add(eApplicant.getFullName(),1,1);
+      SubmitButton save = new SubmitButton("sign","Save");
+      HiddenInput HI = new HiddenInput("signed_id",String.valueOf(eContract.getID()));
+      T.add(save,1,2);
+      T.add(HI,1,2);
+      Form F = new Form();
+      F.add(T);
+      return F;
+    }
+    catch (SQLException ex) {
+      return new Text("");
+    }
+  }
+
+  private void doSignContract(ModuleInfo modinfo){
+    int id = Integer.parseInt(modinfo.getParameter("signed_id"));
+    try {
+      Contract eContract = new Contract(id);
+      eContract.setStatusSigned();
+      eContract.update();
+    }
+    catch (SQLException ex) {
+
+    }
   }
 
 
@@ -238,6 +281,12 @@ public class CampusContracts extends KeyEditor{
     T.setFontColor(this.WhiteColor);
     T.setFontSize(1);
     return T;
+  }
+
+  public Link getSignedLink(ModuleObject MO,int contractId){
+    Link L = new Link(MO);
+    L.addParameter("signed_id",contractId);
+    return L;
   }
 
    public Link getPDFLink(ModuleObject MO,int contractId){

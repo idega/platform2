@@ -1,5 +1,5 @@
 /*
- * $Id: CampusContractWriter.java,v 1.1 2001/07/30 21:22:57 aron Exp $
+ * $Id: CampusContractWriter.java,v 1.2 2001/07/31 09:16:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -109,7 +109,14 @@ public class CampusContractWriter{
       ex.printStackTrace();
       returner = false;
     }
-
+    try {
+      Contract C = new Contract(id);
+      C.setStatusPrinted();
+      C.update();
+    }
+    catch (SQLException ex) {
+      returner = false;
+    }
     return returner;
   }
 
