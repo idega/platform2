@@ -1,5 +1,5 @@
 /*
- * $Id: Adminer.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: Adminer.java,v 1.2 2001/08/27 10:42:45 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -69,7 +69,7 @@ public class Adminer extends CampusObject implements Tabs{
 }
 
     private void doAct1(ModuleInfo modinfo) throws SQLException {
-      add(new CampusFinance("Fjármál"));
+      add(new CampusFinance());
     }
     private void doAct2(ModuleInfo modinfo) throws SQLException{
     }
