@@ -16,7 +16,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 
@@ -33,7 +32,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
-import se.idega.idegaweb.commune.accounting.business.InvoiceComparator;
+import se.idega.idegaweb.commune.accounting.business.PaymentComparator;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeader;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeaderHome;
@@ -300,6 +299,16 @@ public class IFSFileCreationThread extends Thread {
 		}
 		catch (FinderException e1) {
 			e1.printStackTrace();
+		}
+		try {		
+			
+			createInvoiceFilesExcel(phInCommune, fileName1 + "aaa.xls", "");
+		}
+		catch (IOException e3) {
+			e3.printStackTrace();
+		}
+		catch (FinderException e3) {
+			e3.printStackTrace();
 		}
 		if (phInCommune != null && !phInCommune.isEmpty()) {
 			Collection rec = null;
@@ -718,16 +727,7 @@ public class IFSFileCreationThread extends Thread {
 		catch (FinderException e2) {
 			e2.printStackTrace();
 		}
-		try {		
-			
-			createInvoiceFilesExcel(iHeaders, fileName + ".xls", "");
-		}
-		catch (IOException e3) {
-			e3.printStackTrace();
-		}
-		catch (FinderException e3) {
-			e3.printStackTrace();
-		}
+
 		StringBuffer empty = new StringBuffer("");
 		for (int i = 0; i < 25; i++) {
 			empty.append("          ");
@@ -1267,9 +1267,9 @@ public class IFSFileCreationThread extends Thread {
 			short rowNumber = (short) (sheet.getLastRowNum() + 1);
 			short cellNumber;
 			HSSFRow row;
-			ArrayList invoiceHeaders = new ArrayList(data);
-			//Collections.sort(invoiceHeaders, new InvoiceComparator());
-			Iterator it = invoiceHeaders.iterator();
+			ArrayList paymentHeaders = new ArrayList(data);
+			Collections.sort(paymentHeaders, new PaymentComparator());
+			Iterator it = paymentHeaders.iterator();
 			boolean firstRecord;
 			float recordAmount;
 			float discountAmount;
@@ -1277,34 +1277,26 @@ public class IFSFileCreationThread extends Thread {
 			float totalAmount = 0;
 			HSSFCellStyle styleUnderline = wb.createCellStyle();
 			styleUnderline.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-			HashMap SchoolMap = new HashMap();
 			School school = null;
-			String providerId = null;
 			while (it.hasNext()) {
-				InvoiceHeader iHead = (InvoiceHeader) it.next();
-				ArrayList iRecs = new ArrayList(((InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class)).findByInvoiceHeader(iHead));
-				Collections.sort(iRecs, new InvoiceComparator());
-				if (!iRecs.isEmpty()) {					
-					row = sheet.createRow(rowNumber++);
+				PaymentHeader pHead = (PaymentHeader) it.next();
+				
+				ArrayList pRecs = new ArrayList(((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeader(pHead));
+				Collections.sort(pRecs, new PaymentComparator());
+				if (!pRecs.isEmpty()) {
 					cellNumber = 0; 
-					Iterator irIt = iRecs.iterator();
-					firstRecord = true;					
+					Iterator irIt = pRecs.iterator();
+					firstRecord = true;
+					school = pHead.getSchool();
+					row = sheet.createRow(rowNumber++);					
+					row.createCell(cellNumber++).setCellValue(school.getName());					
+					
 					while (irIt.hasNext()) {
-						InvoiceRecord iRec = (InvoiceRecord) irIt.next();						
-						providerId = String.valueOf(iRec.getProviderId());
-						if (!SchoolMap.containsKey(providerId)) {			
-							school = iRec.getProvider();
-							SchoolMap.put(providerId, school);
-						}
-						else 				
-							school = (School) SchoolMap.get(providerId);			
-						
-						if (firstRecord == true)
-							row.createCell(cellNumber++).setCellValue(school.getName());						
-						else
+						PaymentRecord iRec = (PaymentRecord) irIt.next();
+						if (firstRecord == false)
 							row = sheet.createRow(rowNumber++);
-						row.createCell(cellNumber++).setCellValue(iRec.getInvoiceText());
-						recordAmount = AccountingUtil.roundAmount(iRec.getAmount());
+						row.createCell(cellNumber++).setCellValue(iRec.getPaymentText());
+						recordAmount = AccountingUtil.roundAmount(iRec.getTotalAmount());
 						discountAmount = AccountingUtil.roundAmount(recordAmount * EXTRA_PAYMENT_PERCENTAGE);
 						totalHeaderAmount = totalHeaderAmount + recordAmount + discountAmount;
 						row.createCell(cellNumber--).setCellValue(recordAmount);

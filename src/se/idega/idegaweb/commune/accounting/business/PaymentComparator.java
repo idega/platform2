@@ -25,12 +25,12 @@ public class PaymentComparator implements Comparator {
 		collator = Collator.getInstance(LocaleUtil.getSwedishLocale());
 
 		if (o1 instanceof PaymentHeader) {
-		compareString1 = ((PaymentHeader) o1).getSchool().getName();
-		compareString2 = ((PaymentHeader) o2).getSchool().getName();
+			compareString1 = ((PaymentHeader) o1).getSchool().getName();
+			compareString2 = ((PaymentHeader) o2).getSchool().getName();
 		}
-		else if (o1 instanceof PaymentRecord){
-			compareString1 = ((PaymentRecord) o1).getPaymentText();
-			compareString2 = ((PaymentRecord) o2).getPaymentText();
+		else if (o1 instanceof PaymentRecord) {
+			compareString1 = String.valueOf(((PaymentRecord) o1).getOrderId());
+			compareString2 = String.valueOf(((PaymentRecord) o2).getOrderId());
 		}
 		return collator.compare(compareString1, compareString2);
 	}
