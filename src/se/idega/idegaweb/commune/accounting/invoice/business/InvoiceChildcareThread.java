@@ -252,7 +252,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
 							school.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK, paymentRecord, 
-							postings[0], postings[1], placementTimes, school);
+							postings[0], postings[1], placementTimes, school, contract);
 					log.info("created invoice record");
 
  					totalSum = postingDetail.getAmount()*placementTimes.getMonths();
@@ -307,7 +307,7 @@ public class InvoiceChildcareThread extends BillingThread{
 							System.out.println("InvoiceHeader "+invoiceHeader.getPrimaryKey());
 	//						RegulationSpecType regulationSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 							postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regulation.getRegSpecType().getPrimaryKey()).intValue(), provider,currentDate);
-							invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], "", placementTimes, school);
+							invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], "", placementTimes, school, contract);
 	
 							//Need to store the subvention row, so that it can be adjusted later if needed					
 							if(postingDetail.getRuleSpecType()== RegSpecConstant.SUBVENTION){
@@ -516,13 +516,25 @@ public class InvoiceChildcareThread extends BillingThread{
 			//Go through all the regular payments
 			while (regularPaymentIter.hasNext()) {
 				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) regularPaymentIter.next();
+				StringBuffer errorRelated = new StringBuffer("RegularPaymentEntry ID "+regularPaymentEntry.getPrimaryKey()+"<br>");
+				errorRelated.append("Placing "+regularPaymentEntry.getPlacing()+"<br>");
+				errorRelated.append("Amount "+regularPaymentEntry.getAmount()+"<br>");
+				errorRelated.append("School "+regularPaymentEntry.getSchool()+"<br>");
 				postingDetail = new PostingDetail(regularPaymentEntry);
 				school = regularPaymentEntry.getSchool();
 				placementTimes = calculateTime(regularPaymentEntry.getFrom(),regularPaymentEntry.getTo());
-				createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school);
+				try {
+					createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school);
+					log.info("Regular Payment" + errorRelated);
+				} catch (IDOLookupException e) {
+					createNewErrorMessage(regularPaymentEntry.toString(), "regularPayment.IDOLookup");
+					e.printStackTrace();
+				} catch (CreateException e) {
+					createNewErrorMessage(regularPaymentEntry.toString(), "regularPayment.Create");
+					e.printStackTrace();
+				}
 			}
-		}
-		catch (Exception e) {
+		}catch (FinderException e) {
 			e.printStackTrace();
 			if (postingDetail != null) {
 				createNewErrorMessage(postingDetail.getTerm(), "payment.DBSetupProblem");
@@ -530,6 +542,12 @@ public class InvoiceChildcareThread extends BillingThread{
 			else {
 				createNewErrorMessage("payment.severeError", "payment.DBSetupProblem");
 			}
+		} catch (IDOLookupException e) {
+			createNewErrorMessage("payment.severeError", "payment.DBSetupProblem");
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			createNewErrorMessage("payment.severeError", "payment.DBSetupProblem");
+			e.printStackTrace();
 		}
 	}
 
@@ -718,14 +736,14 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws MissingMandatoryFieldException
 	 */
 	private InvoiceRecord createInvoiceRecordForCheck(InvoiceHeader invoiceHeader, String header, 
-			PaymentRecord paymentRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school) 
+			PaymentRecord paymentRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
 			throws PostingParametersException, PostingException, RemoteException, CreateException, MissingMandatoryFieldException{
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(header);
 		//set the reference to payment record (utbetalningsposten)
 		invoiceRecord.setPaymentRecord(paymentRecord);
-		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school);
+		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract);
 	}
 
 	/**
@@ -738,12 +756,12 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws CreateException
 	 * @throws MissingMandatoryFieldException
 	 */
-	private InvoiceRecord createInvoiceRecord(InvoiceHeader invoiceHeader, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school) 
+	private InvoiceRecord createInvoiceRecord(InvoiceHeader invoiceHeader, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
 			throws PostingParametersException, PostingException, RemoteException, CreateException, MissingMandatoryFieldException{
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(postingDetail.getTerm());
-		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school);
+		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract);
 	}
 
 	/**
@@ -758,17 +776,17 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws RemoteException
 	 * @throws MissingMandatoryFieldException
 	 */
-	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school) 
+	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
 			throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
 		invoiceRecord.setProvider(school);
         //		invoiceRecord.setContractId(contract.getContractID());
 		invoiceRecord.setSchoolClassMember(contract.getSchoolClassMmeber());
 		invoiceRecord.setRuleText(postingDetail.getTerm());
 		invoiceRecord.setDays(placementTimes.getDays());
-		invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
-		invoiceRecord.setPeriodEndCheck(endPeriod.getDate());
-		invoiceRecord.setPeriodStartPlacement(placementTimes.getFirstCheckDay().getDate());
-		invoiceRecord.setPeriodEndPlacement(placementTimes.getLastCheckDay().getDate());
+		invoiceRecord.setPeriodStartCheck(placementTimes.getFirstCheckDay().getDate());
+		invoiceRecord.setPeriodEndCheck(placementTimes.getLastCheckDay().getDate());
+		invoiceRecord.setPeriodStartPlacement(contract.getValidFromDate());
+		invoiceRecord.setPeriodEndPlacement(contract.getTerminatedDate());
 		invoiceRecord.setDateCreated(currentDate);
 		invoiceRecord.setCreatedBy(BATCH_TEXT);
 		invoiceRecord.setAmount(postingDetail.getAmount()*placementTimes.getMonths());

@@ -3,6 +3,8 @@ package se.idega.idegaweb.commune.accounting.invoice.presentation;
 import java.rmi.RemoteException;
 import java.sql.Date;
 
+import javax.ejb.RemoveException;
+
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusinessHome;
@@ -79,6 +81,10 @@ public class RemovePreliminaryInvoicing  extends AccountingBlock{
 			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
 			invoiceBusiness.removePreliminaryInvoice(new Date(System.currentTimeMillis()), schoolCategory);
 			add(this.localize(PREFIX+"records_removed","Records have been removed."));
+		} catch (RemoveException e) {
+			add(this.localize(PREFIX+"There_are_records_with_status_'Locked'_and/or_'History',_therefore_deletes_are_not_allowed","There are records with status 'Locked' and/or 'History', therefore deletes are not allowed."));
+		} catch (RemoteException e) {
+			add(new ExceptionWrapper(e));
 		} catch (Exception e) {
 			add(new ExceptionWrapper(e));
 		}

@@ -18,16 +18,7 @@ public class PostingDetail {
 	
 	public PostingDetail(){
 	}
-/*
-	//TODO (JJ) Have to change the regularInvoiceEntry to regularPaymentEntry
-	public PostingDetail(RegularInvoiceEntry regularPaymentEntry){
-		setAmount(regularPaymentEntry.getAmount());
-		setRuleSpecType(regularPaymentEntry.getRegSpecType().getRegSpecType());
-		setTerm(regularPaymentEntry.getPlacing());
-		setVat(regularPaymentEntry.getVAT());
-		setVatRegulationID(regularPaymentEntry.getVatRegulationId());
-	}
-*/
+
 	public PostingDetail(RegularPaymentEntry regularPaymentEntry){
 		setAmount(regularPaymentEntry.getAmount());
 		if(regularPaymentEntry.getRegSpecType()!=null){

@@ -58,11 +58,11 @@ import com.idega.user.data.User;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/12 15:06:38 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/12 18:16:53 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.49 $
+ * @version $Revision: 1.50 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -91,7 +91,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	 * 
 	 *
 	 */
-	protected void contracts() {
+	protected void contracts() throws NotEmptyException {
 		School school;
 		
 		try {
@@ -212,14 +212,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			}else{
 				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_IDOException");
 			}
-		} catch (NotEmptyException e) {
-			if(errorRelated!=null)
-			{
-				createNewErrorMessage(errorRelated.toString(), "invoice.Severe_MustFirstEmptyOldData");
-			}else{
-				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_MustFirstEmptyOldData");
-			}
-			e.printStackTrace();
 		}
 	}
 	
@@ -459,6 +451,56 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	 */
 	protected void regularPayment() {
 		PostingDetail postingDetail = null;
+		PlacementTimes placementTimes = null;
+		School school;
+
+		try {
+			Iterator regularPaymentIter = getRegularPaymentBusiness().findRegularPaymentsForPeriodeAndCategory(startPeriod.getDate(), category).iterator();
+			//Go through all the regular payments
+			while (regularPaymentIter.hasNext()) {
+				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) regularPaymentIter.next();
+				log.info("Looking at reg Payment "+regularPaymentEntry.getPrimaryKey());
+				StringBuffer errorRelated = new StringBuffer("RegularPaymentEntry ID "+regularPaymentEntry.getPrimaryKey()+"<br>");
+				errorRelated.append("Placing "+regularPaymentEntry.getPlacing()+"<br>");
+				errorRelated.append("Amount "+regularPaymentEntry.getAmount()+"<br>");
+				errorRelated.append("School "+regularPaymentEntry.getSchool()+"<br>");
+				postingDetail = new PostingDetail(regularPaymentEntry);
+				school = regularPaymentEntry.getSchool();
+				placementTimes = calculateTime(regularPaymentEntry.getFrom(),regularPaymentEntry.getTo());
+				try {
+					createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school);
+					log.info("Regular Payment" + errorRelated);
+				} catch (IDOLookupException e) {
+					createNewErrorMessage(regularPaymentEntry.toString(), "regularPayment.IDOLookup");
+					e.printStackTrace();
+				} catch (CreateException e) {
+					createNewErrorMessage(regularPaymentEntry.toString(), "regularPayment.Create");
+					e.printStackTrace();
+				}
+			}
+		}catch (FinderException e) {
+			e.printStackTrace();
+			if (postingDetail != null) {
+				createNewErrorMessage(postingDetail.getTerm(), "payment.DBSetupProblem");
+			}
+			else {
+				createNewErrorMessage("payment.severeError", "payment.DBSetupProblem");
+			}
+		} catch (IDOLookupException e) {
+			createNewErrorMessage("payment.severeError", "payment.DBSetupProblem");
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			createNewErrorMessage("payment.severeError", "payment.DBSetupProblem");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Creates all the invoice headers, invoice records, payment headers and payment records
+	 * for the Regular payments
+	 */
+/*	protected void regularPayment() {
+		PostingDetail postingDetail = null;
 		try {
 			//Go through all the regular payments
 			for (Iterator i = getRegularPayments().iterator(); i.hasNext();) {
@@ -476,7 +518,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			}
 		}
 	}
-    
+*/
 	private ArrayList getConditions(SchoolClassMember schoolClassMember) {
 		ArrayList conditions = new ArrayList();
 		conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
@@ -535,7 +577,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		return (CommuneHome) IDOLookup.getHome(Commune.class);
 	}
     
-	private Collection getRegularPayments() throws RemoteException {
+	protected Collection getRegularPayments() throws RemoteException {
 		return getRegularPaymentBusiness().findRegularPaymentsForPeriode(startPeriod.getDate(), endPeriod.getDate());
 	}
 

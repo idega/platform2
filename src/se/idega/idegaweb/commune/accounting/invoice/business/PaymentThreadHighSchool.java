@@ -40,6 +40,9 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool{
 			//VAT
 			calcVAT();
 			batchRunLoggerDone();
+		} catch (NotEmptyException e) {
+			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_MustFirstEmptyOldData");
+			e.printStackTrace();
 		} catch (Exception e) {
 			//This is a spawned off thread, so we cannot report back errors to the browser, just log them
 			e.printStackTrace();
