@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import com.idega.block.login.presentation.LoginByUUIDLink;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.data.IDOEntity;
@@ -20,6 +21,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.GenericSelect;
 import com.idega.presentation.ui.SelectDropdown;
@@ -48,6 +50,7 @@ public class GolferTab extends UserTab {
 	protected static final String HELP_TEXT_KEY = "golfer_info_tab";
 	protected IDOEntity entity;
 	protected Map titles;
+	protected String uuid;
 	private GolfUserPluginBusiness golfBiz;
 	private String mainClubAbbrFromRequest;
 	private String[] subClubsAbbrFromRequest;
@@ -68,6 +71,7 @@ public class GolferTab extends UserTab {
 //		get the values and update all the fieldValues
 //		main club
 		User user = getUser();
+		uuid = user.getUniqueId();
 		String mainClubAbbreviation = (mainClubAbbrFromRequest!=null)?mainClubAbbrFromRequest : user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
 		List mainSelected = new ArrayList();
 		if(mainClubAbbreviation!=null && !"".equals(mainClubAbbreviation)){
@@ -214,6 +218,7 @@ public class GolferTab extends UserTab {
 		table.setCellspacing(0);
 		table.setBorder(0);
 		IWContext iwc = IWContext.getInstance();
+		String currentUserUUID = iwc.getCurrentUser().getUniqueId();
 		IWResourceBundle iwrb = this.getResourceBundle(iwc);
 		
 //		table.add(new Text(iwrb.getLocalizedString("GenericMetaDataTab.Key","Key"),true,false,true),1,1);
@@ -222,8 +227,24 @@ public class GolferTab extends UserTab {
 		
 		this.add(table, 1, 1);
 		
+		int row = 1;
+		if(currentUserUUID!=null){
+			row++;
+			LoginByUUIDLink loginByUUIDLink = new LoginByUUIDLink();
+			//hardcoded hack
+			loginByUUIDLink.setText(iwrb.getLocalizedString(TAB_NAME+".handicapinfo_on_golf.is","Open handicap info on golf.is"));
+			loginByUUIDLink.setURL("http://www.golf.is/index.jsp?ib_page=36");
+			loginByUUIDLink.setUUID(currentUserUUID);
+			loginByUUIDLink.setTarget(Link.TARGET_NEW_WINDOW);
+			
+			if(uuid!=null){
+				loginByUUIDLink.addParameter(GolfConstants.MEMBER_UUID, uuid);
+			}
+			table.add(loginByUUIDLink,1,row);
+		}
+		
 		if(!fieldValues.isEmpty()){
-			int row = 1;
+			
 			Iterator iter = titles.keySet().iterator();
 			while(iter.hasNext()){
 				String key = (String) iter.next();
