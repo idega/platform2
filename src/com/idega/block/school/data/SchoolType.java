@@ -13,6 +13,7 @@ public interface SchoolType extends com.idega.data.IDOEntity
  public java.lang.String getSchoolCategory();
  public java.lang.String getSchoolTypeInfo();
  public java.lang.String getSchoolTypeName();
+ public java.lang.String getTypeStringId();
  public void setCategory(com.idega.block.school.data.SchoolCategory p0);
  public void setIsFamilyFreetimeType(boolean p0);
  public void setIsFreetimeType(boolean p0);
@@ -24,4 +25,5 @@ public interface SchoolType extends com.idega.data.IDOEntity
  public void setSchoolTypeName(java.lang.String p0);
  public boolean isSelectable();
  public void setSelectable(boolean isSelectable);
+ public void setTypeStringId(java.lang.String p0);
 }

@@ -32,6 +32,7 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
 	public static final String IS_FAMILY_FREETIME_TYPE = "is_family_freetime_type";
 	public static final String IS_SELECTABLE = "is_selectable";
 	public static final String ORDER = "type_order";
+	public static final String TYPE_STRING_ID = "type_string_id";
 
   public void initializeAttributes() {
     this.addAttribute(getIDColumnName());
@@ -43,6 +44,7 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
 		this.addAttribute(IS_FAMILY_FREETIME_TYPE,"Is freetime type",Boolean.class);
 		this.addAttribute(IS_SELECTABLE,"Is selectable",Boolean.class);
 		this.addAttribute(ORDER,"Order",true,true,Integer.class);
+		this.addAttribute(TYPE_STRING_ID,"Extra school type ID",true,true,String.class);
     
     addManyToOneRelationship(SCHOOLCATEGORY, SchoolCategory.class);
   }
@@ -133,6 +135,14 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
 
 	public void setOrder(int order){
 		setColumn(ORDER,order);
+	}
+
+	public String getTypeStringId(){
+		return getStringColumnValue(TYPE_STRING_ID);
+	}
+
+	public void setTypeStringId(String typeStringId){
+		setColumn(TYPE_STRING_ID, typeStringId);
 	}
   
   public Collection ejbFindAllSchoolTypes() throws javax.ejb.FinderException{
