@@ -202,7 +202,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			report = getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(groupId, year);
 		}
 		catch (FinderException e) {
-			System.out.println("[WorkReportBusinessBean] No report for groupId : " + groupId + " ann year : " + year + " creating a new one.");
+			System.out.println("[WorkReportBusinessBean] No report for groupId : " + groupId + " and year : " + year + " creating a new one.");
 			try {
 
 				report = getWorkReportHome().create();
@@ -1742,6 +1742,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	public Collection getAllWorkReportsForYear(int year) {
 		try {
 			return getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
+			//TODO Eiki rada eftir numeri heradssambands og felags
 		}
 		catch (FinderException e) {
 			//no report available return empty list
@@ -2448,7 +2449,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   private Collection getBoardUsersFromClubDivision(Group clubDivision, GroupBusiness groupBusiness)  {
     Collection users = null;
     String divisionBoardIdAsString = clubDivision.getMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD);
+    
+    
     if (divisionBoardIdAsString != null)  {
+			divisionBoardIdAsString = divisionBoardIdAsString.substring(divisionBoardIdAsString.lastIndexOf("_")+1);
       try {
         Integer divisionBoardId = new Integer(divisionBoardIdAsString);
         Group divisionBoard = getGroupHome().findByPrimaryKey(divisionBoardId);
