@@ -1,5 +1,5 @@
 /*
- * $Id: VacationApprover.java,v 1.11 2005/01/19 12:34:37 laddi Exp $ Created on
+ * $Id: VacationApprover.java,v 1.12 2005/01/19 22:12:44 laddi Exp $ Created on
  * 18.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -34,7 +34,7 @@ import com.idega.user.data.User;
  * Last modified: 18.11.2004 10:21:40 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class VacationApprover extends VacationBlock {
 
@@ -179,6 +179,7 @@ public class VacationApprover extends VacationBlock {
 
 	private Form getSendToHandleForm(IWContext iwc) throws RemoteException {
 		Form form = new Form();
+		form.maintainParameter(PARAMETER_PRIMARY_KEY_VAC);
 		form.add(forwardView(iwc));
 		form.add(new Break());
 		form.add(getCancelButton());
