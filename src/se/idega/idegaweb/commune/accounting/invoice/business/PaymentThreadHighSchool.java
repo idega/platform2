@@ -164,12 +164,13 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
 		if (schoolClassMember.getStudyPathId() != -1)
 			all.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STUDY_PATH, new Integer(schoolClassMember.getStudyPathId())));
-		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_COMMUNE, defaultCommune.getPrimaryKey()));
+		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_COMMUNE, provider.getSchool().getCommunePK()));
 		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STADSBIDRAG, new Boolean(provider.getStateSubsidyGrant())));
 		
 		Collection regulationForResourceArray = null;
 		
-		all.add(resourceConditions);
+		all.addAll(resourceConditions);
+		
 		regulationForResourceArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
 				category.getCategory(),
 				PaymentFlowConstant.OUT,
