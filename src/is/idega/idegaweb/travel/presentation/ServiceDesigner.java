@@ -87,7 +87,7 @@ public class ServiceDesigner extends TravelManager {
 				}
 			} catch (IDORelationshipException e) {
 				PRODUCT_CATEGORY_TYPE = ProductCategoryFactoryBean.CATEGORY_TYPE_DEFAULT;
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
     }
 
@@ -124,7 +124,7 @@ public class ServiceDesigner extends TravelManager {
       super.main(iwc);
       init(iwc);
 
-      if (super.isLoggedOn(iwc)) {
+      if (super.isLoggedOn(iwc) && supplier != null) {
         if (iwc.getParameter(super.sAction) != null) {
           if (iwc.getParameter(super.sAction).equals(super.parameterServiceDesigner)) {
             removeSessionServiceId(iwc);
