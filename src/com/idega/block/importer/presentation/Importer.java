@@ -19,6 +19,7 @@ import com.idega.business.IBOLookup;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.UploadFile;
 import com.idega.presentation.IWContext;
@@ -138,6 +139,7 @@ public class Importer extends StyledIWAdminWindow {
 	
 	public void main(IWContext iwc) throws Exception {
 		iwrb = this.getResourceBundle(iwc);
+		addTitle(iwrb.getLocalizedString("Importer.title", "Importer"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 		parseAction(iwc);
 		if (selectFiles) {
 			if (usingLocalFileSystem) {
