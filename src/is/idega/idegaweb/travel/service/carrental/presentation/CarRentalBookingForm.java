@@ -988,7 +988,12 @@ public class CarRentalBookingForm extends BookingForm {
 					  pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
 						pPriceText.setSize(8);
 	
-						pPriceMany = new HiddenInput("priceCategory"+pPrices[i].getID(), "1");
+						if (prices.length == 1) {
+							pPriceMany = new HiddenInput("priceCategory"+pPrices[i].getID(), "1");
+						}else {
+							pPriceMany = new TextInput("priceCategory"+pPrices[i].getID(), "0");
+							((TextInput) pPriceMany).setSize(5);
+						}
 						
 					  if (i == pricesLength) {
 						Text tempTexti = (Text) theBoldText.clone();
@@ -998,16 +1003,17 @@ public class CarRentalBookingForm extends BookingForm {
 						table.add(tempTexti, 1, row);
 						++row;
 					  }
-					  /*
-					  else if (i == 0) {
-						Text tempTexti = (Text) theBoldText.clone();
-						  tempTexti.setText(iwrb.getLocalizedString("travel.basic_prices","Basic prices"));
-						  tempTexti.setUnderline(true);
-						//table.mergeCells(1, row, 2, row);
-						table.setAlignment(1, row, "RIGHT");
-						table.add(tempTexti, 1, row);
-						++row;
-					  }*/
+					  
+						if (prices.length > 1 && i == 0) {
+//					  else if (i == 0) {
+							Text tempTexti = (Text) theBoldText.clone();
+							  tempTexti.setText(iwrb.getLocalizedString("travel.basic_prices","Basic prices"));
+							  tempTexti.setUnderline(true);
+							//table.mergeCells(1, row, 2, row);
+							table.setAlignment(1, row, "RIGHT");
+							table.add(tempTexti, 1, row);
+							++row;
+					  }
 					  if (i >= pricesLength) {
 							pPriceMany = new TextInput("miscPriceCategory"+pPrices[i].getID() ,"0");
 							  ((TextInput) pPriceMany).setSize(5);
@@ -1105,7 +1111,9 @@ public class CarRentalBookingForm extends BookingForm {
 			
 			  TotalTextInput.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
 			  TotalTextInput.setExtraForTotal(ResultOutput.OPERATOR_PLUS+"(myForm."+manyDays.getName()+".value"+ResultOutput.OPERATOR_MULTIPLY+Integer.toString(mainPrice)+")");
-			  TotalPassTextInput.setExtraForTotal(ResultOutput.OPERATOR_PLUS+"1");
+			  if (prices.length == 1) {
+			  	TotalPassTextInput.setExtraForTotal(ResultOutput.OPERATOR_PLUS+"1");
+			  }
 
 
 
