@@ -172,10 +172,7 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			
 			
 			
-			PostalCode postalCode = getPostalCode(po);
-
-			userBiz.updateUsersMainAddressOrCreateIfDoesNotExist(user, address, postalCode, null, null, null, null, null);
-			userBiz.updateUsersCoAddressOrCreateIfDoesNotExist(user, address, postalCode, null, null, null, null, null);
+			updateUserAddress(user, userBiz, address, po);
 //			userBiz.updateUsersMainAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, postalCodeId, null, null, null, null, null);
 //			userBiz.updateUsersCoAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, postalCodeId, null, null, null, null, null);
 		}
@@ -195,6 +192,13 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 		return true;
 	}
 	
+	public void updateUserAddress(User user, UserBusiness userBiz, String address, String po) throws RemoteException, CreateException {
+		PostalCode postalCode = getPostalCode(po);
+
+		userBiz.updateUsersMainAddressOrCreateIfDoesNotExist(user, address, postalCode, null, null, null, null, null);
+		userBiz.updateUsersCoAddressOrCreateIfDoesNotExist(user, address, postalCode, null, null, null, null, null);
+	}
+
 	private PostalCode getPostalCode(String po) throws RemoteException {
 		if (postalCodes == null) {
 			postalCodes = new HashMap();
@@ -212,6 +216,7 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 				}
 				catch(FinderException e) {
 					postalCodes.put(po, null);
+					System.out.println("NationalRegisterBusinessBean : looking up postal code NULL");
 					return null;
 				}
 			}

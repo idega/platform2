@@ -80,8 +80,10 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	
 	private final static String PROPERTY_NAME_CREATE_ONLY = "NAT_REG_CREATE_ONLY";
 	private final static String PROPERTY_NAME_RELATION_ONLY = "NAT_REG_RELATION_ONLY";
+	private final static String PROPERTY_NAME_POSTAL_CODE_FIX = "NAT_REG_POSTAL_CODE_FIX";
 	private boolean createOnly = false;
 	private boolean relationOnly = false;
+	private boolean postalCodeFix = false;
 	/**
 	 * @see com.idega.block.importer.business.ImportFileHandler#handleRecords()
 	 */
@@ -102,14 +104,19 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			IWBundle bundle = getIWMainApplication().getBundle(Importer.IW_BUNDLE_IDENTIFIER);
 			String sCreateOnly = bundle.getProperty(PROPERTY_NAME_CREATE_ONLY);
 			String sRelationOnly = bundle.getProperty(PROPERTY_NAME_RELATION_ONLY);
+			String sPostal = bundle.getProperty(PROPERTY_NAME_POSTAL_CODE_FIX);
 			createOnly = (sCreateOnly != null && sCreateOnly.equalsIgnoreCase("yes"));
 			relationOnly = (sRelationOnly != null && sRelationOnly.equalsIgnoreCase("yes"));
+			postalCodeFix = (sPostal != null && sPostal.equalsIgnoreCase("yes"));
 			int count = 0;
 			if (createOnly) {
 				System.out.println("NationalRegisterHandler create only variable set to TRUE");
 			}
 			if (relationOnly) {
 				System.out.println("NationalRegisterHandler relation only variable set to TRUE");
+			}
+			if (postalCodeFix) {
+				System.out.println("NationalRegisterHandler postalCodeFix variable set to TRUE");
 			}
 			
 			System.out.println("NationalRegisterHandler processing RECORD [0] time: " + IWTimestamp.getTimestampRightNow().toString());
@@ -356,6 +363,17 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		
 		//			//initialize business beans and data homes           
 		NationalRegisterBusiness natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
+
+		if (postalCodeFix) {
+			UserBusiness uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
+			try {
+				natReg.updateUserAddress(uBiz.getUser(ssn), uBiz, address, po);
+				return true;
+			} catch (Exception e){
+				return false;
+			}
+		}
+		
 		
 		boolean success = false;
 		if (createOnly) {
