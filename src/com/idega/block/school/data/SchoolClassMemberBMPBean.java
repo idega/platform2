@@ -23,6 +23,7 @@ import com.idega.user.data.UserBMPBean;
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
 
+  public final static String SCHOOLCLASSMEMBERID = "sch_class_member_id";
   public final static String SCHOOLCLASSMEMBER = "sch_class_member";
   public final static String MEMBER = "ic_user_id";
   public final static String SCHOOLCLASS = "sch_school_class_id";
