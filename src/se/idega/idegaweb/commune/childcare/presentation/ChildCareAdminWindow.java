@@ -19,6 +19,7 @@ import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
 import se.idega.idegaweb.commune.care.business.PlacementHelper;
+import se.idega.idegaweb.commune.care.data.CareTimeBMPBean;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.NoPlacementFoundException;
@@ -254,6 +255,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	// private boolean restrictDates = false;
 	boolean onlyAllowFutureCareDate = true; // Changed according to #nacc149
 
+	private boolean _addCareTimeScript = false;
+
+	private User _child = null;
+	
+	private SubmitButton _submitButton = null;
+	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
@@ -398,6 +405,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			personalIdUserName = "  -  " + userName + "   " + personalId;
 		}
 
+		_addCareTimeScript = false;
+		
 		switch (_method) {
 			case METHOD_GRANT_PRIORITY:
 				headerTable.add(getHeader(localize("child_care.grant_priority", "Grant priority") + personalIdUserName), 1, 1);
@@ -481,8 +490,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 
 		}
-
+		
 		add(form);
+		
+		if (_addCareTimeScript) {
+			_submitButton.setOnSubmitFunction("checkCareTime", getSubmitCheckCareTimeScript(_child));
+		}
 	}
 
 	private Table getPriorityForm(IWContext iwc) throws RemoteException {
@@ -723,7 +736,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(getSmallText(localize("child_care.child_care_time", "Time") + ":"), 1, row);
 
 			if (isUsePredefinedCareTimeValues()) {
-				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME, helper.getApplication().getChild());
+				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
 				if (helper.getCurrentCareTimeHours() != null)
 					menu.setSelectedElement(helper.getCurrentCareTimeHours());
 				table.add(menu, 1, row++);
@@ -792,6 +805,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			changeDate = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.alter_placing", "Change placing"), PARAMETER_ACTION, String.valueOf(ACTION_ALTER_VALID_FROM_DATE)));
 		else
 			changeDate = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.change_date", "Change date"), PARAMETER_ACTION, String.valueOf(ACTION_CHANGE_DATE)));
+		_submitButton = changeDate;
+		_child = helper.getApplication().getChild();
+		_addCareTimeScript = isUsePredefinedCareTimeValues();
 		form.setToDisableOnSubmit(changeDate, true);
 		table.add(changeDate, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
@@ -825,7 +841,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
 			table.add(getSmallText(localize("child_care.child_care_time", "Time") + ":"), 1, row);
 			if (isUsePredefinedCareTimeValues()) {
-				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME, application.getChild());
+				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
 				table.add(menu, 1, row++);
 			}
 			else {
@@ -960,7 +976,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallText(localize("child_care.child_care_time", "Time") + ":"), 1, row);
 
 		if (isUsePredefinedCareTimeValues()) {
-			DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME, helper.getApplication().getChild());
+			DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
 			if (helper.getCurrentCareTimeHours() != null)
 				menu.setSelectedElement(helper.getCurrentCareTimeHours());
 			table.add(menu, 1, row++);
@@ -1065,6 +1081,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(getText(localize("school.deadline_msg_for_passedby_date", "Chosen period has been invoiced. Earliest possible date is the first day of next month.")), 1, row++);
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.alter_care_time", "Alter care time"), PARAMETER_ACTION, String.valueOf(ACTION_ALTER_CARE_TIME)));
+		_submitButton = placeInGroup;
+		_child = helper.getApplication().getChild();
+		_addCareTimeScript = isUsePredefinedCareTimeValues();
 		form.setToDisableOnSubmit(placeInGroup, true);
 		table.add(placeInGroup, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
@@ -1629,7 +1648,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		layoutTbl.add(getSmallHeader(localize("ccnctw_care_time", "Care time") + ":"), 1, row);
 		if (isUsePredefinedCareTimeValues()) {
-			DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME, application.getChild());
+			DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
 			menu.setSelectedElement(application.getCareTime());
 			layoutTbl.add(menu, 2, row++);
 		}
@@ -1653,6 +1672,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		row++;
 
 		SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit"), PARAMETER_ACTION, String.valueOf(ACTION_NEW_CARE_TIME)));
+		_submitButton = submit;
+		_child = application.getChild();
+		_addCareTimeScript = isUsePredefinedCareTimeValues();
 		form.setToDisableOnSubmit(submit, true);
 		layoutTbl.add(submit, 1, row);
 		layoutTbl.add(Text.getNonBrakingSpace(), 1, row);
@@ -2283,5 +2305,85 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	private PlacementHelper getPlacementHelper() throws RemoteException {
 		return getBusiness().getPlacementHelper(new Integer(_applicationID));
+	}
+	
+	protected DropdownMenu getCareTimeMenu(String parameter) {
+		DropdownMenu menu = super.getCareTimeMenu(parameter);
+		menu.addMenuElementFirst("", localize("child_care.select_care_time", "Select care time"));
+		return menu;
+	}
+	
+	private String getSubmitCheckCareTimeScript(User child) {
+		String childDate = child.getDateOfBirth().toString();
+		String childYear = childDate.substring(0, 4);
+		String emptyCareTimeMessage = localize("child_care.care_time_empty", "Care time must be selected.");
+		String errorMessage = localize("child_care.care_time_not_valid_for_date", "Care time not valid for the selected date.");
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("\nfunction checkCareTime(){\n\t");
+		buffer.append("\n\t var message = '';");
+		buffer.append("\n\t var childYear = " + childYear + ";");
+		buffer.append("\n\t var dropDay = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_day").append("');");
+		buffer.append("\n\t var dropMonth = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_month").append("');");
+		buffer.append("\n\t var dropYear = ").append("findObj('").append(PARAMETER_CHANGE_DATE + "_year").append("');");
+		buffer.append("\n\t var dateDay = ").append("parseInt(dropDay.options[dropDay.selectedIndex].value);");
+		buffer.append("\n\t var dateMonth = ").append("parseInt(dropMonth.options[dropMonth.selectedIndex].value);");
+		buffer.append("\n\t var dateYear = ").append("parseInt(dropYear.options[dropYear.selectedIndex].value);");
+
+		buffer.append("\n\n\t if (dateYear < 2000) {\n\t\t return true;\n\t }");
+
+		buffer.append("\n\t var dropCareTime = ").append("findObj('").append(PARAMETER_CHILDCARE_TIME).append("');");
+		buffer.append("\n\t var careTimeCode = ").append("dropCareTime.options[dropCareTime.selectedIndex].value;");
+
+		buffer.append("\n\n\t if (careTimeCode == '') {");
+		buffer.append("\n\t\t alert('" + emptyCareTimeMessage + "');");
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t }");
+
+		buffer.append("\n\n\t if (careTimeCode == '" + CareTimeBMPBean.CODE_FSKHEL + "') {");
+		buffer.append("\n\t\t var childYears = dateYear - childYear;");
+		buffer.append("\n\t\t if (dateMonth > 8) {");
+		buffer.append("\n\t\t\t childYears++;");
+		buffer.append("\n\t\t } else if (dateMonth == 8 && dateDay >= 14) {");
+		buffer.append("\n\t\t\t childYears++;");
+		buffer.append("\n\t\t }");
+		buffer.append("\n\t\t if (childYears >= 4) {");
+		buffer.append("\n\t\t\t message = '" + errorMessage + "';");
+		buffer.append("\n\t\t }");
+		buffer.append("\n\t }");
+
+		buffer.append("\n\n\t else if (careTimeCode == '" + CareTimeBMPBean.CODE_FSKHEL4_5 + "') {");
+		buffer.append("\n\t\t var childYears = dateYear - childYear;");
+		buffer.append("\n\t\t if (dateMonth > 8) {");
+		buffer.append("\n\t\t\t childYears++;");
+		buffer.append("\n\t\t } else if (dateMonth == 8 && dateDay >= 15) {");
+		buffer.append("\n\t\t\t childYears++;");
+		buffer.append("\n\t\t }");
+		buffer.append("\n\t\t if (childYears < 4) {");
+		buffer.append("\n\t\t\t message = '" + errorMessage + "';");
+		buffer.append("\n\t\t }");
+		buffer.append("\n\t }");
+
+		buffer.append("\n\n\t else if (careTimeCode == '" + CareTimeBMPBean.CODE_FSKDEL4_5 + "') {");
+		buffer.append("\n\t\t var childYears = dateYear - childYear;");
+		buffer.append("\n\t\t if (dateMonth > 8) {");
+		buffer.append("\n\t\t\t childYears++;");
+		buffer.append("\n\t\t } else if (dateMonth == 8 && dateDay >= 15) {");
+		buffer.append("\n\t\t\t childYears++;");
+		buffer.append("\n\t\t }");
+		buffer.append("\n\t\t if (childYears < 4) {");
+		buffer.append("\n\t\t\t message = '" + errorMessage + "';");
+		buffer.append("\n\t\t }");
+		buffer.append("\n\t }");
+
+		buffer.append("\n\t if (message != '') {");
+		buffer.append("\n\t\t alert(message);");
+		buffer.append("\n\t\t return false;");
+		buffer.append("\n\t }");
+		
+		buffer.append("\n\t return true;");
+
+		buffer.append("\n }");
+
+		return buffer.toString();
 	}
 }
