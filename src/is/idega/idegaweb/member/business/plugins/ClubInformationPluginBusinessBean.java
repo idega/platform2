@@ -464,14 +464,34 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
      */
     private void addMissingGroupsToClubs(Group league, Group divisionTemplate, IWContext iwc) {
         try {
+            //Find all clubs connected to league. These just have one division.
             Collection clubs = ((GroupHome) com.idega.data.IDOLookup
                     .getHome(Group.class))
                     .findGroupsByMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION, ((Integer)league.getPrimaryKey()).toString());
 
+            //Find all the division in the other clubs, that are connected to the league.
             Collection divisions = ((GroupHome) com.idega.data.IDOLookup
                     .getHome(Group.class))
                     .findGroupsByMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION, ((Integer)league.getPrimaryKey()).toString());
             
+            //Find the league club division group. If it's null, just use the league group.
+            Group leaguePlayerGroup = null;
+            Collection leagueGroups = league.getChildren();
+            if (leagueGroups != null && !leagueGroups.isEmpty()) {
+                Iterator it = leagueGroups.iterator();
+                while (it.hasNext() && leaguePlayerGroup == null) {
+                    Group leagueGroup = (Group) it.next();
+                    if (leagueGroup.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE_CLUB_DIVISION)) {
+                        leaguePlayerGroup = leagueGroup;
+                    }
+                }
+            }
+            
+            if (leaguePlayerGroup == null) {
+                leaguePlayerGroup = league;
+            }
+            
+            //Go through all the clubs. Find the division in them, and compare it to the division template from the league.
             if (clubs != null && !clubs.isEmpty()) {
                 Iterator it = clubs.iterator();
                 while (it.hasNext()) {
@@ -479,7 +499,19 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
                     Group division = findDivisionForClub(club);
                     
                     if (division != null) {
-                        
+                        updateDivision(division, divisionTemplate, club, leaguePlayerGroup, iwc);
+                    }
+                }
+            }
+            
+            //Go through the divisions. Find the club they belong to and then compare them to the division template from the league.
+            if (divisions != null && !divisions.isEmpty()) {
+                Iterator it = divisions.iterator();
+                while (it.hasNext()) {
+                    Group division = (Group) it.next();
+                    Group club = findClubForGroup(division);
+                    while (club == null) {
+                        updateDivision(division, divisionTemplate, club, leaguePlayerGroup, iwc);                        
                     }
                 }
             }
@@ -488,6 +520,25 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
         } catch (FinderException e) {
             e.printStackTrace();
         }
+    }
+    
+    private Group findClubForGroup(Group group) {
+        if (group == null) { return null; }
+
+        if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB)) { return group; }
+
+        List parents = group.getParentGroups();
+        if (parents != null && !parents.isEmpty()) {
+            Iterator it = parents.iterator();
+            while (it.hasNext()) {
+                Group parent = (Group) it.next();
+
+                Group div = findClubForGroup(parent);
+                if (div != null) { return div; }
+            }
+        }
+
+        return null;
     }
     
     private Group findDivisionForClub(Group club) {
@@ -505,10 +556,9 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
         return null;
     }
     
-    private void updateDivision(Group division, Group divisionTemplate, Group club ) {
+    private void updateDivision(Group division, Group divisionTemplate, Group club, Group specialPlayerAliasGroupParent, IWContext iwc) {
         
     }
-    
 
     private void updatePlayerGroupsConnectedTo(Group parent, IWContext iwc) {
         Collection connected = null;
