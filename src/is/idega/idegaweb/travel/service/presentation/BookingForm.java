@@ -2064,13 +2064,15 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 	protected void handleCreditcardForBooking(IWContext iwc, int bookingId,	String ccNumber, String ccMonth,	String ccYear, String ccCVC) throws FinderException, RemoteException, CreditCardAuthorizationException {
 		if (bookingId > 0 && ccNumber != null && ccMonth != null && ccYear != null && !ccNumber.equals("")) {
 			String heimild;
+			String currency = null;
+			float price = -1;
 			CreditCardMerchant merchant = null;
 			try {
 
 				GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
 				GeneralBooking gBooking = gbHome.findByPrimaryKey(new Integer(bookingId));
 				List bookings = getBooker(iwc).getMultibleBookings(gBooking);
-				float price = getBooker(iwc).getBookingPrice(bookings); 
+				price = getBooker(iwc).getBookingPrice(bookings); 
 				
 				/** Setting all bookings to Invalid */
 				gBooking.setIsValid(false);
@@ -2087,7 +2089,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 			
 				System.out.println("Starting Creditcard Payment : "+IWTimestamp.RightNow().toString());
 				//float price = this.getOrderPrice(iwc, _product, _stamp, true);
-				String currency = getCurrencyForBooking(gBooking);
+				currency = getCurrencyForBooking(gBooking);
 				System.out.println("  Price = "+price+" "+currency);
 				//System.out.println(" Booking prices = "+getBooker(iwc).getBookingPrice(getBooker(iwc).getMultibleBookings(gBooking)));
 				if (currency == null) {
@@ -2115,13 +2117,13 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 		  
 			}catch(CreditCardAuthorizationException e) {
 				//e.printStackTrace(System.err);
-				sendErrorEmail("Online booking failed ("+e.getLocalizedMessage(iwrb)+")","Creditcard authorization failed.", merchant, e);
+				sendErrorEmail("Online booking failed ("+e.getLocalizedMessage(iwrb)+")","Creditcard authorization failed.", merchant, e, price, currency);
 
 				throw new CreditCardAuthorizationException(e.getLocalizedMessage(iwrb));
 			}catch (Exception e) {
 					e.printStackTrace(System.err);
 //				throw new TPosException(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
-				sendErrorEmail("Online booking failed (unknown error)","An online booking failed.", merchant, e);
+				sendErrorEmail("Online booking failed (unknown error)","An online booking failed.", merchant, e, price, currency);
 				throw new CreditCardAuthorizationException(iwrb.getLocalizedString("travel.unknown_error","Unknown error"));
 			}
 		}
@@ -2157,7 +2159,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 		return -1;
 	}
 	
-	protected void sendErrorEmail(String subject, String bodyHeader, CreditCardMerchant merchant, Exception e) throws CreditCardAuthorizationException {
+	protected void sendErrorEmail(String subject, String bodyHeader, CreditCardMerchant merchant, Exception e, float price, String currency) throws CreditCardAuthorizationException {
 		String error_notify_email = this.bundle.getProperty(PARAMETER_EMAIL_FOR_ERROR_NOTIFICATION);
 		if (error_notify_email != null) {
 			try {
@@ -2174,12 +2176,14 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 					msg.append("Display error = "+((CreditCardAuthorizationException)e).getDisplayError()+"\n\n");
 					msg.append("Localized message = "+((CreditCardAuthorizationException)e).getLocalizedMessage(iwrb)+"\n\n");
 				}
-				msg.append(bodyHeader+"\n\n ");
+				msg.append(bodyHeader+"\n\n");
 				if (merchant != null) {
-					msg.append("Merchant = "+merchant.getMerchantID()+"\n\n ");
+					msg.append("Merchant = "+merchant.getMerchantID()+"\n");
 				} else {
-					msg.append("Merchant = NULL\n\n ");
+					msg.append("Merchant = NULL\n");
 				}
+				msg.append("Amount = "+price+" "+currency+"\n\n");
+				
 				for ( int i = 0 ; i < ste.length ; i++) {
 					if (i != 0) {
 						msg.append("      ");
