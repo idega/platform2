@@ -1,11 +1,7 @@
 package com.idega.block.category.business;
 
 import com.idega.data.EntityFinder;
-import com.idega.block.text.business.*;
-import com.idega.block.text.data.*;
-import com.idega.util.LocaleUtil;
-import com.idega.block.news.data.*;
-import com.idega.block.text.data.*;
+
 import com.idega.util.idegaTimestamp;
 import java.util.List;
 import java.util.Vector;
@@ -21,6 +17,7 @@ import com.idega.core.data.ICFile;
 import com.idega.core.data.ICCategory;
 import com.idega.core.data.ICBusiness;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOFinderException;
 
 /**
  * Title:
@@ -118,6 +115,22 @@ public class CategoryFinder {
     return id;
   }
 
+  public static int[] getObjectInstanceCategoryIds(int iObjectInstanceId,boolean CreateNew,String type){
+    int[] ids = new int[0];
+    try {
+      ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+      ids = getObjectInstanceCategoryIds(obj);
+      if(ids.length == 0 && CreateNew ){
+        ids = new int[1];
+        ids[0] = CategoryBusiness.createCategory(iObjectInstanceId ,type);
+      }
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    return ids;
+  }
+
   public static int getObjectInstanceCategoryId(int iObjectInstanceId){
     try {
       ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
@@ -141,6 +154,26 @@ public class CategoryFinder {
     catch (SQLException ex) {
       ex.printStackTrace();
       return -2;
+    }
+  }
+
+  public static int[] getObjectInstanceCategoryIds(ICObjectInstance eObjectInstance){
+    try {
+      List L = EntityFinder.findRelated(eObjectInstance ,(GenericEntity)ICCategory.getStaticInstance(ICCategory.class));
+      if(L!= null){
+        java.util.Iterator iter = L.iterator();
+        int[] ids = new int[L.size()];
+        for (int i = 0; i < ids.length; i++) {
+          ids[i] = ((GenericEntity) L.get(0)).getID();
+        }
+        return ids;
+      }
+      else
+        return new int[0];
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return new int[0];
     }
   }
 
@@ -168,7 +201,34 @@ public class CategoryFinder {
     StringBuffer sql = new StringBuffer("select ");
     sql.append(((ICCategory)ICCategory.getStaticInstance(ICCategory.class)).getIDColumnName());
     sql.append(" from ").append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(ICCategory.class,ICObjectInstance.class));
+    sql.append(" where ").append(((ICObjectInstance)ICObjectInstance.getStaticInstance(ICObjectInstance.class)).getIDColumnName());
+    sql.append(" = ").append(iObjectInstanceId);
     return sql.toString();
+  }
+
+  /**
+   *  Returns a Collection of ICCategory entities
+   *  with specified type
+   */
+  public static Collection getCategories(int[] ids,String type){
+    StringBuffer sql = new StringBuffer("select * from ");
+    ICCategory cat = (ICCategory)ICCategory.getStaticInstance(ICCategory.class);
+    sql.append(cat.getEntityTableName());
+    sql.append(" where ").append(cat.getColumnType()).append(" = ").append(type);
+    sql.append(" and ").append(cat.getIDColumnName()).append(" in (");
+    for (int i = 0; i < ids.length; i++) {
+      if(i>0)
+        sql.append(",");
+      sql.append(ids[i]);
+    }
+    sql.append(" )");
+    try{
+      return EntityFinder.getInstance().findAll(ICCategory.class , sql.toString());
+    }
+    catch(IDOFinderException ex){
+
+    }
+    return null;
   }
 
   /**
@@ -179,20 +239,22 @@ public class CategoryFinder {
     String[] ids = null;
 
     try {
-      ids = com.idega.data.SimpleQuerier.executeStringQuery(getRelatedSQL(iObjectInstanceId));
+      String sql = getRelatedSQL(iObjectInstanceId);
+      ids = com.idega.data.SimpleQuerier.executeStringQuery(sql);
       if(ids != null){
         HashSet H = new HashSet();
         Integer I;
         for (int i = 0; i < ids.length; i++) {
-          I = new Integer(ids[0]);
-          if(!H.contains(I))
+          I = new Integer(ids[i]);
+          if(!H.contains(I)){
             H.add(I);
+          }
         }
         return H;
       }
     }
     catch (Exception ex) {
-
+      ex.printStackTrace();
     }
 
     return null;

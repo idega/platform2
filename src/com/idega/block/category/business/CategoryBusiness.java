@@ -82,6 +82,18 @@ public class CategoryBusiness{
 
   }
 
+  public static void saveRelatedCategories(int iObjectInstanceId,int[] CategoryIds){
+    try {
+      ICObjectInstance.getEntityInstance(ICObjectInstance.class,iObjectInstanceId).removeFrom(ICCategory.class);
+      for (int i = 0; i < CategoryIds.length; i++) {
+        ICObjectInstance.getEntityInstance(ICObjectInstance.class,iObjectInstanceId).addTo(ICCategory.class,CategoryIds[i]);
+      }
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
+
   public static ICCategory saveCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId,String type,boolean allowMultible){
     ICCategory Cat = new ICCategory();
     if(iCategoryId > 0)
@@ -90,6 +102,20 @@ public class CategoryBusiness{
     Cat.setDescription(sDesc);
     Cat.setType(type);
     return saveCategory(Cat,iObjectInstanceId,allowMultible);
+  }
+
+  public static boolean updateCategory(int id,String name,String info){
+    try {
+      ICCategory cat = new ICCategory(id);
+      cat.setName(name);
+      cat.setDescription(info);
+      cat.update();
+      return true;
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    return false;
   }
 
   public static ICCategory saveCategory(int iCategoryId,String sName,String sDesc,int iObjectInstanceId,String type){
