@@ -3,6 +3,7 @@ package is.idega.tools;
 import java.io.*;
 
 import java.lang.reflect.Method;
+import java.util.StringTokenizer;
 
 /**
  * Title:        idegaclasses
@@ -39,12 +40,54 @@ public class EJBWizard {
 
   public static void main(String[] args)throws Exception{
     try{
+      
       String className = args[0];
-      EJBWizard instance = new EJBWizard(className);
-      String currentDir = System.getProperty("user.dir");
-      File workingDir = new File(currentDir);
-      instance.setWorkingDirectory(workingDir);
-      instance.doJavaFileCreate();
+      
+      // file check:
+      if(className.endsWith(".java") || className.endsWith(".JAVA")){
+      	File javaFile = new File(className);
+      	FileReader reader = new FileReader(javaFile);
+      	LineNumberReader linereader = new LineNumberReader(new FileReader(javaFile));
+      	String line;
+      	String pack = "";
+      	String clss = "";
+      	int nr = 0;
+      	while( (line = linereader.readLine()) != null ){
+      		StringTokenizer tok = new StringTokenizer(line," ;");
+      		while( tok.hasMoreTokens()){
+      			String token = tok.nextToken();
+      			if(token.equals("package")){
+      				if(tok.hasMoreTokens())
+      					pack = tok.nextToken();
+      			}
+      			else if(token.equals("class")){
+      				if(tok.hasMoreTokens())
+      					clss = tok.nextToken();
+      				break;
+      			}
+      			//System.out.println("line"+nr++);
+      		}
+      	
+      	}
+      	
+      	className = pack+"."+clss;
+      	//System.out.println(className);
+      	EJBWizard instance = new EJBWizard(className);
+      	instance.setWorkingDirectory(javaFile.getParentFile());
+      	 instance.doJavaFileCreate();
+      
+      }
+      else{
+      		System.out.println("className is "+className);
+      	  String currentDir = System.getProperty("user.dir");
+	      File workingDir = new File(currentDir);
+	      EJBWizard instance = new EJBWizard(className);
+	      instance.setWorkingDirectory(workingDir);
+	       instance.doJavaFileCreate();
+      }
+      
+      
+     
     }
     catch(java.lang.ArrayIndexOutOfBoundsException e){
       System.out.println("EJBWizard: You have to supply a valid ClassName as an argument");
