@@ -1,6 +1,6 @@
 package com.idega.block.contract.business;
 
-import java.sql.SQLException;
+
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -132,7 +132,7 @@ public class ContractWriter
 					}
 					if (bEntity)
 					{
-						try
+						
 						{
 							Contract eContract =
 								(
@@ -143,10 +143,7 @@ public class ContractWriter
 								eContract.store();
 							}
 						}
-						catch (SQLException ex)
-						{
-							ex.printStackTrace();
-						}
+						
 					}
 				}
 				document.add(chapter);
@@ -244,7 +241,7 @@ public class ContractWriter
 								eContract.store();
 							}
 						}
-						catch (SQLException ex)
+						catch (Exception ex)
 						{
 							ex.printStackTrace();
 						}

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.11 2003/05/31 00:49:38 aron Exp $
+ * $Id: ContractBusiness.java,v 1.12 2003/05/31 15:03:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -436,9 +436,6 @@ public class ContractBusiness
 			catch (IDOLookupException e) {
 				e.printStackTrace();
 			}
-			catch (CreateException e) {
-				e.printStackTrace();
-			}
 			
 		return null;
 	}	
@@ -451,9 +448,6 @@ public class ContractBusiness
 					catch (IDOLookupException e) {
 						e.printStackTrace();
 					}
-					catch (CreateException e) {
-						e.printStackTrace();
-					}
 			
 				return null;
 	}	
@@ -464,9 +458,6 @@ public class ContractBusiness
 				return ((ContractHome)IDOLookup.getHome(Contract.class)).create(userID,iCategoryID,ValFrom,ValTo,sStatus,text);
 			}
 			catch (IDOLookupException e) {
-				e.printStackTrace();
-			}
-			catch (CreateException e) {
 				e.printStackTrace();
 			}
 			
