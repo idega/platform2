@@ -498,10 +498,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	private boolean containsTypePayment(String[] types) {
 		boolean containsTypePayment = false;
 		for (int i = 0; i<types.length;i++) {
-			if (types[i].equals(TYPE_PAYMENT)) {
+			if (types[i].equals(TYPE_PAYMENT)) 
 				containsTypePayment = true;
-				return containsTypePayment;
-			}
 		}
 		return containsTypePayment;
 	}
