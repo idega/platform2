@@ -209,7 +209,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   public Product[] getProducts(Reseller reseller) {
     Product[] returner = {};
     try {
-      Reseller parent = (Reseller) reseller.getParent();
+      Reseller parent = (Reseller) reseller.getParentEntity();
       if (parent != null) {
 
       }

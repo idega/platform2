@@ -358,7 +358,7 @@ public class ResellerManager {
   }
 
   public static Product[] getProductsWithContracts(Reseller reseller, String orderBy) {
-    Reseller parent = (Reseller) reseller.getParent();
+    Reseller parent = (Reseller) reseller.getParentEntity();
     if (parent == null) {
       System.err.println("parent == null : "+reseller.getID());
       return getProductsWithContracts(-1, reseller.getID(),-1, orderBy);

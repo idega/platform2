@@ -426,7 +426,7 @@ public class BookingOverview extends TravelManager {
                               iAvailable = iCount - iBooked - iAssigned;
                           }else if (reseller != null) {
                               iCount = contract.getAlotment();
-                              iBooked = Booker.getNumberOfBookings(reseller.getID() ,service.getID(), tempStamp);
+                              iBooked = Booker.getNumberOfBookingsByReseller(reseller.getID() ,service.getID(), tempStamp);
                               iAssigned = 0;
 
                               iInquery = Inquirer.getInqueredSeats(service.getID(),tempStamp,reseller.getID(), true);
@@ -603,7 +603,7 @@ public class BookingOverview extends TravelManager {
             seats = contract.getAlotment();
             assigned = 0;
             iInqueries = Inquirer.getInqueredSeats(service.getID() , currentStamp, reseller.getID(), true);
-            booked = Booker.getNumberOfBookings(reseller.getID(),service.getID(), currentStamp);
+            booked = Booker.getNumberOfBookingsByReseller(reseller.getID(),service.getID(), currentStamp);
             available = seats - booked - iInqueries;
           }
 
