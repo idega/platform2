@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.13 2003/08/27 22:45:57 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.14 2003/08/28 12:55:34 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -12,6 +12,8 @@ package se.idega.idegaweb.commune.accounting.posting.presentation;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Iterator;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -28,6 +30,7 @@ import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
@@ -40,10 +43,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.13 2003/08/27 22:45:57 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.14 2003/08/28 12:55:34 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -96,27 +99,13 @@ public class PostingParameterListEditor extends AccountingBlock {
 	
 	private final static String PARAM_POSTING_ID = "pp_edit_posting_id";
 	private final static String PARAM_EDIT_ID = "param_edit_id";
-	private final static String PARAM_ACCOUNT = "pp_edit_account";
-	private final static String PARAM_LIABILITY = "pp_edit_liability";
-	private final static String PARAM_RESOURCE = "pp_edit_resource";
-	private final static String PARAM_ACTIVITY_CODE = "pp_edit_activity_code";
-	private final static String PARAM_DOUBLE_ENTRY_CODE = "pp_edit_double_entry_code";
-	private final static String PARAM_ACTIVITY_FIELD = "p_edit_activity_field";
-	private final static String PARAM_PROJECT = "pp_edit_project";
-	private final static String PARAM_OBJECT = "pp_edit_object";
 	private final static String PARAM_PERIODE_FROM = "pp_edit_periode_from";
 	private final static String PARAM_PERIODE_TO = "pp_edit_periode_to";
 	private final static String PARAM_SIGNED = "pp_edit_signed";
 	private final static String PARAM_MODE_COPY = "mode_copy";
 
-	private final static String PARAM_DOUBLE_ACCOUNT = "pp_double_edit_account";
-	private final static String PARAM_DOUBLE_LIABILITY = "pp_double_edit_liability";
-	private final static String PARAM_DOUBLE_RESOURCE = "pp_double_edit_resource";
-	private final static String PARAM_DOUBLE_ACTIVITY_CODE = "pp_double_edit_activity_code";
-	private final static String PARAM_DOUBLE_DOUBLE_ENTRY_CODE = "pp_double_edit_double_entry_code";
-	private final static String PARAM_DOUBLE_ACTIVITY_FIELD = "p_double_edit_activity_field";
-	private final static String PARAM_DOUBLE_PROJECT = "pp_double_edit_project";
-	private final static String PARAM_DOUBLE_OBJECT = "pp_double_edit_object";
+	private final static String PARAM_OWN_STRING = "own_string";
+	private final static String PARAM_DOUBLE_STRING = "double_string";
 
 	private final static String PARAM_SELECTOR_ACTIVITY = "selector_activity";
 	private final static String PARAM_SELECTOR_REGSPEC = "selector_regspec";
@@ -124,8 +113,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String PARAM_SELECTOR_COM_BELONGING = "selector_com_belonging";
 
 	private IBPage _responsePage;
-	private String _errorText = ""
-	;
+	private String _errorText = "";
+	private String _theOwnString = "";
+	private String _theDoubleString = "";
+	
 	public void setResponsePage(IBPage page) {
 		_responsePage = page;
 	}
@@ -181,22 +172,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 				iwc.getParameter(PARAM_SELECTOR_REGSPEC),					
 				iwc.getParameter(PARAM_SELECTOR_COMPANY_TYPE),					
 				iwc.getParameter(PARAM_SELECTOR_COM_BELONGING),
-				iwc.getParameter(PARAM_ACCOUNT),
-				iwc.getParameter(PARAM_LIABILITY),
-				iwc.getParameter(PARAM_RESOURCE),
-				iwc.getParameter(PARAM_ACTIVITY_CODE),
-				iwc.getParameter(PARAM_DOUBLE_ENTRY_CODE),
-				iwc.getParameter(PARAM_ACTIVITY_FIELD),
-				iwc.getParameter(PARAM_PROJECT),
-				iwc.getParameter(PARAM_OBJECT),
-				iwc.getParameter(PARAM_DOUBLE_ACCOUNT),
-				iwc.getParameter(PARAM_DOUBLE_LIABILITY),
-				iwc.getParameter(PARAM_DOUBLE_RESOURCE),
-				iwc.getParameter(PARAM_DOUBLE_ACTIVITY_CODE),
-				iwc.getParameter(PARAM_DOUBLE_DOUBLE_ENTRY_CODE),
-				iwc.getParameter(PARAM_DOUBLE_ACTIVITY_FIELD),
-				iwc.getParameter(PARAM_DOUBLE_PROJECT),
-				iwc.getParameter(PARAM_DOUBLE_OBJECT)
+				iwc.getParameter(_theOwnString),
+				iwc.getParameter(_theDoubleString)
 				);
 			} catch (PostingParametersException e) {
 				_errorText = localize(e.getTextKey(), e.getDefaultText());
@@ -307,45 +284,27 @@ public class PostingParameterListEditor extends AccountingBlock {
 		Table table = new Table();
 		Table selectors = new Table();
 		Table accounts = new Table();
-		ListTable list1 = new ListTable(this, 8);
-		ListTable list2 = new ListTable(this, 8);
-
-		list1.setLocalizedHeader(KEY_POST_ACCOUNT, "Konto", 1);
-		list1.setLocalizedHeader(KEY_POST_LIABILITY, "Ansvar", 2);
-		list1.setLocalizedHeader(KEY_POST_RESOURCE, "Resurs", 3);
-		list1.setLocalizedHeader(KEY_POST_ACTIVITY_CODE, "Verksamhet", 4);
-		list1.setLocalizedHeader(KEY_POST_DOUBLE_ENTRY_CODE, "Motpart", 5);
-		list1.setLocalizedHeader(KEY_POST_ACTIVITY_FIELD, "Aktivitet", 6);
-		list1.setLocalizedHeader(KEY_POST_PROJECT, "Projekt", 7);
-		list1.setLocalizedHeader(KEY_POST_OBJECT, "Objekt", 8);
-
-		list2.setLocalizedHeader(KEY_POST_ACCOUNT, "Konto", 1);
-		list2.setLocalizedHeader(KEY_POST_LIABILITY, "Ansvar", 2);
-		list2.setLocalizedHeader(KEY_POST_RESOURCE, "Resurs", 3);
-		list2.setLocalizedHeader(KEY_POST_ACTIVITY_CODE, "Verksamhet", 4);
-		list2.setLocalizedHeader(KEY_POST_DOUBLE_ENTRY_CODE, "Motpart", 5);
-		list2.setLocalizedHeader(KEY_POST_ACTIVITY_FIELD, "Aktivitet", 6);
-		list2.setLocalizedHeader(KEY_POST_PROJECT, "Projekt", 7);
-		list2.setLocalizedHeader(KEY_POST_OBJECT, "Objekt", 8);
-
-
-		list1.add(getTextInput(PARAM_ACCOUNT, pp != null ? pp.getPostingAccount() : "", 60, 6));
-		list1.add(getSmallText(""));
-		list1.add(getTextInput(PARAM_RESOURCE, pp != null ? pp.getPostingResource() : "", 60, 6));
-		list1.add(getTextInput(PARAM_ACTIVITY_CODE, pp != null ? pp.getPostingActivityCode() : "", 60, 4));
-		list1.add(getTextInput(PARAM_DOUBLE_ENTRY_CODE, pp != null ? pp.getPostingDoubleEntry() : "", 60, 6));
-		list1.add(getSmallText(""));
-		list1.add(getSmallText(""));
-		list1.add(getSmallText(""));
-
-		list2.add(getSmallText(""));
-		list2.add(getSmallText(""));
-		list2.add(getSmallText(""));
-		list2.add(getSmallText(""));
-		list2.add(getSmallText(""));
-		list2.add(getSmallText(""));
-		list2.add(getSmallText(""));
-		list2.add(getSmallText(""));
+		ListTable list1 = null;
+		ListTable list2 = null;
+		try {
+			int index = 1;
+			Collection fields = getPostingBusiness(iwc).getAllPostingFieldsByDate(pp.getPeriodeFrom());
+			int size = fields.size();
+			
+			list1 = new ListTable(this, size);
+			list2 = new ListTable(this, size);
+			Iterator iter = fields.iterator();
+			while (iter.hasNext()) {
+				PostingField field = (PostingField) iter.next();
+				list1.setHeader(field.getFieldTitle(), index);
+				list2.setHeader(field.getFieldTitle(), index);
+				list1.add(getTextInput(PARAM_OWN_STRING+"_"+index, getFieldData(field, pp.getPostingString()), 60, field.getLen()));
+				list1.add(getTextInput(PARAM_DOUBLE_STRING+"_"+index, getFieldData(field, pp.getDoublePostingString()), 60, field.getLen()));
+				index++;
+			}
+			
+		} catch (RemoteException e) {
+		}
 
 
 		/*
@@ -401,6 +360,13 @@ public class PostingParameterListEditor extends AccountingBlock {
 		
 		return table;
 	}
+
+
+	private String getFieldData(PostingField pf, String s ) {
+		// dummy
+		return "";	
+	}
+
 
 	/*
 	 * Retrives from business the current posting data that is pointed out by PARAM_EDIT_ID.

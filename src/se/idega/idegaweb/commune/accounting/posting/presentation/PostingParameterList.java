@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.12 2003/08/27 22:48:58 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.13 2003/08/28 12:55:34 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.HiddenInput;
+
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
@@ -46,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.12 2003/08/27 22:48:58 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.13 2003/08/28 12:55:34 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -199,6 +200,8 @@ public class PostingParameterList extends AccountingBlock {
 	private ListTable getPostingTable(IWContext iwc) {
 
 		PostingBusiness pBiz;
+		
+		
 		ListTable list = new ListTable(this, 10);
 
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
@@ -245,9 +248,13 @@ public class PostingParameterList extends AccountingBlock {
 					} else {
 						list.add(p.getCommuneBelonging().getTextKey(), p.getCommuneBelonging().getTextKey());
 					}
+		
 
-					list.add(p.getPostingAccount());
-					list.add(p.getPostingDoubleEntry());
+//					list.add(p.getPostingAccount());
+//					list.add(p.getPostingDoubleEntry());
+
+					list.add("");
+					list.add("");
 
 					Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera")));
 					edit.addParameter(PARAM_EDIT_ID, p.getPrimaryKey().toString());
