@@ -3,6 +3,8 @@ package is.idega.idegaweb.travel.service.hotel.presentation;
 import is.idega.idegaweb.travel.block.search.presentation.AbstractSearchForm;
 import is.idega.idegaweb.travel.service.hotel.data.Hotel;
 import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
+import is.idega.idegaweb.travel.service.hotel.data.HotelType;
+import is.idega.idegaweb.travel.service.hotel.data.HotelTypeHome;
 import is.idega.idegaweb.travel.service.hotel.data.RoomType;
 import is.idega.idegaweb.travel.service.hotel.data.RoomTypeHome;
 
@@ -27,6 +29,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -35,7 +38,9 @@ import com.idega.util.IWTimestamp;
 public class HotelSearch extends AbstractSearchForm {
 
 	protected String PARAMETER_TYPE_COUNT = HotelBookingForm.parameterCountToCheck;
-
+	protected String PARAMETER_HOTEL_TYPE = "hs_pht";
+	protected String PARAMETER_MIN_RATING = "hs_mir";
+	protected String PARAMETER_MAX_RATING = "hs_mar";
 	
 	private IWContext iwc;
 
@@ -67,6 +72,9 @@ public class HotelSearch extends AbstractSearchForm {
 		String sManyDays = iwc.getParameter(PARAMETER_MANY_DAYS);
 		String sRoomType[] = iwc.getParameterValues(PARAMETER_TYPE);
 		String sRoomTypeCount[] = iwc.getParameterValues(PARAMETER_TYPE_COUNT);
+		String sHotelType[] = iwc.getParameterValues(PARAMETER_HOTEL_TYPE);
+		String sMinRating = iwc.getParameter(PARAMETER_MIN_RATING);
+		String sMaxRating = iwc.getParameter(PARAMETER_MAX_RATING);
 		
 		try {
 			Object[] roomTypeIds = null;
@@ -77,6 +85,24 @@ public class HotelSearch extends AbstractSearchForm {
 					roomTypeIds[i] = sRoomType[i];
 				}
 			}
+			
+			Object[] hotelTypeIds = null;
+			if (sHotelType != null && sHotelType.length > 0) {
+				hotelTypeIds = new Object[sHotelType.length];
+				for (int i = 0; i < hotelTypeIds.length; i++) {
+					hotelTypeIds[i] = sHotelType[i];
+				}
+			}
+			
+			float min = -1;
+			float max = -1;
+			
+			try {
+				min = Float.parseFloat(sMinRating);
+			} catch (Exception e) {}
+			try {
+				max = Float.parseFloat(sMaxRating);
+			} catch (Exception e) {}
 		
 			Object[] postalCodeIds = getSearchBusiness(iwc).getPostalCodeIds(iwc);
 			
@@ -101,7 +127,8 @@ public class HotelSearch extends AbstractSearchForm {
 			Collection coll = new Vector();
 			
 			if (suppIds.length > 0) {
-				coll = hHome.find(null, null, roomTypeIds, postalCodeIds, suppIds);
+//				coll = hHome.find(null, null, roomTypeIds, postalCodeIds, suppIds);
+				coll = hHome.find(null, null, roomTypeIds, hotelTypeIds, postalCodeIds, suppIds, min, max);
 			}
 			
 			PriceCategoryHome pcHome = (PriceCategoryHome) IDOLookup.getHome(PriceCategory.class);
@@ -181,20 +208,63 @@ public class HotelSearch extends AbstractSearchForm {
 		manyDays.setSize(3);
 		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_in","Check in"), iwrb.getLocalizedString("travel.search.number_of_days","Number of days")}, new PresentationObject[]{fromDate, manyDays});
 		
-		Collection coll = new Vector();
+		Collection hotelTypes = new Vector();
 		try {
-			RoomTypeHome trh = (RoomTypeHome) IDOLookup.getHome(RoomType.class);
+			HotelTypeHome trh = (HotelTypeHome) IDOLookup.getHome(HotelType.class);
 			if (super.definedProduct == null) {
-				coll = trh.findAll();
+				hotelTypes = trh.findAll();
 			} else {
 				HotelHome hHome = (HotelHome) IDOLookup.getHome(Hotel.class);
 				Hotel hotel = hHome.findByPrimaryKey(definedProduct.getPrimaryKey());
-				coll.add(trh.findByPrimaryKey(new Integer(hotel.getRoomTypeId())));
+				hotelTypes = hotel.getHotelTypes();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_rooms","Type of rooms"), iwrb.getLocalizedString("travel.search.number_of_rooms","Number of rooms")}, new PresentationObject[]{new DropdownMenu(coll, PARAMETER_TYPE), getRoomTypeCountDropdown()});
+		
+		DropdownMenu spHotelTypes = new DropdownMenu(PARAMETER_HOTEL_TYPE );
+		SelectorUtility su = new SelectorUtility();
+		spHotelTypes = (DropdownMenu) su.getSelectorFromIDOEntities(spHotelTypes, hotelTypes, "getLocalizationKey", iwrb);
+		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_accomodation","Type of accomodation")}, new PresentationObject[]{spHotelTypes});
+
+		Collection roomTypes = new Vector();
+		try {
+			RoomTypeHome trh = (RoomTypeHome) IDOLookup.getHome(RoomType.class);
+			if (super.definedProduct == null) {
+				roomTypes = trh.findAll();
+			} else {
+				HotelHome hHome = (HotelHome) IDOLookup.getHome(Hotel.class);
+				Hotel hotel = hHome.findByPrimaryKey(definedProduct.getPrimaryKey());
+				roomTypes = hotel.getRoomTypes();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		DropdownMenu min = getDropdownWithNumbers(PARAMETER_MIN_RATING, 1, 5);
+		DropdownMenu max = getDropdownWithNumbers(PARAMETER_MAX_RATING, 1, 5);
+		min.addMenuElementFirst("-1", "");
+		max.addMenuElementFirst("-1", "");
+		
+		if (hotelTypes != null) {
+			Iterator iter = hotelTypes.iterator();
+			HotelType hotelType;
+			boolean first = true;
+			
+			while (iter.hasNext()) {
+				hotelType = (HotelType) iter.next();
+				if (first) {
+					min.setDisabled(!hotelType.getUseRating());
+					max.setDisabled(!hotelType.getUseRating());
+				}
+				spHotelTypes.setToDisableWhenSelected(min, hotelType.getPrimaryKey().toString(), !hotelType.getUseRating(), true);
+				spHotelTypes.setToDisableWhenSelected(max, hotelType.getPrimaryKey().toString(), !hotelType.getUseRating(), true);
+				first = false;
+			}
+		}
+		
+		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.minimum_rating","Minimum rating"), iwrb.getLocalizedString("travel.search.maximum_rating","Maximum rating")},  new PresentationObject[] { min, max});
+		
+		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_rooms","Type of rooms"), iwrb.getLocalizedString("travel.search.number_of_rooms","Number of rooms")}, new PresentationObject[]{new DropdownMenu(roomTypes, PARAMETER_TYPE), getDropdownWithNumbers(PARAMETER_TYPE_COUNT, 1, 7)});
 	}
 
 	protected Link getBookingLink(int productId) {
@@ -204,19 +274,13 @@ public class HotelSearch extends AbstractSearchForm {
 		return link;
 	}
 
-	private DropdownMenu getRoomTypeCountDropdown() {
-		DropdownMenu menu = new DropdownMenu(PARAMETER_TYPE_COUNT);
-		menu.addMenuElement(1, "1");
-		menu.addMenuElement(2, "2");
-		menu.addMenuElement(3, "3");
-		menu.addMenuElement(4, "4");
-		menu.addMenuElement(5, "5");
-		menu.addMenuElement(6, "6");
-		menu.addMenuElement(7, "7");
-		
+	private DropdownMenu getDropdownWithNumbers(String name, int startNumber, int endNumber) {
+		DropdownMenu menu = new DropdownMenu(name);
+		for (int i = startNumber; i <= endNumber; i++) {
+			menu.addMenuElement(i, Integer.toString(i));
+		}		
 		return menu;
 	}
-	
 	protected String getParameterTypeCountName() {
 		return PARAMETER_TYPE_COUNT;
 	}
