@@ -5,12 +5,11 @@ package is.idega.idegaweb.member.isi.block.reports.data;
 
 import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import com.idega.core.file.data.ICFile;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDOReportableEntity;
@@ -416,7 +415,19 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 	}
 
 	public int getNumberOfMembers() {
-		return getIntColumnValue(COLUMN_NAME_NUMBER_OF_MEMBERS);
+		try {
+			
+			WorkReportMemberHome membHome = (WorkReportMemberHome)this.getIDOHome(WorkReportMember.class);
+			
+			return membHome.getCountOfMembersByWorkReport(this);
+		}
+		catch (IDOLookupException e) {
+			
+			e.printStackTrace();
+			
+			return 0;
+		}
+		//return getIntColumnValue(COLUMN_NAME_NUMBER_OF_MEMBERS);
 	}
 
 	public void setNumberOfMembers(int totalMembersCount) {
@@ -432,7 +443,22 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 	}
 
 	public int getNumberOfPlayers() {
-		return getIntColumnValue(COLUMN_NAME_NUMBER_OF_PLAYERS);
+		try {
+			
+			WorkReportMemberHome membHome = (WorkReportMemberHome)this.getIDOHome(WorkReportMember.class);
+			
+			return membHome.getCountOfPlayersByWorkReport(this);
+		}
+		catch (IDOLookupException e) {
+			
+			e.printStackTrace();
+			
+			return 0;
+		}
+		
+		//return getIntColumnValue(COLUMN_NAME_NUMBER_OF_PLAYERS);
+		
+		
 	}
 
 	public void setNumberOfPlayers(int totalPlayersCount) {
