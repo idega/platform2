@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.78 2004/11/25 09:54:43 aron Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.79 2004/12/02 12:39:07 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -61,6 +61,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	final static String REQ_BUTTON = "REQ_BUTTON";
 	//Session variable for rejected and cancelled applications
 	final static String DELETED_APPLICATIONS = "DELETED_APPLICATIONS";
+	
+	private static final String PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT = "can_keep_all_choices_when_acception_offer";
 
 	private String CHILD_ID = CitizenChildren.getChildIDParameterName();
 	private int childID = -1;
@@ -334,21 +336,25 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			}
 		}
 
-		//Removing other applications from the queue
-		Collection applications = findApplications(iwc);
-		Iterator allaps = applications.iterator();
-		//If choice 1 accepted, choice 2 shall not be deleted, unless it is already an accepted offer
-		int deleteFromChoice = acceptedChoiceNumber == 1 ? 2 : acceptedChoiceNumber;
-
-		while (allaps.hasNext()) {
-			ChildCareApplication app = (ChildCareApplication) allaps.next();
-
-			if (app.getChoiceNumber() > deleteFromChoice //TODO: This is probably not nessesary anymore (Roar)
-			|| (acceptedChoiceNumber == 2 && app.getChoiceNumber() == 1 && isAccepted(app))) {
-				childCarebusiness.removeFromQueue(app.getNodeID(), app.getOwner());
-				app.setApplicationStatus(childCarebusiness.getStatusCancelled());
-
-				addDeletedAppToSession(iwc, app);
+		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);
+		
+		if (!canKeepAllChoices) {
+			//Removing other applications from the queue
+			Collection applications = findApplications(iwc);
+			Iterator allaps = applications.iterator();
+			//If choice 1 accepted, choice 2 shall not be deleted, unless it is already an accepted offer
+			int deleteFromChoice = acceptedChoiceNumber == 1 ? 2 : acceptedChoiceNumber;
+	
+			while (allaps.hasNext()) {
+				ChildCareApplication app = (ChildCareApplication) allaps.next();
+	
+				if (app.getChoiceNumber() > deleteFromChoice //TODO: This is probably not nessesary anymore (Roar)
+				|| (acceptedChoiceNumber == 2 && app.getChoiceNumber() == 1 && isAccepted(app))) {
+					childCarebusiness.removeFromQueue(app.getNodeID(), app.getOwner());
+					app.setApplicationStatus(childCarebusiness.getStatusCancelled());
+	
+					addDeletedAppToSession(iwc, app);
+				}
 			}
 		}
 		

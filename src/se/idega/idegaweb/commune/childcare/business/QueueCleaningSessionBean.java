@@ -1,5 +1,5 @@
 /*
- * $Id: QueueCleaningSessionBean.java,v 1.1 2004/11/25 10:44:06 aron Exp $
+ * $Id: QueueCleaningSessionBean.java,v 1.2 2004/12/02 12:39:07 laddi Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/25 10:44:06 $ by $Author: aron $
+ *  Last modified: $Date: 2004/12/02 12:39:07 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class QueueCleaningSessionBean extends IBOSessionBean  implements QueueCleaningSession{
     
@@ -67,7 +67,7 @@ public class QueueCleaningSessionBean extends IBOSessionBean  implements QueueCl
 					application.setLastReplyDate(lastReplyDate.getDate());
 					service.changeCaseStatus(application, service.getCaseStatusPending().getStatus(), performer);
 
-					service.sendMessageToParents(application, subject, body, letterBody, true); 
+					service.sendMessageToParents(application, subject, body, letterBody, false); 
 				}
 			}
 

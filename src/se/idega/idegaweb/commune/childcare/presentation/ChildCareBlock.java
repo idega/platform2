@@ -3,17 +3,22 @@ package se.idega.idegaweb.commune.childcare.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+
 import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.care.business.CareBusiness;
+import se.idega.idegaweb.commune.care.data.CareTime;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBORuntimeException;
 import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -23,12 +28,14 @@ import com.idega.presentation.ui.util.SelectorUtility;
 /**
  * @author laddi
  */
-public abstract class ChildCareBlock extends CommuneBlock {
+public class ChildCareBlock extends CommuneBlock {
 
 	private CareBusiness careBusiness;
 	private ChildCareBusiness business;
 	protected ChildCareSession session;
 	private int _childCareID = -1;
+	private boolean checkRequired;
+	private boolean usePredefinedCareTimeValues;
 	
 	//public static final String ACCEPTED_COLOR = "#FFEAEA";
 	//public static final String PARENTS_ACCEPTED_COLOR = "#EAFFEE";
@@ -41,11 +48,16 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	
 	public static final String STATUS_ALL = "status_all";
 	
+	private static final String PROPERTY_CHECK_REQUIRED = "check_required";
+	private static final String PROPERTY_USE_PREDEFINED_CARE_TIME_VALUES = "use_predefined_care_time_values";
+	
 	public void main(IWContext iwc) throws Exception{
 		setResourceBundle(getResourceBundle(iwc));
 		business = getChildCareBusiness(iwc);
 		session = getChildCareSession(iwc);
 		careBusiness = getCareBusiness(iwc);
+		checkRequired = getBundle(iwc).getBooleanProperty(PROPERTY_CHECK_REQUIRED, true);
+		usePredefinedCareTimeValues = getBundle(iwc).getBooleanProperty(PROPERTY_USE_PREDEFINED_CARE_TIME_VALUES, false);
 		initialize();
 
 		init(iwc);
@@ -55,7 +67,7 @@ public abstract class ChildCareBlock extends CommuneBlock {
 		_childCareID = session.getChildCareID();	
 	}
 	
-	public abstract void init(IWContext iwc) throws Exception;
+	public void init(IWContext iwc) throws Exception {}
 	
 	private ChildCareBusiness getChildCareBusiness(IWContext iwc) throws RemoteException {
 		return (ChildCareBusiness) IBOLookup.getServiceInstance(iwc, ChildCareBusiness.class);	
@@ -281,5 +293,53 @@ public abstract class ChildCareBlock extends CommuneBlock {
 		
 		return (DropdownMenu) getStyledInterface(menu);
 	}
+	
+	protected DropdownMenu getCareTimeMenu(String name)  {
+		try {
+			SelectorUtility util = new SelectorUtility();
+			DropdownMenu menu = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(name), getBusiness().getCareTimes(), "getLocalizedKey", getResourceBundle());
+			
+			return (DropdownMenu) getStyledInterface(menu);
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
+	protected String getCareTime(String careTime) {
+		if (careTime == null) {
+			return "-";
+		}
 		
+		try {
+			Integer.parseInt(careTime);
+		}
+		catch (NumberFormatException nfe) {
+			try {
+				CareTime time = getBusiness().getCareTime(careTime);
+				return getResourceBundle().getLocalizedString(time.getLocalizedKey(), careTime);
+			}
+			catch (FinderException fe) {
+				log(fe);
+			}
+			catch (RemoteException re) {
+				log(re);
+			}
+		}
+		return careTime;
+	}
+		
+	/**
+	 * @return Returns the checkRequired.
+	 */
+	public boolean isCheckRequired() {
+		return checkRequired;
+	}
+	
+	/**
+	 * @return Returns the usePredefinedCareTimeValues.
+	 */
+	public boolean isUsePredefinedCareTimeValues() {
+		return usePredefinedCareTimeValues;
+	}
 }

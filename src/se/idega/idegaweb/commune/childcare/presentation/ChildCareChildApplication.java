@@ -112,37 +112,26 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		}
 	}
 	
-	private void parseAction(IWContext iwc) {
+	private void parseAction(IWContext iwc) throws RemoteException {
 		isAdmin = isAdmin(iwc);
 		
-		if (iwc.isParameterSet(PARAMETER_ACTION))
+		if (iwc.isParameterSet(PARAMETER_ACTION)) {
 			_action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
-		else
-			_action = ACTION_VIEW_FORM;
-
-		if (isAdmin) {
-			try {
-				child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
-				check = getCheckBusiness(iwc).getGrantedCheckByChild(child);
-				if (check == null)
-					_noCheckError = true;
-			}
-			catch (RemoteException re) {
-				_noCheckError = true;
-			}
 		}
 		else {
-			try {
-				check = getCheckBusiness(iwc).getGrantedCheck(getSession().getCheckID());
-			}
-			catch (RemoteException e) {
-				e.printStackTrace();
-			}
+			_action = ACTION_VIEW_FORM;
+		}
 
-			if (check != null) {
-				child = check.getChild();
+		child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
+		
+		if (isCheckRequired()) {
+			try {
+				check = getCheckBusiness(iwc).getGrantedCheckByChild(child);
+				if (check == null) {
+					_noCheckError = true;
+				}
 			}
-			else {
+			catch (RemoteException re) {
 				_noCheckError = true;
 			}
 		}
@@ -266,7 +255,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				parent = iwc.getCurrentUser();
 			}
 
-			done = getBusiness().insertApplications(parent, providers, dates, message, ((Integer) check.getPrimaryKey()).intValue(), ((Integer) child.getPrimaryKey()).intValue(), subject, body, false, sendMessages, queueDates, null);
+			done = getBusiness().insertApplications(parent, providers, dates, message, check != null ? ((Integer) check.getPrimaryKey()).intValue() : -1, ((Integer) child.getPrimaryKey()).intValue(), subject, body, false, sendMessages, queueDates, null);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();

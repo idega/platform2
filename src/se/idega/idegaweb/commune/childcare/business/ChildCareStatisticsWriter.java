@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 
+import javax.ejb.FinderException;
+
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -17,6 +19,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.care.data.CareTime;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -180,7 +183,7 @@ public class ChildCareStatisticsWriter {
 					else
 						cellColumn++;
 	
-					row.createCell((short)cellColumn++).setCellValue(archive.getCareTime());
+					row.createCell((short)cellColumn++).setCellValue(getCareTime(getChildCareBusiness(iwc), iwrb, archive.getCareTime()));
 					row.createCell((short)cellColumn++).setCellValue(new IWTimestamp(archive.getValidFromDate()).getLocaleDate(locale, IWTimestamp.SHORT));
 		
 					if (application.getRejectionDate() != null) {
@@ -226,6 +229,25 @@ public class ChildCareStatisticsWriter {
 		}
 	}
 	
+	protected String getCareTime(ChildCareBusiness business, IWResourceBundle resourceBundle, String careTime) {
+		try {
+			Integer.parseInt(careTime);
+		}
+		catch (NumberFormatException nfe) {
+			try {
+				CareTime time = business.getCareTime(careTime);
+				return resourceBundle.getLocalizedString(time.getLocalizedKey(), careTime);
+			}
+			catch (FinderException fe) {
+				fe.printStackTrace();
+			}
+			catch (RemoteException re) {
+				re.printStackTrace();
+			}
+		}
+		return careTime;
+	}
+
 	protected ChildCareBusiness getChildCareBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (ChildCareBusiness) IBOLookup.getServiceInstance(iwc, ChildCareBusiness.class);	
 	}

@@ -191,7 +191,7 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 		boolean done = false;
 		try {
 			int providerID = Integer.parseInt(iwc.getParameter(PARAM_PROVIDER));
-			int careTime = Integer.parseInt(iwc.getParameter(PARAM_CARE_TIME));
+			String careTime = iwc.getParameter(PARAM_CARE_TIME);
 			IWTimestamp fromDate = new IWTimestamp(iwc.getParameter(PARAM_FROM_DATE));
 			IWTimestamp toDate = null;
 			if (iwc.isParameterSet(PARAM_TO_DATE))

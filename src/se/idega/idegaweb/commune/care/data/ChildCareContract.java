@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareContract.java,v 1.4 2004/11/25 11:03:53 aron Exp $
+ * $Id: ChildCareContract.java,v 1.5 2004/12/02 12:39:08 laddi Exp $
  * Created on 22.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -20,10 +20,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/25 11:03:53 $ by $Author: aron $
+ *  Last modified: $Date: 2004/12/02 12:39:08 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface ChildCareContract extends IDOEntity {
     /**
@@ -44,7 +44,7 @@ public interface ChildCareContract extends IDOEntity {
     /**
      * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#getCareTime
      */
-    public int getCareTime();
+    public String getCareTime();
 
     /**
      * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#getChildID
@@ -134,7 +134,7 @@ public interface ChildCareContract extends IDOEntity {
     /**
      * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#setCareTime
      */
-    public void setCareTime(int careTime);
+    public void setCareTime(String careTime);
 
     /**
      * @see se.idega.idegaweb.commune.care.data.ChildCareContractBMPBean#setChildID

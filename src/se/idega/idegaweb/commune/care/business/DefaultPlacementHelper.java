@@ -1,5 +1,5 @@
 /*
- * $Id: DefaultPlacementHelper.java,v 1.1 2004/11/26 09:10:30 aron Exp $
+ * $Id: DefaultPlacementHelper.java,v 1.2 2004/12/02 12:39:08 laddi Exp $
  * Created on 5.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -20,10 +20,10 @@ import com.idega.util.TimePeriod;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 09:10:30 $ by $Author: aron $
+ *  Last modified: $Date: 2004/12/02 12:39:08 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DefaultPlacementHelper implements PlacementHelper{
 
@@ -43,9 +43,9 @@ public class DefaultPlacementHelper implements PlacementHelper{
     public ChildCareContract getContract() {
         return contract;
     }
-    public Integer getCurrentCareTimeHours() {
+    public String getCurrentCareTimeHours() {
         if(contract!=null)
-            return new Integer(contract.getCareTime());
+            return contract.getCareTime();
         return null;
     }
     public Integer getCurrentClassID() {

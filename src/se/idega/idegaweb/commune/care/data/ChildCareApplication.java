@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplication.java,v 1.2 2004/10/14 12:44:30 thomas Exp $
+ * $Id: ChildCareApplication.java,v 1.3 2004/12/02 12:39:08 laddi Exp $
  * Created on 6.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/14 12:44:30 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/12/02 12:39:08 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface ChildCareApplication extends IDOEntity, Case {
     /**
@@ -77,7 +77,7 @@ public interface ChildCareApplication extends IDOEntity, Case {
     /**
      * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#getCareTime
      */
-    public int getCareTime();
+    public String getCareTime();
 
     /**
      * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#getChoiceNumber
@@ -232,7 +232,7 @@ public interface ChildCareApplication extends IDOEntity, Case {
     /**
      * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#setCareTime
      */
-    public void setCareTime(int careTime);
+    public void setCareTime(String careTime);
 
     /**
      * @see se.idega.idegaweb.commune.care.data.ChildCareApplicationBMPBean#setChoiceNumber

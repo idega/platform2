@@ -37,7 +37,8 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	public static final String COLUMN_CREATED_DATE = "created_date";
 	public static final String COLUMN_VALID_FROM_DATE = "valid_from_date";
 	public static final String COLUMN_TERMINATED_DATE = "terminated_date";
-	public static final String COLUMN_CARE_TIME = "care_time";
+	public static final String COLUMN_CARE_TIME = "care_time_string";
+	public static final String COLUMN_CARE_TIME_OLD = "care_time";
 	public static final String COLUMN_WORK_SITUATION = "work_situation";
 	public static final String COLUMN_INVOICE_RECEIVER = "invoice_receiver";
 	
@@ -56,7 +57,8 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		addAttribute(COLUMN_CREATED_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(COLUMN_VALID_FROM_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(COLUMN_TERMINATED_DATE,"",true,true,java.sql.Date.class);
-		addAttribute(COLUMN_CARE_TIME,"",true,true,java.lang.Integer.class);
+		addAttribute(COLUMN_CARE_TIME_OLD,"",true,true,java.lang.Integer.class);
+		addAttribute(COLUMN_CARE_TIME,"",true,true,java.lang.String.class);
 		
 		addManyToOneRelationship(COLUMN_CHILD_ID,User.class);
 		addManyToOneRelationship(COLUMN_APPLICATION_ID,ChildCareApplication.class);
@@ -79,8 +81,15 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return (Date) getColumnValue(COLUMN_TERMINATED_DATE);
 	}
 	
-	public int getCareTime() {
-		return getIntColumnValue(COLUMN_CARE_TIME);
+	public String getCareTime() {
+		String careTime = getStringColumnValue(COLUMN_CARE_TIME);
+		if (careTime == null) {
+			int oldCareTime = getIntColumnValue(COLUMN_CARE_TIME_OLD);
+			if (oldCareTime != -1) {
+				careTime = String.valueOf(oldCareTime);
+			}
+		}
+		return careTime;
 	}
 	
 	public int getChildID() {
@@ -152,7 +161,7 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		setColumn(COLUMN_TERMINATED_DATE, terminatedDate);
 	}
 	
-	public void setCareTime(int careTime) {
+	public void setCareTime(String careTime) {
 		setColumn(COLUMN_CARE_TIME, careTime);
 	}
 	

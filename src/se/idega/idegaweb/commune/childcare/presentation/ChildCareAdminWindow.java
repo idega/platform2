@@ -670,16 +670,24 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}*/
 
 		if (isAlteration) {
-			TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
-			textInput.setLength(2);
-			if(helper.getCurrentCareTimeHours()!=null)
-			    textInput.setContent(helper.getCurrentCareTimeHours().toString());
-			textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
-			textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
-	
 			table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
 			table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
-			table.add(textInput, 1, row++);
+
+			if (isUsePredefinedCareTimeValues()) {
+				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
+				if(helper.getCurrentCareTimeHours()!=null)
+					menu.setSelectedElement(helper.getCurrentCareTimeHours());
+				table.add(menu, 1, row++);
+			}
+			else {
+				TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
+				textInput.setLength(2);
+				if(helper.getCurrentCareTimeHours()!=null)
+				    textInput.setContent(helper.getCurrentCareTimeHours().toString());
+				textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
+				textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
+				table.add(textInput, 1, row++);
+			}
 			
 		}
 		
@@ -724,19 +732,24 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		if (hasBankId){
 			table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
-			table.add(getSmallText("" + application.getCareTime()), 1, row++);
-			table.add(new HiddenInput(PARAMETER_CHILDCARE_TIME, "" + application.getCareTime()));
+			table.add(getSmallText(getCareTime(application.getCareTime())), 1, row++);
+			table.add(new HiddenInput(PARAMETER_CHILDCARE_TIME, application.getCareTime()));
 			
 		} else {
-			TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
-			textInput.setLength(2);
-			textInput.setMaxlength(2);
-			textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
-			textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
-
 			table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
 			table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
-			table.add(textInput, 1, row++);
+			if (isUsePredefinedCareTimeValues()) {
+				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
+				table.add(menu, 1, row++);
+			}
+			else {
+				TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
+				textInput.setLength(2);
+				textInput.setMaxlength(2);
+				textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
+				textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
+				table.add(textInput, 1, row++);
+			}
 		}
 		
 		/* *******restricting the classes being chosen */
@@ -836,22 +849,27 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		TimePeriod deadlinePeriod = null;
 		deadlinePeriod = helper.getValidPeriod();
 		
-		TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
-		textInput.setLength(helper.getMaximumCareTimeHours().toString().length());
-		textInput.setMaxlength(helper.getMaximumCareTimeHours().toString().length());
-		textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
-		textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
-		///if(archive.getCareTime()>0)
-		///	textInput.setContent(String.valueOf(archive.getCareTime()));
-		if(helper.getCurrentCareTimeHours()!=null)
-		    textInput.setContent(helper.getCurrentCareTimeHours().toString());
-		    
-		///table.add(new HiddenInput("ccc_old_archive_id",archive.getPrimaryKey().toString()));
 		table.add(new HiddenInput("ccc_old_archive_id",helper.getContract().getPrimaryKey().toString()));
 
 		table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
 		table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
-		table.add(textInput, 1, row++);
+		
+		if (isUsePredefinedCareTimeValues()) {
+			DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
+			if(helper.getCurrentCareTimeHours()!=null)
+				menu.setSelectedElement(helper.getCurrentCareTimeHours());
+			table.add(menu, 1, row++);
+		}
+		else {
+			TextInput careTimeInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
+			careTimeInput.setLength(helper.getMaximumCareTimeHours().toString().length());
+			careTimeInput.setMaxlength(helper.getMaximumCareTimeHours().toString().length());
+			careTimeInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
+			careTimeInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
+			if(helper.getCurrentCareTimeHours()!=null)
+				careTimeInput.setContent(helper.getCurrentCareTimeHours());
+			table.add(careTimeInput, 1, row++);
+		}
 		
 		IWTimestamp stamp = new IWTimestamp();
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
@@ -1450,11 +1468,18 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			getSmallHeader(localize("ccnctw_care_time", "Care time") + ":"),
 			1,
 			row);
-		TextInput careTime = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
-		careTime.setValue(application.getCareTime());
-		careTime.setAsIntegers(localize("ccnctw_alert_care_time_format", "Care time must be an integer"));
-		careTime.setLength(4);
-		layoutTbl.add(careTime, 2, row++);
+		if (isUsePredefinedCareTimeValues()) {
+			DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
+			menu.setSelectedElement(application.getCareTime());
+			layoutTbl.add(menu, 2, row++);
+		}
+		else {
+			TextInput careTime = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
+			careTime.setValue(application.getCareTime());
+			careTime.setAsIntegers(localize("ccnctw_alert_care_time_format", "Care time must be an integer"));
+			careTime.setLength(4);
+			layoutTbl.add(careTime, 2, row++);
+		}
 
 		layoutTbl.add(
 		getSmallHeader(localize("ccnctw_from_date", "From date") + ":"),
@@ -1520,7 +1545,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 						fieldValues.put(name.substring(PARAMETER_TEXT_FIELD.length()), iwc.getParameter(name));
 						ChildCareApplication application = getBusiness().getChildCareContractArchiveHome().findApplicationByContract(((Integer)contract.getPrimaryKey()).intValue()).getApplication();
 						if (name.equals(PARAMETER_TEXT_FIELD + "care-time")){
-							application.setCareTime(Integer.parseInt(value));
+							application.setCareTime(value);
 							application.store();
 						}
 					}
@@ -1743,7 +1768,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	
 	private void alterCareTime(IWContext iwc) throws RemoteException {
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
-		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
+		String childCareTime = iwc.getParameter(PARAMETER_CHILDCARE_TIME);
 		int employmentType = Integer.parseInt(iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE));
 		int schoolTypeId = -1;
 		if(iwc.isParameterSet(PARAMETER_SCHOOL_TYPES))
@@ -1789,7 +1814,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	private void alterValidFromDate(IWContext iwc) throws RemoteException , NoPlacementFoundException{
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
-		int careTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
+		String careTime = iwc.getParameter(PARAMETER_CHILDCARE_TIME);
 		getBusiness().alterValidFromDate(_applicationID, validFrom.getDate(), -1, iwc.getCurrentLocale(), iwc.getCurrentUser());
 		getBusiness().placeApplication(_applicationID, null, null, careTime, -1, -1, -1, iwc.getCurrentUser(), iwc.getCurrentLocale());
 		
@@ -1895,14 +1920,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 	
 	private void createContract(IWContext iwc) throws RemoteException {
-		getBusiness().assignContractToApplication(_applicationID, -1,-1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
+		getBusiness().assignContractToApplication(_applicationID, -1,null, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		close();
 	}
 	
 	private void createContractForBankID(IWContext iwc) throws RemoteException {
-		getBusiness().assignContractToApplication(_applicationID, -1,-1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
+		getBusiness().assignContractToApplication(_applicationID, -1,null, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		close();
@@ -1927,7 +1952,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 	
 	private void placeInGroup(IWContext iwc) throws RemoteException {
-		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
+		String childCareTime = iwc.getParameter(PARAMETER_CHILDCARE_TIME);
 		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
 		int typeID = Integer.parseInt(iwc.getParameter(getSession().getParameterSchoolTypeID()));
 		int employmentType = Integer.parseInt(iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE));

@@ -48,6 +48,8 @@ import se.idega.idegaweb.commune.care.business.DefaultPlacementHelper;
 import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.check.data.Check;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.care.data.CareTime;
+import se.idega.idegaweb.commune.care.data.CareTimeHome;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareApplicationHome;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
@@ -124,6 +126,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	final int FS_WITHOUT_PLACE = 3;
 
 	private final static String PROPERTY_CONTRACT_CATEGORY = "childcare_contract_category";
+	private final static String PROPERTY_HAS_THREE_MONTHS_RULE = "use_three_months_rule";
+	private final static String PROPERTY_SEND_JOINT_MESSAGE_TO_OTHER_CUSTODIAN = "send_joint_message_to_other_custodian_on_child_care_choice";
 
 	private final static String STATUS_NOT_PROCESSED = String.valueOf(ChildCareConstants.STATUS_SENT_IN);
 	private final static String[] STATUS_IN_QUEUE = { String.valueOf(ChildCareConstants.STATUS_SENT_IN), String.valueOf(ChildCareConstants.STATUS_PRIORITY), String.valueOf(ChildCareConstants.STATUS_ACCEPTED), String.valueOf(ChildCareConstants.STATUS_PARENTS_ACCEPT), String.valueOf(ChildCareConstants.STATUS_CONTRACT)};
@@ -313,34 +317,39 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public boolean insertApplications(User user, int provider[], String[] dates, String message, int checkId, int childId, String subject, String body, boolean freetimeApplication, boolean sendMessages, Date[] queueDates, boolean[] hasPriority) {
 		UserTransaction t = getSessionContext().getUserTransaction();
-
+		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
+		
 		try {
 			t.begin();
 			ChildCareApplication appl = null;
 			User child = getUserBusiness().getUser(childId);
-			IWTimestamp now;
+			IWTimestamp now = new IWTimestamp();
 			String[] caseStatus = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus()};
-
-			try {
-			    /*
-				IWTimestamp dateOfBirth = new IWTimestamp(child.getDateOfBirth());
-				now = new IWTimestamp();
-				int days = IWTimestamp.getDaysBetween(child.getDateOfBirth());
-				if (days < 90) {
-					dateOfBirth.addMonths(3);
-					now = new IWTimestamp(dateOfBirth);
-				}*/
-			    // Bug fixed, 90 days is not the magic number !! ( aron ) 
-			    IWTimestamp dateOfBirth = new IWTimestamp(child.getDateOfBirth());
-			    now = new IWTimestamp();
-			    dateOfBirth.addMonths(3);
-				int days = IWTimestamp.getDaysBetween(dateOfBirth, now);
-				if (days <= 0) {
-					now = new IWTimestamp(dateOfBirth);
+			boolean hasThreeMonthsRule = bundle.getBooleanProperty(PROPERTY_HAS_THREE_MONTHS_RULE, true);
+			boolean sendJointMessageToOtherCustodian = bundle.getBooleanProperty(PROPERTY_SEND_JOINT_MESSAGE_TO_OTHER_CUSTODIAN, false);
+			Collection applications = new ArrayList();
+			
+			if (hasThreeMonthsRule) {
+				try {
+				    /*
+					IWTimestamp dateOfBirth = new IWTimestamp(child.getDateOfBirth());
+					now = new IWTimestamp();
+					int days = IWTimestamp.getDaysBetween(child.getDateOfBirth());
+					if (days < 90) {
+						dateOfBirth.addMonths(3);
+						now = new IWTimestamp(dateOfBirth);
+					}*/
+				    // Bug fixed, 90 days is not the magic number !! ( aron ) 
+				    IWTimestamp dateOfBirth = new IWTimestamp(child.getDateOfBirth());
+				    dateOfBirth.addMonths(3);
+					int days = IWTimestamp.getDaysBetween(dateOfBirth, now);
+					if (days <= 0) {
+						now = new IWTimestamp(dateOfBirth);
+					}
 				}
-			}
-			catch (NullPointerException e) {
-				now = new IWTimestamp();
+				catch (NullPointerException e) {
+					now = new IWTimestamp();
+				}
 			}
 
 			IWTimestamp stamp = new IWTimestamp();
@@ -403,8 +412,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							}
 							updateQueue(appl);
 						}
+						applications.add(appl);
 					}
 				}
+			}
+			
+			if (sendJointMessageToOtherCustodian) {
+				sendMessageToOtherParent(applications);
 			}
 
 			t.commit();
@@ -420,6 +434,51 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return false;
 		}
 		return true;
+	}
+
+	public void sendMessageToOtherParent(Collection applications) {
+		try {
+			Object[] arguments = { "", "-", "-", "-", "-", "-" };
+			
+			User child = null;
+			User appParent = null;
+			boolean first = true;
+			int i = 1;
+			Iterator iter = applications.iterator();
+			while (iter.hasNext()) {
+				ChildCareApplication application = (ChildCareApplication) iter.next();
+				if (first) {
+					first = false;
+					child = application.getChild();
+					appParent = application.getOwner();
+					arguments[0] = child.getName();
+				}
+				arguments[i] = application.getProvider().getSchoolName();
+				i++;
+			}
+			
+			String subject = getLocalizedString("child_care.child_care_choices_separated_subject", "Child care choices registered");
+			String body = getLocalizedString("child_care.child_care_choices_separated_body", "The other custodian for {0} has created the following care choices:\n\n1. {1}\n2. {2}\n3. {3}\n4. {4}5. {5}");
+
+			if (child != null && appParent != null) {
+				try {
+					Collection parents = getUserBusiness().getMemberFamilyLogic().getCustodiansFor(child);
+					iter = parents.iterator();
+					while (iter.hasNext()) {
+						User parent = (User) iter.next();
+						if (!getUserBusiness().haveSameAddress(parent, appParent)) {
+							getMessageBusiness().createUserMessage(parent, subject, MessageFormat.format(body, arguments));
+						}
+					}
+				}
+				catch (NoCustodianFound ncf) {
+					ncf.printStackTrace();
+				}
+			}
+		}
+		catch (RemoteException re) {
+			re.printStackTrace();
+		}
 	}
 
 	private boolean hasQueuePriority(User child, int providerID) throws RemoteException {
@@ -989,7 +1048,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 
-	public boolean placeApplication(int applicationID, String subject, String body, int childCareTime, int groupID, int schoolTypeID, int employmentTypeID, User user, Locale locale) {
+	public boolean placeApplication(int applicationID, String subject, String body, String childCareTime, int groupID, int schoolTypeID, int employmentTypeID, User user, Locale locale) {
 		UserTransaction t = super.getSessionContext().getUserTransaction();
 		try {
 			t.begin();
@@ -1071,7 +1130,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean alterContract(int childcareContractID, int careTime, Date fromDate, Date endDate, Locale locale, User performer,int employmentType, int invoiceReceiver, int schoolType, int schoolClass) {
+	public boolean alterContract(int childcareContractID, String careTime, Date fromDate, Date endDate, Locale locale, User performer,int employmentType, int invoiceReceiver, int schoolType, int schoolClass) {
 		try {
 			return alterContract(getChildCareContractArchiveHome().findByPrimaryKey(new Integer(childcareContractID)), careTime, fromDate, endDate, locale, performer,employmentType,invoiceReceiver,schoolType,schoolClass);
 		}
@@ -1086,7 +1145,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	 * 
 	 * 
 	 */
-	public boolean alterContract(ChildCareContract childcareContract, int careTime, Date fromDate, Date endDate, Locale locale, User performer,int employmentType, int invoiceReceiver, int schoolType, int schoolClass) {
+	public boolean alterContract(ChildCareContract childcareContract, String careTime, Date fromDate, Date endDate, Locale locale, User performer,int employmentType, int invoiceReceiver, int schoolType, int schoolClass) {
 		UserTransaction trans = getSessionContext().getUserTransaction();
 		try {
 			trans.begin();
@@ -1109,7 +1168,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if(employmentType>0)
 			    childcareContract.setEmploymentType(employmentType);
 			
-			if(careTime>0 && childcareContract.getCareTime()!= careTime){
+			if(careTime != null && childcareContract.getCareTime().equals(careTime)){
 			    childcareContract.setCareTime(careTime);
 			    
 			}
@@ -1878,10 +1937,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	}
 
-	public boolean assignContractToApplication(int applicationID, int oldArchiveID,int childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus) {
+	public boolean assignContractToApplication(int applicationID, int oldArchiveID,String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus) {
 		return assignContractToApplication( applicationID,-1,  childCareTime,  validFrom,  employmentTypeID,  user,  locale,  changeStatus,false,-1,-1);
 	}
-	public boolean assignContractToApplication(int applicationID,int archiveID, int childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus,boolean createNewStudent,int schoolTypeId,int schoolClassId) {
+	public boolean assignContractToApplication(int applicationID,int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus,boolean createNewStudent,int schoolTypeId,int schoolClassId) {
 		UserTransaction transaction = getSessionContext().getUserTransaction();
 		try {
 			transaction.begin();
@@ -2075,7 +2134,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		if (ids != null && ids.length > 0) {
 			for (int i = 0; i < ids.length; i++) {
 				String id = ids[i];
-				done = assignContractToApplication(Integer.parseInt(id), -1,-1, null, -1, user, locale, false,false,-1,-1);
+				done = assignContractToApplication(Integer.parseInt(id), -1,null, null, -1, user, locale, false,false,-1,-1);
 				if (!done) return done;
 			}
 		}
@@ -2367,7 +2426,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return getTagMap(application, locale, validFrom, isChange, "...");
 	}
 
-	protected HashMap getTagMap(ChildCareApplication application, Locale locale, int careTime, IWTimestamp validFrom, boolean isChange) throws RemoteException {
+	protected HashMap getTagMap(ChildCareApplication application, Locale locale, String careTime, IWTimestamp validFrom, boolean isChange) throws RemoteException {
 		return getTagMap(application, locale, careTime, validFrom, isChange, "...");
 	}
 
@@ -2375,7 +2434,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return getTagMap(application, locale, application.getCareTime(), validFrom, isChange, emptyCareTimeValue);
 	}
 
-	protected HashMap getTagMap(ChildCareApplication application, Locale locale, int careTime, IWTimestamp validFrom, boolean isChange, String emptyCareTimeValue) throws RemoteException {
+	protected HashMap getTagMap(ChildCareApplication application, Locale locale, String careTime, IWTimestamp validFrom, boolean isChange, String emptyCareTimeValue) throws RemoteException {
 		HashMap map = new HashMap();
 		User child = application.getChild();
 		User parent1 = application.getOwner();
@@ -2434,16 +2493,41 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		map.put(peer.getAlias(), peer);
 
 		peer = new XmlPeer(ElementTags.CHUNK, "careTime");
-		if (careTime != -1 && !isChange)
+		if (careTime != null && !isChange) {
+			try {
+				Integer.parseInt(careTime);
+			}
+			catch (NumberFormatException nfe) {
+				try {
+					CareTime time = getCareTime(careTime);
+					careTime = getLocalizedString(time.getLocalizedKey(), careTime);
+				}
+				catch (FinderException fe) {
+					log(fe);
+				}
+			}
 			peer.setContent(String.valueOf(careTime));
-
+		}
 		else
 			peer.setContent(emptyCareTimeValue);
 		map.put(peer.getAlias(), peer);
 
 		peer = new XmlPeer(ElementTags.CHUNK, "careTimeChange");
-		if (careTime != -1 && isChange)
+		if (careTime != null && isChange) {
+			try {
+				Integer.parseInt(careTime);
+			}
+			catch (NumberFormatException nfe) {
+				try {
+					CareTime time = getCareTime(careTime);
+					careTime = getLocalizedString(time.getLocalizedKey(), careTime);
+				}
+				catch (FinderException fe) {
+					log(fe);
+				}
+			}
 			peer.setContent(String.valueOf(careTime));
+		}
 		else
 			peer.setContent("....");
 		map.put(peer.getAlias(), peer);
@@ -3577,15 +3661,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, int careTime, int employmentTypeID, int schoolTypeID, String comment, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin) throws AlreadyCreatedException {
+	public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, String careTime, int employmentTypeID, int schoolTypeID, String comment, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin) throws AlreadyCreatedException {
 		return importChildToProvider(applicationID, childID, providerID, groupID, careTime, employmentTypeID, schoolTypeID, comment, fromDate, toDate, locale, parent, admin, false);
 	}
 
-	public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, int careTime, int employmentTypeID, int schoolTypeID, String comment, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin, boolean canCreateMultiple) throws AlreadyCreatedException {
+	public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, String careTime, int employmentTypeID, int schoolTypeID, String comment, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin, boolean canCreateMultiple) throws AlreadyCreatedException {
 		return importChildToProvider(applicationID, childID, providerID, groupID, careTime, employmentTypeID, schoolTypeID, comment, fromDate, toDate, locale, parent, admin, canCreateMultiple, null, null, false, null, false, null);
 	}
 
-	public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, int careTime, int employmentTypeID, int schoolTypeID, String comment, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin, boolean canCreateMultiple, IWTimestamp lastReplyDate, String preSchool, boolean extraContract, String extraContractMessage, boolean extraContractOther, String extraContractOtherMessage) throws AlreadyCreatedException {
+	public boolean importChildToProvider(int applicationID, int childID, int providerID, int groupID, String careTime, int employmentTypeID, int schoolTypeID, String comment, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin, boolean canCreateMultiple, IWTimestamp lastReplyDate, String preSchool, boolean extraContract, String extraContractMessage, boolean extraContractOther, String extraContractOtherMessage) throws AlreadyCreatedException {
 		UserTransaction t = getSessionContext().getUserTransaction();
 
 		if (!canCreateMultiple) {
@@ -3623,7 +3707,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.setProviderId(providerID);
 			application.setFromDate(fromDate.getDate());
 			if (toDate != null) application.setRejectionDate(toDate.getDate());
-			if (careTime != -1) application.setCareTime(careTime);
+			if (careTime != null) application.setCareTime(careTime);
 			application.setOwner(parent);
 			application.setChoiceNumber(1);
 			application.setMessage(comment);
@@ -4129,10 +4213,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 
 		public void sendMessageToParents(ChildCareApplication application, String subject, String body, boolean alwaysSendLetter) {
-			sendMessageToParents(application, subject, body, body, alwaysSendLetter);
+			sendMessageToParents(application, subject, body, body, alwaysSendLetter, true);
 		}
 
 		public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter) {
+			sendMessageToParents(application, subject, body, letterBody, alwaysSendLetter, true);
+		}
+		
+		public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter, boolean sendToOtherParent) {
 			try {
 				User child = application.getChild();
 				//Object[] arguments = { child.getNameLastFirst(true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : ""};
@@ -4144,19 +4232,24 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					message.setParentCase(application);
 					message.store();
 				}
+				else {
+					sendToOtherParent = true;
+				}
 
-				try {
-					Collection parents = getUserBusiness().getMemberFamilyLogic().getCustodiansFor(child);
-					Iterator iter = parents.iterator();
-					while (iter.hasNext()) {
-						User parent = (User) iter.next();
-						if (!getUserBusiness().haveSameAddress(parent, appParent)) {
-							getMessageBusiness().createUserMessage(application, parent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
+				if (sendToOtherParent) {
+					try {
+						Collection parents = getUserBusiness().getMemberFamilyLogic().getCustodiansFor(child);
+						Iterator iter = parents.iterator();
+						while (iter.hasNext()) {
+							User parent = (User) iter.next();
+							if (!getUserBusiness().haveSameAddress(parent, appParent)) {
+								getMessageBusiness().createUserMessage(application, parent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), true, alwaysSendLetter);
+							}
 						}
 					}
-				}
-				catch (NoCustodianFound ncf) {
-					ncf.printStackTrace();
+					catch (NoCustodianFound ncf) {
+						ncf.printStackTrace();
+					}
 				}
 			}
 			catch (RemoteException re) {
@@ -4250,7 +4343,27 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				e.printStackTrace(System.err);
 				return null;
 			}
-		
 		}
 		
+		private CareTimeHome getCareTimeHome() {
+			try {
+				return (CareTimeHome) IDOLookup.getHome(CareTime.class);
+			}
+			catch (IDOLookupException ile) {
+				throw new IBORuntimeException(ile);
+			}
+		}
+		
+		public Collection getCareTimes() {
+			try {
+				return getCareTimeHome().findAll();
+			}
+			catch (FinderException fe) {
+				return new ArrayList();
+			}
+		}
+		
+		public CareTime getCareTime(String careTime) throws FinderException {
+			return getCareTimeHome().findByPrimaryKey(careTime);
+		}
 }

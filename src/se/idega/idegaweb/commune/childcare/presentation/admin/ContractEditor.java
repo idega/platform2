@@ -36,6 +36,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
@@ -142,17 +143,12 @@ public class ContractEditor extends ChildCareBlock {
 			String schClass = iwc.getParameter(PARAMETER_SCHOOL_CLASS);
 			boolean clearTerminationDate = iwc.isParameterSet(PARAMETER_CLEAR_DATE);
 			
-			int iCareTime = -1;
 			int iEmpType = -1;
 			Date dFromDate = null;
 			Date dToDate = null;
 			int invoiceReceiver = -1;
 			int schoolType = -1;
 			int schoolClass = -1;
-			
-			try {
-				iCareTime = Integer.parseInt(careTime);
-			} catch (Exception e) {}
 			
 			try {
 				iEmpType = Integer.parseInt(empType);
@@ -182,7 +178,7 @@ public class ContractEditor extends ChildCareBlock {
 			boolean success = false;
 			
 			if (dFromDate != null) {
-				success = getBusiness().alterContract(contract, iCareTime, dFromDate, dToDate, iwc.getCurrentLocale(), iwc.getCurrentUser(),iEmpType,invoiceReceiver,schoolType,schoolClass);
+				success = getBusiness().alterContract(contract, careTime, dFromDate, dToDate, iwc.getCurrentLocale(), iwc.getCurrentUser(),iEmpType,invoiceReceiver,schoolType,schoolClass);
 				/*
 				if (iEmpType > 0) {
 					contract.setEmploymentType(iEmpType);
@@ -283,13 +279,25 @@ public class ContractEditor extends ChildCareBlock {
                 cancelled.setLatestPossibleDate(nextContract.getValidFromDate(),localize("child_care.date_warning.termination_later_than_nex_startdate","You can not choose a termination date later than next start date"));
             }
 			
-			TextInput careTime = (TextInput) getStyledInterface(new TextInput(PARAMETER_CARE_TIME));
-			careTime.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
-			careTime.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
-			careTime.setSize(10);
-			if (contract.getCareTime() > 0) {
-				careTime.setContent (Integer.toString(contract.getCareTime()));
-			}
+      InterfaceObject careTime = null;
+    		if (isUsePredefinedCareTimeValues()) {
+    			DropdownMenu menu = getCareTimeMenu(PARAMETER_CARE_TIME);
+    			if (contract.getCareTime() != null) {
+    				menu.setSelectedElement(contract.getCareTime());
+    			}
+    			careTime = menu;
+    		}
+    		else {
+				TextInput input = (TextInput) getStyledInterface(new TextInput(PARAMETER_CARE_TIME));
+				input.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
+				input.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
+				input.setSize(10);
+				if (contract.getCareTime() != null) {
+					input.setContent (contract.getCareTime());
+				}
+				careTime = input;
+    		}
+    			
 			DropdownMenu mCustodians = (DropdownMenu)getStyledInterface(new DropdownMenu(custodians, PARAMETER_INVOICE_REVCEIVER));
 			if (contract.getInvoiceReceiverID() > 0) {
 				mCustodians.setSelectedElement(contract.getInvoiceReceiverID());
@@ -559,7 +567,7 @@ public class ContractEditor extends ChildCareBlock {
 					else
 						table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
 					column++;
-					table.add(getSmallText(String.valueOf(contract.getCareTime())), column++, row);
+					table.add(getSmallText(getCareTime(contract.getCareTime())), column++, row);
 					
 					et = contract.getEmploymentType();
 					if (et != null) {

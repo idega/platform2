@@ -71,17 +71,26 @@ public class ChildCareChildren extends ChildCareBlock {
 						}
 					}
 					
+					boolean createLink = false;
 					GrantedCheck check = null;
-					try {
-						check = getCheckBusiness(iwc).getGrantedCheckByChild(child);
+					if (this.isCheckRequired()) {
+						try {
+							check = getCheckBusiness(iwc).getGrantedCheckByChild(child);
+							createLink = true;
+						}
+						catch (RemoteException e) {
+						}
 					}
-					catch (RemoteException e) {
+					else {
+						createLink = true;
 					}
 	
 					Link link = null;
-					if (check != null) {
+					if (createLink) {
 						link = getLink(child.getName());
-						link.addParameter(getSession().getParameterCheckID(), ((Integer) check.getPrimaryKey()).intValue());
+						if (check != null) {
+							link.addParameter(getSession().getParameterCheckID(), ((Integer) check.getPrimaryKey()).intValue());
+						}
 						link.addParameter(getSession().getParameterUserID(), ((Integer)child.getPrimaryKey()).intValue());
 						link.setEventListener(ChildCareEventListener.class);
 						link.setPage(getResponsePage());

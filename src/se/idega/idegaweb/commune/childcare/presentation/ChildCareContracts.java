@@ -193,7 +193,7 @@ public class ChildCareContracts extends ChildCareBlock {
 						else
 							table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
 						column++;
-						table.add(getSmallText(String.valueOf(contract.getCareTime())), column++, row);
+						table.add(getSmallText(getCareTime(contract.getCareTime())), column++, row);
 						if(isCommuneAdministrator(iwc)){
 							if(contract.getInvoiceReceiverID()>0){
 								table.add(getSmallText(contract.getInvoiceReceiver().getName()),column++,row);

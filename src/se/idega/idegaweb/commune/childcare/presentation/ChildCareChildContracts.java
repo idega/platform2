@@ -157,9 +157,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 				terminated = new IWTimestamp(contract.getTerminatedDate());
 			else
 				terminated = null;
-			careTime = String.valueOf(contract.getCareTime());
-			if (contract.getCareTime() == -1)
-				careTime = "-";
+			careTime = getCareTime(contract.getCareTime());
 				
 			if (stampNow.isLaterThanOrEquals(validFrom)) {
 				isActive = true;

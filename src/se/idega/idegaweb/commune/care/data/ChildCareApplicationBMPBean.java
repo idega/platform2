@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.6 2004/10/26 17:14:20 aron Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.7 2004/12/02 12:39:08 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -43,7 +43,8 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public final static String CHILD_ID = "child_id";
 	public final static String QUEUE_DATE = "queue_date";
 	public final static String METHOD = "method";
-	public final static String CARE_TIME = "care_time";
+	public final static String CARE_TIME = "care_time_string";
+	public final static String CARE_TIME_OLD = "care_time";
 	public final static String CHOICE_NUMBER = "choice_number";
 	public final static String CHECK_ID = "check_id";
 	public final static String CONTRACT_ID = "contract_id";
@@ -101,7 +102,8 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		addAttribute(FROM_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(QUEUE_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(METHOD,"",true,true,java.lang.Integer.class);
-		addAttribute(CARE_TIME,"",true,true,java.lang.Integer.class);
+		addAttribute(CARE_TIME_OLD,"",true,true,java.lang.Integer.class);
+		addAttribute(CARE_TIME,"",true,true,java.lang.String.class);
 		addAttribute(CHOICE_NUMBER,"",true,true,java.lang.Integer.class);
 		addAttribute(REJECTION_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(OFFER_VALID_UNTIL,"",true,true,java.sql.Date.class);
@@ -156,8 +158,15 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return getIntColumnValue(METHOD);	
 	}
 	
-	public int getCareTime() {
-		return getIntColumnValue(CARE_TIME);
+	public String getCareTime() {
+		String careTime = getStringColumnValue(CARE_TIME);
+		if (careTime == null) {
+			int oldCareTime = getIntColumnValue(CARE_TIME_OLD);
+			if (oldCareTime != -1) {
+				careTime = String.valueOf(oldCareTime);
+			}
+		}
+		return careTime;
 	}
 	
 	public int getChoiceNumber() {
@@ -287,7 +296,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		setColumn(METHOD,method);	
 	}
 	
-	public void setCareTime(int careTime) {
+	public void setCareTime(String careTime) {
 		setColumn(CARE_TIME,careTime);	
 	}
 	

@@ -110,7 +110,8 @@ class ChildCarePlaceOfferTable2 extends Table {
 			rb2.setMarkupAttributeWithoutValue("disabled");
 		}
 		else {
-			rb1.setMarkupAttributeWithoutValue("checked");
+			//rb1.setMarkupAttributeWithoutValue("checked");
+			rb2.setMustBeSelected(_page.localize("child_care.must_select_to_keep_choice", "You must select whether to keep choice or not."));
 		}
 
 		if (!isCancelled && !offer) {

@@ -11,7 +11,6 @@ import java.util.Date;
 
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.data.User;
@@ -19,8 +18,10 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.Window;
@@ -50,7 +51,7 @@ public class ChildCareNewCareTimeWindow extends Window {
 	private final static String[] INFO =
 		new String[] { "ccnctw_info", "Info about care time." };
 
-	private CommuneBlock style = new CommuneBlock();
+	private ChildCareBlock style = new ChildCareBlock();
 
 	public void main(IWContext iwc) throws Exception {
 		ChildCareApplication application =
@@ -71,14 +72,22 @@ public class ChildCareNewCareTimeWindow extends Window {
 	private void makeGUI(IWContext iwc, ChildCareApplication application) {
 		Form form = new Form();
 		Table layoutTbl = new Table();
-
 		//		add(new Text("Appid:" + iwc.getParameter(CCConstants.APPID) + "."));
 
-		TextInput careTime = new TextInput(CARE_TIME);
-		careTime.setValue(application.getCareTime());
-		careTime.setLength(4);
-		careTime.setStyleAttribute(style.getSmallTextFontStyle());
-
+		InterfaceObject careTime = null;
+		if (style.isUsePredefinedCareTimeValues()) {
+			DropdownMenu menu = style.getCareTimeMenu(CARE_TIME);
+			menu.setSelectedElement(application.getCareTime());
+			careTime = menu;
+		}
+		else {
+			TextInput input = new TextInput(CARE_TIME);
+			input.setValue(application.getCareTime());
+			input.setLength(4);
+			input.setStyleAttribute(style.getSmallTextFontStyle());
+			careTime = input;
+		}
+		
 		DateInput fromDate = new DateInput(FROM_DATE);
 		fromDate.setAsNotEmpty(style.localize(ALERT_UNVALID_DATE_FORMAT));
 		fromDate.setStyleAttribute("style", style.getSmallTextFontStyle());

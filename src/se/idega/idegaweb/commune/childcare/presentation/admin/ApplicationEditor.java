@@ -289,11 +289,7 @@ public class ApplicationEditor extends ChildCareBlock {
 					table.add(getSmallText("-"), column++, row);
 				}
 				
-				if (application.getCareTime() > 0) {
-					table.add(getSmallText(Integer.toString(application.getCareTime())), column++, row);
-				} else {
-					table.add(getSmallText("-"), column++, row);
-				}
+				table.add(getSmallText(getCareTime(application.getCareTime())), column++, row);
 				
 				if (queueDate != null) {
 					table.add(getSmallText(queueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
