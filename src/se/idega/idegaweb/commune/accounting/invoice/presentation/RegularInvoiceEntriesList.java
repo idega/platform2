@@ -698,7 +698,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		searchPanel.setSchoolIfNull(entry.getSchool());
 		
 		searchPanel.setParameter(PAR_EDIT, " ");
-		searchPanel.maintainAllParameters();
 		table.mergeCells(1, row, 10, row);
 		table.add(searchPanel, 1, row++); 
 

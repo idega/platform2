@@ -692,7 +692,6 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		
 		regSearchPanel.setParameter(PAR_EDIT_FROM_SCREEN, " ");
-		regSearchPanel.maintainAllParameters();
 		table.mergeCells(1, row, 10, row);
 		table.add(regSearchPanel, 1, row++); 
 
