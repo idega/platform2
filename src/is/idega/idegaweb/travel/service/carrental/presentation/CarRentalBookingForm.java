@@ -1730,7 +1730,7 @@ public class CarRentalBookingForm extends BookingForm {
   		return (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);	
   }
 
-	public Form getFormMaintainingAllParameters( IWContext iwc,	boolean withBookingAction, boolean withSAction) {
+	public Form getFormMaintainingAllParameters( IWContext iwc,	boolean withBookingAction, boolean withSAction) throws RemoteException {
 		//System.out.println("[CarRentalBookingForm] getFormMaintainingAllParameters()");
 		Form form = super.getFormMaintainingAllParameters( iwc, withBookingAction, withSAction);
 		form.maintainParameter(this.PARAMETER_DROPOFF_PLACE);
