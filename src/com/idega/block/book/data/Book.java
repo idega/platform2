@@ -23,5 +23,5 @@ public interface Book extends com.idega.data.IDOEntity
  public java.sql.Timestamp getDateAdded() throws java.rmi.RemoteException;
  public void setYear(int p0) throws java.rmi.RemoteException;
  public java.util.Collection findRelatedCategories()throws com.idega.data.IDOException, java.rmi.RemoteException;
- public void remove()throws javax.ejb.RemoveException, java.rmi.RemoteException;
+
 }
