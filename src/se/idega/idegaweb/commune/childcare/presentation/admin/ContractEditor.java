@@ -343,7 +343,7 @@ public class ContractEditor extends ChildCareBlock {
 						table.add(getSmallText(cancelledDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 					else
 						table.add(getSmallText("-"), column++, row);
-					if (application.getApplicationStatus() == getBusiness().getStatusCancelled() && isCancelled)
+					if (isCancelled)
 						table.add(getSmallText(localize("child_care.status_cancelled","Cancelled")), column, row);
 					else
 						table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
