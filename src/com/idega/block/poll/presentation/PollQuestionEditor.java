@@ -86,6 +86,7 @@ public PollQuestionEditor(){
     if ( iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION) != null ) {
       try {
         pollQuestionID = Integer.parseInt(iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION));
+        iwc.setApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestionID));
       }
       catch (NumberFormatException e) {
         pollQuestionID = -1;
@@ -96,6 +97,15 @@ public PollQuestionEditor(){
       savePollQuestion(iwc,iLocaleId);
     }*/
 
+    if ( (String) iwc.getApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION) != null ) {
+      try {
+        pollQuestionID = Integer.parseInt((String) iwc.getApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION));
+      }
+      catch (NumberFormatException e) {
+        pollQuestionID = -1;
+      }
+    }
+
     if ( iwc.getParameter(PollBusiness._PARAMETER_MODE) != null ) {
       if ( iwc.getParameter(PollBusiness._PARAMETER_MODE).equalsIgnoreCase(PollBusiness._PARAMETER_CLOSE) ) {
         closePollQuestion(iwc);
@@ -105,15 +115,6 @@ public PollQuestionEditor(){
           savePollQuestion(iwc,iLocaleId);
         else
           closePollQuestion(iwc);
-      }
-    }
-
-    if ( (String) iwc.getApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION) != null ) {
-      try {
-        pollQuestionID = Integer.parseInt((String) iwc.getApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION));
-      }
-      catch (NumberFormatException e) {
-        pollQuestionID = -1;
       }
     }
 
