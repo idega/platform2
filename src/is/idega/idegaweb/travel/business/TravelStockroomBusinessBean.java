@@ -318,6 +318,29 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return returner;
   }
 
+	public PriceCategory[] getPriceCategories(String key) {
+		PriceCategory[] returner = {};
+		try {
+		  StringBuffer sql = new StringBuffer();
+			sql.append("Select * from ")
+			   .append(PriceCategoryBMPBean.getPriceCategoryTableName())
+			   .append(" where ")
+			   .append(PriceCategoryBMPBean.getColumnNameKey())
+			   .append(" = '")
+			   .append(key)
+			   .append(" and ")
+			   .append(PriceCategoryBMPBean.getColumnNameIsValid())
+			   .append("' = 'Y'");
+
+		  returner = (PriceCategory[]) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class).findAll(sql.toString());
+
+		}catch (SQLException sql) {
+		  sql.printStackTrace(System.err);
+		}
+		return returner;
+		
+	}
+
   public PriceCategory[] getMiscellaneousServices(int supplierId) {
     PriceCategory[] returner = {};
     try {
