@@ -46,17 +46,17 @@ public class GolferPage extends Page{
   //It would be smart to override this String to create possible diffrent sidemenus for different users.
   public String sideMenuAttributeName = "sideMenuAttributeName";
 
-  private Table Maintable, innerLeftTable, innerMainTable, tempSideMenuTable;
+  private Table Maintable, innerLeftTable, innerMainTable, tempSideMenuTable, topBannerTable;
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
   protected boolean isAdmin, isTopPictureSet;
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   private Sidemenu sidemenu = new Sidemenu();
 
+  //Variables to set!
   public String cornerLogoImageUrlInBundle;
-  public int cornerLogoImageWidth;
-  public int cornerLogoImageHeight;
-  private Image golferImage;
+  public int cornerLogoImageWidth, cornerLogoImageHeight;
+  private int profileTextReaderId, golfbagTextReaderId, homeNewsReaderId;
 
   //The text objects in the side menu are cloned from this text.
   Text theText = new Text();
@@ -86,7 +86,7 @@ public class GolferPage extends Page{
     this.setLinkColor("FF6000");
     this.setHoverColor("#FF9310");
     this.setTextDecoration("none");
-    this.setStyleSheetURL("/style/idega.css");
+    this.setStyleSheetURL("/style/GolferPageView.css");
     Maintable = new Table(3,5);
     Maintable.mergeCells(3,3,3,4);
 //    Maintable.mergeCells(1,5,3,5);
@@ -104,7 +104,7 @@ public class GolferPage extends Page{
     Maintable.setWidth(1,2,"120");
     Maintable.add(Text.emptyString(),2,1);
     Maintable.add(Text.emptyString(),2,3);
-    Maintable.setAlignment(1,3,"top");
+    Maintable.setVerticalAlignment(1,3,"top");
     Maintable.setCellpadding(0);
     Maintable.setCellspacing(0);
     Maintable.setAlignment(1,3,"center");
@@ -118,7 +118,7 @@ public class GolferPage extends Page{
     innerLeftTable.setCellspacing(0);
     Maintable.add(innerLeftTable,1,3);
     //Maintable.add(innerMainTable,3,3);
-    Maintable.setAlignment(3,3,"top");
+    Maintable.setVerticalAlignment(3,3,"top");
    /* Table dummyTable = new Table(1,1);
     dummyTable.setCellpadding(10);
     dummyTable.setCellspacing(0);
@@ -129,6 +129,12 @@ public class GolferPage extends Page{
     tempSideMenuTable.setAlignment(1,2,"top");
     dummyTable.add(tempSideMenuTable,1,1);
     innerLeftTable.add(dummyTable,1,1);*/
+    topBannerTable = new Table(3,1);
+    topBannerTable.setAlignment(1,1,"left");
+    topBannerTable.setAlignment(2,1,"center");
+    topBannerTable.setAlignment(3,1,"right");
+    topBannerTable.setWidth("100%");
+    Maintable.add(topBannerTable,3,1);
     super.add(Maintable);
   }
 
@@ -140,14 +146,6 @@ public class GolferPage extends Page{
     return isAdmin;
   }
 
-  public void addTopPicture(Image imageToAdd){
-    if (isTopPictureSet) {
-//      innerMainTable.add("AKLSDLKLJSDLKJLSDKJADLSKJ  VIRKAR ÞETTA???",1,1);
-      innerMainTable.emptyCell(1,1);
-      innerMainTable.add(imageToAdd,1,1);
-    }
-  }
-
   public void add(ModuleObject objectToAdd){
     Maintable.add(objectToAdd,3,3);
   }
@@ -156,45 +154,20 @@ public class GolferPage extends Page{
     Maintable.add(stringToAdd,3,3);
   }
 
- /* public void add(ModuleObject objectToAdd){
-    if (isTopPictureSet) {
-      innerMainTable.emptyCell(1,2);
-      innerMainTable.add(objectToAdd,1,2);
-    }
-    else {
-      innerMainTable.emptyCell(1,2);
-      innerMainTable.emptyCell(1,1);
-      innerMainTable.add(objectToAdd,1,1);
-    }
-  }
-
-  public void add(String text){
-    if (isTopPictureSet) {
-      innerMainTable.emptyCell(1,2);
-      innerMainTable.add(text,1,2);
-    }
-    else {
-      innerMainTable.emptyCell(1,2);
-      innerMainTable.emptyCell(1,1);
-      innerMainTable.add(text,1,1);
-    }
-  }*/
-
- /* public void addLink(ModuleObject objectToAdd){
-    Maintable.add(objectToAdd,3,2);
-  }*/
-
- /* public void addLeftFooter(ModuleObject objectToAdd){
-    Maintable.add(objectToAdd,1,5);
-  }*/
-
   public void addFooter(ModuleObject objectToAdd){
     Maintable.add(objectToAdd,1,5);
   }
 
+  public void addLeftTopBanner(ModuleObject objectToAdd){
+    topBannerTable.add(objectToAdd,1,1);
+  }
 
-  public void addTopBanners(ModuleObject objectToAdd){
-    Maintable.add(objectToAdd,3,1);
+  public void addRightTopBanner(ModuleObject objectToAdd){
+    topBannerTable.add(objectToAdd,3,1);
+  }
+
+  public void addCenterTopBanner(ModuleObject objectToAdd){
+    topBannerTable.add(objectToAdd,2,1);
   }
 
   public void addLeftLogo(ModuleObject objectToAdd){
@@ -246,8 +219,40 @@ public class GolferPage extends Page{
     }
   }
 
-  public void setTopPicture(boolean isSet){
-    isTopPictureSet = isSet;
+  public void addSideBannerImage(String sideBannerImageIWBundleUrl){
+    Image sideBannerImage;
+    sideBannerImage = iwb.getImage(sideBannerImageIWBundleUrl);
+    addLeftBanners(sideBannerImage);
+  }
+
+  public void addRightTopImage(String rightTopImageIWBundleUrl){
+    Image rightTopImage;
+    rightTopImage = iwb.getImage(rightTopImageIWBundleUrl);
+    addRightTopBanner(rightTopImage);
+  }
+
+  public void addCenterTopImage(String centerTopImageIWBundleUrl){
+    Image centerTopImage;
+    centerTopImage = iwb.getImage(centerTopImageIWBundleUrl);
+    addCenterTopBanner(centerTopImage);
+  }
+
+  public void addLeftTopImage(String leftTopImageIWBundleUrl){
+    Image leftTopImage;
+    leftTopImage = iwb.getImage(leftTopImageIWBundleUrl);
+    addLeftTopBanner(leftTopImage);
+  }
+
+  public void setProfileTextReaderId(int profileTextReaderId){
+    this.profileTextReaderId = profileTextReaderId;
+  }
+
+  public void setGolfbagTextReaderId(int golfbagTextReaderId){
+    this.golfbagTextReaderId = golfbagTextReaderId;
+  }
+
+  public void setHomeNewsReaderId(int homeNewsReaderId){
+    this.homeNewsReaderId = homeNewsReaderId;
   }
 
   public void setCornerLogoImage(String cornerLogoImageUrlInBundle, int cornerLogoImageWidth, int cornerLogoImageHeight){
@@ -319,8 +324,6 @@ public class GolferPage extends Page{
     lPictures.addParameter(sTopMenuParameterName, sPicturesParameterValue);
     lHome.addParameter(sTopMenuParameterName, sHomeParameterValue);
 
-    //topTable.setVerticalAlignment("100%");
-    //topTable.setAlignment("100%");
     topTable.setWidth("100%");
 
     addMenuLinks(topTable);
@@ -335,7 +338,6 @@ public class GolferPage extends Page{
 
       //INFO
       if (chosenParameterValue.equals(sInfoParameterValue)) {
-    //    this.addLeftLink("Arrrrrg");
         setInfoView();
       }
 
@@ -367,16 +369,16 @@ public class GolferPage extends Page{
       if (chosenParameterValue.equals(sStatisticsParameterValue)) {
         this.setStyleSheetURL("/style/StatisticsView.css");
       }
-      else{
+      /*else{
         this.setStyleSheetURL("/style/idega.css");
-      }
+      }*/
     }
     //temporarily!!
     else if (modinfo.isParameterSet(fakeSideMenuParameterName)) {
       setHomeView(modinfo);
     }
     else{
-      this.setStyleSheetURL("/style/StatisticsView.css");
+//b      this.setStyleSheetURL("/style/StatisticsView.css");
       setHomeView(modinfo);
     }
     getSideMenuViewType(modinfo);
@@ -416,13 +418,12 @@ public class GolferPage extends Page{
     Image dotLineBackgroundImage;
     dotLineBackgroundImage = iwb.getImage("shared/brotalina.gif");
     homeTable.setBackgroundImage(2,1,dotLineBackgroundImage);
-    homeTable.setWidth(1,1,"380");
+    homeTable.setWidth(1,1,"375");
     homeTable.setWidth(2,1,"1");
     homeTable.add(Text.emptyString(),2,1);
 
-    setTopPicture(false);
     NewsReader news = new NewsReader();
-    news.setConnectionAttributes("golfer_page", 228);
+    news.setConnectionAttributes("golfer_page", homeNewsReaderId);
     news.setNewsEditorURL("/golfers/newsIndex.jsp");
 //    news.setNumberOfDays(4);
     news.setHeadlineImageURL("/idegaweb/bundles/golf.bundle/resources/shared/bullet.gif");
@@ -440,7 +441,7 @@ public class GolferPage extends Page{
     homeTable.add(news,3,1);
     homeTable.setVerticalAlignment(3,1,"top");
 
-    golferImage = new Image();
+    Image golferImage = new Image();
     golferImage = iwb.getImage("shared/mynd.jpg");
 //    setTopPicture(true);
 //    addTopPicture(golferImage);
@@ -448,7 +449,7 @@ public class GolferPage extends Page{
     pictureTable.setCellpadding(10);
     pictureTable.setCellspacing(0);
     pictureTable.add(golferImage,1,1);
-    TextReader text = new TextReader(818);
+    TextReader text = new TextReader(profileTextReaderId);
       text.setEnableDelete(false);
     text.setWidth("100%");
     text.setTableTextSize(1);
@@ -523,34 +524,38 @@ public class GolferPage extends Page{
   //Golfpokinn
   public void setInfoView(){
 
-    Table dummyTable = new Table();
+    Table dummyTable = new Table(2,1);
     dummyTable.setCellpadding(24);
-    setTopPicture(false);
     Image iWelcomeLogo = iwrb.getImage("/golferpage/upplysingar.gif");
     this.addLeftLogo(iWelcomeLogo);
 //    this.addLeftLink("Arrrrrg");
-    TextReader golfbagText = new TextReader(819);
+    TextReader golfbagText = new TextReader(golfbagTextReaderId);
     golfbagText.setWidth("100%");
     golfbagText.setTableTextSize(1);
     golfbagText.setTextSize(1);
     golfbagText.setTextStyle(Text.FONT_FACE_ARIAL);
     golfbagText.setHeadlineSize(1);
-    dummyTable.add(golfbagText);
+    dummyTable.add(golfbagText,1,1);
+    Image sideImage;
+    sideImage = iwb.getImage("/shared/pingi3.jpg");
+    dummyTable.add(sideImage,2,1);
+    dummyTable.setVerticalAlignment(2,1,"top");
+    dummyTable.setAlignment(2,1,"right");
     add(dummyTable);
   }
 
   //Árangur
   public void setRecordView(){
-    setTopPicture(false);
     Image iRecordLogo = iwrb.getImage("/golferpage/ferill.gif");
     this.addLeftLogo(iRecordLogo);
+    /*HandicapOverview hOverview = new HandicapOverview(memberId);
+    add(hOverview);*/
     /*TextReader recordText = new TextReader(756);
     add(recordText);*/
   }
 
   //Stuðningsaðilar
   public void setInterviewsView(){
-    setTopPicture(false);
     Image iInterviewsLogo = iwrb.getImage("/golferpage/velkomin.gif");
     this.addLeftLogo(iInterviewsLogo);
     /*TextReader interviewText = new TextReader(757);
@@ -559,11 +564,8 @@ public class GolferPage extends Page{
 
   //STATISTICS_VIEW
   public void setStatisticsView(){
-    setTopPicture(false);
     Image iStatisticsLogo = iwrb.getImage("/golferpage/tolfraedi.gif");
     this.addLeftLogo(iStatisticsLogo);
-    /*HandicapOverview hOverview = new HandicapOverview(memberId);
-    add(hOverview);*/
 
     /*    TextReader statisticText = new TextReader(759);
     add(statisticText);*/
@@ -571,11 +573,10 @@ public class GolferPage extends Page{
 
   //PICTURES_VIEW
   public void setPictureView(){
-    setTopPicture(false);
     Image iWelcomeLogo = iwrb.getImage("/golferpage/velkomin.gif");
     this.addLeftLogo(iWelcomeLogo);
-    sidemenu.setConnectionAttributes(sideMenuAttributeName,2);
-    sidemenu.addParameter(sTopMenuParameterName, sPicturesParameterValue);
+    /*sidemenu.setConnectionAttributes(sideMenuAttributeName,2);
+    sidemenu.addParameter(sTopMenuParameterName, sPicturesParameterValue);*/
    // this.addUpperLeftLink(sidemenu);
 
   }
@@ -651,7 +652,7 @@ public class GolferPage extends Page{
       System.err.println("ÉG ER H'ER!!!!");
       NewsReader news = (NewsReader) jmodule;
 //      news.setEnableDelete(false);
-      news.setConnectionAttributes("golfer_page", 229);
+      news.setConnectionAttributes("golfer_page", homeNewsReaderId);
       news.setNewsEditorURL("/golfers/newsIndex.jsp");
       news.setNumberOfDays(4);
       news.setNewsReaderURLAsSamePage(modinfo);
@@ -682,25 +683,9 @@ public class GolferPage extends Page{
     Maintable.setBackgroundImage(2,3,dotLineBackgroundImage);
     Maintable.setWidth(2,3,"1");
 
-    /*InsertBanner topInsertBanner = new InsertBanner(1);
-    InsertBanner leftInsertBanner = new InsertBanner(1);
-
-    this.addTopBanners(topInsertBanner);
-    this.addLeftBanners(leftInsertBanner);*/
-
-    Image topBanner1, topBanner2, topBanner3;
-    topBanner1 = iwb.getImage("shared/top1.gif");
-    topBanner2 = iwb.getImage("shared/top2.gif");
-    topBanner3 = iwb.getImage("shared/top3.gif");
-    Table topBannerTable = new Table(3,1);
-    topBannerTable.add(topBanner1,1,1);
-    topBannerTable.setAlignment(1,1,"left");
-    topBannerTable.setAlignment(2,1,"center");
-    topBannerTable.setAlignment(3,1,"right");
-    topBannerTable.add(topBanner2,2,1);
-    topBannerTable.add(topBanner3,3,1);
-    topBannerTable.setWidth("100%");
-    addTopBanners(topBannerTable);
+    addLeftTopImage("shared/top1.gif");
+    addCenterTopImage("shared/top2.gif");
+    addRightTopImage("shared/top3.gif");
 
     Image footerImage;
     footerImage = iwrb.getImage("golferpage/index_23.gif");
