@@ -131,8 +131,8 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		Date end = month.getLastDateOfMonth();
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CUSTODIAN_ID, custodian.getPrimaryKey());
-		sql.appendAnd().append(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start);
-		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanOrEqualsSign().append(end);
+		sql.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
+		sql.appendAnd().append(COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
 		return (Integer)idoFindOnePKByQuery(sql);
 	}
 	
@@ -147,8 +147,8 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		Date end = month.getLastDateOfMonth();
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
-		query.appendWhere(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start);
-		query.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanOrEqualsSign().append(end);
+		query.appendWhere(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
+		query.appendAnd().append(COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
 		return query;
 	}
 	
