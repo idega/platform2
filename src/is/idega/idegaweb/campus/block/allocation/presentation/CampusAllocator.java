@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.34 2002/08/12 13:00:38 palli Exp $
+ * $Id: CampusAllocator.java,v 1.35 2002/08/22 14:14:38 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -292,7 +292,7 @@ public class CampusAllocator extends Block implements Campus {
 			T.add(boldText(totApp3), 8, row);
 			row++;
 		}
-		
+
 		return T;
 	}
 
@@ -381,10 +381,10 @@ public class CampusAllocator extends Block implements Campus {
 			T.add(boldText(totApp3), 8, row);
 			row++;
 		}
-		
+
 		return T;
 	}*/
-	
+
 /*	private PresentationObject getWaitingLists(ApartmentCategory AC) {
 		Table T = new Table();
 
@@ -754,12 +754,16 @@ public class CampusAllocator extends Block implements Campus {
 				if (Available || isThis) {
 					if (A.getUnavailableUntil() != null) {
 						IWTimestamp it = new IWTimestamp(A.getUnavailableUntil());
-						if (!it.isLaterThan(IWTimestamp.RightNow())) {
+            nextAvailable = it;
+						/*
+            if (!it.isLaterThan(IWTimestamp.RightNow())) {
 							T.add(RB1, 1, row);
 						}
+            */
 					}
 					else {
-						T.add(RB1, 1, row);
+            nextAvailable = IWTimestamp.RightNow();
+						//T.add(RB1, 1, row);
 					}
 				}
 
@@ -769,6 +773,8 @@ public class CampusAllocator extends Block implements Campus {
 				T.add(formatText((BuildingCacher.getBuilding(F.getBuildingId())).getName()), 4, row);
 				if (nextAvailable != null) {
 					Text text = formatText(nextAvailable.getISLDate());
+          if(nextAvailable.equals(IWTimestamp.RightNow()))
+            text = formatText(iwrb.getLocalizedString("today","Í dag"));
 					T.add(getApartmentContractsLink(text, applicant_id, iContractId, A.getID(), nextAvailable), 5, row);
 				}
 
