@@ -33,6 +33,7 @@ import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.data.EntityValueHolder;
 import com.idega.block.entity.presentation.EntityBrowser;
+import com.idega.block.entity.presentation.converters.CheckBoxAsLinkConverter;
 import com.idega.block.entity.presentation.converters.CheckBoxConverter;
 import com.idega.block.entity.presentation.converters.ConverterConstants;
 import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
@@ -467,21 +468,19 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     // define converter
     CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
     TextEditorConverter textEditorConverter = new TextEditorConverter(form);
-    TextEditorConverter socialSecurityNumberEditorConverter = new TextEditorConverter(form);
     String message = resourceBundle.getLocalizedString("wr_member_editor_not_a_valid_ssn", "The input is not a valid social security number");
-    socialSecurityNumberEditorConverter.setAsIcelandicSocialSecurityNumber(message);
-    socialSecurityNumberEditorConverter.maintainParameters(this.getParametersToMaintain());
+    EditOkayButtonConverter okayConverter = new EditOkayButtonConverter();
+    okayConverter.maintainParameters(this.getParametersToMaintain());
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     DropDownMenuConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
     // define if the converters should be editable
     checkBoxConverter.setEditable(editable);
     textEditorConverter.setEditable(editable);
-    socialSecurityNumberEditorConverter.setEditable(editable);
     dropDownPostalCodeConverter.setEditable(editable);    
     // define path short keys and map corresponding converters
     // if a converter is "null" the default converter of the entity browser is used
     Object[] columns = {
-      "okay", new EditOkayButtonConverter(),
+      "okay", okayConverter,
       CHECK_BOX, checkBoxConverter,
       NAME, null,
       PERSONAL_ID, null,
@@ -517,9 +516,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       String leagueName = (String) iterator.next();
      WorkReportCheckBoxConverter converter = new WorkReportCheckBoxConverter(leagueName);
      converter.setEditable(editable);
-      converter.maintainParameters(getParametersToMaintain());
-      browser.setMandatoryColumn(i++, leagueName);
-      browser.setEntityToPresentationConverter(leagueName, converter);
+     converter.maintainParameters(getParametersToMaintain());
+     browser.setMandatoryColumn(i++, leagueName);
+     browser.setEntityToPresentationConverter(leagueName, converter);
     }
     browser.setDefaultNumberOfRows(Math.min(entities.size(), 20));
     browser.setEntities("dummy_string", entities);
@@ -787,66 +786,18 @@ public class WorkReportMemberEditor extends WorkReportSelector {
    * Inner class.
    */
   
-  class WorkReportCheckBoxConverter extends CheckBoxConverter {
-    
-    private List maintainParameterList = new ArrayList(0);
+  class WorkReportCheckBoxConverter extends CheckBoxAsLinkConverter {
     
     public WorkReportCheckBoxConverter(String key) {
       super(key);
     }
     
-    /** This method uses a copy of the specified list */
-    public void maintainParameters(List maintainParameters) {
-      this.maintainParameterList.addAll(maintainParameters);
-    }    
-        
-    public PresentationObject getPresentationObject(
-      Object entity,
-      EntityPath path,
-      EntityBrowser browser,
-      IWContext iwc) {
-      
-      EntityRepresentation idoEntity = (EntityRepresentation) entity;
-      Integer id = (Integer) idoEntity.getPrimaryKey();
+    protected boolean shouldEntityBeChecked(Object entity, Integer primaryKey) { 
 
-      Collection leagues = (Collection) memberLeaguesMap.get(id);
-      boolean shouldBeChecked = (leagues != null && leagues.contains(getKeyForCheckBox()));
-
-      boolean disableCheckBox = true;
-      if (iwc.isParameterSet(ConverterConstants.EDIT_ENTITY_KEY)) {
-        String idEditEntity = iwc.getParameter(ConverterConstants.EDIT_ENTITY_KEY);
-        try {
-          Integer primaryKey = new Integer(idEditEntity);
-          if (id.equals(primaryKey))  {
-            CheckBox checkBox = new CheckBox(getKeyForCheckBox(), id.toString());
-            checkBox.setChecked(shouldBeChecked);
-            return checkBox;
-          }
-        }
-        catch (NumberFormatException ex)  {
-        }
-      }
-      String text;
-      if (shouldBeChecked) {
-        // black dot
-        text = "X";
-      }
-      else {
-        text = "_";
-      }
-      if (! editable) {
-        return new Text(text);
-      }
-      Link link = new Link(text);
-      link.addParameter(ConverterConstants.EDIT_ENTITY_KEY, id.toString());
-       // add maintain parameters
-      Iterator iteratorList = maintainParameterList.iterator();
-      while (iteratorList.hasNext())  {
-        String parameter = (String) iteratorList.next();
-        link.maintainParameter(parameter, iwc);
-      }
-      return link;
+      Collection leagues = (Collection) memberLeaguesMap.get(primaryKey);
+      return (leagues != null && leagues.contains(getKeyForCheckBox()));
     }
+
     
     public PresentationObject getHeaderPresentationObject(
       EntityPath entityPath,

@@ -417,6 +417,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
     TextEditorConverter textEditorConverter = new TextEditorConverter(form);
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
+    EditOkayButtonConverter okayConverter = new EditOkayButtonConverter();
+    okayConverter.maintainParameters(this.getParametersToMaintain());
     TextEditorConverter socialSecurityNumberEditorConverter = new TextEditorConverter(form);
     String message = resourceBundle.getLocalizedString("wr_member_editor_not_a_valid_ssn", "The input is not a valid social security number");
     socialSecurityNumberEditorConverter.setAsIcelandicSocialSecurityNumber(message);
@@ -433,7 +435,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     dropDownPostalCodeConverter.setEditable(editable);
     // define path short keys and map corresponding converters
     Object[] columns = {
-      "okay", new EditOkayButtonConverter(),
+      "okay",okayConverter,
       CHECK_BOX, checkBoxConverter,
       LEAGUE, leagueDropDownMenuConverter,
       STATUS, statusDropDownMenuConverter,

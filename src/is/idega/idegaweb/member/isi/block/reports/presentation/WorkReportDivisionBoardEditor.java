@@ -334,55 +334,18 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     mainTable.add(browser, 1,1);
     // do not show the buttons if not editable
     if (editable) {
-      PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
-        getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
-      PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
-      PresentationObject cancelButton = getCancelButton(resourceBundle);
-      Table buttonTable = new Table(2,1);
-//      buttonTable.add(newEntryButton,1,1);
-//      buttonTable.add(deleteEntriesButton,2,1);
-      buttonTable.add(cancelButton, 1,1);
       if (! workReport.isBoardPartDone()) {
-        buttonTable.add(getFinishButton(resourceBundle), 2, 1);
+        mainTable.add(getFinishButton(resourceBundle), 1, 2);
       }
       else {
         Text text = new Text(resourceBundle.getLocalizedString("wr_division_board_editor_board_part_finished", "Board part has been finished."));
         text.setBold();
-        buttonTable.add(text, 2,1);
+        mainTable.add(text, 1,2);
       }
-      mainTable.add(buttonTable,1,2);
     }
     return mainTable;    
   }
   
-  private PresentationObject getCreateNewEntityButton(IWResourceBundle resourceBundle) {
-    String createNewEntityText = resourceBundle.getLocalizedString("wr_div_board_member_editor_create_new_entry", "New entry");
-    SubmitButton button = new SubmitButton(createNewEntityText, SUBMIT_CREATE_NEW_ENTRY_KEY, "dummy_value");
-    button.setAsImageButton(true);
-    return button;
-  }
-  
-  private PresentationObject getSaveNewEntityButton(IWResourceBundle resourceBundle)  {
-    String saveNewEntityText = resourceBundle.getLocalizedString("wr_div_board_member_editor_save_new_entry", "Save");
-    SubmitButton button = new SubmitButton(saveNewEntityText, SUBMIT_SAVE_NEW_ENTRY_KEY, "dummy_value");
-    button.setAsImageButton(true);
-    return button;
-  }    
-
-  private PresentationObject getDeleteEntriesButton(IWResourceBundle resourceBundle)  {
-    String deleteEntityText = resourceBundle.getLocalizedString("wr_board_member_editor_remove_entries", "Remove");
-    SubmitButton button = new SubmitButton(deleteEntityText, SUBMIT_DELETE_ENTRIES_KEY, "dummy_value");
-    button.setAsImageButton(true);
-    return button;
-  }  
-
-  private PresentationObject getCancelButton(IWResourceBundle resourceBundle)  {
-    String cancelText = resourceBundle.getLocalizedString("wr_division_board_editor_cancel", "Cancel");
-    SubmitButton button = new SubmitButton(cancelText, SUBMIT_CANCEL_KEY, "dummy_value");
-    button.setAsImageButton(true);
-    return button;
-  }    
-
   private PresentationObject getFinishButton(IWResourceBundle resourceBundle) {
     String finishText = resourceBundle.getLocalizedString("wr_division_board_editor_finish", "Finish");
     SubmitButton button = new SubmitButton(finishText, SUBMIT_FINISH_KEY, "dummy_value");
@@ -395,6 +358,8 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
     TextEditorConverter textEditorConverter = new TextEditorConverter(form);
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
+    EditOkayButtonConverter okayConverter = new EditOkayButtonConverter();
+    okayConverter.maintainParameters(this.getParametersToMaintain());
     EntityToPresentationObjectConverter textConverter = new WorkReportTextConverter();
     DropDownMenuConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
     // define if the converters should be editable or not
@@ -404,7 +369,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     // WorkReportTextConverter is not an editor 
     // define path short keys and map corresponding converters
     Object[] columns = {
-      "okay", new EditOkayButtonConverter(),
+      "okay", okayConverter,
       LEAGUE, textConverter,
       HOME_PAGE, textEditorConverter,
       PERSONAL_ID, textEditorConverter,

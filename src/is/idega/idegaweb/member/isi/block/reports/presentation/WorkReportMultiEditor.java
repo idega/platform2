@@ -19,6 +19,7 @@ import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.presentation.EntityBrowser;
+import com.idega.block.entity.presentation.converters.CheckBoxAsLinkConverter;
 import com.idega.block.entity.presentation.converters.CheckBoxConverter;
 import com.idega.block.entity.presentation.converters.ConverterConstants;
 import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
@@ -169,6 +170,7 @@ public class WorkReportMultiEditor extends Block {
 		
 		InActiveCheckBoxConverter inActiveConverter = new InActiveCheckBoxConverter();
 		inActiveConverter.maintainParameters(params);
+        inActiveConverter.setEditable(editable);
 		EditOkayButtonConverter okCancelButton = new EditOkayButtonConverter();
 		
 		okCancelButton.maintainParameters(params);
@@ -394,61 +396,14 @@ public class WorkReportMultiEditor extends Block {
 	 * Inner class.
 	 */
   
-	class InActiveCheckBoxConverter extends CheckBoxConverter {
+	class InActiveCheckBoxConverter extends CheckBoxAsLinkConverter {
     
-		private List maintainParameterList = new ArrayList(0);
-    
-		
-		public PresentationObject getHeaderPresentationObject(EntityPath entityPath, EntityBrowser browser, IWContext iwc)	{
-			return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);
-		}
-    
-		/** This method uses a copy of the specified list */
-		public void maintainParameters(List maintainParameters) {
-			this.maintainParameterList.addAll(maintainParameters);
-		}    
-        
-		public PresentationObject getPresentationObject( Object entity,EntityPath path,EntityBrowser browser,IWContext iwc) {
-      
-			WorkReport report = (WorkReport) entity;
-			Integer id = (Integer) report.getPrimaryKey();
-
-			
-			boolean shouldBeChecked = report.isInActive();
-
-			if (iwc.isParameterSet(ConverterConstants.EDIT_ENTITY_KEY)) {
-				String idEditEntity = iwc.getParameter(ConverterConstants.EDIT_ENTITY_KEY);
-				try {
-					Integer primaryKey = new Integer(idEditEntity);
-					if (id.equals(primaryKey))  {
-						CheckBox checkBox = new CheckBox(getKeyForCheckBox(), id.toString());
-						checkBox.setChecked(shouldBeChecked);
-						return checkBox;
-					}
-				}
-				catch (NumberFormatException ex)  {
-				}
-			}
-			String text;
-			if (shouldBeChecked) {
-				// black dot
-				text = "X";
-			}
-			else {
-				text = "_";
-			}
-			if (! editable) {
-				return new Text(text);
-			}
-			
-			Link link = new Link(text);
-			link.addParameter(ConverterConstants.EDIT_ENTITY_KEY, id.toString());
-			link.addParameter(WorkReportWindow.ACTION,iwc.getParameter(WorkReportWindow.ACTION));
-
-			return link;
-		}
+      protected boolean shouldEntityBeChecked(Object entity, Integer primaryKey) {
+        WorkReport report = (WorkReport) entity;
+        return  report.isInActive();
+      }
+  }
     
 
-	}
 	
 }
