@@ -29,7 +29,9 @@ public class QuestionsServiceBean extends IBOServiceBean implements QuestionsSer
 					quest.setAnswerID(AnswerID);
 				quest.setCategoryId(CategoryID);
 				quest.setValid(true);
-				quest.setSequence(quest.getID());
+				
+				quest.store();
+				quest.setSequence(((Integer)quest.getPrimaryKey()).intValue());
 				quest.store();
 				return quest;
 			}
@@ -76,6 +78,23 @@ public class QuestionsServiceBean extends IBOServiceBean implements QuestionsSer
 		catch (Exception e) {
 		}
 	
+	}
+	
+	public void resetQuestionSequence(int questionId)throws RemoteException{
+		try{
+			Question currentQuestion = getQuestionHome().findByPrimaryKey(new Integer(questionId));
+			currentQuestion.setSequence(((Integer)currentQuestion.getPrimaryKey()).intValue());
+			currentQuestion.store();	
+		}catch(Exception e){throw new RemoteException(e.getMessage());}
+	}
+	
+	public void removeQuestion(int questionId)throws RemoteException{
+		try {
+			getQuestionHome().findByPrimaryKey(new Integer(questionId)).remove();
+		}
+		catch (Exception e) {
+			throw new RemoteException(e.getMessage());
+		}
 	}
 	
 }
