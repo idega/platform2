@@ -1,5 +1,5 @@
 /*
- * $Id: AgeEditor.java,v 1.15 2003/10/09 15:28:29 anders Exp $
+ * $Id: AgeEditor.java,v 1.16 2003/10/10 09:26:07 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -23,6 +23,8 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Break;
 
+import com.idega.block.school.data.SchoolCategory;
+
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
@@ -31,16 +33,15 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation;
 import se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.AgeException;
-import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 
 /** 
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/09 15:28:29 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/10 09:26:07 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class AgeEditor extends AccountingBlock {
 
@@ -57,6 +58,7 @@ public class AgeEditor extends AccountingBlock {
 
 	private final static String PARAMETER_SEARCH_PERIOD_FROM = PP + "period_search_from";
 	private final static String PARAMETER_SEARCH_PERIOD_TO = PP + "period_search_to";
+	private final static String PARAMETER_OPERATIONAL_FIELD = PP + "operational_field";
 	private final static String PARAMETER_PERIOD_FROM = PP + "period_from";
 	private final static String PARAMETER_PERIOD_TO = PP + "period_to";
 	private final static String PARAMETER_AGE_FROM = PP + "age_from";
@@ -83,10 +85,10 @@ public class AgeEditor extends AccountingBlock {
 	private final static String KEY_AGE_FROM = KP + "age_from";
 	private final static String KEY_AGE_TO = KP + "age_to";
 	private final static String KEY_DESCRIPTION = KP+ "description";
+	private final static String KEY_OPERATIONAL_FIELD_SELECTOR_HEADER = KP+ "operational_field_selector_header";
 	private final static String KEY_RULE_TYPE_SELECTOR_HEADER = KP+ "rule_type_selector_header";
 	private final static String KEY_CUT_DATE = KP + "cut_date";
 	private final static String KEY_OPERATIONAL_FIELD = KP + "operational_field";
-	private final static String KEY_OPERATIONAL_FIELD_MISSING = KP + "operational_field_missing";
 	private final static String KEY_SEARCH = KP + "search";
 	private final static String KEY_NEW = KP + "new";
 	private final static String KEY_SAVE = KP + "save";
@@ -247,13 +249,14 @@ public class AgeEditor extends AccountingBlock {
 			}
 			ab.saveAgeRegulation(
 					getIntParameter(iwc, PARAMETER_AGE_REGULATION_ID),
+					getParameter(iwc, PARAMETER_OPERATIONAL_FIELD),
 					parseDate(iwc.getParameter(PARAMETER_PERIOD_FROM)),
 					parseDate(iwc.getParameter(PARAMETER_PERIOD_TO)),
-					iwc.getParameter(PARAMETER_PERIOD_FROM),
-					iwc.getParameter(PARAMETER_PERIOD_TO),
-					iwc.getParameter(PARAMETER_AGE_FROM),
-					iwc.getParameter(PARAMETER_AGE_TO),
-					iwc.getParameter(PARAMETER_DESCRIPTION),
+					getParameter(iwc, PARAMETER_PERIOD_FROM),
+					getParameter(iwc, PARAMETER_PERIOD_TO),
+					getParameter(iwc, PARAMETER_AGE_FROM),
+					getParameter(iwc, PARAMETER_AGE_TO),
+					getParameter(iwc, PARAMETER_DESCRIPTION),
 					parseDate(cutDateString),
 					cutDateString);
 		} catch (RemoteException e) {
@@ -263,6 +266,12 @@ public class AgeEditor extends AccountingBlock {
 			errorMessage = localize(e.getTextKey(), e.getDefaultText());
 		}
 		
+		String operationalField = getParameter(iwc, PARAMETER_OPERATIONAL_FIELD);
+		if (operationalField.length() > 0) {
+			try {
+				getSession().setOperationalField(operationalField);
+			} catch (RemoteException e) {}
+		}
 		if (errorMessage != null) {
 			add(getAgeRegulationForm(
 					iwc,
@@ -335,15 +344,17 @@ public class AgeEditor extends AccountingBlock {
 
 		try {
 			AgeBusiness ab = getAgeBusiness(iwc);
+			String operationalField = getSession().getOperationalField();
+			operationalField = operationalField == null ? "" : operationalField;
 			String periodFromString = iwc.getParameter(PARAMETER_SEARCH_PERIOD_FROM);
 			String periodToString = iwc.getParameter(PARAMETER_SEARCH_PERIOD_TO);
 			Date periodFrom = parseDate(periodFromString);
 			Date periodTo = parseDate(periodToString);
 			try {
 				if (search == true) {
-					ageRegulations = ab.findAgeRegulations(periodFrom, periodTo, periodFromString, periodToString);
+					ageRegulations = ab.findAgeRegulations(operationalField, periodFrom, periodTo, periodFromString, periodToString);
 				} else {
-					ageRegulations = ab.findAllAgeRegulations();
+					ageRegulations = ab.findByOperationalField(operationalField);
 				}
 			} catch (AgeException e) {
 				errorMessage = localize(e.getTextKey(), e.getDefaultText());
@@ -453,11 +464,7 @@ public class AgeEditor extends AccountingBlock {
 		try {
 			operationalField = getSession().getOperationalField();
 		} catch (RemoteException e) {}
-		if (operationalField == null) {
-			table.add(getErrorText(localize(KEY_OPERATIONAL_FIELD_MISSING, "Ingen huvudverskamhet vald")), 2, row++);
-		} else {
-			table.add(getText(localizeOperationalField(iwc, operationalField)), 2, row++);
-		}
+		table.add(getOperationalFieldDropdownMenu(PARAMETER_OPERATIONAL_FIELD, operationalField), 2, row++); 
 		table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, row);
 		table.add(getTextInput(PARAMETER_PERIOD_FROM, periodFrom, 60), 2, row);
 		table.add(getText(" - "), 2, row);
@@ -467,7 +474,6 @@ public class AgeEditor extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_AGE_TO, "Ålder till"), 1, row);
 		table.add(getTextInput(PARAMETER_AGE_TO, ageTo, 30), 2, row++);
 		table.add(getLocalizedLabel(KEY_DESCRIPTION, "Regel"), 1, row);
-//		table.add(getTextInput(PARAMETER_DESCRIPTION, description, 200), 2, 4);
 		table.add(getRuleDropdownMenu(iwc, PARAMETER_DESCRIPTION, description), 2, row++);
 		table.add(getLocalizedLabel(KEY_CUT_DATE, "Brytdatum"), 1, row);
 		table.add(getTextInput(PARAMETER_CUT_DATE, cutDate, 60), 2, row++);
@@ -535,16 +541,28 @@ public class AgeEditor extends AccountingBlock {
 	}
 
 	/*
-	 * Returns a localized string for the specified operational field
+	 * Returns a DropdownMenu for operational fields. 
 	 */
-	private String localizeOperationalField(IWContext iwc, String operationalField) {
-		String localizedText = "";
+	private DropdownMenu getOperationalFieldDropdownMenu(String parameter, String operationalField) {
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
+		menu.addMenuElement("", localize(KEY_OPERATIONAL_FIELD_SELECTOR_HEADER, "Choose operational field"));
 		try {
-			VATBusiness vb = getVATBusiness(iwc);
-			String localizationKey = vb.getOperationalFieldLocalizationKey(operationalField);
-			localizedText = localize(localizationKey, localizationKey);
-		} catch (RemoteException e) {}
-		return localizedText;
+			Collection c = getBusiness().getExportBusiness().getAllOperationalFields();
+			if (c != null) {
+				Iterator iter = c.iterator();
+				while (iter.hasNext()) {
+					SchoolCategory sc = (SchoolCategory) iter.next();
+					String id = sc.getPrimaryKey().toString();
+					menu.addMenuElement(id, localize(sc.getLocalizedKey(), sc.getLocalizedKey()));
+				}
+				if (operationalField != null) {
+					menu.setSelectedElement(operationalField);
+				}
+			}		
+		} catch (Exception e) {
+			add(new ExceptionWrapper(e));
+		}
+		return menu;	
 	}
 
 	/*
@@ -553,11 +571,4 @@ public class AgeEditor extends AccountingBlock {
 	private AgeBusiness getAgeBusiness(IWContext iwc) throws RemoteException {
 		return (AgeBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, AgeBusiness.class);
 	}	
-
-	/*
-	 * Returns a VAT business object
-	 */
-	private VATBusiness getVATBusiness(IWContext iwc) throws RemoteException {
-		return (VATBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, VATBusiness.class);
-	}
 }

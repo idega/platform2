@@ -1,5 +1,5 @@
 /*
- * $Id: AgeBusinessBean.java,v 1.9 2003/10/09 18:59:01 aron Exp $
+ * $Id: AgeBusinessBean.java,v 1.10 2003/10/10 09:26:07 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,10 +26,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation;
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/09 18:59:01 $ by $Author: aron $
+ * Last modified: $Date: 2003/10/10 09:26:07 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class AgeBusinessBean extends com.idega.business.IBOServiceBean implements AgeBusiness  {
 
@@ -38,6 +38,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String KEY_DATE_FORMAT = KP + "date_format";
 	public final static String KEY_SEARCH_PERIOD_VALUES = KP + "search_period_value";
 	public final static String KEY_PERIOD_VALUES = KP + "period_values";
+	public final static String KEY_OPERATIONAL_FIELD_MISSING = KP + "operational_field_missing";
 	public final static String KEY_FROM_DATE_MISSING = KP + "from_date_missing";
 	public final static String KEY_TO_DATE_MISSING = KP + "to_date_missing";
 	public final static String KEY_AGE_FROM_MISSING = KP + "age_from_missing";
@@ -58,6 +59,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String DEFAULT_DATE_FORMAT = "Datum måste anges på formen ÅÅMM, ÅÅMMDD, eller ÅÅÅÅMMDD.";
 	public final static String DEFAULT_PERIOD_VALUES = "Periodens startdatum måste vara mindre eller lika med slutdatum.";
 	public final static String DEFAULT_SEARCH_PERIOD_VALUES = "Sökperiodens startdatum måste vara mindre eller lika med slutdatum.";
+	public final static String DEFAULT_OPERATIONAL_FIELD_MISSING = "Huvudverksamhet måste v?ljas.";
 	public final static String DEFAULT_FROM_DATE_MISSING = "Periodens startdatum måste fyllas i.";
 	public final static String DEFAULT_TO_DATE_MISSING = "Periodens slutdatum måste fyllas i.";
 	public final static String DEFAULT_AGE_FROM_MISSING = "Ålder från måste fyllas i.";
@@ -105,8 +107,26 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	}	
 	
 	/**
-	 * Finds all age regulations for the specified period.
+	 * Finds all age regulations with the specified operational field.
+	 * @param operationalField the operational field
+	 * @return collection of age regulation objects
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation 
+	 */
+	public Collection findByOperationalField(String operationalField) {
+		try {
+			AgeRegulationHome home = getAgeRegulationHome();
+			return home.findByCategory(operationalField);				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+	
+	/**
+	 * Finds all age regulations for the specified period and operational field.
 	 * The string values are used for exception handling only.
+	 * @param operationalField the operational field
 	 * @param periodFrom the start of the period
 	 * @param periodTo the end of the period
 	 * @param periodFromString the unparsed from date
@@ -116,6 +136,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	 * @throws AgeException if invalid period parameters
 	 */
 	public Collection findAgeRegulations(
+			String operationalField,
 			Date periodFrom,
 			Date periodTo,
 			String periodFromString,
@@ -147,7 +168,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 				}
 			}
 
-			return home.findByPeriod(periodFrom, periodTo);
+			return home.findByPeriodAndCategory(periodFrom, periodTo, operationalField);
 			
 		} catch (RemoteException e) {
 			return null;
@@ -159,7 +180,8 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	/**
 	 * Saves an age regulation object.
 	 * Creates a new persistent object if nescessary.
-	 * @parame id the age regulation id
+	 * @param id the age regulation id
+	 * @param operationalField the operational field
 	 * @param periodFrom the start of the period
 	 * @param periodTo the end of the period
 	 * @param periodFromString the unparsed from date
@@ -173,6 +195,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	 */
 	public void saveAgeRegulation(
 			int id,
+			String operationalField,
 			Date periodFrom,
 			Date periodTo,
 			String periodFromString,
@@ -183,8 +206,16 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 			Date cutDate,
 			String cutDateString) throws AgeException {
 				
+		// Operational field
+		String s = operationalField.trim();
+		if (s.equals("")) {
+			throw new AgeException(KEY_OPERATIONAL_FIELD_MISSING, DEFAULT_OPERATIONAL_FIELD_MISSING);
+		} else {
+			operationalField = s;
+		}
+
 		// Period from
-		String s = periodFromString.trim();
+		s = periodFromString.trim();
 		if (s.equals("")) {
 			throw new AgeException(KEY_FROM_DATE_MISSING, DEFAULT_FROM_DATE_MISSING);
 		} else {
@@ -241,7 +272,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 			throw new AgeException(KEY_AGE_VALUES, DEFAULT_AGE_VALUES);
 		}
 
-		Collection c = findAllAgeRegulations();
+		Collection c = findByOperationalField(operationalField);
 		Iterator iter = c.iterator();
 		while (iter.hasNext()) {
 			AgeRegulation ar = (AgeRegulation) iter.next();
@@ -291,6 +322,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 			} catch (FinderException e) {
 				ar = home.create();
 			}
+			ar.setCategory(operationalField);
 			ar.setPeriodFrom(periodFrom);
 			ar.setPeriodTo(periodTo);
 			ar.setAgeFrom(ageFrom);
@@ -356,12 +388,12 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	/**
 	 * Returns the age of the child with the specified personal id according
 	 * to the age rules/regulations.
-	 * 
+	 * @param operationalField the operational field
 	 * @param childPersonalId the child's personal id (format: 'yyyyMMddnnnn')
 	 * @param date the calendar date to use for calculating the child's age
 	 * @return the age of the child according to the age rules, -1 if no matching rule found
 	 */
-	public int getChildAge(String childPersonalId, Date date) {
+	public int getChildAge(String childPersonalId, Date date, String operationalField) {
 		int childAgeAccordingToRegulations = -1;
 		
 		try {
@@ -373,7 +405,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 			childDate.setAsDate();
 			int childMaxAge = calendarDate.getYear() - childDate.getYear();
 			
-			Collection ageRegulations = findAllAgeRegulations();
+			Collection ageRegulations = findByOperationalField(operationalField);
 			Iterator iter = ageRegulations.iterator();
 			AgeRegulation regulationToUse = null; 
 			while (iter.hasNext()) {
@@ -404,12 +436,43 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	
 	/**
 	 * Returns the age of the child with the specified personal id according
+	 * to the age rules/regulations. The operational field ChildCare is used.
+	 * 
+	 * @param childPersonalId the child's personal id (format: 'yyyyMMddnnnn')
+	 * @param date the calendar date to use for calculating the child's age
+	 * @return the age of the child according to the age rules, -1 if no matching rule found
+	 */
+	public int getChildAge(String childPersonalId, Date date) {
+		String operationalField = "";
+		try {
+			com.idega.block.school.business.SchoolBusiness sb = (com.idega.block.school.business.SchoolBusiness) com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(), 
+					com.idega.block.school.business.SchoolBusiness.class);
+			com.idega.block.school.data.SchoolCategory sc = sb.getCategoryChildcare();
+			operationalField = sc.getPrimaryKey().toString();
+		} catch (RemoteException e) {}
+		return getChildAge(childPersonalId, date, operationalField);	
+	}
+	
+	/**
+	 * Returns the age of the child with the specified personal id according
 	 * to the age rules/regulations. The current date is used for comparing.
+	 *  The operational field ChildCare is used.
 	 * 
 	 * @param childPersonalId the child's personal id (format: 'yyyyMMddnnnn')
 	 * @return the age of the child according to the age rules, -1 if no matching rule found
 	 */
 	public int getChildAge(String childPersonalId) {
 		return getChildAge(childPersonalId, new Date(System.currentTimeMillis()));
+	}
+	
+	/**
+	 * Returns the age of the child with the specified personal id according
+	 * to the age rules/regulations. The current date is used for comparing.
+	 * @param operationalField the operationalField
+	 * @param childPersonalId the child's personal id (format: 'yyyyMMddnnnn')
+	 * @return the age of the child according to the age rules, -1 if no matching rule found
+	 */
+	public int getChildAge(String childPersonalId, String operationalField) {
+		return getChildAge(childPersonalId, new Date(System.currentTimeMillis()), operationalField);
 	}
 }
