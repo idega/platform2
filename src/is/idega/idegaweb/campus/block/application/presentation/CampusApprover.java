@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.55 2004/06/24 15:20:17 aron Exp $
+ * $Id: CampusApprover.java,v 1.56 2004/06/28 11:35:47 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -256,9 +256,10 @@ public class CampusApprover extends CampusBlock {
 		ApartmentInfo aprtInfo = getApartmentInfo(iwc);
 		SpouseInfo spouseInfo = getSpouseInfo(iwc);
 		List childInfo = getChildrenInfo(iwc);
+		String newStatus = iwc.getParameter(PRM_STATUS);
 		
 		try {
-			Application app = getApplicationService(iwc).storeWholeApplication(applicationID,new Integer(iSubjectId),aInfo,aprtInfo,spouseInfo,childInfo);
+			CampusApplication app = getApplicationService(iwc).storeWholeApplication(applicationID,new Integer(iSubjectId),aInfo,aprtInfo,spouseInfo,childInfo);
 			applicationID =  ((Integer)app.getPrimaryKey());
 		}
 		catch (RemoteException e) {
@@ -1320,7 +1321,7 @@ public class CampusApprover extends CampusBlock {
 		String key1 = iwc.getParameter("drp_one");
 		String key2 = iwc.getParameter("drp_two");
 		String key3 = iwc.getParameter("drp_three");
-		return new ApartmentInfo(new IWTimestamp(sRentFrom),new Boolean(sFurni),new Boolean(sWait),comment,key1,key2,key2);
+		return new ApartmentInfo(new IWTimestamp(sRentFrom),new Boolean(sFurni),new Boolean(sWait),comment,key1,key2,key3);
 	}
 
 	

@@ -50,7 +50,8 @@ public interface ApplicationService extends com.idega.business.IBOService
 	public void storeApartmentInfo(			CampusApplication campusApplication,			Collection capplieds,			ApartmentInfo apartmentInfo)throws RemoteException, CreateException;
 	public void createApplicationSubject(String sDesc, String sDate) throws CreateException, RemoteException;
 	public void storePriorityLevel(Integer ID, String level) throws RemoteException;
-	public Application storeWholeApplication(			Integer ID,			Integer subjectID,			ApplicantInfo applicantInfo,			ApartmentInfo apartmentInfo,			SpouseInfo spouseInfo,			List childrenInfo);
+	public CampusApplication storeWholeApplication(			Integer ID,			Integer subjectID,			ApplicantInfo applicantInfo,			ApartmentInfo apartmentInfo,			SpouseInfo spouseInfo,			List childrenInfo);
+	public CampusApplication storeWholeApplication(			Integer ID,			Integer subjectID,			ApplicantInfo applicantInfo,			ApartmentInfo apartmentInfo,			SpouseInfo spouseInfo,			List childrenInfo,String status);
 	public CampusApplicationHolder getApplicationInfo(Application a);
 	public CampusApplicationHolder getApplicationInfo(int applicationId);
 	public void storeApplicationSubject(String description,IWTimestamp expires) throws CreateException,RemoteException;

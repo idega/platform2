@@ -250,14 +250,24 @@ import com.idega.util.IWTimestamp;
 			parentApplicant.addChild(child);
 
 		}
+		
+		public CampusApplication storeWholeApplication(
+				Integer campusApplicationID,
+				Integer subjectID,
+				ApplicantInfo applicantInfo,
+				ApartmentInfo apartmentInfo,
+				SpouseInfo spouseInfo,
+				List childrenInfo) {
+			return storeWholeApplication(campusApplicationID,subjectID,applicantInfo,apartmentInfo,spouseInfo,childrenInfo,Status.SUBMITTED.toString());
+		}
 
-		public Application storeWholeApplication(
+		public CampusApplication storeWholeApplication(
 			Integer campusApplicationID,
 			Integer subjectID,
 			ApplicantInfo applicantInfo,
 			ApartmentInfo apartmentInfo,
 			SpouseInfo spouseInfo,
-			List childrenInfo) {
+			List childrenInfo,String status) {
 
 			javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
 
@@ -296,8 +306,18 @@ import com.idega.util.IWTimestamp;
 
 					application = getApplicationHome().create();
 					application.setApplicantId(new Integer(applicant.getPrimaryKey().toString()).intValue());
-					application.setSubmitted(IWTimestamp.getTimestampRightNow());
-					application.setStatusSubmitted();
+					
+					if(status!=null){
+						application.setStatus(status);
+					if(status.equalsIgnoreCase(Status.SUBMITTED.toString()))
+						application.setSubmitted(IWTimestamp.getTimestampRightNow());
+					else
+						application.setStatusChanged(IWTimestamp.getTimestampRightNow());
+					}
+					else{
+						application.setStatusSubmitted();
+						application.setSubmitted(IWTimestamp.getTimestampRightNow());
+					}
 					application.setSubjectId(subjectID.intValue());
 					application.store();
 
@@ -320,7 +340,7 @@ import com.idega.util.IWTimestamp;
 
 				}
 				t.commit();
-				return application;
+				return campusApplication;
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -373,8 +393,7 @@ import com.idega.util.IWTimestamp;
 						try {
 							superApplicant.addChild(child);
 						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							
 						}
 					}
 				}
