@@ -18,6 +18,9 @@ import com.idega.block.school.business.SchoolAreaComparator;
 import com.idega.block.school.business.SchoolComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
+import com.idega.business.IBOLookup;
+import com.idega.core.location.business.CommuneBusiness;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -215,6 +218,8 @@ public class ChildCareStatistics extends ChildCareBlock {
 		} catch (Exception e) {}
 		
 		if (providers != null && !providers.isEmpty()) {
+			int defaultCommuneId = ((Integer) getCommuneBusiness(iwc).getDefaultCommune().getPrimaryKey()).intValue(); 
+			
 			School school;
 			ChildCarePrognosis prognosis;
 			int providerID = -1;
@@ -233,6 +238,9 @@ public class ChildCareStatistics extends ChildCareBlock {
 			while (iter.hasNext()) {
 				column = 1;
 				school = (School) iter.next();
+				if (school.getCommuneId() != defaultCommuneId) {
+					continue;
+				}
 				providerID = ((Integer)school.getPrimaryKey()).intValue();
 				prognosis = getBusiness().getPrognosis(providerID);
 				
@@ -429,5 +437,9 @@ public class ChildCareStatistics extends ChildCareBlock {
 	 */
 	public void setUseSorting(boolean useSorting) {
 		_useSorting = useSorting;
+	}
+	
+	protected CommuneBusiness getCommuneBusiness(IWApplicationContext iwac) throws RemoteException {
+		return (CommuneBusiness) IBOLookup.getServiceInstance(iwac, CommuneBusiness.class);
 	}
 }
