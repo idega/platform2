@@ -186,7 +186,7 @@ public class MessageBox extends CommuneBlock {
     if(nrOfMessagesToDelete==0){
       s = localize("message.no_messages_to_delete","No messages selected. You have to mark the message(s) to delete.");
     }else if(nrOfMessagesToDelete==1){
-      Message msg = getMessageBusiness(iwc).getMessage(msgId);
+      Message msg = getMessageBusiness(iwc).getUserMessage(msgId);
       s = localize("message.one_message_to_delete","Do you really want to delete the message with subject: ")+msg.getSubject()+"?";
     }else{
       s = localize("message.messages_to_delete","Do you really want to delete the selected messages?");
@@ -234,7 +234,7 @@ public class MessageBox extends CommuneBlock {
 
   private Message getMessage(String id, IWContext iwc)throws Exception{
     int msgId = Integer.parseInt(id);
-    Message msg = getMessageBusiness(iwc).getMessage(msgId);
+    Message msg = getMessageBusiness(iwc).getUserMessage(msgId);
     return msg;
   }
 }

@@ -30,7 +30,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 
   private MessageHome getMessageHome(String messageType) throws java.rmi.RemoteException{
     if(messageType.equals(TYPE_USER_MESSAGE)){
-      return (MessageHome) com.idega.data.IDOLookup.getHome(UserMessage.class);
+      return (MessageHome) this.getIDOHome(UserMessage.class);
     }
     else{
       throw new java.lang.UnsupportedOperationException("MessageType "+messageType+" not yet implemented");
@@ -41,8 +41,12 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
   private String getTypeMailMessage(){return TYPE_SYSTEM_PRINT_MAIL_MESSAGE;}
   private String getTypeArchivationMessage(){return TYPE_SYSTEM_PRINT_ARCHIVATION_MESSAGE;}
 
-  public Message getMessage(String messageType,int messageId) throws Exception {
+  public Message getMessage(String messageType,int messageId) throws FinderException,RemoteException {
     return getMessageHome(messageType).findByPrimaryKey(new Integer(messageId));
+  }
+
+  public Message getUserMessage(int messageId)throws FinderException,RemoteException{
+    return getMessage(getTypeUserMessage(),messageId);
   }
 
   public Collection findMessages(int userId) throws Exception {
