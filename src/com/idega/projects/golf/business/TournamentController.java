@@ -371,7 +371,7 @@ public class TournamentController{
 
         return tGroup;
     }
-
+/*
     public static List getUnions(ModuleInfo modinfo) throws SQLException {
             if (AccessControl.isClubAdmin(modinfo)) {
 
@@ -393,7 +393,7 @@ public class TournamentController{
 
             return null;
     }
-
+*/
     public static SubmitButton getAheadButton(String name, String value) {
         com.idega.jmodule.object.Image aheadImage = new com.idega.jmodule.object.Image("/pics/formtakks/afram.gif","");
         SubmitButton aheadButton = new SubmitButton(aheadImage,name,value);
