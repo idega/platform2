@@ -1149,7 +1149,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	private SchoolClassMember getLatestPlacement(int childID, int providerID) throws FinderException {
 		try {
-			return getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(childID, providerID);
+			Collection types = getSchoolBusiness().getSchoolTypesForCategory(getSchoolBusiness().getCategoryChildcare(), true);
+			return getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(childID, providerID, types);
 		}
 		catch (RemoteException e) {
 			throw new IDORuntimeException(e.getMessage());
