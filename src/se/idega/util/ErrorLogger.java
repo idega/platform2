@@ -34,7 +34,7 @@ public class ErrorLogger {
 	}
 	
 	/**
-	 * Create an empty error logger with logging level set to 5
+	 * Create an empty error logger with logging level set to 4
 	 */
 	public ErrorLogger(){
 		loggingLevel = 4;
