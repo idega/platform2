@@ -70,7 +70,7 @@ public class IPDeleteProjectWindow extends IBAdminWindow{
           pageId = BuilderLogic.getStartPageId(iwc);
         }
 
-        this.setOnUnLoad("window.opener.location='"+BuilderLogic.getInstance().getIBPageURL(pageId)+"'");
+        this.setOnUnLoad("window.opener.location='"+BuilderLogic.getInstance().getIBPageURL(iwc,pageId)+"'");
         this.close();
       }
   }
