@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.48 2003/11/06 13:55:54 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.49 2003/11/26 05:51:43 gimmi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package se.idega.idegaweb.commune.message.business;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -618,8 +619,11 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		return message;
 	}
 
-
 	public void sendMessage(String email, String subject, String body) {
+		sendMessage(email, subject, body, null);
+	}
+	
+	public void sendMessage(String email, String subject, String body, File attachment) {
 
 		String mailServer = DEFAULT_SMTP_MAILSERVER;
 		String fromAddress = DEFAULT_MESSAGEBOX_FROM_ADDRESS;
@@ -635,7 +639,11 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			
 
 		try {
-			com.idega.util.SendMail.send(fromAddress, email.trim(), "", "", mailServer, subject, body);
+			if (attachment == null) {
+				com.idega.util.SendMail.send(fromAddress, email.trim(), "", "", mailServer, subject, body);
+			} else {
+				com.idega.util.SendMail.send(fromAddress, email.trim(), "", "", mailServer, subject, body, attachment);
+			}
 		}
 		catch (javax.mail.MessagingException me) {
 			System.err.println("Error sending mail to address: " + email + " Message was: " + me.getMessage());

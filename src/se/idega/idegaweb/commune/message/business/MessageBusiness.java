@@ -38,6 +38,7 @@ public interface MessageBusiness extends CaseBusiness
  public com.idega.block.process.data.CaseCode getCaseCodePrintedLetterMessage()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public com.idega.block.process.data.CaseCode getCaseCodeSystemArchivationMessage()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public com.idega.block.process.data.CaseCode getCaseCodeUserMessage()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public boolean getIfCanSendEmail();
  public boolean getIfUserPreferesMessageByEmail(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public boolean getIfUserPreferesMessageInMessageBox(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.Message getMessage(java.lang.String p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
@@ -55,6 +56,7 @@ public interface MessageBusiness extends CaseBusiness
  public boolean isMessageRead(se.idega.idegaweb.commune.message.data.Message p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void markMessageAsRead(se.idega.idegaweb.commune.message.data.Message p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void sendMessage(java.lang.String p0,java.lang.String p1,java.lang.String p2) throws java.rmi.RemoteException;
+ public void sendMessage(java.lang.String p0,java.lang.String p1,java.lang.String p2, java.io.File p3) throws java.rmi.RemoteException;
  public void setIfUserPreferesMessageByEmail(com.idega.user.data.User p0,boolean p1) throws java.rmi.RemoteException;
  public void setIfUserPreferesMessageInMessageBox(com.idega.user.data.User p0,boolean p1) throws java.rmi.RemoteException;
  public void sendMessageToCommuneAdministrators(String subject, String body) throws java.rmi.RemoteException;
