@@ -26,6 +26,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
+import com.idega.util.LocaleUtil;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -74,11 +75,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/09 13:47:39 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/10 20:22:32 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.60 $
+ * @version $Revision: 1.61 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -225,7 +226,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private final static Font SANSSERIF_FONT
 		= FontFactory.getFont (FontFactory.HELVETICA, 9);
 	private static final NumberFormat integerFormatter
-		= NumberFormat.getIntegerInstance ();
+		= NumberFormat.getIntegerInstance (LocaleUtil.getSwedishLocale ());
 
 	private ICPage providerAuthorizationPage = null;
 	private ICPage createPaymentPage = null;

@@ -26,6 +26,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.util.CalendarMonth;
 import com.idega.util.IWTimestamp;
+import com.idega.util.LocaleUtil;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -85,10 +86,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/09 13:47:39 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/10 20:22:32 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.112 $
+ * @version $Revision: 1.113 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -258,7 +259,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	private static final SimpleDateFormat dateAndTimeFormatter
 		= new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
 	private static final NumberFormat integerFormatter
-		= NumberFormat.getIntegerInstance ();
+		= NumberFormat.getIntegerInstance (LocaleUtil.getSwedishLocale ());
 
 	/**
 	 * Init is the event handler of InvoiceCompilationEditor
