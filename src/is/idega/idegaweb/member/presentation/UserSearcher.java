@@ -166,6 +166,7 @@ public class UserSearcher extends Block {
 		}
 		if (message != null) {
 			Text tMessage = new Text(message);
+			tMessage.setStyleAttribute("color:red");
 			T.add(tMessage, 1, 3);
 		}
 		if (OwnFormContainer) {
