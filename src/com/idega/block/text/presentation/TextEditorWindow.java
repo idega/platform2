@@ -251,12 +251,12 @@ public class TextEditorWindow extends AbstractChooserWindow{
 
   private void addLocalizedTextFields(TxText txText,ContentHelper contentHelper, int iLocaleId,String sAttribute,int iObjInsId){
     LocalizedText locText = null;
-    boolean hasTxText = ( txText != null ) ? true: false;
+    boolean hasTxText = ( txText != null );
     //boolean hasLocalizedText = ( locText != null ) ? true: false;
-    boolean hasContent = ( contentHelper != null) ? true:false;
+    boolean hasContent = ( contentHelper != null);
     if(hasContent)
       locText = contentHelper.getLocalizedText(TextFinder.getLocale(iLocaleId));
-    boolean hasLocalizedText = ( locText !=null ) ? true:false;
+    boolean hasLocalizedText = ( locText !=null ) ;
 
     TextInput tiHeadline = new TextInput(prmHeadline);
     tiHeadline.setLength(40);
