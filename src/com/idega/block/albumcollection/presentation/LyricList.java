@@ -47,7 +47,7 @@ public class LyricList extends Block {
 
     Table frameTable = new Table(1,1);
     frameTable.setCellspacing(1);
-    frameTable.setCellpadding(10);
+    frameTable.setCellpadding(0);
     frameTable.setColor(AlbumCollection._COLOR_BRIGHTEST);
     frameTable.setColor(1,1,AlbumCollection._COLOR_BRIGHT);
     frameTable.setWidth("550");
@@ -55,6 +55,7 @@ public class LyricList extends Block {
     frameTable.setAlignment(1,1,"center");
 
 
+    frameTable.add(Text.getBreak(),1,1);
     frameTable.add(this.getLyricList(iwc),1,1);
 
 
@@ -163,6 +164,9 @@ public class LyricList extends Block {
         lyricTable.add(info,1,index);
         index++;
       }
+    } else {
+      lyricTable = new Table(1,2);
+      lyricTable.add(AlbumCollectionBusiness.getMainTextClone("Engir textar fundust"),1,index++);
     }
 
 
@@ -184,9 +188,7 @@ public class LyricList extends Block {
       trackTable.add(addTrackLink,1,index);
 
       */
-      lyricTable.add(AlbumCollectionBusiness.getMainTextClone("Engir textar fundust"),1,index);
-    } else {
-      lyricTable.add(AlbumCollectionBusiness.getMainTextClone("Engir textar fundust"),1,index);
+      //lyricTable.add(AlbumCollectionBusiness.getMainTextClone("Engir textar fundust"),1,index);
     }
 
 
