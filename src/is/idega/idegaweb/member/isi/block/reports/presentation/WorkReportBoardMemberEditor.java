@@ -151,6 +151,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     }
   }
   
+  protected void addBreakLine() {};
+  
   private String parseAction(IWContext iwc, IWResourceBundle resourceBundle) {
     String action = "";
     // does the user want to cancel something?
@@ -338,6 +340,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     // add buttons
     if (editable) {
       Table mainTable = new Table(1,2);
+      mainTable.setCellspacing(0);
+      mainTable.setCellpadding(0);
       mainTable.add(browser, 1,1);
       PresentationObject inputField = getPersonalIdInputField(resourceBundle);
       PresentationObject dropDownMenu = getLeagueDropDownMenu(resourceBundle, iwc);

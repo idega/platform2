@@ -129,6 +129,8 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     }
   }
   
+  protected void addBreakLine() {};
+  
   private String parseAction(IWContext iwc) {
     String action = "";
     if (iwc.isParameterSet(SUBMIT_FINISH_KEY))  {
@@ -344,6 +346,8 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     if (! isReadOnly) {
       Table mainTable = new Table(1,2);
       mainTable.add(browser, 1,1);
+      mainTable.setCellspacing(0);
+      mainTable.setCellpadding(0);
       if (editable) {
         mainTable.add(getFinishButton(resourceBundle), 1, 2);
       }

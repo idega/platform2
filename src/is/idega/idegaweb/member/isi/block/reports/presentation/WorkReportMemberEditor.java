@@ -136,6 +136,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
   }
   
+  protected void addBreakLine() {};
+  
   private void initializeFieldList(IWContext iwc) {
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
     Collection leagues;
@@ -403,6 +405,8 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     if (! isReadOnly) {
       Table mainTable = new Table(1,2);
       mainTable.add(browser, 1,1);
+      mainTable.setCellspacing(0);
+      mainTable.setCellpadding(0);
       Table buttonTable = new Table(4,1);
       if (editable) {
         PresentationObject inputField = getPersonalIdInputField(resourceBundle);
