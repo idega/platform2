@@ -41,50 +41,39 @@ public class ResultsViewer extends GolfBlock {
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
 
 	protected IWResourceBundle iwrb;
-
 	protected IWBundle iwb;
 
 	private int tournamentID = 0;
-
 	private int tournamentGroupID = -1;
-
 	private int[] tournamentRounds = null;
 
 	private String gender = null;
 
 	private int orderBy = -1;
-
 	private int sortBy = -1;
 
 	private boolean showAllGroups = false;
-
 	private boolean showAllGenders = false;
-
 	private boolean championship = false;
 
 	private Tournament tournament;
 
 	private Form myForm;
-
 	private Table outerTable;
-
 	private Table formTable;
-
 	private Table resultTable;
 
 	public ResultsViewer() {
-		myForm = new Form();
-		myForm.setName("resultform");
 	}
 
 	public ResultsViewer(int tournamentID) {
 		this.tournamentID = tournamentID;
-		myForm = new Form();
-		myForm.setName("resultform");
 	}
 
 	public void main(IWContext modinfo) throws Exception {
 		try {
+			myForm = new Form();
+			myForm.setName("resultform");
 			iwrb = getResourceBundle(modinfo);
 			tournament = getTournamentSession(modinfo).getTournament();
 			tournamentID = getTournamentSession(modinfo).getTournamentID();

@@ -82,7 +82,7 @@ public class TournamentParticipantsList extends GolfBlock {
 			table2.setAlignment(5, 1, "center");
 			table2.setAlignment(6, 1, "center");
 			table2.setHeight(1, "15");
-			table2.setRowPadding(1, getCellpadding());
+			table2.setRowStyleClass(1, getHeaderRowClass());
 
 			int half = (int) (members.size() + 1) / 2;
 			int column = 1;
@@ -97,7 +97,7 @@ public class TournamentParticipantsList extends GolfBlock {
 				else {
 					++row;
 				}
-				table2.setHeight(row, "16");
+				table2.setHeight(row, 10);
 				member = (Member) members.get(i);
 				//                    member = new
 				// TournamentParticipants().getTournamentParticipants(((Member)
@@ -145,16 +145,12 @@ public class TournamentParticipantsList extends GolfBlock {
 				
 				table2.setRowPadding(row, getCellpadding());
 				if (zebraRow % 2 != 0) {
-					table2.setRowColor(row++, lightColor);
+					table2.setRowStyleClass(row, getLightRowClass());
 				}
 				else {
-					table2.setRowColor(row++, darkColor);
+					table2.setRowStyleClass(row, getDarkRowClass());
 				}
 				zebraRow++;
-				
-				table2.mergeCells(1, row, table2.getColumns(), row);
-				table2.setHeight(row, 1);
-				table2.setRowColor(row, getLineSeperatorColor());
 			} // for ends
 			
 			row = table2.getRows() + 1;
@@ -165,7 +161,6 @@ public class TournamentParticipantsList extends GolfBlock {
 			Text notice = getHeader(iwrb.getLocalizedString("tournament.handicap_comment", ""));
 			table2.add(notice, 1, row);
 
-			table2.setRowColor(1, getHeaderColor());
 			add(table2);
 		}
 		else {

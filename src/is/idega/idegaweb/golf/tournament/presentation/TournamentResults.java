@@ -37,16 +37,19 @@ public class TournamentResults extends GolfBlock {
 
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
 
-	protected IWResourceBundle iwrb;
+	public static final int TOTALSTROKES = 1;
+	public static final int TOTALSTROKESWITHHANDICAP = 2;
+	public static final int TOTALPOINTS = 3;
+	public static final int NAME = 4;
+	public static final int ABBREVATION = 5;
+	public static final int TOURNAMENTROUND = 6;
 
+	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
 
 	private int tournamentId_ = -1;
-
 	private int tournamentGroupId_ = -1;
-
 	private int tournamentType_ = -1;
-
 	private int[] tournamentRounds_ = null;
 
 	private String gender_ = null;
@@ -60,20 +63,7 @@ public class TournamentResults extends GolfBlock {
 	private Tournament tournament = null;
 
 	private int numberOfRounds = -1;
-
 	private int numberOfColumns = -1;
-
-	public static final int TOTALSTROKES = 1;
-
-	public static final int TOTALSTROKESWITHHANDICAP = 2;
-
-	public static final int TOTALPOINTS = 3;
-
-	public static final int NAME = 4;
-
-	public static final int ABBREVATION = 5;
-
-	public static final int TOURNAMENTROUND = 6;
 
 	public void sortBy(int toSortBy) {
 		sortBy = toSortBy;
@@ -357,7 +347,7 @@ public class TournamentResults extends GolfBlock {
 				myTable.add(holeText, 5, row);
 				myTable.add(firstNineText, 6, row);
 				myTable.add(lastNineText, 7, row);
-				myTable.setHeight(row, 18);
+				myTable.setHeight(row, 10);
 
 				if (collector.getDismissal() > 0) {
 					Dismissal dismissal = ((DismissalHome) IDOLookup.getHomeLegacy(Dismissal.class)).findByPrimaryKey(collector.getDismissal());
@@ -374,16 +364,12 @@ public class TournamentResults extends GolfBlock {
 				
 				myTable.setRowPadding(row, getCellpadding());
 				if (zebraRow % 2 != 0) {
-					myTable.setRowColor(row++, getZebraColor1());
+					myTable.setRowStyleClass(row++, getLightRowClass());
 				}
 				else {
-					myTable.setRowColor(row++, getZebraColor2());
+					myTable.setRowStyleClass(row++, getDarkRowClass());
 				}
 				zebraRow++;
-				
-				myTable.mergeCells(1, row, myTable.getColumns(), row);
-				myTable.setHeight(row, 1);
-				myTable.setRowColor(row++, getLineSeperatorColor());
 			}
 
 			for (int c = 1; c <= numberOfColumns; c++) {
@@ -392,10 +378,8 @@ public class TournamentResults extends GolfBlock {
 				}
 			}
 			myTable.setAlignment(2, 1, "center");
-			myTable.setRowColor(1, getHeaderColor());
-			myTable.setRowColor(2, getHeaderColor());
-			myTable.setRowPadding(1, getCellpadding());
-			myTable.setRowPadding(2, getCellpadding());
+			myTable.setRowStyleClass(1, getHeaderRowClass());
+			myTable.setRowStyleClass(2, getHeaderRowClass());
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -405,11 +389,6 @@ public class TournamentResults extends GolfBlock {
 	private void addHeaders(String header, int column, int row) {
 		try {
 			Text headerText = new Text(header);
-			headerText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-			headerText.setBold();
-			headerText.setFontFace(Text.FONT_FACE_VERDANA);
-			headerText.setFontColor("#FFFFFF");
-
 			myTable.add(headerText, column, row);
 		}
 		catch (Exception e) {

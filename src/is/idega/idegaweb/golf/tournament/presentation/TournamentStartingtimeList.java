@@ -85,7 +85,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 		
 		String cacheString = "tournament_startingtime_" + tournament.getID() + "_" + tournament_round_id + "_" + viewOnly + "_" + onlineRegistration + "_" + useBorder;
 
-		Form cachedForm = null;//(Form) modinfo.getApplicationAttribute(cacheString);
+		Form cachedForm = (Form) modinfo.getApplicationAttribute(cacheString);
 		if (cachedForm != null && !onlineRegistration) {
 			//EIKI: TODO ENABLE CACHING FOR ONLINE ALSO
 			//THE PROBLEM IS THAT THE form.maintainParameter("action") is causing a
@@ -352,7 +352,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 						}
 						zebraRow++;
 						
-						table.setHeight(row, 14);
+						table.setHeight(row, 10);
 						++numberOfMember;
 						if (i != 0) table.add(tooMany, 1, row);
 
@@ -422,7 +422,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 						}
 						zebraRow++;
 
-						table.setHeight(row, 14);
+						table.setHeight(row, 10);
 						if ((!viewOnly) && (roundNumber == 1)) {
 							if (tee_number == 10) {
 								socialNumber = (TextInput) getStyledInterface(new TextInput("social_security_number_for_group_" + groupCounter + "_"));
@@ -451,7 +451,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 			}
 
 			++row;
-			table.setHeight(row, 14);
+			table.setHeight(row, 10);
 			table.setRowColor(row, headerColor);
 			table.mergeCells(1, row, 3, row);
 			Text many = getSmallHeader(getResourceBundle().getLocalizedString("tournament.number_of_participants", "Number of participants") + " : " + numberOfMember);
