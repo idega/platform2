@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.29 2004/07/13 17:39:09 roar Exp $
+ * $Id: ProviderEditor.java,v 1.30 2004/07/16 12:28:03 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
+
+import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
@@ -32,9 +34,9 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderStatisticsTypeHo
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
-import com.idega.block.school.data.SchoolSubArea;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolManagementType;
+import com.idega.block.school.data.SchoolSubArea;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolYear;
 import com.idega.core.builder.data.ICPage;
@@ -60,10 +62,10 @@ import com.idega.presentation.ui.TextArea;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2004/07/13 17:39:09 $ by $Author: roar $
+ * Last modified: $Date: 2004/07/16 12:28:03 $ by $Author: roar $
  *
  * @author Anders Lindman
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -161,6 +163,8 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_DELETE_CONFIRM = KP + "delete_confirm_message";
 	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
 	private final static String KEY_BUTTON_DELETE = KP + "button_delete";	
+	private final static String KEY_AREA_MISSING = KP + "area_missing";	
+	
 
 	private boolean _useCancelButton = true;
 	
@@ -389,7 +393,23 @@ public class ProviderEditor extends AccountingBlock {
 			p.generateStrings(iwc);
 			ownPosting = p.getOwnPosting();
 			doublePosting = p.getDoublePosting();
+			
+			//If chosen commune is default, area and sub area must be specified
+			String communeId = getParameter(iwc, PARAMETER_COMMUNE_ID);
+			String areaId = getParameter(iwc, PARAMETER_SCHOOL_AREA_ID);
+			String subAreaId = getParameter(iwc, PARAMETER_SCHOOL_SUB_AREA_ID);
+			
+			CommuneHome home = (CommuneHome) com.idega.data.IDOLookup.getHome(Commune.class);
+			try{
+				Commune c = home.findByPrimaryKey(communeId);
+				if(c.getIsDefault() && (areaId.equals("-1") || subAreaId.equals("-1"))){
+					throw new ProviderException(KEY_AREA_MISSING, "Area and/or sub area is missing");
+				}
+			}catch(FinderException ex){
 
+			}
+
+			
 			ProviderBusiness pb = getProviderBusiness(iwc);
 			pb.saveProvider(
 					getParameter(iwc, PARAMETER_SCHOOL_ID),
@@ -410,7 +430,7 @@ public class ProviderEditor extends AccountingBlock {
 					getParameter(iwc, PARAMETER_PROVIDER_TYPE_ID),
 					getParameter(iwc, PARAMETER_SCHOOL_MANAGEMENT_TYPE_ID),
 					parseDate(getParameter(iwc, PARAMETER_TERMINATION_DATE)),
-					getParameter(iwc, PARAMETER_COMMUNE_ID),
+					communeId,
 					getParameter(iwc, PARAMETER_COUNTRY_ID),
 					getParameter(iwc, PARAMETER_CENTRALIZED_ADMINISTRATION),
 					getParameter(iwc, PARAMETER_INVISIBLE_FOR_CITIZEN),
@@ -428,7 +448,7 @@ public class ProviderEditor extends AccountingBlock {
 			errorMessage = localize(e.getTextKey(), e.getDefaultText());
 		} catch (PostingParametersException e) {
 			errorMessage = localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText();
-		}			
+		} 
 		
 		if (errorMessage != null) {
 			add(getProviderForm(
@@ -893,7 +913,7 @@ public class ProviderEditor extends AccountingBlock {
 	 */
 	private DropdownMenu getSchoolAreaDropdownMenu(IWContext iwc, String parameter, String schoolAreaId) {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
-		menu.addMenuElement(0, localize(KEY_SCHOOL_AREA_SELECTOR_HEADER, "Choose school area"));
+		menu.addMenuElement(-1, localize(KEY_SCHOOL_AREA_SELECTOR_HEADER, "Choose school area"));
 		int selectedId;
 		try{	
 			selectedId = (new Integer(schoolAreaId)).intValue();
@@ -920,7 +940,7 @@ public class ProviderEditor extends AccountingBlock {
 	 */
 	private DropdownMenu getSchoolSubAreaDropdownMenu(IWContext iwc, String parameter, String schoolSubAreaId, String schoolAreaId) {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
-		menu.addMenuElement(0, localize(KEY_SCHOOL_SUB_AREA_SELECTOR_HEADER, "Choose school sub area"));
+		menu.addMenuElement(-1, localize(KEY_SCHOOL_SUB_AREA_SELECTOR_HEADER, "Choose school sub area"));
 		int selectedId;
 		try{
 			selectedId = (new Integer(schoolSubAreaId)).intValue();
