@@ -1,11 +1,13 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
+import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
@@ -13,8 +15,11 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusi
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolType;
 import com.idega.core.location.data.Commune;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
@@ -136,5 +141,13 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 		}
 		
 		return detail;
+	}	
+	
+	protected String[] getPostingStrings(SchoolCategory category, SchoolType schoolType, int regSpecTypeId, Provider provider, Date calculationDate, int schoolYearId, int studyPathId) throws PostingException, RemoteException {
+		if (studyPathId == -1)
+			return getPostingBusiness().getPostingStrings(category, schoolType, regSpecTypeId, provider, calculationDate,schoolYearId, studyPathId, false);
+		else {
+			return null;
+		}
 	}	
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.29 2004/01/05 13:01:24 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.30 2004/01/14 16:05:08 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -41,10 +41,10 @@ import com.idega.util.CalendarMonth;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.29 2004/01/05 13:01:24 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.30 2004/01/14 16:05:08 palli Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -347,7 +347,9 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 			int reg_id, 
 			String com_id, 
 			int com_bel_id,
-			int school_year
+			int school_year,
+			int study_path_id,
+			boolean no_study_path
 		 ) throws FinderException {
 		IDOQuery sql = idoQuery();
 
@@ -413,6 +415,31 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
                 sqlHasWhere = true;
             }
 			sql.appendEquals(COLUMN_COMMUNE_BELONGING_ID, com_bel_id);
+		}
+		
+		if (no_study_path) {
+			if (sqlHasWhere) {
+				sql.appendAnd();
+			}
+			else {
+				sql.appendWhere();
+				sqlHasWhere = true;
+			}
+			
+			sql.append(COLUMN_STUDY_PATH_ID);
+			sql.append(" is null ");
+			
+		}
+		else if (study_path_id > 0) {
+			if (sqlHasWhere) {
+				sql.appendAnd();
+			}
+			else {
+				sql.appendWhere();
+				sqlHasWhere = true;
+			}
+			
+			sql.appendEquals(COLUMN_STUDY_PATH_ID, study_path_id);
 		}
 
 		if (school_year > 0) {

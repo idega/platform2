@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/14 12:21:39 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/14 16:05:08 $ by $Author: palli $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.106 $
+ * @version $Revision: 1.107 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -535,9 +535,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 							findByYearName(FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
 					errorRelated.append("Fritidsklubb schoolyear" + FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
 					
-					String[] postings =  getPostingBusiness().getPostingStrings(category, schoolType, 
+					String[] postings =  getPostingStrings(category, schoolType, 
 							((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, 
-							((Integer)schoolYear.getPrimaryKey()).intValue());
+							((Integer)schoolYear.getPrimaryKey()).intValue(), schoolClassMember.getSchoolClassId());
 				
 					PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], 
 							placementTimes.getMonths(), school);
@@ -580,7 +580,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				Regulation regulation = (Regulation) i.next();
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, calculationDate, conditions,placementTimes);
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-				String[] postings =  getPostingBusiness().getPostingStrings(category, schoolType, ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue());
+				String[] postings =  getPostingStrings(category, schoolType, ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue(), schoolClassMember.getSchoolClassId());
 
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
 				createVATPaymentRecord(record, postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
@@ -739,8 +739,15 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		return schoolClassMember.getSchoolClass().getSchool().getSchoolTypes();
 	}
 
-	private String[] getPostingStrings(Provider provider, SchoolClassMember schoolClassMember, RegulationSpecType regSpecType) throws PostingException, RemoteException, EJBException {
-		return getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue());
+	protected String[] getPostingStrings(Provider provider, SchoolClassMember schoolClassMember, RegulationSpecType regSpecType) throws PostingException, RemoteException, EJBException {
+		int id = schoolClassMember.getStudyPathId();
+		return getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue(), id);
+	}
+	
+	protected String[] getPostingStrings(SchoolCategory category, SchoolType schoolType, int regSpecTypeId, Provider provider, Date calculationDate, int schoolYearId, int studyPathId) throws PostingException, RemoteException {
+		if (studyPathId == -1)
+			studyPathId = -1;
+		return getPostingBusiness().getPostingStrings(category, schoolType, regSpecTypeId, provider, calculationDate,schoolYearId, studyPathId, false);		
 	}
 
 	protected CommuneHome getCommuneHome() throws RemoteException {
@@ -778,5 +785,4 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	protected ChildCareApplicationHome getChildCareApplicationHome() throws RemoteException {
 		return (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 	}
-
 }

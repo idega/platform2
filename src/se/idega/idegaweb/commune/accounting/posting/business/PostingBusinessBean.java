@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.57 2004/01/12 11:40:45 sigtryggur Exp $
+ * $Id: PostingBusinessBean.java,v 1.58 2004/01/14 16:05:08 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -332,7 +332,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 					reg_id, 
 					com_id, 
 					com_bel_id, 
-					schoolYear1_id
+					schoolYear1_id, -1, false
 			);
 			if (pp == null) {
 				throw new PostingParametersException(KEY_ERROR_POST_NOT_FOUND, "Could not find parameter");
@@ -797,8 +797,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	public String[] getPostingStrings(SchoolCategory category, SchoolType type, int regSpecType, Provider provider, Date date) throws PostingException{
 		return getPostingStrings(category, type, regSpecType, provider, date, -1);
 	}
-
-	public String[] getPostingStrings(SchoolCategory category, SchoolType type, int regSpecType, Provider provider, Date date, int schoolYearId) throws PostingException{
+	
+	public String[] getPostingStrings(SchoolCategory category, SchoolType type, int regSpecType, Provider provider, Date date, int schoolYearId, int studyPathId, boolean noStudyPathId) throws PostingException{
 		if (type == null){
 			throw new PostingException("postingException.missing_school_tpe", "No school type found");
 		} else if (category == null){
@@ -806,22 +806,24 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		} else if (provider == null){
 			throw new PostingException("postingException.missing_provider", "No provider found");
 		}			
-				
+		
+		//TODO Remove
+		if (noStudyPathId)
+			if (studyPathId == -1)
+				studyPathId = -1;
+		
 		String ownPosting = null, doublePosting = null;
 		try{
 			Commune commune = provider.getSchool().getCommune();
 			CommuneBelongingTypeHome home = (CommuneBelongingTypeHome) IDOLookup.getHome(CommuneBelongingType.class);
 			CommuneBelongingType cbt = commune.getIsDefault() ? home.findHomeCommune() : home.findNoHomeCommune();
-						
+			
 			ExportDataMapping categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).
-				findByPrimaryKeyIDO(category.getPrimaryKey());				
+			findByPrimaryKeyIDO(category.getPrimaryKey());				
 			//Set the posting strings
-	
+			
 			PostingParameters  parameters = getPostingParameter(date, ((Integer) type.getPrimaryKey()).intValue(), regSpecType, provider.getSchool().getManagementTypeId(), ((Integer) cbt.getPrimaryKey()).intValue(), schoolYearId);
-//			System.out.println("Parameters:"+parameters.getPostingString()+"+"+parameters.getDoublePostingString()+".");
-//			System.out.println("Parameters:"+provider.getOwnPosting()+"+"+provider.getDoublePosting()+".");
-//			System.out.println("Parameters:"+categoryPosting.getAccount()+"+"+categoryPosting.getCounterAccount()+".");
-	
+			
 			ownPosting = parameters.getPostingString();
 //			logDebug("ownPosting1: " + ownPosting);
 			ownPosting = generateString(ownPosting, provider.getOwnPosting(), date);
@@ -829,7 +831,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			ownPosting = generateString(ownPosting, categoryPosting.getAccount(), date);
 			logDebug("ownPosting3: " + ownPosting);				
 			validateString(ownPosting,date);
-	
+			
 			doublePosting = parameters.getDoublePostingString();
 			doublePosting = generateString(doublePosting, provider.getDoublePosting(), date);
 			doublePosting = generateString(doublePosting, categoryPosting.getCounterAccount(), date);
@@ -851,6 +853,10 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			throw new PostingException("postingException.posting_parameter", "postingException.posting_parameter"); 				
 		}
 		return new String[] {ownPosting, doublePosting};
+	}
+
+	public String[] getPostingStrings(SchoolCategory category, SchoolType type, int regSpecType, Provider provider, Date date, int schoolYearId) throws PostingException{
+		return getPostingStrings(category, type, regSpecType, provider, date, schoolYearId, -1, false);
 	}	
 
 	protected PostingParametersHome getPostingParametersHome() throws RemoteException {
