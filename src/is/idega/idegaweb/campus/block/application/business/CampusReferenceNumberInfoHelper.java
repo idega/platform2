@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.16 2004/06/05 07:43:04 aron Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.17 2004/06/07 18:41:06 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -122,14 +122,15 @@ public class CampusReferenceNumberInfoHelper {
           return(null);
 
 
-        User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(contract.getUserId().intValue());
-        l.add(new Integer(user.getID()));
-        LoginTable login = LoginDBHandler.getUserLogin(user.getID());
+        User user = contract.getUser();
+        Integer userID = contract.getUserId();
+        l.add((Integer)user.getPrimaryKey());
+        LoginTable login = LoginDBHandler.getUserLogin(userID.intValue());
 
         java.sql.Timestamp t = login.getLastChanged();
         if (t == null){
           String passwd = LoginCreator.createPasswd(8);
-          LoginDBHandler.updateLogin(user.getID(),login.getUserLogin(),passwd);
+          LoginDBHandler.updateLogin(userID.intValue(),login.getUserLogin(),passwd);
 
           l.add(login.getUserLogin());
           l.add(passwd);
