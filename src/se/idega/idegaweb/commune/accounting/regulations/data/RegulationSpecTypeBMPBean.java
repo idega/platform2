@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecTypeBMPBean.java,v 1.6 2003/08/20 11:50:34 kjell Exp $
+ * $Id: RegulationSpecTypeBMPBean.java,v 1.7 2003/08/27 07:38:49 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.data.IDOLookup;
  * Regulation spec types ("check", "modersmal", "blabla") etc. Used for the posting.
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean 
  * <p>
- * $Id: RegulationSpecTypeBMPBean.java,v 1.6 2003/08/20 11:50:34 kjell Exp $
+ * $Id: RegulationSpecTypeBMPBean.java,v 1.7 2003/08/27 07:38:49 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class RegulationSpecTypeBMPBean extends GenericEntity implements RegulationSpecType {
 	
@@ -42,7 +42,7 @@ public class RegulationSpecTypeBMPBean extends GenericEntity implements Regulati
 
 		RegulationSpecTypeHome home
 				= (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
-		final String [] data = { "check", "modersmal"};
+		final String [] data = { "blank", "check", "modersmal"};
 		for (int i = 0; i < data.length; i++) {
 			RegulationSpecType regSpec = home.create();
 			regSpec.setRegSpecType(ENTITY_NAME + "." + data[i]);
