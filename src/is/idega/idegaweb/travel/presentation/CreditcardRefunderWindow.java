@@ -83,7 +83,7 @@ public class CreditcardRefunderWindow extends TravelWindow {
   private void cacCertificate(IWContext iwc) {
     try {
       com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
-      if (t.getCACertifycate()) {
+      if (t.getCACertificate()) {
         add(getText("CA certificate creation successful"));
       }else {
         add(getText("CA certificate creation failed"));
