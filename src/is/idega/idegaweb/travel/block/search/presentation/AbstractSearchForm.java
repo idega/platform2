@@ -650,7 +650,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		
 	private int addErrorWarning(Table table, int row) {
 		if (errorFields != null && !errorFields.isEmpty()) {
-			Table sTable = setSearchPart(table, -1, true);
+			Table sTable = setSearchPart(table, -1, true, true);
 			sTable.setCellpaddingLeft(1, 1, 10);
 			sTable.setCellpaddingTop(1, 1, 5);
 			sTable.setCellpaddingBottom(1, 1, 5);
@@ -699,6 +699,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		Table table = new Table();
 		table.setBorder(0);
 		table.setCellpaddingAndCellspacing(0);
+		table.setWidth("100%");
 		int row = 1;
 		
 		IWTimestamp from = new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE));
@@ -723,7 +724,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			e2.printStackTrace();
 		}
 
-		setSearchPart(table, row, false);
+		setSearchPart(table, row, false, false);
 		if (errorFields != null && !errorFields.isEmpty()) {
 			addErrorWarning(currentSearchPart, currentSearchPartRow);
 			currentSearchPart.setCellpaddingBottom(1, currentSearchPartRow, 8);
@@ -1586,22 +1587,24 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return count;
 	}
 
-	public Table setSearchPart(Table table, int tableRow, boolean createNew) {
+	public Table setSearchPart(Table table, int tableRow, boolean createNew, boolean useColors) {
 		if (createNew || currentSearchPart == null) {
 			//table.setBorder(1);
 
 			currentSearchPart = new Table();
-			if (searchPartTopBorderColor != null && searchPartTopBorderWidth != null) {
-				currentSearchPart.setTableBorderBottom(Integer.parseInt(searchPartTopBorderWidth), searchPartTopBorderColor, "solid");
-			}
-			if (searchPartBottomBorderColor != null && searchPartBottomBorderWidth != null) {
-				currentSearchPart.setTableBorderBottom(Integer.parseInt(searchPartBottomBorderWidth), searchPartBottomBorderColor, "solid");
-			}
-			String darkBackground = this.getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR);
-			String lightBackground = this.getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR);
-			
-			if (lightBackground != null) {
-				currentSearchPart.setStyleClass(lightBackground);
+			if (useColors) {
+				if (searchPartTopBorderColor != null && searchPartTopBorderWidth != null) {
+					currentSearchPart.setTableBorderBottom(Integer.parseInt(searchPartTopBorderWidth), searchPartTopBorderColor, "solid");
+				}
+				if (searchPartBottomBorderColor != null && searchPartBottomBorderWidth != null) {
+					currentSearchPart.setTableBorderBottom(Integer.parseInt(searchPartBottomBorderWidth), searchPartBottomBorderColor, "solid");
+				}
+				String darkBackground = this.getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR);
+				String lightBackground = this.getStyleName(ServiceSearch.STYLENAME_BACKGROUND_COLOR);
+				
+				if (lightBackground != null) {
+					currentSearchPart.setStyleClass(lightBackground);
+				}
 			}
 			currentSearchPart.setBorder(0);
 			//currentSearchPart.setBorderColor("#F0C0FF");
@@ -1631,7 +1634,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		formTable.add(new HiddenInput(name, value));
 	}
 	protected void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText, boolean newSearchPart, Table table, int row) {
-		setSearchPart(table, row, newSearchPart);
+		setSearchPart(table, row, newSearchPart, true);
 		for (int i = 0; i < text.length; i++) {
 			if ( errorFields != null && errorFields.contains(object[i].getName())) {
 				currentSearchPart.add(getErrorText("* "), i+1, currentSearchPartRow);
@@ -1965,14 +1968,14 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		table.setWidth(2, "34%");
 		table.setWidth(3, "33%");
 		table.setCellpaddingLeft(1, 1, 10);
-		table.setCellpaddingRight(2, 1, 10);
+		table.setCellpaddingRight(3, 1, 10);
 		table.setHeight(33);
-		table.add(getHeaderText(iwrb.getLocalizedString("travel.search.sort_by", "Sort by")+":"+Text.NON_BREAKING_SPACE), 1, 1);
-		table.add(getSortMenu(), 1, 1);
-		
+		table.setRowStyleClass(1, getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
+		table.setHeight(2, 1);
+		table.setHeight(3, 1);
+		table.setHeight(4, 3);
+		table.setRowStyleClass(3, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
 		int totalPages = (int )Math.ceil((double) collSize / (double) resultsPerPage); 
-		//int totalPages = 1 + ( (collSize - 1) / resultsPerPage);
-		//System.out.println(totalPages +" = " +collSize+"/"+resultsPerPage);
 		
 		if (currentPageNumber > 1) {
 			table.add(getNextOrPreviousLink(false), 2, 1);
@@ -1986,19 +1989,20 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		}
 		table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_CENTER);
 		
+		Table bottomTable = (Table) table.clone();
+		
+		table.add(getHeaderText(iwrb.getLocalizedString("travel.search.sort_by", "Sort by")+":"+Text.NON_BREAKING_SPACE), 1, 1);
+		table.add(getSortMenu(), 1, 1);
+		
 		table.add(getHeaderText(collSize+Text.NON_BREAKING_SPACE+results), 3, 1);
 		table.setAlignment(3, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 //		table.add("gimmi", 1, 1);
-		table.setRowStyleClass(1, getStyleName(ServiceSearch.STYLENAME_HEADER_BACKGROUND_COLOR));
-		
-		table.setHeight(2, 1);
-		table.setHeight(3, 1);
-		table.setHeight(4, 3);
-		table.setRowStyleClass(3, getStyleName(ServiceSearch.STYLENAME_BLUE_BACKGROUND_COLOR));
 		form.add(table);
 		add(form);
 		
 		listResults(iwc, coll);
+	
+		add(bottomTable);
 
 	}
 	
