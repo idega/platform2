@@ -38,13 +38,13 @@ public class PageCounter extends PresentationObjectContainer {
 
     addBreak();
 
-    Text hits4 = new Text("Total website sessions: "+TrackerBusiness.getTotalHits());
+    Text hits4 = new Text("Total website sessions: "+TrackerBusiness.getTotalSessions());
     hits4.setBold(true);
     add(hits4);
 
     addBreak();
 
-    Text hits3 = new Text("Total website hits: "+TrackerBusiness.getTotalSessions());
+    Text hits3 = new Text("Total website hits: "+TrackerBusiness.getTotalHits());
     hits3.setBold(true);
     add(hits3);
 

@@ -50,7 +50,7 @@ public class TrackerBusiness {
     if( domainEntity == null ) domainEntity = BuilderLogic.getInstance().getCurrentDomain(iwc);/**@todo add multidomain support**/
     if( pages == null ){pages = new HashMap();}
     if( pageSessions == null ){ pageSessions = new Hashtable();}
-    if( pageHits == null ){ pageSessions = new Hashtable();}
+    if( pageHits == null ){ pageHits = new Hashtable();}
     if( agents == null ){ agents = new Hashtable();}
   }
 
