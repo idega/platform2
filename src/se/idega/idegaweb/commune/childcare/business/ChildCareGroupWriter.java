@@ -249,8 +249,8 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 			SchoolClassMember studentMember;
 			Cell cell;
 			
-			String[] headers = {"Name", "PersonalID", "Address", "Postal code", "Phone"};
-			int[] sizes = { 35, 20, 25, 10, 10 };
+			String[] headers = {iwrb.getLocalizedString("school.name","Name"), iwrb.getLocalizedString("school.personal_id","Personal ID"), iwrb.getLocalizedString("school.address","Address"), iwrb.getLocalizedString("school.postal_code"),iwrb.getLocalizedString("school.phone","Phone")};
+			int[] sizes = { 25, 14, 20, 26, 15 };
 
 			Table datatable = getTable(headers, sizes);
 			Iterator iter = students.iterator();
@@ -262,7 +262,8 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 					postalCode = address.getPostalCode();
 				phone = userBusiness.getChildHomePhone(student);
 
-				Name name = new Name(student.getFirstName(), student.getMiddleName(), student.getLastName());
+				//Name name = new Name(student.getFirstName(), student.getMiddleName(), student.getLastName());
+				Name name = new Name(student.getFirstName(), "", student.getLastName());
 				cell = new Cell(new Phrase(name.getName(locale, true), new Font(Font.HELVETICA, 10, Font.BOLD)));
 				cell.setBorder(Rectangle.NO_BORDER);
 				datatable.addCell(cell);
