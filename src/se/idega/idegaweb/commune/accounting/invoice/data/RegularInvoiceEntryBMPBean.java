@@ -451,7 +451,9 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TO).appendGreaterThanOrEqualsSign().append(date);
 		sql.appendOr().append(COLUMN_TO).append(" is null").appendRightParenthesis();
 		sql.appendAndEquals(COLUMN_REG_SPEC_TYPE_ID,type);
-		sql.appendWhereEquals(COLUMN_USER_ID, userId);
+		sql.appendAndEquals(COLUMN_USER_ID, userId);
+		
+		System.out.println("SQL = " + sql);
 		
 		return idoFindPKsByQuery(sql);
 	}
