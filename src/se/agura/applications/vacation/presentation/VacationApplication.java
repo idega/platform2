@@ -14,6 +14,7 @@ import java.util.StringTokenizer;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.agura.AguraConstants;
 import se.agura.applications.vacation.business.ExtraInformation;
 import se.agura.applications.vacation.data.VacationType;
 
@@ -32,6 +33,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
+import com.idega.user.business.UserProperties;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -240,16 +242,14 @@ public class VacationApplication extends VacationBlock {
 		//toDateInput.setEarliestPossibleDate(stamp.getDate(), getResourceBundle().getLocalizedString("vacation.to_date_back_in_time", "To date can not be back in time."));
 		toDateInput.setYearRange(stamp.getYear(), stamp.getYear() + 4);
 		
+		UserProperties properties = iwc.getUserProperties();
+		String workHours = properties.getProperty(AguraConstants.USER_PROPERTY_WORK_HOURS, "8");
+		
 		DropdownMenu hours = (DropdownMenu) getInput(new DropdownMenu(PARAMETER_VACATION_WORKING_HOURS));
-		hours.addMenuElement(1, "1");
-		hours.addMenuElement(2, "2");
-		hours.addMenuElement(3, "3");
-		hours.addMenuElement(4, "4");
-		hours.addMenuElement(5, "5");
-		hours.addMenuElement(6, "6");
-		hours.addMenuElement(7, "7");
-		hours.addMenuElement(8, "8");
-		hours.setSelectedElement(8);
+		for (int a = 1; a <= 8; a++) {
+			hours.addMenuElement(a, String.valueOf(a));
+		}
+		hours.setSelectedElement(workHours);
 	
 		hours.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.hours_not_empty", "This field may not be empty"));
 		
@@ -379,8 +379,8 @@ public class VacationApplication extends VacationBlock {
 
 	private Table showWorkingDaysTable(IWContext iwc) {
 		int selectedHours = Integer.parseInt(iwc.getParameter(PARAMETER_VACATION_WORKING_HOURS));
-		IWTimestamp from = new IWTimestamp(iwc.getParameter(PARAMETER_VACATION_FROM_DATE));
-		IWTimestamp to = new IWTimestamp(iwc.getParameter(PARAMETER_VACATION_TO_DATE));
+		IWTimestamp from = new IWTimestamp(iwc.getCurrentLocale(), iwc.getParameter(PARAMETER_VACATION_FROM_DATE));
+		IWTimestamp to = new IWTimestamp(iwc.getCurrentLocale(), iwc.getParameter(PARAMETER_VACATION_TO_DATE));
 		
 		String vacationPeriod = from.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + " - " + to.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT);
 		int maxDays = getVacationType(iwc) != null ? getVacationType(iwc).getMaxDays() : 35;
@@ -408,27 +408,16 @@ public class VacationApplication extends VacationBlock {
 			int week = -1;
 			to.addDays(1);
 			while (from.isEarlierThan(to)) {
-				if (week != from.getWeekOfYear() && !(from.getDayOfWeek() == Calendar.SUNDAY)) {
+				if (week != from.getWeekOfYear()) {
 					row++;
 					week = from.getWeekOfYear();
-					workingDaysTable.add(getText(String.valueOf(from.getWeekOfYear())), 2, row);
-				}
-				if (week == -1 && (from.getDayOfWeek() == Calendar.SUNDAY)) {
-					row++;
 					workingDaysTable.add(getText(String.valueOf(from.getWeekOfYear())), 2, row);
 				}
 				
 				int hours = selectedHours;
 				int dayOfWeek = from.getDayOfWeek();
-				if (dayOfWeek == Calendar.SUNDAY) {
-					dayOfWeek = 9;
+				if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.SATURDAY) {
 					hours = 0;
-				}
-				else {
-					if (dayOfWeek == Calendar.SATURDAY) {
-						hours = 0;
-					}
-					dayOfWeek++;
 				}
 				workingDaysTable.add(getWorkingHoursMenu(hours, 8), dayOfWeek, row);
 				from.addDays(1);
