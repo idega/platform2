@@ -417,9 +417,15 @@ public class VacationApplication extends VacationBlock {
 				int hours = selectedHours;
 				int dayOfWeek = from.getDayOfWeek();
 				if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.SATURDAY) {
+					if (dayOfWeek == Calendar.SUNDAY) {
+						dayOfWeek = 8;
+					}
 					hours = 0;
 				}
-				workingDaysTable.add(getWorkingHoursMenu(hours, 8), dayOfWeek, row);
+				if (dayOfWeek > 8) {
+					dayOfWeek = dayOfWeek - 7;
+				}
+				workingDaysTable.add(getWorkingHoursMenu(hours, 8), dayOfWeek + 1, row);
 				from.addDays(1);
 			}
 		}
@@ -507,7 +513,7 @@ public class VacationApplication extends VacationBlock {
 			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.monday", "Mo")), 3, row);
 			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.tuesday", "Tu")), 4, row);
 			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.wednesday", "We")), 5, row);
-			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.thursday", "th")), 6, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.thursday", "Th")), 6, row);
 			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.friday", "Fr")), 7, row);
 			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.saturday", "Sa")), 8, row);
 			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.sunday", "Su")), 9, row);
@@ -527,9 +533,11 @@ public class VacationApplication extends VacationBlock {
 				if (dayOfWeek == Calendar.SUNDAY) {
 					dayOfWeek = 8;
 				}
-				dayOfWeek++;
+				else if (dayOfWeek > 8) {
+					dayOfWeek = dayOfWeek - 7;
+				}
 				
-				table.add(getText(workingHours[a]), dayOfWeek, row);
+				table.add(getText(workingHours[a]), dayOfWeek + 1, row);
 				fromDate.addDays(1);
 				a++;
 			}
