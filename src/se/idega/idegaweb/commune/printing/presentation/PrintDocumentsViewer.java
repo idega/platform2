@@ -13,7 +13,6 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.presentation.ColumnList;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
-import se.idega.idegaweb.commune.printing.business.DocumentService;
 import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 
 import com.idega.core.builder.data.ICPage;
@@ -306,16 +305,16 @@ public class PrintDocumentsViewer extends CommuneBlock {
 					.getPrintedLetterMessageHome()
 					.findByPrimaryKey(
 					new Integer(msgID));
-			/*fileID =
+			fileID =
 				getDocumentBusiness(iwc).writePDF(
 					msg,
 					iwc.getCurrentUser(),
-					"LetterPDF",
+					localize("printdoc.letter_filename","LetterPDF"),
 					iwc.getApplicationSettings().getDefaultLocale(),
 					true);
-			*/
 			
-			fileID = getDocumentService(iwc).createPDF(iwc,msg,localize("printdoc.letter_filename","LetterPDF"),false).intValue();
+			//TODO
+			////fileID = getDocumentService(iwc).createPDF(iwc,msg,localize("printdoc.letter_filename","LetterPDF"),false).intValue();
 			//System.err.println("file id written :"+fileID);
 			//getDocumentBusiness(iwc).writePrintedLetterPDF(msgId,userID);
 		}
@@ -1261,10 +1260,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private DocumentBusiness getDocumentBusiness(IWContext iwc) throws RemoteException {
 		return (DocumentBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,DocumentBusiness.class);
 	}
-	
+	/*
 	private DocumentService getDocumentService(IWContext iwc) throws RemoteException {
 		return (DocumentService) com.idega.business.IBOLookup.getServiceInstance(iwc,DocumentService.class);
-	}
+	}*/
 
 
 	/* Commented out since it is never used...
