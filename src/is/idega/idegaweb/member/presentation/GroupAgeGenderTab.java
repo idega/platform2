@@ -20,6 +20,7 @@ public class GroupAgeGenderTab extends UserGroupTab {
   
   public GroupAgeGenderTab(Group group) {
     this.group = group;
+		setName("Age and Gender");
   }
     
 	/**
