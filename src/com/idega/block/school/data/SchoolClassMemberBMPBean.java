@@ -149,7 +149,21 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
     //System.err.println(sql.toString());
     return (Integer)this.idoFindOnePKBySQL(sql.toString());
   }
-
+  
+	public Collection ejbFindAllByUserAndSeason(User user, SchoolSeason season) throws FinderException, RemoteException{
+		return ejbFindAllByUserAndSeason(((Integer)user.getPrimaryKey()).intValue(),((Integer)season.getPrimaryKey()).intValue());
+	}
+  
+  public Collection ejbFindAllByUserAndSeason(int userID, int seasonID) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this.getTableName()+" mb"+","+SchoolClassBMPBean.SCHOOLCLASS +" cl")
+		.appendWhere().append(" mb."+MEMBER).appendEqualSign().append(userID)
+		.appendAnd().append("cl."+SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID)
+		.appendAnd().append("(cl."+SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl."+SchoolClassBMPBean.COLUMN_VALID).append(" is null)")
+		.appendAnd().append(" mb."+SCHOOLCLASS).appendEqualSign().append("cl."+SchoolClassBMPBean.SCHOOLCLASS+"_id");
+  	return idoFindPKsBySQL(sql.toString());
+  }
+  
   public Collection ejbFindBySchoolAndSeasonAndYear(int schoolID, int seasonID, int yearID) throws FinderException, RemoteException{
     IDOQuery sql = idoQuery();
     sql.appendSelectAllFrom(this.getTableName()+" mb"+","+SchoolClassBMPBean.SCHOOLCLASS +" cl")

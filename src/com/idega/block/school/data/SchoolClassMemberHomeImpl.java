@@ -1,5 +1,12 @@
 package com.idega.block.school.data;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import com.idega.user.data.User;
+
 
 public class SchoolClassMemberHomeImpl extends com.idega.data.IDOFactory implements SchoolClassMemberHome
 {
@@ -97,5 +104,25 @@ public SchoolClassMember findByUserAndSeason(com.idega.user.data.User p0,com.ide
  }
 
 
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberHome#findAllByUserAndSeason(int, int)
+	 */
+	public Collection findAllByUserAndSeason(int p0, int p1) throws FinderException,RemoteException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllByUserAndSeason(p0,p1);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberHome#findAllByUserAndSeason(com.idega.user.data.User, com.idega.block.school.data.SchoolSeason)
+	 */
+	public Collection findAllByUserAndSeason(User p0, SchoolSeason p1) throws FinderException,RemoteException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllByUserAndSeason(p0,p1);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
 }
