@@ -357,7 +357,7 @@ public abstract class BookingForm extends TravelManager{
           pTable.setWidth(2, Integer.toString(pWidthCenter));
           pTable.setWidth(3, Integer.toString(pWidthRight));
           pTable.setCellpaddingAndCellspacing(0);
-        table.add(pTable, 2, row);
+        table.add(pTable, 2, row+1);
 
         Text count = (Text) super.theSmallBoldText.clone();
           count.setText(iwrb.getLocalizedString("travel.number_of_units","Units"));
@@ -398,14 +398,14 @@ public abstract class BookingForm extends TravelManager{
                 if (i == pricesLength) {
                   Text tempTexti = (Text) theBoldText.clone();
                     tempTexti.setText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
-                  table.mergeCells(1, row, 2, row);
+//                  table.mergeCells(1, row, 2, row);
                   table.add(tempTexti, 1, row);
                   ++row;
                 }else if (i == 0) {
                   Text tempTexti = (Text) theBoldText.clone();
                     tempTexti.setText(iwrb.getLocalizedString("travel.basic_prices","Basic prices"));
                     tempTexti.setUnderline(true);
-                  table.mergeCells(1, row, 2, row);
+//                  table.mergeCells(1, row, 2, row);
                   table.add(tempTexti, 1, row);
                   ++row;
                 }
@@ -880,8 +880,8 @@ public abstract class BookingForm extends TravelManager{
 //          priceTable.add(unitPrice, 2, pRow);
 //          priceTable.add(amount, 3, pRow);
 
-          table.add(space, 1, row);
-          table.add(pTable, 2, row);
+//          table.add(space, 1, row);
+          table.add(pTable, 2, row+1);
 //          table.mergeCells(2, row, 2, row + prices.length + misc.length + 1);
 
 
@@ -1842,14 +1842,27 @@ public abstract class BookingForm extends TravelManager{
     String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
     String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
     String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
+    
+	  _stamp = new IWTimestamp(IWTimestamp.RightNow());
+	  if (year != null) {
+	  	_stamp.setYear(Integer.parseInt(year));	
+	  }
+    if (month != null) {
+    	_stamp.setMonth(Integer.parseInt(month));	
+    }
+    if (day != null) {
+    	_stamp.setDay(Integer.parseInt(day));	
+    }
+    
+    /*
     if (day != null && month != null && year != null) {
       _stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
     }else if (day == null && month != null && year != null) {
       _stamp = new IWTimestamp(1, Integer.parseInt(month), Integer.parseInt(year));
     }else {
       _stamp = new IWTimestamp(IWTimestamp.RightNow());
-   
     }
+    */
   }
 
   protected DropdownMenu getDropdownMenuWithUsers(List users, String name) throws RemoteException{

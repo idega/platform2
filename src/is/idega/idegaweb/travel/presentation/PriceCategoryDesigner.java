@@ -4,6 +4,7 @@ import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import java.rmi.RemoteException;
 
 import com.idega.block.trade.stockroom.data.PriceCategory;
+import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
 import com.idega.block.trade.stockroom.data.PriceCategoryHome;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.data.IDOLookup;
@@ -16,6 +17,8 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SelectDropdown;
+import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
@@ -80,7 +83,7 @@ public class PriceCategoryDesigner extends TravelManager {
       Text onlineTxt = (Text)  theText.clone();
         onlineTxt.setFontColor(super.WHITE);
         onlineTxt.setBold();
-        onlineTxt.setText(iwrb.getLocalizedString("travel.online","Online"));
+        onlineTxt.setText(iwrb.getLocalizedString("travel.visible","Visible"));
 
       Text typeTxt = (Text)  theText.clone();
         typeTxt.setFontColor(super.WHITE);
@@ -113,15 +116,16 @@ public class PriceCategoryDesigner extends TravelManager {
 
       Text numberTxt;
       TextInput nameInp;
-      BooleanInput online;
+//      BooleanInput online;
+      DropdownMenu online = new DropdownMenu("priceCategoryVisible");
+      	online.addMenuElement(PriceCategoryBMPBean.PRICE_VISIBILITY_PRIVATE, iwrb.getLocalizedString("travel.web_only","Web only"));
+      	online.addMenuElement(PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, iwrb.getLocalizedString("travel.online_only","Online only"));
+      	online.addMenuElement(PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, iwrb.getLocalizedString("travel.everywhere","Everywhere"));
       DropdownMenu ddType = new DropdownMenu("priceCategoryType");
         ddType.addMenuElement(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE, iwrb.getLocalizedString("travel.price","Price"));
         ddType.addMenuElement(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT, iwrb.getLocalizedString("travel.discount","Discount"));
       DropdownMenu ddDisc = new DropdownMenu(categories,"priceCategoryParent");
         ddDisc.addMenuElementFirst("-1",Text.NON_BREAKING_SPACE);
-
-      DropdownMenu ddOne;
-      DropdownMenu ddTwo;
 
       CheckBox delete;
 
@@ -135,56 +139,79 @@ public class PriceCategoryDesigner extends TravelManager {
         nameInp = new TextInput("priceCategoryName");
           nameInp.setContent(categories[i].getName());
 
-        online = new BooleanInput("priceCategoryOnline");
-          online.setSelected(categories[i].isNetbookingCategory());
 
-        ddOne = (DropdownMenu) ddType.clone();
-          ddOne.setSelectedElement(categories[i].getType());
+//        online = new BooleanInput("priceCategoryOnline");
+//          online.setSelected(categories[i].isNetbookingCategory());
+				DropdownMenu ddVis = (DropdownMenu) online.clone();
+					ddVis.setSelectedElement(categories[i].getVisibility());
 
-        ddTwo = (DropdownMenu) ddDisc.clone();
-          ddTwo.setSelectedElement(Integer.toString(categories[i].getParentId()));
+//        DropdownMenu ddOne = (DropdownMenu) ddType.clone();
+//          ddOne.setSelectedElement(categories[i].getType());
+
+//        DropdownMenu ddTwo = (DropdownMenu) ddDisc.clone();
+//          ddTwo.setSelectedElement(Integer.toString(categories[i].getParentId()));
 
         delete = new CheckBox("priceCategoryToDelete_"+categories[i].getID());
 
         table.add(new HiddenInput(this.parameterPriceCategoryId,Integer.toString(categories[i].getID())));
         table.add(numberTxt,1,row);
         table.add(nameInp,2,row);
-        table.add(online,3,row);
+        table.add(ddVis,3,row);
         if ( this.miscellaneousServices ) {
-          table.add(new HiddenInput(ddOne.getName(), com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE), 3, row);
-          table.add(new HiddenInput(ddTwo.getName(), "-1"), 3, row);
+//          table.add(new HiddenInput(ddOne.getName(), com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE), 3, row);
+//          table.add(new HiddenInput(ddTwo.getName(), "-1"), 3, row);
           table.mergeCells(3, row, 5 ,row);
         }else {
-          table.add(ddOne,4,row);
-          table.add(ddTwo,5,row);
+//          table.add(ddOne,4,row);
+//          table.add(ddTwo,5,row);
         }
         table.add(delete,6,row);
         table.setRowColor(row,super.GRAY);
       }
-      for (int i = 0; i < extraRows; i++) {
+/*      for (int i = 0; i < extraRows; i++) {
         ++counter;
         ++row;
         numberTxt = (Text) super.smallText.clone();
           numberTxt.setFontColor(super.BLACK);
           numberTxt.setText(Integer.toString(counter));
         nameInp = new TextInput("priceCategoryName");
-        online = new BooleanInput("priceCategoryOnline");
-          online.setSelected(true);
-        ddOne = (DropdownMenu) ddType.clone();
-        ddTwo = (DropdownMenu) ddDisc.clone();
+//        online = new BooleanInput("priceCategoryOnline");
+//ddVis = new DropdownMenu("priceCategoryVisible");
+//      	ddVis.addMenuElement(PriceCategoryBMPBean.PRICE_VISIBILITY_PRIVATE, iwrb.getLocalizedString("travel.web_only","Web only"));
+//      	ddVis.addMenuElement(PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, iwrb.getLocalizedString("travel.online_only","Online only"));
+//      	ddVis.addMenuElement(PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC, iwrb.getLocalizedString("travel.everywhere","Everywhere"));
+				DropdownMenu ddVis = (DropdownMenu) online.clone();
+          ddVis.setSelectedElement(Integer.toString(PriceCategoryBMPBean.PRICE_VISIBILITY_PRIVATE));
+        DropdownMenu ddOne = (DropdownMenu) ddType.clone();
+        	ddOne.setSelectedElement(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE);
+        DropdownMenu ddTwo = (DropdownMenu) ddDisc.clone();
+        	ddTwo.setSelectedElement(-1);
 
         table.add(new HiddenInput(this.parameterPriceCategoryId,"-1"));
         table.add(numberTxt,1,row);
         table.add(nameInp,2,row);
-        table.add(online,3,row);
-        if (this.miscellaneousServices) {
+        table.add(PriceCategoryBMPBean.PRICE_VISIBILITY_PRIVATE+" / "+ddVis.getSelectedElementValue(),3,row);
+        table.add(ddVis,3,row);
+        if ( this.miscellaneousServices ) {
           table.add(new HiddenInput(ddOne.getName(), com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE), 3, row);
           table.add(new HiddenInput(ddTwo.getName(), "-1"), 3, row);
-          table.mergeCells(3, row, 5, row);
+          table.mergeCells(3, row, 5 ,row);
         }else {
+          table.add(PriceCategoryBMPBean.PRICETYPE_PRICE+" / "+ddOne.getSelectedElementValue(),4,row);
           table.add(ddOne,4,row);
+          table.add("-1 / "+ddTwo.getSelectedElementValue(),5,row);
           table.add(ddTwo,5,row);
         }
+
+//        table.add(ddVis,3,row);
+//        if (this.miscellaneousServices) {
+//          table.add(new HiddenInput(ddOne.getName(), com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE), 3, row);
+//          table.add(new HiddenInput(ddTwo.getName(), "-1"), 3, row);
+//          table.mergeCells(3, row, 5, row);
+//        }else {
+//          table.add(ddOne,4,row);
+//          table.add(ddTwo,5,row);
+//        }
         table.setRowColor(row,super.GRAY);
       }
       ++row;
@@ -199,6 +226,27 @@ public class PriceCategoryDesigner extends TravelManager {
         table.add(lSave,1,row);
       }
 
+	DropdownMenu a = new DropdownMenu("repps");
+	    a.addMenuElement("1", "Númer 1");
+	    a.addMenuElement("2", "Númer 2");
+
+
+	for (int c = 1; c < 2; c++) {
+	    DropdownMenu r = (DropdownMenu) a.clone();
+		r.setSelectedElement("1");
+	    form.add(r);
+	}
+
+	for (int b = 1; b < 2; b++) {
+	    DropdownMenu r = (DropdownMenu) a.clone();
+		r.setSelectedElement("2");
+	    form.add(r);
+	}
+*/
+				DropdownMenu ddVis1 = (DropdownMenu) online.clone();
+          ddVis1.setSelectedElement(Integer.toString(PriceCategoryBMPBean.PRICE_VISIBILITY_PRIVATE));
+        form.add(PriceCategoryBMPBean.PRICE_VISIBILITY_PRIVATE+" / "+ddVis1.getSelectedElementValue());
+        form.add(ddVis1);
 
       return form;
   }
@@ -208,7 +256,7 @@ public class PriceCategoryDesigner extends TravelManager {
   public void savePriceCategories(IWContext iwc) {
     String[] catIds = iwc.getParameterValues(this.parameterPriceCategoryId);
     String[] names  = iwc.getParameterValues("priceCategoryName");
-    String[] online = iwc.getParameterValues("priceCategoryOnline");
+    String[] visible= iwc.getParameterValues("priceCategoryVisible");
     String[] type   = iwc.getParameterValues("priceCategoryType");
     String[] parent = iwc.getParameterValues("priceCategoryParent");
 
@@ -221,18 +269,15 @@ public class PriceCategoryDesigner extends TravelManager {
           if ((names[i] != null) && (!names[i].equals(""))){
             int priceCategoryId = 0;
             int parentId;
+            int visibility = -1;
+              visibility = Integer.parseInt(visible[i]);
             boolean bOnline;
-            if (online[i].equals("Y")) {
-                bOnline = true;
-            }else {
-              bOnline = false;
-            }
 
             if (type[i].equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)) {
               parentId = Integer.parseInt(parent[i]);
-              priceCategoryId = tsb.createPriceCategory(supplier.getID(), names[i], "",type[i], "", bOnline, parentId);
+              priceCategoryId = tsb.createPriceCategory(supplier.getID(), names[i], "",type[i], "", visibility, parentId);
             }else if (type[i].equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
-              priceCategoryId = tsb.createPriceCategory(supplier.getID(), names[i], "",type[i], "", bOnline);
+              priceCategoryId = tsb.createPriceCategory(supplier.getID(), names[i], "",type[i], "", visibility);
             }
 
             if (this.miscellaneousServices) {
@@ -248,11 +293,8 @@ public class PriceCategoryDesigner extends TravelManager {
             pCat.delete();
           }else {
             boolean bOnline;
-            if (online[i].equals("Y")) {
-                bOnline = true;
-            }else {
-              bOnline = false;
-            }
+            int visibility = -1;
+              visibility = Integer.parseInt(visible[i]);
 
               pCat.setName(names[i]);
               pCat.setDescription("");
@@ -262,7 +304,7 @@ public class PriceCategoryDesigner extends TravelManager {
               }
               pCat.setSupplierId(supplier.getID());
               pCat.setExtraInfo("");
-              pCat.isNetbookingCategory(bOnline);
+              pCat.setVisibility(visibility);
               if (this.miscellaneousServices) {
                 pCat.setCountAsPerson(false);
               }else {

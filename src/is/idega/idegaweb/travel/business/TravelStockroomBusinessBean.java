@@ -90,22 +90,17 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     }
   }
 
-  public int createPriceCategory(int supplierId, String name, String description, String type, String extraInfo, boolean isNetbooking) throws Exception {
-      return this.createPriceCategory(supplierId, name, description,type,extraInfo, isNetbooking, -1);
+  public int createPriceCategory(int supplierId, String name, String description, String type, String extraInfo, int visibility) throws Exception {
+      return this.createPriceCategory(supplierId, name, description,type,extraInfo, visibility, -1);
   }
 
-  public int createPriceCategory(int supplierId, String name, String description, String type, String extraInfo, boolean isNetbooking, int parentId) throws Exception {
+  public int createPriceCategory(int supplierId, String name, String description, String type, String extraInfo, int visibility, int parentId) throws Exception {
+		int catId = this.createPriceCategory(supplierId, name, description, extraInfo);
 
-    PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).createLegacy();
-
-    cat.setName(name);
+    PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKey(catId);
 
     if(parentId != -1) {
       cat.setParentId(parentId);
-    }
-
-    if(description != null){
-      cat.setDescription(description);
     }
 
     if(type != null){
@@ -116,14 +111,16 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       cat.setExtraInfo(extraInfo);
     }
 
-    cat.isNetbookingCategory(isNetbooking);
+		cat.setVisibility(visibility);
+
+//    cat.isNetbookingCategory(isNetbooking);
     cat.setSupplierId(supplierId);
     cat.setCountAsPerson(true);
 
-    cat.insert();
+    cat.update();
 
 
-    return cat.getID();
+    return catId;
   }
 
 

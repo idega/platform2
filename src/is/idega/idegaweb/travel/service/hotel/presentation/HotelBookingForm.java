@@ -343,7 +343,7 @@ public class HotelBookingForm extends BookingForm {
           pTable.setWidth(2, Integer.toString(pWidthCenter));
           pTable.setWidth(3, Integer.toString(pWidthRight));
           pTable.setCellpaddingAndCellspacing(0);
-        table.add(pTable, 2, row);
+        table.add(pTable, 2, row+1);
 
         Text count = (Text) super.theSmallBoldText.clone();
           count.setText(iwrb.getLocalizedString("travel.number_of_units","Number of units"));
@@ -384,14 +384,14 @@ public class HotelBookingForm extends BookingForm {
                 if (i == pricesLength) {
                   Text tempTexti = (Text) theBoldText.clone();
                     tempTexti.setText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
-                  table.mergeCells(1, row, 2, row);
+//                  table.mergeCells(1, row, 2, row);
                   table.add(tempTexti, 1, row);
                   ++row;
                 }else if (i == 0) {
                   Text tempTexti = (Text) theBoldText.clone();
                     tempTexti.setText(iwrb.getLocalizedString("travel.basic_prices","Basic prices"));
                     tempTexti.setUnderline(true);
-                  table.mergeCells(1, row, 2, row);
+//                  table.mergeCells(1, row, 2, row);
                   table.add(tempTexti, 1, row);
                   ++row;
                 }
@@ -589,29 +589,40 @@ public class HotelBookingForm extends BookingForm {
     return form;
   }
 
-  public Form getPublicBookingForm(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, FinderException {
-    int bookings = getBooker(iwc).getBookingsTotalCount(_productId, this._stamp);
-    int max = 0;
-    int min = 0;
+  public Form getPublicBookingForm(IWContext iwc, Product product) throws RemoteException, FinderException {
+		/*
+	    int bookings = getBooker(iwc).getBookingsTotalCount(_productId, this._stamp);
+	    int max = 0;
+	    int min = 0;
+	
+	    try {
+	      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+	      ServiceDay sDay = sDayHome.create();
+	        sDay = sDay.getServiceDay(this._productId, stamp);
+	      if (sDay != null) {
+	        max = sDay.getMax();
+	        min = sDay.getMin();
+	      }
+	    }catch (Exception e) {
+	      e.printStackTrace(System.err);
+	    }
+	
+	    /// ef ferd er fullbokud eda ef ferd er vanbokud 
+	    if ((max > 0 && max <= bookings) || (min > 0 && min > bookings) ){
+	      _useInquiryForm = true;
+	    }
+	    */
+		try {
+			/** Not tested 100% here, but seems to work at other places... */
+			if (isFullyBooked(iwc, product, _stamp)) {
+				_useInquiryForm	= true;
+			}
+		} catch (CreateException e) {
+			e.printStackTrace(System.err);
+		}
 
     try {
-      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-      ServiceDay sDay = sDayHome.create();
-        sDay = sDay.getServiceDay(this._productId, stamp);
-      if (sDay != null) {
-        max = sDay.getMax();
-        min = sDay.getMin();
-      }
-    }catch (Exception e) {
-      e.printStackTrace(System.err);
-    }
-
-    /** ef ferd er fullbokud eda ef ferd er vanbokud */
-    if ((max > 0 && max <= bookings) || (min > 0 && min > bookings) ){
-      _useInquiryForm = true;
-    }
-    try {
-      return getPublicBookingFormPrivate(iwc, product, stamp);
+      return getPublicBookingFormPrivate(iwc, product);
     }catch (ServiceNotFoundException snfe) {
       throw new FinderException(snfe.getMessage());
     }catch (TimeframeNotFoundException tnfe) {
@@ -620,7 +631,7 @@ public class HotelBookingForm extends BookingForm {
   }
 
 
-  private Form getPublicBookingFormPrivate(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException, FinderException {
+  private Form getPublicBookingFormPrivate(IWContext iwc, Product product) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException, FinderException {
     Form form = new Form();
       form.addParameter(this.parameterOnlineBooking, "true");
     Table table = new Table();
@@ -630,10 +641,10 @@ public class HotelBookingForm extends BookingForm {
       table.setWidth("100%");
       form.add(table);
 
-      if (stamp != null) {
-        form.addParameter(CalendarBusiness.PARAMETER_YEAR,stamp.getYear());
-        form.addParameter(CalendarBusiness.PARAMETER_MONTH,stamp.getMonth());
-        form.addParameter(CalendarBusiness.PARAMETER_DAY,stamp.getDay());
+      if (_stamp != null) {
+        form.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+        form.addParameter(CalendarBusiness.PARAMETER_MONTH,_stamp.getMonth());
+        form.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
       }
 
       boolean isDay = true;
@@ -647,7 +658,7 @@ public class HotelBookingForm extends BookingForm {
 
       ProductPrice[] prices = {};
       ProductPrice[] misc = {};
-      Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, stamp, -1);
+      Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, -1);
       int timeframeId = -1;
       if (tFrame != null) {
       	timeframeId = tFrame.getID();
@@ -672,7 +683,7 @@ public class HotelBookingForm extends BookingForm {
         inquiryExplain.setText(iwrb.getLocalizedString("travel.inquiry_explain","A departure on the selected day cannot be guarenteed. By filling out this form you will send us your request and we will try to meet your requirements.\nYou can also select another day from the calendar."));
 
       Text dateText = (Text) theBoldText.clone();
-        dateText.setText(getLocaleDate(stamp));
+        dateText.setText(getLocaleDate(_stamp));
         dateText.addToText("."+Text.NON_BREAKING_SPACE);
 
       Text pleaseBook = (Text) theText.clone();
@@ -852,8 +863,8 @@ public class HotelBookingForm extends BookingForm {
 //          priceTable.add(unitPrice, 2, pRow);
 //          priceTable.add(amount, 3, pRow);
 
-          table.add(space, 1, row);
-          table.add(pTable, 2, row);
+//          table.add(space, 1, row);
+          table.add(pTable, 2, row+1);
 //          table.mergeCells(2, row, 2, row + prices.length + misc.length + 1);
 
 

@@ -627,7 +627,7 @@ public class InitialData extends TravelManager {
       ++row;
         table.setAlignment(1,row,"left");
         table.add(lBack,1,row);
-      if (super.isInPermissionGroup) {
+      if (super.isInPermissionGroup || isTravelAdministrator(iwc)) {
         table.setAlignment(2,row,"right");
         table.add(submit,2,row);
       }

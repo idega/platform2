@@ -176,9 +176,7 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
   public static ProductPrice[] getProductPrices(int productId, boolean netBookingOnly) {
     return getProductPrices(productId, -1, netBookingOnly);
   }
-  /**
-   * @deprecated
-   */
+
   public static ProductPrice[] getProductPrices(int productId, int timeframeId, boolean netBookingOnly) {
     return getProductPrices(productId, timeframeId, -1, netBookingOnly);
   }
@@ -209,9 +207,23 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
    * @return ProductPrice array
    */
   public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId) {
+		return getProductPrices(productId, timeframeId, addressId, netBookingOnly, countAsPersonStatus, currencyId, -1);	
+  }
+  /**
+   *
+   * @param productId Product id
+   * @param timeframeId Timeframe id
+   * @param addressId TravelAddress id
+   * @param netBookingOnly View netBookings only
+   * @param countAsPersonStatus 0 = selects when COUNT_AS_PERSON = 'Y' or NULL, 1 = selects where COUNT_AS_PERSON = 'N', -1 both 0 and 1
+   * @param currencyId Currency id
+   * @param visibility 1 = Private Prices, 2 = Public Prices, 3 Both Types
+   * @return ProductPrice array
+   */
+  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId, int visibility) {
       ProductPrice[] prices = {};
       try {
-        String sql = getSQLQuery(productId, timeframeId, addressId, netBookingOnly, countAsPersonStatus, currencyId);
+        String sql = getSQLQuery(productId, timeframeId, addressId, netBookingOnly, countAsPersonStatus, currencyId, visibility);
         prices = (ProductPrice[]) (com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class)).findAll(sql);
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
@@ -220,7 +232,11 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
   }
 
   public static int[] getCurrenciesInUse(int productId) {
-    String sql = getSQLQuery(productId, -1, -1, false, -1, -1);
+		return getCurrenciesInUse(productId, -1);
+  }
+
+  public static int[] getCurrenciesInUse(int productId, int visibility) {
+    String sql = getSQLQuery(productId, -1, -1, false, -1, -1, visibility);
     sql = TextSoap.findAndReplace(sql, getProductPriceTableName()+".*", "distinct "+getColumnNameCurrencyId());
     try {
       String[] sIds = SimpleQuerier.executeStringQuery(sql);
@@ -238,7 +254,7 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     return new int[]{};
   }
 
-  private static String getSQLQuery(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId) {
+  private static String getSQLQuery(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId, int visibility) {
     ProductPrice price = (ProductPrice) com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class);
     PriceCategory category = (PriceCategory) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class);
     Timeframe timeframe = (Timeframe) com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance(Timeframe.class);
@@ -295,10 +311,15 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     SQLQuery.append(pTable+"."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameIsValid() +"='Y'");
     SQLQuery.append(" AND ");
     SQLQuery.append(cTable+"."+com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameIsValid() +"='Y'");
-    if (netBookingOnly) {
-      SQLQuery.append(" AND ");
+    if (netBookingOnly || visibility > 0 || visibility != 3) { 
+			/** visibility == 3, applies applies to both 1 and 2.... netBookingOnly in for backwards compatability */
+      SQLQuery.append(" AND (");
       SQLQuery.append(cTable+"."+com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameNetbookingCategory()+" = 'Y'");
+    	SQLQuery.append(" OR ");
+    	SQLQuery.append(cTable+"."+PriceCategoryBMPBean.getColumnNameVisibility()+"="+visibility);
+    	SQLQuery.append(")");
     }
+    
     SQLQuery.append(" ORDER BY "+pTable+"."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceType()+","+cTable+"."+com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameName());
 
     return SQLQuery.toString();
@@ -319,7 +340,6 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     return this.idoGetRelatedEntities(Timeframe.class);
   }
 
-
   public static String getProductPriceTableName(){return "SR_PRODUCT_PRICE";}
   public static String getColumnNameProductId(){return "SR_PRODUCT_ID";}
   public static String getColumnNamePriceCategoryId() {return "SR_PRICE_CATEGORY_ID";}
@@ -329,7 +349,6 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
   public static String getColumnNamePriceType() {return "PRICE_TYPE"; }
   public static String getColumnNameIsValid() {return "IS_VALID";}
   public static String getColumnNameMaxUsage() {return "MAX_USAGE";}
-
 
 
 

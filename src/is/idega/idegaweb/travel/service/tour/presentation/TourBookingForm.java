@@ -323,7 +323,7 @@ public class TourBookingForm extends BookingForm{
             pTable.setWidth(2, Integer.toString(pWidthCenter));
             pTable.setWidth(3, Integer.toString(pWidthRight));
             pTable.setCellpaddingAndCellspacing(0);
-          table.add(pTable, 2, row);
+          table.add(pTable, 2, row+1);
 
           Text count = (Text) super.theSmallBoldText.clone();
             count.setText(iwrb.getLocalizedString("travel.number_of_seats","No.of seats"));
@@ -364,14 +364,14 @@ public class TourBookingForm extends BookingForm{
                   if (i == pricesLength) {
                     Text tempTexti = (Text) theBoldText.clone();
                       tempTexti.setText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
-                    table.mergeCells(1, row, 2, row);
+//                    table.mergeCells(1, row, 2, row);
                     table.add(tempTexti, 1, row);
                     ++row;
                   }else if (i == 0) {
                     Text tempTexti = (Text) theBoldText.clone();
                       tempTexti.setText(iwrb.getLocalizedString("travel.basic_prices","Basic prices"));
                       tempTexti.setUnderline(true);
-                    table.mergeCells(1, row, 2, row);
+//                    table.mergeCells(1, row, 2, row);
                     table.add(tempTexti, 1, row);
                     ++row;
                   }
@@ -869,8 +869,8 @@ public class TourBookingForm extends BookingForm{
 //          priceTable.add(unitPrice, 2, pRow);
 //          priceTable.add(amount, 3, pRow);
 
-          table.add(space, 1, row);
-          table.add(pTable, 2, row);
+//          table.add(space, 1, row);
+          table.add(pTable, 2, row+1);
 //          table.mergeCells(2, row, 2, row + prices.length + misc.length + 1);
 
 

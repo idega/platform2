@@ -88,12 +88,16 @@ public class PublicBooking extends Block  {
     String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
     String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
     String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
-    if (year != null && month != null && day != null) {
-      stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
-    }else {
-      stamp = IWTimestamp.RightNow();
+	  stamp = new IWTimestamp(IWTimestamp.RightNow());
+	  if (year != null) {
+	  	stamp.setYear(Integer.parseInt(year));	
+	  }
+    if (month != null) {
+    	stamp.setMonth(Integer.parseInt(month));	
     }
-
+    if (day != null) {
+    	stamp.setDay(Integer.parseInt(day));	
+    }
 
     String sProductId = iwc.getParameter(this.parameterProductId);
     if (sProductId != null) {
@@ -252,19 +256,17 @@ public class PublicBooking extends Block  {
         ch.setProduct(product);
 
       boolean legalDay = bf.getIsDayVisible(iwc);
+      boolean fullyBooked = bf.isFullyBooked( iwc, product, stamp);
 //      legalDay = getTravelStockroomBusiness(iwc).getIfDay(iwc, product, stamp);
-
 
       Form form = new Form();
 
 
-      if (legalDay && !bf.isFullyBooked( iwc, product, stamp)) {
-
+      if (legalDay && !fullyBooked) {
         String action = iwc.getParameter(BookingForm.sAction);
-
 //        String tbfAction = iwc.getParameter(BookingForm.sAction);
 //        if (tbfAction == null || !tbfAction.equals(BookingForm.parameterSaveBooking)) {//
-//	        System.out.println("action a = "+action);
+//	        System.out.println("action a = '"+action+"'");
 //          action = "";
 //        }
         if (action == null || action.equals("")) {

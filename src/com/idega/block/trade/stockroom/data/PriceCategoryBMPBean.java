@@ -20,6 +20,10 @@ public class PriceCategoryBMPBean extends com.idega.data.GenericEntity implement
   public static final String PRICETYPE_PRICE = "sr_pricetype_price";
   public static final String PRICETYPE_DISCOUNT = "sr_pricetype_discount";
 
+  public static final int PRICE_VISIBILITY_PRIVATE = 1;
+	public static final int PRICE_VISIBILITY_PUBLIC  = 2;
+	public static final int PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC = 3;
+
   public PriceCategoryBMPBean(){
     super();
   }
@@ -39,6 +43,8 @@ public class PriceCategoryBMPBean extends com.idega.data.GenericEntity implement
     addAttribute(getColumnNameParentId(),"parent_id", true, true, Integer.class, "many_to_one", PriceCategory.class);
     addAttribute(getColumnNameIsValid(), "is valid", true, true, Boolean.class);
     addAttribute(getColumnNameCountAsPerson(), "count as person", true, true, Boolean.class);
+    /** added 20.11.2002 by gimmi */
+    addAttribute(getColumnNameVisibility(), "visibility", true, true, Integer.class);
 
     this.addManyToManyRelationShip(Address.class);
     this.addTreeRelationShip();
@@ -126,6 +132,33 @@ public class PriceCategoryBMPBean extends com.idega.data.GenericEntity implement
     return getBooleanColumnValue(getColumnNameCountAsPerson(), true);
   }
 
+	public int getVisibility() {
+		int vis = this.getIntColumnValue(getColumnNameVisibility());	
+		if (vis < 1) {
+			try {
+				if (isNetbookingCategory()) {
+					setVisibility(PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC);
+					update();
+					System.out.println("[PriceCategoryBMPBean] backward compatability for visibility");
+					return PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC;	
+				}else {
+					setVisibility(PRICE_VISIBILITY_PRIVATE);
+					update();
+					System.out.println("[PriceCategoryBMPBean] backward compatability for visibility");
+					return PRICE_VISIBILITY_PRIVATE;
+				}
+			} catch (SQLException e) {
+				System.out.println("[PriceCategoryBMPBean] backward compatability for visibility FAILED ("+e.getMessage()+")");
+//				e.printStackTrace(System.err);
+			}
+		}
+		return vis;
+	}
+	
+	public void setVisibility(int visibility) {
+		this.setColumn(getColumnNameVisibility(), visibility);	
+	}
+
   public static String getColumnNameName() {return "CATEGORY_NAME";}
   public static String getColumnNameDescription() {return "DESCRIPTION";}
   public static String getColumnNameType(){return "CATEGORY_TYPE";}
@@ -136,6 +169,7 @@ public class PriceCategoryBMPBean extends com.idega.data.GenericEntity implement
   public static String getColumnNameIsValid() {return "IS_VALID";}
   public static String getColumnNameCountAsPerson() {return "COUNT_AS_PERSON";}
   public static String getPriceCategoryTableName() {return "SR_PRICE_CATEGORY";}
+	public static String getColumnNameVisibility() {return "PRICE_VISIBILITY";}
 
 }
 
