@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.3 2003/08/23 21:01:48 anders Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.4 2003/08/25 15:31:57 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -35,7 +35,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	/**
 	 * Gets all Activity types
 	 * @return collection of Activity Types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data#ActivityType 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType 
 	 * @author Kjell
 	 */
 	public Collection findAllActivityTypes() {
@@ -52,7 +52,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	/**
 	 * Gets all Commune belonging types
 	 * @return collection of Commune belonging types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data#CommuneBelongingType 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType 
 	 * @author Kjell
 	 */
 	public Collection findAllCommuneBelongingTypes() {
@@ -69,7 +69,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	/**
 	 * Gets all Company Types
 	 * @return collection of Company Types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data#CompanyType 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType 
 	 * @author Kjell
 	 */
 	public Collection findAllCompanyTypes() {
@@ -86,7 +86,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	/**
 	 * Gets all Regulation specification types
 	 * @return collection of Regulation specification types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data#RegulationSpecType 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType 
 	 * @author Kjell
 	 */
 	public Collection findAllRegulationSpecTypes() {
@@ -103,7 +103,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	/**
 	 * Gets all payment flow types.
 	 * @return collection of payment flow types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data#PaymentFlowType 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowType 
 	 * @author anders
 	 */
 	public Collection findAllPaymentFlowTypes() {
@@ -120,7 +120,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	/**
 	 * Gets all provider types.
 	 * @return collection of provider types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data#ProviderType 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ProviderType 
 	 * @author anders
 	 */
 	public Collection findAllProviderTypes() {

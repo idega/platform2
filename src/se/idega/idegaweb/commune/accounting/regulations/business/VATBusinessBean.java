@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.4 2003/08/25 15:29:17 anders Exp $
+ * $Id: VATBusinessBean.java,v 1.5 2003/08/25 15:32:45 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/08/25 15:29:17 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/25 15:32:45 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -67,7 +67,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	/**
 	 * Finds all VAT regulations.
 	 * @return collection of VAT regulation objects
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data#VATRegulation 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation 
 	 */
 	public Collection findAllVATRegulations() {
 		try {
@@ -88,7 +88,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	 * @param periodFromString the unparsed from date
 	 * @param periodToString the unparsed to date
 	 * @return collection of VAT regulation objects
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data#VATRegulation
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation
 	 * @throws VATException if invalid period parameters
 	 */
 	public Collection findVATRegulations(
