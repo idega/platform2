@@ -34,6 +34,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 	private UserBusiness userBiz;
 	private String userType = null;
 	private WorkReportBusiness workBiz = null;
+	private String styledLink = "styledLinkGeneral";
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
@@ -284,6 +285,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 
 		//B.1
 		LinkContainer selectReport = new LinkContainer();
+		//added for a styled link font:
+		selectReport.setStyleClass(styledLink);
 		selectReport.add(formatText(iwrb.getLocalizedString("workreportwindow.select_report", "Select report"), true));
 		selectReport.addParameter(ACTION, ACTION_WORK_SELECT_REPORT);
 		selectReport.addParameter(WorkReportConstants.WR_SESSION_CLEAR, "TRUE");
@@ -294,6 +297,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 
 		if ((!WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_UNION.equals(type) && !WorkReportConstants.WR_USER_TYPE_LEAGUE.equals(type))  || iwc.isSuperAdmin()) {
 			LinkContainer editMemberList = new LinkContainer();
+			editMemberList.setStyleClass(styledLink);
 			editMemberList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_members", "Edit member list")));
 			editMemberList.addParameter(ACTION, ACTION_EDIT_MEMBER_LIST);
 			editList.add(editMemberList);
@@ -301,16 +305,19 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 
 		//B.3
 		LinkContainer editAccountList = new LinkContainer();
+		editAccountList.setStyleClass(styledLink);
 		editAccountList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_account", "Edit account info")));
 		editAccountList.addParameter(ACTION, ACTION_EDIT_ACCOUNT);
 		editList.add(editAccountList);
 		//B.4
 		LinkContainer editBoardList = new LinkContainer();
+		editBoardList.setStyleClass(styledLink);
 		editBoardList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_board", "Edit board info")));
 		editBoardList.addParameter(ACTION, ACTION_EDIT_BOARD);
 		editList.add(editBoardList);
 		//B.4_1
 		LinkContainer editDivisionBoardList = new LinkContainer();
+		editDivisionBoardList.setStyleClass(styledLink);
 		editDivisionBoardList.add(formatText(iwrb.getLocalizedString("workreportwindow.division_edit_board", "Edit division board info")));
 		editDivisionBoardList.addParameter(ACTION, ACTION_EDIT_DIVISION_BOARD);
 		editList.add(editDivisionBoardList);
@@ -318,6 +325,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		//
 		//B.5		
 		LinkContainer sendReport = new LinkContainer();
+		sendReport.setStyleClass(styledLink);
 		sendReport.add(formatText(iwrb.getLocalizedString("workreportwindow.send_report", "Send report"), true));
 		sendReport.addParameter(ACTION, ACTION_SEND_REPORT);
 
@@ -328,6 +336,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		//B.7
 		if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
 			LinkContainer importMemberList = new LinkContainer();
+			importMemberList.setStyleClass(styledLink);
 			importMemberList.add(formatText(iwrb.getLocalizedString("workreportwindow.import_members", "Import member list")));
 			importMemberList.addParameter(ACTION, ACTION_IMPORT_MEMBERS);
 			uploadList.add(importMemberList);
@@ -335,22 +344,26 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		
 		//B.8
 		LinkContainer importAccount = new LinkContainer();
+		importAccount.setStyleClass(styledLink);
 		importAccount.add(formatText(iwrb.getLocalizedString("workreportwindow.import_account", "Import account info")));
 		importAccount.addParameter(ACTION, ACTION_IMPORT_ACCOUNT);
 		uploadList.add(importAccount);
 		//B.9
 		LinkContainer importBoard = new LinkContainer();
+		importBoard.setStyleClass(styledLink);
 		importBoard.add(formatText(iwrb.getLocalizedString("workreportwindow.import_board", "Import board info")));
 		importBoard.addParameter(ACTION, ACTION_IMPORT_BOARD);
 		uploadList.add(importBoard);
 
 		//B.10
 		LinkContainer reportsOverview = new LinkContainer();
+		reportsOverview.setStyleClass(styledLink);
 		reportsOverview.add(formatText(iwrb.getLocalizedString("workreportwindow.report_overview", "Reports overview"), true));
 		reportsOverview.addParameter(ACTION, ACTION_REPORT_OVERVIEW);
 
 		//B.11
 		LinkContainer closeReport = new LinkContainer();
+		closeReport.setStyleClass(styledLink);
 		closeReport.add(formatText(iwrb.getLocalizedString("workreportwindow.close_report", "Close report"), true));
 		closeReport.addParameter(ACTION, ACTION_CLOSE_REPORT);
 
@@ -367,6 +380,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 
 		//B.13
 		LinkContainer createReports = new LinkContainer();
+		createReports.setStyleClass(styledLink);
 		createReports.add(formatText(iwrb.getLocalizedString("workreportwindow.create_reports", "Get Excel reports"), true));
 		createReports.addParameter(ACTION, ACTION_CREATE_REPORTS);
 
