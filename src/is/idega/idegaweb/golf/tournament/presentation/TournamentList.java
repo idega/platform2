@@ -54,6 +54,10 @@ public class TournamentList extends GolfBlock {
 	
 	private ICPage iTournamentPage;
 
+	public TournamentList() {
+		this(null);
+	}
+	
 	public TournamentList(String view) {
 		this.view = view;
 	}
