@@ -470,6 +470,8 @@ public class GolferPage extends Page{
     pictureTable.setCellspacing(0);
     pictureTable.add(golferImage,1,1);
     TextReader text = new TextReader(profileTextReaderId);
+    //Added by Laddi
+    text.setAdmin(isBjorgvin);
       text.setEnableDelete(false);
     text.setWidth("100%");
     text.setTableTextSize(1);
@@ -488,6 +490,15 @@ public class GolferPage extends Page{
 
   //Golfpokinn
   private void setInfoView(){
+    //Added by Laddi
+    boolean isBjorgvin = false;
+    try {
+      isBjorgvin = (com.idega.jmodule.login.business.LoginBusiness.getMember(iwc).getID() == this.memberId);
+    }
+    catch (Exception ex) {
+      isBjorgvin = false;
+    }
+
 
     Table dummyTable = new Table(2,1);
     dummyTable.setCellpadding(24);
@@ -495,6 +506,8 @@ public class GolferPage extends Page{
     this.addLeftLogo(iWelcomeLogo);
 //    this.addLeftLink("Arrrrrg");
     TextReader golfbagText = new TextReader(golfbagTextReaderId);
+    //Added by Laddi
+    golfbagText.setAdmin(isBjorgvin);
     golfbagText.setWidth("100%");
     golfbagText.setTableTextSize(1);
     golfbagText.setTextSize(1);
@@ -511,6 +524,15 @@ public class GolferPage extends Page{
 
   //Árangur Erlendis
   private void setAbroadResultsView(){
+    //Added by Laddi
+    boolean isBjorgvin = false;
+    try {
+      isBjorgvin = (com.idega.jmodule.login.business.LoginBusiness.getMember(iwc).getID() == this.memberId);
+    }
+    catch (Exception ex) {
+      isBjorgvin = false;
+    }
+
     Image iResultsLogo = iwrb.getImage("/golferpage/arangur.gif");
     this.addLeftLogo(iResultsLogo);
     addFakeResultsSidemenu();
@@ -522,6 +544,8 @@ public class GolferPage extends Page{
     dummyTable.setVerticalAlignment(1,1,"top");
     dummyTable.setVerticalAlignment(2,1,"top");
     TextReader abroadResultsTextReader = new TextReader(abroadResultsTextReaderId);
+    //Added by Laddi
+    abroadResultsTextReader.setAdmin(isBjorgvin);
     Image resultsImage;
     resultsImage = iwb.getImage("/shared/arangurMyndsmall.jpg");
     dummyTable.add(resultsImage,2,1);
@@ -580,6 +604,15 @@ public class GolferPage extends Page{
 
   //STUÐNINGSAÐILAR
   private void setInterviewsView(IWContext iwc){
+    //Added by Laddi
+    boolean isBjorgvin = false;
+    try {
+      isBjorgvin = (com.idega.jmodule.login.business.LoginBusiness.getMember(iwc).getID() == this.memberId);
+    }
+    catch (Exception ex) {
+      isBjorgvin = false;
+    }
+
     Image iInterviewsLogo = iwrb.getImage("/golferpage/studningsadilar.gif");
     this.addLeftLogo(iInterviewsLogo);
 
@@ -596,6 +629,8 @@ public class GolferPage extends Page{
     interviewsTable.setVerticalAlignment(1,1,"top");
 
     TextReader supportText = new TextReader(supportListTextReaderId);
+    //Added by Laddi
+    supportText.setAdmin(isBjorgvin);
     supportText.setTextStyle(Text.FONT_FACE_VERDANA);
     supportText.setAlignment("center");
     supportText.setHeadlineColor("FF6000");
@@ -625,12 +660,23 @@ public class GolferPage extends Page{
 
   //STATISTICS_VIEW
   private void setStatisticsView(){
+    //Added by Laddi
+    boolean isBjorgvin = false;
+    try {
+      isBjorgvin = (com.idega.jmodule.login.business.LoginBusiness.getMember(iwc).getID() == this.memberId);
+    }
+    catch (Exception ex) {
+      isBjorgvin = false;
+    }
+
     Table dummyTable = new Table(2,1);
     dummyTable.setWidth("100%");
     dummyTable.setCellpadding(24);
     Image iStatisticsLogo = iwrb.getImage("/golferpage/tolfraedi.gif");
     this.addLeftLogo(iStatisticsLogo);
     TextReader statisticText = new TextReader(statisticsTextReaderId);
+    //Added by Laddi
+    statisticText.setAdmin(isBjorgvin);
     statisticText.setWidth("100%");
     statisticText.setTableTextSize(1);
     statisticText.setTextSize(1);
