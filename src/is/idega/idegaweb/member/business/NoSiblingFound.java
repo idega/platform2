@@ -12,6 +12,6 @@ package is.idega.idegaweb.member.business;
 public class NoSiblingFound extends javax.ejb.FinderException {
 
   public NoSiblingFound(String UserName) {
-      super("No children found for user "+UserName);
+      super("No siblings found for user "+UserName);
   }
 }
