@@ -70,12 +70,6 @@ public class RegisterTime extends GolfBlock {
   public static final String PRM_BACK_PAGE = "bpage";
 
   public RegisterTime() {
-    myForm = new Form();
-    frameTable = new Table();
-    frameTable.setAlignment("center");
-    frameTable.setWidth("100%");
-    myForm.add(frameTable);
-    this.add(myForm);
     business = new TeeTimeBusinessBean();
     unionDropdown = (DropdownMenu)GolfCacher.getUnionAbbreviationDropdown("club").clone();
     templText = getSmallText("");
@@ -716,7 +710,18 @@ public class RegisterTime extends GolfBlock {
 
 
    public void main(IWContext modinfo) throws Exception {
+   	
+   	this.empty();
+   	myForm = new Form();
+    frameTable = new Table();
+    frameTable.setAlignment("center");
+    frameTable.setWidth("100%");
+    myForm.add(frameTable);
+    this.add(myForm);
+   	
 	this.getParentPage().setTitle(this.localize("start.register_tee_time","Register tee time"));
+	
+	
 	
 	try {
 		  boolean keepOn = true;

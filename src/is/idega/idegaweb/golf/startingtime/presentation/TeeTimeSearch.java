@@ -581,7 +581,9 @@ public class TeeTimeSearch extends GolfBlock {
 		myForm.addParameter("field_id",result.getFieldInfo().get_field_id());
 		myForm.addParameter("date", result.getDate());
 		myForm.addParameter("union_id", getFieldUnion(result.getFieldInfo().get_field_id()));
-		myForm.addParameter("skraMarga",modinfo.getParameter("fjoldi"));
+		//myForm.addParameter("skraMarga",modinfo.getParameter("fjoldi"));
+		//register one at a time
+		myForm.addParameter("skraMarga","1");
 		
 		myForm.addParameter(RegisterTime.PRM_LOCKED_AS_WML_LAYOUT, "y");
 		
