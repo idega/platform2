@@ -8,12 +8,10 @@ import java.sql.*;
 
 public class Flash extends ModuleObject{
 
-private String params="";
+private Hashtable params;
 
 public Flash(){
-	this("");
-	setParam("quality","high");
-
+  this("");
 }
 
 public Flash(String url){
@@ -61,12 +59,25 @@ public void setSrc(String src){
 }
 
 public void setParam(String name,String value){
-	params += "<param name=\""+name+"\" value=\""+value+"\" >\n";
+  if( params == null ) params = new Hashtable();
+  params.put(name,value);
 }
 
 public String getParams(){
-	return params;
+  /*
+  StringBuffer params = new StringBuffer();
+  Enumeration enum = cache.elements();
+  while( enum.hasMoreElements() ){
+    params.append() pathAndFile = realPath + java.net.URLDecoder.decode(TextSoap.findAndReplace( (String)enum.nextElement() ,"/",FileUtil.getFileSeparator()) );
+    System.out.println(pathAndFile);
+    FileUtil.delete( pathAndFile );
+  }
+  params += "<param name=\""+name+"\" value=\""+value+"\" >\n";
 
+
+  return params;
+  */
+    return null;
 }
 
 
@@ -137,6 +148,19 @@ public void print(ModuleInfo modinfo)throws IOException{
 		}
 	}
 }
+
+
+  public synchronized Object clone() {
+    Flash obj = null;
+    try {
+      obj = (Flash)super.clone();
+      obj.params = this.params;
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
+  }
 
 
 }
