@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.25 2001/09/27 13:30:59 laddi Exp $
+ * $Id: Page.java,v 1.26 2001/09/28 14:36:56 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ public class Page extends ModuleObjectContainer {
   private String _linkColor = "#000000";
   private String _visitedColor = "#000000";
   private String _hoverColor = "#000000";
-  private String _textDecoration = "none";
+  private String _textDecoration = "underline";
   private String _hoverDecoration = "underline";
   private String _pageStyleFont = Text.FONT_FACE_ARIAL;
   private String _pageStyleFontSize = Text.FONT_SIZE_10_STYLE_TAG;
