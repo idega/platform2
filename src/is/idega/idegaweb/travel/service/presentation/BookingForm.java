@@ -1542,7 +1542,7 @@ public abstract class BookingForm extends TravelManager{
 				headerTable.setCellpaddingTop(headerColumn, hRow, 1);
 				headerTable.setCellpaddingBottom(headerColumn, hRow, 1);
 				headerTable.setCellpaddingLeft(headerColumn, hRow, 10);
-				headerTable.add(getSmallText(tFrames[i].getName()), headerColumn, hRow++);
+				headerTable.add(getSmallText(tFrames[i].getName(this.iwc.getCurrentLocale())), headerColumn, hRow++);
 				while (addrIter.hasNext()) {
 					address = (TravelAddress) addrIter.next();
 					headerTable.setCellpaddingTop(headerColumn, hRow, 1);
