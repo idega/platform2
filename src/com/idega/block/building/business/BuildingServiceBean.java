@@ -13,7 +13,6 @@ import com.idega.block.building.data.ApartmentHome;
 import com.idega.block.building.data.ApartmentType;
 import com.idega.block.building.data.ApartmentTypeHome;
 import com.idega.block.building.data.Building;
-import com.idega.block.building.data.BuildingEntity;
 import com.idega.block.building.data.BuildingHome;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.ComplexHome;
@@ -116,7 +115,7 @@ public class BuildingServiceBean extends IBOServiceBean implements BuildingServi
 	public ComplexTypeViewHome getComplexTypeViewHome() throws RemoteException{
 		return (ComplexTypeViewHome) getIDOHome(ComplexTypeView.class);
 	}
-	*/
+	
 	public void switchNameAndInfo(BuildingEntity entity, java.util.Locale locale) {
 		String infoText = "", nameText = "";
 		if (entity.getTextId() > 0) {
@@ -130,7 +129,7 @@ public class BuildingServiceBean extends IBOServiceBean implements BuildingServi
 		if (nameText.length() > 0) {
 			entity.setName(nameText);
 		}
-	}
+	}*/
 	
 	
 }

@@ -24,5 +24,4 @@ public interface BuildingService extends com.idega.business.IBOService
  public com.idega.block.building.data.Complex storeComplex(java.lang.Integer p0,java.lang.String p1,java.lang.String p2,java.lang.Integer p3,java.lang.Integer p4) throws java.rmi.RemoteException;
  public com.idega.block.building.data.Floor storeFloor(java.lang.Integer p0,java.lang.String p1,java.lang.Integer p2,java.lang.String p3,java.lang.Integer p4,java.lang.Integer p5) throws java.rmi.RemoteException;
  public com.idega.block.building.data.Room storeRoom(java.lang.Integer p0) throws java.rmi.RemoteException;
- public void switchNameAndInfo(com.idega.block.building.data.BuildingEntity p0,java.util.Locale p1) throws java.rmi.RemoteException;
 }
