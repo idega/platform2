@@ -6,6 +6,7 @@
  */
 package com.idega.block.dataquery.data.xml;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -92,22 +93,22 @@ public class QueryHelper {
 		init(doc.getRootElement(), iwc);
 	}
 
-	public QueryHelper(XMLData data,  IWContext iwc) throws NumberFormatException, RemoteException, FinderException {
+	public QueryHelper(XMLData data,  IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException {
 		this(data, null, iwc);
 	}
 	
-	public QueryHelper(XMLData data, UserQuery userQuery, IWContext iwc) throws NumberFormatException, RemoteException, FinderException  {
+	public QueryHelper(XMLData data, UserQuery userQuery, IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException  {
 		doc = data.getDocument();
 		this.userQuery = userQuery;
 		init(doc.getRootElement(), iwc);
 	}
 	
-	public QueryHelper(XMLElement root, QueryHelper nextQuery, IWContext iwc) throws NumberFormatException, RemoteException, FinderException	{
+	public QueryHelper(XMLElement root, QueryHelper nextQuery, IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException	{
 		this.nextQuery = nextQuery;
 		init(root, iwc);
 	}
 	
-	private void init(XMLElement root, IWContext iwc) throws NumberFormatException, RemoteException, FinderException {
+	private void init(XMLElement root, IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException {
 		this.root = root; 
 		if (root != null) {
 			name = root.getAttribute(QueryXMLConstants.NAME).getValue();

@@ -70,17 +70,17 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	private UserQueryHome userQueryHome;
 	private QuerySequenceHome querySequenceHome;
 
-	public QueryHelper getQueryHelper(UserQuery userQuery, IWContext iwc ) throws NumberFormatException, RemoteException, FinderException{
+	public QueryHelper getQueryHelper(UserQuery userQuery, IWContext iwc ) throws NumberFormatException, FinderException, IOException{
 		XMLData data = XMLData.getInstanceForFile(userQuery.getSource());
 		return new QueryHelper(data, userQuery, iwc);
 	}
 	
-	public QueryHelper getQueryHelper(int userQueryID, IWContext  iwc) throws NumberFormatException, RemoteException, FinderException{
+	public QueryHelper getQueryHelper(int userQueryID, IWContext  iwc) throws NumberFormatException, FinderException, IOException{
 		UserQuery userQuery = getUserQueryHome().findByPrimaryKey(new Integer(userQueryID));
 		return getQueryHelper(userQuery, iwc);
 	}
 	
-	public QueryHelper getQueryHelperByNameAndPathToQuerySequence(String name, String path, IWContext iwc) throws NumberFormatException, RemoteException, FinderException {
+	public QueryHelper getQueryHelperByNameAndPathToQuerySequence(String name, String path, IWContext iwc) throws NumberFormatException, FinderException, IOException {
 		String id = StringHandler.substringEnclosedBy(path, "(",")");
 		QuerySequence querySequence;
 		if (id != null && id.length() > 0) {
@@ -367,6 +367,9 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		}
 		catch (RemoteException e) {
 			throw new QueryGenerationException(e.getMessage());
+		}
+		catch (IOException ioEx) {
+			throw new QueryGenerationException(ioEx.getMessage());
 		}
 	}
 	

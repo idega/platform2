@@ -119,7 +119,7 @@ public class QueryResultViewer extends Block {
 		}
 	}
 	
-	private String initializeByParsing(IWContext iwc, IWResourceBundle resourceBundle) throws RemoteException, FinderException {
+	private String initializeByParsing(IWContext iwc, IWResourceBundle resourceBundle) throws NumberFormatException, RemoteException, FinderException, IOException {
 		// request from self
 		if (iwc.isParameterSet(QUERY_ID_KEY)) {
 			queryId = Integer.parseInt(iwc.getParameter(QUERY_ID_KEY));

@@ -40,11 +40,11 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession   {
 	public void createNewQuery() throws RemoteException {
 		helper = getQueryService().getQueryHelper();
 	}
-	public void createQuery(int userQueryID, IWContext iwc) throws RemoteException, FinderException {
+	public void createQuery(int userQueryID, IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException {
 		helper = getQueryService().getQueryHelper(userQueryID, iwc);
 		this.userQueryID = userQueryID;
 	}
-	public QueryHelper getQueryHelper(IWContext iwc) throws RemoteException, FinderException {
+	public QueryHelper getQueryHelper(IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException {
 		if (helper == null) {
 			if (userQueryID > 0) {
 				createQuery(userQueryID, iwc);

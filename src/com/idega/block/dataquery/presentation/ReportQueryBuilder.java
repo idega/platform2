@@ -423,7 +423,7 @@ public class ReportQueryBuilder extends Block {
 
 	}
 
-	private boolean processNextStep(IWContext iwc) throws RemoteException, FinderException  {
+	private boolean processNextStep(IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException  {
 		int currentStep = iwc.isParameterSet(PARAM_STEP) ? Integer.parseInt(iwc.getParameter(PARAM_STEP)) : 1;
 		//System.out.println("current processing step " + currentStep);
 		switch (currentStep) {
@@ -582,7 +582,7 @@ public class ReportQueryBuilder extends Block {
 		else
 			return helper.hasSourceEntity();
 	}
-	private boolean processStep1(IWContext iwc) throws RemoteException, FinderException {
+	private boolean processStep1(IWContext iwc) throws NumberFormatException, RemoteException, FinderException, IOException {
 		if (iwc.isParameterSet(PARAM_QUERY_AS_SOURCE))	{
 			String[] userQueryId = iwc.getParameterValues(PARAM_QUERY_AS_SOURCE);
 			for (int i = 0; i < userQueryId.length; i++) {
