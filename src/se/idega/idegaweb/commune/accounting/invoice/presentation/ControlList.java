@@ -1,4 +1,4 @@
-/* $Id: ControlList.java,v 1.1 2003/10/30 09:07:43 kjell Exp $
+/* $Id: ControlList.java,v 1.2 2003/10/30 09:12:07 kjell Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -30,12 +30,11 @@ import se.idega.idegaweb.commune.accounting.invoice.business.ControlListBusiness
 /**
  * ControlList
  * used to check the a batch run after it has completed
- *  
+ * 
+ * $Id: ControlList.java,v 1.2 2003/10/30 09:12:07 kjell Exp $ 
  * <p>
- * Last modified: $Modified$
  *
  * @author <a href="http://www.lindman.se">Kelly Lindman</a>
- * @version $$
  */
 public class ControlList extends AccountingBlock {
 

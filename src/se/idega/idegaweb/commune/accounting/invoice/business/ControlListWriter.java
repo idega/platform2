@@ -1,4 +1,4 @@
-/* $Id: ControlListWriter.java,v 1.2 2003/10/30 09:09:53 kjell Exp $
+/* $Id: ControlListWriter.java,v 1.3 2003/10/30 09:10:40 kjell Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -49,7 +49,7 @@ import com.lowagie.text.pdf.PdfWriter;
 /** 
  * PDF and XLS Writer for the Control List
  * <p>
- * $Id: ControlListWriter.java,v 1.2 2003/10/30 09:09:53 kjell Exp $
+ * $Id: ControlListWriter.java,v 1.3 2003/10/30 09:10:40 kjell Exp $
  *
  * @author Kelly
  */
@@ -109,7 +109,7 @@ public class ControlListWriter implements MediaWritable {
 
 		if (!data.isEmpty()) {			
 			HSSFWorkbook wb = new HSSFWorkbook();
-			HSSFSheet sheet = wb.createSheet("test");
+			HSSFSheet sheet = wb.createSheet("Excel");
 			sheet.setColumnWidth((short)0, (short) (30 * 256));
 			sheet.setColumnWidth((short)1, (short) (14 * 256));
 			sheet.setColumnWidth((short)2, (short) (30 * 256));
