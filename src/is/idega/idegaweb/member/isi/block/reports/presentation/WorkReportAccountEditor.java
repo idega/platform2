@@ -23,6 +23,7 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountReco
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecordHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 
+import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.presentation.EntityBrowser;
 import com.idega.block.entity.presentation.converters.CheckBoxConverter;
@@ -59,11 +60,11 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   
   // do not use -1 (-1 means null or new entity)
   // dummy keys for primary entries
-  private static final Integer INCOME_SUM_KEY = new Integer(-11);
-  private static final Integer EXPONSES_SUM_KEY = new Integer(-12);
-  private static final Integer INCOME_EXPONSES_SUM_KEY = new Integer(-13);
-  private static final Integer ASSET_SUM_KEY = new Integer(-14);
-  private static final Integer DEBT_SUM_KEY = new Integer(-15);
+  private static final String INCOME_SUM_KEY = "FIN_income_sum";
+  private static final String EXPONSES_SUM_KEY = "FIN_exponses_sum";
+  private static final String INCOME_EXPONSES_SUM_KEY = "FIN_exponses_sum";
+  private static final String ASSET_SUM_KEY = "FIN_asset_sum";
+  private static final String DEBT_SUM_KEY = "FIN_debt_sum";
   
   private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
@@ -72,6 +73,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private List fieldList = new ArrayList();
       
   private HashMatrix leagueKeyMatrix = new HashMatrix();
+  
+  private Map accountKeyNamePrimaryKey = new HashMap();
 
   public WorkReportAccountEditor() {
     super();
@@ -317,14 +320,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     Collections.sort(assetKeys, keyComparator);
     Collections.sort(debtKeys, keyComparator);
     // add sorted keys to the fields
-    addPrimaryKeys(fieldList, incomeKeys);
+    addKeys(incomeKeys);
     fieldList.add(INCOME_SUM_KEY);
-    addPrimaryKeys(fieldList, exponsesKeys);
+    addKeys(exponsesKeys);
     fieldList.add(EXPONSES_SUM_KEY);
     fieldList.add(INCOME_EXPONSES_SUM_KEY);
-    addPrimaryKeys(fieldList, assetKeys);
+    addKeys(assetKeys);
     fieldList.add(ASSET_SUM_KEY);
-    addPrimaryKeys(fieldList, debtKeys);
+    addKeys(debtKeys);
     fieldList.add(DEBT_SUM_KEY);
 
     // sort league collection
@@ -351,7 +354,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
     // define entity browser
     EntityBrowser browser = getEntityBrowser(workReportAccountGroupHelpers, resourceBundle, form);
-    browser.setShowMirroredView(true);
     // put browser into a table
     Table mainTable = new Table(1,2);
     mainTable.add(browser, 1,1);
@@ -368,12 +370,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     return mainTable;
   }
   
-  private void addPrimaryKeys(List primaryKeys, List entities)  {
-    Iterator iterator = entities.iterator();
+  private void addKeys(List accountKeys)  {
+    Iterator iterator = accountKeys.iterator();
     while (iterator.hasNext())  {
-      EntityRepresentation entity = (EntityRepresentation) iterator.next();
-      Integer primaryKey = (Integer) entity.getPrimaryKey();
-      primaryKeys.add(primaryKey);
+      WorkReportAccountKey key = (WorkReportAccountKey) iterator.next();
+      Integer primaryKey = (Integer) key.getPrimaryKey();
+      String name = key.getKeyName();
+      fieldList.add(name);
+      accountKeyNamePrimaryKey.put(name, primaryKey);
     }
   }
   
@@ -614,12 +618,12 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       this.groupId = groupId;
     }
     
-    public void setEntry(Integer accountKeyNumber, Float amount)  {
-      leagueKeyMatrix.put(groupId, accountKeyNumber, amount);
-    }
-    
-    public Float getEntry(String accountKeyNumber) {
-      WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, new Integer(accountKeyNumber));
+    public Float getEntry(String accountKeyName) {
+      Integer primaryKey = (Integer) accountKeyNamePrimaryKey.get(accountKeyName);
+      if (primaryKey == null) {
+        return new Float(999999);
+      }
+      WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, primaryKey);
       // sometimes the record does not exist yet
       if (record == null) {
         return new Float(-1);
@@ -640,6 +644,28 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       return new Integer(getGroupId());
     }
   }
+  
+  /**
+   * 
+   */
+  
+  class WorkReportAccountInputConverter extends TextEditorConverter {
+    
+    public WorkReportAccountInputConverter(Form form) {
+      super(form);
+    }
+    
+    protected Object getValue(
+        Object entity,
+        EntityPath path,
+        EntityBrowser browser,
+        IWContext iwc)  {
+      String name = path.getShortKey();
+      return ((EntityRepresentation) entity).getColumnValue(name);
+    } 
+    
+  }       
+    
 
 } 
 
