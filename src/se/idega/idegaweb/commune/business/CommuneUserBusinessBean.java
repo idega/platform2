@@ -1038,6 +1038,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			// remove custodian relations
 			MemberFamilyLogic familyService = getMemberFamilyLogic();
 			User deceasedUser = getUser(userID);
+			familyService.removeAllFamilyRelationsForUser(deceasedUser);
+			/* Replaced with "familyService.removeAllFamilyRelationsForUser(deceasedUser);"
 			try {
 				Collection custodyChildren = familyService.getChildrenInCustodyOf(deceasedUser);
 				if(custodyChildren!=null && !custodyChildren.isEmpty()){
@@ -1049,11 +1051,11 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 				}
 			}
 			catch (NoChildrenFound e1) {
-				
 			}
 			catch (RemoveException e1) {
 				e1.printStackTrace();
 			}
+			*/
 			Group deceasedGroup;
 			try {
 				deceasedGroup = this.getRootDeceasedCitizensGroup();
