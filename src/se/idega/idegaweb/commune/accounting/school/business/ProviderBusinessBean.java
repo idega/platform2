@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.5 2003/09/24 08:39:31 anders Exp $
+ * $Id: ProviderBusinessBean.java,v 1.6 2003/09/25 15:59:46 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderAccountingProper
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2003/09/24 08:39:31 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/25 15:59:46 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
@@ -195,14 +195,18 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 	public void deleteProvider(String id) throws ProviderException {
 		try {
 			Integer schoolId = new Integer(id);
+			ProviderAccountingPropertiesHome home = getProviderAccountingPropertiesHome();
+			
+			ProviderAccountingProperties pap = null;
+			try {
+				pap = home.findByPrimaryKey(schoolId);
+			} catch (FinderException e) {}
+			if (pap != null) {
+				pap.remove();
+			}
 			SchoolBusiness sb = getSchoolBusiness();
 			sb.removeSchool(schoolId.intValue());
-			ProviderAccountingPropertiesHome home = getProviderAccountingPropertiesHome();
-			ProviderAccountingProperties pap = home.findByPrimaryKey(schoolId);
-			pap.remove();
 		} catch (RemoteException e) { 
-			throw new ProviderException(KEY_CANNOT_DELETE_PROVIDER, DEFAULT_CANNOT_DELETE_PROVIDER);
-		} catch (FinderException e) { 
 			throw new ProviderException(KEY_CANNOT_DELETE_PROVIDER, DEFAULT_CANNOT_DELETE_PROVIDER);
 		} catch (RemoveException e) { 
 			throw new ProviderException(KEY_CANNOT_DELETE_PROVIDER, DEFAULT_CANNOT_DELETE_PROVIDER);
