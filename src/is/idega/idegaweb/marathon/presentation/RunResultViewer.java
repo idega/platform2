@@ -25,7 +25,6 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -44,6 +43,15 @@ import com.idega.util.IWColor;
 public class RunResultViewer extends Block {
 
 	private static final String STYLENAME_INTERFACE = "interface";
+	private static final String STYLENAME_GROUP_ROW = "groupRow";
+	private static final String STYLENAME_HEADER_ROW = "headerRow";
+	private static final String STYLENAME_LIST_ROW = "listRow";
+
+	private static final String DEFAULT_INTERFACE_STYLE = "font-family:Verdana,Arial,Helvetica,sans-serif;font-size:8px;font-weight:bold;border-width:1px;border-color:#000000;border-style:solid;";
+	private static final String DEFAULT_GROUP_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;padding:4px;";
+	private static final String DEFAULT_HEADER_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:bold;color:#FFFFFF;padding:2px;";
+	private static final String DEFAULT_LIST_ROW_STYLE = "font-family:Arial,Helvetica,sans-serif;font-size:10px;padding:2px;";
+	
 	private static final String HEADLINE_BACKGROUND_COLOR = "#ACACAC";
 	private static final String HEADLINE_COLOR = "FFFFFF";
 	private static final String DARK_COLOR = "#E9E9E9";
@@ -116,24 +124,28 @@ public class RunResultViewer extends Block {
 		}
 
 		Form form = new Form();
-		form.add(getYearsDropdown());
-		form.add(getDistanceDropdown());
-		form.add(getSortDropdown());
-		form.add(new Break(2));
-
 		Table table = new Table();
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setColumns(COLUMN_COUNT);
 		table.setWidth(Table.HUNDRED_PERCENT);
+		int row = 1;
 		
+		table.setCellpaddingLeft(1, row, 16);
+		table.mergeCells(1, row, table.getColumns(), row);
+		
+		table.add(getYearsDropdown(), 1, row);
+		table.add(getDistanceDropdown(), 1, row);
+		table.add(getSortDropdown(), 1, row++);
+		table.setHeight(row++, 12);
+
 		if (distance != null) {
 				switch (sortBy) {
 					case IWMarathonConstants.RYSDD_TOTAL:
-						getTotalResults(table);
+						getTotalResults(table, row);
 						break;
 					case IWMarathonConstants.RYSDD_GROUPS:
-						getGroupResults(table);
+						getGroupResults(table, row);
 						break;
 					case IWMarathonConstants.RYSDD_GROUPS_COMP:
 						
@@ -143,20 +155,19 @@ public class RunResultViewer extends Block {
 		
 		for (int a = 2; a < COLUMN_COUNT; a = a + 2) {
 			table.setWidth(a, 2);
-			table.setColumnColor(2, "#FFFFFF");
+			table.setColumnColor(a, "#FFFFFF");
 		}
 		
 		form.add(table);
 		add(form);
 	}
 	
-	private void getTotalResults(Table table) {
+	private void getTotalResults(Table table, int row) {
 		try {
 			List runGroups = new ArrayList(getGroupBiz().getChildGroups(distance));
 			List runs = new ArrayList();
 			Iterator runGroupIter = runGroups.iterator();
 			
-			int row = 1;
 			while (runGroupIter.hasNext()) {
 				Group runGroup = (Group) runGroupIter.next();
 				List runners = new ArrayList(getGroupBiz().getUsers(runGroup));
@@ -177,13 +188,12 @@ public class RunResultViewer extends Block {
 		}
 	}
 
-	private void getGroupResults(Table table) {
+	private void getGroupResults(Table table, int row) {
 		try {
 			List runGroups = new ArrayList(getGroupBiz().getChildGroups(distance));
 			sortRunnerGroups(runGroups);
 			Iterator runGroupIter = runGroups.iterator();
 			
-			int row = 1;
 			while (runGroupIter.hasNext()) {
 				Group runGroup = (Group) runGroupIter.next();
 				row = insertRunGroupIntoTable(table, row, runGroup);
@@ -261,7 +271,9 @@ public class RunResultViewer extends Block {
 	 */
 	private List getRunsForRunners(List runners) {
 		List runs = new ArrayList(runners.size());
-		_runToRunnerMap = new HashMap();
+		if (_runToRunnerMap == null) {
+			_runToRunnerMap = new HashMap();
+		}
 
 		Iterator runnerIter = runners.iterator();
 		while (runnerIter.hasNext()) {
@@ -313,17 +325,32 @@ public class RunResultViewer extends Block {
 	private int insertRunIntoTable(Table table, int row, Run run, int num) {
 		User user = (User) _runToRunnerMap.get(run);
 		table.add(getRunnerRowText(Integer.toString(num)), 1, row);
+		table.setStyleClass(1, row, getStyleName(STYLENAME_LIST_ROW));
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
 
 		String runTime = getTimeStringFromMillis(run.getRunTime());
 		table.add(getRunnerRowText(runTime), 3, row);
+		table.setStyleClass(3, row, getStyleName(STYLENAME_LIST_ROW));
+		table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_CENTER);
 
 		String chipTime = getTimeStringFromMillis(run.getChipTime());
-
 		table.add(getRunnerRowText(chipTime), 5, row);
+		table.setStyleClass(5, row, getStyleName(STYLENAME_LIST_ROW));
+		table.setAlignment(5, row, Table.HORIZONTAL_ALIGN_CENTER);
+
 		table.add(getRunnerRowText(user.getName()), 7, row);
+		table.setStyleClass(7, row, getStyleName(STYLENAME_LIST_ROW));
+
 		table.add(getRunnerRowText(Integer.toString(user.getDateOfBirth().getYear())), 9, row);
+		table.setStyleClass(9, row, getStyleName(STYLENAME_LIST_ROW));
+		table.setAlignment(9, row, Table.HORIZONTAL_ALIGN_CENTER);
+
 		table.add(getRunnerRowText(run.getUserNationality()), 11, row);
+		table.setStyleClass(11, row, getStyleName(STYLENAME_LIST_ROW));
+		table.setAlignment(11, row, Table.HORIZONTAL_ALIGN_CENTER);
+
 		table.add(getRunnerRowText(run.getRunGroupName()), 13, row);
+		table.setStyleClass(13, row, getStyleName(STYLENAME_LIST_ROW));
 		
 		if (num % 2 == 0) {
 			table.setRowColor(row, LIGHT_COLOR);
@@ -331,6 +358,36 @@ public class RunResultViewer extends Block {
 		else {
 			table.setRowColor(row, DARK_COLOR);
 		}
+		
+		return ++row;
+	}
+
+	private int insertHeadersIntoTable(Table table, int row) {
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.number", "Nr.")), 1, row);
+		table.setStyleClass(1, row, getStyleName(STYLENAME_HEADER_ROW));
+		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
+
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.run_time", "Run time")), 3, row);
+		table.setStyleClass(3, row, getStyleName(STYLENAME_HEADER_ROW));
+		table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_CENTER);
+
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.chip_time", "Chip time")), 5, row);
+		table.setStyleClass(5, row, getStyleName(STYLENAME_HEADER_ROW));
+		table.setAlignment(5, row, Table.HORIZONTAL_ALIGN_CENTER);
+
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.name", "Name")), 7, row);
+		table.setStyleClass(7, row, getStyleName(STYLENAME_LIST_ROW));
+
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.birth_year", "Year")), 9, row);
+		table.setStyleClass(9, row, getStyleName(STYLENAME_HEADER_ROW));
+		table.setAlignment(9, row, Table.HORIZONTAL_ALIGN_CENTER);
+
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.country", "Country")), 11, row);
+		table.setStyleClass(11, row, getStyleName(STYLENAME_HEADER_ROW));
+		table.setAlignment(11, row, Table.HORIZONTAL_ALIGN_CENTER);
+
+		table.add(getRunnerRowText(iwrb.getLocalizedString("results.group", "Group")), 13, row);
+		table.setStyleClass(13, row, getStyleName(STYLENAME_LIST_ROW));
 		
 		return ++row;
 	}
@@ -350,9 +407,6 @@ public class RunResultViewer extends Block {
 
 	private Text getRunnerRowText(String text) {
 		Text t = new Text(text);
-		t.setFontFace(Text.FONT_FACE_ARIAL);
-		t.setFontSize(10);
-		t.setFontColor("000000");
 		return t;
 	}
 
@@ -402,5 +456,18 @@ public class RunResultViewer extends Block {
 	 */
 	public void setRun(String runPK) {
 		this.runPK = runPK;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.Block#getStyleNames()
+	 */
+	public Map getStyleNames() {
+		Map map = new HashMap();
+		map.put(STYLENAME_GROUP_ROW, DEFAULT_GROUP_ROW_STYLE);
+		map.put(STYLENAME_HEADER_ROW, DEFAULT_HEADER_ROW_STYLE);
+		map.put(STYLENAME_INTERFACE, DEFAULT_INTERFACE_STYLE);
+		map.put(STYLENAME_LIST_ROW, DEFAULT_LIST_ROW_STYLE);
+		
+		return map;
 	}
 }
