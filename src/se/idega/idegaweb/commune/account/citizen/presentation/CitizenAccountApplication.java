@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.29 2002/11/15 09:07:30 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.30 2002/11/15 09:24:46 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,11 +28,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/15 09:07:30 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/15 09:24:46 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -109,6 +109,8 @@ public class CitizenAccountApplication extends CommuneBlock {
 
     private final static String COLOR_RED = "#ff0000";
 
+    private final static String ERROR_FIELD_CAN_NOT_BE_EMPTY_DEFAULT = "Fältet måste fyllas i";
+    private final static String ERROR_FIELD_CAN_NOT_BE_EMPTY_KEY = "caa_field_can_not_be_empty";
 	private final static String ERROR_NO_INSERT_DEFAULT = "Kunde inte lagra ansökan.";
 	private final static String ERROR_NO_INSERT_KEY = "caa_unable_to_insert";
 
@@ -477,7 +479,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.add(getHeader(EMAIL_KEY, EMAIL_DEFAULT), 1, 2);
 		table.add(getSingleInput(iwc, EMAIL_KEY, 40, true), 3, 2);
 		table.add(getHeader(PHONE_HOME_KEY, PHONE_HOME_DEFAULT), 1, 3);
-		table.add(getSingleInput(iwc, PHONE_HOME_KEY, 20, true), 3, 3);
+		table.add(getSingleInput(iwc, PHONE_HOME_KEY, 20, false), 3, 3);
 		table.add(getHeader(PHONE_WORK_KEY, PHONE_WORK_DEFAULT), 1, 4);
 		table.add(getSingleInput(iwc, PHONE_WORK_KEY, 20, true), 3, 4);
 	}
@@ -519,11 +521,18 @@ public class CitizenAccountApplication extends CommuneBlock {
 		return table;
 	}
 
-	private TextInput getSingleInput(IWContext iwc, final String paramId, final int maxLength, boolean notEmpty) {
-		TextInput textInput = (TextInput) getStyledInterface(new TextInput(paramId));
+	private TextInput getSingleInput (IWContext iwc, final String paramId,
+                                      final int maxLength, boolean notEmpty) {
+		TextInput textInput = (TextInput) getStyledInterface
+                (new TextInput(paramId));
 		textInput.setMaxlength(maxLength);
-		if (notEmpty)
-			textInput.setAsNotEmpty(localize("caa_empty_"+paramId, "Input "+paramId+" can not be empty"));
+		if (notEmpty) {
+            final String fieldCanNotBeEmpty = localize
+                    (ERROR_FIELD_CAN_NOT_BE_EMPTY_KEY,
+                     ERROR_FIELD_CAN_NOT_BE_EMPTY_DEFAULT);
+            final String name = localize(paramId, paramId);
+ 			textInput.setAsNotEmpty(fieldCanNotBeEmpty + ": " + name);
+        }
 		String param = iwc.getParameter(paramId);
 		if (param != null) {
 			textInput.setContent(param);
