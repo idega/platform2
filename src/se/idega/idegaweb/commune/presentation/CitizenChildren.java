@@ -125,7 +125,7 @@ public class CitizenChildren extends CommuneBlock {
 				else
 					age = new Age(PIDChecker.getInstance().getDateFromPersonalID(child.getPersonalID()));
 				
-				if(age.getYears() <= toAge && age.getYears() >=fromAge){
+				if(getShowChild(iwc, child) && age.getYears() <= toAge && age.getYears() >=fromAge){
 					T.add(getChildLink(child), 1, row++);
 					if (iter.hasNext())
 						T.setHeight(row++,2);
@@ -164,6 +164,14 @@ public class CitizenChildren extends CommuneBlock {
 		}
 		f.add(T);
 		return f;
+	}
+
+	/**
+	 * @param child
+	 * @return
+	 */
+	protected boolean getShowChild(IWContext iwc, User child) {
+		return true;
 	}
 
 	private Link getChildLink(User child) throws java.rmi.RemoteException {
