@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.2 2002/07/12 10:21:58 palli Exp $
+ * $Id: CitizenAccountApplication.java,v 1.3 2002/07/22 10:37:09 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -24,212 +24,218 @@ import java.util.Vector;
 import java.util.Iterator;
 
 /**
+ * This is the presentation class for the CitizenAccount application and bla bla
+ * bla, rhubarb and Laddi forgot the tapes.....
+ * 
+ * 
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
 public class CitizenAccountApplication extends CommuneBlock {
-  private final static int ACTION_VIEW_FORM = 0;
-  private final static int ACTION_SUBMIT_FORM = 1;
+	private final static int ACTION_VIEW_FORM = 0;
+	private final static int ACTION_SUBMIT_FORM = 1;
 
-  private final static String PARAM_PID = "caa_pid";
-  private final static String PARAM_EMAIL = "caa_email";
-  private final static String PARAM_PHONE_HOME = "caa_phone_home";
-  private final static String PARAM_PHONE_WORK = "caa_phone_work";
-  private final static String PARAM_FORM_SUBMIT = "caa_submit";
+	private final static String PARAM_PID = "caa_pid";
+	private final static String PARAM_EMAIL = "caa_email";
+	private final static String PARAM_PHONE_HOME = "caa_phone_home";
+	private final static String PARAM_PHONE_WORK = "caa_phone_work";
+	private final static String PARAM_FORM_SUBMIT = "caa_submit";
 
-  private final static String ERROR_PID = "caa_pid_error";
-  private final static String ERROR_PHONE_HOME = "caa_error_phone_home";
-  private final static String ERROR_NO_INSERT = "caa_no_insert";
-  private final static String ERROR_NOT_EMAIL = "caa_err_email";
+	private final static String ERROR_PID = "caa_pid_error";
+	private final static String ERROR_PHONE_HOME = "caa_error_phone_home";
+	private final static String ERROR_NO_INSERT = "caa_no_insert";
+	private final static String ERROR_NOT_EMAIL = "caa_err_email";
 
-  private final static String TEXT_APPLICATION_SUBMITTED = "caa_app_submitted";
+	private final static String TEXT_APPLICATION_SUBMITTED = "caa_app_submitted";
 
-  private boolean _isPIDError = false;
-  private boolean _isPhoneHomeError = false;
-  private boolean _isEmailError = false;
-  private boolean _isError = false;
-  private Vector _errorMsg = null;
+	private boolean _isPIDError = false;
+	private boolean _isPhoneHomeError = false;
+	private boolean _isEmailError = false;
+	private boolean _isError = false;
+	private Vector _errorMsg = null;
 
-  public CitizenAccountApplication() {
-  }
 
-  public void main(IWContext iwc) {
-    setResourceBundle(getResourceBundle(iwc));
+	public CitizenAccountApplication() {
+	}
 
-    try {
-      int action = parseAction(iwc);
-      switch(action) {
-        case ACTION_VIEW_FORM:
-          viewForm(iwc);
-          break;
-        case ACTION_SUBMIT_FORM:
-          submitForm(iwc);
-          break;
-      }
-    }
-    catch (Exception e) {
-      super.add(new ExceptionWrapper(e,this));
-    }
-  }
+	public void main(IWContext iwc) {
+		setResourceBundle(getResourceBundle(iwc));
 
-  private void viewForm(IWContext iwc) {
-    Form accountForm = new Form();
+		try {
+			int action = parseAction(iwc);
+			switch (action) {
+				case ACTION_VIEW_FORM :
+					viewForm(iwc);
+					break;
+				case ACTION_SUBMIT_FORM :
+					submitForm(iwc);
+					break;
+			}
+		}
+		catch (Exception e) {
+			super.add(new ExceptionWrapper(e, this));
+		}
+    
+	}
 
-    Table inputTable = new Table(2,6);
-    inputTable.setCellspacing(2);
-    inputTable.setCellpadding(4);
-    inputTable.setAlignment(2,6,"right");
-    inputTable.setColor(getBackgroundColor());
+	private void viewForm(IWContext iwc) {
+		Form accountForm = new Form();
 
-    String pid = localize(PARAM_PID,"PID");
-    String email = localize(PARAM_EMAIL,"E-Mail");
-    String phone_home = localize(PARAM_PHONE_HOME,"Home phone");
-    String phone_work = localize(PARAM_PHONE_WORK,"Work/mobile phone");
+		Table inputTable = new Table(2, 6);
+		inputTable.setCellspacing(2);
+		inputTable.setCellpadding(4);
+		inputTable.setAlignment(2, 6, "right");
+		inputTable.setColor(getBackgroundColor());
 
-    TextInput inputPid = new TextInput(PARAM_PID);
-    inputPid.setMaxlength(40);
-    TextInput inputEmail = new TextInput(PARAM_EMAIL);
-    inputEmail.setAsEmail(localize(ERROR_NOT_EMAIL,"Not a valid email"));
-    inputEmail.setMaxlength(40);
-    TextInput inputPhoneHome = new TextInput(PARAM_PHONE_HOME);
-    inputPhoneHome.setMaxlength(20);
-    TextInput inputPhoneWork = new TextInput(PARAM_PHONE_WORK);
-    inputPhoneWork.setMaxlength(20);
+		String pid = localize(PARAM_PID, "PID");
+		String email = localize(PARAM_EMAIL, "E-Mail");
+		String phone_home = localize(PARAM_PHONE_HOME, "Home phone");
+		String phone_work = localize(PARAM_PHONE_WORK, "Work/mobile phone");
 
-    inputPid.setStyle(getSmallTextFontStyle());
-    inputEmail.setStyle(getSmallTextFontStyle());
-    inputPhoneHome.setStyle(getSmallTextFontStyle());
-    inputPhoneWork.setStyle(getSmallTextFontStyle());
+		TextInput inputPid = new TextInput(PARAM_PID);
+		inputPid.setMaxlength(40);
+		TextInput inputEmail = new TextInput(PARAM_EMAIL);
+		inputEmail.setAsEmail(localize(ERROR_NOT_EMAIL, "Not a valid email"));
+		inputEmail.setMaxlength(40);
+		TextInput inputPhoneHome = new TextInput(PARAM_PHONE_HOME);
+		inputPhoneHome.setMaxlength(20);
+		TextInput inputPhoneWork = new TextInput(PARAM_PHONE_WORK);
+		inputPhoneWork.setMaxlength(20);
 
-    String pidString = iwc.getParameter(PARAM_PID);
-    String emailString = iwc.getParameter(PARAM_EMAIL);
-    String phoneHomeString = iwc.getParameter(PARAM_PHONE_HOME);
-    String phoneWorkString = iwc.getParameter(PARAM_PHONE_WORK);
+		inputPid.setStyle(getSmallTextFontStyle());
+		inputEmail.setStyle(getSmallTextFontStyle());
+		inputPhoneHome.setStyle(getSmallTextFontStyle());
+		inputPhoneWork.setStyle(getSmallTextFontStyle());
 
-    if (pidString != null)
-      inputPid.setContent(pidString);
+		String pidString = iwc.getParameter(PARAM_PID);
+		String emailString = iwc.getParameter(PARAM_EMAIL);
+		String phoneHomeString = iwc.getParameter(PARAM_PHONE_HOME);
+		String phoneWorkString = iwc.getParameter(PARAM_PHONE_WORK);
 
-    if (emailString != null)
-      inputEmail.setContent(emailString);
+		if (pidString != null)
+			inputPid.setContent(pidString);
 
-    if (phoneHomeString != null)
-      inputPhoneHome.setContent(phoneHomeString);
+		if (emailString != null)
+			inputEmail.setContent(emailString);
 
-    if (phoneWorkString != null)
-      inputPhoneWork.setContent(phoneWorkString);
+		if (phoneHomeString != null)
+			inputPhoneHome.setContent(phoneHomeString);
 
-    if (!_isPIDError)
-      inputTable.add(getSmallText(pid),1,1);
-    else
-      inputTable.add(getSmallErrorText(pid),1,1);
-    if (!_isEmailError)
-      inputTable.add(getSmallText(email),2,1);
-    else
-      inputTable.add(getSmallErrorText(email),2,1);
-    if (!_isPhoneHomeError)
-      inputTable.add(getSmallText(phone_home),1,3);
-    else
-      inputTable.add(getSmallErrorText(phone_home),1,3);
-    inputTable.add(getSmallText(phone_work),2,3);
+		if (phoneWorkString != null)
+			inputPhoneWork.setContent(phoneWorkString);
 
-    inputTable.add(inputPid,1,2);
-    inputTable.add(inputEmail,2,2);
-    inputTable.add(inputPhoneHome,1,4);
-    inputTable.add(inputPhoneWork,2,4);
+		if (!_isPIDError)
+			inputTable.add(getSmallText(pid), 1, 1);
+		else
+			inputTable.add(getSmallErrorText(pid), 1, 1);
+		if (!_isEmailError)
+			inputTable.add(getSmallText(email), 2, 1);
+		else
+			inputTable.add(getSmallErrorText(email), 2, 1);
+		if (!_isPhoneHomeError)
+			inputTable.add(getSmallText(phone_home), 1, 3);
+		else
+			inputTable.add(getSmallErrorText(phone_home), 1, 3);
+		inputTable.add(getSmallText(phone_work), 2, 3);
 
-    SubmitButton submitButton = new SubmitButton(getBundle(iwc).getImageButton(localize(PARAM_FORM_SUBMIT,"Submit application")),PARAM_FORM_SUBMIT);
-    submitButton.setStyle(getLinkFontStyle());
+		inputTable.add(inputPid, 1, 2);
+		inputTable.add(inputEmail, 2, 2);
+		inputTable.add(inputPhoneHome, 1, 4);
+		inputTable.add(inputPhoneWork, 2, 4);
 
-    inputTable.add(submitButton,2,6);
-    if (_isError) {
-      if (_errorMsg != null) {
-        Table errorTable = new Table(1,1);
-        errorTable.setCellspacing(2);
-        errorTable.setCellpadding(4);
-        Iterator it = _errorMsg.iterator();
-        while (it.hasNext()) {
-          String errorMsg = (String)it.next();
-          errorTable.add(getErrorText(errorMsg),1,1);
-          errorTable.add(Text.getBreak(),1,1);
-        }
-        accountForm.add(errorTable);
-      }
-    }
-    accountForm.add(inputTable);
+		SubmitButton submitButton = new SubmitButton(getBundle(iwc).getImageButton(localize(PARAM_FORM_SUBMIT, "Submit application")), PARAM_FORM_SUBMIT);
+		submitButton.setStyle(getLinkFontStyle());
 
-    add(accountForm);
-  }
+		inputTable.add(submitButton, 2, 6);
+		if (_isError) {
+			if (_errorMsg != null) {
+				Table errorTable = new Table(1, 1);
+				errorTable.setCellspacing(2);
+				errorTable.setCellpadding(4);
+				Iterator it = _errorMsg.iterator();
+				while (it.hasNext()) {
+					String errorMsg = (String) it.next();
+					errorTable.add(getErrorText(errorMsg), 1, 1);
+					errorTable.add(Text.getBreak(), 1, 1);
+				}
+				accountForm.add(errorTable);
+			}
+		}
+		accountForm.add(inputTable);
 
-  private void submitForm(IWContext iwc) {
-    String pidString = iwc.getParameter(PARAM_PID);
-    String phoneHomeString = iwc.getParameter(PARAM_PHONE_HOME);
-    String emailString = iwc.getParameter(PARAM_EMAIL);
-    String phoneWorkString = iwc.getParameter(PARAM_PHONE_WORK);
+		add(accountForm);
+	}
 
-    _errorMsg = null;
+	private void submitForm(IWContext iwc) {
+		String pidString = iwc.getParameter(PARAM_PID);
+		String phoneHomeString = iwc.getParameter(PARAM_PHONE_HOME);
+		String emailString = iwc.getParameter(PARAM_EMAIL);
+		String phoneWorkString = iwc.getParameter(PARAM_PHONE_WORK);
 
-    if (pidString == null || pidString.equals("")) {
-      _isPIDError = true;
-      _isError = true;
-      addErrorString(localize(ERROR_PID,"PID invalid"));
-    }
+		_errorMsg = null;
 
-    if (emailString == null || emailString.equals("")) {
-      _isEmailError = true;
-      _isError = true;
-      addErrorString(localize(ERROR_NOT_EMAIL,"Email invalid"));
-    }
-/*    else
-      checkEmail(emailString);*/
+		if (pidString == null || pidString.equals("")) {
+			_isPIDError = true;
+			_isError = true;
+			addErrorString(localize(ERROR_PID, "PID invalid"));
+		}
 
-    if (phoneHomeString == null || phoneHomeString.equals("")) {
-      _isPhoneHomeError = true;
-      _isError = true;
-      addErrorString(localize(ERROR_PHONE_HOME,"Home phone invalid"));
-    }
+		if (emailString == null || emailString.equals("")) {
+			_isEmailError = true;
+			_isError = true;
+			addErrorString(localize(ERROR_NOT_EMAIL, "Email invalid"));
+		}
+		/*    else
+		      checkEmail(emailString);*/
 
-    if (_isError == true) {
-      viewForm(iwc);
-      return;
-    }
+		if (phoneHomeString == null || phoneHomeString.equals("")) {
+			_isPhoneHomeError = true;
+			_isError = true;
+			addErrorString(localize(ERROR_PHONE_HOME, "Home phone invalid"));
+		}
 
-    boolean insert = false;
-    try {
-      CitizenAccountBusiness business = (CitizenAccountBusiness)IBOLookup.getServiceInstance(iwc,CitizenAccountBusiness.class);
-      insert = business.insertApplication(business.getUser(pidString),pidString,emailString,phoneHomeString,phoneWorkString);
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-      insert = false;
-    }
+		if (_isError == true) {
+			viewForm(iwc);
+			return;
+		}
 
-    if (!insert) {
-      _isError = true;
-      addErrorString(localize(ERROR_NO_INSERT,"Unable to insert application"));
-      viewForm(iwc);
-      return;
-    }
+		boolean insert = false;
+		try {
+			CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
+			insert = business.insertApplication(business.getUser(pidString), pidString, emailString, phoneHomeString, phoneWorkString);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			insert = false;
+		}
 
-    if (getResponsePage() != null)
-      iwc.forwardToIBPage(getParentPage(),getResponsePage());
-    else
-      add(new Text(localize(TEXT_APPLICATION_SUBMITTED,"Application submitted")));
-  }
+		if (!insert) {
+			_isError = true;
+			addErrorString(localize(ERROR_NO_INSERT, "Unable to insert application"));
+			viewForm(iwc);
+			return;
+		}
 
-  private void addErrorString(String errorString) {
-    if (_errorMsg == null)
-      _errorMsg = new Vector();
+		if (getResponsePage() != null)
+			iwc.forwardToIBPage(getParentPage(), getResponsePage());
+		else
+			add(new Text(localize(TEXT_APPLICATION_SUBMITTED, "Application submitted")));
+	}
 
-    _errorMsg.add(errorString);
-  }
+	private void addErrorString(String errorString) {
+		if (_errorMsg == null)
+			_errorMsg = new Vector();
 
-  private int parseAction(IWContext iwc) {
-    int action = ACTION_VIEW_FORM;
+		_errorMsg.add(errorString);
+	}
 
-    if (iwc.isParameterSet(PARAM_FORM_SUBMIT)) {
-      action = ACTION_SUBMIT_FORM;
-    }
+	private int parseAction(IWContext iwc) {
+		int action = ACTION_VIEW_FORM;
 
-    return action;
-  }
+		if (iwc.isParameterSet(PARAM_FORM_SUBMIT)) {
+			action = ACTION_SUBMIT_FORM;
+		}
+
+		return action;
+	}
 }
