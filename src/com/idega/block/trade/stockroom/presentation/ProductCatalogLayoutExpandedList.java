@@ -82,14 +82,17 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
       if ( productCatalog._productIsLink ) {
 	if (productCatalog._useAnchor) {
 	  nameLink = new AnchorLink(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)), productCatalog.getAnchorString(product.getID()));
+	  nameLink.setBold();
 	}else {
 	  nameLink = new Link(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)));
+	  nameLink.setBold();
 	}
 	nameLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
 	productTable.add(nameLink, 1,1);
       }
       else {
 	nameText = productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId));
+	nameText.setBold();
 	productTable.add(nameText, 1,1);
       }
       row = expand(product, table, productTable, row);
@@ -126,6 +129,7 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
     }
 
     table.add(productTable,1,row++);
+    table.setHeight(1,row++,"10");
 
     return row;
   }
