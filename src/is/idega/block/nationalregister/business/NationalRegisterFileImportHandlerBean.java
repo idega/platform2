@@ -1,7 +1,6 @@
 package is.idega.block.nationalregister.business;
 
 import is.idega.block.nationalregister.data.NationalRegister;
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -181,9 +180,9 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			Set keys = _familyRelations.keySet();
 			UserHome userHome = null; 
 			NationalRegisterBusiness natReg = null;
-			MemberFamilyLogic familyLogic = null;
+			FamilyLogic familyLogic = null;
 			try {
-				familyLogic = (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
+				familyLogic = (FamilyLogic) getServiceInstance(FamilyLogic.class);
 				natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 				UserBusiness userBusiness = (UserBusiness) getServiceInstance(UserBusiness.class);
 				userHome = userBusiness.getUserHome();
@@ -233,7 +232,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		return true;
 	}
 	
-	private boolean handleFamilyCollection(NationalRegisterBusiness natRegBus, MemberFamilyLogic familyLogic, UserHome uHome, Collection coll) throws RemoteException {
+	private boolean handleFamilyCollection(NationalRegisterBusiness natRegBus, FamilyLogic familyLogic, UserHome uHome, Collection coll) throws RemoteException {
 		if (coll != null) {
 			NationalRegister natReg;
 			Iterator iter = coll.iterator();
