@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObjectContainer.java,v 1.13 2001/09/19 23:32:43 palli Exp $
+ * $Id: ModuleObjectContainer.java,v 1.14 2001/09/28 15:39:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,7 +20,7 @@ import java.io.*;
 public class ModuleObjectContainer extends ModuleObject {
   protected Vector theObjects;
   protected boolean goneThroughMain = false;
-  protected boolean _locked = false;
+  protected boolean _locked = true;
 
   public ModuleObjectContainer() {
   }
@@ -414,6 +414,7 @@ public class ModuleObjectContainer extends ModuleObject {
     ModuleObjectContainer obj = null;
     try {
       obj = (ModuleObjectContainer)super.clone(modinfo, askForPermission);
+      obj._locked = this._locked;
       //if(!(this instanceof Table)){
         if (this.theObjects != null) {
             //obj.setObjects((Vector)this.theObjects.clone());

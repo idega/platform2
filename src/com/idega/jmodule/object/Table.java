@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.28 2001/09/28 13:13:57 eiki Exp $
+ * $Id: Table.java,v 1.29 2001/09/28 15:39:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,9 +9,10 @@
  */
 package com.idega.jmodule.object;
 
-import java.util.*;
-import java.io.*;
-import com.idega.jmodule.object.textObject.*;
+import java.util.Vector;
+import java.util.List;
+import java.util.Enumeration;
+import com.idega.jmodule.object.textObject.Text;
 import com.idega.util.IWColor;
 import com.idega.idegaweb.IWMainApplication;
 
@@ -24,15 +25,10 @@ import com.idega.idegaweb.IWMainApplication;
 */
 public class Table extends ModuleObjectContainer {
 
-  /**
-   * @todo Laga changeSize dótið, þannig að _lockRegions uppfærist líka.
-   */
-
   private static Image transparentcell;
   private static final String IW_BUNDLE_IDENTIFIER="com.idega.core";
 
   private ModuleObjectContainer theObjects[][];
-  private Boolean _lockedRegions[][];
 
   private int cols = 0;
   private int rows = 0;
@@ -66,7 +62,6 @@ public class Table extends ModuleObjectContainer {
     super();
     isResizable = false;
     theObjects = new ModuleObjectContainer[cols][rows];
-    _lockedRegions = new Boolean[cols][rows];
     this.cols = cols;
     this.rows = rows;
     setBorder("0");
@@ -233,16 +228,12 @@ public class Table extends ModuleObjectContainer {
 
 
     ModuleObjectContainer theNewObjects[][];
-    Boolean newLockedRegions[][];
     theNewObjects = new ModuleObjectContainer[columns][rows];
-    newLockedRegions = new Boolean[columns][rows];
 
     for (int x=0;x<this.cols;x++){
       System.arraycopy(theObjects[x],0,theNewObjects[x],0,this.rows);
-        System.arraycopy(_lockedRegions[x],0,newLockedRegions[x],0,this.rows);
     }
     theObjects=theNewObjects;
-    _lockedRegions = newLockedRegions;
     this.cols=columns;
     this.rows=rows;
 
@@ -1065,16 +1056,6 @@ public boolean isEmpty(int x, int y){
                   }
           }
       }
-      if (this._lockedRegions != null) {
-        obj._lockedRegions=new Boolean[cols][rows];
-          for (int x = 0;x<_lockedRegions.length;x++){
-                  for(int y = 0; y < _lockedRegions[x].length;y++){
-                          if (this._lockedRegions[x][y] != null){
-                                  obj._lockedRegions[x][y]=(Boolean)this._lockedRegions[x][y];
-                          }
-                  }
-          }
-      }
       obj.cols = this.cols;
       obj.rows = this.rows;
       if (this.beginMergedxpos != null) {
@@ -1150,20 +1131,17 @@ public boolean isEmpty(int x, int y){
   }
 
   public void lock(int xpos, int ypos) {
-    _lockedRegions[xpos-1][ypos-1] = new Boolean(true);
+    ModuleObjectContainer cont = containerAt(xpos,ypos);
+    cont.lock();
   }
 
   public void unlock(int xpos, int ypos) {
-    _lockedRegions[xpos-1][ypos-1] = new Boolean(false);
+    ModuleObjectContainer cont = containerAt(xpos,ypos);
+    cont.unlock();
   }
 
   public boolean isLocked(int xpos, int ypos) {
-    if (_lockedRegions == null)
-      return(false);
-
-    if (_lockedRegions[xpos-1][ypos-1] == null)
-      return(false);
-    else
-      return(_lockedRegions[xpos-1][ypos-1].booleanValue());
+    ModuleObjectContainer cont = containerAt(xpos,ypos);
+    return(cont.isLocked());
   }
 }

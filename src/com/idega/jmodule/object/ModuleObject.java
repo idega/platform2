@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.24 2001/09/28 10:34:50 gummi Exp $
+ * $Id: ModuleObject.java,v 1.25 2001/09/28 15:39:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -67,6 +67,7 @@ public class ModuleObject extends Object implements Cloneable {
   public static final ModuleObject NULL_CLONE_OBJECT = new ModuleObject();
 
   private boolean _useBuilderObjectControl = true;
+  private boolean _belongsToParent = false;
 
   /**
    * Default constructor
@@ -704,5 +705,13 @@ public class ModuleObject extends Object implements Cloneable {
 
   public boolean getUseBuilderObjectControl() {
     return(_useBuilderObjectControl);
+  }
+
+  public void setBelongsToParent(boolean belongs) {
+    _belongsToParent = belongs;
+  }
+
+  public boolean getBelongsToParent() {
+    return(_belongsToParent);
   }
 }
