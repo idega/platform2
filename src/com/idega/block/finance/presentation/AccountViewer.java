@@ -15,7 +15,7 @@ import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextFormat;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -93,8 +93,8 @@ public class AccountViewer extends Finance {
     image.setHeight(6);
     NF = NumberFormat.getCurrencyInstance(iwc.getCurrentLocale());
     checkIds(iwc);
-    IWTimeStamp itFromDate = getFromDate(iwc);
-    IWTimeStamp itToDate = getToDate(iwc);
+    IWTimestamp itFromDate = getFromDate(iwc);
+    IWTimestamp itToDate = getToDate(iwc);
     specialview = iwc.isParameterSet("specview");
     boolean clean = iwc.isParameterSet(prmClean);
     if(isAdmin || isLoggedOn){
@@ -127,7 +127,7 @@ public class AccountViewer extends Finance {
     return new Text();
   }
 
-  public PresentationObject getAccountView(FinanceAccount eAccount,List listAccount,IWTimeStamp FromDate,IWTimeStamp ToDate,boolean showallkeys,boolean clean)throws java.rmi.RemoteException{
+  public PresentationObject getAccountView(FinanceAccount eAccount,List listAccount,IWTimestamp FromDate,IWTimestamp ToDate,boolean showallkeys,boolean clean)throws java.rmi.RemoteException{
     Table T = new Table(1,3);
     T.setWidth("100%");
     T.add(getEntrySearchTable(iAccountId,listAccount,FromDate,ToDate),1,2);
@@ -142,11 +142,11 @@ public class AccountViewer extends Finance {
     return T;
   }
 
-  private String getDateString(IWTimeStamp stamp){
+  private String getDateString(IWTimestamp stamp){
     return stamp.getISLDate(".",true);
   }
 
-  public PresentationObject getEntrySearchTable(int iAccountId,List listAccount,IWTimeStamp from,IWTimeStamp to){
+  public PresentationObject getEntrySearchTable(int iAccountId,List listAccount,IWTimestamp from,IWTimestamp to){
     Table T = new Table(6,2);
     T.setWidth("100%");
     String sFromDate = getDateString(from);
@@ -237,7 +237,7 @@ public class AccountViewer extends Finance {
           accountLink.addParameter(prmUserId,account.getUserId());
         T.add(accountLink,col++,row);
         T.add(tf.format(eUser.getName()),col++,row);
-        T.add(tf.format(getDateString(new IWTimeStamp(account.getLastUpdated()))),col++,row);
+        T.add(tf.format(getDateString(new IWTimestamp(account.getLastUpdated()))),col++,row);
         float b = eAccount.getBalance();
 
         if(account.getAccountType().equals(com.idega.block.finance.data.AccountBMPBean.typePhone)){
@@ -282,7 +282,7 @@ public class AccountViewer extends Finance {
       T.add(formatText(eUser.getName(),fontSize,null),2,row);
       row++;
       T.add(formatText(iwrb.getLocalizedString("lastentry","Last Entry"),fontSize,null),1,row);
-      T.add(formatText(getDateString(new IWTimeStamp(eAccount.getLastUpdated())),fontSize,null),2,row);
+      T.add(formatText(getDateString(new IWTimestamp(eAccount.getLastUpdated())),fontSize,null),2,row);
       row++;
       T.add(formatText(iwrb.getLocalizedString("balance","Balance"),fontSize,null),1,row);
       float b = eAccount.getBalance();
@@ -297,7 +297,7 @@ public class AccountViewer extends Finance {
     return T;
   }
 
-  private PresentationObject getEntryTable(int iAccountId,IWTimeStamp from,IWTimeStamp to,boolean showallkeys,boolean clean){
+  private PresentationObject getEntryTable(int iAccountId,IWTimestamp from,IWTimestamp to,boolean showallkeys,boolean clean){
     PresentationObject mo = null;
     try{
       Account a = accBuiz.getAccount(iAccountId);
@@ -311,7 +311,7 @@ public class AccountViewer extends Finance {
     return mo;
   }
 
-  private PresentationObject getEntryTable(FinanceAccount eAccount,IWTimeStamp from,IWTimeStamp to,boolean showallkeys,boolean clean)throws java.rmi.RemoteException{
+  private PresentationObject getEntryTable(FinanceAccount eAccount,IWTimestamp from,IWTimestamp to,boolean showallkeys,boolean clean)throws java.rmi.RemoteException{
     List listEntries = null;
     if(eAccount.getAccountType().equals(com.idega.block.finance.data.AccountBMPBean.typeFinancial)){
       if(showallkeys)
@@ -333,7 +333,7 @@ public class AccountViewer extends Finance {
     else return new Text();
   }
 
-  private PresentationObject getPhoneEntryTable(FinanceAccount eAccount,List listEntries,IWTimeStamp from ,IWTimeStamp to){
+  private PresentationObject getPhoneEntryTable(FinanceAccount eAccount,List listEntries,IWTimestamp from ,IWTimestamp to){
     int tableDepth = 4;
     int cols = 9;
     if(listEntries != null){
@@ -399,11 +399,11 @@ public class AccountViewer extends Finance {
       float totPrice = 0;
       for(int j = 0; j < len; j++){
         AccountPhoneEntry entry = (AccountPhoneEntry) listEntries.get(j);
-        TableTexts[0] = new Text(getDateString(new IWTimeStamp(entry.getLastUpdated())));
+        TableTexts[0] = new Text(getDateString(new IWTimestamp(entry.getLastUpdated())));
         TableTexts[1] = new Text(entry.getMainNumber());
         TableTexts[2] = new Text(entry.getSubNumber());
         TableTexts[3] = new Text(entry.getPhonedNumber());
-        TableTexts[4] = new Text(new IWTimeStamp(entry.getPhonedStamp()).toSQLString());
+        TableTexts[4] = new Text(new IWTimestamp(entry.getPhonedStamp()).toSQLString());
         TableTexts[5] = new Text(new java.sql.Time(entry.getNightDuration()*1000).toString());
         TableTexts[6] = new Text(new java.sql.Time(entry.getDayDuration()*1000).toString());
         TableTexts[7] = new Text(new java.sql.Time(entry.getDuration()*1000).toString());
@@ -455,7 +455,7 @@ public class AccountViewer extends Finance {
     return T;
   }
 
-  private PresentationObject getPhoneEntryReportTable(FinanceAccount eAccount,List listEntries,IWTimeStamp from ,IWTimeStamp to){
+  private PresentationObject getPhoneEntryReportTable(FinanceAccount eAccount,List listEntries,IWTimestamp from ,IWTimestamp to){
     int tableDepth = 3;
     Vector other = new Vector();
     Vector mobile = new Vector();
@@ -556,7 +556,7 @@ public class AccountViewer extends Finance {
     return T;
   }
 
-  private PresentationObject getFinanceEntryTable(FinanceAccount eAccount,List listEntries,IWTimeStamp from ,IWTimeStamp to)throws java.rmi.RemoteException{
+  private PresentationObject getFinanceEntryTable(FinanceAccount eAccount,List listEntries,IWTimestamp from ,IWTimestamp to)throws java.rmi.RemoteException{
     DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
     int tableDepth = 5;
     if(listEntries != null){
@@ -596,7 +596,7 @@ public class AccountViewer extends Finance {
       double totPrice = 0;
       for(int j = 0; j < len; j++){
         AccountEntry entry = (AccountEntry) listEntries.get(j);
-        TableTexts[0] = new Text(getDateString(new IWTimeStamp(entry.getLastUpdated())));
+        TableTexts[0] = new Text(getDateString(new IWTimestamp(entry.getLastUpdated())));
         TableTexts[1] = new Text(entry.getName());
         TableTexts[2] = new Text(entry.getInfo());
         double p = entry.getTotal();
@@ -631,7 +631,7 @@ public class AccountViewer extends Finance {
     return T;
   }
 
-  private PresentationObject getCleanFinanceEntryTable(FinanceAccount eAccount,List listEntries,IWTimeStamp from ,IWTimeStamp to){
+  private PresentationObject getCleanFinanceEntryTable(FinanceAccount eAccount,List listEntries,IWTimestamp from ,IWTimestamp to){
 
     int tableDepth = 3;
     if(listEntries != null){
@@ -684,7 +684,7 @@ public class AccountViewer extends Finance {
         double p = entry.getTotal();
         debet = p > 0 ? true : false ;
         totPrice += p;
-        T.add(formatText(getDateString(new IWTimeStamp(entry.getLastUpdated()))),1,row );
+        T.add(formatText(getDateString(new IWTimestamp(entry.getLastUpdated()))),1,row );
         T.add(formatText(entry.getName()),2,row );
         T.add(formatText(entry.getInfo()),3,row );
         T.add(formatText(NF.format(p),1,debet?sDebetColor:sKreditColor),4,row );
@@ -718,24 +718,24 @@ public class AccountViewer extends Finance {
     return formatText(text,1,null);
   }
 
-  private IWTimeStamp getFromDate(IWContext iwc){
+  private IWTimestamp getFromDate(IWContext iwc){
     if(iwc.getParameter(prmFromDate)!=null){
       String sFromDate = iwc.getParameter(prmFromDate);
       return parseStamp(sFromDate);
     }
     else{
-       IWTimeStamp today =  IWTimeStamp.RightNow();
-       return new IWTimeStamp(1,today.getMonth(),today.getYear());
+       IWTimestamp today =  IWTimestamp.RightNow();
+       return new IWTimestamp(1,today.getMonth(),today.getYear());
     }
   }
 
-  private IWTimeStamp getToDate(IWContext iwc){
+  private IWTimestamp getToDate(IWContext iwc){
     if(iwc.getParameter(prmToDate)!=null){
       String sToDate = iwc.getParameter(prmToDate);
       return parseStamp(sToDate);
     }
     else{
-      return IWTimeStamp.RightNow();
+      return IWTimestamp.RightNow();
     }
   }
 
@@ -758,15 +758,15 @@ public class AccountViewer extends Finance {
     listAccount = FinanceFinder.getInstance().listOfFinanceAccountsByUserId(iUserId);
   }
 
-  private Link getPrintableLink(PresentationObject obj,IWTimeStamp from,IWTimeStamp to){
+  private Link getPrintableLink(PresentationObject obj,IWTimestamp from,IWTimestamp to){
     Link printLink = new Link(obj);
     printLink.addParameter(prmFromDate,getDateString(from));
     printLink.addParameter(prmToDate,getDateString(to));
     return printLink;
   }
 
-  private IWTimeStamp parseStamp(String sDate){
-     IWTimeStamp it = new IWTimeStamp();
+  private IWTimestamp parseStamp(String sDate){
+     IWTimestamp it = new IWTimestamp();
      try{
       StringTokenizer st = new StringTokenizer(sDate," .-/+");
       int day = 1,month = 1,year = 2001;
@@ -776,9 +776,9 @@ public class AccountViewer extends Finance {
         year = Integer.parseInt(st.nextToken());
 
       }
-      it = new IWTimeStamp(day,month,year);
+      it = new IWTimestamp(day,month,year);
     }
-    catch(Exception pe){ it = new IWTimeStamp();}
+    catch(Exception pe){ it = new IWTimestamp();}
     return it;
   }
 

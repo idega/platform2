@@ -11,7 +11,7 @@ package com.idega.block.mailinglist.business;
 import com.idega.block.mailinglist.data.*;
 import com.idega.block.mailinglist.presentation.EmailProgramViewTable;
 import com.idega.presentation.IWContext;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import com.idega.core.user.data.User;
@@ -101,7 +101,7 @@ public class MailingListBusiness {
     try {
       User user = iwc.getUser();
       createEmailAccount(user.getID(), user.getName(), email, email, "", -1, "", "",
-                         "", -1, "", "", IWTimeStamp.getTimestampRightNow());
+                         "", -1, "", "", IWTimestamp.getTimestampRightNow());
     }
     catch (SQLException ex) {}
   }
@@ -157,7 +157,7 @@ public class MailingListBusiness {
     mailinglistArray = (Mailinglist[]) mailinglist.findAllByColumn(com.idega.block.mailinglist.data.MailinglistBMPBean.MAILINGLIST_NAME, inputMailinglistName);
     if (mailinglistArray.length < 1){
       mailinglist.setMailinglistName(inputMailinglistName);
-      mailinglist.setCreationDate(IWTimeStamp.getTimestampRightNow());
+      mailinglist.setCreationDate(IWTimestamp.getTimestampRightNow());
       mailinglist.insert();
     }
     return(1);
@@ -173,7 +173,7 @@ public class MailingListBusiness {
       mailinglist.setMailinglistName(inputMailinglistName);
       mailinglist.setEmail(email);
       mailinglist.setPOP3Host(mailServer);
-      mailinglist.setCreationDate(IWTimeStamp.getTimestampRightNow());
+      mailinglist.setCreationDate(IWTimestamp.getTimestampRightNow());
       mailinglist.insert();
     }
     else{
@@ -185,7 +185,7 @@ public class MailingListBusiness {
       mailinglist.setMailinglistName(inputMailinglistName);
       mailinglist.setEmail(email);
       mailinglist.setPOP3Host(mailServer);
-      mailinglist.setCreationDate(IWTimeStamp.getTimestampRightNow());
+      mailinglist.setCreationDate(IWTimestamp.getTimestampRightNow());
       mailinglist.insert();
     }
 
@@ -202,7 +202,7 @@ public class MailingListBusiness {
         mailinglistArray[i].setMailinglistName(inputMailinglistName);
         mailinglistArray[i].setEmail(email);
         mailinglistArray[i].setPOP3Host(mailServer);
-        mailinglistArray[i].setCreationDate(IWTimeStamp.getTimestampRightNow());
+        mailinglistArray[i].setCreationDate(IWTimestamp.getTimestampRightNow());
         mailinglistArray[i].update();
       }
     }
@@ -249,7 +249,7 @@ public class MailingListBusiness {
     letters.setSubject(subject);
     letters.setToEmail(toEmail);
     letters.setFromEmail(fromEmail);
-    letters.setDate(IWTimeStamp.getTimestampRightNow());
+    letters.setDate(IWTimestamp.getTimestampRightNow());
     letters.setCCEmail(ccEmail);
     System.err.println("letters.getID() = " +letters.getID());
     if (letterID == -1) {

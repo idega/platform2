@@ -1,7 +1,7 @@
 package com.idega.block.finance.business;
 
 import com.idega.business.IBOServiceBean;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.util.*;
 import com.idega.data.*;
 import com.idega.block.finance.data.*;
@@ -73,16 +73,16 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
     }
   }
 
-  public  List listOfAccountEntries(int iAccountId,IWTimeStamp from,IWTimeStamp to){
+  public  List listOfAccountEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
     return listOfAccEntries(iAccountId,((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(), from,to,null);
   }
-  public  List listOfPhoneEntries(int iAccountId,IWTimeStamp from,IWTimeStamp to){
+  public  List listOfPhoneEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
     return listOfPhoneEntries(iAccountId, from,to,null);
   }
-  public  List listOfPhoneEntries(int iAccountId,IWTimeStamp to,String status){
+  public  List listOfPhoneEntries(int iAccountId,IWTimestamp to,String status){
     return listOfPhoneEntries(iAccountId,null,to,status);
   }
-  private  List listOfAccEntries(int iAccountId,Entry entry,IWTimeStamp from,IWTimeStamp to,String status){
+  private  List listOfAccEntries(int iAccountId,Entry entry,IWTimestamp from,IWTimestamp to,String status){
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(entry.getTableName());
     sql.append(" where ");
@@ -123,7 +123,7 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
     return A;
   }
 
-  private  List listOfPhoneEntries(int iAccountId,IWTimeStamp from,IWTimeStamp to,String status){
+  private  List listOfPhoneEntries(int iAccountId,IWTimestamp from,IWTimestamp to,String status){
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getEntityTableName());
     sql.append(" where ");
@@ -178,7 +178,7 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
     return FinanceFinder.getInstance().mapOfTariffKeys();
   }
 
-  public List listOfKeySortedEntries(int iAccountId,IWTimeStamp from,IWTimeStamp to){
+  public List listOfKeySortedEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
     Map acckeys = hashOfAccountKeys();
     Map takeys = hashOfTariffKeys();
     if(acckeys != null && takeys != null){
@@ -221,8 +221,8 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
     Account A = aHome.create();
     //Account A = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy();
     A.setBalance(0);
-    A.setCreationDate(IWTimeStamp.getTimestampRightNow() );
-    A.setLastUpdated(IWTimeStamp.getTimestampRightNow()) ;
+    A.setCreationDate(IWTimestamp.getTimestampRightNow() );
+    A.setLastUpdated(IWTimestamp.getTimestampRightNow()) ;
     A.setUserId(iUserId);
     A.setName(sName) ;
     A.setExtraInfo(sExtra);

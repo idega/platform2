@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.33 2002/08/12 12:17:52 palli Exp $
+ * $Id: CampusAllocator.java,v 1.34 2002/08/12 13:00:38 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -62,7 +62,7 @@ import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author  <a href="mailto:aron@idega.is">aron@idega.is
@@ -162,7 +162,7 @@ public class CampusAllocator extends Block implements Campus {
 					int iApartmentId = Integer.parseInt(iwc.getParameter("view_aprtmnt"));
 					int iContractId = Integer.parseInt(iwc.getParameter("contract"));
 					int iApplicantId = Integer.parseInt(iwc.getParameter("applicant"));
-					IWTimeStamp from = new IWTimeStamp(iwc.getParameter("from"));
+					IWTimestamp from = new IWTimestamp(iwc.getParameter("from"));
 					Frame.add(getApplicantInfo(iApplicantId, iwc), 1, row);
 					Frame.add(getContractsForm(iApartmentId, iApplicantId, iContractId, from), 3, row);
 				}
@@ -542,7 +542,7 @@ public class CampusAllocator extends Block implements Campus {
 		return L;
 	}
 
-	private Link getApartmentContractsLink(Text display, int applicant_id, int contract_id, int apartment_id, IWTimeStamp from) {
+	private Link getApartmentContractsLink(Text display, int applicant_id, int contract_id, int apartment_id, IWTimestamp from) {
 		Link L = new Link(display);
 		L.addParameter("view_aprtmnt", String.valueOf(apartment_id));
 		L.addParameter("contract", String.valueOf(contract_id));
@@ -635,7 +635,7 @@ public class CampusAllocator extends Block implements Campus {
 		return myForm;
 	}
 
-	private PresentationObject getContractsForm(int apartmentId, int applicant_id, int contract_id, IWTimeStamp from) {
+	private PresentationObject getContractsForm(int apartmentId, int applicant_id, int contract_id, IWTimestamp from) {
 		Apartment A = BuildingCacher.getApartment(apartmentId);
 		Contract C = ContractFinder.getContract(contract_id);
 		ApartmentTypePeriods ATP = getPeriod(A.getApartmentTypeId());
@@ -671,7 +671,7 @@ public class CampusAllocator extends Block implements Campus {
 			Contract C;
 			User user;
 			Integer UID;
-			IWTimeStamp temp = null;
+			IWTimestamp temp = null;
 			row = 2;
 			while (I.hasNext() && iCount-- > 0) {
 				C = (Contract) I.next();
@@ -720,7 +720,7 @@ public class CampusAllocator extends Block implements Campus {
 			RadioButton RB1, RB2;
 			Integer apId;
 			boolean Available = false;
-			IWTimeStamp nextAvailable;
+			IWTimestamp nextAvailable;
 			for (int i = 0; i < len; i++) {
 				A = (Apartment) L.get(i);
 				apId = new Integer(A.getID());
@@ -753,8 +753,8 @@ public class CampusAllocator extends Block implements Campus {
 				// If apartment is not in contract table:
 				if (Available || isThis) {
 					if (A.getUnavailableUntil() != null) {
-						IWTimeStamp it = new IWTimeStamp(A.getUnavailableUntil());
-						if (!it.isLaterThan(IWTimeStamp.RightNow())) {
+						IWTimestamp it = new IWTimestamp(A.getUnavailableUntil());
+						if (!it.isLaterThan(IWTimestamp.RightNow())) {
 							T.add(RB1, 1, row);
 						}
 					}
@@ -780,7 +780,7 @@ public class CampusAllocator extends Block implements Campus {
 		return T;
 	}
 
-	private PresentationObject getContractMakingTable(Contract C, ApartmentTypePeriods ATP, int applicant_id, IWTimeStamp from, int iApartmentId) {
+	private PresentationObject getContractMakingTable(Contract C, ApartmentTypePeriods ATP, int applicant_id, IWTimestamp from, int iApartmentId) {
 		DataTable T = new DataTable();
 		if (iApartmentId > 0) {
 			Apartment A = BuildingCacher.getApartment(iApartmentId);
@@ -798,17 +798,17 @@ public class CampusAllocator extends Block implements Campus {
 		DateInput dateFrom = new DateInput("contract_date_from", true);
 		DateInput dateTo = new DateInput("contract_date_to", true);
 
-		IWTimeStamp contractDateFrom = new IWTimeStamp();
-		IWTimeStamp contractDateTo = new IWTimeStamp();
+		IWTimestamp contractDateFrom = new IWTimestamp();
+		IWTimestamp contractDateTo = new IWTimestamp();
 
 		if (C != null) {
-			contractDateTo = new IWTimeStamp(C.getValidTo());
-			contractDateFrom = new IWTimeStamp(C.getValidFrom());
+			contractDateTo = new IWTimestamp(C.getValidTo());
+			contractDateFrom = new IWTimestamp(C.getValidFrom());
 		}
 		else if (ATP != null) {
 			// Period checking
 			//System.err.println("ATP exists");
-			IWTimeStamp[] stamps = ContractBusiness.getContractStampsFromPeriod(ATP, monthOverlap);
+			IWTimestamp[] stamps = ContractBusiness.getContractStampsFromPeriod(ATP, monthOverlap);
 			contractDateTo = stamps[1];
 			contractDateFrom = stamps[0];
 
@@ -819,19 +819,19 @@ public class CampusAllocator extends Block implements Campus {
 		}
 		// are the System Properties set
 		else if (SysProps != null) {
-			contractDateTo = new IWTimeStamp(SysProps.getValidToDate());
-			contractDateFrom = new IWTimeStamp();
+			contractDateTo = new IWTimestamp(SysProps.getValidToDate());
+			contractDateFrom = new IWTimestamp();
 		}
 		else {
-			contractDateTo = new IWTimeStamp();
-			contractDateFrom = new IWTimeStamp();
+			contractDateTo = new IWTimestamp();
+			contractDateFrom = new IWTimestamp();
 		}
 		if (from != null) {
 			contractDateFrom = from;
 			T.add(new HiddenInput("from", from.toString()));
 		}
 
-		int year = IWTimeStamp.RightNow().getYear();
+		int year = IWTimestamp.RightNow().getYear();
 		dateFrom.setYearRange(year - 2, year + 5);
 		dateTo.setYearRange(year - 2, year + 5);
 		dateFrom.setDate(contractDateFrom.getSQLDate());
@@ -913,14 +913,14 @@ public class CampusAllocator extends Block implements Campus {
 		String sDateTo = iwc.getParameter("contract_date_to");
 		String sMustFrom = iwc.getParameter("from");
 		/** @todo  contract overlap */
-		IWTimeStamp mustBeFrom = sMustFrom != null ? new IWTimeStamp(sMustFrom) : null;
+		IWTimestamp mustBeFrom = sMustFrom != null ? new IWTimestamp(sMustFrom) : null;
 		mustBeFrom.setHour(0);
 		mustBeFrom.setMinute(0);
 		mustBeFrom.setSecond(0);
 
 		if (sDateFrom != null && sDateTo != null) {
-			IWTimeStamp from = new IWTimeStamp(sDateFrom);
-			IWTimeStamp to = new IWTimeStamp(sDateTo);
+			IWTimestamp from = new IWTimestamp(sDateFrom);
+			IWTimestamp to = new IWTimestamp(sDateTo);
 			System.err.println("Saving new contract : Applicant : " + sApplicantId);
 			System.err.println("Must be from : " + mustBeFrom.toString() + " , is from " + from.toString());
 			if (mustBeFrom != null && mustBeFrom.isLaterThan(from)) {
@@ -991,15 +991,15 @@ public class CampusAllocator extends Block implements Campus {
 		return ContractBusiness.makeNewUser(A, emails);
 	}
 
-	private boolean makeNewContract(IWContext iwc, User eUser, Applicant eApplicant, int iApartmentId, IWTimeStamp from, IWTimeStamp to) {
+	private boolean makeNewContract(IWContext iwc, User eUser, Applicant eApplicant, int iApartmentId, IWTimestamp from, IWTimestamp to) {
 		return ContractBusiness.makeNewContract(iwc, eUser, eApplicant, iApartmentId, from, to);
 	}
 
 	private java.sql.Date getValidToDate(SystemProperties SysProps) {
 		int years = SysProps.getContractYears();
 		if (SysProps.getContractYears() > 0) {
-			IWTimeStamp now = IWTimeStamp.RightNow();
-			IWTimeStamp iT = new IWTimeStamp(1, now.getMonth(), now.getYear() + years);
+			IWTimestamp now = IWTimestamp.RightNow();
+			IWTimestamp iT = new IWTimestamp(1, now.getMonth(), now.getYear() + years);
 			return iT.getSQLDate();
 		}
 		else

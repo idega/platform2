@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFormHelper.java,v 1.8 2002/08/12 12:15:24 palli Exp $
+ * $Id: ApplicationFormHelper.java,v 1.9 2002/08/12 12:59:31 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,7 +12,7 @@ package com.idega.block.application.business;
 import com.idega.presentation.IWContext;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
 import com.idega.block.application.presentation.ApplicationForm;
 
@@ -76,9 +76,9 @@ public class ApplicationFormHelper {
     String subject = (String)iwc.getParameter("subject");
     Application application = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy();
     application.setSubjectId(Integer.parseInt(subject));
-    application.setSubmitted(IWTimeStamp.getTimestampRightNow());
+    application.setSubmitted(IWTimestamp.getTimestampRightNow());
     application.setStatusSubmitted();
-    application.setStatusChanged(IWTimeStamp.getTimestampRightNow());
+    application.setStatusChanged(IWTimestamp.getTimestampRightNow());
     iwc.setSessionAttribute("application",application);
   }
 }

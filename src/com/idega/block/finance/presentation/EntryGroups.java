@@ -32,9 +32,9 @@ import com.idega.presentation.Block;
 
 import com.idega.presentation.text.*;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
-import com.idega.util.idegaCalendar;
+import com.idega.util.IWCalendar;
 
 import java.sql.SQLException;
 
@@ -52,7 +52,7 @@ import com.idega.idegaweb.IWBundle;
 
 import com.idega.idegaweb.IWResourceBundle;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 
 
@@ -208,13 +208,13 @@ public class EntryGroups extends Block {
 
       if(!"".equals(dateTo)){
 
-        IWTimeStamp to = new IWTimeStamp(dateTo);
+        IWTimestamp to = new IWTimestamp(dateTo);
 
-        IWTimeStamp from = null;
+        IWTimestamp from = null;
 
         if(!"".equals(dateFrom))
 
-          from =  new IWTimeStamp(dateFrom );
+          from =  new IWTimestamp(dateFrom );
 
 
 
@@ -234,17 +234,17 @@ public class EntryGroups extends Block {
 
 
 
-  private PresentationObject doGroup(IWContext iwc,IWTimeStamp from , IWTimeStamp to){
+  private PresentationObject doGroup(IWContext iwc,IWTimestamp from , IWTimestamp to){
 
     try {
 
-      //System.err.println(" doGroup start :"+IWTimeStamp.RightNow().toString());
+      //System.err.println(" doGroup start :"+IWTimestamp.RightNow().toString());
 
       //CampusAssessmentBusiness.groupEntries(from,to);
       AssessmentBusiness assBuiz = (AssessmentBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,AssessmentBusiness.class);
       assBuiz.groupEntriesWithSQL(from,to);
 
-      //System.err.println(" doGroup end   :"+IWTimeStamp.RightNow().toString());
+      //System.err.println(" doGroup end   :"+IWTimestamp.RightNow().toString());
 
       return Edit.formatText(iwrb.getLocalizedString("group_created","Group was created"));
 
@@ -356,7 +356,7 @@ public class EntryGroups extends Block {
 
         T.add(getGroupLink(EG.getName(),EG.getID()),col++,row);
 
-        T.add(Edit.formatText(new IWTimeStamp(EG.getGroupDate()).getLocaleDate(iwc)),col++,row);
+        T.add(Edit.formatText(new IWTimestamp(EG.getGroupDate()).getLocaleDate(iwc)),col++,row);
 
         T.add(Edit.formatText(EG.getEntryIdFrom()),col++,row);
 
@@ -448,7 +448,7 @@ public class EntryGroups extends Block {
 
           T.add(Edit.formatText(A.getName()),col++,row);
 
-          T.add(Edit.formatText(new IWTimeStamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
+          T.add(Edit.formatText(new IWTimestamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
 
           T.add(Edit.formatText(nf.format(A.getTotal())),col++,row);
 
@@ -498,11 +498,11 @@ public class EntryGroups extends Block {
 
 
 
-    IWTimeStamp today = IWTimeStamp.RightNow();
+    IWTimestamp today = IWTimestamp.RightNow();
 
     DateInput di1 = new DateInput("ent_from",true);
 
-    //di.setDate(new IWTimeStamp(1,today.getMonth(),today.getYear()).getSQLDate());
+    //di.setDate(new IWTimestamp(1,today.getMonth(),today.getYear()).getSQLDate());
 
     T.add(di1,2,row);
 

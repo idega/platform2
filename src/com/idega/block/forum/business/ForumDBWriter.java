@@ -220,9 +220,9 @@ public class ForumDBWriter {
 
 
 
-//    return service.saveThread(parent_id, forum_id, TextSoap.findAndRemoveHtmlTags(subject), TextSoap.formatString(body), Author, user_id, IWTimeStamp.RightNow());
+//    return service.saveThread(parent_id, forum_id, TextSoap.findAndRemoveHtmlTags(subject), TextSoap.formatString(body), Author, user_id, IWTimestamp.RightNow());
 
-      newThreadID =  service.saveThread(parent_id, forum_id, subject, body, Author, user_id, IWTimeStamp.RightNow());
+      newThreadID =  service.saveThread(parent_id, forum_id, subject, body, Author, user_id, IWTimestamp.RightNow());
 
 
 

@@ -48,7 +48,7 @@ private String teeTextColor;
 private int year = 0;
 private int month = 0;
 private int day = 0;
-private idegaCalendar dagatalid;
+private IWCalendar dagatalid;
 private String start_year;
 private String start_month;
 private String start_day;
@@ -238,7 +238,7 @@ private Link textLink = new Link();
 
 		for ( int a = 0; a < scoreCards.length; a++ ) {
 
-      IWTimeStamp date = new IWTimeStamp(scoreCards[a].getScorecardDate());
+      IWTimestamp date = new IWTimestamp(scoreCards[a].getScorecardDate());
       Text date2 = ((Text) tableText.clone());
       date2.setText(date.getDate()+"/"+date.getMonth()+"/"+String.valueOf(date.getYear()).substring(2,4));
 
@@ -676,7 +676,7 @@ private Link textLink = new Link();
 
 		String[] dates = {"",""};
 
-		dagatalid = new idegaCalendar();
+		dagatalid = new IWCalendar();
 			year = dagatalid.getYear();
 			month = dagatalid.getMonth();
 			day = dagatalid.getDay();
@@ -727,7 +727,7 @@ private Link textLink = new Link();
 
 	private String formatDate(String date) {
 
-		 idegaCalendar dagatal = new idegaCalendar();
+		 IWCalendar dagatal = new IWCalendar();
 
 		 String ReturnString = date.substring(8, 10);
 

@@ -52,7 +52,7 @@ public class PublicBooking extends Block  {
   Supplier supplier;
   int productId = -1;
 
-  private IWTimeStamp stamp;
+  private IWTimestamp stamp;
   private String parameterProductId = LinkGenerator.parameterProductId;
   private DecimalFormat df = new DecimalFormat("0.00");
   private Text text = new Text("");
@@ -90,9 +90,9 @@ public class PublicBooking extends Block  {
     String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
     String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
     if (year != null && month != null && day != null) {
-      stamp = new IWTimeStamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
+      stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
     }else {
-      stamp = IWTimeStamp.RightNow();
+      stamp = IWTimestamp.RightNow();
     }
 
 
@@ -272,7 +272,7 @@ public class PublicBooking extends Block  {
       table.setAlignment("center");
       table.setBorder(0);
 
-      IWTimeStamp depTimeStamp = new IWTimeStamp(service.getDepartureTime());
+      IWTimestamp depTimeStamp = new IWTimestamp(service.getDepartureTime());
       List depAddresses = ProductBusiness.getDepartureAddresses(product, true);
       TravelAddress depAddress = ProductBusiness.getDepartureAddress(product);
       Currency currency;
@@ -312,7 +312,7 @@ public class PublicBooking extends Block  {
       departureTimeTextBold.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
 
       String[] dayOfWeekName = new String[8];
-      idegaCalendar cal = new idegaCalendar();
+      IWCalendar cal = new IWCalendar();
         dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY ,iwc).substring(0,3);
         dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY ,iwc).substring(0,3);
         dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY ,iwc).substring(0,3);
@@ -371,8 +371,8 @@ public class PublicBooking extends Block  {
         for (int i = 0; i < timeframes.length; i++) {
           prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), depAddress.getID(), true);
           if (prices.length > 0) {
-            stampTxt1 = new IWTimeStamp(timeframes[i].getFrom()).getLocaleDate(iwc);
-            stampTxt2 = new IWTimeStamp(timeframes[i].getTo()).getLocaleDate(iwc);
+            stampTxt1 = new IWTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
+            stampTxt2 = new IWTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
             if (timeframes[i].getIfYearly()) {
               try {
                 stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
@@ -391,7 +391,7 @@ public class PublicBooking extends Block  {
               nameOfCategory = getText(prices[j].getPriceCategory().getName());
                 nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
               try {
-                priceText = getBoldText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimeStamp.getTimestampRightNow(), timeframes[i].getID(), depAddress.getID()) ) );
+                priceText = getBoldText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframes[i].getID(), depAddress.getID()) ) );
                 currencyText = getBoldText(currency.getCurrencyAbbreviation());
                 pTable.add(currencyText,5,pRow);
               }catch (ProductPriceException p) {
@@ -574,10 +574,10 @@ public class PublicBooking extends Block  {
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
 
-      IWTimeStamp fromStamp = new IWTimeStamp(fromDate);
+      IWTimestamp fromStamp = new IWTimestamp(fromDate);
       try {
         int iManyDays = Integer.parseInt(manyDays);
-        IWTimeStamp toStamp = new IWTimeStamp(fromStamp);
+        IWTimestamp toStamp = new IWTimestamp(fromStamp);
         if (iManyDays > 1) {
           toStamp.addDays(iManyDays);
           table.add(getBoldTextWhite(fromStamp.getLocaleDate(iwc)+ " - "+toStamp.getLocaleDate(iwc)),2,row);
@@ -703,7 +703,7 @@ public class PublicBooking extends Block  {
         try {
           if (i == 0)
           currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrices[i].getCurrencyId());
-          price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimeStamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddressId));
+          price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddressId));
         }catch (SQLException sql) {
         }catch (NumberFormatException n) {}
 
@@ -781,7 +781,7 @@ public class PublicBooking extends Block  {
               valid = false;
               for (int i = 0; i < errorDays.size(); i++) {
                 ++row;
-                dayText = getBoldText(((IWTimeStamp) errorDays.get(i)).getLocaleDate(iwc));
+                dayText = getBoldText(((IWTimestamp) errorDays.get(i)).getLocaleDate(iwc));
                   dayText.setFontColor(errorColor);
                 table.add(dayText, 2, row);
               }
@@ -853,7 +853,7 @@ public class PublicBooking extends Block  {
               current = 0;
             }
             total += current;
-            price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimeStamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
+            price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
           }
 
           for (int i = 0; i < misc.length; i++) {
@@ -862,7 +862,7 @@ public class PublicBooking extends Block  {
             }catch (NumberFormatException n) {
               current = 0;
             }
-            price += current * getTravelStockroomBusiness(iwc).getPrice(misc[i].getID() ,this.productId,misc[i].getPriceCategoryID(), misc[i].getCurrencyId() ,IWTimeStamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
+            price += current * getTravelStockroomBusiness(iwc).getPrice(misc[i].getID() ,this.productId,misc[i].getPriceCategoryID(), misc[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
           }
 
         }
@@ -877,7 +877,7 @@ public class PublicBooking extends Block  {
           tm.commit();
         }else {
            try {
-            System.out.println("Starting TPOS test : "+IWTimeStamp.RightNow().toString());
+            System.out.println("Starting TPOS test : "+IWTimestamp.RightNow().toString());
             TPosMerchant merchant = null;
             try {
               int productSupplierId = gBooking.getService().getProduct().getSupplierId();
@@ -894,7 +894,7 @@ public class PublicBooking extends Block  {
             }
             heimild = t.doSale(ccNumber,ccMonth,ccYear,price,"ISK");
             //System.out.println("heimild = " + heimild);
-            System.out.println("Ending TPOS test : "+IWTimeStamp.RightNow().toString());
+            System.out.println("Ending TPOS test : "+IWTimestamp.RightNow().toString());
           }catch(com.idega.block.tpos.business.TPosException e) {
             System.out.println("TPOS errormessage = " + e.getErrorMessage());
             System.out.println("number = " + e.getErrorNumber());
@@ -1009,7 +1009,7 @@ public class PublicBooking extends Block  {
               mailText.append(iwrb.getLocalizedString("travel.email_double_confirmation","This email is to confirm that your booking has been received, and confirmed."));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
               mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimeStamp(gBooking.getBookingDate()).getLocaleDate(iwc));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
 
               SendMail sm = new SendMail();
@@ -1029,7 +1029,7 @@ public class PublicBooking extends Block  {
               mailText.append(iwrb.getLocalizedString("travel.email_after_online_booking","You have just received a booking through nat.sidan.is."));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(gBooking.getName());
               mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
-              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimeStamp(gBooking.getBookingDate()).getLocaleDate(iwc));
+              mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimestamp(gBooking.getBookingDate()).getLocaleDate(iwc));
               mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(gBooking.getTotalCount());
               if (doubleSendSuccessful) {
                 mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_been_sent","Double confirmation has been sent."));

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.17 2002/08/12 12:17:52 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.18 2002/08/12 13:00:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -286,7 +286,7 @@ public class CampusApplicationForm extends ApplicationForm {
     List subjects = ApplicationFinder.listOfNonExpiredSubjects();
     List categories = BuildingFinder.listOfApartmentCategory();
     Text textTemplate = new Text();
-    IWTimeStamp today = IWTimeStamp.RightNow();
+    IWTimestamp today = IWTimestamp.RightNow();
     int fromYear = today.getYear()-7;
     int toYear = today.getYear()+7;
     Edit.setStyle(textTemplate);
@@ -339,7 +339,7 @@ public class CampusApplicationForm extends ApplicationForm {
     spouseStudyEnd.setToShowDay(false);
     spouseStudyEnd.setYearRange(fromYear,toYear);
 
-    int currentYear = IWTimeStamp.RightNow().getYear();
+    int currentYear = IWTimestamp.RightNow().getYear();
 
     String labelStudyBegin = _iwrb.getLocalizedString("studyBegin","Nám hafið við HÍ (mán./ár)");
     String labelStudyEnd = _iwrb.getLocalizedString("studyEnd","Áætluð námslok (mán./ár)");
@@ -440,7 +440,7 @@ public class CampusApplicationForm extends ApplicationForm {
     if(iwc.isParameterSet("wantHousingFrom")){
       String sdate = iwc.getParameter("wantHousingFrom");
       if(sdate!=null && !"".equals(sdate))
-        input16.setDate(new IWTimeStamp(sdate).getSQLDate());
+        input16.setDate(new IWTimestamp(sdate).getSQLDate());
     }
     input16.setToCurrentDate();
 

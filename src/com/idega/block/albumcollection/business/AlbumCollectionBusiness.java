@@ -3,7 +3,7 @@ package com.idega.block.albumcollection.business;
 import com.idega.data.EntityFinder;
 import com.idega.business.IDOLegacyEntityComparator;
 import com.idega.block.albumcollection.data.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.text.Link;
 
@@ -173,7 +173,7 @@ public class AlbumCollectionBusiness {
     return EntityFinder.findAllOrdered(com.idega.block.albumcollection.data.AlbumBMPBean.getStaticInstance(Album.class),com.idega.block.albumcollection.data.AlbumBMPBean._COLUMNNAME_PUBLISHINGDAY);
   }
 
-  public static void createAlbum(String name, String description,Integer albumType, IWTimeStamp publishingDay, int[] authors, int[] performers, int[] categories, Integer frontCoverId) throws SQLException {
+  public static void createAlbum(String name, String description,Integer albumType, IWTimestamp publishingDay, int[] authors, int[] performers, int[] categories, Integer frontCoverId) throws SQLException {
     Album album = ((com.idega.block.albumcollection.data.AlbumHome)com.idega.data.IDOLookup.getHomeLegacy(Album.class)).createLegacy();
 
     if( name != null){
@@ -218,7 +218,7 @@ public class AlbumCollectionBusiness {
 
   }
 
-  public static void updateAlbum(int albumId,String name, String description,Integer albumType, IWTimeStamp publishingDay, int[] authors, int[] performers, int[] categories, Integer frontCoverId) throws SQLException {
+  public static void updateAlbum(int albumId,String name, String description,Integer albumType, IWTimestamp publishingDay, int[] authors, int[] performers, int[] categories, Integer frontCoverId) throws SQLException {
     Album album = ((com.idega.block.albumcollection.data.AlbumHome)com.idega.data.IDOLookup.getHomeLegacy(Album.class)).findByPrimaryKeyLegacy(albumId);
 
     if( name != null){

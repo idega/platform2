@@ -15,7 +15,7 @@ import is.idega.idegaweb.campus.presentation.Edit;
 import com.idega.block.building.data.*;
 import com.idega.block.building.business.*;
 import java.util.List;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
 
 /**
@@ -131,7 +131,7 @@ public class ApartmentFreezer extends Block {
         T.add(Edit.formatText(F.getName()),2,i+1);
         T.add(Edit.formatText(B.getName()),3,i+1);
         if(A.getUnavailableUntil()!=null)
-          T.add(Edit.formatText((new IWTimeStamp(A.getUnavailableUntil())).getLocaleDate(iwc)),4,i+1);
+          T.add(Edit.formatText((new IWTimestamp(A.getUnavailableUntil())).getLocaleDate(iwc)),4,i+1);
         else
           T.add(Edit.formatText("Unfrozen"),4,i+1);
       }
@@ -180,7 +180,7 @@ public class ApartmentFreezer extends Block {
       if(frozenDate != null && frozenDate.length()==10){
       int id = Integer.parseInt(appId);
       Apartment A = BuildingCacher.getApartment(id);
-      IWTimeStamp iT = new IWTimeStamp(frozenDate);
+      IWTimestamp iT = new IWTimestamp(frozenDate);
       A.setUnavailableUntil(iT.getSQLDate());
       A.update();
       }

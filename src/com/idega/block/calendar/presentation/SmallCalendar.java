@@ -13,13 +13,13 @@ import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.builder.data.IBPage;
 import com.idega.util.text.*;
 import com.idega.util.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 public class SmallCalendar extends Block{
 
-private IWTimeStamp today;
-private IWTimeStamp stamp;
-private idegaCalendar cal = new idegaCalendar();
+private IWTimestamp today;
+private IWTimestamp stamp;
+private IWCalendar cal = new IWCalendar();
 private IBPage _page;
 
 private boolean useNextAndPreviousLinks = true;
@@ -60,14 +60,14 @@ public SmallCalendar() {
   initialize();
 }
 
-  public SmallCalendar(IWTimeStamp timestamp) {
+  public SmallCalendar(IWTimestamp timestamp) {
       initialize();
       stamp = timestamp;
   }
 
   public SmallCalendar(int year,int month) {
     initialize();
-    stamp = new IWTimeStamp();
+    stamp = new IWTimestamp();
     stamp.setMonth(month);
     stamp.setYear(year);
   }
@@ -81,10 +81,10 @@ public SmallCalendar() {
 	stamp = CalendarBusiness.getTimestamp(day,month,year);
       }
       else if(iwc.getSessionAttribute("smcal"+getICObjectInstanceID())!=null){
-	stamp = (IWTimeStamp) iwc.getSessionAttribute("smcal"+getICObjectInstanceID());
+	stamp = (IWTimestamp) iwc.getSessionAttribute("smcal"+getICObjectInstanceID());
       }
       else
-	stamp = IWTimeStamp.RightNow();
+	stamp = IWTimestamp.RightNow();
     //}
     make(iwc);
   }
@@ -188,7 +188,7 @@ public SmallCalendar() {
       while (enum.hasMoreElements()) {
 	String dayString = (String) enum.nextElement();
 	if ( inThisMonth(dayString,year,month) ) {
-	  IWTimeStamp newStamp = new IWTimeStamp(dayString);
+	  IWTimestamp newStamp = new IWTimestamp(dayString);
 	  int[] XY = getXYPos(newStamp.getYear(),newStamp.getMonth(),newStamp.getDate());
 	  T.setColor(XY[0],XY[1],getDayColor(dayString));
 	}
@@ -268,14 +268,14 @@ public SmallCalendar() {
   }
 
   public void initialize() {
-    today = new IWTimeStamp();
+    today = new IWTimestamp();
     T = new Table();
     T.setCellpadding(2);
     T.setCellspacing(0);
     T.setWidth(width);
   }
 
-  public void addNextMonthPrm(Link L,IWTimeStamp idts){
+  public void addNextMonthPrm(Link L,IWTimestamp idts){
     if(idts.getMonth() == 12){
       L.addParameter(CalendarBusiness.PARAMETER_MONTH,String.valueOf(1));
       L.addParameter(CalendarBusiness.PARAMETER_YEAR,String.valueOf(idts.getYear()+1));
@@ -287,7 +287,7 @@ public SmallCalendar() {
     //L.addParameter(CalendarBusiness.PARAMETER_DAY,String.valueOf(idts.getDay()));
   }
 
-  public void addLastMonthPrm(Link L,IWTimeStamp idts){
+  public void addLastMonthPrm(Link L,IWTimestamp idts){
     if(idts.getMonth() == 1){
       L.addParameter(CalendarBusiness.PARAMETER_MONTH,String.valueOf(12));
       L.addParameter(CalendarBusiness.PARAMETER_YEAR,String.valueOf(idts.getYear()-1));
@@ -299,18 +299,18 @@ public SmallCalendar() {
     //L.addParameter(CalendarBusiness.PARAMETER_DAY,String.valueOf(idts.getDay()));
   }
 
-  public IWTimeStamp nextMonth(IWTimeStamp idts){
+  public IWTimestamp nextMonth(IWTimestamp idts){
     if(idts.getMonth() == 12)
-      return new IWTimeStamp(1,1,idts.getYear()+1);
+      return new IWTimestamp(1,1,idts.getYear()+1);
     else
-      return new IWTimeStamp(1,idts.getMonth()+1,idts.getYear() );
+      return new IWTimestamp(1,idts.getMonth()+1,idts.getYear() );
   }
 
-  public IWTimeStamp lastMonth(IWTimeStamp idts){
+  public IWTimestamp lastMonth(IWTimestamp idts){
     if(idts.getMonth() == 1)
-      return new IWTimeStamp(1,12,idts.getYear()-1);
+      return new IWTimestamp(1,12,idts.getYear()-1);
     else
-      return new IWTimeStamp(1,idts.getMonth()-1,idts.getYear() );
+      return new IWTimestamp(1,idts.getMonth()-1,idts.getYear() );
   }
 
   public String getDateString(int year,int month,int day) {
@@ -456,12 +456,12 @@ public SmallCalendar() {
     dayFontColors.put(getDateString(year,month,day),color);
   }
 
-  public void setDayFontColor(IWTimeStamp timestamp, String color) {
+  public void setDayFontColor(IWTimestamp timestamp, String color) {
     setDayFontColor(timestamp.getYear() ,timestamp.getMonth(),timestamp.getDay() ,color);
   }
 
   public void setTodayFontColor(String color) {
-    IWTimeStamp timestamp = new IWTimeStamp();
+    IWTimestamp timestamp = new IWTimestamp();
     setDayFontColor(timestamp.getYear() ,timestamp.getMonth(),timestamp.getDay() ,color);
   }
 
@@ -472,7 +472,7 @@ public SmallCalendar() {
     dayColors.put(getDateString(year,month,day),color);
   }
 
-  public void setDayColor(IWTimeStamp timestamp, String color) {
+  public void setDayColor(IWTimestamp timestamp, String color) {
       this.setDayColor(timestamp.getYear() ,timestamp.getMonth(),timestamp.getDay() ,color);
   }
 
@@ -555,7 +555,7 @@ public SmallCalendar() {
     _page = page;
   }
 
-  public void setTimestamp(IWTimeStamp stamp) {
+  public void setTimestamp(IWTimestamp stamp) {
     this.stamp = stamp;
   }
 
@@ -572,10 +572,10 @@ public SmallCalendar() {
     try {
       obj = (SmallCalendar)super.clone();
       if (this.today != null) {
-	obj.today = new IWTimeStamp(today);
+	obj.today = new IWTimestamp(today);
       }
       if (this.stamp != null) {
-	obj.stamp = new IWTimeStamp(stamp);
+	obj.stamp = new IWTimestamp(stamp);
       }
       if (this.T != null) {
 	obj.T = (Table)T.clone();

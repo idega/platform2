@@ -7,7 +7,7 @@ import com.idega.idegaweb.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
@@ -62,26 +62,26 @@ public class HotelPickupReporter extends TravelManager implements Report {
     }catch (Exception e) {e.printStackTrace(System.err);}
   }
 /*
-  public Table getHotelPickupReport(IWContext iwc, Supplier supplier, IWTimeStamp stamp) {
+  public Table getHotelPickupReport(IWContext iwc, Supplier supplier, IWTimestamp stamp) {
     List products = ProductBusiness.getProducts(supplier.getID(), stamp);
     return getHotelPickupReport(iwc, products, stamp);
   }
 
-  public Table getHotelPickupReport(IWContext iwc, Product product, IWTimeStamp stamp) {
+  public Table getHotelPickupReport(IWContext iwc, Product product, IWTimestamp stamp) {
     List list = new Vector();
     list.add(product);
     return getHotelPickupReport(iwc, list, stamp);
   }
 */
 
-  public PresentationObject getReport(IWContext iwc, List products, IWTimeStamp stamp, IWTimeStamp toStamp) {
+  public PresentationObject getReport(IWContext iwc, List products, IWTimestamp stamp, IWTimestamp toStamp) {
     /**
      * unsupported
      */
     return new Table();
   }
 
-  public PresentationObject getReport(IWContext iwc, List products, IWTimeStamp stamp) throws RemoteException, FinderException{
+  public PresentationObject getReport(IWContext iwc, List products, IWTimestamp stamp) throws RemoteException, FinderException{
     initialize(iwc);
     Table table = new Table();
       table.setColor(super.WHITE);
@@ -117,7 +117,7 @@ public class HotelPickupReporter extends TravelManager implements Report {
       headerRoomTxt.setText(iwrb.getLocalizedString("travel.room","Room"));
       headerRoomTxt.setFontColor(super.WHITE);
 
-    IWTimeStamp tempStamp;
+    IWTimestamp tempStamp;
     Text productNameTxt;
     Text productTimeTxt;
     Text bookingNameTxt;

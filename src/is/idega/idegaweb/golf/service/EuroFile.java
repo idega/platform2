@@ -146,7 +146,7 @@ public class EuroFile  {
 
     Union U = ((is.idega.idegaweb.golf.entity.UnionHome)com.idega.data.IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKeyLegacy(iUnionId);
 
-    IWTimeStamp datenow = new IWTimeStamp();
+    IWTimestamp datenow = new IWTimestamp();
 
     String sLowerCaseUnionAbbreviation = U.getAbbrevation().toLowerCase();
 
@@ -206,7 +206,7 @@ public class EuroFile  {
 
     UnionMemberInfo UMI;
 
-    IWTimeStamp cardexpiredate,startDate;
+    IWTimestamp cardexpiredate,startDate;
 
     Card card;
 
@@ -224,7 +224,7 @@ public class EuroFile  {
 
       price = ePayments[i].getPrice();
 
-      startDate = new IWTimeStamp(ePayments[i].getPaymentDate());
+      startDate = new IWTimestamp(ePayments[i].getPaymentDate());
 
       sStartDate = startDate.getISLDate(".", true);
 
@@ -260,7 +260,7 @@ public class EuroFile  {
 
          if(card.getExpireDate()!= null){
 
-          cardexpiredate = new IWTimeStamp(card.getExpireDate());
+          cardexpiredate = new IWTimestamp(card.getExpireDate());
 
           sCardExpires = cardexpiredate.getISLDate(".", true);
 
@@ -352,7 +352,7 @@ public class EuroFile  {
 
     Union U = ((is.idega.idegaweb.golf.entity.UnionHome)com.idega.data.IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKeyLegacy(un_id);
 
-    IWTimeStamp datenow = new IWTimeStamp();
+    IWTimestamp datenow = new IWTimestamp();
 
 
 
@@ -406,7 +406,7 @@ public class EuroFile  {
 
     UnionMemberInfo UMI;
 
-    IWTimeStamp cardexpiredate,startDate;
+    IWTimestamp cardexpiredate,startDate;
 
     Card card;
 
@@ -424,7 +424,7 @@ public class EuroFile  {
 
       price = payments[i].getPrice();
 
-      startDate = new IWTimeStamp(payments[i].getPaymentDate());
+      startDate = new IWTimestamp(payments[i].getPaymentDate());
 
       sStartDate = startDate.getISLDate(".", true);
 
@@ -458,7 +458,7 @@ public class EuroFile  {
 
         card = UMI.getCard();
 
-        cardexpiredate = new IWTimeStamp(card.getExpireDate());
+        cardexpiredate = new IWTimestamp(card.getExpireDate());
 
         sCardExpires = cardexpiredate.getISLDate(".", true);
 

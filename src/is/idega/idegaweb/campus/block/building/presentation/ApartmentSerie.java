@@ -14,7 +14,7 @@ import is.idega.idegaweb.campus.presentation.Edit;
 import com.idega.block.building.data.*;
 import com.idega.block.building.business.*;
 import java.util.List;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
 
 /**

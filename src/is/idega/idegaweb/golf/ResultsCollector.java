@@ -6,7 +6,7 @@ import java.util.*;
 
 import is.idega.idegaweb.golf.business.TournamentController;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 
 
@@ -52,7 +52,7 @@ public class ResultsCollector {
 
   private int realLastNine_ = 0;
 
-  private IWTimeStamp scorecardDate = null;
+  private IWTimestamp scorecardDate = null;
 
 
 
@@ -232,7 +232,7 @@ public class ResultsCollector {
 
 
 
-  public void setDate(IWTimeStamp date) {
+  public void setDate(IWTimestamp date) {
 
     scorecardDate = date;
 
@@ -714,7 +714,7 @@ public class ResultsCollector {
 
 
 
-  public IWTimeStamp getDate() {
+  public IWTimestamp getDate() {
 
     return scorecardDate;
 

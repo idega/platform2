@@ -10,7 +10,7 @@ import com.idega.presentation.IWContext;
 
 import com.idega.block.news.presentation.NewsReader;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 
 

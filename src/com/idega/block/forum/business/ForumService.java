@@ -638,9 +638,9 @@ public class ForumService{
 
 
 
-  public IWTimeStamp get_idegaTimestamp(int thread_id)throws SQLException{
+  public IWTimestamp get_idegaTimestamp(int thread_id)throws SQLException{
 
-    return new IWTimeStamp(getTimestamp(thread_id));
+    return new IWTimestamp(getTimestamp(thread_id));
 
   }
 
@@ -668,7 +668,7 @@ public class ForumService{
 
 
 
-  public int saveThread(int parent_id, int forum_id, String subject, String body, String user_name, int user_id, IWTimeStamp date )throws SQLException{
+  public int saveThread(int parent_id, int forum_id, String subject, String body, String user_name, int user_id, IWTimestamp date )throws SQLException{
 
     ForumThread myThread = ((com.idega.block.forum.data.ForumThreadHome)com.idega.data.IDOLookup.getHomeLegacy(ForumThread.class)).createLegacy();
 
@@ -754,7 +754,7 @@ public class ForumService{
 
 
 
-  public void saveNewThread( int forum_id, String subject, String body, String user_name, IWTimeStamp date )throws SQLException{
+  public void saveNewThread( int forum_id, String subject, String body, String user_name, IWTimestamp date )throws SQLException{
 
     ForumThread myThread = ((com.idega.block.forum.data.ForumThreadHome)com.idega.data.IDOLookup.getHomeLegacy(ForumThread.class)).createLegacy();
 
@@ -854,7 +854,7 @@ public class ForumService{
 
     toConstruct.setGroupID(new Integer(1));
 
-    toConstruct.setNewThreadDate(IWTimeStamp.getTimestampRightNow());
+    toConstruct.setNewThreadDate(IWTimestamp.getTimestampRightNow());
 
     toConstruct.setNumberOfThreads(new Integer(0));
 

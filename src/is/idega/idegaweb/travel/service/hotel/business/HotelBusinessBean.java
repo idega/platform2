@@ -5,7 +5,7 @@ import is.idega.idegaweb.travel.service.business.*;
 import is.idega.idegaweb.travel.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.data.IDOLookup;
 import com.idega.business.IBOLookup;
 import java.sql.SQLException;
@@ -29,7 +29,7 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
   }
 
 //  public int createService(int supplierId, Integer fileId, String serviceName, String number, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival, int discountTypeId) throws Exception{
-  public int createHotel(int supplierId, Integer fileId, String name, String number, String description, int[] activeDays, String departureFrom, IWTimeStamp departureTime, String arrivalAt, IWTimeStamp arrivalTime,  boolean isValid, int discountTypeId) throws Exception{
+  public int createHotel(int supplierId, Integer fileId, String name, String number, String description, int[] activeDays, String departureFrom, IWTimestamp departureTime, String arrivalAt, IWTimestamp arrivalTime,  boolean isValid, int discountTypeId) throws Exception{
 /*
     int[] departureAddressIds = setDepartureAddress(-1, departureFrom, departureTime);
     int[] arrivalAddressIds = setArrivalAddress(-1, arrivalAt);
@@ -50,7 +50,7 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
 
   }
 
-  public int updateHotel(int serviceId, int supplierId, Integer fileId, String name, String number, String description, int[] activeDays, String departureFrom, IWTimeStamp departureTime, String arrivalAt, IWTimeStamp arrivalTime,boolean isValid, int discountTypeId) throws Exception{
+  public int updateHotel(int serviceId, int supplierId, Integer fileId, String name, String number, String description, int[] activeDays, String departureFrom, IWTimestamp departureTime, String arrivalAt, IWTimestamp arrivalTime,boolean isValid, int discountTypeId) throws Exception{
     int productId = -1;
     int[] departureAddressIds = setDepartureAddress(serviceId, departureFrom, departureTime);
     int[] arrivalAddressesIds = setArrivalAddress(serviceId, arrivalAt);

@@ -16,7 +16,7 @@ import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.user.Converter;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:
@@ -175,7 +175,7 @@ public class MessageBox extends CommuneBlock {
     //add(getLink(msg.getSenderName()));
     add(new Break(2));
     add(getLocalizedText("message.date","Date"));
-    add(getText(": "+(new IWTimeStamp(msg.getCreated())).getLocaleDate(iwc)));
+    add(getText(": "+(new IWTimestamp(msg.getCreated())).getLocaleDate(iwc)));
     add(new Break(2));
     add(getLocalizedText("message.subject","Subject"));
     add(getText(": "+msg.getSubject()));

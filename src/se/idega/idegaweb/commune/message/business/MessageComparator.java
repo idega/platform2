@@ -1,6 +1,6 @@
 package se.idega.idegaweb.commune.message.business;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 import se.idega.idegaweb.commune.message.data.*;
 import java.rmi.RemoteException;
@@ -27,18 +27,18 @@ public class MessageComparator implements Comparator {
     Message p1 = (Message) o1;
     Message p2 = (Message) o2;
 
-    IWTimeStamp one;
-    IWTimeStamp two;
+    IWTimestamp one;
+    IWTimestamp two;
 
     try {
-      one = new IWTimeStamp(p1.getCreated());
+      one = new IWTimestamp(p1.getCreated());
     }
     catch (RemoteException e) {
       one = null;
     }
 
     try {
-      two = new IWTimeStamp(p2.getCreated());
+      two = new IWTimestamp(p2.getCreated());
     }
     catch (RemoteException e) {
       two = null;

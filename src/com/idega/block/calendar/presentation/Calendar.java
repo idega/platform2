@@ -17,8 +17,8 @@ import com.idega.block.IWBlock;
 import com.idega.block.calendar.data.*;
 import com.idega.block.calendar.business.*;
 import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.util.IWTimeStamp;
-import com.idega.util.idegaCalendar;
+import com.idega.util.IWTimestamp;
+import com.idega.util.IWCalendar;
 import com.idega.util.text.TextSoap;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -36,7 +36,7 @@ private boolean hasEdit = false,hasAdd = false,hasPref = false;
 private int _iLocaleID;
 private int _view = CalendarBusiness.MONTH;
 
-private IWTimeStamp _stamp;
+private IWTimestamp _stamp;
 private String _width = "100%";
 private boolean _isSelectedDay = false;
 private Integer _daysAhead = null;//= 7;
@@ -65,7 +65,7 @@ private int iUserId = -1;
 public Calendar(){
 }
 
-public Calendar(IWTimeStamp timestamp){
+public Calendar(IWTimestamp timestamp){
   _stamp = timestamp;
 }
 
@@ -153,7 +153,7 @@ public Calendar(IWTimeStamp timestamp){
       String[] localeStrings = null;
       Text headlineText = null;
       Text bodyText = null;
-      IWTimeStamp stamp = null;
+      IWTimestamp stamp = null;
       boolean hasImage = true;
       int imageID;
       int ypos = 1;
@@ -245,7 +245,7 @@ public Calendar(IWTimeStamp timestamp){
 	headlineText.setFontStyle("font-family: Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold; color: "+_headlineColor+";");
 	entriesTable.add(headlineText,xpos,ypos);
 
-	stamp = new IWTimeStamp(entry.getDate());
+	stamp = new IWTimestamp(entry.getDate());
 	DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
 	Date date = new Date(stamp.getTimestamp().getTime());
 	Text dateText = new Text(format.format(date));
@@ -356,7 +356,7 @@ public Calendar(IWTimeStamp timestamp){
     add(monthTable);
   }
 
-  private SmallCalendar getCalendar(IWTimeStamp stamp) {
+  private SmallCalendar getCalendar(IWTimestamp stamp) {
     List list = CalendarFinder.getInstance().getMonthEntries(stamp,getCategoryIds());
 
     SmallCalendar calendar = new SmallCalendar(stamp);
@@ -369,7 +369,7 @@ public Calendar(IWTimeStamp timestamp){
     if ( list != null ) {
       Iterator iter = list.iterator();
       while (iter.hasNext()) {
-	      calendar.setDayFontColor(new IWTimeStamp(((CalendarEntry) iter.next()).getDate()),_actionDay);
+	      calendar.setDayFontColor(new IWTimestamp(((CalendarEntry) iter.next()).getDate()),_actionDay);
       }
     }
 
@@ -378,7 +378,7 @@ public Calendar(IWTimeStamp timestamp){
 
   private void drawYear(IWContext iwc) {
     Table yearTable = new Table();
-    IWTimeStamp yearStamp = null;
+    IWTimestamp yearStamp = null;
     SmallCalendar calendar = null;
     int ypos = 1;
     int xpos = 1;
@@ -403,7 +403,7 @@ public Calendar(IWTimeStamp timestamp){
 
 
     for ( int a = 1; a <= 12; a++ ) {
-      yearStamp = new IWTimeStamp(_stamp.getDay(),a,_stamp.getYear());
+      yearStamp = new IWTimestamp(_stamp.getDay(),a,_stamp.getYear());
       calendar = getCalendar(yearStamp);
       calendar.setICObjectInstanceID(this.getICObjectInstanceID());
       calendar.setOnlySelectedHighlighted(true);
@@ -514,7 +514,7 @@ public Calendar(IWTimeStamp timestamp){
 
   public void setDate(int year,int month,int day) {
     if ( _stamp == null ) {
-      _stamp = new IWTimeStamp(day,month,year);
+      _stamp = new IWTimestamp(day,month,year);
     }
     else {
       _stamp.setDate(day);

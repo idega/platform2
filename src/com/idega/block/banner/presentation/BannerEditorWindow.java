@@ -222,14 +222,14 @@ public BannerEditorWindow(){
     DateInput beginDate = new DateInput(BannerBusiness.PARAMETER_BEGIN_DATE);
       beginDate.setStyleAttribute("style",STYLE);
       if ( ad != null && ad.getBeginDate() != null ) {
-        beginDate.setDate(new IWTimeStamp(ad.getBeginDate()).getSQLDate());
+        beginDate.setDate(new IWTimestamp(ad.getBeginDate()).getSQLDate());
       }
     addLeft(_iwrb.getLocalizedString("valid_from","Valid from")+": ",beginDate,true);
 
     DateInput endDate = new DateInput(BannerBusiness.PARAMETER_END_DATE);
       endDate.setStyleAttribute("style",STYLE);
       if ( ad != null && ad.getEndDate() != null ) {
-        endDate.setDate(new IWTimeStamp(ad.getEndDate()).getSQLDate());
+        endDate.setDate(new IWTimestamp(ad.getEndDate()).getSQLDate());
       }
     addLeft(_iwrb.getLocalizedString("valid_to","Valid to")+": ",endDate,true);
 

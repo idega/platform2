@@ -14,7 +14,7 @@ import com.idega.block.finance.presentation.*;
 import com.idega.block.application.data.*;
 import com.idega.block.application.business.ApplicationFinder;
 import com.idega.block.building.data.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
 import java.util.List;
 /**
@@ -89,7 +89,7 @@ public class SubjectMaker extends Block{
     Table T = new Table();
     TextInput Description = new TextInput("app_subj_desc");
     DateInput ExpireDate = new DateInput("app_subj_xdate",true);
-    ExpireDate.setDate(IWTimeStamp.RightNow().getSQLDate());
+    ExpireDate.setDate(IWTimestamp.RightNow().getSQLDate());
     SubmitButton SaveButton = new SubmitButton("save","Save");
     T.add(iwrb.getLocalizedString("description", "Description") +" :",1,1);
     T.add(iwrb.getLocalizedString("expiredate", "Expiredate") +" :",2,1);
@@ -102,7 +102,7 @@ public class SubjectMaker extends Block{
       for (int i = 0; i < len; i++) {
         ApplicationSubject AS = (ApplicationSubject) L.get(i);
         T.add(Edit.formatText(AS.getDescription()),1,a);
-        T.add(Edit.formatText(new IWTimeStamp(AS.getExpires()).getISLDate()),2,a);
+        T.add(Edit.formatText(new IWTimestamp(AS.getExpires()).getISLDate()),2,a);
         T.add((getDeleteLink(AS)),3,a);
         a++;
       }
@@ -139,7 +139,7 @@ public class SubjectMaker extends Block{
     if(sDesc.length() > 0){
       ApplicationSubject AS = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).createLegacy();
       AS.setDescription(sDesc);
-      AS.setExpires(new IWTimeStamp(sDate).getSQLDate());
+      AS.setExpires(new IWTimestamp(sDate).getSQLDate());
       try {
         AS.insert();
       }

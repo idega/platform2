@@ -18,7 +18,7 @@ import com.idega.core.user.data.*;
 
 import com.idega.data.*;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 import com.idega.core.business.UserGroupBusiness;
 
@@ -86,7 +86,7 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 
 
 
-  public static void updateStaff(int user_id, String title, String education, String school, String area, IWTimeStamp began_work) throws RemoteException{
+  public static void updateStaff(int user_id, String title, String education, String school, String area, IWTimestamp began_work) throws RemoteException{
 
     StaffInfo staffToAdd = null;
 
@@ -156,7 +156,7 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 
 
 
-  public static void saveStaff(int localeID, int userID, String title, String education, String area, IWTimeStamp began_work, String imageID) {
+  public static void saveStaff(int localeID, int userID, String title, String education, String area, IWTimestamp began_work, String imageID) {
 
     StaffEntity staffToAdd = null;
 

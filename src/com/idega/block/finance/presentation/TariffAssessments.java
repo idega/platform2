@@ -18,8 +18,8 @@ import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Block;
 import com.idega.presentation.text.*;
-import com.idega.util.IWTimeStamp;
-import com.idega.util.idegaCalendar;
+import com.idega.util.IWTimestamp;
+import com.idega.util.IWCalendar;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.HashMap;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.core.user.data.User;
 
 /**
@@ -206,13 +206,13 @@ public class TariffAssessments extends Block {
         if(roundName != null && roundName.trim().length() > 1){
           roundName = roundName == null?"":roundName;
           int iAccountKeyId = accountKeyId!=null?Integer.parseInt(accountKeyId):-1;
-          IWTimeStamp paydate = new IWTimeStamp(date);
-          IWTimeStamp startdate = new IWTimeStamp(start);
-          IWTimeStamp enddate = new IWTimeStamp(end);
+          IWTimestamp paydate = new IWTimestamp(date);
+          IWTimestamp startdate = new IWTimestamp(start);
+          IWTimestamp enddate = new IWTimestamp(end);
           //add(paydate.getISLDate());
-          debug("Starting Execution "+IWTimeStamp.RightNow().toString());
+          debug("Starting Execution "+IWTimestamp.RightNow().toString());
           boolean assessed = handler.executeAssessment(iCategoryId, iGroupId,roundName,1,iAccountKeyId,paydate,startdate,enddate);
-          debug("Ending Execution "+IWTimeStamp.RightNow().toString());
+          debug("Ending Execution "+IWTimestamp.RightNow().toString());
           if(assessed){
             status.setMessage(iwrb.getLocalizedString("assessment_sucess","Assessment succeded"));
           }
@@ -294,7 +294,7 @@ public class TariffAssessments extends Block {
         col = 1;
         AR = (RoundInfo) L.get(i);
         T.add(getRoundLink(AR.getName(),AR.getRoundId(),iGroupId),col++,row);
-        T.add(Edit.formatText(new IWTimeStamp(AR.getRoundStamp()).getLocaleDate(iwc)),col++,row);
+        T.add(Edit.formatText(new IWTimestamp(AR.getRoundStamp()).getLocaleDate(iwc)),col++,row);
         T.add(Edit.formatText(nf.format(AR.getTotals())),col++,row);
         Link R = new Link(iwb.getImage("rollback.gif"));
         R.addParameter("rollback",AR.getRoundId());
@@ -404,7 +404,7 @@ public class TariffAssessments extends Block {
           li.addParameter(strAction,ACT7);
           T.add(Edit.formatText(username),col++,row);
           T.add(li,col++,row);
-          T.add(Edit.formatText(new IWTimeStamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
+          T.add(Edit.formatText(new IWTimestamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
           T.add(Edit.formatText(nf.format(A.getBalance())),col++,row);
           total += A.getBalance();
           row++;
@@ -455,8 +455,8 @@ public class TariffAssessments extends Block {
           if(A.getInfo()!=null)
             T.add(Edit.formatText(A.getInfo()),col,row);
           col++;
-          T.add(Edit.formatText(new IWTimeStamp(A.getPaymentDate()).getLocaleDate(iwc)),col++,row);
-          T.add(Edit.formatText(new IWTimeStamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
+          T.add(Edit.formatText(new IWTimestamp(A.getPaymentDate()).getLocaleDate(iwc)),col++,row);
+          T.add(Edit.formatText(new IWTimestamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
           T.add(Edit.formatText(nf.format(A.getTotal())),col++,row);
           total+= A.getTotal();
           row++;
@@ -488,26 +488,26 @@ public class TariffAssessments extends Block {
 
     DateInput di = new DateInput("pay_date",true);
     di.setStyleAttribute("type",Edit.styleAttribute);
-    IWTimeStamp today = IWTimeStamp.RightNow();
+    IWTimestamp today = IWTimestamp.RightNow();
     di.setYearRange(today.getYear()-2,today.getYear()+3);
     today.addMonths(1);
-    di.setDate(new IWTimeStamp(1,today.getMonth(),today.getYear()).getSQLDate());
+    di.setDate(new IWTimestamp(1,today.getMonth(),today.getYear()).getSQLDate());
 
     DateInput start = new DateInput("start_date",true);
     start.setStyleAttribute("type",Edit.styleAttribute);
-    IWTimeStamp today1 = IWTimeStamp.RightNow();
+    IWTimestamp today1 = IWTimestamp.RightNow();
     start.setYearRange(today1.getYear()-2,today1.getYear()+3);
     today1.addMonths(1);
-    start.setDate(new IWTimeStamp(1,today.getMonth(),today.getYear()).getSQLDate());
+    start.setDate(new IWTimestamp(1,today.getMonth(),today.getYear()).getSQLDate());
 
     DateInput end = new DateInput("end_date",true);
     end.setStyleAttribute("type",Edit.styleAttribute);
-    IWTimeStamp today2 = IWTimeStamp.RightNow();
+    IWTimestamp today2 = IWTimestamp.RightNow();
     end.setYearRange(today2.getYear()-2,today2.getYear()+3);
     today2.addMonths(1);
-    idegaCalendar cal = new idegaCalendar();
+    IWCalendar cal = new IWCalendar();
     int day = cal.getLengthOfMonth(today2.getMonth(),today2.getYear());
-    end.setDate(new IWTimeStamp(day,today2.getMonth(),today2.getYear()).getSQLDate());
+    end.setDate(new IWTimestamp(day,today2.getMonth(),today2.getYear()).getSQLDate());
 
     TextInput rn = new TextInput("round_name");
 

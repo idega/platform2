@@ -1,7 +1,7 @@
 package is.idega.idegaweb.travel.data;
 
 import javax.ejb.RemoveException;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.rmi.RemoteException;
 import java.util.*;
 import javax.ejb.FinderException;
@@ -143,7 +143,7 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
   /**
    * returns null if nothing...
    */
-  public ServiceDay getServiceDay(int serviceId, IWTimeStamp stamp) throws FinderException, RemoteException{
+  public ServiceDay getServiceDay(int serviceId, IWTimestamp stamp) throws FinderException, RemoteException{
     return getServiceDay(serviceId, stamp.getDayOfWeek());
   }
   /**

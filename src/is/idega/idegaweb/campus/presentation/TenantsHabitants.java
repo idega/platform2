@@ -27,7 +27,7 @@ import is.idega.idegaweb.campus.data.Habitant;
 import com.idega.block.application.data.Applicant;
 import com.idega.util.text.TextStyler;
 import com.idega.util.text.StyleConstants;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:
@@ -169,7 +169,7 @@ public class TenantsHabitants extends Block implements Campus{
     Long refreshed = (Long) iwc.getApplicationAttribute(APPLICATION_REFRESH_RATE);
     boolean refresh = false;
     if(refreshed !=null){
-      long now = IWTimeStamp.RightNow().getTimestamp().getTime();
+      long now = IWTimestamp.RightNow().getTimestamp().getTime();
       long then = refreshed.longValue();
       long diff = now-then;
       refresh = (Math.abs(diff) >= refreshRate);
@@ -209,7 +209,7 @@ public class TenantsHabitants extends Block implements Campus{
       }
       collectionMap.put(CMPLX_ID,vector);
       iwc.setApplicationAttribute(APPLICATION_VARIABLE,collectionMap);
-      iwc.setApplicationAttribute(APPLICATION_REFRESH_RATE,new Long( IWTimeStamp.RightNow().getTimestamp().getTime()));
+      iwc.setApplicationAttribute(APPLICATION_REFRESH_RATE,new Long( IWTimestamp.RightNow().getTimestamp().getTime()));
     }
 
     return vector;
@@ -276,9 +276,9 @@ public class TenantsHabitants extends Block implements Campus{
     List vector = listOfComplexHabitants(_campusID,iwc);
 
     HabitantsComparator comparator = new HabitantsComparator(_orderID);
-    //System.err.println("starting sort "+com.idega.util.IWTimeStamp.getTimestampRightNow().toString());
+    //System.err.println("starting sort "+com.idega.util.IWTimestamp.getTimestampRightNow().toString());
     Collections.sort(vector,comparator);
-    //System.err.println("ending sort "+com.idega.util.IWTimeStamp.getTimestampRightNow().toString());
+    //System.err.println("ending sort "+com.idega.util.IWTimestamp.getTimestampRightNow().toString());
     Link adminLink = null;
     int column = 1;
 

@@ -4,7 +4,7 @@ import is.idega.idegaweb.golf.entity.*;
 import is.idega.idegaweb.golf.*;
 import java.util.Vector;
 import java.sql.SQLException;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 
 public class UpdateHandicap {
@@ -12,7 +12,7 @@ public class UpdateHandicap {
     public static void update(int member_id) {
         try {
             Member member = ((is.idega.idegaweb.golf.entity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKeyLegacy(member_id);
-            IWTimeStamp stampur = new IWTimeStamp(1,1,2000);
+            IWTimestamp stampur = new IWTimestamp(1,1,2000);
             UpdateHandicap.update(member,stampur);
         }
         catch (SQLException sql) {
@@ -20,7 +20,7 @@ public class UpdateHandicap {
         }
     }
 
-    public static void update(int member_id,IWTimeStamp stampur) {
+    public static void update(int member_id,IWTimestamp stampur) {
         try {
             Member member = ((is.idega.idegaweb.golf.entity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKeyLegacy(member_id);
             stampur.addDays(-1);
@@ -31,7 +31,7 @@ public class UpdateHandicap {
         }
     }
 
-    public static void update(Member member,IWTimeStamp stampur) {
+    public static void update(Member member,IWTimestamp stampur) {
 
       try {
             int member_id = member.getID();

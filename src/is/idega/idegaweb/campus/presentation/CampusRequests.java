@@ -1,5 +1,5 @@
 /*
- * $Id: CampusRequests.java,v 1.7 2002/08/12 12:17:54 palli Exp $
+ * $Id: CampusRequests.java,v 1.8 2002/08/12 13:00:42 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -24,7 +24,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.PresentationObject;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.SendMail;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author <a href="mailto:aron@idega.is">aron@idega.is
@@ -185,7 +185,7 @@ public class CampusRequests extends Block {
       if(info != null){
         info.append(sinfo);
         info.append(iwrb.getLocalizedString("sendtime","Sent :"));
-        info.append(IWTimeStamp.RightNow().getISLDate());
+        info.append(IWTimestamp.RightNow().getISLDate());
         try{
 //          SendMail.send("admin@campus.is",getEmail(type),"","aron@idega.is","mail.idega.is",getSubject(type),info.toString());
           return iwrb.getLocalizedString("requestsent","Beiðni hefur verið send !");

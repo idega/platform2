@@ -10,7 +10,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -34,7 +34,7 @@ public class TariffEditor extends Block{
   protected final int ACT5 = 5,ACT6 = 6, ACT7 = 7,ACT8  = 8;
   public  String strAction = "te_action";
   public final   int YEAR=1,MONTH=2,WEEK=3,DAY=4;
-  private IWTimeStamp workingPeriod;
+  private IWTimestamp workingPeriod;
   private int period = MONTH;
   private int iPeriod;
   private int iNumberOfDecimals = 0;
@@ -177,7 +177,7 @@ public class TariffEditor extends Block{
   }
 
   protected PresentationObject getMain(IWContext iwc,int iCategoryId,TariffGroup group)throws java.rmi.RemoteException{
-    IWTimeStamp today = new IWTimeStamp();
+    IWTimestamp today = new IWTimestamp();
     int iGroupId = -1;
     FinanceHandler handler = null;
     Map attributeMap = null;
@@ -269,7 +269,7 @@ public class TariffEditor extends Block{
     Form myForm = new Form();
     myForm.add(Finance.getCategoryParameter(iCategoryId));
     boolean updateIndex = factor;
-    IWTimeStamp today = new IWTimeStamp();
+    IWTimestamp today = new IWTimestamp();
     Collection tariffs = FinanceFinder.getInstance().listOfTariffs(group.getID());
     List AK = FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
     List indices = Finder.listOfTypeGroupedIndices();
@@ -355,13 +355,13 @@ public class TariffEditor extends Block{
           if(ifIndices){
             String ixType = tariff.getIndexType();
             String ixDate = iwc.getParameter("te_ixdate");
-            IWTimeStamp ixdate = null;
+            IWTimestamp ixdate = null;
 
             if(ixDate != null){
-              ixdate = new IWTimeStamp(ixDate);
+              ixdate = new IWTimestamp(ixDate);
             }
             else if(tariff.getIndexUpdated() != null){
-              ixdate = new IWTimeStamp(tariff.getIndexUpdated());
+              ixdate = new IWTimestamp(tariff.getIndexUpdated());
               T.add(new HiddenInput("te_ixdate",ixdate.toString()));
             }
 
@@ -475,7 +475,7 @@ public class TariffEditor extends Block{
     myForm.add(Finance.getCategoryParameter(iCategoryId));
     myForm.maintainAllParameters();
     boolean updateIndex = factor;
-    IWTimeStamp today = new IWTimeStamp();
+    IWTimestamp today = new IWTimestamp();
     Collection ts = FinanceFinder.getInstance().listOfTariffs(group.getID());
     List tariffs = new Vector(ts);
     List AK = FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
@@ -576,13 +576,13 @@ public class TariffEditor extends Block{
         if(ifIndices){
           String ixType = tariff.getIndexType();
           String ixDate = iwc.getParameter("te_ixdate"+i);
-          IWTimeStamp ixdate = null;
+          IWTimestamp ixdate = null;
 
           if(ixDate != null){
-            ixdate = new IWTimeStamp(ixDate);
+            ixdate = new IWTimestamp(ixDate);
           }
           else if(tariff.getIndexUpdated() != null){
-            ixdate = new IWTimeStamp(tariff.getIndexUpdated());
+            ixdate = new IWTimestamp(tariff.getIndexUpdated());
             T.add(new HiddenInput("te_ixdate"+i,ixdate.toString()));
           }
 
@@ -699,10 +699,10 @@ public class TariffEditor extends Block{
       sDel = iwc.getParameter("te_delcheck"+i);
       sID = iwc.getParameter("te_idinput"+i);
       sIndexStamp = iwc.getParameter("te_ixdate"+i);
-      IWTimeStamp stamp = sIndexStamp!= null ?new IWTimeStamp(sIndexStamp):null;
+      IWTimestamp stamp = sIndexStamp!= null ?new IWTimestamp(sIndexStamp):null;
 
       if(stamp == null && sIndex !=null && M!=null && M.containsKey(sIndex)){
-        stamp = new IWTimeStamp(((TariffIndex)M.get(sIndex)).getDate());
+        stamp = new IWTimestamp(((TariffIndex)M.get(sIndex)).getDate());
       }
 
       if(sIndex != null && !sIndex.equals("-1")){

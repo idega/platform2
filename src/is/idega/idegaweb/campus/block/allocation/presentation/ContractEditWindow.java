@@ -17,7 +17,7 @@ import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.*;
 import com.idega.block.application.data.Applicant;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
 import com.idega.core.data.Email;
 import com.idega.core.user.business.UserBusiness;
@@ -124,7 +124,7 @@ public class ContractEditWindow extends Window{
           T.add(Edit.formatText(getApartmentString(BuildingCacher.getApartment(eContract.getApartmentId().intValue()))),2,row);
           row++;
 
-          IWTimeStamp today = IWTimeStamp.RightNow();
+          IWTimestamp today = IWTimestamp.RightNow();
 
           DateInput from = new DateInput("from_date",true);
           from.setYearRange(today.getYear()-3,today.getYear()+7);
@@ -206,25 +206,25 @@ public class ContractEditWindow extends Window{
       int id = Integer.parseInt(iwc.getParameter("contract_id"));
       Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(id);
 
-      IWTimeStamp from = null,to = null,moving = null,deliver = null, retur = null;
+      IWTimestamp from = null,to = null,moving = null,deliver = null, retur = null;
       String sfrom = iwc.getParameter("from_date");
       if(sfrom!=null && sfrom.length() == 10)
-        eContract.setValidFrom(new IWTimeStamp(sfrom).getSQLDate());
+        eContract.setValidFrom(new IWTimestamp(sfrom).getSQLDate());
       String to_date = iwc.getParameter("to_date");
       if(to_date!=null && to_date.length() == 10)
-        eContract.setValidTo(new IWTimeStamp(to_date).getSQLDate());
+        eContract.setValidTo(new IWTimestamp(to_date).getSQLDate());
       String moving_date = iwc.getParameter("moving_date");
       if(moving_date!=null && moving_date.length() == 10)
-        eContract.setMovingDate(new IWTimeStamp(moving_date).getSQLDate());
+        eContract.setMovingDate(new IWTimestamp(moving_date).getSQLDate());
       String deliver_date = iwc.getParameter("deliver_date");
       if(deliver_date!=null && deliver_date.length() > 0)
-        eContract.setDeliverTime(new IWTimeStamp(deliver_date).getTimestamp());
+        eContract.setDeliverTime(new IWTimestamp(deliver_date).getTimestamp());
       String return_date = iwc.getParameter("return_date");
       if(return_date!=null && return_date.length() > 0)
-        eContract.setReturnTime(new IWTimeStamp(return_date).getTimestamp());
+        eContract.setReturnTime(new IWTimestamp(return_date).getTimestamp());
       if(iwc.isParameterSet("status")){
         eContract.setStatus((iwc.getParameter("status")));
-        eContract.setStatusDate(IWTimeStamp.RightNow().getSQLDate());
+        eContract.setStatusDate(IWTimestamp.RightNow().getSQLDate());
       }
       if(iwc.isParameterSet("info")){
         eContract.setResignInfo((iwc.getParameter("info")));

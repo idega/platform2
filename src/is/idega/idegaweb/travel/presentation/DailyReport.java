@@ -80,7 +80,7 @@ public class DailyReport extends TravelManager implements Report{
     iwrb = super.getResourceBundle();
   }
 
-  public Table getBookingTable(IWContext iwc, Product product, IWTimeStamp stamp) throws RemoteException, FinderException {
+  public Table getBookingTable(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, FinderException {
       int totalBookings = 0;
       int totalAttendance = 0;
       int totalAmount = 0;
@@ -642,7 +642,7 @@ public class DailyReport extends TravelManager implements Report{
 		bookedText = (Text) smallText.clone();
 		  bookedText.setText(Integer.toString(many));
 		amountText = (Text) smallText.clone();
-		  amountText.setText(Integer.toString(many * ((int) getTravelStockroomBusiness(iwc).getPrice(prices[i].getID(), product.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), IWTimeStamp.getTimestampRightNow(), tframe.getID(), address.getID()))));
+		  amountText.setText(Integer.toString(many * ((int) getTravelStockroomBusiness(iwc).getPrice(prices[i].getID(), product.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), IWTimestamp.getTimestampRightNow(), tframe.getID(), address.getID()))));
 
 		nameText.setFontColor(super.BLACK);
 		bookedText.setFontColor(super.BLACK);
@@ -667,7 +667,7 @@ public class DailyReport extends TravelManager implements Report{
 		bookedText = (Text) smallText.clone();
 		  bookedText.setText(Integer.toString(many));
 		amountText = (Text) smallText.clone();
-		  amountText.setText(Integer.toString(many * ((int) getTravelStockroomBusiness(iwc).getPrice(misc[i].getID(), product.getID(), misc[i].getPriceCategoryID(), misc[i].getCurrencyId(), IWTimeStamp.getTimestampRightNow(), tframe.getID(), address.getID()))));
+		  amountText.setText(Integer.toString(many * ((int) getTravelStockroomBusiness(iwc).getPrice(misc[i].getID(), product.getID(), misc[i].getPriceCategoryID(), misc[i].getCurrencyId(), IWTimestamp.getTimestampRightNow(), tframe.getID(), address.getID()))));
 
 		nameText.setFontColor(super.BLACK);
 		bookedText.setFontColor(super.BLACK);
@@ -753,14 +753,14 @@ public class DailyReport extends TravelManager implements Report{
     }
   }
 
-  public PresentationObject getReport(IWContext iwc, List products, IWTimeStamp stamp, IWTimeStamp toStamp) {
+  public PresentationObject getReport(IWContext iwc, List products, IWTimestamp stamp, IWTimestamp toStamp) {
     /**
      * unsupported
      */
     return new Table();
   }
 
-  public PresentationObject getReport(IWContext iwc, List products, IWTimeStamp stamp) throws RemoteException, FinderException {
+  public PresentationObject getReport(IWContext iwc, List products, IWTimestamp stamp) throws RemoteException, FinderException {
     handleInsert(iwc);
     if (products.size() == 1) {
       return getBookingTable(iwc, (Product) products.get(0), stamp);
@@ -794,7 +794,7 @@ public class DailyReport extends TravelManager implements Report{
     }
   }
 
-  public Table getDailyReportSimple(IWContext iwc, List products, IWTimeStamp stamp) throws RemoteException, FinderException {
+  public Table getDailyReportSimple(IWContext iwc, List products, IWTimestamp stamp) throws RemoteException, FinderException {
       Table table = new Table();
 	table.setColor(super.WHITE);
 	table.setCellspacing(1);
@@ -808,7 +808,7 @@ public class DailyReport extends TravelManager implements Report{
 
       Product prod;
       Booking[] bookings;
-      IWTimeStamp depTime;
+      IWTimestamp depTime;
 
 
       String sOrderBy = iwc.getParameter("dayRepOrderBy");

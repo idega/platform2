@@ -17,7 +17,7 @@ import com.idega.block.albumcollection.data.Lyric;
 import com.idega.block.albumcollection.data.AlbumType;
 import com.idega.data.EntityFinder;
 import com.idega.util.text.TextSoap;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
@@ -158,7 +158,7 @@ public class AlbumDetails extends Block {
           albumInfoTable.add(AlbumCollectionBusiness.getMainTextBoldClone(name),2,2);
         }
         if(album.getPublishingDay() != null){
-          albumInfoTable.add(AlbumCollectionBusiness.getMainTextBoldClone(Integer.toString(new IWTimeStamp(album.getPublishingDay()).getYear())),2,3);
+          albumInfoTable.add(AlbumCollectionBusiness.getMainTextBoldClone(Integer.toString(new IWTimestamp(album.getPublishingDay()).getYear())),2,3);
         }
 
         if(album.getAlbumTypeId() > 0){

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.10 2002/08/12 12:17:55 palli Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.11 2002/08/12 13:00:42 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package is.idega.idegaweb.campus.block.application.business;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.block.application.data.Applicant;
 //import com.idega.block.application.data.ApplicantBean;
 import com.idega.presentation.IWContext;
@@ -61,7 +61,7 @@ public class CampusReferenceNumberInfoHelper {
       WaitingList li = ((is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).findByPrimaryKeyLegacy(waitingListId);
       if (stayOnList) {
         li.setRemovedFromList(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.NO);
-        li.setLastConfirmationDate(IWTimeStamp.getTimestampRightNow());
+        li.setLastConfirmationDate(IWTimestamp.getTimestampRightNow());
       }
       else
         li.setRemovedFromList(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.YES);

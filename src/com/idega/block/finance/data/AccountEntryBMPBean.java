@@ -350,7 +350,7 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
 
       setColumn(getColumnNameStatus(),status);
 
-      setLastUpdated(com.idega.util.IWTimeStamp.getTimestampRightNow());
+      setLastUpdated(com.idega.util.IWTimestamp.getTimestampRightNow());
 
     }
 

@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusHome.java,v 1.3 2002/08/12 12:17:55 palli Exp $
+ * $Id: CampusHome.java,v 1.4 2002/08/12 13:00:43 palli Exp $
 
  *
 
@@ -26,7 +26,7 @@ import com.idega.presentation.IWContext;
 
 import com.idega.block.news.presentation.NewsReader;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 
 
@@ -62,7 +62,7 @@ public class CampusHome extends MainTemplate{
 
       CampusPage P = this;
 
-      IWTimeStamp stamp= IWTimeStamp.RightNow();
+      IWTimestamp stamp= IWTimestamp.RightNow();
 
       int daysIn = -150;
 

@@ -12,7 +12,7 @@ import com.idega.core.business.Category;
 import com.idega.data.IDOFinderException;
 import com.idega.block.category.business.CategoryFinder;
 import com.idega.presentation.ui.SelectionBox;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.core.data.ICFile;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
@@ -124,7 +124,7 @@ public class ProductEditorBusiness extends IBOServiceBean{
 	    pPrice.setPrice(Float.parseFloat(price));
 	    pPrice.setPriceType(com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE);
 	    pPrice.setProductId(product.getID());
-	    pPrice.setPriceDate(IWTimeStamp.getTimestampRightNow());
+	    pPrice.setPriceDate(IWTimestamp.getTimestampRightNow());
 	    pPrice.setCurrencyId(Integer.parseInt(currencyId));
 	  pPrice.insert();
 	  return true;

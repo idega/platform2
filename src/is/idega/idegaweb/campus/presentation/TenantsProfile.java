@@ -35,7 +35,7 @@ import is.idega.idegaweb.campus.block.request.presentation.RequestView;
 import com.idega.block.finance.data.*;
 import com.idega.block.finance.business.AccountBusiness;
 import com.idega.block.finance.business.FinanceFinder;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 import com.idega.util.text.TextStyler;
 import com.idega.util.text.StyleConstants;
@@ -369,7 +369,7 @@ public class TenantsProfile extends Block {
       while(iter.hasNext()){
         AccountInfo account = (AccountInfo) iter.next();
         table.add(formatText(account.getName()),1,row);
-        table.add(formatText(new IWTimeStamp(account.getLastUpdated()).getISLDate(".",true)),2,row);
+        table.add(formatText(new IWTimestamp(account.getLastUpdated()).getISLDate(".",true)),2,row);
 
         float balance = account.getBalance();
         boolean debet = balance >= 0 ? true : false ;
@@ -432,7 +432,7 @@ public class TenantsProfile extends Block {
         }
         table.add(formatText(_iwrb.getLocalizedString("REQUEST_TYPE_" + type,"Almenn viðgerð")),1,row);
         try {
-          table.add(formatText(new IWTimeStamp(request.getDateSent()).getISLDate(".",true)),2,row);
+          table.add(formatText(new IWTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
         }
         catch(java.rmi.RemoteException e) {
           table.add("",2,row);

@@ -1,6 +1,6 @@
 package se.idega.idegaweb.commune.business;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.business.IBOServiceBean;
@@ -50,7 +50,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
    * Creates a new citizen with a firstname,middlename, lastname, personalID,gender and date of birth where middlename, personalID,gender,dateofbirth can be null.<br>
    * Also adds the citizen to the Commune Root Group.
    */
- public User createCitizen(String firstname, String middlename, String lastname,String personalID, Gender gender, IWTimeStamp dateOfBirth) throws CreateException,RemoteException{
+ public User createCitizen(String firstname, String middlename, String lastname,String personalID, Gender gender, IWTimestamp dateOfBirth) throws CreateException,RemoteException{
     Group rootGroup;
     User newUser;
 
@@ -74,7 +74,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
     return createCitizenByPersonalIDIfDoesNotExist(firstName, middleName, lastName, personalID, null,null);
   }
 
-  public User createCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName,String personalID, Gender gender, IWTimeStamp dateOfBirth) throws CreateException,RemoteException{
+  public User createCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName,String personalID, Gender gender, IWTimestamp dateOfBirth) throws CreateException,RemoteException{
     User user;
     try{
       user = getUserBusiness().getUserHome().findByPersonalID(personalID);

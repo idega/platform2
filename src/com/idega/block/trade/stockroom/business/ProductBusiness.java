@@ -456,26 +456,26 @@ public class ProductBusiness {
     return getProducts((ICCategory) productCategory);
   }
 
-  public static List getProducts(IWTimeStamp stamp) {
+  public static List getProducts(IWTimestamp stamp) {
     return getProducts(-1, stamp);
   }
 
-  public static List getProducts(IWTimeStamp fromStamp, IWTimeStamp toStamp) {
+  public static List getProducts(IWTimestamp fromStamp, IWTimestamp toStamp) {
     return getProducts(-1, fromStamp, toStamp);
   }
 
-  public static List getProducts(int supplierId, IWTimeStamp stamp) {
+  public static List getProducts(int supplierId, IWTimestamp stamp) {
     if (stamp != null)
-      return getProducts(supplierId, stamp, new IWTimeStamp(stamp));
+      return getProducts(supplierId, stamp, new IWTimestamp(stamp));
     else
       return getProducts(supplierId, null, null);
   }
 
-  public static List getProducts(int supplierId, IWTimeStamp from, IWTimeStamp to) {
+  public static List getProducts(int supplierId, IWTimestamp from, IWTimestamp to) {
     return getProducts(supplierId, -1, from, to);
   }
 
-  public static List getProducts(int supplierId, int productCategoryId ,IWTimeStamp from, IWTimeStamp to) {
+  public static List getProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to) {
     Object obj = IWContext.getInstance().getApplicationAttribute(productsApplication+supplierId+productCategoryId+from+to);
     List products = null;
     if (obj != null) {
@@ -569,11 +569,11 @@ public class ProductBusiness {
   /**
    * @deprecated
    */
-  public static Timeframe getTimeframe(Product product, IWTimeStamp stamp) {
+  public static Timeframe getTimeframe(Product product, IWTimestamp stamp) {
     return getTimeframe(product, stamp, -1);
   }
 
-  public static Timeframe getTimeframe(Product product, IWTimeStamp stamp, int travelAddressId) {
+  public static Timeframe getTimeframe(Product product, IWTimestamp stamp, int travelAddressId) {
     Timeframe returner = null;
     try {
       Timeframe[] frames = product.getTimeframes();
@@ -588,7 +588,7 @@ public class ProductBusiness {
           }
         }
 
-	if (stamp.isInTimeframe( new IWTimeStamp(returner.getFrom()) , new IWTimeStamp(returner.getTo()), stamp, returner.getIfYearly() )) {
+	if (stamp.isInTimeframe( new IWTimestamp(returner.getFrom()) , new IWTimestamp(returner.getTo()), stamp, returner.getIfYearly() )) {
 	  return returner;
 	}
       }

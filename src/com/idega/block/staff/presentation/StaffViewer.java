@@ -31,7 +31,7 @@ import com.idega.core.user.business.UserBusiness;
 import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.data.Phone;
 import com.idega.core.data.PhoneType;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.util.GenericUserComparator;
 import com.idega.util.text.TextStyler;
 import com.idega.util.text.StyleConstants;
@@ -287,14 +287,14 @@ private Table _myTable;
       textTable.add(nameText,column+1,tableRow);
       tableRow++;
 
-      IWTimeStamp dateOfBirth = null;
+      IWTimestamp dateOfBirth = null;
       if ( user.getDateOfBirth() != null )
-	dateOfBirth = new IWTimeStamp(user.getDateOfBirth());
-      IWTimeStamp dateToday = new IWTimeStamp();
+	dateOfBirth = new IWTimestamp(user.getDateOfBirth());
+      IWTimestamp dateToday = new IWTimestamp();
 
       int userAge = 0;
       if ( dateOfBirth != null )
-	userAge = (new IWTimeStamp().getDaysBetween(dateOfBirth,dateToday))/365;
+	userAge = (new IWTimestamp().getDaysBetween(dateOfBirth,dateToday))/365;
 
       Text age = new Text(_iwrb.getLocalizedString("user_age","Age")+":");
 	age.setFontStyle(_headlineStyle);
@@ -374,7 +374,7 @@ private Table _myTable;
 	beganWork.setFontStyle(_headlineStyle);
       Text beganWorkText = new Text("");
 	if ( staffInfo != null && staffInfo.getBeganWork() != null )
-	  beganWorkText.setText(new IWTimeStamp(staffInfo.getBeganWork()).getLocaleDate(iwc));
+	  beganWorkText.setText(new IWTimestamp(staffInfo.getBeganWork()).getLocaleDate(iwc));
 	beganWorkText.setFontStyle(_textStyle);
 
       if ( _showBeganWork ) {

@@ -14,7 +14,7 @@ import com.idega.presentation.ui.*;
 
 import com.idega.presentation.text.*;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 import com.idega.block.finance.presentation.KeyEditor;
 

@@ -12,7 +12,7 @@ import com.idega.block.trade.stockroom.business.*;
 import java.sql.SQLException;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.business.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:        idegaWeb TravelBooking

@@ -3,7 +3,7 @@ package is.idega.idegaweb.travel.business;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.IWContext;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.travel.data.Contract;
 import com.idega.data.SimpleQuerier;
 import com.idega.business.IBOServiceBean;
@@ -152,7 +152,7 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
     return getProductsWithContracts(reseller, null);
   }
 
-  public Reseller[] getResellers(int serviceId, IWTimeStamp stamp) {
+  public Reseller[] getResellers(int serviceId, IWTimestamp stamp) {
     Reseller[] returner = {};
     try {
         Reseller reseller = (Reseller) com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class);

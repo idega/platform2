@@ -140,7 +140,7 @@ public class VisaFile  {
 
     Union U = ((is.idega.idegaweb.golf.entity.UnionHome)com.idega.data.IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKeyLegacy(iUnionId);
 
-    IWTimeStamp datenow = new IWTimeStamp();
+    IWTimestamp datenow = new IWTimestamp();
 
 
 
@@ -200,7 +200,7 @@ public class VisaFile  {
 
     UnionMemberInfo UMI;
 
-    IWTimeStamp cardexpiredate,startDate;
+    IWTimestamp cardexpiredate,startDate;
 
     Card card;
 
@@ -218,7 +218,7 @@ public class VisaFile  {
 
       price = ePayments[i].getPrice();
 
-      startDate = new IWTimeStamp(ePayments[i].getPaymentDate());
+      startDate = new IWTimestamp(ePayments[i].getPaymentDate());
 
       sStartDate = startDate.getISLDate(".", true);
 
@@ -254,7 +254,7 @@ public class VisaFile  {
 
          if(card.getExpireDate()!= null){
 
-          cardexpiredate = new IWTimeStamp(card.getExpireDate());
+          cardexpiredate = new IWTimestamp(card.getExpireDate());
 
           sCardExpires = cardexpiredate.getISLDate(".", true);
 
@@ -342,7 +342,7 @@ public class VisaFile  {
 
     Union U = ((is.idega.idegaweb.golf.entity.UnionHome)com.idega.data.IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKeyLegacy(un_id);
 
-    IWTimeStamp datenow = new IWTimeStamp();
+    IWTimestamp datenow = new IWTimestamp();
 
 
 
@@ -396,7 +396,7 @@ public class VisaFile  {
 
     UnionMemberInfo UMI;
 
-    IWTimeStamp cardexpiredate,startDate;
+    IWTimestamp cardexpiredate,startDate;
 
     Card card;
 
@@ -414,7 +414,7 @@ public class VisaFile  {
 
       price = payments[i].getPrice();
 
-      startDate = new IWTimeStamp(payments[i].getPaymentDate());
+      startDate = new IWTimestamp(payments[i].getPaymentDate());
 
       startd = startDate.getISLDate(".", true);
 
@@ -450,7 +450,7 @@ public class VisaFile  {
 
         if(card.getExpireDate()!= null){
 
-          cardexpiredate = new IWTimeStamp(card.getExpireDate());
+          cardexpiredate = new IWTimestamp(card.getExpireDate());
 
           cardexpires = cardexpiredate.getISLDate(".", true);
 

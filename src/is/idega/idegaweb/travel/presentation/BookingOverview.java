@@ -16,8 +16,8 @@ import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.calendar.presentation.SmallCalendar;
-import com.idega.util.IWTimeStamp;
-import com.idega.util.idegaCalendar;
+import com.idega.util.IWTimestamp;
+import com.idega.util.IWCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
 import is.idega.idegaweb.travel.business.*;
 import is.idega.idegaweb.travel.service.tour.business.*;
@@ -57,8 +57,8 @@ public class BookingOverview extends TravelManager {
   private Timeframe timeframe;
 //  private Tour tour;
 
-  private IWTimeStamp fromStamp;
-  private IWTimeStamp toStamp;
+  private IWTimestamp fromStamp;
+  private IWTimestamp toStamp;
 
   private String cellWidth = "50";
 
@@ -187,25 +187,25 @@ public class BookingOverview extends TravelManager {
 
 
   // BUSINESS
-  public IWTimeStamp getFromIdegaTimestamp(IWContext iwc) {
-    IWTimeStamp stamp = null;
+  public IWTimestamp getFromIdegaTimestamp(IWContext iwc) {
+    IWTimestamp stamp = null;
     String from_time = iwc.getParameter("active_from");
     if (from_time!= null) {
-      stamp = new IWTimeStamp(from_time);
+      stamp = new IWTimestamp(from_time);
     } else {
-      stamp = IWTimeStamp.RightNow();
+      stamp = IWTimestamp.RightNow();
     }
     return stamp;
   }
 
   // BUSINESS
-  public IWTimeStamp getToIdegaTimestamp(IWContext iwc) {
-    IWTimeStamp stamp = null;
+  public IWTimestamp getToIdegaTimestamp(IWContext iwc) {
+    IWTimestamp stamp = null;
     String from_time = iwc.getParameter("active_to");
     if (from_time!= null) {
-      stamp = new IWTimeStamp(from_time);
+      stamp = new IWTimestamp(from_time);
     } else {
-      stamp = IWTimeStamp.RightNow();
+      stamp = IWTimestamp.RightNow();
       stamp.addDays(15);
     }
     return stamp;
@@ -359,7 +359,7 @@ public class BookingOverview extends TravelManager {
           int supplierId = 0;
           if (supplier != null)
             supplierId = supplier.getID();
-          idegaCalendar cal = new idegaCalendar();
+          IWCalendar cal = new IWCalendar();
           int dayOfWeek;
           boolean upALine = false;
 
@@ -374,7 +374,7 @@ public class BookingOverview extends TravelManager {
 
           String theColor = super.GRAY;
 
-          IWTimeStamp tempStamp = new IWTimeStamp(fromStamp);
+          IWTimestamp tempStamp = new IWTimestamp(fromStamp);
           ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
           ServiceDay sDay = sDayHome.create();
 
@@ -625,7 +625,7 @@ public class BookingOverview extends TravelManager {
 */
           table.setRowColor(row, super.backgroundColor);
 
-          IWTimeStamp currentStamp = new IWTimeStamp(view_date);
+          IWTimestamp currentStamp = new IWTimestamp(view_date);
           int seats = 0;
           int assigned = 0;
           int iInqueries = 0;

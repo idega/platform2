@@ -7,7 +7,7 @@ import com.idega.idegaweb.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
@@ -40,8 +40,8 @@ public class UserBookingReporter extends TravelManager implements Report{
   private int orderBy = BookingComparator.USER;
   private int userId = -1;
   private int ownerId = -1;
-  private IWTimeStamp _fromStamp;
-  private IWTimeStamp _toStamp;
+  private IWTimestamp _fromStamp;
+  private IWTimestamp _toStamp;
 
   public UserBookingReporter(IWContext iwc) throws Exception {
     initialize(iwc);
@@ -84,11 +84,11 @@ public class UserBookingReporter extends TravelManager implements Report{
     }
   }
 
-  public PresentationObject getReport(IWContext iwc, List products, IWTimeStamp stamp) throws RemoteException, FinderException{
-    return getReport(iwc, products, stamp, new IWTimeStamp(stamp));
+  public PresentationObject getReport(IWContext iwc, List products, IWTimestamp stamp) throws RemoteException, FinderException{
+    return getReport(iwc, products, stamp, new IWTimestamp(stamp));
   }
 
-  public PresentationObject getReport(IWContext iwc, List products, IWTimeStamp fromStamp, IWTimeStamp toStamp) throws RemoteException, FinderException{
+  public PresentationObject getReport(IWContext iwc, List products, IWTimestamp fromStamp, IWTimestamp toStamp) throws RemoteException, FinderException{
     initialize(iwc);
 
     if (userId != -1) {
@@ -100,7 +100,7 @@ public class UserBookingReporter extends TravelManager implements Report{
     }
   }
 
-  private Table getUserReport(IWContext iwc, List products, IWTimeStamp fromStamp, IWTimeStamp toStamp) throws RemoteException, FinderException{
+  private Table getUserReport(IWContext iwc, List products, IWTimestamp fromStamp, IWTimestamp toStamp) throws RemoteException, FinderException{
     Table table = getTable();
       table.setWidth("100%");
     int row = 1;
@@ -164,7 +164,7 @@ public class UserBookingReporter extends TravelManager implements Report{
         ownerLink = Reports.getReportLink(getText(owner.getName()));
           ownerLink.addParameter(PARAMETER_OWNER_ID, owner.getID());
 
-        table.add(getText(new IWTimeStamp(bookings[i].getBookingDate()).getLocaleDate(_locale)), 1, row);
+        table.add(getText(new IWTimestamp(bookings[i].getBookingDate()).getLocaleDate(_locale)), 1, row);
         table.add(getText(ProductBusiness.getProductName(prod, _localeId)), 2, row);
         table.add(getText(Integer.toString(count)), 3, row);
         table.add(ownerLink, 4, row);
@@ -190,7 +190,7 @@ public class UserBookingReporter extends TravelManager implements Report{
     return table;
   }
 
-  private Table getOwnerReport(IWContext iwc, List products, IWTimeStamp fromStamp, IWTimeStamp toStamp) throws RemoteException, FinderException{
+  private Table getOwnerReport(IWContext iwc, List products, IWTimestamp fromStamp, IWTimestamp toStamp) throws RemoteException, FinderException{
     Table table = getTable();
       table.setWidth("100%");
     int row = 1;
@@ -251,7 +251,7 @@ public class UserBookingReporter extends TravelManager implements Report{
         userLink = Reports.getReportLink(getText(user.getName()));
           userLink.addParameter(PARAMETER_USER_ID, user.getID());
 
-        table.add(getText(new IWTimeStamp(bookings[i].getBookingDate()).getLocaleDate(_locale)), 1, row);
+        table.add(getText(new IWTimestamp(bookings[i].getBookingDate()).getLocaleDate(_locale)), 1, row);
         table.add(getText(ProductBusiness.getProductName(prod, _localeId)), 2, row);
         table.add(getText(Integer.toString(count)), 3, row);
         table.add(userLink, 4, row);
@@ -280,7 +280,7 @@ public class UserBookingReporter extends TravelManager implements Report{
   }
 
 
-  private Table getDefaultReport(IWContext iwc, List products, IWTimeStamp fromStamp, IWTimeStamp toStamp) throws RemoteException, FinderException{
+  private Table getDefaultReport(IWContext iwc, List products, IWTimestamp fromStamp, IWTimestamp toStamp) throws RemoteException, FinderException{
 
     Booking[] bookings = getBooker(iwc).getBookings(products, fromStamp, toStamp);
     BookingComparator bComp = new BookingComparator(iwc, orderBy);
@@ -347,7 +347,7 @@ public class UserBookingReporter extends TravelManager implements Report{
         prod = ProductBusiness.getProduct(bookings[i].getServiceID());
 
 
-        table.add(getText(new IWTimeStamp(bookings[i].getBookingDate()).getLocaleDate(_locale)), 1, row);
+        table.add(getText(new IWTimestamp(bookings[i].getBookingDate()).getLocaleDate(_locale)), 1, row);
         table.add(getText(ProductBusiness.getProductName(prod, _localeId)), 2, row);
         table.add(getText(Integer.toString(bookings[i].getTotalCount())), 3, row);
         table.add(getText(TextSoap.decimalFormat(getBooker(iwc).getBookingPrice(iwc, bookings[i]), 0)), 6, row);

@@ -274,9 +274,9 @@ import java.util.*;
 
         int price = P.getPrice();
 
-        IWTimeStamp Paydate = new IWTimeStamp(P.getPaymentDate());
+        IWTimestamp Paydate = new IWTimestamp(P.getPaymentDate());
 
-        IWTimeStamp Update = new IWTimeStamp(P.getLastUpdated());
+        IWTimestamp Update = new IWTimestamp(P.getLastUpdated());
 
         int pt_id = P.getPaymentTypeID();
 
@@ -608,9 +608,9 @@ import java.util.*;
 
       for(int i = 1; i < 13; i++){ drdInstallment.addMenuElement( String.valueOf(i));  }
 
-      Text payDateText = new Text(new IWTimeStamp().toSQLDateString());
+      Text payDateText = new Text(new IWTimestamp().toSQLDateString());
 
-      Text lastUpdatedText = new Text(new IWTimeStamp().toSQLDateString());
+      Text lastUpdatedText = new Text(new IWTimestamp().toSQLDateString());
 
 
 
@@ -734,7 +734,7 @@ import java.util.*;
 
           payround.setName("Auka");
 
-          payround.setRoundDate(IWTimeStamp.getTimestampRightNow());
+          payround.setRoundDate(IWTimestamp.getTimestampRightNow());
 
           payround.setTotals(price);
 
@@ -758,9 +758,9 @@ import java.util.*;
 
             P.setPriceCatalogueId(0);
 
-            P.setPaymentDate(new IWTimeStamp(iday,imonth+i,iyear).getTimestamp());
+            P.setPaymentDate(new IWTimestamp(iday,imonth+i,iyear).getTimestamp());
 
-            P.setLastUpdated(IWTimeStamp.getTimestampRightNow());
+            P.setLastUpdated(IWTimestamp.getTimestampRightNow());
 
             P.setCashierId(cashier_id);
 
@@ -1034,7 +1034,7 @@ import java.util.*;
 
           T.add(memberPayments[i].getExtraInfo(),2,r);
 
-          T.add(new IWTimeStamp(memberPayments[i].getPaymentDate()).toSQLDateString(),3,r);
+          T.add(new IWTimestamp(memberPayments[i].getPaymentDate()).toSQLDateString(),3,r);
 
           T.add(memberPayments[i].getInstallmentNr()+"/"+memberPayments[i].getTotalInstallment(),4,r);
 
@@ -1068,7 +1068,7 @@ import java.util.*;
 
           T.add(pmtname,7,r);
 
-          T.add(new IWTimeStamp(memberPayments[i].getLastUpdated()).toSQLDateString(),8,r);
+          T.add(new IWTimestamp(memberPayments[i].getLastUpdated()).toSQLDateString(),8,r);
 
           T.add(makeChangeLink(memberPayments[i].getID()),9,r);
 
@@ -1166,7 +1166,7 @@ import java.util.*;
 
     private DropdownMenu drpMonth(String name){
 
-      IWTimeStamp Today = new IWTimeStamp();
+      IWTimestamp Today = new IWTimestamp();
 
       int iMonth = Today.getMonth();
 
@@ -1188,7 +1188,7 @@ import java.util.*;
 
     private DropdownMenu drpYear(String name){
 
-      IWTimeStamp it = new IWTimeStamp();
+      IWTimestamp it = new IWTimestamp();
 
       int a = it.getYear();
 
@@ -1222,9 +1222,9 @@ import java.util.*;
 
       account.setBalance(this.calculateBalance(P));
 
-      account.setLastUpdated(new IWTimeStamp().getTimestampRightNow());
+      account.setLastUpdated(new IWTimestamp().getTimestampRightNow());
 
-      account.setCreationDate(new IWTimeStamp().getTimestampRightNow());
+      account.setCreationDate(new IWTimestamp().getTimestampRightNow());
 
       account.setCashierId(cashier_id);
 
@@ -1234,7 +1234,7 @@ import java.util.*;
 
     private void makePayment(int memberID, int PriceCatalogueId, int RoundId, int Price , boolean Status , String Info , int InstallmentNumber, int Totalinstallments, int PaymentTypeID, Timestamp PayDate, int cashier_is) throws SQLException {
 
-      IWTimeStamp today = new IWTimeStamp();
+      IWTimestamp today = new IWTimestamp();
 
       Payment P = ((is.idega.idegaweb.golf.entity.PaymentHome)com.idega.data.IDOLookup.getHomeLegacy(Payment.class)).createLegacy();
 
@@ -1296,7 +1296,7 @@ import java.util.*;
 
     private Payment[] getPayments(int member_id){
 
-      IWTimeStamp today = new IWTimeStamp();
+      IWTimestamp today = new IWTimestamp();
 
       Payment[] P;
 
@@ -1400,7 +1400,7 @@ import java.util.*;
 
         T.add(" "+(i+1),1,i+2);
 
-        T.add(new IWTimeStamp(payments[i].getPaymentDate()).getISLDate(),2,i+2);
+        T.add(new IWTimestamp(payments[i].getPaymentDate()).getISLDate(),2,i+2);
 
         T.add(payments[i].getExtraInfo(),3,i+2);
 

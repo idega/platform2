@@ -7,7 +7,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.ui.HeaderTable;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 import com.idega.jmodule.news.data.News;
 import com.idega.jmodule.news.data.NewsCategory;
@@ -80,7 +80,7 @@ public class ClubNewsBox extends Block {
           unionText.addToText(union.getAbbrevation()+" - ");
         }
 
-        IWTimeStamp stampur = new IWTimeStamp(clubNews[0].getDate());
+        IWTimestamp stampur = new IWTimestamp(clubNews[0].getDate());
 
         String minutes = stampur.getMinute()+"";
         if (stampur.getMinute() < 10) {

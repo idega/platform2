@@ -4,7 +4,7 @@ import com.idega.block.finance.business.*;
 
 import com.idega.block.finance.data.*;
 import com.idega.idegaweb.IWBundle;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
@@ -113,7 +113,7 @@ public class AccountTariffer extends Finance {
     if(iwc.isParameterSet(prmConfirm)&& iwc.getParameter(prmConfirm).equals("true")){
       System.err.println("confirmation");
       String paydate = iwc.getParameter(prmPayDate);
-      IWTimeStamp Pd = new IWTimeStamp(paydate);
+      IWTimestamp Pd = new IWTimestamp(paydate);
       String SDiscount = iwc.getParameter(prmDiscount);
       int discount = SDiscount!=null && !SDiscount.equals("")?Integer.parseInt(SDiscount):-1;
 
@@ -252,7 +252,7 @@ public class AccountTariffer extends Finance {
 
     T.add(Edit.format(iwrb.getLocalizedString("paydate","Paydate")),col,row++);
     DateInput payDate = new DateInput(prmPayDate,true);
-    payDate.setDate(IWTimeStamp.RightNow().getSQLDate());
+    payDate.setDate(IWTimestamp.RightNow().getSQLDate());
     T.add(payDate,col,row);
     col++;
     row = 1;

@@ -19,11 +19,11 @@ import com.idega.block.application.data.ApplicationSubject;
 import com.idega.block.application.business.*;
 import com.idega.block.building.data.*;
 import com.idega.block.building.business.BuildingCacher;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.idegaCalendar;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWCalendar;
+import com.idega.util.IWTimestamp;
 import com.idega.presentation.Image;
 
 import java.text.DateFormat;

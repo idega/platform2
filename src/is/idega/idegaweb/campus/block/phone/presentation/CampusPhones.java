@@ -18,7 +18,7 @@ import com.idega.data.EntityFinder;
 import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.ListIterator;
@@ -244,7 +244,7 @@ public class CampusPhones extends Block implements IWEventListener{
           if(M != null && M.containsKey(ID)){
             P = (CampusPhone)M.get(ID);
             ti.setContent(P.getPhoneNumber());
-            T.add(Edit.formatText(new IWTimeStamp(P.getDateInstalled()).getLocaleDate(iwc)),4,row);
+            T.add(Edit.formatText(new IWTimestamp(P.getDateInstalled()).getLocaleDate(iwc)),4,row);
             T.add(new HiddenInput("phoneid"+i,String.valueOf(P.getID())),1,row);
           }
           row++;
@@ -303,7 +303,7 @@ public class CampusPhones extends Block implements IWEventListener{
                 CampusPhone P = (CampusPhone)M.get(iPHId);
                 if(!P.getPhoneNumber().equals(sNumber)){
                   P.setPhoneNumber(sNumber);
-                  P.setDateInstalled(IWTimeStamp.RightNow().getSQLDate());
+                  P.setDateInstalled(IWTimestamp.RightNow().getSQLDate());
                   P.update();
                 }
               }
@@ -312,7 +312,7 @@ public class CampusPhones extends Block implements IWEventListener{
                 CampusPhone P = ((is.idega.idegaweb.campus.block.phone.data.CampusPhoneHome)com.idega.data.IDOLookup.getHomeLegacy(CampusPhone.class)).createLegacy();
                 P.setPhoneNumber(sNumber);
                 P.setApartmentId(iAPId.intValue());
-                P.setDateInstalled(IWTimeStamp.RightNow().getSQLDate());
+                P.setDateInstalled(IWTimestamp.RightNow().getSQLDate());
                 P.insert();
               }
             }

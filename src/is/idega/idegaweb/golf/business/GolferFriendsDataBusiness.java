@@ -5,7 +5,7 @@ import is.idega.idegaweb.golf.entity.GolferPageFriendsData;
 import is.idega.idegaweb.golf.entity.GolferPageData;
 import java.sql.Date;
 import java.lang.String;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.data.*;
 import java.sql.SQLException;
 
@@ -37,7 +37,7 @@ public class GolferFriendsDataBusiness {
     golferPageFriendsData.setNameAppearance(nameAppearance);
     golferPageFriendsData.setPaymentAmount(paymentAmount);
     golferPageFriendsData.setPaymentDuration(paymentDuration);
-    golferPageFriendsData.setSigningDate(new IWTimeStamp().getTimestampRightNow());
+    golferPageFriendsData.setSigningDate(new IWTimestamp().getTimestampRightNow());
     golferPageFriendsData.setSocialSecurityNumber(sSNumber);
     golferPageFriendsData.setBillAdress(billAdress);
     golferPageFriendsData.setBillName(billName);

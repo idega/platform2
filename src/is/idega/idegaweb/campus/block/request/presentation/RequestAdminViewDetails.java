@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.3 2002/08/12 12:17:54 palli Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.4 2002/08/12 13:00:40 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,7 +26,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TimeInput;
 import com.idega.presentation.ui.RadioButton;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.campus.presentation.Edit;
 import is.idega.idegaweb.campus.block.request.business.RequestBusiness;
 import is.idega.idegaweb.campus.block.request.business.RequestFinder;

@@ -7,7 +7,7 @@ import com.idega.block.trade.stockroom.business.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.sql.Timestamp;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.block.text.business.*;
 import com.idega.block.text.data.TxText;
 import com.idega.block.trade.stockroom.data.Timeframe;
@@ -102,8 +102,8 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
   public void setDefaultValues() {
     this.setIsValid( true );
     this.setDiscountTypeId( DISCOUNT_TYPE_ID_PERCENT );
-    this.setCreationDate( IWTimeStamp.getTimestampRightNow() );
-    this.setModificationDate( IWTimeStamp.getTimestampRightNow() );
+    this.setCreationDate( IWTimestamp.getTimestampRightNow() );
+    this.setModificationDate( IWTimestamp.getTimestampRightNow() );
   }
 
   /**
@@ -291,7 +291,7 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
    *
    *@param  timestamp  The new creationDate value
    */
-  public void setCreationDate( IWTimeStamp timestamp ) {
+  public void setCreationDate( IWTimestamp timestamp ) {
     setCreationDate( timestamp.getTimestamp() );
   }
 
@@ -309,7 +309,7 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
    *
    *@param  timestamp  The new modificationDate value
    */
-  private void setModificationDate( IWTimeStamp timestamp ) {
+  private void setModificationDate( IWTimestamp timestamp ) {
     setModificationDate( timestamp.getTimestamp() );
   }
 
@@ -480,7 +480,7 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
    *@exception  SQLException  Description of the Exception
    */
   public void update() throws SQLException {
-    setModificationDate( IWTimeStamp.getTimestampRightNow() );
+    setModificationDate( IWTimestamp.getTimestampRightNow() );
     super.update();
   }
 

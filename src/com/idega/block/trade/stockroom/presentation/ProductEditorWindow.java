@@ -11,7 +11,7 @@ import com.idega.util.text.TextSoap;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.block.trade.business.CurrencyBusiness;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.trade.stockroom.business.*;

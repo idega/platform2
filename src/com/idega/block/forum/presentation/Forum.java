@@ -425,7 +425,7 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
   }
 
   private Text getThreadDate(IWContext iwc,ForumData thread) {
-    IWTimeStamp stamp = new IWTimeStamp(thread.getThreadDate());
+    IWTimestamp stamp = new IWTimestamp(thread.getThreadDate());
     DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
     Date date = new Date(stamp.getTimestamp().getTime());
     return formatText(format.format(date));
@@ -488,7 +488,7 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
     if ( headlineString == null ) headlineString = "";
     Text headline = formatText(headlineString,_headingStyle);
 
-    IWTimeStamp stamp = new IWTimeStamp(thread.getThreadDate());
+    IWTimestamp stamp = new IWTimestamp(thread.getThreadDate());
     DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
     Date date = new Date(stamp.getTimestamp().getTime());
     Text dateText = formatText(format.format(date));

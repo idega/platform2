@@ -10,7 +10,7 @@ import com.idega.block.trade.stockroom.business.ProductBusiness;
 import javax.mail.MessagingException;
 import java.sql.SQLException;
 import java.util.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.data.Inquery;
@@ -39,32 +39,32 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
   public InquirerBean() {
   }
 
-  public int getInqueredSeats(int serviceId, IWTimeStamp stamp, boolean unansweredOnly) throws RemoteException, FinderException{
+  public int getInqueredSeats(int serviceId, IWTimestamp stamp, boolean unansweredOnly) throws RemoteException, FinderException{
     return getInquiryHome().getInqueredSeats(serviceId, stamp, -1, unansweredOnly);
   }
 
   /**
    * @deprecated
    */
-  public Inquery[] getInqueries(int serviceId, IWTimeStamp stamp, boolean unansweredOnly) throws RemoteException, FinderException {
+  public Inquery[] getInqueries(int serviceId, IWTimestamp stamp, boolean unansweredOnly) throws RemoteException, FinderException {
     return this.collectionToInqueryArray(getInquiryHome().findInqueries(serviceId, stamp, -1, unansweredOnly, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryDateColumnName()));
   }
 
   /**
    * @deprecated
    */
-  public Inquery[] getInqueries(int serviceId, IWTimeStamp stamp, boolean unansweredOnly, String orderBy)  throws RemoteException, FinderException{
+  public Inquery[] getInqueries(int serviceId, IWTimestamp stamp, boolean unansweredOnly, String orderBy)  throws RemoteException, FinderException{
     return this.collectionToInqueryArray(getInquiryHome().findInqueries(serviceId, stamp, -1, unansweredOnly, orderBy));
   }
 
-  public Inquery[] getInqueries(int serviceId, IWTimeStamp stamp, boolean unansweredOnly, TravelAddress travelAddress)  throws RemoteException, FinderException{
+  public Inquery[] getInqueries(int serviceId, IWTimestamp stamp, boolean unansweredOnly, TravelAddress travelAddress)  throws RemoteException, FinderException{
     return getInqueries(serviceId, stamp, unansweredOnly, travelAddress, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryDateColumnName());
   }
-  public Inquery[] getInqueries(int serviceId, IWTimeStamp stamp, boolean unansweredOnly, TravelAddress travelAddress, String orderBy)  throws RemoteException, FinderException{
+  public Inquery[] getInqueries(int serviceId, IWTimestamp stamp, boolean unansweredOnly, TravelAddress travelAddress, String orderBy)  throws RemoteException, FinderException{
     return this.collectionToInqueryArray(getInquiryHome().findInqueries(serviceId, stamp,-1, unansweredOnly, travelAddress, orderBy ));
   }
 
-  public int sendInquery(String name,String email, IWTimeStamp inqueryDate, int productId, int numberOfSeats, int bookingId, Reseller reseller)  throws RemoteException, FinderException, CreateException {
+  public int sendInquery(String name,String email, IWTimestamp inqueryDate, int productId, int numberOfSeats, int bookingId, Reseller reseller)  throws RemoteException, FinderException, CreateException {
     String sInquery = "Are the available seats this day";
     try {
       int returner = -1;
@@ -73,7 +73,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
             inq.setEmail(email);
             inq.setInqueryDate(inqueryDate.getTimestamp());
             inq.setInquery(sInquery);
-            inq.setInqueryPostDate(IWTimeStamp.getTimestampRightNow());
+            inq.setInqueryPostDate(IWTimestamp.getTimestampRightNow());
             inq.setName(name);
             inq.setServiceID(productId);
             inq.setNumberOfSeats(numberOfSeats);
@@ -127,13 +127,13 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
         responseString.append(" \""+tempService.getName()+"\" ");
         if (inquiries.size() == 1) {
           responseString.append(iwrb.getLocalizedString("travel.on_the","on the"));
-          responseString.append(" "+new IWTimeStamp(booking.getBookingDate()).getLocaleDate(iwc));
+          responseString.append(" "+new IWTimestamp(booking.getBookingDate()).getLocaleDate(iwc));
         }else {
           booking = getInquiryHome().findByPrimaryKey(inquiries.get(0)).getBooking();
 //          booking = ((Inquery) inquiries.get(0)).getBooking();
           Booking booking2 = getInquiryHome().findByPrimaryKey(inquiries.get(inquiries.size()-1)).getBooking();
 //          Booking booking2 = ((Inquery) inquiries.get(inquiries.size()-1)).getBooking();
-          responseString.append(new IWTimeStamp(booking.getBookingDate()).getLocaleDate(iwc)+" - "+new IWTimeStamp(booking2.getBookingDate()).getLocaleDate(iwc));
+          responseString.append(new IWTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+" - "+new IWTimestamp(booking2.getBookingDate()).getLocaleDate(iwc));
         }
         responseString.append("\n\n");
 
@@ -152,7 +152,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
           inquery = getInquiryHome().findByPrimaryKey(inquiries.get(i));
 //          inquery = (Inquery) inquiries.get(i);
           inquery.setAnswered(true);
-          inquery.setAnswerDate(IWTimeStamp.getTimestampRightNow());
+          inquery.setAnswerDate(IWTimestamp.getTimestampRightNow());
           inquery.store();
           if (book) {
             booking = inquery.getBooking();
@@ -180,16 +180,16 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
                 responseString.append(" "+inquery.getName()+",\n\n");
                 if (inquiries.size() == 1) {
                   responseString.append(iwrb.getLocalizedString("travel.on_the","on the"));
-                  responseString.append(" "+new IWTimeStamp(booking.getBookingDate()).getLocaleDate(iwc));
+                  responseString.append(" "+new IWTimestamp(booking.getBookingDate()).getLocaleDate(iwc));
                 }else {
                   booking = getInquiryHome().findByPrimaryKey(inquiries.get(0)).getBooking();
                   Booking booking2 = getInquiryHome().findByPrimaryKey(inquiries.get(inquiries.size()-1)).getBooking();
 //                  booking = ((Inquery) inquiries.get(0)).getBooking();
 //                  Booking booking2 = ((Inquery) inquiries.get(inquiries.size()-1)).getBooking();
-                  responseString.append(new IWTimeStamp(booking.getBookingDate()).getLocaleDate(iwc)+" - "+new IWTimeStamp(booking2.getBookingDate()).getLocaleDate(iwc));
+                  responseString.append(new IWTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+" - "+new IWTimestamp(booking2.getBookingDate()).getLocaleDate(iwc));
                 }
 //                responseString.append(iwrb.getLocalizedString("travel.on_the","on the"));
-//                responseString.append(" "+new IWTimeStamp(booking.getBookingDate()).getLocaleDate(iwc));
+//                responseString.append(" "+new IWTimestamp(booking.getBookingDate()).getLocaleDate(iwc));
                 responseString.append("\n\n");
                 if (book == false) {
                     responseString.append(iwrb.getLocalizedString("travel.request_is_denied","Request is denied."));
@@ -197,7 +197,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
                     responseString.append(iwrb.getLocalizedString("travel.request_is_granted_booking_confirmed","Request is granted. Booking has been confimed"));
                 }
 
-                //responseString.append("T - Svar við fyrirspurn varðandi "+inquery.getNumberOfSeats()+" sæti fyrir \""+inquery.getName()+"\" í ferðina \""+tempService.getName()+"\" þann "+new IWTimeStamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
+                //responseString.append("T - Svar við fyrirspurn varðandi "+inquery.getNumberOfSeats()+" sæti fyrir \""+inquery.getName()+"\" í ferðina \""+tempService.getName()+"\" þann "+new IWTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
                 for (int i = 0; i < resellers.length; i++) {
                   if (resellers[i].getEmail() != null) {
                     if (sendMail) {
@@ -296,7 +296,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
           mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(inq.getName());
           mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
           if (inqsSize == 1) {
-            mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimeStamp(inq.getInqueryDate()).getLocaleDate(iwc));
+            mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimestamp(inq.getInqueryDate()).getLocaleDate(iwc));
           }else {
             for (int i = 0; i < inqsSize; i++) {
               tempInq = getInquiryHome().findByPrimaryKey(inqs.get(i));
@@ -304,7 +304,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
               if (i == 0) {
                 mailText.append("\n").append(iwrb.getLocalizedString("travel.dates",   "Dates :"));
               }
-              mailText.append("\n\t").append(new IWTimeStamp(tempInq.getInqueryDate()).getLocaleDate(iwc));
+              mailText.append("\n\t").append(new IWTimestamp(tempInq.getInqueryDate()).getLocaleDate(iwc));
             }
           }
           mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(inq.getNumberOfSeats());
@@ -331,7 +331,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
           mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(inq.getName());
           mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
           if (inqsSize == 1) {
-            mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimeStamp(inq.getInqueryDate()).getLocaleDate(iwc));
+            mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimestamp(inq.getInqueryDate()).getLocaleDate(iwc));
           }else {
             for (int i = 0; i < inqsSize; i++) {
               tempInq = getInquiryHome().findByPrimaryKey(inqs.get(i));
@@ -339,10 +339,10 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
               if (i == 0) {
                 mailText.append("\n").append(iwrb.getLocalizedString("travel.dates",   "Dates :"));
               }
-              mailText.append("\n\t").append(new IWTimeStamp(tempInq.getInqueryDate()).getLocaleDate(iwc));
+              mailText.append("\n\t").append(new IWTimestamp(tempInq.getInqueryDate()).getLocaleDate(iwc));
             }
           }
-//          mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimeStamp(inq.getInqueryDate()).getLocaleDate(iwc));
+//          mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimestamp(inq.getInqueryDate()).getLocaleDate(iwc));
           mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(inq.getNumberOfSeats());
           if (doubleSendSuccessful) {
             mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_been_sent","Double confirmation has been sent."));

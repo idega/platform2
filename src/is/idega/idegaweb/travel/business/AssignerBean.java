@@ -3,7 +3,7 @@ package is.idega.idegaweb.travel.business;
 import java.rmi.RemoteException;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.SimpleQuerier;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.travel.data.Contract;
 import com.idega.block.trade.stockroom.data.Product;
 import java.sql.SQLException;
@@ -23,13 +23,13 @@ public class AssignerBean extends IBOServiceBean implements Assigner{
   public AssignerBean() {
   }
 
-  public int getNumberOfAssignedSeats(int serviceId, IWTimeStamp stamp) {
+  public int getNumberOfAssignedSeats(int serviceId, IWTimestamp stamp) {
     return getNumberOfAssignedSeats(serviceId, -1, stamp);
   }
 
 
-  public int getNumberOfAssignedSeatsByContract(int serviceId, int resellerId, IWTimeStamp stamp, Contract contract, Connection conn) throws RemoteException {
-    IWTimeStamp theStamp= IWTimeStamp.RightNow();
+  public int getNumberOfAssignedSeatsByContract(int serviceId, int resellerId, IWTimestamp stamp, Contract contract, Connection conn) throws RemoteException {
+    IWTimestamp theStamp= IWTimestamp.RightNow();
       theStamp.addDays(contract.getExpireDays()-1);
     if (stamp.isLaterThan(theStamp)) {
       return getNumberOfAssignedSeats(serviceId, resellerId, stamp, conn);
@@ -41,7 +41,7 @@ public class AssignerBean extends IBOServiceBean implements Assigner{
 
 
 
-  public int getNumberOfAssignedSeats(Product product, IWTimeStamp stamp) throws RemoteException{
+  public int getNumberOfAssignedSeats(Product product, IWTimestamp stamp) throws RemoteException{
     int returner = 0;
     Contract[] contracts = getContracts(product);
     Connection conn= null;
@@ -61,11 +61,11 @@ public class AssignerBean extends IBOServiceBean implements Assigner{
     return returner;
   }
 
-  public int getNumberOfAssignedSeats(int serviceId,int resellerId, IWTimeStamp stamp) {
+  public int getNumberOfAssignedSeats(int serviceId,int resellerId, IWTimestamp stamp) {
     return getNumberOfAssignedSeats(serviceId, resellerId, stamp, null);
   }
 
-  private int getNumberOfAssignedSeats(int serviceId,int resellerId, IWTimeStamp stamp, Connection conn) {
+  private int getNumberOfAssignedSeats(int serviceId,int resellerId, IWTimestamp stamp, Connection conn) {
     int returner = 0;
     try {
         String[] many = {};

@@ -11,7 +11,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.Image;
 import is.idega.idegaweb.golf.GolfField;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.golf.entity.TournamentDay;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentRound;
@@ -50,7 +50,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
   private int maxCountInGroups = 4;
   private int maxPerOwnerPerDay = 4;
 
-  private IWTimeStamp currentDay;
+  private IWTimestamp currentDay;
   private String currentField;
   private String currentUnion;
   private String currentMember;
@@ -438,7 +438,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
 
     public GolfField getFieldInfo( int field, String date) throws SQLException,IOException{
             StartingtimeFieldConfig FieldConfig = business.getFieldConfig( field , date );
-            GolfField field_info = new GolfField ( new IWTimeStamp(FieldConfig.getOpenTime()).toSQLTimeString(), new IWTimeStamp(FieldConfig.getCloseTime()).toSQLTimeString(), FieldConfig.getMinutesBetweenStart(), field, date, FieldConfig.getDaysShown(), FieldConfig.publicRegistration());
+            GolfField field_info = new GolfField ( new IWTimestamp(FieldConfig.getOpenTime()).toSQLTimeString(), new IWTimestamp(FieldConfig.getCloseTime()).toSQLTimeString(), FieldConfig.getMinutesBetweenStart(), field, date, FieldConfig.getDaysShown(), FieldConfig.publicRegistration());
             return field_info;
     }
 
@@ -521,7 +521,7 @@ public void main(IWContext iwc) throws Exception {
 
 
         currentMember = Integer.toString(is.idega.idegaweb.golf.login.business.LoginBusiness.getMember(iwc).getID());
-        currentDay = new IWTimeStamp(date);
+        currentDay = new IWTimestamp(date);
       }catch(Exception e){
         keepOn = false;
         this.noPermission();

@@ -1,6 +1,6 @@
 package com.idega.block.boxoffice.presentation;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 import com.idega.util.text.TextStyler;
 import com.idega.util.text.StyleConstants;
@@ -330,7 +330,7 @@ public Box(String attribute){
 
 	for ( int b = 0; b < links.length; b++ ) {
 	  Link link = getLink(links[b]);
-	  IWTimeStamp stamp = new IWTimeStamp(links[b].getCreationDate());
+	  IWTimestamp stamp = new IWTimestamp(links[b].getCreationDate());
 
 	  if ( link != null ) {
 	    linksTable.add(link,1,linkRow);

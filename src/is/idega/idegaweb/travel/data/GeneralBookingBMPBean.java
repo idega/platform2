@@ -6,7 +6,7 @@ import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.presentation.IWContext;
 import com.idega.business.IBOLookup;
 import javax.ejb.FinderException;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.rmi.RemoteException;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import java.sql.*;
@@ -289,11 +289,11 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   public static String getCreditcardAuthorizationNumberColumnName() {return "CC_AUTH_NUMBER";}
 
 
-  public  Collection ejbFindBookings(int resellerId, int serviceId, IWTimeStamp stamp) throws FinderException{
+  public  Collection ejbFindBookings(int resellerId, int serviceId, IWTimestamp stamp) throws FinderException{
     return ejbFindBookings(new int[] {resellerId}, serviceId, stamp);
   }
 
-  public  Collection ejbFindBookings(int[] resellerIds, int serviceId, IWTimeStamp stamp) throws FinderException{
+  public  Collection ejbFindBookings(int[] resellerIds, int serviceId, IWTimestamp stamp) throws FinderException{
     Collection returner = null;
 
     if (resellerIds == null) {
@@ -327,11 +327,11 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     return returner;
   }
 
-  public int ejbHomeGetNumberOfBookings(int[] resellerIds, int serviceId, IWTimeStamp stamp) {
+  public int ejbHomeGetNumberOfBookings(int[] resellerIds, int serviceId, IWTimestamp stamp) {
     return ejbHomeGetNumberOfBookings(resellerIds, serviceId, stamp, null);
   }
 
-  public int ejbHomeGetNumberOfBookings(int[] resellerIds, int serviceId, IWTimeStamp stamp, Collection travelAddressIds) {
+  public int ejbHomeGetNumberOfBookings(int[] resellerIds, int serviceId, IWTimestamp stamp, Collection travelAddressIds) {
     int returner = 0;
     try {
         if (resellerIds == null) {
@@ -395,11 +395,11 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     return returner;
   }
 
-  public int ejbHomeGetNumberOfBookings(int serviceId, IWTimeStamp fromStamp, IWTimeStamp toStamp, int bookingType, int[] productPriceIds){
+  public int ejbHomeGetNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds){
     return ejbHomeGetNumberOfBookings(serviceId, fromStamp, toStamp, bookingType, productPriceIds, null);
   }
 
-  public int ejbHomeGetNumberOfBookings(int serviceId, IWTimeStamp fromStamp, IWTimeStamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds){
+  public int ejbHomeGetNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds, Collection travelAddressIds){
     int returner = 0;
     StringBuffer sql = new StringBuffer();
     //Connection conn = null;
@@ -488,7 +488,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   }
 
 
-  public Collection ejbFindBookings(int[] serviceIds, IWTimeStamp fromStamp, IWTimeStamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address) throws FinderException, RemoteException{
+  public Collection ejbFindBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address) throws FinderException, RemoteException{
     Collection returner = null;
     StringBuffer sql = new StringBuffer();
 

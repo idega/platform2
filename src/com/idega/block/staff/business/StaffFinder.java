@@ -22,7 +22,7 @@ import com.idega.core.user.data.*;
 
 import com.idega.data.*;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 import com.idega.core.business.UserGroupBusiness;
 
@@ -416,13 +416,13 @@ public class StaffFinder {
 
     if ( user != null ) {
 
-     IWTimeStamp stamp = null;
+     IWTimestamp stamp = null;
 
      if ( user.getDateOfBirth() != null )
 
-        stamp = new IWTimeStamp(user.getDateOfBirth());
+        stamp = new IWTimestamp(user.getDateOfBirth());
 
-      IWTimeStamp dateToday = new IWTimeStamp();
+      IWTimestamp dateToday = new IWTimestamp();
 
 
 
@@ -430,7 +430,7 @@ public class StaffFinder {
 
       if ( stamp != null )
 
-        userAge = (new IWTimeStamp().getDaysBetween(stamp,dateToday))/365;
+        userAge = (new IWTimestamp().getDaysBetween(stamp,dateToday))/365;
 
 /*
 
@@ -452,7 +452,7 @@ public class StaffFinder {
 
       if ( staff.getBeganWork() != null )
 
-        holder.setBeganWork(new IWTimeStamp(staff.getBeganWork()));
+        holder.setBeganWork(new IWTimestamp(staff.getBeganWork()));
 
       holder.setImageID(staff.getImageID());
 

@@ -9,7 +9,7 @@ import com.idega.presentation.*;
 import is.idega.idegaweb.travel.business.BookingComparator;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.business.Booker;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.util.List;
 import com.idega.idegaweb.IWResourceBundle;
 
@@ -46,12 +46,12 @@ public class OnlineBookingReport extends TravelManager implements Report{
     return true;
   }
 
-  public PresentationObject getReport(IWContext iwc, List products, IWTimeStamp stamp) throws RemoteException, FinderException {
+  public PresentationObject getReport(IWContext iwc, List products, IWTimestamp stamp) throws RemoteException, FinderException {
     Booking[] bookings = getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING},stamp);
     return getReport(iwc, bookings);
   }
 
-  public PresentationObject getReport(IWContext iwc, List products, IWTimeStamp fromStamp, IWTimeStamp toStamp) throws RemoteException, FinderException {
+  public PresentationObject getReport(IWContext iwc, List products, IWTimestamp fromStamp, IWTimestamp toStamp) throws RemoteException, FinderException {
     Booking[] bookings = getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING},fromStamp, toStamp, null, null);
     return getReport(iwc, bookings);
   }
@@ -64,7 +64,7 @@ public class OnlineBookingReport extends TravelManager implements Report{
       table.setWidth("100%");
     int row = 1;
     GeneralBooking gBooking;
-    IWTimeStamp stamp;
+    IWTimestamp stamp;
     Link link;
     int count = 0;
     int tCount = 0;
@@ -80,7 +80,7 @@ public class OnlineBookingReport extends TravelManager implements Report{
     for (int i = 0; i < bookings.length; i++) {
       ++row;
       gBooking = (GeneralBooking) bookings[i];
-      stamp = new IWTimeStamp(gBooking.getBookingDate());
+      stamp = new IWTimestamp(gBooking.getBookingDate());
       count = bookings[i].getTotalCount();
       tCount += count;
       price = getBooker(iwc).getBookingPrice(iwc, bookings[i]);

@@ -15,7 +15,7 @@ import com.idega.block.trade.stockroom.business.*;
 import java.sql.SQLException;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.business.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.block.trade.data.Currency;
 import com.idega.data.*;
 
@@ -405,8 +405,8 @@ public class Contracts extends TravelManager {
         Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(productId));
         Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
 
-        IWTimeStamp from = new IWTimeStamp(activeFrom);
-        IWTimeStamp to = new IWTimeStamp(activeTo);
+        IWTimestamp from = new IWTimestamp(activeFrom);
+        IWTimestamp to = new IWTimestamp(activeTo);
 
 
         Contract contract;
@@ -809,11 +809,11 @@ public class Contracts extends TravelManager {
     try {
       if (contract == null) {
         timeframe = tsb.getTimeframe(product);
-        pFrom.setDate(new IWTimeStamp(timeframe.getFrom()).getSQLDate());
-        pTo.setDate(new IWTimeStamp(timeframe.getTo()).getSQLDate());
+        pFrom.setDate(new IWTimestamp(timeframe.getFrom()).getSQLDate());
+        pTo.setDate(new IWTimestamp(timeframe.getTo()).getSQLDate());
       }else {
-        pFrom.setDate(new IWTimeStamp(contract.getFrom()).getSQLDate());
-        pTo.setDate(new IWTimeStamp(contract.getTo()).getSQLDate());
+        pFrom.setDate(new IWTimestamp(contract.getFrom()).getSQLDate());
+        pTo.setDate(new IWTimestamp(contract.getTo()).getSQLDate());
       }
     }catch (TimeframeNotFoundException tnfe) {
       tnfe.printStackTrace(System.err);

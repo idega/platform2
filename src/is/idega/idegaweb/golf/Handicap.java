@@ -12,7 +12,7 @@ import is.idega.idegaweb.golf.entity.*;
 
 import java.util.Vector;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 import com.idega.util.text.TextSoap;
 

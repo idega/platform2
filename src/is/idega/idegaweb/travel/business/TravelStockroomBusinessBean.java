@@ -59,7 +59,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
     supplies.setProductId(productId);
     supplies.setCurrentSupplies(status);
-    supplies.setRecordTime(IWTimeStamp.RightNow().getTimestamp());
+    supplies.setRecordTime(IWTimestamp.RightNow().getTimestamp());
 
     if(period > -1){
       supplies.setPeriod(period);
@@ -187,11 +187,11 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
 
 
-  public void setTimeframe(IWTimeStamp from, IWTimeStamp to, boolean yearly) throws SQLException {
+  public void setTimeframe(IWTimestamp from, IWTimestamp to, boolean yearly) throws SQLException {
     setTimeframe(-1,from,to,yearly);
   }
 
-  public void setTimeframe(int timeframeId, IWTimeStamp from, IWTimeStamp to, boolean yearly) throws SQLException {
+  public void setTimeframe(int timeframeId, IWTimestamp from, IWTimestamp to, boolean yearly) throws SQLException {
     if (timeframeId != -1) {
       if ((from != null) && (to != null)) {
         timeframe = ((com.idega.block.trade.stockroom.data.TimeframeHome)com.idega.data.IDOLookup.getHomeLegacy(Timeframe.class)).findByPrimaryKeyLegacy(timeframeId);
@@ -243,7 +243,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   /**
    * @deprecated
    */
-  public Product[] getProducts(int supplierId, IWTimeStamp stamp) {
+  public Product[] getProducts(int supplierId, IWTimestamp stamp) {
     List list = ProductBusiness.getProducts(supplierId, stamp);
     if (list == null) {
       return new Product[]{};
@@ -255,7 +255,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   /**
    * @deprecated
    */
-  public Product[] getProducts(int supplierId, IWTimeStamp from, IWTimeStamp to) {
+  public Product[] getProducts(int supplierId, IWTimestamp from, IWTimestamp to) {
     List list = ProductBusiness.getProducts(supplierId, from, to);
     if (list == null) {
       return new Product[]{};
@@ -354,15 +354,15 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       return returner;
   }
 
-  public boolean getIfDay(IWContext iwc, Product product, IWTimeStamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, SQLException, RemoteException {
+  public boolean getIfDay(IWContext iwc, Product product, IWTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, SQLException, RemoteException {
     return getIfDay(iwc, product, product.getTimeframes(), stamp, true, true);
   }
 
-  public boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, IWTimeStamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, RemoteException {
+  public boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, IWTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, RemoteException {
     return getIfDay(iwc, product, timeframes, stamp, true, false);
   }
 
-  public boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, IWTimeStamp stamp, boolean includePast, boolean fixTimeframe) throws ServiceNotFoundException, TimeframeNotFoundException, RemoteException {
+  public boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, IWTimestamp stamp, boolean includePast, boolean fixTimeframe) throws ServiceNotFoundException, TimeframeNotFoundException, RemoteException {
       boolean isDay = false;
       String key1 = Integer.toString(product.getID());
       String key2 = stamp.toSQLDateString();
@@ -378,8 +378,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
           boolean tooEarly = false;
           if (!includePast) {
-            IWTimeStamp now = IWTimeStamp.RightNow();
-            IWTimeStamp tNow = new IWTimeStamp(now.getDay(), now.getMonth(), now.getYear());
+            IWTimestamp now = IWTimestamp.RightNow();
+            IWTimestamp tNow = new IWTimestamp(now.getDay(), now.getMonth(), now.getYear());
             if (tNow.isLaterThan(stamp)) {
               tooEarly = true;
             }
@@ -410,14 +410,14 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       return isDay;
   }
 
-  private boolean isDateValid(Contract contract, IWTimeStamp stamp) throws RemoteException {
-    IWTimeStamp theStamp= IWTimeStamp.RightNow();
+  private boolean isDateValid(Contract contract, IWTimestamp stamp) throws RemoteException {
+    IWTimestamp theStamp= IWTimestamp.RightNow();
       theStamp.addDays(contract.getExpireDays()-1);
 
-    return IWTimeStamp.isInTimeframe(new IWTimeStamp(contract.getFrom()), new IWTimeStamp(contract.getTo()), stamp, false);
+    return IWTimestamp.isInTimeframe(new IWTimestamp(contract.getFrom()), new IWTimestamp(contract.getTo()), stamp, false);
     /*
     if (stamp.isLaterThan(theStamp)) {
-      return new IWTimeStamp(contract.getTo()).isLaterThan(stamp);
+      return new IWTimestamp(contract.getTo()).isLaterThan(stamp);
     }else {
       return false;
     }
@@ -425,15 +425,15 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
   }
 
-  private boolean isDayValid(Timeframe[] frames, IWTimeStamp stamp, boolean fixTimeframe) {
+  private boolean isDayValid(Timeframe[] frames, IWTimestamp stamp, boolean fixTimeframe) {
     return isDayValid(frames, null, stamp, fixTimeframe);
   }
 
-  private boolean isDayValid(Timeframe[] frames, Contract contract, IWTimeStamp stamp) {
+  private boolean isDayValid(Timeframe[] frames, Contract contract, IWTimestamp stamp) {
     return isDayValid(frames, contract, stamp, false);
   }
 
-  private boolean isDayValid(Timeframe[] frames, Contract contract, IWTimeStamp stamp, boolean fixTimeframe) {
+  private boolean isDayValid(Timeframe[] frames, Contract contract, IWTimestamp stamp, boolean fixTimeframe) {
 
     boolean returner = false;
 
@@ -452,16 +452,16 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
         for (int i = 0; i < frames.length; i++) {
           if (fixTimeframe) {
 //            System.err.println("---------------------------------------------------------------------------------------------------------------");
-//            System.err.println("isDayValid.... : from : "+new IWTimeStamp(frames[i].getFrom()).toSQLDateString());
-//            System.err.println(".............. : to   : "+new IWTimeStamp(frames[i].getTo()).toSQLDateString());
+//            System.err.println("isDayValid.... : from : "+new IWTimestamp(frames[i].getFrom()).toSQLDateString());
+//            System.err.println(".............. : to   : "+new IWTimestamp(frames[i].getTo()).toSQLDateString());
             fixTimeframe(frames[i], stamp);
 //            System.err.println(":::::::FIXING:::::: "+stamp.toSQLDateString());
-//            System.err.println("isDayValid.... : from : "+new IWTimeStamp(frames[i].getFrom()).toSQLDateString());
-//            System.err.println(".............. : to   : "+new IWTimeStamp(frames[i].getTo()).toSQLDateString());
+//            System.err.println("isDayValid.... : from : "+new IWTimestamp(frames[i].getFrom()).toSQLDateString());
+//            System.err.println(".............. : to   : "+new IWTimestamp(frames[i].getTo()).toSQLDateString());
           }
 //          System.err.println(".............. : year : "+frames[i].getYearly());
           isYearly = frames[i].getIfYearly();
-          returner = IWTimeStamp.isInTimeframe(new IWTimeStamp(frames[i].getFrom()), new IWTimeStamp(frames[i].getTo() ), stamp, isYearly);
+          returner = IWTimestamp.isInTimeframe(new IWTimestamp(frames[i].getFrom()), new IWTimestamp(frames[i].getTo() ), stamp, isYearly);
           if (returner) break;
         }
 
@@ -474,13 +474,13 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return returner;
   }
 
-  public Timeframe fixTimeframe(Timeframe frame, IWTimeStamp stamp) {
+  public Timeframe fixTimeframe(Timeframe frame, IWTimestamp stamp) {
     return fixTimeframe(frame, stamp, null);
   }
 
-  public Timeframe fixTimeframe(Timeframe frame, IWTimeStamp from, IWTimeStamp to) {
-    IWTimeStamp tFrom = new IWTimeStamp(frame.getFrom());
-    IWTimeStamp tTo = new IWTimeStamp(frame.getTo());
+  public Timeframe fixTimeframe(Timeframe frame, IWTimestamp from, IWTimestamp to) {
+    IWTimestamp tFrom = new IWTimestamp(frame.getFrom());
+    IWTimestamp tTo = new IWTimestamp(frame.getTo());
 
     if (frame.getYearly()) {
       int fromYear = tFrom.getYear();
@@ -575,16 +575,16 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
       return hash;
   }
 
-  public boolean getIfExpired(Contract contract, IWTimeStamp stamp) throws RemoteException {
+  public boolean getIfExpired(Contract contract, IWTimestamp stamp) throws RemoteException {
     boolean returner = false;
-      int daysBetween = stamp.getDaysBetween(IWTimeStamp.RightNow(), stamp);
+      int daysBetween = stamp.getDaysBetween(IWTimestamp.RightNow(), stamp);
       if (daysBetween < contract.getExpireDays()) {
         returner = true;
       }
     return returner;
   }
 
-  public boolean getIfDay(IWContext iwc, Contract contract, Product product, IWTimeStamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, SQLException, RemoteException {
+  public boolean getIfDay(IWContext iwc, Contract contract, Product product, IWTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, SQLException, RemoteException {
       boolean isDay = false;
       if (contract != null) {
         String key1 = ( (Integer) contract.getPrimaryKey()).toString();
@@ -613,8 +613,8 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
         Object obj = resellerDayHash.get(key1, key2);
         if (obj == null) {
           if (isValidWeekDay) {
-            IWTimeStamp from = new IWTimeStamp(contract.getFrom());
-            IWTimeStamp to = new IWTimeStamp(contract.getTo());
+            IWTimestamp from = new IWTimestamp(contract.getFrom());
+            IWTimestamp to = new IWTimestamp(contract.getTo());
             if (stamp.isLaterThan(from) && to.isLaterThan(stamp)  ) {
               isDay = true;
               resellerDayHash.put(key1, key2, new Boolean(true));
@@ -673,11 +673,11 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return getDepartureDays(iwc, product, null, null, showPast);
   }
 
-  public List getDepartureDays(IWContext iwc, Product product, IWTimeStamp from, IWTimeStamp to) {
+  public List getDepartureDays(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to) {
     return getDepartureDays(iwc, product, from, to, true);
   }
 
-  public List getDepartureDays(IWContext iwc, Product product, IWTimeStamp fromStamp, IWTimeStamp toStamp, boolean showPast) {
+  public List getDepartureDays(IWContext iwc, Product product, IWTimestamp fromStamp, IWTimestamp toStamp, boolean showPast) {
     List returner = new Vector();
     try {
 //      Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(product.getID());
@@ -687,20 +687,20 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
         boolean yearly = frames[j].getIfYearly();
 
 
-        IWTimeStamp tFrom = new IWTimeStamp(frames[j].getFrom());
-        IWTimeStamp tTo = new IWTimeStamp(frames[j].getTo());
+        IWTimestamp tFrom = new IWTimestamp(frames[j].getFrom());
+        IWTimestamp tTo = new IWTimestamp(frames[j].getTo());
 
 
-        IWTimeStamp from = null;
-        if (fromStamp != null) from = new IWTimeStamp(fromStamp);
-        IWTimeStamp to = null;
-        if (toStamp != null) to = new IWTimeStamp(toStamp);
+        IWTimestamp from = null;
+        if (fromStamp != null) from = new IWTimestamp(fromStamp);
+        IWTimestamp to = null;
+        if (toStamp != null) to = new IWTimestamp(toStamp);
 
         if (from == null) {
-          from = new IWTimeStamp(tFrom);
+          from = new IWTimestamp(tFrom);
         }
         if (to == null) {
-          to   = new IWTimeStamp(tTo);
+          to   = new IWTimestamp(tTo);
         }
 
         int toMonth = tTo.getMonth();
@@ -717,7 +717,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
           int fromY = from.getYear();
           int toY = to.getYear();
 
-          int daysBetween = IWTimeStamp.getDaysBetween(from, to);
+          int daysBetween = IWTimestamp.getDaysBetween(from, to);
 
           if (fromYear == toYear) {
             from.setYear(fromYear);
@@ -731,21 +731,21 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
               }
           }
 
-          to = new IWTimeStamp(from);
+          to = new IWTimestamp(from);
             to.addDays(daysBetween);
 
           yearsBetween = to.getYear() - toY;
         }
 
-        IWTimeStamp stamp = new IWTimeStamp(from);
-        IWTimeStamp temp;
+        IWTimestamp stamp = new IWTimestamp(from);
+        IWTimestamp temp;
 
         if (!showPast) {
-          IWTimeStamp now = IWTimeStamp.RightNow();
+          IWTimestamp now = IWTimestamp.RightNow();
           if (now.isLaterThan(from) && to.isLaterThan(now)) {
-            stamp = new IWTimeStamp(now);
+            stamp = new IWTimestamp(now);
           }else if (now.isLaterThan(from) && now.isLaterThan(to)) {
-            stamp = new IWTimeStamp(to);
+            stamp = new IWTimestamp(to);
           }
         }
 
@@ -766,7 +766,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
             if (stamp.getDayOfWeek() == weekDays[i]) {
               if (yearly) stamp.addYears(-yearsBetween);
               returner.add(stamp);
-              stamp = new IWTimeStamp(stamp);
+              stamp = new IWTimestamp(stamp);
               if (yearly) stamp.addYears(yearsBetween);
             }
           }
@@ -781,11 +781,11 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return returner;
   }
 
-  public boolean isWithinTimeframe(Timeframe timeframe, IWTimeStamp stamp) {
+  public boolean isWithinTimeframe(Timeframe timeframe, IWTimestamp stamp) {
     boolean yearly = timeframe.getIfYearly();
-    IWTimeStamp from = new IWTimeStamp(timeframe.getFrom());
-    IWTimeStamp to   = new IWTimeStamp(timeframe.getTo());
-    return IWTimeStamp.isInTimeframe(from, to, stamp,yearly);
+    IWTimestamp from = new IWTimestamp(timeframe.getFrom());
+    IWTimestamp to   = new IWTimestamp(timeframe.getTo());
+    return IWTimestamp.isInTimeframe(from, to, stamp,yearly);
   }
 
 
@@ -854,7 +854,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   }
 
 
-  public int getTotalSeats(Product product, ServiceDay sDay, TravelAddress tAddress, IWTimeStamp stamp) throws RemoteException, IDOFinderException{
+  public int getTotalSeats(Product product, ServiceDay sDay, TravelAddress tAddress, IWTimestamp stamp) throws RemoteException, IDOFinderException{
     Booker booker = (Booker) IBOLookup.getServiceInstance(this.getIWApplicationContext(), Booker.class);
     if (sDay != null) {
       int sDayMax = sDay.getMax();
@@ -944,7 +944,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return returner;
   }
 
-  protected int[] setDepartureAddress(int serviceId, String departureFrom, IWTimeStamp departureTime) throws SQLException, IDOFinderException{
+  protected int[] setDepartureAddress(int serviceId, String departureFrom, IWTimestamp departureTime) throws SQLException, IDOFinderException{
     int departureAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusiness.uniqueDepartureAddressType);
     TravelAddress departureAddress = null;
     Address address = null;

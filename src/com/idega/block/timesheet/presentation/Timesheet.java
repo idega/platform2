@@ -14,12 +14,12 @@ import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import javax.servlet.http.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
 import java.util.*;
 //import com.idega.jmodule.days.data.*;
 import com.idega.block.calendar.data.CalendarEntry;
-import com.idega.util.idegaCalendar;
+import com.idega.util.IWCalendar;
 
 import com.idega.util.text.*;
 
@@ -42,7 +42,7 @@ public class Timesheet extends Block{
     private int daysShown;
     private int extraLines;
     public	int manudur,ar,dagur;
-    private com.idega.util.idegaCalendar FunctColl = new com.idega.util.idegaCalendar();
+    private com.idega.util.IWCalendar FunctColl = new com.idega.util.IWCalendar();
     private int fjoldidaga;
     public	int	manudurInn;
     public	int arInn;
@@ -85,7 +85,7 @@ public class Timesheet extends Block{
     private String language = "IS";
 
 
-    private IWTimeStamp stamp;
+    private IWTimestamp stamp;
     private	int fjLinuIToflu=40;
 
 
@@ -134,7 +134,7 @@ public class Timesheet extends Block{
 
 
 //      if (this.stamp != null)
-//        obj.stamp = (IWTimeStamp)stamp.clone();
+//        obj.stamp = (IWTimestamp)stamp.clone();
 
     }
     catch(Exception ex) {
@@ -1936,7 +1936,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
 
                 if (entry_id != null) {
                 System.out.println("");
-			IWTimeStamp stamp;
+			IWTimestamp stamp;
                         String timarString = "0";
 			for (int telja=0;telja<date.length;telja++) {
               		    if (project_id != null) {
@@ -1945,7 +1945,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
 
                                         TimesheetEntry entry = ((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).createLegacy();
 
-                                        stamp = new IWTimeStamp(date[telja]);
+                                        stamp = new IWTimestamp(date[telja]);
 
                                         entry.setDate(stamp.getTimestamp());
                                         entry.setUserId(user_id);
@@ -1977,7 +1977,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
 /*				else {
                                         TimesheetEntry entry = ((com.idega.block.timesheet.data.TimesheetEntryHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetEntry.class)).findByPrimaryKeyLegacy(Integer.parseInt(entry_id[telja]));
 
-                                        stamp = new IWTimeStamp(date[telja]);
+                                        stamp = new IWTimestamp(date[telja]);
 
                                         entry.setDate(stamp.getTimestamp());
                                         entry.setMemberId(member_id);
@@ -2007,9 +2007,9 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
        private void reportHourPrEmployee(IWContext iwc) throws SQLException {
 
             int dagariman = FunctColl.getLengthOfMonth(manudur,ar);
-            idegaCalendar cal = new idegaCalendar();
+            IWCalendar cal = new IWCalendar();
             Timestamp stamp;
-            IWTimeStamp i_stamp;
+            IWTimestamp i_stamp;
 
             /*
             Days[] days = (Days[])(new Days()).findAllOrdered("days_id");
@@ -2248,8 +2248,8 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                     add(headerTable);
 
           Timestamp stamp;
-          IWTimeStamp i_stamp;
-          idegaCalendar cal = new idegaCalendar();
+          IWTimestamp i_stamp;
+          IWCalendar cal = new IWCalendar();
           int day_of_week;
           double total_hour;
           double day_hour;
@@ -2290,7 +2290,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                   if (entry[i].getResourceId() == 0 ) {
                       ++row;
                       stamp = entry[i].getDate();
-                      i_stamp = new IWTimeStamp(stamp);
+                      i_stamp = new IWTimestamp(stamp);
                       project = ((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(entry[i].getProjectId());
                       day_of_week = cal.getDayOfWeek(i_stamp.getYear(),i_stamp.getMonth(),i_stamp.getDate());
                       total_hour = 0;
@@ -2447,8 +2447,8 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                     add(headerTable);
 
           Timestamp stamp;
-          IWTimeStamp i_stamp;
-          idegaCalendar cal = new idegaCalendar();
+          IWTimestamp i_stamp;
+          IWCalendar cal = new IWCalendar();
           int day_of_week;
           double total_hour;
           double day_hour;
@@ -2491,7 +2491,7 @@ private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
                   if (entry[i].getResourceId() == 0 ) {
                       ++row;
                       stamp = entry[i].getDate();
-                      i_stamp = new IWTimeStamp(stamp);
+                      i_stamp = new IWTimestamp(stamp);
                       project = ((com.idega.block.timesheet.data.TimesheetProjectHome)com.idega.data.IDOLookup.getHomeLegacy(TimesheetProject.class)).findByPrimaryKeyLegacy(entry[i].getProjectId());
                       day_of_week = cal.getDayOfWeek(i_stamp.getYear(),i_stamp.getMonth(),i_stamp.getDate());
                       if (viewAll) {

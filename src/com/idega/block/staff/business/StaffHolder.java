@@ -4,7 +4,7 @@ package com.idega.block.staff.business;
 
 import java.util.*;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 import com.idega.core.user.data.User;
 
@@ -30,7 +30,7 @@ public class StaffHolder {
 
   private String email_ = null;
 
-  private IWTimeStamp beganWork_ = null;
+  private IWTimestamp beganWork_ = null;
 
   private String title_ = null;
 
@@ -136,7 +136,7 @@ public class StaffHolder {
 
 
 
-  public void setBeganWork(IWTimeStamp beganWork) {
+  public void setBeganWork(IWTimestamp beganWork) {
 
     beganWork_ = beganWork;
 
@@ -298,7 +298,7 @@ public class StaffHolder {
 
 
 
-  public IWTimeStamp getBeganWork() {
+  public IWTimestamp getBeganWork() {
 
     return beganWork_;
 

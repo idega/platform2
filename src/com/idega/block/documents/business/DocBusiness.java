@@ -8,7 +8,7 @@ import com.idega.core.data.ICInformationFolder;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLegacyEntity;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
 
 /**
@@ -168,7 +168,7 @@ public static final int PAGE = 3;
 
     if ( !update ) {
       try {
-        link.setCreationDate(new IWTimeStamp().getTimestampRightNow());
+        link.setCreationDate(new IWTimestamp().getTimestampRightNow());
         if ( folderId != -1 ) {
           link.setFolderID(folderId);
         }
@@ -292,7 +292,7 @@ public static final int PAGE = 3;
 //
 //    locText.setHeadline(categoryName);
 //		locText.setBody("");
-//		locText.setCreated(com.idega.util.IWTimeStamp.getTimestampRightNow());
+//		locText.setCreated(com.idega.util.IWTimestamp.getTimestampRightNow());
 //
 //    if ( newLocText ) {
 //      locText.setLocaleId(iLocaleID);

@@ -317,10 +317,10 @@ private IWResourceBundle iwrb;
       int iImageId = sImageId != null ? Integer.parseInt(sImageId):-1;
       int iCategoryId = sCategoryId !=null ? Integer.parseInt(sCategoryId):-1;
       boolean bUseImage = sUseImage!= null?true:false;
-      IWTimeStamp today = IWTimeStamp.RightNow();
-      IWTimeStamp pubFrom = sPubFrom!=null ? new IWTimeStamp(sPubFrom):today;
+      IWTimestamp today = IWTimestamp.RightNow();
+      IWTimestamp pubFrom = sPubFrom!=null ? new IWTimestamp(sPubFrom):today;
       today.addDays(defaultPublishDays);
-      IWTimeStamp pubTo = sPubTo!=null ?new IWTimeStamp(sPubTo):today;
+      IWTimestamp pubTo = sPubTo!=null ?new IWTimestamp(sPubTo):today;
       Vector V = null;
       ICFile F = null;
       if(iImageId > 0){
@@ -487,7 +487,7 @@ private IWResourceBundle iwrb;
     tiHeadline.setLength(40);
     tiHeadline.setMaxlength(255);
 
-    IWTimeStamp now = IWTimeStamp.RightNow();
+    IWTimestamp now = IWTimestamp.RightNow();
     TimestampInput publishFrom = new TimestampInput(prmPubFrom,true);
       publishFrom.setTimestamp(now.getTimestamp());
     // add default publishing days:
@@ -575,7 +575,7 @@ private IWResourceBundle iwrb;
       if( eUser !=null){
         tiAuthor.setContent(eUser.getFirstName());
       }
-      IWTimeStamp today = IWTimeStamp.RightNow();
+      IWTimestamp today = IWTimestamp.RightNow();
       publishFrom.setTimestamp(today.getTimestamp());
       today.addDays(defaultPublishDays);
       publishTo.setTimestamp(today.getTimestamp());

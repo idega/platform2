@@ -2,7 +2,7 @@ package com.idega.block.trade.stockroom.data;
 
 import com.idega.data.*;
 import com.idega.core.data.Address;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -57,7 +57,7 @@ public class TravelAddressBMPBean extends com.idega.data.GenericEntity implement
   }
 
   public String getName() {
-    IWTimeStamp timestamp = new IWTimeStamp(getTime());
+    IWTimestamp timestamp = new IWTimestamp(getTime());
 
     return getStreetName()+" - "+TextSoap.addZero(timestamp.getHour())+":"+TextSoap.addZero(timestamp.getMinute());
   }
@@ -90,7 +90,7 @@ public class TravelAddressBMPBean extends com.idega.data.GenericEntity implement
     setColumn(getColumnNameTime(), stamp);
   }
 
-  public void setTime(IWTimeStamp stamp) {
+  public void setTime(IWTimestamp stamp) {
     setTime(stamp.getTimestamp());
   }
 

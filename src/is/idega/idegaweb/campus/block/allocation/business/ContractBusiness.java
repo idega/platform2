@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.16 2002/08/12 12:17:55 palli Exp $
+ * $Id: ContractBusiness.java,v 1.17 2002/08/12 13:00:42 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.idegaweb.IWApplicationContext;
 import java.util.List;
 import java.util.Iterator;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
 import com.idega.block.application.data.Application;
 import is.idega.idegaweb.campus.presentation.Campus;
@@ -149,8 +149,8 @@ public  class ContractBusiness {
 
     //System.err.println(login+" "+pass);
 
-    //IWTimeStamp today = IWTimeStamp.RightNow();
-    //int validDays = today.getDaysBetween(today,new IWTimeStamp(eContract.getValidTo()));
+    //IWTimestamp today = IWTimestamp.RightNow();
+    //int validDays = today.getDaysBetween(today,new IWTimestamp(eContract.getValidTo()));
     LoginDBHandler.createLogin(iUserId,login,pass);
     //LoginDBHandler.createLogin(iUserId,login,passwd,new Boolean(true),today,validDays,new Boolean(false),new Boolean(true),new Boolean(false),"");
   }
@@ -220,7 +220,7 @@ public  class ContractBusiness {
     }
   }
 
-  public static void endContract(int iContractId,IWTimeStamp movingDate,String info,boolean datesync){
+  public static void endContract(int iContractId,IWTimestamp movingDate,String info,boolean datesync){
     try {
       Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
       C.setMovingDate(movingDate.getSQLDate());
@@ -266,7 +266,7 @@ public  class ContractBusiness {
   	deliverKey(iwac,iContractId,null);
   }
 
-  public static void resignContract(IWApplicationContext iwac,int iContractId,IWTimeStamp movingDate,String info,boolean datesync){
+  public static void resignContract(IWApplicationContext iwac,int iContractId,IWTimestamp movingDate,String info,boolean datesync){
     try {
       Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
       C.setMovingDate(movingDate.getSQLDate());
@@ -282,7 +282,7 @@ public  class ContractBusiness {
     }
   }
 
-  public static boolean makeNewContract(IWApplicationContext iwc,User eUser,Applicant eApplicant,int iApartmentId,IWTimeStamp from,IWTimeStamp to){
+  public static boolean makeNewContract(IWApplicationContext iwc,User eUser,Applicant eApplicant,int iApartmentId,IWTimestamp from,IWTimestamp to){
 
       Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
       eContract.setApartmentId(iApartmentId);
@@ -331,58 +331,58 @@ public  class ContractBusiness {
     }
   }
 
-  public static IWTimeStamp[] getContractStampsForApartment(int apartmentId){
+  public static IWTimestamp[] getContractStampsForApartment(int apartmentId){
     Apartment ap = com.idega.block.building.business.BuildingCacher.getApartment(apartmentId);
     return getContractStampsForApartment(ap);
   }
 
-  public static IWTimeStamp[] getContractStampsForApartment(Apartment apartment){
+  public static IWTimestamp[] getContractStampsForApartment(Apartment apartment){
     ApartmentTypePeriods ATP = ContractFinder.getPeriod(apartment.getApartmentTypeId());
     return getContractStampsFromPeriod(ATP,1);
 
   }
 
-   public static IWTimeStamp[] getContractStampsFromPeriod(ApartmentTypePeriods ATP,int monthOverlap){
-     IWTimeStamp contractDateFrom = IWTimeStamp.RightNow();
-     IWTimeStamp contractDateTo = IWTimeStamp.RightNow();
+   public static IWTimestamp[] getContractStampsFromPeriod(ApartmentTypePeriods ATP,int monthOverlap){
+     IWTimestamp contractDateFrom = IWTimestamp.RightNow();
+     IWTimestamp contractDateTo = IWTimestamp.RightNow();
      if(ATP!=null){
         // Period checking
         //System.err.println("ATP exists");
         boolean first = ATP.hasFirstPeriod();
         boolean second = ATP.hasSecondPeriod();
-         IWTimeStamp today = new IWTimeStamp();
+         IWTimestamp today = new IWTimestamp();
 
         // Two Periods
         if(first && second){
 
           if(today.getMonth() > ATP.getFirstDateMonth()+monthOverlap && today.getMonth() <= ATP.getSecondDateMonth()+monthOverlap ){
-            contractDateFrom = new IWTimeStamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
-            contractDateTo = new IWTimeStamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
+            contractDateFrom = new IWTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
+            contractDateTo = new IWTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
           }
           else if(today.getMonth() <= 12){
-            contractDateFrom = new IWTimeStamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
-            contractDateTo = new IWTimeStamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
+            contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
+            contractDateTo = new IWTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
           }
           else{
-            contractDateFrom = new IWTimeStamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
-            contractDateTo = new IWTimeStamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
+            contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
+            contractDateTo = new IWTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
           }
 
         }
         // One Periods
         else if(first && !second){
           //System.err.println("two sectors");
-          contractDateFrom = new IWTimeStamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
-          contractDateTo = new IWTimeStamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
+          contractDateFrom = new IWTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
+          contractDateTo = new IWTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
         }
         else if(!first && second){
           //System.err.println("two sectors");
-          contractDateFrom = new IWTimeStamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
-          contractDateTo = new IWTimeStamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
+          contractDateFrom = new IWTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
+          contractDateTo = new IWTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
         }
      }
 
-      IWTimeStamp[] stamps = {contractDateFrom,contractDateTo};
+      IWTimestamp[] stamps = {contractDateFrom,contractDateTo};
       return stamps;
   }
 

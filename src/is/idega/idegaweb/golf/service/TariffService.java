@@ -10,7 +10,7 @@ import com.idega.data.*;
 
 import is.idega.idegaweb.golf.entity.*;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 import com.idega.presentation.IWContext;
 
@@ -546,7 +546,7 @@ public class TariffService  {
 
 
 
-   static public Payment[] getMemberPayments(int iAccountId,int iUnionId,IWTimeStamp from,IWTimeStamp to){
+   static public Payment[] getMemberPayments(int iAccountId,int iUnionId,IWTimestamp from,IWTimestamp to){
 
      Payment[] P;
 
@@ -628,7 +628,7 @@ public class TariffService  {
 
 
 
-  static public AccountEntry[] getAccountEntrys(int iAccountId,IWTimeStamp from,IWTimeStamp to){
+  static public AccountEntry[] getAccountEntrys(int iAccountId,IWTimestamp from,IWTimestamp to){
 
     AccountEntry[] E;
 
@@ -706,7 +706,7 @@ public class TariffService  {
 
 
 
-  static public AccountEntry[] getTariffEntrys(int iAccountId,IWTimeStamp from,IWTimeStamp to){
+  static public AccountEntry[] getTariffEntrys(int iAccountId,IWTimestamp from,IWTimestamp to){
 
     AccountEntry[] E;
 
@@ -818,9 +818,9 @@ public class TariffService  {
 
     A.setCashierId(CashierId);
 
-    A.setCreationDate(IWTimeStamp.getTimestampRightNow());
+    A.setCreationDate(IWTimestamp.getTimestampRightNow());
 
-    A.setLastUpdated(IWTimeStamp.getTimestampRightNow());
+    A.setLastUpdated(IWTimestamp.getTimestampRightNow());
 
     A.setMemberId(MemberId);
 

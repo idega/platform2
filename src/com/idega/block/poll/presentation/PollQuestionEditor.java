@@ -304,7 +304,7 @@ public PollQuestionEditor(){
 
 
 
-    IWTimeStamp stampur = new IWTimeStamp();
+    IWTimestamp stampur = new IWTimestamp();
 
 
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.15 2002/08/12 12:17:55 palli Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.16 2002/08/12 13:00:42 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,7 +23,7 @@ import com.idega.block.building.data.ApartmentType;
 import com.idega.presentation.IWContext;
 import com.idega.util.CypherText;
 import com.idega.util.SendMail;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import java.sql.SQLException;
@@ -234,7 +234,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 
     if(studyBegin!=null){
       try{
-      IWTimeStamp stamp = new IWTimeStamp(studyBegin);
+      IWTimestamp stamp = new IWTimestamp(studyBegin);
       studyBeginMon = stamp.getMonth();
       studyBeginYr = stamp.getYear();
       }
@@ -245,7 +245,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 
     if(studyEnd!=null){
       try{
-      IWTimeStamp stamp = new IWTimeStamp(studyEnd);
+      IWTimestamp stamp = new IWTimestamp(studyEnd);
       studyEndMo = stamp.getMonth();
       studyEndYr = stamp.getYear();
       }
@@ -256,7 +256,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 
     if(spouseStudyBegin!=null){
       try{
-      IWTimeStamp stamp = new IWTimeStamp(spouseStudyBegin);
+      IWTimestamp stamp = new IWTimestamp(spouseStudyBegin);
       spouseStudyBeginMo = stamp.getMonth();
       spouseStudyBeginYr = stamp.getYear();
       }
@@ -267,7 +267,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 
     if(spouseStudyEnd!=null){
       try{
-      IWTimeStamp stamp = new IWTimeStamp(spouseStudyEnd);
+      IWTimestamp stamp = new IWTimestamp(spouseStudyEnd);
       spouseStudyEndMo = stamp.getMonth();
       spouseStudyEndYr = stamp.getYear();
       }
@@ -293,7 +293,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     application.setSpouseStudyEndMonth(spouseStudyEndMo);
     application.setSpouseStudyEndYear(spouseStudyEndYr);
 
-    IWTimeStamp t = new IWTimeStamp(wantHousingFrom);
+    IWTimestamp t = new IWTimestamp(wantHousingFrom);
     application.setHousingFrom(t.getSQLDate());
     if (waitingList == null)
       application.setOnWaitinglist(false);
@@ -342,9 +342,9 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     String aprtCat = (String)iwc.getParameter("aprtCat");
     Application application = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy();
     application.setSubjectId(Integer.parseInt(subject));
-    application.setSubmitted(IWTimeStamp.getTimestampRightNow());
+    application.setSubmitted(IWTimestamp.getTimestampRightNow());
     application.setStatusSubmitted();
-    application.setStatusChanged(IWTimeStamp.getTimestampRightNow());
+    application.setStatusChanged(IWTimestamp.getTimestampRightNow());
     iwc.setSessionAttribute("application",application);
     iwc.setSessionAttribute("aprtCat",aprtCat);
   }

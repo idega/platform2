@@ -766,7 +766,7 @@ public class News extends NewsReader implements IWBlock{
 
   public void setNumberOfDays( int daysIn ){
 
-    IWTimeStamp stamp= IWTimeStamp.RightNow();
+    IWTimestamp stamp= IWTimestamp.RightNow();
 
     stamp.addDays(-daysIn);//dagar inni
 

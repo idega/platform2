@@ -3,7 +3,7 @@ package is.idega.idegaweb.travel.service.business;
 import is.idega.idegaweb.travel.presentation.ServiceViewer;
 import is.idega.idegaweb.travel.data.Service;
 import java.sql.SQLException;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.util.*;
 import java.rmi.RemoteException;
 import com.idega.business.*;
@@ -119,15 +119,15 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
   }
 
 
-  public IWTimeStamp getDepartureTime(Product product) throws SQLException {
+  public IWTimestamp getDepartureTime(Product product) throws SQLException {
     return getDepartureTime(product.getID());
  }
 
-  public IWTimeStamp getDepartureTime(int productId) throws SQLException {
+  public IWTimestamp getDepartureTime(int productId) throws SQLException {
     /** @todo FIXA STRAX !!! */
     try {
       Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(new Integer(productId));
-      IWTimeStamp tempStamp = new IWTimeStamp(service.getDepartureTime());
+      IWTimestamp tempStamp = new IWTimestamp(service.getDepartureTime());
       return tempStamp;
     }catch (Exception e) {
       throw new SQLException(e.getMessage());

@@ -29,7 +29,7 @@ private boolean _update = true;
 private boolean _save = false;
 
 private int _userID = -1;
-private IWTimeStamp _stamp;
+private IWTimestamp _stamp;
 
 private IWBundle _iwb;
 private IWResourceBundle _iwrb;
@@ -112,7 +112,7 @@ public StaffEditor(){
     if ( _update )
       locTexts = StaffFinder.getLocalizedStaff(entity,iLocaleId);
     if ( _update && entity.getBeganWork() != null )
-      _stamp = new IWTimeStamp(entity.getBeganWork());
+      _stamp = new IWTimestamp(entity.getBeganWork());
 
     TextInput title = new TextInput(StaffBusiness.PARAMETER_TITLE);
       title.setLength(24);
@@ -134,7 +134,7 @@ public StaffEditor(){
     addLeft(_iwrb.getLocalizedString("user_area","Area")+":",area,true);
 
     DateInput beganWork = new DateInput(StaffBusiness.PARAMETER_BEGAN_WORK);
-      beganWork.setYearRange(new IWTimeStamp().getYear()-60,new IWTimeStamp().getYear());
+      beganWork.setYearRange(new IWTimestamp().getYear()-60,new IWTimestamp().getYear());
       if ( _stamp != null ) {
         beganWork.setDay(_stamp.getDay());
         beganWork.setMonth(_stamp.getMonth());
@@ -189,7 +189,7 @@ public StaffEditor(){
     String beganwork = iwc.getParameter(StaffBusiness.PARAMETER_BEGAN_WORK);
     if ( beganwork != null )
       try {
-        _stamp = new IWTimeStamp(beganwork);
+        _stamp = new IWTimestamp(beganwork);
       }
       catch (Exception e) {
         _stamp = null;

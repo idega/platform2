@@ -16,7 +16,7 @@ import com.idega.data.*;
  * @version 1.0
  */
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 
 public class ContractCategoryBMPBean extends com.idega.data.GenericEntity implements com.idega.block.contract.data.ContractCategory {

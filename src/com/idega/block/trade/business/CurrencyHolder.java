@@ -1,7 +1,7 @@
 package com.idega.block.trade.business;
 
 import java.util.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 public class CurrencyHolder {
 
@@ -32,7 +32,7 @@ private String currencyName_ = null;
 private float buyValue_ = -1;
 private float sellValue_ = -1;
 private float middleValue_ = -1;
-private IWTimeStamp timestamp_ = null;
+private IWTimestamp timestamp_ = null;
 private int currencyID_ = -1;
 
   public CurrencyHolder() {
@@ -60,7 +60,7 @@ private int currencyID_ = -1;
     middleValue_ = value;
   }
 
-  public void setTimestamp(IWTimeStamp timestamp) {
+  public void setTimestamp(IWTimestamp timestamp) {
     timestamp_ = timestamp;
   }
 
@@ -86,7 +86,7 @@ private int currencyID_ = -1;
     return middleValue_;
   }
 
-  public IWTimeStamp getTimestamp() {
+  public IWTimestamp getTimestamp() {
     return timestamp_;
   }
 

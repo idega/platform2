@@ -3,7 +3,7 @@ package com.idega.block.text.data;
 
 import java.sql.*;
 import com.idega.data.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:

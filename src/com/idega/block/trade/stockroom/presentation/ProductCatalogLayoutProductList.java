@@ -2,7 +2,7 @@ package com.idega.block.trade.stockroom.presentation;
 
 import com.idega.block.trade.data.Currency;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;

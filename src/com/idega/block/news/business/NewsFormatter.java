@@ -9,7 +9,7 @@ import com.idega.util.text.TextSoap;
 import com.idega.block.news.data.NwNews;
 import java.text.DateFormat;
 import java.util.Locale;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 /**
  * Title:
  * Description:

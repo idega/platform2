@@ -2,7 +2,7 @@ package is.idega.idegaweb.project.data;
 
 import java.sql.*;
 import com.idega.data.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.data.User;
@@ -82,7 +82,7 @@ public class IPProjectBMPBean extends com.idega.data.GenericEntity implements is
     }
 
     public void setDefaultValues(){
-      this.setCreationDate(IWTimeStamp.RightNow().getSQLDate());
+      this.setCreationDate(IWTimestamp.RightNow().getSQLDate());
     }
 
     public String getName() {

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationBMPBean.java,v 1.2 2002/08/12 12:15:27 palli Exp $
+ * $Id: ApplicationBMPBean.java,v 1.3 2002/08/12 12:59:35 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,7 +13,7 @@ import com.idega.data.IDOLegacyEntity;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.lang.IllegalStateException;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 /**
  *
@@ -126,7 +126,7 @@ public class ApplicationBMPBean extends com.idega.data.GenericEntity implements 
         (status.equalsIgnoreCase(STATUS_REJECTED))||
         (status.equalsIgnoreCase(STATUS_GARBAGE))){
       setColumn(getStatusColumnName(),status);
-      setStatusChanged(IWTimeStamp.getTimestampRightNow());
+      setStatusChanged(IWTimestamp.getTimestampRightNow());
     }
     else
       throw new IllegalStateException("Undefined state : " + status);

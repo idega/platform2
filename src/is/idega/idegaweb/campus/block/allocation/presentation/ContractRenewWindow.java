@@ -17,7 +17,7 @@ import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.*;
 import com.idega.block.application.data.Applicant;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
 import com.idega.core.data.Email;
 import com.idega.core.user.business.UserBusiness;
@@ -59,7 +59,7 @@ public class ContractRenewWindow extends Window{
   private Applicant eApplicant = null;
   private User contractUser = null;
   private List newContracts = null;
-  private IWTimeStamp lastDate = null;
+  private IWTimestamp lastDate = null;
   private int iContractId = -1;
   private boolean save = false;
 
@@ -104,7 +104,7 @@ public class ContractRenewWindow extends Window{
       contractUser  = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
       newContracts = ContractFinder.listOfApplicantContracts(eApplicant.getID(),ContractBMPBean.statusCreated);
       java.sql.Date d= ContractFinder.getLastContractDateForApartment(eContract.getApartmentId().intValue());
-      lastDate = d!=null?new IWTimeStamp(d):new IWTimeStamp();
+      lastDate = d!=null?new IWTimestamp(d):new IWTimestamp();
       }
       catch(SQLException ex){
 
@@ -151,8 +151,8 @@ public class ContractRenewWindow extends Window{
           T.add(Edit.formatText(BuildingCacher.getApartmentString((eContract.getApartmentId().intValue()))),2,row);
           row++;
 
-          IWTimeStamp today = IWTimeStamp.RightNow();
-          IWTimeStamp[] stamps = ContractBusiness.getContractStampsForApartment(eContract.getApartmentId().intValue());
+          IWTimestamp today = IWTimestamp.RightNow();
+          IWTimestamp[] stamps = ContractBusiness.getContractStampsForApartment(eContract.getApartmentId().intValue());
 
 
           DateInput from = new DateInput("from_date",true);
@@ -206,17 +206,17 @@ public class ContractRenewWindow extends Window{
       int id = iContractId;
       Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(id);
 
-      IWTimeStamp from = null,to = null;
+      IWTimestamp from = null,to = null;
       String sfrom = iwc.getParameter("from_date");
       if(sfrom!=null && sfrom.length() == 10)
-       from = new IWTimeStamp(sfrom);
+       from = new IWTimestamp(sfrom);
       String to_date = iwc.getParameter("to_date");
       if(to_date!=null && to_date.length() == 10)
-        to = (new IWTimeStamp(to_date));
+        to = (new IWTimestamp(to_date));
       boolean endOld = iwc.isParameterSet("end_old_contr");
 
       if(endOld)
-        ContractBusiness.endContract(eContract.getID(),new IWTimeStamp(eContract.getValidTo()),"",false);
+        ContractBusiness.endContract(eContract.getID(),new IWTimestamp(eContract.getValidTo()),"",false);
 
       if(eContract.getStatus().equals(ContractBMPBean.statusSigned) && !endOld)
         return false;

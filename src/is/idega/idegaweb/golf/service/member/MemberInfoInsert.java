@@ -218,7 +218,7 @@ public class MemberInfoInsert extends EntityInsert {
 
     else {
 
-      IWTimeStamp stamp = new IWTimeStamp();
+      IWTimestamp stamp = new IWTimestamp();
 
       eMemberInfo.setHistory(stamp.toString()+": Félagi skráður í kerfið");
 

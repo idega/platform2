@@ -19,7 +19,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.*;
 import com.idega.block.application.data.Applicant;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
 import com.idega.core.data.Email;
 import com.idega.core.user.business.UserBusiness;
@@ -108,8 +108,8 @@ public class ContractKeyWindow extends Window{
       Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
       List listOfContracts = ContractFinder.listOfApartmentContracts(eContract.getApartmentId().intValue(),true);
       User eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
-      IWTimeStamp from = new IWTimeStamp(eContract.getValidFrom());
-      IWTimeStamp to = new IWTimeStamp(eContract.getValidTo());
+      IWTimestamp from = new IWTimestamp(eContract.getValidFrom());
+      IWTimestamp to = new IWTimestamp(eContract.getValidTo());
       Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
       boolean apartmentReturn = eContract.getIsRented();
       DataTable T = new DataTable();
@@ -161,19 +161,19 @@ public class ContractKeyWindow extends Window{
       T.add(Edit.formatText(iwrb.getLocalizedString("returned","Returned")),1,row);
       java.sql.Timestamp retstamp = eContract.getReturnTime();
       if(retstamp !=null){
-        IWTimeStamp ret = new IWTimeStamp(retstamp);
+        IWTimestamp ret = new IWTimestamp(retstamp);
         T.add(Edit.formatText(ret.getLocaleDate(iwc)),2,row);
       }
       row++;
       T.add(Edit.formatText(iwrb.getLocalizedString("delivered","Delivered")),1,row);
       java.sql.Timestamp delstamp = eContract.getDeliverTime();
       if(delstamp !=null){
-        IWTimeStamp del = new IWTimeStamp(delstamp);
+        IWTimestamp del = new IWTimestamp(delstamp);
         T.add(Edit.formatText(del.getLocaleDate(iwc)),2,row);
       } 
       else {
       	if (canSave) {
-	      	IWTimeStamp	del = new IWTimeStamp();
+	      	IWTimestamp	del = new IWTimestamp();
   	    	DateInput input = new DateInput("deliveredDate");
     	  	input.setDate(del.getSQLDate());
       		Edit.setStyle(input);
@@ -208,7 +208,7 @@ public class ContractKeyWindow extends Window{
       }
       else if(val.equals("deliver")){
       	String from = iwc.getParameter("deliveredDate");
-      	IWTimeStamp fromStamp = new IWTimeStamp(from);
+      	IWTimestamp fromStamp = new IWTimestamp(from);
 //        ContractBusiness.deliverKey(iwc,id);
 				ContractBusiness.deliverKey(iwc,id,fromStamp.getTimestamp());
       }

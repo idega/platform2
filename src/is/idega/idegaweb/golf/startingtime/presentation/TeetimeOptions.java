@@ -15,7 +15,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.Image;
 import is.idega.idegaweb.golf.GolfField;
 import com.idega.data.IDOLegacyEntity;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.Tournament;
 import com.idega.data.EntityFinder;
@@ -30,7 +30,7 @@ import is.idega.idegaweb.golf.business.GolfCacher;
 import is.idega.idegaweb.golf.startingtime.data.TeeTime;
 import com.idega.util.text.TextSoap;
 import com.idega.jmodule.login.business.AccessControl;
-import com.idega.util.idegaCalendar;
+import com.idega.util.IWCalendar;
 import is.idega.idegaweb.golf.entity.Group;
 import com.idega.presentation.ui.Window;
 import is.idega.idegaweb.golf.TableInfo;
@@ -305,10 +305,10 @@ public TextInput insertEditBox(String name, int size)
 
 
 
-public DropdownMenu insertDropdown(String dropdownName, idegaCalendar funcDate, IWContext iwc)
+public DropdownMenu insertDropdown(String dropdownName, IWCalendar funcDate, IWContext iwc)
 {
 
-	IWTimeStamp stamp = new IWTimeStamp();
+	IWTimestamp stamp = new IWTimestamp();
 
 	DropdownMenu myDropdown = new DropdownMenu(dropdownName);
 
@@ -372,9 +372,9 @@ public boolean storeConfig(IWContext iwc)throws SQLException, IOException
 		if(OpenTime == null || CloseTime == null)
 			return false;
 
-		IWTimeStamp beginDate = new IWTimeStamp(BeginDate);
-		IWTimeStamp openTime = new IWTimeStamp(OpenTime);
-		IWTimeStamp closeTime = new IWTimeStamp(CloseTime);
+		IWTimestamp beginDate = new IWTimestamp(BeginDate);
+		IWTimestamp openTime = new IWTimestamp(OpenTime);
+		IWTimestamp closeTime = new IWTimestamp(CloseTime);
 
                 //System.err.println("Select * from " + conf.getEntityName() + " WHERE begin_date ='"+beginDate.toSQLDateString()+"'");
                 List oldRecord = EntityFinder.findAll(conf,"Select * from " + conf.getEntityName() + " WHERE begin_date ='"+beginDate.toSQLDateString()+"' and field_id = "+FieldID );
@@ -447,7 +447,7 @@ public void setFeedBack(Form myForm, boolean isOk)
 
 public void drawTable(IWContext iwc)throws IOException
 {
-	idegaCalendar funcDate = new idegaCalendar();
+	IWCalendar funcDate = new IWCalendar();
 	Table firstTable = new Table(4, 8);
 	firstTable.mergeCells(1, 2, 2, 2);
 	firstTable.setAlignment("center");

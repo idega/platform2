@@ -12,7 +12,7 @@ package com.idega.block.calendar.business;
 import java.sql.SQLException;
 import java.util.List;
 import com.idega.block.text.business.TextFinder;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.data.EntityFinder;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
@@ -59,8 +59,8 @@ public static final String PARAMETER_SHOW_CALENDAR = "show_calendar";
 
 public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
-  public static IWTimeStamp getTimestamp(String day,String month,String year) {
-    IWTimeStamp stamp = null;
+  public static IWTimestamp getTimestamp(String day,String month,String year) {
+    IWTimestamp stamp = null;
 
     if(month != null && year != null){
       try {
@@ -75,14 +75,14 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 	int iMonth = Integer.parseInt(month);
 	int iYear = Integer.parseInt(year);
 
-	stamp = new IWTimeStamp(iDay,iMonth,iYear);
+	stamp = new IWTimestamp(iDay,iMonth,iYear);
       }
       catch (Exception ex) {
-	stamp = new IWTimeStamp();
+	stamp = new IWTimestamp();
       }
     }
     else
-      stamp = new IWTimeStamp();
+      stamp = new IWTimestamp();
 
     stamp.setHour(0);
     stamp.setMinute(0);
@@ -150,7 +150,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     entry.setEntryTypeID(Integer.parseInt(entryType));
     entry.setUserID(userID);
     entry.setGroupID(groupID);
-    entry.setDate(new IWTimeStamp(entryDate+" "+entryTime).getTimestamp());
+    entry.setDate(new IWTimestamp(entryDate+" "+entryTime).getTimestamp());
 
     if ( !update ) {
       try {
@@ -318,7 +318,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
   public static void initializeCalendarEntry() throws SQLException{
    EntityBulkUpdater bulk = new EntityBulkUpdater();
     CalendarEntry entry = ((com.idega.block.calendar.data.CalendarEntryHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarEntry.class)).createLegacy();
-      entry.setDate(new com.idega.util.IWTimeStamp(1,1,2000).getTimestamp());
+      entry.setDate(new com.idega.util.IWTimestamp(1,1,2000).getTimestamp());
       entry.setEntryTypeID(3);
 
     LocalizedText text = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();

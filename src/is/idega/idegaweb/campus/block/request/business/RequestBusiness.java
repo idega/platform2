@@ -1,5 +1,5 @@
 /*
- * $Id: RequestBusiness.java,v 1.5 2002/08/12 12:17:55 palli Exp $
+ * $Id: RequestBusiness.java,v 1.6 2002/08/12 13:00:42 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package is.idega.idegaweb.campus.block.request.business;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.campus.block.request.data.Request;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -36,7 +36,7 @@ public class RequestBusiness {
       req.setRequestType(type);
       if (special != null)
         req.setSpecialTime(special);
-      req.setDateSent(IWTimeStamp.getTimestampRightNow());
+      req.setDateSent(IWTimestamp.getTimestampRightNow());
       req.setStatus(RequestFinder.REQUEST_STATUS_SENT);
 //      ((is.idega.idegaweb.campus.block.request.data.RequestHome)com.idega.data.IDOLookup.getHome(Request.class)).
       req.store();

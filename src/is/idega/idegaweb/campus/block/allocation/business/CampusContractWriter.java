@@ -12,7 +12,7 @@ import com.idega.block.application.data.Applicant;
 
 import com.idega.util.text.TextSoap;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 import com.idega.data.EntityFinder;
 

@@ -56,9 +56,9 @@ public class MemberDevelopment extends Block {
 
 private int unionID = -1;
 
-private IWTimeStamp dateBefore;
+private IWTimestamp dateBefore;
 
-private IWTimeStamp dateAfter;
+private IWTimestamp dateAfter;
 
 private boolean onlyActive = false;
 
@@ -72,9 +72,9 @@ private boolean phones = false;
 
     this.unionID = 3;
 
-    dateBefore = new IWTimeStamp(1,1,2000);
+    dateBefore = new IWTimestamp(1,1,2000);
 
-    dateAfter = new IWTimeStamp();
+    dateAfter = new IWTimestamp();
 
   }
 
@@ -84,27 +84,27 @@ private boolean phones = false;
 
     this.unionID = unionID;
 
-    dateBefore = new IWTimeStamp(1,1,2000);
+    dateBefore = new IWTimestamp(1,1,2000);
 
-    dateAfter = new IWTimeStamp();
+    dateAfter = new IWTimestamp();
 
   }
 
 
 
-  public MemberDevelopment(IWTimeStamp dateBefore) {
+  public MemberDevelopment(IWTimestamp dateBefore) {
 
     this.unionID = 3;
 
     this.dateBefore = dateBefore;
 
-    dateAfter = new IWTimeStamp();
+    dateAfter = new IWTimestamp();
 
   }
 
 
 
-  public MemberDevelopment(IWTimeStamp dateBefore, IWTimeStamp dateAfter) {
+  public MemberDevelopment(IWTimestamp dateBefore, IWTimestamp dateAfter) {
 
     this.unionID = 3;
 
@@ -116,19 +116,19 @@ private boolean phones = false;
 
 
 
-  public MemberDevelopment(int unionID, IWTimeStamp dateBefore) {
+  public MemberDevelopment(int unionID, IWTimestamp dateBefore) {
 
     this.unionID = unionID;
 
     this.dateBefore = dateBefore;
 
-    dateAfter = new IWTimeStamp();
+    dateAfter = new IWTimestamp();
 
   }
 
 
 
-  public MemberDevelopment(int unionID, IWTimeStamp dateBefore, IWTimeStamp dateAfter) {
+  public MemberDevelopment(int unionID, IWTimestamp dateBefore, IWTimestamp dateAfter) {
 
     this.unionID = unionID;
 
@@ -190,7 +190,7 @@ private boolean phones = false;
 
 
 
-      System.out.println("Starting: "+new IWTimeStamp().getTimestampRightNow().toString());
+      System.out.println("Starting: "+new IWTimestamp().getTimestampRightNow().toString());
 
       Union union = ((is.idega.idegaweb.golf.entity.UnionHome)com.idega.data.IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKeyLegacy(unionID);
 
@@ -456,7 +456,7 @@ private boolean phones = false;
 
                 if ( umi.getRegistrationDate() != null )
 
-                  s = (new IWTimeStamp(umi.getRegistrationDate())).toSQLDateString();
+                  s = (new IWTimestamp(umi.getRegistrationDate())).toSQLDateString();
 
                 else
 
@@ -598,7 +598,7 @@ private boolean phones = false;
 
 
 
-      System.out.println("Done: "+new IWTimeStamp().getTimestampRightNow().toString());
+      System.out.println("Done: "+new IWTimestamp().getTimestampRightNow().toString());
 
 
 

@@ -4,7 +4,7 @@ import java.sql.*;
 import com.idega.presentation.IWContext;
 import com.idega.block.text.data.*;
 import com.idega.core.data.ICObjectInstance;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.util.List;
 import java.util.Iterator;
 import com.idega.core.data.ICFile;
@@ -122,7 +122,7 @@ public class ContentBusiness{
         ctUpdate = false;
         locUpdate = false;
         eContent = ((com.idega.block.text.data.ContentHome)com.idega.data.IDOLookup.getHomeLegacy(Content.class)).createLegacy();
-        eContent.setCreated(IWTimeStamp.getTimestampRightNow());
+        eContent.setCreated(IWTimestamp.getTimestampRightNow());
         locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       }
 
@@ -130,13 +130,13 @@ public class ContentBusiness{
       locText.setBody(sBody);
       locText.setLocaleId(iLocaleId);
       locText.setTitle( sTitle);
-      locText.setUpdated(IWTimeStamp.getTimestampRightNow());
+      locText.setUpdated(IWTimestamp.getTimestampRightNow());
 
       if(tsPublishFrom!= null)
         eContent.setPublishFrom(tsPublishFrom);
       if(tsPublishTo != null)
         eContent.setPublishTo(tsPublishTo);
-      eContent.setLastUpdated(IWTimeStamp.getTimestampRightNow());
+      eContent.setLastUpdated(IWTimestamp.getTimestampRightNow());
 
       if(ctUpdate ){
         eContent.update();
@@ -144,17 +144,17 @@ public class ContentBusiness{
           locText.update();
         }
         else if(!locUpdate){
-          locText.setCreated(IWTimeStamp.getTimestampRightNow());
+          locText.setCreated(IWTimestamp.getTimestampRightNow());
           locText.insert();
           locText.addTo(eContent);
         }
       }
       else if(!ctUpdate){
-        eContent.setCreated(IWTimeStamp.getTimestampRightNow());
+        eContent.setCreated(IWTimestamp.getTimestampRightNow());
         if(iUserId > 0)
         eContent.setUserId(iUserId);
         eContent.insert();
-        locText.setCreated(IWTimeStamp.getTimestampRightNow());
+        locText.setCreated(IWTimestamp.getTimestampRightNow());
         locText.insert();
         locText.addTo(eContent);
       }

@@ -43,7 +43,7 @@ public class CalendarHandler extends TravelManager {
   private String colorForFullyBookedText = BLACK;
   private String colorForToday = "#71CBFB";
 
-  private idegaCalendar cal = new idegaCalendar();
+  private IWCalendar cal = new IWCalendar();
   public SmallCalendar sm = new SmallCalendar();
 
   private Product _product;
@@ -52,8 +52,8 @@ public class CalendarHandler extends TravelManager {
   private Timeframe[] _timeframes;
   private Contract _contract;
   private Reseller _reseller;
-  private IWTimeStamp _fromStamp;
-  private IWTimeStamp _toStamp;
+  private IWTimestamp _fromStamp;
+  private IWTimestamp _toStamp;
   private Class _class = Booking.class;
 
   private int _productId;
@@ -61,7 +61,7 @@ public class CalendarHandler extends TravelManager {
 
   private Vector parameterName  = new Vector();
   private Vector parameterValue = new Vector();
-  private IWTimeStamp _stamp = IWTimeStamp.RightNow();
+  private IWTimestamp _stamp = IWTimestamp.RightNow();
 
   private String _fontColor;
   private boolean _viewInquiries = true;
@@ -98,7 +98,7 @@ public class CalendarHandler extends TravelManager {
 //      sm.setSelectedHighlighted(true);
 //      sm.setSelectedHighlightColor(colorForToday);
 
-      sm.setDayFontColor(IWTimeStamp.RightNow(),this.backgroundColor);
+      sm.setDayFontColor(IWTimestamp.RightNow(),this.backgroundColor);
   }
 
   private void timeframeCheck() {
@@ -142,7 +142,7 @@ public class CalendarHandler extends TravelManager {
         form.maintainParameter(CalendarBusiness.PARAMETER_MONTH);
 
         Table yearTable = new Table(2,1);
-        IWTimeStamp tempSt = IWTimeStamp.RightNow();
+        IWTimestamp tempSt = IWTimestamp.RightNow();
         DropdownMenu yearMenu = new DropdownMenu(CalendarBusiness.PARAMETER_YEAR);
           for (int i = 2000; i < ( tempSt.getYear() +4 ); i++) {
               yearMenu.addMenuElement(i,""+i);
@@ -331,7 +331,7 @@ public class CalendarHandler extends TravelManager {
       int year = _fromStamp.getYear();
       int lengthOfMonth = cal.getLengthOfMonth(month, year);
 
-      IWTimeStamp temp = new IWTimeStamp(1, month , year);
+      IWTimestamp temp = new IWTimestamp(1, month , year);
       int iBookings = 0;
 
       List depDays = this.getDepartureDays(iwc, _showPast);
@@ -349,7 +349,7 @@ public class CalendarHandler extends TravelManager {
       try {
         if (_contract != null) {
           for (int i = 0; i < depDays.size(); i++) {
-            temp = (IWTimeStamp) depDays.get(i);
+            temp = (IWTimestamp) depDays.get(i);
             if (!getTravelStockroomBusiness(iwc).getIfExpired(_contract, temp))
             try {
             if (getTravelStockroomBusiness(iwc).getIfDay(iwc,_contract,_product,temp)) {
@@ -367,7 +367,7 @@ public class CalendarHandler extends TravelManager {
           }
           int resellerId = _contract.getResellerId();
           if (this._viewInquiries) {
-            temp = new IWTimeStamp(1, month , year);
+            temp = new IWTimestamp(1, month , year);
             for (int i = 1; i <= lengthOfMonth; i++) {
               if (getInquirer(iwc).getInquiryHome().getInqueredSeats(_productId, temp,resellerId, true) > 0) {
                 sm.setDayColor(temp, colorForInquery);
@@ -381,7 +381,7 @@ public class CalendarHandler extends TravelManager {
         else if (_supplier != null) {
           for (int i = 0; i < depDays.size(); i++) {
             //System.err.println("trying");
-            temp = (IWTimeStamp) depDays.get(i);
+            temp = (IWTimestamp) depDays.get(i);
             if (seats > 0 && seats <= getBooker(iwc).getNumberOfBookings(_productId, temp) ) {
             //System.err.println("bookings...");
               sm.setDayColor(temp, colorForFullyBooked);
@@ -393,7 +393,7 @@ public class CalendarHandler extends TravelManager {
             }
           }
           if (this._viewInquiries) {
-            temp = new IWTimeStamp(1, month , year);
+            temp = new IWTimestamp(1, month , year);
             for (int i = 1; i <= lengthOfMonth; i++) {
               if (getInquirer(iwc).getInqueredSeats(_productId, temp, true) > 0) {
                 sm.setDayColor(temp, colorForInquery);
@@ -405,7 +405,7 @@ public class CalendarHandler extends TravelManager {
         }
         else if (_reseller != null) {
           for (int i = 0; i < depDays.size(); i++) {
-            temp = (IWTimeStamp) depDays.get(i);
+            temp = (IWTimestamp) depDays.get(i);
             iBookings = getBooker(iwc).getNumberOfBookings(_productId, temp);
             if (seats > 0 && seats <= iBookings ) {
               sm.setDayColor(temp, colorForFullyBooked);
@@ -416,7 +416,7 @@ public class CalendarHandler extends TravelManager {
             }
           }
           if (this._viewInquiries) {
-            temp = new IWTimeStamp(1, month , year);
+            temp = new IWTimestamp(1, month , year);
             for (int i = 1; i <= lengthOfMonth; i++) {
 //              System.err.println("Reseller != null : "+Inquirer.getInqueredSeats(_productId, temp,_resellerId, true));
               if (getInquirer(iwc).getInquiryHome().getInqueredSeats(_productId, temp,_resellerId, true) > 0) {
@@ -527,29 +527,29 @@ public class CalendarHandler extends TravelManager {
   }
 
   private void setTimestampsAuto(IWContext iwc) {
-    IWTimeStamp stamp = IWTimeStamp.RightNow();
+    IWTimestamp stamp = IWTimestamp.RightNow();
 
     String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
     String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
     if (year != null && month != null) {
-      _fromStamp =  new IWTimeStamp(1,Integer.parseInt(month), Integer.parseInt(year));
-      _toStamp   = new IWTimeStamp(cal.getLengthOfMonth(Integer.parseInt(month), Integer.parseInt(year)), Integer.parseInt(month), Integer.parseInt(year));
+      _fromStamp =  new IWTimestamp(1,Integer.parseInt(month), Integer.parseInt(year));
+      _toStamp   = new IWTimestamp(cal.getLengthOfMonth(Integer.parseInt(month), Integer.parseInt(year)), Integer.parseInt(month), Integer.parseInt(year));
     }else {
-      _fromStamp =  new IWTimeStamp(1,stamp.getMonth(), stamp.getYear());
-      _toStamp   = new IWTimeStamp(cal.getLengthOfMonth(stamp.getMonth(), stamp.getYear()), stamp.getMonth(), stamp.getYear());
+      _fromStamp =  new IWTimestamp(1,stamp.getMonth(), stamp.getYear());
+      _toStamp   = new IWTimestamp(cal.getLengthOfMonth(stamp.getMonth(), stamp.getYear()), stamp.getMonth(), stamp.getYear());
     }
 
   }
 
-  public void setTimestamp(IWTimeStamp stamp) {
-    _stamp = new IWTimeStamp(stamp);
-    _fromStamp =  new IWTimeStamp(1,stamp.getMonth(), stamp.getYear());
-    _toStamp   = new IWTimeStamp(cal.getLengthOfMonth(stamp.getMonth(), stamp.getYear()), stamp.getMonth(), stamp.getYear());
+  public void setTimestamp(IWTimestamp stamp) {
+    _stamp = new IWTimestamp(stamp);
+    _fromStamp =  new IWTimestamp(1,stamp.getMonth(), stamp.getYear());
+    _toStamp   = new IWTimestamp(cal.getLengthOfMonth(stamp.getMonth(), stamp.getYear()), stamp.getMonth(), stamp.getYear());
   }
 
-  public void setTimeframe(IWTimeStamp fromStamp, IWTimeStamp toStamp) {
-    _fromStamp = new IWTimeStamp(fromStamp);
-    _toStamp = new IWTimeStamp(toStamp);
+  public void setTimeframe(IWTimestamp fromStamp, IWTimestamp toStamp) {
+    _fromStamp = new IWTimestamp(fromStamp);
+    _toStamp = new IWTimestamp(toStamp);
   }
 
   public void setClassToLinkTo(Class classToLinkTo) {

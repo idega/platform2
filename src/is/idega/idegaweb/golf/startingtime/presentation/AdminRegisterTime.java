@@ -15,7 +15,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.Image;
 import is.idega.idegaweb.golf.GolfField;
 import com.idega.data.IDOLegacyEntity;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.Tournament;
 import com.idega.data.EntityFinder;
@@ -51,7 +51,7 @@ public class AdminRegisterTime extends is.idega.idegaweb.golf.templates.page.Jmo
   private TeeTimeBusiness business;
   private Form myForm;
   private Table frameTable;
-  private IWTimeStamp currentDay;
+  private IWTimestamp currentDay;
   private String currentField;
   private String currentUnion;
   private String MemberID;
@@ -105,15 +105,15 @@ public class AdminRegisterTime extends is.idega.idegaweb.golf.templates.page.Jmo
       for (int i = 0; i < TournamentRounds.size(); i++) {
         TournamentRound tempRound = (TournamentRound)TournamentRounds.get(i);
 
-        IWTimeStamp begin = new IWTimeStamp(tempRound.getRoundDate());
+        IWTimestamp begin = new IWTimestamp(tempRound.getRoundDate());
         begin.setAsTime();
-        IWTimeStamp End_ = new IWTimeStamp(tempRound.getRoundEndDate());
+        IWTimestamp End_ = new IWTimestamp(tempRound.getRoundEndDate());
         End_.setAsTime();
-        IWTimeStamp begintime = new IWTimeStamp(fieldInfo.getOpenTime());
+        IWTimestamp begintime = new IWTimestamp(fieldInfo.getOpenTime());
         begintime.setAsTime();
 
-        int firstGroup = IWTimeStamp.getMinutesBetween(begintime, begin)/interval;
-        int groupCount = IWTimeStamp.getMinutesBetween(begin,End_)/interval;
+        int firstGroup = IWTimestamp.getMinutesBetween(begintime, begin)/interval;
+        int groupCount = IWTimestamp.getMinutesBetween(begin,End_)/interval;
         int[] tempBeginGroupAndEnd = new int[2];
 
         tempBeginGroupAndEnd[0] = firstGroup+1;
@@ -146,41 +146,41 @@ public class AdminRegisterTime extends is.idega.idegaweb.golf.templates.page.Jmo
     Vector illegalTimes = new Vector(0);
     int illegalTimesIndex = 0;
 
-    IWTimeStamp openTime = new IWTimeStamp(fieldInfo.getOpenTime());
+    IWTimestamp openTime = new IWTimestamp(fieldInfo.getOpenTime());
     int minBetween = fieldInfo.getMinutesBetweenStart();
 
-    IWTimeStamp noon = new IWTimeStamp(1,2,1,13,0,0);
+    IWTimestamp noon = new IWTimestamp(1,2,1,13,0,0);
     noon.setAsTime();
-    IWTimeStamp afternoon = new IWTimeStamp(1,2,1,17,0,0);
+    IWTimestamp afternoon = new IWTimestamp(1,2,1,17,0,0);
     afternoon.setAsTime();
 
     int groupCount = 0;
     int firstGroup = 1;
     List takenTimes = null;
-    IWTimeStamp firstTime = null;
+    IWTimestamp firstTime = null;
     switch (daytime) {
       case 1: //afternoon
-        groupCount = IWTimeStamp.getMinutesBetween(noon,afternoon)/minBetween;
-        firstGroup = IWTimeStamp.getMinutesBetween(openTime ,noon)/minBetween+1;
+        groupCount = IWTimestamp.getMinutesBetween(noon,afternoon)/minBetween;
+        firstGroup = IWTimestamp.getMinutesBetween(openTime ,noon)/minBetween+1;
         takenTimes = business.getStartingtimeTableEntries(this.currentDay,this.currentField,firstGroup,firstGroup+groupCount-1);
         firstTime = noon;
         break;
       case 2: //evening
-        groupCount = IWTimeStamp.getMinutesBetween(afternoon,new IWTimeStamp(fieldInfo.getCloseTime()))/minBetween;
-        firstGroup = IWTimeStamp.getMinutesBetween(openTime ,afternoon)/minBetween+1;
+        groupCount = IWTimestamp.getMinutesBetween(afternoon,new IWTimestamp(fieldInfo.getCloseTime()))/minBetween;
+        firstGroup = IWTimestamp.getMinutesBetween(openTime ,afternoon)/minBetween+1;
         takenTimes = business.getStartingtimeTableEntries(this.currentDay,this.currentField,firstGroup,firstGroup+groupCount-1);
         firstTime = afternoon;
         break;
       default: // morning
-        groupCount = IWTimeStamp.getMinutesBetween(openTime,noon)/minBetween;
+        groupCount = IWTimestamp.getMinutesBetween(openTime,noon)/minBetween;
         firstGroup = 1;
         takenTimes = business.getStartingtimeTableEntries(this.currentDay,this.currentField,firstGroup,groupCount);
-        firstTime = new IWTimeStamp(fieldInfo.getOpenTime());
+        firstTime = new IWTimestamp(fieldInfo.getOpenTime());
         break;
     }
 
 
-//    int groupCount = IWTimeStamp.getMinutesBetween(openTime,new IWTimeStamp(fieldInfo.getCloseTime()))/minBetween;
+//    int groupCount = IWTimestamp.getMinutesBetween(openTime,new IWTimestamp(fieldInfo.getCloseTime()))/minBetween;
 
     List tournamentGroups = getTournamentRoundList();
 
@@ -340,7 +340,7 @@ public class AdminRegisterTime extends is.idega.idegaweb.golf.templates.page.Jmo
     groupCounter = 1;
     lastGroup = -1;
     List allTakenTimes = business.getStartingtimeTableEntries(this.currentDay,this.currentField);
-    int allGroupCount = IWTimeStamp.getMinutesBetween(new IWTimeStamp(fieldInfo.getOpenTime()),new IWTimeStamp(fieldInfo.getCloseTime()))/minBetween;
+    int allGroupCount = IWTimestamp.getMinutesBetween(new IWTimestamp(fieldInfo.getOpenTime()),new IWTimestamp(fieldInfo.getCloseTime()))/minBetween;
     int[] freeGroups = new int[allGroupCount];
 
 
@@ -770,7 +770,7 @@ public class AdminRegisterTime extends is.idega.idegaweb.golf.templates.page.Jmo
     boolean keepOn = true;
 
     try{
-      currentDay = new IWTimeStamp(date);
+      currentDay = new IWTimestamp(date);
     }catch(NullPointerException e){
       keepOn = false;
       this.noPermission();

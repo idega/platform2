@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
 import com.idega.core.data.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.data.EntityFinder;
 import com.idega.core.user.data.User;
 import com.idega.data.*;

@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 import com.idega.presentation.IWContext;
 import com.idega.core.user.data.User;
 import com.idega.util.IsCollator;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.util.*;
 import java.util.Comparator;
 import is.idega.idegaweb.travel.interfaces.Booking;
@@ -235,8 +235,8 @@ public class BookingComparator implements Comparator {
     Booking p1 = (Booking) o1;
     Booking p2 = (Booking) o2;
 
-    IWTimeStamp t1 = new IWTimeStamp(p1.getBookingDate());
-    IWTimeStamp t2 = new IWTimeStamp(p2.getBookingDate());
+    IWTimestamp t1 = new IWTimestamp(p1.getBookingDate());
+    IWTimestamp t2 = new IWTimestamp(p2.getBookingDate());
 
     if (t1.isLaterThan(t2)) {
       return 1;

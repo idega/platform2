@@ -9,8 +9,8 @@ import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.calendar.presentation.SmallCalendar;
-import com.idega.util.IWTimeStamp;
-import com.idega.util.idegaCalendar;
+import com.idega.util.IWTimestamp;
+import com.idega.util.IWCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.data.*;
 import java.sql.SQLException;
@@ -44,8 +44,8 @@ public class Statistics extends TravelManager {
   private Service service;
   private Timeframe timeframe;
 
-  private IWTimeStamp fromStamp;
-  private IWTimeStamp toStamp;
+  private IWTimestamp fromStamp;
+  private IWTimestamp toStamp;
 
   public Statistics() {
   }
@@ -127,38 +127,38 @@ public class Statistics extends TravelManager {
 
 
   // BUSINESS
-  public IWTimeStamp getFromIdegaTimestamp(IWContext iwc) {
-      IWTimeStamp stamp = null;
+  public IWTimestamp getFromIdegaTimestamp(IWContext iwc) {
+      IWTimestamp stamp = null;
       String from_time = iwc.getParameter("active_from");
       if (from_time!= null) {
           try {
-              stamp = new IWTimeStamp(from_time);
+              stamp = new IWTimestamp(from_time);
           }
           catch (RuntimeException e) {
-              stamp = IWTimeStamp.RightNow();
+              stamp = IWTimestamp.RightNow();
           }
       }
       else {
-          stamp = IWTimeStamp.RightNow();
+          stamp = IWTimestamp.RightNow();
       }
       return stamp;
   }
 
   // BUSINESS
-  public IWTimeStamp getToIdegaTimestamp(IWContext iwc) {
-      IWTimeStamp stamp = null;
+  public IWTimestamp getToIdegaTimestamp(IWContext iwc) {
+      IWTimestamp stamp = null;
       String from_time = iwc.getParameter("active_to");
       if (from_time!= null) {
           try {
-              stamp = new IWTimeStamp(from_time);
+              stamp = new IWTimestamp(from_time);
           }
           catch (RuntimeException e) {
-              stamp = IWTimeStamp.RightNow();
+              stamp = IWTimestamp.RightNow();
               stamp.addDays(15);
           }
       }
       else {
-          stamp = IWTimeStamp.RightNow();
+          stamp = IWTimestamp.RightNow();
           stamp.addDays(15);
       }
       return stamp;

@@ -252,7 +252,7 @@ private Form myForm;
 
 
 
-      idegaCalendar dagatal = new idegaCalendar();
+      IWCalendar dagatal = new IWCalendar();
 
 
 

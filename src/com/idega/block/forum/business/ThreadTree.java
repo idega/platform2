@@ -428,7 +428,7 @@ public class ThreadTree  extends PresentationObjectContainer {
 
 
 
-      Text Thdate = new Text("<small>" + new IWTimeStamp(theThread.getThreadDate()).toString(true, false, false));
+      Text Thdate = new Text("<small>" + new IWTimestamp(theThread.getThreadDate()).toString(true, false, false));
 
       Thdate.setFontFace("Arial");
 

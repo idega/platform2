@@ -11,7 +11,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.util.text.TextFormat;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.business.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 import java.util.Collection;
 import com.idega.business.IBOLookup;
@@ -91,11 +91,11 @@ public class SchoolSeasonEditor extends Block {
       if(id!=null)
         aid = Integer.parseInt(id);
       if(start!=null);
-        startDate = new IWTimeStamp(start).getSQLDate();
+        startDate = new IWTimestamp(start).getSQLDate();
       if(end!=null);
-        endDate = new IWTimeStamp(end).getSQLDate();
+        endDate = new IWTimestamp(end).getSQLDate();
       if(duedate!=null);
-        dueDate = new IWTimeStamp(duedate).getSQLDate();
+        dueDate = new IWTimestamp(duedate).getSQLDate();
       sabBean.storeSchoolSeason(aid,name,startDate,endDate,dueDate);
     }
   }

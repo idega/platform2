@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminView.java,v 1.8 2002/08/12 12:17:54 palli Exp $
+ * $Id: RequestAdminView.java,v 1.9 2002/08/12 13:00:40 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -22,7 +22,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.text.Link;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.campus.block.request.business.RequestFinder;
 import is.idega.idegaweb.campus.block.request.business.RequestHolder;
 import is.idega.idegaweb.campus.presentation.Edit;
@@ -141,7 +141,7 @@ public class RequestAdminView extends Block {
 
         table.add(details,1,row);
         try {
-          table.add(Edit.formatText(new IWTimeStamp(request.getDateSent()).getISLDate(".",true)),2,row);
+          table.add(Edit.formatText(new IWTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
         }
         catch(java.rmi.RemoteException e) {
           table.add(null,2,row);

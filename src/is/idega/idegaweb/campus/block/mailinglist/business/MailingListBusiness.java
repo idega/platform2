@@ -4,7 +4,7 @@ import com.idega.data.EntityBulkUpdater;
 import com.idega.data.EntityFinder;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.SendMail;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.ContentParser;
 import com.idega.idegaweb.IWApplicationContext;
 import is.idega.idegaweb.campus.block.mailinglist.data.*;
@@ -121,7 +121,7 @@ public class MailingListBusiness {
                 update = true;
             }
             mlist.setName(name);
-            mlist.setCreated(IWTimeStamp.getTimestampRightNow());
+            mlist.setCreated(IWTimestamp.getTimestampRightNow());
             if (iCategoryId > 0) {
                 mlist.setCategoryId(iCategoryId);
             }

@@ -1,7 +1,7 @@
 package com.idega.block.finance.business;
 
 import com.idega.block.finance.data.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.data.genericentity.Member;
 import com.idega.core.user.data.User;
 import java.sql.SQLException;
@@ -36,16 +36,16 @@ public class AccountManager {
     }
   }
 
-  public static List listOfAccountEntries(int iAccountId,IWTimeStamp from,IWTimeStamp to){
+  public static List listOfAccountEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
     return listOfAccEntries(iAccountId,((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(), from,to,null);
   }
-  public static List listOfPhoneEntries(int iAccountId,IWTimeStamp from,IWTimeStamp to){
+  public static List listOfPhoneEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
     return listOfPhoneEntries(iAccountId, from,to,null);
   }
-  public static List listOfPhoneEntries(int iAccountId,IWTimeStamp to,String status){
+  public static List listOfPhoneEntries(int iAccountId,IWTimestamp to,String status){
     return listOfPhoneEntries(iAccountId,null,to,status);
   }
-  private static List listOfAccEntries(int iAccountId,Entry entry,IWTimeStamp from,IWTimeStamp to,String status){
+  private static List listOfAccEntries(int iAccountId,Entry entry,IWTimestamp from,IWTimestamp to,String status){
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(entry.getTableName());
     sql.append(" where ");
@@ -86,7 +86,7 @@ public class AccountManager {
     return A;
   }
 
-  private static List listOfPhoneEntries(int iAccountId,IWTimeStamp from,IWTimeStamp to,String status){
+  private static List listOfPhoneEntries(int iAccountId,IWTimestamp from,IWTimestamp to,String status){
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getEntityTableName());
     sql.append(" where ");
@@ -141,7 +141,7 @@ public class AccountManager {
     return FinanceFinder.getInstance().mapOfTariffKeys();
   }
 
-  public static List listOfKeySortedEntries(int iAccountId,IWTimeStamp from,IWTimeStamp to){
+  public static List listOfKeySortedEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
     Map acckeys = hashOfAccountKeys();
     Map takeys = hashOfTariffKeys();
     if(acckeys != null && takeys != null){
@@ -182,8 +182,8 @@ public class AccountManager {
   public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,String type,int iCategoryId)throws SQLException,java.rmi.RemoteException,javax.ejb.CreateException{
     Account A = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHome(Account.class)).create();
     A.setBalance(0);
-    A.setCreationDate(IWTimeStamp.getTimestampRightNow() );
-    A.setLastUpdated(IWTimeStamp.getTimestampRightNow()) ;
+    A.setCreationDate(IWTimestamp.getTimestampRightNow() );
+    A.setLastUpdated(IWTimestamp.getTimestampRightNow()) ;
     A.setUserId(iUserId);
     A.setName(sName) ;
     A.setExtraInfo(sExtra);

@@ -2,7 +2,7 @@ package is.idega.idegaweb.travel.presentation;
 
 import java.rmi.RemoteException;
 import com.idega.presentation.text.Text;
-import com.idega.util.idegaCalendar;
+import com.idega.util.IWCalendar;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.Table;
 import com.idega.idegaweb.IWResourceBundle;
@@ -35,7 +35,7 @@ public class ServiceDaySetter extends TravelWindow {
   private int _localeId;
   private Product _product;
   private ServiceDayHome _serviceDayHome;
-  private idegaCalendar _cal;
+  private IWCalendar _cal;
   private ServiceDay[] _serviceDays;
   private int _textInputSize = 5;
 
@@ -66,7 +66,7 @@ public class ServiceDaySetter extends TravelWindow {
   private void init(IWContext iwc) {
     _iwrb = super.getResourceBundle(iwc);
     _localeId = iwc.getCurrentLocaleId();
-    _cal = new idegaCalendar();
+    _cal = new IWCalendar();
     String serviceId = iwc.getParameter(PARAMETER_SERVICE_ID);
 
     try {

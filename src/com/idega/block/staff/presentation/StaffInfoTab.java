@@ -8,7 +8,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
 import com.idega.block.staff.business.StaffBusiness;
 import com.idega.block.staff.data.StaffInfo;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import com.idega.core.user.presentation.UserTab;
@@ -113,7 +113,7 @@ public class StaffInfoTab extends UserTab{
     areaField.setWrap(true);
 
     beganWorkField = new DateInput(beganWorkFieldName);
-    IWTimeStamp time = IWTimeStamp.RightNow();
+    IWTimestamp time = IWTimestamp.RightNow();
     beganWorkField.setYearRange(time.getYear(),time.getYear()-100);
   }
 
@@ -206,10 +206,10 @@ public class StaffInfoTab extends UserTab{
   public boolean store(IWContext iwc){
     try{
       if(getUserId() > -1){
-        IWTimeStamp beganWorkTS = null;
+        IWTimestamp beganWorkTS = null;
         String st = (String)fieldValues.get(this.beganWorkFieldName);
         if( st != null && !st.equals("")){
-          beganWorkTS = new IWTimeStamp(st);
+          beganWorkTS = new IWTimestamp(st);
         }
         StaffBusiness.updateStaff(getUserId(),(String)fieldValues.get(this.titleFieldName),
                             (String)fieldValues.get(this.educationFieldName),(String)fieldValues.get(this.schoolFieldName),
@@ -233,7 +233,7 @@ public class StaffInfoTab extends UserTab{
       fieldValues.put(this.educationFieldName,(staffInfo.getEducation() != null) ? staffInfo.getEducation():"" );
       fieldValues.put(this.schoolFieldName,(staffInfo.getSchool() != null) ? staffInfo.getSchool():"" );
       fieldValues.put(this.areaFieldName,(staffInfo.getArea() != null) ? staffInfo.getArea():"" );
-      fieldValues.put(this.beganWorkFieldName,(staffInfo.getBeganWork() != null) ? new IWTimeStamp(staffInfo.getBeganWork()).toSQLDateString() : "");
+      fieldValues.put(this.beganWorkFieldName,(staffInfo.getBeganWork() != null) ? new IWTimestamp(staffInfo.getBeganWork()).toSQLDateString() : "");
       this.updateFieldsDisplayStatus();
 
     }

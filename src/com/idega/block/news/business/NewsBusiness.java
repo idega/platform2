@@ -18,7 +18,7 @@ import com.idega.core.data.ICCategory;
 
 import com.idega.core.data.ICObjectInstance;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 import com.idega.core.data.ICFile;
 
@@ -438,7 +438,7 @@ public class NewsBusiness{
 
       locText.setTitle( sTitle);
 
-      locText.setUpdated(IWTimeStamp.getTimestampRightNow());
+      locText.setUpdated(IWTimestamp.getTimestampRightNow());
 
 
 
@@ -466,7 +466,7 @@ public class NewsBusiness{
 
       nwNews.setIncludeImage(useImage);
 
-      nwNews.setUpdated(IWTimeStamp.getTimestampRightNow());
+      nwNews.setUpdated(IWTimestamp.getTimestampRightNow());
 
       nwNews.setNewsCategoryId(iCategoryId );
 
@@ -492,7 +492,7 @@ public class NewsBusiness{
 
         else if(!locUpdate){
 
-          locText.setCreated(IWTimeStamp.getTimestampRightNow());
+          locText.setCreated(IWTimestamp.getTimestampRightNow());
 
           locText.insert();
 
@@ -504,15 +504,15 @@ public class NewsBusiness{
 
       else if(!nwUpdate){
 
-        nwNews.setNewsDate(IWTimeStamp.getTimestampRightNow());
+        nwNews.setNewsDate(IWTimestamp.getTimestampRightNow());
 
-        nwNews.setCreated(IWTimeStamp.getTimestampRightNow());
+        nwNews.setCreated(IWTimestamp.getTimestampRightNow());
 
         nwNews.setUserId(iUserId);
 
         nwNews.insert();
 
-        locText.setCreated(IWTimeStamp.getTimestampRightNow());
+        locText.setCreated(IWTimestamp.getTimestampRightNow());
 
         locText.insert();
 

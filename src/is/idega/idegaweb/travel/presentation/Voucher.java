@@ -9,7 +9,7 @@ import com.idega.core.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.data.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
@@ -92,7 +92,7 @@ public abstract class Voucher extends TravelManager {
         _user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(_booking.getUserId());
         _reseller = ResellerManager.getReseller(_user);
       }
-      _timeframe = ProductBusiness.getTimeframe(_product, new IWTimeStamp(_booking.getBookingDate()));
+      _timeframe = ProductBusiness.getTimeframe(_product, new IWTimestamp(_booking.getBookingDate()));
       Collection coll = gBooking.getTravelAddresses();
       TravelAddress[] addresses = (TravelAddress[]) coll.toArray(new TravelAddress[]{});
       _address = addresses[addresses.length - 1];
@@ -180,8 +180,8 @@ public abstract class Voucher extends TravelManager {
         Table rightHeader = new Table();
           rightHeader.add(getSmallText(_iwrb.getLocalizedString("travel.date_of_issue","Date of issue")),1,1);
           rightHeader.add(getSmallText(":"),1,1);
-//          rightHeader.add(getSmallText(IWTimeStamp.RightNow().getLocaleDate(_iwc)),1,2);
-          rightHeader.add(getSmallText(new IWTimeStamp(_booking.getDateOfBooking()).getLocaleDate(_iwc)),1,2);
+//          rightHeader.add(getSmallText(IWTimestamp.RightNow().getLocaleDate(_iwc)),1,2);
+          rightHeader.add(getSmallText(new IWTimestamp(_booking.getDateOfBooking()).getLocaleDate(_iwc)),1,2);
           rightHeader.setAlignment(1,1,"right");
           rightHeader.setAlignment(1,2,"right");
         table.add(rightHeader,3,1);
@@ -283,11 +283,11 @@ public abstract class Voucher extends TravelManager {
         table.add(getText(ProductBusiness.getProductNameWithNumber(_product, true, _localeId)),1,2);
         table.add(Text.BREAK,1,2);
         if (_bookings.size() > 0) {
-          IWTimeStamp fromStamp = new IWTimeStamp(((Booking)_bookings.get(0)).getBookingDate());
+          IWTimestamp fromStamp = new IWTimestamp(((Booking)_bookings.get(0)).getBookingDate());
           if (_bookings.size() < 2) {
             table.add(getText(fromStamp.getLocaleDate(_iwc)),1,2);
           }else {
-            IWTimeStamp toStamp = new IWTimeStamp(((Booking)_bookings.get(_bookings.size()-1)).getBookingDate());
+            IWTimestamp toStamp = new IWTimestamp(((Booking)_bookings.get(_bookings.size()-1)).getBookingDate());
             table.add(getText(fromStamp.getLocaleDate(_iwc)+" - "+toStamp.getLocaleDate(iwc)),1,2);
           }
         }

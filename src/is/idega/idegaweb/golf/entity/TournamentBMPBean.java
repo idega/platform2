@@ -130,11 +130,11 @@ public class TournamentBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityB
 
 	public void setDefaultValues(){
 
-		setCreationDate(com.idega.util.IWTimeStamp.getTimestampRightNow());
+		setCreationDate(com.idega.util.IWTimestamp.getTimestampRightNow());
 
 
 
-                com.idega.util.IWTimeStamp start = com.idega.util.IWTimeStamp.RightNow();
+                com.idega.util.IWTimestamp start = com.idega.util.IWTimestamp.RightNow();
 
                 start.addDays(2);
 
@@ -148,7 +148,7 @@ public class TournamentBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityB
 
 
 
-                com.idega.util.IWTimeStamp end = com.idega.util.IWTimeStamp.RightNow();
+                com.idega.util.IWTimestamp end = com.idega.util.IWTimestamp.RightNow();
 
                 end.addDays(1);
 
@@ -668,7 +668,7 @@ public class TournamentBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityB
 
       public Tournament[] getMostRecentTournaments(int number)throws SQLException{
 
-          //IWTimeStamp stamp = new IWTimeStamp(IWTimeStamp.getTimestampRightNow());
+          //IWTimestamp stamp = new IWTimestamp(IWTimestamp.getTimestampRightNow());
 
           //return (Tournament[])findAll("select * from "+this.getTableName()+" where start_time > '"+stamp.toSQLDateString()+"'");
 
@@ -682,7 +682,7 @@ public class TournamentBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityB
 
     public Tournament[] getForthcomingTournaments()throws SQLException{
 
-          IWTimeStamp stamp = new IWTimeStamp(IWTimeStamp.getTimestampRightNow());
+          IWTimestamp stamp = new IWTimestamp(IWTimestamp.getTimestampRightNow());
 
           return (Tournament[])findAll("select * from "+this.getTableName()+" where start_time > '"+stamp.toSQLDateString()+"'");
 
@@ -698,9 +698,9 @@ public class TournamentBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityB
 
       /*
 
-      IWTimeStamp stampNow = new IWTimeStamp(IWTimeStamp.getTimestampRightNow());
+      IWTimestamp stampNow = new IWTimestamp(IWTimestamp.getTimestampRightNow());
 
-      IWTimeStamp stampTournBegin = new IWTimeStamp(getStartTime());
+      IWTimestamp stampTournBegin = new IWTimestamp(getStartTime());
 
       return stampNow.isLaterThan(stampTournBegin);
 
@@ -712,11 +712,11 @@ public class TournamentBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityB
 
     public boolean isTournamentOngoing(){
 
-      IWTimeStamp stampNow = IWTimeStamp.RightNow();
+      IWTimestamp stampNow = IWTimestamp.RightNow();
 
-      IWTimeStamp stampTournBegin = new IWTimeStamp(getStartTime());
+      IWTimestamp stampTournBegin = new IWTimestamp(getStartTime());
 
-      IWTimeStamp stampTournEnd = new IWTimeStamp(getStartTime());
+      IWTimestamp stampTournEnd = new IWTimestamp(getStartTime());
 
       stampTournEnd.addDays(this.getNumberOfDays());
 
@@ -770,13 +770,13 @@ public class TournamentBMPBean extends is.idega.idegaweb.golf.entity.GolfEntityB
 
 				round.setTournament(this);
 
-				round.setRoundDate(com.idega.util.idegaCalendar.getTimestampAfter(getStartTime(),i+1));
+				round.setRoundDate(com.idega.util.IWCalendar.getTimestampAfter(getStartTime(),i+1));
 
                                 round.setIncreaseHandicap(true);
 
                                 round.setDecreaseHandicap(true);
 
-                                round.setRoundEndDate(com.idega.util.idegaCalendar.getTimestampAfter(getStartTime(),i+1));
+                                round.setRoundEndDate(com.idega.util.IWCalendar.getTimestampAfter(getStartTime(),i+1));
 
 				round.insert();
 

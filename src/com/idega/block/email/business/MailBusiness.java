@@ -58,7 +58,7 @@ public class MailBusiness {
       if (update) {
         group.update();
       } else {
-        group.setCreated(com.idega.util.IWTimeStamp.getTimestampRightNow());
+        group.setCreated(com.idega.util.IWTimestamp.getTimestampRightNow());
         group.insert();
       }
 
@@ -94,12 +94,12 @@ public class MailBusiness {
         topic.update();
       } else {
         MailList list = ((com.idega.block.email.data.MailListHome)com.idega.data.IDOLookup.getHomeLegacy(MailList.class)).createLegacy();
-        list.setCreated(com.idega.util.IWTimeStamp.getTimestampRightNow());
+        list.setCreated(com.idega.util.IWTimestamp.getTimestampRightNow());
         list.setName(topic.getName() + " list");
         list.setDescription(topic.getDescription());
         list.insert();
         topic.setListId(list.getID());
-        topic.setCreated(com.idega.util.IWTimeStamp.getTimestampRightNow());
+        topic.setCreated(com.idega.util.IWTimestamp.getTimestampRightNow());
         topic.insert();
       }
 

@@ -144,24 +144,24 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
     }
 
 
-    IWTimeStamp activeFromStamp = null;
+    IWTimestamp activeFromStamp = null;
     if ( activeFrom != null ) {
-      activeFromStamp = new IWTimeStamp( activeFrom );
+      activeFromStamp = new IWTimestamp( activeFrom );
     }
 
-    IWTimeStamp activeToStamp = null;
+    IWTimestamp activeToStamp = null;
     if ( activeTo != null ) {
-      activeToStamp = new IWTimeStamp( activeTo );
+      activeToStamp = new IWTimestamp( activeTo );
     }
 
-    IWTimeStamp departureStamp = null;
+    IWTimestamp departureStamp = null;
     if ( departureTime != null ) {
-      departureStamp = new IWTimeStamp( "2001-01-01 " + departureTime );
+      departureStamp = new IWTimestamp( "2001-01-01 " + departureTime );
     }
 
-    IWTimeStamp arrivalStamp = null;
+    IWTimestamp arrivalStamp = null;
     if ( arrivalTime != null ) {
-      arrivalStamp = new IWTimeStamp( "2001-01-01 " + arrivalTime );
+      arrivalStamp = new IWTimestamp( "2001-01-01 " + arrivalTime );
     }
 
 
@@ -256,7 +256,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       table.setAlignment("center");
 
       int row = 0;
-      IWTimeStamp stamp = IWTimeStamp.RightNow();
+      IWTimestamp stamp = IWTimestamp.RightNow();
 
       TextInput name = new TextInput( PARAMETER_NAME );
       name.setSize( 40 );
@@ -270,7 +270,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       number.keepStatusOnAction();
       DropdownMenu locales = ProductBusiness.getLocaleDropDown( iwc );
 
-      int currentYear = IWTimeStamp.RightNow().getYear();
+      int currentYear = IWTimestamp.RightNow().getYear();
 
       DateInput active_from = new DateInput( PARAMETER_ACTIVE_FROM );
       active_from.setDate( stamp.getSQLDate() );
@@ -502,8 +502,8 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
           Parameter par2 = new Parameter( PARAMETER_TIMEFRAME_ID, Integer.toString( _timeframe.getID() ) );
           par2.keepStatusOnAction();
           table.add( par2 );
-          active_from.setDate( new IWTimeStamp( _timeframe.getFrom() ).getSQLDate() );
-          active_to.setDate( new IWTimeStamp( _timeframe.getTo() ).getSQLDate() );
+          active_from.setDate( new IWTimestamp( _timeframe.getFrom() ).getSQLDate() );
+          active_to.setDate( new IWTimestamp( _timeframe.getTo() ).getSQLDate() );
           active_yearly.setSelected( _timeframe.getIfYearly() );
         }
 
@@ -544,7 +544,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
               break;
           }
         }
-        IWTimeStamp tempStamp;
+        IWTimestamp tempStamp;
 
 
         discountType.setSelectedElement( Integer.toString( _product.getDiscountTypeId() ) );

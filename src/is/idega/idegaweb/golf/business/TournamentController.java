@@ -84,7 +84,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
       Tournament tournament = ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).createLegacy();
 
-      IWTimeStamp stamp = IWTimeStamp.RightNow();
+      IWTimestamp stamp = IWTimestamp.RightNow();
 
       Tournament[] tourns = (Tournament[])tournament.findAll("select * from tournament where start_time>'"+stamp.toSQLDateString()+"' order by start_time",2);
 
@@ -98,7 +98,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
       Tournament tournament = ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).createLegacy();
 
-      IWTimeStamp stamp = IWTimeStamp.RightNow();
+      IWTimestamp stamp = IWTimestamp.RightNow();
 
       Tournament[] tourns = (Tournament[])tournament.findAll("select * from tournament where start_time<'"+stamp.toSQLDateString()+"' order by start_time desc",2);
 
@@ -112,7 +112,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
       Tournament tournament = ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).createLegacy();
 
-      IWTimeStamp stamp = IWTimeStamp.RightNow();
+      IWTimestamp stamp = IWTimestamp.RightNow();
 
       Tournament[] tourns = (Tournament[])tournament.findAll("select * from tournament where start_time>'"+stamp.toSQLDateString()+"' order by start_time",number);
 
@@ -126,7 +126,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
       Tournament tournament = ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).createLegacy();
 
-      IWTimeStamp stamp = IWTimeStamp.RightNow();
+      IWTimestamp stamp = IWTimestamp.RightNow();
 
       Tournament[] tourns = (Tournament[])tournament.findAll("select * from tournament where start_time<'"+stamp.toSQLDateString()+"' order by start_time desc",number);
 
@@ -136,9 +136,9 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
 
 
-    public static Tournament[] getTournaments(IWTimeStamp stamp) throws Exception{
+    public static Tournament[] getTournaments(IWTimestamp stamp) throws Exception{
 
-      IWTimeStamp next = new IWTimeStamp(stamp.RightNow());
+      IWTimestamp next = new IWTimestamp(stamp.RightNow());
 
           next.addDays(1);
 
@@ -156,7 +156,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
     public static Tournament[] getTournamentToday() throws Exception{
 
-        return TournamentController.getTournaments(IWTimeStamp.RightNow());
+        return TournamentController.getTournaments(IWTimestamp.RightNow());
 
     }
 
@@ -216,7 +216,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
       Tournament tournament = ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).createLegacy();
 
-      IWTimeStamp stamp = IWTimeStamp.RightNow();
+      IWTimestamp stamp = IWTimestamp.RightNow();
 
       Tournament[] tourns = (Tournament[])tournament.findAll("select * from tournament where closed = 'Y' and closed_date<'"+stamp.toSQLString()+"' order by closed_date desc",number);
 
@@ -822,7 +822,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
             startingtime.setMemberID(member.getID());
 
-            startingtime.setStartingtimeDate(new IWTimeStamp(tourRound.getRoundDate()).getSQLDate());
+            startingtime.setStartingtimeDate(new IWTimestamp(tourRound.getRoundDate()).getSQLDate());
 
             startingtime.setPlayerName(member.getName());
 
@@ -884,7 +884,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
         boolean returner = false;
 
-        com.idega.util.IWTimeStamp startStamp = new  com.idega.util.IWTimeStamp(tourRound.getRoundDate());
+        com.idega.util.IWTimestamp startStamp = new  com.idega.util.IWTimestamp(tourRound.getRoundDate());
 
         Startingtime[] startingtimes = (Startingtime[]) (((is.idega.idegaweb.golf.entity.StartingtimeHome)com.idega.data.IDOLookup.getHomeLegacy(Startingtime.class)).createLegacy()).findAll("SELECT startingtime.* FROM STARTINGTIME, tournament_round_STARTINGTIME WHERE tournament_round_startingtime.tournament_round_id = "+tourRound.getID()+" AND tournament_round_startingtime.startingtime_id = startingtime.startingtime_id AND STARTINGTIME_DATE = '"+startStamp.toSQLDateString()+"' AND field_id="+tournament.getFieldId()+" AND member_id = "+member.getID());
 
@@ -918,7 +918,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
     public static List getMembersInStartingGroup(Tournament tournament, TournamentRound tournamentRound, int startingGroupNumber) {
 
-        String SQLDate = new IWTimeStamp(tournamentRound.getRoundDate()).toSQLDateString();
+        String SQLDate = new IWTimestamp(tournamentRound.getRoundDate()).toSQLDateString();
 
         int fieldId = tournament.getFieldId();
 
@@ -1142,7 +1142,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
 
 
-            IWTimeStamp tourDay = null;
+            IWTimestamp tourDay = null;
 
 
 
@@ -1154,7 +1154,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
                 for (int i = 0; i < tourRounds.length; i++) {
 
-                  tourDay = new IWTimeStamp(tourRounds[i].getRoundDate());
+                  tourDay = new IWTimestamp(tourRounds[i].getRoundDate());
 
                     rounds.addMenuElement(tourRounds[i].getID() ,iwrb.getLocalizedString("tournament.round","Round")+" "+tourRounds[i].getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
 
@@ -1174,7 +1174,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
               else {
 
-                  tourDay = new IWTimeStamp(tournamentRound.getRoundDate());
+                  tourDay = new IWTimestamp(tournamentRound.getRoundDate());
 
                     rounds.addMenuElement(tournamentRound.getID() ,iwrb.getLocalizedString("tournament.round","Round")+ " "+tournamentRound.getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
 
@@ -1348,9 +1348,9 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
 
 
-                            IWTimeStamp startHour = new IWTimeStamp(tournamentRound.getRoundDate());
+                            IWTimestamp startHour = new IWTimestamp(tournamentRound.getRoundDate());
 
-                            IWTimeStamp endHour = new IWTimeStamp(tournamentRound.getRoundEndDate());
+                            IWTimestamp endHour = new IWTimestamp(tournamentRound.getRoundEndDate());
 
                                     endHour.addMinutes(1);
 
@@ -1666,7 +1666,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
         try {
 
-            com.idega.util.IWTimeStamp startStamp = new  com.idega.util.IWTimeStamp(tourRound.getRoundDate());
+            com.idega.util.IWTimestamp startStamp = new  com.idega.util.IWTimestamp(tourRound.getRoundDate());
 
             Startingtime[] startingtimes = (Startingtime[]) (((is.idega.idegaweb.golf.entity.StartingtimeHome)com.idega.data.IDOLookup.getHomeLegacy(Startingtime.class)).createLegacy()).findAll("SELECT * FROM STARTINGTIME WHERE STARTINGTIME_DATE = '"+startStamp.toSQLDateString()+"' AND member_id ="+member.getID()+" AND field_id="+tournament.getFieldId());
 
@@ -1708,7 +1708,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
             Startingtime[] startingtimes;
 
-            com.idega.util.IWTimeStamp startStamp = new  com.idega.util.IWTimeStamp(tourRound.getRoundDate());
+            com.idega.util.IWTimestamp startStamp = new  com.idega.util.IWTimestamp(tourRound.getRoundDate());
 
 
 
@@ -1790,9 +1790,9 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
         try {
 
-            com.idega.util.IWTimeStamp startStamp = new  com.idega.util.IWTimeStamp(tournamentRound.getRoundDate());
+            com.idega.util.IWTimestamp startStamp = new  com.idega.util.IWTimestamp(tournamentRound.getRoundDate());
 
-            com.idega.util.IWTimeStamp endStamp = new  com.idega.util.IWTimeStamp(tournamentRound.getRoundEndDate());
+            com.idega.util.IWTimestamp endStamp = new  com.idega.util.IWTimestamp(tournamentRound.getRoundEndDate());
 
 
 
@@ -2072,7 +2072,7 @@ public static void createScorecardForMember(is.idega.idegaweb.golf.entity.Member
 
           scorecard.setTournamentRoundId(tRound.getID());
 
-          //scorecard.setScorecardDate(new IWTimeStamp(tDays[i].getDate()).getTimestamp());
+          //scorecard.setScorecardDate(new IWTimestamp(tDays[i].getDate()).getTimestamp());
 
           scorecard.setTotalPoints(0);
 
@@ -2118,7 +2118,7 @@ public static void createScorecardForMember(is.idega.idegaweb.golf.entity.Member
 
   public static boolean isOnlineRegistration(Tournament tournament) {
 
-    return isOnlineRegistration(tournament, IWTimeStamp.RightNow());
+    return isOnlineRegistration(tournament, IWTimestamp.RightNow());
 
   }
 
@@ -2478,15 +2478,15 @@ public static void createScorecardForMember(is.idega.idegaweb.golf.entity.Member
 
 
 
-  public static boolean isOnlineRegistration(Tournament tournament, IWTimeStamp dateToCheck) {
+  public static boolean isOnlineRegistration(Tournament tournament, IWTimestamp dateToCheck) {
 
       boolean returner = false;
 
       if (tournament.getIfRegistrationOnline()) {
 
-          if (dateToCheck.isLaterThan(new IWTimeStamp(tournament.getFirstRegistrationDate()))) {
+          if (dateToCheck.isLaterThan(new IWTimestamp(tournament.getFirstRegistrationDate()))) {
 
-              if (new IWTimeStamp(tournament.getLastRegistrationDate()).isLaterThan(dateToCheck) ) {
+              if (new IWTimestamp(tournament.getLastRegistrationDate()).isLaterThan(dateToCheck) ) {
 
                   returner = true;
 
@@ -2522,7 +2522,7 @@ public static void createScorecardForMember(is.idega.idegaweb.golf.entity.Member
 
 
 
-          IWTimeStamp stamp;
+          IWTimestamp stamp;
 
           String SQLString;
 
@@ -2540,7 +2540,7 @@ public static void createScorecardForMember(is.idega.idegaweb.golf.entity.Member
 
           for (int j = 0; j < tRounds.length; j++) {
 
-              stamp = new IWTimeStamp(tRounds[j].getRoundDate());
+              stamp = new IWTimestamp(tRounds[j].getRoundDate());
 
 
 

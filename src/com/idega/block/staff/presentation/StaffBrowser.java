@@ -32,7 +32,7 @@ import com.idega.core.user.business.UserBusiness;
 import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.data.Phone;
 import com.idega.core.data.PhoneType;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.util.GenericUserComparator;
 import com.idega.util.text.TextStyler;
 import com.idega.util.text.StyleConstants;

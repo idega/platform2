@@ -9,7 +9,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 import com.idega.block.finance.presentation.KeyEditor;
 import com.idega.development.presentation.Localizer;
 import com.idega.util.LocaleUtil;

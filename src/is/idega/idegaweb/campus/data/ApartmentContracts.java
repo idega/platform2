@@ -12,7 +12,7 @@ import java.util.List;
 
 import java.util.Vector;
 
-import com.idega.util.IWTimeStamp;
+import com.idega.util.IWTimestamp;
 
 
 
@@ -42,7 +42,7 @@ public class ApartmentContracts {
 
   private Vector Contracts;
 
-  private IWTimeStamp nextDate;
+  private IWTimestamp nextDate;
 
 
 
@@ -50,7 +50,7 @@ public class ApartmentContracts {
 
     Contracts = new Vector();
 
-    nextDate = IWTimeStamp.RightNow();
+    nextDate = IWTimestamp.RightNow();
 
   }
 
@@ -98,7 +98,7 @@ public class ApartmentContracts {
 
     //if(C.getStatus().equals(C.statusSigned) || C.getStatus().equals(C.statusResigned)){
 
-        IWTimeStamp date = new IWTimeStamp(C.getValidTo());
+        IWTimestamp date = new IWTimestamp(C.getValidTo());
 
         if(nextDate != null && date.isLaterThan(nextDate)){
 
@@ -134,7 +134,7 @@ public class ApartmentContracts {
 
 
 
-  public IWTimeStamp getNextDate(){
+  public IWTimestamp getNextDate(){
 
     return nextDate ;
 

@@ -296,10 +296,10 @@ public class CreditcardRefunderWindow extends TravelWindow {
       table.setCellpadding(2);
 
       try{
-        System.out.println("Starting TPOS test : "+IWTimeStamp.RightNow().toString());
+        System.out.println("Starting TPOS test : "+IWTimestamp.RightNow().toString());
         com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
         String heimild = t.doRefund(number,month,year,Float.parseFloat(amount),"ISK");
-        System.out.println("Ending TPOS test : "+IWTimeStamp.RightNow().toString());
+        System.out.println("Ending TPOS test : "+IWTimestamp.RightNow().toString());
 
         int row = 1;
         table.add(getText(iwrb.getLocalizedString("travel.success","Success")),1,row);

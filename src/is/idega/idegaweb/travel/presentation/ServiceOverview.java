@@ -16,8 +16,8 @@ import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.calendar.presentation.SmallCalendar;
-import com.idega.util.IWTimeStamp;
-import com.idega.util.idegaCalendar;
+import com.idega.util.IWTimestamp;
+import com.idega.util.IWCalendar;
 import com.idega.util.text.TextSoap;
 import com.idega.core.accesscontrol.business.AccessControl;
 import java.sql.SQLException;
@@ -49,7 +49,7 @@ public class ServiceOverview extends TravelManager {
   private String parameterStartNumber = "parameterStartNumber";
   private Supplier supplier;
 
-  private idegaCalendar cal = new idegaCalendar();
+  private IWCalendar cal = new IWCalendar();
   String[] dayOfWeekName = new String[8];
 
 
@@ -108,10 +108,10 @@ public class ServiceOverview extends TravelManager {
         topTable.setWidth("90%");
 
       DateInput active_from = new DateInput("active_from");
-          IWTimeStamp fromStamp = getFromIdegaTimestamp(iwc);
+          IWTimestamp fromStamp = getFromIdegaTimestamp(iwc);
           active_from.setDate(fromStamp.getSQLDate());
       DateInput active_to = new DateInput("active_to");
-          IWTimeStamp toStamp = getToIdegaTimestamp(iwc);
+          IWTimestamp toStamp = getToIdegaTimestamp(iwc);
           active_to.setDate(toStamp.getSQLDate());
 
       Text tfFromText = (Text) theText.clone();
@@ -181,7 +181,7 @@ public class ServiceOverview extends TravelManager {
       }
 
       int row = 0;
-      IWTimeStamp stamp = IWTimeStamp.RightNow();
+      IWTimestamp stamp = IWTimestamp.RightNow();
 
 
 
@@ -385,27 +385,27 @@ public class ServiceOverview extends TravelManager {
   }
 
   // BUSINESS
-  public IWTimeStamp getFromIdegaTimestamp(IWContext iwc) {
-      IWTimeStamp stamp = null;
+  public IWTimestamp getFromIdegaTimestamp(IWContext iwc) {
+      IWTimestamp stamp = null;
       String from_time = iwc.getParameter("active_from");
       if (from_time!= null) {
-          stamp = new IWTimeStamp(from_time);
+          stamp = new IWTimestamp(from_time);
       }
       else {
-          stamp = IWTimeStamp.RightNow();
+          stamp = IWTimestamp.RightNow();
       }
       return stamp;
   }
 
   // BUSINESS
-  public IWTimeStamp getToIdegaTimestamp(IWContext iwc) {
-      IWTimeStamp stamp = null;
+  public IWTimestamp getToIdegaTimestamp(IWContext iwc) {
+      IWTimestamp stamp = null;
       String from_time = iwc.getParameter("active_to");
       if (from_time!= null) {
-          stamp = new IWTimeStamp(from_time);
+          stamp = new IWTimestamp(from_time);
       }
       else {
-          stamp = IWTimeStamp.RightNow();
+          stamp = IWTimestamp.RightNow();
           stamp.addDays(15);
       }
       return stamp;
@@ -460,8 +460,8 @@ public class ServiceOverview extends TravelManager {
         TravelAddress depAddress;
         Address arrAddress;
 
-        IWTimeStamp depTimeStamp;
-        IWTimeStamp arrTimeStamp;
+        IWTimestamp depTimeStamp;
+        IWTimestamp arrTimeStamp;
         Text prodName;
         Text timeframeTxt;
         Text depFrom;
@@ -503,7 +503,7 @@ public class ServiceOverview extends TravelManager {
 
 
         if (service.getDepartureTime() != null) {
-          depTimeStamp = new IWTimeStamp(service.getDepartureTime());
+          depTimeStamp = new IWTimestamp(service.getDepartureTime());
         }
         //depTime = (Text) theBoldText.clone();
             //depTime.setFontColor(super.BLACK);
@@ -517,7 +517,7 @@ public class ServiceOverview extends TravelManager {
         arrTime = (Text) theBoldText.clone();
             arrTime.setFontColor(super.BLACK);
         if (service.getArrivalTime() != null) {
-          arrTimeStamp = new IWTimeStamp(service.getArrivalTime());
+          arrTimeStamp = new IWTimestamp(service.getArrivalTime());
           arrTime.setText(TextSoap.addZero(arrTimeStamp.getHour())+":"+TextSoap.addZero(arrTimeStamp.getMinute()));
         }
 
@@ -567,7 +567,7 @@ public class ServiceOverview extends TravelManager {
           depFrom.setFontColor(super.BLACK);
           depFrom.setText(depAddress.getName());
 /*
-          depTimeStamp = new IWTimeStamp(depAddresses[l].getTime());
+          depTimeStamp = new IWTimestamp(depAddresses[l].getTime());
           depTime = (Text) theBoldText.clone();
           depTime.setFontColor(super.BLACK);
           depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
@@ -597,8 +597,8 @@ public class ServiceOverview extends TravelManager {
                   stampTxt1 = iwrb.getLocalizedString("travel.not_configured","Not configured");
                   timeframeTxt.addToText(stampTxt1);
                 }else {
-                  stampTxt1 = new IWTimeStamp(timeframes[k].getFrom()).getLocaleDate(iwc);
-                  stampTxt2 = new IWTimeStamp(timeframes[k].getTo()).getLocaleDate(iwc);
+                  stampTxt1 = new IWTimestamp(timeframes[k].getFrom()).getLocaleDate(iwc);
+                  stampTxt2 = new IWTimestamp(timeframes[k].getTo()).getLocaleDate(iwc);
                   try {
                     if (timeframes[0].getIfYearly() ){
                       stampTxt1 = stampTxt1.substring(0, stampTxt1.length() -4);
@@ -633,7 +633,7 @@ public class ServiceOverview extends TravelManager {
                 if (prices[j] == null) {debug("PRICES");}
                 if (timeframes[k] == null) {debug("TIMEFRAMEs");}
                 if (depAddress == null) {debug("ADDRESS");}
-                priceText.setText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimeStamp.getTimestampRightNow(), timeframes[k].getID(), depAddress.getID() ) ));
+                priceText.setText(Integer.toString( (int) getTravelStockroomBusiness(iwc).getPrice(prices[j].getID(),((Integer) service.getPrimaryKey()).intValue(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframes[k].getID(), depAddress.getID() ) ));
                 priceText.addToText(Text.NON_BREAKING_SPACE);
                 priceText.addToText(currency.getCurrencyAbbreviation());
               }catch (ProductPriceException p) {

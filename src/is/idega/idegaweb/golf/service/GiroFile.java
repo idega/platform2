@@ -150,7 +150,7 @@ public class GiroFile  {
 
     Union U = ((is.idega.idegaweb.golf.entity.UnionHome)com.idega.data.IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKeyLegacy(union_id);
 
-    IWTimeStamp datenow = new IWTimeStamp();
+    IWTimestamp datenow = new IWTimestamp();
 
 
 
@@ -288,7 +288,7 @@ public class GiroFile  {
 
 
 
-    Member M;IWTimeStamp PayDate;
+    Member M;IWTimestamp PayDate;
 
     String year,month,day,kt;
 
@@ -304,7 +304,7 @@ public class GiroFile  {
 
       kt = M.getSocialSecurityNumber();
 
-      PayDate = new IWTimeStamp(ePayments[i].getPaymentDate());
+      PayDate = new IWTimestamp(ePayments[i].getPaymentDate());
 
       price = ePayments[i].getPrice();
 
@@ -432,7 +432,7 @@ public class GiroFile  {
 
     Union U = ((is.idega.idegaweb.golf.entity.UnionHome)com.idega.data.IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKeyLegacy(un_id);
 
-    IWTimeStamp datenow = new IWTimeStamp();
+    IWTimestamp datenow = new IWTimestamp();
 
 
 
@@ -576,7 +576,7 @@ public class GiroFile  {
 
 
 
-    Member M;IWTimeStamp PayDate;
+    Member M;IWTimestamp PayDate;
 
     String year,month,day,kt;
 
@@ -592,7 +592,7 @@ public class GiroFile  {
 
       kt = M.getSocialSecurityNumber();
 
-      PayDate = new IWTimeStamp(payments[i].getPaymentDate());
+      PayDate = new IWTimestamp(payments[i].getPaymentDate());
 
       price = payments[i].getPrice();
 
