@@ -84,8 +84,9 @@ public class CheckRequestQuickAdmin extends CheckRequestAdmin {
 		if ( check != null ) {
 			String[] selectedRules = iwc.getParameterValues(PARAM_RULE);
 			String notes = iwc.getParameter(PARAM_NOTES);
+			String userNotes = iwc.getParameter(PARAM_USER_NOTES);
 			int managerId = iwc.getUserId();
-			return getCheckBusiness(iwc).saveCheckRules(check, selectedRules, notes, managerId);
+			return getCheckBusiness(iwc).saveCheckRules(check, selectedRules, notes, userNotes, managerId);
 		}
 
 		return null;

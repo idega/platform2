@@ -48,6 +48,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 	protected final static String PARAM_CHECK_ID = "chk_check_id";
 	protected final static String PARAM_RULE = "chk_rule";
 	protected final static String PARAM_NOTES = "chk_notes";
+	protected final static String PARAM_USER_NOTES = "chk_user_notes";
 
 	public CheckRequestAdmin() {
 	}
@@ -225,6 +226,16 @@ public class CheckRequestAdmin extends CommuneBlock {
 
 		row++;
 
+		if (check != null && getWorkSituation(check.getWorkSituation1()) != null) {
+			checkInfoTable.add(getLocalizedSmallHeader("check.work_situation_1", "Work situation (parent 1)"), 1, row);
+			checkInfoTable.add(getSmallHeader(":"), 1, row);
+			checkInfoTable.add(getSmallText(getWorkSituation(check.getWorkSituation1())), 2, row++);
+		}
+		if (check != null && getWorkSituation(check.getWorkSituation2()) != null) {
+			checkInfoTable.add(getLocalizedSmallHeader("check.work_situation_2", "Work situation (parent 2)"), 1, row);
+			checkInfoTable.add(getSmallHeader(":"), 1, row);
+			checkInfoTable.add(getSmallText(getWorkSituation(check.getWorkSituation2())), 2, row++);
+		}
 		if (check != null && check.getMotherToungueMotherChild() != null) {
 			checkInfoTable.add(getLocalizedSmallHeader("check.language_mother_child", "Language mother-child"), 1, row);
 			checkInfoTable.add(getSmallHeader(":"), 1, row);
@@ -257,15 +268,17 @@ public class CheckRequestAdmin extends CommuneBlock {
 			f.add(new HiddenInput(CitizenChildren.getChildIDParameterName(), user.getPrimaryKey().toString()));
 		}
 
-		Table frame = new Table(2, 1);
+		Table frame = new Table(2, 2);
 		frame.setCellpadding(14);
 		frame.setCellspacing(0);
+		frame.mergeCells(1, 2, 2, 2);
 		frame.setColor(getBackgroundColor());
-		frame.setVerticalAlignment(2, 1, "top");
+		frame.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
+		frame.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
 		frame.add(getLocalizedSmallText("check.requirements", "Requirements"), 1, 1);
-		frame.add(new Break(2));
+		frame.add(new Break());
 
-		Table ruleTable = new Table(2, 5);
+		Table ruleTable = new Table(2, 3);
 		ruleTable.setCellpadding(4);
 		ruleTable.setCellspacing(0);
 
@@ -283,33 +296,43 @@ public class CheckRequestAdmin extends CommuneBlock {
 			rule5 = check.getRule5();
 		}
 
-		ruleTable.add(getCheckBox("1", rule1), 1, 1);
+		/*ruleTable.add(getCheckBox("1", rule1), 1, 1);
 		ruleTable.add(getRuleText(localize("check.nationally_registered", "Nationally registered"), rule1, isError), 2, 1);
 
 		ruleTable.add(getCheckBox("2", rule2), 1, 2);
-		ruleTable.add(getRuleText(localize("check.child_one_year", "Child one year of age"), rule2, isError), 2, 2);
+		ruleTable.add(getRuleText(localize("check.child_one_year", "Child one year of age"), rule2, isError), 2, 2);*/
 
-		ruleTable.add(getCheckBox("3", rule3), 1, 3);
-		ruleTable.add(getRuleText(localize("check.work_situation_approved", "Work situation approved"), rule3, isError), 2, 3);
+		ruleTable.add(getCheckBox("3", rule3), 1, 1);
+		ruleTable.add(getRuleText(localize("check.work_situation_approved", "Work situation approved"), rule3, isError), 2, 1);
 
-		ruleTable.add(getCheckBox("4", rule4), 1, 4);
-		ruleTable.add(getRuleText(localize("check.dept_control", "Skuldkontroll"), rule4, isError), 2, 4);
+		ruleTable.add(getCheckBox("4", rule4), 1, 2);
+		ruleTable.add(getRuleText(localize("check.dept_control", "Skuldkontroll"), rule4, isError), 2, 2);
 
-		ruleTable.add(getCheckBox("5", rule5), 1, 5);
-		ruleTable.add(getRuleText(localize("check.need_for_special_support", "Need for special support"), rule5, isError), 2, 5);
+		ruleTable.add(getCheckBox("5", rule5), 1, 3);
+		ruleTable.add(getRuleText(localize("check.need_for_special_support", "Need for special support"), rule5, isError), 2, 3);
 
 		frame.add(ruleTable, 1, 1);
 		frame.add(new Break(2), 1, 1);
-		frame.add(getSubmitButtonTable(), 1, 1);
+		frame.add(getSubmitButtonTable(), 1, 2);
 
 		frame.add(getLocalizedSmallText("check.notes", "Notes"), 2, 1);
-		frame.add(new Break(2), 2, 1);
-		TextArea notes = new TextArea(PARAM_NOTES);
+		frame.add(new Break(), 2, 1);
+		TextArea notes = (TextArea) getStyledInterface(new TextArea(PARAM_NOTES));
 		if (check != null)
 			notes.setValue(check.getNotes());
-		notes.setHeight(8);
+		notes.setHeight(4);
 		notes.setWidth(50);
 		frame.add(notes, 2, 1);
+		frame.add(new Break(2),2,1);
+
+		frame.add(getLocalizedSmallText("check.user_notes", "User notes"), 2, 1);
+		frame.add(new Break(), 2, 1);
+		TextArea userNotes = (TextArea) getStyledInterface(new TextArea(PARAM_USER_NOTES));
+		if (check != null)
+			userNotes.setValue(check.getUserNotes());
+		userNotes.setHeight(4);
+		userNotes.setWidth(50);
+		frame.add(userNotes, 2, 1);
 		f.add(frame);
 
 		return f;
@@ -338,9 +361,11 @@ public class CheckRequestAdmin extends CommuneBlock {
 	}
 
 	private Table getSubmitButtonTable() {
-		Table submitTable = new Table(5, 1);
+		Table submitTable = new Table(4, 1);
 		submitTable.setWidth(2, "3");
-		submitTable.setWidth(4, "3");
+		submitTable.setWidth(4, Table.HUNDRED_PERCENT);
+		submitTable.setWidth(Table.HUNDRED_PERCENT);
+		submitTable.setAlignment(4, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 		submitTable.setCellpaddingAndCellspacing(0);
 
 		Image image = getResourceBundle().getLocalizedImageButton("check.grant_check", "Grant check");
@@ -353,7 +378,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 
 		image = getResourceBundle().getLocalizedImageButton("check.save", "Save");
 		SubmitButton saveButton = new SubmitButton(image, PARAM_SAVE_CHECK);
-		submitTable.add(saveButton, 5, 1);
+		submitTable.add(saveButton, 4, 1);
 
 		return submitTable;
 	}
@@ -362,9 +387,10 @@ public class CheckRequestAdmin extends CommuneBlock {
 		int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
 		String[] selectedRules = iwc.getParameterValues(PARAM_RULE);
 		String notes = iwc.getParameter(PARAM_NOTES);
+		String userNotes = iwc.getParameter(PARAM_USER_NOTES);
 		//    int managerId = iwc.getUser().getID();
 		int managerId = iwc.getUserId();
-		return getCheckBusiness(iwc).saveCheckRules(checkId, selectedRules, notes, managerId);
+		return getCheckBusiness(iwc).saveCheckRules(checkId, selectedRules, notes, userNotes, managerId);
 	}
 
 	private void grantCheck(IWContext iwc) throws Exception {
@@ -427,6 +453,24 @@ public class CheckRequestAdmin extends CommuneBlock {
 		return null;
 	}
 
+	private String getWorkSituation(int workSituation) {
+		String returnString = "";
+		switch (workSituation) {
+			case 1 :
+				returnString = localize("check.working", "Working");
+				break;
+			case 2 :
+				returnString = localize("check.studying", "Studying");
+				break;
+			case 3 :
+				returnString = localize("check.seeking_work", "Seeking work");
+				break;
+			default :
+				returnString = null;
+		}
+		return returnString;
+	}
+	
 	private int getDefaultView() {
 		return ACTION_VIEW_CHECK_LIST;
 	}
