@@ -1325,29 +1325,31 @@ public class IFSFileCreationThread extends Thread {
 			while (it.hasNext()) {
 				cellNumber = 0;
 				PaymentRecord pRec = (PaymentRecord) it.next();
-				amount = AccountingUtil.roundAmount(pRec.getTotalAmount());
-				totalAmount += amount;
-				numberOfRecords++;
-				row = sheet.createRow(rowNumber++);
-				row.createCell(cellNumber++).setCellValue(pRec.getDateCreated().toString());
-				short loopTillEndOfPostingFields = (short) (cellNumber + 8);
-				for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
-					row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getOwnPosting(), columnNames[i]));
-				cell = row.createCell(cellNumber++);
-				cell.setCellValue(getNumberFormat().format(amount));
-				cell.setCellStyle(styleAlignRight);
-				row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
-				if (doublePosting) {
-					cellNumber = 0;
+				if (pRec.getTotalAmount() != 0.0f) {
+					amount = AccountingUtil.roundAmount(pRec.getTotalAmount());
+					totalAmount += amount;
 					numberOfRecords++;
 					row = sheet.createRow(rowNumber++);
-					row.createCell(cellNumber++).setCellValue(pRec.getDateCreated().toString());				
+					row.createCell(cellNumber++).setCellValue(_paymentDate.toString());
+					short loopTillEndOfPostingFields = (short) (cellNumber + 8);
 					for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
-						row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getDoublePosting(), columnNames[i]));
+						row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getOwnPosting(), columnNames[i]));
 					cell = row.createCell(cellNumber++);
-					cell.setCellValue(getNumberFormat().format(-1*amount));
+					cell.setCellValue(getNumberFormat().format(amount));
 					cell.setCellStyle(styleAlignRight);
 					row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
+					if (doublePosting) {
+						cellNumber = 0;
+						numberOfRecords++;
+						row = sheet.createRow(rowNumber++);
+						row.createCell(cellNumber++).setCellValue(_paymentDate.toString());				
+						for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
+							row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getDoublePosting(), columnNames[i]));
+						cell = row.createCell(cellNumber++);
+						cell.setCellValue(getNumberFormat().format(-1*amount));
+						cell.setCellStyle(styleAlignRight);
+						row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
+					}
 				}
 			}
 			//sheet.createRow(rowNumber++).createCell((short) (row.getLastCellNum() - 1)).setCellValue(totalAmount);
@@ -1392,7 +1394,7 @@ public class IFSFileCreationThread extends Thread {
 		row = sheet.createRow(rowNumber++);
 		row.createCell(cellNumber--).setCellValue(totalInvoiceRecordAmountFoPreviousMonth);
 		row.createCell(cellNumber--).setCellValue(totalInvoiceRecordAmountForCurrentMonth);
-		row.createCell(cellNumber).setCellValue("Totalt fakturerat bellopp");
+		row.createCell(cellNumber).setCellValue("Totalt fakturerat belopp");
 		rowNumber+=3;
 		createSigningFooter(sheet, rowNumber, cellNumber, "Granskingsattest");
 		rowNumber = createSigningFooter(sheet, rowNumber, cellNumber+=2, "Beslutsattest");
