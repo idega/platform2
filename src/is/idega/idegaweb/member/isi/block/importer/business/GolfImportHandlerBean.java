@@ -128,7 +128,7 @@ private static final String MAIN_CLUB_TYPE = "main";
 			//iterate through the records and process them
 			String item;
 			int count = 0;
-			while ( (item = (String) file.getNextRecord())!=null) {
+			while ( (item = (String) file.getNextRecord())!=null && !"".equals(item)) {
 				count++;
 				if (!processRecord(item))
 					failedRecords.add(item);
