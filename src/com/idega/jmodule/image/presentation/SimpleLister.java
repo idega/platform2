@@ -66,7 +66,7 @@ public class SimpleLister extends ModuleObjectContainer {
   }
 
   public Link getImageLink(ImageEntity image,String target,String prm){
-    Link L = new Link(image.getName(),viewUrl);
+    Link L = new Link(image.getName(),SimpleViewer.class);
     L.setFontSize(1);
     L.addParameter(sessImageParameter,image.getID());
     L.setTarget(target);
