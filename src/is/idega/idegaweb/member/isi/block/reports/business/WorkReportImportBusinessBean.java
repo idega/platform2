@@ -983,7 +983,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 				String ssn = getStringValueFromExcelNumberOrStringCell(row,
 						COLUMN_BOARD_MEMBER_SSN);
 				ssn = TextSoap.findAndCut(ssn, "-");
-				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
+				try {
+				    ssn = TextSoap.removeWhiteSpace(ssn);
+				}
+				catch (Exception e) {
+				    e.printStackTrace();
+				}
+				ssn = (ssn.length() == 9) ? "0" + ssn : ssn;
+				    
 				String streetName = getStringValueFromExcelNumberOrStringCell(
 						row, COLUMN_BOARD_MEMBER_STREET_NAME);
 				String postalCode = getStringValueFromExcelNumberOrStringCell(
@@ -1200,7 +1207,13 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 				String ssn = getStringValueFromExcelNumberOrStringCell(row,
 						(short) 3);
 				ssn = TextSoap.findAndCut(ssn, "-");
-				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
+				try {
+				    ssn = TextSoap.removeWhiteSpace(ssn);
+				}
+				catch (Exception e) {
+				    e.printStackTrace();
+				}
+				ssn = (ssn.length() == 9) ? "0" + ssn : ssn;
 				String address = getStringValueFromExcelNumberOrStringCell(row,
 						(short) 4);
 				String pnr = getStringValueFromExcelNumberOrStringCell(row,
@@ -1452,7 +1465,13 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 							HSSFCell leagueCell = row.getCell((short) j);
 
 							if (leagueCell != null) {
-								String check = leagueCell.getStringCellValue();
+								String check = null;
+								try {
+							        check = leagueCell.getStringCellValue();
+							    }
+							    catch (NumberFormatException e) {
+							        throw new WorkReportImportException("workreportimportexception.numberic_value_in_league_cell",i,j,"");
+							    }
 								//								boolean isChecked = (check != null &&
 								// !"".equals(check) &&
 								// "X".equals(check.toUpperCase()));
