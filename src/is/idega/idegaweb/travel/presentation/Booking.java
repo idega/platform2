@@ -471,7 +471,7 @@ public class Booking extends TravelManager {
       SmallCalendar sm = new SmallCalendar(stamp);
           sm.T.setBorder(1);
           sm.T.setCellpadding(2);
-          sm.T.setCellspacing(0);
+//          sm.T.setCellspacing(2);
           sm.T.setBorderColor(NatBusiness.backgroundColor);
           sm.useNextAndPreviousLinks(false);
           sm.setBackgroundColor(NatBusiness.backgroundColor);

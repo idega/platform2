@@ -142,6 +142,11 @@ public class ServiceOverview extends TravelManager {
 
       Link delete;
       Link getLink;
+      Link bookClone = new Link(iwrb.getImage("/buttons/book.gif"),Booking.class);
+      Link editClone = new Link(iwrb.getImage("/buttons/change.gif"),ServiceDesigner.class);
+
+      Link book;
+      Link edit;
 
 
       Text nameText = (Text) theText.clone();
@@ -174,7 +179,6 @@ public class ServiceOverview extends TravelManager {
             service = TravelStockroomBusiness.getService(products[i]);
             timeframe = TravelStockroomBusiness.getTimeframe(products[i]);
             address = service.getAddress();
-
 
             Text prodName = (Text) theBoldText.clone();
                 prodName.setText(service.getName());
@@ -229,14 +233,21 @@ public class ServiceOverview extends TravelManager {
             getLink = new Link("getLink");
               getLink.setWindowToOpen(LinkGenerator.class);
               getLink.addParameter(LinkGenerator.parameterProductId ,service.getID());
-            table.add(getLink,2,row);
 
-            table.add("&nbsp;&nbsp;",2,row);
-
-            delete = new Link("delete");
+            delete = new Link(iwrb.getImage("buttons/delete.gif"));
               delete.addParameter(actionParameter,"delete");
               delete.addParameter(deleteParameter,service.getID());
+
+            book = (Link) bookClone.clone();
+              book.addParameter(Booking.parameterProductId,products[i].getID());
+
+            table.add(book,2,row);
+            table.add("&nbsp;&nbsp;",2,row);
+            table.add(getLink,2,row);
+            table.add("&nbsp;&nbsp;",2,row);
             table.add(delete,2,row);
+
+
             table.setColor(2,row,NatBusiness.backgroundColor);
 
             ++row;
