@@ -16,9 +16,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMappingHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
@@ -31,9 +34,12 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.presentation.RegulationSearchPanel;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
 
 import com.idega.block.school.business.SchoolBusiness;
@@ -67,7 +73,6 @@ import com.idega.user.data.User;
  */
 public class ManuallyPaymentEntriesList extends AccountingBlock {
 
-
 	private String ERROR_DOUBLE_POSTING_NULL = "error_double_posting_null";
 	private String ERROR_OWN_POSTING_NULL = "error_own_posting_null";
 	private String ERROR_PLACING_NULL = "error_placing";
@@ -77,6 +82,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	private String ERROR_USER = "error_user";	
 	private String ERROR_PERIODE_NULL = "error_periode_null";
 	private String ERROR_AMOUNT_FORMAT = "error_amount_format";
+	private String ERROR_CHECK = "error_check";
 
 	private String LOCALIZER_PREFIX = "regular_payment_entries_list.";
 	
@@ -117,7 +123,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	private static final String PAR_SCH_GROUP = KEY_SCH_GROUP;	
 		
 	private static final String PAR_PK = "pk";	
-	
+	private static final String PAR_REG_SPEC_TYPE = "par_reg_spec_type";	
 	private static final String PAR_USER_ID = "user_id";
 	
 	private static final int MIN_LEFT_COLUMN_WIDTH = 150;	
@@ -242,6 +248,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		checkNotNull(iwc, PAR_AMOUNT_PR_ITEM, errorMessages, ERROR_AMOUNT_ITEM_NULL, "Amount must be set");
 		checkNotNull(iwc, RegulationSearchPanel.PAR_VALID_DATE, errorMessages, ERROR_PERIODE_NULL, "Periode must be set");
 		checkNotNull(iwc, RegulationSearchPanel.PAR_PLACING, errorMessages, ERROR_PLACING_NULL, "Placing must be set");
+		
 
 		PaymentRecord pay = null;
 		InvoiceRecord inv = null;
@@ -271,6 +278,27 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 				ex.printStackTrace();
 			}catch(FinderException ex){
 				ex.printStackTrace();
+			}
+			
+
+//			When "huvudverksamhets flow are set to in and "regelspectyp" = check - we should not be able to save
+ 
+			if (getValue(iwc, PAR_REG_SPEC_TYPE) != null && getValue(iwc, PAR_REG_SPEC_TYPE).length() != 0){
+			
+				try {
+					ExportDataMapping expMapping = ((ExportDataMappingHome) IDOLookup.getHome(ExportDataMapping.class)).findByPrimaryKey(category.getPrimaryKey());
+					RegulationSpecType regSpecType = ((RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class)).findByPrimaryKey(getValue(iwc, PAR_REG_SPEC_TYPE));
+					if (expMapping.getCashFlowOut() && regSpecType.getRegSpecType().equals(RegSpecConstant.CHECK)){
+						errorMessages.put(ERROR_CHECK, localize(ERROR_CHECK, "Checks must be created/changed in invoice"));
+					}
+					
+				} catch (EJBException e) {
+					e.printStackTrace();
+				} catch (IDOLookupException e) {
+					e.printStackTrace();			
+				} catch (FinderException e) {
+					e.printStackTrace();
+				}
 			}
 	
 			//Creating paymentHeader if not found
@@ -545,6 +573,10 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		Table table = new Table();
 		int row = 1;
 
+		
+		if (errorMessages.get(ERROR_CHECK) != null) {
+			table.add(getErrorText((String) errorMessages.get(ERROR_CHECK)), 2, row++);	
+		}			
 		if (errorMessages.get(ERROR_PLACING_NULL) != null) {
 			table.add(getErrorText((String) errorMessages.get(ERROR_PLACING_NULL)), 2, row++);	
 		}	
@@ -566,10 +598,14 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		
 		regSearchPanel.setParameter(PAR_EDIT_FROM_SCREEN, " ");
 		table.mergeCells(1, row, 10, row);
-		table.add(regSearchPanel, 1, row++); 
+		table.add(regSearchPanel, 1, row++);
 
 		Regulation reg = regSearchPanel.getRegulation(); 
+		if (reg != null && reg.getRegSpecType() != null){
+			table.add(new HiddenInput(PAR_REG_SPEC_TYPE, reg.getRegSpecType().getPrimaryKey().toString()));
+		}
 		
+
 		String[] posting = new String[]{"",""};
 		String postingError = null;
 		try{
