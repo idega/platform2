@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.3 2003/03/05 11:46:07 thomas Exp $
+ * $Id: ContractServiceBean.java,v 1.4 2003/05/24 13:13:46 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -70,7 +70,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
         deleteFromWaitingList(eContract);
         changeApplicationStatus( eContract);
         eContract.setStatusSigned();
-        eContract.update();
+        eContract.store();
         MailingListBusiness.processMailEvent(getIWApplicationContext(),iContractId,LetterParser.SIGNATURE);
       }
      t.commit();
@@ -304,16 +304,18 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
     return r;
   }
 
-  public   void doGarbageContract(int iContract){
+  public   boolean  doGarbageContract(int iContract){
     int id = iContract;
     try {
       Contract eContract = getContractHome().findByPrimaryKey(iContract);
       eContract.setStatusGarbage();
       eContract.store();
+	  return true;
     }
     catch (Exception ex) {
-
+		return false;
     }
+    
   }
 
   public UserBusiness getUserService() throws java.rmi.RemoteException{
