@@ -1,5 +1,5 @@
 /*
- * $Id: KBDataInsert.java,v 1.2 2005/03/15 11:04:18 birna Exp $
+ * $Id: KBDataInsert.java,v 1.3 2005/03/22 13:20:14 birna Exp $
  * Created on Feb 8, 2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -24,24 +24,28 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import com.idega.block.finance.business.BankFileManager;
 import com.idega.block.finance.business.BankInvoiceFileManager;
 import com.idega.block.finance.business.InvoiceDataInsert;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
 import com.idega.util.IWTimestamp;
 
 
 /**
  * 
- *  Last modified: $Date: 2005/03/15 11:04:18 $ by $Author: birna $
+ *  Last modified: $Date: 2005/03/22 13:20:14 $ by $Author: birna $
  * 
  * @author <a href="mailto:birna@idega.com">birna</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class KBDataInsert /*extends Window*/ implements InvoiceDataInsert {
+public class KBDataInsert extends Window implements InvoiceDataInsert {
 	private static String POST_METHOD = "https://www.bi.is/krofulinan/Pages/Senda_skra.aspx";
-	private static String POST_ANSWER_METHOD = "https://www.bi.is/krofulinan/Pages/saekja_svarskra.aspx";
+	private static String POST_ANSWER_METHOD = "https://www.bi.is/krofulinan/Pages/saekja_greidsluskra.aspx";
 	private static String FILE_NAME = "iw_cache/kbb.txt";
 	private String emptyString = new String();
 	private String zeroString = new String();
 
-/*	public KBDataInsert() {
+	public KBDataInsert() {
 		setWidth(500);
 		setHeight(500);
 	}
@@ -55,10 +59,12 @@ public class KBDataInsert /*extends Window*/ implements InvoiceDataInsert {
 			createClaimsInBank(0,170573);
 		}
 		if(iwc.getParameter("getdata") != null && !iwc.getParameter("getdata").equals("") && iwc.getParameter("getdata").equals("getdata")) {
-			getClaimStatusFromBank(0, 170573);
+			IWTimestamp from = new IWTimestamp(1,7,2003);
+			IWTimestamp to = new IWTimestamp(23,8,2004);
+			getClaimStatusFromBank(0, 170573, from.getDate(), to.getDate());
 		}
 		add(f);
-	}*/
+	}
 
 
 	/* (non-Javadoc)
@@ -126,9 +132,9 @@ public class KBDataInsert /*extends Window*/ implements InvoiceDataInsert {
 		buffer.append("\n");
 		//"hausfaersla" ends
 
- 		Integer[] krofuNumer = bfm.getInvoiceNumbers(batchNumber);//new Integer[2];
-// 		krofuNumer[0] = new Integer(1);
-// 		krofuNumer[1] = new Integer(2);
+ 		Integer[] krofuNumer = new Integer[2];//bfm.getInvoiceNumbers(batchNumber);
+ 		krofuNumer[0] = new Integer(1);
+ 		krofuNumer[1] = new Integer(2);
  		
  		String numberOfClaims = String.valueOf(krofuNumer.length);
  		if(numberOfClaims.length() < 6) numberOfClaims = zeroString.substring(0, 6 - numberOfClaims.length()) + numberOfClaims;
@@ -232,7 +238,7 @@ public class KBDataInsert /*extends Window*/ implements InvoiceDataInsert {
 			/*Gengiskodi - 1*/
 			buffer.append("0");
 			/*Greidslukodi - 1*/
-			buffer.append("1");
+			buffer.append(" ");
 			/*Fyrri afslattur - 11*/
 			buffer.append("00000000000");
 			/*Seinni afslattur - 11*/
@@ -287,12 +293,14 @@ public class KBDataInsert /*extends Window*/ implements InvoiceDataInsert {
 		
 		sendCreateClaimsRequest(bfm, groupId);
 	}
-	/*
-	 * Not functional yet!! 
-	 */
 	public void getClaimStatusFromBank(int batchNumber, int groupId, java.util.Date from, java.util.Date to) {
 		BankFileManager bfm = new BankInvoiceFileManager();
-		sendGetClaimStatusRequest(bfm, groupId);
+		String response = sendGetClaimStatusRequest(bfm, groupId, new IWTimestamp(from).getDateString("yyyyMMdd"), new IWTimestamp(to).getDateString("yyyyMMdd"));
+		String number = response.substring(6,12);
+		String faerslugerd = response.substring(20,21);
+		
+		bfm.setInvoiceStatus(faerslugerd, Integer.parseInt(number));
+
 	}
 	public void deleteClaim(int groupId, int claimNumber, java.util.Date dueDate, String payersSSN) {
 		
@@ -316,7 +324,7 @@ public class KBDataInsert /*extends Window*/ implements InvoiceDataInsert {
 			post.setDoAuthentication(false);
 			client.executeMethod(post);
 				
-//			System.out.println("responseString: " + post.getResponseBodyAsString());
+			System.out.println("responseString: " + post.getResponseBodyAsString());
 			
 		}
 		catch (FileNotFoundException e1) {
@@ -336,21 +344,22 @@ public class KBDataInsert /*extends Window*/ implements InvoiceDataInsert {
 	 * @param groupId
 	 * @return
 	 */
-	private PostMethod sendGetClaimStatusRequest(BankFileManager bfm, int groupId) {
+	private String sendGetClaimStatusRequest(BankFileManager bfm, int groupId, String fromDate, String toDate) {
 		HttpClient client = new HttpClient();
 		PostMethod post = new PostMethod(POST_ANSWER_METHOD);
-		
+		String response = new String();
 		try {
 			post.addParameter("cguser", bfm.getUsername(groupId));
 			post.addParameter("cgpass", bfm.getPassword(groupId));
-//			post.addParameter("cgbnum", "60404");
-			post.addParameter("cgdfra", "20030701");
-			post.addParameter("cgdtil", "20040823");
+//			post.addParameter("cgbnum", "64014");
+			post.addParameter("cgdfra", fromDate);//"20030701"
+			post.addParameter("cgdtil", toDate);//"20040823"
 			post.addParameter("cgvisi", bfm.getClaimantsAccountId(groupId));
 			post.addParameter("cgSvarskra", "on");
 			client.executeMethod(post);
 			
-//			System.out.println("responseString: " + post.getResponseBodyAsString());
+			response = post.getResponseBodyAsString();
+			
 		}
 		catch (HttpException e) {
 			e.printStackTrace();
@@ -364,7 +373,7 @@ public class KBDataInsert /*extends Window*/ implements InvoiceDataInsert {
 		finally {
 			post.releaseConnection();
 		}
-		
-		return post;
+//		System.out.println("response: " + response);
+		return response;
 	}
 }
