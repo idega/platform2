@@ -168,6 +168,9 @@ public abstract class BillingThread extends Thread{
 		if (null != paymentRecord) {
 			result.setPaymentRecord (paymentRecord);
 		}
+		if (null != postingDetail.getTerm()) {
+			result.setRuleText (postingDetail.getTerm());
+		}
 		result.setPeriodStartCheck (placementTimes.getFirstCheckDay ().getDate ());
 		result.setPeriodEndCheck (placementTimes.getLastCheckDay ().getDate ());
 		if (null != placement) {
@@ -189,7 +192,6 @@ public abstract class BillingThread extends Thread{
 					= getRegulationSpecTypeHome ().findByRegulationSpecType
 					(postingDetail.getRuleSpecType ());
 			result.setRegSpecType (regSpecType);
-			//        result.setRuleText(java.lang.String p0);
 		} catch (Exception e) {
 			e.printStackTrace ();
 		}

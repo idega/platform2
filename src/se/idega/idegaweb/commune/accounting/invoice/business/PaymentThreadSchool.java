@@ -58,11 +58,11 @@ import com.idega.user.data.User;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/11 17:38:03 $ by $Author: joakim $
+ * Last modified: $Date: 2003/12/12 13:19:30 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.47 $
+ * @version $Revision: 1.48 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -225,7 +225,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	
 	private void craetePaymentForSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember) 
 			throws RemoteException, FinderException, RegulationException, EJBException, PostingException, CreateException, IDOLookupException {
-		PlacementTimes placementTimes = null;
 		School school;
 		
 		errorRelated.append("Student "+schoolClassMember.getStudent().getName()+"<br>");
@@ -259,7 +258,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			if (schoolClassMember.getRemovedDate() != null) {
 				eDate = new Date(schoolClassMember.getRemovedDate().getTime());
 			}
-			placementTimes = calculateTime(sDate, eDate);
+			PlacementTimes placementTimes = calculateTime(sDate, eDate);
 			RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 			String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
 			final PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
@@ -445,13 +444,12 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	 */
 	protected void regularPayment() {
 		PostingDetail postingDetail = null;
-		PlacementTimes placementTimes = null;
 		try {
 			//Go through all the regular payments
 			for (Iterator i = getRegularPayments().iterator(); i.hasNext();) {
 				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) i.next();
 				postingDetail = new PostingDetail(regularPaymentEntry);
-				placementTimes = calculateTime(regularPaymentEntry.getFrom(), regularPaymentEntry.getTo());
+				PlacementTimes placementTimes = calculateTime(regularPaymentEntry.getFrom(), regularPaymentEntry.getTo());
 				createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), regularPaymentEntry.getSchool());
 			}
 		} catch (Exception e) {
