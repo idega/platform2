@@ -182,7 +182,7 @@ public class TariffAssessments extends Finance {
 				collectionNavigator.addMaintainParameter(PRM_ACTION);
 				
 				try {
-					assessments = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate,-1,-1);//getCollectionViewSize(),getCollectionIndex());
+					assessments = getFinanceService().getAssessmentRoundHome().findByCategoryAndTariffGroup(getFinanceCategoryId(),groupID,this.fromDate,this.toDate,getCollectionViewSize(),getCollectionIndex());
 					
 				} catch (RemoteException e) {
 					e.printStackTrace();
@@ -271,8 +271,9 @@ public class TariffAssessments extends Finance {
 		IWTimestamp from = IWTimestamp.RightNow();
 		from.addMonths(-6);
 		fromDate = from.getDate();
-		toDate = new IWTimestamp(cal.getLengthOfMonth(Today.getMonth(), Today.getYear()), Today.getMonth(), Today
-				.getYear()).getDate();
+		IWTimestamp to = new IWTimestamp(1,Today.getMonth(),Today.getYear() );
+		to.addMonths(1);
+		toDate = to.getDate();
 	}
 	
 	private void initGroups(IWContext iwc) {
