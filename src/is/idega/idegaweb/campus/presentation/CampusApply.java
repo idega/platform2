@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApply.java,v 1.4 2001/12/07 13:24:42 aron Exp $
+ * $Id: CampusApply.java,v 1.5 2002/01/10 12:30:42 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -52,8 +52,10 @@ public class CampusApply extends PresentationObjectContainer {
 
     Image textImage = iwb.getImage("/text_pictures/apply.jpg");
     textImage.setVerticalSpacing(12);
-
-    T.add(new CampusApplicationForm(),1,1);
+    if(iwc.hasEditPermission(this))
+      T.add("Átt þú ekki að skrá umsóknir á öðrum stað "+iwc.getUser().getName()+" !!",1,1);
+    else
+      T.add(new CampusApplicationForm(),1,1);
     if (iwc.getParameter("status") == null || iwc.getParameter("status").equals("2")) {
       T.add(textImage,2,1);
     }
