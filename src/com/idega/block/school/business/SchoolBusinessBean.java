@@ -1466,7 +1466,9 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		return storeSchoolClassMember(studentID, schoolClassID, schoolYearID, schoolTypeID, registerDate, null, registrator, notes);
 	}
 	
-
+	/**
+	 *  Stores placement. If placement for student and schoolgroup exist placement is updated
+	 */
 	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) throws RemoteException {
 		try {
 			SchoolClassMember member = findClassMemberInClass(studentID, schoolClassID);
@@ -1499,6 +1501,56 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return null;
 		}
 	}
+
+	public SchoolClassMember storeNewSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, int registrator, String notes) throws RemoteException {
+		return storeNewSchoolClassMember(studentID, schoolClassID, schoolYearID, schoolTypeID, registerDate, null, registrator, notes);
+	}
+
+	/**
+	 * Creates and stores a new placment
+	 * 
+	 * @param studentID
+	 * @param schoolClassID
+	 * @param schoolYearID
+	 * @param schoolTypeID
+	 * @param registerDate
+	 * @param removedDate
+	 * @param registrator
+	 * @param notes
+	 * @return
+	 * @throws RemoteException
+	 */	
+	public SchoolClassMember storeNewSchoolClassMember(int studentID, int schoolClassID, int schoolYearID, int schoolTypeID, Timestamp registerDate, Timestamp removedDate, int registrator, String notes) throws RemoteException {
+		try {
+			SchoolClassMember member = getSchoolClassMemberHome().create();
+
+			if (member != null) {
+				member.setClassMemberId(studentID);
+				member.setSchoolClassId(schoolClassID);
+				if (schoolYearID > 0)
+					member.setSchoolYear(schoolYearID);
+				if (schoolTypeID > 0)
+					member.setSchoolTypeId(schoolTypeID);
+				if (registerDate != null)
+					member.setRegisterDate(registerDate);
+				if (removedDate != null)
+					member.setRemovedDate(removedDate);
+				if (registrator != -1)
+					member.setRegistratorId(registrator);
+				if (notes != null)
+					member.setNotes(notes);
+				member.setRegistrationCreatedDate(IWTimestamp.getTimestampRightNow());
+
+				member.store();
+			}
+			return member;
+		}
+		catch (CreateException ce) {
+			ce.printStackTrace(System.err);
+			return null;
+		}
+	}
+
 
 	public SchoolClass findSchoolClass(Object primaryKey) {
 		try {
