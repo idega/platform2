@@ -282,6 +282,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
           leaguesList.add(leagueName);
           Integer count = (Integer) leagueCountMap.get(leagueName);
           count = (count == null) ? null : new Integer( (count.intValue()) + 1 );
+          leagueCountMap.put(leagueName, count);
         }
         Integer memberId = (Integer) member.getPrimaryKey();
         memberLeaguesMap.put(memberId, leaguesList);
