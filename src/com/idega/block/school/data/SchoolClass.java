@@ -35,7 +35,7 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public void setSchoolTypeId(int p0);
  public void setSchoolYearId(int p0);
  public void setSchoolYearId(java.lang.Integer p0);
- public void setTeacherId(int p0);
  public void setTeacherId(java.lang.Integer p0);
+ public void setTeacherId(int p0);
  public void setValid(boolean p0);
 }

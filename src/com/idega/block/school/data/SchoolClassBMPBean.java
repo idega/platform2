@@ -292,6 +292,17 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 		return super.idoGetNumberOfRecords(sql.toString());
   }
 
+	/**
+	 * Returns a collection of all school classes. 
+	 * Used to create the SchoolClass - SchoolType relation
+	 * 
+	 * @return Collection of all schoolClass
+	 * @throws FinderException
+	 */
+	public Collection ejbFindAll() throws FinderException{
+		return ejbFindAll();
+	}
+
 	public Collection findRelatedUsers() throws com.idega.data.IDORelationshipException {
 		return super.idoGetRelatedEntities(User.class);
 	}
