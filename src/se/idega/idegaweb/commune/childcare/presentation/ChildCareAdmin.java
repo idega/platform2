@@ -139,7 +139,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 				
 		Collection applications = getApplicationCollection();
 		
-		int numberInqueueNoOffer = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID()).size();
+		int numberInqueueNoOffer = getBusiness().getNumberOfUnhandledApplicationsByProvider(getSession().getChildCareID());
 		
 		if (applications != null && !applications.isEmpty()) {
 			ChildCareApplication application;
