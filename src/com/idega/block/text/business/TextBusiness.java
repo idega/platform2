@@ -67,7 +67,7 @@ public class TextBusiness{
   }
 
 
-  public static boolean saveText(int iTxTextId,
+  public static TxText saveText(int iTxTextId,
                               int iLocalizedTextId,
                               int iLocaleId ,
                               int iUserId,
@@ -105,13 +105,13 @@ public class TextBusiness{
           //System.err.println(" object instance "+objIns.getID() + objIns.getName());
           eTxText.addTo(objIns);
         }
-        return true;
+        return eTxText;
       }
     }
     catch (SQLException ex) {
       ex.printStackTrace();
     }
-    return false;
+    return null;
   }
 }
 
