@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.57 2001/12/10 22:03:00 aron Exp $
+ * $Id: NewsReader.java,v 1.58 2001/12/10 22:20:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -461,7 +461,7 @@ public class NewsReader extends Block implements IWBlock {
           smallTable.setCellpadding(0);
           smallTable.setCellspacing(0);
           if(backImage!=null){
-            smallTable.add(new BackButton(backImage), 1, 1);
+            smallTable.add(getBackLink(backImage), 1, 1);
             smallTable.add(Text.getNonBrakingSpace(), 1, 1);
           }
           if(showBackText){
@@ -607,20 +607,22 @@ public class NewsReader extends Block implements IWBlock {
       /////////  BACK LINK ////////////////
 
       if( showAll ) {
+        T.setHeight(row++,String.valueOf(iSpaceBetweenNewsAndBody));
         if(backImage!=null){
-          T.add(new BackButton(backImage), 1, row);
+          T.add(getBackLink(backImage), 1, row);
           T.add(Text.getNonBrakingSpace(), 1, row);
         }
         if(showBackText){
           Text tBack = new Text(iwrb.getLocalizedString("back","Back"));
           tBack =  setInformationAttributes(tBack);
-          T.add(tBack, 1, row);
+          T.add(getBackLink(tBack), 1, row);
         }
       }
 
       ////////// MORE LINK ///////////////
 
       if(!showAll && showMoreButton){
+        T.setHeight(row++,String.valueOf(iSpaceBetweenNewsAndBody));
         if(moreImage !=null){
           T.add(getMoreLink(moreImage,news.getID(),iwc), 1, row);
           T.add(Text.getNonBrakingSpace(), 1, row);
@@ -683,13 +685,10 @@ public class NewsReader extends Block implements IWBlock {
     return moreLink;
   }
 
-   private Link getBackLink(PresentationObject obj,int newsId,IWContext iwc){
-    Link moreLink = new Link(obj);
-    checkFromPage(moreLink);
-    moreLink.addParameter(prmMore+getInstanceIDString(iwc),newsId);
-    if(viewPageId > 0)
-      moreLink.setPage(viewPageId);
-    return moreLink;
+   private Link getBackLink(PresentationObject obj){
+    Link backLink = new Link(obj);
+    backLink.setAsBackLink();
+    return backLink;
   }
 
   private PresentationObject getNewsAdminPart(NwNews news,IWContext iwc){
