@@ -8,6 +8,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
+import com.idega.block.school.data.School;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
@@ -145,6 +146,23 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					table.setHeight(row++, 12);
 				}
 			}
+		 
+			School provider = getBusiness().getCurrentProviderByPlacement(getSession().getChildID());
+			String school = null;
+			if (provider != null){
+				school = provider.getName();				
+			} else {
+				school = localize("child_care.no_current_provider", "No current provider");
+			}
+				
+			
+			if (school != null){
+				table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+				table.add(getLocalizedSmallHeader("child_care.current_provider","Current provider"), 1, row);
+				table.add(getSmallText(school), 3, row++);
+				table.setHeight(row++, 12);	
+			}
+			
 			
 			if (getSession().getApplicationID() != -1 && !isAdministrator) {
 				application = getBusiness().getApplication(getSession().getApplicationID());
@@ -378,7 +396,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				}
 
 				GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
-
+					
 				if (getBusiness().hasActivePlacementNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {
 					table.add(disabledCreateContract, 3, 1);
 					dateWarning = localize("child_care.child_has_active_contract", "Child has an active contract");
