@@ -12,7 +12,10 @@ import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolYear;
 import com.idega.business.IBOLookup;
+import com.idega.core.location.business.CommuneBusiness;
+import com.idega.core.location.data.Commune;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -27,6 +30,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.util.text.TextFormat;
 /**
  * <p>Title: </p>
@@ -104,6 +108,7 @@ public class SchoolEditor extends Block {
       String keycode = iwc.getParameter("sch_keycode");
       String lon = iwc.getParameter("sch_lon");
       String lat = iwc.getParameter("sch_lat");
+      String commune = iwc.getParameter("sch_commune");
       String[] type_ids = iwc.getParameterValues("sch_type_ids");
       String[] year_ids = iwc.getParameterValues("sch_year_ids");
       int[] types = new int[0];
@@ -127,9 +132,13 @@ public class SchoolEditor extends Block {
         sid = Integer.parseInt(id);
       if(area!=null)
         areaId = Integer.parseInt(area);
-        
+      
+      Integer communePK = null;
+      if (commune != null) {
+      	communePK = new Integer(commune);
+      }  
 //		System.err.println("school id is "+id);      
-		sabBean.storeSchool(sid,name,info,address,zipcode,ziparea,phone,keycode,lat,lon,areaId,types,years);
+			sabBean.storeSchool(sid,name,info,address,zipcode,ziparea,phone,keycode,lat,lon,areaId,types,years, communePK);
     }
   }
 
@@ -161,6 +170,7 @@ public class SchoolEditor extends Block {
     T.add(tFormat.format(iwrb.getLocalizedString("address","Address")),col++,row);
     T.add(tFormat.format(iwrb.getLocalizedString("zipcode","Zipcode")),col++,row);
     T.add(tFormat.format(iwrb.getLocalizedString("ziparea","Ziparea")),col++,row);
+		T.add(tFormat.format(iwrb.getLocalizedString("commune","Commune")),col++,row);
     T.add(tFormat.format(iwrb.getLocalizedString("phone","Phone")),col++,row);
     T.add(tFormat.format(iwrb.getLocalizedString("keycode","Keycode")),col++,row);
     T.add(tFormat.format(iwrb.getLocalizedString("latitude","Latitude")),col++,row);
@@ -170,7 +180,10 @@ public class SchoolEditor extends Block {
     java.util.Iterator iter = schools.iterator();
     School school ;
     SchoolAreaHome areaHome = (SchoolAreaHome)IDOLookup.getHome(SchoolArea.class);
+    //CommuneHome communeHome = (CommuneHome) IDOLookup.getHome(Commune.class);
     SchoolArea area;
+    //Commune commune;
+    Commune communePK;
     col = 1;
     while(iter.hasNext()){
       Object obj = iter.next();
@@ -182,11 +195,16 @@ public class SchoolEditor extends Block {
       T.add(L,col++,row);
       //T.add(tFormat.format(school.getSchoolTypeId()),col++,row);
       area = areaHome.findByPrimaryKey(new Integer(school.getSchoolAreaId()));
+      communePK = (Commune)school.getCommunePK();
       T.add(tFormat.format(area.getName()),col++,row);
       T.add(tFormat.format(school.getSchoolName()),col++,row);
       T.add(tFormat.format(school.getSchoolAddress()),col++,row);
       T.add(tFormat.format(school.getSchoolZipCode()),col++,row);
       T.add(tFormat.format(school.getSchoolZipArea()),col++,row);
+      if (communePK != null) {
+    		//commune = communeHome.findByPrimaryKey(communePK);
+				T.add(tFormat.format(communePK.getCommuneName()),col++,row);
+      } 
       T.add(tFormat.format(school.getSchoolPhone()),col++,row);
       T.add(tFormat.format(school.getSchoolKeyCode()),col++,row);
       T.add(tFormat.format(school.getSchoolLatitude()),col++,row);
@@ -215,28 +233,33 @@ public class SchoolEditor extends Block {
     TextInput inputLON = new TextInput("sch_lon");
     TextInput inputLAT = new TextInput("sch_lat");
     DropdownMenu drpArea = new DropdownMenu(getSchoolAreas(iwc),"sch_area_id");
+    DropdownMenu communes = new DropdownMenu("sch_commune");
+		SelectorUtility su = new SelectorUtility();
+		su.getSelectorFromIDOEntities(communes, getCommuneBusiness(iwc).getCommunes(), "getCommuneName");
+    
     Map schooltypes = null,schoolyears = null;
     int Id = -1;
     if(ent!=null){
 
       try{
-      schooltypes = getSchoolRelatedSchoolTypes(iwc,ent);
-      schoolyears = getSchoolRelatedSchoolYears(iwc,ent);
-
-      Id = ((Integer)ent.getPrimaryKey()).intValue();
-      inputName.setContent(ent.getSchoolName());
-      inputAddress.setContent(ent.getSchoolAddress());
-      inputInfo.setContent(ent.getSchoolInfo());
-      inputZipCode.setContent(ent.getSchoolZipCode());
-      inputZipArea.setContent(ent.getSchoolZipArea());
-      inputPhone.setContent(ent.getSchoolPhone());
-      inputKeyCode.setContent(ent.getSchoolKeyCode());
-      inputLON.setContent(ent.getSchoolLongitude());
-      inputLAT.setContent(ent.getSchoolLatitude());
-      //drpType.setSelectedElement(String.valueOf(ent.getSchoolTypeId()));//NO FIELD IN DATABASE!!
-      drpArea.setSelectedElement(String.valueOf(ent.getSchoolAreaId()));
-
-     
+	      schooltypes = getSchoolRelatedSchoolTypes(iwc,ent);
+	      schoolyears = getSchoolRelatedSchoolYears(iwc,ent);
+	
+	      Id = ((Integer)ent.getPrimaryKey()).intValue();
+	      inputName.setContent(ent.getSchoolName());
+	      inputAddress.setContent(ent.getSchoolAddress());
+	      inputInfo.setContent(ent.getSchoolInfo());
+	      inputZipCode.setContent(ent.getSchoolZipCode());
+	      inputZipArea.setContent(ent.getSchoolZipArea());
+	      inputPhone.setContent(ent.getSchoolPhone());
+	      inputKeyCode.setContent(ent.getSchoolKeyCode());
+	      inputLON.setContent(ent.getSchoolLongitude());
+	      inputLAT.setContent(ent.getSchoolLatitude());
+	      //drpType.setSelectedElement(String.valueOf(ent.getSchoolTypeId()));//NO FIELD IN DATABASE!!
+	      drpArea.setSelectedElement(String.valueOf(ent.getSchoolAreaId()));
+	      if (ent.getCommunePK() != null) {
+					communes.setSelectedElement(ent.getCommunePK().toString());
+	      }
       }
       catch(Exception ex){}
     }
@@ -255,6 +278,7 @@ public class SchoolEditor extends Block {
     T.add(tFormat.format(iwrb.getLocalizedString("keycode","Keycode"),tFormat.HEADER),1,row++);
     T.add(tFormat.format(iwrb.getLocalizedString("latitude","Latitude"),tFormat.HEADER),1,row++);
     T.add(tFormat.format(iwrb.getLocalizedString("longitude","Longitude"),tFormat.HEADER),1,row++);
+		T.add(tFormat.format(iwrb.getLocalizedString("commune","Commune"),tFormat.HEADER),1,row++);
     T.add(tFormat.format(iwrb.getLocalizedString("school_area","SchoolArea"),tFormat.HEADER),1,row++);
 
     row = 2;
@@ -269,6 +293,7 @@ public class SchoolEditor extends Block {
     T.add(inputKeyCode,3,row++);
     T.add(inputLAT,3,row++);
     T.add(inputLON,3,row++);
+    T.add(communes, 3, row++);
     T.add(drpArea,3,row++);
 
 
@@ -387,6 +412,10 @@ public class SchoolEditor extends Block {
 			}
 		}
   	
+  }
+  
+  public CommuneBusiness getCommuneBusiness(IWApplicationContext iwac) throws RemoteException {
+  	return (CommuneBusiness) IBOLookup.getServiceInstance(iwac, CommuneBusiness.class);
   }
 
 }
