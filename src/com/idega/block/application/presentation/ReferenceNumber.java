@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.23 2004/06/21 16:48:39 aron Exp $
+ * $Id: ReferenceNumber.java,v 1.24 2004/06/21 18:02:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,6 @@
  */
 package com.idega.block.application.presentation;
 
-import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;

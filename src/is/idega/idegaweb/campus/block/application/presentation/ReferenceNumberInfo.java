@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.36 2004/06/21 16:49:40 aron Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.37 2004/06/21 18:02:13 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -34,7 +34,6 @@ import java.util.Vector;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
-import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationBMPBean;
@@ -62,7 +61,6 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.CypherText;
 import com.idega.util.IWTimestamp;
-import com.idega.util.PersonalIDFormatter;
 
 /**
  *

@@ -40,7 +40,6 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 		return ENTITY_NAME;
 	}
 	
-	
 	public void setWorkReportGroupId(int wrGroupId){
 		setColumn(COLUMN_NAME_WORK_REPORT_GROUP,wrGroupId);
 	}

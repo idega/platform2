@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.18 2004/06/21 16:49:13 aron Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.19 2004/06/21 18:02:13 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.contract.business.ContractService;

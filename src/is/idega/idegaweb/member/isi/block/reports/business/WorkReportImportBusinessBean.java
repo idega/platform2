@@ -523,6 +523,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 						}
 
 						float f = (float) val;
+						System.out.println("f = " + f);
+						System.out.println("val = " + val);
 						
 						try {
 							WorkReportClubAccountRecord rec = clubRecordHome
