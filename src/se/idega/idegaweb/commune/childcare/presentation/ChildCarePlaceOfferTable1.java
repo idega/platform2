@@ -35,6 +35,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 	private static Text HEADER_CREATED_DATE;
 	private static Text HEADER_QUEUE_POSITION;
 	private static String CONFIRM_DELETE;
+	private static String CONFIRM_REQUEST;
 
 	private static String GRANTED, VALID_UNTIL;
 
@@ -64,7 +65,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			HEADER_QUEUE_POSITION = page.getLocalHeader("ccatp1_queue_position", "Queue pos.");
 
 			CONFIRM_DELETE = page.localize("ccatp1_confirm_delete", "Really delete?").toString();
-
+			CONFIRM_REQUEST = page.localize("ccatp1_confirm_request", "Do you want to send a request?").toString();
 			GRANTED = page.localize("ccatp1_granted", "You have received an offer from").toString();
 			VALID_UNTIL = page.localize("ccatp1_valid_until", "This offer is valid until").toString();
 
@@ -250,6 +251,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 		//if (!disableReqBtn && !isCancelled) {
 		if (!isCancelled && !isAfterSchoolApplication) {
 			Link reqBtn = new Link(_page.getQuestionIcon(_page.localize(REQUEST_INFO)));
+			reqBtn.setOnClick("return confirm('" + CONFIRM_REQUEST + "')");
 			reqBtn.addParameter(CCConstants.ACTION, CCConstants.ACTION_REQUEST_INFO);
 			reqBtn.addParameter(CCConstants.APPID, app.getNodeID());
 
