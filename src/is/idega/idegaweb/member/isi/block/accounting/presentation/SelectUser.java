@@ -77,6 +77,7 @@ public class SelectUser extends CashierSubWindowTemplate {
 		else
 			f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
+		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
 		
 		add(f);
 	}

@@ -32,7 +32,14 @@ public class UserPaymentHistory extends CashierSubWindowTemplate {
 	}
 
 	public void main(IWContext iwc) {
-		Form f = new Form();
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		
+		Text notDone = new Text(iwrb.getLocalizedString(NOT_DONE, "Not done. Working on this..."));
+		notDone.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+
+		add(notDone);
+		
+		/*Form f = new Form();
 		Table t = new Table();
 		Table dataTable = new Table();		
 		t.setCellpadding(5);
@@ -58,7 +65,8 @@ public class UserPaymentHistory extends CashierSubWindowTemplate {
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
+		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
 		
-		add(f);
+		add(f);*/
 	}
 }

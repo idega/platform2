@@ -174,7 +174,7 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 		sql.appendWhereEquals(COLUMN_CLUB, club);
 		sql.appendAnd();
 		if (division != null) {
-			sql.appendWhereEquals(COLUMN_DIVISION, division);
+			sql.appendEquals(COLUMN_DIVISION, division);
 			sql.appendAnd();
 		}
 		sql.appendLeftParenthesis();
@@ -189,6 +189,8 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 		sql.append(COLUMN_GROUP);
 		sql.append(", ");
 		sql.append(COLUMN_TARIFF_TYPE);
+		
+		System.out.println("sql = " + sql.toString());
 		
 		return idoFindPKsByQuery(sql);
 	}

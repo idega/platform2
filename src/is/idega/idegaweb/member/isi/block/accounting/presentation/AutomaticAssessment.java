@@ -271,6 +271,7 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
+		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
 		
 		f.add(inputTable);
 		f.add(t);

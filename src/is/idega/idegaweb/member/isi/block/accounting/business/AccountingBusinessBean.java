@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
@@ -83,6 +84,17 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		return null;
 	}
 
+	public Collection findAllTariffByClubAndDivision(Group club, Group division) {
+		try {
+			return getClubTariffHome().findAllByClubAndDivision(club, division);
+		}
+		catch (FinderException e) {
+		}
+
+		return null;
+	}
+	
+	
 	public Collection findAllValidTariffByGroup(Group group) {
 		try {
 			return getClubTariffHome().findAllValidByGroup(group);
@@ -230,6 +242,31 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				Group parent = (Group) it.next();
 				
 				Group div = findDivisionForGroup(parent);
+				if (div != null) {
+					return div;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public Group findClubForGroup(Group group) {
+		if (group == null) {
+			return null;
+		}
+
+		if (group.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB)) {
+			return group;
+		}
+		
+		List parents = group.getParentGroups();
+		if (parents != null && !parents.isEmpty()) {
+			Iterator it = parents.iterator();
+			while (it.hasNext()) {
+				Group parent = (Group) it.next();
+				
+				Group div = findClubForGroup(parent);
 				if (div != null) {
 					return div;
 				}
@@ -452,6 +489,21 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				AssessmentRound eRound = getAssessmentRoundHome().findByPrimaryKey(id);
 				eRound.setDeleted(true);
 				eRound.store();
+
+				//@TODO just get entries I'm allowed to delete!!!!
+				Collection rec = getFinanceEntryHome().findAllByAssessmentRound(eRound);
+				if (rec != null && !rec.isEmpty()) {
+					Iterator it = rec.iterator();
+					while (it.hasNext()) {
+						FinanceEntry entry = (FinanceEntry) it.next();
+						try {
+							entry.remove();
+						}
+						catch (RemoveException e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
 			}
 
 			return true;

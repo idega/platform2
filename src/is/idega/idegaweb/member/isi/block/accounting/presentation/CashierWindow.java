@@ -8,8 +8,12 @@
 package is.idega.idegaweb.member.isi.block.accounting.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
+import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
@@ -20,7 +24,6 @@ import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.LinkContainer;
 import com.idega.presentation.text.Text;
 import com.idega.user.business.GroupBusiness;
@@ -36,6 +39,7 @@ import com.idega.user.presentation.StyledIWAdminWindow;
 public class CashierWindow extends StyledIWAdminWindow {
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
 	public static final String PARAMETER_GROUP_ID = GroupPropertyWindow.PARAMETERSTRING_GROUP_ID;
+	public static final String PARAMETER_CLUB_ID = "cashier_club_id";
 	public static final String PARAMETER_DIVISION_ID = "cashier_div_id";
 	public static final String PARAMETER_USER_ID = "cashier_user_id";
 	public final static String STYLE_2 = "font-family:arial; font-size:8pt; color:#000000; text-align: justify;";
@@ -71,6 +75,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 	private static final String HELP_TEXT_KEY = "cashier_window";
 
 	private Group _group;
+	private Group _club;
 	private Group _div;
 	private User _user;
 	private IWResourceBundle _iwrb;
@@ -110,6 +115,22 @@ public class CashierWindow extends StyledIWAdminWindow {
 			}
 		}
 
+		String sClubId = iwc.getParameter(PARAMETER_CLUB_ID);
+		if (sClubId != null) {
+			try {
+				_club = getGroupBusiness(iwc).getGroupByGroupID(new Integer(sClubId).intValue());
+			}
+			catch (NumberFormatException e1) {
+				e1.printStackTrace();
+			}
+			catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+			catch (FinderException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
 		String sDivId = iwc.getParameter(PARAMETER_DIVISION_ID);
 		if (sDivId != null) {
 			try {
@@ -166,6 +187,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_div != null) {
 			editTariffType.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
 		}
+		if (_club != null) {
+			editTariffType.addParameter(PARAMETER_CLUB_ID, ((Integer) _club.getPrimaryKey()).toString());
+		}
 		
 		LinkContainer editTariff = new LinkContainer();
 		editTariff.setStyleClass(styledLink);
@@ -177,6 +201,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 		}
 		if (_div != null) {
 			editTariff.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		if (_club != null) {
+			editTariff.addParameter(PARAMETER_CLUB_ID, ((Integer) _club.getPrimaryKey()).toString());
 		}
 		
 		LinkContainer autoAss = new LinkContainer();
@@ -190,6 +217,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_div != null) {
 			autoAss.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
 		}
+		if (_club != null) {
+			autoAss.addParameter(PARAMETER_CLUB_ID, ((Integer) _club.getPrimaryKey()).toString());
+		}
 		
 		LinkContainer ccContract = new LinkContainer();
 		ccContract.setStyleClass(styledLink);
@@ -202,6 +232,10 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_div != null) {
 			ccContract.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
 		}
+		if (_club != null) {
+			ccContract.addParameter(PARAMETER_CLUB_ID, ((Integer) _club.getPrimaryKey()).toString());
+		}
+		
 		
 		LinkContainer selectUser = new LinkContainer();
 		selectUser.setStyleClass(styledLink);
@@ -213,6 +247,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 		}
 		if (_div != null) {
 			selectUser.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		if (_club != null) {
+			selectUser.addParameter(PARAMETER_CLUB_ID, ((Integer) _club.getPrimaryKey()).toString());
 		}
 		
 		LinkContainer manAss = new LinkContainer();
@@ -226,6 +263,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_div != null) {
 			manAss.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
 		}
+		if (_club != null) {
+			manAss.addParameter(PARAMETER_CLUB_ID, ((Integer) _club.getPrimaryKey()).toString());
+		}
 		
 		LinkContainer insertContract = new LinkContainer();
 		insertContract.setStyleClass(styledLink);
@@ -237,6 +277,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 		}
 		if (_div != null) {
 			insertContract.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		if (_club != null) {
+			insertContract.addParameter(PARAMETER_CLUB_ID, ((Integer) _club.getPrimaryKey()).toString());
 		}
 		
 		LinkContainer registerPayment = new LinkContainer();
@@ -250,6 +293,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_div != null) {
 			registerPayment.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
 		}
+		if (_club != null) {
+			registerPayment.addParameter(PARAMETER_CLUB_ID, ((Integer) _club.getPrimaryKey()).toString());
+		}
 		
 		LinkContainer paymentHistory = new LinkContainer();
 		paymentHistory.setStyleClass(styledLink);
@@ -262,6 +308,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 		if (_div != null) {
 			paymentHistory.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
 		}
+		if (_club != null) {
+			paymentHistory.addParameter(PARAMETER_CLUB_ID, ((Integer) _club.getPrimaryKey()).toString());
+		}
 		
 		LinkContainer memberCreditCard = new LinkContainer();
 		memberCreditCard.setStyleClass(styledLink);
@@ -273,6 +322,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 		}
 		if (_div != null) {
 			memberCreditCard.addParameter(PARAMETER_DIVISION_ID, ((Integer) _div.getPrimaryKey()).toString());
+		}
+		if (_club != null) {
+			memberCreditCard.addParameter(PARAMETER_CLUB_ID, ((Integer) _club.getPrimaryKey()).toString());
 		}
 		
 		//reports
@@ -345,26 +397,134 @@ public class CashierWindow extends StyledIWAdminWindow {
 	}
 
 	protected boolean getHasPermissionToViewWindow(IWContext iwc) {
+		if (_club == null) {
+			if (_group == null) {
+				Text errorText = new Text(_iwrb.getLocalizedString("isi_acc_no_group_selected", "You must select a group in a club"));
+				errorText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+				
+				add(errorText);
+				return false;
+			}
+			else {
+				try {
+					_club = getAccountingBusiness(iwc).findClubForGroup(_group);
+				}
+				catch (RemoteException e) {
+					e.printStackTrace();
+					_club = null;
+				}
+			
+				if (_club == null) {
+					Text errorText = new Text(_iwrb.getLocalizedString("isi_acc_no_group_selected", "You must select a group in a club"));
+					errorText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+					
+					add(errorText);
+					return false;
+				}
+			}
+		}
 		
-		return false;
-	}
+		User currentUser = iwc.getCurrentUser();
+		if (currentUser == null) {
+			Text errorText = new Text(_iwrb.getLocalizedString("isi_acc_no_user", "There is no user logged in. Please log in and try again."));
+			errorText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+			
+			add(errorText);
+			return false;
+		}
+		
+		System.out.println("Going to get all the cashierGroups for the user");
+		
+		Collection cashierGroupsInClubForUser = getGroupsForUser(iwc, currentUser);
+		System.out.println("Done getting groups.");
+		if (cashierGroupsInClubForUser == null || cashierGroupsInClubForUser.isEmpty()) {
+			Text errorText = new Text(_iwrb.getLocalizedString("isi_acc_user_not_cashier", "You are not logged in as a cashier for this club. Please log in as a cashier and try again."));
+			errorText.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+			
+			add(errorText);
+			return false;
+		}
+		
+		//@TODO fix ef einhver er gjaldkeri í tveimur deildum en ekki félagi....
+		boolean first = true;
+		Iterator it = cashierGroupsInClubForUser.iterator();
+		while (it.hasNext()) {
+			Group cashierGroup = (Group) it.next();
+			try {
+				Group tmpDiv = getAccountingBusiness(iwc).findDivisionForGroup(cashierGroup);
+				if (first) {
+					_div = tmpDiv;
+					first = false;
+				}
+				else {
+					if (_div != null) {
+						_div = tmpDiv;
+					}
+				}
+				
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}			
+		}
+		
+		return true;
+ 	}
 	
+	private Collection getGroupsForUser(IWContext iwc, User user) {
+		ArrayList userCashierGroups = new ArrayList();
+		ArrayList userGroupsInClub = new ArrayList();
+		Collection allCashierGroups = iwc.getAccessController().getAllGroupsForRoleKey("Gjaldkeri", iwc);
+
+		try {
+			Collection allUserGroups = getUserBusiness(iwc).getUserGroupsDirectlyRelated(user);
+			if (allUserGroups != null && !allUserGroups.isEmpty()) {
+				Iterator it = allUserGroups.iterator();
+				while (it.hasNext()) {
+					Group group = (Group) it.next();
+					if (allCashierGroups.contains(group)) {
+						userCashierGroups.add(group);
+					}					
+				}
+			}
+			
+			if (userCashierGroups != null && !userCashierGroups.isEmpty()) {
+				Iterator it = userCashierGroups.iterator();
+				while (it.hasNext()) {
+					Group group = (Group) it.next();
+					Group parent = getAccountingBusiness(iwc).findClubForGroup(group);
+					if (parent != null && _club.equals(parent)) {
+						userGroupsInClub.add(group);
+					}
+				}
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}		
+		
+		return userGroupsInClub;
+	}
 	
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		
+		init(iwc);
+		
 		boolean hasPermission = getHasPermissionToViewWindow(iwc);
 		if (!hasPermission) {
-			
+			return;
 		}
-		
-		init(iwc);
 
 		setTitle("Cashier window");
 		StringBuffer title = new StringBuffer(_iwrb.getLocalizedString("isi_acc_cashier_window", "Cashier Window"));
-		if (_group != null) {
+		if (_club != null) {
 			title.append(" - ");
-			title.append(_group.getName());
+			title.append(_club.getName());
+			if (_div != null) {
+				title.append(" / ");
+				title.append(_div.getName());
+			}
 		}
 		addTitle(title.toString(), IWConstants.BUILDER_FONT_STYLE_TITLE);
 
@@ -442,9 +602,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 				subWindow = new UserCreditcard();
 			}
 
-			if (_group != null) {
+			if (_club != null) {
 				actionTitle.append(" - ");
-				actionTitle.append(_group.getName());
+				actionTitle.append(_club.getName());
 			}
 			addTitle(actionTitle.toString(), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			
@@ -456,7 +616,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 				helpTable.add(getHelpWithGrayImage(helpTextKey, false), 1, 1);
 				table.add(helpTable, 2, 1);
 				
-				subWindow.setClub(_group);
+				subWindow.setClub(_club);
 				if (_user != null)
 					subWindow.setUser(_user);
 				if (_div != null)
@@ -504,4 +664,13 @@ public class CashierWindow extends StyledIWAdminWindow {
 			throw new RuntimeException(ex.getMessage());
 		}
 	}
+	
+	private AccountingBusiness getAccountingBusiness(IWContext iwc) {
+		try {
+			return (AccountingBusiness) IBOLookup.getServiceInstance(iwc, AccountingBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+	}	
 }

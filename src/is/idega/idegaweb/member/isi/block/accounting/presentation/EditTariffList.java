@@ -13,6 +13,7 @@ import is.idega.idegaweb.member.isi.block.accounting.data.ClubTariffType;
 
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -62,6 +63,8 @@ public class EditTariffList extends CashierSubWindowTemplate {
 	}
 
 	private void saveTariffEntry(IWContext iwc) {
+		_errorList = new ArrayList();
+		
 		String group = iwc.getParameter(LABEL_GROUP);
 		String type = iwc.getParameter(LABEL_TARIFF_TYPE);
 		String text = iwc.getParameter(LABEL_TEXT);
@@ -170,9 +173,8 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		Collection col = null;
 		Collection types = null;
 		try {
-			System.out.println("EditTariffList.getClub() = " + getClub());
 			if (getClub() != null) {
-				col = getAccountingBusiness(iwc).findAllTariffByClub(getClub());
+				col = getAccountingBusiness(iwc).findAllTariffByClubAndDivision(getClub(), getDivision());
 				types = getAccountingBusiness(iwc).findAllTariffTypeByClub(getClub());
 			}
 		}
@@ -256,7 +258,8 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_USER_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
-
+		f.maintainParameter(CashierWindow.PARAMETER_CLUB_ID);
+		
 		f.add(inputTable);
 		f.add(t);
 		add(f);
