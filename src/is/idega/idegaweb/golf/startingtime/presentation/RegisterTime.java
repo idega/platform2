@@ -383,7 +383,9 @@ public class RegisterTime extends GolfBlock {
                     Member tempMemb = (is.idega.idegaweb.golf.entity.Member)MemberBMPBean.getMember(sentSecureNums[j]);
                     if(tempMemb != null){
 
-                      if( business.countEntriesInGroup(Integer.parseInt(lines[j]),this.currentField,this.currentDay) >= maxCountInGroups){
+                      if( business.countEntriesInGroup(
+                      		Integer.parseInt(lines[j]),
+							this.currentField,this.currentDay) >= maxCountInGroups){
                         illegal.add(k++,new Integer(j));
                         fullGroup = true;
                       }else if(business.countOwnersEntries(Integer.parseInt(this.currentMember),this.currentField,this.currentDay) >= maxPerOwnerPerDay ){
@@ -401,14 +403,26 @@ public class RegisterTime extends GolfBlock {
 
 						
 
-                        business.setStartingtime(
-                        			Integer.parseInt(lines[j]),
+					   if(playerCard != null && playerCard.length>j){
+					   	business.setStartingtime(
+					   			Integer.parseInt(lines[j]),
 								this.currentDay, this.currentField, 
 								Integer.toString(tempMemb.getID()),
 								this.currentMember, tempMemb.getName(), 
 								Float.toString(tempMemb.getHandicap()), 
 								unionAbbr, playerCard[j], 
 								playerCardNo[j]);
+					   } else {
+					   	business.setStartingtime(
+							   	Integer.parseInt(lines[j]),
+								this.currentDay, this.currentField, 
+								Integer.toString(tempMemb.getID()),
+								this.currentMember, tempMemb.getName(), 
+								Float.toString(tempMemb.getHandicap()), 
+								unionAbbr, "", 
+								"");
+					   }
+                        			
                         ones = true;
                       }
                     }else{
@@ -437,14 +451,15 @@ public class RegisterTime extends GolfBlock {
                   tempIllegal1.setText(sentSecureNums[index]);
                   tempTable.add(tempIllegal1,1,i+1);
 
-                  Text tempIllegal2 = (Text)templText.clone();
-                  tempIllegal2.setText(playerCard[index]);
-                  tempTable.add(tempIllegal2,2,i+1);
-
-                  Text tempIllegal3 = (Text)templText.clone();
-                  tempIllegal3.setText(playerCardNo[index]);
-                  tempTable.add(tempIllegal3,3,i+1);
-
+                  if(playerCard != null && playerCard.length>index){
+	                  Text tempIllegal2 = (Text)templText.clone();
+	                  tempIllegal2.setText(playerCard[index]);
+	                  tempTable.add(tempIllegal2,2,i+1);
+	
+	                  Text tempIllegal3 = (Text)templText.clone();
+	                  tempIllegal3.setText(playerCardNo[index]);
+	                  tempTable.add(tempIllegal3,3,i+1);
+                  }
                 }
 
                 frameTable.add(Text.getBreak());
