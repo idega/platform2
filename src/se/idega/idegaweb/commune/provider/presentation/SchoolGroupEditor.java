@@ -495,23 +495,16 @@ public class SchoolGroupEditor extends ProviderBlock {
 			table.setHeight(row++, 15);
 		}
 		//study paths...
-
-		//maintain parameters
-		form.maintainParameter(PARAMETER_IS_SUBGROUP);
-		form.maintainParameter(PARAMETER_TYPE_ID);
-		form.maintainParameter(PARAMETER_SEASON_ID);
-		form.maintainParameter(PARAMETER_STUDY_PATHS);
-		form.maintainParameter(PARAMETER_TEACHERS);
-		form.maintainParameter(PARAMETER_SCHOOL_YEARS);
-		form.maintainParameter(PARAMETER_GROUP_NAME);
-		form.maintainParameter(PARAMETER_GROUP_STRING_ID);
-		form.maintainParameter(PARAMETER_GROUP_ID);
 		
 		Link link = new Link(localize("create_school_user", "Create school user"));
 		link.setAsImageButton(true);
 		link.setWindowToOpen(com.idega.block.school.presentation.SchoolUserWindow.class);
 		link.setParameter("sue_act", "sue_pvs");
 		link.setParameter("pr_schl_id", _provider.getPrimaryKey().toString());
+		
+		//	added 23.February - ac
+		link.setToMaintainAllParameter(true);
+		
 		table.add(link, 3, row++);
 
 		List groupTeachers = new ArrayList();
