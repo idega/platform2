@@ -44,11 +44,13 @@ public class ProductItem extends Block {
   private void initialize(IWContext iwc) {
     String sProductId = iwc.getParameter(ProductBusiness.PRODUCT_ID);
     if (sProductId != null) {
-      try {
-        _productId = Integer.parseInt(sProductId);
-        _product = ProductBusiness.getProduct(_productId);
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
+      if (!sProductId.equals("-1")) {
+        try {
+          _productId = Integer.parseInt(sProductId);
+          _product = ProductBusiness.getProduct(_productId);
+        }catch (SQLException sql) {
+          sql.printStackTrace(System.err);
+        }
       }
     }
     this._locale = iwc.getCurrentLocale();

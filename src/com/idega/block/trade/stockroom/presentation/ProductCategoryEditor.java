@@ -124,7 +124,8 @@ public class ProductCategoryEditor extends IWAdminWindow {
       sdb.getRightBox().selectAllOnSubmit();
       sdb.getLeftBox().setHeight(height);
       sdb.getRightBox().setHeight(height);
-
+      sdb.getLeftBox().setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE+"width:130px");
+      sdb.getRightBox().setStyleAttribute(IWConstants.BUILDER_FONT_STYLE_INTERFACE+"width:130px");
 
       SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"), this._action, this._parameterSaveCategory);
       SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"), this._action, this._parameterClose);

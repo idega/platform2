@@ -384,6 +384,23 @@ public class ProductBusiness {
     return getProducts(-1, null);
   }
 
+  public static List getProducts(List productCategories) {
+    List returner = new Vector();
+    List temp;
+    Product product;
+    for (int i = 0; i < productCategories.size(); i++) {
+      temp = getProducts((ICCategory) productCategories.get(i));
+      for (int j = 0; j < temp.size(); j++) {
+        product = (Product) temp.get(j);
+        if (!returner.contains(product)) {
+          returner.add(product);
+        }
+      }
+    }
+
+    return returner;
+  }
+
   public static List getProducts(ICCategory category) {
     return getProducts(-1, category.getID(), null,null);
   }

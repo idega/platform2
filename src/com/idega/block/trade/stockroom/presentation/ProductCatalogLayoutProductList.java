@@ -41,6 +41,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
 
     return toEMM(productCategories);
   }
+
   private Form toEMM(List productCategories) {
     Form form = new Form();
 
@@ -53,26 +54,19 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
      */
 
     if (productCategories != null && productCategories.size() > 0) {
-      ICCategory pCat;
-      for (int i = 0; i < productCategories.size(); i++) {
-        pCat = (ICCategory) productCategories.get(i);
-        products.addAll(ProductBusiness.getProducts(pCat));
-      }
+      products = ProductBusiness.getProducts(productCategories);
     }else {
       products = ProductBusiness.getProducts();
     }
 
     int manyProducts = products.size();
-    debug("Start sorting..... "+idegaTimestamp.RightNow().toString());
     Collections.sort(products, new ProductComparator(orderBy));
-    debug("Done sorting...... "+idegaTimestamp.RightNow().toString());
 
     int totalPages = manyProducts / _productCatalog.productsPerPage;
     if (manyProducts % _productCatalog.productsPerPage != 0) {
       ++totalPages;
     }
 
-    //int totalPages = 1;
 
     int startProductId = 0;
     if (_productCatalog.currentPage > 1) {
@@ -94,9 +88,9 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
     Image image;
     float price;
     Link productLink;
+    Text nameText;
 
     ++row;
-
     Link number = new Link(_productCatalog.getCategoryText(_iwrb.getLocalizedString("item_number","Item number")));
       number.addParameter(this.PARAMETER_ORDER_BY, ProductComparator.NUMBER);
     Link name = new Link(_productCatalog.getCategoryText(_iwrb.getLocalizedString("name","Name")));
@@ -123,11 +117,21 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
           price = pPrice.getPrice();
         }
 
+        if (_productCatalog._useAnchor) {
+          table.add(_productCatalog.getAnchor(product.getID()), 1, row);
+        }
+        nameText = _productCatalog.getText(ProductBusiness.getProductName(product, _productCatalog._currentLocaleId));
+
         table.add(_productCatalog.getText(product.getNumber()), 1,row);
 
         if (_productCatalog._productIsLink) {
-          productLink = new Link(_productCatalog.getText(ProductBusiness.getProductName(product, _productCatalog._currentLocaleId)));
+          if (_productCatalog._useAnchor) {
+            productLink = new AnchorLink(nameText, _productCatalog.getAnchorString(product.getID()));
+          }else {
+            productLink = new Link(nameText);
+          }
           productLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
+
           if (_productCatalog._productLinkPage != null) {
             productLink.setPage(_productCatalog._productLinkPage);
           }else {
@@ -135,7 +139,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
           }
           table.add(productLink, 2,row);
         }else {
-          table.add(_productCatalog.getText(ProductBusiness.getProductName(product, _productCatalog._currentLocaleId)), 2,row);
+          table.add(nameText, 2,row);
         }
 //        table.add(ProductCatalog.getText(ProductBusiness.getProductName(product)), 2,row);
 

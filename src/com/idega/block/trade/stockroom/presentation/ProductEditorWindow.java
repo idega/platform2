@@ -31,16 +31,17 @@ public class ProductEditorWindow extends IWAdminWindow {
   public static final String PRODUCT_ID = "prod_edit_prod_id";
 
   private static final String ACTION = "prod_edit_action";
-  private static final String PAR_SAVE = "prod_edit_save";
+  private static final String PAR_CLOSE = "prod_edit_close";
   private static final String PAR_DELETE = "prod_edit_del";
   private static final String PAR_DEL_VERIFIED = "prod_edit_del_verified";
-  private static final String PAR_CLOSE = "prod_edit_close";
-  private static final String PAR_NUMBER = "prod_edit_number";
-  private static final String PAR_NAME = "prod_edit_name";
   private static final String PAR_DESCRIPTION = "prod_edit_description";
-  private static final String PAR_TEASER = "prod_edit_teaser";
-  private static final String PAR_PRICE = "prod_edit_price";
   private static final String PAR_IMAGE = "prod_edit_image";
+  private static final String PAR_NAME = "prod_edit_name";
+  private static final String PAR_NEW = "prod_edit_new";
+  private static final String PAR_NUMBER = "prod_edit_number";
+  private static final String PAR_PRICE = "prod_edit_price";
+  private static final String PAR_SAVE = "prod_edit_save";
+  private static final String PAR_TEASER = "prod_edit_teaser";
 
   private IWResourceBundle iwrb;
   private IWBundle bundle;
@@ -63,6 +64,10 @@ public class ProductEditorWindow extends IWAdminWindow {
 
     String action = iwc.getParameter(ACTION);
     if (action == null || action.equals("")) {
+      displayForm(iwc);
+    }else if (action.equals(this.PAR_NEW)) {
+      this._product = null;
+      this._productId = -1;
       displayForm(iwc);
     }else if (action.equals(this.PAR_SAVE)) {
       if (saveProduct(iwc)) {
@@ -141,9 +146,6 @@ public class ProductEditorWindow extends IWAdminWindow {
       teaser.setWidth(50);
 
     if (_product != null) {
-      /**
-       * @todo addTeaser;
-       */
       number.setContent(_product.getNumber());
       name.setContent(ProductBusiness.getProductName(_product, iLocaleID));
       description.setContent(ProductBusiness.getProductDescription(_product, iLocaleID));
@@ -180,6 +182,14 @@ public class ProductEditorWindow extends IWAdminWindow {
     SubmitButton saveBtn = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"), this.ACTION, this.PAR_SAVE);
     SubmitButton deleteBtn = new SubmitButton(iwrb.getLocalizedImageButton("delete","Delete"), this.ACTION, this.PAR_DELETE);
     SubmitButton closeBtn = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"), this.ACTION, this.PAR_CLOSE);
+    SubmitButton newBtn = new SubmitButton(iwrb.getLocalizedImageButton("create_new","Create new"), this.ACTION, this.PAR_NEW);
+
+    Table table = new Table();
+    table.add(newBtn);
+    table.setAlignment(1,1, "right");
+    table.setWidth("100%");
+
+    super.addLeft("",table, false, false);
 
     super.addSubmitButton(closeBtn);
     super.addSubmitButton(deleteBtn);

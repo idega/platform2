@@ -40,18 +40,26 @@ public class ProductCatalog extends CategoryBlock{
   private IWBundle bundle;
 
   Image iCreate = null;
-  private Image iDelete = null;
-  private Image iEdit = null;
+  Image iDelete = null;
+  Image iEdit = null;
   Image iDetach = null;
 
   private String _fontStyle = null;
   private String _catFontStyle = null;
+  private String _anchorString = "prodCatAnchorID_";
+
   String _width = null;
   IBPage _productLinkPage = null;
   boolean _productIsLink = false;
   boolean _showCategoryName = true;
   boolean _showImage = false;
   boolean _showTeaser = false;
+  boolean _showDescription = false;
+  boolean _showNumber = false;
+  boolean _showPrice = false;
+  boolean _useAnchor = false;
+  boolean _expandSelectedOnly = false;
+  int _orderProductsBy = -1;
 
   Locale _currentLocale = null;
   int _currentLocaleId = -1;
@@ -59,6 +67,7 @@ public class ProductCatalog extends CategoryBlock{
   boolean _allowMulitpleCategories = true;
 
   private Class _layoutClass = ProductCatalogLayoutSingleFile.class;
+
 
 
   public ProductCatalog() {
@@ -217,6 +226,15 @@ public class ProductCatalog extends CategoryBlock{
     return text;
   }
 
+  String getAnchorString(int productId) {
+    return this._anchorString+productId;
+  }
+
+  Anchor getAnchor(int productId) {
+    Anchor anchor = new Anchor(getAnchorString(productId));
+    return anchor;
+  }
+
   public void setFontStyle(String fontStyle) {
     this._fontStyle = fontStyle;
   }
@@ -262,6 +280,26 @@ public class ProductCatalog extends CategoryBlock{
     this._showTeaser = showTeaser;
   }
 
+  public void setUseAnchor(boolean useAnchor) {
+    this._useAnchor = useAnchor;
+  }
+
+  public void setExpandSelectedOnyl(boolean expaneSelectedOnly) {
+    this._expandSelectedOnly = expaneSelectedOnly;
+  }
+
+  public void setShowDescription(boolean showDescription) {
+    this._showDescription = showDescription;
+  }
+
+  public void setShowPrice(boolean showPrice) {
+    this._showPrice = showPrice;
+  }
+
+  public void setShowNumber(boolean showNumber) {
+    this._showNumber = showNumber;
+  }
+
   public boolean getMultible() {
     return this._allowMulitpleCategories;
   }
@@ -278,4 +316,9 @@ public class ProductCatalog extends CategoryBlock{
       cnf.printStackTrace(System.err);
     }
   }
+
+  public void setOrderBy(int orderProductsBy) {
+    this._orderProductsBy = orderProductsBy;
+  }
+
 }

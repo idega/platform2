@@ -36,10 +36,13 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
     int fileId;
     Image image;
     String teaser;
+    String description;
 
     List catProducts;
     Link configCategory;
     Link productLink;
+    Text nameText;
+
     for (int i = 0; i < productCategories.size(); i++) {
       if (i != 0){
         ++row;
@@ -74,8 +77,18 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
             fileId = product.getFileId();
             //table.add(getText(product.getNumber()), 1,row);
 
+            nameText = productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId));
+            if (productCatalog._useAnchor) {
+              table.add(productCatalog.getAnchor(product.getID()),1,row);
+            }
+            nameText.setName(Integer.toString(product.getID()));
+
             if (productCatalog._productIsLink) {
-              productLink = new Link(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)));
+              if (productCatalog._useAnchor) {
+                productLink = new AnchorLink(nameText, productCatalog.getAnchorString(product.getID()));
+              }else {
+                productLink = new Link(nameText);
+              }
               productLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
               if (productCatalog._productLinkPage != null) {
                 productLink.setPage(productCatalog._productLinkPage);
@@ -84,7 +97,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
               }
               table.add(productLink, 1,row);
             }else {
-              table.add(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)), 1,row);
+              table.add(nameText, 1,row);
             }
 
             if (fileId != -1) {
@@ -101,6 +114,16 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
                 table.setWidth(2, row, "100%");
                 table.mergeCells(2, row, 3, row);
                 table.add(productCatalog.getText(teaser), 2,row);
+              }
+            }
+
+            if (productCatalog._showDescription) {
+              description = ProductBusiness.getProductDescription(product, productCatalog._currentLocaleId);
+              if (!description.equals("")) {
+                ++row;
+                table.setWidth(2, row, "100%");
+                table.mergeCells(2, row, 3, row);
+                table.add(productCatalog.getText(description), 2,row);
               }
             }
 

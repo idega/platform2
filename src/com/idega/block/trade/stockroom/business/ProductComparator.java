@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.business;
 
+import com.idega.presentation.IWContext;
 import com.idega.util.IsCollator;
 import com.idega.util.idegaTimestamp;
 import java.util.*;
@@ -26,15 +27,20 @@ public class ProductComparator implements Comparator {
   public static final int DEPARTURETIME_NAME = 4;
   public static final int PRICE = 5;
 
-
+  private int localeId = -1;
   private int sortBy;
 
   public ProductComparator() {
-      sortBy = NAME;
+    this(1);
   }
 
   public ProductComparator(int toSortBy) {
+    this(toSortBy, IWContext.getInstance().getCurrentLocaleId());
+  }
+
+  public ProductComparator(int toSortBy, int localeId) {
       sortBy = toSortBy;
+      localeId = localeId;
   }
 
   public void sortBy(int toSortBy) {
@@ -66,8 +72,8 @@ public class ProductComparator implements Comparator {
     Product p1 = (Product) o1;
     Product p2 = (Product) o2;
 
-    String one = ProductBusiness.getProductName(p1)!=null?ProductBusiness.getProductName(p1):"";
-    String two = ProductBusiness.getProductName(p2)!=null?ProductBusiness.getProductName(p2):"";
+    String one = ProductBusiness.getProductName(p1, localeId)!=null?ProductBusiness.getProductName(p1, localeId):"";
+    String two = ProductBusiness.getProductName(p2, localeId)!=null?ProductBusiness.getProductName(p2, localeId):"";
 
     return IsCollator.getIsCollator().compare(one,two);
   }

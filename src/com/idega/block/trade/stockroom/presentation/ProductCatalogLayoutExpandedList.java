@@ -50,7 +50,7 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
   for (int i = 0; i < products.size(); i++) {
     addedRow = false;
     product = (Product) products.get(i);
-    ++row;/*
+    ++row;
     if (productCatalog._hasEditPermission) {
       editLink = ProductEditorWindow.getEditorLink(product.getID());
       editLink.setImage(productCatalog.iEdit);
@@ -58,8 +58,9 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
     }
     if (productCatalog._useAnchor) {
       table.add(productCatalog.getAnchor(product.getID()), 1,row);
-    }*/
+    }
     table.add(productCatalog.getCategoryText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)), 1,row);
+    table.mergeCells(1, row, 3, row);
     if (!productCatalog._expandSelectedOnly) {
 
       if (productCatalog._showNumber) {
@@ -72,7 +73,6 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
       if (productCatalog._showDescription) {
         if (!addedRow){
           ++row;
-          table.mergeCells(1, row, 3, row);
           addedRow = true;
         }
         description = ProductBusiness.getProductDescription(product, productCatalog._currentLocaleId);
@@ -83,7 +83,6 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
       if (productCatalog._showImage) {
         if (!addedRow){
           ++row;
-          table.mergeCells(1, row, 3, row);
           addedRow = true;
         }
         imageId = product.getFileId();
