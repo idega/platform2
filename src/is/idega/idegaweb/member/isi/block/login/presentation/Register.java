@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
+import javax.ejb.FinderException;
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.data.LoginTable;
@@ -24,7 +25,6 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.PasswordInput;
@@ -53,6 +53,7 @@ public class Register extends Block {
 	//public final static int PERSONAL_NUMBER_NOT_FOUND = 1000;
 	
 	public final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private boolean cannotRegisterUnlessAlreadyInAGroup = false;
 	//private static final int[] KT_MULT = {3, 2, 7, 6, 5, 4, 3, 2}; 
 	
 	public void control() {
@@ -134,24 +135,41 @@ public class Register extends Block {
 		if(kt.length()!=10) {
 			return _iwrb.getLocalizedString("register.personal_number_invalid", "SSN invalid");
 		}
-		try {
+
+			
 			System.out.println("getting user with kt PN: " + kt);
-			User user = getUserBusiness().getUser(kt);
-			if(user==null) {
+			User user = null;
+			try {
+				user = getUserBusiness().getUser(kt);
+				_kt = kt;
+			}
+			catch (FinderException e) {
 				return _iwrb.getLocalizedString("register.pn_not_found", "No user found with given SSN");
 			}
-			if(user.getGroupID()==-1) {
-				return _iwrb.getLocalizedString("register.user_not_in_any_group", "User must be a member of a group.");
+			catch (RemoteException e) {
+				e.printStackTrace();
+				return _iwrb.getLocalizedString("register.error_looking_pn", "Error searching for user by SSN");
+			}
+			
+			
+			if(cannotRegisterUnlessAlreadyInAGroup){
+				Collection parentGroups = user.getParentGroups();
+				if(parentGroups!=null && !parentGroups.isEmpty()){
+					_kt = kt;
+					return null;
+				}
+				else{
+					return _iwrb.getLocalizedString("register.user_not_in_any_group", "User must be a member of a group (club).");
+				}
+			
+				
 			}
 			LoginTable lt = getLoginTable(user, false);
 			if(lt!=null) {
 				return _iwrb.getLocalizedString("register.user_already_has_login", "You already have a login, can not create another");
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return _iwrb.getLocalizedString("register.error_looking_pn", "Error searching for user by SSN");
-		}
-		_kt = kt;
+			
+		
 		return null;
 	}
 	
@@ -406,4 +424,16 @@ public class Register extends Block {
 		return lt;
 	}
 	
+	/**
+	 * @return Returns the cannotRegisterUnlessAlreadyInAGroup.
+	 */
+	public boolean cannotRegisterUnlessAlreadyInAGroup() {
+		return cannotRegisterUnlessAlreadyInAGroup;
+	}
+	/**
+	 * @param cannotRegisterUnlessAlreadyInAGroup The cannotRegisterUnlessAlreadyInAGroup to set.
+	 */
+	public void setCannotRegisterUnlessAlreadyInAGroup(boolean cannotRegisterUnlessAlreadyInAGroup) {
+		this.cannotRegisterUnlessAlreadyInAGroup = cannotRegisterUnlessAlreadyInAGroup;
+	}
 }
