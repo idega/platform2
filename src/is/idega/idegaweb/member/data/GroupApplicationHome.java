@@ -11,5 +11,4 @@ public interface GroupApplicationHome extends com.idega.data.IDOHome
  public java.lang.String getPendingStatusString()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.lang.String getApprovedStatusString()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.lang.String getDeniedStatusString()throws java.rmi.RemoteException, java.rmi.RemoteException;
-
 }

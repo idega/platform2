@@ -10,7 +10,7 @@ public class GroupApplicationHomeImpl extends com.idega.data.IDOFactory implemen
 
  public GroupApplication create() throws javax.ejb.CreateException{
   return (GroupApplication) super.createIDO();
- }
+ } 
 
 
 public java.util.Collection findAllApplicationsByStatusOrderedByCreationDate(java.lang.String p0)throws javax.ejb.FinderException,java.rmi.RemoteException{

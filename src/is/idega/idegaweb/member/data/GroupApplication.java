@@ -4,12 +4,15 @@ import javax.ejb.*;
 
 public interface GroupApplication extends com.idega.data.IDOEntity
 {
+ public java.lang.String getIDColumnName() throws java.rmi.RemoteException;
  public java.lang.String getAdminComment() throws java.rmi.RemoteException;
  public int getUserId() throws java.rmi.RemoteException;
+ public int getApplicationGroupId() throws java.rmi.RemoteException;
  public void removeAllGroups()throws com.idega.data.IDORemoveRelationshipException, java.rmi.RemoteException;
  public java.lang.String getUserComment() throws java.rmi.RemoteException;
- public void initializeAttributes() throws java.rmi.RemoteException;
+ public void setApplicationGroupId(int p0) throws java.rmi.RemoteException;
  public void addGroup(com.idega.user.data.Group p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
+ public void initializeAttributes() throws java.rmi.RemoteException;
  public void setStatus(java.lang.String p0) throws java.rmi.RemoteException;
  public void addGroups(java.util.List p0)throws com.idega.data.IDOAddRelationshipException, java.rmi.RemoteException;
  public java.sql.Timestamp getCreated() throws java.rmi.RemoteException;
