@@ -395,6 +395,13 @@ public class FinanceFinder  {
     return (Account)com.idega.block.finance.data.AccountBMPBean.getEntityInstance(Account.class,id);
   }
 
+  public FinanceAccount getFinanceAccount(int id){
+    FinanceAccount account = getAccountInfo(id);
+    if(account==null)
+      account = getAccount(id);
+    return account;
+  }
+
   public  AccountInfo getAccountInfo(int id){
     try {
       List accountInfo = EntityFinder.getInstance().findAllByColumn(AccountInfo.class,com.idega.block.finance.data.AccountInfoBMPBean.getColumnAccountId(),id);

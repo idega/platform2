@@ -61,7 +61,7 @@ public class AccountTariffer extends Finance {
   }
 
    protected void control(IWContext iwc) throws java.rmi.RemoteException{
-    debugParameters(iwc);
+    //debugParameters(iwc);
     Edit = TextFormat.getInstance();
     if(isAdmin){
       accBuiz = (AccountBusiness) IBOLookup.getServiceInstance(iwc,AccountBusiness.class);
@@ -84,7 +84,7 @@ public class AccountTariffer extends Finance {
         iAccountId = Integer.parseInt(iwc.getParameter(prmAccountId));
         if(iAccountId>0){
           parse(iwc);
-          account = FinanceFinder.getInstance().getAccountInfo(iAccountId);
+          account = FinanceFinder.getInstance().getFinanceAccount(iAccountId);
         }
       }
 
