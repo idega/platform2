@@ -14,7 +14,7 @@ import com.idega.data.*;
 import java.math.*;
 import com.idega.jmodule.*;
 import java.text.DecimalFormat;
-import java.text.NumberFormat.*;
+import java.text.NumberFormat;
 import java.sql.*;
 import java.io.*;
 import java.util.*;
@@ -45,8 +45,8 @@ import java.util.*;
   private String strMessage = "";
   private Account eAccount;
   private Member eMember;
-  private Table Frame,MainFrame;
-  private java.text.NumberFormat NF ;
+  private Table Frame,MainFrame,Frame2;
+  private NumberFormat NF ;
   private String styleAttribute = "font-size: 8pt";
   private String storage;
 
@@ -62,7 +62,6 @@ import java.util.*;
 
     setMenuColor("#ADCAB1");//,"#CEDFD0"
     setItemColor("#CEDFD0");//"#D0F0D0"
-    setInputLines(15);
     currentLocale = java.util.Locale.getDefault();
     NF = java.text.NumberFormat.getInstance();
   }
@@ -74,9 +73,6 @@ import java.util.*;
     this.ItemColor = ItemColor;
   }
 
-  public void setInputLines(int inputlines){
-    this.inputLines = inputlines;
-  }
   private void control(ModuleInfo modinfo){
 
     try{
@@ -105,7 +101,12 @@ import java.util.*;
       else
         mem_id = -1;
 
-      eAccount = new Account(TariffService.findAccountID(mem_id,un_id));
+      int accountid = TariffService.findAccountID(mem_id,un_id);
+      if(accountid != -1)
+        eAccount = new Account(accountid);
+      else if(mem_id != -1){
+        eAccount = new Account(TariffService.makeNewAccount(mem_id,this.un_id,eMember.getName(),this.cashier_id));
+      }
 
       strMessage = "";
 
@@ -117,6 +118,7 @@ import java.util.*;
 
         if(sAction.equals("main"))	        { doMain(modinfo);      }
         else if(sAction.equals("change"))	{ doChange(modinfo); 	}
+        else if(sAction.equals("clearaccount")) { doClearAccount(modinfo);}
         else if(sAction.equals("update"))	{ doUpdate(modinfo); 	}
         else if(sAction.equals("view"))	        { doView(modinfo); 	}
         else if(sAction.equals("save"))	        { doSave(modinfo); 	}
@@ -124,119 +126,115 @@ import java.util.*;
         else if(sAction.equals("tariffs"))	{ doTariff(modinfo); 	}
         else if(sAction.equals("new"))	        { 	}
         else if(sAction.equals("updatenew"))	{ doUpdateNew(modinfo); }
-        else if(sAction.equals("makenew"))	{ doMakeNew(modinfo); }
+        else if(sAction.equals("makenew"))	{ doMakeNew(modinfo);   }
+        else if(sAction.equals("paychange"))	{ doChange(modinfo);    }
+        else if(sAction.equals("updatepay"))	{ doUpdatePay(modinfo); }
+        else if(sAction.equals("deleteall"))    { doDeleteAll(modinfo); }
 
       }
     }
     catch(SQLException S){	S.printStackTrace();	}
+    catch(Exception s){ add("villa");}
     }
 
     private void doMain(ModuleInfo modinfo) throws SQLException {
       makeMainFrame();
       makeFrame();
+      makeFrame2();
       addLinks(makeLinkTable(2));
       addHead(makeViewTable());
-      addFrame(Frame);
+      addFrames();
       add(MainFrame);
     }
 
     private void doTariff(ModuleInfo modinfo){
       makeMainFrame();
       makeFrame();
+      makeFrame2();
       addLinks(makeLinkTable(3));
       addHead(this.makeHeaderTable());
       addMain(this.makeTarifViewTable());
       addRight(this.makeTariffTable());
-      addFrame(Frame);
+      addFrames();
       add(MainFrame);
     }
 
+    private void makeMainFrame(){
+      MainFrame = new Table(4,3);
+      MainFrame.setRowAlignment(2,"top");
+      MainFrame.setWidth(1,"70");
+      MainFrame.setWidth(2,"450");
+      MainFrame.setWidth(3,"20");
+      MainFrame.setWidth(4,"250");
+      //MainFrame.setBorder(1);
+      //MainFrame.setHeight(4,3,"100%");
+      MainFrame.setAlignment(4,3,"top");
+      //MainFrame.setColumnColor(3,WhiteColor);
+      MainFrame.setCellspacing(0);
+      MainFrame.setCellpadding(0);
+    }
+
+    private void addFrames(){
+      MainFrame.add(Frame,2,3);
+      MainFrame.add(Frame2,4,3);
+    }
+
+    private void makeFrame(){
+      Frame = new Table(1,3);
+      //Frame.setBorder(1);
+      Frame.setCellspacing(0);
+      Frame.setCellpadding(0);
+      Frame.setWidth("100%");
+      Frame.setHeight("100%");
+    }
+
+    private void makeFrame2(){
+      Frame2 = new Table(1,2);
+      //Frame2.setBorder(1);
+      Frame2.setCellspacing(0);
+      Frame2.setCellpadding(0);
+      Frame2.setWidth("100%");
+      Frame2.setHeight("100%");
+    }
+
+
+    private void addMain(ModuleObject T){
+      Frame.add(T,1,3);
+    }
+
+    private void addHead(ModuleObject T){
+      Frame.add(T,1,1);
+    }
+
+    private void addRight(ModuleObject T){
+      Frame2.add(T,1,1);
+    }
+
+    private void addLinks(ModuleObject T){
+      MainFrame.add(T,2,2);
+    }
+
     private void doChange(ModuleInfo modinfo) throws SQLException{
-      String paym_id = modinfo.getRequest().getParameter("payment_id");
-      PaymentType[] PT = (PaymentType[])(new PaymentType()).findAll();
-      Form myForm = new Form();
-      myForm.maintainAllParameters();
-      if( paym_id != null){
-        int pm_id = Integer.parseInt(paym_id);
-        Payment P = new Payment(pm_id);
-        String description = P.getExtraInfo();
-        int price = P.getPrice();
-        idegaTimestamp Paydate = new idegaTimestamp(P.getPaymentDate());
-        idegaTimestamp Update = new idegaTimestamp(P.getLastUpdated());
-        int pt_id = P.getPaymentTypeID();
-        String part = P.getInstallmentNr()+"/"+P.getTotalInstallment();
-
-        Table T =  new Table(9,2);
-
-        T.setHorizontalZebraColored(DarkColor,LightColor);
-        T.setRowColor(1,HeaderColor);
-        String fontColor = "#FFFFFF";
-
-        Text DESCR = new Text("LÝSING",true,false,false);
-        DESCR.setFontColor(fontColor);
-        Text PAYDATE = new Text("GJALDDAGI",true,false,false);
-        PAYDATE.setFontColor(fontColor);
-        Text PART = new Text("HLUTI",true,false,false);
-        PART.setFontColor(fontColor);
-        Text PRICE = new Text("UPPHÆÐ",true,false,false);
-        PRICE.setFontColor(fontColor);
-        Text PAYTYPE = new Text("GR.GERÐ",true,false,false);
-        PAYTYPE.setFontColor(fontColor);
-        Text UPDATED = new Text("UPPFÆRT",true,false,false);
-        UPDATED.setFontColor(fontColor);
-        Text PAID = new Text("GREITT",true,false,false);
-        PAID.setFontColor(fontColor);
-        Text UNPAID = new Text("GREITT",true,false,false);
-        UNPAID.setFontColor(fontColor);
-        Text DEL = new Text("EYÐA",true,false,false);
-        DEL.setFontColor(fontColor);
-
-        T.add(PAYDATE,1,1);
-        T.add(DESCR,2,1);
-        T.add(PRICE,3,1);
-        T.add(PAYTYPE,4,1);
-        T.add(PART,5,1);
-        T.add(UPDATED,6,1);
-        T.add(PAID,7,1);
-        T.add(UNPAID,8,1);
-        T.add(DEL,9,1);
-
-        TextInput descInput = new TextInput("payment_idesc",description);
-        descInput.setMaxlength(30);
-        descInput.setSize(25);
-        Text partText = new Text(part);
-        IntegerInput priceInput = new IntegerInput("payment_iprice",price);
-        priceInput.setSize(8);
-        priceInput.setMaxlength(8);
-        DropdownMenu drpPayType = new DropdownMenu(PT,"payment_ipaytype");
-        drpPayType.setSelectedElement(String.valueOf(pt_id));
-        Text payDateText = new Text(Paydate.toSQLDateString());
-        Text lastUpdatedText = new Text(Update.toSQLDateString());
-        CheckBox chkPaid = new CheckBox("payment_ichkpaid","true");
-        CheckBox chkUnPaid = new CheckBox("payment_ichkunpaid","true");
-        CheckBox chkDel = new CheckBox("payment_ichkdel","true");
-
-        T.add(payDateText,1,2);
-        T.add(descInput,2,2);
-        T.add(priceInput,3,2);
-        T.add(drpPayType,4,2);
-        T.add(partText,5,2);
-        T.add(lastUpdatedText,6,2);
-        T.add(chkPaid,7,2);
-        T.add(chkUnPaid,8,2);
-        T.add(chkDel,9,2);
-
-        myForm.add(T);
-        myForm.add(new SubmitButton(new Image("/pics/tarif/uppfaera.gif")));
-        myForm.add(new HiddenInput("payment_action","update" ));
-        myForm.add(new HiddenInput("payment_id",paym_id ));
-
-        Table MainTable = makeMainTable();
-        MainTable.add(makeLinkTable(2),2,1);
-        MainTable.add(myForm,2,3);
-        MainTable.add("<br><br><br>",2,4);
-        add(MainTable);
+      String sPaymId = modinfo.getRequest().getParameter("payid");
+      Payment P = null;
+      if(sPaymId!=null)
+      try{
+        P = new Payment(Integer.parseInt(sPaymId));
       }
+      catch(SQLException sql){}
+
+      makeMainFrame();
+      makeFrame();
+      makeFrame2();
+      addLinks(makeLinkTable(3));
+      addHead(this.makeHeaderTable());
+      if(P!=null)
+        addMain(this.makeTarifViewTable(P));
+      else
+        addMain(this.makeTarifViewTable());
+      addRight(this.makeTariffTable());
+      addFrames();
+      add(MainFrame);
     }
 
     private void doUpdate(ModuleInfo modinfo) throws SQLException{
@@ -286,12 +284,90 @@ import java.util.*;
     private void doSave(ModuleInfo modinfo) throws SQLException{
 
     }
+    private void doUpdatePay(ModuleInfo modinfo) throws SQLException{
+      String sPaymentId   = modinfo.getParameter("account_oldpayid");
+      String sPay         = modinfo.getParameter("payment_ichkpaid");
+      String sUpdate      = modinfo.getParameter("payment_ichkupdate");
+      String sDelete      = modinfo.getParameter("payment_ichkdel");
+      String sDescription = modinfo.getParameter(this.getDscPrm());
+      String sPrice       = modinfo.getParameter(this.getPrcPrm());
+      String sPayDate     = modinfo.getParameter(this.getDtPrm());
+      String sPayTypeId   = modinfo.getParameter(this.getPTPrm());
+
+      int iPaymentId = Integer.parseInt(sPaymentId);
+      Payment ePayment;
+      try{
+        ePayment = new Payment(iPaymentId);
+      }
+      catch(SQLException sql){ePayment = null;}
+
+      if(ePayment != null){
+        idegaTimestamp itPayDate = this.parseStamp(sPayDate);
+        idegaTimestamp itPaymentDate = new idegaTimestamp(ePayment.getPaymentDate());
+        int iPrice = Integer.parseInt(sPrice);
+        int iOldPrice = ePayment.getPrice();
+        int iPayTypeId = Integer.parseInt(sPayTypeId);
+        if(ePayment.getPrice() != iPrice)
+          ePayment.setPrice(iPrice);
+        if(ePayment.getName() != sDescription)
+          ePayment.setName(sDescription);
+        if(ePayment.getPaymentTypeID() != iPayTypeId)
+          ePayment.setPaymentTypeID(iPayTypeId);
+        if(itPaymentDate.getISLDate(".",true) != itPayDate.getISLDate(".",true))
+          ePayment.setPaymentDate(itPayDate.getTimestamp());
+
+        if(sPay != null && sPay.equalsIgnoreCase("true")){
+          String sInfo = "Greiðsla";
+          String sInfo2 = "Leiðrétting";
+          int iPriceChange = iOldPrice - iPrice;
+          ePayment.setStatus(true);
+          try{
+            TariffService.makeAccountEntry(this.eAccount.getID(),ePayment.getPrice(),ePayment.getName(),sInfo,"","","",this.cashier_id,ePayment.getPaymentDate(),idegaTimestamp.getTimestampRightNow());
+            if(iPriceChange != 0)
+              TariffService.makeAccountEntry(this.eAccount.getID(),iPriceChange,ePayment.getName(),sInfo2,"","","",this.cashier_id,ePayment.getPaymentDate(),idegaTimestamp.getTimestampRightNow());
+            ePayment.update() ;
+          }
+          catch(SQLException sql){sql.printStackTrace();}
+        }
+        else if(sUpdate != null && sUpdate.equalsIgnoreCase("true")){
+          String sInfo = "Leiðrétting";
+          int iPriceChange = iOldPrice - iPrice;
+          try{
+            TariffService.makeAccountEntry(this.eAccount.getID(),iPriceChange,ePayment.getName(),sInfo,"","","",this.cashier_id,ePayment.getPaymentDate(),idegaTimestamp.getTimestampRightNow());
+            ePayment.update();
+          }
+          catch(SQLException sql){sql.printStackTrace();}
+        }
+        else if(sDelete != null && sDelete.equalsIgnoreCase("true")){
+          String sInfo = "NiðurFelling";
+          try{
+            ePayment.delete();
+            TariffService.makeAccountEntry(this.eAccount.getID(),iOldPrice,ePayment.getName(),sInfo,"","","",this.cashier_id,ePayment.getPaymentDate(),idegaTimestamp.getTimestampRightNow());
+
+          }
+          catch(SQLException sql){sql.printStackTrace();}
+        }
+        this.doTariff(modinfo);
+      }
+    }
+
     private void doMakeNew(ModuleInfo modinfo) throws SQLException{
       String sCatIds = modinfo.getParameter(this.getIDsPrm());
       String sDescr = modinfo.getParameter(this.getDscPrm());
       String sPrice = modinfo.getParameter(this.getPrcPrm());
       String sDate = modinfo.getParameter(this.getDtPrm());
+      String sCost = modinfo.getParameter(this.getCostprm());
+      String sInterest = modinfo.getParameter(this.getInterestprm());
       int totalprice = 0;
+      int iCost = 0;
+      double dInterest = 0.0;
+      if( !sInterest.equalsIgnoreCase("")){
+            dInterest = Double.parseDouble(sInterest);
+      }
+      if( !sCost.equalsIgnoreCase("")){
+        iCost = Integer.parseInt(sCost);
+      }
+
       int[] iCats;
       if(sCatIds.length() > 0){
         StringTokenizer ST = new StringTokenizer(sCatIds,"#");
@@ -336,6 +412,15 @@ import java.util.*;
         int iInst = Integer.parseInt( modinfo.getParameter(this.getInstPrm()));
         int iType = Integer.parseInt( modinfo.getParameter(this.getPTPrm()));
         String sdate = modinfo.getParameter(this.getDtPrm());
+        idPayDate = parseStamp(sdate);
+
+        double Multi = dInterest/100 ;
+        int totaladd = (int) Math.floor(totalprice * (Multi));
+        totaladd += iCost;
+        totalprice += totaladd;
+
+        TariffService.makeAccountEntry(this.eAccount.getID() ,-totaladd,"Kostnaður","Álagning","","","",0,idegaTimestamp.getTimestampRightNow(),idegaTimestamp.getTimestampRightNow());
+
         try{
           PaymentRound payround = new PaymentRound();
           payround.setName("Auka");
@@ -442,6 +527,21 @@ import java.util.*;
      this.doMain(modinfo);
     }
 
+    private void doClearAccount(ModuleInfo modinfo){
+      if(this.eAccount.getBalance()==0){
+      AccountEntry[] E = TariffService.getAccountEntrys(this.eAccount.getID());
+      for (int i = 0; i < E.length; i++) {
+        try {
+          E[i].delete();
+        }
+        catch (SQLException ex) {
+
+        }
+      }
+      }
+      doTariff(modinfo);
+    }
+
     private void doCalc(ModuleInfo modinfo) throws SQLException{
       try{
         idegaTimestamp accountLastUpd = new idegaTimestamp(eAccount.getLastUpdated());
@@ -473,43 +573,41 @@ import java.util.*;
       }
       this.doMain(modinfo);
     }
+    private void doDeleteAll(ModuleInfo modinfo){
+      int pCount = Integer.parseInt(modinfo.getParameter("payment_totalpaydel"));
+      String sInfo = "NiðurFelling";
+      int totalprice = 0;
+      Timestamp today = idegaTimestamp.getTimestampRightNow();
+      Timestamp lastpaydate = today;
+      String name = "";
+     for (int i = 0; i < pCount; i++) {
+        if(modinfo.getParameter("payment_delchk"+i)!=null){
+          int id = Integer.parseInt(modinfo.getParameter("payment_delchk"+i));
+           Payment ePayment = null;
+          try{
+            ePayment = new Payment(id);
+          }
+          catch(SQLException sql){ePayment = null;}
+          if(ePayment !=null){
+            try{
+              totalprice += ePayment.getPrice();
+              lastpaydate = ePayment.getPaymentDate();
+              name = ePayment.getName();
+              ePayment.delete();
+            }
+            catch(SQLException sql){sql.printStackTrace();}
+          }
+        }
+      }
+      if(totalprice > 0){
+        try {
+          TariffService.makeAccountEntry( this.eAccount.getID(),totalprice,name,
+                          sInfo,"","","",this.cashier_id,lastpaydate,today);
+        }
+        catch (SQLException ex) {        }
 
-    private void makeMainFrame(){
-      MainFrame = new Table(4,3);
-      MainFrame.setWidth(1,"70");
-      MainFrame.setWidth(2,"450");
-      MainFrame.setWidth(3,"20");
-      MainFrame.setWidth(4,"250");
-      MainFrame.setColumnColor(3,WhiteColor);
-      MainFrame.setCellspacing(0);
-      MainFrame.setCellpadding(0);
-    }
-
-    private void addFrame(ModuleObject T){
-      MainFrame.add(T,2,3);
-    }
-
-    private void makeFrame(){
-      Frame = new Table(1,3);
-      Frame.setCellspacing(0);
-      Frame.setCellpadding(0);
-      Frame.setWidth("100%");
-    }
-
-    private void addMain(ModuleObject T){
-      Frame.add(T,1,3);
-    }
-
-    private void addHead(ModuleObject T){
-      Frame.add(T,1,1);
-    }
-
-    private void addRight(ModuleObject T){
-      MainFrame.add(T,4,3);
-    }
-
-    private void addLinks(ModuleObject T){
-      MainFrame.add(T,2,2);
+      }
+      this.doTariff(modinfo);
     }
 
     private Table makeViewTable(){
@@ -543,16 +641,47 @@ import java.util.*;
       T.setCellpadding(1);
       T.setCellspacing(1);
       T.setHeight("100%");
-      Table T2 = new Table(1,3);
+      Table T2 = new Table(1,2);
       T2.setWidth("100%");
+      //T2.setBorder(1);
       T2.setColor(this.WhiteColor);
       T2.setCellpadding(4);
       T2.setCellspacing(0);
       T2.add(this.makeTariffEntriesTable(TariffService.getTariffEntrys(eAccount.getID())),1,1);
-      T2.addBreak(1,2);
-      T2.add(this.makePaymentsTable(TariffService.getMemberPayments(this.mem_id,this.un_id)),1,3);
-      T2.addBreak(1,3);
-      T.add(T2);
+      T2.add(this.makePaymentsTable(TariffService.getMemberPayments(this.mem_id,this.un_id)),1,2);
+
+      Form myForm = new Form();
+      myForm.maintainAllParameters();
+      myForm.add(T2);
+      myForm.add(new HiddenInput( this.prmString, "deleteall"));
+      T.add(myForm);
+      return T;
+    }
+
+     private Table makeTarifViewTable(Payment P){
+      Table T = new Table(1,1);
+      T.setWidth("100%");
+      T.setColor(this.HeaderColor);
+      //T.setBorder(1);
+      //T.setColor(1,1,WhiteColor);
+      T.setCellpadding(1);
+      T.setCellspacing(1);
+      T.setHeight("100%");
+      Table T2 = new Table(1,2);
+      T2.setWidth("100%");
+      //T2.setBorder(1);
+      T2.setColor(this.WhiteColor);
+      T2.setCellpadding(4);
+      T2.setCellspacing(0);
+      T2.add(this.makePayChangeTable(P),1,1);
+      T2.add(this.makePaymentsTable(TariffService.getMemberPayments(this.mem_id,this.un_id)),1,2);
+
+      Form myForm = new Form();
+      myForm.maintainAllParameters();
+      myForm.add(T2);
+      myForm.add(new HiddenInput( this.prmString,"updatepay"));
+      myForm.add(new HiddenInput("account_oldpayid",String.valueOf(P.getID())));
+      T.add(myForm);
       return T;
     }
 
@@ -563,7 +692,8 @@ import java.util.*;
       T.setCellpadding(1);
       T.setCellspacing(1);
       T.setWidth("100%");
-      T.setHeight("100%");
+      T.setRowAlignment(1,"top");
+      //T.setHeight("100%");
       Table T2 = new Table(1,4);
       T2.setWidth("100%");
 
@@ -589,9 +719,10 @@ import java.util.*;
       T2.setCellspacing(1);
       T2.setCellpadding(2);
       T2.setWidth("100%");
+      //T2.setHeight("100%");
       Table T = new Table(3,tableDepth);
       T.setWidth("100%");
-      T.setWidth(1,"65");
+      //T.setWidth(1,"65");
       T.setCellspacing(0);
       T.setCellpadding(2);
       T.setColumnAlignment(1,"center");
@@ -645,22 +776,18 @@ import java.util.*;
       return T2;
     }
 
-    public Table makeNewTarifTable(){
+    private Table makeNewTarifTable(){
       Table T2 = new Table(1,2);
       T2.setCellspacing(1);
       T2.setCellpadding(2);
-      Table T = new Table(3,3);
+      T2.setWidth("100%");
+      Table T = new Table(3,2);
       T.setWidth("100%");
       //T.setWidth(1,"65");
       T.setCellspacing(0);
       T.setCellpadding(2);
       T.setColumnAlignment(1,"left");
       T.setColumnAlignment(2,"left");
-
-      //T.setColumnAlignment(3,"right");
-      T.setAlignment(1,3,"left");
-
-
       T.setRowColor(1,HeaderColor);
 
       String fontColor = WhiteColor;
@@ -670,10 +797,10 @@ import java.util.*;
       Title.setFontColor(HeaderColor);
       T2.add(Title,1,1);
 
-      Text[] TableTitles = new Text[3];
+      Text[] TableTitles = new Text[2];
       TableTitles[0] = new Text("Lýsing");
       TableTitles[1] = new Text("Upphæð");
-      TableTitles[2] = new Text("Gjalddagi");
+      //TableTitles[2] = new Text("Gjalddagi");
 
       for(int i = 0 ; i < TableTitles.length;i++){
         TableTitles[i].setFontSize(fontSize);
@@ -693,23 +820,118 @@ import java.util.*;
 
       T.add(Description,1,2);
       T.add(Price,2,2);
-      T.add(PayDate,3,2);
+
+      //T.add(PayDate,3,2);
       T2.add(T,1,2);
       return T2;
     }
 
-    public Table makeAdjustTable(){
-      Table T2 = new Table(1,2);
+     private Table makePayChangeTable(Payment P){
+      Table T2 = new Table(1,3);
       T2.setCellspacing(1);
       T2.setCellpadding(2);
       T2.setWidth("100%");
-      Table T = new Table(3,3);
+      T2.setRowAlignment(3,"right");
+      Table T = new Table(6,2);
       T.setWidth("100%");
       T.setCellspacing(0);
       T.setCellpadding(2);
       T.setColumnAlignment(1,"left");
       T.setColumnAlignment(2,"left");
-      T.setAlignment(1,3,"left");
+      T.setColumnAlignment(3,"center");
+      T.setColumnAlignment(4,"left");
+      T.setColumnAlignment(5,"right");
+
+
+      T.setRowColor(1,HeaderColor);
+
+      int fontSize = 1;
+
+      Text Title = new Text("Greiðsla",true,false,false);
+      Title.setFontColor(HeaderColor);
+      T2.add(Title,1,1);
+
+      Text[] TableTitles = new Text[5];
+      TableTitles[0] = new Text("Gjalddagi");
+      TableTitles[1] = new Text("Máti");
+      TableTitles[2] = new Text("Hluti");
+      TableTitles[3] = new Text("Lýsing");
+      TableTitles[4] = new Text("Upphæð");
+
+      for(int i = 0 ; i < TableTitles.length;i++){
+        TableTitles[i].setFontSize(fontSize);
+        TableTitles[i].setFontColor(WhiteColor);
+        T.add(TableTitles[i],i+1,1);
+      }
+
+      String sPrice = String.valueOf(P.getPrice());
+
+      String name = (P.getName()!=null?P.getName():"");
+      TextInput Description  = new TextInput(this.getDscPrm(),name);
+      Description.setLength(20);
+      Description.setAttribute("style",this.styleAttribute);
+      IntegerInput Price = new IntegerInput(this.getPrcPrm(),P.getPrice());
+      Price.setLength(5);
+      Price.setAttribute("style",this.styleAttribute);
+      TextInput PayDate = new TextInput(this.getDtPrm(),new idegaTimestamp(P.getPaymentDate()).getISLDate(".",true));
+      PayDate.setLength(10);
+      PayDate.setAttribute("style",this.styleAttribute);
+
+      DropdownMenu drdPaytypes = new DropdownMenu(this.getPTPrm());
+      for(int i = 1; i < 5; i++){ drdPaytypes.addMenuElement( String.valueOf(i),this.getPaymentType(i));  }
+      drdPaytypes.setSelectedElement(String.valueOf(P.getPaymentTypeID()));
+      drdPaytypes.setAttribute("style",this.styleAttribute);
+
+      Text tPart = new Text(P.getInstallmentNr()+"/"+P.getTotalInstallment());
+      tPart.setFontSize(fontSize);
+      tPart.setFontColor(HeaderColor);
+      Text tPay = new Text("Greiða");
+      tPay.setFontSize(fontSize);
+      tPay.setFontColor(HeaderColor);
+      Text tDel = new Text("Eyða");
+      tDel.setFontSize(fontSize);
+      tDel.setFontColor(HeaderColor);
+      Text tUpd = new Text("Upfæra");
+      tUpd.setFontSize(fontSize);
+      tUpd.setFontColor(HeaderColor);
+
+      CheckBox chkPay = new CheckBox("payment_ichkpaid","true");
+      CheckBox chkUpd = new CheckBox("payment_ichkupdate","true");
+      CheckBox chkDel= new CheckBox("payment_ichkdel","true");
+
+      SubmitButton B = new SubmitButton(new Image("/pics/tarif/small/boka.gif"));
+
+      Table T3 = new Table(8,1);
+      T3.add(tPay,1,1);
+      T3.add(chkPay,2,1);
+      T3.add(tDel,3,1);
+      T3.add(chkDel,4,1);
+      T3.add(tUpd,5,1);
+      T3.add(chkUpd,6,1);
+      T3.add(B,8,1);
+
+      T.add(PayDate,1,2);
+      T.add(drdPaytypes,2,2);
+      T.add(tPart,3,2);
+      T.add(Description,4,2);
+      T.add(Price,5,2);
+      T2.add(T,1,2);
+      T2.add(T3,1,3);
+      return T2;
+    }
+
+
+    private Table makeAdjustTable(){
+      Table T2 = new Table(1,3);
+      T2.setCellspacing(1);
+      T2.setCellpadding(2);
+      T2.setWidth("100%");
+      Table T = new Table(3,2);
+      T.setWidth("100%");
+      T.setCellspacing(0);
+      T.setCellpadding(2);
+      T.setColumnAlignment(1,"left");
+      T.setColumnAlignment(2,"left");
       T.setRowColor(1,HeaderColor);
 
       String fontColor = WhiteColor;
@@ -741,14 +963,41 @@ import java.util.*;
       PayDate.setLength(10);
       PayDate.setAttribute("style",this.styleAttribute);
 
+      IntegerInput Interest = new IntegerInput(this.getInterestprm());
+      Interest.setLength(4);
+      Interest.setAttribute("style",this.styleAttribute);
+
+      IntegerInput Cost = new IntegerInput(this.getCostprm());
+      Cost.setLength(4);
+      Cost.setAttribute("style",this.styleAttribute);
+
+      Table CostTable = new Table(4,1);
+      CostTable.setWidth("100%");
+      CostTable.setColumnAlignment(1,"left");
+      CostTable.setColumnAlignment(2,"right");
+      CostTable.setColumnAlignment(3,"left");
+      CostTable.setColumnAlignment(4,"right");
+      Text cost = new Text("Upphæð");
+      cost.setFontSize(fontSize);
+      cost.setFontColor(HeaderColor);
+      CostTable.add(cost,1,1);
+      CostTable.add(Cost,2,1);
+      Text interest = new Text("Prósenta");
+      interest.setFontSize(fontSize);
+      interest.setFontColor(HeaderColor);
+      CostTable.add(interest,3,1);
+      CostTable.add(Interest,4,1);
+
+
       T.add(drdInst,1,2);
       T.add(drdPaytypes,2,2);
       T.add(PayDate,3,2);
       T2.add(T,1,2);
+      T2.add(CostTable,1,3);
       return T2;
     }
 
-    public Table makeSubmitTable(){
+    private Table makeSubmitTable(){
       Table T2 = new Table(1,1);
       T2.setCellspacing(1);
       T2.setCellpadding(2);
@@ -769,6 +1018,9 @@ import java.util.*;
     public String getIDsPrm(){return "account_catids";}
     public String getInstPrm(){return "account_installdrd";}
     public String getPTPrm(){return "account_paytypesdrd";}
+    public String getPCprm(){return "account_paychange";}
+    public String getInterestprm(){return "account_bankinterest";}
+    public String getCostprm(){return "account_bankcost";}
 
 
     private Table makeMainTable(){
@@ -851,7 +1103,7 @@ import java.util.*;
       Table T2 = new Table(1,2);
       T2.setWidth("100%");
       T2.setColor(this.WhiteColor);
-      T2.setCellpadding(4);
+      T2.setCellpadding(2);
       T2.setCellspacing(0);
       T2.add(this.makeMemberTable(),1,1);
       T2.add(this.makeFamilyTable(),1,2);
@@ -888,31 +1140,59 @@ import java.util.*;
   private Table makeFamilyTable(){
     Table T = new Table();
     try{
-    List L = TariffService.getMemberFamily(this.eMember.getID() ,this.un_id);
+    UnionMemberInfo umi = this.eMember.getUnionMemberInfo(this.un_id);
+    int iFamilyId = umi.getFamilyId();
 
-      if(!L.isEmpty()){
+    StringBuffer sql = new StringBuffer();
+    sql.append("select member_id,first_name,middle_name,last_name,date_of_birth,gender,image_id,social_security_number,email ");
+    sql.append("from member,union_member_info ");
+    sql.append("where member.member_id = union_member_info.member_id ");
+    sql.append("and union_member_info.union_id = ");
+    sql.append(this.un_id);
+    sql.append(" and union_member_info.family_id = ");
+    sql.append(iFamilyId);
+
+    List L = EntityFinder.findAll(eMember,sql.toString());
+    //List L = TariffService.getMemberFamily(this.eMember.getID() ,this.un_id);
+
+      if(L!=null && !L.isEmpty()){
+
         int len = L.size();
-        T = new Table(3,len+1);
+        T = new Table(3,len+2);
         T.setWidth("100%");
-        T.setWidth(1,"65");
+        //T.setWidth(1,"65");
+        T.setRowColor(1,HeaderColor);
         T.setCellspacing(0);
         T.setCellpadding(2);
-        T.setColumnAlignment(1,"center");
+        T.setColumnAlignment(1,"left");
         T.setColumnAlignment(2,"left");
         T.setColumnAlignment(3,"right");
 
-        T.setHorizontalZebraColored(LightColor,WhiteColor);
+        //T.setHorizontalZebraColored(LightColor,WhiteColor);
 
         Text header = new Text("Fjölskylda :");
-        header.setFontColor(HeaderColor);
+        header.setFontColor(WhiteColor);
+        T.add(header,1,1);
+
+        Text socialnr = new Text("Kennitala :");
+        socialnr.setFontColor(WhiteColor);
+        T.add(socialnr,3,1);
+
 
         for(int i = 0; i < len;i++){
           Member m = (Member)L.get(i);
-          Link link  = new Link(m.getName());
-          link.addParameter("member_id",m.getID());
-          link.addParameter(this.prmString,"tariffs");
-          T.add(link,1,i+1);
+          int id = m.getID();
+          if(id != eMember.getID()){
+            Link link  = new Link(m.getName());
+            link.addParameter("member_id",m.getID());
+            link.addParameter(this.prmString,"tariffs");
+            T.add(link,1,i+2);
+            Text socid = new Text(m.getSocialSecurityNumber());
+            socid.setFontColor(HeaderColor);
+            T.add(socid,3,i+2);
+          }
         }
+
       }
     }
     catch(Exception e){e.printStackTrace();}
@@ -985,7 +1265,7 @@ import java.util.*;
 
   private Table makeTariffEntriesTable(AccountEntry[] entries){
     int tableDepth = entries.length+2;
-    Table T2 = new Table(1,2);
+    Table T2 = new Table(1,3);
     T2.setWidth("100%");
     T2.setCellspacing(1);
     T2.setCellpadding(2);
@@ -1045,6 +1325,12 @@ import java.util.*;
         T.add(TableTexts[i],i+1,j+2);
       }
     }
+    if(this.eAccount.getBalance() == 0){
+    Link L = new Link(new Image("/pics/tarif/small/hreinsa.gif"));
+    L.addParameter(this.prmString, "clearaccount");
+    T2.setAlignment(1,3,"right");
+    T2.add(L,1,3);
+    }
     Text totalText = new Text(NF.format(total));
     totalText.setFontSize(fontSize);
     totalText.setFontColor(total < 0 ? KreditColor: DebetColor);
@@ -1054,14 +1340,15 @@ import java.util.*;
   }
 
   private Table makePaymentsTable(Payment[] payments){
-    int tableDepth = payments.length+2;
+    int tableDepth = payments.length+1;
     Table T2 = new Table(1,2);
     T2.setCellspacing(1);
     T2.setCellpadding(2);
     T2.setWidth("100%");
-    Table T = new Table(5,tableDepth);
+    Table T = new Table(7,tableDepth);
     T.setWidth("100%");
     T.setWidth(1,"65");
+    T.setWidth(6,"20");
     T.setCellspacing(0);
     T.setCellpadding(2);
     T.setColumnAlignment(1,"right");
@@ -1069,6 +1356,7 @@ import java.util.*;
     T.setColumnAlignment(3,"center");
     T.setColumnAlignment(4,"center");
     T.setColumnAlignment(5,"right");
+    T.setColumnAlignment(6,"right");
 
     T.setHorizontalZebraColored(LightColor,WhiteColor);
     T.setRowColor(1,HeaderColor);
@@ -1107,8 +1395,18 @@ import java.util.*;
         TableTexts[i].setFontSize(fontSize);
         T.add(TableTexts[i],i+1,j+2);
       }
+      CheckBox chkdel = new CheckBox("payment_delchk"+j,String.valueOf(payments[j].getID()));
+      T.add(chkdel,6,j+2);
+      Link L = new Link("B");
+      L.addParameter(this.prmString,"paychange");
+      L.addParameter("payid",payments[j].getID());
+      L.setFontSize(fontSize);
+      T.add(L,7,j+2);
     }
-    T2.add(T);
+    T.add(new HiddenInput("payment_totalpaydel",String.valueOf(payments.length)));
+    T2.add(T,1,1);
+    T2.setAlignment(1,2,"right");
+    T2.add(new SubmitButton(new Image("/pics/tarif/small/eyda.gif")),1,2);
     return T2;
   }
 
@@ -1202,5 +1500,3 @@ import java.util.*;
     control(modinfo);
   }
 }// class AccountViewer
-
-
