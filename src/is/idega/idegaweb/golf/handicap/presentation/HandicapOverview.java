@@ -339,9 +339,6 @@ public class HandicapOverview extends GolfBlock {
 							table.add(tournamentName, 3, row);
 						}
 					}
-					else {
-						table.addText("", 3, row);
-					}
 
 					table.add(teeName, 4, row);
 					table.add(String.valueOf((int) Math.rint(slope)) + Text.NON_BREAKING_SPACE + "/" + Text.NON_BREAKING_SPACE + cr, 5, row);
