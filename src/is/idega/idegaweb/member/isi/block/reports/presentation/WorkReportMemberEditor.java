@@ -310,6 +310,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
     if (memberAlreadyExist) {
       String message = resourceBundle.getLocalizedString("wr_account_member_member_with_ssn_already_exist", "The member with the specified social security number already exist");
+      Text text = new Text(message);
+      text.setBold();
+      add(text);
     }
     // put browser into a table
     Table mainTable = new Table(1,2);
