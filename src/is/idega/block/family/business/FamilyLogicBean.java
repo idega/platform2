@@ -582,13 +582,13 @@ public class FamilyLogicBean extends IBOServiceBean implements FamilyLogic{
 	public void registerAsDeceased(User user, Date deceasedDate) throws RemoteException {
 		removeAllFamilyRelationsForUser(user);
 		UserStatusBusiness userStatusService = (UserStatusBusiness)getServiceInstance(UserStatusBusiness.class);
-		userStatusService.setUserAsDeceased(user.getIDInteger(),deceasedDate);
+		userStatusService.setUserAsDeceased((Integer)user.getPrimaryKey(),deceasedDate);
 	}
 
 	public void registerAsDeceased(User user, Date deceasedDate, User performer) throws RemoteException {
 		removeAllFamilyRelationsForUser(user, performer);
 		UserStatusBusiness userStatusService = (UserStatusBusiness)getServiceInstance(UserStatusBusiness.class);
-		userStatusService.setUserAsDeceased(user.getIDInteger(),deceasedDate);
+		userStatusService.setUserAsDeceased((Integer)user.getPrimaryKey(),deceasedDate);
 	}
 
 	/**
