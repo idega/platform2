@@ -42,10 +42,10 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/05 15:32:47 $ by $Author: joakim $
+ * Last modified: $Date: 2003/11/05 20:39:25 $ by $Author: joakim $
  *
  * @author Joakim
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -179,19 +179,19 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 
 	public int getNoProviders(BatchRun batchRun) throws RemoteException, FinderException, IDOException {
 		Date period = batchRun.getPeriod();
-		int schoolCategoryID = batchRun.getSchoolCategoryID();
+		String schoolCategoryID = batchRun.getSchoolCategoryID();
 		return getPaymentHeaderHome().getProviderCountForSchoolCategoryAndPeriod(schoolCategoryID, period);
 	}
 
 	public int getNoPlacements(BatchRun batchRun) throws RemoteException, FinderException, IDOException {
 		Date period = batchRun.getPeriod();
-		int schoolCategoryID = batchRun.getSchoolCategoryID();
+		String schoolCategoryID = batchRun.getSchoolCategoryID();
 		return getPaymentRecordHome().getPlacementCountForSchoolCategoryAndPeriod(schoolCategoryID, period);
 	}
 
 	public int getTotAmountWithoutVAT(BatchRun batchRun) throws RemoteException, FinderException, IDOException {
 		Date period = batchRun.getPeriod();
-		int schoolCategoryID = batchRun.getSchoolCategoryID();
+		String schoolCategoryID = batchRun.getSchoolCategoryID();
 		return getPaymentRecordHome().getTotAmountForSchoolCategoryAndPeriod(schoolCategoryID, period);
 	}
 

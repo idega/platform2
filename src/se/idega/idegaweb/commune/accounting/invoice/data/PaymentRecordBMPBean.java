@@ -233,7 +233,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @throws FinderException
 	 * @throws IDOException
 	 */
-	public int ejbHomeGetPlacementCountForSchoolCategoryAndPeriod(int schoolCategoryID, Date period) throws FinderException, IDOException {
+	public int ejbHomeGetPlacementCountForSchoolCategoryAndPeriod(String schoolCategoryID, Date period) throws FinderException, IDOException {
 		IWTimestamp start = new IWTimestamp(period);
 		start.setAsDate();
 		start.setDay(1);
@@ -243,7 +243,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		IDOQuery sql = idoQuery();
 		sql.append("select sum("+COLUMN_PLACEMENTS+") from "+getEntityName());
 		sql.append(" r, cacc_payment_header h ");
-		sql.appendWhereEquals("h.school_category_id", schoolCategoryID);
+		sql.appendWhereEqualsQuoted("h.school_category_id", schoolCategoryID);
 		sql.appendAnd().append("h.period").appendGreaterThanOrEqualsSign().append(start.getDate());
 		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
 		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
@@ -259,7 +259,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	 * @throws FinderException
 	 * @throws IDOException
 	 */
-	public int ejbHomeGetTotAmountForSchoolCategoryAndPeriod(int schoolCategoryID, Date period) throws FinderException, IDOException {
+	public int ejbHomeGetTotAmountForSchoolCategoryAndPeriod(String schoolCategoryID, Date period) throws FinderException, IDOException {
 		IWTimestamp start = new IWTimestamp(period);
 		start.setAsDate();
 		start.setDay(1);
@@ -269,7 +269,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		IDOQuery sql = idoQuery();
 		sql.append("select sum("+COLUMN_TOT_AMOUNT+") from "+getEntityName());
 		sql.append(" r, cacc_payment_header h ");
-		sql.appendWhereEquals("h.school_category_id", schoolCategoryID);
+		sql.appendWhereEqualsQuoted("h.school_category_id", schoolCategoryID);
 		sql.appendAnd().append("h.period").appendGreaterThanOrEqualsSign().append(start.getDate());
 		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());
 		sql.appendAnd().append("h.period").appendLessThanSign().append(end.getDate());

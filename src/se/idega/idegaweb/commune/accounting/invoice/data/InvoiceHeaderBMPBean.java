@@ -43,7 +43,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_SCHOOL_CATEGORY_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_CUSTODIAN_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_STATUS, "", true, true, java.lang.String.class, 1);
@@ -58,8 +57,8 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY_ID, SchoolCategory.class);
 		addManyToOneRelationship(COLUMN_CUSTODIAN_ID, User.class);
 	}
-	public int getSchoolCategoryID() {
-		return getIntColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
+	public String getSchoolCategoryID() {
+		return getStringColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
 	}
 	public Date getPeriod() {
 		return getDateColumnValue(COLUMN_PERIOD);
@@ -93,7 +92,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	}
 
 
-	public void setSchoolCategoryID(int i) {
+	public void setSchoolCategoryID(String i) {
 		setColumn(COLUMN_SCHOOL_CATEGORY_ID, i);
 	}
 	public void setSchoolCategoryID(SchoolCategory sc) {
@@ -109,7 +108,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		setColumn(COLUMN_CUSTODIAN_ID, u);
 	}
 	public void setStatus(char c) {
-		setColumn(COLUMN_STATUS, c + "");
+		setColumn(COLUMN_STATUS, c);
 	}
 	public void setDateCreated(Date d) {
 		setColumn(COLUMN_DATE_CREATED, d);

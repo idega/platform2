@@ -28,15 +28,14 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_SCHOOL_CATEGORY_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_START, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_STOP, "", true, true, java.sql.Date.class);
 		
 		addManyToOneRelationship(COLUMN_SCHOOL_CATEGORY_ID, SchoolCategory.class);
 	}
-	public int getSchoolCategoryID() {
-		return getIntColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
+	public String getSchoolCategoryID() {
+		return getStringColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
 	}
 	public Date getPeriod() {
 		return getDateColumnValue(COLUMN_PERIOD);
@@ -48,7 +47,7 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun {
 		return getDateColumnValue(COLUMN_STOP);
 	}
 	
-	public void setSchoolCategoryID(int i) {
+	public void setSchoolCategoryID(String i) {
 		setColumn(COLUMN_SCHOOL_CATEGORY_ID, i);
 	}
 	public void setSchoolCategoryID(SchoolCategory s) {
