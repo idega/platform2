@@ -2359,5 +2359,8 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
     return table;
   }
 
+	public String getPriceCategorySearchKey() {
+		return TourSetup.TOUR_SEARCH_PRICE_CATEGORY_KEY;
+	}
 
 }
