@@ -163,7 +163,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				InvoiceHeader invoiceHeader;
 				try{
 					try{
-						invoiceHeader = getInvoiceHeaderHome().findByCustodian(custodian);
+						invoiceHeader = getInvoiceHeaderHome().findByCustodianAndMonth(custodian,month);
 					} catch (FinderException e) {
 						//No header was found so we have to create it
 						invoiceHeader = getInvoiceHeaderHome().create();
@@ -912,7 +912,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(header);
 		invoiceRecord.setInvoiceText2(text2);
-		errorRelated.append("Created invoice for check '"+header+"','"+text2+"' "+postingDetail.getTerm(),1);
+		errorRelated.append("Created invoice for check '"+header+"','"+text2+"' "+postingDetail.getTerm()+" Invoiceheader "+invoiceHeader.getPrimaryKey(),1);
 		//set the reference to payment record (utbetalningsposten)
 		invoiceRecord.setPaymentRecord(paymentRecord);
 		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract);
