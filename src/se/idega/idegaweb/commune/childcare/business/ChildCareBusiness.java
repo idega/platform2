@@ -3,6 +3,7 @@ package se.idega.idegaweb.commune.childcare.business;
 import java.util.Collection;
 
 import com.idega.block.process.business.CaseBusiness;
+import com.idega.block.school.data.School;
 import com.idega.idegaweb.IWUserContext;
 
 public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBusiness {
@@ -110,6 +111,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public java.util.Collection getPendingApplications(int childID, String caseCode) throws java.rmi.RemoteException;
  public int getPositionInQueue(se.idega.idegaweb.commune.childcare.data.ChildCareQueue p0) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis getPrognosis(int p0) throws java.rmi.RemoteException;
+ public java.util.Map getProviderAreaMap(java.util.Collection p0,com.idega.block.school.data.School p1,java.util.Locale p2,java.lang.String p3,boolean p4) throws java.rmi.RemoteException;
  public java.util.Map getProviderAreaMap(java.util.Collection p0,java.util.Locale p1,java.lang.String p2,boolean p3) throws java.rmi.RemoteException;
  public int getQueueByArea(int p0) throws java.rmi.RemoteException;
  public int getQueueByProvider(int p0) throws java.rmi.RemoteException;
@@ -221,4 +223,5 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public Collection getFamilyAfterSchoolTypes() throws java.rmi.RemoteException;
  public boolean wasRejectedByParent(se.idega.idegaweb.commune.childcare.data.ChildCareApplication application) throws java.rmi.RemoteException;
  public Collection getRejectedApplicationsByProvider(Integer providerID, String fromDateOfBirth, String toDateOfBirth, String fromDate, String toDate) throws java.rmi.RemoteException, javax.ejb.FinderException;
+ public School getCurrentProviderByPlacement(int childID) throws java.rmi.RemoteException;
 }

@@ -16,6 +16,7 @@ import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
 import com.idega.block.navigation.presentation.UserHomeLink;
+import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
@@ -67,6 +68,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	
 	private Collection areas;
 	private Map providerMap;
+	private School currentProvider;
 	
 	private boolean _noCheckError = false;
 	private boolean isAdmin = false;
@@ -140,6 +142,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		if (child != null) {
 			try {
 				hasOffers = getBusiness().hasUnansweredOffers(((Integer) child.getPrimaryKey()).intValue(), null);
+				currentProvider = getBusiness().getCurrentProviderByPlacement(((Integer) child.getPrimaryKey()).intValue());
 			}
 			catch (RemoteException e) {
 				hasOffers = false;
@@ -444,7 +447,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			if (areas == null)
 				areas = getBusiness().getSchoolBusiness().findAllSchoolAreas();
 			if (providerMap == null)
-				providerMap = getBusiness().getProviderAreaMap(areas, locale, emptyString, false);
+				providerMap = getBusiness().getProviderAreaMap(areas, currentProvider, locale, emptyString, false);
 				
 			if (areas != null && providerMap != null) {
 				Iterator iter = areas.iterator();

@@ -2937,6 +2937,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public Map getProviderAreaMap(Collection schoolAreas, Locale locale, String emptyString, boolean isFreetime) {
+		return getProviderAreaMap(schoolAreas, null, locale, emptyString, isFreetime);
+	}
+	
+	public Map getProviderAreaMap(Collection schoolAreas, School currentSchool, Locale locale, String emptyString, boolean isFreetime) {
 		try {
 			SortedMap areaMap = new TreeMap(new SchoolAreaComparator(locale));
 			if (schoolAreas != null) {
@@ -2951,11 +2955,23 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					SchoolArea area = (SchoolArea) iter.next();
 					SchoolBusiness sb = getSchoolBusiness();
 					Collection providers = sb.findAllSchoolsByAreaAndTypes(((Integer) area.getPrimaryKey()).intValue(), schoolTypes);
+					boolean addSchool = true;
 					if (providers != null) {
 						Iterator iterator = providers.iterator();
 						while (iterator.hasNext()) {
 							School provider = (School) iterator.next();
 							if (!provider.getInvisibleForCitizen()) {
+								addSchool = true;
+							}
+							else {
+								addSchool = false;
+							}
+							
+							if (currentSchool != null) {
+								addSchool = !currentSchool.equals(provider);
+							}
+							
+							if (addSchool) {
 								providerMap.put(provider, provider);
 							}
 						}
@@ -3408,6 +3424,21 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (FinderException e) {
 			return null;
 		}
+	}
+	
+	public School getCurrentProviderByPlacement(int childID) {
+		ChildCareApplication application = getActiveApplicationByChild(childID);
+		if (application != null) {
+			return application.getProvider();
+		}
+		else {
+			ChildCareContract contract = getLatestTerminatedContract(childID);
+			if (contract != null) {
+				return contract.getApplication().getProvider();
+			}
+		}
+		
+		return null;
 	}
 
 	public ChildCareContract getLatestContract(int childID) {
