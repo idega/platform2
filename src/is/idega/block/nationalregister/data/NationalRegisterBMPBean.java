@@ -10,7 +10,7 @@ import com.idega.data.IDOQuery;
 
 /**
  * A data class to hold the national register data, for Iceland, which is read
- * in from the E128 file from SKYRR.
+ * in from the E128 and E36 file from SKYRR.
  * 
  * @author palli
  */

@@ -5,6 +5,7 @@ import is.idega.block.nationalregister.data.NationalRegisterHome;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
@@ -26,6 +27,9 @@ import com.sun.rsasign.u;
 public class NationalRegisterBusinessBean extends IBOServiceBean implements NationalRegisterBusiness {
 	
 	private static int icelandCountryPK = 1;
+	private static Gender maleGender = null;
+	private static Gender femaleGender = null;
+	private static HashMap postalCodes = null;
 	
 	public NationalRegister getEntryBySSN(String ssn) {
 		try {
@@ -148,48 +152,32 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			t.setMonth(iMonth);
 			t.setYear(iYear);
 			
-			GenderHome home = (GenderHome) getIDOHome(Gender.class);
-			
-			Gender gender = null;
-			if (sex.equals("1") || sex.equals("3"))
-				gender = home.getMaleGender();
-			else
-				gender = home.getFemaleGender();
+			Gender gender = getGender(sex);
 
 			User user = userBiz.createUserByPersonalIDIfDoesNotExist(name,ssn,gender,t);
-			user.setDisplayName(name);
+			//user.setDisplayName(name);
 
 			if (newSsnOrName != null && "".equalsIgnoreCase(newSsnOrName)) {
 				try {
 					Long.parseLong(newSsnOrName);
 					user.setPersonalID(newSsnOrName);
+					user.store();
 					log("Changing user's personalID to "+newSsnOrName);
-					System.out.println("");
 				} catch (NumberFormatException n) {
 					user.setFullName(newSsnOrName);
+					user.store();
 					log("Changing user's name to "+newSsnOrName);
 				}
 			}
 			
-			user.store();
 			
 			
-			PostalCode poCode = null;
-			if (po != null && !po.trim().equals("")) {
-				try {				
-			  	poCode = ((PostalCodeHome)getIDOHome(PostalCode.class)).findByPostalCodeAndCountryId(po,getIcelandicCountryPK());
-				}
-				catch(FinderException e) {
-					poCode = null;
-				}
-			}
+			PostalCode postalCode = getPostalCode(po);
 
-			Integer id = null;
-			if (poCode != null)
-				id = (Integer)poCode.getPrimaryKey();
-
-			userBiz.updateUsersMainAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, id, null, null, null, null, null);
-			userBiz.updateUsersCoAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, id, null, null, null, null, null);
+			userBiz.updateUsersMainAddressOrCreateIfDoesNotExist(user, address, postalCode, null, null, null, null, null);
+			userBiz.updateUsersCoAddressOrCreateIfDoesNotExist(user, address, postalCode, null, null, null, null, null);
+//			userBiz.updateUsersMainAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, postalCodeId, null, null, null, null, null);
+//			userBiz.updateUsersCoAddressOrCreateIfDoesNotExist((Integer) user.getPrimaryKey(), address, postalCodeId, null, null, null, null, null);
 		}
 		catch (CreateException e) {
 			e.printStackTrace();
@@ -207,6 +195,44 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 		return true;
 	}
 	
+	private PostalCode getPostalCode(String po) throws RemoteException {
+		if (postalCodes == null) {
+			postalCodes = new HashMap();
+		}
+		
+		if (po != null && !po.trim().equals("")) {
+			if (postalCodes.containsKey(po)) {
+				return (PostalCode) postalCodes.get(po);
+			} else {
+				try {				
+					PostalCode poCode = ((PostalCodeHome)getIDOHome(PostalCode.class)).findByPostalCodeAndCountryId(po,getIcelandicCountryPK());
+					postalCodes.put(po, poCode);
+					return poCode;
+				}
+				catch(FinderException e) {
+					postalCodes.put(po, null);
+					return null;
+				}
+			}
+		} 
+		return null;
+	}
+
+	private Gender getGender(String sex) throws RemoteException, FinderException {
+		if (maleGender == null || femaleGender == null) {
+			GenderHome home = (GenderHome) getIDOHome(Gender.class);
+			maleGender = home.getMaleGender();
+			femaleGender = home.getFemaleGender();
+		}
+		
+		if (sex.equals("1") || sex.equals("3")) {
+			return maleGender;
+		}	else {
+			return femaleGender;
+		}
+		
+	}
+
 	private int getIcelandicCountryPK() throws RemoteException, FinderException {
 		if (icelandCountryPK < 1) {
 			Country country = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("IS");
