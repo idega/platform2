@@ -136,8 +136,6 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	
 	private static final int MIN_LEFT_COLUMN_WIDTH = 150;	
 		 
-	private static ICPage _returnPage;	
-
 	private UserSearcher searcher = null;
 
 	private static final int 
@@ -471,8 +469,8 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 				inv.store();		
 			}
 
-			if (_returnPage != null){
-				iwc.forwardToIBPage(getParentPage(), _returnPage);
+			if (getResponsePage () != null){
+				iwc.forwardToIBPage(getParentPage(), getResponsePage ());
 			}
 		}
 	}
@@ -998,16 +996,4 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	protected VATBusiness getVATBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (VATBusiness) IBOLookup.getServiceInstance(iwc, VATBusiness.class);
 	}
-
-	
-	//Property responsePage
-	public void setResponsePage(ICPage responsePage){
-		_returnPage = responsePage;
-	}
-	
-	public ICPage getResponsePage(){
-		return _returnPage;
-	}	
-		 
-	
 }
