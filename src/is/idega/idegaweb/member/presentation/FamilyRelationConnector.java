@@ -40,6 +40,10 @@ public class FamilyRelationConnector extends UserRelationConnector {
 			Text tType = new Text(iwrb.getLocalizedString(type, type));
 			return tType;
 		}
+		else if(hasSelectedReverseType()){
+			Text tReverseType = new Text(iwrb.getLocalizedString(rtype,rtype));
+			return tReverseType;
+		}
 		else {
 			MemberFamilyLogic familyService = getMemberFamilyLogic(iwc);
 			DropdownMenu menu = new DropdownMenu(PARAM_TYPE);

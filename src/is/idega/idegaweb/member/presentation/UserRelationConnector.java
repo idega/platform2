@@ -99,7 +99,7 @@ public class UserRelationConnector extends Window {
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		debugParameters(iwc);
+		//debugParameters(iwc);
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		//iwc.getApplication().getLog().info("Who is your daddy ?");
@@ -206,7 +206,7 @@ public class UserRelationConnector extends Window {
 				getActionButton(iwrb.getLocalizedString("detach", "Detach"), ACTION_DETACH, detachWarning);
 			return detach;
 		}
-		else if(hasSelectedReverseType() && victimUser.hasRelationTo(((Integer) roleUser.getUserGroup().getPrimaryKey()).intValue(), type)) {
+		else if(hasSelectedReverseType() && victimUser.hasRelationTo(((Integer) roleUser.getUserGroup().getPrimaryKey()).intValue(), rtype)) {
 			String detachWarning = 
 			iwrb.getLocalizedString("warning_detach_relation", "Are you shure you want to remove this relation ?");
 			SubmitButton detach =

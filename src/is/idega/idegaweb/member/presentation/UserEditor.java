@@ -518,7 +518,8 @@ public class UserEditor extends Block {
 		TextInput coPostalNameInput = new TextInput(prm_coaddress_postal_name);
 		coPostalNameInput.setStyleClass(interfaceStyleName);
 		
-		CountryDropdownMenu coCountryInput = new CountryDropdownMenu(prm_coaddress_country);
+		CountryDropdownMenu coCountryInput = (CountryDropdownMenu) primaryCountryInput.clone();
+		coCountryInput.setName(prm_coaddress_country);
 		coCountryInput.setStyleClass(interfaceStyleName);
 		
 		/*
