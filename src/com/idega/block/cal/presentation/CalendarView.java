@@ -43,6 +43,8 @@ public class CalendarView extends Block{
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
 	private int view = CalendarParameters.MONTH;
 	
+	private final static String PARAMETER_ISI_GROUP_ID = "group_id";
+	
 	
 	private IWTimestamp now = null;
 	private IWTimestamp timeStamp = null;
@@ -237,10 +239,10 @@ public class CalendarView extends Block{
 		 * now holds the current time
 		 */
 		now = new IWTimestamp();
-		Link right = getRightLink(iwc);
-		Link left = getLeftLink(iwc);
-		addNextWeekPrm(right,timeStamp);
-		addLastWeekPrm(left,timeStamp);
+//		Link right = getRightLink(iwc);
+//		Link left = getLeftLink(iwc);
+//		addNextWeekPrm(right,timeStamp);
+//		addLastWeekPrm(left,timeStamp);
 		
 
 		Table backTable = new Table();
@@ -264,9 +266,9 @@ public class CalendarView extends Block{
 		headTable.setStyleClass(mainTableStyle);
 		headTable.setAlignment(2,1,"right");
 		String yearString = stamp.getDateString("yyyy");
-		headTable.add(left,1,1);
+//		headTable.add(left,1,1);
 		headTable.add(iwrb.getLocalizedString("calView.week_of_year","Week of the year") + " " + stamp.getWeekOfYear() + "<br>" + yearString,1,1);
-		headTable.add(right,1,1);
+//		headTable.add(right,1,1);
 		headTable.add(getIconTable(iwc),2,1);
 		backTable.mergeCells(1,1,8,1);
 		backTable.add(headTable,1,1);
@@ -503,6 +505,9 @@ public class CalendarView extends Block{
 			dayLink.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
 			dayLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
 			dayLink.addParameter(CalendarParameters.PARAMETER_DAY, n);
+			if(groupID != -2) {
+				dayLink.addParameter(PARAMETER_ISI_GROUP_ID,groupID);
+			}
 			dayCell.add(dayLink,1,1);
 			dayCell.setHeight(1,1,"12");
 			dayCell.add("<br>",1,1);
@@ -707,6 +712,8 @@ public class CalendarView extends Block{
 
 	public void main(IWContext iwc) throws Exception{
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+		
+		
 	
 		Page parentPage = this.getParentPage();
 		String styleSrc = iwc.getIWMainApplication().getBundle(getBundleIdentifier()).getResourcesURL();
@@ -729,7 +736,7 @@ public class CalendarView extends Block{
 			}
 			 
 
-		}			
+		}	
 		/*
 		 * view is set to the current view
 		 */
@@ -781,7 +788,7 @@ public class CalendarView extends Block{
 			viewTable = yearView(iwc,timeStamp);
 			break;
 		}
-		
+				
 		table.add(viewTable,1,1);
 		
 		
@@ -833,6 +840,9 @@ public class CalendarView extends Block{
 	 * @param stamp
 	 */
 	public void addLinkParameters(Link l, int viewValue, IWTimestamp stamp) {
+		if(groupID != -2) {
+			l.addParameter("group_id",groupID);
+		}		
 		l.addParameter(CalendarParameters.PARAMETER_VIEW, viewValue);
 		l.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
 		l.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
@@ -874,6 +884,10 @@ public class CalendarView extends Block{
 	 * @param idts
 	 */
 	public void addNextDayPrm(Link L, IWTimestamp idts) {
+		if(groupID != -2) {
+			L.addParameter(PARAMETER_ISI_GROUP_ID,groupID);
+		}
+		
 		IWCalendar cal = new IWCalendar();
 		int lastDayOfMonth = cal.getLengthOfMonth(idts.getMonth(),idts.getYear());
 		
@@ -901,6 +915,10 @@ public class CalendarView extends Block{
 	 * @param idts
 	 */
 	public void addLastDayPrm(Link L, IWTimestamp idts) {
+		if(groupID != -2) {
+			L.addParameter(PARAMETER_ISI_GROUP_ID,groupID);
+		}
+		
 		IWCalendar cal = new IWCalendar();
 		int lastDayOfPreviousMonthThisYear = cal.getLengthOfMonth(idts.getMonth() - 1,idts.getYear());
 		int lastDayOfPreviousMonthLastYear = cal.getLengthOfMonth(idts.getMonth() - 1,idts.getYear() - 1);
@@ -929,11 +947,6 @@ public class CalendarView extends Block{
 		GregorianCalendar calendar = new GregorianCalendar(idts.getYear(),idts.getMonth(),idts.getDay());
 		Timestamp ts = idts.getTimestamp();
 		calendar.add(calendar.DAY_OF_MONTH,6);
-		System.out.println(calendar.get(calendar.DAY_OF_MONTH) + " vs " + idts.getDay());
-		System.out.println("gregCal: " + calendar.toString());
-		System.out.println("idts.getYear(): " + idts.getYear());
-		System.out.println("idts.getMonth(): " + idts.getMonth());
-		System.out.println("idts.getMonth(): " + idts.getDay());
 		if(calendar.get(calendar.DAY_OF_MONTH) < idts.getDay()) {
 			calendar.add(calendar.MONTH,1);
 			if(calendar.get(calendar.MONTH) < idts.getMonth()) {
@@ -961,6 +974,9 @@ public class CalendarView extends Block{
 	 * @param idts
 	 */
 	public void addNextMonthPrm(Link L, IWTimestamp idts) {
+		if(groupID != -2) {
+			L.addParameter(PARAMETER_ISI_GROUP_ID,groupID);
+		}
 		if (idts.getMonth() == 12) {
 			L.addParameter(CalendarParameters.PARAMETER_DAY, idts.getDay());
 			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(1));
@@ -979,6 +995,10 @@ public class CalendarView extends Block{
 	 */
 
 	public void addLastMonthPrm(Link L, IWTimestamp idts) {
+		if(groupID != -2) {
+			L.addParameter(PARAMETER_ISI_GROUP_ID,groupID);
+		}
+		
 		if (idts.getMonth() == 1) {
 			L.addParameter(CalendarParameters.PARAMETER_DAY,idts.getDay());
 			L.addParameter(CalendarParameters.PARAMETER_MONTH, String.valueOf(12));

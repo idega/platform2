@@ -52,8 +52,8 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 	private Text descriptionText;
 	
 	//fields
-	private String groupNameField;
-	private String clubNameField;
+	private Text groupNameField;
+	private Text clubNameField;
 	private String headlineField;
 	private String typeField;
 	private String dayFromField;
@@ -70,8 +70,8 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 	private Table table;
 	
 	public EntryInfoWindow() {
-		setHeight(400);
-		setWidth(400);
+		setHeight(200);
+		setWidth(300);
 		setResizable(true);
 	}
 	public void initializeTexts(IWContext iwc) {
@@ -106,17 +106,19 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 		Collection parentGroups = null;
 		try {
 			if(groupID != -1) {
-				groupNameField = getGroupBusiness(iwc).getGroupByGroupID(groupID).getName();
+				groupNameField = new Text(getGroupBusiness(iwc).getGroupByGroupID(groupID).getName());
 				parentGroups = new ArrayList(getGroupBusiness(iwc).getParentGroupsRecursive(getGroupBusiness(iwc).getGroupByGroupID(groupID)));
 				
 			}
 			else if(ledgerID != -1) {
 				CalendarLedger ledger = getCalBusiness(iwc).getLedger(ledgerID);
 				Group g = getGroupBusiness(iwc).getGroupByGroupID(ledger.getGroupID());
-				groupNameField = g.getName();
+				groupNameField = new Text(g.getName());
+				groupNameField.setStyleClass(boldText);
 			}
 			else {
-				groupNameField = iwrb.getLocalizedString("entryinfowindow.no_group_text","No group");
+				groupNameField = new Text(iwrb.getLocalizedString("entryinfowindow.no_group_text","No group"));
+				groupNameField.setStyleClass(boldText);
 			}
 			
 		}catch (Exception e) {
@@ -128,12 +130,14 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 				Group g = (Group) pgIter.next();
 				String type = g.getGroupType();
 				if("iwme_club".equals(type)) {
-					clubNameField = g.getName();
+					clubNameField = new Text(g.getName());
+					clubNameField.setStyleClass(boldText);
 				}
 			}
 		}
 		if(clubNameField == null) {
-			clubNameField = iwrb.getLocalizedString("ledgerwindow.no_club_text","No club");
+			clubNameField = new Text(iwrb.getLocalizedString("ledgerwindow.no_club_text","No club"));
+			clubNameField.setStyleClass(boldText);
 		}
 		
 		headlineField = entry.getName();
@@ -165,7 +169,7 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 	public void lineUp() {
 		table = new Table();
 		table.setCellspacing(0);
-		table.setCellpadding(0);
+		table.setCellpadding(2);
 		table.setStyleClass(borderAllWhiteStyle);
 		table.add(clubNameField,1,1);
 		table.add(" - ",1,1);
