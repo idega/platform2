@@ -86,7 +86,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private final static String PARAMETER_CO_CITY = "cap_co_ct";
 	private final static String PARAMETER_MESSAGES_VIA_EMAIL = "cap_m_v_e";
 
-	private final int MIN_PASSWORD_LENGTH = 6;
+	private final int MIN_PASSWORD_LENGTH = 8;
 	
 	private final static String KEY_PREFIX = "citizen.";
 	private final static String KEY_EMAIL = KEY_PREFIX + "email";
