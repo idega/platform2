@@ -477,14 +477,21 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 
 	}
 
+	/**
+	 * Finds all providers that is "part of" a category
+	 * @param schoolCategory
+	 * @return Collection of School
+	 * @throws javax.ejb.FinderException
+	 */
 	public Collection ejbFindAllByCategory(SchoolCategory schoolCategory) throws javax.ejb.FinderException {
-		StringBuffer sql = new StringBuffer("select s.* ");
-		sql.append(" sch_school s, sch_school_type t, sch_school_sch_school_type m, sch_school_category c ");
-		sql.append(" where s.sch_school_id = m.sch_school_id ");
-		sql.append(" and m.sch_school_type_id = t.sch_school_type_id");
-		sql.append(" and t.school_category = c.sch_school_category_id");
-		sql.append(" and c.sch_school_category_id = "+schoolCategory.getPrimaryKey().toString());
-		return super.idoFindPKsBySQL(sql.toString());
+		//String constants is concatenated at compile time...
+		return super.idoFindPKsBySQL(
+			"SELECT distinct s.* " +
+			"FROM sch_school s, sch_school_type t, sch_school_sch_school_type m, sch_school_category c " +
+			"WHERE s.sch_school_id = m.sch_school_id " +
+			"AND m.sch_school_type_id = t.sch_school_type_id " +
+			"AND t.school_category LIKE c.category " +
+			"AND c.category LIKE '" + schoolCategory.getPrimaryKey() + "'");
 	}
 
 	public Collection ejbFindAllInHomeCommuneByCategory(SchoolCategory schoolCategory) throws IDOLookupException, EJBException, FinderException, CreateException {
