@@ -8,6 +8,12 @@ package se.idega.idegaweb.ehealth.presentation;
 
 
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import se.idega.util.PIDChecker;
+
+import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
@@ -21,6 +27,9 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
+import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 
 
@@ -42,18 +51,47 @@ public class JournalTexts extends EHealthBlock {
 	private String prmAppointType = prefix + "appoint_type";
 	private String prmPrint = prefix + "print";
 	private String prmHealthCentre = prefix + "healthcentre";
+	
 	private String prmFrom = prefix + "from";
 	private String prmTo = prefix + "to";
 	private String prmSearch = prefix + "search";
 	private String prmLoglist = prefix + "loglist";
 	
+	private String keyFrom = prefix + "from";
+	private String keyTo = prefix + "to";
 	
+	private String keyText1U1 = prefix + "jt1U1";
+	private String keyText2U1 = prefix + "jt2U1";
+	private String keyText3U1 = prefix + "jt3U1";
+	private String keyText4U1 = prefix + "jt4U1";
+	private String keyText5U1 = prefix + "jt5U1";
 	
+	private String keyText1U2 = prefix + "jt1U2";
+	private String keyText2U2 = prefix + "jt2U2";
+	private String keyText3U2 = prefix + "jt3U2";
+	private String keyText4U2 = prefix + "jt4U2";
+	private String keyText5U2 = prefix + "jt5U2";
 	
+	private int userID = -1;
+	private User user;
 	IWContext _iwc = null;
+	Age age = null;
 
 	public void main(IWContext iwc) throws Exception {
 		_iwc = iwc;
+		
+		userID = iwc.getUserId();
+		
+		if (userID > 0) {
+			user = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userID);
+		}
+		
+		
+		if (user != null && user.getDateOfBirth() != null)
+			age = new Age(user.getDateOfBirth());
+		else if (user != null && user.getPersonalID() != null)
+			age = new Age(PIDChecker.getInstance().getDateFromPersonalID(user.getPersonalID()));
+		
 		add(getAppointmentHistoryForm());
 		
 	}
@@ -93,13 +131,22 @@ public class JournalTexts extends EHealthBlock {
 				myForm.setAssociatedFormScript(timeScript);
 			}
 		}
+		ArrayList texts = new ArrayList();
 		
-		String infoDiv[] = {"Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.",
-				"Lorem ipsum consectetuer dolor sit amet,  iscing elit, sed diam nonmy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.",
-				"Lorema met ipsum dolor sconsec it am nonummy nibh eu, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.",
-				"Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.",
-				"Lorem ipsum adipiscing dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat."};
-		
+		if (age != null && age.getYears() >= 70){
+			texts.add(localize(keyText1U1, "Texten"));
+			texts.add(localize(keyText2U1, "Texten"));
+			texts.add(localize(keyText3U1, "Texten"));
+			texts.add(localize(keyText4U1, "Texten"));
+			texts.add(localize(keyText5U1, "Texten"));	
+		}		
+		else{
+			texts.add(localize(keyText1U2, "Texten"));
+			texts.add(localize(keyText2U2, "Texten"));
+			texts.add(localize(keyText3U2, "Texten"));
+			texts.add(localize(keyText4U2, "Texten"));
+			texts.add(localize(keyText5U2, "Texten"));	
+		}
 		Layer layer = new Layer(Layer.DIV);
 		layer.setVisibility("hidden");
 		layer.setOverflow("scroll");
@@ -110,13 +157,17 @@ public class JournalTexts extends EHealthBlock {
 		
 		
 		
-		int theRow;
-		for (theRow = 1; theRow <= 5; theRow++) {
+		int theRow = 1;
+		Iterator iter = texts.iterator();
+		
+		while (iter.hasNext()) {
 			Layer layers = (Layer) layer.clone();
-			layers.setID("lay" + theRow + "_");	
-			layers.add(infoDiv[theRow-1]);
+			layers.setID("lay" + theRow + "_");
+			String text = (String) iter.next();
+			layers.add(text);
 						
 			T.add(layers, 1, 3);
+			theRow++;
 		}
 		
 		
@@ -161,14 +212,67 @@ public class JournalTexts extends EHealthBlock {
 		int theRow = 1;
 		int theColumn = 1;
 		
-		String dates[] = {"2004-10-11", "2004-10-06", "2004-06-15", "2004-02-07", "2003-12-16"};
-		String caregivers[] = {"Dr Magne Syhl", "Dr Alve Don", "Dr Inga Pren", "Dr Alve Don", "Dr Alve Don"};
-		String vcs[] = {"Gimo VC", "Gimo VC", "Gimo VC", "Gimo VC", "Gimo VC"};
-		String visitypes[] = {"Undersökning", "Undersökning", "Undersökning", "Undersökning", "Undersökning", "Undersökning"};
+		ArrayList dates = new ArrayList();
+		ArrayList caregivers = new ArrayList();
+		ArrayList vcs = new ArrayList();
+		ArrayList visitypes = new ArrayList();
 		
+		if (age != null && age.getYears() >= 70){
 		
-				
-		for (theRow = 1; theRow <= 5; theRow++) {
+			dates.add("2004-10-11");
+			dates.add("2004-10-06");
+			dates.add("2004-06-15");
+			dates.add("2004-02-07");
+			dates.add("2003-12-16");
+			caregivers.add("Dr Magne Syhl");
+			caregivers.add("Dr Alve Don");
+			caregivers.add("Dr Inga Pren");
+			caregivers.add("Dr Alve Don");
+			caregivers.add("Dr Alve Don");
+			vcs.add("Gimo VC");
+			vcs.add("Gimo VC");
+			vcs.add("Gimo VC");
+			vcs.add("Gimo VC");
+			vcs.add("Gimo VC");
+			visitypes.add("Läk mott.besök");
+			visitypes.add("Läk mott.besök");
+			visitypes.add("Läk mott.besök");
+			visitypes.add("Läk mott.besök");
+			visitypes.add("Läk mott.besök");
+			
+		}
+		else{
+			dates.add("2004-09-28");
+			dates.add("2004-09-24");
+			dates.add("2004-08-15");
+			dates.add("2004-04-07");
+			dates.add("2003-10-16");
+			caregivers.add("Dr Inga Pren");
+			caregivers.add("Dr Magne Syhl");
+			caregivers.add("Dr Alve Don");			
+			caregivers.add("Dr Alve Don");
+			caregivers.add("Dr Alve Don");
+			vcs.add("Gimo VC");
+			vcs.add("Gimo VC");
+			vcs.add("Gimo VC");
+			vcs.add("Gimo VC");
+			vcs.add("Gimo VC");
+			visitypes.add("Läk mott.besök");
+			visitypes.add("Läk mott.besök");
+			visitypes.add("Läk mott.besök");
+			visitypes.add("Läk mott.besök");
+			visitypes.add("Läk mott.besök");	
+		}
+			
+		
+		Iterator idates = dates.iterator();
+		Iterator icaregivers = caregivers.iterator();
+		Iterator ivcs = vcs.iterator();
+		Iterator ivisitypes = visitypes.iterator();
+
+	
+		while (idates.hasNext()) {		
+		//for (theRow = 1; theRow <= 5; theRow++) {
 			
 			for (theColumn = 1; theColumn <= 7; theColumn++) {
 				Layer layers = (Layer) layer.clone();
@@ -178,21 +282,25 @@ public class JournalTexts extends EHealthBlock {
 					layers.setWidth("20");
 				}
 				else if (theColumn == 1){
-					layers.add(dates[theRow-1]);
+					String theDate = (String) idates.next();
+					layers.add(theDate);
 				}
 				else if (theColumn == 3){
-					layers.add(caregivers[theRow-1]);
+					String theCaregiver = (String) icaregivers.next();
+					layers.add(theCaregiver);
 				}
 				else if (theColumn == 5){
-					layers.add(vcs[theRow-1]);
+					String theVc = (String) ivcs.next();
+					layers.add(theVc);
 				}
 				else if (theColumn == 7){
-					layers.add(visitypes[theRow-1]);
+					String theVisitType = (String) ivisitypes.next();
+					layers.add(theVisitType);
 				}
 				
 				tableInfo.add(layers, theColumn, theRow);
 			}
-			
+			theRow++;
 		}
 	
 		layerInfo.add(tableInfo);
@@ -274,7 +382,8 @@ public class JournalTexts extends EHealthBlock {
 		
 		
 		DropdownMenu dropHCentre = (DropdownMenu) getStyledInterface(new DropdownMenu(prmHealthCentre));
-		dropHCentre.addMenuElementFirst("1", "Gimo VC");
+		dropHCentre.addMenuElementFirst("-1", "Välj vårdenhet");
+		dropHCentre.addMenuElement("1", "Gimo VC");
 		dropHCentre.addMenuElement("2", "Östhammar VC");
 		dropHCentre.addMenuElement("3", "Alunda VC");
 		dropHCentre.addMenuElement("4", "Österbybruk VC");
@@ -284,7 +393,8 @@ public class JournalTexts extends EHealthBlock {
 		dropHCentre.addMenuElement("8", "Månkarbo VC");
 		
 		DropdownMenu dropCaregiver = (DropdownMenu) getStyledInterface(new DropdownMenu(prmHealthCentre));
-		dropCaregiver.addMenuElementFirst("1", "Dr Magne Syhl");
+		dropCaregiver.addMenuElementFirst("-1", "Välj vårdgivare");
+		dropCaregiver.addMenuElement("1", "Dr Magne Syhl");
 		dropCaregiver.addMenuElement("2", "Dr Alve Don");
 		dropCaregiver.addMenuElement("3", "Dr Inga Pren");
 		dropCaregiver.addMenuElement("4", "Dr Volta Ren");
@@ -294,9 +404,9 @@ public class JournalTexts extends EHealthBlock {
 		
 		GenericButton loglist = getButton(new GenericButton("loglist", localize(prmLoglist, "Loglist")));
 		
-		table.add(getSmallHeader(localize(prmFrom, "From")+": "), 1, 1);
+		table.add(getSmallHeader(localize(keyFrom, "From")+": "), 1, 1);
 		table.add(from, 1, 2);
-		table.add(getSmallHeader(localize(prmTo, "To")+": "), 3, 1);
+		table.add(getSmallHeader(localize(keyTo, "To")+": "), 3, 1);
 		table.add(to, 3, 2);
 		table.add(loglist, 3, 3);
 		table.add(dropHCentre, 1, 3);
