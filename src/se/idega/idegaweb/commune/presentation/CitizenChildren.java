@@ -52,22 +52,26 @@ public class CitizenChildren extends CommuneBlock {
     iwb  = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
     userID = iwc.getUserId();
-    user =( (UserBusiness) IBOLookup.getServiceInstance (iwc,UserBusiness.class)).getUser(userID);
-    Table T = new Table();
-    int row = 1;
-    int col = 1;
-    if(iwc.isParameterSet(prmSubmitName) && iwc.getParameter(prmSubmitName).equals("true")){
-      try{
-	User child = processSSNRequest(iwc);
-	T.add(getChildLink(child),col,row);
-      }
-      catch(javax.ejb.FinderException fix){
-	T.add(fix.getMessage(),col,row);
-      }
-      row++;
+    if(userID > 0){
+	    user =( (UserBusiness) IBOLookup.getServiceInstance (iwc,UserBusiness.class)).getUser(userID);
+	    Table T = new Table();
+	    int row = 1;
+	    int col = 1;
+	    if(iwc.isParameterSet(prmSubmitName) && iwc.getParameter(prmSubmitName).equals("true")){
+	      try{
+		User child = processSSNRequest(iwc);
+		T.add(getChildLink(child),col,row);
+	      }
+	      catch(javax.ejb.FinderException fix){
+		T.add(fix.getMessage(),col,row);
+	      }
+	      row++;
+	    }
+	    T.add(getChildrenForm(iwc));
+	    add(T);
     }
-    T.add(getChildrenForm(iwc));
-    add(T);
+    else
+    	add(iwrb.getLocalizedString("citizen_children.no_citizen_logged_on","You are not a citizen of Nacka Commune"));
   }
 
   public static String getChildIDParameterName(){
