@@ -30,7 +30,7 @@ public class QuestionBMPBean extends GenericEntity implements Question{
   }
 
   public String getEntityName() {
-    return "mm3_question";
+    return "test_question";
   }
 
 
