@@ -476,17 +476,10 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 		if(run != null) {
 			if(runTime != null && !runTime.equals("")) {
-				double d = Double.valueOf(runTime).doubleValue();
-				System.out.println(d);
-				System.out.println(d);
-				System.out.println(d);
-				System.out.println(d);
-				System.out.println(d);
-				System.out.println(d);
-				run.setRunTime(Double.valueOf(runTime).doubleValue());
+				run.setRunTime(Integer.parseInt(runTime));
 			}
 			if(chipTime != null && !chipTime.equals("")) {
-				run.setChipTime(Double.valueOf(chipTime).doubleValue());
+				run.setChipTime(Integer.parseInt(chipTime));
 			}
 			run.store();
 		}

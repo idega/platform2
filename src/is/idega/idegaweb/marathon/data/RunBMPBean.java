@@ -42,8 +42,8 @@ public class RunBMPBean extends GenericEntity implements Run {
 		addAttribute(getColumnNameRunYearGroupID(), "Run Year", true, true, Integer.class);
 		addAttribute(getColumnNameRunDistanceGroupID(), "Run Distance", true, true, Integer.class);
 		addAttribute(getColumnNameRunGroupGroupID(), "Run Group", true, true, Integer.class);
-		addAttribute(getColumnNameRunTime(), "Run Time", true, true, Double.class);
-		addAttribute(getColumnNameChipTime(), "Chip Time", true, true, Double.class);
+		addAttribute(getColumnNameRunTime(), "Run Time", true, true, Integer.class);
+		addAttribute(getColumnNameChipTime(), "Chip Time", true, true, Integer.class);
 		addAttribute(getColumnNameUserID(), "User ID", true, true, Integer.class);
 		addAttribute(getColumnNameChipNumber(), "Chip Number", true, true, String.class);
 		addAttribute(getColumnNameChipBunchNumber(), "Chip bunch Number", true, true, String.class);
@@ -171,12 +171,12 @@ public class RunBMPBean extends GenericEntity implements Run {
 		return getIntColumnValue(getColumnNameRunGroupGroupID());
 	}
 
-	public double getRunTime() {
-		return getDoubleColumnValue(getColumnNameRunTime());
+	public int getRunTime() {
+		return getIntColumnValue(getColumnNameRunTime());
 	}
 
-	public double getChipTime() {
-		return getDoubleColumnValue(getColumnNameChipTime());
+	public int getChipTime() {
+		return getIntColumnValue(getColumnNameChipTime());
 	}
 	
 	public String getChipOwnershipStatus() {
