@@ -32,7 +32,7 @@ private boolean limitNumberOfImages=true;
 private int numberOfDisplayedImages=9;
 private int iNumberInRow = 3; //iXXXX for int
 private int ifirst = 0;
-private int maxImageWidth = 140;
+private int maxImageWidth = 100;
 private boolean limitImageWidth=true;
 private String callingModule = "image_id";
 
@@ -50,6 +50,7 @@ private Image headerBackgroundImage;
 private ImageEntity[] entities;
 private String percent = "100";
 private Link continueRefresh = new Link("Click here to continue...");
+private String lastViewAction = "";
 
 
 private Text textProxy = new Text();
@@ -129,8 +130,8 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 }
 
 public void main(ModuleInfo modinfo)throws Exception{
-  //isAdmin= isAdministrator(modinfo);
-  isAdmin= true;
+  isAdmin= isAdministrator(modinfo);
+ // isAdmin= true;
   setSpokenLanguage(modinfo);
   ImageEntity[] image =  new ImageEntity[1];
   String imageId = modinfo.getParameter("image_id");
@@ -249,6 +250,7 @@ public void main(ModuleInfo modinfo)throws Exception{
           outerTable.add(links,1,3);
         }
         else{
+//continueRefresh.addParameter("idega","best&"+modinfo.getQueryString());
           Text texti = new Text("");
           ImageHandler handler = null;
           if( "delete".equalsIgnoreCase(action) ){
