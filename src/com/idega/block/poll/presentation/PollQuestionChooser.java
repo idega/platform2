@@ -132,7 +132,7 @@ public PollQuestionChooser(){
   }
 
   private void setToClose(IWContext iwc, int pollQuestionID) {
-    iwc.setApplicationAttribute(prmQuestions,Integer.toString(pollQuestionID));
+    iwc.setSessionAttribute(prmQuestions,Integer.toString(pollQuestionID));
     setParentToReload();
     close();
   }
