@@ -4,15 +4,21 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+
 import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.business.CareConstants;
+import se.idega.idegaweb.commune.care.data.ApplicationPriority;
+import se.idega.idegaweb.commune.care.data.ApplicationPriorityHome;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
+
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableData;
 import com.idega.block.datareport.util.ReportableField;
@@ -347,6 +353,86 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 
 		ReportableData count = new ReportableData();
 		count.addData(personalID, getLocalizedString("number_of_choices", "Number of choices:") + " " +  String.valueOf(numberOfChoices));
+		reportCollection.add(count);
+
+		return reportCollection;
+	}
+
+	public ReportableCollection getPriorityReport(Integer providerID, String fromDate, String toDate) {
+		initializeBundlesIfNeeded();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		
+		ReportableCollection reportCollection = new ReportableCollection();
+
+		ReportableField priorityDate = new ReportableField(FIELD_PRIORITY_DATE, String.class);
+		priorityDate.setLocalizedName(getLocalizedString(FIELD_PRIORITY_DATE, "Priority Date"), currentLocale);
+		reportCollection.addField(priorityDate);
+
+		ReportableField providerName = new ReportableField(FIELD_PROVIDER_NAME, String.class);
+		providerName.setLocalizedName(getLocalizedString(FIELD_PROVIDER_NAME, "Provider Name"), currentLocale);
+		reportCollection.addField(providerName);
+
+		ReportableField childName = new ReportableField(FIELD_CHILD_NAME, String.class);
+		childName.setLocalizedName(getLocalizedString(FIELD_CHILD_NAME, "Child"), currentLocale);
+		reportCollection.addField(childName);
+
+		ReportableField personalId = new ReportableField(FIELD_PERSONAL_ID, String.class);
+		personalId.setLocalizedName(getLocalizedString(FIELD_PERSONAL_ID, "Personal ID"), currentLocale);
+		reportCollection.addField(personalId);
+
+		ReportableField message = new ReportableField(FIELD_MESSAGE, String.class);
+		personalId.setLocalizedName(getLocalizedString(FIELD_MESSAGE, "Message"), currentLocale);
+		reportCollection.addField(personalId);
+
+		int numberOfApplications = 0;
+		try {
+			ApplicationPriorityHome home = (ApplicationPriorityHome) this.getIDOHome(ApplicationPriority.class);
+			Date from = fromDate != null && fromDate.length() > 0 ? new IWTimestamp(fromDate).getDate() : null; 
+			Date to = toDate != null && toDate.length() > 0 ? new IWTimestamp(toDate).getDate() : null;
+			if (providerID == null) {
+				providerID = new Integer(-1);
+			}
+			Collection priorities = home.findByPeriodAndProvider(from, to, providerID.intValue());
+			if (priorities != null) {
+				Iterator iter = priorities.iterator();
+				while (iter.hasNext()) {
+					ApplicationPriority ap = (ApplicationPriority) iter.next();
+					ChildCareApplication application = ap.getApplication();
+					if (application == null) {
+						continue;
+					}
+					School provider = application.getProvider();
+					if (provider == null) {
+						continue;
+					}
+					User child = application.getChild();
+					if (child == null) {
+						continue;
+					}
+
+					ReportableData data = new ReportableData();
+
+					data.addData(priorityDate, (new IWTimestamp(ap.getPriorityDate())).getLocaleDate(currentLocale, IWTimestamp.SHORT));
+					data.addData(providerName, provider.getName());
+					data.addData(childName, child.getLastName() + ", " + child.getFirstName());
+					data.addData(personalId, PersonalIDFormatter.format(child.getPersonalID(), currentLocale));
+					data.addData(message, ap.getMessage());
+
+					numberOfApplications++;
+
+					reportCollection.add(data);
+				}
+			}
+		}
+		catch (FinderException fe) {
+			log(fe);
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+
+		ReportableData count = new ReportableData();
+		count.addData(priorityDate, getLocalizedString("number_of_applications", "Number of applications:") + " " +  String.valueOf(numberOfApplications));
 		reportCollection.add(count);
 
 		return reportCollection;

@@ -28,6 +28,13 @@ public interface ChildCareReportBusiness extends IBOSession {
 	public static final String FIELD_PROVIDER = "provider";
 	public static final String FIELD_STATUS = "status";
 	
+	public static final String FIELD_PRIORITY_DATE = "priority_date";
+	public static final String FIELD_PROVIDER_NAME = "provider_name";
+	public static final String FIELD_CHILD_NAME = "child_name";
+	public static final String FIELD_MESSAGE = "message";
+	
+	
 	public ReportableCollection getChildCareReport(Integer numberOfWeeks, Integer numberOfMonths, Object areaID, Boolean firstHandOnly) throws RemoteException;
 	public ReportableCollection getRemovedReport(String fromDateOfBirth, String toDateOfBirth, Integer providerID, String fromDate, String toDate) throws RemoteException;
+	public ReportableCollection getPriorityReport(Integer providerID, String fromDate, String toDate);
 }
