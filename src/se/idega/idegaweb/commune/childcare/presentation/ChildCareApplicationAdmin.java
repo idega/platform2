@@ -166,18 +166,13 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 			while (it.hasNext()) {
 				application = (ChildCareApplication)it.next();
 				String name = null;
-				try {
-					User child = application.getChild();
-					data.add(child.getName(),1,row);
-					data.add(child.getPersonalID(),2,row);					
-					data.add(application.getQueueDate().toString(),3,row);
-					data.add(Integer.toString(application.getCheckId()),4,row);
-					data.add(application.getFromDate().toString(),6,row);
-					name = child.getName();
-				}
-				catch (RemoteException e) {
-					data.add("Unable to get child",1,row);
-				}
+				User child = application.getChild();
+				data.add(child.getName(),1,row);
+				data.add(child.getPersonalID(),2,row);					
+				data.add(application.getQueueDate().toString(),3,row);
+				data.add(Integer.toString(application.getCheckId()),4,row);
+				data.add(application.getFromDate().toString(),6,row);
+				name = child.getName();
 
 				String id = null;;
 				//try {
@@ -247,11 +242,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 				else if (kout) {
 					Link contract = new Link(localize(SHOW_CONTRACT,"Show"));
 					contract.setWindowToOpen(ViewChildCareContract.class);
-					try {
-						contract.addParameter(ViewChildCareContract.VIEW_CONTRACT_FILE,application.getContractFileId());
-					}
-					catch (RemoteException e) {
-					}
+					contract.addParameter(ViewChildCareContract.VIEW_CONTRACT_FILE,application.getContractFileId());
 	
 					data.add(contract,9,row);
 

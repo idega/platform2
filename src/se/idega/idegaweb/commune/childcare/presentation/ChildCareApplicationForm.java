@@ -214,7 +214,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		Collection children = null;
 		
 		try {
-			children = getUserBusiness(iwc).getMemberFamilyLogic().getChildrenInCustodyOf(_user);
+			children = getUserBusiness(iwc).getMemberFamilyLogic().getChildrenFor(_user);
 		}
 		catch (RemoteException e) {
 		}

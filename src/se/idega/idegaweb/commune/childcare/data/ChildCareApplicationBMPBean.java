@@ -15,6 +15,7 @@ import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
 import com.idega.core.data.ICFile;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
 import se.idega.idegaweb.commune.childcare.check.data.Check;
@@ -321,5 +322,15 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	
 	public Collection ejbFindAllCasesByStatus(String caseStatus) throws FinderException {
 		return super.ejbFindAllCasesByStatus(caseStatus);
+	}
+	
+	public Integer ejbFindApplicationByChildAndChoiceNumber(User child, int choiceNumber) throws FinderException {
+		return ejbFindApplicationByChildAndChoiceNumber(((Integer)child.getPrimaryKey()).intValue(), choiceNumber);
+	}
+
+	public Integer ejbFindApplicationByChildAndChoiceNumber(int childID, int choiceNumber) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(CHOICE_NUMBER, choiceNumber).appendAndEquals(CHILD_ID,childID);
+		return (Integer) idoFindOnePKByQuery(sql);
 	}
 }

@@ -131,17 +131,12 @@ public class RedeemCheck extends CommuneBlock {
 			while (it.hasNext()) {
 				appl = (ChildCareApplication)it.next();				
 
-				try {
-					check = appl.getCheck();
-					inner.add(getSmallText(check.getPrimaryKey().toString()),1,row);
-					
-					SubmitButton details = new SubmitButton(localize(PARAM_APPL_ID, "Handle"), PARAM_APPL_ID, ((Integer) appl.getPrimaryKey()).toString());
-					details.setAsImageButton(true);
-					inner.add(details,2,row++);
-				}
-				catch (RemoteException e) {
-					e.printStackTrace();
-				}
+				check = appl.getCheck();
+				inner.add(getSmallText(check.getPrimaryKey().toString()),1,row);
+				
+				SubmitButton details = new SubmitButton(localize(PARAM_APPL_ID, "Handle"), PARAM_APPL_ID, ((Integer) appl.getPrimaryKey()).toString());
+				details.setAsImageButton(true);
+				inner.add(details,2,row++);
 			}
 		}
 		else {
@@ -169,13 +164,7 @@ public class RedeemCheck extends CommuneBlock {
 		}
 		
 		if (appl != null) {
-			User child = null;
-			try {
-				child = appl.getChild();
-			}
-			catch (RemoteException e) {
-				e.printStackTrace();
-			}
+			User child = appl.getChild();
 			
 			if (child != null) {
 				Collection custodians = null;

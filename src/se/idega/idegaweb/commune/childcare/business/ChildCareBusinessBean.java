@@ -22,6 +22,7 @@ import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.lowagie.text.Font;
 
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
@@ -30,8 +31,10 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 
 import java.rmi.RemoteException;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Locale;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -45,6 +48,13 @@ import javax.transaction.UserTransaction;
  * @version 1.0
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness {
+
+	private final static String CASE_CODE_KEY = "MBANBOP";
+
+	private ChildCareApplicationHome getChildCareApplicationHome() throws RemoteException {
+		return (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+	}
+
 	public boolean insertApplications(User user, int provider[], String date, int checkId, int childId, String subject, String message, boolean freetimeApplication) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 
@@ -55,8 +65,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			CaseBusiness caseBiz = (CaseBusiness)getServiceInstance(CaseBusiness.class);
 			
 			IWTimestamp now = new IWTimestamp();
+			IWTimestamp stamp = new IWTimestamp();
 			for (int i = 0; i < provider.length; i++) {
-				appl = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).create();
+				try {
+					appl = getChildCareApplicationHome().findApplicationByChildAndChoiceNumber(childId, i+1);
+				}
+				catch (FinderException fe) {
+					appl = getChildCareApplicationHome().create();
+				}
+				
 				if (user != null)
 					appl.setOwner(user);
 				appl.setProviderId(provider[i]);
@@ -66,6 +83,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				appl.setQueueDate(now.getDate());
 				appl.setMethod(1);
 				appl.setChoiceNumber(i+1);
+				stamp.addSeconds((1 - ((i+1) * 1)));
+				appl.setCreated(stamp.getTimestamp());
 				if (checkId != -1)
 					appl.setCheckId(checkId);
 				if (i == 0) {
@@ -577,5 +596,32 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 				
 		return true;
+	}
+
+	protected ChildCareApplication getChildCareApplicationInstance(Case theCase) throws RuntimeException {
+		String caseCode = "unreachable";
+		try {
+			caseCode = theCase.getCode();
+			if (CASE_CODE_KEY.equals(caseCode)) {
+				int caseID = ((Integer) theCase.getPrimaryKey()).intValue();
+				return this.getApplicationByPrimaryKey(String.valueOf(caseID));
+			}
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		throw new ClassCastException("Case with casecode: " + caseCode + " cannot be converted to a schoolchoice");
+	}
+
+	public String getLocalizedCaseDescription(Case theCase, Locale locale) throws RemoteException {
+		ChildCareApplication choice = getChildCareApplicationInstance(theCase);
+		Object[] arguments = { choice.getChild().getFirstName(), String.valueOf(choice.getChoiceNumber()), choice.getProvider().getName() };
+		
+		String desc = super.getLocalizedCaseDescription(theCase, locale);
+		return MessageFormat.format(desc, arguments);
+	}
+
+	public CommuneUserBusiness  getUserBusiness() throws RemoteException {
+		return (CommuneUserBusiness) this.getServiceInstance(CommuneUserBusiness.class);
 	}
 }

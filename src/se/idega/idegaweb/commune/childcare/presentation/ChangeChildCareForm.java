@@ -101,8 +101,6 @@ public class ChangeChildCareForm extends CommuneBlock {
 				try {
 					child = appl.getChild();
 				}
-				catch (RemoteException e) {
-				}
 				catch (Exception e) {
 				}
 
