@@ -23,74 +23,7 @@ import java.sql.SQLException;
 
 public class Finder  {
 
- public static Tariff[] findTariffs(int month,int year){
-   Tariff[] tariffs = new Tariff[0];
-    try{
-      com.idega.util.idegaCalendar ic = new com.idega.util.idegaCalendar();
-      int endofmonth = ic.getLengthOfMonth(month,year);
-      String from = new idegaTimestamp(1,month,year).getTimestamp().toString();
-      String to = new idegaTimestamp(endofmonth,month,year).getTimestamp().toString();
-      tariffs = (Tariff[]) (((com.idega.block.finance.data.TariffHome)com.idega.data.IDOLookup.getHomeLegacy(Tariff.class)).createLegacy().findAllByColumnOrdered("usefrom_date",from,"useto_date",to,"tariff_id"));
-    }
-    catch(SQLException e){}
-    return tariffs;
-  }
-
-  public static Tariff[] findTariffs(){
-   Tariff[] tariffs = new Tariff[0];
-    try{
-      tariffs = (Tariff[]) ((com.idega.block.finance.data.TariffHome)com.idega.data.IDOLookup.getHomeLegacy(Tariff.class)).createLegacy().findAllOrdered(com.idega.block.finance.data.TariffBMPBean.getColumnAttribute());
-    }
-    catch(SQLException e){}
-    return tariffs;
-  }
-
-  public static TariffKey[] findTariffKeys(){
-   TariffKey[] keys = new TariffKey[0];
-    try{
-      keys = (TariffKey[]) ((com.idega.block.finance.data.TariffKeyHome)com.idega.data.IDOLookup.getHomeLegacy(TariffKey.class)).createLegacy().findAll();
-    }
-    catch(SQLException e){}
-    return keys;
-  }
-
-  public static List listOfTariffs(){
-    try{
-      return EntityFinder.findAll(((com.idega.block.finance.data.TariffHome)com.idega.data.IDOLookup.getHomeLegacy(Tariff.class)).createLegacy());
-    }
-    catch(SQLException e){return null;}
-  }
-
-
-  public static List getAccountKeys(){
-    List  L = null;
-    try{
-      L = EntityFinder.findAll(((com.idega.block.finance.data.AccountKeyHome)com.idega.data.IDOLookup.getHomeLegacy(AccountKey.class)).createLegacy());
-    }
-    catch(SQLException e){
-
-    }
-    return L;
-  }
-
-  public static AccountKey[] findAccountKeys(){
-   AccountKey[] keys = new AccountKey[0];
-    try{
-    keys = (AccountKey[]) (((com.idega.block.finance.data.AccountKeyHome)com.idega.data.IDOLookup.getHomeLegacy(AccountKey.class)).createLegacy()).findAllOrdered(com.idega.block.finance.data.AccountKeyBMPBean.getNameColumnName());
-    }
-    catch(SQLException e){}
-    return keys;
-  }
-
-  public static List listOfAccounts(){
-    List L = null;
-    try{
-       L = EntityFinder.findAll(((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy());
-    }
-    catch(Exception e){e.printStackTrace();}
-    return L;
-  }
-
+/*
   public static int countAccounts(){
     String sql = "select count(*) from fin_account ";
     int count = 0;
@@ -102,7 +35,7 @@ public class Finder  {
       count = 0;
     return count;
   }
-
+*/
   public static List listOfAssessments(){
     try {
       return EntityFinder.findAllDescendingOrdered(((com.idega.block.finance.data.AssessmentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).createLegacy(),com.idega.block.finance.data.AssessmentRoundBMPBean.getRoundStampColumnName());
@@ -111,7 +44,7 @@ public class Finder  {
       return null;
     }
   }
-
+/*
   public static int countUnGroupedEntries(){
      String sql = "select count(*) from fin_acc_entry where FIN_ENTRY_GROUP_ID is not null or FIN_ENTRY_GROUP_ID > 0 ";
     int count = 0;
@@ -123,7 +56,7 @@ public class Finder  {
       count = 0;
     return count;
   }
-
+*/
   public static List listOfEntryGroups(){
     try {
       return EntityFinder.findAllDescendingOrdered(((com.idega.block.finance.data.EntryGroupHome)com.idega.data.IDOLookup.getHomeLegacy(EntryGroup.class)).createLegacy(),com.idega.block.finance.data.EntryGroupBMPBean.getColumnNameGroupDate());

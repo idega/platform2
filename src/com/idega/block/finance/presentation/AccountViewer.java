@@ -1,8 +1,8 @@
 package com.idega.block.finance.presentation;
 
 import com.idega.block.finance.data.*;
-import com.idega.block.finance.business.AccountManager;
-import com.idega.block.finance.business.FinanceFinder;
+import com.idega.block.finance.business.*;
+import com.idega.business.IBOLookup;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -36,7 +36,7 @@ import java.text.DateFormat;
  * @version 1.1
  */
 
-public class AccountViewer extends com.idega.presentation.PresentationObjectContainer {
+public class AccountViewer extends Finance {
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
   protected IWResourceBundle iwrb;
@@ -52,13 +52,14 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
   private String sDebetColor,sKreditColor;
   private NumberFormat NF ;
   private final String prmFromDate = "from_date",prmToDate = "to_date";
-  public static final String prmUserId = "user_id",prmAccountId = "account_id";
+  public static final String prmUserId = "user_id",prmAccountId = "fin_acc_id";
   public static final String prmClean = "av_clean";
   private List listAccount = null;
   private User eUser = null;
   protected String styleAttribute = "font-size: 8pt";
   private int iUserId = -1,iAccountId = -1;
   private boolean specialview = false;
+  private AccountBusiness accBuiz;
 
   public AccountViewer(){
     this(-1);
@@ -86,7 +87,8 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     sDarkColor =  "#27324B";
   }
 
-  private void control( IWContext iwc ){
+  private void control( IWContext iwc )throws java.rmi.RemoteException{
+    accBuiz = (AccountBusiness) IBOLookup.getServiceInstance(iwc,AccountBusiness.class);
     image = Table.getTransparentCell(iwc);
     image.setHeight(6);
     NF = NumberFormat.getCurrencyInstance(iwc.getCurrentLocale());
@@ -108,7 +110,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     }
   }
 
-  private FinanceAccount getAccount(int iAccountId,List listOfAccounts){
+  private FinanceAccount getAccount(int iAccountId,List listOfAccounts)throws java.rmi.RemoteException{
     Iterator iter = listOfAccounts.iterator();
     FinanceAccount account = (FinanceAccount) listOfAccounts.get(0);
     while(iter.hasNext()){
@@ -125,7 +127,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     return new Text();
   }
 
-  public PresentationObject getAccountView(FinanceAccount eAccount,List listAccount,idegaTimestamp FromDate,idegaTimestamp ToDate,boolean showallkeys,boolean clean){
+  public PresentationObject getAccountView(FinanceAccount eAccount,List listAccount,idegaTimestamp FromDate,idegaTimestamp ToDate,boolean showallkeys,boolean clean)throws java.rmi.RemoteException{
     Table T = new Table(1,3);
     T.setWidth("100%");
     T.add(getEntrySearchTable(iAccountId,listAccount,FromDate,ToDate),1,2);
@@ -203,7 +205,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     return myForm;
   }
 
-  public PresentationObject getAccountTable(FinanceAccount eAccount,List listAccounts){
+  public PresentationObject getAccountTable(FinanceAccount eAccount,List listAccounts)throws java.rmi.RemoteException{
     if(eAccount != null){
       if( eUser.getID() != eAccount.getUserId()){
         eUser = com.idega.core.user.business.UserBusiness.getUser(eAccount.getUserId());
@@ -237,8 +239,11 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
         T.add(tf.format(eUser.getName()),col++,row);
         T.add(tf.format(getDateString(new idegaTimestamp(account.getLastUpdated()))),col++,row);
         float b = eAccount.getBalance();
-        if(account.getAccountType().equals(com.idega.block.finance.data.AccountBMPBean.typePhone))
-          b = FinanceFinder.getInstance().getPhoneAccountBalance(account.getAccountId())*tax;
+
+        if(account.getAccountType().equals(com.idega.block.finance.data.AccountBMPBean.typePhone)){
+          b = FinanceFinder.getInstance().getPhoneAccountBalance(account.getAccountId());
+          b = b*tax;
+        }
 
         boolean debet = b > 0 ? true:false;
         T.add(tf.format(NF.format( (double) b)),col++,row);
@@ -295,30 +300,31 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
   private PresentationObject getEntryTable(int iAccountId,idegaTimestamp from,idegaTimestamp to,boolean showallkeys,boolean clean){
     PresentationObject mo = null;
     try{
-      Account a = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).findByPrimaryKeyLegacy(iAccountId);
+      Account a = accBuiz.getAccount(iAccountId);
+      //Account a = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).findByPrimaryKeyLegacy(iAccountId);
       mo =  getEntryTable(a, from, to, showallkeys,clean);
     }
-    catch(SQLException ex){
+    catch(Exception ex){
       ex.printStackTrace();
       mo = new Text();
     }
     return mo;
   }
 
-  private PresentationObject getEntryTable(FinanceAccount eAccount,idegaTimestamp from,idegaTimestamp to,boolean showallkeys,boolean clean){
+  private PresentationObject getEntryTable(FinanceAccount eAccount,idegaTimestamp from,idegaTimestamp to,boolean showallkeys,boolean clean)throws java.rmi.RemoteException{
     List listEntries = null;
     if(eAccount.getAccountType().equals(com.idega.block.finance.data.AccountBMPBean.typeFinancial)){
       if(showallkeys)
-        listEntries = AccountManager.listOfAccountEntries(eAccount.getAccountId(),from,to);
+        listEntries = accBuiz.listOfAccountEntries(eAccount.getAccountId(),from,to);
       else
-        listEntries = AccountManager.listOfKeySortedEntries(eAccount.getAccountId(),from,to);
+        listEntries = accBuiz.listOfKeySortedEntries(eAccount.getAccountId(),from,to);
       if(clean)
         return getCleanFinanceEntryTable(eAccount,listEntries,from,to);
       else
         return getFinanceEntryTable(eAccount,listEntries,from,to);
     }
     else if(eAccount.getAccountType().equals(com.idega.block.finance.data.AccountBMPBean.typePhone)){
-      listEntries = AccountManager.listOfPhoneEntries(eAccount.getAccountId(),from,to);
+      listEntries = accBuiz.listOfPhoneEntries(eAccount.getAccountId(),from,to);
       if(specialview)
         return getPhoneEntryReportTable(eAccount,listEntries,from,to);
       else
@@ -550,7 +556,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     return T;
   }
 
-  private PresentationObject getFinanceEntryTable(FinanceAccount eAccount,List listEntries,idegaTimestamp from ,idegaTimestamp to){
+  private PresentationObject getFinanceEntryTable(FinanceAccount eAccount,List listEntries,idegaTimestamp from ,idegaTimestamp to)throws java.rmi.RemoteException{
     DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
     int tableDepth = 5;
     if(listEntries != null){
@@ -733,11 +739,11 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     }
   }
 
-  private void checkIds(IWContext iwc){
+  private void checkIds(IWContext iwc)throws java.rmi.RemoteException{
 
     if(iwc.isParameterSet(prmAccountId)){
       iAccountId = Integer.parseInt(iwc.getParameter(prmAccountId));
-      FinanceAccount acc = FinanceFinder.getInstance().getAccount(iAccountId);
+      FinanceAccount acc = accBuiz.getAccount(iAccountId);
       if(acc !=null)
         iUserId = acc.getUserId();
     }
@@ -776,7 +782,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     return it;
   }
 
-  public void main( IWContext iwc ) {
+  public void main( IWContext iwc ) throws java.rmi.RemoteException{
 
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);

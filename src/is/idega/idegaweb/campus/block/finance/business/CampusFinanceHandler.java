@@ -2,7 +2,7 @@ package is.idega.idegaweb.campus.block.finance.business;
 
 import com.idega.block.finance.business.FinanceHandler;
 import com.idega.block.finance.business.FinanceFinder;
-import com.idega.block.finance.business.AssessmentTariffPreview;
+import com.idega.block.finance.business.*;
 import com.idega.block.finance.data.Account;
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.Tariff;
@@ -30,6 +30,7 @@ import java.text.NumberFormat;
 
 public class CampusFinanceHandler implements FinanceHandler{
   int count = 0;
+
   NumberFormat nf = NumberFormat.getPercentInstance();
   public CampusFinanceHandler() {
   }
@@ -104,10 +105,12 @@ public class CampusFinanceHandler implements FinanceHandler{
   }
 
   public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String roundName,int iCashierId,int iAccountKeyId,idegaTimestamp paydate,idegaTimestamp start,idegaTimestamp end){
-    List listOfTariffs = FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
+    Collection tariffs = FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
+    List listOfTariffs = new Vector(tariffs);
     //List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(getAccountType());
     List listOfUsers = CampusAccountFinder.listOfContractAccountApartment(getAccountType(),start,end);
     //Map mapOfContracts = ContractFinder.mapOfApartmentUsersBy();
+
     int iAccountCount = 0;
     if(listOfTariffs !=null){
       if(listOfUsers!=null){
@@ -286,8 +289,9 @@ public class CampusFinanceHandler implements FinanceHandler{
   }
 
 
-  public Collection listOfAssessmentTariffPreviews(int iTariffGroupId,idegaTimestamp start,idegaTimestamp end){
-    List listOfTariffs = FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
+  public Collection listOfAssessmentTariffPreviews(int iTariffGroupId,idegaTimestamp start,idegaTimestamp end)throws java.rmi.RemoteException{
+    Collection tariffs = FinanceFinder.getInstance().listOfTariffs(iTariffGroupId);
+    List listOfTariffs = new Vector(tariffs);
     List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(getAccountType());
 
     if(listOfTariffs !=null && listOfUsers!=null){
@@ -369,9 +373,9 @@ public class CampusFinanceHandler implements FinanceHandler{
     return null;
   }
 
-  private synchronized void addAmount(Map map,Tariff tariff,double factor){
+  private synchronized void addAmount(Map map,Tariff tariff,double factor)throws java.rmi.RemoteException{
     //System.err.println("map size "+map.size());
-    Integer id = new Integer(tariff.getID());
+    Integer id = ((Integer)tariff.getPrimaryKey());
     AssessmentTariffPreview preview;
     if(map.containsKey(id)){
       preview = (AssessmentTariffPreview) map.get(id);
@@ -385,7 +389,7 @@ public class CampusFinanceHandler implements FinanceHandler{
   }
 
   private float insertEntry(Vector V,Tariff T,int iAccountId,int iRoundId,idegaTimestamp itPaydate,int iCashierId,double factor)
-  throws SQLException{
+  throws SQLException, java.rmi.RemoteException{
 
     if(factor > 0){
     AccountEntry AE = ((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy();
@@ -393,7 +397,9 @@ public class CampusFinanceHandler implements FinanceHandler{
     AE.setAccountKeyId(T.getAccountKeyId());
     AE.setCashierId(iCashierId);
     AE.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+
     /** @todo  skeptical precision cut */
+
     AE.setTotal((int)(-T.getPrice()*factor));
     AE.setRoundId(iRoundId);
     AE.setName(T.getName());
@@ -411,12 +417,14 @@ public class CampusFinanceHandler implements FinanceHandler{
     return AE.getTotal();
     }
     return 0;
+
     /*
     System.err.println("totals before"+totals);
     totals = totals + AE.getPrice();
     System.err.println("price"+AE.getPrice());
     System.err.println("totals after"+totals);
     */
+
   }
 
   public Map getAttributeMap(){

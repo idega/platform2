@@ -218,7 +218,7 @@ public class EntryGroups extends Block {
 
 
 
-        doGroup(from,to);
+        doGroup(iwc,from,to);
 
         return new Text("Succeeded");
 
@@ -234,15 +234,15 @@ public class EntryGroups extends Block {
 
 
 
-  private PresentationObject doGroup(idegaTimestamp from , idegaTimestamp to){
+  private PresentationObject doGroup(IWContext iwc,idegaTimestamp from , idegaTimestamp to){
 
     try {
 
       //System.err.println(" doGroup start :"+idegaTimestamp.RightNow().toString());
 
       //CampusAssessmentBusiness.groupEntries(from,to);
-
-      AssessmentBusiness.groupEntriesWithSQL(from,to);
+      AssessmentBusiness assBuiz = (AssessmentBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,AssessmentBusiness.class);
+      assBuiz.groupEntriesWithSQL(from,to);
 
       //System.err.println(" doGroup end   :"+idegaTimestamp.RightNow().toString());
 
@@ -306,7 +306,7 @@ public class EntryGroups extends Block {
 
 
 
-  private PresentationObject getTableOfGroups(IWContext iwc){
+  private PresentationObject getTableOfGroups(IWContext iwc)throws java.rmi.RemoteException{
 
     Table T = new Table();
 
@@ -363,8 +363,8 @@ public class EntryGroups extends Block {
         T.add(Edit.formatText(EG.getEntryIdTo()),col++,row);
 
         T.add(Edit.formatText(EG.getFileName()),col++,row);
-
-        T.add(Edit.formatText(AssessmentBusiness.getGroupEntryCount(EG)),col++,row);
+        AssessmentBusiness assBuiz = (AssessmentBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,AssessmentBusiness.class);
+        T.add(Edit.formatText(assBuiz.getGroupEntryCount(EG)),col++,row);
 
 
 

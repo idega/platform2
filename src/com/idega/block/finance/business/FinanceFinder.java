@@ -11,6 +11,7 @@ import com.idega.data.EntityFinder;
 import com.idega.data.IDOFinderException;
 import java.sql.SQLException;
 import com.idega.core.user.data.User;
+import com.idega.data.IDOLookup;
 
 /**
  * Title:
@@ -229,22 +230,23 @@ public class FinanceFinder  {
       return null;
   }
 
-  public  List listOfTariffs(int iGroupId){
+  public  Collection listOfTariffs(int iGroupId){
      try{
-       return EntityFinder.findAllByColumn(((com.idega.block.finance.data.TariffHome)com.idega.data.IDOLookup.getHomeLegacy(Tariff.class)).createLegacy(),com.idega.block.finance.data.TariffBMPBean.getColumnTariffGroup(),iGroupId);
+       return ((TariffHome) com.idega.data.IDOLookup.getHome(Tariff.class)).findAllByColumn(TariffBMPBean.getColumnTariffGroup(),iGroupId);
+
       }
-      catch(SQLException e){
+      catch(Exception e){
 
       }
       return null;
   }
 
-  public  List listOfTariffsByAttribute(String attribute){
+  public  Collection listOfTariffsByAttribute(String attribute){
      try{
-      List L =  EntityFinder.findAllByColumn(((com.idega.block.finance.data.TariffHome)com.idega.data.IDOLookup.getHomeLegacy(Tariff.class)).createLegacy(),com.idega.block.finance.data.TariffBMPBean.getColumnAttribute(),attribute);
-      return L;
+      return ((TariffHome) IDOLookup.getHome(Tariff.class)).findAllByColumn(TariffBMPBean.getColumnAttribute(),attribute);
+
       }
-      catch(SQLException e){
+      catch(Exception e){
 
       }
       return null;
@@ -255,7 +257,7 @@ public class FinanceFinder  {
        return EntityFinder.findAllByColumn(((com.idega.block.finance.data.TariffGroupHome)com.idega.data.IDOLookup.getHomeLegacy(TariffGroup.class)).createLegacy(),com.idega.block.finance.data.TariffGroupBMPBean.getColumnCategoryId(),iCategoryId);
       }
       catch(SQLException e){
-
+        e.printStackTrace();
       }
       return null;
   }
@@ -267,6 +269,29 @@ public class FinanceFinder  {
         sql.append(" where ");
         sql.append(com.idega.block.finance.data.TariffGroupBMPBean.getColumnHandlerId());
         sql.append(" > 0 ");
+        sql.append(" and " );
+        sql.append(com.idega.block.finance.data.TariffGroupBMPBean.getColumnCategoryId());
+        sql.append(" = ");
+        sql.append(iCategoryId);
+       return EntityFinder.findAll(((com.idega.block.finance.data.TariffGroupHome)com.idega.data.IDOLookup.getHomeLegacy(TariffGroup.class)).createLegacy(),sql.toString());
+      }
+      catch(SQLException e){
+
+      }
+      return null;
+  }
+
+  public  List listOfTariffGroupsWithOutHandlers(int iCategoryId){
+     try{
+        StringBuffer sql = new StringBuffer("select * from ");
+        sql.append(com.idega.block.finance.data.TariffGroupBMPBean.getEntityTableName());
+        sql.append(" where ");
+        sql.append(com.idega.block.finance.data.TariffGroupBMPBean.getColumnHandlerId());
+        sql.append(" is null ");
+        sql.append(" and " );
+        sql.append(com.idega.block.finance.data.TariffGroupBMPBean.getColumnCategoryId());
+        sql.append(" = ");
+        sql.append(iCategoryId);
        return EntityFinder.findAll(((com.idega.block.finance.data.TariffGroupHome)com.idega.data.IDOLookup.getHomeLegacy(TariffGroup.class)).createLegacy(),sql.toString());
       }
       catch(SQLException e){
@@ -304,68 +329,23 @@ public class FinanceFinder  {
     return null;
   }
 
-  public  int countAccounts(int iCategory,String type){
+  public int countAccounts(int iCategory,String type){
     try {
-      StringBuffer sql = new StringBuffer("select count(*) from fin_account a");
-      sql.append(" where a.");
-      sql.append(com.idega.block.finance.data.AccountBMPBean.getTypeColumnName());
-      sql.append(" = '");
-      sql.append(type);
-      sql.append("' and a.");
-      sql.append(com.idega.block.finance.data.AccountBMPBean.getColumnCategoryId());
-      sql.append(" = ");
-      sql.append(iCategory);
-      return ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy().getNumberOfRecords(sql.toString());
+      AccountHome aHome = (AccountHome) IDOLookup.getHome(Account.class);
+      //return aHome.
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       ex.printStackTrace();
     }
     return 0;
   }
 
-  public  List searchAccounts(String id,String first,String middle,String last,String type,int iCategoryId){
-    StringBuffer sql = new StringBuffer("select * from ");
-    sql.append(com.idega.block.finance.data.AccountBMPBean.getEntityTableName());
-    sql.append(" a,ic_user u ");
-    sql.append(" where a.ic_user_id = u.ic_user_id");
-    sql.append(" and a.");
-    sql.append(com.idega.block.finance.data.AccountBMPBean.getColumnCategoryId());
-    sql.append(" = ");
-    sql.append(iCategoryId);
-    if(id !=null && !"".equals(id)){
-      sql.append(" and a.name like '");
-      sql.append(id);
-      sql.append("' ");
+  public  Collection searchAccounts(String id,String first,String middle,String last,String type,int iCategoryId){
+    try{
+      return getAccountHome().findBySearch(id,first,middle,last,type,iCategoryId);
     }
-    if(first !=null && !"".equals(first )){
-      sql.append(" and u.first_name like '");
-      sql.append(first);
-      sql.append("' ");
-    }
-    if(middle !=null && !"".equals(middle)){
-      sql.append(" and u.middle_name like '");
-      sql.append(middle);
-      sql.append("' ");
-    }
-    if(last !=null && !"".equals(last)){
-      sql.append(" and u.last like '");
-      sql.append(last);
-      sql.append("' ");
-    }
-    if(type !=null && !"".equals(type)){
-      sql.append(" and a.account_type like '");
-      sql.append(type);
-      sql.append("' ");
-    }
-    //System.err.println(sql.toString());
-    try {
-      return EntityFinder.findAll(((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy(),sql.toString());
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-    }
+    catch(Exception ex){}
     return null;
-
   }
 
    public  List searchAccountUsers(String first,String middle,String last){
@@ -477,7 +457,7 @@ public class FinanceFinder  {
     Hashtable tar = null;
     Map AccKeyMap = mapOfAccountKeys();
     Map TarKeyMap = mapOfTariffKeys();
-    List tariffs = this.listOfTariffsByAttribute(attribute);
+    Collection tariffs = this.listOfTariffsByAttribute(attribute);
     if(tariffs != null ){
       tar = new Hashtable();
       java.util.Iterator iter = tariffs.iterator();
@@ -486,6 +466,7 @@ public class FinanceFinder  {
       Integer tarkey;
       while(iter.hasNext()){
         t = (Tariff) iter.next();
+        try{
         acckey = new Integer(t.getAccountKeyId());
         if(AccKeyMap.containsKey(acckey)){
           AccountKey AK = (AccountKey) AccKeyMap.get(acckey);
@@ -503,6 +484,9 @@ public class FinanceFinder  {
             }
           }
         }
+        }
+        catch(java.rmi.RemoteException ex)
+        {}
       }
       return tar.values();
     }
@@ -745,21 +729,14 @@ public class FinanceFinder  {
   }
 
 
-  public List listOfAccountsInAssessmentRound(int roundid){
-    StringBuffer sql = new StringBuffer("select distinct a.* ");
-    sql.append(" from fin_account a,fin_acc_entry e,fin_assessment_round r ");
-    sql.append(" where a.fin_account_id = e.fin_account_id ");
-    sql.append(" and e.fin_assessment_round_id = r.fin_assessment_round_id ");
-    sql.append(" and r.fin_assessment_round_id = ");
-    sql.append(roundid);
-    try {
-      return EntityFinder.findAll(((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy(),sql.toString());
+  public Collection listOfAccountsInAssessmentRound(int roundid){
+    try{
+      return getAccountHome().findByAssessmentRound(roundid);
     }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return null;
-    }
+    catch(Exception ex){
 
+    }
+    return null;
   }
 
   public List listOfAccountUsersByRoundId(int roundId){
@@ -777,6 +754,10 @@ public class FinanceFinder  {
       ex.printStackTrace();
       return null;
     }
+  }
+
+  public AccountHome getAccountHome()throws java.rmi.RemoteException{
+    return (AccountHome) IDOLookup.getHome(Account.class);
   }
 /*
   public List listOfPhoneEntriesInAssessment(){

@@ -1,42 +1,35 @@
 package com.idega.block.finance.business;
 
-import com.idega.block.finance.data.*;
-import com.idega.util.idegaTimestamp;
-import com.idega.data.genericentity.Member;
-import com.idega.core.user.data.User;
-import java.sql.SQLException;
-import com.idega.data.EntityFinder;
-import com.idega.data.IDOLegacyEntity;
-import java.util.*;
-import com.idega.data.IDOLookup;
 import com.idega.business.IBOServiceBean;
+import com.idega.util.idegaTimestamp;
+import java.util.*;
+import com.idega.data.*;
+import com.idega.block.finance.data.*;
+
 /**
- * Title:        AccountManager
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega multimedia
- * @author       <a href="mailto:aron@idega.is">aron@idega.is</a>
+ * <p>Title: </p>
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2002</p>
+ * <p>Company: </p>
+ * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
  * @version 1.0
  */
 
-public class AccountManager extends IBOServiceBean {
+public class AccountBusinessBean extends IBOServiceBean implements AccountBusiness {
 
-  private Account eAccount;
-  private Member eMember;
-
-  public AccountManager() {
-
+  public AccountHome getAccountHome()throws java.rmi.RemoteException{
+    return (AccountHome) IDOLookup.getHome(Account.class);
   }
-/*
-  public static Account[] findAccounts(int iUserId){
-    Account[] A;
+
+  public Account getAccount(int iAccountId)throws java.rmi.RemoteException{
     try{
-       A = (Account[])((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy().findAllByColumn("ic_user_id",iUserId);
+    return getAccountHome().findByPrimaryKey(new Integer(iAccountId));
     }
-    catch(Exception e){A=null;}
-    return A;
+    catch(javax.ejb.FinderException ex){
+      throw new java.rmi.RemoteException(ex.getMessage());
+    }
   }
-*/
+
   public Collection listOfAccounts(int iUserId){
     Collection A = null;
     try{
@@ -74,7 +67,7 @@ public class AccountManager extends IBOServiceBean {
     try {
       return EntityFinder.findAllByColumnOrdered(((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(),com.idega.block.finance.data.AccountEntryBMPBean.getRoundIdColumnName(),String.valueOf(iAssessmentRoundId) ,com.idega.block.finance.data.AccountEntryBMPBean.getAccountIdColumnName());
     }
-    catch (SQLException ex) {
+    catch (java.sql.SQLException ex) {
       ex.printStackTrace();
       return null;
     }

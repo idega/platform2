@@ -522,13 +522,13 @@ public  class FinanceBusiness {
 
      try {
 
-      Tariff tariff = ((com.idega.block.finance.data.TariffHome)com.idega.data.IDOLookup.getHomeLegacy(Tariff.class)).createLegacy();
+      Tariff tariff = ((TariffHome)com.idega.data.IDOLookup.getHome(Tariff.class)).create();
 
       boolean update = false;
 
       if(id > 0){
 
-        tariff = ((com.idega.block.finance.data.TariffHome)com.idega.data.IDOLookup.getHomeLegacy(Tariff.class)).findByPrimaryKeyLegacy(id);
+        tariff = ((TariffHome)com.idega.data.IDOLookup.getHome(Tariff.class)).findByPrimaryKey(new Integer(id));
 
         update = true;
 
@@ -562,19 +562,13 @@ public  class FinanceBusiness {
 
         tariff.setIndexUpdated(indexStamp);
 
-      if(update)
-
-        tariff.update();
-
-      else
-
-        tariff.insert();
+        tariff.store();
 
       return true;
 
       }
 
-      catch (SQLException ex) {
+      catch (Exception ex) {
 
         //ex.printStackTrace();
 
@@ -590,13 +584,13 @@ public  class FinanceBusiness {
 
     try {
 
-      ((com.idega.block.finance.data.TariffHome)com.idega.data.IDOLookup.getHomeLegacy(Tariff.class)).findByPrimaryKeyLegacy(id).delete();
+      ((TariffHome)com.idega.data.IDOLookup.getHome(Tariff.class)).findByPrimaryKey(new Integer(id)).remove();
 
       return true;
 
     }
 
-    catch (SQLException ex) {
+    catch (Exception ex) {
 
 
 
