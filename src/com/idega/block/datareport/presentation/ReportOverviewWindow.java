@@ -34,7 +34,7 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
     if (iwc.isParameterSet(ReportQueryBuilder.PARAM_CANCEL)) {
     	// do not show wizard even if the parameter show wizard is set
     	ReportQueryBuilder.cleanSession(iwc);
-    	ReportOverview overview = new ReportOverview();
+    	ReportQueryOverview overview = new ReportQueryOverview();
     	add(overview,iwc);
     }
     else if (iwc.isParameterSet(ReportQueryBuilder.PARAM_SAVE)) {
@@ -43,7 +43,7 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
     	// get the jid of the just created new file
     	int queryId = queryBuilder.getQueryId();
     	ReportQueryBuilder.cleanSession(iwc);
-    	ReportOverview overview = new ReportOverview();
+    	ReportQueryOverview overview = new ReportQueryOverview();
     	overview.setShowOnlyOneQueryWithId(queryId);
     	add(overview,iwc);
     }
@@ -52,7 +52,7 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
     	add(queryBuilder,iwc);
     }
     else {
-	   	ReportOverview overview = new ReportOverview();
+	   	ReportQueryOverview overview = new ReportQueryOverview();
     	add(overview,iwc);
     }
   }
