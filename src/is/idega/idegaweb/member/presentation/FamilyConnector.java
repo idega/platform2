@@ -19,11 +19,11 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.Window;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
+import com.idega.user.presentation.StyledIWAdminWindow;
 
-public class FamilyConnector extends Window {
+public class FamilyConnector extends StyledIWAdminWindow {
 	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 
 	private static final String TAB_NAME = "usr_fam_win_name";
@@ -105,7 +105,7 @@ public class FamilyConnector extends Window {
 		frameTable.add(new SubmitButton(iwrb.getLocalizedString("usr_fam_win_save","Save")), 1, 3);
 
 		form.add(frameTable);
-		add(form);
+		add(form,iwc);
 	}
 
 	private void getConfirmation(IWContext iwc) throws Exception {
@@ -128,7 +128,7 @@ public class FamilyConnector extends Window {
 		frameTable.add(new SubmitButton(iwrb.getLocalizedString("usr_fam_win_yes","Yes")), 1, 2);
 
 		form.add(frameTable);
-		add(form);
+		add(form,iwc);
 	}
 
 	private void save(IWContext iwc) throws RemoteException {
