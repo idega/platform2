@@ -55,6 +55,8 @@ import dori.jasper.engine.JasperPrint;
  * Created on Jan 21, 2004
  */
 public class QueryResultViewer extends Block {
+	
+	protected static final String ADD_QUERY_SQL_FOR_DEBUG = "ADD_QUERY_SQL_FOR_DEBUG";
 
 	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.dataquery";
 	public static final String QUERY_ID_KEY = "query_id_key";
@@ -196,6 +198,9 @@ public class QueryResultViewer extends Block {
 	    query.setIdentifierValueMap(modifiedValues);
 	  	String errorMessage = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
 	  	if (errorMessage != null) {
+	  		if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
+	  			addExecutedSQLQueries(executedSQLStatements);
+	  		}
 	  		addErrorMessage(errorMessage);
 	  		if (! containsOnlyAccessVariable) {
 			  	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();
@@ -324,7 +329,14 @@ public class QueryResultViewer extends Block {
     	uri = reportBusiness.getHtmlReport(print, "report");
     }
     Page parentPage = getParentPage();
-    parentPage.setToRedirect(uri);
+    if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
+    	addExecutedSQLQueries(executedSQLStatements);
+    	add(new Text("ADD_QUERY_SQL_FOR_DEBUG is true, result is shown in pop up window!"));
+    	parentPage.setOnLoad(" openwindow('" + uri + "','IdegaWeb Generated Report','0','0','0','0','0','1','1','1','800','600') ");
+	  }
+    else {
+    	parentPage.setToRedirect(uri);
+    }
     // open an extra window with scrollbars
     //getParentPage().setOnLoad("window.open('" + uri + "' , 'newWin', 'width=600,height=400,scrollbars=yes')");
 	//openwindow(Address,Name,ToolBar,Location,Directories,Status,Menubar,Titlebar,Scrollbars,Resizable,Width,Height)
@@ -442,5 +454,17 @@ public class QueryResultViewer extends Block {
 	  text.setFontColor("#FF0000");
 	  add(text);
 	  add(Text.getBreak());
+	}
+	
+	private void addExecutedSQLQueries(List executedSQLStatements) {
+		Iterator iterator = executedSQLStatements.iterator();
+		while (iterator.hasNext())	{
+			String statement = (String) iterator.next();
+			Text text = new Text(statement);
+			text.setBold();
+	  	text.setFontColor("#FF0000");
+	  	add(text);
+	  	add(Text.getBreak());
+		}
 	}
 }
