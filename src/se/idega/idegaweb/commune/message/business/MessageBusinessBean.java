@@ -15,7 +15,7 @@ import java.util.*;
  * Description:
  * Copyright:    Copyright (c) 2002
  * Company:
- * @author Anders Lindman
+ * @author Anders Lindman , <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
 
@@ -87,5 +87,18 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
       throw new IDOCreateException(idos);
     }
     return message;
+  }
+
+  public void sendMessage(String email,String subject, String body){
+    /**
+     * @todo: Implement better
+     */
+     String mailServer = "mail.idega.is";
+     try{
+       com.idega.util.SendMail.send("idegaWeb MessageBox",email,"","",mailServer,subject,body);
+      }
+      catch(javax.mail.MessagingException me){
+        System.err.println("Error sending mail to address: "+email+" Message was: "+me.getMessage());
+      }
   }
 }

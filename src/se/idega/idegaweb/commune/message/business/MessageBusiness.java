@@ -10,4 +10,5 @@ public interface MessageBusiness extends com.idega.business.IBOService
  public se.idega.idegaweb.commune.message.data.Message getMessage(java.lang.String p0,int p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.Message createPrintArchivationMessage(int p0,java.lang.String p1,java.lang.String p2)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.Message createPrintedLetterMessage(int p0,java.lang.String p1,java.lang.String p2)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
+ public void sendMessage(String email,String subject, String body)throws java.rmi.RemoteException;
 }
