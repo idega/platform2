@@ -6,6 +6,7 @@ public interface AgeRegulation extends com.idega.data.IDOEntity
  public int getAgeFrom();
  public java.lang.String getAgeInterval();
  public int getAgeTo();
+ public java.lang.String getCategory();
  public java.sql.Date getCutDate();
  public java.lang.String getDescription();
  public java.lang.String getIDColumnName();
@@ -14,6 +15,7 @@ public interface AgeRegulation extends com.idega.data.IDOEntity
  public void initializeAttributes();
  public void setAgeFrom(int p0);
  public void setAgeTo(int p0);
+ public void setCategory(java.lang.String p0);
  public void setCutDate(java.sql.Date p0);
  public void setDescription(java.lang.String p0);
  public void setPeriodFrom(java.sql.Date p0);
