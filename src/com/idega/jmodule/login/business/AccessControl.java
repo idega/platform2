@@ -188,6 +188,40 @@ public class AccessControl{
 
         }
 
+        public static boolean isTournamentManager(ModuleInfo modinfo) throws SQLException{
+		Member member = getMember(modinfo);
+                if(member!=null){
+                    if(member instanceof com.idega.projects.golf.entity.Member){
+
+                        com.idega.projects.golf.entity.Member membi = (com.idega.projects.golf.entity.Member)member;
+                    	Group[] access = membi.getGroups(); //  (member).getGenericGroups();
+			for(int i = 0; i < access.length; i++){
+                          if ("administrator".equals(access[i].getName())){
+                                  return true;
+                          }
+
+                          if ("tournament_manager".equals(access[i].getName())){
+                            return true;
+                          }
+
+                        }
+                        return false;
+                    }
+                    else{
+
+			LoginType[] access = member.getLoginType();
+                        if (access != null){
+                          for(int i = 0; i < access.length; i++){
+                              if ("administrator".equals(access[i].getName())){
+                                  return true;
+                              }
+                          }
+                        }
+                    }
+		}
+		return false;
+
+        }
 
 
 
