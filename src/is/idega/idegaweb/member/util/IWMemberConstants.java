@@ -14,6 +14,8 @@ public final class IWMemberConstants {
 	
 	public static final String META_DATA_CLUB_LEAGUE_CONNECTION = "CLUBINFO_CONN";
 	public static final String META_DATA_DIVISION_LEAGUE_CONNECTION ="CLUBDIV_CONN";
+	
+	public static final String META_DATA_DIVISION_BOARD = "CLUBDIV_BOARD";
 	public static final String META_DATA_CLUB_USING_SYSTEM = "CLUBINFO_SYSTEM";
 	public static final String META_DATA_CLUB_OPERATION = "CLUBINFO_OPERATION";
 	public static final String META_DATA_CLUB_STATUS = "CLUBINFO_STATUS";
