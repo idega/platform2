@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.48 2003/01/15 12:46:12 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.49 2003/02/21 10:22:52 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -35,17 +35,21 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2003/01/15 12:46:12 $ by $Author: staffan $
+ * Last modified: $Date: 2003/02/21 10:22:52 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.48 $
+ * @version $Revision: 1.49 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
   implements CitizenAccountBusiness, AccountBusiness 
     {
 	private boolean acceptApplicationOnCreation = true;
 
+	protected CitizenAccountHome getCitizenAccountHome() throws RemoteException {
+		return (CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class);
+	}
+	
 	/**
 	 * Creates an application for CitizenAccount for a user with a personalId that is in the system.
 	 * @param user The user that makes the application
@@ -738,6 +742,15 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
       //do something: email or letter was not sent!     
       throw new CreateException("Email or letter could not be created"); 
     } 
+  }
+  
+  public int getNumberOfApplications() throws RemoteException {
+		try {
+			return getCitizenAccountHome().getTotalCount();
+		}
+		catch (IDOException ie) {
+			return 0;
+		}
   }
 
 

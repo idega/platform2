@@ -29,4 +29,5 @@ public interface CitizenAccountBusiness extends com.idega.business.IBOService
  public void rejectApplication(int p0,com.idega.user.data.User p1,java.lang.String p2)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
     void removeApplication (int applicationId, User user)
         throws RemoteException, FinderException;
+	public int getNumberOfApplications() throws RemoteException;
 }
