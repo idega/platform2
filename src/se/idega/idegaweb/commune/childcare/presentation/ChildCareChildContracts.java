@@ -154,10 +154,13 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			contracts = getBusiness().getContractsByChild(getChildID(iwc));
 			//contracts = getBusiness().getContractsByChild(getSession().getUserID());
 
+		int contractCount = 0;
 		Iterator iter = contracts.iterator();
 		while (iter.hasNext()) {
 			column = 1;
 			contract = (ChildCareContract) iter.next();
+			contractCount++;
+			Link viewCancelFile = null;
 			provider = contract.getApplication().getProvider();
 			created = new IWTimestamp(contract.getCreatedDate());
 			member = contract.getSchoolClassMember();
@@ -195,6 +198,13 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			//viewContract.setFile(contract.getContractFileID());
 			//viewContract.setTarget(Link.TARGET_NEW_WINDOW);
 			viewContract = getPDFLink(contract.getContractFileID(),localize("child_care.view_contract","View contract"));
+
+			if (contractCount == 1) {
+				int fileId = contract.getApplication().getCancelFormFileID();
+				if (fileId > 0) {
+					viewCancelFile = getPDFLink(fileId, localize("child_care.view_cancel_file", "View cancel contract document"));
+				}
+			}
 					
 			if (useStyleNames()) {
 				if (row % 2 == 0) {
@@ -227,7 +237,11 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			table.add(getText(careTime, isActive), column++, row);
 					
 			table.setWidth(column, row, 12);
-			table.add(viewContract, column++, row++);
+			table.add(viewContract, column++, row);
+			if (viewCancelFile != null) {
+				table.add(viewCancelFile, column++, row);
+			}
+			row++;
 		}
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
