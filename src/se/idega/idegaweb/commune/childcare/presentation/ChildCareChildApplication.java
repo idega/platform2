@@ -14,6 +14,7 @@ import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
+import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.Address;
@@ -22,6 +23,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
@@ -105,17 +107,27 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	}
 
 	private void viewForm(IWContext iwc) {
-		Form form = new Form();
-		form.setOnSubmit("return checkApplication()");
+		boolean hasOffers = false;
+		if (child != null) {
+			try {
+				hasOffers = getBusiness().hasUnansweredOffers(((Integer) child.getPrimaryKey()).intValue());
+			}
+			catch (RemoteException e) {
+				hasOffers = false;
+			}
+		}
 		
-		Table table = new Table();
-		table.setWidth(getWidth());
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		form.add(table);
+		if (!_noCheckError && !hasOffers) {
+			Form form = new Form();
+			form.setOnSubmit("return checkApplication()");
 		
-		int row = 1;
-		if (!_noCheckError) {
+			Table table = new Table();
+			table.setWidth(getWidth());
+			table.setCellpadding(0);
+			table.setCellspacing(0);
+			form.add(table);
+		
+			int row = 1;
 			table.add(getChildInfoTable(iwc), 1, row++);
 			table.setHeight(row++, 12);
 			table.add(getInputTable(iwc), 1, row++);
@@ -129,12 +141,17 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				Script script = page.getAssociatedScript();
 				script.addFunction("checkApplication", getSubmitCheckScript());
 			}
+
+			add(form);
 		}
 		else {
-			add(getErrorText(localize("child_care.no_check_selected", "No check or child selected.")));
+			if (hasOffers)
+				add(getErrorText(localize("child_care.child_has_offers", "Child has offers not yet replied to. New choices can not be made until dealt with.")));
+			else
+				add(getErrorText(localize("child_care.no_check_selected", "No check or child selected.")));
+			add(new Break(2));
+			add(new UserHomeLink());
 		}
-
-		add(form);
 	}
 	
 	private void submitForm(IWContext iwc) {
@@ -284,23 +301,28 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n\t if (dropFour.selectedIndex > 0) {\n\t\t four = dropFour.options[dropFour.selectedIndex].value;\n\t\t length++;\n\t }");
 		buffer.append("\n\t if (dropFive.selectedIndex > 0) {\n\t\t five = dropFive.options[dropFive.selectedIndex].value;\n\t\t length++;\n\t }");
 
-		buffer.append("\n\t if(one > 0){");
-		buffer.append("\n\t if(one == two || one == three || one == four || one == five){");
+		buffer.append("\n\t if(length > 0){");
+		buffer.append("\n\t\t if(one > 0 && (one == two || one == three || one == four || one == five)){");
 		String message = localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once.");
 		buffer.append("\n\t\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t\t return false;");
 		buffer.append("\n\t\t }");
-		buffer.append("\n\t if(two > 0 && (two == three || two == four || two == five)){");
+		buffer.append("\n\t\t if(two > 0 && (two == one || two == three || two == four || two == five)){");
 		message = localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once.");
 		buffer.append("\n\t\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t\t return false;");
 		buffer.append("\n\t\t }");
-		buffer.append("\n\t if(three > 0 && (three == four || three == five)){");
+		buffer.append("\n\t\t if(three > 0 && (three == one || three == two || three == four || three == five)){");
 		message = localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once.");
 		buffer.append("\n\t\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t\t return false;");
 		buffer.append("\n\t\t }");
-		buffer.append("\n\t if(four > 0 && (four == five)){");
+		buffer.append("\n\t\t if(four > 0 && (four == one || four == two || four == three || four == five)){");
+		message = localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once.");
+		buffer.append("\n\t\t\t alert('").append(message).append("');");
+		buffer.append("\n\t\t\t return false;");
+		buffer.append("\n\t\t }");
+		buffer.append("\n\t\t if(five > 0 && (five == one || five == two || five == three || five == four)){");
 		message = localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once.");
 		buffer.append("\n\t\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t\t return false;");
