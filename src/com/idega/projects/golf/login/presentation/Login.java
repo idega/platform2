@@ -866,12 +866,12 @@ public static String controlParameter;
                 else if(state.equals("newlogin")){
                   String temp = modinfo.getRequest().getParameter("login");
                   if(temp != null){
-                    if(temp.length() == 10){
-                      registerLogin(modinfo,modinfo.getRequest().getParameter("login"));
-                    }else if (temp.length() == 11) {
+                    if (temp.length() == 11) {
                       loginFailed("toBig");
                     }else if( temp.equals("") || temp.equals(" ") ){
                       loginFailed("empty");
+                    }else{
+                      loginFailed("");
                     }
                   }else{
                     loginFailed("");
