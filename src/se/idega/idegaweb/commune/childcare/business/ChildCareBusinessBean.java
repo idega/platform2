@@ -939,7 +939,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			member.store();
 		}
 		catch (FinderException e) {
-			e.printStackTrace();
+			//Placing not yet created...
 		}
 	}
 
