@@ -128,9 +128,9 @@ public class MemberOverview extends Block {
 				String[] financeOverviewHeaderAlignments = { null, null, "right" };
 				row = insertSectionHeaderIntoTable(table, row, financeOverviewHeaders);
 				row = insertFinanceInfoIntoTable(table, row, true, iwc);
-				mainTable.add(table, 1, 4);
 			}
 		}
+		mainTable.add(table, 1, 4);
 		add(mainTable);
 	}
 
