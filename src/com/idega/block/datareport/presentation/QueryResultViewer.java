@@ -183,7 +183,7 @@ public class QueryResultViewer extends Block {
 
   private void showInputFieldsOrExecuteQuery(List executedSQLStatements, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
   	Map identifierValueMap = query.getIdentifierValueMap();
-	  boolean calculateAccess = false;
+	  boolean calculateAccess = calculateAccess(identifierValueMap);
 	  boolean containsOnlyAccessVariable = containsOnlyAccessVariables(identifierValueMap); 
 	  if (! (containsOnlyAccessVariable || iwc.isParameterSet(EXECUTE_QUERY_KEY))) {
 	  	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();
@@ -209,6 +209,13 @@ public class QueryResultViewer extends Block {
 	  	}
 	  }
   }  
+  
+  private boolean calculateAccess(Map identifierValueMap) {
+  	return (
+  			identifierValueMap.containsKey(DirectSQLStatement.GROUP_ACCESS_VARIABLE) ||
+				identifierValueMap.containsKey(DirectSQLStatement.USER_ACCESS_VARIABLE) ||
+				identifierValueMap.containsKey(DirectSQLStatement.USER_GROUP_ACCESS_VARIABLE));
+  }
   
   private boolean containsOnlyAccessVariables(Map identifierValueMap) {
   	int numberOfVariables = identifierValueMap.size();
