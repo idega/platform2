@@ -782,6 +782,7 @@ public class TourBookingForm extends TravelManager {
       form.maintainParameter(this.parameterCCNumber);
       form.maintainParameter(this.parameterCCMonth);
       form.maintainParameter(this.parameterCCYear);
+      form.maintainParameter(this.BookingAction);
     return form;
   }
 
@@ -791,8 +792,10 @@ public class TourBookingForm extends TravelManager {
     boolean tooMany = false;
     String sAvailable = iwc.getParameter("available");
 
+    int iAvailable = available;
 
-    int iAvailable = Integer.parseInt(sAvailable);
+    if (sAvailable != null)
+      iAvailable = Integer.parseInt(sAvailable);
 
     if (iAvailable != available) {
       String many;
@@ -841,15 +844,17 @@ public class TourBookingForm extends TravelManager {
 
   public int handleInsert(IWContext iwc) throws Exception{
     String action = iwc.getParameter(this.BookingAction);
-    if (action.equals(this.BookingParameter)) {
-      return checkBooking(iwc);
-    }else if (action.equals(this.parameterBookAnyway)) {
-      return saveBooking(iwc);
-    }else if (action.equals(this.parameterSendInquery)) {
-      return sendInquery(iwc);
-    }else {
-      return -1;
-    }
+    if (action != null) {
+      if (action.equals(this.BookingParameter)) {
+        return checkBooking(iwc);
+      }else if (action.equals(this.parameterBookAnyway)) {
+        return saveBooking(iwc);
+      }else if (action.equals(this.parameterSendInquery)) {
+        return sendInquery(iwc);
+      }else {
+        return -1;
+      }
+    }else {return -1;}
 
   }
 
@@ -981,7 +986,7 @@ public class TourBookingForm extends TravelManager {
           }
         }
         */
-        returner = iBookingId;
+        returner = lbookingId;
 
         if (lbookingId != -1) {
           if (iBookingId == -1) {

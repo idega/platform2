@@ -303,7 +303,7 @@ public class TravelManager extends Block {
         //theBoldText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
         //theBoldText.setBold();
         theBigBoldText.setFontColor(this.textColor);
-        theBigBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+"; font-weight: bold;");
+        theBigBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_12_STYLE_TAG+"; font-weight: bold;");
         theBoldText.setFontColor(this.textColor);
         theText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+";");
         theBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+"; font-weight: bold;");

@@ -436,27 +436,39 @@ public class PublicBooking extends Block  {
 
       try {
         System.out.println("Starting TPOS test");
-        com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
-        heimild = t.doSale(ccNumber,ccMonth,ccYear,20000,"ISK");
-        System.out.println("heimild = " + heimild);
+        //com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
+        //heimild = t.doSale(ccNumber,ccMonth,ccYear,20000,"ISK");
+        //System.out.println("heimild = " + heimild);
         System.out.println("Ending TPOS test");
         success = true;
-      }
+      }/*
       catch(com.idega.block.tpos.business.TPosException e) {
         System.out.println("message = " + e.getErrorMessage());
         System.out.println("number = " + e.getErrorNumber());
         System.out.println("display = " + e.getDisplayError());
         display.setText(e.getDisplayError());
-      }
+      }*/
       catch (Exception e) {
         e.printStackTrace(System.err);
       }
-      table.add(display);
 
       if (success) {
+        try {
+          int bookingId = -1;
+          TourBookingForm tbf = new TourBookingForm(iwc);
+            tbf.setProduct(product);
+          bookingId = tbf.handleInsert(iwc);
+
+          Voucher v = new Voucher(iwc, bookingId);
+
+          table.add(v.getVoucher());
+        }catch (Exception e) {
+          table.add("Villa í try");
+          e.printStackTrace(System.err);
+        }
 
       }else {
-
+        table.add(display);
       }
 
     return table;
