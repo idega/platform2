@@ -387,7 +387,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			boolean hasSchoolPlacement = getBusiness().getSchoolBusiness().hasActivePlacement(application.getChildId(), application.getProviderId(), getBusiness().getSchoolBusiness().getCategoryElementarySchool());
 			boolean instantContract = isAfterSchoolApplication && hasSchoolPlacement && (status == getBusiness().getStatusSentIn());
 
-			if (status == getBusiness().getStatusSentIn() && !instantContract) {
+			//if (status == getBusiness().getStatusSentIn() && !instantContract) {
+			if (status == getBusiness().getStatusSentIn()) {
 				int column = 3;
 				if (numberInQueue == 1 || hasPriority) {
 					GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
