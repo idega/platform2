@@ -196,11 +196,13 @@ public void addParameter(Parameter parameter){
 }
 
 public void addParameter(String ParameterName, String ParameterValue){
+        String encodedName = java.net.URLEncoder.encode(ParameterName);
+        String encodedValue = java.net.URLEncoder.encode(ParameterValue);
 	if (parameterString == null){
-		parameterString = "&"+ParameterName+"="+ParameterValue;
+		parameterString = "&"+encodedName+"="+encodedValue;
 	}
 	else{
-		parameterString=parameterString+"&"+ParameterName+"="+ParameterValue;
+		parameterString=parameterString+"&"+encodedName+"="+encodedValue;
 	}
 }
 
@@ -442,7 +444,7 @@ public void print(ModuleInfo modinfo)throws IOException{
 	initVariables(modinfo);
 	//if ( doPrint(modinfo) ){
             if (getURL() == null){
-                    setURL(modinfo.getRequest().getRequestURI());
+                    setURL(modinfo.getRequestURI());
             }
             String oldURL = getURL();
 
