@@ -77,7 +77,10 @@ public class ForumTree extends AbstractTreeViewer {
 
 	private PresentationObject getThreadImage(IWContext iwc, ICTreeNode node, boolean isOpen) {
 		ForumData thread = (ForumData) node;
-		if (_threadImage == null) _threadImage = iwc.getIWMainApplication().getBundle(ForumBusiness.IW_BUNDLE_IDENTIFIER).getImage("shared/thread.gif");
+		if (_threadImage == null) {
+			_threadImage = iwc.getIWMainApplication().getBundle(ForumBusiness.IW_BUNDLE_IDENTIFIER).getImage("shared/thread.gif");
+		}
+		_threadImage.setPaddingRight(2);
 		Link link = new Link(_threadImage);
 		link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, thread.getTopicID());
 		link.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
@@ -178,7 +181,7 @@ public class ForumTree extends AbstractTreeViewer {
 	public void setResourceBundle(IWResourceBundle iwrb) {
 		_iwrb = iwrb;
 	}
-	
+
 	public void setLightRowStyle(String styleName) {
 		lightRowStyle = styleName;
 	}

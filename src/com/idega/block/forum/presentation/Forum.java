@@ -259,6 +259,13 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 					table.add(numberOfThreadsText, 2, row);
 					if (lastUpdatedText != null)
 						table.add(lastUpdatedText, 3, row);
+					
+					if (row % 2 == 0) {
+						table.setRowStyleClass(row, LIGHT_ROW_STYLE);
+					}
+					else {
+						table.setRowStyleClass(row, DARK_ROW_STYLE);
+					}
 
 					row++;
 				}
@@ -292,6 +299,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			if (_showTopicName) {
 				Text topicText = formatText(topic.getName(), HEADER_STYLE);
 				table.setRowColor(row, _headingColor);
+				table.setRowPadding(row, 2);
 				table.add(topicText, 1, row++);
 				//table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
 			}
@@ -300,8 +308,10 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 
 			if (thread != null && thread.isValid()) {
 				table.add(getThreadHeaderTable(thread, iwc), 1, row++);
+				table.setHeight(row++, 3);
 				//table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
 				table.add(getThreadBodyTable(thread), 1, row++);
+				table.setHeight(row++, 3);
 				table.add(getThreadLinks(iwc, thread), 1, row++);
 			}
 
@@ -531,6 +541,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			image = (Image) _threadImage.clone();
 		}
 		image.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
+		image.setPaddingRight(2);
 
 		String headlineString = thread.getThreadSubject();
 		if (headlineString == null)
@@ -551,19 +562,13 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		return table;
 	}
 
-	private Table getThreadBodyTable(ForumData thread) {
-		Table table = new Table(1, 1);
-		table.setWidth("100%");
-		table.setCellpadding(2);
-		table.setCellspacing(0);
-
+	private Text getThreadBodyTable(ForumData thread) {
 		String bodyString = thread.getThreadBody();
 		if (bodyString == null)
 			bodyString = "";
 		Text body = formatText(TextFormatter.formatText(bodyString, 1, "100%"));
 
-		table.add(body, 1, 1);
-		return table;
+		return body;
 	}
 
 	private Table getNextPreviousTable(boolean hasNext, boolean hasPrevious) {
