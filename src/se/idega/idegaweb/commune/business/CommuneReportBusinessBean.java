@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.user.data.Citizen;
@@ -38,11 +39,13 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.user.business.UserStatusBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.GroupRelationHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.idega.user.data.UserStatus;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -697,9 +700,27 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	 * @param lastDateOfConditionInPeriode
 	 * @return Returns time of the event or null if condition is not fulfilled
 	 */
-	private java.util.Date hasDeceasedInTimePeriode(User usr, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) {
-		// TODO Auto-generated method stub
+	private java.util.Date hasDeceasedInTimePeriode(User usr, Date firstDateOfConditionInPeriod, Date lastDateOfConditionInPeriod) {
+		try {
+			UserStatus status = getUserStatusService().getDeceasedUserStatus((Integer)usr.getPrimaryKey());
+			if(status==null)
+				return null;
+			Timestamp deceasedDate = status.getDateFrom();
+			if(firstDateOfConditionInPeriod.getTime() <= deceasedDate.getTime() && deceasedDate.getTime() <= lastDateOfConditionInPeriod.getTime() )
+				return new Date( deceasedDate.getTime());
+		}
+		catch (RemoteException e) {
+			
+		}
+		catch (EJBException e) {
+			
+		}
 		return null;
+	}
+	
+	
+	private UserStatusBusiness getUserStatusService() throws RemoteException{
+		return (UserStatusBusiness) getServiceInstance(UserStatusBusiness.class);
 	}
 
 	/**
