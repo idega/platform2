@@ -172,9 +172,9 @@ public class SchoolEditor extends Block {
     T.add(tFormat.format(iwrb.getLocalizedString("ziparea","Ziparea")),col++,row);
 		T.add(tFormat.format(iwrb.getLocalizedString("commune","Commune")),col++,row);
     T.add(tFormat.format(iwrb.getLocalizedString("phone","Phone")),col++,row);
-    T.add(tFormat.format(iwrb.getLocalizedString("keycode","Keycode")),col++,row);
-    T.add(tFormat.format(iwrb.getLocalizedString("latitude","Latitude")),col++,row);
-    T.add(tFormat.format(iwrb.getLocalizedString("longitude","Longitude")),col++,row);
+//    T.add(tFormat.format(iwrb.getLocalizedString("keycode","Keycode")),col++,row);
+//    T.add(tFormat.format(iwrb.getLocalizedString("latitude","Latitude")),col++,row);
+//    T.add(tFormat.format(iwrb.getLocalizedString("longitude","Longitude")),col++,row);
     row++;
 
     java.util.Iterator iter = schools.iterator();
@@ -203,12 +203,13 @@ public class SchoolEditor extends Block {
       T.add(tFormat.format(school.getSchoolZipArea()),col++,row);
       if (communePK != null) {
     		//commune = communeHome.findByPrimaryKey(communePK);
-				T.add(tFormat.format(communePK.getCommuneName()),col++,row);
-      } 
+				T.add(tFormat.format(communePK.getCommuneName()),col,row);
+      }
+      col++;
       T.add(tFormat.format(school.getSchoolPhone()),col++,row);
-      T.add(tFormat.format(school.getSchoolKeyCode()),col++,row);
-      T.add(tFormat.format(school.getSchoolLatitude()),col++,row);
-      T.add(tFormat.format(school.getSchoolLongitude()),col++,row);
+ //     T.add(tFormat.format(school.getSchoolKeyCode()),col++,row);
+ //     T.add(tFormat.format(school.getSchoolLatitude()),col++,row);
+ //     T.add(tFormat.format(school.getSchoolLongitude()),col++,row);
       }
       catch(Exception ex){}
       row++;
