@@ -11,6 +11,7 @@ import java.util.Vector;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import javax.transaction.UserTransaction;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
@@ -33,6 +34,7 @@ import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
@@ -883,9 +885,27 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public SchoolClassMember findByStudentAndSeason(int userID, int seasonID) throws RemoteException {
+		try {
+			return getSchoolClassMemberHome().findByUserAndSeason(userID, seasonID);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+
 	public SchoolClassMember findByStudentAndSeason(User user, SchoolSeason season) throws RemoteException {
 		try {
 			return getSchoolClassMemberHome().findByUserAndSeason(user, season);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+
+	public SchoolClassMember findByStudentAndSeason(SchoolClassMember student, SchoolSeason season) throws RemoteException {
+		try {
+			return getSchoolClassMemberHome().findByUserAndSeason(student.getClassMemberId(), ((Integer)season.getPrimaryKey()).intValue());
 		}
 		catch (FinderException fe) {
 			return null;
@@ -934,10 +954,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			member.remove();
 		}
 		catch (FinderException fe) {
-			fe.printStackTrace(System.err);
 		}
 		catch (RemoveException re) {
-			re.printStackTrace(System.err);
 		}
 	}
 
@@ -953,15 +971,14 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			}
 		}
 		catch (RemoveException re) {
-			re.printStackTrace(System.err);
 		}
 	}
 
-	public void storeSchoolClassMember(int studentID, int schoolClassID, Timestamp registerDate, int registrator) throws RemoteException {
-		storeSchoolClassMember(studentID, schoolClassID, registerDate, registrator, null);
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, Timestamp registerDate, int registrator) throws RemoteException {
+		return storeSchoolClassMember(studentID, schoolClassID, registerDate, registrator, null);
 	}
 
-	public void storeSchoolClassMember(int studentID, int schoolClassID, Timestamp registerDate, int registrator, String notes) throws RemoteException {
+	public SchoolClassMember storeSchoolClassMember(int studentID, int schoolClassID, Timestamp registerDate, int registrator, String notes) throws RemoteException {
 		try {
 			SchoolClassMember member = findClassMemberInClass(studentID, schoolClassID);
 			if (member == null)
@@ -979,9 +996,11 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 				member.store();
 			}
+			return member;
 		}
 		catch (CreateException ce) {
 			ce.printStackTrace(System.err);
+			return null;
 		}
 	}
 
@@ -1087,6 +1106,24 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			SchoolClass schoolClass = getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassID));
 			schoolClass.setValid(false);
 			schoolClass.store();
+
+			UserTransaction trans = getSessionContext().getUserTransaction();
+			try {
+				trans.begin();
+				Collection students = findStudentsInClass(schoolClassID);
+				Iterator iter = students.iterator();
+				while (iter.hasNext()) {
+					SchoolClassMember element = (SchoolClassMember) iter.next();
+					element.remove();
+				}
+			}
+			catch (Exception ex) {
+				try {
+					trans.rollback();
+				}
+				catch (javax.transaction.SystemException e) {
+				}
+			}
 		}
 		catch (FinderException fe) {
 			fe.printStackTrace(System.err);
