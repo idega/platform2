@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/03/12 16:40:23 $ by $Author: joakim $
+ * Last modified: $Date: 2004/03/16 11:05:55 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.122 $
+ * @version $Revision: 1.123 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -673,20 +673,22 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 					(regSpecTypeId);
 			final String regSpecTypeName = regSpecType.getRegSpecType ();
 			if (regSpecTypeName.equals (RegSpecConstant.CHECK)) {
+				// since invoice is check, then create payment
 				final School school = record.getProvider ();
 				final SchoolCategory schoolCategory = header.getSchoolCategory ();
 				final Date period = header.getPeriod ();
-					final PaymentRecord paymentRecord
-							= createPaymentRecord
-							(school, schoolCategory, period, createdBySignature, now,
-							 ruleText, amount, pieceAmount, vatRule, ownPaymentPosting,
-							 doublePaymentPosting, regSpecTypeName, orderId);
-					record.setPaymentRecord (paymentRecord);
-					record.store ();
-					final SchoolClassMember placement = record.getSchoolClassMember ();
-					createOrUpdateVatPaymentRecord
-							(paymentRecord, placement.getSchoolType (),
-							 placement.getSchoolYear (), createdBySignature);
+				final PaymentRecord paymentRecord
+						= createPaymentRecord
+						(school, schoolCategory, period, createdBySignature, now,
+						 ruleText, amount, pieceAmount, vatRule, ownPaymentPosting,
+						 doublePaymentPosting, regSpecTypeName, orderId);
+				record.setPaymentRecord (paymentRecord);
+				record.store ();
+				final SchoolClassMember placement = record.getSchoolClassMember ();
+				// create vat record for this payment
+				createOrUpdateVatPaymentRecord
+						(paymentRecord, placement.getSchoolType (),
+						 placement.getSchoolYear (), createdBySignature);
 			}
 		} catch (Exception e) {
 			e.printStackTrace ();
@@ -782,7 +784,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		 final String regSpecTypeName,
 		 final Integer orderId) throws RemoteException, CreateException {
 		final char status = ConstantStatus.PRELIMINARY;
-		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader(school, schoolCategory, period, status);
+		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader
+				(school, schoolCategory, period, status);
 		final PaymentRecord paymentRecord = getPaymentRecordHome ().create ();
 		paymentRecord.setCreatedBy (null != createdBy ? createdBy : "");
 		paymentRecord.setDateCreated (dateCreated);
@@ -800,9 +803,10 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 		try {
 			final Regulation vatRegulation = paymentRecord.getVATRuleRegulation ();
-			final float vat
-					= getVATBusiness ().getVATPercentForRegulation (vatRegulation);
-			paymentRecord.setTotalAmountVAT (vat);
+			final float vatPercent = getVATBusiness ()
+					.getVATPercentForVATRuleRegulation (vatRegulation) / 100.0f;
+			paymentRecord.setTotalAmountVAT
+					(vatPercent * paymentRecord.getTotalAmount ());
 		} catch (Exception e) {
 			e.printStackTrace ();
 			paymentRecord.setTotalAmountVAT (0);
