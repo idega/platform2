@@ -1,15 +1,13 @@
 package com.idega.block.news.business;
 
-import java.util.Vector;
+import java.text.DateFormat;
 import java.util.List;
-import java.util.StringTokenizer;
-import com.idega.block.text.data.LocalizedText;
+import java.util.Locale;
+import java.util.Vector;
+
+import com.idega.block.news.data.NwNews;
 import com.idega.block.text.data.Content;
 import com.idega.util.text.TextSoap;
-import com.idega.block.news.data.NwNews;
-import java.text.DateFormat;
-import java.util.Locale;
-import com.idega.util.IWTimestamp;
 /**
  * Title:
  * Description:

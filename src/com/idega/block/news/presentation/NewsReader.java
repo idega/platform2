@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.112 2003/01/09 11:50:11 laddi Exp $
+ * $Id: NewsReader.java,v 1.113 2003/04/03 08:01:12 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,35 +9,41 @@
  */
 package com.idega.block.news.presentation;
 
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.util.Collections;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+
 import com.idega.block.IWBlock;
-import com.idega.block.news.presentation.NewsTable;
-import com.idega.block.text.data.LocalizedText;
-import com.idega.block.text.business.*;
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.block.news.business.*;
-import com.idega.core.user.data.User;
-import com.idega.core.data.ICCategory;
-import com.idega.core.business.CategoryFinder;
-import com.idega.core.business.CategoryBusiness;
-import java.sql.*;
-import java.util.*;
-import java.io.*;
-import java.text.DateFormat;
-import com.idega.util.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.block.news.data.*;
-import com.idega.block.text.data.Content;
-import com.idega.data.*;
-import com.idega.util.text.*;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.core.data.ICFile;
-import java.text.DateFormat;
-import com.idega.util.text.TextStyler;
+import com.idega.block.news.business.NewsBusiness;
+import com.idega.block.news.business.NewsFinder;
+import com.idega.block.news.business.NewsFormatter;
+import com.idega.block.news.business.NewsHelper;
+import com.idega.block.news.business.NewsLayoutHandler;
+import com.idega.block.news.data.NwNews;
 import com.idega.block.presentation.CategoryBlock;
+import com.idega.block.text.business.ContentHelper;
+import com.idega.block.text.business.TextFormatter;
+import com.idega.block.text.data.Content;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.core.business.CategoryFinder;
+import com.idega.core.data.ICCategory;
+import com.idega.core.data.ICFile;
+import com.idega.core.user.data.User;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.Parameter;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:

@@ -1,35 +1,18 @@
 package com.idega.block.news.business;
 
 import java.rmi.RemoteException;
-import java.sql.*;
-
-import com.idega.presentation.IWContext;
-
-import com.idega.block.news.data.*;
-
-import com.idega.block.text.data.LocalizedText;
-
-import com.idega.block.text.business.*;
-
-import com.idega.block.category.business.*;
-
-import com.idega.core.data.ICCategory;
-
-import com.idega.core.data.ICObjectInstance;
-
-import com.idega.util.IWTimestamp;
-
-import com.idega.core.data.ICFile;
-
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Iterator;
 import java.util.List;
 
-import java.util.Vector;
-
-import java.util.Iterator;
-
-import com.idega.data.EntityFinder;
-
+import com.idega.block.category.business.CategoryBusiness;
+import com.idega.block.news.data.NewsCategory;
+import com.idega.block.news.data.NwNews;
+import com.idega.block.text.business.ContentBusiness;
 import com.idega.block.text.data.Content;
+import com.idega.core.data.ICCategory;
+import com.idega.core.data.ICObjectInstance;
 
 public class NewsBusiness {
 

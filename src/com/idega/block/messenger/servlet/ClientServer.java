@@ -1,12 +1,18 @@
 package com.idega.block.messenger.servlet;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.idega.block.messenger.business.ClientManager;
+import com.idega.block.messenger.business.MessageManager;
 import com.idega.block.messenger.data.Packet;
 import com.idega.servlet.IWCoreServlet;
-import com.idega.block.messenger.business.*;
 
 public class ClientServer extends IWCoreServlet{
   public static String MESSENGER_JAR_FILE = "messenger.jar";

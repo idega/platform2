@@ -4,44 +4,6 @@ package com.idega.block.news.presentation;
 
 import com.idega.block.IWBlock;
 
-import com.idega.block.news.presentation.NewsTable;
-
-import com.idega.block.text.data.LocalizedText;
-
-import com.idega.core.accesscontrol.business.AccessControl;
-
-import com.idega.block.news.business.*;
-
-import com.idega.core.user.data.User;
-
-import java.sql.*;
-
-import java.util.*;
-
-import java.io.*;
-
-import java.text.DateFormat;
-
-import com.idega.util.*;
-
-import com.idega.presentation.text.*;
-
-import com.idega.presentation.*;
-
-import com.idega.presentation.ui.*;
-
-import com.idega.block.news.data.*;
-
-import com.idega.data.*;
-
-import com.idega.util.text.*;
-
-import com.idega.idegaweb.IWResourceBundle;
-
-import com.idega.idegaweb.IWBundle;
-
-import com.idega.idegaweb.IWMainApplication;
-
 
 
 

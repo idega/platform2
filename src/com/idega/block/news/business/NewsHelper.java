@@ -3,18 +3,7 @@ package com.idega.block.news.business;
 
 
 import com.idega.block.news.data.NwNews;
-
-import com.idega.block.text.data.LocalizedText;
-
 import com.idega.block.text.business.ContentHelper;
-
-import com.idega.block.text.business.TextFinder;
-
-import java.util.Vector;
-
-import java.util.List;
-
-import java.util.Locale;
 
 
 

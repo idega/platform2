@@ -1,13 +1,13 @@
 package com.idega.block.messenger.business;
 
-import java.util.Hashtable;
-import java.util.Map;/**@todo use this instead of Hashtable directly*/
-import java.util.Vector;
-import java.util.Enumeration;
-import com.idega.core.user.data.User;
 import java.sql.SQLException;
-import com.idega.block.messenger.data.Property;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
+
 import com.idega.block.messenger.data.Packet;
+import com.idega.block.messenger.data.Property;
+import com.idega.core.user.data.User;
 
 /**
  * Title:        com.idega.block.messenger.business

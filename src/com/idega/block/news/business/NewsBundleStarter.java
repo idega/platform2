@@ -11,18 +11,22 @@ package com.idega.block.news.business;
  * @version 1.0
  */
 
-import com.idega.idegaweb.IWBundleStartable;
-import com.idega.idegaweb.IWBundle;
-import com.idega.data.EntityFinder;
-import com.idega.block.category.business.*;
-import com.idega.data.*;
-import com.idega.core.data.ICCategory;
-import com.idega.block.news.data.*;
-import java.sql.SQLException;
-import java.util.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
-import java.util.HashMap;
+import com.idega.block.category.business.CategoryBusiness;
+import com.idega.block.news.data.NewsCategory;
+import com.idega.block.news.data.NwNews;
+import com.idega.core.data.ICCategory;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.data.SimpleQuerier;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWBundleStartable;
 
 public class NewsBundleStarter implements IWBundleStartable{
 

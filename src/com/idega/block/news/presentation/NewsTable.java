@@ -2,27 +2,10 @@ package com.idega.block.news.presentation;
 
 
 
-import com.idega.presentation.*;
-
-/**
-
- * Title:
-
- * Description:
-
- * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
-
- * Company:      idega
-
-  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
-
- * @version 1.1
-
- */
-
-
-
-import java.util.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Table;
 
 
 

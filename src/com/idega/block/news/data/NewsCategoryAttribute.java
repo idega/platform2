@@ -1,6 +1,5 @@
 package com.idega.block.news.data;
 
-import javax.ejb.*;
 
 public interface NewsCategoryAttribute extends com.idega.data.IDOLegacyEntity
 {

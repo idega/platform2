@@ -1,15 +1,28 @@
 package com.idega.block.messenger.presentation;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.applet.AudioClip;
+import java.awt.AWTEvent;
+import java.awt.AWTEventMulticaster;
+import java.awt.Button;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.Rectangle;
+import java.awt.TextArea;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
-import java.util.EventListener;
-import java.net.URL;
+
 import com.idega.block.messenger.data.Message;
 import com.idega.presentation.awt.ImageLabel;
-import java.applet.AudioClip;
-import java.util.Date;
-import java.util.Calendar;
 
 /**
  * Title:        com.idega.block.messenger.presentation

@@ -4,14 +4,9 @@ package com.idega.block.news.data;
 
 //import java.util.*;
 
-import java.sql.*;
-
-//import com.idega.data.*;
-
-import com.idega.data.*;
+import java.sql.SQLException;
 
 import com.idega.block.text.data.Content;
-
 import com.idega.core.data.ICCategory;
 
 

@@ -1,6 +1,5 @@
 package com.idega.block.news.data;
 
-import javax.ejb.*;
 
 public interface NwNews extends com.idega.data.IDOLegacyEntity
 {

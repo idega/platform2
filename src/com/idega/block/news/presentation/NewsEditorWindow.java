@@ -1,35 +1,50 @@
 package com.idega.block.news.presentation;
 
 
-import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.block.news.business.*;
-
+import java.io.IOException;
 import java.rmi.RemoteException;
-import java.sql.*;
-import java.util.*;
-import java.io.*;
-import com.idega.util.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.block.news.data.*;
-import com.idega.block.text.data.*;
-import com.idega.block.text.business.*;
-import com.idega.core.user.data.User;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+
+import com.idega.block.media.presentation.ImageInserter;
+import com.idega.block.news.business.NewsBusiness;
+import com.idega.block.news.business.NewsFinder;
+import com.idega.block.news.data.NewsCategoryAttribute;
+import com.idega.block.news.data.NwNews;
+import com.idega.block.text.business.ContentBusiness;
+import com.idega.block.text.business.ContentFinder;
+import com.idega.block.text.business.ContentHelper;
+import com.idega.block.text.business.TextFinder;
+import com.idega.block.text.data.Content;
+import com.idega.block.text.data.LocalizedText;
 import com.idega.core.business.CategoryFinder;
 import com.idega.core.data.ICCategory;
-import com.idega.core.localisation.presentation.ICLocalePresentation;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.block.media.presentation.ImageInserter;
-import com.idega.data.*;
-import com.idega.util.text.*;
-import com.idega.util.text.TextSoap;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.core.data.ICFile;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.core.localisation.presentation.ICLocalePresentation;
+import com.idega.core.user.data.User;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.texteditor.TextEditor;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.TimestampInput;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:

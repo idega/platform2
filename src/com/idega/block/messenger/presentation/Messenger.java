@@ -1,11 +1,10 @@
 package com.idega.block.messenger.presentation;
 
+import com.idega.block.messenger.business.ClientSessionBinder;
+import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.Applet;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Applet;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
-import com.idega.block.messenger.business.ClientSessionBinder;
 
 /**
  * Title: Messenger

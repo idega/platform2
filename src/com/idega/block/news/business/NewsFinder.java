@@ -1,22 +1,22 @@
 package com.idega.block.news.business;
 
-import com.idega.core.business.CategoryBusiness;
-import com.idega.core.business.CategoryFinder;
-import com.idega.data.EntityFinder;
-import com.idega.block.text.business.*;
-import com.idega.block.text.data.*;
-import com.idega.util.LocaleUtil;
-import com.idega.block.news.data.*;
-import com.idega.block.text.data.*;
-import com.idega.util.IWTimestamp;
-import java.util.List;
-import java.util.Vector;
-import java.util.Hashtable;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Locale;
-import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.core.data.ICObjectInstance;
+import java.util.Vector;
+
+import com.idega.block.news.data.NewsCategory;
+import com.idega.block.news.data.NwNews;
+import com.idega.block.text.business.ContentFinder;
+import com.idega.block.text.business.ContentHelper;
+import com.idega.block.text.data.Content;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.core.business.CategoryFinder;
 import com.idega.core.data.ICFile;
+import com.idega.core.data.ICObjectInstance;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import com.idega.data.EntityFinder;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:
