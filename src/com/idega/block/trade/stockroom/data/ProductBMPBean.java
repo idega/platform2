@@ -36,8 +36,8 @@ import com.idega.util.IWTimestamp;
  *  Title: IW Trade Description: Copyright: Copyright (c) 2001 Company: idega.is
  *
  *@author     2000 - idega team - <br>
- *      <a href="mailto:gummi@idega.is">Guðmundur Ágúst Sæmundsson</a> <br>
- *      <a href="mailto:gimmi@idega.is">Grímur Jónsson</a>
+ *      <a href="mailto:gummi@idega.is">Guï¿½mundur ï¿½gï¿½st Sï¿½mundsson</a> <br>
+ *      <a href="mailto:gimmi@idega.is">Grï¿½mur Jï¿½nsson</a>
  *@created    6. mars 2002
  *@version    1.0
  */
@@ -74,12 +74,13 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
     this.addAttribute( getIDColumnName() );
     this.addAttribute( getColumnNameSupplierId(), "Birgi", true, true, Integer.class, "many_to_one", Supplier.class );
     this.addAttribute( getColumnNameFileId(), "Fylgiskjal(mynd)", true, true, Integer.class, "many_to_one", ICFile.class );
-    this.addAttribute( getColumnNameIsValid(), "í notkun", true, true, Boolean.class );
+    this.addAttribute( getColumnNameIsValid(), "ï¿½ notkun", true, true, Boolean.class );
     this.addAttribute( getDiscountTypeIdColumnName(), "discount type", true, true, Integer.class );
-    this.addAttribute( getColumnNameNumber(), "númer", true, true, String.class );
+    this.addAttribute( getColumnNameNumber(), "nï¿½mer", true, true, String.class );
     this.addAttribute( getColumnNameCreationDate(), "creation date", true, true, Timestamp.class );
     this.addAttribute( getColumnNameModificationDate(), "edit date", true, true, Timestamp.class );
     addAttribute( COLUMN_REFUNDABLE, "refundable", true, true, Boolean.class);
+    addAttribute(getColumnNameAuthorizationCheck(),"authorization", true, true, Boolean.class);
 
     this.addManyToManyRelationShip( ProductCategory.class, "SR_PRODUCT_PRODUCT_CATEGORY" );
     this.setNullable( getColumnNameFileId(), true );
@@ -137,6 +138,7 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
   public static String getColumnNameNumber() {    return "PRODUCT_NUMBER";  }
   public static String getColumnNameCreationDate() {    return "CREATION_DATE";  }
   public static String getColumnNameModificationDate() {    return "MODIFICATION_DATE";  }
+  public static String getColumnNameAuthorizationCheck() { return "AUTHORIZATION_CHECK"; }
 
 
   /*
@@ -253,6 +255,15 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
    */
   private void setModificationDate( Timestamp timestamp ) {
     setColumn( getColumnNameModificationDate(), timestamp );
+  }
+  /**
+   *  Set to true if the sale is to be set on hold
+   * 
+   * @param saleOnHold true if the sale is set on hold while creditcard is checked, false otherwise
+   *  
+   */
+  public void setAuthorizationCheck(boolean saleOnHold) {
+  		setColumn(getColumnNameAuthorizationCheck(), saleOnHold);
   }
 
 
@@ -423,6 +434,14 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
 //    } else {
 //      return null;
 //    }
+  }
+  /**
+   * 	Gets the status of the saleOnHold attribute
+   * 
+   * @return true if the sale of the product is set on hold, false otherwise
+   */
+  public boolean getAuthorizationCheck() {
+  		return this.getBooleanColumnValue( getColumnNameAuthorizationCheck() );
   }
 
   /**
@@ -765,7 +784,7 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
     }
 
     /**
-     * @todo bæta við filter supporti
+     * @todo bï¿½ta viï¿½ filter supporti
     switch (filter) {
       case FILTER_NOT_CONNECTED_TO_CATEGORY :
         break;
