@@ -25,6 +25,7 @@ public class ApartmentCategory extends GenericEntity {
     addAttribute(getIDColumnName());
     addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
     addAttribute(getInfoColumnName(),"Info",true,true,java.lang.String.class);
+    addAttribute(getImageIdColumnName(),"Icon",true,true,java.lang.Integer.class);
     super.setMaxLength(getInfoColumnName(),4000);
   }
 
@@ -34,6 +35,7 @@ public class ApartmentCategory extends GenericEntity {
   public static String getNameTableName(){return "bu_aprt_cat";}
   public static String getNameColumnName(){return "name";}
   public static String getInfoColumnName(){return "info";}
+  public static String getImageIdColumnName(){return "ic_image_id";}
 
   public String getName(){
     return getStringColumnValue(getNameColumnName());
@@ -46,5 +48,14 @@ public class ApartmentCategory extends GenericEntity {
   }
   public void setInfo(String info){
     setColumn(getInfoColumnName(),info);
+  }
+   public int getImageId(){
+    return getIntColumnValue(getImageIdColumnName());
+  }
+  public void setImageId(int image_id){
+    setColumn(getImageIdColumnName(),image_id);
+  }
+  public void setImageId(Integer image_id){
+    setColumn(getImageIdColumnName(),image_id);
   }
 }

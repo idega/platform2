@@ -25,6 +25,7 @@ public class Complex extends GenericEntity {
     addAttribute(getIDColumnName());
     addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
     addAttribute(getInfoColumnName(),"Info",true,true,java.lang.String.class,4000);
+    addAttribute(getImageIdColumnName(),"Map",true,true,java.lang.Integer.class);
   }
 
   public String getEntityName() {
@@ -33,6 +34,7 @@ public class Complex extends GenericEntity {
   public static String getNameTableName(){return "bu_complex";}
   public static String getNameColumnName(){return "name";}
   public static String getInfoColumnName(){return "info";}
+  public static String getImageIdColumnName(){return "ic_image_id";}
 
   public String getName(){
     return getStringColumnValue(getNameColumnName());
@@ -45,5 +47,14 @@ public class Complex extends GenericEntity {
   }
   public void setInfo(String info){
     setColumn(getInfoColumnName(),info);
+  }
+   public int getImageId(){
+    return getIntColumnValue(getImageIdColumnName());
+  }
+  public void setImageId(int image_id){
+    setColumn(getImageIdColumnName(),image_id);
+  }
+  public void setImageId(Integer image_id){
+    setColumn(getImageIdColumnName(),image_id);
   }
 }

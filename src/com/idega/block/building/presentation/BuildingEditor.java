@@ -237,14 +237,15 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
   private void storeComplex(ModuleInfo modinfo){
     String sName = modinfo.getParameter("bm_name").trim();
     String sInfo = modinfo.getParameter("bm_info").trim();
+    String sImageId = modinfo.getParameter("mapid");
     String sId = modinfo.getParameter("dr_id");
+    int imageid = 1;
     int id = -1;
-    try {
-      id = Integer.parseInt(sId);
-    }
-    catch (Exception ex) {
-      id = -1;
-    }
+    try {  imageid = Integer.parseInt(sImageId); }
+    catch (NumberFormatException ex) { imageid = 1;  }
+    try { id = Integer.parseInt(sId); }
+    catch (Exception ex) { id = -1; }
+
     Complex eComplex = new Complex();
     boolean update = false;
     try{
@@ -254,6 +255,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
       }
       eComplex.setName(sName);
       eComplex.setInfo(sInfo);
+      eComplex.setImageId(imageid);
       if(update)
         eComplex.update();
       else
@@ -341,9 +343,12 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
   private void storeApartmentCategory(ModuleInfo modinfo){
     String sName = modinfo.getParameter("bm_name").trim();
     String sInfo = modinfo.getParameter("bm_info").trim();
+    String sImageId = modinfo.getParameter("iconid");
     String sId = modinfo.getParameter("dr_id");
-
+    int imageid = 1;
     int id = -1;
+    try {  imageid = Integer.parseInt(sImageId); }
+    catch (NumberFormatException ex) { imageid = 1;  }
     try {  id = Integer.parseInt(sId);  }
     catch (NumberFormatException ex) { id = -1;  }
 
@@ -356,6 +361,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
       }
       eACategory.setName(sName);
       eACategory.setInfo(sInfo);
+      eACategory.setImageId(imageid);
       if(update)
         eACategory.update();
       else
@@ -713,6 +719,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     String sId = e ? String.valueOf(eComplex.getID()):"";
     String sName = e ? eComplex.getName():"";
     String sInfo = e ? eComplex.getInfo():"";
+    int iMapId = e ? eComplex.getImageId(): 1 ;
 
     Form form = new Form();
     Table Frame = new Table(2,1);
@@ -732,8 +739,9 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
       T2.setAlignment("center");
       T2.setHeight("100%");
       T2.setWidth("100%");
-      T2.setVerticalAlignment(1,1,"bottom");
-      T2.setAlignment(1,1,"center");
+      T2.setVerticalAlignment(1,1,"top");
+      T2.setVerticalAlignment(1,2,"bottom");
+      T2.setAlignment(1,2,"center");
     Frame.add(T,1,1);
     Frame.add(T2,2,1);
 
@@ -748,12 +756,15 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     T.add(HI);
     T.add(HA);
     T.add(categories,1,1);
-    T.add(formatText(iwrb.getLocalizedString("photo","Name")),1,2);
+    T.add(formatText(iwrb.getLocalizedString("name","Name")),1,2);
     T.add(Text.getBreak(),1,2);
     T.add(name,1,2);
     T.add(formatText(iwrb.getLocalizedString("info","Info")),1,3);
     T.add(Text.getBreak(),1,3);
     T.add( makeTextArea(sInfo),1,3);
+    T2.add(formatText(iwrb.getLocalizedString("map","Map")),1,1);
+    T2.add(Text.getBreak(),1,1);
+    T2.add(this.makeImageInput(iMapId,"mapid"),1,1);
     T2.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,2);
     T2.add(new SubmitButton("del",iwrb.getLocalizedString("delete","Delete")),1,2);
     form.add(Frame);
@@ -903,6 +914,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     String sName = e ? eApartmentCategory.getName() : "" ;
     String sInfo = e ? eApartmentCategory.getInfo() : "" ;
     String sId = e ? String.valueOf(eApartmentCategory.getID()) : "";
+    int iIconId = e ? eApartmentCategory.getImageId(): 1 ;
      Form form = new Form();
     Table Frame = new Table(2,1);
       Frame.setRowVerticalAlignment(1,"top");
@@ -921,8 +933,9 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
       T2.setAlignment("center");
       T2.setHeight("100%");
       T2.setWidth("100%");
-      T2.setVerticalAlignment(1,1,"bottom");
-      T2.setAlignment(1,1,"center");
+      T2.setVerticalAlignment(1,1,"top");
+      T2.setVerticalAlignment(1,2,"bottom");
+      T2.setAlignment(1,2,"center");
     Frame.add(T,1,1);
     Frame.add(T2,2,1);
 
@@ -944,6 +957,9 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     T.add(formatText(iwrb.getLocalizedString("info","Info")),1,3);
     T.add(Text.getBreak(),1,3);
     T.add( makeTextArea(sInfo),1,3);
+    T2.add(formatText(iwrb.getLocalizedString("icon","Icon")),1,1);
+    T2.add(Text.getBreak(),1,1);
+    T2.add(this.makeImageInput(iIconId,"iconid"),1,1);
     T2.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")),1,1);
     T2.add(new SubmitButton("del",iwrb.getLocalizedString("delete","Delete")),1,1);
     form.add(Frame);
