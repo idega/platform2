@@ -34,7 +34,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	private ChildCareApplication application;
 	private boolean isAdministrator;
 	private IBPage contractsPage;
-	private boolean _canEdit = true;
+	private Boolean _canEdit;
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -42,8 +42,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	public void init(IWContext iwc) throws Exception {
 		parse(iwc);
 		isAdministrator = isCommuneAdministrator(iwc);
-		if (!_canEdit)
-			isAdministrator = false;
+		if (_canEdit != null)
+			isAdministrator = !_canEdit.booleanValue();
 
 		Table table = new Table(1,7);
 		table.setCellpadding(0);
@@ -339,7 +339,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	}
 
 	public void setCanEdit(boolean b) {
-		_canEdit = b;
+		_canEdit = new Boolean(b);
 	}
 
 }
