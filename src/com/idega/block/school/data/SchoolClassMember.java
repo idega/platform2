@@ -24,4 +24,10 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public void setRemovedDate(java.sql.Timestamp p0);
  public void setSchoolClassId(int p0);
  public void setSpeciallyPlaced(boolean p0);
+ public boolean getHasContractCompensation() ;
+ public void setHasContractCompensation(boolean p0);
+ public java.lang.String getFactoringInterval();
+ public void setFactoringInterval(java.lang.String interval);
+ public java.sql.Timestamp getLatestFactoringDate();
+ public void setLatestFactoringDate(java.sql.Timestamp p0);
 }
