@@ -129,7 +129,7 @@ public class HouseHoldViewer extends AccountingBlock {
 					 custodianChildren = userService.getMemberFamilyLogic().getChildrenInCustodyOf(parent);
 				}
 				catch (NoChildrenFound e1) {
-					e1.printStackTrace();
+					
 				}
 				if(custodianChildren !=null)
 					childs.addAll(custodianChildren);
@@ -344,11 +344,30 @@ public class HouseHoldViewer extends AccountingBlock {
 				}
 				Collection custodians = getCustodians(iwc, child);
 				if (custodians != null && !custodians.isEmpty()) {
-					for (Iterator iterator = custodians.iterator(); iterator.hasNext();) {
-						User custodian = (User) iterator.next();
-						table.add(getText(custodian.getPersonalID()));
-						col++;
+					Iterator iterator = custodians.iterator();
+					// first custodian
+					User custodian_1 =  null;
+					User custodian_2 = null;
+					if(iterator.hasNext()){
+						custodian_1 = (User) iterator.next();
 					}
+					// second custodian
+					if(iterator.hasNext()){
+						custodian_2= (User) iterator.next();
+					}
+					int skip = 0;
+					if(custodian_1!=null){
+						table.add(getText(custodian_1.getPersonalID()));
+					}
+					else
+						skip++;
+					if(custodian_2!=null)
+						table.add(getText(custodian_2.getPersonalID()));
+					else
+						skip++;
+					if(skip>0)
+						table.skip(skip);
+					
 				}
 				else{
 					table.skip(2);
