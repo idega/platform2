@@ -48,6 +48,15 @@ public void add(ModuleObject modObject){
 
 }
 
+
+public void add(Object obj){
+  if(obj instanceof ModuleObject){
+    add((ModuleObject)obj);
+  }else{
+    System.err.println("Not instance of ModuleObject and therefore cannot be added to ModuleObjectContainer: " + obj);
+  }
+}
+
 public void addAtBeginning(ModuleObject modObject){
 		if (theObjects == null){
 		this.theObjects = new Vector();
