@@ -32,7 +32,6 @@ import javax.transaction.TransactionManager;
 import com.idega.block.creditcard.business.CreditCardAuthorizationException;
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.creditcard.business.CreditCardClient;
-import com.idega.block.creditcard.business.KortathjonustanCreditCardClient;
 import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
 import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.creditcard.presentation.Receipt;
@@ -199,9 +198,7 @@ public abstract class BookingForm extends TravelManager{
 	protected IWContext iwc;
 	
 	protected boolean _useInquiryForm = false;
-	
-	private boolean isCreditCardFormAdded = false;
-	
+		
 	public Table formTable = new Table();
 	protected int row = 1;
 	protected Table currentSearchPart = null;
@@ -3603,16 +3600,16 @@ public abstract class BookingForm extends TravelManager{
 				if (currency == null) {
 					currency = "ISK";	
 				}
-//				CreditCardClient t = getCreditCardClient(iwc, gBooking);
-//				merchant = t.getCreditCardMerchant();
+			  CreditCardClient t = getCreditCardClient(iwc, gBooking);
+				merchant = t.getCreditCardMerchant();
 				//heimild = t.doSale(ccNumber,ccMonth,ccYear,price,currency);
 
 				
 				if(product != null && product.getAuthorizationCheck()) {
-					creditCardReferenceString = "454545454";//"?svaedi=101_101&fermetrar_fra=40&fermetrar_til=50&herbergi_fra=1&herbergi_til=7&verd_fra=2&verd_til=6";//t.creditcardAuthorization(gBooking.getName(), ccNumber,ccMonth,ccYear, ccCVC, price,currency, gBooking.getReferenceNumber());
+					creditCardReferenceString = t.creditcardAuthorization(gBooking.getName(), ccNumber,ccMonth,ccYear, ccCVC, price,currency, gBooking.getReferenceNumber());
 				}
 				else {
-					heimild = "ælkjkj23434"; //t.doSale(gBooking.getName(), ccNumber,ccMonth,ccYear, ccCVC, price,currency, gBooking.getReferenceNumber());
+					heimild = t.doSale(gBooking.getName(), ccNumber,ccMonth,ccYear, ccCVC, price,currency, gBooking.getReferenceNumber());
 					System.out.println("Ending Creditcard Payment : "+IWTimestamp.RightNow().toString());
 					Iterator iter = bookings.iterator();
 					while (iter.hasNext()) {
