@@ -48,6 +48,8 @@ public class Register extends Block {
 	
 	private String _kt = null;
 	
+	private boolean _mailError = false;
+	
 	public final static int PERSONAL_NUMBER_NOT_FOUND = 1000;
 	
 	public final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
@@ -72,7 +74,11 @@ public class Register extends Block {
 				po = getStage3Page(null);
 			} else {
 				System.out.println("Stage 2 redisplayed");
-				po = getStage2Page(message);
+				if(_mailError) {
+					po = getStage3Page(message);
+				} else {
+					po = getStage2Page(message);
+				}
 			}
 		} else {
 			System.out.println("Stage 1 - starting registration");
@@ -227,6 +233,9 @@ public class Register extends Block {
 			lt.store();
 			LoginBusiness.changeUserPassword(user, password);
 			msg = sendMessage(user, kt, password);
+			if(msg!=null) {
+				_mailError = true;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return _iwrb.getLocalizedString("register.error_changing_password", "Error changing password, password unchanged");
