@@ -86,7 +86,7 @@ public class HandicapFindMember extends GolfWindow {
 				String nafn = modinfo.getParameter("name");
 
 				Member[] member = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAllByColumn("social_security_number", kennitala);
-				if (nafn != null && (member == null || member.length == 0)) {
+				if ((nafn != null && !nafn.equals("")) && (member == null || member.length == 0)) {
 					member = findMembersByName(modinfo, nafn);
 				}
 				Member memberinn = (Member) modinfo.getSessionAttribute("member_login");
@@ -170,8 +170,7 @@ public class HandicapFindMember extends GolfWindow {
 			int manyNames = 0;
 			int numberInserted = 0;
 
-			String SQLString = "Select * from member ";
-			String tempSQLString = "";
+			String SQLString = null;
 
 			try {
 				manyNames = 0;
@@ -179,7 +178,6 @@ public class HandicapFindMember extends GolfWindow {
 				firstName = "";
 				middleName = "";
 				lastName = "";
-				tempSQLString = "";
 
 				fullName = name;
 				nameParts = new StringTokenizer(fullName, " ");
