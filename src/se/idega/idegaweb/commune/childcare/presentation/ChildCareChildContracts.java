@@ -245,7 +245,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		return table;
 	}
 	
-	protected Form getRemoveContractsForm() {
+	protected Form getRemoveContractsForm() throws RemoteException {
 		Form form = new Form();
 		form.add(new HiddenInput(PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID())));
 		
@@ -282,7 +282,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		}
 	}
 	
-	private int getChildID(IWContext iwc){
+	private int getChildID(IWContext iwc) throws RemoteException {
 		if(iwc.isParameterSet(PARAMETER_CHILD_ID))
 			return Integer.parseInt(iwc.getParameter(PARAMETER_CHILD_ID));
 		else

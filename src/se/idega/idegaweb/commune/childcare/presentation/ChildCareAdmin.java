@@ -207,7 +207,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 		return applicationTable;
 	}
 	
-	private Form getSortTable() {
+	private Form getSortTable() throws RemoteException {
 		Form form = new Form();
 		form.setEventListener(ChildCareEventListener.class);
 		form.maintainParameter(CollectionNavigator.getParameterName());

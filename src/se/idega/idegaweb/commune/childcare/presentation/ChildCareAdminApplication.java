@@ -417,7 +417,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		return table;
 	}
 	
-	protected GenericButton getButton(String name, String value, int method) {
+	protected GenericButton getButton(String name, String value, int method)  throws RemoteException {
 		GenericButton button = (GenericButton) getStyledInterface(new GenericButton(name, value));
 		button.setWindowToOpen(ChildCareWindow.class);
 		button.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
