@@ -65,10 +65,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/26 10:51:05 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/26 12:40:27 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.55 $
+ * @version $Revision: 1.56 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -87,7 +87,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT = "Det gick inte att at bort fakturaunderlaget eller någon av dess fakturarader";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY = PREFIX + "could_not_remove_invoice_compilation_or_records";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT = "Kunde inte ta bort fakturarad";
-    private static final String COULD_NOT_REMOVE_INVOICE_RECORD_KEY = PREFIX + "";
+    private static final String COULD_NOT_REMOVE_INVOICE_RECORD_KEY = PREFIX + "could_not_remove_invoice_record";
     private static final String CREATED_SIGNATURE_KEY = PREFIX + "created_signature";
     private static final String CREATE_INVOICE_COMPILATION_DEFAULT = "Skapa fakturaunderlag";
     private static final String CREATE_INVOICE_COMPILATION_KEY = PREFIX + "create_invoice_compilation";
@@ -129,7 +129,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String INVOICE_RECORD_DEFAULT = "Fakturarad";
     private static final String INVOICE_RECORD_KEY = PREFIX + "invoice_record";
     private static final String INVOICE_RECORD_REMOVED_DEFAULT = "Fakturaraden är borttagen";
-    private static final String INVOICE_RECORD_REMOVED_KEY = PREFIX + "";
+    private static final String INVOICE_RECORD_REMOVED_KEY = PREFIX + "invoice_record_removed";
     private static final String INVOICE_RECORD_UPDATED_DEFAULT = "Fakturaraden är nu uppdaterad";
     private static final String INVOICE_RECORD_UPDATED_KEY = PREFIX + "invoice_record_updated";
     private static final String INVOICE_TEXT_DEFAULT  = "Fakturatext";
@@ -475,8 +475,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final User currentUser = context.getCurrentUser ();
         inputs.put (CREATED_SIGNATURE_KEY, getSmallText (getSignature
                                                          (currentUser)));
-        inputs.put (DATE_ADJUSTED_KEY, getSmallText (""));
-        inputs.put (ADJUSTED_SIGNATURE_KEY, getSmallText (""));
 
         inputs.put (AMOUNT_KEY, getStyledInput (AMOUNT_KEY));
         inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
@@ -611,8 +609,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             final String ruleName = rule.getVATRule ();
             details.put (VAT_RULE_KEY, getSmallText (localize (ruleName,
                                                               ruleName)));
-        } else {
-            details.put (VAT_RULE_KEY, getSmallText (""));
         }
         addSmallText (details, RULE_TEXT_KEY, record.getRuleText ());
         details.put (HEADER_KEY, localize (INVOICE_RECORD_KEY,
@@ -1130,8 +1126,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final String [][] columnNames =
                 {{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
                  { INVOICE_RECEIVER_KEY, INVOICE_RECEIVER_DEFAULT },
-                 { TOTAL_AMOUNT_KEY, TOTAL_AMOUNT_DEFAULT }, {"", ""},
-                 {"", ""}};
+                 { TOTAL_AMOUNT_KEY, TOTAL_AMOUNT_DEFAULT }, {"no_text", ""},
+                 {"no_text", ""}};
         final Table table = createTable (columnNames.length);
         table.setColumns (columnNames.length);
         setIconColumnWidth (table);
@@ -1206,7 +1202,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                  { INVOICE_TEXT_KEY, INVOICE_TEXT_DEFAULT },
                  { NUMBER_OF_DAYS_KEY, NUMBER_OF_DAYS_DEFAULT },
                  { AMOUNT_KEY, AMOUNT_DEFAULT },
-                 { REMARK_KEY, REMARK_DEFAULT }, {"", ""}, {"", ""}};
+                 { REMARK_KEY, REMARK_DEFAULT }, {"no_text", ""},
+                 {"no_text", ""}};
         final Table table = createTable (columnNames.length);
         table.setColumns (columnNames.length);
         setIconColumnWidth (table);

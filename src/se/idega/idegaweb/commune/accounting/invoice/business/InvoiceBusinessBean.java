@@ -59,10 +59,10 @@ import com.lowagie.text.Element;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/26 12:09:47 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/26 12:40:27 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.51 $
+ * @version $Revision: 1.52 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -107,7 +107,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			final MemoryFileBuffer buffer = new MemoryFileBuffer ();
 			final OutputStream outStream = new MemoryOutputStream (buffer);
 			final Document document = new Document
-					(PageSize.A4, mmToPoints (30), mmToPoints (30),
+					(PageSize.A4.rotate (), mmToPoints (30), mmToPoints (30),
 					 mmToPoints (30), mmToPoints (30));
 			final PdfWriter writer
                     = PdfWriter.getInstance (document, outStream);
@@ -123,13 +123,14 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
             // add content to document
 			final PdfPTable table = new PdfPTable (columnNames.length);
 			table.setWidthPercentage (100f);
-            table.getDefaultCell ().setBackgroundColor (Color.blue);
-            table.getDefaultCell().setNoWrap (true);
+            table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
+            table.getDefaultCell ().setNoWrap (true);
+            table.getDefaultCell ().setBorder (0);
             for (int i = 0; i < columnNames.length; i++) {
                 table.addCell (columnNames [i]);
             }
             table.setHeaderRows (1);  // this is the end of the table header
-            final Color lightBlue = Color.blue.brighter ();
+            final Color lightBlue = new Color (0xf4f4f4);
             for (int i = 0; i < records.length; i++) {
                 final InvoiceRecord record = records [i];
                 final User child = getChildByInvoiceRecord (record);

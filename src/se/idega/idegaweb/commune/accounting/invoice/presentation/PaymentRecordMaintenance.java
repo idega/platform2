@@ -48,11 +48,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/26 05:57:24 $ by $Author: gimmi $
+ * Last modified: $Date: 2003/11/26 12:40:27 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -710,7 +710,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                  { PLACEMENT_KEY, PLACEMENT_DEFAULT },
                  { NO_OF_PLACEMENTS_KEY, NO_OF_PLACEMENTS_DEFAULT },
                  { TOTAL_AMOUNT_KEY, TOTAL_AMOUNT_DEFAULT },
-                 { NOTE_KEY, NOTE_DEFAULT }, {"", ""}, {"", ""}};
+                 { NOTE_KEY, NOTE_DEFAULT }, {"no_text", ""}, {"no_text", ""}};
         final Table table = createTable (columnNames.length);
         table.setColumns (columnNames.length);
         setIconColumnWidth (table);
