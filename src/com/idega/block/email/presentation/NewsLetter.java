@@ -421,6 +421,10 @@ public class NewsLetter extends CategoryBlock {
 			Link sendLink = new Link(iwrb.getLocalizedString("subscribe", "Subscribe"));
 			sendLink.addParameter("nl_send", "true");
 			sendLink.setToFormSubmit(form);
+			
+			//added 20.01.2005 - ac
+			sendLink.setToolTip("Please fill in your email, mark the desired newsletter and choose subscribe or unsubscribe.");
+			
 			if (linkStyleClass != null) {
 				sendLink.setStyle(linkStyleClass);
 			}
