@@ -863,7 +863,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 			}//end while				
 		}//end if(save != null)			
 		add(form,iwc);
-		setOnUnLoad("window.opener.location.reload()");
+//		setOnUnLoad("window.opener.location.reload()");
 	}
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
