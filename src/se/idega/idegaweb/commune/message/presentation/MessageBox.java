@@ -1,22 +1,29 @@
 package se.idega.idegaweb.commune.message.presentation;
 
 import java.text.DateFormat;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Vector;
 
-import javax.ejb.EJBException;
+import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.message.business.MessageComparator;
+import se.idega.idegaweb.commune.message.business.MessageSession;
+import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.event.MessageListener;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
-import se.idega.idegaweb.commune.presentation.*;
-import se.idega.idegaweb.commune.message.data.*;
-import se.idega.idegaweb.commune.message.business.*;
-
-import com.idega.block.process.data.CaseStatus;
+import com.idega.presentation.ExceptionWrapper;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
-import com.idega.idegaweb.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.user.Converter;
-import com.idega.util.IWTimestamp;
+import com.idega.util.CustomDateFormat;
 
 /**
  * Title:
@@ -29,294 +36,140 @@ import com.idega.util.IWTimestamp;
 
 public class MessageBox extends CommuneBlock {
 
-  private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
-
-  private final static int ACTION_VIEW_MESSAGE_LIST = 1;
-  private final static int ACTION_VIEW_MESSAGE = 2;
-  private final static int ACTION_SHOW_DELETE_INFO = 3;
-  private final static int ACTION_DELETE_MESSAGE = 4;
-
-  private final static String PARAM_VIEW_MESSAGE = "msg_view_msg";
-  private final static String PARAM_VIEW_MESSAGE_LIST = "msg_view_msg_list";
-  private final static String PARAM_MESSAGE_ID = "msg_id";
-  private final static String PARAM_SAVE_SETTINGS = "msg_save_settings";
-  private final static String PARAM_SHOW_DELETE_INFO = "msg_s_delete_i";
-  private final static String PARAM_DELETE_MESSAGE = "msg_delete_message";
-  
-  private final static String PARAM_TO_MSG_BOX = "msg_to_msg_box";
-  private final static String PARAM_TO_EMAIL = "msg_to_email";
-   
-  private Table mainTable = null;
-
-  public MessageBox() {
-  }
-
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
-
-  public void main(IWContext iwc){
-    this.setResourceBundle(getResourceBundle(iwc));
-    
-    try{
-      int action = parseAction(iwc);
-      switch(action){
-        case ACTION_VIEW_MESSAGE_LIST:
-          viewMessageList(iwc);
-          break;
-        case ACTION_VIEW_MESSAGE:
-          viewMessage(iwc);
-          break;
-        case ACTION_SHOW_DELETE_INFO:
-          showDeleteInfo(iwc);
-          break;
-        case ACTION_DELETE_MESSAGE:
-          deleteMessage(iwc);
-          viewMessageList(iwc);
-        	break;
-        default:
-          break;
-      }
-      super.add(mainTable);
-    } catch (Exception e) {
-      super.add(new ExceptionWrapper(e,this));
-    }
-  }
-
-  public void add(PresentationObject po){
-    if(mainTable==null){
-      mainTable = new Table();
-      mainTable.setCellpadding(14);
-      mainTable.setCellspacing(0);
-      mainTable.setColor(getBackgroundColor());
-      mainTable.setWidth(getWidth());
-    }
-    mainTable.add(po);
-  }
-
-  private int parseAction(IWContext iwc)throws Exception{
-    int action = ACTION_VIEW_MESSAGE_LIST;
-
-    if(iwc.isParameterSet(PARAM_VIEW_MESSAGE)){
-      action = ACTION_VIEW_MESSAGE;
-    }
-    if(iwc.isParameterSet(PARAM_SHOW_DELETE_INFO)){
-      action = ACTION_SHOW_DELETE_INFO;
-    }
-    if(iwc.isParameterSet(PARAM_DELETE_MESSAGE)){
-      action = ACTION_DELETE_MESSAGE;
-    }
-    if (iwc.isParameterSet(PARAM_SAVE_SETTINGS)){
-    	saveSettings(iwc);
-    }
-
-    return action;
-  }
-
-  private void viewMessageList(IWContext iwc)throws Exception{
-    add(getLocalizedHeader("message.my_messages", "My messages"));
-    add(new Break(2));
-
-    Form f = new Form();
-    Table table = new Table(1,3);
-    table.setWidth(Table.HUNDRED_PERCENT);
-    table.setCellpaddingAndCellspacing(0);
-    f.add(table);
-    
-    ColumnList messageList = new ColumnList(3);
-    table.add(messageList,1,1);
-    messageList.setWidth(Table.HUNDRED_PERCENT);
-    messageList.setBackroundColor("#e0e0e0");
-    messageList.setHeader(localize("message.subject","Subject"),1);
-    messageList.setHeader(localize("message.date","Date"),2);
-    
-    if ( iwc.isLoggedOn() ) {
-    	MessageBusiness messageBusiness = getMessageBusiness(iwc);
-    	User user = iwc.getCurrentUser();
-	    Collection messages = messageBusiness.findMessages(user);
-	    Link subject = null;
-	    Text date = null;
-	    CheckBox deleteCheck = null;
-	    boolean isRead = false;
-	    DateFormat dateFormat = com.idega.util.CustomDateFormat.getDateTimeInstance(iwc.getCurrentLocale());
+  private final static String PARAM_MESSAGE_ID = MessageListener.PARAM_MESSAGE_ID;
+  private final static String PARAM_TO_MSG_BOX = MessageListener.PARAM_TO_MSG_BOX;
+  private final static String PARAM_TO_EMAIL = MessageListener.PARAM_TO_EMAIL;
+	private final static String PARAM_DELETE_MESSAGE = MessageListener.PARAM_DELETE_MESSAGE;
+	private final static String PARAM_SAVE_SETTINGS = MessageListener.PARAM_SAVE_SETTINGS;
 	
-	    if ( messages != null ) {
-	    	Vector messageVector = new Vector(messages);
-	    	Collections.sort(messageVector,new MessageComparator());
-		    Iterator iter = messageVector.iterator();
-		    while (iter.hasNext()) {
-		      Message msg = (Message)iter.next();
-		      Date msgDate = new Date(msg.getCreated().getTime());
-		      
-		      isRead = getMessageBusiness(iwc).isMessageRead(msg);
-		      subject = new Link(msg.getSubject());
-		      subject.addParameter(PARAM_VIEW_MESSAGE,"true");
-		      subject.addParameter(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
-		      if ( !isRead )
-		      	subject.setBold();
-		      date = this.getSmallText(dateFormat.format(msgDate));
-		      if ( !isRead )
-		      	date.setBold();
-		      deleteCheck = new CheckBox(PARAM_MESSAGE_ID,msg.getPrimaryKey().toString());
-		      
-		      messageList.add(subject);
-		      messageList.add(date);
-		      messageList.add(deleteCheck);
-		    }
-	    }
-	
-	  	Table settingsTable = new Table(2,2);
-	  	table.add(settingsTable,1,2);
-	  	
-	  	CheckBox msgBox = new CheckBox(PARAM_TO_MSG_BOX);
-	  		msgBox.setChecked(messageBusiness.getIfUserPreferesMessageInMessageBox(user));
-	  	CheckBox email = new CheckBox(PARAM_TO_EMAIL);
-	  		email.setChecked(messageBusiness.getIfUserPreferesMessageByEmail(user));
-	/*  	
-	  	if ( userProperties != null && userProperties.getProperty(MessageBusiness.SEND_TO_MESSAGE_BOX) != null )
-	  		msgBox.setChecked(new Boolean(userProperties.getProperty(MessageBusiness.SEND_TO_MESSAGE_BOX)).booleanValue());
-	  	if ( userProperties != null && userProperties.getProperty(MessageBusiness.SEND_TO_EMAIL) != null )
-	  		email.setChecked(new Boolean(userProperties.getProperty(MessageBusiness.SEND_TO_EMAIL)).booleanValue());
-	 */ 		
-	  	settingsTable.add(msgBox,1,1);
-	  	settingsTable.add(email,1,2);
-	  	settingsTable.add(getText(getLocalizedString("message.send_to_message_box", "Send to message box", iwc)),2,1);
-	  	settingsTable.add(getText(getLocalizedString("message.send_to_email", "Send to email", iwc)),2,2);
-	    
-	    Table submitTable = new Table(3,1);
-	    submitTable.setCellpaddingAndCellspacing(0);
-	    submitTable.setWidth(2,1,"6");
-	    table.add(submitTable,1,3);
-	    
-	    SubmitButton deleteButton = new SubmitButton(this.getLocalizedString("message.delete", "Delete", iwc),PARAM_SHOW_DELETE_INFO,"true");
-	    deleteButton.setAsImageButton(true);
-	    submitTable.add(deleteButton,1,1);
-	    
-	    SubmitButton settings = new SubmitButton(this.getLocalizedString("message.settings", "Save settings", iwc),PARAM_SAVE_SETTINGS,"true");
-	    settings.setAsImageButton(true);
-			submitTable.add(settings,3,1);	
-    }
+	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 
-    add(f);
-  }
+	public MessageBox() {
+	}
 
-  private void viewMessage(IWContext iwc)throws Exception{
-    Message msg = getMessage(iwc.getParameter(PARAM_MESSAGE_ID),iwc);
-    getMessageBusiness(iwc).markMessageAsRead(msg);
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
 
-    add(getLocalizedHeader("message.message","Message"));
-    add(new Break(2));
-    add(getLocalizedText("message.from","From"));
-    add(getText(": "));
-    //add(getLink(msg.getSenderName()));
-    add(new Break(2));
-    add(getLocalizedText("message.date","Date"));
-    add(getText(": "+(new IWTimestamp(msg.getCreated())).getLocaleDate(iwc)));
-    add(new Break(2));
-    add(getLocalizedText("message.subject","Subject"));
-    add(getText(": "+msg.getSubject()));
-    add(new Break(2));
-    add(getText(msg.getBody()));
+	public void main(IWContext iwc) {
+		this.setResourceBundle(getResourceBundle(iwc));
 
-    add(new Break(2));
-    Table t = new Table();
-    t.setWidth(Table.HUNDRED_PERCENT);
-    t.setAlignment(1,1,"right");
-    Link l = getLocalizedLink("message.back", "Back");
-    l.addParameter(PARAM_VIEW_MESSAGE_LIST,"true");
-    l.setAsImageButton(true);
-    t.add(l,1,1);
-    add(t);
-  }
+		try {
+			viewMessageList(iwc);
+		}
+		catch (Exception e) {
+			super.add(new ExceptionWrapper(e, this));
+		}
+	}
 
-  private void showDeleteInfo(IWContext iwc)throws Exception{
-    String[] ids = iwc.getParameterValues(PARAM_MESSAGE_ID);
-    int msgId = 0;
-    int nrOfMessagesToDelete = 0;
-    if(ids!=null){
-      nrOfMessagesToDelete = ids.length;
-      msgId = Integer.parseInt(ids[0]);
-    }
+	private void viewMessageList(IWContext iwc) throws Exception {
+		Form f = new Form();
+		f.setEventListener(MessageListener.class);
+		
+		int row = 1;
+		Table messageTable = new Table();
+		messageTable.setCellpadding(getCellpadding());
+		messageTable.setCellspacing(getCellspacing());
+		f.add(messageTable);
 
-    if(nrOfMessagesToDelete==1){
-      add(getLocalizedHeader("message.delete_message","Delete message"));
-    }else{
-      add(getLocalizedHeader("message.delete_messages","Delete messages"));
-    }
-    add(new Break(2));
+		messageTable.setWidth(Table.HUNDRED_PERCENT);
+		messageTable.add(getSmallHeader(localize("message.subject", "Subject")), 1, row);
+		messageTable.add(getSmallHeader(localize("message.date", "Date")), 2, row);
+		messageTable.setWidth(3, "12");
+		messageTable.setRowColor(row++, getHeaderColor());
 
-    String s = null;
-    if(nrOfMessagesToDelete==0){
-      s = localize("message.no_messages_to_delete","No messages selected. You have to mark the message(s) to delete.");
-    }else if(nrOfMessagesToDelete==1){
-      Message msg = getMessageBusiness(iwc).getUserMessage(msgId);
-      s = localize("message.one_message_to_delete","Do you really want to delete the message with subject: ")+msg.getSubject()+"?";
-    }else{
-      s = localize("message.messages_to_delete","Do you really want to delete the selected messages?");
-    }
+		if (iwc.isLoggedOn()) {
+			MessageBusiness messageBusiness = getMessageBusiness(iwc);
+			MessageSession messageSession = getMessageSession(iwc);
+			
+			User user = iwc.getCurrentUser();
+			Collection messages = messageBusiness.findMessages(user);
+			Link subject = null;
+			Text date = null;
+			CheckBox deleteCheck = null;
+			boolean isRead = false;
+			DateFormat dateFormat = CustomDateFormat.getDateTimeInstance(iwc.getCurrentLocale());
 
-    Table t = new Table(1,5);
-    t.setWidth(Table.HUNDRED_PERCENT);
-    t.add(getText(s),1,1);
-    t.setAlignment(1,1,"center");
-    if(nrOfMessagesToDelete==0){
-      Link l = getLocalizedLink("message.back","back");
-      l.addParameter(PARAM_VIEW_MESSAGE_LIST,"true");
-      l.setAsImageButton(true);
-      t.add(l,1,4);
-    }else{
-      Link l = getLocalizedLink("message.ok","OK");
-      l.addParameter(PARAM_DELETE_MESSAGE,"true");
-      for(int i=0; i<ids.length; i++){
-        l.addParameter(PARAM_MESSAGE_ID,ids[i]);
-      }
-      l.setAsImageButton(true);
-      t.add(l,1,4);
-      t.add(getText(" "),1,4);
-      l = getLocalizedLink("message.cancel","Cancel");
-      l.addParameter(PARAM_VIEW_MESSAGE_LIST,"true");
-      l.setAsImageButton(true);
-      t.add(l,1,4);
-    }
-    t.setAlignment(1,4,"center");
-    add(t);
-  }
+			if (messages != null) {
+				Vector messageVector = new Vector(messages);
+				Collections.sort(messageVector, new MessageComparator());
+				Iterator iter = messageVector.iterator();
+				while (iter.hasNext()) {
+					Message msg = (Message) iter.next();
+					Date msgDate = new Date(msg.getCreated().getTime());
 
-  private void deleteMessage(IWContext iwc)throws Exception{
-    String[] ids = iwc.getParameterValues(PARAM_MESSAGE_ID);
-    for(int i=0; i<ids.length; i++){
-      getMessageBusiness(iwc).deleteUserMessage(Integer.parseInt(ids[i]));
-    }
-  }
+					isRead = getMessageBusiness(iwc).isMessageRead(msg);
+					
+					subject = (Link) getSmallLink(msg.getSubject());
+					subject.setWindowToOpen(MessageViewerWindow.class);
+					subject.addParameter(PARAM_MESSAGE_ID, msg.getPrimaryKey().toString());
+					if (!isRead)
+						subject.setBold();
+					
+					date = this.getSmallText(dateFormat.format(msgDate));
+					if (!isRead)
+						date.setBold();
+					
+					deleteCheck = getCheckBox(PARAM_MESSAGE_ID, msg.getPrimaryKey().toString());
 
-  private void saveSettings(IWContext iwc) throws Exception{
+					messageTable.add(subject, 1, row);
+					messageTable.add(date, 2, row);
+					messageTable.add(deleteCheck, 3, row);
+					if (row % 2 == 0)
+						messageTable.setRowColor(row++, getZebraColor1());
+					else
+						messageTable.setRowColor(row++, getZebraColor2());
+				}
+			}
 
-	  	MessageBusiness messageBusiness = getMessageBusiness(iwc);
-	  	User user = iwc.getCurrentUser();
-	  	String toMsgBox = iwc.getParameter(PARAM_TO_MSG_BOX);
-	  	
-	  	if ( toMsgBox == null )
-	  		messageBusiness.setIfUserPreferesMessageInMessageBox(user,false);
-	  	else
-	  		messageBusiness.setIfUserPreferesMessageInMessageBox(user,true);
-	  		
-	  	String toEmail = iwc.getParameter(PARAM_TO_EMAIL);
-	  	if ( toEmail == null )
-	  		messageBusiness.setIfUserPreferesMessageByEmail(user,false);
-	  	else
-	  		messageBusiness.setIfUserPreferesMessageByEmail(user,false);
-	  	
-	  	//iwc.getUserProperties().store();
-  	
-  }
-  
-  private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
-    return (MessageBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,MessageBusiness.class);
-  }
+			messageTable.setHeight(row++,5);
+			
+			Table settingsTable = new Table(3, 3);
+			settingsTable.setCellpaddingAndCellspacing(0);
+			settingsTable.setWidth(2, "4");
+			settingsTable.setHeight(2,"4");
+			messageTable.mergeCells(1, row, messageTable.getColumns(), row);
+			messageTable.add(settingsTable, 1, row++);
 
-  private Message getMessage(String id, IWContext iwc)throws Exception{
-    int msgId = Integer.parseInt(id);
-    Message msg = getMessageBusiness(iwc).getUserMessage(msgId);
-    return msg;
+			messageTable.setHeight(row++,5);
+			
+			boolean toMessageBox = messageSession.getIfUserPreferesMessageInMessageBox(user);
+			CheckBox msgBox = getCheckBox(PARAM_TO_MSG_BOX,"true");
+			msgBox.setChecked(toMessageBox);
+			boolean toEmail = messageSession.getIfUserPreferesMessageByEmail(user);
+			CheckBox email = getCheckBox(PARAM_TO_EMAIL,"true");
+			email.setChecked(toEmail);
+			
+			settingsTable.add(msgBox, 1, 1);
+			settingsTable.add(email, 1, 3);
+			settingsTable.add(getSmallText(getLocalizedString("message.send_to_message_box", "Send to message box", iwc)), 3, 1);
+			settingsTable.add(getSmallText(getLocalizedString("message.send_to_email", "Send to email", iwc)), 3, 3);
+
+			Table submitTable = new Table(3, 1);
+			submitTable.setCellpaddingAndCellspacing(0);
+			submitTable.setWidth(2, 1, "6");
+			messageTable.mergeCells(1, row, messageTable.getColumns(), row);
+			messageTable.add(submitTable, 1, 5);
+
+			SubmitButton deleteButton = (SubmitButton) getButton(new SubmitButton(localize("delete", "Delete"), PARAM_DELETE_MESSAGE, "true"));
+			deleteButton.setToEnableWhenChecked(PARAM_MESSAGE_ID);
+			deleteButton.setDescription(localize("message.delete", "Delete"));
+			deleteButton.setSubmitConfirm(localize("message.messages_to_delete", "Do you really want to delete the selected messages?"));
+			submitTable.add(deleteButton, 1, 1);
+
+			SubmitButton settings = (SubmitButton) getButton(new SubmitButton(localize("save", "Save"), PARAM_SAVE_SETTINGS, "true"));
+			settings.setDescription(localize("message.settings", "Save settings"));
+			submitTable.add(settings, 3, 1);
+		}
+
+		add(f);
+	}
+
+	private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
+		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, MessageBusiness.class);
+	}
+
+  private MessageSession getMessageSession(IWContext iwc) throws Exception {
+    return (MessageSession)com.idega.business.IBOLookup.getSessionInstance(iwc,MessageSession.class);
   }
 }

@@ -50,7 +50,6 @@ public class MessageComparator implements Comparator {
     	else if ( two.isLaterThan(one) )
     		return 1;
     }
-    System.out.println("Return: "+result);
     
     return result;
   }

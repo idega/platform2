@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.17 2002/11/04 09:39:46 tryggvil Exp $
+ * $Id: MessageBusinessBean.java,v 1.18 2002/11/04 15:58:20 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -333,49 +333,49 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 
 
-	protected IWPropertyList getUserPreferences(User user)
-	{
+	protected UserProperties getUserPreferences(User user) throws Exception {
+		UserProperties property = ((UserBusiness)getServiceInstance(UserBusiness.class)).getUserProperties(user);	
+		return property;
+	}
+	
+	protected IWPropertyList getUserMessagePreferences(User user) {
 		try{
-			IWPropertyList property = ((UserBusiness)getServiceInstance(UserBusiness.class)).getUserProperties(user).getProperties(IW_BUNDLE_IDENTIFIER);	
-			return property;
+			return getUserPreferences(user).getProperties(IW_BUNDLE_IDENTIFIER);
 		}
 		catch(Exception e){
-			throw new EJBException("MessageBusiness: Exception getting UserBusiness: "+e.getMessage());	
+			e.printStackTrace();
+			return null;
 		}
 	}
 
 	public boolean getIfUserPreferesMessageByEmail(User user){
-		IWPropertyList propertyList = getUserPreferences(user);
-		String property = propertyList.getProperty(USER_PROP_SEND_TO_EMAIL);
-		if(property!=null){
-			return Boolean.getBoolean(property);
+		IWPropertyList propertyList = getUserMessagePreferences(user);
+		if (propertyList != null) {
+			String property = propertyList.getProperty(USER_PROP_SEND_TO_EMAIL);
+			if(property!=null)
+				return Boolean.getBoolean(property);
 		}
-		else{
-			return true;
-		}
+		return true;
 	}
 
 	public boolean getIfUserPreferesMessageInMessageBox(User user){
-		IWPropertyList propertyList = getUserPreferences(user);
-		String property = propertyList.getProperty(USER_PROP_SEND_TO_MESSAGE_BOX);
-		if(property!=null){
-			return Boolean.getBoolean(property);
+		IWPropertyList propertyList = getUserMessagePreferences(user);
+		if (propertyList != null) {
+			String property = propertyList.getProperty(USER_PROP_SEND_TO_MESSAGE_BOX);
+			if(property!=null)
+				return Boolean.getBoolean(property);
 		}
-		else{
-			return true;
-		}
+		return true;
 	}
 
 	public void setIfUserPreferesMessageByEmail(User user,boolean preference){
-		IWPropertyList propertyList = getUserPreferences(user);
+		IWPropertyList propertyList = getUserMessagePreferences(user);
 		propertyList.setProperty(USER_PROP_SEND_TO_EMAIL, new Boolean(preference));
-		//propertyList.store();
 	}
 
 	public void setIfUserPreferesMessageInMessageBox(User user,boolean preference){
-		IWPropertyList propertyList = getUserPreferences(user);
+		IWPropertyList propertyList = getUserMessagePreferences(user);
 		propertyList.setProperty(USER_PROP_SEND_TO_MESSAGE_BOX, new Boolean(preference));
-		//propertyList.store();
 	}
 
 }
