@@ -70,7 +70,8 @@ public class ApartmentContracts {
 		if(apartment!=null){
 			try {
 				ContractHome cHome = (ContractHome) IDOLookup.getHome(Contract.class);
-				contracts = cHome.findByApartmentID((Integer) apartment.getPrimaryKey());
+				Collection cons = cHome.findByApartmentID((Integer) apartment.getPrimaryKey());
+				setContracts(cons);
 			}
 			catch (IDOLookupException e) {
 				e.printStackTrace();
