@@ -404,12 +404,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			System.out.println("First row is at: "+firstRow);
 			System.out.println("Last row is at: "+lastRow);
 		
-			
 		
-		boolean keepOnReading = true;
 			//iterate through the rows that contain the actual data and create the records in the database
 		int i = firstRow;
-			while ( keepOnReading) {
+			while ( i<=lastRow) {
 			
 				HSSFRow row = (HSSFRow) members.getRow(i);
 			
@@ -419,12 +417,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				
 					HSSFCell nameCell = row.getCell(COLUMN_BOARD_MEMBER_NAME);
 					if(nameCell==null){
-						keepOnReading = false;
+						break;//stop
 					}
 	
 					String name = nameCell.getStringCellValue();
 					if( name==null || name.indexOf("##")!=-1 ){
-						keepOnReading = false;
+						break;//stop
 					} 
 					
 					String ssn = getStringValueFromExcelNumberOrStringCell(row,COLUMN_BOARD_MEMBER_SSN);
