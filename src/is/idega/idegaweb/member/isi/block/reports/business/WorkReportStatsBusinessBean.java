@@ -4157,7 +4157,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				ReportableData regData = (ReportableData) leagueStatsMap.get(leagueIdentifier);
 				if(regData==null) {
 					regData = new ReportableData();
-					leagueStatsMap.put(leagueIdentifier, regData);
+					leagueStatsMap.put(leagueKey, regData);
 					regData.addData(leagueString, leagueIdentifier);
 					regData.addData(singleDivisionMembers, new Integer(0));
 					regData.addData(multiDivisionMembers, new Integer(0));
