@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.7 2002/10/16 15:57:57 palli Exp $
+ * $Id: ContractBusiness.java,v 1.8 2003/05/26 15:30:26 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -462,7 +462,8 @@ public class ContractBusiness
 			Contract C = ((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
 			C.setStatus(sStatus);
 			C.setValidFrom(ValFrom.getSQLDate());
-			C.setValidTo(ValTo.getSQLDate());
+			if (ValTo != null)
+				C.setValidTo(ValTo.getSQLDate());
 			C.setCategoryId(iCategoryId);
 			Iterator it = null;
 			if (map != null)  {
