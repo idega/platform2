@@ -2849,6 +2849,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 								}
 	
 								leagueData.addData(dummyOrderingField,"B");
+								
+								recordsMapKeyedByLeagueIdentifierAndClubsName.put(leagueKey,leagueData);
 							}
 
 						}
