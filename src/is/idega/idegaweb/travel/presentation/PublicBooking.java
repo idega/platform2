@@ -258,7 +258,7 @@ public class PublicBooking extends Block  {
       Form form = new Form();
 
 
-      if (legalDay) {
+      if (legalDay && !bf.isFullyBooked( iwc, product, stamp)) {
 
         String action = iwc.getParameter(BookingForm.sAction);
 
@@ -267,20 +267,17 @@ public class PublicBooking extends Block  {
 //	        System.out.println("action a = "+action);
 //          action = "";
 //        }
-        String gimmi = iwc.getParameter( "Gimmi" );
-        System.out.println("Gimmi = "+gimmi);
-        System.out.println("action b = "+action);
         if (action == null || action.equals("")) {
             form = bf.getPublicBookingForm(iwc, product, stamp);
             form.maintainParameter(this.parameterProductId);
             form.addParameter(BookingForm.sAction,BookingForm.parameterSaveBooking);
         }else if (action.equals(BookingForm.parameterSaveBooking)) {
-            form = bf.getFormMaintainingAllParameters(false);
+            form = bf.getFormMaintainingAllParameters(true, false);
             form.maintainParameter(this.parameterProductId);
 //            form.addParameter( BookingForm.sAction, this.parameterBookingVerified);
             form.add(bf.getVerifyBookingTable(iwc, product));
         }else if (action.equals(this.parameterBookingVerified)) {
-            form = bf.getFormMaintainingAllParameters(false);
+            form = bf.getFormMaintainingAllParameters(true, false);
             form.maintainParameter(this.parameterProductId);
             form.add(doBooking(iwc));
         }
@@ -346,7 +343,7 @@ public class PublicBooking extends Block  {
 				float price = bf.getOrderPrice(iwc, product, stamp);
 
 //        TourBookingForm tbf = new TourBookingForm(iwc,product);
-        int bookingId = bf.handleInsert(iwc);
+        int bookingId = bf.saveBooking(iwc); // WAS handleInsert(iwc), changed 14.10.2002, because Booking has already been checked, and verified
         gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
 
         if (bookingId == BookingForm.inquirySent) {

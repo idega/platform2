@@ -199,7 +199,7 @@ public class Booking extends TravelManager {
       }
 
         if (product != null) {
-          System.err.println("Beginning to create BookingForm ... : "+IWTimestamp.RightNow().toSQLTimeString());
+          System.out.println("Beginning to create BookingForm ... : "+IWTimestamp.RightNow().toSQLTimeString());
           Table contentTable = new Table(1,1);
               contentTable.setBorder(1);
               contentTable.add(getContentHeader(iwc));
@@ -210,7 +210,7 @@ public class Booking extends TravelManager {
               }else {
                 contentTable.add(contentTableForm);
               }
-          System.err.println("Finished creating BookingForm ..... : "+IWTimestamp.RightNow().toSQLTimeString());
+          System.out.println("Finished creating BookingForm ..... : "+IWTimestamp.RightNow().toSQLTimeString());
               contentTable.setWidth("90%");
               contentTable.setCellspacing(0);
               contentTable.setCellpadding(0);
@@ -379,39 +379,15 @@ public class Booking extends TravelManager {
           table.mergeCells(6,1,6,row);
           table.add(Text.BREAK ,1,row);
 
-          // Warning if no seats are available
-/*
-          if (this.tour != null) {
-            int seats = tour.getTotalSeats();
-            boolean addWarning = false;
-            if (supplier != null) {
-              if (seats > 0 && seats <= Booker.getNumberOfBookings(productId, stamp) ) {
-                addWarning = true;
-              }
-            }else if (reseller != null) {
-              if (seats > 0 && seats <= Booker.getNumberOfBookings(new int[]{resellerId},productId, stamp) ) {
-                addWarning = true;
-              }
-            }
-            if (addWarning) {
-              Text overBookingWarning = (Text)super.theBoldText.clone();
-                overBookingWarning.setText(iwrb.getLocalizedString("travel.there_are_no_availability_selected_day","There are no availability on the selected day"));
-                overBookingWarning.setFontColor(super.RED);
-              table.add(overBookingWarning, 1, row);
-            }
-          }
-*/
 
-          ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-          ServiceDay sDay = sDayHome.create();
-          sDay = sDay.getServiceDay(this.productId, stamp.getDayOfWeek());
-
-          if ((this.iMax <= this.iBookings) && (this.iMax > 0)) {
+					if (bf.isFullyBooked(iwc, product, stamp)) {					
+//          if ((this.iMax <= this.iBookings) && (this.iMax > 0)) {
             table.add(super.getHeaderText(iwrb.getLocalizedString("travel.attention_fully_booked","Attention! Fully booked")), 1, row);
             table.add(Text.BREAK ,1,row);
           }
 
-          if ((this.iMin > this.iBookings) && (this.iMin > 0)) {
+					if (bf.isUnderBooked(iwc, product, stamp)) {					
+//          if ((this.iMin > this.iBookings) && (this.iMin > 0)) {
             table.add(super.getHeaderText(iwrb.getLocalizedString("travel.attention_under_booked","Attention! Booked seats are fewer than the service minimum.")), 1, row);
             table.add(Text.BREAK ,1,row);
           }
@@ -470,6 +446,8 @@ public class Booking extends TravelManager {
               table.setColor(1,row,super.backgroundColor);
             }
           }
+          
+          System.out.println("booking ... Adding line");
           table.add(iwrb.getLocalizedString("travel.trip_is_not_scheduled_this_day","Trip is not scheduled this day")+" : "+stamp.getLocaleDate(iwc));
         }
           table.mergeCells(1,row,5,row);
@@ -832,6 +810,7 @@ public class Booking extends TravelManager {
 //      if (reseller != null) tbf.setReseller(reseller);
       bf.setTimestamp(stamp);
       if (booking != null)  bf.setBooking(booking);
+      System.out.println("bf returning bf.getBookingForm(iwc)");
       return bf.getBookingForm(iwc);
     }catch (Exception e) {
       return new Form();
@@ -841,49 +820,49 @@ public class Booking extends TravelManager {
 
   // BUSINESS
   private IWTimestamp getIdegaTimestamp(IWContext iwc) {
-      IWTimestamp stamp = null;
+	  IWTimestamp stamp = null;
+	
+	  String year = iwc.getParameter("year");
+	  String month = iwc.getParameter("month");
+	  String day = iwc.getParameter("day");
+	
+	  String IWCalendar_year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
+	  String IWCalendar_month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
+	  String IWCalendar_day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
+	  if (IWCalendar_year != null) year = IWCalendar_year;
+	  if (IWCalendar_month != null) month = IWCalendar_month;
+	  if (IWCalendar_day != null) day = IWCalendar_day;
+	
+	  String dateStr = iwc.getParameter("booking_date");
+	
+	  if (dateStr == null) {
+      String chYear = iwc.getParameter("chosen_year");
+      if ((chYear != null) && (year != null)) year = chYear;
 
-      String year = iwc.getParameter("year");
-      String month = iwc.getParameter("month");
-      String day = iwc.getParameter("day");
+      if (stamp == null)
 
-      String IWCalendar_year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
-      String IWCalendar_month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
-      String IWCalendar_day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
-      if (IWCalendar_year != null) year = IWCalendar_year;
-      if (IWCalendar_month != null) month = IWCalendar_month;
-      if (IWCalendar_day != null) day = IWCalendar_day;
-
-      String dateStr = iwc.getParameter("booking_date");
-
-      if (dateStr == null) {
-          String chYear = iwc.getParameter("chosen_year");
-          if ((chYear != null) && (year != null)) year = chYear;
-
-          if (stamp == null)
-
-          try {
-              if ( (day != null) && (month != null) && (year != null)) {
-                  stamp = new IWTimestamp(Integer.parseInt(day),Integer.parseInt(month),Integer.parseInt(year));
-              }
-              else if ((day == null) && (month == null) && (year != null)) {
-                  stamp = new IWTimestamp(1,IWTimestamp.RightNow().getMonth(),Integer.parseInt(year));
-              }
-              else if ((day == null) && (month != null) && (year != null)) {
-                  stamp = new IWTimestamp(1,Integer.parseInt(month),Integer.parseInt(year));
-              }
-              else {
-                  stamp = IWTimestamp.RightNow();
-              }
-          }
-          catch (Exception e) {
-              stamp = IWTimestamp.RightNow();
-          }
-      }else {
-        stamp = new IWTimestamp(dateStr);
+      try {
+	      if ( (day != null) && (month != null) && (year != null)) {
+          stamp = new IWTimestamp(Integer.parseInt(day),Integer.parseInt(month),Integer.parseInt(year));
+	      }
+	      else if ((day == null) && (month == null) && (year != null)) {
+          stamp = new IWTimestamp(1,IWTimestamp.RightNow().getMonth(),Integer.parseInt(year));
+	      }
+	      else if ((day == null) && (month != null) && (year != null)) {
+          stamp = new IWTimestamp(1,Integer.parseInt(month),Integer.parseInt(year));
+	      }
+	      else {
+          stamp = IWTimestamp.RightNow();
+	      }
       }
-
-      return stamp;
+      catch (Exception e) {
+          stamp = IWTimestamp.RightNow();
+      }
+	  }else {
+	    stamp = new IWTimestamp(dateStr);
+	  }
+	
+	  return stamp;
   }
 
 

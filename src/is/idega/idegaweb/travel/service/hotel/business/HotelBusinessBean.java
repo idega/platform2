@@ -116,6 +116,10 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
 	      }
 	      
 	      if (validDate) {
+	      	isDay = true;
+	      }
+	      /*
+	      if (validDate) {
 	      	Hotel hotel;
 					try {
 						hotel =	((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(product.getPrimaryKey());
@@ -133,7 +137,7 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
 					} catch (FinderException e) {
 						e.printStackTrace(System.err);
 					}
-				} 
+				} */
       }
       else {
         isDay = ((Boolean) obj).booleanValue();

@@ -1942,6 +1942,30 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 
   }
 
+	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
+		Tour tour = getTourHome().findByPrimaryKey(product.getPrimaryKey());
+		int max = tour.getTotalSeats();
+		if (max > 0) {
+			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp);
+			if (currentBookings >= max) {
+				return true;	
+			}
+		}
+		return super.isFullyBooked( iwc, product, stamp);
+	}
+
+	public boolean isUnderBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
+		Tour tour = getTourHome().findByPrimaryKey(product.getPrimaryKey());
+		int min = tour.getMinimumSeats();
+		if (min > 0) {
+			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp);
+			if (currentBookings < min) {
+				return true;	
+			}
+		}
+		return super.isUnderBooked( iwc, product, stamp);
+	}
+
 
   public void setBooking(Booking booking) throws RemoteException, FinderException {
     this._booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHome(TourBooking.class)).findByPrimaryKey(booking.getPrimaryKey());
@@ -1950,6 +1974,10 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
   public void setTimestamp(IWTimestamp stamp) {
     this._stamp = new IWTimestamp(stamp);
   }
+
+	private TourHome getTourHome() throws RemoteException {
+		return (TourHome) IDOLookup.getHome(Tour.class);	
+	}
 
   private TourBooker getTourBooker(IWApplicationContext iwac) throws RemoteException {
     return (TourBooker) IBOLookup.getServiceInstance(iwac, TourBooker.class);

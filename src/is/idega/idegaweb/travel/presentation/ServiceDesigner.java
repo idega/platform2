@@ -119,7 +119,7 @@ public class ServiceDesigner extends TravelManager {
         }
 
         String action = iwc.getParameter(ServiceAction);
-        System.out.println("action = "+action);
+//        System.out.println("action = "+action);
         if (action == null) {action = "";}
 
         if (action.equals("")) {

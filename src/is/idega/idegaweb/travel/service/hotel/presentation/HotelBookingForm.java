@@ -75,6 +75,7 @@ public class HotelBookingForm extends BookingForm {
 
 
   private Form getForm(IWContext iwc) throws RemoteException, FinderException {
+  	
     Form form = new Form();
     Table table = new Table();
     table.setBorder(0);
@@ -1477,12 +1478,14 @@ public class HotelBookingForm extends BookingForm {
     
     try {
       fromStamp = new IWTimestamp(fromDate);
+      
+//      heildarbokanir = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);
     	heildarbokanir = getHotelBooker(iwc).getNumberOfReservedRooms(serviceId, fromStamp, null);
       int iManyDays = Integer.parseInt(manyDays);
       if (iManyDays < 1) betw = 1;
       else betw = iManyDays;
     }catch (Exception e) {
-      debug(e.getMessage());
+    	e.printStackTrace(System.err);
     }
 
 //    ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
@@ -1495,11 +1498,7 @@ public class HotelBookingForm extends BookingForm {
 		int totalRooms = hotel.getNumberOfUnits();
 		int maxPerRoom = hotel.getMaxPerUnit();
 		
-
-/**
- * gera checkid thannig ad thad checki a
- * totalRooms...
- * maxPerRoom... */
+		
 
 //    iMany;
 		if (maxPerRoom > 0) {
@@ -1542,5 +1541,22 @@ public class HotelBookingForm extends BookingForm {
   private HotelBusiness getHotelBusiness(IWContext iwc) throws RemoteException{
     return (HotelBusiness) IBOLookup.getServiceInstance(iwc, HotelBusiness.class);
   }
+  
+  private HotelHome getHotelHome() throws RemoteException {
+  	return (HotelHome) IDOLookup.getHome(Hotel.class);	
+  }
+
+	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
+		Hotel hotel = getHotelHome().findByPrimaryKey( product.getPrimaryKey() );
+		
+		int max = hotel.getNumberOfUnits();
+		
+		if (max > 0) {
+			int currentBookings = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);
+			return (currentBookings >= max);
+		}
+		
+		return false;
+	}
 
 }

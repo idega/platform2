@@ -410,7 +410,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   }
 
   public int ejbHomeGetNumberOfBookings(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType){
-		return ejbHomeGetBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, new int[]{}, null, true, false );
+		return ejbHomeGetBookingsTotalCount(serviceId, fromStamp, toStamp, bookingType, new int[]{}, null, false, false );
   }
 
   public int ejbHomeGetBookingsTotalCount(int serviceId, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType, int[] productPriceIds){
@@ -506,6 +506,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
               sql.append(" and ");
 //              sql.append(dateColumn+" >= '"+TextSoap.findAndCut(toStamp.toSQLDateString(),"-")+"'");
               sql.append(dateColumn+" <= '"+toStamp.toSQLDateString()+"')");
+	            sql.append(" )");
             }
             sql.append(" )");
 

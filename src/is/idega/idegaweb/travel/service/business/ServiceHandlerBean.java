@@ -53,23 +53,23 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
       ProductCategory pCat = (ProductCategory) iter.next();
       String categoryType = getProductCategoryFactory().getProductCategoryType(pCat);
       if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR)) {
-        System.out.println("Returning bookingform for TOUR");
+//        System.out.println("Returning bookingform for TOUR");
         return new TourBookingForm(iwc, product);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL)) {
-        System.out.println("Returning bookingform for HOTEL");
+//        System.out.println("Returning bookingform for HOTEL");
         return new HotelBookingForm(iwc, product);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_FISHING)) {
-        System.out.println("Returning bookingform for FISHING");
+//        System.out.println("Returning bookingform for FISHING");
         return new FishingBookingForm(iwc, product);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_PRODUCT)) {
-        System.out.println("Cannot find BookingForm for ProductCategory PRODUCT, returning form for TOUR");
+//        System.out.println("Cannot find BookingForm for ProductCategory PRODUCT, returning form for TOUR");
         return new TourBookingForm(iwc, product);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_CAR_RENTAL)) {
-        System.out.println("Returning bookingform for CAR RENTAL");
+//        System.out.println("Returning bookingform for CAR RENTAL");
         return new CarRentalBookingForm(iwc, product);
       }
     }else {
-      System.out.println("[ServiceHandlerBean] iter.hasNext() = false");
+//      System.out.println("[ServiceHandlerBean] iter.hasNext() = false");
     }
     return new TourBookingForm(iwc, product);
   }
@@ -78,19 +78,19 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
     String categoryType = getProductCategoryFactory().getProductCategoryType(productCategory);
 
     if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR)) {
-      System.out.println("Returning form for TOUR");
+//      System.out.println("Returning form for TOUR");
       return new TourDesigner(iwc);
     }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL)) {
-      System.out.println("Returning form for HOTEL");
+//      System.out.println("Returning form for HOTEL");
       return new HotelDesigner(iwc);
     }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_FISHING)) {
-      System.out.println("Returning form for FISHING");
+//      System.out.println("Returning form for FISHING");
       return new FishingDesigner(iwc);
     }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_PRODUCT)) {
-      System.out.println("Cannot find DesignerForm for ProductCategory PRODUCT, returning form for TOUR");
+//      System.out.println("Cannot find DesignerForm for ProductCategory PRODUCT, returning form for TOUR");
       return new TourDesigner(iwc);
     }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_CAR_RENTAL)) {
-      System.out.println("Returning form for CAR RENTAL");
+//      System.out.println("Returning form for CAR RENTAL");
       return new CarRentalDesigner(iwc);
     }
     return new TourDesigner(iwc);
@@ -106,19 +106,19 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
       ProductCategory pCat = (ProductCategory) iter.next();
       String categoryType = getProductCategoryFactory().getProductCategoryType(pCat);
       if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR)) {
-        System.out.println("Returning ServiceOverview for TOUR");
+//        System.out.println("Returning ServiceOverview for TOUR");
         return new TourOverview(iwc);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL)) {
-        System.out.println("Returning ServiceOverview for HOTEL");
+//        System.out.println("Returning ServiceOverview for HOTEL");
         return new HotelOverview(iwc);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_FISHING)) {
-        System.out.println("Returning ServiceOverview for FISHING");
+//        System.out.println("Returning ServiceOverview for FISHING");
         return new FishingOverview(iwc);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_PRODUCT)) {
-        System.out.println("Cannot find ServiceOverview for ProductCategory PRODUCT, returning form for TOUR");
+//        System.out.println("Cannot find ServiceOverview for ProductCategory PRODUCT, returning form for TOUR");
         return new TourOverview(iwc);
       }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_CAR_RENTAL)) {
-        System.out.println("Returning ServiceOverview for CAR RENTAL");
+//        System.out.println("Returning ServiceOverview for CAR RENTAL");
         return new CarRentalOverview(iwc);
       }
     }
@@ -139,19 +139,19 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
         ProductCategory pCat = (ProductCategory) iter.next();
         String categoryType = getProductCategoryFactory().getProductCategoryType(pCat);
         if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR)) {
-          System.out.println("Returning BookingOverview for TOUR");
+  //        System.out.println("Returning BookingOverview for TOUR");
           return new TourBookingOverview(iwc);
         }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL)) {
-          System.out.println("Returning BookingOverview for HOTEL");
+//          System.out.println("Returning BookingOverview for HOTEL");
           return new HotelBookingOverview(iwc);
         }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_FISHING)) {
-          System.out.println("Returning BookingOverview for FISHING");
+//          System.out.println("Returning BookingOverview for FISHING");
           return new FishingBookingOverview(iwc);
         }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_PRODUCT)) {
-          System.out.println("Cannot find BookingOverview for ProductCategory PRODUCT, returning form for TOUR");
+//          System.out.println("Cannot find BookingOverview for ProductCategory PRODUCT, returning form for TOUR");
           return new TourBookingOverview(iwc);
         }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_CAR_RENTAL)) {
-          System.out.println("Returning BookingOverview for CAR RENTAL");
+//          System.out.println("Returning BookingOverview for CAR RENTAL");
           return new CarRentalBookingOverview(iwc);
         }
       }
@@ -173,23 +173,23 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
       ProductCategory pCat = (ProductCategory) iter.next();
       String type = getProductCategoryFactory().getProductCategoryType(pCat);
       if (type.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR)) {
-        System.out.println("Returning voucher for TOUR");
+//        System.out.println("Returning voucher for TOUR");
         return new TourVoucher(booking);
       }else if (type.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL)) {
-        System.out.println("Returning voucher for HOTEL");
+//        System.out.println("Returning voucher for HOTEL");
         return new HotelVoucher(booking);
       }else if (type.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_FISHING)) {
-        System.out.println("Returning voucher for FISHING");
+//        System.out.println("Returning voucher for FISHING");
         return new FishingVoucher(booking);
       }else if (type.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_PRODUCT)) {
-        System.out.println("Cannot find Voucher for ProductCategory PRODUCT, returning voucher for TOUR");
+//        System.out.println("Cannot find Voucher for ProductCategory PRODUCT, returning voucher for TOUR");
         return new TourVoucher(booking);
       }else if (type.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_CAR_RENTAL)) {
-        System.out.println("Returning voucher for CAR RENTAL");
+//        System.out.println("Returning voucher for CAR RENTAL");
         return new CarRentalVoucher(booking);
       }
     }else {
-      System.out.println("Returning voucher for TOUR, because iter.hasNext() = false");
+//      System.out.println("Returning voucher for TOUR, because iter.hasNext() = false");
     }
 
     return new TourVoucher(booking);
@@ -207,19 +207,19 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
         ProductCategory pCat = (ProductCategory) iter.next();
         String categoryType = getProductCategoryFactory().getProductCategoryType(pCat);
         if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR)) {
-          System.out.println("Returning Business for TOUR");
+//          System.out.println("Returning Business for TOUR");
           return (TourBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), TourBusiness.class);
         }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL)) {
-          System.out.println("Returning Business for HOTEL");
+//          System.out.println("Returning Business for HOTEL");
           return (HotelBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), HotelBusiness.class);
         }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_FISHING)) {
-          System.out.println("Returning Business for FISHING");
+//          System.out.println("Returning Business for FISHING");
           return (FishingBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), FishingBusiness.class);
         }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_PRODUCT)) {
-          System.out.println("Returning Business for PRODUCT");
+//          System.out.println("Returning Business for PRODUCT");
           return (TravelStockroomBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), TravelStockroomBusiness.class);
         }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_CAR_RENTAL)) {
-          System.out.println("Returning Business for CAR RENTAL");
+//          System.out.println("Returning Business for CAR RENTAL");
           return (CarRentalBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), CarRentalBusiness.class);
         }
       }

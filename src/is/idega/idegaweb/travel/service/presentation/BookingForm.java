@@ -1281,7 +1281,8 @@ public abstract class BookingForm extends TravelManager{
     String check = iwc.getParameter(sAction);
     String action = iwc.getParameter(this.BookingAction);
     String inquiry = iwc.getParameter(this.parameterInquiry);
-    debug("check  = "+check);
+//    System.out.println("check  = "+check);
+//    System.out.println("action  = "+action);
     //debug("action = "+action);
 
     /** @todo fatta af hverju thetta er herna og hvort megi henda thvi
@@ -1290,12 +1291,9 @@ public abstract class BookingForm extends TravelManager{
       return 0;
     }
     */
-   if (check != null) {
-   	 check = "";
-   }
+  
    
-   
-   if (check.equals(this.parameterSaveBooking)) {
+//   if (check.equals(this.parameterSaveBooking)  ) {
       if (action != null) {
         if (action.equals(this.BookingParameter)) {
           if (inquiry == null) {
@@ -1330,9 +1328,9 @@ public abstract class BookingForm extends TravelManager{
       }else {
         return -1;
       }
-    }else {
-      return 0;
-    }
+//    }else {
+//      return 0;
+//    }
   }
 
 
@@ -1469,7 +1467,10 @@ public abstract class BookingForm extends TravelManager{
       String comment = iwc.getParameter("comment");
 
       String sAddressId = iwc.getParameter(this.parameterDepartureAddressId);
-      int iAddressId = Integer.parseInt(sAddressId);
+      int iAddressId = -1;
+      if (sAddressId != null) {
+      	Integer.parseInt(sAddressId);
+      }
 
       String sUserId = iwc.getParameter("ic_user");
       if (sUserId == null) sUserId = "-1";
@@ -2246,40 +2247,76 @@ public abstract class BookingForm extends TravelManager{
     return super.getTravelStockroomBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), _stamp);
   }
 
-public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	throws RemoteException, SQLException {
-	 int productId = product.getID();
-	float price = 0;
-	int total = 0;
-	int current = 0;
-	Currency currency = null;
-	
-	
-	ProductPrice[] pPrices = {};
-	ProductPrice[] misc = {};
-	  pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, true);
-	  misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), -1, -1, true);
-	
-	
-	  for (int i = 0; i < pPrices.length; i++) {
-	    try {
-	      current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
-	    }catch (NumberFormatException n) {
-	      current = 0;
-	    }
-	    total += current;
-	    price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), -1, -1);
-	  }
-	
-	  for (int i = 0; i < misc.length; i++) {
-	    try {
-	      current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+i));
-	    }catch (NumberFormatException n) {
-	      current = 0;
-	    }
-	    price += current * getTravelStockroomBusiness(iwc).getPrice(misc[i].getID() ,productId,misc[i].getPriceCategoryID(), misc[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), -1, -1);
-	  }
-	
-	return price;
-}
+	public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	throws RemoteException, SQLException {
+		 int productId = product.getID();
+		float price = 0;
+		int total = 0;
+		int current = 0;
+		Currency currency = null;
+		
+		
+		ProductPrice[] pPrices = {};
+		ProductPrice[] misc = {};
+		  pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, true);
+		  misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), -1, -1, true);
+		
+		
+		  for (int i = 0; i < pPrices.length; i++) {
+		    try {
+		      current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+		    }catch (NumberFormatException n) {
+		      current = 0;
+		    }
+		    total += current;
+		    price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), -1, -1);
+		  }
+		
+		  for (int i = 0; i < misc.length; i++) {
+		    try {
+		      current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+i));
+		    }catch (NumberFormatException n) {
+		      current = 0;
+		    }
+		    price += current * getTravelStockroomBusiness(iwc).getPrice(misc[i].getID() ,productId,misc[i].getPriceCategoryID(), misc[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), -1, -1);
+		  }
+		
+		return price;
+	}
 
+	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
+	  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+	  ServiceDay sDay = sDayHome.create();
+	  sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
+	  
+	  if (sDay != null) {
+	  	int max = sDay.getMax();
+	  	if (max > 0 ) {
+				int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp);
+				if (currentBookings >= max) {
+					return true;	
+				}
+	  	}
+	  }
+		
+		return false;
+	}
+
+	public boolean isUnderBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
+	  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+	  ServiceDay sDay = sDayHome.create();
+	  sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
+	  
+	  if (sDay != null) {
+	  	int min = sDay.getMin();
+	  	if (min > 0 ) {
+				int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp);
+				if (currentBookings < min) {
+					return true;	
+				}
+	  	}
+	  }
+		
+		return false;
+	}
+		
 }
