@@ -104,11 +104,13 @@ public class GroupMemberList extends Block {
 					if(statusKey!=null) {
 						String key = "usr_stat_" + statusKey;
 						String status = _iwrb.getLocalizedString(key, statusKey);
+						table.setCellpaddingLeft(column, row, 3);
 						table.add(status, column++, row);
 					}
 				}
 				if(showGroup) {
 					String groupNames = getGroupNamesForTrainer(user, division);
+					table.setCellpaddingLeft(column, row, 3);
 					table.add(groupNames, column++, row);
 				}
 			} catch(Exception e) {
