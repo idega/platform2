@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.18 2003/11/28 16:20:23 joakim Exp $
+ * $Id: RegulationBMPBean.java,v 1.19 2003/11/30 23:17:18 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.18 2003/11/28 16:20:23 joakim Exp $
+ * $Id: RegulationBMPBean.java,v 1.19 2003/11/30 23:17:18 palli Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -77,7 +77,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		addAttribute(COLUMN_MAX_AMOUNT_DISCOUNT, "Max amount discount", true, true, java.lang.Float.class);
 
 		setAsPrimaryKey(getIDColumnName(), true);
-		
+
 		setNullable(COLUMN_OPERATION_ID, true);
 		setNullable(COLUMN_PAYMENT_FLOW_TYPE_ID, true);
 		setNullable(COLUMN_REG_SPEC_TYPE_ID, true);
@@ -278,52 +278,48 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		sql.append(COLUMN_NAME);
 		return idoFindPKsBySQL(sql.toString());
 	}
-	
+
 	public Collection ejbFindRegulationsByNameNoCase(String name) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere();
-		sql.append(" upper");		
+		sql.append(" upper");
 		sql.appendWithinParentheses(COLUMN_NAME);
 		sql.appendLike();
 		sql.append(" upper");
-		sql.appendWithinParentheses("'"+name+"'");
-		sql.appendOrderBy(COLUMN_PERIOD_FROM);
-		sql.append(", ");
-		sql.append(COLUMN_NAME);
-		return idoFindPKsBySQL(sql.toString());
-	}	
-	
-
-	public Collection ejbFindRegulationsByNameNoCaseAndCategory(String name, String catId) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this);
-		sql.appendWhere();
-		sql.appendEqualsQuoted(COLUMN_OPERATION_ID, catId);	
-		sql.appendAnd();	
-		sql.append(" upper");		
-		sql.appendWithinParentheses(COLUMN_NAME);
-		sql.appendLike();
-		sql.append(" upper");
-		sql.appendWithinParentheses("'"+name+"'");
+		sql.appendWithinParentheses("'" + name + "'");
 		sql.appendOrderBy(COLUMN_PERIOD_FROM);
 		sql.append(", ");
 		sql.append(COLUMN_NAME);
 		return idoFindPKsBySQL(sql.toString());
 	}
-	
 
-
+	public Collection ejbFindRegulationsByNameNoCaseAndCategory(String name, String catId) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere();
+		sql.appendEqualsQuoted(COLUMN_OPERATION_ID, catId);
+		sql.appendAnd();
+		sql.append(" upper");
+		sql.appendWithinParentheses(COLUMN_NAME);
+		sql.appendLike();
+		sql.append(" upper");
+		sql.appendWithinParentheses("'" + name + "'");
+		sql.appendOrderBy(COLUMN_PERIOD_FROM);
+		sql.append(", ");
+		sql.append(COLUMN_NAME);
+		return idoFindPKsBySQL(sql.toString());
+	}
 
 	public Collection ejbFindRegulationsByNameNoCaseAndDate(String name, Date validDate) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere();
-		sql.append(" upper");		
+		sql.append(" upper");
 		sql.appendWithinParentheses(COLUMN_NAME);
 		sql.appendLike();
 		sql.append(" upper");
-		sql.appendWithinParentheses("'"+name+"'");
+		sql.appendWithinParentheses("'" + name + "'");
 		sql.appendAnd();
 		sql.append(COLUMN_PERIOD_FROM);
 		sql.appendLessThanOrEqualsSign();
@@ -337,16 +333,16 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		sql.append(COLUMN_NAME);
 		return idoFindPKsBySQL(sql.toString());
 	}
-	
+
 	public Collection ejbFindRegulationsByNameNoCaseDateAndCategory(String name, Date validDate, String catId) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere();
-		sql.append(" upper");		
+		sql.append(" upper");
 		sql.appendWithinParentheses(COLUMN_NAME);
 		sql.appendLike();
 		sql.append(" upper");
-		sql.appendWithinParentheses("'"+name+"'");
+		sql.appendWithinParentheses("'" + name + "'");
 		sql.appendAndEqualsQuoted(COLUMN_OPERATION_ID, catId);
 		sql.appendAnd();
 		sql.append(COLUMN_PERIOD_FROM);
@@ -361,25 +357,22 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		sql.append(COLUMN_NAME);
 		return idoFindPKsBySQL(sql.toString());
 	}
-		
 
-	public Collection ejbFindRegulationsByPeriodAndOperationId
-        (final Date validDate, final String operationID)
-        throws FinderException {
+	public Collection ejbFindRegulationsByPeriodAndOperationId(final Date validDate, final String operationID) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom (this)
-                .appendWhere (COLUMN_PERIOD_FROM)
-                .appendLessThanOrEqualsSign ()
-                .append (validDate)
-                .appendAnd ()
-                .append (COLUMN_PERIOD_TO)
-                .appendGreaterThanOrEqualsSign ()
-                .append (validDate)
-                .appendAndEquals (COLUMN_OPERATION_ID, "'" + operationID + "'")
-                .appendOrderBy (COLUMN_NAME);
-		return idoFindPKsBySQL (sql.toString());
+		sql
+			.appendSelectAllFrom(this)
+			.appendWhere(COLUMN_PERIOD_FROM)
+			.appendLessThanOrEqualsSign()
+			.append(validDate)
+			.appendAnd()
+			.append(COLUMN_PERIOD_TO)
+			.appendGreaterThanOrEqualsSign()
+			.append(validDate)
+			.appendAndEquals(COLUMN_OPERATION_ID, "'" + operationID + "'")
+			.appendOrderBy(COLUMN_NAME);
+		return idoFindPKsBySQL(sql.toString());
 	}
-			
 
 	public Collection ejbFindRegulationsByPeriod(Date from, Date to, String operationID, int flowTypeID, int sortByID) throws FinderException {
 		IDOQuery sql = idoQuery();
@@ -401,70 +394,43 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		return idoFindPKsBySQL(sql.toString());
 	}
 
-	public Collection ejbFindRegulations(Date from, Date to, String operationID, int flowTypeID, int condTypeID, int regSpecTypeID) throws FinderException {
+	public Collection ejbFindRegulations(Date from, Date to, String operationID, int flowTypeID, int condTypeID, int regSpecTypeID, int mainRuleId) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this);
-		//Check if this is the first condition.
-		boolean first = true;
-		if (from != null) {
-			sql.appendWhere(COLUMN_PERIOD_TO);
-			sql.appendGreaterThanOrEqualsSign().append("'" + from + "'");
-			first = false;
+		sql.append("select r.* from ");
+		sql.append(ENTITY_NAME);
+		sql.append("r ");
+		if (regSpecTypeID != -1 || mainRuleId != -1) {
+			sql.append(", cacc_reg_spec_type t ");
 		}
-		
-		if (to != null) {
-			if (!first) {
-				sql.appendAnd();
-			}
-			else {
-				first = false;
-			}
-			sql.append(COLUMN_PERIOD_FROM);
-			sql.appendLessThanOrEqualsSign().append("'" + to + "'");
-		}
-		
+
+		sql.appendWhere("r."+COLUMN_PERIOD_TO);
+		sql.appendGreaterThanOrEqualsSign().append("'" + from + "'");
+		sql.appendAnd();
+		sql.append("r."+COLUMN_PERIOD_FROM);
+		sql.appendLessThanOrEqualsSign().append("'" + to + "'");
 		if (operationID != null && !"".equals(operationID) && !"0".equals(operationID)) {
-			if (!first) {
-				sql.appendAnd();
-			}
-			else {
-				first = false;
-			}
-			sql.appendEqualsQuoted(COLUMN_OPERATION_ID,operationID);			
+			sql.appendAndEqualsQuoted("r."+COLUMN_OPERATION_ID, operationID);
 		}
-		
+
 		if (flowTypeID != -1) {
-			if (!first) {
-				sql.appendAnd();
-			}
-			else {
-				first = false;
-			}
-			sql.appendEquals(COLUMN_PAYMENT_FLOW_TYPE_ID,flowTypeID);						
+			sql.appendAndEquals("r."+COLUMN_PAYMENT_FLOW_TYPE_ID, flowTypeID);
+		}
+
+		if (condTypeID != -1) {
+			sql.appendAndEquals("r."+COLUMN_CONDITION_TYPE_ID, condTypeID);
+		}
+
+		if (regSpecTypeID != -1 || mainRuleId != -1) {
+			sql.appendAnd();
+			sql.appendEquals("r."+COLUMN_REG_SPEC_TYPE_ID, "t.cacc_reg_spec_type_id");
+			if (regSpecTypeID != -1)
+				sql.appendAndEquals("t.cacc_reg_spec_type_id",regSpecTypeID);
+			if (mainRuleId != -1)
+				sql.appendAndEquals("t.main_rule_id",mainRuleId);
 		}
 		
-		if (condTypeID != -1) {
-			if (!first) {
-				sql.appendAnd();
-			}
-			else {
-				first = false;
-			}
-			sql.appendEquals(COLUMN_CONDITION_TYPE_ID,condTypeID);						
-		}
-
-		if (regSpecTypeID != -1) {
-			if (!first) {
-				sql.appendAnd();
-			}
-			else {
-				first = false;
-			}
-			sql.appendEquals(COLUMN_REG_SPEC_TYPE_ID,regSpecTypeID);						
-		}
-
-		sql.appendOrderBy(COLUMN_CONDITION_ORDER);
-		System.out.println("SQL: "+sql);
+		sql.appendOrderBy("r."+COLUMN_CONDITION_ORDER);
+		System.out.println("SQL: " + sql);
 		return idoFindPKsBySQL(sql.toString());
 	}
 
@@ -531,11 +497,9 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		return idoFindOnePKByQuery(sql);
 	}
 
-	
 	//Find functions for C&P
 	public Collection ejbFindAllBy() throws FinderException {
 		return null;
 	}
-
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.78 2003/11/30 22:30:53 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.79 2003/11/30 23:17:18 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1552,7 +1552,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				regSpecTypeID = -1;
 			}
 
-			Collection reg = home.findRegulations(period, period, operation, flowID, condTypeID, regSpecTypeID);
+			Collection reg = home.findRegulations(period, period, operation, flowID, condTypeID, regSpecTypeID,-1);
 			if (reg != null && !reg.isEmpty()) {
 				List match = new Vector();
 				Iterator it = reg.iterator();
@@ -1760,6 +1760,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			RegulationHome home = getRegulationHome();
 			int flowID = -1;
 			int condTypeID = -1;
+			int regSpecTypeId = -1;
+			int mainRuleId = -1;
 
 			try {
 				PaymentFlowType pfType = getPaymentFlowTypeHome().findByLocalizationKey(flow);
@@ -1778,8 +1780,17 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			catch (Exception e) {
 				condTypeID = -1;
 			}
+			
+			try {
+				MainRule mRule = getMainRuleHome().findMainRuleByName(mainRule);
+				if (mRule != null)
+					mainRuleId = ((Integer) mRule.getPrimaryKey()).intValue();
+			}
+			catch(Exception e) {
+				mainRuleId = -1;
+			}
 
-			Collection reg = home.findRegulations(period, period, operation, flowID, condTypeID, -1);
+			Collection reg = home.findRegulations(period, period, operation, flowID, condTypeID, regSpecTypeId, mainRuleId);
 			if (reg != null && !reg.isEmpty()) {
 				Iterator it = reg.iterator();
 				while (it.hasNext()) {

@@ -1,5 +1,5 @@
 /*	
- * $Id: MainRuleBMPBean.java,v 1.6 2003/11/19 08:53:48 anders Exp $
+ * $Id: MainRuleBMPBean.java,v 1.7 2003/11/30 23:17:18 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -24,10 +24,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.regulation.data.RegulationSpecTypeBMPBean# 
  * <p>
- * $Id: MainRuleBMPBean.java,v 1.6 2003/11/19 08:53:48 anders Exp $
+ * $Id: MainRuleBMPBean.java,v 1.7 2003/11/30 23:17:18 palli Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class MainRuleBMPBean extends GenericEntity implements MainRule {
 	
@@ -87,4 +87,9 @@ public class MainRuleBMPBean extends GenericEntity implements MainRule {
 		return idoFindOnePKByQuery(sql);
 	}
 
+	public Object ejbFindMainRuleByName(String name) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEqualsWithSingleQuotes(COLUMN_MAIN_RULE, name);
+		return idoFindOnePKByQuery(sql);
+	}
 }

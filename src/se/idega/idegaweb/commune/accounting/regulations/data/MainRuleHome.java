@@ -7,5 +7,6 @@ public interface MainRuleHome extends com.idega.data.IDOHome
  public MainRule findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public java.util.Collection findAllMainRules()throws javax.ejb.FinderException;
  public MainRule findMainRule(int p0)throws javax.ejb.FinderException;
+ public MainRule findMainRuleByName(java.lang.String p0)throws javax.ejb.FinderException;
 
 }

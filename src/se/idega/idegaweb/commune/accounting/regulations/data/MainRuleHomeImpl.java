@@ -27,6 +27,13 @@ public MainRule findMainRule(int p0)throws javax.ejb.FinderException{
 	return this.findByPrimaryKey(pk);
 }
 
+public MainRule findMainRuleByName(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((MainRuleBMPBean)entity).ejbFindMainRuleByName(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public MainRule findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (MainRule) super.findByPrimaryKeyIDO(pk);
  }
