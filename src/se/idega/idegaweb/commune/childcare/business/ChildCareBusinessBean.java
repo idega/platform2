@@ -369,7 +369,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private boolean hasQueuePriority(User child, int providerID) throws RemoteException {
 		SchoolClassMember member = null;
 		try {
-			member = getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(((Integer) member.getPrimaryKey()).intValue(), providerID);
+			member = getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(((Integer) child.getPrimaryKey()).intValue(), providerID);
 			if (member != null && member.getNeedsSpecialAttention())
 				return true;
 		}
@@ -713,6 +713,21 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };
 
 			return home.findAllCasesByProviderAndNotInStatus(providerId, sortBy, fromDate, toDate, caseStatus, numberOfEntries, startingEntry);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		} catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public Collection getUnhandledApplicationsByChild(int childID) {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus(), getCaseStatusDenied().getStatus(), getCaseStatusContract().getStatus(), getCaseStatusPreliminary().getStatus() };
+
+			return home.findApplicationByChildAndNotInStatus(childID, caseStatus);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			return null;
