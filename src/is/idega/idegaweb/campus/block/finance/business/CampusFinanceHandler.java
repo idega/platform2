@@ -242,8 +242,8 @@ public class CampusFinanceHandler implements FinanceHandler{
   /**
    *  Returns a multiplying factor to entry prices, for each contract
    *  The factor makes use of the contract begin and end dates.
-   *  if the contract has a delivertime, that is the begin date,
-   *  if the contract has a returntime , that is the end date.
+   *  NOT if the contract has a delivertime, that is the begin date,
+   *  NOT if the contract has a returntime , that is the end date.
    */
   public double getFactor(ContractAccountApartment con,IWTimestamp start,IWTimestamp end   ){
     double ret = 0;
@@ -253,12 +253,12 @@ public class CampusFinanceHandler implements FinanceHandler{
     long valfr = con.getValidFrom().getTime();
     long valto = con.getValidTo().getTime();
 
-    if(con.getDeliverTime()!=null ){
+/*    if(con.getDeliverTime()!=null ){
       valfr = con.getDeliverTime().getTime();
     }
     if(con.getReturnTime() !=null){
       valto = con.getReturnTime().getTime();
-    }
+    }*/
 
 /*
       System.err.print("Valfr: "+con.getValidFrom().toString());
