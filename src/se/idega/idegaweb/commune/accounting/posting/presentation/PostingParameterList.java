@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.6 2003/08/24 06:50:02 anders Exp $
+ * $Id: PostingParameterList.java,v 1.7 2003/08/25 21:42:52 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -42,10 +42,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.6 2003/08/24 06:50:02 anders Exp $
+ * $Id: PostingParameterList.java,v 1.7 2003/08/25 21:42:52 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -68,15 +68,17 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String KEY_NEW = "posting_parm_list.new";
 	private final static String KEY_REMOVE = "posting_parm_list.remove";
 	private final static String KEY_CANCEL = "posting_parm_list.cancel";
+	private final static String KEY_CONFIRM_REMOVE_MESSAGE = "posting_parm_list.confirm_remove_message";
 
 	private final static String PARAM_SEARCH = "button_search";
 	private final static String PARAM_COPY = "button_copy";
 	private final static String PARAM_NEW = "button_new";
 	private final static String PARAM_REMOVE = "button_remove";
-	private final static String PARAM_CANCEL = "button_cancel";
 
+	private final static String PARAM_CHECKED_FOR_DELETE = "param_checked_for_delete";
 	private final static String PARAM_FROM = "param_from";
 	private final static String PARAM_TO = "param_to";
+	private final static String PARAM_POSTING_ID = "param_posting_id";
 
 	private IBPage editPage;
 	private Date currentFromDate;
@@ -130,17 +132,20 @@ public class PostingParameterList extends AccountingBlock {
 	 */	
 	 
 	private void viewForm(IWContext iwc) {
-		ApplicationForm app = new ApplicationForm();
+		ApplicationForm app = new ApplicationForm(this);
 		
 		if (iwc.isParameterSet(PARAM_FROM)) {
 			currentFromDate = parseDate(iwc.getParameter(PARAM_FROM));
+		} else{
+			currentFromDate = new Date(System.currentTimeMillis());
 		}
 		
 		if (iwc.isParameterSet(PARAM_TO)) {
 			currentToDate = parseDate(iwc.getParameter(PARAM_TO));
+		} else {
+			currentToDate = new Date(System.currentTimeMillis());
 		}
-			 		
-		
+
 		app.setLocalizedTitle(KEY_HEADER, "Konteringlista");
 		app.setSearchPanel(getSearchPanel());
 		app.setMainPanel(getPostingTable(iwc));
@@ -149,11 +154,15 @@ public class PostingParameterList extends AccountingBlock {
 	}
 
 	private ButtonPanel getButtonPanel() {
-		ButtonPanel buttonPanel = new ButtonPanel();
-		buttonPanel.addLocalizedButton(PARAM_COPY, KEY_COPY, "Kopiera");
+		ButtonPanel buttonPanel = new ButtonPanel(this);
 		buttonPanel.addLocalizedButton(PARAM_NEW, KEY_NEW, "Ny", editPage);
-		buttonPanel.addLocalizedButton(PARAM_REMOVE, KEY_REMOVE, "Ta bort");
-		buttonPanel.addLocalizedButton(PARAM_CANCEL, KEY_CANCEL, "Avbryt");
+		buttonPanel.addLocalizedConfirmButton(
+								PARAM_REMOVE, 
+								KEY_REMOVE, 
+								"Ta bort",
+								PARAM_POSTING_ID, 
+								KEY_CONFIRM_REMOVE_MESSAGE,
+								"Vill du verkligen ta bort markerade poster?");
 		return buttonPanel;
 	}
 	
@@ -163,7 +172,7 @@ public class PostingParameterList extends AccountingBlock {
 	private ListTable getPostingTable(IWContext iwc) {
 		
 		PostingBusiness pBiz;
-		ListTable list = new ListTable(7);
+		ListTable list = new ListTable(this, 9);
 
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
 		list.setLocalizedHeader(KEY_ACTIVITY, "Verksamhet", 2);
@@ -172,27 +181,34 @@ public class PostingParameterList extends AccountingBlock {
 		list.setLocalizedHeader(KEY_COMMUNE_BELONGING, "Kommuntillhörighet", 5);
 		list.setLocalizedHeader(KEY_OWN_ENTRY, "Egen kontering", 6);
 		list.setLocalizedHeader(KEY_DOUBLE_ENTRY, "Motkontering", 7);
-		
+		list.setLocalizedHeader(KEY_COPY, "Kopiera", 8);
+		list.setLocalizedHeader(KEY_REMOVE, "Ta bort", 9);
 		
 		try {
 			pBiz = getPostingBusiness(iwc);
 			pBiz.findAllPostingParameters();
 
-			Collection items = pBiz.findAllPostingParameters();
+			Collection items = pBiz.findPostingParametersByPeriode(currentFromDate, currentToDate);
+//			Collection items = pBiz.findAllPostingParameters();
 			if(items != null) {
 				Iterator iter = items.iterator();
 				while (iter.hasNext()) {
 					PostingParameters p = (PostingParameters) iter.next();
-					p.getActivity().getActivityType();
-					p.getPeriodeFrom();
-					
-					list.add(p.getPeriodeFrom() + "-" + p.getPeriodeTo());
-					list.add(localize(p.getActivity().getTextKey(),""));
-					list.add(localize(p.getRegSpecType().getTextKey(), ""));
-					list.add(localize(p.getCompanyType().getTextKey(), ""));
-					list.add(localize(p.getCommuneBelonging().getTextKey(), ""));
+					list.add(formatDate(p.getPeriodeFrom(), 4) + "-" + formatDate(p.getPeriodeTo(), 4));
+//					list.add(localize(p.getActivity().getTextKey(), p.getActivity().getTextKey()));
+//					list.add(localize(p.getRegSpecType().getTextKey(), p.getRegSpecType().getTextKey()));
+//					list.add(localize(p.getCompanyType().getTextKey(), p.getCompanyType().getTextKey()));
+//					list.add(localize(p.getCommuneBelonging().getTextKey(), p.getCommuneBelonging().getTextKey()));
+
+					list.add(p.getActivity().getTextKey(), p.getActivity().getTextKey());
+					list.add(p.getRegSpecType().getTextKey(), p.getRegSpecType().getTextKey());
+					list.add(p.getCompanyType().getTextKey(), p.getCompanyType().getTextKey());
+					list.add(p.getCommuneBelonging().getTextKey(), p.getCommuneBelonging().getTextKey());
+
+					list.add(p.getPostingAccount());
+					list.add(p.getDoublePostingAccount());
 					list.add("");
-					list.add("");
+					list.add(getCheckBox(PARAM_POSTING_ID, p.getPrimaryKey().toString()));
 				}
 			}			
 		} catch (Exception e) {
@@ -221,42 +237,15 @@ public class PostingParameterList extends AccountingBlock {
 
 	private Table getFromToDatePanel(String param_from, Date date_from, String param_to, Date date_to) {
 		Table table = new Table();
-		TextInput fromDate = getTextInput(param_from, formatDateTemp(date_from, 6),  100, 10);
-		TextInput toDate = getTextInput(param_from, formatDateTemp(date_to, 6),  100, 10);
+		TextInput fromDate = getTextInput(param_from, formatDate(date_from, 6),  100, 10);
+		TextInput toDate = getTextInput(param_to, formatDate(date_to, 6),  100, 10);
 		table.add(fromDate, 1, 1);
 		table.add(new String("-"), 2, 1);
 		table.add(toDate, 3, 1);
 		return table;
 	}
 
-	/*
-	 * Formats a date according to specifications 
-	 * @param dt user/session context 
-	 * @param pp PostingParameter 
-	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters
-	 * @return formated date in String format
-	 */
-	private String formatDateTemp(Date dt, int len) {
-		if (dt == null) {
-			return "";
-		}
-		String ret = "";
-		String y = ("00" + dt.getYear()).substring(2);
-		String year = y.substring(y.length()-2);
-		String m = ("00" + (dt.getMonth() + 1));
-		String month = m.substring(m.length()-2);
-		String d = ("00" + dt.getDay());
-		String day = m.substring(d.length()-2);
-		if (len == 4) {
-			ret = year+month;
-		}
-		if (len == 6) {
-			ret = year+month+day;
-		}
-		return ret;
-	}
-
-	private PostingBusiness getPostingBusiness(IWContext iwc) throws RemoteException {
+		private PostingBusiness getPostingBusiness(IWContext iwc) throws RemoteException {
 		return (PostingBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.7 2003/08/24 06:50:02 anders Exp $
+ * $Id: PostingParameterListEditor.java,v 1.8 2003/08/25 21:42:52 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -13,10 +13,17 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.sql.Date;
+import java.sql.Timestamp;
 
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.data.IBPage;
+import com.idega.user.data.User;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ExceptionWrapper;
+import com.idega.util.IWTimestamp;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
@@ -29,30 +36,33 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParamException;
 
 
-/**
+/**7
  * PostingParameterListEdit is an idegaWeb block that handles maintenance of some 
  * default data thatis used in a "posting". The block shows/edits Periode, Activity, Regulation specs, 
  * Company types and Commune belonging. 
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.7 2003/08/24 06:50:02 anders Exp $
+ * $Id: PostingParameterListEditor.java,v 1.8 2003/08/25 21:42:52 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
 	private final static int ACTION_DEFAULT = 0;
 	private final static int ACTION_EDIT = 1;
+	private final static int ACTION_SAVE = 2;
+	private final static int ACTION_CANCEL = 3;
 
 	private final static String KEY_SAVE = "posting_parm_edit.save";
 	private final static String KEY_CANCEL = "posting_parm_edit.cancel";
 
 	private final static String KEY_ACTIVITY_HEADER = "posting_parm_edit.activity_header";
-	private final static String KEY_REGSPEC_HEADER = "posting_parm_edit.reg_spec_header";
+	private final static String KEY_REGSPEC_HEADER = "regulation_specification_header";
 	private final static String KEY_COMPANY_TYPE_HEADER = "posting_parm_edit.company_type_header";
 	private final static String KEY_COM_BEL_HEADER = "posting_parm_edit.com_bel_header";
 
@@ -87,10 +97,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String KEY_POST_PROJECT = "posting_parm_edit_post.project";
 	private final static String KEY_POST_OBJECT = "posting_parm_edit_post.object";
 
-	private final static String PARAM_SAVE = "button_save";
-	private final static String PARAM_CANCEL = "button_cancel";
-	private final static String PARAM_POSTING_ID = "posting_id";
-
+	private final static String PARAM_BUTTON_SAVE = "button_save";
+	private final static String PARAM_BUTTON_CANCEL = "button_cancel";
+	
+	private final static String PARAM_POSTING_ID = "pp_edit_posting_id";
 	private final static String PARAM_ACCOUNT = "pp_edit_account";
 	private final static String PARAM_LIABILITY = "pp_edit_liability";
 	private final static String PARAM_RESOURCE = "pp_edit_resource";
@@ -99,6 +109,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String PARAM_ACTIVITY_FIELD = "p_edit_activity_field";
 	private final static String PARAM_PROJECT = "pp_edit_project";
 	private final static String PARAM_OBJECT = "pp_edit_object";
+	private final static String PARAM_PERIODE_FROM = "pp_edit_periode_from";
+	private final static String PARAM_PERIODE_TO = "pp_edit_periode_to";
+	private final static String PARAM_SIGNED = "pp_edit_signed";
 
 	private final static String PARAM_DOUBLE_ACCOUNT = "pp_double_edit_account";
 	private final static String PARAM_DOUBLE_LIABILITY = "pp_double_edit_liability";
@@ -114,7 +127,16 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String PARAM_SELECTOR_COMPANY_TYPE = "selector_company_type";
 	private final static String PARAM_SELECTOR_COM_BELONGING = "selector_com_belonging";
 
+	private IBPage _responsePage;
 
+	public void setResponsePage(IBPage page) {
+		_responsePage = page;
+	}
+
+	public IBPage getResponsePage() {
+		return _responsePage;
+	}
+	
 	/**
 	 * Handles all of the blocks presentation.
 	 * @param iwc user/session context 
@@ -128,11 +150,56 @@ public class PostingParameterListEditor extends AccountingBlock {
 				case ACTION_DEFAULT :
 					viewMainForm(iwc);
 					break;
+				case ACTION_SAVE :
+					saveData(iwc);
+				case ACTION_CANCEL :
+					closeMe(iwc);
 			}
 		}
 		catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}
+	}
+		 
+	private void saveData(IWContext iwc) {
+		
+			try {
+				getPostingBusiness(iwc).savePostingParameter(iwc.getParameter(PARAM_POSTING_ID),
+				(Date) parseDate(iwc.getParameter(PARAM_PERIODE_FROM)),
+				(Date) parseDate(iwc.getParameter(PARAM_PERIODE_TO)),
+				iwc.getParameter(PARAM_SIGNED),
+				iwc.getParameter(PARAM_SELECTOR_ACTIVITY),				
+				iwc.getParameter(PARAM_SELECTOR_REGSPEC),					
+				iwc.getParameter(PARAM_SELECTOR_COMPANY_TYPE),					
+				iwc.getParameter(PARAM_SELECTOR_COM_BELONGING),
+				iwc.getParameter(PARAM_ACCOUNT),
+				iwc.getParameter(PARAM_LIABILITY),
+				iwc.getParameter(PARAM_RESOURCE),
+				iwc.getParameter(PARAM_ACTIVITY_CODE),
+				iwc.getParameter(PARAM_DOUBLE_ENTRY_CODE),
+				iwc.getParameter(PARAM_ACTIVITY_FIELD),
+				iwc.getParameter(PARAM_PROJECT),
+				iwc.getParameter(PARAM_OBJECT),
+				iwc.getParameter(PARAM_DOUBLE_ACCOUNT),
+				iwc.getParameter(PARAM_DOUBLE_LIABILITY),
+				iwc.getParameter(PARAM_DOUBLE_RESOURCE),
+				iwc.getParameter(PARAM_DOUBLE_ACTIVITY_CODE),
+				iwc.getParameter(PARAM_DOUBLE_DOUBLE_ENTRY_CODE),
+				iwc.getParameter(PARAM_DOUBLE_ACTIVITY_FIELD),
+				iwc.getParameter(PARAM_DOUBLE_PROJECT),
+				iwc.getParameter(PARAM_DOUBLE_OBJECT)
+				);
+			} catch (PostingParamException e) {
+				super.add(new ExceptionWrapper(e, this));
+			} catch (RemoteException e) {
+				super.add(new ExceptionWrapper(e, this));
+			}
+			
+			closeMe(iwc);
+	}
+
+	private void closeMe(IWContext iwc) {
+		getParentPage().setToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _responsePage.getID()));
 	}
 	 
 	/*
@@ -140,22 +207,28 @@ public class PostingParameterListEditor extends AccountingBlock {
 	 * on the POST parameters in the specified context.
 	 */
 	private int parseAction(IWContext iwc) {
-		return ACTION_DEFAULT;
+		int action = ACTION_DEFAULT;
+		if (iwc.isParameterSet(PARAM_BUTTON_SAVE)) {
+		  action = ACTION_SAVE;
+		}
+		if (iwc.isParameterSet(PARAM_BUTTON_CANCEL)) {
+		  action = ACTION_CANCEL;
+		}
+		return action;
 	}
-
 	/*
 	 * Adds the default form to the block.
     */	
 	private void viewMainForm(IWContext iwc) {
-		ApplicationForm app = new ApplicationForm();
+		ApplicationForm app = new ApplicationForm(this);
 		PostingParameters pp = getThisPostingParameter(iwc);
 		
 		Table topPanel = getTopPanel(iwc, pp);		
 		Table postingForm = getPostingForm(iwc, pp);
 					
-		ButtonPanel buttonPanel = new ButtonPanel();
-		buttonPanel.addLocalizedButton(PARAM_SAVE, KEY_SAVE, "Spara");
-		buttonPanel.addLocalizedButton(PARAM_CANCEL, KEY_CANCEL, "Avbryt");
+		ButtonPanel buttonPanel = new ButtonPanel(this);
+		buttonPanel.addLocalizedButton(PARAM_BUTTON_SAVE, KEY_SAVE, "Spara");
+		buttonPanel.addLocalizedButton(PARAM_BUTTON_CANCEL, KEY_CANCEL, "Avbryt");
 		
 		app.setLocalizedTitle(KEY_HEADER, "Skapa/Ändra konteringlista");
 		app.setSearchPanel(topPanel);
@@ -175,45 +248,28 @@ public class PostingParameterListEditor extends AccountingBlock {
 
 		Table table = new Table();
 		table.setWidth("75%");
-		Date dd = Date.valueOf("2003-01-01");
+		User user = iwc.getCurrentUser();
+		String userName = "";
+		if(user != null) {
+			userName = user.getDisplayName();
+		}
+		Timestamp rightNow = IWTimestamp.getTimestampRightNow();
+		Date dd = new Date(System.currentTimeMillis());
 		
 		table.add(getLocalizedLabel(KEY_FROM_DATE, "Från datum"),1 ,1);
-		table.add(getText(formatDateTemp(pp != null ? pp.getPeriodeFrom() : dd, 4)), 2, 1);
+		table.add(getTextInput(PARAM_PERIODE_FROM, (formatDate(pp != null ? pp.getPeriodeFrom() : dd, 4)), 60,6), 2, 1);
 	
 		table.add(getLocalizedLabel(KEY_TO_DATE, "Tom datum"),3 ,1);
-		table.add(getText(formatDateTemp(pp != null ? pp.getPeriodeTo(): dd, 4)), 4, 1);
+		table.add(getTextInput(PARAM_PERIODE_TO, (formatDate(pp != null ? pp.getPeriodeTo() : dd, 4)), 60,6), 4, 1);
 
 		table.add(getLocalizedLabel(KEY_CHANGE_DATE, "Ändringsdatum"),1 ,2);
-		table.add(getText(formatDateTemp(pp != null ? pp.getChangedDate(): dd, 6)), 2, 2);
-	
+		table.add(getText(formatDate(pp != null ? pp.getChangedDate(): rightNow, 6)), 2, 2);
+
 		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,2);
-		table.add(getText(pp != null ? pp.getChangedSign(): ""), 4, 2);
+		table.add(""+userName, 4, 2);
+		table.add(new HiddenInput(PARAM_SIGNED, ""+userName));
 		
 		return table;	
-	}
-	
-	/*
-	 * Formats a date according to specifications 
-	 * @param dt user/session context 
-	 * @param pp PostingParameter 
-	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters
-	 * @return formated date in String format
-	 */
-	private String formatDateTemp(Date dt, int len) {
-		String ret = "";
-		String y = ("00" + dt.getYear()).substring(2);
-		String year = y.substring(y.length()-2);
-		String m = ("00" + (dt.getMonth() + 1));
-		String month = m.substring(m.length()-2);
-		String d = ("00" + dt.getDay());
-		String day = m.substring(d.length()-2);
-		if (len == 4) {
-			ret = year+month;
-		}
-		if (len == 6) {
-			ret = year+month+day;
-		}
-		return ret;
 	}
 	
 	/*
