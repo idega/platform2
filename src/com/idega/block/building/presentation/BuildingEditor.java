@@ -1458,7 +1458,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     try{
     isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
     this.getParentPage().setName("b_editor");
-    this.getParentPage().setTitle("Building Editor");
+    this.getParentPage().setTitle(iwrb.getLocalizedString("buildingEditor","Building Editor"));
     this.getParentPage().setAllMargins(0);
     }
     catch(SQLException sql){ isAdmin = false;}
