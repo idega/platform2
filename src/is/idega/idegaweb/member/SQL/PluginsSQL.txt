@@ -15,7 +15,7 @@ insert into ic_user_plugin(PLUG_IN_NAME,PRESENTATION_IC_OBJECT ,PLUG_IN_TYPE ,PL
 insert into ic_user_plugin(PLUG_IN_NAME,PRESENTATION_IC_OBJECT ,PLUG_IN_TYPE ,PLUG_IN_DESC ,BUSINESS_IC_OBJECT)  values('Group Office Address Plugin',null,'group',1,null, 208)
 
 207 is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness 
-insert into ic_user_plugin(PLUG_IN_NAME,PRESENTATION_IC_OBJECT ,PLUG_IN_TYPE ,PLUG_IN_DESC ,BUSINESS_IC_OBJECT)  values('Club Informatio Plugin',null,'group',null, 207)
+insert into ic_user_plugin(PLUG_IN_NAME,PRESENTATION_IC_OBJECT ,PLUG_IN_TYPE ,PLUG_IN_DESC ,BUSINESS_IC_OBJECT)  values('Club Information Plugin',null,'group',null, 207)
 
 126 is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness
 insert into ic_user_plugin(PLUG_IN_NAME,PRESENTATION_IC_OBJECT ,PLUG_IN_TYPE ,PLUG_IN_DESC ,BUSINESS_IC_OBJECT)  values('Age and Gender Plugin',null,'group',null, 126)
