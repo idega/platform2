@@ -51,4 +51,6 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public void setQueueDate(java.sql.Date p0);
  public void setQueueOrder(int p0);
  public void setRejectionDate(java.sql.Date p0);
+ public boolean isAcceptedByParent() throws java.rmi.RemoteException;
+ public boolean isCancelledOrRejectedByParent() throws  java.rmi.RemoteException;
 }

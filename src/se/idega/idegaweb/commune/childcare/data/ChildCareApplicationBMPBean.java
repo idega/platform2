@@ -645,4 +645,17 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		return idoGetNumberOfRecords(sql);
 	}
+	
+	
+	public boolean isAcceptedByParent() throws RemoteException{
+		return 	getStatus().equals("PREL") && //CaseBMPBean.CASE_STATUS_PRELIMINARY_KEY (make public...?)
+			getApplicationStatus() == 'D'; //ChildCareBusinessBean.STATUS_PARENTS_ACCEPT (make public...?)
+	}
+	
+	public boolean isCancelledOrRejectedByParent() throws RemoteException{
+		return 	getStatus().equals("TYST") //CaseBMPBean.CASE_STATUS_INACTIVE_KEY (make public...?)
+		&& (getApplicationStatus() == 'Z' //ChildCareBusinessBean.STATUS_CANCELLED (make public...?)
+		|| getApplicationStatus() == 'V'); //ChildCareBusinessBean.STATUS_REJECTED (make public...?)
+	}	
+	
 }
