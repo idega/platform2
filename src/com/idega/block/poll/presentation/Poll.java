@@ -68,7 +68,7 @@ private idegaTimestamp _date;
 
 	public void main(IWContext iwc)throws Exception{
     _iwrb = getResourceBundle(iwc);
-    _iwb = getBundle(iwc);
+    _iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
     _isAdmin = iwc.hasEditPermission(this);
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
@@ -122,7 +122,7 @@ private idegaTimestamp _date;
 	}
 
   private Link getAdminPart(int pollID,boolean newObjInst,boolean newWithAttribute) {
-    Link adminLink = new Link(_iwrb.getImage("pollmanager.gif"));
+    Link adminLink = new Link(_iwb.getImage("shared/create.gif"));
       adminLink.setWindowToOpen(PollAdminWindow.class,this.getICObjectInstanceID());
       adminLink.addParameter(PollAdminWindow.prmID,pollID);
       if(newObjInst)

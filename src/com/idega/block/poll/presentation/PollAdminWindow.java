@@ -11,6 +11,7 @@ import com.idega.presentation.ui.*;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICLocale;
+import com.idega.block.IWBlock;
 import com.idega.block.poll.data.*;
 import com.idega.block.poll.business.*;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -59,7 +60,7 @@ public PollAdminWindow(){
      */
     isAdmin = iwc.hasEditPermission(this);
     superAdmin = iwc.isSuperAdmin();
-    iwb = getBundle(iwc);
+    iwb = iwc.getApplication().getBundle(IWBlock.IW_CORE_BUNDLE_IDENTIFIER);
     iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("poll_admin","Poll Admin"));
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
@@ -72,14 +73,8 @@ public PollAdminWindow(){
     }
 
     editImage = iwb.getImage("shared/edit.gif");
-      editImage.setHorizontalSpacing(1);
-      editImage.setVerticalSpacing(0);
-    createImage = iwrb.getImage("create.gif");
-      createImage.setHorizontalSpacing(4);
-      createImage.setVerticalSpacing(3);
+    createImage = iwb.getImage("shared/create.gif");
     deleteImage = iwb.getImage("shared/delete.gif");
-      deleteImage.setHorizontalSpacing(1);
-      deleteImage.setVerticalSpacing(0);
 
     String sLocaleId = iwc.getParameter(prmLocale);
 
@@ -156,15 +151,16 @@ public PollAdminWindow(){
       pollTable.setCellspacing(0);
 
     Text choosePollText = formatText(iwrb.getLocalizedString("choose_poll_question","Choose Question")+":&nbsp;",true);
-    Link choosePollLink = new Link(iwrb.getImage("choose.gif"));
+    Link choosePollLink = new Link(editImage);
       choosePollLink.setWindowToOpen(PollQuestionChooser.class);
       choosePollLink.addParameter(Poll._prmPollID,_pollID);
     Link createPollLink = new Link(createImage);
       createPollLink.setWindowToOpen(PollQuestionEditor.class);
       createPollLink.addParameter(Poll._prmPollID,_pollID);
       pollTable.add(choosePollText,1,1);
-      pollTable.add(choosePollLink,2,1);
+      pollTable.setWidth(2,1,"5");
       pollTable.add(createPollLink,3,1);
+      pollTable.add(choosePollLink,3,1);
 
     addLeft(pollTable,false);
 
@@ -265,7 +261,7 @@ public PollAdminWindow(){
       questionTable.add(questionText,1,1);
       if ( pollQuestionID != -1 && _pollQuestion != null ) {
         if ( _userID == _pollQuestion.getUserID() || superAdmin ) {
-          questionTable.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,1);
+          questionTable.setWidth(2,1,"5");
           questionTable.add(questionEditLink,3,1);
           questionTable.add(questionDeleteLink,3,1);
         }
@@ -291,7 +287,7 @@ public PollAdminWindow(){
           answerTable.add("<li>",1,row);
           answerTable.add(formatText(pollAnswers[a],true),1,row);
           if ( _userID == _pollQuestion.getUserID() || superAdmin ) {
-            answerTable.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
+            answerTable.setWidth(2,row,"5");
             answerTable.add(editAnswerLink,3,row);
             answerTable.add(deleteAnswerLink,3,row);
           }
@@ -310,8 +306,8 @@ public PollAdminWindow(){
       addHiddenInput(new HiddenInput(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestionID)));
     }
 
-    addSubmitButton(new SubmitButton(iwrb.getImage("close.gif"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_CLOSE));
-    addSubmitButton(new SubmitButton(iwrb.getImage("save.gif"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_SAVE));
+    addSubmitButton(new SubmitButton(iwrb.getLocalizedImageButton("close","CLOSE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_CLOSE));
+    addSubmitButton(new SubmitButton(iwrb.getLocalizedImageButton("save","SAVE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_SAVE));
 
   }
 

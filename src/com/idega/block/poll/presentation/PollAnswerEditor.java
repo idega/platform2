@@ -34,8 +34,8 @@ private IWBundle iwb;
 private IWResourceBundle iwrb;
 
 public PollAnswerEditor(){
-  setWidth(570);
-  setHeight(430);
+  setWidth(430);
+  setHeight(140);
   setUnMerged();
 }
 
@@ -151,8 +151,8 @@ public PollAnswerEditor(){
     addHiddenInput(new HiddenInput(PollBusiness._PARAMETER_POLL_ANSWER,Integer.toString(pollAnswerID)));
     addHiddenInput(new HiddenInput("iLocaleID",Integer.toString(iLocaleID)));
 
-    addSubmitButton(new SubmitButton(iwrb.getImage("close.gif"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_CLOSE));
-    addSubmitButton(new SubmitButton(iwrb.getImage("save.gif"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_SAVE));
+    addSubmitButton(new SubmitButton(iwrb.getLocalizedImageButton("close","CLOSE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_CLOSE));
+    addSubmitButton(new SubmitButton(iwrb.getLocalizedImageButton("save","SAVE"),PollBusiness._PARAMETER_MODE,PollBusiness._PARAMETER_SAVE));
   }
 
   private void closePollAnswer(IWContext iwc) {
