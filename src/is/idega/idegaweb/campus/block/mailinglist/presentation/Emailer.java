@@ -201,11 +201,11 @@ public class Emailer extends CampusBlock {
 		else {
 			EmailLetter letter = null;
 			boolean saved = false;
-			int id = -1;
+			//int id = -1;
 			if (iwc.isParameterSet(prmLetter)) {
 				try {
 					letter = MailingListBusiness.getEmailLetter(Integer.parseInt(iwc.getParameter(prmLetter)));
-					id = new Integer(letter.getPrimaryKey().toString()).intValue();
+					//id = new Integer(letter.getPrimaryKey().toString()).intValue();
 				}
 				catch (NumberFormatException e) {
 					e.printStackTrace();
@@ -374,26 +374,26 @@ public class Emailer extends CampusBlock {
 		int row = 1;
 
 		if (types != null) {
-			dTable.add(getHeader(localize("type", "Type")), col_1, row);
+			dTable.add(getHeader(localize("emailer.letter.type", "Type")), col_1, row);
 			dTable.add(types, col_2, row);
 			row++;
 		}
-		dTable.add(getHeader(localize("host", "Host")), col_1, row);
+		dTable.add(getHeader(localize("emailer.letter.host", "Host")), col_1, row);
 		dTable.add(host, col_2, row);
 		row++;
-		dTable.add(getHeader(localize("from", "From")), col_1, row);
+		dTable.add(getHeader(localize("emailer.letter.from", "From")), col_1, row);
 		dTable.add(from, col_2, row);
 		row++;
-		dTable.add(getHeader(localize("subject", "Subject")), col_1, row);
+		dTable.add(getHeader(localize("emailer.letter.subject", "Subject")), col_1, row);
 		dTable.add(subject, col_2, row);
 		row++;
-		dTable.add(getHeader(localize("body", "Body")), col_1, row);
+		dTable.add(getHeader(localize("emailer.letter.body", "Body")), col_1, row);
 		dTable.add(body, col_2, row);
 		row++;
-		dTable.add(getHeader(localize("parse", "Parse")), col_1, row);
+		dTable.add(getHeader(localize("emailer.letter.parse", "Parse")), col_1, row);
 		dTable.add(parse, col_2, row);
 		row++;
-		dTable.add(getHeader(localize("skip_user", "Skip user")), col_1, row);
+		dTable.add(getHeader(localize("emailer.letter.skip_user", "Skip user")), col_1, row);
 		dTable.add(useronly, col_2, row);
 		dTable.addButton(new SubmitButton(getResourceBundle().getLocalizedImageButton("save", "Save"), "save_letter"));
 		return dTable;
@@ -447,11 +447,11 @@ public class Emailer extends CampusBlock {
 		}
 		if (mlists != null) {
 			MailingList mlist;
-			String color;
+			//String color;
 			Iterator iter = mlists.iterator();
 			while (iter.hasNext()) {
 				mlist = (MailingList) iter.next();
-				color = new Integer(mlist.getPrimaryKey().toString()).intValue() != mlistId ? "#000000" : "#FF0000";
+				//color = new Integer(mlist.getPrimaryKey().toString()).intValue() != mlistId ? "#000000" : "#FF0000";
 				dTable.add(getText(mlist.getName()), 1, row);
 				dTable.add(getText(mlist.getCreated().toString()), 2, row);
 				dTable.add(getListChangeLink(mlist), 3, row);
@@ -503,7 +503,7 @@ public class Emailer extends CampusBlock {
 		int row = 1;
 		dTable.add(getHeader(localize("email_address", "Email address")), 1, row);
 		row++;
-		int id = -1;
+		//int id = -1;
 		Collection emails = null;
 
 		try {
@@ -559,7 +559,7 @@ public class Emailer extends CampusBlock {
 		Collection mlists = getMailService(iwc).getMailingLists(); //MailingListBusiness.listOfMailingList();
 		if (mlists != null) {
 			MailingList mlist;
-			String color;
+			//String color;
 			CheckBox use;
 			HiddenInput used;
 			String prmUse = "let_use";
