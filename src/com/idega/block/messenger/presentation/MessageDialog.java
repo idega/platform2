@@ -33,11 +33,16 @@ public class MessageDialog extends Frame implements ActionListener{
   AudioClip alertSound;
 
   public MessageDialog(String title, Message message) {
+    this(title,message,null);
+  }
+
+  public MessageDialog(String title, Message message, ImageLabel imageLogo) {
     super(title);
-    //super(new Frame(), title, false);
+    //super(new Frame(), title, false);//if we are a dialog
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
     this.message = message;
     try {
+      this.logo = imageLogo;
       jbInit();
       add(panel);
       pack();
@@ -45,15 +50,6 @@ public class MessageDialog extends Frame implements ActionListener{
     catch(Exception ex) {
       ex.printStackTrace();
     }
-  }
-
-  public MessageDialog(String title, Message message, ImageLabel imageLogo) {
-    this(title, message);
-    this.logo = imageLogo;
-  }
-
-  public MessageDialog(String title, Message message, Image image) {
-    this(title, message,new ImageLabel(image));
   }
 
   void jbInit() throws Exception {
@@ -87,7 +83,8 @@ public class MessageDialog extends Frame implements ActionListener{
     sendButton.setBounds(new Rectangle(206, 222, 79, 31));
     sendButton.addActionListener(this);*/
 
-    if(logo!=null){
+
+    if( logo!=null ) {
       logo.setBounds(new Rectangle(6, 0, 126, 52));
       panel.add(logo, null);
     }

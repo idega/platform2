@@ -51,8 +51,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private String resourceURL;
 
   private Hashtable dialogs = new Hashtable();
-  private ImageLabel faceLabel;
-  private ImageLabel logoLabel;
   private MessageListener cycler;
 
   private AudioClip alertSound;
@@ -69,6 +67,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private Packet packetToServlet;
   private Packet packetFromServlet;
 
+
   /**Construct the applet*/
   public MessengerApplet() {
   }
@@ -77,7 +76,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   /**Initialize the applet*/
   public void init() {
 
-    setBackground(Color.red);
+    //setBackground(Color.red);
 
     try {
       sessionId = this.getParameter(SESSION_ID, "noId");
@@ -88,12 +87,10 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       resourceURL = this.getParameter(RESOURCE_URL,"/idegaweb/bundles/com.idega.block.messenger.bundle/resources/");
     }
     catch(MalformedURLException e) {
-      System.out.println("MessageApplet: error in init!");
+      System.out.println("MessageApplet: error in init getting parameters!");
       e.printStackTrace(System.err);
     }
 
-    faceLabel = new ImageLabel(getImage(getCodeBase(),"face_in.gif"));
-    logoLabel = new ImageLabel(getImage(getCodeBase(),"idegalogo.gif"));
     alertSound = getAudioClip(getCodeBase(),"notify.au");
 
   }
@@ -154,8 +151,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   private MessageDialog createAMessageDialog(boolean newId, Message aMessage){
     MessageDialog messageDialog;
-    if( logoLabel != null ) messageDialog = new MessageDialog(FRAME_NAME,aMessage,logoLabel);
-    else messageDialog = new MessageDialog(FRAME_NAME,aMessage);
+    messageDialog = new MessageDialog(FRAME_NAME,aMessage,new ImageLabel(getImage(getCodeBase(),"idegalogo.gif")));
 
     Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
     messageDialog.setLocation((d.width - messageDialog.getSize().width) / 2, (d.height - messageDialog.getSize().height) / 2);
@@ -345,15 +341,18 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     if( !id.equalsIgnoreCase(sessionId) ){
          addToUserList( id , (String)user.getValue() );//new user
     }
+       refresh();
+
    }
 
-   refresh();
+
 
 
     System.out.println("MessengerApplet: userListVersion : "+userListVersion);
   }
 
   private void addToUserList(String sendToId, String name){
+
     System.out.println("MessengerApplet: Adding to userlist! id: "+sendToId+" name: "+name);
       Message msg = new Message();
       msg.setSender(sendToId);
@@ -367,19 +366,23 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.setWindowToOpen(dialog);
       item.addActionListener(this);
 
-      //item.setSize(18,150);
-      faceLabel.waitForImage(false);
-      item.add(faceLabel);
+      item.add(new ImageLabel(getImage(getCodeBase(),"face_in.gif")));
       item.add(new Label(name));
 
       add(item);
-      item.refresh();
+
 
   }
 
   private void refresh(){
-      doLayout();
-      repaint();
+   doLayout();
+   Component[] comps = getComponents();
+   for (int i = 0; i < comps.length; i++) {
+        comps[i].paintAll(getGraphics());
+    comps[i].repaint();
+   }
+
+    repaint();
   }
 
   public synchronized void cycle(){
@@ -416,15 +419,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     }
 
     System.out.println("MessengerApplet: action command was :"+action);
-    //debug
-  /*  Component[] comps = getComponents();
-    for (int i = 0; i < comps.length; i++) {
-        comps[i].repaint();
-    }*/
-
-
     refresh();
-
   }
 
   /**
