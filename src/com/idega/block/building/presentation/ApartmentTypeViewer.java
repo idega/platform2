@@ -33,8 +33,8 @@ public class ApartmentTypeViewer extends JModuleObject{
 private static final String IW_RESOURCE_BUNDLE = "com.idega.block.building";
 public static final String PARAMETER_STRING = "type_id";
 private int apartmenttypeid = 0;
-private String style = "font-family:verdana; font-size: 11pt; font-weight: bold; color: #FFFFFF;";
-private String infoStyle =  "font-family:arial; font-size:8pt; color:#000000; line-height: 1.8; text-align: justify;";
+private String style = "font-family:verdana,arial,sans-serif; font-size: 11pt; font-weight: bold; color: #FFFFFF;";
+private String infoStyle =  "font-family:verdana,arial,sans-serif; font-size:10px; color:#000000; text-align: justify;";
 protected IWResourceBundle iwrb_;
 protected IWBundle iwb_;
 

@@ -33,7 +33,7 @@ public static final String PARAMETER_STRING = "complex_id";
 private int building_id = 0;
 private String nameStyle = "font-family:verdana; font-size: 11pt; font-weight: bold; color: #27324B;";
 private String addressStyle = "font-family:verdana; font-size: 10pt; font-weight: bold; color: #9FA9B3;";
-private String infoStyle= "font-family:arial; font-size:8pt; color:#000000; line-height: 1.8; text-align: justify;";
+private String infoStyle= "font-family:verdana,arial,sans-serif; font-size:11px; color:#000000; line-height: 1.8; text-align: justify;";
 protected IWResourceBundle iwrb_;
 
 public BuildingViewer(){
@@ -185,9 +185,11 @@ public BuildingViewer(int building_id){
       BackButton BB = new BackButton( backImage);
       typesTable.add(getAddressText(typeName),1,1);
       typesTable.add(getInfoText(typeText),1,2);
-      typesTable.add(typeLink,1,3);
       typesTable.add(BB,1,3);
-      typesTable.add(typeImage,2,2);
+      typesTable.add("&nbsp;&nbsp;&nbsp;",1,3);
+      typesTable.add(typeLink,1,3);
+      if ( types[a].getImageId() != -1 )
+        typesTable.add(typeImage,2,2);
 
       complexTable.add(typesTable,1,a+2);
       if ( a+1 < types.length ) {
