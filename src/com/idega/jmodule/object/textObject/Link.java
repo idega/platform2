@@ -33,7 +33,7 @@ private StringBuffer parameterString;
 private boolean addSessionId = true;
 private static String sessionStorageName=IWMainApplication.windowOpenerParameter;
 private Form formToSubmit;
-
+private Class windowClass;
 
 
 public Link(){
@@ -558,32 +558,23 @@ public void print(ModuleInfo modinfo)throws Exception{
 
 
 		if (getLanguage().equals("HTML")){
-			//if (getInterfaceStyle().equals("something")){
-			//}
-			//else{
-				//unfinished
 				if (ObjectType.equals("Window")){
-					if (obj == null){
-
-                                                //myWindow.setURL(myWindow.getURL(modinfo)+getParameterString(modinfo,myWindow.getURL(modinfo)));
-
-                                                setURL("#");
-						setOnClick(myWindow.getCallingScriptString(modinfo,myWindow.getURL(modinfo)+getParameterString(modinfo,myWindow.getURL(modinfo))));
-						//setTarget(myWindow.getTarget());
-						print("<a "+getAttributeString()+" >");
-						Text myText = new Text(myWindow.getName());
-						myText.print(modinfo);
-						print("</a>");
+                                        setURL("#");
+                                        if(windowClass==null){
+					  setOnClick(myWindow.getCallingScriptString(modinfo,myWindow.getURL(modinfo)+getParameterString(modinfo,myWindow.getURL(modinfo))));
+			                }
+                                        else{
+                                          setOnClick(Window.getCallingScriptString(windowClass,getURL()+getParameterString(modinfo,getURL()),false));
+                                        }
+                                        print("<a "+getAttributeString()+" >");
+                                        if (obj == null){
+					  Text myText = new Text(myWindow.getName());
+                                          myText.print(modinfo);
 					}
 					else{
-                                                //myWindow.setURL(myWindow.getURL(modinfo)+getParameterString(modinfo,myWindow.getURL(modinfo)));
-						setURL("#");
-                                                setOnClick(myWindow.getCallingScriptString(modinfo,myWindow.getURL(modinfo)+getParameterString(modinfo,myWindow.getURL(modinfo))));
-						//setTarget(myWindow.getTarget());
-						print("<a "+getAttributeString()+" >");
-						obj.print(modinfo);
-						print("</a>");
+                                          obj.print(modinfo);
 					}
+                                        print("</a>");
 				}
 				else{
 					setURL(oldURL+getParameterString(modinfo,oldURL));
@@ -591,7 +582,6 @@ public void print(ModuleInfo modinfo)throws Exception{
 					obj.print(modinfo);
 					print("</a>");
 				}
-			// }
 		}
 		else if (getLanguage().equals("WML")){
 				if (ObjectType.equals("Window")){
@@ -698,6 +688,13 @@ public void print(ModuleInfo modinfo)throws Exception{
 
   public void sendToControllerFrame(){
     this.setTarget(IWConstants.IW_CONTROLLER_FRAME_NAME);
+  }
+
+  public void setWindowToOpen(Class windowClass){
+    ObjectType="Window";
+    this.windowClass=windowClass;
+    setURL(IWMainApplication.windowOpenerURL);
+    addParameter(Page.IW_FRAME_CLASS_PARAMETER,windowClass.getName());
   }
 
 }
