@@ -28,4 +28,5 @@ public interface Reseller extends com.idega.data.IDOLegacyEntity, com.idega.data
  public void setName(java.lang.String p0);
  public void setReferenceNumber(java.lang.String p0);
  public void setTPosMerchantId(int p0);
+ public void setTPosMerchantId(Integer id);
 }

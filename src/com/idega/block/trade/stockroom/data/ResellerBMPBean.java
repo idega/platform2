@@ -178,7 +178,11 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
   }
 
   public void setTPosMerchantId(int id) {
-    setColumn(getColumnNameTPosMerchantID(), id);
+	setTPosMerchantId(new Integer(id));
+  }
+
+  public void setTPosMerchantId(Integer id) {
+	setColumn(getColumnNameTPosMerchantID(), id);
   }
 
   public TPosMerchant getTPosMerchant() throws RemoteException, FinderException {
