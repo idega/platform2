@@ -3135,6 +3135,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		
 		reportCollection.add(regData);
 		
+		
 		//finished return the collection
 		return reportCollection;
 	}
@@ -3309,9 +3310,22 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			pacptTotal += pwn;
 		}
 		
+		reportCollection.addExtraHeaderParameter(
+				FIELD_NAME_MEMBERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL,
+				_iwrb.getLocalizedString(LOCALIZED_MEMBERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL, "Members Annual Change of Total"),
+				"label",
+				format.format(macptTotal));
+		
+		reportCollection.addExtraHeaderParameter(
+				FIELD_NAME_PLAYERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL,
+				_iwrb.getLocalizedString(LOCALIZED_PLAYERS_ANNUAL_CHANGE_PERCENT_OF_TOTAL, "Players Annual Change of Total"),
+				"label",
+				format.format(pacptTotal));
+		
+		
+		/*
 		double mChangeTotalPercent = (mLastYearTotal==0)?-1:((100*((double)mThisYearTotal))/((double)mLastYearTotal));
 		double pChangeTotalPercent = (pLastYearTotal==0)?-1:((100*((double)pThisYearTotal))/((double)pLastYearTotal));
-		
 		ReportableData regData = new ReportableData();
 		regData.addData(regionalUnionName, _iwrb.getLocalizedString(LOCALIZED_TOTAL, "TOTAL"));
 		regData.addData(membersThisYear, new Integer(mThisYearTotal));
@@ -3325,7 +3339,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		regData.addData(playersAnnualChangePercent, (pChangeTotalPercent<0.0)?"":format.format(pChangeTotalPercent));
 		regData.addData(playersAnnualChangePercentOfTotal, format.format(pacptTotal));
 		
-		reportCollection.add(regData);
+		reportCollection.add(regData);*/
 
 		//finished return the collection
 		return reportCollection;
