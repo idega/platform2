@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.16 2003/10/10 15:16:34 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.17 2003/10/13 21:04:08 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -29,12 +29,13 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.util.IWTimestamp;
-import com.idega.block.school.business.SchoolBusiness;
+//import com.idega.block.school.business.SchoolBusiness;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
 import se.idega.idegaweb.commune.accounting.regulations.business.ConditionHolder;
@@ -44,10 +45,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.16 2003/10/10 15:16:34 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.17 2003/10/13 21:04:08 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -75,7 +76,7 @@ public class RegulationListEditor extends AccountingBlock {
 	private final static String KEY_REG_SPEC_TYPE_HEADER = PP + "reg_spec_type_header";
 	private final static String KEY_CONDITION_ORDER_HEADER = PP + "condition_order_header";
 	private final static String KEY_CONDITION_HEADER = PP + "condition_header";
-	private final static String KEY_MENU_OPERATION_HEADER = PP + "menu_operation_header";
+//	private final static String KEY_MENU_OPERATION_HEADER = PP + "menu_operation_header";
 	private final static String KEY_MENU_REG_SPEC_HEADER = PP + "menu_reg_spec_header";
 	private final static String KEY_MENU_SPEC_CALC_HEADER = PP + "menu_spec_calc_header";
 	private final static String KEY_MENU_VAT_HEADER = PP + "menu_vat_header";	
@@ -109,7 +110,7 @@ public class RegulationListEditor extends AccountingBlock {
 	
 	private final static String PARAM_SELECTOR_MAIN_OPERATION = "param_main_oper_sel";
 
-	private final static String PARAM_SELECTOR_OPERATION = "param_oper_sel";
+	private final static String PARAM_SELECTOR_CONDITION = "param_cond_sel";
 	private final static String PARAM_SELECTOR_INTERVAL = "param_int_sel";
 	private final static String PARAM_SELECTOR_CONDITION_TYPE = "param_cond_type_sel";
 	private final static String PARAM_SELECTOR_REG_SPEC_TYPE = "param_reg_spec_sel";
@@ -169,7 +170,6 @@ public class RegulationListEditor extends AccountingBlock {
 		_pMap.put(PARAM_NAME, iwc.getParameter(PARAM_NAME));
 		_pMap.put(PARAM_AMOUNT, iwc.getParameter(PARAM_AMOUNT));
 		_pMap.put(PARAM_CONDITION_ORDER, iwc.getParameter(PARAM_CONDITION_ORDER));
-		_pMap.put(PARAM_SELECTOR_MAIN_OPERATION, iwc.getParameter(PARAM_SELECTOR_MAIN_OPERATION));
 		_pMap.put(PARAM_SELECTOR_PAYMENT_FLOW_TYPE, iwc.getParameter(PARAM_SELECTOR_PAYMENT_FLOW_TYPE));
 		_pMap.put(PARAM_SELECTOR_VAT_ELIGIBLE, iwc.getParameter(PARAM_SELECTOR_VAT_ELIGIBLE));
 		_pMap.put(PARAM_SELECTOR_REG_SPEC_TYPE, iwc.getParameter(PARAM_SELECTOR_REG_SPEC_TYPE));
@@ -181,8 +181,8 @@ public class RegulationListEditor extends AccountingBlock {
 		_pMap.put(PARAM_MAX_AMOUNT_DISCOUNT, iwc.getParameter(PARAM_MAX_AMOUNT_DISCOUNT));
 
 		for (int index = 1; index <= 5; index++) {
-			_pMap.put(PARAM_SELECTOR_OPERATION +"_" +index, 
-					iwc.getParameter(PARAM_SELECTOR_OPERATION +"_" +index));  
+			_pMap.put(PARAM_SELECTOR_CONDITION +"_" +index, 
+					iwc.getParameter(PARAM_SELECTOR_CONDITION +"_" +index));  
 			_pMap.put(PARAM_SELECTOR_INTERVAL +"_" +index, 
 					iwc.getParameter(PARAM_SELECTOR_INTERVAL +"_" +index));  
 		}
@@ -196,7 +196,9 @@ public class RegulationListEditor extends AccountingBlock {
 			if (iwc.isParameterSet(PARAM_MODE_COPY)) {
 				id = null;
 			}
-			
+			String operationalField = getSession().getOperationalField();
+			operationalField = operationalField == null ? "" : operationalField;
+
 			newId = getRegulationBusiness(iwc).saveRegulation(
 					id,
 					parseDate(iwc.getParameter(PARAM_PERIOD_FROM)),
@@ -204,7 +206,7 @@ public class RegulationListEditor extends AccountingBlock {
 					iwc.getParameter(PARAM_NAME),
 					iwc.getParameter(PARAM_AMOUNT),
 					iwc.getParameter(PARAM_CONDITION_ORDER),
-					iwc.getParameter(PARAM_SELECTOR_MAIN_OPERATION),
+					operationalField,
 					iwc.getParameter(PARAM_SELECTOR_PAYMENT_FLOW_TYPE),
 					iwc.getParameter(PARAM_SELECTOR_VAT_ELIGIBLE),
 					iwc.getParameter(PARAM_SELECTOR_REG_SPEC_TYPE),
@@ -228,7 +230,7 @@ public class RegulationListEditor extends AccountingBlock {
 				getRegulationBusiness(iwc).saveCondition(
 					""+newId,
 					""+index,
-					iwc.getParameter(PARAM_SELECTOR_OPERATION +"_" +index), 
+					iwc.getParameter(PARAM_SELECTOR_CONDITION +"_" +index), 
 					iwc.getParameter(PARAM_SELECTOR_INTERVAL +"_" +index)
 				);
 			}
@@ -307,8 +309,12 @@ public class RegulationListEditor extends AccountingBlock {
 		int row;
 		User user = iwc.getCurrentUser();
 		String userName = "";
-		String mainOpPK = (String) _pMap.get(PARAM_SELECTOR_MAIN_OPERATION);
-		
+		String mainOpPK = "";
+		try {
+			mainOpPK = getSession().getOperationalField();
+			mainOpPK = mainOpPK == null ? "" : mainOpPK;
+		} catch (RemoteException e) {}
+
 		int payStreamPK = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_PAYMENT_FLOW_TYPE));
 		int condTypePK = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_CONDITION_TYPE));
 		int regSpecTypePK = Integer.parseInt((String)_pMap.get(PARAM_SELECTOR_REG_SPEC_TYPE));
@@ -352,8 +358,9 @@ public class RegulationListEditor extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_CHANGE_DATE, "Ändringsdatum"),1 ,row++);
 
 		row = startRow;	
+		table.add(new OperationalFieldsMenu(), 2, row++);
 
-		table.add(mainOperationSelector(iwc, PARAM_SELECTOR_MAIN_OPERATION, mainOpPK), 2, row++);
+//		table.add(mainOperationSelector(iwc, PARAM_SELECTOR_MAIN_OPERATION, mainOpPK), 2, row++);
 		
 		table.add(getTextInput(PARAM_NAME, r != null ? r.getName() : 
 				(String) _pMap.get(PARAM_NAME), 200, 40), 2, row++);
@@ -455,16 +462,16 @@ public class RegulationListEditor extends AccountingBlock {
 			}
 			table.add(getLocalizedLabel(KEY_CONDITION_HEADER + index, "Villkor " + index), 1, row);
 			ExtendedDropdownDouble dDrop = (ExtendedDropdownDouble) 
-					getStyledInterface(operationSelector(
+					getStyledInterface(conditionSelector(
 					iwc, 
-					PARAM_SELECTOR_OPERATION +"_" +index, 
+					PARAM_SELECTOR_CONDITION +"_" +index, 
 					PARAM_SELECTOR_INTERVAL +"_" +index)
 			);
 			if (field != null) {
 				dDrop.setSelectedValues(""+field.getConditionID(), ""+field.getIntervalID());
 			} else {
 				dDrop.setSelectedValues(
-						(String)_pMap.get(PARAM_SELECTOR_OPERATION +"_" +index), 
+						(String)_pMap.get(PARAM_SELECTOR_CONDITION +"_" +index), 
 						(String)_pMap.get(PARAM_SELECTOR_INTERVAL +"_" +index));
 			}
 			table.add(dDrop, 2, row++);
@@ -645,13 +652,16 @@ public class RegulationListEditor extends AccountingBlock {
 		return menu;
 	}
 
-	private ExtendedDropdownDouble operationSelector(IWContext iwc, String primaryName, String secondaryName) {
+	private ExtendedDropdownDouble conditionSelector(IWContext iwc, String primaryName, String secondaryName) {
 		
 		ExtendedDropdownDouble dropdown = new ExtendedDropdownDouble(this, primaryName, secondaryName);
 		String emptyString = localize(KEY_CHOOSE_INTERVAL, "Välj intervall");
 		dropdown.addEmptyElement(localize(KEY_CHOOSE_CONDITION, "Välj Villkor"), emptyString);
 		try {
-			Collection conditions = getRegulationBusiness(iwc).findAllConditionSelections();
+			String op = getSession().getOperationalField();
+			op = op == null ? "" : op;
+
+			Collection conditions = getRegulationBusiness(iwc).findAllConditionSelections(op);
 				
 			if (conditions != null) {
 				Iterator iter = conditions.iterator();
@@ -688,12 +698,21 @@ public class RegulationListEditor extends AccountingBlock {
 		Collection col = null; 
 
 		try {
+			Class partypes[] = new Class[1];
+			Object[] args = new Object[1];
+
+			if(condition.getDataParameter().length() != 0) {
+				args[0] = condition.getDataParameter();
+				partypes[0] = new String().getClass();
+			} else {
+				partypes = null;
+				args = null;
+			}
 			Method myMethod;
 			Class cls = Class.forName(condition.getBusinessClassName());
 			Object business = com.idega.business.IBOLookup.getServiceInstance(iwc, cls);
-
-			myMethod = cls.getMethod(condition.getCollectDataMethod(), null);
-			Collection data = (Collection) myMethod.invoke(business, null);
+			myMethod = cls.getMethod(condition.getCollectDataMethod(), partypes);
+			Collection data = (Collection) myMethod.invoke(business, args);
 			return data;
 		}
 		catch (Exception e) {
@@ -712,6 +731,7 @@ public class RegulationListEditor extends AccountingBlock {
 	 * @param refIndex The initial position to set the selector to 
 	 * @return the drop down menu
 	 */
+/*
 	private DropdownMenu mainOperationSelector(IWContext iwc, String name, String refIndex) {
 		
 		DropdownMenu menu = null;
@@ -724,7 +744,7 @@ public class RegulationListEditor extends AccountingBlock {
 		menu.setSelectedElement(refIndex);
 		return menu;
 	}
-
+*/
 
 	/*
 	 * Generates a DropDownSelector for Payment flow type
@@ -761,9 +781,7 @@ public class RegulationListEditor extends AccountingBlock {
 
 	private void closeMe(IWContext iwc) {
 		String backUrl = BuilderLogic.getInstance().getIBPageURL(iwc, ((Integer)_responsePage.getPrimaryKey()).intValue());
-		backUrl += 	"&" + RegulationList.PARAM_SELECTOR_OPERATION + "=" + 
-						iwc.getParameter(PARAM_SELECTOR_MAIN_OPERATION) +
-					"&"	+ RegulationList.PARAM_SELECTOR_PAYMENT_FLOW_TYPE + "=" + 
+		backUrl += 	"&"	+ RegulationList.PARAM_SELECTOR_PAYMENT_FLOW_TYPE + "=" + 
 						iwc.getParameter(PARAM_SELECTOR_PAYMENT_FLOW_TYPE)+
 					"&"	+ RegulationList.PARAM_RETURN_FROM_DATE + "=" + 
 						iwc.getParameter(RegulationList.PARAM_RETURN_FROM_DATE)+
@@ -783,7 +801,6 @@ public class RegulationListEditor extends AccountingBlock {
 			_pMap.put(PARAM_NAME, "");
 			_pMap.put(PARAM_AMOUNT, "0");
 			_pMap.put(PARAM_CONDITION_ORDER, "");
-			_pMap.put(PARAM_SELECTOR_MAIN_OPERATION, "0");
 			_pMap.put(PARAM_SELECTOR_PAYMENT_FLOW_TYPE, "0");
 			_pMap.put(PARAM_SELECTOR_VAT_ELIGIBLE, "0");
 			_pMap.put(PARAM_SELECTOR_REG_SPEC_TYPE, "0");
@@ -800,9 +817,9 @@ public class RegulationListEditor extends AccountingBlock {
 		return ""+(cash.intValue());
 	}
 
-	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {
-		return (SchoolBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
-	}
+//	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {
+//		return (SchoolBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
+//	}
 	
 	private RegulationsBusiness getRegulationBusiness(IWContext iwc) throws RemoteException {
 		return (RegulationsBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);

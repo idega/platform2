@@ -1,5 +1,5 @@
 /*
- * $Id: ConditionHolder.java,v 1.2 2003/09/06 22:43:32 kjell Exp $
+ * $Id: ConditionHolder.java,v 1.3 2003/10/13 21:04:09 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -13,10 +13,10 @@ package se.idega.idegaweb.commune.accounting.regulations.business;
 /**
  * ConditionHolder holds class info for a condition  
  * <p>
- * $Id: ConditionHolder.java,v 1.2 2003/09/06 22:43:32 kjell Exp $
+ * $Id: ConditionHolder.java,v 1.3 2003/10/13 21:04:09 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ConditionHolder {
 
@@ -25,6 +25,7 @@ public class ConditionHolder {
 	private String businessClassName = null;
 	private String collectDataMethod = null;
 	private String dataMethodName = null;
+	private String dataParameter = null;
 	private int pk = 0;
 	
 	public ConditionHolder(
@@ -33,7 +34,8 @@ public class ConditionHolder {
 			String localizationKey, 
 			String businessClassName, 
 			String collectDataMethod,
-			String dataMethodName) {
+			String dataMethodName,
+			String dataParameter) {
 				
 		this.pk = Integer.parseInt(pk);
 		this.name = name;
@@ -41,6 +43,7 @@ public class ConditionHolder {
 		this.businessClassName = businessClassName;					
 		this.collectDataMethod = collectDataMethod;
 		this.dataMethodName = dataMethodName;
+		this.dataParameter = dataParameter;
 	}
 	 
 	public void setName(String name) {
@@ -60,6 +63,10 @@ public class ConditionHolder {
 	}
 
 	public void setDataMethodName(String method) {
+		this.dataMethodName = method;
+	}
+
+	public void setDataParameter(String method) {
 		this.dataMethodName = method;
 	}
 
@@ -85,6 +92,10 @@ public class ConditionHolder {
 
 	public String getDataMethodName() {
 		return this.dataMethodName;
+	}
+
+	public String getDataParameter() {
+		return this.dataParameter;
 	}
 
 }

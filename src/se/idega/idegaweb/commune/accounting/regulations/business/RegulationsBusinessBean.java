@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.43 2003/10/10 15:16:35 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.44 2003/10/13 21:04:09 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -50,6 +50,7 @@ import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
+import com.idega.block.school.data.SchoolCategoryBMPBean;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -63,7 +64,8 @@ import com.idega.util.IWTimestamp;
 public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean implements RegulationsBusiness {
 
 	private final static String KP = "regulation_spec_type_error."; // key prefix 
-	private final static String LP = "cacc_regulation."; // Localization prefex	public final static String KEY_CANNOT_DELETE_REG_SPEC_TYPE  = KP + "cannot_delete_reg_spec_type_regulation";
+	private final static String LP = "cacc_regulation."; // Localization prefex
+	public final static String KEY_CANNOT_DELETE_REG_SPEC_TYPE  = KP + "cannot_delete_reg_spec_type_regulation";
 	public final static String DEFAULT_CANNOT_DELETE_REG_SPEC_TYPE = "Kunde inte radera regelspecifikationstypen";
 	public final static String KEY_CANNOT_SAVE_REG_SPEC_TYPE  = KP + "cannot_save_reg_spec_type_regulation";
 	public final static String DEFAULT_CANNOT_SAVE_REG_SPEC_TYPE = "Kunde inte spara regelspecifikationstypen";
@@ -823,7 +825,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public Collection findAllHourIntervals() {
 		ArrayList arr = new ArrayList();
 
-		arr.add(new Object[]{new Integer(1), "<=10"});
+		arr.add(new Object[]{new Integer(1), "<11"});
 		arr.add(new Object[]{new Integer(2), "11-25"});
 		arr.add(new Object[]{new Integer(3), "0-25"});
 		arr.add(new Object[]{new Integer(4), ">25"});
@@ -960,8 +962,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @see se.idega.idegaweb.commune.accounting.regulations.business.ConditionHolder#
 	 * @see se.idega.idegaweb.commune.accounting.regulations.presentation.RegulationListEditor#
 	 * @author Kelly
+	 * TODO: getSession.getOperationalField() 
+	 * 
 	 */
-	public Collection findAllConditionSelections() {
+	public Collection findAllConditionSelections(String OperationID) {
 			// LP = Localization path
 			ArrayList arr = new ArrayList();
 			arr.add(new ConditionHolder(
@@ -970,7 +974,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					LP + "verksamhet", 
 					"com.idega.block.school.business.SchoolBusiness", 
 					"findAllSchoolTypes",
-					"getLocalizationKey")
+					"getLocalizationKey", 
+					"")
 			);
 			
 			arr.add(new ConditionHolder(
@@ -979,7 +984,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					LP + "resurs", 
 					"se.idega.idegaweb.commune.accounting.resource.business.ResourceBusiness", 
 					"findAllResources",
-					"getResourceName")
+					"getResourceName",
+					"")
 			);
 	
 			arr.add(new ConditionHolder(
@@ -988,7 +994,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					LP + "momssats", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness", 
 					"findAllVATRegulations",
-					"getDescription")
+					"getDescription",
+					OperationID)
 			);
 	
 			arr.add(new ConditionHolder(
@@ -997,7 +1004,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					LP + "aarskurs", 
 					"com.idega.block.school.business.SchoolBusiness", 
 					"findAllSchoolYears",
-					"getSchoolYearName")
+					"getSchoolYearName",
+					"")
 			);
 	
 			arr.add(new ConditionHolder(
@@ -1006,6 +1014,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					LP + "timmar", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
 					"findAllHourIntervals",
+					"",
 					"")
 			);
 	
@@ -1015,6 +1024,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					LP + "syskonnr", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
 					"findAllSiblingValues",
+					"",
 					"")
 			);
 	
@@ -1023,8 +1033,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					"Ålder", 
 					LP + "alder", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness", 
-					"findAllAgeRegulations",
-					"getAgeInterval")
+					"findByOperationalField",
+					"getAgeInterval",
+					OperationID)
 			);
 
 			arr.add(new ConditionHolder(
@@ -1033,17 +1044,22 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					LP + "stadsbidragsberattigad", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
 					"getYesNo",
-					"getLocalizationKey")
+					"getLocalizationKey",
+					"")
 			);
 			
-			arr.add(new ConditionHolder(
-				RuleTypeConstant.CONDITION_ID_STUDY_PATH, 
-				"Studieväg", 
-				LP + "studievag", 
-				"se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness", 
-				"findAllStudyPaths",
-				"getDescription")
-			);
+			if (OperationID.compareTo(SchoolCategoryBMPBean.CATEGORY_HIGH_SCHOOL) == 0) {
+				arr.add(new ConditionHolder(
+					RuleTypeConstant.CONDITION_ID_STUDY_PATH, 
+					"Studieväg", 
+					LP + "studievag", 
+					"se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness", 
+					"findAllStudyPaths",
+					"getDescription",
+					"")
+				);
+			}
+
 
 	/*
 			arr.add(new ConditionHolder(

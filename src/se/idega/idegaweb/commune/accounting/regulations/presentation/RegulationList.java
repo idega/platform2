@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.10 2003/10/10 11:57:47 kjell Exp $
+ * $Id: RegulationList.java,v 1.11 2003/10/13 21:04:09 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,12 +22,14 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.block.school.business.SchoolBusiness;
+//import com.idega.block.school.business.SchoolBusiness;
+//import com.idega.block.school.data.SchoolCategory;
 
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
@@ -39,10 +41,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.10 2003/10/10 11:57:47 kjell Exp $
+ * $Id: RegulationList.java,v 1.11 2003/10/13 21:04:09 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class RegulationList extends AccountingBlock {
 
@@ -65,7 +67,7 @@ public class RegulationList extends AccountingBlock {
 	private final static String KEY_HEADER = PP + "header";
 	private final static String KEY_BUTTON_COPY = PP + "button_copy";
 	private final static String KEY_BUTTON_EDIT = PP + "button_edit";
-	private final static String KEY_MENU_OPERATION_HEADER = PP + "menu_operation_header"; 
+//	private final static String KEY_MENU_OPERATION_HEADER = PP + "menu_operation_header"; 
 	private final static String KEY_MENU_SORTNAME_HEADER = PP + "menu_sortname_header"; 
 	private final static String KEY_MENU_SORTPERIODE_HEADER = PP + "menu_sortperiode_header"; 
 	private final static String KEY_NEW = PP + "new";
@@ -74,7 +76,7 @@ public class RegulationList extends AccountingBlock {
 	private final static String KEY_REMOVE_CONFIRM = PP + "remove_confirm";
 	private final static String KEY_REMOVE = PP + "remove";
 	private final static String KEY_SEARCH = PP + "search";
-
+	
 	private final static String KEY_LIST_EDIT = PP + "list_edit";
 	private final static String KEY_LIST_COPY = PP + "list_copy";
 	private final static String KEY_LIST_DELETE = PP + "list_delete";
@@ -168,8 +170,15 @@ public class RegulationList extends AccountingBlock {
 	private void viewForm(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm(this);
 
-		_currentOperation = iwc.isParameterSet(PARAM_SELECTOR_OPERATION) ? 
-				iwc.getParameter(PARAM_SELECTOR_OPERATION) : "0";
+		try {
+			_currentOperation = getSession().getOperationalField();
+			_currentOperation = _currentOperation == null ? "" : _currentOperation;
+		} catch (RemoteException e) {}
+
+
+//		_currentOperation = iwc.isParameterSet(PARAM_SELECTOR_OPERATION) ? 
+//				iwc.getParameter(PARAM_SELECTOR_OPERATION) : "0";
+
 		_currentFlowType = iwc.isParameterSet(PARAM_SELECTOR_PAYMENT_FLOW_TYPE) ? 
 				Integer.parseInt(iwc.getParameter(PARAM_SELECTOR_PAYMENT_FLOW_TYPE)) : 1;
 		_currentSortBy = iwc.isParameterSet(PARAM_SELECTOR_SORT_BY) ? 
@@ -315,8 +324,10 @@ public class RegulationList extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_HEADER_OPERATION, "Huvudverksamhet"), 1, 1);
 		table.add(getLocalizedLabel(KEY_HEADER_PAYMENT_FLOW_TYPE, "Ström"), 1, 2);
 		table.add(getLocalizedLabel(KEY_PERIOD_SEARCH, "Period"), 1, 3);
+		table.add(new OperationalFieldsMenu(), 2, 1);
 		
-		table.add(mainOperationSelector(iwc, PARAM_SELECTOR_OPERATION, _currentOperation), 2, 1);
+//		table.add(getOperationalFieldDropdownMenu(PARAM_SELECTOR_OPERATION, _currentOperation), 2, 1);
+//		table.add(mainOperationSelector(iwc, PARAM_SELECTOR_OPERATION, _currentOperation), 2, 1);
 		table.add(paymentFlowTypeSelector(iwc, PARAM_SELECTOR_PAYMENT_FLOW_TYPE, _currentFlowType), 2, 2);
 		table.add(getFromToDatePanel(PARAM_FROM, _currentFromDate, PARAM_TO, _currentToDate), 2, 3);
 
@@ -355,7 +366,7 @@ public class RegulationList extends AccountingBlock {
 		return (DropdownMenu) getStyledInterface(menu);
 	}
 
-
+/*
 	/*
 	 * Generates a DropDownSelector for Main operation (Huvudverksamhet) 
 	 * from the school framework 
@@ -365,6 +376,7 @@ public class RegulationList extends AccountingBlock {
 	 * @param refIndex The initial position to set the selector to 
 	 * @return the drop down menu
 	 */
+/*
 	private DropdownMenu mainOperationSelector(IWContext iwc, String name, String refIndex) {
 		
 		DropdownMenu menu = null;
@@ -377,7 +389,7 @@ public class RegulationList extends AccountingBlock {
 		menu.setSelectedElement(refIndex);
 		return menu;
 	}
-
+*/
 
 	/*
 	 * Generates a DropDownSelector for Payment flow type
@@ -401,9 +413,37 @@ public class RegulationList extends AccountingBlock {
 	}
 
 
-	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {
-		return (SchoolBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
+	/*
+	 * Returns a DropdownMenu for operational fields. 
+	 */
+	/*
+	private DropdownMenu getOperationalFieldDropdownMenu(String parameter, String operationalField) {
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
+		menu.addMenuElement("", localize(KEY_MENU_OPERATION_HEADER, "Välj huvudverksamhet"));
+		try {
+			Collection c = getBusiness().getExportBusiness().getAllOperationalFields();
+			if (c != null) {
+				Iterator iter = c.iterator();
+				while (iter.hasNext()) {
+					SchoolCategory sc = (SchoolCategory) iter.next();
+					String id = sc.getPrimaryKey().toString();
+					menu.addMenuElement(id, localize(sc.getLocalizedKey(), sc.getLocalizedKey()));
+				}
+				if (operationalField != null) {
+					menu.setSelectedElement(operationalField);
+				}
+			}		
+		} catch (Exception e) {
+			add(new ExceptionWrapper(e));
+		}
+		return menu;	
 	}
+
+*/
+
+//	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException {
+//		return (SchoolBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
+//	}
 
 	private RegulationsBusiness getRegulationBusiness(IWContext iwc) throws RemoteException {
 		return (RegulationsBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
