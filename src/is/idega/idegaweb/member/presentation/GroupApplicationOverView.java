@@ -71,11 +71,11 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
     this.empty();
     iwrb = this.getResourceBundle(iwc);
     
-    Table returnTable = new Table(1,2);
+    Table returnTable = new Table(1,1);
 	    returnTable.setCellpaddingAndCellspacing(0);
 	    returnTable.setWidth(Table.HUNDRED_PERCENT);
 	    returnTable.setHeight(Table.HUNDRED_PERCENT);
-	    returnTable.setHeight(1,22);
+
 
     //the event model is not being used in this class when used as a plugin!
     GroupApplicationOverViewPS ps = (GroupApplicationOverViewPS)this.getPresentationState(iwc);
@@ -101,7 +101,7 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
 	
 	
 	      userTable = new Table(7, ((applications.size()>33)?applications.size():33)+1  );
-	      returnTable.add(userTable,1,2);
+	      returnTable.add(userTable,1,1);
 	      userTable.setCellpaddingAndCellspacing(0);
 	      userTable.setLineAfterColumn(1);
 	      userTable.setLineAfterColumn(2);
