@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.16 2003/12/15 13:47:14 kjell Exp $
+ * $Id: RegulationList.java,v 1.17 2004/01/02 11:01:35 sigtryggur Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.16 2003/12/15 13:47:14 kjell Exp $
+ * $Id: RegulationList.java,v 1.17 2004/01/02 11:01:35 sigtryggur Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class RegulationList extends AccountingBlock {
 
@@ -150,7 +150,7 @@ public class RegulationList extends AccountingBlock {
 	 */
 	private void deletePost(IWContext iwc) {
 		String id = iwc.getParameter(PARAM_DELETE_ID);
-		if (id != null) {
+		if (id != null && !id.equals("-1")) {
 			try {
 				getRegulationBusiness(iwc).deleteRegulation(Integer.parseInt(id));
 			} catch ( Exception e) {
