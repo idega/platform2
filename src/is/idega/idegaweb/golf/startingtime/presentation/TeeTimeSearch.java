@@ -5,6 +5,7 @@ import is.idega.idegaweb.golf.SqlTime;
 import is.idega.idegaweb.golf.TableInfo;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
+import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
@@ -24,6 +25,7 @@ import javax.ejb.FinderException;
 
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
+import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.IWContext;
@@ -258,8 +260,6 @@ public class TeeTimeSearch extends GolfBlock {
 		Form myForm = new Form();
 		myForm.add(new HiddenInput("state", "search"));
 		
-		Table table = new Table();
-		
 		InterfaceObject fieldDropdownMenu = getFieldDropdownMenu(modinfo,false);
 		
 		DropdownMenu countOfPlayers = new DropdownMenu("fjoldi");
@@ -291,13 +291,15 @@ public class TeeTimeSearch extends GolfBlock {
 		Label dags = new Label(getResourceBundle().getLocalizedString("start.search.date", "Date"),dateDropdownMenu);
 
 		int row = 1;
-		table.add(vollur,1,row++);
-		table.add(fieldDropdownMenu,1,row++);
+		myForm.add(vollur);
+		myForm.add(fieldDropdownMenu);
+		myForm.addBreak();
 		
-		table.add(fjoldi,1,row++);
-		table.add(playerCountInputBox,1,row++);
+		myForm.add(fjoldi);
+		myForm.add(playerCountInputBox);
+		myForm.addBreak();
 		
-		table.add(dags,1,row++);
+		myForm.add(dags);
 		
 //		String funcyDateRS = dateFunc.toSQLDateString();
 
@@ -307,10 +309,11 @@ public class TeeTimeSearch extends GolfBlock {
 //		}
 //		myDropdown.keepStatusOnAction();
 		
-		table.add(dateDropdownMenu,1,row++);
+		myForm.add(dateDropdownMenu);
+		myForm.addBreak();
 
 		
-		table.add(fKL,1,row++);
+		myForm.add(fKL);
 //		DropdownMenu fHours = new DropdownMenu("ftime_h");
 //		for(int i = 0;i<24;i++) {
 //			fHours.addMenuElement(i,String.valueOf(i));
@@ -326,10 +329,10 @@ public class TeeTimeSearch extends GolfBlock {
 //		myForm.add(fHours);
 //		myForm.add(":");
 //		myForm.add(fMinutes);
-		table.add(firstTimeDropdownMenu,1,row++);
-
+		myForm.add(firstTimeDropdownMenu);
+		myForm.addBreak();
 		
-		table.add(tKL,1,row++);
+		myForm.add(tKL);
 //		DropdownMenu lHours = new DropdownMenu("ltime_h");
 //		for(int i = 0;i<24;i++) {
 //			lHours.addMenuElement(i,String.valueOf(i));
@@ -345,17 +348,16 @@ public class TeeTimeSearch extends GolfBlock {
 //		myForm.add(lHours);
 //		myForm.add(":");
 //		myForm.add(lMinutes);
-		table.add(lastTimeDropdownMenu,1,row++);
+		myForm.add(lastTimeDropdownMenu);
 
 		
 
 		
 		SubmitButton bSearch = new SubmitButton(localize("start.search","Search"));
-		table.add(bSearch,1,row++);
+		myForm.add(bSearch);
 		
 		insertHiddenInput("results", "1", myForm);
 
-		myForm.add(table);
 		
 		return myForm;
 	}
@@ -655,6 +657,7 @@ public class TeeTimeSearch extends GolfBlock {
 			
 			myForm.add(label);
 			myForm.add(radio);
+			myForm.addBreak();
 			myForm.add(hmLabel);
 			myForm.add(howMany);
 			
@@ -697,7 +700,8 @@ public class TeeTimeSearch extends GolfBlock {
 		Vector boolGroups = new Vector();
 		frameGroups.add(0, Groups);
 		frameGroups.add(1, boolGroups);
-
+		
+		
 		int gr = numberOfGroups(firstTime, lastTime, info.get_interval());
 		int firstgr = numberOfGroups(info.get_open_hour(), info.get_open_min(), firstTime, info.get_interval()) + 1;
 		int lastgr = firstgr + gr;
@@ -710,24 +714,12 @@ public class TeeTimeSearch extends GolfBlock {
 
 		TeeTime[] result = service.getTableEntries(date, firstgr, (lastgr + numOfGroup), info.get_field_id());
 
-		Vector RSvector = new Vector();
 		Vector group_num = new Vector();
-		Vector name = new Vector();
-		Vector handicap = new Vector();
-		Vector club = new Vector();
 
-		RSvector.add(0, group_num);
-		RSvector.add(1, name);
-		RSvector.add(2, handicap);
-		RSvector.add(3, club);
 
 		int k = 0;
 		for (int i = 0; i < result.length; i++) {
 			group_num.add(k, "" + result[i].getGroupNum());
-			name.add(k, result[i].getName());
-			handicap.add(k, "" + result[i].getHandicap());
-			club.add(k, result[i].getClubName());
-
 			k++;
 		}
 		group_num.add(k, "-1"); // sett inn �ar sem group_num m� ekki vera af
@@ -744,13 +736,7 @@ public class TeeTimeSearch extends GolfBlock {
 				if (Integer.parseInt(group_num.elementAt(n).toString()) >= m && Integer.parseInt(group_num.elementAt(n).toString()) < (m + numOfGroup)) {
 					count++;
 				}
-				//				out.print( "<br>" +count + " > " + (numOfGroup * 4 - fjoldi)
-				// + " ||
-				// ( " + (m
-				// + numOfGroup) + " > " + getLastGroup(info)+1 + " && " + count
-				// + " >
-				// " +
-				// (-(m-getLastGroup(info))*4 - fjoldi ) + " )" );
+
 				if (count > (numOfGroup * 4 - fjoldi) || (((m + numOfGroup) > getLastGroup(info) + 1) && (count > (-(m - getLastGroup(info)) * 4 - fjoldi)))) {
 					boolGroups.set(p, new Boolean(false));
 					count = 0;
@@ -761,7 +747,49 @@ public class TeeTimeSearch extends GolfBlock {
 		}
 
 		for (int i = 0; i < Groups.size(); i++) {
-			if (Integer.parseInt(Groups.elementAt(i).toString()) < 1 || Integer.parseInt(Groups.elementAt(i).toString()) > getLastGroup(info)) boolGroups.set(i, new Boolean(false));
+			if (Integer.parseInt(Groups.elementAt(i).toString()) < 1 || Integer.parseInt(Groups.elementAt(i).toString()) > getLastGroup(info)) {
+				boolGroups.set(i, new Boolean(false));
+			}
+		}
+		
+		Vector tournamentGroups = new Vector(0);
+		int tournamentGroupsIndex = 0;
+		List TournamentRounds = EntityFinder.findAll((TournamentRound) IDOLookup.instanciateEntity(TournamentRound.class), "select tournament_round.* from tournament,tournament_round where tournament_round.tournament_id=tournament.tournament_id and tournament_round.round_date >= '" + funcDate.toSQLDateString() + " 00:00' and tournament_round.round_date <= '" + funcDate.toSQLDateString() + " 23:59' and tournament.field_id = " + today.get_field_id());
+
+		if (TournamentRounds != null) {
+			for (int i = 0; i < TournamentRounds.size(); i++) {
+				TournamentRound tempRound = (TournamentRound) TournamentRounds.get(i);
+
+				IWTimestamp begin = new IWTimestamp(tempRound.getRoundDate());
+				begin.setAsTime();
+				IWTimestamp End_ = new IWTimestamp(tempRound.getRoundEndDate());
+				End_.setAsTime();
+				End_.addMinutes(today.get_interval());
+				
+				End_.addMinutes(info.get_interval());
+				IWTimestamp begintime = new IWTimestamp(0, 1, 0, today.get_open_hour(), today.get_open_min(), 0);
+				begintime.setAsTime();
+
+				int firstGroup = IWTimestamp.getMinutesBetween(begintime, begin) / today.get_interval();
+				int groupCount = IWTimestamp.getMinutesBetween(begin, End_) / today.get_interval();
+				int[] tempBeginGroupAndEnd = new int[2];
+
+				tempBeginGroupAndEnd[0] = firstGroup + 1;
+				tempBeginGroupAndEnd[1] = firstGroup + groupCount;
+
+				tournamentGroups.add(tournamentGroupsIndex++, tempBeginGroupAndEnd);
+
+			}
+
+		}
+		
+		for (Iterator iter = tournamentGroups.iterator(); iter.hasNext();) {
+			int[] beginAndEnd = (int[]) iter.next();
+			for (int i = (beginAndEnd[0]-firstgr); i <= (beginAndEnd[1]-firstgr); i++) {
+				if(i>=0 && i<=gr){
+					boolGroups.set(i, new Boolean(false));
+				}
+			}
 		}
 
 		return frameGroups;

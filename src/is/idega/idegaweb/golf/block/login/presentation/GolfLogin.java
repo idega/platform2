@@ -116,7 +116,6 @@ public class GolfLogin extends GolfBlock {
 		myForm.setMethod("post");
 		myForm.maintainAllParameters();
 
-		Table myTable = new Table();
 		int row = 1;
 
 		TextInput login = (TextInput) getStyledSmallInterface(new TextInput("login"));
@@ -137,14 +136,15 @@ public class GolfLogin extends GolfBlock {
 
 		SubmitButton loginButton = new SubmitButton(localize("login.login","Login"));
 		
-		myTable.add(loginTexti,1,row++);
-		myTable.add(login,1,row++);
-		myTable.add(passwordTexti,1,row++);
-		myTable.add(passw,1,row++);
-		myTable.add(loginButton,1,row++);
+		myForm.add(loginTexti);
+		myForm.add(login);
+		myForm.addBreak();
+		myForm.add(passwordTexti);
+		myForm.add(passw);
+		myForm.add(loginButton);
 		
-		myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "login"));
-		myForm.add(myTable);
+		myForm.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "login"));
+
 		add(myForm);
 
 //		
