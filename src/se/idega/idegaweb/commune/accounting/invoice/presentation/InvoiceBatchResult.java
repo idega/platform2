@@ -1,6 +1,7 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import java.rmi.RemoteException;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -36,7 +37,10 @@ public class InvoiceBatchResult extends AccountingBlock{
 	
 	public void init(IWContext iwc){
 		Form form = new Form();
-		Table table = new Table(2,6);
+		Table table = new Table(2,9);
+		// set alignment to right for the second column
+		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_RIGHT);
+		
 		OperationalFieldsMenu opFields = new OperationalFieldsMenu();
 		
 		try {
@@ -52,18 +56,21 @@ public class InvoiceBatchResult extends AccountingBlock{
 			
 			boolean categoryIsChildCare = invoiceBusiness.isChildCare(schoolCategory);
 			
-			table.add(getLocalizedLabel("invbr.period","Period"),1,1);
-			table.add(getLocalizedLabel("invbr.batchrun_starttime","Batchrun start-time"),1,2);
-			table.add(getLocalizedLabel("invbr.batchrun_endtime","Batchrun end-time"),1,3);
+			int i = 1;
+			table.add(getLocalizedLabel("invbr.period","Period"),1,i++);
+			table.add(getLocalizedLabel("invbr.batchrun_starttime","Batchrun start-time"),1,i++);
+			table.add(getLocalizedLabel("invbr.batchrun_endtime","Batchrun end-time"),1,i++);
 			if (categoryIsChildCare) {
-				table.add(getLocalizedLabel("invbr.number_of_invoices","Number of invoices"),1,4);
-				table.add(getLocalizedLabel("invbr.number_of_billed_children","Number of handled children"),1,5);
-				table.add(getLocalizedLabel("invbr.totalAmount","Total amount"),1,6);
+				table.add(getLocalizedLabel("invbr.number_of_invoices","Number of invoices"),1, i++);
+				table.add(getLocalizedLabel("invbr.number_of_billed_children","Number of handled children"),1,i++);
+				table.add(getLocalizedLabel("invbr.total_number_of_handled_providers","Number of handled providers"),1,i++);
+				table.add(getLocalizedLabel("invbr.total_amount_of_invoices","Total amount of invoices"),1,i++);
+				table.add(getLocalizedLabel("invbr.total_amount_of_payments","Total amount of payments"),1,i++);
 			}
 			else {
-				table.add(getLocalizedLabel("invbr.total_number_of_handled_providers","Number of handled providers"),1,4);
-				table.add(getLocalizedLabel("invbr.total_number_of_handled_placements","Number of handled placements"),1,5);
-				table.add(getLocalizedLabel("invbr.total_Amount_excluding_VAT","Total amount excluding VAT"),1,6);
+				table.add(getLocalizedLabel("invbr.total_number_of_handled_providers","Number of handled providers"),1,i++);
+				table.add(getLocalizedLabel("invbr.total_number_of_handled_placements","Number of handled placements"),1,i++);
+				table.add(getLocalizedLabel("invbr.total_Amount_excluding_VAT","Total amount excluding VAT"),1,i++);
 			}
 	
 			BatchRun batchRun = invoiceBusiness.getBatchRunByCategory(schoolCategory);
@@ -75,24 +82,31 @@ public class InvoiceBatchResult extends AccountingBlock{
 			if(batchRun.getEnd()!=null){
 				end = new IWTimestamp(batchRun.getEnd());
 			}
-
-			table.add(period.getDateString("MMM yyyy"),2,1);
-			table.add(start.getDateString("yyyy-MM-dd kk:mm:ss"),2,2);
+			// reset row counter
+			i = 1;
+			table.add(period.getDateString("MMM yyyy"),2, i++);
+			table.add(start.getDateString("yyyy-MM-dd kk:mm:ss"),2,i++);
 			if(end!=null){
-				table.add(end.getDateString("yyyy-MM-dd kk:mm:ss"),2,3);
+				table.add(end.getDateString("yyyy-MM-dd kk:mm:ss"),2,i++);
 			} else {
-				table.add(getLocalizedSmallText("invbr.not_finished","Not finished"),2,3);
+				table.add(getLocalizedSmallText("invbr.not_finished","Not finished"),2,i++);
 			}
 	
+			// get a nice formatter
+			NumberFormat numberFormat = NumberFormat.getNumberInstance(iwc.getCurrentLocale());
+			numberFormat.setMaximumFractionDigits(0);
+			
 			if (categoryIsChildCare) {
-				table.add(Integer.toString(invoiceBusiness.getNumberOfInvoices(batchRun)),2,4);
-				table.add(Integer.toString(invoiceBusiness.getNumberOfHandledChildren(batchRun)),2,5);
+				table.add(Integer.toString(invoiceBusiness.getNumberOfInvoices(batchRun)),2,i++);
+				table.add(Integer.toString(invoiceBusiness.getNumberOfHandledChildren(batchRun)),2,i++);
+				table.add(Integer.toString(invoiceBusiness.getNoProviders(batchRun)), 2, i++);
+				table.add(numberFormat.format(invoiceBusiness.getTotalAmountOfInvoices(batchRun)),2, i++);
 			}
 			else {
-				table.add(Integer.toString(invoiceBusiness.getNoProviders(batchRun)),2,4);
-				table.add(Integer.toString(invoiceBusiness.getNoPlacements(batchRun)),2,5);
+				table.add(Integer.toString(invoiceBusiness.getNoProviders(batchRun)),2,i++);
+				table.add(Integer.toString(invoiceBusiness.getNoPlacements(batchRun)),2,i++);
 			}
-			table.add(Integer.toString(invoiceBusiness.getTotAmountWithoutVAT(batchRun)),2,6);
+			table.add(numberFormat.format(invoiceBusiness.getTotAmountWithoutVAT(batchRun)),2,i++);
 		
 			form.add(table);
 			
@@ -102,6 +116,7 @@ public class InvoiceBatchResult extends AccountingBlock{
 
 			//Bottom section
 			add(getLocalizedLabel("invbr.Total_number_of_suspected_errors","Total number of suspected errors"));
+			add(Text.getNonBrakingSpace());
 			add(new Text(new Integer(errorColl.size()).toString()));
 
 			//Middle section with the error list
