@@ -399,6 +399,9 @@ private String headerTextColor = "#FFFFFF";
 			Window updateWindow2 = new Window(iwrb.getLocalizedString("handicap.register_statistics","Register statistics"),600,350,"/handicap/handicap_statistics.jsp?");
 
 			Link tengill = new Link(iwb.getImage("shared/eye.gif",iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),13,13),scorecardWindow);
+        if ( noIcons ) {
+          tengill = new Link(iwb.getImage("shared/eye2.gif",iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),13,13),scorecardWindow);
+        }
 				tengill.addParameter("scorecard_id",String.valueOf(scoreCards[a].getID()));
 
 			Link update = new Link(iwb.getImage("shared/pad.gif",iwrb.getLocalizedString("handicap.update_scorecard","Change scorecard"),11,13),updateWindow);
@@ -555,6 +558,9 @@ private String headerTextColor = "#FFFFFF";
 
 			SubmitButton skoda = new SubmitButton(iwrb.getLocalizedString("handicap.get_overview","Get overview"));
 				skoda.setAttribute("style","font-size: 8pt");
+        if ( noIcons ) {
+          skoda = new SubmitButton(iwrb.getImage("getOverview.gif"));
+        }
 
 				Text fra = new Text(iwrb.getLocalizedString("handicap.from","From")+": ");
 					fra.setBold();
