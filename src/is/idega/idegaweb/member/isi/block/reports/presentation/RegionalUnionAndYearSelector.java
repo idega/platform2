@@ -7,6 +7,7 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
+import is.idega.idegaweb.member.isi.block.reports.business.WorkReportImportBusiness;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class RegionalUnionAndYearSelector extends Block {
 	protected int year = -1;
 
 	protected WorkReportBusiness reportBiz;
+	protected WorkReportImportBusiness reportImportBiz;
 	protected IWResourceBundle iwrb;
 	
 	protected List paramsToMaintain = null;
@@ -192,6 +194,19 @@ public class RegionalUnionAndYearSelector extends Block {
 	
 		add(regionalSelectorForm);
 	}
+	
+	protected WorkReportImportBusiness getWorkReportImportBusiness(IWApplicationContext iwc) {
+	if (reportImportBiz == null) {
+		try {
+			reportImportBiz = (WorkReportImportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportImportBusiness.class);
+		}
+		catch (java.rmi.RemoteException rme) {
+			throw new RuntimeException(rme.getMessage());
+		}
+	}
+	return reportImportBiz;
+}
+
 
 	protected WorkReportBusiness getWorkReportBusiness(IWApplicationContext iwc) {
 		if (reportBiz == null) {

@@ -31,7 +31,7 @@ public class WorkReportAccountImporter extends WorkReportImporter {
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 			try {
 
-				boolean success = getWorkReportBusiness(iwc).importAccountPart(getWorkReportFileId(), getWorkReportId());
+				boolean success = getWorkReportImportBusiness(iwc).importAccountPart(getWorkReportFileId(), getWorkReportId());
 				if (success) {
 					add(iwrb.getLocalizedString("WorkReportAccountImporter.import_successful", "Importing yearly account info completed successfully."));
 				}

@@ -1,6 +1,7 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
+import is.idega.idegaweb.member.isi.block.reports.business.WorkReportImportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 
 import java.rmi.RemoteException;
@@ -42,6 +43,7 @@ public class ClubSelector extends Block {
 	protected int clubId = -1;
 	int stepCounter = 0;
 	protected WorkReportBusiness reportBiz;
+	protected WorkReportImportBusiness reportImportBiz;
 	protected IWResourceBundle iwrb;
 	
 	protected List paramsToMaintain = null;
@@ -261,8 +263,18 @@ public class ClubSelector extends Block {
 		return reportBiz;
 	}
 	
-	
-	
+	protected WorkReportImportBusiness getWorkReportImportBusiness(IWApplicationContext iwc) {
+		if (reportImportBiz == null) {
+			try {
+				reportImportBiz = (WorkReportImportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, WorkReportImportBusiness.class);
+			}
+			catch (java.rmi.RemoteException rme) {
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return reportImportBiz;
+	}
+		
 	public String getBundleIdentifier(){
 		return this.IW_BUNDLE_IDENTIFIER;
 	}
