@@ -77,7 +77,9 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason{
   }
 
   public java.util.Collection ejbFindAllSchoolSeasons()throws FinderException{
-    return super.idoFindAllIDsBySQL();
+  	IDOQuery query = this.idoQueryGetSelect();
+  	query.appendOrderBy(START);
+    return super.idoFindPKsByQuery(query);
   }
   
   /**
