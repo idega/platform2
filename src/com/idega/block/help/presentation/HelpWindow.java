@@ -1,5 +1,5 @@
 /*
- * $Id:$
+ * $Id$
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -248,21 +248,6 @@ public class HelpWindow extends Window {
 			root.addContent(help);				
 		}
 
-/*		String lang = loc.getLanguage();
-		String country = loc.getCountry();
-		
-		StringBuffer localeString = new StringBuffer(lang);
-		if (!country.equals("")) {
-			localeString.append("_");
-			localeString.append(country);
-		}
-				
-		XMLElement localeElement = help.getChild(localeString.toString());
-		if (localeElement == null) {
-			localeElement = new XMLElement(localeString.toString());
-			help.addContent(localeElement);
-		}*/
-
 		XMLElement titleElement = help.getChild(XML_TITLE);
 		if (titleElement == null) {
 			titleElement = new XMLElement(XML_TITLE);
@@ -344,19 +329,6 @@ public class HelpWindow extends Window {
 		if (id == null || !id.getValue().equals(helpKey))
 			return;
 
-//		String lang = loc.getLanguage();
-//		String country = loc.getCountry();
-//		
-//		StringBuffer localeString = new StringBuffer(lang);
-//		if (!country.equals("")) {			
-//			localeString.append("_");
-//			localeString.append(country);
-//		}
-//				
-//		XMLElement localeElement = help.getChild(localeString.toString());
-//		if (localeElement == null)
-//			return;
-			
 		XMLElement title = help.getChild(XML_TITLE);
 		if (title != null) {
 			String tmp = title.getText();
