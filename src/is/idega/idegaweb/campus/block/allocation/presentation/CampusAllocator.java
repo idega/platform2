@@ -865,7 +865,7 @@ public class CampusAllocator extends Block{
       idegaTimestamp from = new idegaTimestamp(sDateFrom);
       idegaTimestamp to = new idegaTimestamp(sDateTo);
       if(mustBeFrom!=null && mustBeFrom.isLaterThanOrEquals(from))
-        return false;
+        System.err.println("Contracts overlap");//return false;
       if(sApplicantId !=null && sApartmentId!=null ){
         int iApartmentId = Integer.parseInt(sApartmentId);
         int iApplicantId = Integer.parseInt(sApplicantId);
