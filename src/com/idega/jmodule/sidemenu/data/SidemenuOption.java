@@ -26,6 +26,7 @@ public class SidemenuOption extends GenericEntity{
                 addAttribute("entity_id_column_value","Gildi id_column entitys",true,true,"java.lang.Integer");
 
                 this.addManyToManyRelationShip(com.idega.builder.data.IBEntity.class,"sidemenu_option_ib_entity");
+                this.addManyToManyRelationShip(SidemenuModule.class,"sidemenu_sidemenu_option");
         }
 
 	public String getIDColumnName(){
