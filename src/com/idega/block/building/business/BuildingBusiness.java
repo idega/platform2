@@ -115,7 +115,7 @@ public class BuildingBusiness {
   public static boolean saveApartmentType(int id,String sName,String sInfo,
     String sExtraInfo,int planid,int imageid,int categoryid,float area,
     int roomcount,int rent,boolean balcony,boolean bath,boolean kitchen,
-    boolean storage,boolean study,boolean furniture){
+    boolean storage,boolean study,boolean furniture,boolean loft){
      try{
         if(categoryid > 0){
           ApartmentType etype = new ApartmentType();
@@ -137,7 +137,7 @@ public class BuildingBusiness {
           etype.setBalcony(balcony);
           etype.setBathRoom(bath);
           etype.setKitchen(kitchen);
-          etype.setLoft(storage);
+          etype.setLoft(loft);
           etype.setStorage(storage);
           etype.setStudy(study);
           etype.setFurniture(furniture);

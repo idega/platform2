@@ -298,9 +298,8 @@ public class BuildingEditor extends com.idega.presentation.Block{
     catch (NumberFormatException ex) { count = 1;  }
 
     BuildingBusiness.saveApartmentType(id,sName,sInfo,sExtraInfo,planid,imageid,
-      categoryid,area,count,rent,sBalcony!=null?true:false,sBath!=null?true:false,
-      sKitch !=null?true:false,sLoft != null?true:false,sStorage !=null?true:false,
-      sFurniture!= null?true:false);
+      categoryid,area,count,rent,sBalcony!=null,sBath!=null,
+      sKitch !=null,sStorage !=null,sStudy!=null,sFurniture!= null,sLoft!=null);
 
   }
   private void storeApartment(IWContext iwc){
