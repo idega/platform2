@@ -218,8 +218,8 @@ public class ContractRenewWindow extends Window{
       if(endOld)
         ContractBusiness.endContract(eContract.getID(),new IWTimestamp(eContract.getValidTo()),"",false);
 
-      if(eContract.getStatus().equals(ContractBMPBean.statusSigned) && !endOld)
-        return false;
+//      if(eContract.getStatus().equals(ContractBMPBean.statusSigned) && !endOld)
+//        return false;
       if(from !=null && to !=null)
         return ContractBusiness.makeNewContract(iwc,contractUser,eApplicant,eContract.getApartmentId().intValue(),from,to);
       else
