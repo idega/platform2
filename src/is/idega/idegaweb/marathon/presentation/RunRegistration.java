@@ -117,13 +117,13 @@ public class RunRegistration extends Block {
 
 	private Text rentChipText;
 
-	private float buyPrice = 2700;
+	private float buyPrice = 2200;
 
-	private float rentPrice = 300;
+	private float rentPrice = 200;
 
 	private float buyPriceEuro = 36;
 
-	private float rentPriceEuro = 4;
+	private float rentPriceEuro = 3;
 
 	private Text groupCompetitionText;
 
@@ -365,20 +365,37 @@ public class RunRegistration extends Block {
 		}
 		
 		tShirtField = (DropdownMenu) getStyleObject(new DropdownMenu(IWMarathonConstants.PARAMETER_TSHIRT), STYLENAME_INTERFACE);
-		SelectOption empty = new SelectOption(iwrb.getLocalizedString("run_reg.select_tee_shirt_size", "Select tee-shirt size"), IWMarathonConstants.PARAMETER_TSHIRT_S);
-		small = new SelectOption(iwrb.getLocalizedString("run_reg.small", "Small"), IWMarathonConstants.PARAMETER_TSHIRT_S);
-		medium = new SelectOption(iwrb.getLocalizedString("run_reg.medium", "Medium"), IWMarathonConstants.PARAMETER_TSHIRT_M);
-		large = new SelectOption(iwrb.getLocalizedString("run_reg.large", "Large"), IWMarathonConstants.PARAMETER_TSHIRT_L);
-		xlarge = new SelectOption(iwrb.getLocalizedString("run_reg.xlarge", "Larger"), IWMarathonConstants.PARAMETER_TSHIRT_XL);
-		xxlarge = new SelectOption(iwrb.getLocalizedString("run_reg.xxlarge", "Largest"), IWMarathonConstants.PARAMETER_TSHIRT_XXL);
+		SelectOption empty = new SelectOption(iwrb.getLocalizedString("run_reg.select_tee_shirt_size", "Select tee-shirt size"), "-1");
+		SelectOption selectAdult = new SelectOption(iwrb.getLocalizedString("run_reg.adult_sized", "Adult sizes"), "-1");
+		small = new SelectOption("- " + iwrb.getLocalizedString("run_reg.small", "Small"), IWMarathonConstants.PARAMETER_TSHIRT_S);
+		medium = new SelectOption("- " + iwrb.getLocalizedString("run_reg.medium", "Medium"), IWMarathonConstants.PARAMETER_TSHIRT_M);
+		large = new SelectOption("- " + iwrb.getLocalizedString("run_reg.large", "Large"), IWMarathonConstants.PARAMETER_TSHIRT_L);
+		xlarge = new SelectOption("- " + iwrb.getLocalizedString("run_reg.xlarge", "Larger"), IWMarathonConstants.PARAMETER_TSHIRT_XL);
+		xxlarge = new SelectOption("- " + iwrb.getLocalizedString("run_reg.xxlarge", "Largest"), IWMarathonConstants.PARAMETER_TSHIRT_XXL);
 
 		tShirtField.addOption(empty);
+		tShirtField.addOption(selectAdult);
 		tShirtField.addOption(small);
 		tShirtField.addOption(medium);
 		tShirtField.addOption(large);
 		tShirtField.addOption(xlarge);
 		tShirtField.addOption(xxlarge);
-		tShirtField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.must_select_shirt_size", "You must select tee-shirt size"));
+
+		SelectOption selectKids = new SelectOption(iwrb.getLocalizedString("run_reg.kids_sized", "Kids sizes"), "-1");
+		SelectOption smallKids = new SelectOption("- " + iwrb.getLocalizedString("run_reg.small_kids", "Small"), IWMarathonConstants.PARAMETER_TSHIRT_S + "_kids");
+		SelectOption mediumKids = new SelectOption("- " + iwrb.getLocalizedString("run_reg.medium_kids", "Medium"), IWMarathonConstants.PARAMETER_TSHIRT_M + "_kids");
+		SelectOption largeKids = new SelectOption("- " + iwrb.getLocalizedString("run_reg.large_kids", "Large"), IWMarathonConstants.PARAMETER_TSHIRT_L + "_kids");
+		SelectOption xlargeKids = new SelectOption("- " + iwrb.getLocalizedString("run_reg.xlarge_kids", "Larger"), IWMarathonConstants.PARAMETER_TSHIRT_XL + "_kids");
+		SelectOption xxlargeKids = new SelectOption("- " + iwrb.getLocalizedString("run_reg.xxlarge_kids", "Largest"), IWMarathonConstants.PARAMETER_TSHIRT_XXL + "_kids");
+
+		tShirtField.addOption(selectKids);
+		tShirtField.addOption(smallKids);
+		tShirtField.addOption(mediumKids);
+		tShirtField.addOption(largeKids);
+		tShirtField.addOption(xlargeKids);
+		tShirtField.addOption(xxlargeKids);
+
+		tShirtField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.must_select_shirt_size", "You must select tee-shirt size"), "-1");
 
 		//step one fields end
 
@@ -604,7 +621,7 @@ public class RunRegistration extends Block {
 			t.add(buyChipText, column, row);
 			t.add(" - ", column, row);
 			if (iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())) {
-				t.add(String.valueOf((int) buyPrice) + " " + ISK.getSymbol(), column, row++);
+				t.add(String.valueOf((int) buyPrice) + " " + ISK.getSymbol() + " " + iwrb.getLocalizedString("run_reg.special_buy_chip_offer", "(special price)"), column, row++);
 			}
 			else {
 				t.add(String.valueOf((int) buyPriceEuro) + " " + EUR.getSymbol(), column, row++);
@@ -729,6 +746,8 @@ public class RunRegistration extends Block {
 			agrees = new Boolean(agreement).booleanValue();
 		}
 
+		int sevenKM = Integer.parseInt(iwrb.getIWBundleParent().getProperty("7_km_id", "113"));
+
 		int userID = -1;
 		
 		Table t = new Table();
@@ -783,7 +802,21 @@ public class RunRegistration extends Block {
 				Link payBlue = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.pay", "Pay fee")), STYLENAME_BLUE_TEXT);
 				Link payGreen = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
 				if (runGroup != null && distanceGroup != null) {
-					String URL = iwrb.getIWBundleParent().getProperty("travelURL_"+runGroup.getName()+"_"+distanceGroup.getName()+"_"+year+"_"+iwc.getCurrentLocale().toString(), "#");
+					String travelURL = "travelURL_"+runGroup.getName()+"_"+distanceGroup.getName()+"_"+year+"_"+iwc.getCurrentLocale().toString();
+					if (chip.equals(IWMarathonConstants.RR_BUY_CHIP)) {
+						travelURL += "_buy";
+					}
+					else if (chip.equals(IWMarathonConstants.RR_RENT_CHIP)) {
+						travelURL += "_rent";
+					}
+					if (Integer.parseInt(distance) == sevenKM && ssnIS != null) {
+						int age = getRunBiz(iwc).getAgeFromPersonalID(ssnIS);
+						if (age > 0 && age <= 12) {
+							travelURL += "_12";
+						}
+					}
+
+					String URL = iwrb.getIWBundleParent().getProperty(travelURL, "#");
 					if (URL.equals("#")) {
 						showPayment = false;
 					}
@@ -804,6 +837,10 @@ public class RunRegistration extends Block {
 	
 				t.setHeight(row++, 12);
 				if (showPayment) {
+					Text payText = new Text(iwrb.getLocalizedString("run_reg.registration_finished_pay", "Registration is now finished. You can pay the fee by clicking on the link below."));
+					payText.setStyleAttribute("font-size", "12px");
+					
+					t.add(payText, 1, row++);
 					t.add(payBlue, 1, row);
 					t.add(Text.getNonBrakingSpace(), 1, row);
 					t.add(payGreen, 1, row++);
