@@ -18,20 +18,29 @@ public class ClassIntrospector {
   Class sourceClass;
   String shortName;
   BeanInfo info;
+  private static String INITIALIZE_ATTRIBUTES="initializeAttributes";
+  private static String GET_ENTITY_NAME="getEntityName";
+  //private static String DELETE="delete";
+  private static String UPDATE="update";
+  private static String INSERT="insert";
+  private static String INSERT_START_DATA = "insertStartData";
+  private static String EJB_START = "ejb";
+  private static String GET_NAME_OF_MIDDLE_TABLE = "getNameOfMiddleTable";
+  private boolean convertGenericEntityToIDOLegacyEntity=true;
 
   public ClassIntrospector(Class sourceClass)throws Exception{
     this.sourceClass = sourceClass;
     this.info = Introspector.getBeanInfo(sourceClass,sourceClass.getSuperclass());
     String name = sourceClass.getName().substring(sourceClass.getName().lastIndexOf(".")+1);
-    if(name.endsWith("Entity")){
+    /*if(name.endsWith("Entity")){
       shortName = name.substring(name.indexOf("Entity"));
     }
     else if(name.endsWith("Bean")){
       shortName = name.substring(name.indexOf("Bean"));
     }
-    else{
+    else{*/
       shortName = name;
-    }
+    //}
   }
 
   private Method[] getVisibleMethods(){
@@ -42,9 +51,40 @@ public class ClassIntrospector {
     for (int i = 0; i < descr.length; i++) {
       MethodDescriptor currentDesc = descr[i];
       Method m = currentDesc.getMethod();
-      if(Modifier.isPublic(m.getModifiers())){
-        //System.out.println(m.toString());
-        v.add(m);
+      if((Modifier.isPublic(m.getModifiers())) && !(Modifier.isStatic(m.getModifiers()))){
+        //if(m.getDeclaringClass().equals(this.sourceClass)){
+        //  v.add(m);
+        //}
+        String methodName = m.getName();
+        //System.out.println("methodName: "+methodName);
+        if(methodName.equals(this.INITIALIZE_ATTRIBUTES)){
+          //v.add(m);
+        }
+        else if(methodName.equals(this.INSERT_START_DATA)){
+          //v.add(m);
+        }
+        else if(methodName.equals(this.GET_ENTITY_NAME)){
+          //v.add(m);
+        }
+        else if(methodName.equals(this.UPDATE)){
+          //v.add(m);
+        }
+        //else if(methodName.equals(this.DELETE)){
+          //v.add(m);
+        //}
+        else if(methodName.equals(this.INSERT)){
+          //v.add(m);
+        }
+        else if(methodName.equals(this.GET_NAME_OF_MIDDLE_TABLE)){
+          //v.add(m);
+        }
+        else if(methodName.startsWith(this.EJB_START)){
+          //v.add(m);
+        }
+        else{
+          v.add(m);
+        }
+
       }
     }
     methods = (Method[])v.toArray(new Method[0]);
@@ -58,13 +98,22 @@ public class ClassIntrospector {
     for (int i = 0; i < methods.length; i++) {
       Method thisMethod = methods[i];
       Class returnTypeClass = thisMethod.getReturnType();
-      String returnType = null;
-      if(returnTypeClass.isArray()){
-        returnType=returnTypeClass.getComponentType().getName()+"[]";
+      String returnType = this.getClassParameterToString(returnTypeClass);
+
+      /*if(returnTypeClass.isArray()){
+        //returnType=returnTypeClass.getComponentType().getName()+"[]";
+          Class arrayClass = returnTypeClass.getComponentType();
+          if(arrayClass.isArray()){
+            returnType=arrayClass.getComponentType().getName()+"[][]";
+          }
+          else{
+            returnType=arrayClass.getName()+"[]";
+          }
       }
       else{
         returnType=returnTypeClass.getName();
       }
+      */
       String methodName=thisMethod.getName();
       Class[] parameters=thisMethod.getParameterTypes();
       Class[] exceptions=thisMethod.getExceptionTypes();
@@ -75,13 +124,20 @@ public class ClassIntrospector {
           returnString+=",";
         }
         Class parameterClass = parameters[j];
-        String parameterType = null;
-        if(parameterClass.isArray()){
-          parameterType=parameterClass.getComponentType().getName()+"[]";
+        String parameterType = getClassParameterToString(parameterClass);
+        /*if(parameterClass.isArray()){
+          Class arrayClass = parameterClass.getComponentType();
+          if(arrayClass.isArray()){
+            parameterType=arrayClass.getComponentType().getName()+"[][]";
+          }
+          else{
+            //parameterType=parameterClass.getComponentType().getName()+"[]";
+            parameterType=arrayClass.getName()+"[]";
+          }
         }
         else{
           parameterType=parameterClass.getName();
-        }
+        }*/
         returnString += parameterType+" p"+j;
       }
       returnString+=")";
@@ -119,13 +175,15 @@ public class ClassIntrospector {
               returnString+=",";
             }
             Class parameterClass = parameters[j];
-            String parameterType = null;
-            if(parameterClass.isArray()){
+
+            String parameterType = this.getClassParameterToString(parameterClass);
+/*            if(parameterClass.isArray()){
               parameterType=parameterClass.getComponentType().getName()+"[]";
             }
             else{
               parameterType=parameterClass.getName();
             }
+*/
             returnString += parameterType+" p"+j;
           }
           returnString+=")";
@@ -157,6 +215,37 @@ public class ClassIntrospector {
 
   public Class[] getImplementedInterfaces(){
     return sourceClass.getInterfaces();
+  }
+
+  private String getClassParameterToString(Class parameter){
+    String returnType = "";
+    if(parameter.isArray()){
+      //returnType=returnTypeClass.getComponentType().getName()+"[]";
+        Class arrayClass = parameter.getComponentType();
+        if(arrayClass.isArray()){
+          returnType=getClassTranslated(arrayClass.getComponentType())+"[][]";
+        }
+        else{
+          returnType=getClassTranslated(arrayClass)+"[]";
+        }
+    }
+    else{
+      returnType=getClassTranslated(parameter);
+    }
+    return returnType;
+  }
+
+  private String getClassTranslated(Class parameter){
+    String className = parameter.getName();
+    if(convertGenericEntityToIDOLegacyEntity){
+      if(className.equals("com.idega.data.GenericEntity")){
+        return "com.idega.data.IDOLegacyEntity";
+      }
+      else{
+        return className;
+      }
+    }
+    return className;
   }
 
 }

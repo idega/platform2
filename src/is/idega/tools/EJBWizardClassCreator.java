@@ -16,12 +16,14 @@ public class EJBWizardClassCreator {
   private Class originalClass;
   private ClassIntrospector introspector;
   private String baseName;
+  private File workingDir;
+  private String factorySuffix = "HomeImpl";
 
-  private String entityBeanClassSuffix = "BMPBean";
+  private String entityBeanClassSuffix = EJBWizard.entityBeanClassSuffix;
   protected boolean legacyIDO = true;
 
   private String factorySuperClass="com.idega.data.IDOFactory";
-  private String remoteInterfaceSuperInterface = "com.idega.data.IDOEntity";
+  private String _remoteInterfaceSuperInterface = "com.idega.data.IDOEntity";
 
   private boolean throwRemoteExceptions=true;
 
@@ -51,11 +53,12 @@ public class EJBWizardClassCreator {
   }
 
   public String getRemoteInterfaceSuperInterface(){
-    return remoteInterfaceSuperInterface;
+    return _remoteInterfaceSuperInterface;
   }
 
   public void setRemoteInterfaceSuperInterface(String remoteInterfaceSuperInterface){
-    this.remoteInterfaceSuperInterface=remoteInterfaceSuperInterface;
+    //System.out.println("EJBWizardClassCreator - Setting RemoteSuperInterface: "+remoteInterfaceSuperInterface+" for "+this.baseName);
+    this._remoteInterfaceSuperInterface=remoteInterfaceSuperInterface;
   }
 
   public String getFactorySuperClass(){
@@ -153,7 +156,7 @@ public class EJBWizardClassCreator {
           codeString+=", java.rmi.RemoteException";
         }
         codeString+=";\n";
-        codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(Integer id) throws javax.ejb.FinderException";
+        codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(Object pk) throws javax.ejb.FinderException";
         if(throwRemoteExceptionsInHome()){
           codeString+=", java.rmi.RemoteException";
         }
@@ -203,7 +206,7 @@ public class EJBWizardClassCreator {
 
         codeString+=" public "+this.introspector.getShortName()+" create() throws javax.ejb.CreateException";
         codeString+="{\n";
-        codeString+="  return ("+this.introspector.getShortName()+") super.idoCreate(getEntityInterfaceClass());";
+        codeString+="  return ("+this.introspector.getShortName()+") super.idoCreate();";
         codeString+="\n }\n\n";
 
         if(legacyIDO){
@@ -213,19 +216,19 @@ public class EJBWizardClassCreator {
           codeString+="\t\treturn create();\n";
           codeString+="\t}\n";
           codeString+="\tcatch(javax.ejb.CreateException ce){\n";
-          codeString+="\t\tce.printStackTrace();\n";
+          codeString+="\t\tthrow new RuntimeException(\"CreateException:\"+ce.getMessage());\n";
           codeString+="\t}\n";
           codeString+="\n }\n\n";
         }
 
         codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(int id) throws javax.ejb.FinderException";
         codeString+="{\n";
-        codeString+="  return ("+this.introspector.getShortName()+") super.idoFindByPrimaryKey(getEntityInterfaceClass(),id);";
+        codeString+="  return ("+this.introspector.getShortName()+") super.idoFindByPrimaryKey(id);";
         codeString+="\n }\n\n";
 
-        codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(Integer id) throws javax.ejb.FinderException";
+        codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(Object pk) throws javax.ejb.FinderException";
         codeString+="{\n";
-        codeString+="  return ("+this.introspector.getShortName()+") super.idoFindByPrimaryKey(getEntityInterfaceClass(),id);";
+        codeString+="  return ("+this.introspector.getShortName()+") super.idoFindByPrimaryKey(pk);";
         codeString+="\n }\n\n";
 
         if(legacyIDO){
@@ -252,7 +255,7 @@ public class EJBWizardClassCreator {
   }
 
   public File getFile(String name)throws Exception{
-    File f = new File(name+".java");
+    File f = new File(getWorkingDirectory(),name+".java");
     try{
       f.createNewFile();
     }
@@ -295,7 +298,7 @@ public class EJBWizardClassCreator {
   }
 
   public String getFactoryName(){
-    return this.introspector.getShortName()+"Factory";
+    return this.introspector.getShortName()+factorySuffix;
   }
 
   public boolean moveEntityBean(){
@@ -323,5 +326,13 @@ public class EJBWizardClassCreator {
 
   public String getEntityBeanName(){
     return introspector.getShortName()+this.entityBeanClassSuffix;
+  }
+
+  public void setWorkingDirectory(File dir){
+    this.workingDir=dir;
+  }
+
+  public File getWorkingDirectory(){
+    return workingDir;
   }
 }
