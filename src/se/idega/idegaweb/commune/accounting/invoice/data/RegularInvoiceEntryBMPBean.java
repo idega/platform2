@@ -21,6 +21,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author Roar
@@ -121,14 +122,14 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getUser()
 	 */
-	public User getUser() {
+	public User getChild() {
 		return (User) getColumnValue(COLUMN_USER_ID);
 	}
 
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getUser()
 	 */
-	public int getUserID() {
+	public int getChildId() {
 		return getIntColumnValue(COLUMN_USER_ID);
 	}
 
@@ -301,35 +302,12 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 	public void setNote(String note) {
 		setColumn(COLUMN_NOTE, note);
 	}
-	
-	public Collection ejbFindRegularInvoicesForPeriodeUserAndCategory(Date from, Date to, int userId, String schoolCategoryId) throws FinderException {
-		return idoFindPKsByQuery(idoQuery() 
-		.appendSelectAllFrom(this)
-		.appendWhereEquals(COLUMN_USER_ID, userId)
-		.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, schoolCategoryId)
-		.appendAnd()
-		.append(COLUMN_FROM)
-		.appendLessThanOrEqualsSign()
-		.append(to)
-		.appendAnd()
-		.appendLeftParenthesis()
-		.append(COLUMN_TO)
-		.appendGreaterThanOrEqualsSign()
-		.append(from)
-//		.appendOr()
-//		.append(COLUMN_TO)
-//		.appendIsNull()
-		.appendRightParenthesis());
-	}
-
-
-
 
 
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setUser(com.idega.user.data.User)
 	 */
-	public void setUser(User user) {
+	public void setChild(User user) {
 		setColumn(COLUMN_USER_ID, user.getPrimaryKey());
 	}
 
@@ -432,29 +410,54 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 		setColumn(COLUMN_EDIT_NAME, name);
 	}
 
-	public Collection ejbFindRegularInvoicesForPeriodeAndCategoryExceptType(Date date, String category, int lagCat) throws FinderException{
+	public Collection ejbFindRegularInvoicesForPeriodAndChildAndCategory(Date from, Date to, int childUserId, String schoolCategoryId) throws FinderException {
+		
+				IDOQuery query = idoQuery() 
+				.appendSelectAllFrom(this)
+				.appendWhereEquals(COLUMN_USER_ID, childUserId)
+				.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, schoolCategoryId)
+				.appendAnd()
+				.append(COLUMN_FROM)
+				.appendLessThanOrEqualsSign()
+				.append(to)
+				.appendAnd()
+				.appendLeftParenthesis()
+				.append(COLUMN_TO)
+				.appendGreaterThanOrEqualsSign()
+				.append(from)
+//		.appendOr()
+//		.append(COLUMN_TO)
+//		.appendIsNull()
+				.appendRightParenthesis();
+				return idoFindPKsByQuery(query);
+	}	
+	
+	public Collection ejbFindRegularInvoicesForPeriodAndCategoryExceptType(Date firstDateOfMonthForPeriod, String category, int regulationSpecTypeId) throws FinderException{
 		IDOQuery sql = idoQuery();
+		IWTimestamp endOfPeriod = new IWTimestamp(firstDateOfMonthForPeriod);
+		endOfPeriod.addMonths(1);
 		sql.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, category);
-		sql.appendAnd().append(COLUMN_FROM).appendLessThanOrEqualsSign().append(date);
-		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TO).appendGreaterThanOrEqualsSign().append(date);
+		sql.appendAnd().append(COLUMN_FROM).appendLessThanSign().append(endOfPeriod.getDate());
+		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TO).appendGreaterThanOrEqualsSign().append(firstDateOfMonthForPeriod);
 		sql.appendOr().append(COLUMN_TO).append(" is null").appendRightParenthesis();
-		sql.appendAnd().append(COLUMN_REG_SPEC_TYPE_ID).appendNOTEqual().append(lagCat);
+		sql.appendAnd().append(COLUMN_REG_SPEC_TYPE_ID).appendNOTEqual().append(regulationSpecTypeId);
 //		System.out.println("SQL:"+sql);
 		return idoFindPKsByQuery(sql);
 	}
 
-	public Collection ejbFindRegularInvoicesForPeriodeUserCategoryAndRegSpecType(Date date, int userId, String category, int type) throws FinderException{
+	public Collection ejbFindRegularInvoicesForPeriodAndChildAndCategoryAndRegSpecType(Date date, int childUserId, String category, int regSpecTypeId) throws FinderException{
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhereEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, category);
 		sql.appendAnd().append(COLUMN_FROM).appendLessThanOrEqualsSign().append(date);
 		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TO).appendGreaterThanOrEqualsSign().append(date);
 		sql.appendOr().append(COLUMN_TO).append(" is null").appendRightParenthesis();
-		sql.appendAndEquals(COLUMN_REG_SPEC_TYPE_ID,type);
-		sql.appendAndEquals(COLUMN_USER_ID, userId);
+		sql.appendAndEquals(COLUMN_REG_SPEC_TYPE_ID,regSpecTypeId);
+		sql.appendAndEquals(COLUMN_USER_ID, childUserId);
 		
 //		System.out.println("SQL = " + sql);
 		
 		return idoFindPKsByQuery(sql);
 	}
+
 }
