@@ -1,11 +1,11 @@
 /*
- * $Id: VATBusinessBean.java,v 1.18 2004/01/08 19:05:08 tryggvil Exp $
- *
+ * $Id: VATBusinessBean.java,v 1.19 2004/01/11 16:51:58 tryggvil Exp $
+ * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
- *
- * This software is the proprietary information of Agura IT AB.
- * Use is subject to license terms.
- *
+ * 
+ * This software is the proprietary information of Agura IT AB. Use is subject
+ * to license terms.
+ *  
  */
 package se.idega.idegaweb.commune.accounting.regulations.business;
 
@@ -29,18 +29,19 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
-/** 
+/**
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2004/01/08 19:05:08 $ by $Author: tryggvil $
- *
+ * Last modified: $Date: 2004/01/11 16:51:58 $ by $Author: tryggvil $
+ * 
  * @author Anders Lindman
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
-public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
+public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness {
 
-	private final static String KP = "vat_error."; // key prefix 
+	private final static String KP = "vat_error."; // key prefix
 
 	public final static String KEY_DATE_FORMAT = KP + "date_format";
 	public final static String KEY_SEARCH_PERIOD_VALUES = KP + "search_period_values";
@@ -77,63 +78,78 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String DEFAULT_CANNOT_FIND_VAT_REGULATION = "Kan ej hitta momssatsen.";
 
 	/**
-	 * Return VAT regulation home. 
-	 */	
+	 * Return VAT regulation home.
+	 */
 	protected VATRegulationHome getVATRegulationHome() throws RemoteException {
 		return (VATRegulationHome) com.idega.data.IDOLookup.getHome(VATRegulation.class);
-	}	
-	
+	}
+
 	/**
 	 * Finds all VAT regulations.
+	 * 
 	 * @return collection of VAT regulation objects
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation
 	 */
 	public Collection findAllVATRegulations() {
 		try {
 			VATRegulationHome home = getVATRegulationHome();
-			return home.findAll();				
-		} catch (RemoteException e) {
-			return null;
-		} catch (FinderException e) {
+			return home.findAll();
+		}
+		catch (RemoteException e) {
 			return null;
 		}
-	}	
-	
+		catch (FinderException e) {
+			return null;
+		}
+	}
+
 	/**
 	 * Finds all VAT regulations for the specified operational field.
-	 * @param operationalField the operational field (school category)
+	 * 
+	 * @param operationalField
+	 *            the operational field (school category)
 	 * @return collection of VAT regulation objects
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation
 	 */
 	public Collection findAllVATRegulations(String operationalField) {
 		try {
 			VATRegulationHome home = getVATRegulationHome();
-			return home.findByCategory(operationalField);				
-		} catch (RemoteException e) {
-			return null;
-		} catch (FinderException e) {
+			return home.findByCategory(operationalField);
+		}
+		catch (RemoteException e) {
 			return null;
 		}
-	}	
-	
+		catch (FinderException e) {
+			return null;
+		}
+	}
+
 	/**
-	 * Finds all VAT regulations for the specified period.
-	 * The string values are used for exception handling only.
-	 * @param periodFrom the start of the period
-	 * @param periodTo the end of the period
-	 * @param periodFromString the unparsed from date
-	 * @param periodToString the unparsed to date
-	 * @param operationalField the operational field (school category)
+	 * Finds all VAT regulations for the specified period. The string values
+	 * are used for exception handling only.
+	 * 
+	 * @param periodFrom
+	 *            the start of the period
+	 * @param periodTo
+	 *            the end of the period
+	 * @param periodFromString
+	 *            the unparsed from date
+	 * @param periodToString
+	 *            the unparsed to date
+	 * @param operationalField
+	 *            the operational field (school category)
 	 * @return collection of VAT regulation objects
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation
-	 * @throws VATException if invalid period parameters
+	 * @throws VATException
+	 *             if invalid period parameters
 	 */
 	public Collection findVATRegulations(
-			Date periodFrom,
-			Date periodTo,
-			String periodFromString,
-			String periodToString,
-			String operationalField) throws VATException {
+		Date periodFrom,
+		Date periodTo,
+		String periodFromString,
+		String periodToString,
+		String operationalField)
+		throws VATException {
 		try {
 			VATRegulationHome home = getVATRegulationHome();
 
@@ -154,7 +170,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 					}
 				}
 			}
-			
+
 			if ((periodFrom != null) && (periodTo != null)) {
 				if (periodFrom.getTime() > periodTo.getTime()) {
 					throw new VATException(KEY_SEARCH_PERIOD_VALUES, DEFAULT_SEARCH_PERIOD_VALUES);
@@ -164,42 +180,53 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			if ((operationalField == null) || (operationalField.length() == 0)) {
 				throw new VATException(KEY_OPERATIONAL_FIELD_MISSING, DEFAULT_OPERATIONAL_FIELD_MISSING);
 			}
-			
+
 			return home.findByPeriod(periodFrom, periodTo, operationalField);
-			
-		} catch (RemoteException e) {
-			return null;
-		} catch (FinderException e) {
+
+		}
+		catch (RemoteException e) {
 			return null;
 		}
-	}	
-	
+		catch (FinderException e) {
+			return null;
+		}
+	}
+
 	/**
-	 * Saves a VAT regulation object.
-	 * Creates a new persistent object if nescessary.
-	 * @parame id the VAT regulation id
-	 * @param periodFrom the start of the period
-	 * @param periodTo the end of the period
-	 * @param periodFromString the unparsed from date
-	 * @param periodToString the unparsed to date
-	 * @param description the description of the VAT regulation
-	 * @param vatPercentString the VAT percent value
-	 * @param paymentFlowTypeIdString the payment flow type id
-	 * @param providerTypeIdString the provider type id
-	 * @throws VATException if invalid parameters
+	 * Saves a VAT regulation object. Creates a new persistent object if
+	 * nescessary. @parame id the VAT regulation id
+	 * 
+	 * @param periodFrom
+	 *            the start of the period
+	 * @param periodTo
+	 *            the end of the period
+	 * @param periodFromString
+	 *            the unparsed from date
+	 * @param periodToString
+	 *            the unparsed to date
+	 * @param description
+	 *            the description of the VAT regulation
+	 * @param vatPercentString
+	 *            the VAT percent value
+	 * @param paymentFlowTypeIdString
+	 *            the payment flow type id
+	 * @param providerTypeIdString
+	 *            the provider type id
+	 * @throws VATException
+	 *             if invalid parameters
 	 */
 	public void saveVATRegulation(
-			int id,
-			Date periodFrom,
-			Date periodTo,
-			String periodFromString,
-			String periodToString,
-			String description,
-			String vatPercentString,
-			String paymentFlowTypeIdString,
-			String providerTypeIdString,
-			String operationalField) throws VATException {
-				
+		int id,
+		Date periodFrom,
+		Date periodTo,
+		String periodFromString,
+		String periodToString,
+		String description,
+		String vatPercentString,
+		String paymentFlowTypeIdString,
+		String providerTypeIdString,
+		String operationalField)
+		throws VATException {
 
 		// Operational field
 		if ((operationalField == null) || (operationalField.length() == 0)) {
@@ -210,47 +237,51 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 		String s = periodFromString.trim();
 		if (s.equals("")) {
 			throw new VATException(KEY_FROM_DATE_MISSING, DEFAULT_FROM_DATE_MISSING);
-		} else {
+		}
+		else {
 			if (periodFrom == null) {
 				throw new VATException(KEY_DATE_FORMAT, DEFAULT_DATE_FORMAT);
 			}
 		}
-		
+
 		// Period to
 		s = periodToString.trim();
 		if (s.equals("")) {
 			throw new VATException(KEY_TO_DATE_MISSING, DEFAULT_TO_DATE_MISSING);
-		} else {
+		}
+		else {
 			if (periodTo == null) {
 				throw new VATException(KEY_DATE_FORMAT, DEFAULT_DATE_FORMAT);
 			}
 		}
-		
+
 		if (periodFrom.getTime() > periodTo.getTime()) {
 			throw new VATException(KEY_PERIOD_VALUES, DEFAULT_PERIOD_VALUES);
 		}
-		
+
 		if (periodFrom.getTime() == periodTo.getTime()) {
 			throw new VATException(KEY_FROM_TO_DATE_EQUAL, DEFAULT_FROM_TO_DATE_EQUAL);
 		}
-		
+
 		// Description
 		s = description.trim();
 		if (s.equals("")) {
 			throw new VATException(KEY_DESCRIPTION_MISSING, DEFAULT_DESCRIPTION_MISSING);
-		} else {
+		}
+		else {
 			description = s;
 		}
-		
+
 		// VAT percent
 		s = vatPercentString.trim();
 		float vatPercent = 0;
-		if (s.equals("")) { 
+		if (s.equals("")) {
 			throw new VATException(KEY_VAT_PERCENT_MISSING, DEFAULT_VAT_PERCENT_MISSING);
 		}
 		try {
-			vatPercent = Float.parseFloat(s); 
-		} catch (NumberFormatException e) {
+			vatPercent = Float.parseFloat(s);
+		}
+		catch (NumberFormatException e) {
 			throw new VATException(KEY_VAT_PERCENT_VALUE, DEFAULT_VAT_PERCENT_VALUE);
 		}
 		if ((vatPercent < 0) || (vatPercent > 100)) {
@@ -270,7 +301,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			throw new VATException(KEY_PROVIDER_TYPE_MISSING, DEFAULT_PROVIDER_TYPE_MISSING);
 		}
 		int providerTypeId = Integer.parseInt(s);
-		
+
 		// Overlapping date intervals
 		Collection c = findAllVATRegulations(operationalField);
 		Iterator iter = c.iterator();
@@ -279,7 +310,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			if (((Integer) vr.getPrimaryKey()).intValue() == id) {
 				continue;
 			}
-			
+
 			IWTimestamp from = new IWTimestamp(vr.getPeriodFrom());
 			from.setAsDate();
 			IWTimestamp to = new IWTimestamp(vr.getPeriodTo());
@@ -288,15 +319,14 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			vatFrom.setAsDate();
 			IWTimestamp vatTo = new IWTimestamp(periodTo);
 			vatTo.setAsDate();
-			
-			if ((vatFrom.isLaterThan(from) && vatFrom.isEarlierThan(to)) || 
-					(vatTo.isLaterThan(from) && vatTo.isEarlierThan(to)) ||
-					((vatFrom.isEarlierThan(from) || vatFrom.equals(from)) && (vatTo.isLaterThanOrEquals(to)))) {
-				if ((vr.getPaymentFlowTypeId() == paymentFlowTypeId) && 
-						(vr.getProviderTypeId() == providerTypeId)) {				
+
+			if ((vatFrom.isLaterThan(from) && vatFrom.isEarlierThan(to))
+				|| (vatTo.isLaterThan(from) && vatTo.isEarlierThan(to))
+				|| ((vatFrom.isEarlierThan(from) || vatFrom.equals(from)) && (vatTo.isLaterThanOrEquals(to)))) {
+				if ((vr.getPaymentFlowTypeId() == paymentFlowTypeId) && (vr.getProviderTypeId() == providerTypeId)) {
 					throw new VATException(KEY_PERIOD_OVERLAP, DEFAULT_PERIOD_OVERLAP);
 				}
-			}								 
+			}
 		}
 
 		try {
@@ -305,10 +335,12 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 
 			try {
 				Integer pk = new Integer(id);
-				if (pk.intValue() > 0) { 
+				if (pk.intValue() > 0) {
 					vr = home.findByPrimaryKey(new Integer(id));
 				}
-			} catch (Exception e) {}
+			}
+			catch (Exception e) {
+			}
 
 			if (vr == null) {
 				vr = home.create();
@@ -322,18 +354,23 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			vr.setProviderTypeId(providerTypeId);
 			vr.setCategory(operationalField);
 			vr.store();
-		} catch (RemoteException e) { 
+		}
+		catch (RemoteException e) {
 			throw new VATException(KEY_CANNOT_SAVE_VAT_REGULATION, DEFAULT_CANNOT_SAVE_VAT_REGULATION);
-		} catch (CreateException e) { 
+		}
+		catch (CreateException e) {
 			throw new VATException(KEY_CANNOT_SAVE_VAT_REGULATION, DEFAULT_CANNOT_SAVE_VAT_REGULATION);
-		}		
+		}
 	}
-	
+
 	/**
 	 * Deletes the VAT regulation objects with the specified ids.
-	 * @param vatRegulationIds the array of VAT regulation ids
-	 * @throws VATException if a VAT regulation could not be deleted
-	 */ 
+	 * 
+	 * @param vatRegulationIds
+	 *            the array of VAT regulation ids
+	 * @throws VATException
+	 *             if a VAT regulation could not be deleted
+	 */
 	public void deleteVATRegulations(String[] vatRegulationIds) throws VATException {
 		try {
 			VATRegulationHome home = getVATRegulationHome();
@@ -342,56 +379,72 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 				VATRegulation vr = home.findByPrimaryKey(new Integer(id));
 				vr.remove();
 			}
-		} catch (RemoteException e) { 
+		}
+		catch (RemoteException e) {
 			throw new VATException(KEY_CANNOT_DELETE_VAT_REGULATION, DEFAULT_CANNOT_DELETE_VAT_REGULATION);
-		} catch (FinderException e) { 
+		}
+		catch (FinderException e) {
 			throw new VATException(KEY_CANNOT_DELETE_VAT_REGULATION, DEFAULT_CANNOT_DELETE_VAT_REGULATION);
-		} catch (RemoveException e) { 
+		}
+		catch (RemoveException e) {
 			throw new VATException(KEY_CANNOT_DELETE_VAT_REGULATION, DEFAULT_CANNOT_DELETE_VAT_REGULATION);
-		}		
+		}
 	}
-	
+
 	/**
 	 * Deletes the VAT regulation object with the specified id.
-	 * @param id the VAT regulation id
-	 * @throws VATException if the VAT regulation could not be deleted
-	 */ 
+	 * 
+	 * @param id
+	 *            the VAT regulation id
+	 * @throws VATException
+	 *             if the VAT regulation could not be deleted
+	 */
 	public void deleteVATRegulation(int id) throws VATException {
 		try {
 			VATRegulationHome home = getVATRegulationHome();
 			VATRegulation vr = home.findByPrimaryKey(new Integer(id));
 			vr.remove();
-		} catch (RemoteException e) { 
+		}
+		catch (RemoteException e) {
 			throw new VATException(KEY_CANNOT_DELETE_VAT_REGULATION, DEFAULT_CANNOT_DELETE_VAT_REGULATION);
-		} catch (FinderException e) { 
+		}
+		catch (FinderException e) {
 			throw new VATException(KEY_CANNOT_DELETE_VAT_REGULATION, DEFAULT_CANNOT_DELETE_VAT_REGULATION);
-		} catch (RemoveException e) { 
+		}
+		catch (RemoveException e) {
 			throw new VATException(KEY_CANNOT_DELETE_VAT_REGULATION, DEFAULT_CANNOT_DELETE_VAT_REGULATION);
-		}		
+		}
 	}
-	
+
 	/**
 	 * Returns the VAT regulation with the specified id.
-	 * @param id the VAT regulation id
-	 * @throws VATException if VAT regulation not found
+	 * 
+	 * @param id
+	 *            the VAT regulation id
+	 * @throws VATException
+	 *             if VAT regulation not found
 	 */
 	public VATRegulation getVATRegulation(int id) throws VATException {
 		VATRegulation vr = null;
 		try {
 			VATRegulationHome home = getVATRegulationHome();
 			vr = home.findByPrimaryKey(new Integer(id));
-		} catch (RemoteException e) { 
-			throw new VATException(KEY_CANNOT_FIND_VAT_REGULATION, DEFAULT_CANNOT_FIND_VAT_REGULATION);
-		} catch (FinderException e) { 
+		}
+		catch (RemoteException e) {
 			throw new VATException(KEY_CANNOT_FIND_VAT_REGULATION, DEFAULT_CANNOT_FIND_VAT_REGULATION);
 		}
-		
-		return vr;		
+		catch (FinderException e) {
+			throw new VATException(KEY_CANNOT_FIND_VAT_REGULATION, DEFAULT_CANNOT_FIND_VAT_REGULATION);
+		}
+
+		return vr;
 	}
-	
+
 	/**
 	 * Returns the localization key for the specified operational field.
-	 * @param operationalField the operational field id
+	 * 
+	 * @param operationalField
+	 *            the operational field id
 	 */
 	public String getOperationalFieldLocalizationKey(String operationalField) {
 		String localizationKey = "";
@@ -399,31 +452,36 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			SchoolCategoryHome home = (SchoolCategoryHome) com.idega.data.IDOLookup.getHome(SchoolCategory.class);
 			SchoolCategory sc = home.findByPrimaryKey(operationalField);
 			localizationKey = sc.getLocalizedKey();
-		} catch (Exception e) {}
+		}
+		catch (Exception e) {
+		}
 		return localizationKey;
 	}
-	
-	public float getVATPercentForRegulation(Regulation normalRegulation)throws VATException{
+
+	public float getVATPercentForRegulation(Regulation normalRegulation) throws VATException {
 		return getVATRegulationFromRegulation(normalRegulation).getVATPercent();
 	}
 
 	/**
-	 * Finds the VATRegulation from the given normalRegulation which can be any regulation.
-	 * It uses the VATRuleRegulation field to find the VATRegulation from.
-	 * Returns VATRegulation if found
+	 * Finds the VATRegulation from the given normalRegulation which can be any
+	 * regulation. It uses the VATRuleRegulation field to find the
+	 * VATRegulation from. Returns VATRegulation if found
 	 */
-	public VATRegulation getVATRegulationFromRegulation(Regulation normalRegulation)throws VATException{
+	public VATRegulation getVATRegulationFromRegulation(Regulation normalRegulation) throws VATException {
 		Regulation vatRuleRegulation = normalRegulation.getVATRuleRegulation();
 		return getVATRegulationFromVATRuleRegulation(vatRuleRegulation);
 	}
-	
+
 	/**
-	 * Finds the VATRegulation from the given vatRuleRegulation by its condition fields
-	 * @param vatRuleRegulation A Regulation of type VAT (Moms)
-	 * @return
-	 * @throws VATException
+	 * Finds the VATRegulation from the given vatRuleRegulation by its
+	 * condition fields
+	 * 
+	 * @param vatRuleRegulation
+	 *            A Regulation of type VAT (Moms)
+	 * @return @throws
+	 *         VATException
 	 */
-	protected VATRegulation getVATRegulationFromVATRuleRegulation(Regulation vatRuleRegulation)throws VATException{
+	protected VATRegulation getVATRegulationFromVATRuleRegulation(Regulation vatRuleRegulation) throws VATException {
 		try {
 			RegulationsBusiness regBus = getRegulationsBusiness();
 			Collection conditions;
@@ -432,34 +490,50 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 				Condition element = (Condition) iter.next();
 				//Check if the condition is of type VAT (Moms)
 				String conditionId = Integer.toString(element.getConditionID());
-				if(conditionId.equals(RuleTypeConstant.CONDITION_ID_VAT)){
-					//The integer in interval i in this case a reference to a VATRegulation
+				if (conditionId.equals(RuleTypeConstant.CONDITION_ID_VAT)) {
+					//The integer in interval i in this case a reference to a
+					// VATRegulation
 					int interval = element.getIntervalID();
 					return getVATRegulationHome().findByPrimaryKey(new Integer(interval));
 				}
 			}
 		}
 		catch (FinderException e) {
-			throw new VATException("vatbusiness_exception_occurred","Exception occurred when finding VAT",e);
+			throw new VATException("vatbusiness_exception_occurred", "Exception occurred when finding VAT", e);
 		}
 		catch (RemoteException e) {
-			throw new VATException("vatbusiness_exception_occurred","Exception occurred when finding VAT",e);
+			throw new VATException("vatbusiness_exception_occurred", "Exception occurred when finding VAT", e);
 		}
-		throw new VATException("vatbusiness_no_vat_found","No VATRegulation Found for Regulation");
+		throw new VATException("vatbusiness_no_vat_found", "No VATRegulation Found for Regulation");
 	}
 
 	/**
 	 * Gets an instance of the RegulationsBusiness
+	 * 
 	 * @return
 	 */
 	private RegulationsBusiness getRegulationsBusiness() throws IBOLookupException {
-		RegulationsBusiness business = (RegulationsBusiness)getServiceInstance(RegulationsBusiness.class);
+		RegulationsBusiness business = (RegulationsBusiness) getServiceInstance(RegulationsBusiness.class);
 		return business;
 	}
-	
-	public boolean isSchoolApplicableForVAT(School school){
-		String manType = (String)school.getManagementType().getPrimaryKey();
-		if(manType.equals(SchoolManagementTypeBMPBean.TYPE_PRIVATE)||manType.equals(SchoolManagementTypeBMPBean.TYPE_COMPANY)){
+
+	/**
+	 * Gets if the given school should be using VAT (Momsersättning). This is
+	 * only applicable to privately run schools.
+	 */
+	public boolean isSchoolApplicableForVAT(School school) {
+		/*String manType = (String) school.getManagementType().getPrimaryKey();
+		if (manType.equals(SchoolManagementTypeBMPBean.TYPE_PRIVATE)
+			|| manType.equals(SchoolManagementTypeBMPBean.TYPE_COMPANY)
+			|| manType.equals(SchoolManagementTypeBMPBean.TYPE_FOUNDATION)) {
+			return true;
+		}
+		return false;
+		*/
+		Provider provider = new Provider(school);
+		//TODO: TL do this more cleanly:
+		int provTypeId = provider.getProviderTypeId();
+		if(provTypeId==2){
 			return true;
 		}
 		return false;
