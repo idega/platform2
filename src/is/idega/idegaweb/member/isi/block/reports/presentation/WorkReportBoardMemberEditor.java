@@ -176,7 +176,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       Object value = valueContainerFromTextEditor.getValue();
       String socialSecurityNumber = value.toString();
       User user = getUserBySocialSecurityNumber(socialSecurityNumber, workReportBusiness);
-      if (user == null) {
+      // there are some users in the system without any social security number
+      if (socialSecurityNumber.length() == 0 || user == null) {
         personalIdnotCorrect = true;
         return action;
       }
@@ -611,7 +612,8 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     else if (pathShortKey.equals(PERSONAL_ID))  {
       String socialSecurityNumber = value.toString();
       User user = getUserBySocialSecurityNumber(socialSecurityNumber, workReportBusiness);
-      if (user == null) {
+      // there are some users in the system without any social security number
+      if (socialSecurityNumber.length() == 0 || user == null) {
         personalIdnotCorrect = true;
         return;
       }

@@ -225,7 +225,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 
 	public WorkReportMember createWorkReportMember(int reportID, String personalID) throws CreateException {
-
+    
+    // there are some users in the system without any social security number
+    if (personalID.length() == 0) {
+      return null;
+    }
 		User user = null;
 		try {
 			user = getUser(personalID);

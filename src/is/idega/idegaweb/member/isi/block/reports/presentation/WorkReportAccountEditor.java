@@ -431,15 +431,15 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     Table mainTable = new Table(1,2);
     mainTable.add(browser, 1,1);
     // add buttons
-    PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
-      getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
-    PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
+//    PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
+//      getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
+//    PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
     PresentationObject cancelButton = getCancelButton(resourceBundle);
     // add buttons
-    Table buttonTable = new Table(3,1);
-    buttonTable.add(newEntryButton,1,1);
-    buttonTable.add(deleteEntriesButton,2,1);
-    buttonTable.add(cancelButton, 3,1);
+    Table buttonTable = new Table(1,1);
+//    buttonTable.add(newEntryButton,1,1);
+//    buttonTable.add(deleteEntriesButton,2,1);
+    buttonTable.add(cancelButton, 1,1);
     mainTable.add(buttonTable,1,2);
     return mainTable;
   }
@@ -464,26 +464,26 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     specialFieldAccountKeyIdsPlus.put(accountArea, plus);
   }
   
-  private PresentationObject getCreateNewEntityButton(IWResourceBundle resourceBundle) {
-    String createNewEntityText = resourceBundle.getLocalizedString("wr_account_editor_create_new_entry", "New entry");
-    SubmitButton button = new SubmitButton(createNewEntityText, SUBMIT_CREATE_NEW_ENTRY_KEY, "dummy_value");
-    button.setAsImageButton(true);
-    return button;
-  }
+//  private PresentationObject getCreateNewEntityButton(IWResourceBundle resourceBundle) {
+//    String createNewEntityText = resourceBundle.getLocalizedString("wr_account_editor_create_new_entry", "New entry");
+//    SubmitButton button = new SubmitButton(createNewEntityText, SUBMIT_CREATE_NEW_ENTRY_KEY, "dummy_value");
+//    button.setAsImageButton(true);
+//    return button;
+//  }
 
-  private PresentationObject getSaveNewEntityButton(IWResourceBundle resourceBundle)  {
-    String saveNewEntityText = resourceBundle.getLocalizedString("wr_div_board_member_editor_save_new_entry", "Save");
-    SubmitButton button = new SubmitButton(saveNewEntityText, SUBMIT_SAVE_NEW_ENTRY_KEY, "dummy_value");
-    button.setAsImageButton(true);
-    return button;
-  }    
-  
-  private PresentationObject getDeleteEntriesButton(IWResourceBundle resourceBundle)  {
-    String deleteEntityText = resourceBundle.getLocalizedString("wr_account_editor_remove_entries", "Remove");
-    SubmitButton button = new SubmitButton(deleteEntityText, SUBMIT_DELETE_ENTRIES_KEY, "dummy_value");
-    button.setAsImageButton(true);
-    return button;
-  }    
+//  private PresentationObject getSaveNewEntityButton(IWResourceBundle resourceBundle)  {
+//    String saveNewEntityText = resourceBundle.getLocalizedString("wr_div_board_member_editor_save_new_entry", "Save");
+//    SubmitButton button = new SubmitButton(saveNewEntityText, SUBMIT_SAVE_NEW_ENTRY_KEY, "dummy_value");
+//    button.setAsImageButton(true);
+//    return button;
+//  }    
+//  
+//  private PresentationObject getDeleteEntriesButton(IWResourceBundle resourceBundle)  {
+//    String deleteEntityText = resourceBundle.getLocalizedString("wr_account_editor_remove_entries", "Remove");
+//    SubmitButton button = new SubmitButton(deleteEntityText, SUBMIT_DELETE_ENTRIES_KEY, "dummy_value");
+//    button.setAsImageButton(true);
+//    return button;
+//  }    
  
   private PresentationObject getCancelButton(IWResourceBundle resourceBundle)  {
     String cancelText = resourceBundle.getLocalizedString("wr_account_editor_cancel", "Cancel");
