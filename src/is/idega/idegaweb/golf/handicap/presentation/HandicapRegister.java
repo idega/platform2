@@ -135,9 +135,6 @@ public class HandicapRegister extends GolfBlock {
 
 		if (update) {
 			Scorecard scorecardID = ((ScorecardHome) IDOLookup.getHomeLegacy(Scorecard.class)).findByPrimaryKey(Integer.parseInt(scorecard_id));
-			Statistic[] statCrapper = (Statistic[]) ((Statistic) IDOLookup.instanciateEntity(Statistic.class)).findAll("select s.* from statistic s,tee t where scorecard_id = " + scorecard_id + " and s.tee_id = t.tee_id");
-			//Statistic[] statCrapper = (Statistic[]) (new
-			// Statistic()).findAllByColumn("scorecard_id",Integer.parseInt(scorecard_id));
 			str = new Hashtable(18);
 			Stroke[] strokesIDS = (Stroke[]) (com.idega.data.GenericEntity.getStaticInstance(is.idega.idegaweb.golf.entity.Stroke.class)).findAll("select s.* from stroke s,tee t where scorecard_id = " + scorecard_id + " and s.tee_id = t.tee_id order by s.tee_id");
 			for (int i = 0; i < strokesIDS.length; i++)
@@ -160,13 +157,9 @@ public class HandicapRegister extends GolfBlock {
 			}
 			else {
 				tournament = true;
-				stat = "1";
 			}
 
-			if (statCrapper.length > 0) {
-				stat = "1";
-			}
-
+			stat = "1";
 			handicapBefore = scorecardID.getHandicapBefore();
 			Slope = scorecardID.getSlope();
 			CourseRating = scorecardID.getCourseRating();
