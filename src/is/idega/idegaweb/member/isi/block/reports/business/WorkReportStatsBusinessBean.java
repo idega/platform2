@@ -4007,7 +4007,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			age2 =age1;
 		}
 		
-		boolean filterByAge = (age1==0 && age2==123);
+		boolean filterByAge = !(age1==0 && age2==123);
 	
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -4144,7 +4144,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			age2 =age1;
 		}
 		
-		boolean filterByAge = (age1==0 && age2==123);
+		boolean filterByAge = !(age1==0 && age2==123);
 		
 		WorkReportGroup mainBoard = getWorkReportBusiness().getMainBoardWorkReportGroup(year.intValue());
 		Integer mainGroupId = null;
