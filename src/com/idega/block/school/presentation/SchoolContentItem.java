@@ -31,6 +31,7 @@ public abstract class SchoolContentItem extends Block {
   protected School _school = null;
   protected boolean _showDemoWhenSchoolIsNull = false;
   String _fontStyle = null;
+  String _fontClass = null;
   String _fontColor = null;
 
 	protected abstract PresentationObject getObject() throws RemoteException;
@@ -67,11 +68,19 @@ public abstract class SchoolContentItem extends Block {
     if (_fontColor != null) {
     	text.setFontColor(_fontColor);
     }
+    if (_fontClass != null) {
+    	text.setFontClass(_fontClass);
+    }
+    
     return text;
   }
 
   public void setFontStyle(String style) {
     this._fontStyle = style;
+  }
+  
+  public void setFontClass(String fontClass) {
+  	this._fontClass = fontClass;	
   }
   	
   public void setFontColor(String color) {
