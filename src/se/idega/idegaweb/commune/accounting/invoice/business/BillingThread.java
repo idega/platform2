@@ -380,6 +380,10 @@ public abstract class BillingThread extends Thread{
 	}*/
 
 	protected PlacementTimes calculateTime(Date start, Date end){
+		return calculateTime(start, end, true);
+	}
+	
+	protected PlacementTimes calculateTime(Date start, Date end, boolean displayWarning){
 		IWTimestamp firstCheckDay = new IWTimestamp(start);
 		firstCheckDay.setAsDate();
 		IWTimestamp time = new IWTimestamp(startPeriod);
@@ -396,7 +400,7 @@ public abstract class BillingThread extends Thread{
 			}
 		}
 		PlacementTimes placementTimes = new PlacementTimes (firstCheckDay, lastCheckDay);
-		if(placementTimes.getDays()<0f){
+		if(placementTimes.getDays()<0f && displayWarning){
 			errorRelated.append(getLocalizedString("invoice.PlacementDays","Placement days")+":"+placementTimes.getDays());
 			createNewErrorMessage(errorRelated, getLocalizedString("invoice.WarningNegativePlacementTimeFound","Warning. Negative placement time found"));
 		}

@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/03/16 11:03:33 $ by $Author: joakim $
+ * Last modified: $Date: 2004/03/18 15:31:50 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.129 $
+ * @version $Revision: 1.130 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -527,7 +527,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	private void createPaymentsForResource(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, ResourceClassMember resource) throws EJBException, FinderException, PostingException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 		final Date startDate = resource.getStartDate();
 		final Date endDate = resource.getEndDate();
-		final PlacementTimes placementTimes = calculateTime(startDate, endDate);
+		final PlacementTimes placementTimes = calculateTime(startDate, endDate, false);
 		if(placementTimes.getDays() > 0){
 			School school = schoolClassMember.getSchoolClass().getSchool();
 			
