@@ -162,7 +162,9 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		if (placementDate != null)
 			choice.setFromDate(placementDate);
 		IWTimestamp stamp = new IWTimestamp();
+		choice.setQueueDate(stamp.getDate());
 		stamp.addSeconds((10 - (choiceNumber.intValue() * 10)));
+		choice.setCreated(stamp.getTimestamp());
 		choice.setCaseStatus(caseStatus);
 
 		if (parentCase != null)
