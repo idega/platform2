@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.21 2003/10/09 12:07:08 anders Exp $
+ * $Id: ProviderEditor.java,v 1.22 2003/10/10 00:51:40 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -56,14 +56,17 @@ import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
+
+
 /** 
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/09 12:07:08 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/10 00:51:40 $ by $Author: kjell $
  *
  * @author Anders Lindman
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -293,7 +296,13 @@ public class ProviderEditor extends AccountingBlock {
 	private void handleSaveAction(IWContext iwc) {
 		String errorMessage = null;
 		PostingBlock p = new PostingBlock(null, null);
-		p.generateStrings(iwc);
+		try {
+			p.generateStrings(iwc);
+		} catch (PostingParametersException e) {
+			// no problems, this will never happen here, unless you have a parameter period_from
+			// Check PostingParameterListEditor
+			// Kelly
+		}			
 		String ownPosting = p.getOwnPosting();
 		String doublePosting = p.getDoublePosting();
 

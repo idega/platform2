@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.16 2003/09/25 23:00:01 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.17 2003/10/10 00:51:40 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTyp
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.16 2003/09/25 23:00:01 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.17 2003/10/10 00:51:40 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -99,7 +99,8 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		setNullable (COLUMN_REG_SPEC_TYPE_ID, true);
 		setNullable (COLUMN_COMPANY_TYPE, true);
 		setNullable (COLUMN_COMMUNE_BELONGING_ID, true);
-		setNullable (COLUMN_COMMUNE_BELONGING_ID, true);
+		setNullable (COLUMN_SCHOOL_YEAR1_ID, true);
+		setNullable (COLUMN_SCHOOL_YEAR2_ID, true);
 	}
 	
 	public String getPostingString() {return getStringColumnValue(COLUMN_OWN_POSTING_STRING);}
@@ -136,37 +137,49 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	public void setActivity(int id) {
 		if (id != 0) { 
 			setColumn(COLUMN_ACTIVITY_ID, id); 
-		}
+		} else {
+			removeFromColumn(COLUMN_ACTIVITY_ID);
+		}			 
 	}
 	
 	public void setRegSpecType(int id) { 
 		if (id != 0) { 
 			setColumn(COLUMN_REG_SPEC_TYPE_ID, id); 
-		}
+		} else {
+			removeFromColumn(COLUMN_REG_SPEC_TYPE_ID);
+		}			 
 	}
 	
 	public void setCompanyType(String id) { 
-		if (id != "0") {
+		if (id.compareTo("0") != 0) {
 			setColumn(COLUMN_COMPANY_TYPE, id); 
-		}
+		} else {
+			removeFromColumn(COLUMN_COMPANY_TYPE);
+		}			 
 	}
 	
 	public void setCommuneBelonging(int id) { 
 		if (id != 0) { 
 			setColumn(COLUMN_COMMUNE_BELONGING_ID, id);
-		} 
+		} else {
+			removeFromColumn(COLUMN_COMMUNE_BELONGING_ID);
+		}			 
 	}
 
 	public void setSchoolYear1(int id) { 
 		if (id != 0) { 
 			setColumn(COLUMN_SCHOOL_YEAR1_ID, id);
-		} 
+		} else {
+			removeFromColumn(COLUMN_SCHOOL_YEAR1_ID);
+		}			 
 	}
 
 	public void setSchoolYear2(int id) { 
 		if (id != 0) { 
 			setColumn(COLUMN_SCHOOL_YEAR2_ID, id);
-		} 
+		} else {
+			removeFromColumn(COLUMN_SCHOOL_YEAR2_ID);
+		}			 
 	}
 
 	public Date getPeriodeFrom() {
@@ -209,6 +222,10 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		sql.appendAnd().append(COLUMN_PERIODE_TO);
 		sql.appendLessThanOrEqualsSign().append("'"+to+"'");
 		sql.appendOrderByDescending(COLUMN_PERIODE_FROM);
+		sql.append(", ");
+		sql.append(COLUMN_ACTIVITY_ID);
+		sql.append(", ");
+		sql.append(COLUMN_REG_SPEC_TYPE_ID);
 		return idoFindPKsBySQL(sql.toString());
 	}
 
@@ -220,6 +237,11 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		sql.appendAnd().append(COLUMN_PERIODE_TO);
 		sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
 		sql.appendOrderByDescending(COLUMN_PERIODE_FROM);
+		sql.append(", ");
+		sql.append(COLUMN_ACTIVITY_ID);
+		sql.append(", ");
+		sql.append(COLUMN_REG_SPEC_TYPE_ID);
+		
 		return idoFindPKsBySQL(sql.toString());
 	}
 
@@ -228,6 +250,10 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendOrderByDescending(COLUMN_PERIODE_FROM);
+		sql.append(", ");
+		sql.append(COLUMN_ACTIVITY_ID);
+		sql.append(", ");
+		sql.append(COLUMN_REG_SPEC_TYPE_ID);
 		return idoFindPKsBySQL(sql.toString());
 	}
 

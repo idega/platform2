@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.29 2003/10/09 14:45:07 laddi Exp $
+ * $Id: PostingBusinessBean.java,v 1.30 2003/10/10 00:51:40 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -50,7 +50,9 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	private final static String KEY_ERROR_POST_PARAM_SAME_ENTRY = "posting_parm_edit.post_sameentry";
 	private final static String KEY_ERROR_POST_PARAM_SCHOOL_YEAR_ORDER = "posting_parm_edit.post_school_year_order";
 	private final static String KEY_ERROR_POST_PARAM_DATE_MISSING = "posting_parm_edit.post_date_empty";
-		
+	private final static String KEY_ERROR_POST_PARAM_DATE_NULL = "posting_parm_edit.post_date_null";
+	private final static String KEY_ERROR_POST_PARAM_SCHOOL_YEARS = "posting_parm_edit.post_school_years";
+	
 	/**
 	 * Merges two posting strings according to 15.2 and 15.3 in the Kravspecification Check & Peng
 	 * @param first posting string
@@ -311,9 +313,22 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			int parm4 = 0;
 			int parm5 = 0;
 			int parm6 = 0;
+
+			
+			if (	((schoolYear1ID.compareTo("0") != 0) && 
+					( schoolYear2ID.compareTo("0") == 0)) ||
+					((schoolYear1ID.compareTo("0") == 0) && 
+					( schoolYear2ID.compareTo("0") != 0))) {
+				throw new PostingParametersException(KEY_ERROR_POST_PARAM_SCHOOL_YEARS, "Ange skolårsintervall!");			
+			}
+			
+			if (periodeFrom == null || periodeTo == null) {
+				throw new PostingParametersException(KEY_ERROR_POST_PARAM_DATE_NULL, "Datum måste fyllas i!");			
+			}
+
 			if (schoolYear1ID != null && schoolYear1ID != null) {
 				if (Integer.parseInt(schoolYear1ID) > Integer.parseInt(schoolYear2ID)) {
-					throw new PostingParametersException(KEY_ERROR_POST_PARAM_SCHOOL_YEAR_ORDER, "Fel ordning bland skolŒren!");			
+					throw new PostingParametersException(KEY_ERROR_POST_PARAM_SCHOOL_YEAR_ORDER, "Fel ordning bland skolåren!");			
 				}
 			}
 			if(periodeFrom == null || periodeTo == null) {
@@ -378,12 +393,12 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				pp.setChangedDate(IWTimestamp.getTimestampRightNow());
 				pp.setPostingString(ownPostingString);
 				pp.setDoublePostingString(doublePostingString);
-				if(parm1 != 0) pp.setActivity(parm1);
-				if(parm2 != 0) pp.setRegSpecType(parm2);
+				pp.setActivity(parm1);
+				pp.setRegSpecType(parm2);
 				pp.setCompanyType(parm3);
-				if(parm4 != 0) pp.setCommuneBelonging(parm4);
-				if(parm5 != 0) pp.setSchoolYear1(parm5);
-				if(parm6 != 0) pp.setSchoolYear2(parm6);
+				pp.setCommuneBelonging(parm4);
+				pp.setSchoolYear1(parm5);
+				pp.setSchoolYear2(parm6);
 				pp.store();
 			} catch (CreateException ce) {
 				throw new PostingParametersException(KEY_ERROR_POST_PARAM_CREATE, "Kan ej skapa parameter");			

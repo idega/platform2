@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.27 2003/10/09 21:21:58 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.28 2003/10/10 00:51:40 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -12,6 +12,8 @@ package se.idega.idegaweb.commune.accounting.posting.presentation;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -39,15 +41,15 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
 
 /**
  * PostingParameterListEdit is an idegaWeb block that handles maintenance of some 
- * default data thatis used in a "posting". The block shows/edits Periode, Activity, Regulation specs, 
+ * default data thatis used in a "posting". The block shows/edits Period, Activity, Regulation specs, 
  * Company types and Commune belonging. 
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.27 2003/10/09 21:21:58 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.28 2003/10/10 00:51:40 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -81,7 +83,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String KEY_COMMUNE_BELONGING = "posting_parm_edit.commune_belonging";
 	private final static String KEY_SCHOOL_YEAR = "posting_parm_edit.school_yearfrom";
 	private final static String KEY_SCHOOL_YEAR_TO = "posting_parm_edit.school_year_to";
-
+	private final static String KEY_SCHOOL_YEAR_SELECTOR_BLANK = "posting_parm_edit.school_yer_selector_blank";
+	private final static String KEY_ERROR_DATE_NULL	= "posting_parm_edit.error_date";
 	private final static String KEY_NUMERIC = "posting_parm_edit.numeric_only";
 	private final static String KEY_ALPHA = "posting_parm_edit.alpha_only";
 	
@@ -89,8 +92,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String PARAM_BUTTON_CANCEL = "button_cancel";
 	
 	private final static String PARAM_EDIT_ID = "param_edit_id";
-	private final static String PARAM_PERIODE_FROM = "pp_edit_periode_from";
-	private final static String PARAM_PERIODE_TO = "pp_edit_periode_to";
+	private final static String PARAM_PERIOD_FROM = "pp_edit_periode_from";
+	private final static String PARAM_PERIOD_TO = "pp_edit_period_to";
 	private final static String PARAM_SIGNED = "pp_edit_signed";
 	private final static String PARAM_MODE_COPY = "mode_copy";
 
@@ -109,6 +112,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private String _errorText = "";
 	private String _theOwnString = "";
 	private String _theDoubleString = "";
+	private Map _pMap;
 	
 	public void setResponsePage(ICPage page) {
 		_responsePage = page;
@@ -125,6 +129,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	public void init(final IWContext iwc) {
 		try {
 			int action = parseAction(iwc);
+			setDefaultParameters(iwc);
 			switch (action) {
 				case ACTION_DEFAULT :
 					viewMainForm(iwc, "");
@@ -146,42 +151,54 @@ public class PostingParameterListEditor extends AccountingBlock {
 		 
 	private boolean saveData(IWContext iwc) {
 
-			generateStrings(iwc);
+		_pMap.clear();
+		_pMap.put(PARAM_PERIOD_FROM, iwc.getParameter(PARAM_PERIOD_FROM));
+		_pMap.put(PARAM_PERIOD_TO, iwc.getParameter(PARAM_PERIOD_TO));
+		_pMap.put(PARAM_SIGNED, iwc.getParameter(PARAM_SIGNED));
+		_pMap.put(PARAM_SELECTOR_ACTIVITY, iwc.getParameter(PARAM_SELECTOR_ACTIVITY));				
+		_pMap.put(PARAM_SELECTOR_REGSPEC, iwc.getParameter(PARAM_SELECTOR_REGSPEC));		
+		_pMap.put(PARAM_SELECTOR_COMPANY_TYPE, iwc.getParameter(PARAM_SELECTOR_COMPANY_TYPE));					
+		_pMap.put(PARAM_SELECTOR_COM_BELONGING, iwc.getParameter(PARAM_SELECTOR_COM_BELONGING));
+		_pMap.put(PARAM_SELECTOR_SCHOOL_YEAR1, iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR1));
+		_pMap.put(PARAM_SELECTOR_SCHOOL_YEAR2, iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR2));
 		
-			try {
-				String id = null;
-				if (iwc.isParameterSet(PARAM_EDIT_ID)) {
-					id = iwc.getParameter(PARAM_EDIT_ID);
-				}
-				if (iwc.isParameterSet(PARAM_MODE_COPY)) {
-					id = null;
-				}
-				getPostingBusiness(iwc).savePostingParameter(id,
-				parseDate(iwc.getParameter(PARAM_PERIODE_FROM)),
-				parseDate(iwc.getParameter(PARAM_PERIODE_TO)),
-				iwc.getParameter(PARAM_SIGNED),
-				iwc.getParameter(PARAM_SELECTOR_ACTIVITY),				
-				iwc.getParameter(PARAM_SELECTOR_REGSPEC),					
-				iwc.getParameter(PARAM_SELECTOR_COMPANY_TYPE),					
-				iwc.getParameter(PARAM_SELECTOR_COM_BELONGING),
-				iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR1),
-				iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR2),
-				_theOwnString,
-				_theDoubleString
-				);
-			} catch (PostingParametersException e) {
-				_errorText = localize(e.getTextKey(), e.getDefaultText());
-				return false;
-			} catch (RemoteException e) {
-				super.add(new ExceptionWrapper(e, this));
-				return false;
+		addTempFieldParameters(iwc, parseDate(iwc.getParameter(PARAM_PERIOD_FROM)));
+		
+		try {
+			generateStrings(iwc);
+			String id = null;
+			if (iwc.isParameterSet(PARAM_EDIT_ID)) {
+				id = iwc.getParameter(PARAM_EDIT_ID);
 			}
-			
-			closeMe(iwc);
-			return true;
+			if (iwc.isParameterSet(PARAM_MODE_COPY)) {
+				id = null;
+			}
+			getPostingBusiness(iwc).savePostingParameter(id,
+			parseDate(iwc.getParameter(PARAM_PERIOD_FROM)),
+			parseDate(iwc.getParameter(PARAM_PERIOD_TO)),
+			iwc.getParameter(PARAM_SIGNED),
+			iwc.getParameter(PARAM_SELECTOR_ACTIVITY),				
+			iwc.getParameter(PARAM_SELECTOR_REGSPEC),					
+			iwc.getParameter(PARAM_SELECTOR_COMPANY_TYPE),					
+			iwc.getParameter(PARAM_SELECTOR_COM_BELONGING),
+			iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR1),
+			iwc.getParameter(PARAM_SELECTOR_SCHOOL_YEAR2),
+			_theOwnString,
+			_theDoubleString
+			);
+		} catch (PostingParametersException e) {
+			_errorText = localize(e.getTextKey(), e.getDefaultText());
+			return false;
+		} catch (RemoteException e) {
+			super.add(new ExceptionWrapper(e, this));
+			return false;
+		}
+		
+		closeMe(iwc);
+		return true;
 	}
 
-	public void generateStrings(IWContext iwc) {
+	public void generateStrings(IWContext iwc) throws PostingParametersException {
 
 		_theOwnString = "";
 		_theDoubleString = "";
@@ -190,11 +207,14 @@ public class PostingParameterListEditor extends AccountingBlock {
 			int index = 1;
 			PostingBusiness pBiz = getPostingBusiness(iwc);
 			Date date = null;
-			String dateString = iwc.getParameter(PARAM_PERIODE_FROM);
+			String dateString = iwc.getParameter(PARAM_PERIOD_FROM);
 			if (dateString == null) {
 				date = new Date(System.currentTimeMillis()); 
 			} else {
 				date = parseDate(dateString);
+			}
+			if (date == null) {
+				throw new PostingParametersException(KEY_ERROR_DATE_NULL, "Datum saknas");			
 			}
 			Collection fields = pBiz.getAllPostingFieldsByDate(date);
 			Iterator iter = fields.iterator();
@@ -276,25 +296,35 @@ public class PostingParameterListEditor extends AccountingBlock {
 
 		Table table = new Table();
 		table.setWidth("75%");
-		User user = iwc.getCurrentUser();
 		String userName = "";
+		User user = iwc.getCurrentUser();
+		
 		if (user != null) {
 			userName = user.getFirstName();
 		}
+
 		Timestamp rightNow = IWTimestamp.getTimestampRightNow();
 		Date dd = new Date(System.currentTimeMillis());
-		
+
+		String from = formatDate(pp != null ? pp.getPeriodeFrom() : dd, 4);
+		String to = formatDate(pp != null ? pp.getPeriodeTo() : dd, 4);
+
 		table.add(getLocalizedLabel(KEY_FROM_DATE, "Från datum"),1 ,1);
-		table.add(getTextInput(PARAM_PERIODE_FROM, (formatDate(pp != null ? pp.getPeriodeFrom() : dd, 4)), 40, 4), 2, 1);
+		table.add(getTextInput(PARAM_PERIOD_FROM, 
+				(pp != null ? from : 
+				(String) _pMap.get(PARAM_PERIOD_FROM)), 40, 4), 2, 1);
 	
 		table.add(getLocalizedLabel(KEY_TO_DATE, "Tom datum"),3 ,1);
-		table.add(getTextInput(PARAM_PERIODE_TO, (formatDate(pp != null ? pp.getPeriodeTo() : dd, 4)), 40, 4), 4, 1);
+		table.add(getTextInput(PARAM_PERIOD_TO, 
+				(pp != null ? to : 
+				(String) _pMap.get(PARAM_PERIOD_TO)), 40, 4), 4, 1);
 
 		table.add(getLocalizedLabel(KEY_CHANGE_DATE, "Ändringsdatum"),1 ,2);
-		table.add(getText(formatDate(pp != null ? pp.getChangedDate(): rightNow, 6)), 2, 2);
+		String dt = formatDate(pp != null ? pp.getChangedDate(): rightNow, 6);
+		table.add(getText(pp != null ? dt : ""), 2, 2);
 
 		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,2);
-		table.add(getText(userName), 4, 2);
+		table.add(getText(pp != null ? pp.getChangedSign() : ""), 4, 2);
 		table.add(new HiddenInput(PARAM_SIGNED, ""+userName));
 		if (iwc.isParameterSet(PARAM_MODE_COPY)) {
 			table.add(new HiddenInput(PARAM_MODE_COPY, ""+iwc.getParameter(PARAM_MODE_COPY)));
@@ -321,12 +351,12 @@ public class PostingParameterListEditor extends AccountingBlock {
 		Table selectors = new Table();
 
 		try {
-			int actPK = 0;
-			int regPK = 0;
-			String comPK = "";
-			int comBelPK = 0;
-			int schoolYearPK1 = 0;
-			int schoolYearPK2 = 0;
+			int actPK = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_ACTIVITY));
+			int regPK = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_REGSPEC));
+			String comPK = (String) _pMap.get(PARAM_SELECTOR_COMPANY_TYPE);
+			int comBelPK = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_REGSPEC));
+			int schoolYearPK1 = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_SCHOOL_YEAR1));
+			int schoolYearPK2 = Integer.parseInt((String) _pMap.get(PARAM_SELECTOR_SCHOOL_YEAR2));
 			
 			if (pp != null) {
 				actPK = Integer.parseInt(pp.getActivity() != null ? 
@@ -354,7 +384,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 			selectors.add(getLocalizedLabel(KEY_COMMUNE_BELONGING, "Kommuntillhörighet:"), 1, 4);
 			selectors.add(communeBelongingSelector(iwc, PARAM_SELECTOR_COM_BELONGING, comBelPK), 2, 4);
 
-			selectors.add(getLocalizedLabel(KEY_SCHOOL_YEAR, "SkolŒr fr om"), 1, 5);
+			selectors.add(getLocalizedLabel(KEY_SCHOOL_YEAR, "Skolår fr om"), 1, 5);
 			selectors.add(schoolYearSelector(iwc, PARAM_SELECTOR_SCHOOL_YEAR1, schoolYearPK1), 2, 5);
 			selectors.add(getLocalizedLabel(KEY_SCHOOL_YEAR_TO, "t o m"), 3, 5);
 			selectors.add(schoolYearSelector(iwc, PARAM_SELECTOR_SCHOOL_YEAR2, schoolYearPK2), 4, 5);
@@ -414,6 +444,12 @@ public class PostingParameterListEditor extends AccountingBlock {
 				int fieldLength = field.getLen();
 				String theData1 = "";
 				String theData2 = "";
+				if(iwc.isParameterSet(PARAM_OWN_STRING+"_"+index)) {
+					theData1 = (String) _pMap.get(PARAM_OWN_STRING+"_"+index);
+				}
+				if(iwc.isParameterSet(PARAM_DOUBLE_STRING+"_"+index)) {
+					theData2 = (String) _pMap.get(PARAM_DOUBLE_STRING+"_"+index);
+				}
 				if (postingString != null) {
 					theData1 = pBiz.extractField(postingString,readPointer, fieldLength, field);
 					theData2 = pBiz.extractField(doublePostingString,readPointer, fieldLength, field);
@@ -440,6 +476,43 @@ public class PostingParameterListEditor extends AccountingBlock {
 		return accounts;
 	}
 
+
+	private void addTempFieldParameters(IWContext iwc, Date defaultDate) {
+		
+		try {
+			int index = 1;
+			PostingBusiness pBiz = getPostingBusiness(iwc);
+			Collection fields = pBiz.getAllPostingFieldsByDate(defaultDate);
+			if (fields == null) {
+				return;
+			}
+			Iterator iter = fields.iterator();
+			while (iter.hasNext()) {
+				iter.next();
+				_pMap.put(PARAM_OWN_STRING+"_"+index, iwc.getParameter(PARAM_OWN_STRING+"_"+index)); 
+				_pMap.put(PARAM_DOUBLE_STRING+"_"+index, iwc.getParameter(PARAM_DOUBLE_STRING+"_"+index)); 
+				index++;
+			}
+		} catch (RemoteException e) {
+		}
+		
+	}
+
+	private void setDefaultParameters(IWContext iwc) {
+		//String ds = formatDate(new Date(System.currentTimeMillis()), 4);
+		if(_pMap == null) {
+			_pMap = new HashMap();
+		}
+		if(!_pMap.containsKey(PARAM_PERIOD_FROM)) {
+			_pMap.put(PARAM_PERIOD_FROM, "" );
+			_pMap.put(PARAM_PERIOD_TO, "");
+			_pMap.put(PARAM_SELECTOR_ACTIVITY, "0");
+			_pMap.put(PARAM_SELECTOR_REGSPEC, "0");
+			_pMap.put(PARAM_SELECTOR_COMPANY_TYPE, "0");
+			_pMap.put(PARAM_SELECTOR_SCHOOL_YEAR1, "0");
+			_pMap.put(PARAM_SELECTOR_SCHOOL_YEAR2, "0");
+		}	
+	}
 
 	/*
 	 * formats the textinput and sets restrictions on inputs depending on field type
@@ -495,6 +568,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(
 					getDropdownMenuLocalized(name, getSchoolBusiness(iwc).findAllSchoolYears(), 
 					"getLocalizationKey"));
+		menu.addMenuElementFirst("0", localize(KEY_SCHOOL_YEAR_SELECTOR_BLANK, "Inget"));
 		menu.setSelectedElement(refIndex);
 		return menu;
 	}
