@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/12 17:01:55 $ by $Author: laddi $
+ * Last modified: $Date: 2004/02/12 18:05:12 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.106 $
+ * @version $Revision: 1.107 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -159,7 +159,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 				try {
 					removePreliminaryInvoiceSub(month, category);
 				} finally {
-					BatchRunSemaphore.releaseChildcareRunSemaphore();
+					BatchRunSemaphore.releaseHighRunSemaphore();
 				}
 			} else {
 				throw new BatchAlreadyRunningException("HighSchool");

@@ -26,28 +26,34 @@ public class BatchRunSemaphore {
 	private static boolean elementaryRunFlag = false;
 	public static synchronized boolean getElementaryRunSemaphore(){
 		if(elementaryRunFlag){
+			System.out.println("Elementary semaphore refused");
 			return false;
 		}else{
 			elementaryRunFlag = true;
+			System.out.println("Elementary semaphore gotten");
 			return true;
 		}
 	}
 	
 	public static void releaseElementaryRunSemaphore(){
+		System.out.println("Elementary semaphore released");
 		elementaryRunFlag = false;
 	}
 	
 	private static boolean highRunFlag = false;
 	public static synchronized boolean getHighRunSemaphore(){
 		if(highRunFlag){
+			System.out.println("Highschool semaphore refused");
 			return false;
 		}else{
 			highRunFlag = true;
+			System.out.println("Highschool semaphore gotten");
 			return true;
 		}
 	}
 	
 	public static void releaseHighRunSemaphore(){
+		System.out.println("Highschool semaphore released");
 		highRunFlag = false;
 	}
 	
