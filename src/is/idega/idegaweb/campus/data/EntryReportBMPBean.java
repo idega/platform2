@@ -1,10 +1,20 @@
 package is.idega.idegaweb.campus.data;
 
-import javax.ejb.*;
-import com.idega.data.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
+
+import javax.ejb.EJBHome;
+import javax.ejb.EJBLocalHome;
+import javax.ejb.EntityContext;
+
 import com.idega.util.database.ConnectionBroker;
-import java.util.*;
 
 /**
  * <p>Title: </p>
@@ -99,8 +109,8 @@ public class EntryReportBMPBean implements EntryReport{
   }
 
   public Class getPrimaryKeyClass(){return Integer.class;}
-  public void setEJBHome(EJBHome home){}
-  public void setEJBLocalHome(EJBLocalHome home){}
+  public void setEJBHome(EJBHome home){this._ejbHome = home;}
+  public void setEJBLocalHome(EJBLocalHome home){this._ejbLocalHome = home;}
   public Object ejbFindByPrimaryKey(Object primaryKey){return null;}
   public Object ejbCreate(){return null;}
   public void unsetEntityContext(){_entityContext = null;}
@@ -111,7 +121,7 @@ public class EntryReportBMPBean implements EntryReport{
   public void ejbLoad(){}
   public void ejbActivate(){}
 
-  public static List findAllBySearch(int iBuildingId,int iAccountKey,Timestamp from,Timestamp to)throws SQLException{
+  public static List findAllBySearch(Integer iBuildingId,Integer iAccountKey,Timestamp from,Timestamp to)throws SQLException{
      Connection conn= null;
     Statement Stmt= null;
     ResultSetMetaData metaData;
@@ -125,12 +135,12 @@ public class EntryReportBMPBean implements EntryReport{
       //System.err.println(sql);
       ResultSet RS = Stmt.executeQuery(sql);
       metaData = RS.getMetaData();
-      int count = 1;
+      
       while (RS.next() ){
         EntryReportBMPBean tempobj= new EntryReportBMPBean() ;
 
         if(tempobj != null){
-          String columnName = null;
+          
             tempobj.setBuildingId(RS.getInt(1));
             tempobj.setBuildingName(RS.getString(2));
             tempobj.setKeyId(RS.getInt(3));
@@ -169,7 +179,7 @@ public class EntryReportBMPBean implements EntryReport{
     }
   }
 
-  private static String getFindSql(int iBuildingId,int iAccountKey,java.sql.Timestamp from,java.sql.Timestamp to){
+  private static String getFindSql(Integer iBuildingId,Integer iAccountKey,java.sql.Timestamp from,java.sql.Timestamp to){
     StringBuffer sql = new StringBuffer(" select ");
     sql.append(" b.bu_building_id building_id, ");
     sql.append(" b.name building_name, ");
@@ -179,25 +189,24 @@ public class EntryReportBMPBean implements EntryReport{
     sql.append(" sum(e.total) total, ");
     sql.append(" count(acc.fin_account_id) number ");
     sql.append(" from ");
-    sql.append(" bu_apartment a,bu_building b,bu_floor f, ");
+    sql.append(" bu_apartment a,bu_building b,bu_floor f, ic_user u ,  ");
     sql.append(" cam_contract c,fin_account acc,fin_acc_entry e,fin_acc_key k ");
     sql.append(" where b.bu_building_id = f.bu_building_id ");
     sql.append(" and f.bu_floor_id = a.bu_floor_id ");
     sql.append(" and a.bu_apartment_id = c.bu_apartment_id ");
     sql.append(" and c.ic_user_id = acc.ic_user_id ");
+    sql.append(" and u.ic_user_id  = acc.ic_user_id ");
     sql.append(" and e.fin_account_id = acc.fin_account_id ");
     sql.append(" and k.fin_acc_key_id = e.fin_acc_key_id ");
 
-    boolean and = false;
-
-    if(iBuildingId > 0){
+    if(iBuildingId !=null && iBuildingId.intValue()>0 ){
       sql.append(" and ");
       sql.append(" b.bu_building_id ");
       sql.append( " = ");
       sql.append(iBuildingId);
-      and = true;
+      
     }
-    if(iAccountKey > 0){
+    if(iAccountKey !=null && iAccountKey.intValue()>0){
       sql.append(" and ");
       sql.append(" k.fin_acc_key_id ");
       sql.append(" = ").append(iAccountKey);
@@ -215,7 +224,7 @@ public class EntryReportBMPBean implements EntryReport{
 
     sql.append(" group by b.bu_building_id,b.name,k.fin_acc_key_id,k.name,k.info ");
     sql.append(" order by b.bu_building_id ");
-
+    //System.out.println(sql.toString());
     return sql.toString();
   }
 

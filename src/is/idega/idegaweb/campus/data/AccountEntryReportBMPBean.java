@@ -1,0 +1,339 @@
+package is.idega.idegaweb.campus.data;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Vector;
+
+import javax.ejb.EJBHome;
+import javax.ejb.EJBLocalHome;
+import javax.ejb.EntityContext;
+
+import com.idega.util.database.ConnectionBroker;
+
+/**
+ * <p>Title: </p>
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2002</p>
+ * <p>Company: </p>
+ * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
+ * @version 1.0
+ */
+
+public class AccountEntryReportBMPBean implements AccountEntryReport{
+
+
+	public final static String COLUMN_CONTRACT_ID = "CONTRACT_ID";
+  public final static String COLUMN_ACCOUNT_ID = "ACC_ID";
+  public final static String COLUMN_BUILDING_ID = "BUILD_ID";
+  public final static String COLUMN_BUILDING = "BUILDING";
+  public final static String COLUMN_FIRST_NAME = "FIRST_NAME";
+  public final static String COLUMN_MIDDLE_NAME = "MIDDLE_NAME";
+  public final static String COLUMN_LAST_NAME = "LAST_NAME";
+  public final static String COLUMN_PERSONAL_ID = "PERSONAL_ID";
+  public final static String COLUMN_APRT_ID = "APRT_ID";
+  public final static String COLUMN_APARTMENT = "APARTMENT";
+  public final static String COLUMN_KEYID= "KEYID";
+  public final static String COLUMN_KEYCODE= "KEYCODE";
+  public final static String COLUMN_KEYINFO = "KEYINFO";
+  public final static String COLUMN_TOTAL = "TOTAL";
+  public final static String COLUMN_VALID_FROM = "VALID_FROM";
+  public final static String COLUMN_VALID_TO = "VALID_TO";
+  
+ 
+  private Integer accountID;
+  private Integer buildingId;
+  private String building;
+  private String firstName;
+  private String middleName;
+  private String lastName;
+  private String personalID;
+ 
+  private Integer keyID;
+  private String keyCode;
+  private String keyInfo;
+  private Float total;
+  
+
+  private EntityContext _entityContext;
+  private EJBHome _ejbHome;
+  private EJBLocalHome _ejbLocalHome;
+  private Object _primaryKey;
+
+
+  public Class getPrimaryKeyClass(){return Integer.class;}
+  public void setEJBHome(EJBHome home){this._ejbHome = home;}
+  public void setEJBLocalHome(EJBLocalHome home){this._ejbLocalHome = home;}
+  public Object ejbFindByPrimaryKey(Object primaryKey){return null;}
+  public Object ejbCreate(){return null;}
+  public void unsetEntityContext(){_entityContext = null;}
+  public void setEntityContext(EntityContext context){_entityContext = context;}
+  public void ejbStore(){}
+  public void ejbPassivate(){}
+  public void ejbRemove(){}
+  public void ejbLoad(){}
+  public void ejbActivate(){}
+
+  public static Collection findAllBySearch(Integer iBuildingId,Integer iAccountKey,Timestamp from,Timestamp to,boolean byAccountCode)throws SQLException{
+     Connection conn= null;
+    Statement Stmt= null;
+    ResultSetMetaData metaData;
+    Vector vector=null;
+    String sql = getFindSql(iBuildingId,iAccountKey,from,to,byAccountCode);
+    if(iBuildingId!=null){
+    try{
+      conn = ConnectionBroker.getConnection();
+      Stmt = conn.createStatement();
+
+      //System.err.println(sql);
+      ResultSet RS = Stmt.executeQuery(sql);
+      metaData = RS.getMetaData();
+      int count = 1;
+      while (RS.next() ){
+        AccountEntryReportBMPBean tempObj= new AccountEntryReportBMPBean() ;
+
+        if(tempObj != null){
+          String columnName = null;
+          tempObj.setAccountID(new Integer(RS.getInt(COLUMN_ACCOUNT_ID)));
+          tempObj.setBuildingId(new Integer(RS.getInt(COLUMN_BUILDING_ID)));
+          tempObj.setBuilding(RS.getString(COLUMN_BUILDING));
+          tempObj.setFirstName(RS.getString(COLUMN_FIRST_NAME));
+          tempObj.setMiddleName(RS.getString(COLUMN_MIDDLE_NAME));
+          tempObj.setLastName(RS.getString(COLUMN_LAST_NAME));
+          tempObj.setPersonalID(RS.getString(COLUMN_PERSONAL_ID));
+          tempObj.setKeyID(new Integer(RS.getInt(COLUMN_KEYID)));
+          tempObj.setKeyCode(RS.getString(COLUMN_KEYCODE));
+          tempObj.setKeyInfo(RS.getString(COLUMN_KEYINFO));
+          tempObj.setTotal(new Float(RS.getFloat(COLUMN_TOTAL)));
+        
+        }
+        if(vector==null){
+          vector=new Vector();
+        }
+        vector.addElement(tempObj);
+
+      }
+      RS.close();
+    }
+    catch(SQLException ex){
+      throw new SQLException("SQL : "+sql);
+    }
+    finally{
+      if(Stmt != null){
+        Stmt.close();
+      }
+      if (conn != null){
+        ConnectionBroker.freeConnection(conn);
+      }
+    }
+
+    if (vector != null){
+      vector.trimToSize();
+      return vector;
+    }
+   
+    }
+  return null;
+  }
+  
+  
+
+  private static String getFindSql(Integer buildingId,Integer keyId,java.sql.Timestamp from,java.sql.Timestamp to,boolean byAccountKeyCode){
+    
+    StringBuffer sql = new StringBuffer();
+    
+    sql.append(" select a.FIN_ACCOUNT_ID ACC_ID,b.BU_BUILDING_ID BUILD_ID,b.NAME BUILDING, ");
+    sql.append(" u.FIRST_NAME,u.MIDDLE_NAME,u.LAST_NAME,u.PERSONAL_ID, ");
+    if(!byAccountKeyCode)
+    	sql.append(" k.fin_acc_key_id KEYID,k.NAME KEYCODE,k.INFO KEYINFO ");
+    else
+    	sql.append(" tk.fin_tariff_key_id  KEYID,tk.NAME KEYCODE,tk.INFO KEYINFO ");
+    sql.append( ",sum(e.TOTAL) TOTAL "); 
+    sql.append(" from FIN_ACC_ENTRY e, FIN_ACCOUNT a,IC_USER u, FIN_ACC_KEY k,FIN_TARIFF_KEY tk, ");
+	sql.append(" BU_APARTMENT ap,BU_BUILDING b,BU_FLOOR f,CAM_CONTRACT c ");
+	sql.append(" where  b.BU_BUILDING_ID = f.BU_BUILDING_ID ");
+	sql.append(" and f.BU_FLOOR_ID = ap.BU_FLOOR_ID ");
+	sql.append(" and ap.BU_APARTMENT_ID = c.BU_APARTMENT_ID ");
+	sql.append(" and c.IC_USER_ID = a.IC_USER_ID ");
+	sql.append(" and e.FIN_ACCOUNT_ID = a.FIN_ACCOUNT_ID ");
+	sql.append(" and a.IC_USER_ID = u.IC_USER_ID ");
+	sql.append(" and k.FIN_ACC_KEY_ID = e.FIN_ACC_KEY_ID ");
+	sql.append(" and k.FIN_TARIFF_KEY_ID = tk.FIN_TARIFF_KEY_ID ");
+	
+    boolean and = false;
+
+    if(buildingId !=null){
+      sql.append(" and ");
+      sql.append(" b.bu_building_id ");
+      sql.append( " = ");
+      sql.append(buildingId);
+      and = true;
+    }
+    if(keyId!=null && keyId.intValue()>0){
+      sql.append(" and ");
+      sql.append(" k.fin_acc_key_id ");
+      sql.append(" = ").append(keyId);
+    }
+    if(from!=null){
+      sql.append(" and e.payment_date >= '");
+      sql.append(from.toString());
+      sql.append("'");
+    }
+    if(to!=null){
+      sql.append(" and e.payment_date <= '");
+      sql.append(to.toString());
+      sql.append("'");
+    }
+
+    sql.append(" group by a.FIN_ACCOUNT_ID,b.BU_BUILDING_ID,b.NAME, ");
+	sql.append(" u.FIRST_NAME,u.MIDDLE_NAME,u.LAST_NAME,u.PERSONAL_ID, ");
+
+	sql.append(!byAccountKeyCode?" k.fin_acc_key_id,k.NAME,k.INFO ":"tk.fin_tariff_key_id,tk.NAME,tk.INFO");
+	sql.append(" order by u.FIRST_NAME,u.LAST_NAME,a.FIN_ACCOUNT_ID ");
+	//System.out.println(sql.toString());
+    return sql.toString();
+  }
+  
+
+/**
+ * @return Returns the accountID.
+ */
+public Integer getAccountID() {
+	return accountID;
+}
+/**
+ * @param accountID The accountID to set.
+ */
+public void setAccountID(Integer accountID) {
+	this.accountID = accountID;
+}
+
+/**
+ * @return Returns the building.
+ */
+public String getBuilding() {
+	return building;
+}
+/**
+ * @param building The building to set.
+ */
+public void setBuilding(String building) {
+	this.building = building;
+}
+/**
+ * @return Returns the buildingId.
+ */
+public Integer getBuildingId() {
+	return buildingId;
+}
+/**
+ * @param buildingId The buildingId to set.
+ */
+public void setBuildingId(Integer buildingId) {
+	this.buildingId = buildingId;
+}
+/**
+ * @return Returns the firstName.
+ */
+public String getFirstName() {
+	return firstName;
+}
+/**
+ * @param firstName The firstName to set.
+ */
+public void setFirstName(String firstName) {
+	this.firstName = firstName;
+}
+/**
+ * @return Returns the keyCode.
+ */
+public String getKeyCode() {
+	return keyCode;
+}
+/**
+ * @param keyCode The keyCode to set.
+ */
+public void setKeyCode(String keyCode) {
+	this.keyCode = keyCode;
+}
+/**
+ * @return Returns the keyInfo.
+ */
+public String getKeyInfo() {
+	return keyInfo;
+}
+/**
+ * @param keyInfo The keyInfo to set.
+ */
+public void setKeyInfo(String keyInfo) {
+	this.keyInfo = keyInfo;
+}
+/**
+ * @return Returns the lastName.
+ */
+public String getLastName() {
+	return lastName;
+}
+/**
+ * @param lastName The lastName to set.
+ */
+public void setLastName(String lastName) {
+	this.lastName = lastName;
+}
+/**
+ * @return Returns the middleName.
+ */
+public String getMiddleName() {
+	return middleName;
+}
+/**
+ * @param middleName The middleName to set.
+ */
+public void setMiddleName(String middleName) {
+	this.middleName = middleName;
+}
+/**
+ * @return Returns the personalID.
+ */
+public String getPersonalID() {
+	return personalID;
+}
+/**
+ * @param personalID The personalID to set.
+ */
+public void setPersonalID(String personalID) {
+	this.personalID = personalID;
+}
+/**
+ * @return Returns the total.
+ */
+public Float getTotal() {
+	return total;
+}
+/**
+ * @param total The total to set.
+ */
+public void setTotal(Float total) {
+	this.total = total;
+}
+/**
+ * @return Returns the keyID.
+ */
+public Integer getKeyID() {
+	return keyID;
+}
+/**
+ * @param keyID The keyID to set.
+ */
+public void setKeyID(Integer keyID) {
+	this.keyID = keyID;
+}
+
+public String getName(){
+	return getFirstName()+" "+getMiddleName()+" "+getLastName();
+}
+}
