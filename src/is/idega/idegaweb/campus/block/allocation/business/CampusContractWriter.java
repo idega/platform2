@@ -1,12 +1,15 @@
 package is.idega.idegaweb.campus.block.allocation.business;
 
 
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.building.data.*;
 import com.idega.block.application.data.Applicant;
 import com.idega.util.text.TextSoap;
 import com.idega.util.IWTimestamp;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDOLookup;
 import com.idega.block.application.data.*;
 import com.idega.core.data.ICFile;
 
@@ -15,6 +18,8 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.*;
+import is.idega.idegaweb.campus.block.building.data.ApartmentTypeRent;
+import is.idega.idegaweb.campus.block.building.data.ApartmentTypeRentHome;
 /** @todo  */
 // get rid of this interconnection
 import com.idega.block.finance.data.*;
@@ -279,6 +284,7 @@ public class CampusContractWriter{
 
   private static Hashtable getHashTags(int contractId,IWResourceBundle iwrb,Font nameFont,Font tagFont,Font textFont){
     try{
+      IWBundle iwb = iwrb.getIWBundleParent();
       Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(contractId);
       Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
       Apartment eApartment = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(eContract.getApartmentId().intValue());
@@ -289,12 +295,13 @@ public class CampusContractWriter{
       Floor eFloor = ((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).findByPrimaryKeyLegacy(eApartment.getFloorId());
       Building eBuilding = ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).findByPrimaryKeyLegacy(eFloor.getBuildingId());
       Complex eComplex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(eBuilding.getComplexId());
+      ApartmentTypeRent rent = ((ApartmentTypeRentHome) IDOLookup.getHome(ApartmentTypeRent.class)).findByTypeAndValidity(eApartmentType.getID(),eContract.getValidFrom());
       Hashtable H = new Hashtable(TAGS.length);
       DateFormat dfLong = DateFormat.getDateInstance(DateFormat.LONG,iwrb.getLocale());
       NumberFormat nf = NumberFormat.getCurrencyInstance(iwrb.getLocale());
-      H.put(renter_name,new Chunk("Félagsstofnun Stúdenta",tagFont));
-      H.put(renter_address,new Chunk("v/Hringbraut",tagFont));
-      H.put(renter_id,new Chunk("540169-6249",tagFont));
+      H.put(renter_name,new Chunk(iwb.getProperty("contract_campus_name","Fï¿½lagsstofnun Stï¿½denta"),tagFont));
+      H.put(renter_address,new Chunk(iwb.getProperty("contract_campus_address","v/Hringbraut"),tagFont));
+      H.put(renter_id,new Chunk(iwb.getProperty("contract_campus_id","540169-6249"),tagFont));
       H.put(today,new Chunk(dfLong.format(new java.util.Date()),tagFont));
       H.put(tenant_name,new Chunk(eApplicant.getFullName(),nameFont));
       H.put(tenant_address,new Chunk(eApplicant.getLegalResidence(),nameFont));
@@ -310,7 +317,10 @@ public class CampusContractWriter{
       H.put(apartment_info,new Chunk(eApartmentType.getExtraInfo()!= null?eApartmentType.getExtraInfo():"",textFont));
       H.put(contract_starts,new Chunk(dfLong.format(eContract.getValidFrom()),tagFont));
       H.put(contract_ends,new Chunk(dfLong.format(eContract.getValidTo()),tagFont));
-      H.put(apartment_rent,new Chunk(nf.format((long)eApartmentType.getRent()),tagFont));
+      if(rent!=null && rent.getRent()>0)
+      	H.put(apartment_rent,new Chunk(nf.format((double)rent.getRent()),tagFont));
+      else
+	  	H.put(apartment_rent,new Chunk(nf.format(eApartmentType.getRent()),tagFont));
 //      H.put(apartment_category,new Chunk(eApartmentCategory.getName(),tagFont));
 			String aprtTypeNameAbbr = null;
 			if (aprtTypeName != null) {
@@ -323,15 +333,17 @@ public class CampusContractWriter{
 				H.put(apartment_category,new Chunk(aprtTypeNameAbbr,nameFont));
 			else
 				H.put(apartment_category,new Chunk("",nameFont));
-      /** @todo fixa: */
-      H.put(renting_index,new Chunk( "214.9",tagFont));
+      
+      H.put(renting_index,new Chunk( iwb.getProperty("contract_campus_index","100"),tagFont));
       return H;
     }
     catch(SQLException ex){
       ex.printStackTrace();
       return new Hashtable();
     }
-
+    catch(Exception e)
+    {e.printStackTrace();
+		return new Hashtable();}
   }
 
   public static String[] getTags(){
