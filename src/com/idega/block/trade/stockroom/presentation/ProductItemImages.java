@@ -30,7 +30,7 @@ public class ProductItemImages extends ProductItem {
   private String _alignment;
   private boolean _zoom = false;
   private String _tableWidth;
-  private int _numberOfImages;
+  private int _numberOfImages = 0;
 
   /**
    *  Constructor for the ProductItemThumbnail object
@@ -117,19 +117,23 @@ public class ProductItemImages extends ProductItem {
 	  if ( _cellspacing > 0 ) {
 	    table.setWidth(column++,row,String.valueOf(_cellspacing));
 	  }
-	  ++column;
-	  if ( column > _numberOfImages ) {
+	  if ( column == _numberOfImages ) {
 	    column = 1;
 	    row++;
+	  }
+	  else {
+	    ++column;
 	  }
 	}else {
 	  if ( _cellspacing > 0 ) {
 	    table.setHeight(column,row++,String.valueOf(_cellspacing));
 	  }
-	  ++row;
-	  if ( row > _numberOfImages ) {
+	  if ( row == _numberOfImages ) {
 	    row = 1;
 	    column++;
+	  }
+	  else {
+	    ++row;
 	  }
 	}
       }
