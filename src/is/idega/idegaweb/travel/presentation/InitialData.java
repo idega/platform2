@@ -53,6 +53,7 @@ public class InitialData extends TravelManager {
   private static String parameterViewHotelPickup = "parameteViewHotelPickup";
   private static String parameterViewPriceCategories = "parameteViewPriceCategories";
   private static String parameterCreditCardRefund = "parameterCreditcardRefund";
+  private static String parameterTPosProperties = "parTPosProp";
   private static String parameterUsers = "parameterUsers";
   private static String  parameterVoucher = "paraneterVoucher";
   private String parameterResellerId = "contractResellerId";
@@ -127,6 +128,7 @@ public class InitialData extends TravelManager {
     }else {
         menu.addMenuElement("", iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
         menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.credidcard","Creditcard"));
+        menu.addMenuElement(this.parameterTPosProperties, iwrb.getLocalizedString("travel.tpos_properties","TPos Properties"));
     }
     menu.setToSubmit();
 
@@ -246,6 +248,15 @@ public class InitialData extends TravelManager {
               }else if (selected.equals(this.parameterCreditCardRefund)){
                 try {
                   Form form = CreditcardRefunder.creditcardRefunderForm(iwc, iwrb);
+                  add(form);
+                }catch (Exception e) {
+                  e.printStackTrace(System.err);
+                }
+              }else if (selected.equals(this.parameterTPosProperties)) {
+                try {
+                  TPosMerchantEditor tme = new TPosMerchantEditor(iwc);
+                  Form form = tme.getTPosMerchantEditorForm(iwc);
+                  form.maintainParameter(this.dropdownView);
                   add(form);
                 }catch (Exception e) {
                   e.printStackTrace(System.err);

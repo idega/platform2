@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.data;
 
+import com.idega.block.tpos.data.TPosMerchantHome;
+import com.idega.block.tpos.data.TPosMerchant;
 import javax.ejb.*;
 import java.util.*;
 import java.rmi.RemoteException;
@@ -38,7 +40,7 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
     addAttribute(getColumnNameGroupID(),"Hópur", true, true, Integer.class, "many_to_one", ResellerStaffGroup.class);
     addAttribute(getColumnNameIsValid(),"is valid", true, true, Boolean.class);
     addAttribute(getColumnNameReferenceNumber(), "Tilvisunarnúmer", true, true, String.class);
-    addAttribute(getColumnNameTPosMerchantID(), "Viðskiptanumer", true, true, String.class);
+    addAttribute(getColumnNameTPosMerchantID(), "Viðskiptanumer", true, true, Integer.class);
 
     this.addManyToManyRelationShip(Address.class);
     this.addManyToManyRelationShip(Email.class);
@@ -163,12 +165,17 @@ public class ResellerBMPBean extends com.idega.data.TreeableEntityBMPBean implem
     this.update();
   }
 
-  public String getTPosMerchantId() {
-    return getStringColumnValue(getColumnNameTPosMerchantID());
+  public int getTPosMerchantId() {
+    return getIntColumnValue(getColumnNameTPosMerchantID());
   }
 
-  public void setTPosMerchantId(String id) {
+  public void setTPosMerchantId(int id) {
     setColumn(getColumnNameTPosMerchantID(), id);
+  }
+
+  public TPosMerchant getTPosMerchant() throws RemoteException, FinderException {
+    TPosMerchantHome merchantHome = (TPosMerchantHome) IDOLookup.getHome(TPosMerchant.class);
+    return merchantHome.findByPrimaryKey(new Integer(getTPosMerchantId()));
   }
 
   public static String getResellerTableName()         {return "SR_RESELLER";}

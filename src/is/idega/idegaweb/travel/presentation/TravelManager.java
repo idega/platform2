@@ -1,10 +1,11 @@
 package is.idega.idegaweb.travel.presentation;
 
+import java.util.*;
+import com.idega.core.user.business.UserBusiness;
 import is.idega.idegaweb.travel.business.*;
 import java.rmi.RemoteException;
 import com.idega.idegaweb.*;
 import com.idega.business.IBOLookup;
-import java.util.Locale;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
@@ -18,7 +19,6 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.data.*;
 import com.idega.block.login.business.*;
 import com.idega.core.user.data.User;
-import java.util.List;
 
 public class TravelManager extends Block {
 
@@ -209,7 +209,7 @@ public class TravelManager extends Block {
           iHome = iwrb.getImage("buttons/home_on.gif");
         }
 
-        if (iwc.hasEditPermission(this)){
+        if (isTravelAdministrator(iwc)){
             Link lInitialData = new Link(iInitialData,InitialData.class);
               lInitialData.addParameter(this.sAction,this.parameterInitialData);
             table.add(lInitialData,1,1);
@@ -234,7 +234,6 @@ public class TravelManager extends Block {
             Link lStatistics = new Link(iStatistics,Statistics.class);
               lStatistics.addParameter(this.sAction,this.parameterStatistics);
             Link lDailyReport = new Link(iDailyReport,Reports.class);
-//            Link lDailyReport = new Link(iDailyReport,DailyReport.class);
               lDailyReport.addParameter(this.sAction,this.parameterDailyReport);
             Link lContracts = new Link(iContracts,Contracts.class);
               lContracts.addParameter(this.sAction,this.parameterContracts);
@@ -333,12 +332,7 @@ public class TravelManager extends Block {
           debug(e.getMessage());
         }
 
-        //theText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        //theText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
         theText.setFontColor(this.textColor);
-        //theBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        //theBoldText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
-        //theBoldText.setBold();
         theBigBoldText.setFontColor(this.textColor);
         theBigBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_12_STYLE_TAG+"; font-weight: bold;");
         theBoldText.setFontColor(this.textColor);
@@ -347,12 +341,7 @@ public class TravelManager extends Block {
         smallText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+";");
         theSmallBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+"; font-weight: bold;");
 
-        //smallText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        //smallText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
         smallText.setFontColor(this.textColor);
-        //theSmallBoldText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
-        //theSmallBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        //theSmallBoldText.setBold();
         theSmallBoldText.setFontColor(this.textColor);
 
         this.isInPermissionGroup = this.isInPermissionGroup(iwc);
@@ -458,5 +447,24 @@ public class TravelManager extends Block {
 
     protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
       return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
+    }
+
+    protected boolean isTravelAdministrator(IWContext iwc) {
+      return iwc.hasEditPermission(this);
+      /*
+      PermissionGroup perGroup =
+      List pGroups = LoginBusiness.getPermissionGroups(iwc);
+      if (pGroups != null) {
+        Iterator iter = pGroups.iterator();
+        PermissionGroup pGroup;
+        while (iter.hasNext()) {
+          pGroup = (PermissionGroup) iter.next();
+          if (pGroup.getName().equals("")) {
+
+          }
+        }
+      }
+
+      return false;*/
     }
 }

@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.19 2002/06/07 19:02:38 gimmi Exp $
+ *  $Id: TPosClient.java,v 1.20 2002/06/14 19:02:03 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,7 @@
  */
 package com.idega.block.tpos.business;
 
+import com.idega.block.tpos.data.TPosMerchant;
 import com.tpos.client.TPOS3Client;
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWResourceBundle;
@@ -62,6 +63,7 @@ public class TPosClient {
   private String _locationId = null;
   private String _posId = null;
   private String _receivePasswd = null;
+  private TPosMerchant _TPosMerchant = null;
 
   private int amountMultiplier = 100;
 
@@ -71,11 +73,21 @@ public class TPosClient {
    * @param iwc            Description of the Parameter
    * @exception Exception  Description of the Exception
    */
+  public TPosClient(IWContext iwc, TPosMerchant merchant) throws Exception {
+    this._TPosMerchant = merchant;
+    init(iwc);
+  }
+
   public TPosClient(IWContext iwc) throws Exception {
+    init(iwc);
+  }
+
+  private void init(IWContext iwc) throws Exception{
     _iwb = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     if (_iwb != null) {
       _iwrb = _iwb.getResourceBundle(iwc);
     }
+
 
     String path = _iwb.getPropertiesRealPath();
     if (path == null) {
@@ -94,13 +106,26 @@ public class TPosClient {
       _client = new TPOS3Client(path);
       String ipset = _iwb.getProperty(TPOS_IP_SET);
       _client.setIPSet(Integer.parseInt(ipset));
-      _userId = _iwb.getProperty(TPOS_USER_ID);
-      _passwd = _iwb.getProperty(TPOS_PASSWD);
-      _merchantId = _iwb.getProperty(TPOS_MERCHANT_ID);
-      _locationId = _iwb.getProperty(TPOS_LOCATION_ID);
-      _posId = _iwb.getProperty(TPOS_POS_ID);
-      _receivePasswd = _iwb.getProperty(TPOS_KEY_RECEIVE_PASSWD);
+
+
+      if (_TPosMerchant == null) {
+        _userId = _iwb.getProperty(TPOS_USER_ID);
+        _passwd = _iwb.getProperty(TPOS_PASSWD);
+        _merchantId = _iwb.getProperty(TPOS_MERCHANT_ID);
+        _locationId = _iwb.getProperty(TPOS_LOCATION_ID);
+        _posId = _iwb.getProperty(TPOS_POS_ID);
+        _receivePasswd = _iwb.getProperty(TPOS_KEY_RECEIVE_PASSWD);
+      }else {
+        _userId = _TPosMerchant.getUserID();
+        _passwd = _TPosMerchant.getPassword();
+        _merchantId = _TPosMerchant.getMerchantID();
+        _locationId = _TPosMerchant.getLocationID();
+        _posId = _TPosMerchant.getPosID();
+        _receivePasswd = _TPosMerchant.getKeyReceivedPassword();
+      }
     }
+
+
     catch (Exception e) {
       System.out.println("Got an exception trying to create client");
     }
