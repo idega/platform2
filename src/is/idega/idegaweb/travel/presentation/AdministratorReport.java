@@ -1,10 +1,10 @@
 package is.idega.idegaweb.travel.presentation;
-import javax.ejb.FinderException;
 import java.rmi.RemoteException;
+import java.util.List;
+import javax.ejb.FinderException;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.util.IWTimestamp;
-import java.util.List;
-import com.idega.presentation.IWContext;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -16,7 +16,7 @@ import com.idega.presentation.IWContext;
  */
 
 public interface AdministratorReport {
-
+	
   public boolean useTwoDates();
   public PresentationObject getAdministratorReport(List suppliers, IWContext iwc, IWTimestamp stamp)throws RemoteException, FinderException;
   public PresentationObject getAdministratorReport(List suppliers, IWContext iwc, IWTimestamp fromStamp, IWTimestamp toStamp)throws RemoteException, FinderException;
