@@ -244,7 +244,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn + i));
 					if (val != 0.0) {
 						try {
-							WorkReportClubAccountRecord rec = workReportClubAccountRecordHome.create();
+							WorkReportClubAccountRecord rec = clubRecordHome.create();
 							rec.setAccountKey(eAccKey);
 							rec.setWorkReportGroup(league);
 							rec.setReportId(workReportId);
@@ -298,7 +298,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn + i));
 				if (val != 0.0) {
 					try {
-						WorkReportClubAccountRecord rec = workReportClubAccountRecordHome.create();
+						WorkReportClubAccountRecord rec = clubRecordHome.create();
 						rec.setAccountKey(eAccKey);
 						rec.setWorkReportGroup(league);
 						rec.setReportId(workReportId);
@@ -353,7 +353,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn + i));
 					if (val != 0.0) {
 						try {
-							WorkReportClubAccountRecord rec = workReportClubAccountRecordHome.create();
+							WorkReportClubAccountRecord rec = clubRecordHome.create();
 							rec.setAccountKey(eAccKey);
 							rec.setWorkReportGroup(league);
 							rec.setReportId(workReportId);
