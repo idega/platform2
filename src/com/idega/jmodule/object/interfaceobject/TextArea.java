@@ -20,7 +20,7 @@ public class TextArea extends InterfaceObject{
 protected String content;
 protected boolean editable;
 protected boolean keepContent;
-protected boolean wrap;
+protected boolean wrap = true;
 
 
 public TextArea(){
@@ -37,21 +37,18 @@ public TextArea(String name,String content){
 	this.content=content;
 	editable=true;
 	keepContent = false;
-        wrap=false;
 }
 
 public TextArea(String name,int width,int height){
 	this(name,"");
 	setWidth(width);
 	setHeight(height);
-        wrap=false;
 }
 
 public TextArea(String name,String content,int width,int height){
 	this(name,content);
 	setWidth(width);
 	setHeight(height);
-        wrap=false;
 }
 
 
@@ -78,9 +75,7 @@ public void setContent(String s){
 
 
 public void setWrap(boolean wrapping){
-
   this.wrap=wrapping;
-
 }
 
 //Enables the possibility of maintaining the content of the area between requests.
