@@ -396,8 +396,11 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 			if (category.equals(getSchoolBusiness().getElementarySchoolSchoolCategory()) || category.equals("BOTH")) {
 				userTypes.add(new String[] {"school.headmaster", "Headmaster", Integer.toString(USER_TYPE_HEADMASTER) });
 				userTypes.add(new String[] {"school.assistant_headmaster", "Assistant headmaster", Integer.toString(USER_TYPE_ASSISTANT_HEADMASTER) });
+				userTypes.add(new String[] {"school.assistant_headmaster_abbrev", "Ass. headmaster", Integer.toString(USER_TYPE_ASSISTANT_HEADMASTER) });
 				userTypes.add(new String[] {"school.web_administrators", "Web administrators", Integer.toString(USER_TYPE_WEB_ADMIN) });
 				userTypes.add(new String[] {"school.teachers", "Teachers", Integer.toString(USER_TYPE_TEACHER) });
+				userTypes.add(new String[] {"school.ib_coordinator", "IB-coordinator", Integer.toString(USER_TYPE_IB_COORDINATOR) });
+				userTypes.add(new String[] {"school.study_work_councel", "Study and work councel", Integer.toString(USER_TYPE_STUDY_AND_WORK_COUNCEL) });
 			}else if (category.equals(getSchoolBusiness().getChildCareSchoolCategory())) {
 				userTypes.add(new String[] {"school.manager", "Manager", Integer.toString(USER_TYPE_HEADMASTER) });
 				userTypes.add(new String[] {"school.assistant_manager", "Assistant manager", Integer.toString(USER_TYPE_ASSISTANT_HEADMASTER) });
