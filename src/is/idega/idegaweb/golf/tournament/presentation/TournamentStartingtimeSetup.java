@@ -171,6 +171,13 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		DropdownMenu theMenu = new DropdownMenu("tournament_round");
 		Form form = new Form();
 		Table table = new Table();
+		table.setNoWrap();
+		table.setStyleClass(1,1,getHeaderRowClass());
+		table.setStyleClass(3,1,getHeaderRowClass());
+		table.setStyleClass(4,1,getHeaderRowClass());
+		table.setStyleClass(5,1,getHeaderRowClass());
+		table.setStyleClass(6,1,getHeaderRowClass());
+		table.setCellspacing(0);
 		form.add(table);
 		table.setWidth(600);
 		table.setBorder(0);
@@ -228,15 +235,15 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 
 		//setTournament(modinfo,tournament);
 
-		Text header = new Text(iwrb.getLocalizedString("tournament.pick_a_round", "Pick a round"));
-		header.setBold();
+		Text header = getSmallHeader(iwrb.getLocalizedString("tournament.pick_a_round", "Pick a round"));
 
 		table.add(header, 1, row);
+		
 
 		table.setWidth(1, "350");
 		table.setWidth(2, "20");
 
-		Link change = new Link(iwrb.getLocalizedString("tournament.change", "Change"));
+		Link change = getLink(iwrb.getLocalizedString("tournament.change", "Change"));
 		change.addParameter("sub_action", "changeVisibility");
 		change.addParameter("stt_action", modinfo.getParameter("stt_action"));
 
@@ -244,13 +251,13 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 
 		Link changeClone;
 
-		Text notVisible = new Text(iwrb.getLocalizedString("tournament.not_visible", "Not visible"));
+		Text notVisible = getMessageText(iwrb.getLocalizedString("tournament.not_visible", "Not visible"));
 		notVisible.setFontColor("red");
 
-		Text header2 = new Text(iwrb.getLocalizedString("tournament.tee_times", "Tee times"));
-		header2.setBold();
+		Text header2 = getSmallHeader(iwrb.getLocalizedString("tournament.tee_times", "Tee times"));
 		table.add(header2, 3, row);
 		table.mergeCells(3, row, 5, row);
+		
 		for (int i = 0; i < tourRounds.length; i++) {
 			table.add(tourRounds[i].getName(iwrb), 3, row + i + 1);
 			table.setWidth(3, row + i + 1, "80");
@@ -267,11 +274,22 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 			change.addParameter("tournament_round_id_to_change", "" + tourRounds[i].getID());
 			table.add(change, 5, row + i + 1);
 
-			print = new Link(iwrb.getLocalizedString("tournament.print", "print"));
+			print = getLink(iwrb.getLocalizedString("tournament.print", "print"));
 			print.addParameter(TournamentStartingtimeWindow.PARAMETER_TOURNAMENT_ID, tournament.getID());
 			print.addParameter(TournamentStartingtimeWindow.PARAMETER_TOURNAMENT_ROUND_ID, tourRounds[i].getID());
 			print.setWindowToOpen(TournamentStartingtimeWindow.class);
 			table.add(print, 6, row + i + 1);
+			if(i%2==0) {
+				table.setStyleClass(3,row + i + 1,getDarkRowClass());
+				table.setStyleClass(4,row + i + 1,getDarkRowClass());
+				table.setStyleClass(5,row + i + 1,getDarkRowClass());
+				table.setStyleClass(6,row + i + 1,getDarkRowClass());
+			} else {
+				table.setStyleClass(3,row + i + 1,getLightRowClass());
+				table.setStyleClass(4,row + i + 1,getLightRowClass());
+				table.setStyleClass(5,row + i + 1,getLightRowClass());
+				table.setStyleClass(6,row + i + 1,getLightRowClass());
+			}
 		}
 
 		//	table.setBorder(1);
@@ -292,6 +310,7 @@ public class TournamentStartingtimeSetup extends TournamentBlock {
 		theEdit.addParameter("tournament_id", tournament.getID());
 		theEdit.addParameter("action", "getSearch");
 		table.add(theEdit, 1, 5);
+		
 
 		Paragraph par = new Paragraph();
 		par.setAlign("center");

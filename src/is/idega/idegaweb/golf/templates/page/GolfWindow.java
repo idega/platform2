@@ -1,6 +1,8 @@
 // idega - Gimmi & Eiki
 package is.idega.idegaweb.golf.templates.page;
 
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -119,6 +121,10 @@ public class GolfWindow extends Window {
 	private final static String CELLPADDING_PROPERTY = "cellpadding";
 	private final static String CELLSPACING_PROPERTY = "cellspacing";
 
+	private static final String LIGHT_ROW_STYLE = "lightRow";
+	private static final String DARK_ROW_STYLE = "darkRow";
+	private static final String HEADER_ROW_STYLE = "headerRow";
+	private static final String ERROR_ROW_STYLE = "errorRow";
 
   private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
 
@@ -215,7 +221,6 @@ public class GolfWindow extends Window {
     table.setRowStyleClass(1,"top");
     table.setStyleClass(1,1,"banner");
 //    table.add(topRight, 1, 1);
-    
     contentTable.setCellpadding(0);
     contentTable.setCellspacing(0);
     contentTable.setWidth(Table.HUNDRED_PERCENT);
@@ -911,7 +916,21 @@ public class GolfWindow extends Window {
 	  	useStyleSheetFromCoreBundle = value;
 	  }
 
-	
-	
-  	
+		
+		public String getLightRowClass() {
+			return getStyleName(LIGHT_ROW_STYLE);
+		}
+		
+		public String getDarkRowClass() {
+			return getStyleName(DARK_ROW_STYLE);
+		}
+		
+		public String getHeaderRowClass() {
+			return getStyleName(HEADER_ROW_STYLE);
+		}
+		
+		public String getErrorRowClass() {
+			return getStyleName(ERROR_ROW_STYLE);
+		}
+		
 }

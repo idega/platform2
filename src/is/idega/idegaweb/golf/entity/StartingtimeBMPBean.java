@@ -35,6 +35,7 @@ public class StartingtimeBMPBean extends GenericEntity implements Startingtime{
     addAttribute("owner_id","Numer eiganda",true,true,"java.lang.Integer");
     // added 19.06.2001 by Gimmi
     addAttribute("tee_number","Númer teigs",true,true,"java.lang.Integer");
+    addManyToManyRelationShip(TournamentRound.class,"tournament_round_startingtime");
   }
 
   public String getEntityName(){

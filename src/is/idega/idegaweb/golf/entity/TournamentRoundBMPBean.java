@@ -1,5 +1,5 @@
 /*
- * $Id: TournamentRoundBMPBean.java,v 1.4 2004/04/01 17:08:24 laddi Exp $
+ * $Id: TournamentRoundBMPBean.java,v 1.5 2004/06/02 12:59:25 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ public class TournamentRoundBMPBean extends GenericEntity implements TournamentR
 		addAttribute("startingtees","Fjöldi teiga",true,true,"java.lang.Integer");
 		// added 28.06.2001
 		addAttribute("visible_startingtimes","Sýnilegir rástimar",true,true,"java.lang.Boolean");
-
+		addManyToManyRelationShip(Startingtime.class,"tournament_round_startingtime");
 	}
 
 	public String getEntityName(){

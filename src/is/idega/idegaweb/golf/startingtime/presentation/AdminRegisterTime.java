@@ -73,13 +73,6 @@ public class AdminRegisterTime extends GolfWindow {
 	private static String timeChangeStartIDParameterString = "STstartID";
 	private static String formParmeterIDParameterString = "STfpID";
 
-	private static String color1 = "#336661";
-	private static String color2 = "#CEDFCF";
-	private static String color3 = "#ADC9D0";
-	private static String color5 = "#FFFFFF";
-	private static String color4 = "#6E9173";
-	private static String color6 = "#FF6666";
-
 	private boolean forPrinting = false;
 
 	public AdminRegisterTime() {
@@ -187,12 +180,6 @@ public class AdminRegisterTime extends GolfWindow {
 				firstTime = new IWTimestamp(fieldInfo.getOpenTime());
 				break;
 		}
-
-		if (forPrinting) {
-			color1 = "#000000";
-			color2 = "#FFFFFF";
-			color3 = "#DEDEDE";
-		}
 		//    int groupCount = idegaTimestamp.getMinutesBetween(openTime,new
 		// idegaTimestamp(fieldInfo.getCloseTime()))/minBetween;
 		HorizontalRule hr = new HorizontalRule("100%");
@@ -206,7 +193,7 @@ public class AdminRegisterTime extends GolfWindow {
 
 		frameTable.empty();
 
-		String width = "520";
+		String width = Table.HUNDRED_PERCENT;
 		String width1 = "70";
 		String width2 = "250";
 		String width3 = "70";
@@ -216,42 +203,20 @@ public class AdminRegisterTime extends GolfWindow {
 		Table startTable = new Table();
 		startTable.setRows(lines + 1);
 		startTable.setColumns(6);
-		Table headerTable = new Table(6, 1);
 		Table illegalTable = null;
 
 		startTable.setAlignment("center");
 		startTable.setWidth(width);
-		startTable.setCellspacing(1);
+		startTable.setCellspacing(0);
 
-		headerTable.setAlignment("center");
-		headerTable.setWidth(width);
-		headerTable.setCellspacing(0);
 
-		headerTable.setColor(color1);
-		/*
-		 * startTable.setColor(1,1,color1); startTable.setColor(2,1,color1);
-		 * startTable.setColor(3,1,color1); startTable.setColor(4,1,color1);
-		 * startTable.setColor(5,1,color1);
-		 */
-		startTable.add(Text.emptyString(), 1, 1);
-		startTable.add(Text.emptyString(), 2, 1);
-		startTable.add(Text.emptyString(), 3, 1);
-		startTable.add(Text.emptyString(), 4, 1);
-		startTable.add(Text.emptyString(), 5, 1);
-		startTable.add(Text.emptyString(), 6, 1);
-		startTable.setHeight(1, "1");
+		startTable.setRowStyleClass(1,getHeaderRowClass());
 
-		headerTable.setAlignment(1, 1, "center");
-		headerTable.setAlignment(3, 1, "center");
-		headerTable.setAlignment(4, 1, "center");
-		headerTable.setAlignment(5, 1, "center");
-		headerTable.setAlignment(6, 1, "center");
-
-		headerTable.setWidth(1, width1);
-		headerTable.setWidth(2, width2);
-		headerTable.setWidth(3, width3);
-		headerTable.setWidth(4, width4);
-		//    headerTable.setWidth(5,width5);
+		startTable.setAlignment(1, 1, "center");
+		startTable.setAlignment(3, 1, "center");
+		startTable.setAlignment(4, 1, "center");
+		startTable.setAlignment(5, 1, "center");
+		startTable.setAlignment(6, 1, "center");
 
 		startTable.setWidth(1, width1);
 		startTable.setWidth(2, width2);
@@ -271,33 +236,33 @@ public class AdminRegisterTime extends GolfWindow {
 		Text time = (Text) textProxy.clone();
 		time.setText(_iwrb.getLocalizedString("start.time", "Time"));
 		time.setBold();
-		headerTable.add(time, 1, 1);
+		startTable.add(time, 1, 1);
 
 		Text name = (Text) textProxy.clone();
 		name.setText(_iwrb.getLocalizedString("start.social_nr", "Social nr.") + " (" + _iwrb.getLocalizedString("start.name", "Name") + ")");
 		name.setBold();
-		headerTable.add(name, 2, 1);
+		startTable.add(name, 2, 1);
 
 		Text club = (Text) textProxy.clone();
 		club.setText("(" + _iwrb.getLocalizedString("start.club", "Club") + ")");
 		club.setBold();
-		headerTable.add(club, 3, 1);
+		startTable.add(club, 3, 1);
 
 		Text handicap = (Text) textProxy.clone();
 		handicap.setText("(" + _iwrb.getLocalizedString("start.handicap", "Handicap") + ")");
 		handicap.setBold();
-		headerTable.add(handicap, 4, 1);
+		startTable.add(handicap, 4, 1);
 
 		Text showed = (Text) textProxy.clone();
 		showed.setText(_iwrb.getLocalizedString("start.showed", "Showed"));
 		showed.setBold();
-		headerTable.add(showed, 5, 1);
+		startTable.add(showed, 5, 1);
 
 		if (!forPrinting) {
 			Text delete = (Text) textProxy.clone();
 			delete.setText(_iwrb.getLocalizedString("start.delete", "Delete"));
 			delete.setBold();
-			headerTable.add(delete, 6, 1);
+			startTable.add(delete, 6, 1);
 		}
 		CheckBox delCheck = new CheckBox(deleteParameterString);
 		CheckBox showedUpCheck;
@@ -487,19 +452,9 @@ public class AdminRegisterTime extends GolfWindow {
 
 				// if (!forPrinting) {
 				if (firstColor) {
-					startTable.setColor(1, i, color2);
-					startTable.setColor(2, i, color2);
-					startTable.setColor(3, i, color2);
-					startTable.setColor(4, i, color2);
-					startTable.setColor(5, i, color2);
-					startTable.setColor(6, i, color2);
+					startTable.setRowStyleClass(i, getLightRowClass());
 				} else {
-					startTable.setColor(1, i, color3);
-					startTable.setColor(2, i, color3);
-					startTable.setColor(3, i, color3);
-					startTable.setColor(4, i, color3);
-					startTable.setColor(5, i, color3);
-					startTable.setColor(6, i, color3);
+					startTable.setRowStyleClass(i, getDarkRowClass());
 				}
 				//}
 				count++;
@@ -511,7 +466,7 @@ public class AdminRegisterTime extends GolfWindow {
 			illegalTable = new Table(5, illegal);
 			illegalTable.setAlignment("center");
 			illegalTable.setWidth(width);
-			illegalTable.setCellspacing(1);
+			illegalTable.setCellspacing(0);
 
 			illegalTable.setWidth(1, width1);
 			illegalTable.setWidth(2, width2);
@@ -527,11 +482,7 @@ public class AdminRegisterTime extends GolfWindow {
 			for (int i = 1; i <= illegal; i++) {
 				TeeTime tempStart = (TeeTime) illegalTimes.get(i - 1);
 
-				illegalTable.setColor(1, i, color6);
-				illegalTable.setColor(2, i, color6);
-				illegalTable.setColor(3, i, color6);
-				illegalTable.setColor(4, i, color6);
-				illegalTable.setColor(5, i, color6);
+				illegalTable.setRowStyleClass(i, getErrorRowClass());
 
 				illegalTable.add(tempStart.getPlayerName(), 2, i);
 				illegalTable.add(tempStart.getClubName(), 3, i);
@@ -585,9 +536,6 @@ public class AdminRegisterTime extends GolfWindow {
 		dateTable.setWidth(width);
 
 		if (!forPrinting) {
-			Window popUp = new MemberSearchWindow("Leit aÝ meÝlimi");
-			popUp.setWidth(600);
-			popUp.setHeight(500);
 			Link theSearch = getLocalizedLink("search_form_member","Search For Member");
 			theSearch.setWindowToOpen(MemberSearchWindow.class);
 			theSearch.addParameter("action", "getSearch");
@@ -595,12 +543,18 @@ public class AdminRegisterTime extends GolfWindow {
 		}
 
 		frameTable.add(dateTable);
-		frameTable.add(headerTable);
+		
+		Table borderTable = new Table();
+		borderTable.setCellpadding(0);
+		borderTable.setCellspacing(0);
+		borderTable.setCellBorder(1, 1, 1, "#3A5A20", "solid");
 
 		if (illegalTable != null) {
-			frameTable.add(illegalTable);
+			borderTable.add(illegalTable);
 		}
-		frameTable.add(startTable);
+		
+		borderTable.add(startTable);
+		frameTable.add(borderTable);
 
 		//    SubmitButton save = new SubmitButton(" Vista ",
 		// saveParameterString+".x", "do");
