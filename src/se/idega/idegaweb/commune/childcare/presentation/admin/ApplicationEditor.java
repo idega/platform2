@@ -222,7 +222,7 @@ public class ApplicationEditor extends ChildCareBlock {
 				if (application.getRejectionDate() != null) {
 					rejectionDate = new IWTimestamp(application.getRejectionDate());
 				} else {
-					placementDate = null;
+					rejectionDate = null;
 				}
 				if (application.getQueueDate() != null) {
 					queueDate = new IWTimestamp(application.getQueueDate());
