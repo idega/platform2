@@ -48,6 +48,7 @@ import java.util.Vector;
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -116,125 +117,66 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	 * change. This could lead to problems, but we will look the other way for now :)
 	 */
 	public boolean importAccountPart(int workReportFileId, int workReportId) throws WorkReportImportException, RemoteException {
-		System.out.println("Starting account importing from excel file...");
+		UserTransaction trans = null;
+		try {
+			trans = getSessionContext().getUserTransaction();
+			trans.begin();
 
-		//Check to see if the work report is read only
-		if (getWorkReportBusiness().isWorkReportReadOnly(workReportId))
-			throw new WorkReportImportException("workreportimportexception.is_read_only");
+			System.out.println("Starting account importing from excel file...");
 
-		getWorkReportBusiness().deleteWorkReportAccountRecordsForReport(workReportId);
+			//Check to see if the work report is read only
+			if (getWorkReportBusiness().isWorkReportReadOnly(workReportId))
+				throw new WorkReportImportException("workreportimportexception.is_read_only");
 
-		WorkReportAccountKeyHome accKeyHome = getWorkReportBusiness().getWorkReportAccountKeyHome();
-		WorkReportClubAccountRecordHome clubRecordHome = getWorkReportBusiness().getWorkReportClubAccountRecordHome();
-		WorkReport report = getWorkReportBusiness().getWorkReportById(workReportId);
-		int year = report.getYearOfReport().intValue();
-		getWorkReportBusiness().createOrUpdateLeagueWorkReportGroupsForYear(year);
+			getWorkReportBusiness().deleteWorkReportAccountRecordsForReport(workReportId);
 
-		report.setAccountFileId(workReportFileId);
-		report.store();
+			WorkReportAccountKeyHome accKeyHome = getWorkReportBusiness().getWorkReportAccountKeyHome();
+			WorkReportClubAccountRecordHome clubRecordHome = getWorkReportBusiness().getWorkReportClubAccountRecordHome();
+			WorkReport report = getWorkReportBusiness().getWorkReportById(workReportId);
+			int year = report.getYearOfReport().intValue();
+			getWorkReportBusiness().createOrUpdateLeagueWorkReportGroupsForYear(year);
 
-		HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
-		int sheets = excel.getNumberOfSheets();
-		if (sheets > 3)
-			throw new WorkReportImportException("workreportimportexception.wrong_number_of_sheets");
+			report.setAccountFileId(workReportFileId);
+			report.store();
 
-		HSSFSheet accEntries = excel.getSheetAt(SHEET_ACCOUNT_PART);
-		int currRow = 2;
-		int leaguesStartColumn = 7;
-		int lastRow = accEntries.getLastRowNum();
+			HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
+			int sheets = excel.getNumberOfSheets();
+			if (sheets > 3)
+				throw new WorkReportImportException("workreportimportexception.wrong_number_of_sheets");
 
-		System.out.println("Current row is at: " + currRow);
-		System.out.println("Last row is at: " + lastRow);
+			HSSFSheet accEntries = excel.getSheetAt(SHEET_ACCOUNT_PART);
+			int currRow = 2;
+			int leaguesStartColumn = 7;
+			int lastRow = accEntries.getLastRowNum();
 
-		if (lastRow != 42) {
-			System.err.println("Wrong number of lines in account sheet " + lastRow);
-			throw new WorkReportImportException("workreportimportexception.wrong_number_lines");
-		}
+			System.out.println("Current row is at: " + currRow);
+			System.out.println("Last row is at: " + lastRow);
 
-		//get the top row to get a list of leagues to use.
-		HSSFRow headerRow = (HSSFRow)accEntries.getRow(currRow);
-		Map leaguesMap = getLeaguesMapFromRow(headerRow, year, leaguesStartColumn);
-
-		int numberOfLeagues = 1;
-		if (leaguesMap != null)
-			numberOfLeagues = leaguesMap.size();
-
-		String accKey = null;
-
-		/**
-		 * @todo hehe, put this into one submethod and then call if for each set of rows. Silly silly silly
-		 */
-
-		//Get the revenue part
-		for (currRow++; currRow < 8; currRow++) {
-			HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
-			HSSFCell cell = row.getCell((short)1);
-			if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
-				accKey = Integer.toString((int)cell.getNumericCellValue());
-			else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
-				accKey = cell.getStringCellValue();
-			else
-				accKey = null;
-
-			WorkReportAccountKey eAccKey = null;
-			try {
-				eAccKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(accKey);
-			}
-			catch (FinderException e) {
-				e.printStackTrace();
-				throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+			if (lastRow != 42) {
+				System.err.println("Wrong number of lines in account sheet " + lastRow);
+				throw new WorkReportImportException("workreportimportexception.wrong_number_lines");
 			}
 
-			for (int i = 0; i < numberOfLeagues; i++) {
-				HSSFCell c = row.getCell((short) (leaguesStartColumn + i));
-				double val = 0.0;
-				if (c != null) {
-					if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
-						//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
-						throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
-					}
+			//get the top row to get a list of leagues to use.
+			HSSFRow headerRow = (HSSFRow) accEntries.getRow(currRow);
+			Map leaguesMap = getLeaguesMapFromRow(headerRow, year, leaguesStartColumn);
 
-					val = c.getNumericCellValue();
-					System.out.println("celltype == " + c.getCellType());
-				}
+			int numberOfLeagues = 1;
+			if (leaguesMap != null)
+				numberOfLeagues = leaguesMap.size();
 
-				System.out.println("val = " + val);
+			String accKey = null;
 
-				WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn + i));
+			/**
+			 * @todo hehe, put this into one submethod and then call if for each set of rows. Silly silly silly
+			 */
 
-				if (val != 0.0) {
-					try {
-						WorkReportClubAccountRecord rec = clubRecordHome.create();
-						rec.setAccountKey(eAccKey);
-						rec.setWorkReportGroup(league);
-						rec.setReportId(workReportId);
-						rec.setAmount((float)val);
-						rec.store();
-
-						try {
-							getWorkReportBusiness().getWorkReportById(workReportId).addLeague(league);
-						}
-						catch (Exception e) {
-							//Do nothing
-						}
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-						throw new WorkReportImportException("workreportimportexception.unable_to_create_account_record");
-					}
-				}
-			}
-		}
-
-		//Get the expenses part
-		for (currRow = 11; currRow < 26; currRow++) {
-			String parentKey = null;
-			double sum = 0.0;
-			if (currRow != 15) {
-				HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
-				HSSFCell cell = row.getCell((short)1);
+			//Get the revenue part
+			for (currRow++; currRow < 8; currRow++) {
+				HSSFRow row = (HSSFRow) accEntries.getRow(currRow);
+				HSSFCell cell = row.getCell((short) 1);
 				if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
-					accKey = Integer.toString((int)cell.getNumericCellValue());
+					accKey = Integer.toString((int) cell.getNumericCellValue());
 				else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
 					accKey = cell.getStringCellValue();
 				else
@@ -242,7 +184,162 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 
 				WorkReportAccountKey eAccKey = null;
 				try {
-					eAccKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(accKey);
+					eAccKey = (WorkReportAccountKey) accKeyHome.findAccountKeyByNumber(accKey);
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+					throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+				}
+
+				for (int i = 0; i < numberOfLeagues; i++) {
+					HSSFCell c = row.getCell((short) (leaguesStartColumn + i));
+					double val = 0.0;
+					if (c != null) {
+						if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+							//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+							throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+						}
+
+						val = c.getNumericCellValue();
+						System.out.println("celltype == " + c.getCellType());
+					}
+
+					System.out.println("val = " + val);
+
+					WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(leaguesStartColumn + i));
+
+					if (val != 0.0) {
+						try {
+							WorkReportClubAccountRecord rec = clubRecordHome.create();
+							rec.setAccountKey(eAccKey);
+							rec.setWorkReportGroup(league);
+							rec.setReportId(workReportId);
+							rec.setAmount((float) val);
+							rec.store();
+
+							try {
+								getWorkReportBusiness().getWorkReportById(workReportId).addLeague(league);
+							}
+							catch (Exception e) {
+								//Do nothing
+							}
+						}
+						catch (Exception e) {
+							e.printStackTrace();
+							throw new WorkReportImportException("workreportimportexception.unable_to_create_account_record");
+						}
+					}
+				}
+			}
+
+			//Get the expenses part
+			for (currRow = 11; currRow < 26; currRow++) {
+				String parentKey = null;
+				double sum = 0.0;
+				if (currRow != 15) {
+					HSSFRow row = (HSSFRow) accEntries.getRow(currRow);
+					HSSFCell cell = row.getCell((short) 1);
+					if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+						accKey = Integer.toString((int) cell.getNumericCellValue());
+					else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
+						accKey = cell.getStringCellValue();
+					else
+						accKey = null;
+
+					WorkReportAccountKey eAccKey = null;
+					try {
+						eAccKey = (WorkReportAccountKey) accKeyHome.findAccountKeyByNumber(accKey);
+					}
+					catch (FinderException e) {
+						e.printStackTrace();
+						throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+					}
+
+					for (int i = 0; i < numberOfLeagues; i++) {
+						HSSFCell c = row.getCell((short) (leaguesStartColumn + i));
+						double val = 0.0;
+						if (c != null) {
+							if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+								//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+								throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+							}
+
+							val = c.getNumericCellValue();
+						}
+
+						System.out.println("val = " + val);
+						if (currRow >= 16 && currRow <= 18)
+							sum += val;
+						WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(leaguesStartColumn + i));
+						if (val != 0.0) {
+							try {
+								WorkReportClubAccountRecord rec = clubRecordHome.create();
+								rec.setAccountKey(eAccKey);
+								rec.setWorkReportGroup(league);
+								rec.setReportId(workReportId);
+								rec.setAmount((float) val);
+								rec.store();
+								try {
+									getWorkReportBusiness().getWorkReportById(workReportId).addLeague(league);
+								}
+								catch (Exception e) {
+									//Do nothing
+								}
+
+								if (currRow == 18) {
+									WorkReportAccountKey eParKey = null;
+									try {
+										eParKey = (WorkReportAccountKey) accKeyHome.findAccountKeyByNumber(parentKey);
+									}
+									catch (FinderException e) {
+										e.printStackTrace();
+										throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+									}
+
+									WorkReportClubAccountRecord rec2 = clubRecordHome.create();
+									rec2.setAccountKey(eParKey);
+									rec2.setWorkReportGroup(league);
+									rec2.setReportId(workReportId);
+									rec2.setAmount((float) sum);
+									rec2.store();
+								}
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+								throw new WorkReportImportException("workreportimportexception.unable_to_create_account_record");
+							}
+						}
+					}
+
+				}
+				else {
+					HSSFRow row = (HSSFRow) accEntries.getRow(currRow);
+					HSSFCell cell = row.getCell((short) 1);
+					if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+						parentKey = Integer.toString((int) cell.getNumericCellValue());
+					else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
+						parentKey = cell.getStringCellValue();
+					else
+						parentKey = null;
+
+				}
+			}
+
+			double totalAsset = 0;
+			//Get the asset part
+			for (currRow = 33; currRow < 35; currRow++) {
+				HSSFRow row = (HSSFRow) accEntries.getRow(currRow);
+				HSSFCell cell = row.getCell((short) 1);
+				if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+					accKey = Integer.toString((int) cell.getNumericCellValue());
+				else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
+					accKey = cell.getStringCellValue();
+				else
+					accKey = null;
+
+				WorkReportAccountKey eAccKey = null;
+				try {
+					eAccKey = (WorkReportAccountKey) accKeyHome.findAccountKeyByNumber(accKey);
 				}
 				catch (FinderException e) {
 					e.printStackTrace();
@@ -262,16 +359,15 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					}
 
 					System.out.println("val = " + val);
-					if (currRow >= 16 && currRow <= 18)
-						sum += val;
-					WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn + i));
+					totalAsset += val;
+					WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(leaguesStartColumn + i));
 					if (val != 0.0) {
 						try {
 							WorkReportClubAccountRecord rec = clubRecordHome.create();
 							rec.setAccountKey(eAccKey);
 							rec.setWorkReportGroup(league);
 							rec.setReportId(workReportId);
-							rec.setAmount((float)val);
+							rec.setAmount((float) val);
 							rec.store();
 							try {
 								getWorkReportBusiness().getWorkReportById(workReportId).addLeague(league);
@@ -279,24 +375,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 							catch (Exception e) {
 								//Do nothing
 							}
-							
-							if (currRow == 18) {
-								WorkReportAccountKey eParKey = null;
-								try {
-									eParKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(parentKey);
-								}
-								catch (FinderException e) {
-									e.printStackTrace();
-									throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
-								}
 
-								WorkReportClubAccountRecord rec2 = clubRecordHome.create();
-								rec2.setAccountKey(eParKey);
-								rec2.setWorkReportGroup(league);
-								rec2.setReportId(workReportId);
-								rec2.setAmount((float)sum);
-								rec2.store();								
-							}
 						}
 						catch (Exception e) {
 							e.printStackTrace();
@@ -304,204 +383,146 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						}
 					}
 				}
-				
-			}
-			else {
-				HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
-				HSSFCell cell = row.getCell((short)1);
-				if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
-					parentKey = Integer.toString((int)cell.getNumericCellValue());
-				else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
-					parentKey = cell.getStringCellValue();
-				else
-					parentKey = null;
-
-			}
-		}
-
-		double totalAsset = 0;
-		//Get the asset part
-		for (currRow = 33; currRow < 35; currRow++) {
-			HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
-			HSSFCell cell = row.getCell((short)1);
-			if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
-				accKey = Integer.toString((int)cell.getNumericCellValue());
-			else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
-				accKey = cell.getStringCellValue();
-			else
-				accKey = null;
-
-			WorkReportAccountKey eAccKey = null;
-			try {
-				eAccKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(accKey);
-			}
-			catch (FinderException e) {
-				e.printStackTrace();
-				throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
 			}
 
-			for (int i = 0; i < numberOfLeagues; i++) {
-				HSSFCell c = row.getCell((short) (leaguesStartColumn + i));
-				double val = 0.0;
-				if (c != null) {
-					if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
-						//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
-						throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
-					}
+			double totalDept = 0;
+			//Get the dept part
+			for (currRow = 38; currRow < 42; currRow++) {
+				String parentKey = null;
+				double sum = 0.0;
+				if (currRow != 39) {
+					HSSFRow row = (HSSFRow) accEntries.getRow(currRow);
+					HSSFCell cell = row.getCell((short) 1);
+					if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+						accKey = Integer.toString((int) cell.getNumericCellValue());
+					else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
+						accKey = cell.getStringCellValue();
+					else
+						accKey = null;
 
-					val = c.getNumericCellValue();
-				}
-
-				System.out.println("val = " + val);
-				totalAsset += val;
-				WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn + i));
-				if (val != 0.0) {
+					WorkReportAccountKey eAccKey = null;
 					try {
-						WorkReportClubAccountRecord rec = clubRecordHome.create();
-						rec.setAccountKey(eAccKey);
-						rec.setWorkReportGroup(league);
-						rec.setReportId(workReportId);
-						rec.setAmount((float)val);
-						rec.store();
-						try {
-							getWorkReportBusiness().getWorkReportById(workReportId).addLeague(league);
-						}
-						catch (Exception e) {
-							//Do nothing
+						eAccKey = (WorkReportAccountKey) accKeyHome.findAccountKeyByNumber(accKey);
+					}
+					catch (FinderException e) {
+						e.printStackTrace();
+						throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+					}
+
+					for (int i = 0; i < numberOfLeagues; i++) {
+						HSSFCell c = row.getCell((short) (leaguesStartColumn + i));
+						double val = 0.0;
+						if (c != null) {
+							if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+								//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
+								throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
+							}
+
+							val = c.getNumericCellValue();
 						}
 
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-						throw new WorkReportImportException("workreportimportexception.unable_to_create_account_record");
+						System.out.println("val = " + val);
+						if (currRow >= 40 && currRow <= 41)
+							sum += val;
+						totalDept += val;
+						WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(leaguesStartColumn + i));
+						if (val != 0.0) {
+							try {
+								WorkReportClubAccountRecord rec = clubRecordHome.create();
+								rec.setAccountKey(eAccKey);
+								rec.setWorkReportGroup(league);
+								rec.setReportId(workReportId);
+								rec.setAmount((float) val);
+								rec.store();
+								try {
+									getWorkReportBusiness().getWorkReportById(workReportId).addLeague(league);
+								}
+								catch (Exception e) {
+									//Do nothing
+								}
+
+								if (currRow == 41) {
+									WorkReportAccountKey eParKey = null;
+									try {
+										eParKey = (WorkReportAccountKey) accKeyHome.findAccountKeyByNumber(parentKey);
+									}
+									catch (FinderException e) {
+										e.printStackTrace();
+										throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
+									}
+
+									WorkReportClubAccountRecord rec2 = clubRecordHome.create();
+									rec2.setAccountKey(eParKey);
+									rec2.setWorkReportGroup(league);
+									rec2.setReportId(workReportId);
+									rec2.setAmount((float) sum);
+									rec2.store();
+								}
+							}
+							catch (Exception e) {
+								e.printStackTrace();
+								throw new WorkReportImportException("workreportimportexception.unable_to_create_account_record");
+							}
+						}
 					}
 				}
+				else {
+					HSSFRow row = (HSSFRow) accEntries.getRow(currRow);
+					HSSFCell cell = row.getCell((short) 1);
+					if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
+						parentKey = Integer.toString((int) cell.getNumericCellValue());
+					else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
+						parentKey = cell.getStringCellValue();
+					else
+						parentKey = null;
+				}
 			}
-		}
 
-		double totalDept = 0;
-		//Get the dept part
-		for (currRow = 38; currRow < 42; currRow++) {
-			String parentKey = null;
-			double sum = 0.0;
-			if (currRow != 39) {
-				HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
-				HSSFCell cell = row.getCell((short)1);
-				if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
-					accKey = Integer.toString((int)cell.getNumericCellValue());
-				else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
-					accKey = cell.getStringCellValue();
-				else
-					accKey = null;
+			if (totalAsset != totalDept)
+				throw new WorkReportImportException("workreportimportexception.asset_and_dept_not_the_same");
 
-				WorkReportAccountKey eAccKey = null;
+			//Store work-report division thingie........ HOW!!!???!!!		
+			Iterator it = leaguesMap.keySet().iterator();
+			while (it.hasNext()) {
+				Integer key = (Integer) it.next();
+				int WRGroupId = ((Integer) ((WorkReportGroup) leaguesMap.get(key)).getPrimaryKey()).intValue();
+				WorkReportDivisionBoard board = null;
 				try {
-					eAccKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(accKey);
+					board = (WorkReportDivisionBoard) getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, WRGroupId);
 				}
 				catch (FinderException e) {
-					e.printStackTrace();
-					throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
-				}
-
-				for (int i = 0; i < numberOfLeagues; i++) {
-					HSSFCell c = row.getCell((short) (leaguesStartColumn + i));
-					double val = 0.0;
-					if (c != null) {
-						if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
-							//						WorkReportImportException ex = new WorkReportImportException("workreportimportexception.formula_in_sheet");
-							throw new WorkReportImportException("workreportimportexception.formula_in_sheet");
-						}
-
-						val = c.getNumericCellValue();
+					try {
+						board = (WorkReportDivisionBoard) getWorkReportBusiness().getWorkReportDivisionBoardHome().create();
+						board.setWorkReportGroupID(WRGroupId);
+						board.setReportId(workReportId);
 					}
-
-					System.out.println("val = " + val);
-					if (currRow >= 40 && currRow <= 41)
-						sum += val;
-					totalDept += val;
-					WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn + i));
-					if (val != 0.0) {
-						try {
-							WorkReportClubAccountRecord rec = clubRecordHome.create();
-							rec.setAccountKey(eAccKey);
-							rec.setWorkReportGroup(league);
-							rec.setReportId(workReportId);
-							rec.setAmount((float)val);
-							rec.store();
-							try {
-								getWorkReportBusiness().getWorkReportById(workReportId).addLeague(league);
-							}
-							catch (Exception e) {
-								//Do nothing
-							}
-
-							if (currRow == 41) {
-								WorkReportAccountKey eParKey = null;
-								try {
-									eParKey = (WorkReportAccountKey)accKeyHome.findAccountKeyByNumber(parentKey);
-								}
-								catch (FinderException e) {
-									e.printStackTrace();
-									throw new WorkReportImportException("workreportimportexception.wrong_keys_in_sheet");
-								}
-
-								WorkReportClubAccountRecord rec2 = clubRecordHome.create();
-								rec2.setAccountKey(eParKey);
-								rec2.setWorkReportGroup(league);
-								rec2.setReportId(workReportId);
-								rec2.setAmount((float)sum);
-								rec2.store();								
-							}
-						}
-						catch (Exception e) {
-							e.printStackTrace();
-							throw new WorkReportImportException("workreportimportexception.unable_to_create_account_record");
-						}
+					catch (CreateException e1) {
+						e1.printStackTrace();
+						throw new WorkReportImportException("workreportimportexception.error_creating_division");
 					}
 				}
-			}
-			else {
-				HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
-				HSSFCell cell = row.getCell((short)1);
-				if (cell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC)
-					parentKey = Integer.toString((int)cell.getNumericCellValue());
-				else if (cell.getCellType() == HSSFCell.CELL_TYPE_STRING)
-					parentKey = cell.getStringCellValue();
-				else
-					parentKey = null;
-			}
-		}
 
-		if (totalAsset != totalDept)
-			throw new WorkReportImportException("workreportimportexception.asset_and_dept_not_the_same");
-
-		//Store work-report division thingie........ HOW!!!???!!!		
-		Iterator it = leaguesMap.keySet().iterator();
-		while (it.hasNext()) {
-			Integer key = (Integer)it.next();
-			int WRGroupId = ((Integer)((WorkReportGroup)leaguesMap.get(key)).getPrimaryKey()).intValue();
-			WorkReportDivisionBoard board = null;
-			try {
-				board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, WRGroupId);
-			}
-			catch (FinderException e) {
 				try {
-					board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().create();
-					board.setWorkReportGroupID(WRGroupId);
-					board.setReportId(workReportId);
+					board.store();
 				}
-				catch (CreateException e1) {
-					e1.printStackTrace();
-					throw new WorkReportImportException("workreportimportexception.error_creating_division");
+				catch (Exception e) {
+
 				}
 			}
 
-			try {
-				board.store();
+			trans.commit();
+		}
+		catch (Exception e) {
+			if (trans != null) {
+				try {
+					trans.rollback();
+				}
+				catch (SystemException se) {
+					se.printStackTrace();
+				}
 			}
-			catch (Exception e) {
-
-			}
+			
+			throw new WorkReportImportException(e.getMessage());
 		}
 
 		return true;
@@ -546,7 +567,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				workbook.write(out);
 				out.close();
 
-				ICFile icfile = ((ICFileHome)IDOLookup.getHome(ICFile.class)).create();
+				ICFile icfile = ((ICFileHome) IDOLookup.getHome(ICFile.class)).create();
 				icfile.setFileValue(new FileInputStream(fileName));
 				icfile.setName(fileName);
 				icfile.store();
@@ -638,7 +659,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		int i = firstRow;
 		while (i <= lastRow) {
 
-			HSSFRow row = (HSSFRow)members.getRow(i);
+			HSSFRow row = (HSSFRow) members.getRow(i);
 
 			if (row != null) {
 				int firstCell = row.getFirstCellNum();
@@ -682,7 +703,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 
 				String status = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_STATUS);
 				String ssn = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_SSN);
-				ssn = TextSoap.findAndCut(ssn, "-");				
+				ssn = TextSoap.findAndCut(ssn, "-");
 				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
 				String streetName = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_STREET_NAME);
 				String postalCode = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_POSTAL_CODE);
@@ -697,22 +718,24 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					//the user must already exist in the database
 					User user = getUser(ssn);
 					try {
-//						member = membHome.findWorkReportBoardMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(), workReportId);
-						member = membHome.findWorkReportBoardMemberByUserIdAndWorkReportIdAndLeagueId(((Integer)user.getPrimaryKey()).intValue(), workReportId, ((Integer)group.getPrimaryKey()).intValue());
-//						member.store();
+						//						member = membHome.findWorkReportBoardMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(), workReportId);
+						member = membHome.findWorkReportBoardMemberByUserIdAndWorkReportIdAndLeagueId(((Integer) user.getPrimaryKey()).intValue(), workReportId, ((Integer) group.getPrimaryKey()).intValue());
+						//						member.store();
 					}
 					catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
 						member = getWorkReportBusiness().createWorkReportBoardMember(workReportId, ssn, group); //sets basic data
 						member.setPersonalId(ssn);
 						member.setReportId(workReportId);
-						
 
 						if (streetName != null && !"".equals(streetName)) {
 							member.setStreetName(streetName);
 
 							try {
-								PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode, ((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
+								PostalCode postal =
+									getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(
+										postalCode,
+										((Integer) getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
 								member.setPostalCode(postal);
 							}
 							catch (FinderException e3) {
@@ -738,8 +761,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						if (email != null && !"".equals(email.trim())) {
 							member.setEmail(email);
 						}
-						
-						
+
 						/**
 						 * @TODO Palli is this ok?
 						 */
@@ -768,11 +790,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		//Division part
 		i += 7;
 		while (i <= lastRow) {
-			HSSFRow row = (HSSFRow)members.getRow(i);
+			HSSFRow row = (HSSFRow) members.getRow(i);
 
 			WorkReportGroup group = null;
 			if (row != null) {
-				String league = getStringValueFromExcelNumberOrStringCell(row, (short)0);
+				String league = getStringValueFromExcelNumberOrStringCell(row, (short) 0);
 				if (league != null && !"".equals(league.trim())) {
 					league = league.toUpperCase();
 					try {
@@ -800,25 +822,28 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				catch (IDORelationshipException e5) {
 				}
 
-				String homePage = getStringValueFromExcelNumberOrStringCell(row, (short)2);
-				String ssn = getStringValueFromExcelNumberOrStringCell(row, (short)3);
-				String address = getStringValueFromExcelNumberOrStringCell(row, (short)4);
-				String pnr = getStringValueFromExcelNumberOrStringCell(row, (short)5);
-				String tel1 = getStringValueFromExcelNumberOrStringCell(row, (short)6);
-				String tel2 = getStringValueFromExcelNumberOrStringCell(row, (short)7);
-				String fax = getStringValueFromExcelNumberOrStringCell(row, (short)8);
+				String homePage = getStringValueFromExcelNumberOrStringCell(row, (short) 2);
+				String ssn = getStringValueFromExcelNumberOrStringCell(row, (short) 3);
+				String address = getStringValueFromExcelNumberOrStringCell(row, (short) 4);
+				String pnr = getStringValueFromExcelNumberOrStringCell(row, (short) 5);
+				String tel1 = getStringValueFromExcelNumberOrStringCell(row, (short) 6);
+				String tel2 = getStringValueFromExcelNumberOrStringCell(row, (short) 7);
+				String fax = getStringValueFromExcelNumberOrStringCell(row, (short) 8);
 
-				String email = getStringValueFromExcelNumberOrStringCell(row, (short)9);
-				String champ = getStringValueFromExcelNumberOrStringCell(row, (short)10);
+				String email = getStringValueFromExcelNumberOrStringCell(row, (short) 9);
+				String champ = getStringValueFromExcelNumberOrStringCell(row, (short) 10);
 
 				WorkReportDivisionBoard board = null;
 				try {
-					board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, ((Integer)group.getPrimaryKey()).intValue());
+					board =
+						(WorkReportDivisionBoard) getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(
+							workReportId,
+							((Integer) group.getPrimaryKey()).intValue());
 				}
 				catch (FinderException e) {
 					try {
 						e.printStackTrace();
-						board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().create();
+						board = (WorkReportDivisionBoard) getWorkReportBusiness().getWorkReportDivisionBoardHome().create();
 					}
 					catch (CreateException e1) {
 						e1.printStackTrace();
@@ -830,7 +855,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				board.setPersonalId(ssn);
 				board.setStreetName(address);
 				try {
-					PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(pnr, ((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
+					PostalCode postal =
+						getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(pnr, ((Integer) getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
 					board.setPostalCode(postal);
 				}
 				catch (FinderException e3) {
@@ -843,7 +869,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				board.setSecondPhone(tel2);
 				board.setFax(fax);
 				board.setEmail(email);
-				board.setWorkReportGroupID(((Integer)group.getPrimaryKey()).intValue());
+				board.setWorkReportGroupID(((Integer) group.getPrimaryKey()).intValue());
 				board.setReportId(workReportId);
 				if (champ != null && !"".equals(champ.trim()))
 					board.setHasNationalLeague(true);
@@ -894,12 +920,12 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		//System.out.println("Last row is at: "+lastRow);
 
 		//get the top row to get a list of leagues to use.
-		HSSFRow headerRow = (HSSFRow)members.getRow(firstRow);
+		HSSFRow headerRow = (HSSFRow) members.getRow(firstRow);
 		Map leaguesMap = getLeaguesMapFromRow(headerRow, year, 5);
 
 		//iterate through the rows that contain the actual data and create the records in the database
 		for (int i = (firstRow + 1); i <= lastRow; i++) {
-			HSSFRow row = (HSSFRow)members.getRow(i);
+			HSSFRow row = (HSSFRow) members.getRow(i);
 
 			if (row != null) {
 				int firstCell = row.getFirstCellNum();
@@ -913,14 +939,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				String first_name = "";
 				try {
 					if (name != null) {
-				 		int first_space = name.indexOf(" ");
-						first_name = name.substring(0,first_space);
+						int first_space = name.indexOf(" ");
+						first_name = name.substring(0, first_space);
 					}
 				}
-				catch(Exception e) {
+				catch (Exception e) {
 					//Who cares!
 				}
-				
+
 				String streetName = getStringValueFromExcelNumberOrStringCell(row, COLUMN_MEMBER_STREET_NAME);
 				String postalCode = getStringValueFromExcelNumberOrStringCell(row, COLUMN_MEMBER_POSTAL_CODE);
 
@@ -930,12 +956,12 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					try {
 						user = getUser(ssn);
 					}
-					catch(Exception e) {
-						user = getUserByPartOfPersonalIdAndFirstName(ssn,first_name);
+					catch (Exception e) {
+						user = getUserByPartOfPersonalIdAndFirstName(ssn, first_name);
 					}
-					
+
 					try {
-						membHome.findWorkReportMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(), workReportId);
+						membHome.findWorkReportMemberByUserIdAndWorkReportId(((Integer) user.getPrimaryKey()).intValue(), workReportId);
 					}
 					catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
@@ -945,7 +971,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 							member.setStreetName(streetName);
 
 							try {
-								PostalCode postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode, ((Integer)getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
+								PostalCode postal =
+									getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(
+										postalCode,
+										((Integer) getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue());
 								member.setPostalCode(postal);
 							}
 							catch (FinderException e3) {
@@ -968,18 +997,25 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						catch (FinderException e1) {
 							throw new WorkReportImportException("workreportimportexception.main_board_not_found");
 						}
-
+						
+						try {
+							report.addLeague(mainBoard);
+						}
+						catch (Exception e) {
+							//e.printStackTrace();
+						}
+						
 						//find which leagues the member belongs to
 						//and create the many to many connections
 						for (int j = 5; j < lastCell; j++) {
-							HSSFCell leagueCell = row.getCell((short)j);
+							HSSFCell leagueCell = row.getCell((short) j);
 
 							if (leagueCell != null) {
 								String check = leagueCell.getStringCellValue();
 								//								boolean isChecked = (check != null && !"".equals(check) && "X".equals(check.toUpperCase()));
 								boolean isChecked = (check != null && !"".equals(check));
 								if (isChecked) {
-									WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(j));
+									WorkReportGroup league = (WorkReportGroup) leaguesMap.get(new Integer(j));
 									if (league != null) {
 										try {
 											league.addEntity(member);
@@ -996,7 +1032,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 												e.printStackTrace();
 											}
 											playerCount++;
-											Integer count = (Integer)divPlayerCount.get(new Integer(j));
+											Integer count = (Integer) divPlayerCount.get(new Integer(j));
 											if (count == null)
 												count = new Integer(1);
 											else
@@ -1039,19 +1075,19 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		//Store work-report division thingie........ HOW!!!???!!!		
 		Iterator it = leaguesMap.keySet().iterator();
 		while (it.hasNext()) {
-			Integer key = (Integer)it.next();
-			WorkReportGroup league = (WorkReportGroup)leaguesMap.get(key);
+			Integer key = (Integer) it.next();
+			WorkReportGroup league = (WorkReportGroup) leaguesMap.get(key);
 			Integer wrGroupId = (Integer) league.getPrimaryKey();
-			Integer val = (Integer)divPlayerCount.get(key);
+			Integer val = (Integer) divPlayerCount.get(key);
 
 			WorkReportDivisionBoard board = null;
 			try {
-				board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, wrGroupId.intValue());
+				board = (WorkReportDivisionBoard) getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, wrGroupId.intValue());
 			}
 			catch (FinderException e) {
 				e.printStackTrace();
 				try {
-					board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().create();
+					board = (WorkReportDivisionBoard) getWorkReportBusiness().getWorkReportDivisionBoardHome().create();
 				}
 				catch (CreateException e1) {
 					e1.printStackTrace();
@@ -1074,14 +1110,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		ret.leaguesMap = leaguesMap;
 		ret.playerCountPrLeague = divPlayerCount;
 		ret.notRead = notRead;
-	
+
 		return ret;
 	}
 
 	public WorkReportImportClubAccountRecordHome getWorkReportImportClubAccountRecordHome() {
 		if (workReportImportClubAccountRecordHome == null) {
 			try {
-				workReportImportClubAccountRecordHome = (WorkReportImportClubAccountRecordHome)IDOLookup.getHome(WorkReportImportClubAccountRecord.class);
+				workReportImportClubAccountRecordHome = (WorkReportImportClubAccountRecordHome) IDOLookup.getHome(WorkReportImportClubAccountRecord.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
@@ -1093,7 +1129,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	public WorkReportExportFileHome getWorkReportExportFileHome() {
 		if (workReportExportFileHome == null) {
 			try {
-				workReportExportFileHome = (WorkReportExportFileHome)IDOLookup.getHome(WorkReportExportFile.class);
+				workReportExportFileHome = (WorkReportExportFileHome) IDOLookup.getHome(WorkReportExportFile.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
@@ -1105,7 +1141,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	public WorkReportImportMemberHome getWorkReportImportMemberHome() {
 		if (workReportImportMemberHome == null) {
 			try {
-				workReportImportMemberHome = (WorkReportImportMemberHome)IDOLookup.getHome(WorkReportImportMember.class);
+				workReportImportMemberHome = (WorkReportImportMemberHome) IDOLookup.getHome(WorkReportImportMember.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
@@ -1117,7 +1153,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	public WorkReportImportBoardMemberHome getWorkReportImportBoardMemberHome() {
 		if (workReportImportBoardMemberHome == null) {
 			try {
-				workReportImportBoardMemberHome = (WorkReportImportBoardMemberHome)IDOLookup.getHome(WorkReportImportBoardMember.class);
+				workReportImportBoardMemberHome = (WorkReportImportBoardMemberHome) IDOLookup.getHome(WorkReportImportBoardMember.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
@@ -1129,7 +1165,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	public WorkReportImportDivisionBoardHome getWorkReportImportDivisionBoardHome() {
 		if (workReportImportDivisionBoardHome == null) {
 			try {
-				workReportImportDivisionBoardHome = (WorkReportImportDivisionBoardHome)IDOLookup.getHome(WorkReportImportDivisionBoard.class);
+				workReportImportDivisionBoardHome = (WorkReportImportDivisionBoardHome) IDOLookup.getHome(WorkReportImportDivisionBoard.class);
 			}
 			catch (RemoteException rme) {
 				throw new RuntimeException(rme.getMessage());
@@ -1146,7 +1182,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	 */
 	private String getStringValueFromExcelNumberOrStringCell(HSSFRow row, short columnNumber) {
 		String cell = "";
-		HSSFCell myCell = row.getCell((short)columnNumber);
+		HSSFCell myCell = row.getCell((short) columnNumber);
 		if (myCell != null) {
 			if (myCell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
 				//HSSFCell myCell2 = HSSFCellUtil.translateUnicodeValues(myCell);
@@ -1154,8 +1190,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			}
 			else {
 				double d = myCell.getNumericCellValue();
-				if (((int)d) != 0)
-					cell = Integer.toString((int)d);
+				if (((int) d) != 0)
+					cell = Integer.toString((int) d);
 				cell = TextSoap.findAndCut(cell, "-");
 				cell = TextSoap.findAndCut(cell, ".");
 
@@ -1171,7 +1207,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	}
 
 	protected WorkReportBusiness getWorkReportBusiness() throws RemoteException {
-		return (WorkReportBusiness)this.getServiceInstance(WorkReportBusiness.class);
+		return (WorkReportBusiness) this.getServiceInstance(WorkReportBusiness.class);
 	}
 
 	private HSSFWorkbook getExcelWorkBookFromFileId(int fileId) throws WorkReportImportException {
@@ -1214,7 +1250,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		}
 
 		for (int j = startColumn; j < lastCell; j++) {
-			HSSFCell cell = headerRow.getCell((short)j);
+			HSSFCell cell = headerRow.getCell((short) j);
 			if (cell != null) {
 				String leagueName = cell.getStringCellValue();
 				//stupid framework returns "null" as a string

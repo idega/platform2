@@ -57,7 +57,7 @@ public class WorkReportImporter extends WorkReportSelector {
 				workReportFileId = Integer.parseInt(iwc.getParameter(PARAM_FILE_ID));
 				String filename = iwrb.getLocalizedString("workreportimporter.no_file", "No file selected");
 				try {
-					filename = iwc.getUploadedFile().getName();
+					filename = "";this.getWorkReportBusiness(iwc).getWorkReportById(getWorkReportId());
 				}
 				catch(Exception e) {
 				}
@@ -86,7 +86,7 @@ public class WorkReportImporter extends WorkReportSelector {
 			t.setCellspacing(0);
 
 			SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("workreportimporter.start", "start"));
-			submit.setAsImageButton(true);
+//			submit.setAsImageButton(true);
 			System.out.println("Adding the stupid busy bar");
 			BusyBar busy = new BusyBar("readingfiles");
 			if (!iwc.isIE()) {
