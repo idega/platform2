@@ -19,10 +19,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <b>English - Swedish mini lexicon:</b><br/>
  * Invoice compilation = Faktureringsunderlag<br/>
  * <p>
- * Last modified: $Date: 2003/10/28 13:14:49 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/29 09:23:12 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -40,8 +40,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_KEY = PREFIX + "search";
 
-    private static final String USERSEARCHER_FIRSTNAME_KEY = "usrch_search_fname" + PREFIX;
-    private static final String USERSEARCHER_LASTNAME_KEY = "usrch_search_lname" + PREFIX;
+    //private static final String USERSEARCHER_FIRSTNAME_KEY = "usrch_search_fname" + PREFIX;
+    //private static final String USERSEARCHER_LASTNAME_KEY = "usrch_search_lname" + PREFIX;
     private static final String USERSEARCHER_ACTION_KEY = "mbe_act_search" + PREFIX;
     private static final String USERSEARCHER_PERSONALID_KEY = "usrch_search_pid" + PREFIX;
 
