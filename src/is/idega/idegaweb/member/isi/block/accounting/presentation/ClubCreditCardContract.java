@@ -190,7 +190,7 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 
 				    Iterator it2 = groups.iterator();
 				    while (it2.hasNext()) {
-				        Group group = (Group) it.next();
+				        Group group = (Group) it2.next();
 				        map.put(group.getPrimaryKey().toString(), group.getName());
 				    }
 				}
