@@ -1,5 +1,5 @@
 /*
- * $Id: AgeEditor.java,v 1.10 2003/09/09 14:09:44 laddi Exp $
+ * $Id: AgeEditor.java,v 1.11 2003/10/02 16:28:43 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
 
@@ -33,10 +34,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.AgeException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/09 14:09:44 $ by $Author: laddi $
+ * Last modified: $Date: 2003/10/02 16:28:43 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class AgeEditor extends AccountingBlock {
 
@@ -46,7 +47,6 @@ public class AgeEditor extends AccountingBlock {
 	private final static int ACTION_NEW = 3;
 	private final static int ACTION_OPEN = 4;
 	private final static int ACTION_SAVE = 5;
-//	private final static int ACTION_DELETE_CONFIRM = 6;
 	private final static int ACTION_DELETE = 6;
 	
 	private final static String PP = "cacc_age_"; // Parameter prefix 
@@ -65,8 +65,6 @@ public class AgeEditor extends AccountingBlock {
 	private final static String PARAMETER_NEW = PP + "new";
 	private final static String PARAMETER_SAVE = PP + "save";
 	private final static String PARAMETER_CANCEL = PP + "cancel";
-//	private final static String PARAMETER_DELETE_CONFIRM = PP + "delete_confirm";
-//	private final static String PARAMETER_DELETE = PP + "delete";
 	private final static String PARAMETER_EDIT = PP + "edit";
 	
 	private final static String KP = "age_editor."; // key prefix 
@@ -81,6 +79,7 @@ public class AgeEditor extends AccountingBlock {
 	private final static String KEY_AGE_FROM = KP + "age_from";
 	private final static String KEY_AGE_TO = KP + "age_to";
 	private final static String KEY_DESCRIPTION = KP+ "description";
+	private final static String KEY_RULE_TYPE_SELECTOR_HEADER = KP+ "rule_type_selector_header";
 	private final static String KEY_CUT_DATE = KP + "cut_date";
 	private final static String KEY_MAIN_ACTIVITY = KP + "main_activity";
 	private final static String KEY_SEARCH = KP + "search";
@@ -89,8 +88,6 @@ public class AgeEditor extends AccountingBlock {
 	private final static String KEY_EDIT = KP + "edit";
 	private final static String KEY_CANCEL = KP + "cancel";
 	private final static String KEY_DELETE = KP + "delete";
-//	private final static String KEY_DELETE_YES = KP + "delete_yes";
-//	private final static String KEY_DELETE_CONFIRM_MESSAGE = KP + "delete_confirm_message";
 	private final static String KEY_DELETE_CONFIRM = KP + "delete_confirm_message";
 	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
 	private final static String KEY_BUTTON_DELETE = KP + "button_delete";	
@@ -120,9 +117,6 @@ public class AgeEditor extends AccountingBlock {
 				case ACTION_SAVE:
 					handleSaveAction(iwc);
 					break;
-//				case ACTION_DELETE_CONFIRM:
-//					handleDeleteConfirmAction(iwc);
-//					break;
 				case ACTION_DELETE:
 					handleDeleteAction(iwc);
 					break;
@@ -148,8 +142,6 @@ public class AgeEditor extends AccountingBlock {
 			action = ACTION_NEW;
 		} else if (iwc.isParameterSet(PARAMETER_SAVE)) {
 			action = ACTION_SAVE;
-//		} else if (iwc.isParameterSet(PARAMETER_DELETE_CONFIRM)) {
-//			action = ACTION_DELETE_CONFIRM;
 		} else if (iwc.isParameterSet(PARAMETER_DELETE_ID)) {
 			action = ACTION_DELETE;
 		} else if (iwc.isParameterSet(PARAMETER_AGE_REGULATION_ID)) {
@@ -187,17 +179,7 @@ public class AgeEditor extends AccountingBlock {
 	 * Handles the new action for this block.
 	 */	
 	private void handleNewAction(IWContext iwc) {
-		add(getAgeRegulationForm(
-				getParameter(iwc, PARAMETER_AGE_REGULATION_ID),
-				getParameter(iwc, PARAMETER_PERIOD_FROM),
-				getParameter(iwc, PARAMETER_PERIOD_TO),
-				getParameter(iwc, PARAMETER_AGE_FROM),
-				getParameter(iwc, PARAMETER_AGE_TO),
-				getParameter(iwc, PARAMETER_DESCRIPTION),
-				getParameter(iwc, PARAMETER_CUT_DATE),
-				null,
-				true)
-		);
+		add(getAgeRegulationForm(iwc, "", "", "", "", "", "", "", null, true));
 	}
 
 	/*
@@ -207,14 +189,21 @@ public class AgeEditor extends AccountingBlock {
 		try {
 			AgeBusiness ab = getAgeBusiness(iwc);
 			AgeRegulation ar = ab.getAgeRegulation(getIntParameter(iwc, PARAMETER_AGE_REGULATION_ID));
+			Date cutDate = ar.getCutDate();
+			String cutDateString = "";
+			if (cutDate != null) {
+				String s = formatDate(cutDate, 8);
+				cutDateString = s.substring(4, 7);
+			}
 			add(getAgeRegulationForm(
+					iwc,
 					ar.getPrimaryKey().toString(),
 					formatDate(ar.getPeriodFrom(), 4),
 					formatDate(ar.getPeriodTo(), 4),
 					"" + ar.getAgeFrom(),
 					"" + ar.getAgeTo(),
 					ar.getDescription(),
-					formatDate(ar.getCutDate(), 4),
+					cutDateString,
 					null,
 					false)
 			);
@@ -233,6 +222,10 @@ public class AgeEditor extends AccountingBlock {
 
 		try {
 			AgeBusiness ab = getAgeBusiness(iwc);
+			String cutDate = getParameter(iwc, PARAMETER_CUT_DATE);
+			if (cutDate.length() != 0) {
+				cutDate = "2000" + cutDate;
+			}
 			ab.saveAgeRegulation(
 					getIntParameter(iwc, PARAMETER_AGE_REGULATION_ID),
 					parseDate(iwc.getParameter(PARAMETER_PERIOD_FROM)),
@@ -242,8 +235,8 @@ public class AgeEditor extends AccountingBlock {
 					iwc.getParameter(PARAMETER_AGE_FROM),
 					iwc.getParameter(PARAMETER_AGE_TO),
 					iwc.getParameter(PARAMETER_DESCRIPTION),
-					parseDate(iwc.getParameter(PARAMETER_CUT_DATE)),
-					iwc.getParameter(PARAMETER_CUT_DATE));
+					parseDate(cutDate),
+					cutDate);
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 			return;
@@ -253,6 +246,7 @@ public class AgeEditor extends AccountingBlock {
 		
 		if (errorMessage != null) {
 			add(getAgeRegulationForm(
+					iwc,
 					getParameter(iwc, PARAMETER_AGE_REGULATION_ID),
 					getParameter(iwc, PARAMETER_PERIOD_FROM),
 					getParameter(iwc, PARAMETER_PERIOD_TO),
@@ -268,55 +262,6 @@ public class AgeEditor extends AccountingBlock {
 		}
 		
 	}
-
-	/*
-	 * Handles the delete confirm action for this block.
-	 */	
-/*
-	private void handleDeleteConfirmAction(IWContext iwc) {		
-		ApplicationForm app = new ApplicationForm(this);
-		app.setLocalizedTitle(KEY_TITLE_DELETE_CONFIRM, "Ta bort åldersregel");
-		Table table = new Table();
-		table.setCellpadding(getCellpadding());
-		table.setCellspacing(getCellspacing());
-		try {
-			AgeBusiness ab = getAgeBusiness(iwc);
-			AgeRegulation ar = ab.getAgeRegulation(getIntParameter(iwc, PARAMETER_AGE_REGULATION_ID));
-			table.add(getLocalizedLabel(KEY_PERIOD, "Period"), 1, 1);
-			table.add(getText(formatDate(ar.getPeriodFrom(), 4) + " - " + formatDate(ar.getPeriodTo(), 4)), 2, 1);
-			table.add(getLocalizedLabel(KEY_AGE_FROM, "Ålder från"), 1, 2);
-			table.add(getText("" + ar.getAgeFrom()), 2, 2);
-			table.add(getLocalizedLabel(KEY_AGE_TO, "Ålder till"), 1, 3);
-			table.add(getText("" + ar.getAgeTo()), 2, 3);
-			table.add(getLocalizedLabel(KEY_DESCRIPTION, "Benämning"), 1, 4);
-			table.add(getText(ar.getDescription()), 2, 4);
-			table.add(getLocalizedLabel(KEY_CUT_DATE, "Brytdatum"), 1, 5);
-			table.add(getText(formatDate(ar.getCutDate(), 4)), 2, 5);
-			table.setColumnWidth(1, "90");
-			table.setColumnWidth(2, "160");
-			Table t = new Table();
-			t.setCellpadding(0);
-			t.setCellspacing(0);
-			t.add(table, 1, 1);
-			Table t2 = new Table();
-			t2.setCellpadding(getCellpadding());
-			t2.setCellspacing(getCellspacing());
-			t2.add(getErrorText(localize(KEY_DELETE_CONFIRM_MESSAGE, "Vill du verkligen ta bort denna åldersregel?")), 1, 2);
-			t.add(t2, 1, 2);
-			app.setMainPanel(t);
-		} catch (Exception e) {
-			add(new ExceptionWrapper(e));
-			return;
-		}
-		ButtonPanel bp = new ButtonPanel(this);
-		bp.addLocalizedButton(PARAMETER_DELETE, KEY_DELETE_YES, "Ja");
-		bp.addLocalizedButton(PARAMETER_CANCEL, KEY_CANCEL, "Avbryt");
-		app.setButtonPanel(bp);
-		
-		app.addHiddenInput(PARAMETER_AGE_REGULATION_ID, getParameter(iwc, PARAMETER_AGE_REGULATION_ID));
-		add(app);
-	}
-	*/
 	
 	/*
 	 * Handles the delete action for this block.
@@ -413,7 +358,6 @@ public class AgeEditor extends AccountingBlock {
 				list.add(ar.getAgeFrom());
 				list.add(ar.getAgeTo());
 				list.add(ar.getDescription());
-//				list.add(getLink(ar.getDescription(), PARAMETER_AGE_REGULATION_ID, ar.getPrimaryKey().toString()));
 				list.add(formatDate(ar.getCutDate(), 4));
 
 				Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera denna åldersregel")));
@@ -426,10 +370,6 @@ public class AgeEditor extends AccountingBlock {
 				delete.setSubmitConfirm(localize(KEY_DELETE_CONFIRM, "Vill du verkligen ta bort denna åldersregel?"));
 				list.add(delete);
 
-//				Link delete = new Link(getDeleteIcon(localize(KEY_BUTTON_DELETE, "Ta bort")));
-//				delete.addParameter(PARAMETER_DELETE_CONFIRM, "true");
-//				delete.addParameter(PARAMETER_AGE_REGULATION_ID, ar.getPrimaryKey().toString());
-//				list.add(delete);
 			}
 		}
 
@@ -465,6 +405,7 @@ public class AgeEditor extends AccountingBlock {
 	 * Returns the application form for creating or editing an age regulation.
 	 */
 	private ApplicationForm getAgeRegulationForm(
+			IWContext iwc,
 			String id,
 			String periodFrom,
 			String periodTo,
@@ -493,7 +434,8 @@ public class AgeEditor extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_AGE_TO, "Ålder till"), 1, 3);
 		table.add(getTextInput(PARAMETER_AGE_TO, ageTo, 30), 2, 3);
 		table.add(getLocalizedLabel(KEY_DESCRIPTION, "Regel"), 1, 4);
-		table.add(getTextInput(PARAMETER_DESCRIPTION, description, 200), 2, 4);
+//		table.add(getTextInput(PARAMETER_DESCRIPTION, description, 200), 2, 4);
+		table.add(getRuleDropdownMenu(iwc, PARAMETER_DESCRIPTION, description), 2, 4);
 		table.add(getLocalizedLabel(KEY_CUT_DATE, "Brytdatum"), 1, 5);
 		table.add(getTextInput(PARAMETER_CUT_DATE, cutDate, 60), 2, 5);
 
@@ -519,9 +461,6 @@ public class AgeEditor extends AccountingBlock {
 		
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_SAVE, KEY_SAVE, "Spara");
-//		if (!isNew) {
-//			bp.addLocalizedButton(PARAMETER_DELETE_CONFIRM, KEY_DELETE, "Ta bort");
-//		}
 		bp.addLocalizedButton(PARAMETER_CANCEL, KEY_CANCEL, "Avbryt");
 		app.setButtonPanel(bp);
 		
@@ -534,4 +473,26 @@ public class AgeEditor extends AccountingBlock {
 	private AgeBusiness getAgeBusiness(IWContext iwc) throws RemoteException {
 		return (AgeBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, AgeBusiness.class);
 	}	
+	
+	/*
+	 * Returns a DropdownMenu for age rule types. 
+	 */
+	private DropdownMenu getRuleDropdownMenu(IWContext iwc, String name, String selectedRule) {
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
+		menu.addMenuElement("", localize(KEY_RULE_TYPE_SELECTOR_HEADER, "Välj regeltyp"));
+		try {
+			Collection c = getAgeBusiness(iwc).getAllAgeRuleTypes();
+			if (c != null) {
+				Iterator iter = c.iterator();
+				while (iter.hasNext()) {
+					String rule = (String) iter.next();
+					menu.addMenuElement(rule, localize(rule, rule));
+				}
+				if (selectedRule != null) {
+					menu.setSelectedElement(selectedRule);
+				}
+			}
+		} catch (RemoteException e) {}
+		return menu;
+	}
 }
