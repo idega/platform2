@@ -398,8 +398,11 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 	  }
     return returner;
   }
-
   public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered) throws RemoteException, IDOFinderException  {
+  		return getDepartureAddresses(product, stamp, ordered, null);
+  }
+  
+  public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key) throws RemoteException, IDOFinderException  {
 		List list = getDepartureAddresses(product, ordered);
 		List returner = new Vector();
 		try {
@@ -414,7 +417,11 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 					add = false;
 					for (int i = 0; i < timeframes.length; i++) {
 						if (getStockroomBusiness().isInTimeframe(new IWTimestamp(timeframes[i].getFrom()), new IWTimestamp(timeframes[i].getTo()), stamp, timeframes[i].getYearly())) {
-							pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false);
+							if (key == null) {
+								pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false);
+							} else {
+								pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false, key);
+							}
 							if (pPrices.length > 0) {
 								add = true;
 								break;

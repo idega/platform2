@@ -1,9 +1,11 @@
 package com.idega.block.trade.stockroom.business;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.data.IDOFinderException;
 import com.idega.util.IWTimestamp;
 
 
@@ -21,6 +23,7 @@ public interface ProductBusiness extends com.idega.business.IBOService
  public com.idega.block.trade.stockroom.data.TravelAddress getDepartureAddress(com.idega.block.trade.stockroom.data.Product p0)throws java.rmi.RemoteException,com.idega.data.IDOFinderException,java.sql.SQLException, java.rmi.RemoteException;
  public java.util.List getDepartureAddresses(com.idega.block.trade.stockroom.data.Product p0,com.idega.util.IWTimestamp p1,boolean p2)throws java.rmi.RemoteException,com.idega.data.IDOFinderException, java.rmi.RemoteException;
  public java.util.List getDepartureAddresses(com.idega.block.trade.stockroom.data.Product p0,boolean p1)throws java.rmi.RemoteException,com.idega.data.IDOFinderException, java.rmi.RemoteException;
+ public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered, String key) throws RemoteException, IDOFinderException;
  public com.idega.presentation.ui.DropdownMenu getDropdownMenuWithProducts(com.idega.presentation.IWContext p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.presentation.ui.DropdownMenu getDropdownMenuWithProducts(com.idega.presentation.IWContext p0,int p1,java.lang.String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.presentation.ui.DropdownMenu getDropdownMenuWithProducts(com.idega.presentation.IWContext p0,java.util.List p1,java.lang.String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
