@@ -440,6 +440,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						}
 						catch (TooManyRegulationsException e) {
 							e.printStackTrace();
+							errorRelated.append("Regulations found:"+e.getRegulationNamesString());
 							createNewErrorMessage(errorRelated,"invoice.TooManyRegulationsFoundForQuery");
 						}
 					}
@@ -536,6 +537,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				}
 				catch (TooManyRegulationsException e) {
 					e.printStackTrace();
+					errorRelated.append("Regulations found:"+e.getRegulationNamesString());
 					if(errorRelated != null){
 						createNewErrorMessage(errorRelated,"invoice.ErrorFindingTooManyRegulations");
 					} else{
