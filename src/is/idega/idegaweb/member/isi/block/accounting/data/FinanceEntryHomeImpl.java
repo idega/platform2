@@ -48,7 +48,7 @@ public java.util.Collection findAllFinanceEntriesByDateIntervalDivisionsAndGroup
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllFinanceEntriesByEntryDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(com.idega.user.data.Group p0,java.lang.String[] p1,java.sql.Date p2,java.util.Collection p3,java.util.Collection p4)throws javax.ejb.FinderException{
+public java.util.Collection findAllFinanceEntriesByEntryDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(com.idega.user.data.Group p0,java.lang.String p1,java.sql.Date p2,java.util.Collection p3,java.util.Collection p4)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllFinanceEntriesByEntryDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(p0,p1,p2,p3,p4);
 	this.idoCheckInPooledEntity(entity);

@@ -943,9 +943,9 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		}
 	}
 
-	public Collection getFinanceEntriesByEntryDateDivisionsAndGroups(Group club, String[] types, Date entryDate, Collection divisionsFilter, Collection groupsFilter){
+	public Collection getFinanceEntriesByEntryDateDivisionsAndGroups(Group club, String type, Date entryDate, Collection divisionsFilter, Collection groupsFilter){
 		try {
-			return getFinanceEntryHome().findAllFinanceEntriesByEntryDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(club,types,entryDate,divisionsFilter,groupsFilter);
+			return getFinanceEntryHome().findAllFinanceEntriesByEntryDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(club,type,entryDate,divisionsFilter,groupsFilter);
 		}
 		catch (FinderException e) {
 			return ListUtil.getEmptyList();

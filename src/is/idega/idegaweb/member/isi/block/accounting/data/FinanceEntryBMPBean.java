@@ -543,7 +543,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	 */
 	public Collection ejbFindAllFinanceEntriesByEntryDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(
 			Group club,
-			String[] types,
+			String type,
 			Date entryDate,
 			Collection divisions,
 			Collection groups)
@@ -553,12 +553,11 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		IDOUtil util = IDOUtil.getInstance();
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(ENTITY_NAME);
-		sql.appendWhereEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_YES);
+		sql.appendWhereEqualsQuoted(COLUMN_TYPE, type);
+		sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_NO);
 		sql.appendAnd().appendBetweenStamps(COLUMN_DATE_OF_ENTRY, entryDate, toStamp.getDate());
 		if (club != null)
 			sql.appendAndEquals(COLUMN_CLUB_ID, club.getPrimaryKey());
-		if  (types != null && types.length>0)
-			sql.appendAnd().append(COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types, true));
 		if  (divisions != null && divisions.size()>0)
 			sql.appendAnd().append(COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
 		if  (groups != null && groups.size()>0)

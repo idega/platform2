@@ -962,8 +962,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//create a row and insert into an ordered map
 		//then iterate the map and insert into the final report collection.
 		
-		String[] types = { FinanceEntryBMPBean.TYPE_PAYMENT};
-		Collection finEntries = getAccountingBusiness().getFinanceEntriesByEntryDateDivisionsAndGroups(club, types, entryDateFilter, divisionsFilter, groupsFilter);
+		String type = FinanceEntryBMPBean.TYPE_PAYMENT;
+		Collection finEntries = getAccountingBusiness().getFinanceEntriesByEntryDateDivisionsAndGroups(club, type, entryDateFilter, divisionsFilter, groupsFilter);
 		Map financeEntriesByDivisions = new TreeMap();
 		
 		//Iterating through reports and creating report data
