@@ -125,6 +125,45 @@ public static final int PAGE = 3;
     }
   }
 
+	public static boolean deleteBox(int iBoxId,int iObjectInstanceId) {
+    try {
+      if (iBoxId > 0 ) {
+				BoxEntity box= new BoxEntity(iBoxId);
+				disconnectBox(box,iObjectInstanceId);
+        box.delete();
+      }
+      return true;
+    }
+    catch (SQLException e) {
+      e.printStackTrace(System.err);
+      return false;
+    }
+  }
+
+	public static boolean disconnectBox(int instanceid){
+		BoxEntity box = BoxFinder.getObjectInstanceFromID(instanceid);
+    if(box!= null){
+			return disconnectBox(box,instanceid);
+
+    }
+    return false;
+
+  }
+
+	public static boolean disconnectBox(BoxEntity box,int iObjectInstanceId){
+    try {
+      if(iObjectInstanceId > 0  ){
+        ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+        box.removeFrom(obj);
+      }
+      return true;
+    }
+    catch (SQLException ex) {
+
+    }
+    return false;
+  }
+
   public static int saveLink(int userID,int boxID,int boxCategoryID,int linkID,String boxLinkName,int fileID,int pageID,String boxLinkURL,String target,int iLocaleID) {
     boolean update = false;
     boolean newLocText = false;
