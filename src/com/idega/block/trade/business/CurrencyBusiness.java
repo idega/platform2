@@ -251,11 +251,10 @@ public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
 
   public static List getCurrencyList() {
     Vector vector = new Vector();
-    HashMap map = currencyMap;
-    if ( map != null ) {
-      Iterator iter = map.keySet().iterator();
+    if ( currencyMap != null ) {
+      Iterator iter = currencyMap.keySet().iterator();
       while (iter.hasNext()) {
-	vector.add((CurrencyHolder)iter.next());
+	vector.add((CurrencyHolder)currencyMap.get((String)iter.next()));
       }
       Collections.sort(vector,new CurrencyComparator());
 
