@@ -160,8 +160,9 @@ public class HotelBookingOverview extends AbstractBookingOverview {
               service = getTravelStockroomBusiness(iwc).getService(prod);
 
               if (_supplier != null) {
-              	
-                iCount = hotel.getNumberOfUnits();
+              		if (hotel != null) {
+		                iCount = hotel.getNumberOfUnits();
+              		}
 //                sDay = sDay.getServiceDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
 //                if (sDay != null) {
 //                  iCount = sDay.getMax();
@@ -357,8 +358,13 @@ public class HotelBookingOverview extends AbstractBookingOverview {
       if (sDay != null) {
         seats = sDay.getMax();
       }*/
-      Hotel hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(product.getPrimaryKey() );
-      seats = hotel.getNumberOfUnits();
+
+			try {
+				  Hotel hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(product.getPrimaryKey() );
+				  seats = hotel.getNumberOfUnits();
+			} catch (FinderException e) {
+				debug("Cannot find hotel for Product...");
+			}
       assigned = getAssigner(iwc).getNumberOfAssignedSeats(((Integer) product.getPrimaryKey()).intValue(), stamp);
       iInqueries = getInquirer(iwc).getInqueredSeats(product.getID() , stamp, true);
       booked = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);

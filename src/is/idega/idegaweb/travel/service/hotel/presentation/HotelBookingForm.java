@@ -1502,10 +1502,11 @@ public class HotelBookingForm extends BookingForm {
  * maxPerRoom... */
 
 //    iMany;
-
-		if (iMany > maxPerRoom) {
-		  tooMany = true;
-		  errorDays.add(fromStamp);
+		if (maxPerRoom > 0) {
+			if (iMany > maxPerRoom) {
+			  tooMany = true;
+			  errorDays.add(fromStamp);
+			}
 		}
 
 		if (!tooMany) {

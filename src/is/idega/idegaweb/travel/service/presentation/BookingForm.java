@@ -1276,7 +1276,7 @@ public abstract class BookingForm extends TravelManager{
     String check = iwc.getParameter(sAction);
     String action = iwc.getParameter(this.BookingAction);
     String inquiry = iwc.getParameter(this.parameterInquiry);
-    //debug("check  = "+check);
+    debug("check  = "+check);
     //debug("action = "+action);
 
     /** @todo fatta af hverju thetta er herna og hvort megi henda thvi
@@ -1285,8 +1285,12 @@ public abstract class BookingForm extends TravelManager{
       return 0;
     }
     */
-
-    if (check.equals(this.parameterSaveBooking)) {
+   if (check != null) {
+   	 check = "";
+   }
+   
+   
+   if (check.equals(this.parameterSaveBooking)) {
       if (action != null) {
         if (action.equals(this.BookingParameter)) {
           if (inquiry == null) {
