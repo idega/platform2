@@ -57,8 +57,11 @@ public class TournamentResultsDetailed extends JModuleObject {
       tournament = new Tournament(tournamentId_);
       getMemberVector();
       if ( result != null ) {
+      System.err.println("Test : result != null");
         if ( result.size() > 1 ) {
+      System.err.println("Test : result.size() > 1");
           sortMemberVector();
+      System.err.println("Test : sorteringu lokid");
         }
       }
 
