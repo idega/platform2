@@ -24,6 +24,9 @@ import java.lang.StringBuffer;
 
 public class BuildingFinder {
 
+  public final  static int APARTMENT = 2,FLOOR=3,BUILDING=4,COMPLEX=5,CATEGORY=6,TYPE=7;
+
+
   public static List listOfComplex(){
     try{
       return EntityFinder.findAll(new Complex());
@@ -473,6 +476,67 @@ public class BuildingFinder {
     if(count < 0)
       count = 0;
     return count;
+  }
+
+   public static List listOfApartments(String sComplexId,String sBuildingId,String sFloorId,String sType,String sCategory,int iOrder){
+
+    StringBuffer sql = new StringBuffer("select a.* ");
+    sql.append(" from bu_apartment a,bu_floor f,bu_building b");
+    sql.append(",bu_complex c,bu_aprt_type t,bu_aprt_cat y");
+    sql.append(" where a.bu_aprt_type_id = t.bu_aprt_type_id ");
+    sql.append(" and t.bu_aprt_cat_id = y.bu_aprt_cat_id");
+    sql.append(" and a.bu_floor_id = f.bu_floor_id ");
+    sql.append(" and f.bu_building_id = b.bu_building_id ");
+    sql.append(" and b.bu_complex_id = c.bu_complex_id ");
+
+    if(sComplexId !=null && !"-1".equals(sComplexId)){
+      sql.append(" and bu_complex_id  = ");
+      sql.append(sComplexId);
+    }
+    if(sBuildingId !=null && !"-1".equals(sBuildingId)){
+      sql.append(" and bu_building_id = ");
+      sql.append(sBuildingId);
+    }
+    if(sFloorId !=null && !"-1".equals(sFloorId)){
+      sql.append(" and bu_floor_id = ");
+      sql.append(sFloorId);
+    }
+    if(sType !=null && !"-1".equals(sType)){
+      sql.append(" and bu_aprt_type_id = ");
+      sql.append(sType);
+    }
+    if(sCategory !=null && !"-1".equals(sCategory)){
+      sql.append(" and bu_aprt_cat_id = ");
+      sql.append(sCategory);
+    }
+    String order = getOrderString(iOrder);
+    if(order != null){
+      sql.append(" order by ");
+      sql.append(order);
+    }
+    String sSQL = sql.toString();
+    //System.err.println(sSQL);
+    try{
+      return  EntityFinder.findAll(new Apartment(),sql.toString());
+    }
+    catch(SQLException ex){
+      return null;
+    }
+  }
+
+  private static String getOrderString(int type){
+    String order = null;
+    switch (type) {
+      case BUILDING : order = " b.name " ; break;
+      case COMPLEX: order =  " c.name " ; break;
+      case FLOOR:  order =  " f.name " ; break;
+      case APARTMENT: order =" a.name " ; break;
+      case CATEGORY:  order =  " y.name " ; break;
+      case TYPE: order =" t.name " ; break;
+      default: order = " a.bu_apartment_id ";
+
+    }
+    return order;
   }
 
 }// class end
