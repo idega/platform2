@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeBusinessBean.java,v 1.5 2003/09/25 12:00:17 anders Exp $
+ * $Id: NoticeBusinessBean.java,v 1.6 2003/09/30 14:21:25 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolUser;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 
@@ -27,10 +28,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 /** 
  * Business logic for notice messages.
  * <p>
- * Last modified: $Date: 2003/09/25 12:00:17 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/30 14:21:25 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implements NoticeBusiness  {
 
@@ -56,7 +57,6 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 		
 		Collection c = new ArrayList();
 		try {
-			UserBusiness ub = getUserBusiness();
 			SchoolBusiness sb = getSchoolBusiness();
 			SchoolCategory childCareCategory = sb.getCategoryChildcare();
 			String childCareCategoryId = childCareCategory.getCategory();
@@ -70,17 +70,19 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 				Iterator iter2 = schools.iterator();
 				while (iter2.hasNext()) {
 					School school = (School) iter2.next();
-					int headmasterUserId = school.getHeadmasterUserId();
-					if (headmasterUserId > 0) {
+					Collection users = sb.getSchoolUsers(school);
+					Iterator iter3 = users.iterator();
+					while (iter3.hasNext()) {
+						SchoolUser schoolUser = (SchoolUser) iter3.next();
+						User user = schoolUser.getUser();
 						Provider provider = new Provider(school);
 						if (!sc.equals(childCareCategoryId) || 
 								(!school.getCentralizedAdministration() && !provider.getPaymentByInvoice())) {
-							User headmaster = ub.getUser(headmasterUserId);
 							String[] s = new String[2];
 							s[0] = school.getName();
-							s[1] = headmaster.getName();
+							s[1] = user.getName();
 							c.add(s);
-//	   remove comment			Message message = getMessageBusiness().createUserMessage(headmaster, subject, body, false);
+//	   remove comment			Message message = getMessageBusiness().createUserMessage(user, subject, body, false);
 //	   to activate message		message.store();							
 						}
 					}
