@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.11 2002/02/25 19:04:37 aron Exp $
+ * $Id: ReferenceNumber.java,v 1.12 2002/02/25 19:08:42 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -289,7 +289,6 @@ public class ReferenceNumber extends Block {
 
   public synchronized Object clone() {
     ReferenceNumber obj = null;
-    System.err.println("cloning ReferenceNumber");
     try {
       obj = (ReferenceNumber)super.clone();
       if(this.outerTable_!=null)
