@@ -445,8 +445,6 @@ public class PublicBooking extends Block  {
 
       Form form = new Form();
 
-      debug("legalDay : "+legalDay);
-
       if (legalDay) {
         String action = iwc.getParameter(this.sAction);
 
@@ -958,7 +956,7 @@ public class PublicBooking extends Block  {
         table.add(Text.BREAK);
         table.add(Text.BREAK);
         if (sendEmail) {
-          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receiva an email shortly confirming your booking.")));
+          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_will_reveice_an_email_shortly","You will receive an email shortly confirming your booking.")));
           table.add(Text.BREAK);
           table.add(Text.BREAK);
         }
