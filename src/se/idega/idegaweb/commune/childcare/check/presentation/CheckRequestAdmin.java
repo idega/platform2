@@ -8,8 +8,9 @@ import java.util.Iterator;
 
 import javax.ejb.CreateException;
 
-import se.idega.idegaweb.commune.accounting.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.accounting.childcare.check.data.Check;
+import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
+import se.idega.idegaweb.commune.message.presentation.StandardMessageArea;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
@@ -24,6 +25,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -59,7 +61,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 	protected final static String PARAM_RULE = "chk_rule";
 	protected final static String PARAM_NOTES = "chk_notes";
 	protected final static String PARAM_USER_NOTES = "chk_user_notes";
-
+	
 	public CheckRequestAdmin() {
 	}
 
@@ -351,15 +353,46 @@ public class CheckRequestAdmin extends CommuneBlock {
 
 		frame.add(getLocalizedSmallHeader("check.user_notes", "User notes"), 1, 3);
 		frame.add(new Break(), 1, 3);
-		TextArea userNotes = (TextArea) getStyledInterface(new TextArea(PARAM_USER_NOTES));
+		
+		StandardMessageArea standardMsgArea = new StandardMessageArea();
+		standardMsgArea.setCategory("CHECKSTDMSG");
+		
+		TextArea userNotes = (TextArea) getStyledInterface(standardMsgArea.getTextArea(frame));
+		//TextArea userNotes = (TextArea) getStyledInterface(new TextArea(PARAM_USER_NOTES));
 		if (check != null && check.getUserNotes() != null)
 			userNotes.setValue(check.getUserNotes());
 		userNotes.setRows(4);
 		userNotes.setColumns(65);
 		frame.add(userNotes, 1, 3);
+		frame.add(getLocalizedSmallHeader("check.standar_messages", "Standard messages"), 1, 4);
+		frame.add(new Break(), 1, 4);
+		Table messageList = standardMsgArea.getMessageList(frame);
+		messageList.setWidth(420);
+		messageList.setWidth(2,"90%");
+		frame.add(messageList,1,4);
+		//frame.setHeight(4, 6);
+		
+		Table submitTable = new Table(7, 1);
+		submitTable.setWidth(2, "3");
+		submitTable.setWidth(4, "3");
+		submitTable.setWidth(6, "3");
+		submitTable.setCellpaddingAndCellspacing(0);
 
-		frame.setHeight(4, 6);
-		frame.add(getSubmitButtonTable(), 1, 5);
+		SubmitButton grantButton = (SubmitButton) getButton(new SubmitButton(localize("check.grant_check", "Grant check"), PARAM_GRANT_CHECK, "true"));
+		submitTable.add(grantButton, 1, 1);
+
+		SubmitButton retrialButton = (SubmitButton) getButton(new SubmitButton(localize("check.retrial", "Retrial"), PARAM_RETRIAL_CHECK, "true"));
+		submitTable.add(retrialButton, 3, 1);
+
+		SubmitButton saveButton = (SubmitButton) getButton(new SubmitButton(localize("check.save", "Save"), PARAM_SAVE_CHECK, "true"));
+		submitTable.add(saveButton, 5, 1);
+		
+		GenericButton msgButton = getButton(new GenericButton("create_standard_message",localize("check.new_standar_message", "New Standard message")));
+		msgButton.setWindowToOpen(standardMsgArea.getManageWindowClass());
+		msgButton.addParameters(standardMsgArea.getCreateParameters());
+		submitTable.add(msgButton, 7, 1);
+
+		frame.add(submitTable, 1, 5);
 
 		f.add(frame);
 
@@ -386,24 +419,6 @@ public class CheckRequestAdmin extends CommuneBlock {
 		else {
 			return getSmallErrorText(ruleText);
 		}
-	}
-
-	private Table getSubmitButtonTable() {
-		Table submitTable = new Table(5, 1);
-		submitTable.setWidth(2, "3");
-		submitTable.setWidth(4, "3");
-		submitTable.setCellpaddingAndCellspacing(0);
-
-		SubmitButton grantButton = (SubmitButton) getButton(new SubmitButton(localize("check.grant_check", "Grant check"), PARAM_GRANT_CHECK, "true"));
-		submitTable.add(grantButton, 1, 1);
-
-		SubmitButton retrialButton = (SubmitButton) getButton(new SubmitButton(localize("check.retrial", "Retrial"), PARAM_RETRIAL_CHECK, "true"));
-		submitTable.add(retrialButton, 3, 1);
-
-		SubmitButton saveButton = (SubmitButton) getButton(new SubmitButton(localize("check.save", "Save"), PARAM_SAVE_CHECK, "true"));
-		submitTable.add(saveButton, 5, 1);
-
-		return submitTable;
 	}
 
 	private Check verifyCheckRules(IWContext iwc) throws Exception {
