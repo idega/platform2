@@ -182,7 +182,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
       int[] departureAddressIds = {departureAddress.getID()};
       int[] arrivalAddressIds = {arrivalAddress.getID()};
-      int[] hotePickupPlaceIds = {hotelPickupAddress.getID()};
+      int[] hotePickupPlaceIds = {hpp.getID()};
 
       int serviceId = createService(supplierId, fileId, serviceName, serviceDescription, isValid, departureAddressIds, departureTime.getTimestamp(), arrivalTime.getTimestamp());
 
@@ -228,7 +228,17 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       Product[] products ={};
 
       try {
-        products = (Product[]) (new Product()).findAllByColumn(Product.getColumnNameSupplierId(),supplierId);
+        String pTable = Product.getProductEntityName();
+        String sTable = Service.getServiceTableName();
+        String tTable = Timeframe.getTimeframeTableName();
+
+        StringBuffer sqlQuery = new StringBuffer();
+          sqlQuery.append("SELECT "+pTable+".* FROM "+pTable+", "+tTable);
+          sqlQuery.append(" WHERE "+pTable+"."+Product.getStaticInstance(Product.class).getIDColumnName()+" = "+tTable+"."+Timeframe.getStaticInstance(Timeframe.class).getIDColumnName());
+          sqlQuery.append(" AND "+pTable+"."+Product.getColumnNameSupplierId()+" = "+supplierId);
+          sqlQuery.append(" ORDER by "+Timeframe.getTimeframeFromColumnName());
+
+        products = (Product[]) (new Product()).findAll(sqlQuery.toString());
       }catch(SQLException sql) {
         sql.printStackTrace(System.err);
       }
@@ -237,7 +247,48 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
   public Product[] getProducts(int supplierId, idegaTimestamp from) {
-      return getProducts(supplierId, from, idegaTimestamp.RightNow());
+      Product[] products = {};
+
+      try {
+          /**
+           * @todo Oracle support...
+           */
+          Product[] tempProducts = this.getProducts(supplierId);
+          if (tempProducts.length > 0) {
+
+            Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
+            Supplier supplier = (Supplier) Supplier.getStaticInstance(Supplier.class);
+            Service service = (Service) Service.getStaticInstance(Service.class);
+            Product prodcter = (Product) Product.getStaticInstance(Product.class);
+
+            String middleTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class,Service.class);
+            String Ttable = Timeframe.getTimeframeTableName();
+            String Ptable = Product.getProductEntityName();
+            String Stable = Supplier.getSupplierTableName();
+
+            StringBuffer timeframeSQL = new StringBuffer();
+              timeframeSQL.append("SELECT "+Ptable+".* FROM  "+Ttable+", "+Ptable+","+middleTable);
+              timeframeSQL.append(" WHERE ");
+              timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
+              timeframeSQL.append(" AND ");
+              timeframeSQL.append(Ptable+"."+supplier.getIDColumnName()+" = "+middleTable+"."+service.getIDColumnName());
+              timeframeSQL.append(" AND ");
+              timeframeSQL.append(Timeframe.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"'");
+              timeframeSQL.append(" AND ");
+              timeframeSQL.append(Timeframe.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"'");
+              timeframeSQL.append(" ORDER BY "+Timeframe.getTimeframeFromColumnName());
+
+            System.err.println(timeframeSQL.toString());
+            products = (Product[]) (new Product()).findAll(timeframeSQL.toString());
+
+          }
+
+      }catch(SQLException sql) {
+        sql.printStackTrace(System.err);
+      }
+
+
+      return products;
   }
 
   public Product[] getProducts(int supplierId, idegaTimestamp from, idegaTimestamp to) {
@@ -277,11 +328,11 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
                 timeframeSQL.append(" AND ");
                 timeframeSQL.append("(");
-                timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" > '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeFromColumnName()+" <= '"+to.toSQLDateString()+"')");
+                timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"')");
                 timeframeSQL.append(" OR ");
-                timeframeSQL.append(" ("+Timeframe.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" < '"+to.toSQLDateString()+"')");
+                timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" <= '"+to.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+to.toSQLDateString()+"')");
                 timeframeSQL.append(" OR ");
-                timeframeSQL.append(" ("+Timeframe.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+to.toSQLDateString()+"' AND "+Timeframe.getTimeframeFromColumnName()+" <= '"+to.toSQLDateString()+"')");
+                timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" >= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" <= '"+to.toSQLDateString()+"')");
                 timeframeSQL.append(")");
                 timeframeSQL.append(" ORDER BY "+Timeframe.getTimeframeFromColumnName());
 

@@ -12,6 +12,7 @@ import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.projects.nat.business.NatBusiness;
+import is.idega.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
 
 /**
@@ -28,6 +29,8 @@ public class BookingOverview extends TravelManager {
   private IWBundle bundle;
   private IWResourceBundle iwrb;
 
+  private Supplier supplier;
+
   String tableBackgroundColor = "#FFFFFF";
   int numberOfTripsToDiplay = 6;
 
@@ -42,15 +45,21 @@ public class BookingOverview extends TravelManager {
   public void main(ModuleInfo modinfo) throws SQLException {
       super.main(modinfo);
       initialize(modinfo);
+      supplier = super.getSupplier();
 
-      String action = modinfo.getParameter("action");
-      if (action == null) {action = "";}
+      if (supplier != null) {
+        String action = modinfo.getParameter("action");
+        if (action == null) {action = "";}
 
-      if (action.equals("")) {
-          displayForm(modinfo);
+        if (action.equals("")) {
+            displayForm(modinfo);
+        }
+
+        super.addBreak();
+      }else {
+        add("TEMP");
+        add(new com.idega.block.login.presentation.Login());
       }
-
-      super.addBreak();
   }
 
   public void initialize(ModuleInfo modinfo) {
@@ -135,12 +144,14 @@ public class BookingOverview extends TravelManager {
           tframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
           tframeText.addToText(":");
 
-
-      DropdownMenu trip = new DropdownMenu("trip");
-          trip.addMenuElement("1","Dropdown af ferðum sem eru til :)");
-          trip.addMenuElement("2","Annað dropdown hér ;)");
-
-          String parTrip = modinfo.getParameter("trip");
+      DropdownMenu trip = null;
+      try {
+        trip = new DropdownMenu(Product.getStaticInstance(Product.class).findAllByColumnOrdered(Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplier.getID()), Product.getColumnNameProductName()));
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+        trip = new DropdownMenu(Product.getProductEntityName());
+      }
+          String parTrip = modinfo.getParameter(Product.getProductEntityName());
           if (parTrip != null) {
               trip.setSelectedElement(parTrip);
           }
@@ -252,108 +263,122 @@ public class BookingOverview extends TravelManager {
         table.setCellpadding(2);
 
       int row = 1;
-      idegaTimestamp fromStamp = getFromIdegaTimestamp(modinfo);
-      idegaTimestamp toStamp = getToIdegaTimestamp(modinfo);
-          toStamp.addDays(1);
+      String sProductId = modinfo.getParameter(Product.getProductEntityName());
+      if (sProductId != null) {
 
-      Text dateText = (Text) theText.clone();
-          dateText.setText(iwrb.getLocalizedString("travel.date_sm","date"));
-      Text nameText = (Text) theText.clone();
-          nameText.setText(iwrb.getLocalizedString("travel.trip_name_sm","name of trip"));
-      Text countText = (Text) theText.clone();
-          countText.setText(iwrb.getLocalizedString("travel.count_sm","count"));
-      Text assignedText = (Text) theText.clone();
-          assignedText.setText(iwrb.getLocalizedString("travel.assigned_small_sm","assigned"));
-      Text inqText = (Text) theText.clone();
-          inqText.setText(iwrb.getLocalizedString("travel.inqueries_small_sm","inq."));
-      Text bookedText = (Text) theText.clone();
-          bookedText.setText(iwrb.getLocalizedString("travel.booked_sm","booked"));
-      Text availableText = (Text) theText.clone();
-          availableText.setText(iwrb.getLocalizedString("travel.available_small_sm","avail."));
+          idegaTimestamp fromStamp = getFromIdegaTimestamp(modinfo);
+          idegaTimestamp toStamp = getToIdegaTimestamp(modinfo);
+              toStamp.addDays(1);
+          int productId = Integer.parseInt(sProductId);
 
 
-      Text dateTextBold = (Text) theSmallBoldText.clone();
-      Text nameTextBold = (Text) theSmallBoldText.clone();
-      Text countTextBold = (Text) theSmallBoldText.clone();
-      Text assignedTextBold = (Text) theSmallBoldText.clone();
-      Text inqTextBold = (Text) theSmallBoldText.clone();
-      Text bookedTextBold = (Text) theSmallBoldText.clone();
-      Text availableTextBold = (Text) theSmallBoldText.clone();
+          Text dateText = (Text) theText.clone();
+              dateText.setText(iwrb.getLocalizedString("travel.date_sm","date"));
+          Text nameText = (Text) theText.clone();
+              nameText.setText(iwrb.getLocalizedString("travel.trip_name_sm","name of trip"));
+          Text countText = (Text) theText.clone();
+              countText.setText(iwrb.getLocalizedString("travel.count_sm","count"));
+          Text assignedText = (Text) theText.clone();
+              assignedText.setText(iwrb.getLocalizedString("travel.assigned_small_sm","assigned"));
+          Text inqText = (Text) theText.clone();
+              inqText.setText(iwrb.getLocalizedString("travel.inqueries_small_sm","inq."));
+          Text bookedText = (Text) theText.clone();
+              bookedText.setText(iwrb.getLocalizedString("travel.booked_sm","booked"));
+          Text availableText = (Text) theText.clone();
+              availableText.setText(iwrb.getLocalizedString("travel.available_small_sm","avail."));
 
 
-
-      table.add(dateText,1,row);
-      table.add(nameText,2,row);
-      table.add(countText,3,row);
-      table.add(assignedText,4,row);
-      table.add(inqText,5,row);
-      table.add(bookedText,6,row);
-      table.add(availableText,7,row);
-      table.add("&nbsp;",8,row);
+          Text dateTextBold = (Text) theSmallBoldText.clone();
+          Text nameTextBold = (Text) theSmallBoldText.clone();
+          Text countTextBold = (Text) theSmallBoldText.clone();
+          Text assignedTextBold = (Text) theSmallBoldText.clone();
+          Text inqTextBold = (Text) theSmallBoldText.clone();
+          Text bookedTextBold = (Text) theSmallBoldText.clone();
+          Text availableTextBold = (Text) theSmallBoldText.clone();
 
 
 
-      while (toStamp.isLaterThan(fromStamp)) {
-          ++row;
+          table.add(dateText,1,row);
+          table.add(nameText,2,row);
+          table.add(countText,3,row);
+          table.add(assignedText,4,row);
+          table.add(inqText,5,row);
+          table.add(bookedText,6,row);
+          table.add(availableText,7,row);
+          table.add("&nbsp;",8,row);
 
 
-          dateTextBold = (Text) theSmallBoldText.clone();
-              dateTextBold.setText(fromStamp.getLocaleDate(modinfo));
-          nameTextBold  = (Text) theSmallBoldText.clone();
-              nameTextBold.setText("Ferð norður og niður");
-          countTextBold = (Text) theSmallBoldText.clone();
-              countTextBold.setText("30");
-          assignedTextBold = (Text) theSmallBoldText.clone();
-              assignedTextBold.setText("5");
-          inqTextBold = (Text) theSmallBoldText.clone();
-              inqTextBold.setText("6");
-          bookedTextBold = (Text) theSmallBoldText.clone();
-              bookedTextBold.setText("17");
-          availableTextBold = (Text) theSmallBoldText.clone();
-              availableTextBold.setText("8");
+          TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+          Product[] products;
+          int supplierId = supplier.getID();
 
-          SubmitButton btnNanar = new SubmitButton("N");
-          SubmitButton btnBook = new SubmitButton("B");
+          while (toStamp.isLaterThan(fromStamp)) {
+              ++row;
+              products = tsb.getProducts(supplierId, fromStamp);
+
+              add(products.length+"");
+
+              dateTextBold = (Text) theSmallBoldText.clone();
+                  dateTextBold.setText(fromStamp.getLocaleDate(modinfo));
+              nameTextBold  = (Text) theSmallBoldText.clone();
+                  nameTextBold.setText("Ferð norður og niður");
+              countTextBold = (Text) theSmallBoldText.clone();
+                  countTextBold.setText("30");
+              assignedTextBold = (Text) theSmallBoldText.clone();
+                  assignedTextBold.setText("5");
+              inqTextBold = (Text) theSmallBoldText.clone();
+                  inqTextBold.setText("6");
+              bookedTextBold = (Text) theSmallBoldText.clone();
+                  bookedTextBold.setText("17");
+              availableTextBold = (Text) theSmallBoldText.clone();
+                  availableTextBold.setText("8");
+
+              SubmitButton btnNanar = new SubmitButton("N");
+              SubmitButton btnBook = new SubmitButton("B");
 
 
-          table.add(dateTextBold,1,row);
-          table.add(nameTextBold,2,row);
-          table.add(countTextBold,3,row);
-              table.setColor(3,row,NatBusiness.backgroundColor);
-          table.add(assignedTextBold,4,row);
-              table.setColor(4,row,NatBusiness.ORANGE);
-          table.add(inqTextBold,5,row);
-              table.setColor(5,row,NatBusiness.YELLOW);
-          table.add(bookedTextBold,6,row);
-              table.setColor(6,row,NatBusiness.RED);
-          table.add(availableTextBold,7,row);
-              table.setColor(7,row,NatBusiness.LIGHTGREEN);
+              table.add(dateTextBold,1,row);
+              table.add(nameTextBold,2,row);
+              table.add(countTextBold,3,row);
+                  table.setColor(3,row,NatBusiness.backgroundColor);
+              table.add(assignedTextBold,4,row);
+                  table.setColor(4,row,NatBusiness.ORANGE);
+              table.add(inqTextBold,5,row);
+                  table.setColor(5,row,NatBusiness.YELLOW);
+              table.add(bookedTextBold,6,row);
+                  table.setColor(6,row,NatBusiness.RED);
+              table.add(availableTextBold,7,row);
+                  table.setColor(7,row,NatBusiness.LIGHTGREEN);
 
-          table.add(btnNanar,8,row);
-          table.add(btnBook,8,row);
+              table.add(btnNanar,8,row);
+              table.add(btnBook,8,row);
 
-          fromStamp.addDays(1);
+              fromStamp.addDays(1);
+          }
+
+
+          String cellWidth = "50";
+
+          table.setWidth(3,cellWidth);
+          table.setWidth(4,cellWidth);
+          table.setWidth(5,cellWidth);
+          table.setWidth(6,cellWidth);
+          table.setWidth(7,cellWidth);
+
+          table.setColumnAlignment(1,"left");
+          table.setColumnAlignment(2,"left");
+          table.setColumnAlignment(3,"center");
+          table.setColumnAlignment(4,"center");
+          table.setColumnAlignment(5,"center");
+          table.setColumnAlignment(6,"center");
+          table.setColumnAlignment(7,"center");
+          table.setColumnAlignment(8,"right");
+
+
       }
-
-
-      String cellWidth = "50";
-
-      table.setWidth(3,cellWidth);
-      table.setWidth(4,cellWidth);
-      table.setWidth(5,cellWidth);
-      table.setWidth(6,cellWidth);
-      table.setWidth(7,cellWidth);
-
-      table.setColumnAlignment(1,"left");
-      table.setColumnAlignment(2,"left");
-      table.setColumnAlignment(3,"center");
-      table.setColumnAlignment(4,"center");
-      table.setColumnAlignment(5,"center");
-      table.setColumnAlignment(6,"center");
-      table.setColumnAlignment(7,"center");
-      table.setColumnAlignment(8,"right");
-
-
+      else {
+        table.add("TEMP EKKERT VALIÐ");
+      }
       return table;
 
   }

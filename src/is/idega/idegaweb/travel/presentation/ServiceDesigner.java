@@ -372,9 +372,12 @@ public class ServiceDesigner extends TravelManager {
         if (activeYearly.equals("Y")) yearly = true;
       }
 
+
       Integer iImageId = null;
       if (imageId != null) {
-        iImageId = new Integer(imageId);
+        if (!imageId.equals("-1")) {
+          iImageId = new Integer(imageId);
+        }
       }
 
       idegaTimestamp activeFromStamp = null;

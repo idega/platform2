@@ -61,13 +61,52 @@ public class ServiceOverview extends TravelManager {
   }
 
 
-  public void displayForm(ModuleInfo modinfo) {
-
-      Form form = new Form();
-      Table topTable = new Table();
-        form.add(topTable);
+  public Table getTopTable(ModuleInfo modinfo) {
+      Table topTable = new Table(4,2);
         topTable.setBorder(0);
         topTable.setWidth("90%");
+
+      DateInput active_from = new DateInput("active_from");
+          idegaTimestamp fromStamp = getFromIdegaTimestamp(modinfo);
+          active_from.setDate(fromStamp.getSQLDate());
+      DateInput active_to = new DateInput("active_to");
+          idegaTimestamp toStamp = getToIdegaTimestamp(modinfo);
+          active_to.setDate(toStamp.getSQLDate());
+
+      Text tfFromText = (Text) theText.clone();
+          tfFromText.setText(iwrb.getLocalizedString("travel.from","from"));
+      Text tfToText = (Text) theText.clone();
+          tfToText.setText(iwrb.getLocalizedString("travel.to","to"));
+
+
+      Text timeframeText = (Text) theText.clone();
+          timeframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
+          timeframeText.addToText(":");
+
+      topTable.setColumnAlignment(1,"right");
+      topTable.setColumnAlignment(2,"left");
+      topTable.add(timeframeText,1,1);
+      topTable.add(tfFromText,1,1);
+      topTable.add(active_from,2,1);
+      topTable.add(tfToText,2,1);
+      topTable.add(active_to,2,1);
+      topTable.mergeCells(2,1,4,1);
+//    topTable.mergeCells(2,2,4,2);
+
+
+
+      topTable.setAlignment(4,2,"right");
+      topTable.add(new SubmitButton("TEMP-Sækja"),4,2);
+
+      return topTable;
+  }
+
+
+  public void displayForm(ModuleInfo modinfo) {
+      add(Text.getBreak());
+      Form form = new Form();
+      Table topTable = this.getTopTable(modinfo);
+        form.add(topTable);
       Table table = new Table();
         table.setBorder(0);
         table.setWidth(1,"150");
@@ -87,20 +126,6 @@ public class ServiceOverview extends TravelManager {
       idegaTimestamp stamp = idegaTimestamp.RightNow();
 
 
-      Text tframeText = (Text) theText.clone();
-          tframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
-          tframeText.addToText(":");
-      DropdownMenu year = new DropdownMenu("year");
-          year.addMenuElement((stamp.getYear()-1),""+(stamp.getYear()-1));
-          year.addMenuElement(stamp.getYear(),""+stamp.getYear());
-          year.addMenuElement((stamp.getYear()+1),""+(stamp.getYear()+1));
-          year.addMenuElement((stamp.getYear()+2),""+(stamp.getYear()+2));
-          year.addMenuElement((stamp.getYear()+3),""+(stamp.getYear()+3));
-          if (!sYear.equals(Text.emptyString().toString())) {
-              year.setSelectedElement(sYear);
-          }else {
-              year.setSelectedElement(""+stamp.getYear());
-          }
 
       Text nameText = (Text) theText.clone();
           nameText.setText(iwrb.getLocalizedString("travel.name_of_trip","Name of trip"));
@@ -120,20 +145,18 @@ public class ServiceOverview extends TravelManager {
       Supplier supplier = super.getSupplier();
       if (supplier != null) {
         TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
-        Product[] products = tsb.getProducts(supplier.getID(), stamp);
+        Product[] products = tsb.getProducts(supplier.getID(), this.getFromIdegaTimestamp(modinfo), this.getToIdegaTimestamp(modinfo));
 
         Service service;
         Timeframe timeframe;
         Address address;
 
-//        Tour tour;
 
         for (int i = 0; i < products.length; i++) {
           try {
             service = TravelStockroomBusiness.getService(products[i]);
             timeframe = TravelStockroomBusiness.getTimeframe(products[i]);
             address = service.getAddress();
-//            tour = TravelStockroomBusiness.getTour(products[i]);
 
 
             Text prodName = (Text) theBoldText.clone();
@@ -201,14 +224,35 @@ public class ServiceOverview extends TravelManager {
 
       }
 
-
-      topTable.setAlignment(1,1,"right");
-      topTable.add(tframeText);
-      topTable.add(year);
-      topTable.add(new SubmitButton("TEMP-Sækja"));
-
-
       add(form);
+  }
+
+
+  // BUSINESS
+  public idegaTimestamp getFromIdegaTimestamp(ModuleInfo modinfo) {
+      idegaTimestamp stamp = null;
+      String from_time = modinfo.getParameter("active_from");
+      if (from_time!= null) {
+          stamp = new idegaTimestamp(from_time);
+      }
+      else {
+          stamp = idegaTimestamp.RightNow();
+      }
+      return stamp;
+  }
+
+  // BUSINESS
+  public idegaTimestamp getToIdegaTimestamp(ModuleInfo modinfo) {
+      idegaTimestamp stamp = null;
+      String from_time = modinfo.getParameter("active_to");
+      if (from_time!= null) {
+          stamp = new idegaTimestamp(from_time);
+      }
+      else {
+          stamp = idegaTimestamp.RightNow();
+          stamp.addDays(15);
+      }
+      return stamp;
   }
 
 
