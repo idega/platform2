@@ -70,6 +70,8 @@ public class RegisterTime extends GolfBlock {
   private int backPage = -1;
   public static final String PRM_BACK_PAGE = "bpage";
 
+	private TeeTimeBusinessBean service = new TeeTimeBusinessBean();
+  
   public RegisterTime() {
     business = new TeeTimeBusinessBean();
     unionDropdown = (DropdownMenu)GolfCacher.getUnionAbbreviationDropdown("club").clone();
@@ -306,7 +308,7 @@ public class RegisterTime extends GolfBlock {
 	              int topRows = 0;
 	
 	              int i = 1;
-	              for ( ;i < skraMarga+1 ; i++)
+	              for ( ;i <= skraMarga ; i++)
 	              {
 	              	FieldSet set = new FieldSet(lines[i-1]+" - " +i);
 	              	set.add(new HiddenInput("group_num",Integer.toString(groupNums[i-1])));
@@ -332,11 +334,27 @@ public class RegisterTime extends GolfBlock {
               	
               	this.empty();
               	
+	        		Text dateText = new Text(localize("start.Date","Date")+": "+(new IWTimestamp(Date)).getDateString("EEE d MMM", modinfo.getCurrentLocale()));
+	        		Text fieldText = new Text(localize("start.Field","Field")+": "+getFieldName(Integer.parseInt(modinfo.getParameter("field_id"))));
+	        		Text teetimeText = new Text(localize("start.Teetime","Teetime")+": "+lines[0]);
+	        		Text numberOfPlayersText = new Text(localize("start.Number_of_players","Number of players")+": "+skraMarga);
+	
+	        		Paragraph p = new Paragraph();
+	        		p.add(dateText);
+	        		p.add(new Break());
+	        		p.add(fieldText);
+	        		p.add(new Break());
+	        		p.add(teetimeText);
+	        		p.add(new Break());
+	        		p.add(numberOfPlayersText);
+	        		add(p);
+
+              	
               	
               	Paragraph message = new Paragraph();
               	
-              	String sMessage = localize("start.are_you_sure_you_want_to_reserve_this_teetime","Are you sure you want to reserve teetime at");
-              	sMessage += " "+lines[0]+" "+(new IWTimestamp(Date)).getDateString("EEE d MMM", modinfo.getCurrentLocale())+" ";
+              	String sMessage = localize("start.are_you_sure_you_want_to_reserve_this_teetime","Are you sure you want to reserve this teetime");
+//              	sMessage += " "+lines[0]+" "+(new IWTimestamp(Date)).getDateString("EEE d MMM", modinfo.getCurrentLocale())+" ";
               	//sMessage += localize("start.at_the_field","at the field")+....;
               	sMessage += "?";
 				
@@ -357,6 +375,7 @@ public class RegisterTime extends GolfBlock {
               	
               	yes.addParameter("secure_num",member.getSocialSecurityNumber());
               	yes.addParameter("group_num",Integer.toString(groupNums[0]));
+              	yes.addParameter("num_of_players",skraMarga);
               	
               	Strong y = new Strong();
               	y.add(yes);
@@ -381,6 +400,9 @@ public class RegisterTime extends GolfBlock {
             }
     }
 
+	public String getFieldName(int field_id) throws SQLException, IOException, FinderException {
+		return service.getFieldName(field_id);
+	}
 
     public void handleFormInfo(IWContext modinfo)throws SQLException, IOException {
 
@@ -419,49 +441,77 @@ public class RegisterTime extends GolfBlock {
                   if(ssn){
                     Member tempMemb = (is.idega.idegaweb.golf.entity.Member)MemberBMPBean.getMember(sentSecureNums[j]);
                     if(tempMemb != null){
-
-                      if( business.countEntriesInGroup(
-                      		Integer.parseInt(lines[j]),
-							this.currentField,this.currentDay) >= maxCountInGroups){
-                        illegal.add(k++,new Integer(j));
-                        fullGroup = true;
-                      }else if(business.countOwnersEntries(Integer.parseInt(this.currentMember),this.currentField,this.currentDay) >= maxPerOwnerPerDay ){
-                        illegal.add(k++,new Integer(j));
-                        fullOwnerQuota = true;
-                      }else if(business.countMembersEntries(tempMemb.getID(),this.currentField,this.currentDay) >= maxPerMemberPerDay){
-                        illegal.add(k++,new Integer(j));
-                        fullMemberQuota = true;
-                      }else{
-						String unionAbbr = "-";
-						Union union = GolfCacher.getCachedUnion(tempMemb.getMainUnionID());
-						if(union !=null){
-							unionAbbr = union.getAbbrevation();
-						}
-
-						
-
-					   if(playerCard != null && playerCard.length>j){
-					   	business.setStartingtime(
-					   			Integer.parseInt(lines[j]),
-								this.currentDay, this.currentField, 
-								Integer.toString(tempMemb.getID()),
-								this.currentMember, tempMemb.getName(), 
-								Float.toString(tempMemb.getHandicap()), 
-								unionAbbr, playerCard[j], 
-								playerCardNo[j]);
-					   } else {
-					   	business.setStartingtime(
-							   	Integer.parseInt(lines[j]),
-								this.currentDay, this.currentField, 
-								Integer.toString(tempMemb.getID()),
-								this.currentMember, tempMemb.getName(), 
-								Float.toString(tempMemb.getHandicap()), 
-								unionAbbr, "", 
-								"");
-					   }
+                    	 int otherPlayers = -1;
+                    	 do{
+	                      if( business.countEntriesInGroup(
+	                      		Integer.parseInt(lines[j]),
+								this.currentField,this.currentDay) >= maxCountInGroups){
+	                        illegal.add(k++,new Integer(j));
+	                        fullGroup = true;
+	                      }else if(business.countOwnersEntries(Integer.parseInt(this.currentMember),this.currentField,this.currentDay) >= maxPerOwnerPerDay ){
+	                        illegal.add(k++,new Integer(j));
+	                        fullOwnerQuota = true;
+	                      }else if(otherPlayers<0&&business.countMembersEntries(tempMemb.getID(),this.currentField,this.currentDay) >= maxPerMemberPerDay){
+	                        illegal.add(k++,new Integer(j));
+	                        fullMemberQuota = true;
+	                      }else{
+							String unionAbbr = "-";
+							
+							
+	
+						   if(playerCard != null && playerCard.length>j){
+						   	Union union = GolfCacher.getCachedUnion(tempMemb.getMainUnionID());
+							if(union !=null){
+								unionAbbr = union.getAbbrevation();
+							}
+	
+						   	business.setStartingtime(
+						   			Integer.parseInt(lines[j]),
+									this.currentDay, this.currentField, 
+									Integer.toString(tempMemb.getID()),
+									this.currentMember, tempMemb.getName(), 
+									Float.toString(tempMemb.getHandicap()), 
+									unionAbbr, playerCard[j], 
+									playerCardNo[j]);
+						   } else {
+							   	if(otherPlayers>-1){
+							   		business.setStartingtime(
+										   	Integer.parseInt(lines[j]),
+											this.currentDay, this.currentField, 
+											Integer.toString(tempMemb.getID()),
+											this.currentMember, "- "+tempMemb.getName(), 
+											null, 
+											unionAbbr, "", 
+											"");	
+							   		legal.add(l++,new Integer(j));
+							   	} else {
+							   		if(sentSecureNums.length==1){
+							   			String howMany = modinfo.getParameter("num_of_players");
+							   			if(howMany!=null){
+							   				otherPlayers=Integer.parseInt(howMany);
+							   			}
+							   		}
+							   		
+							   		Union union = GolfCacher.getCachedUnion(tempMemb.getMainUnionID());
+									if(union !=null){
+										unionAbbr = union.getAbbrevation();
+									}
+			
+							   		business.setStartingtime(
+										   	Integer.parseInt(lines[j]),
+											this.currentDay, this.currentField, 
+											Integer.toString(tempMemb.getID()),
+											this.currentMember, tempMemb.getName(), 
+											Float.toString(tempMemb.getHandicap()), 
+											unionAbbr, "", 
+											"");
+							   	}
+						    }
+						   }
+	                      otherPlayers--;
+                      	}while(otherPlayers>0);
 					   legal.add(l++,new Integer(j));
                         ones = true;
-                      }
                     }else{
                       illegal.add(k++,new Integer(j));
                     }

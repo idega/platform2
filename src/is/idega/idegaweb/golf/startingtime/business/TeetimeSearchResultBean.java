@@ -8,6 +8,7 @@ import is.idega.idegaweb.golf.GolfField;
 import java.util.List;
 
 import com.idega.business.IBOSessionBean;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title: TeetimeSearchResult
@@ -22,7 +23,10 @@ public class TeetimeSearchResultBean extends IBOSessionBean implements TeetimeSe
 	
 	private List result = null;
 	private GolfField info = null;
-	private String date = null;
+	private IWTimestamp date = null;
+	private IWTimestamp firstTime = null;
+	private IWTimestamp lastTime = null;
+	private int numberOfPlayers = 1;
 	private int sublistSize = 100;
 	private int index = 0;
 	
@@ -41,10 +45,13 @@ public class TeetimeSearchResultBean extends IBOSessionBean implements TeetimeSe
 		}
 	}
 	
-	public void cachResult(List result, GolfField info,String date){
+	public void cachResult(List result, GolfField info,IWTimestamp date,IWTimestamp firstTime,IWTimestamp lastTime,int numberOfPlayers){
 		this.result = result;
 		this.info = info;
 		this.date = date;
+		this.firstTime = firstTime;
+		this.lastTime = lastTime;
+		this.numberOfPlayers = numberOfPlayers;
 		index = -sublistSize;
 	}
 	
@@ -85,8 +92,20 @@ public class TeetimeSearchResultBean extends IBOSessionBean implements TeetimeSe
 		return info;
 	}
 	
-	public String getDate(){
+	public IWTimestamp getDate(){
 		return date;
+	}
+	
+	public IWTimestamp getFirstTime(){
+		return firstTime;
+	}
+	
+	public IWTimestamp getLastTime(){
+		return lastTime;
+	}
+	
+	public int getNumberOfPlayers(){
+		return numberOfPlayers;
 	}
 	
 	public boolean isInitialized(){

@@ -29,6 +29,7 @@ import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
@@ -581,40 +582,41 @@ public class TeeTimeSearch extends GolfBlock {
 				}
 			}
 			
-			result.cachResult(resultList,info2,date);
+			result.cachResult(resultList,info2,new IWTimestamp(date),new IWTimestamp(modinfo.getParameter("ftime")),new IWTimestamp(modinfo.getParameter("ltime")),Integer.parseInt(modinfo.getParameter("fjoldi")));
 			
 		} else if(!result.isInitialized()){
-			add(localize("start.session_timeout","Session has expired"));
+			Paragraph p = new Paragraph();
+			p.add(localize("start.session_timeout","Session has expired"));
+			add(p);
 			return;
 		}
 		
 		myForm.addParameter("search", "1");					
 		myForm.addParameter("field_id",result.getFieldInfo().get_field_id());
-		myForm.addParameter("date", result.getDate());
+		myForm.addParameter("date", result.getDate().getDateString("yyyy-MM-dd"));
 		myForm.addParameter("union_id", getFieldUnion(result.getFieldInfo().get_field_id()));
 		//myForm.addParameter("skraMarga",modinfo.getParameter("fjoldi"));
 		//register one at a time
-		myForm.addParameter("skraMarga","1");
+		//myForm.addParameter("skraMarga","1");
 		
 		myForm.addParameter(RegisterTime.PRM_LOCKED_AS_WML_LAYOUT, "y");
 		
 
-		
-		String headerString = getFieldName(result.getFieldInfo().get_field_id())+" - "+result.getDate();
-		
 		int count = result.getResultSize();
-
-		if ((count % 10 == 1 || (count % 100) % 10 == 1) && count % 100 != 11) {
-			headerString += (" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_time", "Available tee time") + ")");
-		} else if (count != 0) {
-			headerString += (" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_times", "Available tee_times") + ")");
-		} else {
-			headerString += (" (" +getResourceBundle().getLocalizedString("start.search.no_tee_times", "_")+")");
-		}
 		
-		Text headerText = new Text(headerString);
+		Text dateText = new Text(localize("start.Date","Date")+": "+result.getDate().getLocaleDate(modinfo.getCurrentLocale()));
+		Text fieldText = new Text(localize("start.Field","Field")+": "+getFieldName(result.getFieldInfo().get_field_id()));
+		Text intervalText = new Text(localize("start.Interval","Interval")+": "+result.getFirstTime().getLocaleTime(modinfo.getCurrentLocale(),IWTimestamp.SHORT)+"-"+result.getLastTime().getLocaleTime(modinfo.getCurrentLocale(),IWTimestamp.SHORT));
+		Text resultText = new Text(localize("start.Results","Results")+": "+count);
+
 		Paragraph p = new Paragraph();
-		p.add(headerText);
+		p.add(dateText);
+		p.add(new Break());
+		p.add(fieldText);
+		p.add(new Break());
+		p.add(intervalText);
+		p.add(new Break());
+		p.add(resultText);
 		add(p);
 		
 
@@ -626,6 +628,10 @@ public class TeeTimeSearch extends GolfBlock {
 //		int rows = 0;
 		
 		DropdownMenu radio = new DropdownMenu("line");
+		Label label = new Label(localize("start.choose_teetime","Choose teetime:"),radio);
+		
+		DropdownMenu howMany = new DropdownMenu("skraMarga");
+		Label hmLabel = new Label(localize("start.choose_how_many_you_want_to_register","Choose how many you want to register:"),radio);
 
  		if (count != 0) {
 			String part = modinfo.getParameter("part");
@@ -641,8 +647,16 @@ public class TeeTimeSearch extends GolfBlock {
 				String element = (String) iter.next().toString();
 				radio.addMenuElement(element,TimeVsGroupnum(Integer.parseInt(element), result.getFieldInfo()));
 			}
+			int i = 1;
+			for(; i <=result.getNumberOfPlayers();i++){
+				howMany.addMenuElement(i,String.valueOf(i));
+			}
+			howMany.setSelectedElement(i-1);
 			
+			myForm.add(label);
 			myForm.add(radio);
+			myForm.add(hmLabel);
+			myForm.add(howMany);
 			if(result.hasPrevious()){
 				Link prev = new Link(localize("prev","Previous"));
 				prev.addParameter("part","prev");
