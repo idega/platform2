@@ -5,7 +5,6 @@ package is.idega.idegaweb.marathon.presentation;
 
 import is.idega.idegaweb.marathon.business.RunBusiness;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
-import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.Collection;
@@ -17,6 +16,7 @@ import com.idega.block.text.business.TextFormatter;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -48,6 +48,31 @@ import com.idega.util.LocaleUtil;
 public class RunRegistration extends Block {
 
 	private static final String PARAMETER_ACTION = "prm_action";
+	
+	/* 
+	
+	this class works with many settings in the property file like
+	
+	travelURL_Rvk Marathon_10_km_2004_en =	
+		https://travel.idega.is/servlet/ObjectInstanciator?idegaweb_instance_class=7469&linkGeneratorProductId=744&IWCalendar_day=21&IWCalendar_month=8&IWCalendar_year=2004	
+		
+	....and so on
+	
+	further the reference number parameter (value depends on the class the link is pointing to) must be set like 
+	
+	parameter_refererence_number = rNum
+	
+	comment added by Thomas
+	*/
+
+	// this value should be defined in the property file (added by Thomas)
+	private static final String PARAMETER_REFERENCE_NUMBER = "parameter_refererence_number";
+
+	// the default value corresponds to the value of 
+	// is.idega.idegaweb.travel.service.presentation.BookingForm.PARAMETER_REFERENCE_NUMBER (added by Thomas)
+	// do not implement a reference to the travel system, this bundle can be used without the travel system or could use
+	// another booking system.
+	private static final String PARAMETER_REFERENCE_NUMBER_DEFAULT_VALUE = "rNum";
 
 	private static final int ACTION_STEP_ONE = 1;
 
@@ -799,6 +824,7 @@ public class RunRegistration extends Block {
 		
 				Link payBlue = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.pay", "Pay fee")), STYLENAME_BLUE_TEXT);
 				Link payGreen = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
+				IWBundle bundle = iwrb.getIWBundleParent();
 				if (runGroup != null && distanceGroup != null) {
 					String travelURL = "travelURL_"+runGroup.getName()+"_"+distanceGroup.getName()+"_"+year+"_"+iwc.getCurrentLocale().toString();
 					if (chip != null) {
@@ -815,8 +841,7 @@ public class RunRegistration extends Block {
 							travelURL += "_12";
 						}
 					}
-
-					String URL = iwrb.getIWBundleParent().getProperty(travelURL, "#");
+					String URL = bundle.getProperty(travelURL, "#");
 					if (URL.equals("#")) {
 						showPayment = false;
 					}
@@ -825,10 +850,11 @@ public class RunRegistration extends Block {
 					payGreen.setURL(URL);
 					payGreen.setTarget(Link.TARGET_NEW_WINDOW);
 				}
+				String referenceNumberParameter = bundle.getProperty(PARAMETER_REFERENCE_NUMBER, PARAMETER_REFERENCE_NUMBER_DEFAULT_VALUE );
 				payBlue.setLocale(iwc.getCurrentLocale());
-				payBlue.addParameter(BookingForm.PARAMETER_REFERENCE_NUMBER, refNum);
+				payBlue.addParameter(referenceNumberParameter, refNum);
 				payGreen.setLocale(iwc.getCurrentLocale());
-				payGreen.addParameter(BookingForm.PARAMETER_REFERENCE_NUMBER, refNum);
+				payGreen.addParameter(referenceNumberParameter, refNum);
 		
 				buttonTable.add(backBlue, 1, 1);
 				buttonTable.add(Text.getNonBrakingSpace(), 1, 1);
