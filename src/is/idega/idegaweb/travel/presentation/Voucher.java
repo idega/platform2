@@ -75,6 +75,7 @@ public abstract class Voucher extends TravelManager {
   }
 
   public void main(IWContext iwc) throws Exception{
+  	System.out.println("[Voucher] starting voucher for bookingId = "+_booking.getID());
     super.initializer(iwc);
 		setupVoucher(iwc);
     _bundle = super.getBundle();
@@ -102,6 +103,7 @@ public abstract class Voucher extends TravelManager {
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
+		System.out.println("[Voucher] finished voucher for bookingId = "+_booking.getID());
   }
 
   private Text getBigText(String content) {
