@@ -27,6 +27,7 @@ private boolean limitImageWidth = false;
 private boolean zoomView = false;
 private boolean linkOnImage = true;
 private boolean useCached = false;
+private String align;
 
 private int imageId = -1;
 private int maxImageWidth = 140;
@@ -207,6 +208,10 @@ public void setAssociatedScript(Script myScript){
 	theAssociatedScript = myScript;
 }
 
+public void setAlignment(String alignment){
+	align = alignment;
+}
+
 public Script getAssociatedScript(){
 	return theAssociatedScript;
 }
@@ -225,6 +230,9 @@ private String getPrintStringWithName(){
   sPrint.append(getName());
   sPrint.append("\"");
   sPrint.append(getAttributeString());
+  if ( align != null ) {
+    sPrint.append(" align=\""+align+"\" ");
+  }
   sPrint.append(" >");
   return sPrint.toString();
 }
@@ -233,6 +241,9 @@ private String getPrintString(){
   StringBuffer sPrint = new StringBuffer();
   sPrint.append("<img ");
   sPrint.append(getAttributeString());
+  if ( align != null ) {
+    sPrint.append(" align=\""+align+"\" ");
+  }
   sPrint.append(" >");
   return sPrint.toString();
 }
