@@ -79,10 +79,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/28 12:52:50 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/28 13:34:50 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.66 $
+ * @version $Revision: 1.67 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -184,13 +184,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PLACEMENT_START_PERIOD_KEY = PREFIX + "placement_start_period";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
-    private static final String CONTRACT_DEFAULT = "Kontrakt";
-    private static final String CONTRACT_KEY = PREFIX + "contract";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
     private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
     private static final String REMARK_DEFAULT = "Anmärkning";
     private static final String REMARK_KEY = PREFIX + "remark";
+    private static final String SEARCH_RULE_TEXT_KEY = PREFIX + "search_rule_text";
+    private static final String SEARCH_RULE_TEXT_DEFAULT = "Sök regeltext";
     private static final String RULE_TEXT_KEY = PREFIX + "rule_text";
+    private static final String RULE_TEXT_LINK_LIST_KEY = PREFIX + "rule_text_link_list";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sök efter fakturamottagare";
     private static final String SEARCH_INVOICE_RECEIVER_KEY = PREFIX + "search_invoice_receiver";
@@ -573,6 +574,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         inputs.put (HEADER_KEY, localize (CREATE_INVOICE_RECORD_KEY,
                                           CREATE_INVOICE_RECORD_DEFAULT));
         inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY));
+        inputs.put (SEARCH_RULE_TEXT_KEY, getSubmitButton
+                    (ACTION_SHOW_NEW_RECORD_FORM, SEARCH_RULE_TEXT_KEY,
+                     SEARCH_RULE_TEXT_DEFAULT));
         inputs.put (PLACEMENT_KEY, getPlacementDropdown (context, header));
         renderRecordDetailsOrForm (context, inputs);
     }
@@ -1058,15 +1062,25 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addPresentation (table, presentationObjects, IN_CUSTODY_OF_KEY, col++,
                          row);
         col = 1; row++;
-        addSmallHeader (table, col++, row, CONTRACT_KEY, CONTRACT_DEFAULT, ":");
+        addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
         table.mergeCells (col, row, table.getColumns (), row);
         addPresentation (table, presentationObjects, PLACEMENT_KEY, col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, PLACEMENT_KEY, PLACEMENT_DEFAULT,
                         ":");
-        table.mergeCells (col, row, table.getColumns (), row);
+        table.mergeCells (col, row, table.getColumns () - 1, row);
         addPresentation (table, presentationObjects, RULE_TEXT_KEY, col++, row);
+        col = table.getColumns ();
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+        addPresentation (table, presentationObjects, SEARCH_RULE_TEXT_KEY,
+                         col, row);
         col = 1; row++;
+        if (presentationObjects.containsKey (RULE_TEXT_LINK_LIST_KEY)) {
+            table.mergeCells (1, row, table.getColumns (), row);
+            addPresentation (table, presentationObjects,
+                             RULE_TEXT_LINK_LIST_KEY, 1, row);
+            row++;
+        }
         addSmallHeader (table, col++, row, INVOICE_TEXT_KEY,
                         INVOICE_TEXT_DEFAULT, ":");
         table.mergeCells (col, row, table.getColumns (), row);
@@ -2100,16 +2114,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
             final Collection placements = placementHome
                     .findAllByUserAndSchoolCategory (child, category);
-            if (1 == placements.size ()) {
-                final Table table = createTable (1);
-                final SchoolClassMember placement
-                        = (SchoolClassMember) placements.iterator ().next ();
-                table.add (new HiddenInput
-                           (PLACEMENT_KEY, placement.getPrimaryKey () + ""), 1,
-                           1);
-                addSmallText (table, getProviderName (placement), 1, 1);
-                result = table;
-            } else {
+            if (1 < placements.size ()) {
                 final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
                         (new DropdownMenu (PLACEMENT_KEY));
                 for (Iterator i = placements.iterator (); i.hasNext ();) {
@@ -2119,6 +2124,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                              getProviderName (placement));
                 }
                 result = dropdown;
+            } else if (!placements.isEmpty ()) {
+                final Table table = createTable (1);
+                final SchoolClassMember placement
+                        = (SchoolClassMember) placements.iterator ().next ();
+                table.add (new HiddenInput
+                           (PLACEMENT_KEY, placement.getPrimaryKey () + ""), 1,
+                           1);
+                addSmallText (table, getProviderName (placement), 1, 1);
+                result = table;
             }
         } catch (Exception e) {
             // do nothing, ok to return the dropdown as empty as might be
