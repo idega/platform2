@@ -29,8 +29,10 @@ import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.data.EntityValueHolder;
 import com.idega.block.entity.presentation.EntityBrowser;
 import com.idega.block.entity.presentation.converters.CheckBoxConverter;
+import com.idega.block.entity.presentation.converters.ConverterConstants;
 import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converters.DropDownPostalCodeConverter;
+import com.idega.block.entity.presentation.converters.EditOkayButtonConverter;
 import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
 import com.idega.business.IBOLookup;
@@ -176,15 +178,48 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       }
       member.store();
     }  
-    // does the user want to modify an existing entity?
-    EntityPathValueContainer entityPathValueContainerFromTextEditor = TextEditorConverter.getResultByParsing(iwc);
-    EntityPathValueContainer entityPathValueContainerFromDropDownMenu = DropDownMenuConverter.getResultByParsing(iwc);
-    if (entityPathValueContainerFromTextEditor.isValid()) {
-      updateWorkReportBoardMember(entityPathValueContainerFromTextEditor, iwc);
-    }
-    if (entityPathValueContainerFromDropDownMenu.isValid()) {
-      updateWorkReportBoardMember(entityPathValueContainerFromDropDownMenu, iwc);
-    }
+    // does the user want to modify an existing entity? 
+    if (iwc.isParameterSet(ConverterConstants.EDIT_ENTITY_SUBMIT_KEY)) {
+      WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+      String id = iwc.getParameter(ConverterConstants.EDIT_ENTITY_SUBMIT_KEY);
+      Integer primaryKey = null;
+      try {
+        primaryKey = new Integer(id);
+      }
+      catch (NumberFormatException ex)  {
+        System.err.println("[WorkReportBoardMemberEditor] Wrong primary key. Message is: " +
+          ex.getMessage());
+        ex.printStackTrace(System.err);
+      }
+      WorkReportBoardMember member = findWorkReportBoardMember(primaryKey, iwc);
+      Iterator iterator = FIELD_LIST.iterator();
+      while (iterator.hasNext())  {
+        String field = (String) iterator.next();
+        EntityPathValueContainer entityPathValueContainerFromTextEditor = 
+          TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(NEW_ENTRY_ID_VALUE, field, iwc);
+        EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
+          DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(NEW_ENTRY_ID_VALUE, field, iwc);
+        if (entityPathValueContainerFromTextEditor.isValid()) {
+          setValuesOfWorkReportBoardMember(entityPathValueContainerFromTextEditor, member, workReportBusiness);
+        }
+        if (entityPathValueContainerFromDropDownMenu.isValid()) {
+          setValuesOfWorkReportBoardMember(entityPathValueContainerFromDropDownMenu, member, workReportBusiness);
+        }
+      }
+      member.store();
+      return action;
+    }  
+      
+      
+//    // does the user want to modify an existing entity?
+//    EntityPathValueContainer entityPathValueContainerFromTextEditor = TextEditorConverter.getResultByParsing(iwc);
+//    EntityPathValueContainer entityPathValueContainerFromDropDownMenu = DropDownMenuConverter.getResultByParsing(iwc);
+//    if (entityPathValueContainerFromTextEditor.isValid()) {
+//      updateWorkReportBoardMember(entityPathValueContainerFromTextEditor, iwc);
+//    }
+//    if (entityPathValueContainerFromDropDownMenu.isValid()) {
+//      updateWorkReportBoardMember(entityPathValueContainerFromDropDownMenu, iwc);
+//    }
     return action;
   }
   
@@ -339,6 +374,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     EntityToPresentationObjectConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
     // define path short keys and map corresponding converters
     Object[] columns = {
+      "okay", new EditOkayButtonConverter(),
       CHECK_BOX, checkBoxConverter,
       LEAGUE, leagueDropDownMenuConverter,
       STATUS, statusDropDownMenuConverter,
