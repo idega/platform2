@@ -11,6 +11,7 @@ import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QuerySQL;
+import com.idega.block.dataquery.presentation.QueryBuilder;
 import com.idega.block.datareport.business.JasperReportBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.core.ICTreeNode;
@@ -171,8 +172,10 @@ public class ReportLayoutChooser extends Block {
     table.add(outputTable, 3, 2);
     // buttons
     Table buttonTable = new Table(1,3);
-    buttonTable.add(getExecuteQueryButton(resourceBundle), 1,1);
-    buttonTable.add(getPrintReportButton(resourceBundle), 1, 2);
+//    buttonTable.add(getExecuteQueryButton(resourceBundle), 1,1);
+//    buttonTable.add(getPrintReportButton(resourceBundle), 1, 2);
+    buttonTable.add(getNewQueryBuilderButton(resourceBundle), 1, 1);
+    buttonTable.add(getEditQueryBuilderButton(resourceBundle), 1,2 );
     buttonTable.add(getExecuteQueryAndPrintButton(resourceBundle),1,3);
     table.add(buttonTable,4,2);
     // results
@@ -344,6 +347,25 @@ public class ReportLayoutChooser extends Block {
     Text text = new Text(answer);
     text.setBold();
     return text;
+  }
+  
+  private PresentationObject getEditQueryBuilderButton(IWResourceBundle resourceBundle) {
+    Link queryBuilderLink = new Link(resourceBundle.getLocalizedImageButton("report_la_edit_query", "Edit Query..."));
+    queryBuilderLink.setWindowToOpen(com.idega.user.presentation.QueryBuilderWindow.class);
+    // add selected query
+    Integer queryId = ((Integer) parameterMap.get(SELECTION_QUERY_KEY));
+    if (queryId != null && queryFolder != null) {
+      Integer queryFolderId = (Integer) queryFolder.getPrimaryKey();
+      queryBuilderLink.addParameter(QueryBuilder.PARAM_QUERY_ID, queryId.toString());
+      queryBuilderLink.addParameter(QueryBuilder.PARAM_FOLDER_ID, queryFolderId.toString());
+    }
+    return queryBuilderLink;
+  }
+  
+  private PresentationObject getNewQueryBuilderButton(IWResourceBundle resourceBundle)  {
+    Link queryBuilderLink = new Link(resourceBundle.getLocalizedImageButton("report_la_new_query", "New Query..."));
+    queryBuilderLink.setWindowToOpen(com.idega.user.presentation.QueryBuilderWindow.class);
+    return queryBuilderLink;
   }
   
   private PresentationObject getExecuteQueryButton(IWResourceBundle resourceBundle)  {
@@ -527,6 +549,9 @@ public class ReportLayoutChooser extends Block {
     QueryResult queryResult = (QueryResult) iwuc.getSessionAttribute(QUERY_RESULT_SESSION_ATTRIBUTE);
     if (queryResult == null)  {
       return resourceBundle.getLocalizedString("report_la_print_error_result_missing", "Excecute a query, please.");
+    }
+    if (queryResult.isEmpty())  {
+      return resourceBundle.getLocalizedString("report_la_print_result_is_empty", "The result of the executed query is empty.");
     }
     JasperReportBusiness reportBusiness = getReportBusiness();
     try {
