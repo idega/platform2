@@ -35,6 +35,8 @@ public class ChildCareStatistics extends ChildCareBlock {
 	
 	private int _action = ORDER_BY_AREA;
 	
+	private boolean _useSorting = false;
+	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
@@ -61,7 +63,9 @@ public class ChildCareStatistics extends ChildCareBlock {
 		
 		List areas = new Vector(getBusiness().getSchoolBusiness().findAllSchoolAreas());
 		if (areas != null && !areas.isEmpty()) {
-			//Collections.sort(areas, new SchoolAreaComparator(iwc.getCurrentLocale()));
+			if (_useSorting)
+				Collections.sort(areas, new SchoolAreaComparator(iwc.getCurrentLocale()));
+			
 			Iterator iter = areas.iterator();
 			while (iter.hasNext()) {
 				column = 1;
@@ -99,7 +103,10 @@ public class ChildCareStatistics extends ChildCareBlock {
 			School school;
 			ChildCarePrognosis prognosis;
 			int providerID = -1;
-			//Collections.sort(providers, new SchoolComparator(iwc.getCurrentLocale()));
+			
+			if (_useSorting)
+				Collections.sort(providers, new SchoolComparator(iwc.getCurrentLocale()));
+			
 			Iterator iter = providers.iterator();
 			while (iter.hasNext()) {
 				column = 1;
@@ -169,4 +176,12 @@ public class ChildCareStatistics extends ChildCareBlock {
 		if (iwc.isParameterSet(PARAMETER_ACTION))
 			_action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
 	}
+	
+	/**
+	 * @param useSorting
+	 */
+	public void setUseSorting(boolean useSorting) {
+		_useSorting = useSorting;
+	}
+
 }
