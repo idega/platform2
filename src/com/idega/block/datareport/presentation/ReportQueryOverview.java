@@ -296,6 +296,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   private void getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
   	Collection queries = ReportQueryOverview.getQueries(iwc, showOnlyOneQueryWithId);
   	Form form = new Form();
+  	form.setName("list_form");
   	EntityBrowser browser = getBrowser(new  ArrayList(queries), bundle, resourceBundle, form);
   	addParametersToBrowser(browser);
   	addParametersToForm(form);
@@ -373,8 +374,8 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		String deleteText = resourceBundle.getLocalizedString("ro_delete", "Delete");
   	SubmitButton delete = new SubmitButton(DELETE_ITEMS_KEY, deleteText);
   	// change target
-  	String click = getRemoveTargetScript();//ReportOverviewWindow.class);
-  	delete.setOnClick(click);
+  	//String click = getRemoveTargetScript();//ReportOverviewWindow.class);
+  	//delete.setOnClick(click);
   	
   	delete.setAsImageButton(true);
   	// close button
@@ -418,7 +419,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		browser.setArtificialCompoundId("report_overview", null);
 		browser.setLeadingEntityIsUndefined();
 		// browser.setShowAllEntities("", queryRepresentations);
-		browser.setEntities("", queryRepresentations, 10);
+		browser.setEntities("", queryRepresentations, 1);
 		// some design features
 		browser.setCellpadding(2);
 		// define some converters
@@ -725,21 +726,24 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 //  	buffer.append("').value='");
 //		buffer.append(windowId); 
   	StringBuffer buffer = new StringBuffer();
-		buffer.append("this.form.target='newTarget'; openwindow('','newTarget','0','0','0','0','0','0','1','1','1024','768');");
+		buffer.append("var hello=window.name; this.form.target='newTarget'; openwindow('','newTarget','0','0','0','0','0','0','1','1','1024','768');this.form.submit(); this.form.target=hello;");
+		buffer.append("changeValue(findObj('");
+		buffer.append(ButtonConverter.SUBMIT_KEY);
+		buffer.append("'),' ')");
 		return buffer.toString();
 	}
 
-	private String getRemoveTargetScript() {//(Class windowClass) {
-  //	String windowId = IWMainApplication.getEncryptedClassName(windowClass);
-  	// note: the name "newTarget" is not important and arbitrary
-//  	StringBuffer buffer = new StringBuffer("findObj('");
-//  	buffer.append(Page.IW_FRAME_CLASS_PARAMETER);
-//  	buffer.append("').value='");
-//		buffer.append(windowId); 
-  	StringBuffer buffer = new StringBuffer();
-		buffer.append("this.form.target=window.name;");
-		return buffer.toString();
-	}
+//	private String getRemoveTargetScript() {//(Class windowClass) {
+//  //	String windowId = IWMainApplication.getEncryptedClassName(windowClass);
+//  	// note: the name "newTarget" is not important and arbitrary
+////  	StringBuffer buffer = new StringBuffer("findObj('");
+////  	buffer.append(Page.IW_FRAME_CLASS_PARAMETER);
+////  	buffer.append("').value='");
+////		buffer.append(windowId); 
+//  	StringBuffer buffer = new StringBuffer();
+//		buffer.append("this.form.target=window.name;");
+//		return buffer.toString();
+//	}
 
 	
 	
