@@ -50,7 +50,9 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
   public PresentationObject getViewer(ProductViewer productViewer, Product product, IWContext iwc) {
     _name = ProductBusiness.getProductName(product, productViewer._localeId);
     _description = ProductBusiness.getProductDescription(product, productViewer._localeId);
-    _description = TextSoap.formatText(_description);
+    _description = TextFormatter.formatText(_description,1,Table.HUNDRED_PERCENT);
+    _teaser = ProductBusiness.getProductTeaser(product,productViewer._localeId);
+    _teaser = TextFormatter.formatText(_teaser,1,Table.HUNDRED_PERCENT);
     _product = product;
     try {
       _images = EntityFinder.getInstance().findRelated(product, ICFile.class);
@@ -76,7 +78,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 
     int row = 1;
 
-    table.add(header, 1, row);
+    table.add(header, 1, row++);
 
     if (productViewer._useHRasSeperator) {
       HorizontalRule hr = new HorizontalRule("100%");
@@ -90,6 +92,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 	table.setHeight(1,row++,productViewer._spaceBetween);
       }
     }
+
     if (_product != null) {
       Table imageTable = new Table(1,1);
       imageTable.setCellpadding(0);
@@ -111,7 +114,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
     }
     table.add(description, 1, row);
 
-    if ( productViewer._showProductLink ) {
+    if ( productViewer._showProductLink && _product != null ) {
       table.setHeight(1,++row,productViewer._spaceBetween);
 
       Link link = new Link();
@@ -122,6 +125,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 
       if ( productViewer._productPage != null )
 	link.setPage(productViewer._productPage);
+      link.addParameter(ProductBusiness.PRODUCT_ID, _product.getID());
 
       table.add(link,1,++row);
     }
