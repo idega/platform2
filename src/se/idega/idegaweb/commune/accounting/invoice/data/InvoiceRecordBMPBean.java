@@ -367,8 +367,8 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	 * @param month
 	 * @return number of handled children
 	 */
-	public int ejbHomeGetNumberOfHandledChildrenForSchoolTypesAndPeriod(Collection schoolTypes, CalendarMonth month) throws IDOException {
-		// get the first date of the month
+	public int ejbHomeGetNumberOfHandledChildrenForSchoolTypesAndMonth(Collection schoolTypes, CalendarMonth month) throws IDOException {
+		// get the first and the last date of the month
 		Date firstDate = month.getFirstDateOfMonth();
 		Date lastDate = month.getLastDateOfMonth();
 		IDOQuery sql = idoQuery();

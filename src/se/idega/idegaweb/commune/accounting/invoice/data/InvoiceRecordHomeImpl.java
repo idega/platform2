@@ -32,9 +32,9 @@ public java.util.Collection findByPaymentRecord(se.idega.idegaweb.commune.accoun
  }
 
 
-public int getNumberOfHandledChildrenForSchoolTypesAndPeriod(java.util.Collection p0,com.idega.util.CalendarMonth p1)throws com.idega.data.IDOException{
+public int getNumberOfHandledChildrenForSchoolTypesAndMonth(java.util.Collection p0,com.idega.util.CalendarMonth p1)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((InvoiceRecordBMPBean)entity).ejbHomeGetNumberOfHandledChildrenForSchoolTypesAndPeriod(p0,p1);
+	int theReturn = ((InvoiceRecordBMPBean)entity).ejbHomeGetNumberOfHandledChildrenForSchoolTypesAndMonth(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
