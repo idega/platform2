@@ -7,6 +7,7 @@ import com.idega.block.media.presentation.SimpleFileChooser;
 import com.idega.idegaweb.presentation.BusyBar;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 
@@ -54,6 +55,13 @@ public class WorkReportImporter extends WorkReportSelector {
 
 			if (iwc.isParameterSet(PARAM_FILE_ID)) {
 				workReportFileId = Integer.parseInt(iwc.getParameter(PARAM_FILE_ID));
+				String filename = iwrb.getLocalizedString("workreportimporter.no_file", "No file selected");
+				try {
+					filename = iwc.getUploadedFile().getName();
+				}
+				catch(Exception e) {
+				}
+				addToStepsExtraInfo(STEP_NAME_LOCALIZATION_KEY,new Text(filename));
 			}
 			else {
 				addUploadForm(iwc);
@@ -98,5 +106,4 @@ public class WorkReportImporter extends WorkReportSelector {
 
 		add(uploadForm);
 	}
-
 }

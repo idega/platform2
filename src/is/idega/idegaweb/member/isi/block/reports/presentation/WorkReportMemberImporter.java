@@ -70,6 +70,7 @@ public class WorkReportMemberImporter extends WorkReportImporter {
 
 	protected void showReport() {
 		Form f = new Form();
+		f.maintainParameters(getParametersToMaintain());
 		Table t = new Table();
 		t.add(iwrb.getLocalizedString("workreportmemberimport.import_statistics"), 1, 1);
 		t.add(iwrb.getLocalizedString("workreportmemberimport.number_of_members"), 1, 3);
@@ -99,5 +100,4 @@ public class WorkReportMemberImporter extends WorkReportImporter {
 		f.add(t);	
 		add(f);
 	}
-
 }
