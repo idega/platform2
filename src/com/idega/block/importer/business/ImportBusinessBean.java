@@ -94,7 +94,7 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
      ex.printStackTrace();
      return false;
     }
-    catch(ClassNotFoundException ex){
+    catch(Exception ex){
      ex.printStackTrace();
      return false;
     }
