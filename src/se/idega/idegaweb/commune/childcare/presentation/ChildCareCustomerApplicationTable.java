@@ -41,7 +41,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.48 2003/07/01 14:35:20 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.49 2003/07/01 14:52:43 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -70,6 +70,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
+		
+		if (iwc.isInEditMode()){
+			return;
+		}
 
 		setCacheable(false);
 		childCarebusiness = getChildCareBusiness(iwc);
@@ -578,10 +582,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 		GenericButton cancelBtn = (GenericButton) getButton(new GenericButton("cancel", localize(CANCEL)));
 		cancelBtn.setPageToOpen(getParentPageID());
-		cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_1);
+		cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_2);
 
 		SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(SUBMIT)));
-		submitBtn.setValueOnClick(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_1));
+		submitBtn.setValueOnClick(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_2));
 
 		layoutTbl.add(new HiddenInput(CCConstants.ACTION, "-1"));
 		layoutTbl.add(appTable, 1, 1);
