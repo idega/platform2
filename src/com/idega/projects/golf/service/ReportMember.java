@@ -23,6 +23,7 @@
   private Float fHandicap;
   private String sPhone;
   private String sLocker;
+  private String sStatus;
 
   public ReportMember() {
     this.nName = new Name();
@@ -32,9 +33,9 @@
     this.fHandicap = new Float( -1.0);
     this.sLocker = "";
     this.sPhone = "";
+    this.sStatus = "";
   }
-
-  public ReportMember(String first, String middle, String last, String Social,String Address, String Email, int Balance, float Handicap,String Phone,String Locker) {
+  public ReportMember(String first, String middle, String last, String Social,String Address, String Email, int Balance, float Handicap,String Phone,String Locker,String Status) {
 
       this.nName = new Name(first, middle, last);
       this.sSocial = Social!=null?Social:"";
@@ -42,8 +43,9 @@
       this.sAddress = Address!=null?Address:"";
       this.iBalance = Balance;
       this.fHandicap = new Float(Handicap);
-      this.sLocker = Locker!=null?Locker:"";;
-      this.sPhone = Phone!=null?Phone:"";;
+      this.sLocker = Locker!=null?Locker:"";
+      this.sPhone = Phone!=null?Phone:"";
+      this.sStatus = Status!=null?Status:"";
   }
 
 
@@ -124,6 +126,9 @@
   public String getLocker() {
       return this.sLocker ;
   }
+  public String getStatus() {
+      return this.sStatus ;
+  }
   public void setSocial(String social){
     this.sSocial = social;
   }
@@ -156,6 +161,10 @@
 
   public void setLocker(String Locker) {
      this.sLocker = Locker ;
+  }
+
+  public void setStatus(String Status) {
+     this.sStatus = Status ;
   }
 
    class Name {

@@ -28,6 +28,7 @@ public class ReportMemberComparator implements Comparator {
   public static final int BALANCE   = 6;
   public static final int PHONE     = 7;
   public static final int LOCKER    = 8;
+  public static final int STATUS    = 9;
   private int sortBy;
 
   public ReportMemberComparator() {
@@ -82,6 +83,11 @@ public class ReportMemberComparator implements Comparator {
         case LOCKER   : result = p1.getLocker().compareTo(p2.getLocker());
                         if(result == 0)
                           result = nameSort(o1, o2);
+        break;
+        case STATUS   : result = p1.getStatus().compareTo(p2.getStatus());
+                        if(result == 0)
+                          result = nameSort(o1, o2);
+        break;
         default:
           break;
       }

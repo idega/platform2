@@ -24,17 +24,18 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
   private String sAction = "list_action";
   private String sActPrm = "";
   private boolean isAdmin;
-  private String[] sSelectNames = {"first_name,middle_name,last_name","social_security_number","email","street,street_number","number","handicap","balance","locker_number"};
-  private String[] sSelectDisplay = {"Nafn","Kennitala","Netfang","Heimili","Sími","Forgjöf","Skuldastaða","Skápur"};
-  private String[] sSelectTables = {"member","member","member","address,member_address","phone,member_phone","member_info","account","union_member_info"};
+  private String[] sSelectNames = {"first_name,middle_name,last_name","social_security_number","email","street,street_number","number","handicap","balance","locker_number","member_status"};
+  private String[] sSelectDisplay = {"Nafn","Kennitala","Netfang","Heimili","Sími","Forgjöf","Skuldastaða","Skápur","Staða"};
+  private String[] sSelectTables = {"member","member","member","address,member_address","phone,member_phone","member_info","account","union_member_info","union_member_info"};
   private String[] sSelectJoin = {"","","","address.address_id = member_address.address_id and member.member_id = member_address.member_id",
                                         "phone.phone_id = member_phone.phone_id and member.member_id = member_phone.member_id",
                                         "member.member_id = member_info.member_id","member.member_id = account.member_id",
+                                        "member.member_id = union_member_info.member_id ",
                                         "member.member_id = union_member_info.member_id "};
 
-  private final int CH1=0,CH2=1,CH3=2,CH4=3,CH5=4,CH6=5,CH7=6,CH8=7;
-  private final int F=0,M=1,L=2,S=3,E=4,G=5,N=6,P=7,H=8,B=9,C=10;
-  private String[] sCols = {"first_name","middle_name","last_name","social_security_number","email","street","street_number","number","handicap","balance","locker_number"};
+  private final int CH1=0,CH2=1,CH3=2,CH4=3,CH5=4,CH6=5,CH7=6,CH8=7,CH9=8;
+  private final int F=0,M=1,L=2,S=3,E=4,G=5,N=6,P=7,H=8,B=9,C=10,U=11;
+  private String[] sCols = {"first_name","middle_name","last_name","social_security_number","email","street","street_number","number","handicap","balance","locker_number","member_status"};
   private int[] iCols;
   private int paneWidth=600;
   private String boxName = "kassinn";
@@ -103,22 +104,25 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
     box1.addMenuElement(CH6,sSelectDisplay[CH6]);
     box1.addMenuElement(CH7,sSelectDisplay[CH7]);
     box1.addMenuElement(CH8,sSelectDisplay[CH8]);
+    box1.addMenuElement(CH9,sSelectDisplay[CH9]);
 
     box1.setHeight(10);
     box2.setHeight(10);
     box2.selectAllOnSubmit();
 
     T2.add("Hópur",1,1);
-    T2.add("Kyn",1,2);
-    T2.add("Aldur",1,3);
-    T2.add("Forgjöf",1,4);
+    T2.add("Staða",1,2);
+    T2.add("Kyn",1,3);
+    T2.add("Aldur",1,4);
+    T2.add("Forgjöf",1,5);
 
     T2.add(this.drpGroup("list_grp"),2,1);
-    T2.add(this.drpGender("list_gender"),2,2);
-    T2.add(this.drpInt("list_agefrom","Frá",120),2,3);
-    T2.add(this.drpInt("list_ageto","Til",120),2,3);
-    T2.add(this.drpInt("list_hndcpfrom","Frá",101),2,4);
-    T2.add(this.drpInt("list_hndcpto","Til",101),2,4);
+    T2.add(this.drpStatus("list_status"),2,2);
+    T2.add(this.drpGender("list_gender"),2,3);
+    T2.add(this.drpInt("list_agefrom","Frá",120),2,4);
+    T2.add(this.drpInt("list_ageto","Til",120),2,4);
+    T2.add(this.drpInt("list_hndcpfrom","Frá",101),2,5);
+    T2.add(this.drpInt("list_hndcpto","Til",101),2,5);
 
 
     form.add(new SubmitButton("Áfram",this.sAction,String.valueOf(ACT1)));
@@ -128,6 +132,7 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
     String[] selectedValues = modinfo.getParameterValues(boxName);
     if(selectedValues!=null){
       int iGroup        = Integer.parseInt(modinfo.getParameter("list_grp" ));
+      String sStatus    = modinfo.getParameter("list_status");
       String sGender    = modinfo.getParameter("list_gender");
       int iAgefrom      = Integer.parseInt(modinfo.getParameter("list_agefrom"));
       int iAgeto        = Integer.parseInt(modinfo.getParameter("list_ageto" ));
@@ -171,6 +176,11 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
           vJoin.addElement("member.member_id = group_member.member_id");
         vWhere.addElement(" group_member.group_id ='"+iGroup+"' ");
       }
+      if(!sStatus.equalsIgnoreCase("0")){
+        if(!vTables.contains(sSelectTables[CH8]))
+          vTables.addElement(sSelectTables[CH8]);
+        vWhere.addElement(" union_member_info.member_status = '"+sStatus+"' ");
+      }
       if(!sGender.equalsIgnoreCase("0")){
         if(!vTables.contains(sSelectTables[CH1]))
           vTables.addElement(sSelectTables[CH1]);
@@ -212,6 +222,7 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
       add(new Link("Listi","/list"));
       add(Text.getBreak());
       add("Fjöldi "+mbs.size());
+      OrderVector(mbs,1,false);
       add(this.makeMemberTable(this.makeMemberStrings(mbs)));
     }
   }
@@ -234,6 +245,8 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
 
           OrderVector(mbs,order,reverse);
           modinfo.getSession().setAttribute("lastorder",sOrd);
+          add(new Link("Listi","/list"));
+          add(Text.getBreak());
           add("Fjöldi "+mbs.size());
           add(this.makeMemberTable(this.makeMemberStrings(mbs)));
         }
@@ -251,6 +264,7 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
       case H: sortint = ReportMemberComparator.HANDICAP; break;
       case B: sortint = ReportMemberComparator.BALANCE;  break;
       case C: sortint = ReportMemberComparator.LOCKER;   break;
+      case U: sortint = ReportMemberComparator.STATUS;   break;
     }
     ReportMemberComparator RMC = new ReportMemberComparator(sortint);
     if(reverse)
@@ -299,6 +313,7 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
       case H: rs = "Forgjöf";     break;
       case B: rs = "SkuldaStaða"; break;
       case C: rs = "Skápur";      break;
+      case U: rs = "Staða";       break;
     }
     return rs;
   }
@@ -314,6 +329,7 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
       case H: rs = rm.getHandicap().toString();     break;
       case B: rs = String.valueOf(rm.getBalance()); break;
       case C: rs = rm.getLocker();                  break;
+      case U: rs = getStatus(rm.getStatus());       break;
     }
     return rs!=null?rs:"";
   }
@@ -363,6 +379,7 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
         sql.append(",");
     }
 
+    add(sql.toString());
     return sql.toString();
   }
 
@@ -388,7 +405,7 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
       }
       while(RS.next()){
 
-        String f="",m="",l="",s="",e="",g="",n="",p="",c="";
+        String f="",m="",l="",s="",e="",g="",n="",p="",c="",u="";
         float h = -1;
         int b = 0;
 
@@ -405,10 +422,11 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
             case H: h = RS.getFloat(sCols[H]);    break;
             case B: b = RS.getInt(sCols[B]);      break;
             case C: c = RS.getString(sCols[C]);   break;
+            case U: u = RS.getString(sCols[U]);   break;
 
           }
         }
-        rm = new ReportMember(f,m,l,s,g+n,e,b,h,p,c);
+        rm = new ReportMember(f,m,l,s,g+n,e,b,h,p,c,u);
         Members.addElement(rm);
 
       }
@@ -418,6 +436,20 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
     }
     catch(SQLException e){freeConnection(Conn); e.printStackTrace();}
     return Members;
+  }
+
+  private String getStatus(String status){
+    if(status.equalsIgnoreCase("I"))
+      return "Óvirkur";
+    else if(status.equalsIgnoreCase("A"))
+      return "Virkur";
+    else if(status.equalsIgnoreCase("W"))
+      return "Í bið";
+    else if(status.equalsIgnoreCase("Q"))
+      return "Hættur";
+    else if(status.equalsIgnoreCase("D"))
+      return "Látinn";
+    else return "";
   }
 
   private DropdownMenu drpGroup(String sPrm) throws SQLException{
@@ -438,6 +470,17 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
     drp.addMenuElement("6","5.Flokkur");
     return drp;
   }
+  private DropdownMenu drpStatus(String sPrm) throws SQLException{
+    DropdownMenu drp = new DropdownMenu(sPrm);
+    drp.addDisabledMenuElement("0","-");
+    drp.addMenuElement("A","Virkur");
+    drp.addMenuElement("I","Óvirkur");
+    drp.addMenuElement("W","Í bið");
+    drp.addMenuElement("Q","Hættur");
+    drp.addMenuElement("D","Látinn");
+    return drp;
+  }
+
   private DropdownMenu drpGender(String sPrm) throws SQLException{
     DropdownMenu drp = new DropdownMenu(sPrm);
     drp.addDisabledMenuElement("0","-");
