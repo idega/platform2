@@ -30,6 +30,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
   public final static String SCHOOLCLASS = "sch_school_class_id";
   public final static String REGISTER_DATE = "register_date";
   public final static String REGISTRATOR = "registrator";
+  public final static String NEEDS_SPECIAL_ATTENTION = "NEEDS_SPECIAL_ATTENTION";
+  public final static String SPECIALLY_PLACED = "SPECIALLY_PLACED";
+  public final static String LANGUAGE = "LANGUAGE";
 
   public void initializeAttributes() {
     this.addAttribute(getIDColumnName());
@@ -38,6 +41,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
     this.addAttribute(NOTES,"notes",true,true,String.class,255);
     this.addAttribute(REGISTER_DATE,"registerdate",true,true,Timestamp.class);
     this.addAttribute(REGISTRATOR,"registrator",true,true,Integer.class,MANY_TO_ONE,com.idega.core.user.data.User.class);
+    this.addAttribute(NEEDS_SPECIAL_ATTENTION,"Needs special attention",true,true,Boolean.class);
+    this.addAttribute(SPECIALLY_PLACED,"Specially placed",true,true,Boolean.class);
+    this.addAttribute(LANGUAGE,"Needs special attention",true,true,String.class);
   }
   public String getEntityName() {
     return SCHOOLCLASSMEMBER;
@@ -71,6 +77,27 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
   }
   public String getNotes() {
   	return this.getStringColumnValue(NOTES);
+  }
+
+  public void setNeedsSpecialAttention(boolean needsAttention) {
+  	this.setColumn(NEEDS_SPECIAL_ATTENTION, needsAttention);
+  }
+  public boolean getNeedsSpecialAttention() {
+  	return getBooleanColumnValue(NEEDS_SPECIAL_ATTENTION,false);
+  }
+
+  public void setSpeciallyPlaced(boolean speciallyPlaced) {
+  	this.setColumn(SPECIALLY_PLACED, speciallyPlaced);
+  }
+  public boolean getSpeciallyPlaced() {
+  	return getBooleanColumnValue(SPECIALLY_PLACED,false);
+  }
+
+  public void setLanguage(String language) {
+  	this.setColumn(LANGUAGE, language);
+  }
+  public String getLanguage() {
+  	return this.getStringColumnValue(LANGUAGE);
   }
 
   public Collection ejbFindBySchoolClass(SchoolClass schoolClass) throws FinderException,RemoteException {
