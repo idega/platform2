@@ -86,7 +86,6 @@ public class AdminRegisterTime extends is.idega.idegaweb.golf.templates.page.Jmo
     this.setResizable(true);
     myForm = new Form();
     frameTable = new Table();
-    frameTable.setAlignment("center");
     frameTable.setWidth("100%");
     myForm.add(frameTable);
     super.add(Text.getBreak());
