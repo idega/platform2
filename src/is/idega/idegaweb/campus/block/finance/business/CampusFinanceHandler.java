@@ -280,9 +280,9 @@ public class CampusFinanceHandler implements FinanceHandler {
 			to.setTime(23,59,59);
 			CampusFinanceHandler handler = new CampusFinanceHandler();
 			double ret = handler.getFactor(begin.getDate().getTime(),end.getDate().getTime(),from.getDate().getTime(),to.getDate().getTime());
-			System.out.print(" Begin: "+begin.toString()+" End "+end.toString());
-			System.out.print(" From:"+from.toString()+" To: "+to.toString());
-			System.out.println(" Factor "+ret);
+			//System.out.print(" Begin: "+begin.toString()+" End "+end.toString());
+			//System.out.print(" From:"+from.toString()+" To: "+to.toString());
+			System.out.println("Dagar="+day+" Stu›ull= "+ret);
 		}
 		
 		
@@ -417,7 +417,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 			AE.setLastUpdated(IWTimestamp.getTimestampRightNow());
 			/** @todo skeptical precision cut */
 			BigDecimal price = new BigDecimal(-T.getPrice());
-			price.multiply(new BigDecimal(factor));
+			price = price.multiply(new BigDecimal(factor));
 			
 			AE.setTotal(price.toBigInteger().floatValue());
 			//AE.setTotal((int) (-T.getPrice() * factor));
