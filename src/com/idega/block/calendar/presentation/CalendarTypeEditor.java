@@ -11,6 +11,7 @@ import com.idega.presentation.ui.*;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICLocale;
+import com.idega.block.IWBlock;
 import com.idega.block.calendar.data.*;
 import com.idega.block.calendar.business.*;
 import com.idega.block.media.presentation.ImageInserter;
@@ -45,7 +46,7 @@ public CalendarTypeEditor(){
      * @todo permission
      */
     _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
-    _iwb = getBundle(iwc);
+    _iwb = iwc.getApplication().getBundle(IWBlock.IW_CORE_BUNDLE_IDENTIFIER);
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("calendar_type_editor","Calendar Type Editor"));
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
@@ -136,18 +137,17 @@ public CalendarTypeEditor(){
       if ( _typeID != -1 )
         entryTypes.setSelectedElement(Integer.toString(_typeID));
     typesTable.add(entryTypes,1,1);
+    typesTable.setWidth(2,1,"5");
+
+    Image newImage = _iwb.getImage("shared/create.gif",_iwrb.getLocalizedString("new_type","New type"));
+    Link newLink = new Link(newImage);
+    typesTable.add(newLink,3,1);
 
     Image deleteImage = _iwb.getImage("shared/delete.gif",_iwrb.getLocalizedString("delete_type","Delete type"));
-      deleteImage.setHorizontalSpacing(2);
     Link deleteLink = new Link(deleteImage);
       deleteLink.addParameter(CalendarBusiness.PARAMETER_MODE_DELETE,CalendarBusiness.PARAMETER_TRUE);
       deleteLink.addParameter(CalendarBusiness.PARAMETER_TYPE_ID,_typeID);
-    typesTable.add(deleteLink,2,1);
-
-    Image newImage = _iwb.getImage("shared/create.gif",_iwrb.getLocalizedString("new_type","New type"));
-      newImage.setHorizontalSpacing(2);
-    Link newLink = new Link(newImage);
-    typesTable.add(newLink,3,1);
+    typesTable.add(deleteLink,3,1);
 
     addLeft(_iwrb.getLocalizedString("type","Type")+":",typesTable,true,false);
 
@@ -165,8 +165,8 @@ public CalendarTypeEditor(){
     addRight(_iwrb.getLocalizedString("new_image","New image")+":",image,true,false);
 
     addHiddenInput(new HiddenInput(CalendarBusiness.PARAMETER_TYPE_ID,Integer.toString(_typeID)));
-    addSubmitButton(new SubmitButton(_iwrb.getImage("close.gif"),CalendarBusiness.PARAMETER_MODE,CalendarBusiness.PARAMETER_MODE_CLOSE));
-    addSubmitButton(new SubmitButton(_iwrb.getImage("save.gif"),CalendarBusiness.PARAMETER_MODE,CalendarBusiness.PARAMETER_MODE_SAVE));
+    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close","CLOSE"),CalendarBusiness.PARAMETER_MODE,CalendarBusiness.PARAMETER_MODE_CLOSE));
+    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),CalendarBusiness.PARAMETER_MODE,CalendarBusiness.PARAMETER_MODE_SAVE));
   }
 
   private void deleteType(IWContext iwc) {
