@@ -25,10 +25,19 @@ public class AccountManager {
 
   }
 
-  public static Account[] findAccounts(int iMemberId){
+  public static Account[] findAccounts(int iUserId){
     Account[] A;
     try{
-       A = (Account[])new Account().findAllByColumn("member_id",iMemberId);
+       A = (Account[])new Account().findAllByColumn("ic_user_id",iUserId);
+    }
+    catch(Exception e){A=null;}
+    return A;
+  }
+
+  public static List listOfAccounts(int iUserId){
+    List A = null;
+    try{
+       A = EntityFinder.findAllByColumn(new Account(),"ic_user_id",iUserId);
     }
     catch(Exception e){A=null;}
     return A;
