@@ -126,6 +126,10 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	}
 
   public boolean createSpecialConnection(String connection, int parentGroupId, String clubName, IWContext iwc) {
+  	System.out.println("connection = " + connection);
+		System.out.println("parentGroupId = " + parentGroupId);
+		System.out.println("clubName = " + clubName);
+  	
 		if (connection == null || connection.equals(""))
 			return false;
 
@@ -139,7 +143,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 			boolean foundClubDivisionGroup = false;
 			List children = specialGroup.getChildGroups();
 			Iterator it = children.iterator();
-			while (it.hasNext() && !foundIt && !foundClubDivisionGroup) {
+			while (it.hasNext() && !(foundIt && foundClubDivisionGroup)) {
 				child = (Group) it.next();
 				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TEMPLATE)) {
 					foundIt = true;
@@ -161,8 +165,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 				newGroup.store();
 				setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newGroup);
 				
-				
-
+			
 				group.addGroup(newGroup);
 				insertCopyOfChild(newGroup, child, clubDivisionGroup, clubName,iwc);
 			}
