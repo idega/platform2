@@ -11,7 +11,6 @@ import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
 import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolSeason;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
@@ -383,11 +382,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			
 			char status = application.getApplicationStatus();
 
-			SchoolSeason season = null;
-			try {
-				season = getCareBusiness().getCurrentSeason();
-			} catch (Exception e) {}
-			boolean hasSchoolPlacement = getBusiness().getSchoolBusiness().hasActivePlacement(application.getChildId(), application.getProviderId(), season, getBusiness().getSchoolBusiness().getCategoryElementarySchool());
+			boolean hasSchoolPlacement = getBusiness().getSchoolBusiness().hasActivePlacement(application.getChildId(), application.getProviderId(), getBusiness().getSchoolBusiness().getCategoryElementarySchool());
 			boolean instantContract = isAfterSchoolApplication && hasSchoolPlacement && (status == getBusiness().getStatusSentIn());
 
 			if (status == getBusiness().getStatusSentIn() && !instantContract) {
