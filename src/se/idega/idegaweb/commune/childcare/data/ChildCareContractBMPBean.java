@@ -352,7 +352,18 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return idoFindPKsByQuery(sql);
 	}
 
-	
+	public Collection ejbFindByDateRangeWhereStatusActive(Date startDate, Date endDate) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelect().append(" distinct a.* from "+getEntityName()).append(" a, ").append(ChildCareApplicationBMPBean.ENTITY_NAME).append(" c");
+		sql.appendWhereEquals("a."+COLUMN_CHILD_ID, "c."+ChildCareApplicationBMPBean.CHILD_ID);
+		sql.appendAndEqualsQuoted("c.APPLICATION_STATUS","F");
+		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(endDate);
+		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(startDate);
+		sql.appendOr().append(COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
+		return idoFindPKsByQuery(sql);
+	}
+
+
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery sql = idoQueryGetSelect();
 		return idoFindPKsByQuery(sql);

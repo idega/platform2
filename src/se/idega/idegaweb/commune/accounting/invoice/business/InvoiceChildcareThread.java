@@ -120,7 +120,7 @@ public class InvoiceChildcareThread extends BillingThread{
 
 
 		try {
-			contractArray = getChildCareContractHome().findByDateRange(startPeriod.getDate(), endPeriod.getDate());
+			contractArray = getChildCareContractHome().findByDateRangeWhereStatusActive(startPeriod.getDate(), endPeriod.getDate());
 			log.info("# of contracts = "+contractArray.size());
 			Iterator contractIter = contractArray.iterator();
 			errorOrder = 0;
