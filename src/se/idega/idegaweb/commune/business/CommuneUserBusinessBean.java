@@ -1,5 +1,6 @@
 package se.idega.idegaweb.commune.business;
 
+import com.idega.util.idegaTimestamp;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.business.IBOServiceBean;
@@ -31,7 +32,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
   protected UserBusiness getUserBusiness()throws RemoteException{
     return (UserBusiness)this.getServiceInstance(UserBusiness.class);
   }
-  
+
    protected GroupBusiness getGroupBusiness()throws RemoteException{
     return (GroupBusiness)this.getServiceInstance(GroupBusiness.class);
   }
@@ -42,12 +43,20 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
    * Also adds the citizen to the Commune Root Group.
    */
   public User createCitizen(String firstname, String middlename, String lastname,String personalID) throws CreateException,RemoteException{
+   return this.createCitizen(firstname,middlename,lastname,personalID,null,null);
+  }
+
+  /**
+   * Creates a new citizen with a firstname,middlename, lastname, personalID,gender and date of birth where middlename, personalID,gender,dateofbirth can be null.<br>
+   * Also adds the citizen to the Commune Root Group.
+   */
+ public User createCitizen(String firstname, String middlename, String lastname,String personalID, Gender gender, idegaTimestamp dateOfBirth) throws CreateException,RemoteException{
     Group rootGroup;
     User newUser;
 
     try {
       rootGroup = this.getRootCitizenGroup();
-      newUser = this.getUserBusiness().createUser(firstname,middlename,lastname,personalID);
+      newUser = this.getUserBusiness().createUser(firstname,middlename,lastname,personalID,gender,dateOfBirth);
       rootGroup.addGroup(newUser);
     }
     catch (Exception ex) {
@@ -55,13 +64,17 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
     }
 
     return newUser;
-  }
+ }
 
   /**
    * Finds and updates or Creates a new citizen with a firstname,middlename, lastname and personalID.<br>
    * Also adds the citizen to the Commune Root Group.
    */
   public User createCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName,String personalID) throws CreateException,RemoteException{
+    return createCitizenByPersonalIDIfDoesNotExist(firstName, middleName, lastName, personalID, null,null);
+  }
+
+  public User createCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName,String personalID, Gender gender, idegaTimestamp dateOfBirth) throws CreateException,RemoteException{
     User user;
     try{
       user = getUserBusiness().getUserHome().findByPersonalID(personalID);
@@ -78,7 +91,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
       user.store();
     }
     catch(FinderException ex){
-      user = createCitizen(firstName,middleName,lastName,personalID);
+      user = createCitizen(firstName,middleName,lastName,personalID,gender,dateOfBirth);
     }
 
     return user;
@@ -104,7 +117,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
       newUser = this.getUserBusiness().createUser(firstname,middlename,lastname);
       rootSchoolAdminGroup.addGroup(newUser);
       schoolGroup.addGroup(newUser);
-      
+
       return newUser;
   }
 
@@ -149,7 +162,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 
     return rootGroup;
   }
-  
+
    /**
    * Creates (if not available) and returns the default usergroup all citizens, read from imports, are members of.
    * throws a CreateException if it failed to locate or create the group.
