@@ -34,7 +34,7 @@ public class TournamentSelector extends TournamentBlock {
 		if (tournament_id != null){
 			super.setTournamentID(modinfo, tournament_id);
 			String clsName = modinfo.getParameter(PARAMETER_CLASS_NAME);
-			if (clsName == null) {
+			if (clsName == null || TournamentAdministratorWindow.class.getName().equals(clsName)) {
 				getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(TournamentRegistrationWindow.class)+"&tournament_admin_view="+GolfTournamentAdminDialog.ADMIN_VIEW_REGISTER_MEMBER);
 			}else {
 	      getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(Class.forName(clsName)));

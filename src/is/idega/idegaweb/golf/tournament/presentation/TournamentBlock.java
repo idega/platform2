@@ -6,11 +6,14 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
+import java.util.Enumeration;
+
 import is.idega.idegaweb.golf.moduleobject.GolfTournamentAdminDialog;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.Text;
 
 /**
  * @author gimmi
@@ -61,10 +64,22 @@ public abstract class TournamentBlock extends GolfBlock {
 	protected abstract boolean tournamentMustBeSet();
 
 	public void _main(IWContext modinfo) throws Exception {
+		
+//		System.out.println("------------------------------------------");
+//		Enumeration enum = modinfo.getParameterNames();
+//		while (enum.hasMoreElements()) {
+//			String element = (String) enum.nextElement();
+//			System.out.println(element+" : "+modinfo.getParameter(element));
+//		}
+//		System.out.println("-------------------END--------------------");		
 		int tID = getTournamentID(modinfo);
 
 		if (tID < 1 && tournamentMustBeSet()) {
 			System.out.println("ClassCalling is " + getClassName());
+			add(getMessageText(localize("tournament.loading...","Loading...")));
+			add(Text.getBreak());
+		  	add(Text.getBreak());
+		  	add(modinfo.getIWMainApplication().getCoreBundle().getImage("busy.gif"));
 			getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(TournamentSelectorWindow.class) + "&" + PARAMETER_CLASS_NAME + "=" + getClassName()+"Window");
 		} else {
 			super.add(getDialog());

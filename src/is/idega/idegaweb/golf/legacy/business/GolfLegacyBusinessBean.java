@@ -236,7 +236,7 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 				if(fi.getImageID()<1 && oldImage != null) {
 					try {
 						ICFile newImage = fh.create();
-						newImage.setFileValue(oldImage.getImageValue());
+						
 						String name = oldImage.getName();
 						if(name != null) {
 							newImage.setName(name);
@@ -245,7 +245,10 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 						newImage.setDescription("This is imported from old golf ImageEntity");
 						newImage.store();
 						
-						MediaBusiness.saveMediaToDB(newImage,folderID,iwc);
+						folder.addChild(newImage);
+						
+						newImage.setFileValue(oldImage.getImageValue());
+						newImage.store();
 						
 						fi.setImageID((Integer)newImage.getPrimaryKey());
 						fi.store();
@@ -291,16 +294,19 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 				if(fi.getImageID()<1 && oldImage != null) {
 					try {
 						ICFile newImage = fh.create();
-						newImage.setFileValue(oldImage.getImageValue());
+						
 						String name = oldImage.getName();
 						if(name != null) {
 							newImage.setName(name);
-							newImage.setMimeType((name.indexOf(".gif")>-1)?"image/gif":"image/jpeg");
+							newImage.setMimeType((name.toLowerCase().indexOf(".gif")>-1)?"image/gif":"image/jpeg");
 						}
 						newImage.setDescription("This is imported from old golf ImageEntity");
 						newImage.store();
 						
-						MediaBusiness.saveMediaToDB(newImage,folderID,iwc);
+						folder.addChild(newImage);
+						
+						newImage.setFileValue(oldImage.getImageValue());
+						newImage.store();
 						
 						fi.setImageID((Integer)newImage.getPrimaryKey());
 						fi.store();
