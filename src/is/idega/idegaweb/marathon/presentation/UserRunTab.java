@@ -117,7 +117,6 @@ public class UserRunTab extends UserTab{
 		t.setCellspacing(0);
 		t.add(runText,1,row++);
 		if(runs != null) {
-			System.out.println("runs in userRunTab: " + runs.toString());
 			Iterator i = runs.iterator();
 			while(i.hasNext()) {
 				Group run = (Group) i.next();
