@@ -115,7 +115,7 @@ public class AccountingBlock extends CommuneBlock {
 	 * @author anders
 	 */
 	protected TextInput getTextInput(String parameter, String text, int width) {
-		TextInput ti = getTextInput(parameter, text);
+		TextInput ti = getTextInput(parameter, ""+text);
 		ti.setWidth("" + width);
 		return ti;
 	}
