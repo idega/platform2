@@ -6,7 +6,6 @@ package se.idega.idegaweb.commune.user.presentation;
 import is.idega.block.family.business.NoChildrenFound;
 import is.idega.block.family.business.NoCohabitantFound;
 import is.idega.block.family.business.NoSpouseFound;
-import is.idega.idegaweb.member.presentation.UserEditor;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -29,6 +28,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.user.presentation.UserEditor;
 /**
  * CitizenEditor
  * @author aron 

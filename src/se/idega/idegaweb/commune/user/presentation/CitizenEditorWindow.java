@@ -4,10 +4,10 @@
  */
 package se.idega.idegaweb.commune.user.presentation;
 
-import is.idega.idegaweb.member.presentation.UserEditor;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.Window;
+import com.idega.user.presentation.UserEditor;
 
 /**
  * UserEditorWindow

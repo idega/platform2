@@ -2,7 +2,9 @@
  * Created on 6.7.2003
  *
  */
-package is.idega.idegaweb.member.presentation;
+package com.idega.user.presentation;
+import is.idega.idegaweb.member.presentation.FamilyRelationConnector;
+import is.idega.idegaweb.member.presentation.UserRelationConnector;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -68,7 +70,6 @@ import com.idega.user.data.GroupRelation;
 import com.idega.user.data.GroupRelationHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserStatus;
-import com.idega.user.presentation.UserSearcher;
 import com.idega.util.IWTimestamp;
 import com.idega.util.URLUtil;
 
