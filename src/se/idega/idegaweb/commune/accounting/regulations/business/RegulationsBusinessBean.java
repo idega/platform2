@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.88 2003/12/10 10:54:54 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.89 2003/12/10 11:08:52 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1704,7 +1704,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 						}
 					
 						if (!missingIncome) {
-							float perc = reg.getDiscount();
+							float perc = reg.getMaxAmountDiscount();
+							System.out.println("perc = " + perc);
+							System.out.println("income = " + income);
+							
 							float amount = income * perc / 100;
 							if (amount < total_sum) {
 								ret = new PostingDetail();
