@@ -1,6 +1,7 @@
 package com.idega.block.finance.presentation;
 
 import com.idega.block.finance.business.FinanceFinder;
+import com.idega.block.finance.business.FinanceHandler;
 import com.idega.block.finance.data.TariffGroup;
 import com.idega.block.finance.data.Tariff;
 import com.idega.idegaweb.IWBundle;
@@ -30,6 +31,7 @@ public class AccountTariffer extends Block {
   protected IWResourceBundle iwrb;
   protected IWBundle iwb,core;
   private boolean isAdmin = false;
+  private static String prmGroup = "at_grp";
 
   public AccountTariffer() {
   }
@@ -44,31 +46,120 @@ public class AccountTariffer extends Block {
     */
     if(isAdmin){
       int iCategoryId = Finance.parseCategoryId(iwc);
+      int iGroupId = -1;
+      List groups = FinanceFinder.listOfTariffGroups(iCategoryId);
+      TariffGroup group = null;
+      if(iwc.isParameterSet(prmGroup))
+        iGroupId = Integer.parseInt(iwc.getParameter(prmGroup));
+      if(iGroupId > 0 ){
+        group = FinanceFinder.getTariffGroup(iGroupId);
+      }
+      else if(groups !=null){
+        group = (TariffGroup) groups.get(0);
+        iGroupId = group.getID();
+      }
+      Table T = new Table(1,4);
+      T.setCellpadding(0);
+      T.setCellspacing(0);
+      T.add(Edit.headerText(iwrb.getLocalizedString("account_tariffer","Account tariffer"),3),1,1);
+      T.add(getGroupLinks(iCategoryId,iGroupId,groups),1,2);
+      T.add(getTariffTable(group),1,3);
+      T.add(getTariffPropertiesTable(),1,4);
+      T.setWidth("100%");
+      add(T);
     }
-
   }
 
-  private PresentationObject getTariffTable(int iTariffGroupId){
-    List listOfTariffs = FinanceFinder.listOfTariffs(iTariffGroupId);
-    Table T = new Table(1,2);
+  private PresentationObject getGroupLinks(int iCategoryId , int iGroupId,List groups){
+    Table T = new Table();
+    T.setCellpadding(0);
+    T.setCellspacing(0);
+    int col = 1;
+    if(groups!=null){
+      java.util.Iterator I = groups.iterator();
+      TariffGroup group;
+      Link tab;
+      while (I.hasNext()) {
+        group = (TariffGroup) I.next();
+        tab = new Link(iwb.getImageTab(group.getName(),true));
+        tab.addParameter(Finance.getCategoryParameter(iCategoryId));
+        tab.addParameter(prmGroup,group.getID());
+        T.add(tab,col++,1);
+      }
+    }
+    Link edit = new Link(iwrb.getLocalizedImageTab("edit","Edit",true));
+    edit.setWindowToOpen(TariffGroupWindow.class);
+    edit.addParameter(Finance.getCategoryParameter(iCategoryId));
+    T.add(edit,col,1);
+    return T;
+  }
+
+  private PresentationObject getTariffTable(TariffGroup group){
+    List listOfTariffs = null;
+    java.util.Map map = null;
+    boolean hasMap = false;
+    if(group!=null){
+        if(group.getHandlerId() > 0){
+          FinanceHandler handler = FinanceFinder.getFinanceHandler(group.getHandlerId());
+          map = handler.getAttributeMap();
+          if(map !=null)
+            hasMap = true;
+        }
+      }
+    listOfTariffs = FinanceFinder.listOfTariffs(group.getID());
+    //Table T = new Table();
+    DataTable T = new DataTable();
+    T.setWidth("100%");
+    T.addTitle(iwrb.getLocalizedString("tariffs","Tariffs"));
+    T.setTitlesVertical(false);
+    int col = 1;
+    int row = 1;
+    T.add(Edit.formatText(iwrb.getLocalizedString("use","Use")),col++,row);
+    if(hasMap)
+      T.add(Edit.formatText(iwrb.getLocalizedString("attribute","Attribute")),col++,row);
+    T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),col++,row);
+    T.add(Edit.formatText(iwrb.getLocalizedString("price","Price")),col++,row);
+    row++;
     if(listOfTariffs!=null){
       java.util.Iterator I = listOfTariffs.iterator();
       Tariff tariff;
-      int row = 1;
       while(I.hasNext()){
+        col = 1;
         tariff = (Tariff) I.next();
         CheckBox chk = new CheckBox("trfchk",String.valueOf(tariff.getID()));
-        T.add(chk,1,row);
-        T.add(Edit.formatText(tariff.getName()),2,row);
-        T.add(Edit.formatText(Float.toString(tariff.getPrice())),3,row);
+        T.add(chk,col++,row);
+        if(hasMap)
+          T.add(Edit.formatText((String) map.get(tariff.getTariffAttribute())),col++,row);
+        T.add(Edit.formatText(tariff.getName()),col++,row);
+        T.add(Edit.formatText(Float.toString(tariff.getPrice())),col,row);
+        row++;
       }
-     // T.add(new HiddenInput("trf_count"));
+      T.getContentTable().setColumnAlignment(col,"right");
+      T.getContentTable().setAlignment(1,col,"left");
     }
     return T;
   }
 
   private PresentationObject getTariffPropertiesTable(){
-    Table T = new Table();
+    DataTable T = new DataTable();
+    T.addTitle(iwrb.getLocalizedString("properties","Properties"));
+    int row = 1;
+    T.add(Edit.formatText(iwrb.getLocalizedString("paydate","Paydate")),1,row);
+    DateInput di = new DateInput("pay_date",true);
+    T.add(di,2,row);
+    row++;
+    T.add(Edit.formatText(iwrb.getLocalizedString("discount","Discount")+" (%)"),1,row);
+    DropdownMenu dr = getIntDrop("discount",0,100,"");
+    T.add(dr,2,row);
+    row++;
+    T.add(Edit.formatText(iwrb.getLocalizedString("type","Type")),1,row);
+    RadioButton kredit = new RadioButton("type","Kredit");
+    RadioButton debet = new RadioButton("type","Debet");
+    T.add(Edit.formatText(iwrb.getLocalizedString("kredit","Kredit")+" (%)"),2,row);
+    T.add(kredit,2,row);
+    T.add(Edit.formatText(iwrb.getLocalizedString("debet","Debet")+" (%)"),2,row);
+    T.add(debet,2,row);
+    row++;
 
 
     return T;

@@ -41,11 +41,6 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
   private boolean isAdmin,isLoggedOn;
 
   private Image image ;
-  public static String DARKBLUE = "#27334B";
-  public static String DARKGREY = "#D7DADF";
-  public static String LIGHTGREY = "#F4F4F4";
-  public static String DARKRED =  "#932A2D";
-  public static String WHITE ="#FFFFFF";
 
   private String sHeaderColor,sDarkColor,sLightColor,sWhiteColor;
   private String sTextColor,sHeaderTextColor;
@@ -175,14 +170,18 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     T.add(formatText(iwrb.getLocalizedString("to","To")),3,row);
     T.add(formatText(iwrb.getLocalizedString("special","Special")),4,row);
 
+    Link AT = new Link("AT");
+    AT.setWindowToOpen(AccountTarifferWindow.class);
+    AT.addParameter(Finance.getCategoryParameter(1));
+
     row++;
     T.add(drpAccounts,1,row);
     T.add(tiFromDate,2,row);
     T.add(tiToDate,3,row);
     T.add(specialCheck,4,row);
     T.add(fetch,5,row);
+    T.add(AT,5,row);
     T.setWidth(6,row,"100%");
-
 
     myForm.add(new HiddenInput(IWMainApplication.classToInstanciateParameter,"com.idega.block.finance.presentation.AccountViewer"));
     myForm.add(T);
@@ -212,9 +211,9 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       T.setColumnAlignment(3,"right");
       T.setColumnAlignment(4,"right");
 
-      T.setRowColor(1,DARKBLUE);
-      T.setRowColor(2,DARKGREY);
-      T.setRowColor(3,WHITE);
+      T.setRowColor(1,FinanceColors.DARKBLUE);
+      T.setRowColor(2,FinanceColors.DARKGREY);
+      T.setRowColor(3,FinanceColors.WHITE);
 
       T.mergeCells(1,1,4,1);
 
@@ -223,7 +222,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       int row = 1;
 
       Text Title = new Text(iwrb.getLocalizedString("account","Account"),true,false,false);
-      Title.setFontColor(WHITE);
+      Title.setFontColor(FinanceColors.WHITE);
       T.add(Title,1,row);
       if(eAccount != null){
       row = 2;
@@ -362,15 +361,15 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     T.setWidth(cols,"25");
     T.setWidth("100%");
 
-    T.setHorizontalZebraColored(LIGHTGREY,WHITE);
-    T.setRowColor(1,DARKBLUE);
-    T.setRowColor(2,DARKGREY);
+    T.setHorizontalZebraColored(FinanceColors.LIGHTGREY,FinanceColors.WHITE);
+    T.setRowColor(1,FinanceColors.DARKBLUE);
+    T.setRowColor(2,FinanceColors.DARKGREY);
 
     String fontColor = sWhiteColor;
     int fontSize = 1;
 
     Text Title = new Text(iwrb.getLocalizedString("entries","Entries"),true,false,false);
-    Title.setFontColor(WHITE);
+    Title.setFontColor(FinanceColors.WHITE);
     T.add(Title,1,row);
     T.mergeCells(1,row,cols,row);
     row++;
@@ -452,7 +451,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     }
     T.mergeCells(1,row,cols,row);
     T.add(image,1,row);
-    T.setColor(1,row,DARKRED);
+    T.setColor(1,row,FinanceColors.DARKRED);
     return T;
   }
 
@@ -473,9 +472,9 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     T.setCellspacing(0);
 
 
-    T.setHorizontalZebraColored(sLightColor,sWhiteColor);
-    T.setRowColor(1,DARKBLUE);
-    T.setRowColor(2,LIGHTGREY);
+    T.setHorizontalZebraColored(FinanceColors.WHITE,FinanceColors.LIGHTGREY);
+    T.setRowColor(1,FinanceColors.DARKBLUE);
+    T.setRowColor(2,FinanceColors.LIGHTGREY);
     T.setColumnAlignment(3,"right");
     T.setColumnAlignment(4,"right");
     T.setColumnAlignment(5,"right");
@@ -484,7 +483,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     int fontSize = 1;
 
     Text Title = new Text(iwrb.getLocalizedString("entries","Entries"),true,false,false);
-    Title.setFontColor(WHITE);
+    Title.setFontColor(FinanceColors.WHITE);
     T.add(Title,1,1);
 
     T.add(formatText(iwrb.getLocalizedString("type","Type"),fontSize,fontColor),2,2);
@@ -578,15 +577,15 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     //T.setWidth(3,"60%");
     //T.setWidth(4,"25");
 
-    T.setHorizontalZebraColored(WHITE,LIGHTGREY);
-    T.setRowColor(1,DARKBLUE);
-    T.setRowColor(2,DARKGREY);
+    T.setHorizontalZebraColored(FinanceColors.WHITE,FinanceColors.LIGHTGREY);
+    T.setRowColor(1,FinanceColors.DARKBLUE);
+    T.setRowColor(2,FinanceColors.DARKGREY);
 
     String fontColor = sWhiteColor;
     int fontSize = 1;
 
     Text Title = new Text(iwrb.getLocalizedString("entries","Entries"),true,false,false);
-    Title.setFontColor(WHITE);
+    Title.setFontColor(FinanceColors.WHITE);
     T.add(Title,1,row);
     T.mergeCells(1,row,4,row);
     row++;
@@ -642,7 +641,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
 
     T.mergeCells(1,row,4,row);
     T.add(image,1,row);
-    T.setColor(1,row,DARKRED);
+    T.setColor(1,row,FinanceColors.DARKRED);
     return T;
   }
 
