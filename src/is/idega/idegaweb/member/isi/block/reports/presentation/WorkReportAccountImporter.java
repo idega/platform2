@@ -12,31 +12,27 @@ import com.idega.presentation.IWContext;
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
 public class WorkReportAccountImporter extends WorkReportImporter {
-	
 	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportaccountimporter.step_name";
 
 	protected WorkReportAccountImporter() {
 		super();
 		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 	}
-	
-	
+
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
-		
-		if(getWorkReportFileId()!=-1){ //do nothing before we have the file id
+
+		if (getWorkReportFileId() != -1) { //do nothing before we have the file id
 			//sets this step as bold, if another class calls it this will be overridden
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
-			
-			boolean success = getWorkReportBusiness(iwc).importAccountPart(getWorkReportFileId(),getWorkReportId());
-			if(success){
-				add(iwrb.getLocalizedString("WorkReportAccountImporter.import_successful","Importing yearly account info completed successfully."));
+
+			boolean success = getWorkReportBusiness(iwc).importAccountPart(getWorkReportFileId(), getWorkReportId());
+			if (success) {
+				add(iwrb.getLocalizedString("WorkReportAccountImporter.import_successful", "Importing yearly account info completed successfully."));
 			}
-			else{
-				add(iwrb.getLocalizedString("WorkReportAccountImporter.import_failed","Importing yearly account failed!"));
+			else {
+				add(iwrb.getLocalizedString("WorkReportAccountImporter.import_failed", "Importing yearly account failed!"));
 			}
 		}
 	}
-
-
 }

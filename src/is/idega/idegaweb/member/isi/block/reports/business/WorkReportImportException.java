@@ -15,14 +15,11 @@ public class WorkReportImportException extends Exception {
 	public WorkReportImportException() {
 		super();
 	}
+	
 	/**
 	 * @param message
 	 */
 	public WorkReportImportException(String message) {
 		super(message);
 	}
-	
-	
-	
-
 }
