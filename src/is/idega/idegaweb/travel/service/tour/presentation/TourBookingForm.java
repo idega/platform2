@@ -524,9 +524,12 @@ public class TourBookingForm extends TravelManager {
 
       isDay = TourBusiness.getIfDay(iwc, _tour, stamp, false);
 
+      debug("isDay : "+isDay);
       if (isDay) {
+        if (_tour.getTotalSeats() > 0)
         if (_tour.getTotalSeats() <= Booker.getNumberOfBookings(_tour.getID(), stamp) ) {
           isDay = false;
+          debug("isDay : "+isDay+", because of totalseats...");
         }
       }
 
@@ -685,11 +688,13 @@ public class TourBookingForm extends TravelManager {
           table.add(fromDate, 2, row);
           table.setAlignment(1,row,"right");
           table.setAlignment(2,row,"left");
+          table.mergeCells(2,row,6,row);
           ++row;
           table.add(toText, 1, row);
           table.add(toDate, 2, row);
           table.setAlignment(1,row,"right");
           table.setAlignment(2,row,"left");
+          table.mergeCells(2,row,6,row);
 
 
           ++row;
