@@ -1,5 +1,5 @@
 /*
- * $Id: NackaFixBusinessBean.java,v 1.2 2004/12/07 21:21:54 laddi Exp $
+ * $Id: NackaFixBusinessBean.java,v 1.3 2004/12/07 21:53:56 laddi Exp $
  * Created on 7.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -19,6 +19,7 @@ import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
 
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolSeason;
@@ -32,10 +33,10 @@ import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2004/12/07 21:21:54 $ by $Author: laddi $
+ * Last modified: $Date: 2004/12/07 21:53:56 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class NackaFixBusinessBean extends IBOServiceBean  implements NackaFixBusiness{
 
@@ -66,11 +67,29 @@ public class NackaFixBusinessBean extends IBOServiceBean  implements NackaFixBus
 		}
 	}
 	
+	public void fixHighSchoolPlacements() {
+		try {
+			fixSchoolPlacements(getSchoolBusiness().getCategoryHighSchool());
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+	}
+	
 	public void fixElementarySchoolPlacements() {
 		try {
-			Collection placements = getSchoolClassMemberHome().findAllByCategory(getSchoolBusiness().getCategoryElementarySchool());
+			fixSchoolPlacements(getSchoolBusiness().getCategoryElementarySchool());
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+	}
+	
+	private void fixSchoolPlacements(SchoolCategory category) {
+		try {
+			Collection placements = getSchoolClassMemberHome().findAllByCategory(category);
 			int size = placements.size();
-			System.out.println("[FIX]: Updating removed date for "+size+" elementary school placements");
+			System.out.println("[FIX]: Updating removed date for "+size+" placements in category = " +category.getCategory());
 			
 			int userID = -1;
 			SchoolSeason previousSeason = null;
@@ -107,9 +126,6 @@ public class NackaFixBusinessBean extends IBOServiceBean  implements NackaFixBus
 		}
 		catch (FinderException fe) {
 			log(fe);
-		}
-		catch (RemoteException re) {
-			log(re);
 		}
 	}
 	
