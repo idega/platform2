@@ -81,10 +81,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/03 10:27:38 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/03 11:31:17 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.79 $
+ * @version $Revision: 1.80 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -102,8 +102,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String CHECK_PERIOD_DEFAULT = "Checkperiod";
     private static final String CHECK_PERIOD_KEY = PREFIX + "check_period";
     private static final String CHECK_START_PERIOD_KEY = PREFIX + "check_start_period";
-    private static final String CHOOSE_CHILDREN_DEFAULT = "Välj barn";
-    private static final String CHOOSE_CHILDREN_KEY = PREFIX + "choose_children";
+    //private static final String CHOOSE_CHILDREN_DEFAULT = "Välj barn";
+    //private static final String CHOOSE_CHILDREN_KEY = PREFIX + "choose_children";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT = "Det gick inte att at bort fakturaunderlaget eller någon av dess fakturarader";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY = PREFIX + "could_not_remove_invoice_compilation_or_records";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT = "Kunde inte ta bort fakturarad";
@@ -162,8 +162,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String LAST_NAME_KEY = PREFIX + "last_name";
     private static final String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";
     private static final String MAIN_ACTIVITY_KEY = PREFIX + "main_activity";
-    private static final String NAME_DEFAULT = "Namn";
-    private static final String NAME_KEY = PREFIX + "name";
+    //private static final String NAME_DEFAULT = "Namn";
+    //private static final String NAME_KEY = PREFIX + "name";
     private static final String NEW_DEFAULT = "Ny";
     private static final String NEW_KEY = PREFIX + "new";
     private static final String NOTE_DEFAULT = "Anmärkning";
@@ -206,7 +206,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String START_PERIOD_KEY = PREFIX + "start_period";
     private static final String STATUS_DEFAULT = "Status";
     private static final String STATUS_KEY = PREFIX + "status";
-    private static final String IN_CUSTODY_OF_KEY = PREFIX + "in_custody_of";
+    //private static final String IN_CUSTODY_OF_KEY = PREFIX + "in_custody_of";
     private static final String TOO_MANY_RESULTS_DEFAULT = "För många sökträffar - försök att begränsa dina sökkriterier";
     private static final String TOO_MANY_RESULTS_KEY = PREFIX + "too_many_results";
     private static final String TOTAL_AMOUNT_DEFAULT = "Tot.belopp";
