@@ -3,6 +3,7 @@ package is.idega.idegaweb.golf.member;
 
 
 import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import java.sql.SQLException;
 
@@ -131,7 +132,7 @@ public class GolfMemberEditor extends Editor{
 
     if(iImageId >0) {
 
-      memberImg = new Image(iImageId);
+      memberImg = new GolfImage(iImageId);
 
       memberImg.setWidth(110);
 
@@ -143,7 +144,7 @@ public class GolfMemberEditor extends Editor{
 
     else if( eMember != null && eMember.getImageId() != 1){
 
-      memberImg = new Image(eMember.getImageId());
+      memberImg = new GolfImage(eMember.getImageId());
 
       memberImg.setWidth(110);
 

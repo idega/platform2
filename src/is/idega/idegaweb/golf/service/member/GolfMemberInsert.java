@@ -12,6 +12,7 @@ import is.idega.idegaweb.golf.entity.Phone;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.entity.UnionMemberInfo;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 import is.idega.idegaweb.golf.service.FamilyDisconnecterWindow;
 import is.idega.idegaweb.golf.service.FamilyInsertWindow;
 import is.idega.idegaweb.golf.service.GroupMemberInsertWindow;
@@ -171,12 +172,12 @@ import com.idega.presentation.ui.SubmitButton;
     imageId = (String) modinfo.getSession().getAttribute("image_id");
 
     if(imageId != null) {
-        memberImg = new Image(Integer.parseInt( imageId));
+        memberImg = new GolfImage(Integer.parseInt( imageId));
         modinfo.getSession().removeAttribute("image_id");
     }
     else {
       if( eMember != null && eMember.getImageId() != 1)
-          memberImg = new Image(eMember.getImageId());
+          memberImg = new GolfImage(eMember.getImageId());
       else
           memberImg = new Image("/pics/member/x.gif");
     }

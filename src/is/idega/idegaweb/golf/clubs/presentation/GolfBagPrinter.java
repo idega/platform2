@@ -13,6 +13,7 @@ import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.UnionMemberInfo;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 
 /**
  * @author laddi
@@ -54,7 +55,7 @@ public class GolfBagPrinter extends GolfBlock {
 			Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(members[a]));
 			UnionMemberInfo[] unionMember = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumn("member_id", members[a], "member_status", "A");
 
-			Image memberImage = new Image(member.getImageId());
+			Image memberImage = new GolfImage(member.getImageId());
 			memberImage.setHeight(160);
 			memberImage.setWidth(107);
 			memberImage.setVerticalSpacing(6);

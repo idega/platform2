@@ -30,6 +30,7 @@ import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import com.idega.util.IWTimestamp;
@@ -287,7 +288,7 @@ public class HandicapInfo extends GolfBlock {
 			memberImage = iwrb.getImage("/member/x2.gif");
 		}
 		else {
-			memberImage = new Image(memberInfo.getImageId());
+			memberImage = new GolfImage(memberInfo.getImageId());
 		}
 
 		memberImage.setMaxImageWidth(102);

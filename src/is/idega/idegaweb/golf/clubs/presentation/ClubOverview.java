@@ -11,6 +11,7 @@ import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.entity.UnionImage;
 import is.idega.idegaweb.golf.moduleobject.Modernus;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
@@ -50,7 +51,7 @@ public class ClubOverview extends GolfBlock {
 		UnionImage[] union2 = (UnionImage[]) ((UnionImage) IDOLookup.instanciateEntity(UnionImage.class)).findAllByColumn("union_id", union_id);
 
 		if (union2.length > 0) {
-			Image unionImage = new Image(union2[0].getImageId());
+			Image unionImage = new GolfImage(union2[0].getImageId());
 			unionImage.setMaxImageWidth(50);
 
 			myTable.add(unionImage, 1, 1);
