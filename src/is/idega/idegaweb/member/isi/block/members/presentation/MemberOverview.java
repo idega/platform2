@@ -245,12 +245,12 @@ public class MemberOverview extends Block {
 			if(headers[i]!=null) {
 				Text histText = new Text(headers[i]);
 				histText.setBold();
-				table.add(histText, i+1, row);
+				table.add(histText, i+2, row);
 			}
 		}
 		
-		table.add(link, 4, row);
-		table.setAlignment(4, row, "right");
+		table.add(link, 1, row);
+		table.setAlignment(1, row, "left");
 		
 		return ++row;
 	}
@@ -288,22 +288,22 @@ public class MemberOverview extends Block {
 			}
 			System.out.println("Checking membership entry \"" + name + "\" of type " + categoryName);
 			if(!categoryName.equals(previousCategoryName)) {
-				table.mergeCells(1, row, 3, row);
-				table.setColor(1, row, _categoryColor);
-				table.add(categoryName, 1, row++);
+				table.mergeCells(2, row, 4, row);
+				table.setColor(2, row, _categoryColor);
+				table.add(categoryName, 2, row++);
 				previousCategoryName = categoryName;
 				resetColor();
 			}
-			table.add(name, 1, row);
+			table.add(name, 2, row);
 			String color = getColor();
-			table.setColor(1, row, color);
+			table.setColor(2, row, color);
 			if(showHistory) {
-				table.add(begin, 2, row);
-				table.setColor(2, row, color);
-				table.add(end, 3, row);
+				table.add(begin, 3, row);
 				table.setColor(3, row, color);
+				table.add(end, 4, row);
+				table.setColor(4, row, color);
 			} else {
-				table.mergeCells(1, row, 3, row);
+				table.mergeCells(2, row, 4, row);
 			}
 			
 			row++;
