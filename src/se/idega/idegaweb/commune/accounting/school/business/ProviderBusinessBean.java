@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.8 2003/09/30 11:47:15 anders Exp $
+ * $Id: ProviderBusinessBean.java,v 1.9 2003/10/07 16:07:57 gimmi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -32,10 +32,10 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderAccountingProper
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2003/09/30 11:47:15 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/07 16:07:57 $ by $Author: gimmi $
  *
  * @author Anders Lindman
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
@@ -171,7 +171,7 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 					extraProviderId,
 					schoolManagementTypeId,
 					terminationDate,
-					getInt(communeId),
+					getInteger(communeId),
 					getInt(countryId),
 					getBoolean(centralizedAdministration));
 			int id = ((Integer) school.getPrimaryKey()).intValue();
@@ -326,6 +326,18 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 		} catch (Exception e) {}
 		return n;
 	}	
+	
+	/*
+	 * Creates and returns and Integer, returns null if excpeiton
+	 */
+	 Integer getInteger(String s) {
+	 	Integer n = null;
+	 	try {
+	 		n = new Integer(s);
+	 	} catch (Exception e){}
+	 	return n;
+	 }
+	
 	
 	/*
 	 * Parses a boolean
