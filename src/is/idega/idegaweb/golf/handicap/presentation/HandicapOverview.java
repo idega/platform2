@@ -71,7 +71,7 @@ public class HandicapOverview extends GolfBlock {
 	private IWTimestamp start;
 	private IWTimestamp end;
 	private Table table;
-	private Form form = new Form();
+	private Form form;
 	private boolean noIcons = false;
 
 	private boolean setDifferentOverviewButton = false;
@@ -143,6 +143,8 @@ public class HandicapOverview extends GolfBlock {
 		Scorecard[] scoreCards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id='" + iMemberID + "' and scorecard_date>='" + dates[0] + "' and scorecard_date<='" + (dates[1] + " 23:59:59.0") + "' and scorecard_date is not null order by scorecard_date");
 		Scorecard[] scoreCardsBefore = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id = " + iMemberID + " and scorecard_date < '" + dates[0] + "' order by scorecard_date desc");
 
+		form = new Form();
+		
 		table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setBorder(0);
