@@ -198,7 +198,7 @@ public class ServiceDaySetter extends TravelWindow {
 
 
 
-      table.add(getText(_cal.getNameOfDay(i, iwc.getCurrentLocale())), 1, row);
+      table.add(getText(_cal.getDayName(i, iwc.getCurrentLocale(),IWCalendar.LONG)), 1, row);
       table.add(avail, 2, row);
       table.add(max, 3, row);
       table.add(min, 4, row);

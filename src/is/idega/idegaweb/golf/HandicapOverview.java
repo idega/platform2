@@ -546,7 +546,7 @@ private Link textLink = new Link();
 
 				for ( int m = 1 ; m <= mon ; m++ ) {
 
-					start_m.addMenuElement(String.valueOf(m),dagatalid.getNameOfMonth(m).toLowerCase().substring(0,3)+".");
+					start_m.addMenuElement(String.valueOf(m),dagatalid.getMonthName(m).toLowerCase().substring(0,3)+".");
 
 				}
 
@@ -580,7 +580,7 @@ private Link textLink = new Link();
 
 				for ( int m = 1 ; m <= mon ; m++ ) {
 
-					end_m.addMenuElement(String.valueOf(m),dagatalid.getNameOfMonth(m).toLowerCase().substring(0,3)+".");
+					end_m.addMenuElement(String.valueOf(m),dagatalid.getMonthName(m).toLowerCase().substring(0,3)+".");
 
 				}
 

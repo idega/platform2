@@ -1128,7 +1128,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       String mn ;
       CheckBox chk;
       for(int i = 1 ; i <= 12;i++){
-        monthtable.add(formatText(String.valueOf(cal.getNameOfMonth(i).charAt(0))),i,1);
+        monthtable.add(formatText(String.valueOf(cal.getMonthName(i).charAt(0))),i,1);
         chk = new CheckBox("months",String.valueOf(i));
         chk.setStyle(this.styleAttribute);
         monthtable.add(chk,i,2);
