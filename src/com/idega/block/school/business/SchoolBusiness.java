@@ -102,6 +102,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public boolean hasEditPermission(com.idega.user.data.User p0,com.idega.block.school.data.School p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasSchoolRelationToYear(com.idega.block.school.data.School p0,com.idega.block.school.data.SchoolYear p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void invalidateSchoolClass(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public void removeProvider(int p0)throws java.rmi.RemoteException, javax.ejb.RemoveException;
  public void removeSchool(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void removeSchoolArea(int p0) throws java.rmi.RemoteException;
  public void removeSchoolClass(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;

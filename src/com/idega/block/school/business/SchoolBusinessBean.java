@@ -209,42 +209,46 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public void removeProvider(int id) throws RemoteException, RemoveException {
+		School school = getSchool(new Integer(id));
+		school.addSchoolTypesRemoveOther(new int[0]);
+		school.addSchoolYearsRemoveOther(new int[0]);
+		try {
+			school.removeFromClass(ICFile.class);
+		} catch (IDORemoveRelationshipException e) {
+			System.err.println("Cannot remove file from school");
+		}
+		try {
+			school.removeFromClass(TxText.class);
+		} catch (IDORemoveRelationshipException e) {
+			System.err.println("Cannot remove text from school");
+		}
+		try {
+			school.removeFromClass(LocalizedText.class);
+		} catch (IDORemoveRelationshipException e) {
+			System.err.println("Cannot remove text from school");
+		}
+		
+		try {
+			Collection coll = getSchoolUserBusiness().getSchoolUserHome().findBySchool(school);
+			SchoolUser sUser;
+			if (coll != null && !coll.isEmpty()) {
+				Iterator iter = coll.iterator();
+				while (iter.hasNext()) {
+					sUser = getSchoolUserBusiness().getSchoolUserHome().findByPrimaryKey(iter.next());
+					sUser.remove();	
+				}	
+			}
+		}catch (Exception e){
+			e.printStackTrace(System.err);
+		}
+		
+		school.remove();
+	}
+	
 	public void removeSchool(int id) throws RemoteException {
 		try {
-			School school = getSchool(new Integer(id));
-			school.addSchoolTypesRemoveOther(new int[0]);
-			school.addSchoolYearsRemoveOther(new int[0]);
-			try {
-				school.removeFromClass(ICFile.class);
-			} catch (IDORemoveRelationshipException e) {
-				System.err.println("Cannot remove file from school");
-			}
-			try {
-				school.removeFromClass(TxText.class);
-			} catch (IDORemoveRelationshipException e) {
-				System.err.println("Cannot remove text from school");
-			}
-			try {
-				school.removeFromClass(LocalizedText.class);
-			} catch (IDORemoveRelationshipException e) {
-				System.err.println("Cannot remove text from school");
-			}
-			
-			try {
-				Collection coll = getSchoolUserBusiness().getSchoolUserHome().findBySchool(school);
-				SchoolUser sUser;
-				if (coll != null && !coll.isEmpty()) {
-					Iterator iter = coll.iterator();
-					while (iter.hasNext()) {
-						sUser = getSchoolUserBusiness().getSchoolUserHome().findByPrimaryKey(iter.next());
-						sUser.remove();	
-					}	
-				}
-			}catch (Exception e){
-				e.printStackTrace(System.err);
-			}
-			
-			school.remove();
+			removeProvider(id);
 		}
 		catch (RemoveException re) {
 			re.printStackTrace();
