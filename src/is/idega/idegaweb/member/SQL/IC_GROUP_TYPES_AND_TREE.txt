@@ -78,6 +78,10 @@ insert into ic_group_type_tree values ('iwme_club_committee','iwme_club')
 insert into ic_group_type_tree values ('general','iwme_club')
 insert into ic_group_type_tree values ('iwme_temporary','iwme_club')
 
+insert into ic_group_type_tree values ('iwme_club_main_committee','iwme_federation_committee')
+insert into ic_group_type_tree values ('iwme_club_main_committee','iwme_union_committee')
+insert into ic_group_type_tree values ('iwme_club_main_committee','iwme_regional_union_committee')
+insert into ic_group_type_tree values ('iwme_club_main_committee','iwme_league_committee')
 insert into ic_group_type_tree values ('iwme_club_main_committee','iwme_club_committee')
 
 insert into ic_group_type_tree values ('iwme_club_division_trainer','iwme_club_division')
