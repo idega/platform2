@@ -10,20 +10,21 @@ import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryBMPBean;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryHome;
 import is.idega.idegaweb.member.isi.block.members.data.MemberGroupData;
-
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.Collator;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
@@ -116,16 +117,19 @@ public class MemberOverview extends Block {
 		row = insertSectionHeaderIntoTable(table, row, historyHeaders);
 		row = insertRegistrationInfoIntoTable(table, row, true);
 
-		String financeOverviewHeader = _iwrb.getLocalizedString("member_finance_overview", "Finance entry");
-		String entryDateText = _iwrb.getLocalizedString("member_overview_entry_date", "Entry date");
-		String amountText = _iwrb.getLocalizedString("member_overview_amount", "Amount");
-		String infoText = _iwrb.getLocalizedString("member_overview_info", "Info");
-		String[] financeOverviewHeaders = new String[] { financeOverviewHeader, entryDateText, amountText };
-		String[] financeOverviewHeaderAlignments = { null, null, "right" };
-		row = insertSectionHeaderIntoTable(table, row, financeOverviewHeaders);
-		row = insertFinanceInfoIntoTable(table, row, true, iwc);
-		mainTable.add(table, 1, 4);
-
+		Date usersDOB = user.getDateOfBirth();
+		if(isUserOverEighteen(usersDOB)) {
+			String financeOverviewHeader = _iwrb.getLocalizedString("member_finance_overview", "Finance entry");
+			String entryDateText = _iwrb.getLocalizedString("member_overview_entry_date", "Entry date");
+			String amountText = _iwrb.getLocalizedString("member_overview_amount", "Amount");
+			String infoText = _iwrb.getLocalizedString("member_overview_info", "Info");
+			String[] financeOverviewHeaders = new String[] { financeOverviewHeader, entryDateText, amountText };
+			String[] financeOverviewHeaderAlignments = { null, null, "right" };
+			row = insertSectionHeaderIntoTable(table, row, financeOverviewHeaders);
+			row = insertFinanceInfoIntoTable(table, row, true, iwc);
+			mainTable.add(table, 1, 4);
+		}
+		
 		add(mainTable);
 	}
 
@@ -529,6 +533,34 @@ public class MemberOverview extends Block {
 
 	public String emptyIfNull(String str) {
 		return str == null ? "" : str;
+	}
+	
+	private boolean isUserOverEighteen(Date dateOfBirth) {
+		Calendar rightNow = Calendar.getInstance();
+    int currentYear = rightNow.get(Calendar.YEAR);
+    int currentMonth = rightNow.get(Calendar.MONTH);
+    int currentDay = rightNow.get(Calendar.DAY_OF_MONTH);
+
+		GregorianCalendar birth = new GregorianCalendar();
+		birth.setTime(dateOfBirth);
+		int yearOfBirth = birth.get(Calendar.YEAR);
+		int monthOfBirth = birth.get(Calendar.MONTH);
+		int dayOfBirth = birth.get(Calendar.DAY_OF_MONTH);
+		
+		int age;
+		
+		if(currentMonth < monthOfBirth || (currentMonth == monthOfBirth && currentDay < dayOfBirth)) {
+			age = (currentYear - 1) - yearOfBirth;
+		}
+		else {
+			age = currentYear - yearOfBirth;
+		}
+    if(age < 18) {
+    		return false;
+    }
+    else {
+    		return true;
+    }
 	}
 
 	public String getBundleIdentifier() {
