@@ -1,5 +1,5 @@
 /*
- * $Id: Title.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: Title.java,v 1.2 2001/07/12 21:25:44 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -46,11 +46,20 @@ public class Title extends JModuleObject{
     try{
 
       if(modinfo.getParameter(strAction) == null){
-        iAct = NOACT;
+        if ( modinfo.getServletContext().getAttribute(strAction) != null ) {
+          sAct = (String) modinfo.getServletContext().getAttribute(strAction);
+          iAct = Integer.parseInt(sAct);
+        }
+        else {
+          iAct = NOACT;
+        }
       }
       if(modinfo.getParameter(strAction) != null){
         sAct = modinfo.getParameter(strAction);
         iAct = Integer.parseInt(sAct);
+        if ( ((String) modinfo.getServletContext().getAttribute(strAction)) != (sAct) ) {
+          modinfo.getServletContext().setAttribute(strAction,sAct);
+        }
       }
       doAct();
     }
@@ -63,7 +72,7 @@ public class Title extends JModuleObject{
     String lang = "IS";
     switch (iAct) {
       case ACT1:  TitleUrl = "/pics/titles/"+lang+"/info2.gif";             break;
-      case ACT2:  TitleUrl = "/pics/titles/"+lang+"/regulations2.gif";      break;
+      case ACT2:  TitleUrl = "/pics/titles/"+lang+"/office.gif";            break;
       case ACT3:  TitleUrl = "/pics/titles/"+lang+"/application2.gif";      break;
       case ACT4:  TitleUrl = "/pics/titles/"+lang+"/apartment2.gif";        break;
       case ACT5:  TitleUrl = "/pics/titles/"+lang+"/links2.gif";            break;

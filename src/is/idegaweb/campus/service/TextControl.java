@@ -1,0 +1,140 @@
+/*
+ * $Id: TextControl.java,v 1.3 2001/07/12 21:23:12 laddi Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
+package is.idegaweb.campus.service;
+//test
+import com.idega.jmodule.object.*;
+import com.idega.jmodule.object.textObject.*;
+import com.idega.jmodule.object.ModuleInfo;
+import com.idega.jmodule.login.business.AccessControl;
+import com.idega.data.genericentity.Member;
+import com.idega.data.genericentity.Group;
+import com.idega.block.text.presentation.TextReader;
+import com.idega.block.text.data.TextModule;
+import java.util.Hashtable;
+import java.sql.SQLException;
+import java.io.IOException;
+
+/**
+ *
+ * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
+ * @version 1.0
+ */
+public class TextControl extends JModuleObject {
+
+  private String LightColor,MiddleColor,DarkColor;
+  private String action;
+  public static final String strAction = "text_action";
+  private Member eMember;
+  private ModuleObject Tabs;
+  private CampusObject CampObj;
+  private Hashtable PermissionHash;
+  private boolean isAdmin;
+  private String sAct;
+  private int iAct;
+  private final int NOACT = 0;
+
+
+  public TextControl(){
+    MiddleColor = "#9FA9B3";
+    LightColor = "#D7DADF";
+    DarkColor = "#27324B";
+  }
+
+  public ModuleObject getTabs(){
+    return Tabs;
+  }
+
+  private void control(ModuleInfo modinfo){
+
+    try{
+
+
+      if(modinfo.getParameter(strAction) == null){
+        iAct = NOACT;
+      }
+      else {
+        sAct = modinfo.getParameter(strAction);
+        iAct = Integer.parseInt(sAct);
+      }
+
+      if ( iAct == NOACT ) {
+        doMenu();
+      }
+      else {
+        doText(iAct);
+      }
+
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+
+  }
+
+  public void doMenu(){
+    try {
+      Table T = new Table();
+        T.setWidth(400);
+        T.setWidth(1,"50%");
+        T.setWidth(2,"50%");
+        T.setBorder(0);
+
+      TextModule[] text = (TextModule[]) TextModule.getStaticInstance("com.idega.block.data.TextModule").findAll();
+
+      for ( int a = 0; a < text.length; a++ ) {
+        Link L = new Link(text[a].getID());
+        L.addParameter(strAction,iAct);
+
+        int column = ( ( a + 2 ) % 2 ) + 1;
+        int row = ( a + 2 ) / 2;
+
+        T.add(L,column,row);
+      }
+
+      add(T);
+    }
+    catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+  }
+
+  public void doText(int action) {
+    try {
+      TextModule text = new TextModule(action);
+
+      if ( text.getTextHeadline() == null || text.getIncludeImage() == null ) {
+        text.setDefaultValues();
+        text.insert();
+      }
+
+      TextReader textReader = new TextReader(action);
+        textReader.setEnableDelete(false);
+        textReader.setTableWidth("400");
+
+      add(textReader);
+    }
+    catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+  }
+
+  public void main(ModuleInfo modinfo)  {
+    try{
+      isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+    }
+    catch (SQLException sql) {
+      isAdmin = false;
+    }
+    /** @todo fixa Admin*/
+    control(modinfo);
+  }
+}// class PriceCatalogueMaker
+
+

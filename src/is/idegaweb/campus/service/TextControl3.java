@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl3.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: TextControl3.java,v 1.2 2001/07/12 21:23:21 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,7 @@ package is.idegaweb.campus.service;
 
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.text.presentation.TextReader;
+import com.idega.block.text.presentation.TextReader;
 
 /**
  *
