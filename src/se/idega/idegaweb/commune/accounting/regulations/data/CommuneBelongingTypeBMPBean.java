@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.2 2003/08/18 13:36:49 kjell Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.3 2003/08/19 09:48:42 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,16 +17,17 @@ import javax.ejb.FinderException;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDOLookup;
 
 /**
  * Holds Commune belonging types ("Nacka", "Ej Nacka", "blabla") etc. Used for the posting.
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean
  * <p>
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.2 2003/08/18 13:36:49 kjell Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.3 2003/08/19 09:48:42 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CommuneBelongingTypeBMPBean extends GenericEntity implements CommuneBelongingType {
 	
@@ -35,6 +36,21 @@ public class CommuneBelongingTypeBMPBean extends GenericEntity implements Commun
 
 	public String getEntityName() {
 		return ENTITY_NAME;
+	}
+
+	public void insertStartData () throws Exception {
+		super.insertStartData ();
+        
+		System.out.println ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
+
+		CommuneBelongingTypeHome home
+				= (CommuneBelongingTypeHome) IDOLookup.getHome(CommuneBelongingType.class);
+		final String [] data = { "Nacka", "Ej Nacka" };
+		for (int i = 0; i < data.length; i++) {
+			CommuneBelongingType cbType = home.create();
+			cbType.setCommuneBelongingType(data[i]);
+			cbType.store();
+		}
 	}
 
 	public void initializeAttributes() {

@@ -1,5 +1,5 @@
 /*
- * $Id: CompanyTypeBMPBean.java,v 1.2 2003/08/18 13:36:49 kjell Exp $
+ * $Id: CompanyTypeBMPBean.java,v 1.3 2003/08/19 09:48:42 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,6 +17,7 @@ import javax.ejb.FinderException;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDOLookup;
 
 /**
  * Holds Company types ("Kommun", "Stiftelse", "AB") etc. 
@@ -24,10 +25,10 @@ import com.idega.data.IDOQuery;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean 
  * <p>
- * $Id: CompanyTypeBMPBean.java,v 1.2 2003/08/18 13:36:49 kjell Exp $
+ * $Id: CompanyTypeBMPBean.java,v 1.3 2003/08/19 09:48:42 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CompanyTypeBMPBean extends GenericEntity implements CompanyType {
 	
@@ -36,6 +37,21 @@ public class CompanyTypeBMPBean extends GenericEntity implements CompanyType {
 
 	public String getEntityName() {
 		return ENTITY_NAME;
+	}
+
+	public void insertStartData () throws Exception {
+		super.insertStartData ();
+        
+		System.out.println ("¤¤¤ Invoked " + ENTITY_NAME + ".insertStartData ()");
+
+		CompanyTypeHome home
+				= (CompanyTypeHome) IDOLookup.getHome(CompanyType.class);
+		final String [] data = { "Kommun", "Stiftelse", "AB", "Övr företag" };
+		for (int i = 0; i < data.length; i++) {
+			CompanyType ct = home.create();
+			ct.setCompanyType(data[i]);
+			ct.store();
+		}
 	}
 
 	public void initializeAttributes() {
