@@ -58,9 +58,12 @@ public class ProductCatalogLayoutMultibleColumns extends AbstractProductCatalogL
 	catProducts = ProductBusiness.getProducts(pCat);
 	productCatalog.sortList(catProducts);
 
-	int numberOfRows = catProducts.size() / productCatalog._numberOfColumns;
-	if ( catProducts.size() % productCatalog._numberOfColumns > 0 )
+	int numberOfRows = ( catProducts.size() / productCatalog._numberOfColumns ) + firstRow;
+	System.out.println("NumberOfRows: "+catProducts.size() / productCatalog._numberOfColumns);
+	System.out.println("NumberOfRows (modulus): "+catProducts.size() % productCatalog._numberOfColumns);
+	if ( (catProducts.size() % productCatalog._numberOfColumns) > 0 )
 	  numberOfRows++;
+	System.out.println("NumberOfRows (final): "+numberOfRows);
 
 	for (int j = 0; j < catProducts.size(); j++) {
 	  try {
@@ -83,6 +86,7 @@ public class ProductCatalogLayoutMultibleColumns extends AbstractProductCatalogL
 
 	  ++row;
 	}
+	System.out.println("Resetting column");
 	column = 1;
       }
       catch (Exception e) {
