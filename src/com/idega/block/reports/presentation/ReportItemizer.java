@@ -6,6 +6,7 @@ import com.idega.jmodule.object.ModuleInfo;
 import java.sql.SQLException;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.Script;
 
 
@@ -13,12 +14,14 @@ public class ReportItemizer extends JModuleObject{
 
   private boolean isAdmin;
   private final int ACT0 = 0,ACT1=1,ACT2=2,ACT3=3,ACT4=4;
+  protected String MiddleColor,LightColor,DarkColor,WhiteColor,TextFontColor,HeaderFontColor,IndexFontColor;
   private String sAction = "report_action";
   private String sActPrm = "0";
   private int iAction = 0;
   private String sName,sInfo;
   private String sIndex;
   private int fontSize = 2;
+  protected boolean fontBold = false;
   protected String styleAttribute = "font-size: 8pt";
 
   public ReportItemizer(){
@@ -104,8 +107,12 @@ public class ReportItemizer extends JModuleObject{
     if(sCatId != null)
       iCatId = Integer.parseInt(sCatId);
 
-    TariffKey[] keys = Finder.findTariffKeys();
-    int count = keys.length;
+    ReportItem[] RI;
+    try{
+    RI = (ReportItem[])new ReportItem().findAll();
+    }
+    catch(Exception e){RI = new ReportItem[0];}
+    int count = RI.length;
     int inputcount = count+5;
     Table inputTable =  new Table(4,inputcount+1);
     inputTable.setWidth("100%");
@@ -133,9 +140,9 @@ public class ReportItemizer extends JModuleObject{
       int pos;
       if(i <= count ){
         pos = i-1;
-        nameInput  = new TextInput("tke_nameinput"+i,(keys[pos].getName()));
-        infoInput = new TextInput("tke_infoinput"+i,(keys[pos].getInfo()));
-        idInput = new HiddenInput("tke_idinput"+i,String.valueOf(keys[pos].getID()));
+        nameInput  = new TextInput("tke_nameinput"+i,(RI[pos].getName()));
+        infoInput = new TextInput("tke_infoinput"+i,(RI[pos].getInfo()));
+        idInput = new HiddenInput("tke_idinput"+i,String.valueOf(RI[pos].getID()));
         delCheck = new CheckBox("tke_delcheck"+i,"true");
         setStyle(delCheck);
         inputTable.add(delCheck,4,i+1);
@@ -157,26 +164,24 @@ public class ReportItemizer extends JModuleObject{
       inputTable.add(idInput);
     }
     myForm.add(new HiddenInput("tke_count", String.valueOf(inputcount) ));
-    myForm.add(new HiddenInput(this.strAction,String.valueOf(this.ACT3 )));
+    myForm.add(new HiddenInput(this.sAction,String.valueOf(this.ACT3 )));
     myForm.add(inputTable);
     myForm.add(new SubmitButton("Vista"));
 
-    this.makeView();
-    this.addHeader(this.makeLinkTable(0));
-    this.addMain(myForm);
+    add(myForm);
   }
 
   private ReportCategory[] findCategorys(int iCatId){
     try {
-      if(id > 0){
-        return (ReportItem[]) new ReportItem().findAllByColumn("category",iCatId);
+      if(iCatId > 0){
+        return (ReportCategory[]) new ReportCategory().findAllByColumn("category",iCatId);
       }
       else{
-        return new ReportItem[0];
+        return new ReportCategory[0];
       }
     }
     catch (SQLException ex) {
-      return new ReportItem[0];
+      return new ReportCategory[0];
     }
   }
 
@@ -269,6 +274,12 @@ public class ReportItemizer extends JModuleObject{
       T.setFontSize(this.fontSize);
     }
     return T;
+  }
+  public Text formatText(int i){
+    return formatText(String.valueOf(i));
+  }
+  protected void setStyle(InterfaceObject O){
+    O.setAttribute("style",this.styleAttribute);
   }
 
   public void main(ModuleInfo modinfo) {

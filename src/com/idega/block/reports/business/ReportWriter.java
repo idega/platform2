@@ -23,6 +23,13 @@ public class ReportWriter {
         OutputStreamWriter fout = new OutputStreamWriter(out);
         StringBuffer data;
         int len = Content.length;
+        data = new StringBuffer();
+        for (int j = 0; j < Headers.length; j++) {
+            data.append(Headers[j]);
+            data.append("\t");
+        }
+        data.append("\n");
+        fout.write(data.toString());
         for(int i = 0; i < len; i++){
           data = new StringBuffer();
           for (int j = 0; j < Content[i].length; j++) {

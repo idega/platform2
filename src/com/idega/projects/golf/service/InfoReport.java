@@ -13,12 +13,13 @@ import java.io.*;
 import com.idega.idegaweb.*;
 import java.sql.SQLException;
 import com.idega.block.reports.business.*;
+import com.idega.jmodule.object.JModuleObject;
 
 /**
 *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
 *@version 1.0
 */
-public class InfoReport extends com.idega.jmodule.object.ModuleObjectContainer {
+public class InfoReport extends JModuleObject {
 
   private final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4;
   private final int NOACT = 0;
@@ -77,10 +78,10 @@ public class InfoReport extends com.idega.jmodule.object.ModuleObjectContainer {
 
   private void doTheShit(ModuleInfo modinfo){
     try{
-    //UnionMemberInfo[] umi = (UnionMemberInfo[])new UnionMemberInfo().findAllByColumn("union_id",this.iUnionId);
+    UnionMemberInfo[] umi = (UnionMemberInfo[])new UnionMemberInfo().findAllByColumn("union_id",this.iUnionId);
     //UnionMemberInfo[] umi = (UnionMemberInfo[])new UnionMemberInfo().findAllByColumn("union_id",String.valueOf(this.iUnionId),"member_status","A");
     //UnionMemberInfo[] umi = (UnionMemberInfo[])new UnionMemberInfo().findAllByColumn("union_id",String.valueOf(this.iUnionId),"member_status","I");
-    UnionMemberInfo[] umi = (UnionMemberInfo[])new UnionMemberInfo().findAll("select * from union_member_info where union_id = "+iUnionId+" and payment_type_id = 2");
+    //UnionMemberInfo[] umi = (UnionMemberInfo[])new UnionMemberInfo().findAll("select * from union_member_info where union_id = "+iUnionId+" and payment_type_id = 2");
     int iMemberId;
     Member eMember;
     Address eAddress;
@@ -94,6 +95,7 @@ public class InfoReport extends com.idega.jmodule.object.ModuleObjectContainer {
     ReportContent RC;
     Vector Content = new Vector();
     int len = umi.length;
+    add(" lengd "+umi.length);
     sInfo[0] = "Nafn";
     sInfo[1] = "Kennitala";
     sInfo[2] = "Heimili";
@@ -125,7 +127,7 @@ public class InfoReport extends com.idega.jmodule.object.ModuleObjectContainer {
         eMemberInfo = eMember.getMemberInfo();
         try{
         sInfo[4] = String.valueOf(eMemberInfo.getHandicap());
-        sInfo[4].replace('.',',');
+        sInfo[4] += "_ ";
         }
         catch(Exception e){
           sInfo[4] = "";
@@ -183,29 +185,32 @@ public class InfoReport extends com.idega.jmodule.object.ModuleObjectContainer {
           reverse = true;
         int order = Integer.parseInt(sOrder);
 
-        OrderVector(vContent,order,reverse);
+        String[] headers = ((ReportContent) vContent.remove(0)).getWholeContent();
+        //OrderVector(vContent,order,reverse);
 
         modinfo.getSession().setAttribute("lastorder",sOrder);
         add("Fjöldi "+vContent.size());
         String[][] s = this.makeStrings(vContent);
-        add(this.makeTable(s));
-        makeXLS(modinfo,s[0],s);
+        //add(this.makeTable(s));
+        makeXLS(modinfo,headers,s);
+
     }
   }
 
   private void makeXLS(ModuleInfo modinfo,String[] headers,String[][] content){
-    idegaTimestamp datenow = new idegaTimestamp();
     String fileSeperator = System.getProperty("file.separator");
     String filepath = modinfo.getServletContext().getRealPath(fileSeperator+"gsi/reports"+fileSeperator);
     StringBuffer fileName = new StringBuffer("haha");
-    //fileName.append(datenow.getDay());
-    //fileName.append(datenow.getMonth());
     fileName.append(".xls");
+    String st = filepath+fileName.toString();
 
-    FileOutputStream fout = new FileOutputStream(fileName.toString());
+    try{
+    FileOutputStream fout = new FileOutputStream(st);
 
     ReportWriter.writeXLSReport(headers,content,fout);
-
+    Link L = new Link("skrá","/excell?&dir="+st);
+    }
+    catch(Exception ex){ex.printStackTrace();}
 
   }
 

@@ -22,6 +22,9 @@ package com.idega.block.reports.business;
   public String getContent(int index) {
     return this.Content[index];
   }
+  public String[] getWholeContent() {
+    return this.Content;
+  }
   public void setContent(int index,String content) {
     this.Content[index] = content;
   }
