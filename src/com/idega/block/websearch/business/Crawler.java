@@ -148,8 +148,9 @@ public final class Crawler {
             
             String url;
             //System.out.println(linkQueue.toString());
+            if(linkQueue==null) System.out.println("WebSearch crawler: linkQueue is null! check that a trailing / is in the seed url");
             
-            while (!linkQueue.empty()) {
+            while (linkQueue!=null && !linkQueue.empty()) {
                 url = (String)linkQueue.pop();
 
                 if (!url.startsWith(rootURL)) {
@@ -157,8 +158,9 @@ public final class Crawler {
                     // example http://www.12a.com to https://secure.i2a.com/
                     this.rootURL = url.substring(0, url.indexOf("/", 8));
                 }
-                if (reporting > 1) System.out.println();
+                
                 if (reporting > 1) {
+                		 System.out.println();
                     System.out.print("SCANNING : " + url);
                 }
                 
