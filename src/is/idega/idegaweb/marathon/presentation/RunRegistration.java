@@ -6,7 +6,6 @@ package is.idega.idegaweb.marathon.presentation;
 import is.idega.idegaweb.marathon.business.RunBusiness;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,6 +72,7 @@ public class RunRegistration extends Block{
   
   //texts step two
   private Text chipText;
+  private Text chipNumberText;
   private Link chipLink;
   private Text ownChipText;
   private Text buyChipText;
@@ -166,10 +166,11 @@ public class RunRegistration extends Block{
     
     //step two texts begin
     chipText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_CHIP_TIME,"Championchip timing: "));
+    chipNumberText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_CHIP_TIME+"_number","Own chip number"));
     chipLink = new Link(iwrb.getLocalizedString(IWMarathonConstants.RR_CHIP_LINK,"www.championchip.com"),"http://www.championchip.com");
-    ownChipText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_OWN_CHIP,"Own Chip - number: "));
-    buyChipText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_BUY_CHIP,"Buy Chip - "));
-    rentChipText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_RENT_CHIP,"Rent Chip - "));
+    ownChipText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_OWN_CHIP,"Own Chip"));
+    buyChipText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_BUY_CHIP,"Buy Chip"));
+    rentChipText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_RENT_CHIP,"Rent Chip"));
     groupCompetitionText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_GROUP_COMP,"Group competition"));
     groupNameText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_GROUP_NAME,"Group Name"));
     bestTimeText = new Text(iwrb.getLocalizedString(IWMarathonConstants.RR_BEST_TIME,"Your best time running this distance"));
@@ -282,7 +283,7 @@ public class RunRegistration extends Block{
     
     //step two fields end
     
-    backGreen = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.submit_step_two","Next step")), STYLENAME_GREEN_TEXT);
+    backGreen = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.back","Back")), STYLENAME_GREEN_TEXT);
     backGreen.setAsBackLink();
     backBlue = getStyleLink(new Link("&gt;&gt;"), STYLENAME_BLUE_TEXT);
     backBlue.setAsBackLink();
@@ -290,7 +291,7 @@ public class RunRegistration extends Block{
   
   private void stepOne(IWContext iwc) {
     Table t = new Table();
-    t.setColumns(3);
+    t.setColumns(2);
     t.setCellpadding(0);
     t.setCellspacing(0);
     t.setWidth(Table.HUNDRED_PERCENT);
@@ -309,9 +310,9 @@ public class RunRegistration extends Block{
     
     t.setHeight(row++, 12);
     
-    t.mergeCells(column, row, t.getColumns(), row);
     t.add(distanceText, column, row++);
     t.setHeight(row++, 3);
+    t.mergeCells(column, row, t.getColumns(), row);
     t.add(runDisDropdownField, column, row++);
     
     t.setHeight(row++, 6);
@@ -359,7 +360,7 @@ public class RunRegistration extends Block{
     t.add(countryField, column, row++);
     
     row = formRow;
-    column = 3;
+    column = 2;
     
     t.add(genderText, column, row);
     t.add(redStar, column, row++);
@@ -407,7 +408,10 @@ public class RunRegistration extends Block{
     t.add(Text.getNonBrakingSpace(), 1, row);
     t.add(stepTwoBlue, 1, row);
     
-    t.setWidth(2, 16);
+    t.setWidth(1, "50%");
+    t.setWidth(2, "50%");
+    t.setColumnPaddingRight(1, 8);
+    t.setColumnPaddingLeft(2, 8);
     
     f.addParameter(PARAMETER_ACTION,ACTION_STEP_TWO);
     f.keepStatusOnAction();
@@ -415,7 +419,7 @@ public class RunRegistration extends Block{
   
   private void stepTwo(IWContext iwc) {
     Table t = new Table();
-    t.setColumns(3);
+    t.setColumns(2);
     t.setCellpadding(0);
     t.setCellspacing(0);
     t.setWidth(Table.HUNDRED_PERCENT);
@@ -439,8 +443,14 @@ public class RunRegistration extends Block{
     t.add(Text.getNonBrakingSpace(), column, row);
     t.add(rentChipText, column, row++);
     
+    t.setHeight(row++, 6);
+    
+    t.add(chipNumberText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(chipNumberField, column, row++);
+
     row = formRow;
-    column = 3;
+    column = 2;
     
     t.add(groupCompetitionField, column, row);
     t.add(Text.getNonBrakingSpace(), column, row);
@@ -483,7 +493,10 @@ public class RunRegistration extends Block{
     buttonTable.add(finishBlue,3,1);
     
     t.add(buttonTable, 1, row);
-    t.setWidth(column, 16);
+    t.setWidth(1, "50%");
+    t.setWidth(2, "50%");
+    t.setColumnPaddingRight(1, 8);
+    t.setColumnPaddingLeft(2, 8);
     
     f.addParameter(PARAMETER_ACTION,ACTION_SAVE);
     f.keepStatusOnAction();
