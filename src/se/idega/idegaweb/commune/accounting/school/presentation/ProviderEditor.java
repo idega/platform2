@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.15 2003/10/06 09:32:25 anders Exp $
+ * $Id: ProviderEditor.java,v 1.16 2003/10/07 12:39:11 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -60,10 +60,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/06 09:32:25 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/07 12:39:11 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -119,9 +119,6 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_ZIP_AREA = KP + "zip_area";
 	private final static String KEY_PHONE = KP + "phone";
 	private final static String KEY_INFO = KP + "info";
-//	private final static String KEY_KEY_CODE = KP + "key_code";
-//	private final static String KEY_LONGITUDE = KP + "longitude";
-//	private final static String KEY_LATITUDE = KP + "latitude";
 	private final static String KEY_OPERATIONS = KP + "operations";
 	
 	private final static String KEY_SCHOOL_AREA = KP + "school_area";
@@ -424,7 +421,7 @@ public class ProviderEditor extends AccountingBlock {
 			providers = pb.findAllSchools();
 		} catch (RemoteException e) {
 			Table t = new Table();
-			t.add(new ExceptionWrapper(e));
+			t.add(new ExceptionWrapper(e), 1, 1);
 			return t;
 		}
 
@@ -469,7 +466,7 @@ public class ProviderEditor extends AccountingBlock {
 		Table mainPanel = new Table();
 		mainPanel.setCellpadding(0);
 		mainPanel.setCellspacing(0);
-		mainPanel.add(new HiddenInput(PARAMETER_DELETE_ID, "-1"));
+		mainPanel.add(new HiddenInput(PARAMETER_DELETE_ID, "-1"), 1, 1);
 	
 		mainPanel.add(list, 1, 1);
 		
@@ -551,8 +548,6 @@ public class ProviderEditor extends AccountingBlock {
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-//		table.setBorder(1);
-//		table.setBorderColor("#0000cc");
 		int row = 1;
 		table.add(getSmallHeader(localize(KEY_NAME, "Name")), 1, row);
 		table.mergeCells(2, row, 4, row);
@@ -584,17 +579,7 @@ public class ProviderEditor extends AccountingBlock {
 		infoTextArea.setColumns(32);
 		infoTextArea.setRows(3);
 		infoTextArea.setValue(info);
-		table.add(infoTextArea, 2, row++);
-		
-//		table.add(getSmallHeader(localize(KEY_KEY_CODE, "Key code")), 1, row);
-//		table.mergeCells(2, row, 4, row);
-//		table.add(getTextInput(PARAMETER_KEY_CODE, keyCode, 100), 2, row++);
-//		table.add(getSmallHeader(localize(KEY_LONGITUDE, "Longitude")), 1, row);
-//		table.mergeCells(2, row, 4, row);
-//		table.add(getTextInput(PARAMETER_LONGITUDE, longitude, 100), 2, row++);
-//		table.add(getSmallHeader(localize(KEY_LATITUDE, "Latitude")), 1, row);
-//		table.mergeCells(2, row, 4, row);
-//		table.add(getTextInput(PARAMETER_LATITUDE, latitude, 100), 2, row++);
+		table.add(infoTextArea, 2, row++);		
 		table.add(getSmallHeader(localize(KEY_SCHOOL_AREA, "School area")), 1, row);
 		table.mergeCells(2, row, 4, row);
 		table.add(getSchoolAreaDropdownMenu(iwc, PARAMETER_SCHOOL_AREA_ID, schoolAreaId), 2, row++);
@@ -621,7 +606,6 @@ public class ProviderEditor extends AccountingBlock {
 				schoolTypeTable.add(t, 2, stRow);
 				stRow++; 
 			}
-//			stCheckBox.setToDisableOnClick(PARAMETER_SCHOOL_YEAR_ID + stId, true);
 		}
 		table.add(getSmallHeader(localize(KEY_OPERATIONS, "Operations")), 1, row);
 		table.mergeCells(2, row, 4, row);
