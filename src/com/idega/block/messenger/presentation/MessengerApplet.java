@@ -404,7 +404,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     return this.packetFromServlet;
   }
 
-  public void actionPerformed(ActionEvent e){
+  public synchronized void actionPerformed(ActionEvent e){
     String action = e.getActionCommand();
 
     if(action.equalsIgnoreCase("iw-send")){
