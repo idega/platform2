@@ -794,12 +794,13 @@ public class ReportGenerator extends Block {
 		
 		int j = 1;
 		for (int i = 0; i < formats.length; i++) {
-			String filePath = (String) _reportFilePathsMap.get(formats[i]);
-			if(filePath != null){
+			String relativeFilePath = (String) _reportFilePathsMap.get(formats[i]);
+			if(relativeFilePath != null){
 				j++;
 				//Link link = new Link(_reportName, filePath);
 				//link.setTarget(Link.TARGET_NEW_WINDOW);
-				DownloadLink link = new DownloadLink(_reportName, filePath);
+				DownloadLink link = new DownloadLink(_reportName);
+				link.setRelativeFilePath(relativeFilePath);
 				
 				reports.add(formatNames[i], 1, j);
 				reports.add(link, 2, j);
