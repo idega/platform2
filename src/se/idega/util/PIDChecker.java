@@ -84,10 +84,7 @@ public class PIDChecker {
 				sum += values[i];
 			}
 	
-			if (sum % 10 == 0)
-				return true;
-			else
-				return false;
+			return (sum % 10 == 0);
 		}
 	}
 
@@ -126,10 +123,7 @@ public class PIDChecker {
 
 		int sex = personalID.charAt(8) - '0';
 
-		if (sex % 2 == 0)
-			return true;
-		else
-			return false;
+		return (sex % 2 == 0);
 	}
 
 	/**

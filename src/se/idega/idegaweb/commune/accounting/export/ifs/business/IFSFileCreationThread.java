@@ -361,7 +361,7 @@ public class IFSFileCreationThread extends Thread {
 			Iterator it = rec.iterator();
 			FileWriter writer = null;
 			try {
-				writer = new FileWriter(fileName1.toString());
+				writer = new FileWriter(fileName1);
 			}
 			catch (IOException e4) {
 				e4.printStackTrace();
@@ -550,7 +550,7 @@ public class IFSFileCreationThread extends Thread {
 				e3.printStackTrace();
 			}
 
-			FileWriter writer = new FileWriter(fileName2.toString());
+			FileWriter writer = new FileWriter(fileName2);
 			BufferedWriter bWriter = new BufferedWriter(writer);
 
 			PostingBusiness pb = getIFSBusiness().getPostingBusiness();
@@ -798,7 +798,7 @@ public class IFSFileCreationThread extends Thread {
 			format2.setMinimumIntegerDigits(10);
 			format2.setMaximumIntegerDigits(10);
 			format2.setGroupingUsed(false);
-			FileWriter writer = new FileWriter(fileName1.toString());
+			FileWriter writer = new FileWriter(fileName1);
 			BufferedWriter bWriter = new BufferedWriter(writer);
 
 			PostingBusiness pb = getIFSBusiness().getPostingBusiness();
@@ -1499,7 +1499,7 @@ public class IFSFileCreationThread extends Thread {
 					
 					while (irIt.hasNext()) {
 						PaymentRecord iRec = (PaymentRecord) irIt.next();
-						if (firstRecord == false)
+						if (!firstRecord)
 							row = sheet.createRow(rowNumber++);
 						row.createCell(cellNumber++).setCellValue(iRec.getPaymentText());
 						recordAmount = AccountingUtil.roundAmount(iRec.getTotalAmount());

@@ -103,12 +103,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 
 	public boolean getValid() {
 		String valid = getStringColumnValue(COLUMN_VALID);
-		if ((valid == null) || (valid.equals(VALID)))
-			return (true);
-		else if (valid.equals(INVALID))
-			return (false);
-		else
-			return (true);
+		return valid == null || !valid.equals(INVALID);
 	}
 
 	public void setValid(boolean valid) {
@@ -120,12 +115,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 
 	public boolean getReady() {
 		String valid = getStringColumnValue(COLUMN_READY);
-		if ((valid == null) || (valid.equals(INVALID)))
-			return (false);
-		else if (valid.equals(VALID))
-			return (true);
-		else
-			return (false);
+		return valid != null && valid.equals(VALID);
 	}
 
 	public void setReady(boolean valid) {
@@ -137,12 +127,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 
 	public boolean getLocked() {
 		String valid = getStringColumnValue(COLUMN_LOCKED);
-		if ((valid == null) || (valid.equals(INVALID)))
-			return (false);
-		else if (valid.equals(VALID))
-			return (true);
-		else
-			return (false);
+		return valid != null && valid.equals (VALID);
 	}
 
 	public void setLocked(boolean valid) {

@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.27 2003/10/15 11:42:17 anders Exp $
+ * $Id: VATEditor.java,v 1.28 2004/02/03 09:55:37 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATEditor is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/10/15 11:42:17 $ by $Author: anders $
+ * Last modified: $Date: 2004/02/03 09:55:37 $ by $Author: staffan $
  *
  * @author Anders Lindman
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -357,7 +357,7 @@ public class VATEditor extends AccountingBlock {
 			String operationalField = getSession().getOperationalField();
 			operationalField = operationalField == null ? "" : operationalField;
 			try {
-				if (search == true) {
+				if (search) {
 					vatRegulations = vb.findVATRegulations(periodFrom, periodTo, periodFromString, periodToString, operationalField);
 				} else {
 					vatRegulations = vb.findAllVATRegulations(operationalField);

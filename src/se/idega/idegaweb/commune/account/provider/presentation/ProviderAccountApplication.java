@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplication.java,v 1.11 2003/10/03 01:53:10 tryggvil Exp $
+ * $Id: ProviderAccountApplication.java,v 1.12 2004/02/03 09:55:37 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -518,7 +518,7 @@ public class ProviderAccountApplication extends CommuneBlock {
 				_isError = true;
 				addErrorString(localize(ERROR_NO_POSTAL_CODE, "Please supply a postal code"));
 		}
-		if (_isError == true) {
+		if (_isError) {
 			viewForm(iwc);
 			return;
 		}

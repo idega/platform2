@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.116 2004/01/14 13:10:23 tryggvil Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.117 2004/02/03 09:55:37 staffan Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1144,12 +1144,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 		try {
 			RegulationHome home = getRegulationHome();
-			if (home.findRegulationOverlap(name, from, to, r) == null) {
-				return false;
-			}
-			else {
-				return true;
-			}
+			return home.findRegulationOverlap(name, from, to, r) != null;
 		}
 		catch (RemoteException e) {
 			return false;

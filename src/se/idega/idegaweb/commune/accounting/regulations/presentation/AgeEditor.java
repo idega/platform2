@@ -1,5 +1,5 @@
 /*
- * $Id: AgeEditor.java,v 1.18 2003/10/15 11:42:18 anders Exp $
+ * $Id: AgeEditor.java,v 1.19 2004/02/03 09:55:37 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -37,10 +37,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.AgeException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/15 11:42:18 $ by $Author: anders $
+ * Last modified: $Date: 2004/02/03 09:55:37 $ by $Author: staffan $
  *
  * @author Anders Lindman
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class AgeEditor extends AccountingBlock {
 
@@ -346,7 +346,7 @@ public class AgeEditor extends AccountingBlock {
 			Date periodFrom = parseDate(periodFromString);
 			Date periodTo = parseDate(periodToString);
 			try {
-				if (search == true) {
+				if (search) {
 					ageRegulations = ab.findAgeRegulations(operationalField, periodFrom, periodTo, periodFromString, periodToString);
 				} else {
 					ageRegulations = ab.findByOperationalField(operationalField);
