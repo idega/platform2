@@ -69,7 +69,7 @@ public class AccountViewer extends Finance {
 				FinanceAccount eAccount = getAccount(accountID, accounts);
 				setMainPanel(getAccountView(eAccount, accounts, itFromDate, itToDate, isAdmin, clean));
 			} else
-				setMainPanel(getErrorText("no_accounts"));
+				setMainPanel(getErrorText(localize("no_account_selected","No account selected")));
 		} else {
 			setMainPanel(getErrorText(localize("accessdenied", "Access denied")));
 		}
