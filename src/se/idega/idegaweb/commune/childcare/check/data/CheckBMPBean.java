@@ -275,7 +275,7 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 	}
 	
 	public Integer ejbFindCheckForChild(int childID) throws FinderException {
-		IDOQuery query = new IDOQuery();
+		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID,childID);
 		return (Integer) super.idoFindOnePKByQuery(query);
 	}
