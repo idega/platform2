@@ -230,8 +230,6 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       ex.printStackTrace(System.err);
       throw new RuntimeException(message);
     }
-    // should the data be editable?
-    editable = workReport.isSent();
     try {
       // create data from the database
       workReportBusiness.createWorkReportData(getWorkReportId());
