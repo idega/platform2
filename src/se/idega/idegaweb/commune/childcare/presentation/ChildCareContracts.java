@@ -116,7 +116,7 @@ public class ChildCareContracts extends ChildCareBlock {
 			//Collection contracts = null;
 			
 			SchoolClassMember student;
-			User child;
+			User child = null;
 			//Address address;
 			//Phone phone;
 			//Link move;
@@ -157,7 +157,11 @@ public class ChildCareContracts extends ChildCareBlock {
 				while (iter.hasNext()) {
 					column = 1;
 					student = (SchoolClassMember) iter.next();
+					if(child != null && student.getStudent().getPrimaryKey().equals(child.getPrimaryKey()) )
+						continue;
+				
 					child = student.getStudent();
+				
 					//address = getBusiness().getUserBusiness().getUsersMainAddress(child);
 					//phone = getBusiness().getUserBusiness().getChildHomePhone(child);
 					//registered = new IWTimestamp(student.getRegisterDate());
