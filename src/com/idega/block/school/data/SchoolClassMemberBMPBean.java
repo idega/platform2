@@ -51,8 +51,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/09/22 11:01:43 $ by $Author: aron $
- * @version $Revision: 1.122 $
+ *         Last modified: $Date: 2004/12/07 20:39:18 $ by $Author: laddi $
+ * @version $Revision: 1.123 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -655,6 +655,25 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 			}
 		}
 		return this.idoFindPKsByQuery(sql);
+	}
+	
+	public Collection ejbFindAllByCategory(SchoolCategory category) throws FinderException {
+		Table table = new Table(this);
+		Table type = new Table(SchoolType.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		try {
+			query.addJoin(table, type);
+		}
+		catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage()); 
+		}
+		query.addCriteria(new MatchCriteria(type, SchoolTypeBMPBean.SCHOOLCATEGORY, MatchCriteria.EQUALS, category));
+		query.addOrder(table, MEMBER, false);
+		query.addOrder(table, REGISTER_DATE, true);
+		
+		return idoFindPKsByQuery(query);
 	}
 
 	public Collection ejbFindAllByUserAndSchoolCategory(User user, SchoolCategory cat) throws FinderException {
