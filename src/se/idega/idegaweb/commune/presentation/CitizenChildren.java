@@ -40,7 +40,7 @@ public class CitizenChildren extends CommuneBlock {
 	private User user;
 	private Text buttonLabel;
 	private Text ssnLabel;
-	private static final String prmChildId = "comm_child_id";
+	public static final String prmChildId = "comm_child_id";
   private static final String prmParentId = "comm_parent_id";
 	private static final String prmChildSSN = "comm_child_ssn";
 	private String prmSubmitName = "submit_cits_child";

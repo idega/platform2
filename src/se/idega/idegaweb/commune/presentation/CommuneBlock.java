@@ -307,15 +307,15 @@ public class CommuneBlock extends com.idega.presentation.Block {
 		this.formResponsePage = page;
 	}
 	
-	protected String getHeaderColor() {
+	public String getHeaderColor() {
 		return getProperty(HEADER_COLOR_PROPERTY,DEFAULT_HEADER_COLOR);
 	}
 	
-	protected String getZebraColor1() {
+	public String getZebraColor1() {
 		return getProperty(ZEBRA_COLOR1_PROPERTY,DEFAULT_ZEBRA_COLOR_1);
 	}
 	
-	protected String getZebraColor2() {
+	public String getZebraColor2() {
 		return getProperty(ZEBRA_COLOR2_PROPERTY,DEFAULT_ZEBRA_COLOR_2);
 	}
 	
