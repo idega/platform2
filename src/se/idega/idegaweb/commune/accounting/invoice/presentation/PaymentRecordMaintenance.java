@@ -75,11 +75,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/14 21:13:51 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/15 07:48:22 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.70 $
+ * @version $Revision: 1.71 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1015,14 +1015,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				placementCount += paymentRecord.getPlacements ();
 				final String ruleSpecType = paymentRecord.getRuleSpecType ();
 				final long amountVat = roundAmount (paymentRecord.getTotalAmountVAT ());
-				final long amountIncl = roundAmount (paymentRecord.getTotalAmount ());
-				final long amountExcl = amountIncl - amountVat;
+				final long amountExcl = roundAmount (paymentRecord.getTotalAmount ());
 				if (null != ruleSpecType
 						&& ruleSpecType.equals("cacc_reg_spec_type.moms")) {
-					totalAmountVat += amountIncl;
+					totalAmountVat += amountExcl;
 				} else {
 					totalAmountVatExcluded += amountExcl;
-					totalAmountVat += amountVat;
 				}
 				final Collection invoiceRecords
 						= home.findByPaymentRecord (paymentRecord);
