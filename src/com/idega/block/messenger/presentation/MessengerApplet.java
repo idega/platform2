@@ -78,6 +78,13 @@ public class MessengerApplet extends Applet implements  ActionListener{
       servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
       hostURL = new URL(this.getParameter(SERVER_ROOT_URL, getCodeBase().getProtocol()+"://"+getCodeBase().getHost()));
       resourceURL = this.getParameter(RESOURCE_URL,"/idegaweb/bundles/com.idega.block.messenger.bundle/resources/");
+
+      if(cycler==null){
+        cycler = new MessageListener(checkTimer);
+        cycler.addActionListener(this);
+        cycler.start();
+      }
+
     }
     catch(MalformedURLException e) {
       System.out.println("MessageApplet: error in init getting parameters!");
@@ -87,14 +94,6 @@ public class MessengerApplet extends Applet implements  ActionListener{
     setBackground(Color.white);
     alertSound = getAudioClip(getCodeBase(),"notify.au");
 
-  }
-
-  public void run(){
-    if(cycler==null){
-      cycler = new MessageListener(checkTimer);
-      cycler.addActionListener(this);
-      cycler.start();
-    }
   }
 
     /**
