@@ -168,7 +168,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           service.addTo(Address.class, addressIds[i]);
         }
       }
-
       service.insert();
       transaction.commit();
 
@@ -180,8 +179,10 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
 
+  /**
+   * @todo createTripService
+   */
   public static int createTripService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival, int[] pickupPlaceIds) throws Exception {
-
       return TravelStockroomBusiness.createService(supplierId, fileId, serviceName, serviceDescription, isValid, addressIds, departure,arrival, pickupPlaceIds);
   }
 

@@ -399,15 +399,28 @@ public class ServiceDesigner extends TravelManager {
 
       int[] activeDays = new int[counter];
       System.arraycopy(tempDays,0,activeDays,0,counter);
-      for (int i = 0; i < activeDays.length; i++) {
-        add("..."+activeDays[i]);
-      }
 
 
 
       TravelStockroomBusiness tsb = new TravelStockroomBusiness();
 //        tsb.createTripService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalStamp, hotelPickupAddress, hotelPickupTimeStamp, activeDays);
 
+      add("<br>"+name);
+      add("<br>"+description);
+      add("<br>"+imageId);
+      add("<br>"+activeFrom);
+      add("<br>"+activeTo);
+      add("<br>A"+allDays);
+      add("<br>M"+mondays);
+      add("<br>T"+tuesdays);
+      add("<br>W"+wednesdays);
+      add("<br>T"+thursdays);
+      add("<br>F"+fridays);
+      add("<br>S"+saturdays);
+      add("<br>S"+sundays);
+      add("<br>"+departureFrom);
+      add("<br>"+departureTime);
+      add("<br>"+hotelPickup);
 
   }
 
