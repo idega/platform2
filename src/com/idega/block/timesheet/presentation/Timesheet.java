@@ -335,7 +335,6 @@ public class Timesheet extends Block {
 	private void initialize(IWContext iwc) throws Exception {
 		this.timesheetSession = (TimesheetSession) IBOLookup.getSessionInstance(iwc, TimesheetSession.class);
 		this.isAdmin = iwc.hasEditPermission(this);
-		user = iwc.getCurrentUser();
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		this.save_image_url = iwrb.getImage("save.gif").getURL();
@@ -370,7 +369,8 @@ public class Timesheet extends Block {
 		if (edit == null) {
 			edit = "";
 		}
-		if (user != null) {
+		if (iwc.isLoggedOn()) {
+			user = iwc.getCurrentUser();
 			this.userID = (Integer) user.getPrimaryKey();
 			String temp_member_id = iwc.getParameter("i_timesheet_member_id");
 			if (temp_member_id != null) {
