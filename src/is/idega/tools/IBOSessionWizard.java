@@ -26,14 +26,20 @@ public class IBOSessionWizard extends IBOServiceWizard{
 
 
   public static void main(String[] args)throws Exception{
-    try{
-      String className = args[0];
-      IBOSessionWizard instance = new IBOSessionWizard(className);
-      instance.doJavaFileCreate();
-    }
-    catch(java.lang.ArrayIndexOutOfBoundsException e){
-      System.out.println("IBOWizard: You have to supply a valid ClassName as an argument");
-    }
+		try {
+			String firstArg=args[0];
+			String className = getClassName(args);
+			IBOSessionWizard instance = new IBOSessionWizard(className);
+			if (firstArg.endsWith(".java") || firstArg.endsWith(".JAVA")) {
+				File javaFile = new File(firstArg);
+				instance.setWorkingDirectory(javaFile.getParentFile());
+			}
+			instance.doJavaFileCreate();
+		}
+		catch (java.lang.ArrayIndexOutOfBoundsException e) {
+			e.printStackTrace();
+			System.out.println("IBOWizard: You have to supply a valid ClassName as an argument");
+		}
   }
 
 
