@@ -137,6 +137,8 @@ public class GroupApplicationTab extends UserTab {
 				String adminComment = app.getAdminComment();
 				
 				TextArea comment = new TextArea(ADMIN_COMMENT_PARAM);
+				comment.setColumns(32);
+				comment.setRows(10);
 				
 				if( adminComment!=null){
 					comment.setContent(adminComment);	
