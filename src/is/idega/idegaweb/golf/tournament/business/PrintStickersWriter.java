@@ -12,24 +12,17 @@ import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.ejb.FinderException;
-import javax.servlet.http.HttpServletRequest;
 
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.io.MediaWritable;
-import com.idega.io.MemoryFileBuffer;
-import com.idega.io.MemoryInputStream;
-import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
 
@@ -39,36 +32,19 @@ import com.idega.util.IWTimestamp;
  *
  * PrintStickersWriter TODO Describe this type
  */
-public class PrintStickersWriter implements MediaWritable {
+public class PrintStickersWriter extends ExcelWriter implements MediaWritable {
 	
-	String tournamentRoundID = null;
-	MemoryFileBuffer buffer = null;
-	IWResourceBundle iwrb = null;
-
-	/* (non-Javadoc)
-	 * @see com.idega.io.MediaWritable#getMimeType()
-	 */
-	public String getMimeType() {
-		return "application/x-msexcel";
-	}
 	
-	private String localize(String key,String defaultString){
-		return iwrb.getLocalizedString(key,defaultString);
-	}
-
 	/* (non-Javadoc)
-	 * @see com.idega.io.MediaWritable#init(javax.servlet.http.HttpServletRequest, com.idega.presentation.IWContext)
+	 * @see is.idega.idegaweb.golf.tournament.business.ExcelWriter#writeToBuffer(com.idega.idegaweb.IWUserContext, com.idega.io.MemoryFileBuffer)
 	 */
-	public void init(HttpServletRequest req, IWContext iwc) {
-		iwrb = iwc.getIWMainApplication().getBundle("is.idega.idegaweb.golf").getResourceBundle(iwc);
+	public void writeFileContent(IWContext iwc, Writer out) {
+	
 		String tournamentRoundID = iwc.getParameter("tournament_round_id");
 		Connection Conn = null;
 
 		  try{
 			Conn = com.idega.util.database.ConnectionBroker.getConnection();
-			buffer = new MemoryFileBuffer();
-			MemoryOutputStream ous = new MemoryOutputStream(buffer);
-			OutputStreamWriter out = new OutputStreamWriter(ous);
 
 			char[] c  = null;
 
@@ -198,24 +174,7 @@ public class PrintStickersWriter implements MediaWritable {
 
 	}
 
-	/* (non-Javadoc)
-	 * @see com.idega.io.MediaWritable#writeTo(java.io.OutputStream)
-	 */
-	public void writeTo(OutputStream out) throws IOException {
-		if (buffer != null) {
-			MemoryInputStream mis = new MemoryInputStream(buffer);
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			// Read the entire contents of the file.
-			while (mis.available() > 0) {
-				baos.write(mis.read());
-			}
-			baos.writeTo(out);
-		}
-		else
-			System.err.println("buffer is null");
+	
 
-	}
 
-	public static void main(String[] args) {
-	}
 }

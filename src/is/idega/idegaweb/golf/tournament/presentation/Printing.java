@@ -131,14 +131,20 @@ public class Printing extends TournamentBlock {
 	      
 	      //Link scorecardsExcel = getLink(iwrb.getLocalizedString("tournament.stickers_on_scorecards","Stickers on scorecards")+" (Excel)");
 	        //scorecardsExcel.setWindowToOpen(PrintStickersExcelWindow.class);
-	        Link scorecardsExcel = getPrintScoreCardExcelLink(modinfo,iwrb.getLocalizedString("tournament.stickers_on_scorecards","Stickers on scorecards")+" (Excel)");
+	     
+	        Link scorecardsExcel = getLink( iwrb.getLocalizedString("tournament.stickers_on_scorecards","Stickers on scorecards")+" (Excel)" );
+	        scorecardsExcel.setURL(modinfo.getIWMainApplication().getMediaServletURI()+"stickers.xls");
+	        scorecardsExcel.addParameter(ReportWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(PrintStickersWriter.class));
 	        scorecardsExcel.addParameter("tournament_round_id",tournamentRounds[a].getID());
 	        scorecardsExcel.setTarget(Link.TARGET_BLANK_WINDOW);
 	      
 	        
-	      Link excel = getLink(iwrb.getLocalizedString("tournament.unfilled_leaderboard","Unfilled leaderboard")+" (Excel)");
-	        excel.setWindowToOpen(PrintUnfilledLeaderBoardExcelWindow.class);
+	        Link excel = getLink(iwrb.getLocalizedString("tournament.unfilled_leaderboard","Unfilled leaderboard")+" (Excel)");
+	        //excel.setWindowToOpen(PrintUnfilledLeaderBoardExcelWindow.class);
+	      	excel.setURL(modinfo.getIWMainApplication().getMediaServletURI()+"status.xls");
+	      	excel.addParameter(ReportWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(PrintStickersWriter.class));
 	        excel.addParameter("tournament_round_id",tournamentRounds[a].getID());
+	        excel.setTarget(Link.TARGET_BLANK_WINDOW);
 
 //			Link scorecardWindow = new Link(iwrb.getLocalizedString("tournament.scorecards","Scorecards"));
 //			scorecardWindow.setWindowToOpen(PrintScorecardWindow.class);
@@ -196,7 +202,7 @@ public class Printing extends TournamentBlock {
 	  
 	  private Link getPrintScoreCardExcelLink(IWContext iwc,String label){
 	     Link link = getLink( label );
-	     link.setURL(iwc.getIWMainApplication().getMediaServletURI());
+	     link.setURL(iwc.getIWMainApplication().getMediaServletURI()+"stickers.xls");
 	     link.addParameter(ReportWriter.PRM_WRITABLE_CLASS,IWMainApplication.getEncryptedClassName(PrintStickersWriter.class));
 	     return link;
 	  }
