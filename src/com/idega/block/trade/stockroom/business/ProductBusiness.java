@@ -110,10 +110,10 @@ public class ProductBusiness {
 
     if(addressIds != null){
       for (int i = 0; i < addressIds.length; i++) {
-        try {
-          product.addTo(TravelAddress.class, addressIds[i]);
-        }catch (SQLException sql) {
-        }
+	try {
+	  product.addTo(TravelAddress.class, addressIds[i]);
+	}catch (SQLException sql) {
+	}
       }
     }
 
@@ -226,19 +226,19 @@ public class ProductBusiness {
     if ( newLocText ) {
       locText.setLocaleId(localeId);
       try {
-        locText.insert();
-        locText.addTo(product);
+	locText.insert();
+	locText.addTo(product);
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
     else {
       try {
-        locText.update();
+	locText.update();
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
   }
@@ -266,19 +266,19 @@ public class ProductBusiness {
     if ( newLocText ) {
       locText.setLocaleId(localeId);
       try {
-        locText.insert();
-        locText.addTo(product);
+	locText.insert();
+	locText.addTo(product);
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
     else {
       try {
-        locText.update();
+	locText.update();
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
   }
@@ -296,19 +296,19 @@ public class ProductBusiness {
     if ( newLocText ) {
       locText.setLocaleId(localeId);
       try {
-        locText.insert();
-        locText.addTo(product);
+	locText.insert();
+	locText.addTo(product);
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
     else {
       try {
-        locText.update();
+	locText.update();
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
   }
@@ -361,19 +361,19 @@ public class ProductBusiness {
       List products = null;
 
       try {
-        String pTable = Product.getProductEntityName();
+	String pTable = Product.getProductEntityName();
 
-        StringBuffer sqlQuery = new StringBuffer();
-          sqlQuery.append("SELECT * FROM ").append(pTable);
-          sqlQuery.append(" WHERE ");
-          sqlQuery.append(pTable).append(".").append(Product.getColumnNameIsValid()).append(" = 'Y'");
-          if (supplierId != -1)
-          sqlQuery.append(" AND ").append(pTable).append(".").append(Product.getColumnNameSupplierId()).append(" = ").append(supplierId);
-          sqlQuery.append(" order by ").append(Product.getColumnNameNumber());
+	StringBuffer sqlQuery = new StringBuffer();
+	  sqlQuery.append("SELECT * FROM ").append(pTable);
+	  sqlQuery.append(" WHERE ");
+	  sqlQuery.append(pTable).append(".").append(Product.getColumnNameIsValid()).append(" = 'Y'");
+	  if (supplierId != -1)
+	  sqlQuery.append(" AND ").append(pTable).append(".").append(Product.getColumnNameSupplierId()).append(" = ").append(supplierId);
+	  sqlQuery.append(" order by ").append(Product.getColumnNameNumber());
 
-        products =EntityFinder.findAll(Product.getStaticInstance(Product.class),sqlQuery.toString());
+	products =EntityFinder.findAll(Product.getStaticInstance(Product.class),sqlQuery.toString());
       }catch(SQLException sql) {
-        sql.printStackTrace(System.err);
+	sql.printStackTrace(System.err);
       }
 
       return products;
@@ -420,83 +420,83 @@ public class ProductBusiness {
 
     if (products == null)
       try {
-          /**
-           * @todo Oracle support...
-           */
+	  /**
+	   * @todo Oracle support...
+	   */
 
-          Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
-          Product product = (Product) Product.getStaticInstance(Product.class);
-          ProductCategory pCat = (ProductCategory) ProductCategory.getStaticInstance(ProductCategory.class);
-          Product prod = null;
-          //Service tService = (Service) Service.getStaticInstance(Service.class);
+	  Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
+	  Product product = (Product) Product.getStaticInstance(Product.class);
+	  ProductCategory pCat = (ProductCategory) ProductCategory.getStaticInstance(ProductCategory.class);
+	  Product prod = null;
+	  //Service tService = (Service) Service.getStaticInstance(Service.class);
 
-          String middleTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class,Product.class);
-          String Ttable = Timeframe.getTimeframeTableName();
-          String Ptable = Product.getProductEntityName();
-          String catMiddle = EntityControl.getManyToManyRelationShipTableName(ProductCategory.class,Product.class);
+	  String middleTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class,Product.class);
+	  String Ttable = Timeframe.getTimeframeTableName();
+	  String Ptable = Product.getProductEntityName();
+	  String catMiddle = EntityControl.getManyToManyRelationShipTableName(ProductCategory.class,Product.class);
 
-          StringBuffer timeframeSQL = new StringBuffer();
-            timeframeSQL.append("SELECT distinct ("+Ptable+".*) FROM "+Ptable);
-            if (from != null && to != null) {
-              timeframeSQL.append(", "+Ttable+", "+middleTable);
-            }
-            if (productCategoryId != -1) {
-              timeframeSQL.append(", "+catMiddle);
-            }
-            timeframeSQL.append(" WHERE ");
-            timeframeSQL.append(Ptable+"."+Product.getColumnNameIsValid()+" = 'Y'");
-            if (from != null && to != null) {
-              timeframeSQL.append(" AND ");
-              timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
-              timeframeSQL.append(" AND ");
-              timeframeSQL.append(Ptable+"."+product.getIDColumnName()+" = "+middleTable+"."+product.getIDColumnName());
-            }
+	  StringBuffer timeframeSQL = new StringBuffer();
+	    timeframeSQL.append("SELECT distinct "+Ptable+".* FROM "+Ptable);
+	    if (from != null && to != null) {
+	      timeframeSQL.append(", "+Ttable+", "+middleTable);
+	    }
+	    if (productCategoryId != -1) {
+	      timeframeSQL.append(", "+catMiddle);
+	    }
+	    timeframeSQL.append(" WHERE ");
+	    timeframeSQL.append(Ptable+"."+Product.getColumnNameIsValid()+" = 'Y'");
+	    if (from != null && to != null) {
+	      timeframeSQL.append(" AND ");
+	      timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
+	      timeframeSQL.append(" AND ");
+	      timeframeSQL.append(Ptable+"."+product.getIDColumnName()+" = "+middleTable+"."+product.getIDColumnName());
+	    }
 
-            if (productCategoryId != -1) {
-              timeframeSQL.append(" AND ");
-              timeframeSQL.append(Ptable+"."+product.getIDColumnName()+" = "+catMiddle+"."+product.getIDColumnName());
-              timeframeSQL.append(" AND ");
-              timeframeSQL.append(catMiddle+"."+pCat.getIDColumnName() +" = "+productCategoryId);
-            }
+	    if (productCategoryId != -1) {
+	      timeframeSQL.append(" AND ");
+	      timeframeSQL.append(Ptable+"."+product.getIDColumnName()+" = "+catMiddle+"."+product.getIDColumnName());
+	      timeframeSQL.append(" AND ");
+	      timeframeSQL.append(catMiddle+"."+pCat.getIDColumnName() +" = "+productCategoryId);
+	    }
 
-          // Hondla ef supplierId != -1
-          List tempProducts = new Vector();
-          if (supplierId != -1) tempProducts = getProducts(supplierId);
-          if (tempProducts.size() > 0) {
-            timeframeSQL.append(" AND ");
-            timeframeSQL.append(middleTable+"."+product.getIDColumnName()+" in (");
-            for (int i = 0; i < tempProducts.size(); i++) {
-              prod = (Product) tempProducts.get(i);
-              if (i == 0) {
-                timeframeSQL.append(prod.getID());
-              }else {
-                timeframeSQL.append(","+prod.getID());
-              }
-            }
-            timeframeSQL.append(")");
-          }
+	  // Hondla ef supplierId != -1
+	  List tempProducts = new Vector();
+	  if (supplierId != -1) tempProducts = getProducts(supplierId);
+	  if (tempProducts.size() > 0) {
+	    timeframeSQL.append(" AND ");
+	    timeframeSQL.append(middleTable+"."+product.getIDColumnName()+" in (");
+	    for (int i = 0; i < tempProducts.size(); i++) {
+	      prod = (Product) tempProducts.get(i);
+	      if (i == 0) {
+		timeframeSQL.append(prod.getID());
+	      }else {
+		timeframeSQL.append(","+prod.getID());
+	      }
+	    }
+	    timeframeSQL.append(")");
+	  }
 
-          if (from != null && to != null) {
-            timeframeSQL.append(" AND ");
-            timeframeSQL.append("(");
-            timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"')");
-            timeframeSQL.append(" OR ");
-            timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" <= '"+to.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+to.toSQLDateString()+"')");
-            timeframeSQL.append(" OR ");
-            timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" >= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" <= '"+to.toSQLDateString()+"')");
-            timeframeSQL.append(")");
-          }
+	  if (from != null && to != null) {
+	    timeframeSQL.append(" AND ");
+	    timeframeSQL.append("(");
+	    timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"')");
+	    timeframeSQL.append(" OR ");
+	    timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" <= '"+to.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+to.toSQLDateString()+"')");
+	    timeframeSQL.append(" OR ");
+	    timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" >= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" <= '"+to.toSQLDateString()+"')");
+	    timeframeSQL.append(")");
+	  }
 
-          if (from != null && to != null) {
-            timeframeSQL.append(" ORDER BY "+Timeframe.getTimeframeFromColumnName());
-          }
+	  if (from != null && to != null) {
+	    timeframeSQL.append(" ORDER BY "+Timeframe.getTimeframeFromColumnName());
+	  }
 
-          //System.err.println(timeframeSQL.toString());
-          products = EntityFinder.getInstance().findAll(Product.class,timeframeSQL.toString());
+	  //System.err.println(timeframeSQL.toString());
+	  products = EntityFinder.getInstance().findAll(Product.class,timeframeSQL.toString());
 
 
       }catch(IDOFinderException  ido) {
-        ido.printStackTrace(System.err);
+	ido.printStackTrace(System.err);
       }
 
     return products;
@@ -508,10 +508,10 @@ public class ProductBusiness {
     try {
       Timeframe[] frames = product.getTimeframes();
       for (int i = 0; i < frames.length; i++) {
-        returner = frames[i];
-        if (stamp.isInTimeframe( new idegaTimestamp(returner.getFrom()) , new idegaTimestamp(returner.getTo()), stamp, returner.getIfYearly() )) {
-          return returner;
-        }
+	returner = frames[i];
+	if (stamp.isInTimeframe( new idegaTimestamp(returner.getFrom()) , new idegaTimestamp(returner.getTo()), stamp, returner.getIfYearly() )) {
+	  return returner;
+	}
       }
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
@@ -541,9 +541,9 @@ public class ProductBusiness {
   public static TravelAddress getDepartureAddress(Product product) throws SQLException{
       TravelAddress[] tempAddresses = getDepartureAddresses(product);
       if (tempAddresses.length > 0) {
-        return new TravelAddress(tempAddresses[0].getID());
+	return new TravelAddress(tempAddresses[0].getID());
       }else {
-        return null;
+	return null;
       }
   }
 
@@ -567,8 +567,8 @@ public class ProductBusiness {
     Product product;
     if (list != null && list.size() > 0) {
       for (int i = 0; i < list.size(); i++) {
-        product = (Product) list.get(i);
-        menu.addMenuElement(product.getID(), getProductNameWithNumber(product));
+	product = (Product) list.get(i);
+	menu.addMenuElement(product.getID(), getProductNameWithNumber(product));
       }
     }
     return menu;
