@@ -345,6 +345,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     EntityBrowser browser = new EntityBrowser();
     browser.setLeadingEntity(WorkReportDivisionBoard.class);
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
+    browser.setUseEventSystem(false);
     if( entities!=null && !entities.isEmpty()) browser.setDefaultNumberOfRows(entities.size());
     // switch off the internal form of the browser
     browser.setUseExternalForm(true);
