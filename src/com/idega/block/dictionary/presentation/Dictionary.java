@@ -60,7 +60,7 @@ public class Dictionary extends CategoryBlock implements Builderaware {
 	public void main(IWContext iwc) throws Exception {
 		_iwrb = getResourceBundle(iwc);
 		_iwb = getBundle(iwc);
-		_iwcb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		_iwcb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
 		_objectID = getICObjectInstanceID();
 		_isAdmin = iwc.hasEditPermission(this);

@@ -155,7 +155,7 @@ public class Survey extends FolderBlock {
 		super.initializeInMain(iwc);
 		_sBusiness = (SurveyBusiness)IBOLookup.getServiceInstance(iwc,SurveyBusiness.class);
 		_iwrb = getResourceBundle(iwc);
-		_iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		_iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		_iwbSurvey = getBundle(iwc);
 		_iLocaleID = iwc.getCurrentLocale();
 		_date = new IWTimestamp();
@@ -677,7 +677,7 @@ public class Survey extends FolderBlock {
 			if (iter.hasNext()) {
 				Object[] answerPKAndText = (Object[])iter.next();
 				if("".equals(answerPKAndText[1])){
-					aTA.setValue(answerPKAndText[1]);
+					aTA.setValue(answerPKAndText[1].toString());
 				}
 			}
 		}

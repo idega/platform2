@@ -89,7 +89,7 @@ public abstract class CategoryBlock extends Block {
 		//      return CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(getICObjectInstanceID());
 	}
 	protected void initCategory(IWContext iwc) {
-		if (icCategoryId <= 0) {
+		//if (icCategoryId <= 0) {
 			if (iwc.isParameterSet(prmCategoryId)) {
 				icCategoryId = Integer.parseInt(iwc.getParameter(prmCategoryId));
 				icCategory = CategoryFinder.getInstance().getCategory(icCategoryId);
@@ -100,7 +100,7 @@ public abstract class CategoryBlock extends Block {
 				//System.err.println("getting category from instance: "+getICObjectInstanceID()+" cat: "+icCategory+" "+this.getClassName());
 				//icCategoryId = CategoryFinder.getObjectInstanceCategoryId(getICObjectInstanceID(),autocreate,getCategoryType());
 			}
-		}
+		//}
 	}
 	public void initializeInMain(IWContext iwc) {
 		initCategory(iwc);

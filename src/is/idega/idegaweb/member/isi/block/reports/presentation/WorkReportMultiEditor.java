@@ -318,7 +318,7 @@ public class WorkReportMultiEditor extends Block {
 			if(obj!=null){
 				String valueString = obj.toString();
 				Text text = (Text) browser.getDefaultTextProxy().clone();
-				text.setText(iwc.getApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()).getLocalizedString(valueString,valueString));               
+				text.setText(iwc.getApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()).getLocalizedString(valueString,valueString));               
 				return text;
 			}
 			else{
@@ -351,7 +351,7 @@ public class WorkReportMultiEditor extends Block {
 				
 				Text text = (Text) browser.getDefaultTextProxy().clone();
 				
-				text.setText(iwc.getApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()).getLocalizedString("workreportmultieditor.whatisleftkey_"+localizedkey , localizedkey));               
+				text.setText(iwc.getApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()).getLocalizedString("workreportmultieditor.whatisleftkey_"+localizedkey , localizedkey));               
 				return text;
 			}
 			else{

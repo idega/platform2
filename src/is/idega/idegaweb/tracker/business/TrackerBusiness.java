@@ -55,7 +55,7 @@ public class TrackerBusiness {
   }
 
   private static void init(IWContext iwc){
-    if( cm == null ) cm = IWCacheManager.getInstance(iwc.getApplication());
+    if( cm == null ) cm = IWCacheManager.getInstance(iwc.getIWMainApplication());
     if( domainEntity == null ) domainEntity = BuilderLogic.getInstance().getCurrentDomain(iwc);/**@todo add multidomain support**/
     if( pages == null ){pages = new HashMap();}
     if( agents == null ){ agents = new Hashtable();}
@@ -373,7 +373,7 @@ public class TrackerBusiness {
     HashMap totalDomain = new HashMap();
 
 
-    Vector locales = (Vector) iwc.getApplication().getAvailableLocales();
+    Vector locales = (Vector) iwc.getIWMainApplication().getAvailableLocales();
     Iterator iter = locales.iterator();
 
 

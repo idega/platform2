@@ -117,7 +117,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		//debugParameters(iwc);
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
-		core = iwc.getApplication().getCoreBundle();
+		core = iwc.getIWMainApplication().getCoreBundle();
 
 		isAdmin = iwc.hasEditPermission(this);
 		

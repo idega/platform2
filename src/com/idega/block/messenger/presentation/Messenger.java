@@ -54,7 +54,7 @@ public class Messenger extends Block {
       add(messenger);
 
       if( iwc.getSessionAttribute("messenger_logoff_thingy")==null ){
-        iwc.setSessionAttribute("messenger_logoff_thingy",new ClientSessionBinder(iwc.getApplication()) );
+        iwc.setSessionAttribute("messenger_logoff_thingy",new ClientSessionBinder(iwc.getIWMainApplication()) );
       }
 
     }

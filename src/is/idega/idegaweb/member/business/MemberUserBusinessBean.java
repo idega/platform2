@@ -153,7 +153,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		}
 		
 		
-		IWResourceBundle iwrb = this.getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwuc.getCurrentLocale());
+		IWResourceBundle iwrb = this.getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwuc.getCurrentLocale());
 		String toEmailAddress;
 		
 		String subject = iwrb.getLocalizedString("member_transfer.email_subject","IWMember transfer announcement");

@@ -39,7 +39,7 @@ public class SchoolClassDropdownDouble extends SelectDropdownDouble {
 			return schoolClass.getSchoolClassName();
 		}
 		else {
-			IWResourceBundle iwrb = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+			IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 			return iwrb.getLocalizedString("school.select_class","Select class...");
 		}
 	}

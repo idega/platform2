@@ -388,7 +388,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   }   
 
   private IWResourceBundle getResourceBundle() {
-    IWMainApplication mainApp = getIWApplicationContext().getApplication();
+    IWMainApplication mainApp = getIWApplicationContext().getIWMainApplication();
     Locale locale = mainApp.getSettings().getDefaultLocale();
     IWBundle bundle = mainApp.getBundle(getBundleIdentifier());
     return bundle.getResourceBundle(locale);

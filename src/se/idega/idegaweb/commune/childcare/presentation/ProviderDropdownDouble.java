@@ -39,7 +39,7 @@ public class ProviderDropdownDouble extends SelectDropdownDouble {
 			return school.getSchoolName();
 		}
 		else {
-			IWResourceBundle iwrb = iwc.getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+			IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 			return iwrb.getLocalizedString("child_care.select_provider","Select provider...");
 		}
 	}

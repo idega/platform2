@@ -242,12 +242,12 @@ private IWResourceBundle iwrb;
   private void processForm(IWContext iwc,String sNewsId,String sLocTextId,String sCategory){
     // Save :
     if(iwc.getParameter(actSave)!=null || iwc.getParameter(actSave+".x")!=null ){
-      iwc.getApplication().getIWCacheManager().invalidateCache(NewsReader.CACHE_KEY);
+      iwc.getIWMainApplication().getIWCacheManager().invalidateCache(NewsReader.CACHE_KEY);
       saveNews(iwc,sNewsId,sLocTextId,sCategory);
     }
     // Delete :
     else if(iwc.getParameter( actDelete )!=null || iwc.getParameter(actDelete+".x")!=null){
-      iwc.getApplication().getIWCacheManager().invalidateCache(NewsReader.CACHE_KEY);
+      iwc.getIWMainApplication().getIWCacheManager().invalidateCache(NewsReader.CACHE_KEY);
       try {
         if(iwc.getParameter(modeDelete)!=null){
           int I = Integer.parseInt(iwc.getParameter(modeDelete));
@@ -772,7 +772,7 @@ private IWResourceBundle iwrb;
     iUserId = eUser != null?eUser.getID():-1;
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
-		core = iwc.getApplication().getBundle(NewsReader.IW_CORE_BUNDLE_IDENTIFIER);
+		core = iwc.getIWMainApplication().getBundle(NewsReader.IW_CORE_BUNDLE_IDENTIFIER);
     addTitle(iwrb.getLocalizedString("news_editor","News Editor"));
     control(iwc);
   }

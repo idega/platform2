@@ -108,7 +108,7 @@ public class SetupEditor extends Block {
     //debugParameters(iwc);
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
-    core = iwc.getApplication().getCoreBundle();
+    core = iwc.getIWMainApplication().getCoreBundle();
 
     deleteImage = core.getImage("/shared/delete.gif");
     editImage = core.getImage("/shared/edit.gif");

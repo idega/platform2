@@ -78,12 +78,11 @@ public class AccessControllerApp extends IWApplication {
     }
 
     public void main(IWContext iwc) throws Exception {
-      IWBundle iwbCore = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+      IWBundle iwbCore = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 
       Table headerTable = new Table();
       headerTable.setCellpadding(0);
       headerTable.setCellspacing(0);
-      headerTable.setVerticalAlignment("middle");
       headerTable.setWidth("100%");
       headerTable.setAlignment(2,1,"right");
       Image idegaweb = iwbCore.getImage("/editorwindow/idegaweb.gif","idegaWeb");

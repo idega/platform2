@@ -1365,7 +1365,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 	}
 
 	private File getFileObjectForFileId(int fileId) {
-		Cache file = MediaBusiness.getCachedFileInfo(fileId, this.getIWApplicationContext().getApplication());
+		Cache file = MediaBusiness.getCachedFileInfo(fileId, this.getIWApplicationContext().getIWMainApplication());
 
 		return new File(file.getRealPathToFile());
 	}

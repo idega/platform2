@@ -35,7 +35,7 @@ public class ViewChildCareContract extends Window {
 		Page p = getParentPage();		
 		
 		if (fileId > 0) {
-			String url = MediaBusiness.getMediaURL(fileId, iwc.getApplication());
+			String url = MediaBusiness.getMediaURL(fileId, iwc.getIWMainApplication());
 			p.setToRedirect(url);
 		}
 		else {

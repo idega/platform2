@@ -78,7 +78,7 @@ public BoxCategoryEditor(){
 
     _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
 
-    _iwb = iwc.getApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
+    _iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
 
     _iwrb = getResourceBundle(iwc);
 

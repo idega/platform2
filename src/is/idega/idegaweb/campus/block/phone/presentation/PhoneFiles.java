@@ -136,7 +136,7 @@ public class PhoneFiles extends Finance {
 
     String fileName = iwc.getParameter("filename");
     if(fileName != null){
-      String filePath = iwc.getApplication().getApplicationRealPath()+dir+File.separator+fileName;
+      String filePath = iwc.getIWMainApplication().getApplicationRealPath()+dir+File.separator+fileName;
       new PhoneFileHandler().processFile(filePath);
     }
     return getFileTable(iwc);
@@ -165,7 +165,7 @@ public class PhoneFiles extends Finance {
 	int row = 2;
     Map M = mapOfReadFilesByFileName() ;
     try{
-      File F = new File(iwc.getApplication().getApplicationRealPath()+dir);
+      File F = new File(iwc.getIWMainApplication().getApplicationRealPath()+dir);
       PhoneFilenameFilter filter = new PhoneFilenameFilter();
       File[] Fs = F.listFiles(filter);
       
@@ -292,7 +292,7 @@ public class PhoneFiles extends Finance {
 	public void uploadFile(IWContext iwc){
 		UploadFile file = iwc.getUploadedFile();
 		String fileName  = file.getName(); 
-		String newParent = iwc.getApplication().getApplicationRealPath()+dir;
+		String newParent = iwc.getIWMainApplication().getApplicationRealPath()+dir;
 		String newFileName =	newParent+File.separator+fileName; 
 		String changedFileName = iwc.getMultipartParameter("new_file_name");
 		if(changedFileName !=null && !"".equals(changedFileName)){

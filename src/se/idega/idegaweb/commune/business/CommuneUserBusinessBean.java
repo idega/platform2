@@ -513,7 +513,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	}
 	
 	protected IWBundle getCommuneBundle() {
-		return this.getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
+		return this.getIWApplicationContext().getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 	}
 	/**
 	 * Method getFirstManagingSchoolForUser.

@@ -191,7 +191,7 @@ public class CommuneForumTopicFiles extends Window {
 				try {
 					file = fileHome.findByPrimaryKey(iter.next());
 					Link preview = new Link(new Text(file.getName()));
-					preview.setURL(MediaBusiness.getMediaURL(file,iwc.getApplication()));
+					preview.setURL(MediaBusiness.getMediaURL(file,iwc.getIWMainApplication()));
 					preview.setTarget(Link.TARGET_NEW_WINDOW);
 					t.add(preview, 1, row);
 

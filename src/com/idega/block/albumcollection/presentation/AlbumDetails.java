@@ -206,7 +206,7 @@ public class AlbumDetails extends Block {
 
 	public Table getTrackList(IWContext iwc) throws Exception {
 
-		IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		IWBundle core = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		IWBundle iwb = this.getBundle(iwc);
 		IWResourceBundle iwrb = this.getResourceBundle(iwc);
 		

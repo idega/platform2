@@ -61,7 +61,7 @@ public class UserChooserWindow extends AbstractChooserWindow {
 	private void init(IWContext iwc) {
 	
 		searchString = iwc.getParameter(PARAMETER_SEARCH);
-    iwrb = iwc.getApplication().getBundle(BuilderConstants.STANDARD_IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+    iwrb = iwc.getIWMainApplication().getBundle(BuilderConstants.STANDARD_IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
     showAll = iwc.isParameterSet(PARAMETER_VIEW_ALL);
     
 		if (iwc.isParameterSet(PARAMETER_CURRENT_PAGE)) {
@@ -248,7 +248,6 @@ public class UserChooserWindow extends AbstractChooserWindow {
 	public Table getHeaderTable(IWContext iwc) {
 		Table headerTable = new Table();
 		headerTable.setWidth(TABLE_WIDTH);
-		headerTable.setAlignment(Table.HORIZONTAL_ALIGN_CENTER);
 		headerTable.setCellpaddingAndCellspacing(0);
 		
 		Link link = getLink(getText(iwrb.getLocalizedString("all","All")), iwc);

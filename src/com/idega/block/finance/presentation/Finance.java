@@ -70,7 +70,7 @@ public class Finance extends CategoryBlock implements Builderaware{
   public void init(IWContext iwc){
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-    core = iwc.getApplication().getCoreBundle();
+    core = iwc.getIWMainApplication().getCoreBundle();
     isAdmin = this.hasEditPermission();
     textFormat = TextFormat.getInstance();
     initCategoryId(iwc);
@@ -99,7 +99,7 @@ public class Finance extends CategoryBlock implements Builderaware{
     T.setCellpadding(2);
     T.setCellspacing(2);
 
-    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    IWBundle core = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     //if(iCategoryId > 0)
     {
       /*
@@ -127,8 +127,8 @@ public class Finance extends CategoryBlock implements Builderaware{
 
     if(iwc.isParameterSet(prmCategoryId))
       return Integer.parseInt(iwc.getParameter(prmCategoryId));
-    else if(iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY)!=null)
-      return Integer.parseInt(iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY));
+    else if(iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY)!=null)
+      return Integer.parseInt(iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY));
     else
       return -1;
   }
@@ -136,8 +136,8 @@ public class Finance extends CategoryBlock implements Builderaware{
   private void initCategoryId(IWContext iwc){
     iCategoryId = getCategoryId();
     if(iCategoryId <= 0){
-      if(iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY)!=null)
-        iCategoryId =  Integer.parseInt(iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY));
+      if(iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY)!=null)
+        iCategoryId =  Integer.parseInt(iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY));
     }
   }
 

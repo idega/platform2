@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.23 2004/02/19 12:36:31 anders Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.24 2004/02/20 16:36:50 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -43,11 +43,11 @@ import com.idega.util.PersonalIDFormatter;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/02/19 12:36:31 $ by $Author: anders $
+ * Last modified: $Date: 2004/02/20 16:36:50 $ by $Author: tryggvil $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -160,7 +160,7 @@ public class CitizenAccountAdmin extends CommuneBlock {
 				col = 1;
 				AdminListOfApplications list = (AdminListOfApplications) it.next();
 				table.add(getSmallText(list.getName()), col++, row);
-				String personalID = PersonalIDFormatter.format(list.getPID(), iwc.getApplication().getSettings().getApplicationLocale());
+				String personalID = PersonalIDFormatter.format(list.getPID(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
 				table.add(getSmallText(personalID), col++, row);
 				table.add(getSmallText(list.getAddress()), col++, row);
 	
@@ -199,7 +199,7 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			table.add(getSmallText(applicant.getApplicantName()), 3, row++);
 			
 			table.add(getSmallHeader(localize(CitizenAccountApplication.SSN_KEY, CitizenAccountApplication.SSN_DEFAULT)), 1, row);
-			final String pid = PersonalIDFormatter.format(applicant.getSsn(), iwc.getApplication().getSettings().getApplicationLocale());
+			final String pid = PersonalIDFormatter.format(applicant.getSsn(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
 			table.add(getSmallText(pid), 3, row++);
 			
 			table.add(getSmallHeader(localize(CitizenAccountApplication.EMAIL_KEY, CitizenAccountApplication.EMAIL_DEFAULT)), 1, row);

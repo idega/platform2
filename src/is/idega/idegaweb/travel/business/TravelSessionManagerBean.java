@@ -93,7 +93,7 @@ public class TravelSessionManagerBean extends IBOSessionBean implements TravelSe
 
   public IWBundle getIWBundle() {
     if (_bundle == null) {
-      _bundle = super.getIWApplicationContext().getApplication().getBundle(this.IW_BUNDLE_IDENTIFIER);
+      _bundle = super.getIWApplicationContext().getIWMainApplication().getBundle(this.IW_BUNDLE_IDENTIFIER);
     }
     return _bundle;
   }

@@ -49,7 +49,7 @@ public class LyricViewer extends Block {
   public void main(IWContext iwc) throws Exception {
 
 
-    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    IWBundle core = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     IWResourceBundle iwrb = this.getResourceBundle(iwc);
 
     this.empty();

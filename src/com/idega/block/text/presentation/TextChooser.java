@@ -38,7 +38,7 @@ public class TextChooser extends AbstractChooser {
   }
 
   public void main(IWContext iwc){
-    IWBundle iwb = iwc.getApplication().getBundle(BuilderConstants.STANDARD_IW_BUNDLE_IDENTIFIER);
+    IWBundle iwb = iwc.getIWMainApplication().getBundle(BuilderConstants.STANDARD_IW_BUNDLE_IDENTIFIER);
     if (_chooseButtonImage != null) {
       setChooseButtonImage(_chooseButtonImage);
     }else {

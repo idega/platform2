@@ -66,7 +66,7 @@ public class LinkGenerator extends TravelWindow {
   }
 
   private static String getLinkText(IWContext iwc, int serviceId, Class classToInstanciate) {
-  	IWMainApplication iwma = iwc.getApplicationContext().getApplication();
+  	IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
   	IWBundle iwb = iwma.getBundle(TravelWindow.IW_BUNDLE_IDENTIFIER);  	
   	
   	String serverName = iwb.getProperty(PROPERTY_SERVER_NAME);
@@ -80,12 +80,12 @@ public class LinkGenerator extends TravelWindow {
     }
 
     String parName = parameterProductId;
-    String className = iwc.getApplication().getEncryptedClassName(classToInstanciate);
+    String className = iwc.getIWMainApplication().getEncryptedClassName(classToInstanciate);
     if (classToInstanciate.getName().equals(Booking.class.getName())) {
       parName = Booking.parameterProductId;
     }
 
-    String url = iwc.getApplication().getObjectInstanciatorURI(classToInstanciate)+"&"+parName+"="+serviceId;
+    String url = iwc.getIWMainApplication().getObjectInstanciatorURI(classToInstanciate)+"&"+parName+"="+serviceId;
     text.append(url);
 //    text.append("/servlet/ObjectInstanciator?idegaweb_instance_class="+className+"&"+parName+"="+serviceId);
     return text.toString();

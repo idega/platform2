@@ -946,7 +946,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
     public static Link getBackLink(IWContext iwc,int backUpHowManyPages) {
 
-        IWMainApplication iwma = iwc.getApplication();
+        IWMainApplication iwma = iwc.getIWMainApplication();
 
         IWBundle iwb = iwma.getBundle(TournamentController.getBundleIdentifier());
 
@@ -1022,7 +1022,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
     public static SubmitButton getAheadButton(IWContext iwc, String name, String value) {
 
-        IWMainApplication iwma = iwc.getApplication();
+        IWMainApplication iwma = iwc.getIWMainApplication();
 
         IWBundle iwb = iwma.getBundle(TournamentController.getBundleIdentifier());
 

@@ -49,7 +49,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 	 */
 	public PresentationObject getDemo(ProductViewer productViewer, IWContext iwc) throws RemoteException {
 		String IMAGE_BUNDLE_IDENTIFIER = "com.idega.block.image";
-		Image image = iwc.getApplication().getBundle(IMAGE_BUNDLE_IDENTIFIER).getLocalizedImage("picture.gif", productViewer._locale);
+		Image image = iwc.getIWMainApplication().getBundle(IMAGE_BUNDLE_IDENTIFIER).getLocalizedImage("picture.gif", productViewer._locale);
 		_images.add(image);
 
 		_description = TextFormatter.getLoremIpsumString(iwc);

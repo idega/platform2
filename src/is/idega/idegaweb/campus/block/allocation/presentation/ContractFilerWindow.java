@@ -48,7 +48,7 @@ import java.io.*;
 		//IWContext iwc = getIWContext();
     //IWMainApplication iwma = iwc.getApplication()
     String identifier = "is.idega.idegaweb.campus";
-    IWResourceBundle iwrb = iwc.getApplication().getBundle(identifier).getResourceBundle(iwc);
+    IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(identifier).getResourceBundle(iwc);
     Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
     Font paraFont = new Font(Font.HELVETICA, 10, Font.BOLD);
     Font nameFont = new Font(Font.HELVETICA, 12, Font.BOLDITALIC);
@@ -85,7 +85,7 @@ import java.io.*;
 			}
 
 			if(fileId > 0){
-				String url = MediaBusiness.getMediaURL(fileId,iwc.getApplication());
+				String url = MediaBusiness.getMediaURL(fileId,iwc.getIWMainApplication());
 				p.setToRedirect(url,1);
 				p.setParentToReload();
 			}

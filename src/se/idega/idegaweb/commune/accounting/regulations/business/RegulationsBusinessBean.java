@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.119 2004/02/13 14:11:14 staffan Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.120 2004/02/20 16:36:50 tryggvil Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -379,8 +379,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public PostingDetail getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(String operation, String flow, Date period, Collection condition, String regSpecType, int totalSum, ChildCareContract contract) {
 
 		PostingDetail postingDetail = new PostingDetail();
-		IWBundle bundle = getIWApplicationContext().getApplication().getBundle(getBundleIdentifier());
-		IWResourceBundle iwrb = bundle.getResourceBundle(getIWApplicationContext().getApplication().getSettings().getDefaultLocale());
+		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
+		IWResourceBundle iwrb = bundle.getResourceBundle(getIWApplicationContext().getIWMainApplication().getSettings().getDefaultLocale());
 
 		Collection items = findRegulationsByPeriod(period, period);
 		if (items != null) {

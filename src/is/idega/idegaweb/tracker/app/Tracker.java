@@ -75,7 +75,7 @@ public class Tracker extends IWApplication {
       headerTable.setVerticalAlignment("middle");
       headerTable.setWidth("100%");
       headerTable.setAlignment(2,1,"right");
-      Image idegaweb = iwc.getApplication().getCoreBundle().getImage("/editorwindow/idegaweb.gif","idegaWeb");
+      Image idegaweb = iwc.getIWMainApplication().getCoreBundle().getImage("/editorwindow/idegaweb.gif","idegaWeb");
       headerTable.add(idegaweb,1,1);
 
       this.add(headerTable);

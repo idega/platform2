@@ -82,7 +82,7 @@ public class ProductItem extends Block {
     this._iwrb = _iwb.getResourceBundle(iwc);
 
     String IMAGE_BUNDLE_IDENTIFIER="com.idega.block.image";
-    _defaultImage = iwc.getApplication().getBundle(IMAGE_BUNDLE_IDENTIFIER).getLocalizedImage("picture.gif", _locale);
+    _defaultImage = iwc.getIWMainApplication().getBundle(IMAGE_BUNDLE_IDENTIFIER).getLocalizedImage("picture.gif", _locale);
   }
 
   protected Text getText(String content) {

@@ -248,7 +248,7 @@ public class Importer extends StyledIWAdminWindow {
 					path = values[i];
 				}
 				else { /**@todo read directly from the database or at least do this in the business class**/
-					path = MediaBusiness.getCachedFileInfo(Integer.parseInt(values[i]), iwc.getApplication()).getRealPathToFile();
+					path = MediaBusiness.getCachedFileInfo(Integer.parseInt(values[i]), iwc.getIWMainApplication()).getRealPathToFile();
 				}
 				//todo get failed records and associate with the import
 				//handler. add import methods that take in the file id!

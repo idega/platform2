@@ -56,7 +56,7 @@ import java.util.List;
 
 		String identifier = "is.idega.idegaweb.campus.block.allocation";
 
-		IWResourceBundle iwrb = iwc.getApplication().getBundle(identifier).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(identifier).getResourceBundle(iwc);
 
 		String fileSeperator = System.getProperty("file.separator");
 

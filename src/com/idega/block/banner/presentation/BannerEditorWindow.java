@@ -62,7 +62,7 @@ public BannerEditorWindow(){
      */
     _isAdmin = true;
     _superAdmin = iwc.hasEditPermission(this);
-    _iwb = iwc.getApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
+    _iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("banner_admin","Banner Admin"));
 

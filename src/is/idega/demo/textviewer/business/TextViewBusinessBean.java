@@ -23,7 +23,7 @@ public class TextViewBusinessBean extends IBOServiceBean implements TextViewBusi
 
   public String getFileAsString(int fileID)throws FileNotFoundException,IOException{
     StringBuffer sbuffer = new StringBuffer();
-    Cache cache = MediaBusiness.getCachedFileInfo(fileID,this.getIWApplicationContext().getApplication());
+    Cache cache = MediaBusiness.getCachedFileInfo(fileID,this.getIWApplicationContext().getIWMainApplication());
     InputStream in = new FileInputStream(cache.getRealPathToFile());
     InputStreamReader reader = new InputStreamReader(in);
     int bufflen = 10;

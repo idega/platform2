@@ -74,7 +74,7 @@ public class NewsLetterArchive extends CategoryBlock {
 
 	public void main(IWContext iwc) {
 		iwb = getBundle(iwc);
-		core = iwc.getApplication().getCoreBundle();
+		core = iwc.getIWMainApplication().getCoreBundle();
 		iwrb = getResourceBundle(iwc);
 		Table T = new Table();
 		int row = 1;

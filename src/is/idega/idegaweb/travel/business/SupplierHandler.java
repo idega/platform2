@@ -38,7 +38,7 @@ public class SupplierHandler implements PropertyHandler {
   public PresentationObject getHandlerObject(String name, String value, IWContext iwc) {
     DropdownMenu menu = null;
 
-    iwrb = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+    iwrb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 
     Supplier[] supp = null;
     try{

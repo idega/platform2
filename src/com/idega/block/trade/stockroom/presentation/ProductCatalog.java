@@ -109,7 +109,7 @@ public class ProductCatalog extends CategoryBlock {
 		return IW_BUNDLE_IDENTIFIER;
 	}
 	public void clearCache(IWContext iwc) {
-		iwc.getApplication().getIWCacheManager().invalidateCache(getCacheState(iwc, super.getCachePrefixString(iwc)));
+		iwc.getIWMainApplication().getIWCacheManager().invalidateCache(getCacheState(iwc, super.getCachePrefixString(iwc)));
 	}
 	private void init(IWContext iwc) {
 		bundle = getBundle(iwc);
@@ -124,7 +124,7 @@ public class ProductCatalog extends CategoryBlock {
 		this._hasEditPermission = this.hasEditPermission();
 		if (iwc.isInPreviewMode())
 			this._hasEditPermission = false;
-		IWBundle coreBundle = iwc.getApplication().getCoreBundle();
+		IWBundle coreBundle = iwc.getIWMainApplication().getCoreBundle();
 		iCreate = coreBundle.getImage("shared/create.gif");
 		iDelete = coreBundle.getImage("shared/delete.gif");
 		iEdit = coreBundle.getImage("shared/edit.gif");

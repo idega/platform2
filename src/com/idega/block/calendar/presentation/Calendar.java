@@ -110,7 +110,7 @@ public class Calendar extends CategoryBlock implements Builderaware {
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		_iwrb = getResourceBundle(iwc);
-		_iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		_iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		_iwbCalendar = getBundle(iwc);
 
 		iUserId = iwc.getUserId();

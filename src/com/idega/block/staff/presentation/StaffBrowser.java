@@ -118,7 +118,7 @@ public class StaffBrowser extends Block implements Builderaware {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		_iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		_iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		_iwrb = getResourceBundle(iwc);
 		_isAdmin = iwc.hasEditPermission(this);
 		_localeID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());

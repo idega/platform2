@@ -161,9 +161,9 @@ public class DisplayHelp extends PresentationObjectContainer {
 		try {
 			IWBundle iwb = null;
 			if (bundle == null)
-				iwb = iwc.getApplication().getBundle(HELP_BUNDLE);
+				iwb = iwc.getIWMainApplication().getBundle(HELP_BUNDLE);
 			else
-				iwb = iwc.getApplication().getBundle(bundle);
+				iwb = iwc.getIWMainApplication().getBundle(bundle);
 				
 			XMLParser parser = new XMLParser(false);
 			StringBuffer fileName = new StringBuffer(iwb.getResourcesRealPath(loc));

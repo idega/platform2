@@ -145,7 +145,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 
 			String childSSN = "-";
 			if (child != null) {
-				childSSN = PersonalIDFormatter.format(child.getPersonalID(), iwc.getApplication().getSettings().getApplicationLocale());
+				childSSN = PersonalIDFormatter.format(child.getPersonalID(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
 			}
 
 			String managerName = "-";
@@ -229,7 +229,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 			checkInfoTable.add(getLocalizedSmallHeader("check.child", "Child"), 1, row);
 			checkInfoTable.add(getSmallHeader(":"), 1, row);
 
-			String childSSN = PersonalIDFormatter.format(child.getPersonalID(), iwc.getApplication().getSettings().getApplicationLocale());
+			String childSSN = PersonalIDFormatter.format(child.getPersonalID(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
 
 			checkInfoTable.add(getSmallText(childSSN + ", " + child.getName()), 2, row++);
 			Collection addresses = child.getAddresses();

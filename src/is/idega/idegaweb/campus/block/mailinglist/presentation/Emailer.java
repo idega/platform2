@@ -691,7 +691,7 @@ public class Emailer extends Block {
      */
     public void main(IWContext iwc) {
         iwb = getBundle(iwc);
-        core = iwc.getApplication().getCoreBundle();
+        core = iwc.getIWMainApplication().getCoreBundle();
         editImage = core.getImage("/shared/edit.gif");
         deleteImage = core.getImage("/shared/delete.gif");
         mailImage = core.getImage("/shared/empty.gif");

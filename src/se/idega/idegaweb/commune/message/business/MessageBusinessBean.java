@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.57 2004/01/21 18:00:23 staffan Exp $
+ * $Id: MessageBusinessBean.java,v 1.58 2004/02/20 16:36:50 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -621,7 +621,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		String mailServer = DEFAULT_SMTP_MAILSERVER;
 		String fromAddress = DEFAULT_MESSAGEBOX_FROM_ADDRESS;
 		try{
-			IWBundle iwb = getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+			IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 			mailServer = iwb.getProperty(PROP_SYSTEM_SMTP_MAILSERVER,DEFAULT_SMTP_MAILSERVER);
 			fromAddress = iwb.getProperty(PROP_MESSAGEBOX_FROM_ADDRESS,DEFAULT_MESSAGEBOX_FROM_ADDRESS);
 		}

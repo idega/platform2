@@ -44,7 +44,7 @@ public class CampusTypeWindow extends Window {
     String today = com.idega.util.IWTimestamp.RightNow().getLocaleDate(iwc.getCurrentLocale());
     java.util.Collection typeTariffs = FinanceFinder.getInstance().getKeySortedTariffsByAttribute("t_"+id);
     if(typeTariffs !=null){
-      NumberFormat format = DecimalFormat.getCurrencyInstance(iwc.getApplication().getSettings().getDefaultLocale());
+      NumberFormat format = DecimalFormat.getCurrencyInstance(iwc.getIWMainApplication().getSettings().getDefaultLocale());
       //  String rentString = format.format((long)room.getRent());
     	ArrayList list = new ArrayList();
    

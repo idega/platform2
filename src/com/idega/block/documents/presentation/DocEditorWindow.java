@@ -121,7 +121,7 @@ public class DocEditorWindow extends IWAdminWindow {
 		business = (FolderBlockBusiness) IBOLookup.getServiceInstance(iwc,FolderBlockBusiness.class);
 		_hasEditpermission = true;
 		//AccessControl.hasEditPermission(this,iwc);
-		_iwb = iwc.getApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
+		_iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
 		_iwrb = getResourceBundle(iwc);
 		addTitle(_iwrb.getLocalizedString("doc_admin", "Doc Admin"));
 		Locale currentLocale = iwc.getCurrentLocale();

@@ -152,7 +152,7 @@ private IWResourceBundle iwrb;
     iUserId = eUser != null?eUser.getID():-1;
     isAdmin = true;
     iwb = getBundle(iwc);
-    core = iwc.getApplication().getBundle(iwc.getApplication().CORE_BUNDLE_IDENTIFIER);
+    core = iwc.getIWMainApplication().getBundle(iwc.getIWMainApplication().CORE_BUNDLE_IDENTIFIER);
     iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("tariff_group_editor","Tariffgroup Editor"));
     control(iwc);

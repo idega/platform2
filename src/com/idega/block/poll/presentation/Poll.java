@@ -88,7 +88,7 @@ private int _layout = RADIO_BUTTON_VIEW;
 
   public void main(IWContext iwc)throws Exception{
     _iwrb = getResourceBundle(iwc);
-    _iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    _iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     _iwbPoll = getBundle(iwc);
 
     _isAdmin = iwc.hasEditPermission(this);

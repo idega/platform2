@@ -30,7 +30,7 @@ public class TextFormatter {
    *@return      The dummy text
    */
   public static String getLoremIpsumString(IWContext iwc) {
-    return iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty("lorem", "Lorem ipsum text is missing it should be defined as a bundle property named lorem in com.idega.block.text");
+    return iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty("lorem", "Lorem ipsum text is missing it should be defined as a bundle property named lorem in com.idega.block.text");
   }
 
   /**
@@ -41,7 +41,7 @@ public class TextFormatter {
    *@return      The dummy text
    */
   public static String getLoremIpsumString(IWContext iwc, int length) {
-    String lorem = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty("lorem", "Lorem ipsum text is missing it should be defined as a bundle property named lorem in com.idega.block.text");
+    String lorem = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty("lorem", "Lorem ipsum text is missing it should be defined as a bundle property named lorem in com.idega.block.text");
     int loremLength = lorem.length();
     if( length<1 ) length*=-1;
 

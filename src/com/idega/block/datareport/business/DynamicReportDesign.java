@@ -265,7 +265,7 @@ public class DynamicReportDesign {
 			}
 			Text text = null;
 			if(iwc!=null){
-				text = new Text(iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc).getLocalizedString("dynamicreportdesign.pagecountname","Page:"));
+				text = new Text(iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc).getLocalizedString("dynamicreportdesign.pagecountname","Page:"));
 			}
 			else{
 				text = new Text("Page:  ");
@@ -568,7 +568,7 @@ public class DynamicReportDesign {
 	
 	
 	private String getRealPathToDesignFile(IWApplicationContext iwc, String fileName, String extension) {
-		IWMainApplication mainApp = iwc.getApplication();
+		IWMainApplication mainApp = iwc.getIWMainApplication();
 		String separator = FileUtil.getFileSeparator();
 		StringBuffer path = new StringBuffer(mainApp.getApplicationRealPath());
 		path.append(IWCacheManager.IW_ROOT_CACHE_DIRECTORY)

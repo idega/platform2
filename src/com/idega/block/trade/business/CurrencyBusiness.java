@@ -171,7 +171,7 @@ public class CurrencyBusiness {
 		if (currencyMap == null) {
 			try {
 				System.out.println("[CurrencyBusiness] currencyMap == null, trying to get a new one...");
-				getCurrencyMap(IWContext.getInstance().getApplication().getBundle(IW_BUNDLE_IDENTIFIER));
+				getCurrencyMap(IWContext.getInstance().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER));
 				System.out.println("[CurrencyBusiness] getCurrencyMap(bundle) done...");
 			} catch (RemoteException e) {
 				System.out.println("[CurrencyBusiness] getCurrencyMap(bundle) FAILED...");

@@ -629,7 +629,7 @@ private IWResourceBundle iwrb;
     iUserId = eUser != null?eUser.getID():-1;
     isAdmin = true;
     iwb = getBundle(iwc);
-		core = iwc.getApplication().getBundle(ContractViewer.IW_CORE_BUNDLE_IDENTIFIER);
+		core = iwc.getIWMainApplication().getBundle(ContractViewer.IW_CORE_BUNDLE_IDENTIFIER);
     iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("contract_editor","Contract Editor"));
     control(iwc);

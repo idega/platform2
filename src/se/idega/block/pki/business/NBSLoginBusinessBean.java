@@ -229,7 +229,7 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 	}
 
 	private IWBundle getBundle(IWApplicationContext iwac) {
-		return iwac.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+		return iwac.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 	}
 
 	private void carryOnNBSException(IWContext iwc, NBSException e) {

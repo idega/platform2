@@ -280,7 +280,7 @@ public Banner(String attribute){
 
   private Link getAdminPart(IWContext iwc) {
 
-    Image createImage = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/create.gif");
+    Image createImage = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/create.gif");
 
 
 

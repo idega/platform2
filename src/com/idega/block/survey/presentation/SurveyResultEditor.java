@@ -94,7 +94,7 @@ public class SurveyResultEditor extends Block {
 		super.initializeInMain(iwc);
 		_sBusiness = (SurveyBusiness) IBOLookup.getServiceInstance(iwc,SurveyBusiness.class);
 		_iwrb = getResourceBundle(iwc);
-		_iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		_iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		_iwbSurvey = getBundle(iwc);
 		_locale = iwc.getCurrentLocale();
 		_icLocale = ICLocaleBusiness.getICLocale(_locale);

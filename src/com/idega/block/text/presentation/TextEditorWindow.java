@@ -191,12 +191,12 @@ public class TextEditorWindow extends AbstractChooserWindow{
 
     // Save :
     if(iwc.getParameter(actSave)!=null || iwc.getParameter(actSave+".x")!=null ){
-      iwc.getApplication().getIWCacheManager().invalidateCache(TextReader.CACHE_KEY);
+      iwc.getIWMainApplication().getIWCacheManager().invalidateCache(TextReader.CACHE_KEY);
       saveText(iwc,sTextId,sLocTextId,sAttribute);
     }
     // Delete :
     else if(iwc.getParameter( actDelete )!=null || iwc.getParameter(actDelete+".x")!=null){
-      iwc.getApplication().getIWCacheManager().invalidateCache(TextReader.CACHE_KEY);
+      iwc.getIWMainApplication().getIWCacheManager().invalidateCache(TextReader.CACHE_KEY);
 
       try {
         if(iwc.getParameter(modeDelete)!=null){
@@ -435,7 +435,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
     isAdmin = true;
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
-    core = iwc.getApplication().getBundle(TextReader.IW_CORE_BUNDLE_IDENTIFIER);
+    core = iwc.getIWMainApplication().getBundle(TextReader.IW_CORE_BUNDLE_IDENTIFIER);
     reloadCheck(iwc);
     addTitle(iwrb.getLocalizedString("text_editor","Text Editor"));
     try{

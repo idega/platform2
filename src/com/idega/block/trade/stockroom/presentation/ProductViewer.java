@@ -176,7 +176,7 @@ public class ProductViewer extends Block {
 			}
 		}
 
-		IWBundle coreBundle = iwc.getApplication().getCoreBundle();
+		IWBundle coreBundle = iwc.getIWMainApplication().getCoreBundle();
 		iEdit = coreBundle.getImage("shared/edit.gif");
 	}
 

@@ -970,7 +970,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		IWTimestamp fromDate = new IWTimestamp(newDate);
 
 		ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
-		List  buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, fromDate, false),getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+		List  buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, fromDate, false),getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 	
 		ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 		int fileID = ((Integer)contractFile.getPrimaryKey()).intValue();
@@ -1010,7 +1010,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			ChildCareApplication application = childcareContract.getApplication();
 			
 			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
-			List  buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, careTime, new IWTimestamp(fromDate), false),getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+			List  buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, careTime, new IWTimestamp(fromDate), false),getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 			
 			ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
 			
@@ -1724,8 +1724,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						
 			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
 			ITextXMLHandler txtHandler = new ITextXMLHandler(ITextXMLHandler.TXT);
-			List  pdfBuffers = pdfHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus),getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-			List  txtBuffers = txtHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus, hasBankId ? "<care-time/>" : "..."), getXMLContractTxtURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+			List  pdfBuffers = pdfHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus),getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+			List  txtBuffers = txtHandler.writeToBuffers(getTagMap(application, locale, validFrom, !changeStatus, hasBankId ? "<care-time/>" : "..."), getXMLContractTxtURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 			if(pdfBuffers !=null && pdfBuffers.size() == 1 && txtBuffers !=null && txtBuffers.size() == 1){
 				String contractText = txtHandler.bufferToString((MemoryFileBuffer)txtBuffers.get(0));
 				contractText= breakString(contractText, 80);
@@ -1822,7 +1822,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 		
 	private int getContractCategory() {
-		IWBundle bundle = getIWApplicationContext().getApplication().getBundle(getBundleIdentifier());
+		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
 		return Integer.parseInt(bundle.getProperty(PROPERTY_CONTRACT_CATEGORY, "2"));
 	}
 
@@ -3173,7 +3173,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 			else {
 				ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.TXT+ITextXMLHandler.PDF);
-				List buffers = pdfHandler.writeToBuffers(getTagMap(application,locale,fromDate,false),getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+				List buffers = pdfHandler.writeToBuffers(getTagMap(application,locale,fromDate,false),getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 				if(buffers !=null && buffers.size() == 2){
 					String contractText = pdfHandler.bufferToString((MemoryFileBuffer)buffers.get(1));
 					ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer)buffers.get(0),"contract.pdf",pdfHandler.getPDFMimeType());
@@ -3302,7 +3302,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			String caseStatus[] = { getCaseStatusOpen().getStatus(), getCaseStatusContract().getStatus()};
-			IWBundle iwb = getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+			IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 			int areaID = Integer.parseInt(iwb.getProperty(PROP_OUTSIDE_SCHOOL_AREA,"-1"));
 			
 			return home.findApplicationsInSchoolAreaByStatus(areaID, caseStatus, 1);

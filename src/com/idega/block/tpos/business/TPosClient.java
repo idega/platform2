@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.26 2003/04/03 19:29:12 laddi Exp $
+ *  $Id: TPosClient.java,v 1.27 2004/02/20 16:37:44 tryggvil Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -83,7 +83,7 @@ public class TPosClient {
   }
 
   private void init(IWContext iwc) throws Exception{
-    _iwb = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+    _iwb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     if (_iwb != null) {
       _iwrb = _iwb.getResourceBundle(iwc);
     }

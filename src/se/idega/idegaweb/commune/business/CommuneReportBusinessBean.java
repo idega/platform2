@@ -82,7 +82,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	
 	private void initializeBundlesIfNeeded(){
 		if(_iwb==null){
-			_iwb = this.getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+			_iwb = this.getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 		}
 		_iwrb = _iwb.getResourceBundle(this.getUserContext().getCurrentLocale());
 	}

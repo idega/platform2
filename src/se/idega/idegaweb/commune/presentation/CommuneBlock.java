@@ -140,7 +140,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	
 	public void _main(IWContext iwc)throws Exception{
 		this.setResourceBundle(getResourceBundle(iwc));
-		iwb = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+		iwb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 		_width = iwb.getProperty("table.width", "600"); 
 		super._main(iwc);
 	}

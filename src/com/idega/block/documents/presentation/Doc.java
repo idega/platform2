@@ -147,7 +147,7 @@ public class Doc extends FolderBlock implements Builderaware {
 	public void main(IWContext iwc) throws Exception {
 		_iwrb = getResourceBundle(iwc);
 		_iwbDoc = getBundle(iwc);
-		_iwbCore = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		_iwbCore = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		
 
 		_createImage = _iwbCore.getImage("shared/create.gif");

@@ -49,7 +49,7 @@ public class ChildCareStatisticsWriter {
 
 	public boolean createReport(IWContext iwc, ICFile folder, Locale locale) {
 		try {
-			IWResourceBundle iwrb = iwc.getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+			IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
 			IWTimestamp fromDate = new IWTimestamp(1, 6, 2003);
 			IWTimestamp toDate = new IWTimestamp();
 			String lastUpdated = iwrb.getIWBundleParent().getProperty(PROPERTY_LAST_UPDATED);

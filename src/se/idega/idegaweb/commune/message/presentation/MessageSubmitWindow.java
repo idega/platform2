@@ -25,7 +25,7 @@ public class MessageSubmitWindow extends Window {
 	 * @see com.idega.presentation.PresentationObject#main(IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		IWResourceBundle iwrb = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
+		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc);
 		
 		if (iwc.isParameterSet(PARAM_DELETE_MESSAGE)) {
 			close();

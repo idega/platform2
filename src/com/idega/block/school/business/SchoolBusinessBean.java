@@ -593,7 +593,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			String ROOT_SCHOOL_GROUP_ID_PARAMETER = "root_school_group_id";
 			Group rootGroup = null;
 			//create the default group
-			IWBundle bundle = this.getIWApplicationContext().getApplication().getBundle("com.idega.block.school");
+			IWBundle bundle = this.getIWApplicationContext().getIWMainApplication().getBundle("com.idega.block.school");
 			String groupId = bundle.getProperty(ROOT_SCHOOL_GROUP_ID_PARAMETER);
 			//String groupId = (String) this.getIWApplicationContext().getApplicationSettings().getProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME);
 			if (groupId != null) {
@@ -830,7 +830,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	 * @deprecated SHOULD NOT BE HERE
 	 */
 	private IWBundle getCommuneBundle() {
-		return this.getIWApplicationContext().getApplication().getBundle("se.idega.idegaweb.commune");
+		return this.getIWApplicationContext().getIWMainApplication().getBundle("se.idega.idegaweb.commune");
 	}
 
 	/**

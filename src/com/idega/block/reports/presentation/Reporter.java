@@ -128,7 +128,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     Table T = new Table(3,1);
     T.setCellpadding(2);
     T.setCellspacing(2);
-    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    IWBundle core = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     if(iCategoryId > 0){
       Link ne = new Link(core.getImage("/shared/create.gif","create"));
       ne.setWindowToOpen(ReportViewWindow.class);
@@ -329,7 +329,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
   }
 
   public static Window getFileWindow(IWApplicationContext iwac){
-    Window w = new Window("Reports",iwac.getApplication().getMediaServletURI());
+    Window w = new Window("Reports",iwac.getIWMainApplication().getMediaServletURI());
     w.setResizable(true);
     w.setMenubar(true);
     w.setHeight(400);
@@ -369,7 +369,7 @@ public class Reporter extends CategoryBlock implements Builderaware,Reports{
     hasAdd = iwc.hasPermission(PermissionAdd,this);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-    core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    core = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     control(iwc);
   }
 

@@ -97,7 +97,7 @@ public class Box extends Block implements Builderaware {
 	public void main(IWContext iwc) throws Exception {
 		_iwrb = getResourceBundle(iwc);
 		_iwbBox = getBundle(iwc);
-		_iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		_iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
 		_createImage = _iwb.getImage("shared/create.gif");
 		_deleteImage = _iwb.getImage("shared/delete.gif");

@@ -184,7 +184,7 @@ public class SurveyEditor extends FolderBlock {
 		super.initializeInMain(iwc);
 		_iwc = iwc;
 		_iwrb = getResourceBundle(iwc);
-		_iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		_iwb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		_iwbSurvey = getBundle(iwc);
 //		_iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 		_iLocale = iwc.getCurrentLocale();
@@ -1279,7 +1279,7 @@ public class SurveyEditor extends FolderBlock {
 
 	private PresentationObject getDeleteAnswerCheckBox(Object value) {
 		CheckBox box = new CheckBox(PRM_DELETE_ANSWER);
-		box.setValue(value);
+		box.setValue(value.toString());
 //		if(check != null){
 //			box.setChecked(true);
 //		}

@@ -162,7 +162,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 
   
   private String getRealPathToReportFile(String fileName, String extension, long folderIdentifier) {
-    IWMainApplication mainApp = getIWApplicationContext().getApplication();
+    IWMainApplication mainApp = getIWApplicationContext().getIWMainApplication();
     String separator = FileUtil.getFileSeparator();
     StringBuffer path = new StringBuffer(mainApp.getApplicationRealPath());
     path.append(IWCacheManager.IW_ROOT_CACHE_DIRECTORY)
@@ -200,7 +200,7 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   }
   
   private String getURIToReport(String reportName, String extension, long folderIdentifier) {
-    IWMainApplication mainApp = getIWApplicationContext().getApplication();
+    IWMainApplication mainApp = getIWApplicationContext().getIWMainApplication();
     String separator = "/";
     String appContextURI = mainApp.getApplicationContextURI();
     StringBuffer uri = new StringBuffer(appContextURI);

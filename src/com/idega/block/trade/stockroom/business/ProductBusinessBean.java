@@ -252,7 +252,7 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 
   public void clearProductCache(int supplierId) {
     getIWApplicationContext().removeApplicationAttribute(productsApplication+supplierId);
-    getIWApplicationContext().getApplication().getIWCacheManager().invalidateCache(ProductCatalog.CACHE_KEY);
+    getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache(ProductCatalog.CACHE_KEY);
   }
 
   public List getProducts(IWContext iwc, int supplierId) throws RemoteException{

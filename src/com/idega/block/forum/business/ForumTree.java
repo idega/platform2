@@ -77,7 +77,7 @@ public ForumTree() {
   private PresentationObject getThreadImage(IWContext iwc,ICTreeNode node,boolean isOpen) {
     ForumData thread = (ForumData) node;
     if ( _threadImage == null )
-      _threadImage = iwc.getApplication().getBundle(ForumBusiness.IW_BUNDLE_IDENTIFIER).getImage("shared/thread.gif");
+      _threadImage = iwc.getIWMainApplication().getBundle(ForumBusiness.IW_BUNDLE_IDENTIFIER).getImage("shared/thread.gif");
     Link link = new Link(_threadImage);
       link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,thread.getTopicID());
       link.addParameter(ForumBusiness.PARAMETER_STATE,ForumBusiness.FORUM_THREADS);

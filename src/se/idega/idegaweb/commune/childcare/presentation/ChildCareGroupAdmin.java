@@ -307,7 +307,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 	}
 	
 	private Window getFileWindow() {
-		Window w = new Window(localize("child_care.group", "Child care group"), getIWApplicationContext().getApplication().getMediaServletURI());
+		Window w = new Window(localize("child_care.group", "Child care group"), getIWApplicationContext().getIWMainApplication().getMediaServletURI());
 		w.setResizable(true);
 		w.setMenubar(true);
 		w.setHeight(400);

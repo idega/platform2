@@ -1,4 +1,4 @@
-/* $Id: ControlList.java,v 1.11 2004/02/16 12:50:56 staffan Exp $
+/* $Id: ControlList.java,v 1.12 2004/02/20 16:36:50 tryggvil Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -46,7 +46,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.ControlListExceptio
  * Amount paid this period
  * The list can also be presented as an Excel sheet
  * 
- * $Id: ControlList.java,v 1.11 2004/02/16 12:50:56 staffan Exp $ 
+ * $Id: ControlList.java,v 1.12 2004/02/20 16:36:50 tryggvil Exp $ 
  * <p>
  *
  * @author <a href="http://www.lindman.se">Kelly Lindman</a>
@@ -280,7 +280,7 @@ public class ControlList extends AccountingBlock {
 		return link;
 	}
 	public Window getFileWindow() {
-		Window w = new Window(localize(KEY_MEDIA_WINDOW_TITLE, "Control list"), getIWApplicationContext().getApplication().getMediaServletURI());
+		Window w = new Window(localize(KEY_MEDIA_WINDOW_TITLE, "Control list"), getIWApplicationContext().getIWMainApplication().getMediaServletURI());
 		w.setResizable(true);
 		w.setMenubar(true);
 		w.setHeight(480);

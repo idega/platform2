@@ -131,7 +131,7 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 		table.add(getSmallHeader(localize("child_care.address", "Address")+":"), 1, 3);
 
 		table.add(getSmallText(child.getNameLastFirst(true)), 3, 1);
-		String personalID = PersonalIDFormatter.format(child.getPersonalID(), iwc.getApplication().getSettings().getApplicationLocale());
+		String personalID = PersonalIDFormatter.format(child.getPersonalID(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
 		table.add(getSmallText(personalID), 3, 2);
 		
 		try {

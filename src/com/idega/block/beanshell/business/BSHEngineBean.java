@@ -151,7 +151,7 @@ public class BSHEngineBean extends IBOServiceBean implements BSHEngine{
 		//run the script
 		printBSHVersionNumber(engine);
 		
-		Cache fileInfo =  MediaBusiness.getCachedFileInfo( ((Integer)file.getPrimaryKey()).intValue(),iwc.getApplication());
+		Cache fileInfo =  MediaBusiness.getCachedFileInfo( ((Integer)file.getPrimaryKey()).intValue(),iwc.getIWMainApplication());
 		obj = engine.eval(new FileReader(fileInfo.getRealPathToFile()));
 
 		return obj;

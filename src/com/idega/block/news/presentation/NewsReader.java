@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.123 2003/11/21 19:01:13 tryggvil Exp $
+ * $Id: NewsReader.java,v 1.124 2004/02/20 16:37:44 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -276,7 +276,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
     T.setCellspacing(2);
     T.setBorder(0);
 
-    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    IWBundle core = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     if(iCategoryId > 0){
       if(hasEdit || hasAdd || hasInfo){
         Link ne = new Link(core.getImage("/shared/create.gif"));

@@ -311,7 +311,7 @@ public class IFSFileCreationThread extends Thread {
 	}
 
 	private void createPaymentFiles(String fileName1, String fileName2, String fileName3, String fileName4, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate) throws IOException {
-		String localizedSchoolCategoryName = _iwac.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(_currentLocale).getLocalizedString("school_category." + _schoolCategory);
+		String localizedSchoolCategoryName = _iwac.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(_currentLocale).getLocalizedString("school_category." + _schoolCategory);
 		Collection phInCommune = null;
 		try {
 			phInCommune = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).findBySchoolCategoryStatusInCommuneWithCommunalManagement(schoolCategory, 'P');

@@ -789,7 +789,7 @@ public class ReportGenerator extends Block {
 	 *  
 	 */
 	private void lineUpElements(IWResourceBundle iwrb, IWContext iwc) {
-		IWMainApplication iwma = iwc.getApplicationContext().getApplication();
+		IWMainApplication iwma = iwc.getApplicationContext().getIWMainApplication();
 		IWBundle coreBundle = iwma.getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
 		_fieldTable = new Table();

@@ -176,7 +176,7 @@ public class ApplicationSubjectMaker extends Block{
     isAdmin = iwc.hasEditPermission(this);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-    core = iwc.getApplication().getBundle( iwc.getApplication().CORE_BUNDLE_IDENTIFIER );
+    core = iwc.getIWMainApplication().getBundle( iwc.getIWMainApplication().CORE_BUNDLE_IDENTIFIER );
     control(iwc);
   }
 

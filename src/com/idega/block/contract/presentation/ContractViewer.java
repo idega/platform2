@@ -93,7 +93,7 @@ public class ContractViewer extends Block implements Builderaware {
 		Table T = new Table(3, 1);
 		T.setCellpadding(2);
 		T.setCellspacing(2);
-		IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		IWBundle core = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		if (iCategoryId > 0) {
 			Link ne = new Link(core.getImage("/shared/create.gif", "create"));
 			ne.setWindowToOpen(ContractEditorWindow.class);
@@ -274,7 +274,7 @@ public class ContractViewer extends Block implements Builderaware {
 	}
 	public void main(IWContext iwc) {
 		isAdmin = iwc.hasEditPermission(this);
-		core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		core = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		control(iwc);
 	}
 }

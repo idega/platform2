@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.62 2004/02/18 17:13:19 aron Exp $
+ * $Id: PostingBusinessBean.java,v 1.63 2004/02/20 16:36:50 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -958,7 +958,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			doublePosting = generateString(doublePosting, categoryPosting.getCounterAccount(), date);
 			validateString(doublePosting,date);
 		}catch(NullPointerException ex){
-			//ex.printStackTrace();
+			ex.printStackTrace();
 			throw new PostingException("postingException.missing_parameter_value", "postingException.missing_parameter_value"); 
 		}catch(RemoteException ex){
 			ex.printStackTrace();

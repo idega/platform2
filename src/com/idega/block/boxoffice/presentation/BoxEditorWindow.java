@@ -67,7 +67,7 @@ public BoxEditorWindow(){
      */
     _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
     _superAdmin = iwc.hasEditPermission(this);
-    _iwb = iwc.getApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
+    _iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("box_admin","Box Admin"));
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;

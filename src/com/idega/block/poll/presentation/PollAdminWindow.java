@@ -65,7 +65,7 @@ public PollAdminWindow(){
      */
     isAdmin = iwc.hasEditPermission(this);
     superAdmin = iwc.isSuperAdmin();
-    iwb = iwc.getApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
+    iwb = iwc.getIWMainApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
     iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("poll_admin","Poll Admin"));
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;

@@ -27,7 +27,7 @@ import com.idega.presentation.ui.SubmitButton;
  */
 public class TestReportsReader extends Block {
 	public void main(IWContext iwc) {
-		IWBundle bun = iwc.getApplication().getBundle("is.idega.idegaweb.atvr");
+		IWBundle bun = iwc.getIWMainApplication().getBundle("is.idega.idegaweb.atvr");
 		String path = bun.getProperty("npaa_report_location");
 		
 		if (iwc.isParameterSet("submit")) {

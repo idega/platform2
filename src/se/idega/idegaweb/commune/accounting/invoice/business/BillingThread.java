@@ -109,7 +109,7 @@ public abstract class BillingThread extends Thread{
 	}
 	
 	public IWBundle getBundle(){
-		return iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+		return iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 	}
 	
 	public IWResourceBundle getResourceBundle(){

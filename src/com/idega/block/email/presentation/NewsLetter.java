@@ -105,7 +105,7 @@ public class NewsLetter extends CategoryBlock {
   public void main(IWContext iwc) {
     //debugParameters(iwc);
     iwb = getBundle(iwc);
-    core = iwc.getApplication().getCoreBundle();
+    core = iwc.getIWMainApplication().getCoreBundle();
     iwrb = getResourceBundle(iwc);
     Table T = new Table();
       T.setCellpaddingAndCellspacing(0);

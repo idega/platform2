@@ -246,7 +246,7 @@ public class MailingListBusiness {
      */
     public static boolean processMailEvent(IWApplicationContext iwac, EntityHolder holder, String type) {
         try {
-        	IWBundle bundle = iwac.getApplication().getBundle(Campus.CAMPUS_BUNDLE_IDENTIFIER);
+        	IWBundle bundle = iwac.getIWMainApplication().getBundle(Campus.CAMPUS_BUNDLE_IDENTIFIER);
         	if(bundle.getProperty("no_mailevents")!=null){
         		System.err.println("not sending any mail although requested");
         		return false;

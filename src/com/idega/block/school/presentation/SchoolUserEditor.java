@@ -1689,7 +1689,7 @@ public Table getHighSchoolUsersTable(IWContext iwc, School school, boolean addSu
   private void init(IWContext iwc) throws RemoteException {
   	_iwrb = super.getResourceBundle(iwc);
   	_tFormat = TextFormat.getInstance();
-	_iwb = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+	_iwb = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
   	
   	String schoolId = iwc.getParameter(PARAMETER_SCHOOL_ID);
   	if (schoolId != null) {

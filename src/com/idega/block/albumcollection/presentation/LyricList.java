@@ -73,7 +73,7 @@ public class LyricList extends Block {
 
   public Table getLyricList(IWContext iwc)throws Exception {
 
-    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    IWBundle core = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
     Table lyricTable = null;
     int index=1;

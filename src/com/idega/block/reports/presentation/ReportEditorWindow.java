@@ -214,7 +214,7 @@ public class ReportEditorWindow extends IWAdminWindow {
     super.main(iwc);
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
-		core = iwc.getApplication().getBundle(Reporter.IW_CORE_BUNDLE_IDENTIFIER);
+		core = iwc.getIWMainApplication().getBundle(Reporter.IW_CORE_BUNDLE_IDENTIFIER);
     String title = iwrb.getLocalizedString("report_editor","Report Editor");
     setTitle(title);
     addTitle(title);

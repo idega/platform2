@@ -1500,7 +1500,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   }
 
   public WorkReportGroup getMainBoardWorkReportGroup(int year)  {
-    String mainBoardName  = getIWApplicationContext().getApplication().getBundle(ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_MAIN_BOARD_NAME,"ADA");
+    String mainBoardName  = getIWApplicationContext().getIWMainApplication().getBundle(ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_MAIN_BOARD_NAME,"ADA");
     
     
     WorkReportGroup group = findWorkReportGroupByNameAndYear(mainBoardName, year);
@@ -2123,7 +2123,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 
 	public Date getWorkReportOpenFromDate() {
-		String fDate = getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_BUNDLE_PARAM_FROM_DATE);
+		String fDate = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_BUNDLE_PARAM_FROM_DATE);
 		
 		try{
 			if(fDate!=null) {
@@ -2140,7 +2140,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   }
   
 	public Date getWorkReportOpenToDate() {
-		String tDate = getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_BUNDLE_PARAM_TO_DATE);
+		String tDate = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_BUNDLE_PARAM_TO_DATE);
 		try{
 			if(tDate!=null) {
 				return (new IWTimestamp(tDate)).getDate();
@@ -2155,12 +2155,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	
 	
 	public void setWorkReportOpenFromDateWithDateString(String dateString) {
-		getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).setProperty(WorkReportConstants.WR_BUNDLE_PARAM_FROM_DATE,dateString);
+		getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).setProperty(WorkReportConstants.WR_BUNDLE_PARAM_FROM_DATE,dateString);
 		
 	}
 	
 	public void setWorkReportOpenToDateWithDateString(String dateString) {
-		getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).setProperty(WorkReportConstants.WR_BUNDLE_PARAM_TO_DATE,dateString);
+		getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).setProperty(WorkReportConstants.WR_BUNDLE_PARAM_TO_DATE,dateString);
 	}
 	
 	public void setAllWorkReportsTemporarelyReadOnly() {
@@ -2169,10 +2169,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	
 	public void setAllWorkReportsTemporarelyReadOnlyFlag(boolean setAllAsReadOnly) {
 		if(setAllAsReadOnly) {
-			getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).setProperty(WorkReportConstants.WR_BUNDLE_PARAM_TEMP_CLOSED,"TRUE");
+			getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).setProperty(WorkReportConstants.WR_BUNDLE_PARAM_TEMP_CLOSED,"TRUE");
 		}
 		else {
-			getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).setProperty(WorkReportConstants.WR_BUNDLE_PARAM_TEMP_CLOSED,"FALSE");
+			getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).setProperty(WorkReportConstants.WR_BUNDLE_PARAM_TEMP_CLOSED,"FALSE");
 		}
 	}
 	
@@ -2181,7 +2181,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 	
 	public boolean areAllWorkReportsTemporarelyReadOnly() {
-		return "TRUE".equals(getIWApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_BUNDLE_PARAM_TEMP_CLOSED));
+		return "TRUE".equals(getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_BUNDLE_PARAM_TEMP_CLOSED));
 	}
 	
 	

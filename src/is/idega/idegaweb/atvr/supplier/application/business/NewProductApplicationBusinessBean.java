@@ -300,7 +300,7 @@ public class NewProductApplicationBusinessBean extends IBOServiceBean implements
 						}
 
 						if (boxid > -1 && catid > -1) {
-							int localeId = ICLocaleBusiness.getLocaleId(getIWApplicationContext().getApplication().getSettings().getApplicationLocale());
+							int localeId = ICLocaleBusiness.getLocaleId(getIWApplicationContext().getIWMainApplication().getSettings().getApplicationLocale());
 							BoxBusiness.saveLink(userId,boxid,catid,-1,bxLinkName,((Integer)icfile.getPrimaryKey()).intValue(),-1,null,"_blank",localeId);
 						}
 					}

@@ -679,7 +679,7 @@ public class DocumentBusinessBean
 	}
 	
 	private PdfTemplate createPasswordLetterTemplate(PdfWriter writer)throws Exception{
-		IWBundle iwb = getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
+		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 		PdfContentByte cb = writer.getDirectContent();
 		BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 		String mail_zip = iwb.getProperty("commune.mail_zip");
@@ -725,7 +725,7 @@ public class DocumentBusinessBean
 	
 	//private int createPasswordLetterContent(Document document,PrintedLetterMessage msg,PdfWriter writer,Locale locale) throws Exception{
 	private int createPasswordLetterContent(DocumentPrintContext dpc)throws ContentCreationException{
-		IWBundle iwb = getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
+		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 		//IWResourceBundle iwrb = iwb.getResourceBundle(locale);
 		String 	sAddrString = "";		
 		PdfContentByte cb = dpc.getPdfWriter().getDirectContent();
@@ -830,7 +830,7 @@ public class DocumentBusinessBean
 	}
 
 	public void createLogoContent(Document document) throws BadElementException, MalformedURLException, IOException, DocumentException {
-		IWBundle iwb = getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
+		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 		checkBundleDimensions(iwb);
 		Image image =Image.getInstance(iwb.getResourcesRealPath()+ "/shared/commune_logo.png");
 		image.scaleToFit(getPointsFromMM(logoScaleWidth), getPointsFromMM(logoScaleHeight));
@@ -868,7 +868,7 @@ public class DocumentBusinessBean
 	}
 
 	public void createAddressContent(String addressString, PdfWriter writer) throws DocumentException {
-		IWBundle iwb = getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
+		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 		checkBundleDimensions(iwb);
 		Phrase Ph0 = new Phrase(addressString, getAddressFont());
 		ColumnText ct = new ColumnText(writer.getDirectContent());
@@ -903,7 +903,7 @@ public class DocumentBusinessBean
 	//private int createDefaultLetterContent( Document document,PrintedLetterMessage msg, PdfWriter writer,Locale locale)throws Exception{
 	private int createDefaultLetterContent(DocumentPrintContext dpc)throws ContentCreationException{
 		try {
-			IWBundle iwb = getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
+			IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 			PdfWriter writer = dpc.getPdfWriter();
 			Document document =dpc.getDocument();
 			Locale locale = dpc.getLocale();
@@ -992,7 +992,7 @@ public class DocumentBusinessBean
 		table.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 		table.getDefaultCell().setNoWrap(true);
 		
-		IWBundle iwb = getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
+		IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 		
 		
 		table.addCell(new Phrase(iwb.getProperty("commune.name_mailaddr","Mailaddress"),nameFont));
@@ -1037,7 +1037,7 @@ public class DocumentBusinessBean
 	//public void createArchiveMessageContent(Document document,SystemArchivationMessage msg, User performer,PdfWriter writer,Locale locale)throws Exception{
 	public void createArchiveMessageContent(DocumentPrintContext dpc)throws ContentCreationException{
 		try {
-			IWBundle iwb = getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
+			IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 			//IWResourceBundle iwrb = iwb.getResourceBundle(locale);
 			
 			//DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,locale);

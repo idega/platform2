@@ -307,7 +307,7 @@ public class WorkReportOverViewCloseView extends Block {
 			if(obj!=null){
 				String valueString = obj.toString();
 				Text text = (Text) browser.getDefaultTextProxy().clone();
-				text.setText(iwc.getApplicationContext().getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()).getLocalizedString(valueString,valueString));               
+				text.setText(iwc.getApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc.getCurrentLocale()).getLocalizedString(valueString,valueString));               
 				return text;
 			}
 			else{

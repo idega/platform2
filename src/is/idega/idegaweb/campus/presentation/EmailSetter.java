@@ -75,7 +75,7 @@ public class EmailSetter extends Block{
     Table T = new Table(1,10);
     T.setBorder(1);
     int row = 1;
-    DropdownMenu localeDrop = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getApplication(),localesParameter);
+    DropdownMenu localeDrop = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getIWMainApplication(),localesParameter);
     localeDrop.keepStatusOnAction();
     localeDrop.setToSubmit();
     SubmitButton save = new SubmitButton("save","Save");

@@ -1186,7 +1186,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   }
   
     public void removeDepartureDaysApplication(IWApplicationContext iwac, Product product) throws RemoteException{
-    Enumeration enum = iwac.getApplication().getAttributeNames();
+    Enumeration enum = iwac.getIWMainApplication().getAttributeNames();
     Enumeration enum2 = enum;
     String name;
     while (enum2.hasMoreElements()) {

@@ -144,7 +144,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	public void main(IWContext iwc) throws Exception {
 		_iwrb = getResourceBundle(iwc);
 		_iwb = getBundle(iwc);
-		_iwcb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		_iwcb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 
 		_isAdmin = iwc.hasEditPermission(this);
 		_iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());

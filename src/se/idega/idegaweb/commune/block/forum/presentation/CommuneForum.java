@@ -225,7 +225,7 @@ public class CommuneForum extends Forum {
 				while (iter.hasNext()) {
 					file = (ICFile) iter.next();
 					Link preview = new Link(formatText(file.getName(), _textStyle));
-					preview.setURL(MediaBusiness.getMediaURL(file,iwc.getApplication()));
+					preview.setURL(MediaBusiness.getMediaURL(file,iwc.getIWMainApplication()));
 					preview.setTarget(Link.TARGET_NEW_WINDOW);
 					fileTable.add(preview, 3, 1);
 					if (iter.hasNext())

@@ -253,7 +253,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		nameTable.add(getSmallHeader(_iwrb.getLocalizedString(ADDRESS, "Address")+":"), 1, 3);
 
 		nameTable.add(getSmallText(child.getNameLastFirst(true)), 3, 1);
-		String personalID = PersonalIDFormatter.format(child.getPersonalID(), iwc.getApplication().getSettings().getApplicationLocale());
+		String personalID = PersonalIDFormatter.format(child.getPersonalID(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
 		nameTable.add(getSmallText(personalID), 3, 2);
 
 		try {

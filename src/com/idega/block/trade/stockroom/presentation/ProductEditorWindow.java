@@ -159,7 +159,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 	private void init(IWContext iwc) throws RemoteException {
 		bundle = getBundle(iwc);
 		iwrb = bundle.getResourceBundle(iwc);
-		core = iwc.getApplication().getCoreBundle();
+		core = iwc.getIWMainApplication().getCoreBundle();
 
 		addTitle(iwrb.getLocalizedString("product_editor", "Product Editor"));
 		try {

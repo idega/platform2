@@ -60,7 +60,7 @@ public class AlbumList extends Block {
     List albumList = AlbumCollectionBusiness.getAlbums();
     this.empty();
 
-    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    IWBundle core = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     IWResourceBundle iwrb = this.getResourceBundle(iwc);
 
     Table contentTable = null;

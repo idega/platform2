@@ -510,7 +510,7 @@ public class ReportItemWindow extends IWAdminWindow{
 
 	 public void main(IWContext iwc){
     isAdmin = iwc.hasEditPermission(this);
-		core = iwc.getApplication().getBundle(Reporter.IW_CORE_BUNDLE_IDENTIFIER);
+		core = iwc.getIWMainApplication().getBundle(Reporter.IW_CORE_BUNDLE_IDENTIFIER);
     control(iwc);
   }
 

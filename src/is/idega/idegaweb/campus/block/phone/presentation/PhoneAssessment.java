@@ -116,7 +116,7 @@ public class PhoneAssessment extends PresentationObjectContainer {
 
     String fileName = iwc.getParameter("filename");
     if(fileName != null){
-      String filePath = iwc.getApplication().getRealPath(dir+fileName);
+      String filePath = iwc.getIWMainApplication().getRealPath(dir+fileName);
       new PhoneFileHandler().processFile(filePath);
     }
     return getFileTable(iwc);
@@ -134,7 +134,7 @@ public class PhoneAssessment extends PresentationObjectContainer {
     T.add(Edit.formatText(iwrb.getLocalizedString("amount_read","Amount read")),6,1);
     Map M = mapOfReadFilesByFileName() ;
     try{
-      File F = new File(iwc.getApplication().getRealPath("/phone/upload"));
+      File F = new File(iwc.getIWMainApplication().getRealPath("/phone/upload"));
       File[] Fs = F.listFiles();
       if(Fs.length > 0){
         String name;

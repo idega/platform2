@@ -157,7 +157,7 @@ public class ProductCategoryEditor extends CategoryWindow {
 			if (sFilter != null) {
 				filter.setSelectedElement(sFilter);
 			}
-			DropdownMenu loc = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getApplication(), _parameterLocale);
+			DropdownMenu loc = LocalePresentationUtil.getAvailableLocalesDropdown(iwc.getIWMainApplication(), _parameterLocale);
 			loc.addMenuElementFirst("-1", iwrb.getLocalizedString("all_locales", "All locales"));
 			if (sLocale != null) {
 				loc.setSelectedElement(sLocale);
@@ -204,7 +204,7 @@ public class ProductCategoryEditor extends CategoryWindow {
 				}
 			}
 			tm.commit();
-			iwc.getApplication().getIWCacheManager().invalidateCache(ProductCatalog.CACHE_KEY);
+			iwc.getIWMainApplication().getIWCacheManager().invalidateCache(ProductCatalog.CACHE_KEY);
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);

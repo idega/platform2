@@ -79,8 +79,8 @@ public class CategoryWindow extends IWAdminWindow {
 	}
 	protected void clearCache(IWContext iwc) {
 		if (getCacheKey(iwc) != null) {
-			if (iwc.getApplication().getIWCacheManager().isCacheValid(getCacheKey(iwc))) {
-				iwc.getApplication().getIWCacheManager().invalidateCache(getCacheKey(iwc));
+			if (iwc.getIWMainApplication().getIWCacheManager().isCacheValid(getCacheKey(iwc))) {
+				iwc.getIWMainApplication().getIWCacheManager().invalidateCache(getCacheKey(iwc));
 			}
 		}
 	}
@@ -472,7 +472,7 @@ public class CategoryWindow extends IWAdminWindow {
 	public void main(IWContext iwc) throws Exception {
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
-		core = iwc.getApplication().getCoreBundle();
+		core = iwc.getIWMainApplication().getCoreBundle();
 		catServ = (CategoryService) IBOLookup.getServiceInstance(iwc,CategoryService.class);
 		String title = iwrb.getLocalizedString("ic_category_editor", "Category Editor");
 		tree_image_M = core.getImage("/treeviewer/ui/win/treeviewer_M_line.gif");

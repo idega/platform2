@@ -95,7 +95,7 @@ public class TextReader extends Block implements Builderaware {
 	public void main(IWContext iwc) throws Exception {
 		isAdmin = iwc.hasEditPermission(this);
 		iwb = getBundle(iwc);
-		iwcb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+		iwcb = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
 		iwrb = getResourceBundle(iwc);
 		Locale locale = iwc.getCurrentLocale();
 
