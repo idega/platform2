@@ -1,12 +1,14 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolManagementType;
+import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.io.MemoryFileBuffer;
@@ -65,17 +67,17 @@ import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
-import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
+
 
 /**
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/30 13:54:20 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/01 14:08:23 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.49 $
+ * @version $Revision: 1.50 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1600,11 +1602,11 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		int col = 1;
 		addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
 		final String schoolCategory = getSession ().getOperationalField ();
-		final Integer schoolId = getSchoolId (context);
-		if (null != schoolId) {
-			final School provider = business.getSchool (schoolId);
+		final School provider = getSchool (context);
+		if (null != provider) {
 			addSmallText (table, provider.getName (), col, row);
-			table.add (new HiddenInput (PROVIDER_KEY, schoolId + ""), col, row);
+			table.add (new HiddenInput (PROVIDER_KEY, "" + provider.getPrimaryKey ()),
+								 col, row);
 		} else if (null != schoolCategory) {
 			final DropdownMenu providerDropdown = (DropdownMenu)
 					getStyledInterface (new DropdownMenu (PROVIDER_KEY));
@@ -1631,23 +1633,52 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 														 ? string : ""), col, row);
 	}
 	
+	private Collection getSchoolCategoryIdsManagedByLoggedOnUser (final IWContext context) {
+		final Collection categoryIds = new HashSet ();
+		try {
+			final School provider = getSchool (context);
+			if (null != provider) {
+				final Collection schoolTypes = provider.getSchoolTypes ();
+				for (Iterator i = schoolTypes.iterator (); i.hasNext ();) {
+					final SchoolType schoolType = (SchoolType) i.next ();
+					categoryIds.add (schoolType.getSchoolCategory ());
+				}
+			}
+		} catch (Exception e) {
+			// no problem, ignore this
+		}
+		return categoryIds;
+	}
+
 	private void addOperationalFieldDropdown
 		(final IWContext context, final Table table, final int row)
 		throws RemoteException {
 		int col = 1;
 		addSmallHeader (table, col++, row, MAIN_ACTIVITY_KEY,
 										MAIN_ACTIVITY_DEFAULT, ":");
-		String operationalField = getSession ().getOperationalField ();
-		operationalField = operationalField == null ? "" : operationalField;
 		table.mergeCells (col, row, table.getColumns () - 1, row);
-		final OperationalFieldsMenu dropdown = new OperationalFieldsMenu ();
-		if (context.isParameterSet (ACTION_KEY)) {
-			dropdown.setParameter (LAST_ACTION_KEY,
-														 context.getParameter (ACTION_KEY));
-		} else if (context.isParameterSet (LAST_ACTION_KEY)) {
-			dropdown.maintainParameter (LAST_ACTION_KEY);
+		final Collection schoolCategoryIds
+				= getSchoolCategoryIdsManagedByLoggedOnUser (context);
+		if (1 == schoolCategoryIds.size ()) {
+			final String schoolCategoryId
+					= "" + schoolCategoryIds.iterator ().next ();
+			if (null != schoolCategoryId && 0 < schoolCategoryId.length ()) {
+				addSmallText (table, getSchoolCategoryName
+											(context, schoolCategoryId), col++, row);
+				getSession ().setOperationalField (schoolCategoryId);
+			}
+		} else {
+			String operationalField = getSession ().getOperationalField ();
+			operationalField = operationalField == null ? "" : operationalField;
+			final OperationalFieldsMenu dropdown = new OperationalFieldsMenu ();
+			if (context.isParameterSet (ACTION_KEY)) {
+				dropdown.setParameter (LAST_ACTION_KEY,
+															 context.getParameter (ACTION_KEY));
+			} else if (context.isParameterSet (LAST_ACTION_KEY)) {
+				dropdown.maintainParameter (LAST_ACTION_KEY);
+			}
+			table.add (dropdown, col++, row);
 		}
-		table.add (dropdown, col++, row);
 	}
 	
 	private void addOperationalFieldRow
@@ -1822,15 +1853,22 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 																			ACTION_KEY, action));
 	}
 	
-	private Integer getSchoolId (final IWContext context)
-		throws RemoteException {
-		try {
-			final int schoolId
-					= getSchoolCommuneSession (context).getSchoolID ();
-			return 0 < schoolId ? new Integer (schoolId) : null;
-		} catch (NullPointerException e) {
-			return null;
+	private School getSchool (final IWContext context) throws RemoteException {
+		final User user = context.getCurrentUser ();
+		School school = null;
+		if (null != user) {
+			final SchoolUserBusiness business = getSchoolUserBusiness (context);
+			try {
+				final Collection schoolIds = business.getSchools (user);
+				if (!schoolIds.isEmpty  ()) {
+					final Object schoolId = schoolIds.iterator ().next ();
+					school = getSchoolBusiness (context).getSchool (schoolId);
+				}
+			} catch (FinderException e) {
+				// no problem, no school found
+			}
 		}
+		return school;
 	}
 	
 	public ICPage getProviderAuthorizationPage () {
@@ -1849,10 +1887,10 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		createPaymentPage = page;
 	}
 
-	private SchoolCommuneSession getSchoolCommuneSession
+	private SchoolUserBusiness getSchoolUserBusiness
 		(final IWContext context) throws RemoteException {
-		return (SchoolCommuneSession) IBOLookup.getServiceInstance
-				(context, SchoolCommuneSession.class);	
+		return (SchoolUserBusiness) IBOLookup.getServiceInstance
+				(context, SchoolUserBusiness.class);	
 	}
 	
 	private SchoolBusiness getSchoolBusiness
