@@ -113,15 +113,17 @@ public class TextFinder {
   public static LocalizedText getLocalizedText(IDOLegacyEntity entity, int entityID, int iLocaleID){
 		LocalizedText localText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
     try {
-      List list = EntityFinder.findRelated(entity,localText);
-      if ( list != null ) {
-        Iterator iter = list.iterator();
-        while (iter.hasNext()) {
-          LocalizedText item = (LocalizedText) iter.next();
-          if ( item.getLocaleId() == iLocaleID ) {
-            return item;
-          }
-        }
+      if(entity!=null){
+	      List list = EntityFinder.findRelated(entity,localText);
+	      if ( list != null ) {
+	        Iterator iter = list.iterator();
+	        while (iter.hasNext()) {
+	          LocalizedText item = (LocalizedText) iter.next();
+	          if ( item.getLocaleId() == iLocaleID ) {
+	            return item;
+	          }
+	        }
+	      }
       }
       return null;
     }
