@@ -206,8 +206,8 @@ public class ProductComparator implements Comparator {
 				}
 			}
 
-      if (pr1 < pr2) return 1;
-      else if (pr2 < pr1) return -1;
+      if (pr1 < pr2) return -1;
+      else if (pr2 < pr1) return 1;
       else return 0;
 
       }catch (RemoteException re) {
