@@ -1,5 +1,5 @@
 /*
- * $Id: CampusPage.java,v 1.1 2001/08/23 13:50:46 aron Exp $
+ * $Id: CampusPage.java,v 1.2 2001/08/23 23:44:13 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -50,6 +50,7 @@ public class CampusPage extends MainPage{
     login.setStyle("font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
     login.setInputLength(14);
     login.setSubmitButtonAlignment("right");
+    login.addHelpButton();
 
     ReferenceNumber ref = new ReferenceNumber();
     ref.setLayout(ReferenceNumber.LAYOUT_STACKED);
