@@ -27,7 +27,7 @@ public class MessengerApplet extends Applet implements Runnable{
   public boolean isStandalone = false;
   private boolean runThread = true;
   private boolean isfirstRun = true;
-  private static String FRAME_NAME= "IdegaWeb Client";
+  private static String FRAME_NAME= "IdegaWeb Messenger";
   private static int FRAME_WIDTH = 295;
   private static int FRAME_HEIGHT = 310;
   private static String SESSION_ID = "session_id";
@@ -55,7 +55,6 @@ public class MessengerApplet extends Applet implements Runnable{
   private MessageDialog messageDialog;
   private MessageListener listener = new MessageListener(this);//should listen on a per window basis
 
-  SingleLineItem test = new SingleLineItem();
 
   /**Get a parameter value*/
   public String getParameter(String key, String def) {
@@ -76,7 +75,18 @@ public class MessengerApplet extends Applet implements Runnable{
       servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
       hostURL = new URL(this.getParameter(SERVER_ROOT_URL, "http://iw.idega.is"));
 
+      SingleLineItem test = new SingleLineItem();
+      test.setWindowToOpen(new Dialog(new Frame(),"test1"));
       add(test);
+
+      SingleLineItem test2 = new SingleLineItem();
+      test2.setWindowToOpen(new Dialog(new Frame(),"test2"));
+      add(test2);
+
+      SingleLineItem test3 = new SingleLineItem();
+      test3.setWindowToOpen(new Dialog(new Frame(),"test3"));
+      add(test3);
+
 
     }
     catch(Exception e) {
