@@ -79,10 +79,10 @@ public class ChildCareContracts extends ChildCareBlock {
 			
 			
 			if (useStyleNames()) {
-				table.setRowStyleClass(3, getHeaderRowClass());
+				table.setRowStyleClass(4, getHeaderRowClass());
 			}
 			else {
-				table.setRowColor(3, getHeaderColor());
+				table.setRowColor(4, getHeaderColor());
 			}
 			int column = 1;
 			int row = 1;
@@ -94,6 +94,9 @@ public class ChildCareContracts extends ChildCareBlock {
 			}
 			table.mergeCells(column, row, table.getColumns(), row);
 			table.add(getNavigationTable(), column, row++);
+			table.mergeCells(column, row, table.getColumns(), row);
+			table.add(getContractColorTable(), column, row++);
+			
 			table.setHeight(column, row++, "5");
 			table.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 			table.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
