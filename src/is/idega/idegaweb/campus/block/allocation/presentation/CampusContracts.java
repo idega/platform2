@@ -3,7 +3,7 @@ package is.idega.idegaweb.campus.block.allocation.presentation;
 
 import is.idega.idegaweb.campus.presentation.Edit;
 import is.idega.idegaweb.campus.block.allocation.business.*;
-import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.data.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.Table;
@@ -275,6 +275,7 @@ public class CampusContracts extends Block{
     Image keyImage = iwb.getImage("/key.gif");
     Image nokeyImage = iwb.getImage("/nokey.gif");
     Image garbageImage = iwb.getImage("/trashcan.gif");
+    Image renewImag = iwb.getImage("/renew.gif");
     boolean garbage = false;
     int row = 1;
     int col = 1;
@@ -283,7 +284,7 @@ public class CampusContracts extends Block{
     T.setTitlesHorizontal(true);
     T.setWidth("100%");
     T.add(Edit.formatText("#"),col++,1);
-    if(sGlobalStatus.equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusEnded) || sGlobalStatus.equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusResigned) || sGlobalStatus.equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusRejected)){
+    if(sGlobalStatus.equals(ContractBMPBean.statusEnded) || sGlobalStatus.equals(ContractBMPBean.statusResigned) || sGlobalStatus.equals(ContractBMPBean.statusRejected)){
       T.add((garbageImage),col++,1);
       garbage = true;
     }
@@ -320,16 +321,18 @@ public class CampusContracts extends Block{
           Ap = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(C.getApplicantId().intValue());
           A = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(C.getApartmentId().intValue());
           T.add(getEditLink(Edit.formatText(i+1),C.getID()),col++,row);
-          //if(C.getStatus().equalsIgnoreCase(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusCreated) || C.getStatus().equalsIgnoreCase(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusPrinted) )
+          //if(C.getStatus().equalsIgnoreCase(ContractBMPBean.statusCreated) || C.getStatus().equalsIgnoreCase(ContractBMPBean.statusPrinted) )
           if(garbage)
             T.add(getGarbageLink(garbageImage,C.getID()),col++,row);
           else
             T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col++,row);
-          if(C.getStatus().equalsIgnoreCase(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusSigned))
+          if(C.getStatus().equalsIgnoreCase(ContractBMPBean.statusSigned))
             T.add(getReSignLink(resignImage,C.getID()),col,row);
           col++;
-          if(C.getStatus().equalsIgnoreCase(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusPrinted) || C.getStatus().equalsIgnoreCase(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusSigned)  )
+          if(C.getStatus().equalsIgnoreCase(ContractBMPBean.statusPrinted) || C.getStatus().equalsIgnoreCase(ContractBMPBean.statusSigned)  )
             T.add(getSignedLink(registerImage,C.getID(),isAdmin),col,row);
+          else if(C.getStatus().equalsIgnoreCase(ContractBMPBean.statusEnded) || C.getStatus().equalsIgnoreCase(ContractBMPBean.statusResigned))
+             T.add(getRenewLink(registerImage,C.getID()),col,row);
           col++;
           T.add(Edit.formatText(Ap.getFullName()),col++,row);
           T.add(Edit.formatText(Ap.getSSN()),col++,row);
@@ -453,6 +456,13 @@ public class CampusContracts extends Block{
     Link L = new Link(MO);
     L.setWindowToOpen(ContractEditWindow.class);
     L.addParameter("contract_id",contractId);
+    return L;
+  }
+
+  public static Link getRenewLink(PresentationObject MO,int contractId){
+    Link L = new Link(MO);
+    L.setWindowToOpen(ContractRenewWindow.class);
+    L.addParameter(ContractRenewWindow.prmContractId,contractId);
     return L;
   }
 

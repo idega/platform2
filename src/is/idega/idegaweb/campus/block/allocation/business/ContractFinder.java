@@ -5,7 +5,7 @@ import is.idega.idegaweb.campus.data.ApartmentContracts;
 import is.idega.idegaweb.campus.block.allocation.data.*;
 import java.sql.SQLException;
 import java.util.List;
-import com.idega.data.EntityFinder;
+import com.idega.data.*;
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Map;
@@ -15,6 +15,10 @@ import com.idega.block.application.data.Applicant;
 //import com.idega.block.application.data.ApplicantBean;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.business.BuildingCacher;
+import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
+import java.sql.*;
+import com.idega.util.database.ConnectionBroker;
+
 
 /**
  * Title:   idegaclasses
@@ -217,6 +221,17 @@ public abstract class ContractFinder {
       return EntityFinder.findAllByColumn(C,is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getApplicantIdColumnName(),iApplicantId);
     }
     catch(SQLException e){
+      return(null);
+    }
+  }
+
+  public static List listOfApplicantContracts(int iApplicantId,String status){
+    try {
+      Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
+      return EntityFinder.getInstance().findAll(Contract.class,"select * from "+ContractBMPBean.getContractEntityName()+" where "+ContractBMPBean.getApplicantIdColumnName()+" = "+iApplicantId+" and "+ContractBMPBean.getStatusColumnName()+" = '"+status+"'");
+      //return EntityFinder.findAllByColumn(C,is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.getApplicantIdColumnName(),iApplicantId);
+    }
+    catch(Exception e){
       return(null);
     }
   }
@@ -622,5 +637,74 @@ public abstract class ContractFinder {
 
   public static Contract findByUser(User user){
     return findByUser(user.getID());
+  }
+
+  public static java.sql.Date getLastContractDateForApartment(int apartmentId)throws SQLException{
+    return getLastContractDateForApartment(apartmentId,2);
+  }
+
+  private static java.sql.Date getLastContractDateForApartment(int apartmentId,int type)throws SQLException{
+    Connection conn= null;
+    Statement Stmt= null;
+    ResultSetMetaData metaData;
+    Vector vector=null;
+    String sql;
+    if(type == 1)
+      sql = "select max(c.valid_from) from cam_contract c where c.bu_apartment_id =  "+apartmentId;
+    else
+      sql = "select max(c.valid_to) from cam_contract c where c.bu_apartment_id =  "+apartmentId;
+
+    Date date = null;
+    try{
+      conn = ConnectionBroker.getConnection();
+      Stmt = conn.createStatement();
+
+      //System.err.println(sql);
+      ResultSet RS = Stmt.executeQuery(sql);
+      metaData = RS.getMetaData();
+      int count = 1;
+      if(RS.next()){
+        date = RS.getDate(1);
+      }
+      RS.close();
+    }
+    catch(SQLException ex){
+      throw new SQLException("SQL : "+sql);
+    }
+    finally{
+      if(Stmt != null){
+        Stmt.close();
+      }
+      if (conn != null){
+        ConnectionBroker.freeConnection(conn);
+      }
+    }
+    return date;
+  }
+
+
+
+  public static Date getNextValidFromDate(int iApartmentId)throws SQLException{
+    Date last = getLastContractDateForApartment(iApartmentId,2);
+    return null;
+  }
+
+  public static Date getNextValidToDate(int iApartmentId)throws SQLException{
+    Date last = getLastContractDateForApartment(iApartmentId,2);
+    return null;
+  }
+
+   public static ApartmentTypePeriods getPeriod(int aprt_type_id){
+    try {
+      ApartmentTypePeriods A = ((is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentTypePeriods.class)).createLegacy();
+      List L = EntityFinder.findAllByColumn(A,is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsBMPBean.getApartmentTypeIdColumnName(),aprt_type_id);
+      if(L!=null)
+        return (ApartmentTypePeriods) L.get(0);
+      else
+        return null;
+    }
+    catch (SQLException ex) {
+      return null;
+    }
   }
 }

@@ -1,49 +1,57 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
-import com.idega.presentation.ui.*;
-import com.idega.block.finance.presentation.KeyEditor;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Image;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IWContext;
-import com.idega.util.idegaTimestamp;
-import com.idega.util.idegaCalendar;
-import com.idega.core.user.business.UserBusiness;
-import com.idega.block.application.business.ApplicationFinder;
-import com.idega.block.application.data.*;
-import com.idega.block.application.business.ApplicationHolder;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.business.BuildingFinder;
-import com.idega.block.building.business.ApartmentTypeComplexHelper;
-import com.idega.block.building.data.*;
-import com.idega.core.user.data.User;
-import com.idega.data.EntityFinder;
-import com.idega.presentation.Block;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
-import is.idega.idegaweb.campus.block.application.presentation.ApplicationFilerWindow;
-import is.idega.idegaweb.campus.block.allocation.presentation.*;
-import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
-import is.idega.idegaweb.campus.data.ApartmentContracts;
-import is.idega.idegaweb.campus.block.allocation.data.*;
-import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
-import is.idega.idegaweb.campus.block.application.data.WaitingList;
-import is.idega.idegaweb.campus.block.application.data.CampusApplication;
-import is.idega.idegaweb.campus.block.application.presentation.CampusApprover;
-import is.idega.idegaweb.campus.data.*;
-import is.idega.idegaweb.campus.presentation.CampusProperties;
-import is.idega.idegaweb.campus.presentation.Campus;
-import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
-import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.LinkedList;
-import java.util.StringTokenizer;
-import java.util.Hashtable;
-import java.sql.SQLException;
+
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.Application;
+import com.idega.block.building.business.ApartmentTypeComplexHelper;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.business.BuildingFinder;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.ApartmentCategory;
+import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.Building;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.Floor;
+import com.idega.core.user.data.User;
+import com.idega.data.EntityFinder;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.RadioButton;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.idegaTimestamp;
+
+import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
+import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
+import is.idega.idegaweb.campus.block.application.data.WaitingList;
+import is.idega.idegaweb.campus.block.application.presentation.ApplicationFilerWindow;
+import is.idega.idegaweb.campus.block.application.presentation.CampusApprover;
+import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
+import is.idega.idegaweb.campus.data.ApartmentContracts;
+import is.idega.idegaweb.campus.data.SystemProperties;
+import is.idega.idegaweb.campus.presentation.Campus;
+import is.idega.idegaweb.campus.presentation.CampusProperties;
 
 /**
  * Title:   idegaclasses
@@ -578,19 +586,7 @@ public class CampusAllocator extends Block implements Campus{
 
     Form myForm = new Form();
     Table Frame = new Table();
-    /*
-    Table Header = new Table();
-    StringBuffer sHeader = new StringBuffer(A.getName());
-    Floor F = BuildingCacher.getFloor(A.getFloorId());
-    sHeader.append(" ");
-    sHeader.append(F.getName());
-    sHeader.append(" ");
-    sHeader.append(BuildingCacher.getBuilding(F.getBuildingId()).getName());
-    Header.add(headerText(sHeader.toString()),1,1);
-    Header.setRowColor(1,blueColor);
-    Header.setWidth("100%");
-    Frame.add(Header,1,1);
-    */
+
     Frame.add(getContractMakingTable(C,ATP,applicant_id ,from,A.getID()));
     Frame.add(getApartmentContracts(A.getID()),1,3);
     myForm.add(Frame);
@@ -726,64 +722,10 @@ public class CampusAllocator extends Block implements Campus{
           TextFontColor = "#000000";
         row++;
       }
-/*
-      T.setHorizontalZebraColored(lightBlue,WhiteColor);
-      int lastrow = row;
-      T.setRowColor(row,redColor);
-      T.mergeCells(1,row,4,row);
-      T.add(formatText(" "),1,row);
-      T.setHeight(row,bottomThickness);
-      T.setWidth(1,"50");
-      T.setWidth("100%");
-      */
     }
     return T;
   }
 
-  private idegaTimestamp stampFromPeriod(ApartmentTypePeriods ATP,boolean From){
-     idegaTimestamp contractDateFrom = idegaTimestamp.RightNow();
-     idegaTimestamp contractDateTo = idegaTimestamp.RightNow();
-     if(ATP!=null){
-        // Period checking
-        //System.err.println("ATP exists");
-        boolean first = ATP.hasFirstPeriod();
-        boolean second = ATP.hasSecondPeriod();
-         idegaTimestamp today = new idegaTimestamp();
-
-        // Two Periods
-        if(first && second){
-
-          if(today.getMonth() > ATP.getFirstDateMonth()+monthOverlap && today.getMonth() <= ATP.getSecondDateMonth()+monthOverlap ){
-            contractDateFrom = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
-            contractDateTo = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
-          }
-          else if(today.getMonth() <= 12){
-            contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
-            contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
-          }
-          else{
-            contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
-            contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
-          }
-
-        }
-        // One Periods
-        else if(first && !second){
-          //System.err.println("two sectors");
-          contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
-          contractDateTo = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
-        }
-        else if(!first && second){
-          //System.err.println("two sectors");
-          contractDateFrom = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
-          contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
-        }
-     }
-      if(From)
-        return contractDateFrom;
-      else
-        return contractDateTo;
-  }
 
   private PresentationObject getContractMakingTable(Contract C,ApartmentTypePeriods ATP,int applicant_id,idegaTimestamp from,int iApartmentId){
     DataTable T = new DataTable();
@@ -813,8 +755,9 @@ public class CampusAllocator extends Block implements Campus{
       else if(ATP!=null){
         // Period checking
         //System.err.println("ATP exists");
-        contractDateTo = stampFromPeriod(ATP,false);
-        contractDateFrom = stampFromPeriod(ATP,true);
+        idegaTimestamp[] stamps = ContractBusiness.getContractStampsFromPeriod(ATP,monthOverlap);
+        contractDateTo = stamps[0];
+        contractDateFrom = stamps[1];
 
         if(dayBuffer > 0){
         contractDateFrom.addDays(dayBuffer);
@@ -849,13 +792,10 @@ public class CampusAllocator extends Block implements Campus{
       T.add(formatText(iwrb.getLocalizedString("validfrom","Valid from")),1,row);
       T.add(dateFrom,3,row);
 
-     // T.mergeCells(1,row,2,row);
-     // T.mergeCells(3,row,4,row);
       row++;
       T.add(formatText(iwrb.getLocalizedString("validto","Valid to")),1,row);
       T.add(dateTo,3,row);
-     // T.mergeCells(1,row,2,row);
-     // T.mergeCells(3,row,4,row);
+
       row++;
       if(C!=null){
         SubmitButton delete = new SubmitButton("delete_allocation","Delete");
@@ -864,8 +804,7 @@ public class CampusAllocator extends Block implements Campus{
         T.add(new HiddenInput("contract_id",String.valueOf(C.getID())));
       }
       T.add(save,3,row);
-     // T.mergeCells(1,row,2,row);
-     // T.mergeCells(3,row,4,row);
+
     return T;
   }
 
@@ -947,7 +886,7 @@ public class CampusAllocator extends Block implements Campus{
         }
         catch(SQLException ex){ex.printStackTrace();}
 
-        List L = ContractFinder.listOfApplicantContracts(iApplicantId);
+        List L = ContractFinder.listOfApplicantContracts(iApplicantId,ContractBMPBean.statusCreated);
         if(L == null && eApplicant != null ){
           User eUser = makeNewUser(eApplicant);
           if(eUser!=null){
@@ -987,53 +926,16 @@ public class CampusAllocator extends Block implements Campus{
   private boolean deleteAllocation(IWContext iwc){
     String sContractId = iwc.getParameter("contract_id");
     int iContractId = Integer.parseInt(sContractId);
-    try {
-      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
-      User eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
-      eContract.delete();
-      eUser.delete();
-
-      return true;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return false;
-    }
+    return ContractBusiness.deleteAllocation(iContractId);
   }
 
   private User makeNewUser(Applicant A){
-    UserBusiness ub = new UserBusiness();
-    try{
-    User u = ub.insertUser(A.getFirstName(),A.getMiddleName(),A.getLastName(),A.getFirstName(),"",null,null,null);
     String[] emails = CampusApplicationFinder.getApplicantEmail(A.getID());
-    if(emails !=null && emails.length >0)
-      ub.addNewUserEmail(u.getID(),emails[0]);
-
-    return u;
-    }
-    catch(SQLException ex){
-      ex.printStackTrace();
-    }
-    return null;
+    return ContractBusiness.makeNewUser(A,emails);
   }
 
   private boolean makeNewContract(IWContext iwc,User eUser,Applicant eApplicant,int iApartmentId,idegaTimestamp from,idegaTimestamp to){
-
-      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
-      eContract.setApartmentId(iApartmentId);
-      eContract.setApplicantId(eApplicant.getID());
-      eContract.setUserId(eUser.getID());
-      eContract.setStatusCreated();
-      eContract.setValidFrom(from.getSQLDate());
-      eContract.setValidTo(to.getSQLDate());
-      try{
-        eContract.insert();
-        MailingListBusiness.processMailEvent(iwc, eContract.getID(),LetterParser.ALLOCATION);
-        return true;
-      }
-      catch(SQLException ex){
-        return false;
-      }
+    return ContractBusiness.makeNewContract(iwc,eUser,eApplicant,iApartmentId,from,to);
   }
 
   private java.sql.Date getValidToDate(SystemProperties SysProps){
@@ -1081,17 +983,7 @@ public class CampusAllocator extends Block implements Campus{
   }
 
   private ApartmentTypePeriods getPeriod(int aprt_type_id){
-    try {
-      ApartmentTypePeriods A = ((is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentTypePeriods.class)).createLegacy();
-      List L = EntityFinder.findAllByColumn(A,is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsBMPBean.getApartmentTypeIdColumnName(),aprt_type_id);
-      if(L!=null)
-        return (ApartmentTypePeriods) L.get(0);
-      else
-        return null;
-    }
-    catch (SQLException ex) {
-      return null;
-    }
+    return ContractFinder.getPeriod(aprt_type_id);
   }
 
   private String getApartmentString(Contract eContract){

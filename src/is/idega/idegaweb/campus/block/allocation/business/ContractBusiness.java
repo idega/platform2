@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.11 2002/06/20 13:57:28 aron Exp $
+ * $Id: ContractBusiness.java,v 1.12 2002/07/09 18:41:44 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,6 +16,9 @@ import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.data.SystemProperties;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
+import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
+import com.idega.block.building.data.Apartment;
+
 
 import java.sql.SQLException;
 import java.util.List;
@@ -268,5 +271,109 @@ public  class ContractBusiness {
     catch (SQLException ex) {
       ex.printStackTrace();
     }
+  }
+
+  public static boolean makeNewContract(IWApplicationContext iwc,User eUser,Applicant eApplicant,int iApartmentId,idegaTimestamp from,idegaTimestamp to){
+
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
+      eContract.setApartmentId(iApartmentId);
+      eContract.setApplicantId(eApplicant.getID());
+      eContract.setUserId(eUser.getID());
+      eContract.setStatusCreated();
+      eContract.setValidFrom(from.getSQLDate());
+      eContract.setValidTo(to.getSQLDate());
+      try{
+        eContract.insert();
+        MailingListBusiness.processMailEvent(iwc, eContract.getID(),LetterParser.ALLOCATION);
+        return true;
+      }
+      catch(SQLException ex){
+        return false;
+      }
+  }
+
+  public static User makeNewUser(Applicant A,String[] emails){
+    UserBusiness ub = new UserBusiness();
+    try{
+    User u = ub.insertUser(A.getFirstName(),A.getMiddleName(),A.getLastName(),A.getFirstName(),"",null,null,null);
+    if(emails !=null && emails.length >0)
+      ub.addNewUserEmail(u.getID(),emails[0]);
+
+    return u;
+    }
+    catch(SQLException ex){
+      ex.printStackTrace();
+    }
+    return null;
+  }
+
+  public static boolean deleteAllocation(int iContractId){
+    try {
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
+      User eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
+      eContract.delete();
+      eUser.delete();
+
+      return true;
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return false;
+    }
+  }
+
+  public static idegaTimestamp[] getContractStampsForApartment(int apartmentId){
+    Apartment ap = com.idega.block.building.business.BuildingCacher.getApartment(apartmentId);
+    return getContractStampsForApartment(ap);
+  }
+
+  public static idegaTimestamp[] getContractStampsForApartment(Apartment apartment){
+    ApartmentTypePeriods ATP = ContractFinder.getPeriod(apartment.getApartmentTypeId());
+    return getContractStampsFromPeriod(ATP,1);
+
+  }
+
+   public static idegaTimestamp[] getContractStampsFromPeriod(ApartmentTypePeriods ATP,int monthOverlap){
+     idegaTimestamp contractDateFrom = idegaTimestamp.RightNow();
+     idegaTimestamp contractDateTo = idegaTimestamp.RightNow();
+     if(ATP!=null){
+        // Period checking
+        //System.err.println("ATP exists");
+        boolean first = ATP.hasFirstPeriod();
+        boolean second = ATP.hasSecondPeriod();
+         idegaTimestamp today = new idegaTimestamp();
+
+        // Two Periods
+        if(first && second){
+
+          if(today.getMonth() > ATP.getFirstDateMonth()+monthOverlap && today.getMonth() <= ATP.getSecondDateMonth()+monthOverlap ){
+            contractDateFrom = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
+            contractDateTo = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
+          }
+          else if(today.getMonth() <= 12){
+            contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
+            contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
+          }
+          else{
+            contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
+            contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
+          }
+
+        }
+        // One Periods
+        else if(first && !second){
+          //System.err.println("two sectors");
+          contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
+          contractDateTo = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
+        }
+        else if(!first && second){
+          //System.err.println("two sectors");
+          contractDateFrom = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
+          contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
+        }
+     }
+
+      idegaTimestamp[] stamps = {contractDateFrom,contractDateTo};
+      return stamps;
   }
 }
