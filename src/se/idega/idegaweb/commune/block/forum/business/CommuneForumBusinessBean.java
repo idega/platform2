@@ -78,7 +78,7 @@ public class CommuneForumBusinessBean extends IBOServiceBean implements CommuneF
 		return 0;	
 	}
 	
-	public Collection convertFilePKsToFileCollection(Collection filePKs) throws IDOLookupException, FinderException {
+	public Collection convertFilePKsToFileCollection(Collection filePKs) {
 		Vector v = new Vector();
 		if (filePKs != null && !filePKs.isEmpty()) {
 			Iterator iter = filePKs.iterator();

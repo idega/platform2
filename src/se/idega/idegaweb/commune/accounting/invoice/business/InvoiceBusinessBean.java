@@ -6,7 +6,6 @@ import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
-import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolYear;
 import com.idega.business.IBOLookup;
@@ -19,7 +18,6 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
-import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
 import com.idega.util.CalendarMonth;
 import com.idega.util.IWTimestamp;
@@ -67,46 +65,14 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/03/04 14:11:23 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/04 14:45:29 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.118 $
+ * @version $Revision: 1.119 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
-	
-	/**
-	 * Spawns a new thread and starts the execution of the posting calculation and then returns
-	 * @param month
-	 */
-	public void startPostingBatch(Date month, Date readDate, String schoolCategory, IWContext iwc)
-		throws IDOLookupException, FinderException, SchoolCategoryNotFoundException, BatchAlreadyRunningException {
-		//Select correct thread to start
-		SchoolCategoryHome sch = (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
-		if (sch.findChildcareCategory().getCategory().equals(schoolCategory)) {
-			if(BatchRunSemaphore.getChildcareRunSemaphore()){
-				new InvoiceChildcareThread(month, iwc).start();
-			}else{
-				throw new BatchAlreadyRunningException("Childcare");
-			}
-		} else if (sch.findElementarySchoolCategory().getCategory().equals(schoolCategory)) {
-			if(BatchRunSemaphore.getElementaryRunSemaphore()){
-				new PaymentThreadElementarySchool(month, iwc).start();
-			}else{
-				throw new BatchAlreadyRunningException("ElementarySchool");
-			}
-		} else if (sch.findHighSchoolCategory().getCategory().equals(schoolCategory)) {
-			if(BatchRunSemaphore.getHighRunSemaphore()){
-				new PaymentThreadHighSchool(readDate, iwc).start();
-			}else{
-				throw new BatchAlreadyRunningException("HighSchool");
-			}
-		} else {
-			logWarning ("Error: couldn't find any Schoolcategory for billing named " + schoolCategory);
-			throw new SchoolCategoryNotFoundException("Couldn't find any Schoolcategory for billing named " + schoolCategory);
-		}
-	}
 	
 	public int generatePdf (final String title, final MemoryFileBuffer buffer)
 		throws RemoteException {
@@ -334,7 +300,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 
-	public void removePaymentHeader (final PaymentHeader paymentHeader)
+	private void removePaymentHeader (final PaymentHeader paymentHeader)
 		throws RemoteException, RemoveException {
 		try {
 			final Collection paymentRecords
@@ -348,15 +314,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		paymentHeader.remove ();
 	}
 
-	public boolean isHighShool(String category) throws IDOLookupException, FinderException {
-		SchoolCategory highSchool =
-				((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findHighSchoolCategory();
-		if (((String) highSchool.getPrimaryKey()).equals(category)) {
-			return true;
-		}
-		return false;
-	}
-	
 	public boolean isChildCare(String category) throws IDOLookupException, FinderException {
 		SchoolCategoryHome sch = (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
 		return (sch.findChildcareCategory().getCategory().equals(category));
@@ -520,24 +477,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 	
-	public Collection getPaymentRecordsByCategoryProviderAndPeriod(String category, String provider, Date period)
-		throws RemoteException, FinderException {
-		SchoolCategory schoolCategory =
-				((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(category);
-		School school = ((SchoolHome) IDOLookup.getHome(School.class)).findByPrimaryKey(provider);
-		return getPaymentRecordsByCategoryProviderAndPeriod(schoolCategory, school, period);
-	}
-	
-	public Collection getPaymentRecordsByCategoryProviderAndPeriod(
-																																 SchoolCategory category,
-																																 School provider,
-																																 Date period)
-		throws RemoteException, FinderException {
-		PaymentHeader paymentHeader =
-				getPaymentHeaderHome().findBySchoolCategorySchoolPeriod(provider, category, period);
-		return getPaymentRecordHome().findByPaymentHeader(paymentHeader);
-	}
-	
 	public PaymentRecord []
 		getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
 		(final String schoolCategory, final Integer providerId,
@@ -570,11 +509,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * @return the new Invoice Header
 	 * @exception CreateException if lower level fails
 	 */
-	public InvoiceHeader createInvoiceHeader(
-																					 final String schoolCategoryKey,
-																					 final User createdBy,
-																					 final int custodianId,
-																					 final Date period)
+	public InvoiceHeader createInvoiceHeader(final String schoolCategoryKey,final User createdBy,final int custodianId,final Date period)
 		throws CreateException {
 		try {
 			final InvoiceHeader header = getInvoiceHeaderHome ().create ();
@@ -596,10 +531,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 	
-	protected SchoolCategoryHome getSchoolCategoryHome() throws RemoteException {
-		return (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
-	}
-	
 	private String getSignature (final User user) {
 		if (null == user) return "not logged in user";
 		final String firstName = user.getFirstName ();
@@ -612,7 +543,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		(final PaymentRecord paymentRecord, final SchoolClassMember placement,
 		 final PostingDetail postingDetail, PlacementTimes checkPeriod,
 		 final Date startPlacementDate, final Date endPlacementDate,
-		 final String createdBySignature)	throws RemoteException, CreateException {
+		 final String createdBySignature) throws CreateException {
 		final InvoiceRecord result = createInvoiceRecord
 				(paymentRecord, placement, checkPeriod, startPlacementDate,
 				 endPlacementDate, createdBySignature);
@@ -636,11 +567,11 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return result;
 	}
 
-	public InvoiceRecord createInvoiceRecord
+	private InvoiceRecord createInvoiceRecord
 		(final PaymentRecord paymentRecord, final SchoolClassMember placement,
 		 final PlacementTimes checkPeriod, final Date startPlacementDate,
 		 final Date endPlacementDate, final String createdBySignature)
-		throws RemoteException, CreateException {
+		throws CreateException {
 		final InvoiceRecord result = getInvoiceRecordHome ().create ();
 		result.setCreatedBy (createdBySignature);
 		result.setDateCreated (new Date (System.currentTimeMillis ()));
@@ -1122,9 +1053,9 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return placementTimes;
 	}
 	
-	public Regulation findRegulation
+	private Regulation findRegulation
 		(final PaymentRecord paymentRecord, final SchoolCategory schoolCategory,
-		 final Date period) throws IDOLookupException {
+		 final Date period) {
 		Regulation matchedRegulation  = null;
 		final RegulationHome regulationHome = getRegulationHome ();
 		try {
@@ -1180,13 +1111,13 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 				? 1 + (int) (millisDiff / (1000 * 60 * 60 * 24)) : 0;
 	}
 	
-	protected RegulationSpecTypeHome getRegulationSpecTypeHome ()
+	private RegulationSpecTypeHome getRegulationSpecTypeHome ()
 		throws RemoteException {
 		return (RegulationSpecTypeHome)
 				IDOLookup.getHome(RegulationSpecType.class);
 	}
 	
-	public MemberFamilyLogic getMemberFamilyLogic () throws RemoteException {
+	private MemberFamilyLogic getMemberFamilyLogic () throws RemoteException {
 		return (MemberFamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);	
 	}
 	
@@ -1216,7 +1147,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 
-	public RegulationHome getRegulationHome() {
+	private RegulationHome getRegulationHome() {
 		try {
 			return (RegulationHome) IDOLookup.getHome(Regulation.class);
 		}
@@ -1225,7 +1156,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 
-	protected RegulationsBusiness getRegulationsBusiness(){
+	private RegulationsBusiness getRegulationsBusiness(){
 		try {
 			return (RegulationsBusiness)getServiceInstance(RegulationsBusiness.class);
 		}
@@ -1234,7 +1165,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 	
-	protected PostingBusiness getPostingBusiness(){
+	private PostingBusiness getPostingBusiness(){
 		try {
 			return (PostingBusiness)getServiceInstance(PostingBusiness.class);
 		}
@@ -1243,7 +1174,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 	
-	protected SchoolBusiness getSchoolBusiness() {
+	private SchoolBusiness getSchoolBusiness() {
 		try {
 			return (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
 		}
@@ -1252,7 +1183,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 		
-	protected VATBusiness getVATBusiness() {
+	private VATBusiness getVATBusiness() {
 		try {
 			return (VATBusiness) getServiceInstance(VATBusiness.class);
 		}

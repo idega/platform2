@@ -1,49 +1,38 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
 
-public interface InvoiceBusiness extends com.idega.business.IBOService
-{
- public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader createInvoiceHeader(java.lang.String p0,com.idega.user.data.User p1,int p2,java.sql.Date p3)throws javax.ejb.CreateException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord createInvoiceRecord(com.idega.user.data.User p0,se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p1,java.lang.Integer p2,java.lang.Integer p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.sql.Date p8,java.sql.Date p9,java.sql.Date p10,java.sql.Date p11,java.lang.Integer p12,java.lang.Integer p13,java.lang.Integer p14,java.lang.Integer p15,java.lang.Integer p16,java.lang.String p17,java.lang.String p18,java.lang.Integer p19,java.lang.String p20,java.lang.String p21,java.lang.Integer p22)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
-	void saveInvoiceRecord(Integer recordId, com.idega.user.data.User p1, Integer placementId, Integer providerId, String invoiceText, String invoiceText2, String ruleText, String note, java.sql.Date checkEndPeriod, java.sql.Date checkStartPeriod, java.sql.Date placementStartPeriod, java.sql.Date placementEndPeriod, String ownPosting, String doublePosting, Integer amount, Integer vatAmount, Integer vatRule, Integer regSpecTypeId) throws java.rmi.RemoteException, javax.ejb.FinderException;
- public int generatePdf(java.lang.String p0,com.idega.io.MemoryFileBuffer p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType[] getAllRegulationSpecTypes()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.Collection getAllVATRuleRegulations()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.invoice.data.BatchRun getBatchRunByCategory(java.lang.String p0, boolean p1)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;
- public com.idega.user.data.User getChildByInvoiceRecord(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.childcare.data.ChildCareContractHome getChildCareContractHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome getInvoiceHeaderHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader[] getInvoiceHeadersByCustodianOrChild(java.lang.String p0,com.idega.user.data.User p1,com.idega.util.CalendarMonth p2,com.idega.util.CalendarMonth p3) throws java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome getInvoiceRecordHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord[] getInvoiceRecordsByInvoiceHeader(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0) throws java.rmi.RemoteException;
- public is.idega.idegaweb.member.business.MemberFamilyLogic getMemberFamilyLogic()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public int getNoPlacements(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
- public int getNoProviders(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
- public int getNumberOfHandledChildren(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
- public int getNumberOfInvoices(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome getPaymentHeaderHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome getPaymentRecordHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.Collection getPaymentRecordsByCategoryProviderAndPeriod(java.lang.String p0,java.lang.String p1,java.sql.Date p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public java.util.Collection getPaymentRecordsByCategoryProviderAndPeriod(com.idega.block.school.data.SchoolCategory p0,com.idega.block.school.data.School p1,java.sql.Date p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord[] getPaymentRecordsBySchoolCategoryAndProviderAndPeriod(java.lang.String p0,java.lang.Integer p1,java.sql.Date p2,java.sql.Date p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.block.school.data.SchoolClassMember[] getSchoolClassMembers(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0) throws java.rmi.RemoteException;
- public int getTotAmountWithoutVAT(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
- public double getTotalAmountOfInvoices(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.accounting.regulations.data.Regulation getVATRuleRegulation(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean isChildCare(java.lang.String p0)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;
- public boolean isHighShool(java.lang.String p0)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;
- public void removeInvoiceRecord(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord p0)throws java.rmi.RemoteException,javax.ejb.RemoveException, java.rmi.RemoteException;
- public void removePreliminaryInvoice(com.idega.util.CalendarMonth p0,java.lang.String p1)throws javax.ejb.RemoveException, java.rmi.RemoteException, javax.ejb.FinderException, BatchAlreadyRunningException, SchoolCategoryNotFoundException, com.idega.data.IDOLookupException;
- public void removePreliminaryInvoice(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0)throws javax.ejb.RemoveException, java.rmi.RemoteException;
- public void removePreliminaryPayment(com.idega.util.CalendarMonth month, java.lang.String category) throws javax.ejb.RemoveException;
-
- 	public void startPostingBatch(java.sql.Date p0,java.sql.Date p1,java.lang.String p2,com.idega.presentation.IWContext p3)throws com.idega.data.IDOLookupException,javax.ejb.FinderException,se.idega.idegaweb.commune.accounting.invoice.business.SchoolCategoryNotFoundException,se.idega.idegaweb.commune.accounting.invoice.business.BatchAlreadyRunningException, java.rmi.RemoteException;
-	void removePaymentRecord (se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord paymentRecord) throws java.rmi.RemoteException, javax.ejb.RemoveException;
-	void removePaymentHeader (se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader paymentHeader) throws java.rmi.RemoteException, javax.ejb.RemoveException;
-	se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord createVatPaymentRecord(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord previousPaymentRecord, com.idega.block.school.data.SchoolType sType,com.idega.block.school.data.SchoolYear sYear,String signature) throws java.rmi.RemoteException,javax.ejb.CreateException;
-	public java.util.Collection findInvoiceRecordsByContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract contract) throws java.rmi.RemoteException,javax.ejb.FinderException;
+public interface InvoiceBusiness extends com.idega.business.IBOService {
+	boolean isChildCare(java.lang.String p0)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;
+	com.idega.block.school.data.SchoolClassMember[] getSchoolClassMembers(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0) throws java.rmi.RemoteException;
+	com.idega.user.data.User getChildByInvoiceRecord(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+	double getTotalAmountOfInvoices(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
+	int generatePdf(java.lang.String p0,com.idega.io.MemoryFileBuffer p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+	int getNoPlacements(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
+	int getNoProviders(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
+	int getNumberOfHandledChildren(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
+	int getNumberOfInvoices(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
+	int getTotAmountWithoutVAT(se.idega.idegaweb.commune.accounting.invoice.data.BatchRun p0)throws java.rmi.RemoteException,com.idega.data.IDOException, java.rmi.RemoteException;
+	java.util.Collection findInvoiceRecordsByContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract contract) throws java.rmi.RemoteException,javax.ejb.FinderException;
+	java.util.Collection getAllVATRuleRegulations()throws java.rmi.RemoteException, java.rmi.RemoteException;
+	se.idega.idegaweb.commune.accounting.invoice.data.BatchRun getBatchRunByCategory(java.lang.String p0, boolean p1)throws com.idega.data.IDOLookupException,javax.ejb.FinderException, java.rmi.RemoteException;
+	se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader createInvoiceHeader(java.lang.String p0,com.idega.user.data.User p1,int p2,java.sql.Date p3)throws javax.ejb.CreateException, java.rmi.RemoteException;
+	se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome getInvoiceHeaderHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
+	se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader[] getInvoiceHeadersByCustodianOrChild(java.lang.String p0,com.idega.user.data.User p1,com.idega.util.CalendarMonth p2,com.idega.util.CalendarMonth p3) throws java.rmi.RemoteException;
+	se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord createDetailedPaymentRecord(com.idega.user.data.User child,se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord paymentRecord,com.idega.user.data.User registrator)throws com.idega.data.IDOLookupException, javax.ejb.FinderException, java.rmi.RemoteException,javax.ejb.CreateException;
 	se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord createInvoiceRecord	(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord paymentRecord, com.idega.block.school.data.SchoolClassMember placement, se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail postingDetail, PlacementTimes checkPeriod, java.sql.Date startPlacementDate, java.sql.Date endPlacementDate, String createdBySignature)	throws java.rmi.RemoteException, javax.ejb.CreateException;
-se.idega.idegaweb.commune.accounting.regulations.data.Regulation findRegulation	(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord paymentRecord, com.idega.block.school.data.SchoolCategory schoolCategory, java.sql.Date period) throws com.idega.data.IDOLookupException;
-
-se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord createDetailedPaymentRecord(com.idega.user.data.User child,se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord paymentRecord,com.idega.user.data.User registrator)throws com.idega.data.IDOLookupException, javax.ejb.FinderException, java.rmi.RemoteException,javax.ejb.CreateException;
+	se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord createInvoiceRecord(com.idega.user.data.User p0,se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p1,java.lang.Integer p2,java.lang.Integer p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.sql.Date p8,java.sql.Date p9,java.sql.Date p10,java.sql.Date p11,java.lang.Integer p12,java.lang.Integer p13,java.lang.Integer p14,java.lang.Integer p15,java.lang.Integer p16,java.lang.String p17,java.lang.String p18,java.lang.Integer p19,java.lang.String p20,java.lang.String p21,java.lang.Integer p22)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
+	se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome getInvoiceRecordHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
+	se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord[] getInvoiceRecordsByInvoiceHeader(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0) throws java.rmi.RemoteException;
+	se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome getPaymentHeaderHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
+	se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord createVatPaymentRecord(se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord previousPaymentRecord, com.idega.block.school.data.SchoolType sType,com.idega.block.school.data.SchoolYear sYear,String signature) throws java.rmi.RemoteException,javax.ejb.CreateException;
+	se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome getPaymentRecordHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
+	se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord[] getPaymentRecordsBySchoolCategoryAndProviderAndPeriod(java.lang.String p0,java.lang.Integer p1,java.sql.Date p2,java.sql.Date p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
+	se.idega.idegaweb.commune.accounting.regulations.data.Regulation getVATRuleRegulation(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+	se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType[] getAllRegulationSpecTypes()throws java.rmi.RemoteException, java.rmi.RemoteException;
+	void removeInvoiceRecord(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord p0)throws java.rmi.RemoteException,javax.ejb.RemoveException, java.rmi.RemoteException;
+	void removePaymentRecord (se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord paymentRecord) throws java.rmi.RemoteException, javax.ejb.RemoveException;
+	void removePreliminaryInvoice(com.idega.util.CalendarMonth p0,java.lang.String p1)throws javax.ejb.RemoveException, java.rmi.RemoteException, javax.ejb.FinderException, BatchAlreadyRunningException, SchoolCategoryNotFoundException, com.idega.data.IDOLookupException;
+	void removePreliminaryInvoice(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0)throws javax.ejb.RemoveException, java.rmi.RemoteException;
+	void removePreliminaryPayment(com.idega.util.CalendarMonth month, java.lang.String category) throws javax.ejb.RemoveException;
+	void saveInvoiceRecord(Integer recordId, com.idega.user.data.User p1, Integer placementId, Integer providerId, String invoiceText, String invoiceText2, String ruleText, String note, java.sql.Date checkEndPeriod, java.sql.Date checkStartPeriod, java.sql.Date placementStartPeriod, java.sql.Date placementEndPeriod, String ownPosting, String doublePosting, Integer amount, Integer vatAmount, Integer vatRule, Integer regSpecTypeId) throws java.rmi.RemoteException, javax.ejb.FinderException;
 }
