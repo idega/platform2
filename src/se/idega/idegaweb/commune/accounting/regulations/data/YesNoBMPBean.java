@@ -1,5 +1,5 @@
 /*
- * $Id: YesNoBMPBean.java,v 1.1 2003/09/11 15:54:25 kjell Exp $
+ * $Id: YesNoBMPBean.java,v 1.2 2003/12/29 16:17:20 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -19,10 +19,10 @@ import com.idega.data.IDOLookup;
 /**
  * Holds localizeable Yes / No data for the regulation framework 
  * <p>
- * $Id: YesNoBMPBean.java,v 1.1 2003/09/11 15:54:25 kjell Exp $
+ * $Id: YesNoBMPBean.java,v 1.2 2003/12/29 16:17:20 palli Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class YesNoBMPBean extends GenericEntity implements YesNo {
 	
@@ -53,11 +53,22 @@ public class YesNoBMPBean extends GenericEntity implements YesNo {
 		setAsPrimaryKey (getIDColumnName(), true);
 	}
 
+	public boolean getIsYes() {
+		String yesno = getYesNo();
+		StringBuffer yes = new StringBuffer(ENTITY_NAME);
+		yes.append(".yes");
+		if (yesno.equals(yes.toString())) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public void setYesNo(String type) { 
 		setColumn(COLUMN_YESNO, type); 
 	}
 	
-	public String getYeNo() {
+	public String getYesNo() {
 		return getStringColumnValue(COLUMN_YESNO);
 	}
 
