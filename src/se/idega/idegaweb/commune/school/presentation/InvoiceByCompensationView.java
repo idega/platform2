@@ -19,10 +19,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2004/02/18 10:46:24 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/25 10:12:43 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -41,8 +41,6 @@ public class InvoiceByCompensationView extends AccountingBlock {
     private static final String INVOICEINTERVAL_DEFAULT = "Fakturaintervall";
     private static final String INVOICEINTERVAL_KEY
         = PREFIX + "invoiceInterval";
-    private static final String ISUPDATED_DEFAULT = " är nu ändrad till ";
-    private static final String ISUPDATED_KEY = PREFIX + "isUpdated";
     private static final String LATESTINVOICEDATE_DEFAULT
         = "Senaste fakturadatum";
     private static final String LATESTINVOICEDATE_KEY
@@ -359,20 +357,17 @@ public class InvoiceByCompensationView extends AccountingBlock {
         table.setCellpadding (getCellpadding ());
         table.setCellspacing (getCellspacing ());
         
-        if (null != date) {
-            table.add (new Text (localize (LATESTINVOICEDATE_KEY,
-                                           LATESTINVOICEDATE_DEFAULT) + 
-                                 localize (ISUPDATED_KEY, ISUPDATED_DEFAULT)
-                                 +  dateFormatter.format (date)), 1, 1);
-        } else {
+        if (null == date) {
             final Text text = new Text (localize (WRONGDATEFORMAT_KEY,
                                                   WRONGDATEFORMAT_DEFAULT));
             text.setFontColor ("#ff0000");
             table.add (text, 1, 1);
-        }
-		table.setHeight (2, 12);
-        table.add (getSmallLink (localize (BACK_KEY, BACK_DEFAULT)), 1, 3);
-        add (createMainTable (table));
+						table.setHeight (2, 12);
+						table.add (getSmallLink (localize (BACK_KEY, BACK_DEFAULT)), 1, 3);
+						add (createMainTable (table));
+        } else {
+					showInvoiceByCompensationList (context);
+				}
     }
     
 	/**
