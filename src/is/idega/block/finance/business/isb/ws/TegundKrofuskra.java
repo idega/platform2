@@ -24,10 +24,10 @@ public class TegundKrofuskra implements java.io.Serializable {
     public java.lang.String getValue() { return _value_;}
     public static TegundKrofuskra fromValue(java.lang.String value)
           throws java.lang.IllegalStateException {
-        TegundKrofuskra enum = (TegundKrofuskra)
+        TegundKrofuskra enum1 = (TegundKrofuskra)
             _table_.get(value);
-        if (enum==null) throw new java.lang.IllegalStateException();
-        return enum;
+        if (enum1==null) throw new java.lang.IllegalStateException();
+        return enum1;
     }
     public static TegundKrofuskra fromString(java.lang.String value)
           throws java.lang.IllegalStateException {

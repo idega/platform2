@@ -24,10 +24,10 @@ public class PrentunKrofu implements java.io.Serializable {
     public java.lang.String getValue() { return _value_;}
     public static PrentunKrofu fromValue(java.lang.String value)
           throws java.lang.IllegalStateException {
-        PrentunKrofu enum = (PrentunKrofu)
+        PrentunKrofu enum1 = (PrentunKrofu)
             _table_.get(value);
-        if (enum==null) throw new java.lang.IllegalStateException();
-        return enum;
+        if (enum1==null) throw new java.lang.IllegalStateException();
+        return enum1;
     }
     public static PrentunKrofu fromString(java.lang.String value)
           throws java.lang.IllegalStateException {

@@ -22,10 +22,10 @@ public class TegundKrofufyrirspurnar implements java.io.Serializable {
     public java.lang.String getValue() { return _value_;}
     public static TegundKrofufyrirspurnar fromValue(java.lang.String value)
           throws java.lang.IllegalStateException {
-        TegundKrofufyrirspurnar enum = (TegundKrofufyrirspurnar)
+        TegundKrofufyrirspurnar enum1 = (TegundKrofufyrirspurnar)
             _table_.get(value);
-        if (enum==null) throw new java.lang.IllegalStateException();
-        return enum;
+        if (enum1==null) throw new java.lang.IllegalStateException();
+        return enum1;
     }
     public static TegundKrofufyrirspurnar fromString(java.lang.String value)
           throws java.lang.IllegalStateException {

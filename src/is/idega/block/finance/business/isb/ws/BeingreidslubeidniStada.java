@@ -24,10 +24,10 @@ public class BeingreidslubeidniStada implements java.io.Serializable {
     public java.lang.String getValue() { return _value_;}
     public static BeingreidslubeidniStada fromValue(java.lang.String value)
           throws java.lang.IllegalStateException {
-        BeingreidslubeidniStada enum = (BeingreidslubeidniStada)
+        BeingreidslubeidniStada enum1 = (BeingreidslubeidniStada)
             _table_.get(value);
-        if (enum==null) throw new java.lang.IllegalStateException();
-        return enum;
+        if (enum1==null) throw new java.lang.IllegalStateException();
+        return enum1;
     }
     public static BeingreidslubeidniStada fromString(java.lang.String value)
           throws java.lang.IllegalStateException {
