@@ -1,5 +1,5 @@
 /*
- * $Id: CashierWindowPlugin.java,v 1.2 2004/11/27 18:31:36 eiki Exp $
+ * $Id: CashierWindowPlugin.java,v 1.3 2004/11/27 20:12:47 eiki Exp $
  * Created on Sep 1, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.app.ToolbarElement;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/27 18:31:36 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/11/27 20:12:47 $ by $Author: eiki $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CashierWindowPlugin implements ToolbarElement {
 	
@@ -76,7 +76,7 @@ public class CashierWindowPlugin implements ToolbarElement {
 	 * @see com.idega.user.app.ToolbarElement#isValid(com.idega.presentation.IWContext)
 	 */
 	public boolean isValid(IWContext iwc) {
-		//only cashiers and admin can use this plugin
+		//only cashiers and admin and role masters can use this plugin
 		AccessController security = iwc.getAccessController();
 		IWMainApplicationSettings settings = iwc.getApplicationSettings();
 		boolean isiPropertyExists = settings.getProperty("temp_show_is_related_stuff") != null;
@@ -85,7 +85,7 @@ public class CashierWindowPlugin implements ToolbarElement {
 			isValid = true;
 		}
 		else{
-			isValid = (isiPropertyExists) && (security.hasRole(CashierWindow.ROLE_KEY_CASHIER, iwc) || security.hasRole(CashierWindow.ROLE_KEY_CASHIER_ADMIN, iwc));
+			isValid = (isiPropertyExists) && (security.isRoleMaster(iwc) || security.hasRole(CashierWindow.ROLE_KEY_CASHIER, iwc) || security.hasRole(CashierWindow.ROLE_KEY_CASHIER_ADMIN, iwc));
 		}
 		
 		return isValid;
