@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.8 2003/08/25 21:42:52 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.9 2003/08/25 21:51:47 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -30,7 +30,6 @@ import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
-import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
@@ -39,17 +38,17 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParamException;
 
 
-/**7
+/**
  * PostingParameterListEdit is an idegaWeb block that handles maintenance of some 
  * default data thatis used in a "posting". The block shows/edits Periode, Activity, Regulation specs, 
  * Company types and Commune belonging. 
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.8 2003/08/25 21:42:52 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.9 2003/08/25 21:51:47 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -287,8 +286,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 		Table table = new Table();
 		Table selectors = new Table();
 		Table accounts = new Table();
-		ListTable list1 = new ListTable(8);
-		ListTable list2 = new ListTable(8);
+		ListTable list1 = new ListTable(this, 8);
+		ListTable list2 = new ListTable(this, 8);
 
 		list1.setLocalizedHeader(KEY_POST_ACCOUNT, "Konto", 1);
 		list1.setLocalizedHeader(KEY_POST_LIABILITY, "Ansvar", 2);
@@ -398,6 +397,13 @@ public class PostingParameterListEditor extends AccountingBlock {
 	 * @return the drop down menu
 	 */
 	private DropdownMenu activitySelector(IWContext iwc, String name, int refIndex) throws Exception {
+
+//		Collection col = getRegulationsBusiness(iwc).findAllActivityTypes();
+		
+		return getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllActivityTypes(), 
+										"getTextKey", ""+refIndex);
+
+		/*
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
 		menu.addMenuElement(0, localize(KEY_ACTIVITY_HEADER, "Välj aktivitet"));
 		Collection col = getRegulationsBusiness(iwc).findAllActivityTypes();
@@ -412,7 +418,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 				menu.setSelectedElement(refIndex);
 			}
 		}
-		return (DropdownMenu) menu;	
+		return (DropdownMenu) menu;
+		*/	
 	}
 
 	/*
