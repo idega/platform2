@@ -77,14 +77,14 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
       hotel.setPrimaryKey(new Integer(productId));
       hotel.setNumberOfUnits(numberOfUnits);
       hotel.setMaxPerUnit( maxPerUnit );
+      if (rating != null) {
+	  			hotel.setRating(rating.floatValue());
+	  		} else {
+	  			hotel.setRating(-1);
+	  		}
+      hotel.store();
 			hotel.setRoomTypeIds(roomTypeIds);
       hotel.setHotelTypeIds(hotelTypeIds);
-	  	if (rating != null) {
-	  		hotel.setRating(rating.floatValue());
-	  	} else {
-	  		hotel.setRating(-1);
-	  	}
-      hotel.store();
     }
 
     if (!isUpdate) {
