@@ -71,9 +71,9 @@ public class ChildCareQueueRenewer extends ChildCareBlock {
 			
 		table.add(getLocalizedSmallHeader("child_care.provider","Provider"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.placement_date","Placement date"), column, row);
+		table.add(getLocalizedSmallHeader("child_care.placement_date","Placement date"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.last_reply_date","Last reply date"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.keep_application","Keep"), column, row);
+		table.add(getLocalizedSmallHeader("child_care.keep_application","Keep"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.discard_application","Discard"), column, row++);
 			
 		ChildCareApplication application;
