@@ -197,7 +197,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       int toDayOfWeek = toStamp.getDayOfWeek();
 
       toTemp.addDays(1);
-      int daysBetween = toStamp.getDaysBetween(fromStamp, toTemp);
+      int daysBetween = IWTimestamp.getDaysBetween(fromStamp, toTemp);
 
       if (fromStamp.getWeekOfYear() != toTemp.getWeekOfYear()) {
           daysBetween = daysBetween - (8 - fromDayOfWeek + toDayOfWeek);
@@ -249,7 +249,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
 
     for (int i = 0; i < days.size(); i++) {
       stamp = (IWTimestamp) days.get(i);
-      menu.addMenuElement(stamp.toSQLDateString(),stamp.getLocaleDate(iwc));
+      menu.addMenuElement(stamp.toSQLDateString(),stamp.getLocaleDate(iwc.getCurrentLocale()));
     }
 
     return menu;
@@ -294,7 +294,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       }
 
       if (found) {
-        int daysBetween = stamp.getDaysBetween(stamp1, stamp);
+        int daysBetween = IWTimestamp.getDaysBetween(stamp1, stamp);
         if (stamp1.equals(stamp)) {
           return stamp;
         }else if (stamp2.equals(stamp)) {
@@ -459,6 +459,8 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
                   stamp.addYears(yearsBetween);
                 }
 
+              } else {
+                stamp.addDays(numberOfDays);
               }
               //stamp = new IWTimestamp(temp);
             }else {
