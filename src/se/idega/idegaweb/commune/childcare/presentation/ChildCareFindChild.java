@@ -20,6 +20,9 @@ import com.idega.util.Age;
  */
 public class ChildCareFindChild extends CommuneUserFinder {
 
+	private String _key = "child_care.show_applications";
+	private String _defaultValue = "Show applications";
+	
 	/**
 	 * @see se.idega.idegaweb.commune.presentation.CommuneUserFinder#addUser(com.idega.user.data.User)
 	 */
@@ -59,7 +62,7 @@ public class ChildCareFindChild extends CommuneUserFinder {
 	 * @see se.idega.idegaweb.commune.presentation.CommuneUserFinder#getSubmitDisplay()
 	 */
 	public String getSubmitDisplay() {
-		return localize("child_care.show_applications","Show applications");
+		return localize(_key,_defaultValue);
 	}
 
 	/**
@@ -90,4 +93,9 @@ public class ChildCareFindChild extends CommuneUserFinder {
 	private ChildCareSession getChildCareSession(IWContext iwc) throws RemoteException {
 		return (ChildCareSession) IBOLookup.getSessionInstance(iwc, ChildCareSession.class);	
 	}	
+	
+	public void setLocalizedKeyOnButton(String key, String defaultValue) {
+		_key = key;
+		_defaultValue = defaultValue;
+	}
 }
