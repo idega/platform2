@@ -862,13 +862,17 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			String subject = getLocalizedString("child_care.application_timed_out_subject", "Old application removed from queue");
 			String body = getLocalizedString("child_care.application_timed_out_body", "Your application for {0}, {2},Êto {1}Êhas been removed from out queue after you failed to renew it. \n\nBest regards,\n{1}");
 			
+			String providerBody = getLocalizedString("child_care.application_timed_out_provider_body", "An application for {0}, {3},Êhas been removed from your queue because the parents didn't renew the application.");
+			
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
 				ChildCareApplication application = (ChildCareApplication) iter.next();
+				application.setRejectionDate(lastReplyDate.getDate());
 				application.setApplicationStatus(getStatusTimedOut());
 				changeCaseStatus(application, getCaseStatusInactive().getStatus(), performer);
 				
 				sendMessageToParents(application, subject, body, true);
+				sendMessageToProvider(application, subject, providerBody);
 			}
 			
 			transaction.commit();
@@ -1493,7 +1497,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean reactivateApplication(ChildCareApplication application, User user) {
-		if (application.getApplicationStatus() == getStatusNotAnswered()) {
+		if (application.getApplicationStatus() == getStatusNotAnswered() || application.getApplicationStatus() == getStatusTimedOut()) {
 			application.setApplicationStatus(getStatusSentIn());
 			application.setRejectionDate(null);
 			changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
