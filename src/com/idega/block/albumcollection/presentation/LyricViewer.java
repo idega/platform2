@@ -4,7 +4,10 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.BackButton;
 import com.idega.block.albumcollection.data.Lyric;
+import com.idega.util.text.TextSoap;
 
 /**
  * Title:        idegaWeb
@@ -39,17 +42,40 @@ public class LyricViewer extends Block {
         heading.setText(lyric.getName());
 
         Text text = (Text)mainText.clone();
-        text.setText(lyric.getLyric());
+        text.setText(TextSoap.formatString(lyric.getLyric()));
 
         this.add(heading);
         this.add(Text.getBreak());
         this.add(text);
+        this.add(Text.getBreak());
+        this.add(Text.getBreak());
+
+        Link updateLyricLink = new Link("Breyta");
+        updateLyricLink.setWindowToOpen(InsertLyric.class);
+        updateLyricLink.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
+        updateLyricLink.addParameter(AlbumCollectionBusiness._PRM_LYRIC_ID,lyric.getID());
+
+        this.add(updateLyricLink);
+
+        Link deleteTrackLinkTemplate = new Link("Eyða");
+        deleteTrackLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
+        deleteTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_LYRIC);
+        deleteTrackLinkTemplate.addParameter(DeleteConfirmWindow._PRM_ID,lyric.getID());
+
+        this.add(deleteTrackLinkTemplate);
+
+
       } else {
         this.add("Texti finnst ekki");
       }
     } else {
       this.add("Texti finnst ekki");
     }
+
+    this.add(Text.getBreak());
+    this.add(Text.getBreak());
+
+    this.add(new BackButton("Til baka"));
 
   }
 }

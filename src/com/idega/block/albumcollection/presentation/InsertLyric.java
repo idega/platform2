@@ -16,6 +16,8 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.PresentationObject;
 import com.idega.block.albumcollection.data.Author;
 import com.idega.block.albumcollection.data.Performer;
+import com.idega.block.albumcollection.data.Lyric;
+import com.idega.block.albumcollection.data.Track;
 import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
 
 
@@ -37,6 +39,7 @@ public class InsertLyric extends IWAdminWindow {
   private Form myForm;
 
   private HiddenInput _fieldTrackId;
+  private HiddenInput _fieldLyricId;
   private TextInput _fieldLyricName;
   private TextArea _fieldLyric;
   private TextArea _fieldDescription;
@@ -44,6 +47,7 @@ public class InsertLyric extends IWAdminWindow {
   private SelectionBox _fieldCategories;
 
   private static String _fieldNameTrackId = AlbumCollectionBusiness._PRM_TRACK_ID;
+  private static String _fieldNameLyricId = AlbumCollectionBusiness._PRM_LYRIC_ID;
   private static String _fieldNameLyricName = "ac_track_name";
   private static String _fieldNameLyric = "ac_lyric";
   private static String _fieldNameDescription = "ac_lyric_description";
@@ -60,16 +64,42 @@ public class InsertLyric extends IWAdminWindow {
   }
 
   public void initFields(IWContext iwc) throws Exception{
+
+    String lyrId = iwc.getParameter(AlbumCollectionBusiness._PRM_LYRIC_ID);
+    Lyric lyric = null;
+    if(lyrId != null){
+      //update
+      if(lyrId != null && !lyrId.equals("")){
+        _fieldLyricId = new HiddenInput(this._fieldNameLyricId,lyrId);
+        if(iwc.getParameter(AlbumCollectionBusiness._PRM_UPDATE) != null){
+          lyric = new Lyric(Integer.parseInt(lyrId));
+        }
+      }
+      myForm.add(_fieldLyricId);
+      _fieldLyricId.keepStatusOnAction();
+    }
+
     String str = iwc.getParameter(_fieldNameTrackId);
     if(str != null && !str.equals("")){
       _fieldTrackId = new HiddenInput(this._fieldNameTrackId,str);
     }else{
       _fieldTrackId = new HiddenInput(this._fieldNameTrackId);
+      _fieldTrackId.setContent("");
     }
     _fieldTrackId.keepStatusOnAction();
 
 
     _fieldLyricName = new TextInput(_fieldNameLyricName);
+    if(lyric != null){
+      _fieldLyricName.setContent(lyric.getName());
+    } else if(iwc.getParameter(_fieldNameLyricName)==null){
+      try {
+        _fieldLyricName.setContent(new Track(Integer.parseInt(iwc.getParameter(_fieldNameTrackId))).getName());
+      }
+      catch (Exception ex) {
+        // do nothing, can be normal if lyric does not link to any track
+      }
+    }
     _fieldLyricName.keepStatusOnAction();
 
 
@@ -77,11 +107,17 @@ public class InsertLyric extends IWAdminWindow {
     _fieldLyric.setHeight(10);
     _fieldLyric.setWidth(42);
     _fieldLyric.setWrap(false);
+    if(lyric != null){
+      _fieldLyric.setContent(lyric.getLyric());
+    }
     _fieldLyric.keepStatusOnAction();
 
     _fieldDescription = new TextArea(this._fieldNameDescription);
     _fieldDescription.setHeight(6);
     _fieldDescription.setWidth(26);
+    if(lyric != null){
+      _fieldDescription.setContent(lyric.getDescription());
+    }
     _fieldDescription.keepStatusOnAction();
 
     _fieldAuthors = new SelectionBox(_fieldNameAuthors);
@@ -92,6 +128,12 @@ public class InsertLyric extends IWAdminWindow {
       while (iter.hasNext()) {
         Author item = (Author)iter.next();
         this._fieldAuthors.addMenuElement(item.getID(),item.getDisplayName());
+      }
+    }
+    if(lyric != null){
+      int[] IDs = lyric.findRelatedIDs(Author.getStaticInstance(Author.class));
+      for (int i = 0; i < IDs.length; i++) {
+        _fieldAuthors.setSelectedElement(Integer.toString(IDs[i]));
       }
     }
     _fieldAuthors.keepStatusOnAction();
@@ -145,6 +187,13 @@ public class InsertLyric extends IWAdminWindow {
   }
 
   public void saveTrack(IWContext iwc) throws Exception {
+
+    String acLyricId = iwc.getParameter(_fieldNameLyricId);
+    int lyricId = -1;
+    if(acLyricId != null && !"".equals(acLyricId)){
+      lyricId = Integer.parseInt(acLyricId);
+    }
+
     String acTrackId = iwc.getParameter(_fieldNameTrackId);
     String acName = iwc.getParameter(_fieldNameLyricName);
     String acLyric = iwc.getParameter(_fieldNameLyric);
@@ -171,9 +220,11 @@ public class InsertLyric extends IWAdminWindow {
       }
     }
 
-
-    AlbumCollectionBusiness.addLyric(acName,acDescription,acLyric,TrackId,authorIDs);
-
+    if(lyricId > -1){
+      AlbumCollectionBusiness.updateLyric(lyricId,acName,acDescription,acLyric,authorIDs);
+    } else {
+      AlbumCollectionBusiness.addLyric(acName,acDescription,acLyric,TrackId,authorIDs);
+    }
   }
 
   public void main(IWContext iwc) throws Exception {

@@ -17,6 +17,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.PresentationObject;
 import com.idega.block.albumcollection.data.Author;
 import com.idega.block.albumcollection.data.Performer;
+import com.idega.block.albumcollection.data.Track;
 import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
 
 
@@ -38,6 +39,7 @@ public class AddTrack extends IWAdminWindow {
   private Form myForm;
 
   private HiddenInput _fieldAlbumId;
+  private HiddenInput _fieldTrackId;
   private TextInput _fieldTrackName;
   private IntegerInput _fieldTrackNumber;
   private IntegerInput _fieldTrackLengthMin;
@@ -48,6 +50,7 @@ public class AddTrack extends IWAdminWindow {
   private SelectionBox _fieldCategories;
 
   private static String _fieldNameAlbumId = AlbumCollectionBusiness._PRM_ALBUM_ID;
+  private static String _fieldNameTrackId = AlbumCollectionBusiness._PRM_TRACK_ID;
   private static String _fieldNameTrackName = "ac_track_name";
   private static String _fieldNameTrackNumber = "ac_track_number";
   private static String _fieldNameTrackLengthMin = "ac_track_length_min";
@@ -68,34 +71,65 @@ public class AddTrack extends IWAdminWindow {
 
 
   public void initFields(IWContext iwc) throws Exception{
-    String str = iwc.getParameter(_fieldNameAlbumId);
-    if(str != null && !str.equals("")){
-      _fieldAlbumId = new HiddenInput(this._fieldNameAlbumId,str);
+
+    String trId = iwc.getParameter(AlbumCollectionBusiness._PRM_TRACK_ID);
+    Track track = null;
+    if(trId != null){
+      //update
+      if(trId != null && !trId.equals("")){
+        _fieldTrackId = new HiddenInput(this._fieldNameTrackId,trId);
+        if(iwc.getParameter(AlbumCollectionBusiness._PRM_UPDATE) != null){
+          track = new Track(Integer.parseInt(trId));
+        }
+      }
+      _fieldTrackId.keepStatusOnAction();
+      myForm.add(_fieldTrackId);
+    }
+
+    String albumId = iwc.getParameter(_fieldNameAlbumId);
+    if(albumId != null && !albumId.equals("")){
+      _fieldAlbumId = new HiddenInput(this._fieldNameAlbumId,albumId);
     }else{
       _fieldAlbumId = new HiddenInput(this._fieldNameAlbumId);
+      _fieldAlbumId.setContent("");
     }
     _fieldAlbumId.keepStatusOnAction();
 
 
     _fieldTrackName = new TextInput(_fieldNameTrackName);
+    if(track != null){
+      _fieldTrackName.setContent(track.getName());
+    }
     _fieldTrackName.keepStatusOnAction();
 
     _fieldTrackNumber = new IntegerInput(this._fieldNameTrackNumber);
     _fieldTrackNumber.setLength(2);
     _fieldTrackNumber.setMaxlength(2);
+    if(track != null){
+      _fieldTrackNumber.setContent(Integer.toString(track.getNumber()));
+    }
 
     _fieldTrackLengthMin = new IntegerInput(this._fieldNameTrackLengthMin);
     _fieldTrackLengthMin.setLength(2);
     _fieldTrackLengthMin.setMaxlength(2);
+    if(track != null){
+      _fieldTrackLengthMin.setContent(Integer.toString(track.getLength()/60));
+    }
 
     _fieldTrackLengthSek = new IntegerInput(this._fieldNameTrackLengthSek);
     _fieldTrackLengthSek.setLength(2);
     _fieldTrackLengthSek.setMaxlength(2);
+    if(track != null){
+      _fieldTrackLengthSek.setContent(Integer.toString(track.getLength()%60));
+    }
 
 
     _fieldDescription = new TextArea(this._fieldNameDescription);
     _fieldDescription.setHeight(6);
     _fieldDescription.setWidth(42);
+    if(track != null){
+      _fieldDescription.setContent(track.getDescription());
+    }
     _fieldDescription.keepStatusOnAction();
 
 
@@ -110,6 +144,12 @@ public class AddTrack extends IWAdminWindow {
         this._fieldAuthors.addMenuElement(item.getID(),item.getDisplayName());
       }
     }
+    if(track != null){
+      int[] IDs = track.findRelatedIDs(Author.getStaticInstance(Author.class));
+      for (int i = 0; i < IDs.length; i++) {
+        _fieldAuthors.setSelectedElement(Integer.toString(IDs[i]));
+      }
+    }
     _fieldAuthors.keepStatusOnAction();
 
     _fieldPerformers = new SelectionBox(_fieldNamePerformers);
@@ -120,6 +160,12 @@ public class AddTrack extends IWAdminWindow {
       while (iter.hasNext()) {
         Performer item = (Performer)iter.next();
         this._fieldPerformers.addMenuElement(item.getID(),item.getDisplayName());
+      }
+    }
+    if(track != null){
+      int[] IDs = track.findRelatedIDs(Performer.getStaticInstance(Performer.class));
+      for (int i = 0; i < IDs.length; i++) {
+        _fieldPerformers.setSelectedElement(Integer.toString(IDs[i]));
       }
     }
     _fieldPerformers.keepStatusOnAction();
@@ -189,6 +235,13 @@ public class AddTrack extends IWAdminWindow {
   }
 
   public void saveTrack(IWContext iwc) throws Exception {
+
+    String acTrackId = iwc.getParameter(_fieldNameTrackId);
+    int trackId = -1;
+    if(acTrackId != null && !"".equals(acTrackId)){
+      trackId = Integer.parseInt(acTrackId);
+    }
+
     String acAlbumId = iwc.getParameter(_fieldNameAlbumId);
     String acName = iwc.getParameter(_fieldNameTrackName);
 
@@ -251,17 +304,20 @@ public class AddTrack extends IWAdminWindow {
     }
 
 
-
-    AlbumCollectionBusiness.addTrack(acName,acDescription,TrackNumber,AlbumId,null,trackLength,authorIDs,performerIDs,null);
+    if(trackId > -1){
+      AlbumCollectionBusiness.updateTrack(trackId,acName,acDescription,TrackNumber,null,null,trackLength,authorIDs,performerIDs,null);
+    }else{
+      AlbumCollectionBusiness.addTrack(acName,acDescription,TrackNumber,AlbumId,null,trackLength,authorIDs,performerIDs,null);
+    }
 
   }
 
   public void main(IWContext iwc) throws Exception {
 
     if(iwc.getParameter("save") == null){
+      myForm.empty();
       initFields(iwc);
       this.add(myForm);
-      myForm.empty();
       //updateFieldStatus(iwc);
       myForm.add(getElementsOredered(iwc));
     } else {

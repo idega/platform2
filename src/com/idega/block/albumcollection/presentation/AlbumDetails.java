@@ -7,11 +7,13 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.Table;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.ui.BackButton;
 import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
 import com.idega.block.albumcollection.data.Album;
 import com.idega.block.albumcollection.data.Track;
 import com.idega.block.albumcollection.data.Author;
 import com.idega.block.albumcollection.data.Performer;
+import com.idega.util.text.TextSoap;
 
 import java.util.List;
 import java.util.Iterator;
@@ -32,6 +34,8 @@ public class AlbumDetails extends Block {
   private Text trackNumberTemplate;
   private Link setLyricLinkTemplate;
   private Link lyricViewerLinkTemplate;
+  private Link updateTrackLinkTemplate;
+  private Link deleteTrackLinkTemplate;
 
   public AlbumDetails() {
     trackNameTemplate = new Text();
@@ -42,6 +46,15 @@ public class AlbumDetails extends Block {
 
     lyricViewerLinkTemplate = new Link();
     lyricViewerLinkTemplate.addParameter(AlbumCollection._PRM_STATE,AlbumCollection._STATE_LYRIC);
+
+    updateTrackLinkTemplate = new Link("Breyta");
+    updateTrackLinkTemplate.setWindowToOpen(AddTrack.class);
+    updateTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
+
+    deleteTrackLinkTemplate = new Link("Eyða");
+    deleteTrackLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
+    deleteTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_TRACK);
+
 
   }
 
@@ -59,7 +72,7 @@ public class AlbumDetails extends Block {
           contentTable.add(fCover,1,1);
         }
         contentTable.add(Text.getBreak(),1,1);
-        contentTable.add(album.getDescription(),1,1);
+        contentTable.add(TextSoap.formatText(album.getDescription()),1,1);
       }
     }
 
@@ -74,11 +87,11 @@ public class AlbumDetails extends Block {
     if(albumId != null && !"".equals(albumId)){
       List tracks = AlbumCollectionBusiness.getTracks(Integer.parseInt(albumId));
       if(tracks != null && tracks.size() > 0){
-        trackTable = new Table(3,tracks.size()+1);
+        trackTable = new Table(5,tracks.size()+1);
         int index=1;
         trackTable.add(new Text("Númer"),1,index);
         trackTable.add(new Text("Heiti"),2,index);
-        trackTable.add(new Text("Texti"),3,index);
+        trackTable.add(new Text("Texti"),5,index);
         index++;
         Iterator iter = tracks.iterator();
         while (iter.hasNext()) {
@@ -94,20 +107,27 @@ public class AlbumDetails extends Block {
           trackName.setText(item.getName());
           trackTable.add(trackName,2,index);
 
+          Link update = (Link)updateTrackLinkTemplate.clone();
+          update.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID,item.getID());
+          trackTable.add(update,3,index);
+
+          Link delete = (Link)deleteTrackLinkTemplate.clone();
+          delete.addParameter(DeleteConfirmWindow._PRM_ID,item.getID());
+          trackTable.add(delete,4,index);
+
           if(item.getLyricId() < 0){
             Link setLyric = (Link)setLyricLinkTemplate.clone();
             setLyric.setText("setja texta");
             setLyric.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID,item.getID());
 
-            trackTable.add(setLyric,3,index);
+            trackTable.add(setLyric,5,index);
           } else {
             Link setLyric = (Link)lyricViewerLinkTemplate.clone();
             setLyric.setText("Texti");
             setLyric.addParameter(AlbumCollectionBusiness._PRM_LYRIC_ID,item.getLyricId());
 
-            trackTable.add(setLyric,3,index);
+            trackTable.add(setLyric,5,index);
           }
-
 
           index++;
         }
@@ -126,13 +146,17 @@ public class AlbumDetails extends Block {
     Link addTrackLink = new Link("add track");
     //addTrackLink.setFontColor("#EEEEEE");
     addTrackLink.setBold();
-    addTrackLink.setWindowToOpen(com.idega.block.albumcollection.presentation.AddTrack.class);
+    addTrackLink.setWindowToOpen(AddTrack.class);
     String albumId = iwc.getParameter(_PRM_ALBUM_ID);
     if(albumId != null && !albumId.equals("")){
       addTrackLink.addParameter(_PRM_ALBUM_ID,albumId);
     }
 
     this.add(addTrackLink);
+
+    this.add(Text.getBreak());
+    this.add(Text.getBreak());
+    this.add(new BackButton("Til baka"));
 
   }
 }

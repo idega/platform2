@@ -41,6 +41,10 @@ public class Album extends GenericEntity {
     this.addAttribute(_COLUMNNAME_ALBUM_TYPE_ID,"Gerð",true,true,Integer.class,"one_to_many",AlbumType.class);
     this.addAttribute(_COLUMNNAME_COVER_FRONT,"Framhlið umslags",true,true,Integer.class,"one_to_many",com.idega.core.data.ICFile.class);
     this.addAttribute(_COLUMNNAME_COVER_BACK,"Bakhlið umslags",true,true,Integer.class,"one_to_many",com.idega.core.data.ICFile.class);
+
+    this.setNullable(_COLUMNNAME_COVER_FRONT,true);
+    this.setNullable(_COLUMNNAME_COVER_BACK,true);
+
     this.addTreeRelationShip();
     this.addManyToManyRelationShip(Category.class,"ac_album_category");
     this.addManyToManyRelationShip(Author.class,"ac_album_author");
@@ -107,12 +111,20 @@ public class Album extends GenericEntity {
     this.setColumn(_COLUMNNAME_COVER_FRONT,id);
   }
 
+  public void setFrontCoverFileIdAsNull() throws SQLException{
+    this.setColumnAsNull(_COLUMNNAME_COVER_FRONT);
+  }
+
   public int getBackCoverFileId(){
     return getIntColumnValue(_COLUMNNAME_COVER_BACK);
   }
 
   public void setBackCoverFileId(int id){
     this.setColumn(_COLUMNNAME_COVER_BACK,id);
+  }
+
+  public void setBackCoverFileIdAsNull() throws SQLException{
+    this.setColumnAsNull(_COLUMNNAME_COVER_BACK);
   }
 
 }

@@ -3,9 +3,9 @@ package com.idega.block.albumcollection.business;
 import com.idega.data.EntityFinder;
 import com.idega.block.albumcollection.data.*;
 import com.idega.util.idegaTimestamp;
-import com.idega.util.text.TextSoap;
 
 import java.util.List;
+import java.util.Iterator;
 import java.sql.SQLException;
 
 
@@ -23,6 +23,11 @@ public class AlbumCollectionBusiness {
   public final static String _PRM_ALBUM_ID = "ac_album_id";
   public final static String _PRM_TRACK_ID = "ac_track_id";
   public final static String _PRM_LYRIC_ID = "ac_lyric_id";
+  public final static String _PRM_UPDATE = "ac_update";
+  public final static String _PRM_DELETE = "ac_delete";
+  public final static int _CONST_ALBUM = 0;
+  public final static int _CONST_TRACK = 1;
+  public final static int _CONST_LYRIC = 2;
 
   public AlbumCollectionBusiness() {
   }
@@ -93,6 +98,57 @@ public class AlbumCollectionBusiness {
 
   }
 
+  public static void updateAlbum(int albumId,String name, String description,Integer albumType, idegaTimestamp publishingDay, int[] authors, int[] performers, int[] categories, Integer frontCoverId) throws SQLException {
+    Album album = new Album(albumId);
+
+    if( name != null){
+      album.setName(name);
+    }
+
+    if(description != null){
+      album.setDescription(description);
+    }
+
+    if( albumType != null){
+      album.setAlbumTypeId(albumType);
+    }
+
+    if( publishingDay != null){
+      album.setPublishingDay(publishingDay.getSQLDate());
+    }
+
+    if(frontCoverId != null){
+      album.setFrontCoverFileId(frontCoverId.intValue());
+    } else {
+      album.setFrontCoverFileIdAsNull();
+    }
+
+    album.update();
+
+    album.removeFrom(Author.getStaticInstance(Author.class));
+
+    if( authors != null){
+      for (int i = 0; i < authors.length; i++) {
+        album.addTo(Author.class,authors[i]);
+      }
+    }
+
+    album.removeFrom(Performer.getStaticInstance(Performer.class));
+    if( performers != null){
+      for (int i = 0; i < performers.length; i++) {
+        album.addTo(Performer.class,performers[i]);
+      }
+    }
+
+    album.removeFrom(Category.getStaticInstance(Category.class));
+    if( categories != null){
+      for (int i = 0; i < categories.length; i++) {
+        album.addTo(Category.class,categories[i]);
+      }
+    }
+
+  }
+
   public static void addTrack(String name, String description, Integer number, Integer albumId, Integer lyricId, Integer lengthInSek, int[] authors, int[] performers, int[] categories) throws SQLException {
     Track track = new Track();
 
@@ -142,6 +198,58 @@ public class AlbumCollectionBusiness {
 
   }
 
+  public static void updateTrack(int trackId, String name, String description, Integer number, Integer albumId, Integer lyricId, Integer lengthInSek, int[] authors, int[] performers, int[] categories) throws SQLException {
+    Track track = new Track(trackId);
+
+    if( name != null){
+      track.setName(name);
+    }
+
+    if(description != null){
+      track.setDescription(description);
+    }
+
+    if( number != null){
+      track.setNumber(number.intValue());
+    }
+
+    if( albumId != null){
+      track.setAlbumId(albumId.intValue());
+    }
+
+    if( lyricId != null){
+      track.setLyricId(lyricId.intValue());
+    }
+
+    if(lengthInSek != null){
+      track.setLength(lengthInSek.intValue());
+    }
+
+    track.update();
+
+
+    track.removeFrom(Author.getStaticInstance(Author.class));
+    if( authors != null){
+      for (int i = 0; i < authors.length; i++) {
+        track.addTo(Author.class,authors[i]);
+      }
+    }
+
+    track.removeFrom(Performer.getStaticInstance(Performer.class));
+    if( performers != null){
+      for (int i = 0; i < performers.length; i++) {
+        track.addTo(Performer.class,performers[i]);
+      }
+    }
+
+    track.removeFrom(Category.getStaticInstance(Category.class));
+    if( categories != null){
+      for (int i = 0; i < categories.length; i++) {
+        track.addTo(Category.class,categories[i]);
+      }
+    }
+
+  }
 
   public static void addLyric(String name, String description, String lyric, Integer trackId, int[] authors) throws SQLException {
     Lyric acLyric = new Lyric();
@@ -155,7 +263,7 @@ public class AlbumCollectionBusiness {
     }
 
     if(lyric != null){
-      acLyric.setLyric(TextSoap.formatText(lyric));
+      acLyric.setLyric(lyric);
     }
 
     acLyric.insert();
@@ -174,6 +282,34 @@ public class AlbumCollectionBusiness {
 
 
   }
+
+  public static void updateLyric(int lyricId, String name, String description, String lyric, int[] authors) throws SQLException {
+    Lyric acLyric = new Lyric(lyricId);
+
+    if( name != null){
+      acLyric.setName(name);
+    }
+
+    if(description != null){
+      acLyric.setDescription(description);
+    }
+
+    if(lyric != null){
+      acLyric.setLyric(lyric);
+    }
+
+    acLyric.update();
+
+    acLyric.removeFrom(Author.getStaticInstance(Author.class));
+    if( authors != null){
+      for (int i = 0; i < authors.length; i++) {
+        acLyric.addTo(Author.class,authors[i]);
+      }
+    }
+
+
+  }
+
 
   public static void addAuthor(String name, String displayName) throws SQLException {
     Author author = new Author();
@@ -233,5 +369,91 @@ public class AlbumCollectionBusiness {
       return null;
     }
   }
+
+  public static List getTracksRelatedToLyric(int lyricId){
+    try {
+      return EntityFinder.findAllByColumn(Track.getStaticInstance(Track.class),Track._COLUMNNAME_LYRIC_ID,lyricId);
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
+  public static void deleteAlbum(int albumId) {
+    try {
+      Album album = new Album(albumId);
+
+      album.removeFrom(Author.getStaticInstance(Author.class));
+      album.removeFrom(Performer.getStaticInstance(Performer.class));
+      album.removeFrom(Category.getStaticInstance(Category.class));
+
+      List tracks = getTracks(album.getID());
+      if(tracks != null){
+        Iterator iter = tracks.iterator();
+        while (iter.hasNext()) {
+          Track item = (Track)iter.next();
+          deleteTrack(item);
+          /**
+           * or
+           * item.setAlbumIdAsNull();
+           * item.update();
+           */
+        }
+      }
+
+      album.delete();
+
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  public static void deleteLyric(int lyricId) {
+    try {
+      Lyric lyric = new Lyric(lyricId);
+
+      lyric.removeFrom(Author.getStaticInstance(Author.class));
+
+      List tracks = getTracksRelatedToLyric(lyric.getID());
+      if(tracks != null){
+        Iterator iter = tracks.iterator();
+        while (iter.hasNext()) {
+          Track item = (Track)iter.next();
+          item.setLyricIdAsNull();
+        }
+      }
+
+      lyric.delete();
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  public static void deleteTrack(int trackId) {
+    try {
+      Track track = new Track(trackId);
+      deleteTrack(track);
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  public static void deleteTrack(Track track) {
+    try {
+
+      track.removeFrom(Author.getStaticInstance(Author.class));
+      track.removeFrom(Performer.getStaticInstance(Performer.class));
+      track.removeFrom(Category.getStaticInstance(Category.class));
+
+      track.delete();
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+  }
+
 
 }

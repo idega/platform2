@@ -23,10 +23,19 @@ import java.util.Iterator;
 public class AlbumList extends Block {
 
   Link albumLinkTemplate;
+  Link updateAlbumLinkTemplate;
+  Link deleteAlbumLinkTemplate;
 
   public AlbumList() {
     albumLinkTemplate = new Link();
     //albumLinkTemplate.setFontColor("#FFFFFF");
+    updateAlbumLinkTemplate = new Link("Breyta");
+    updateAlbumLinkTemplate.setWindowToOpen(com.idega.block.albumcollection.presentation.CreateAlbum.class);
+    updateAlbumLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
+
+    deleteAlbumLinkTemplate = new Link("Eyða");
+    deleteAlbumLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
+    deleteAlbumLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_ALBUM);
   }
 
 
@@ -34,7 +43,7 @@ public class AlbumList extends Block {
     List albumList = AlbumCollectionBusiness.getAlbums();
     this.empty();
     if(albumList != null){
-      Table contentTable = new Table(1,albumList.size()+1);
+      Table contentTable = new Table(3,albumList.size()+1);
       int index = 1;
       Text t = new Text("Titill");
       //t.setFontColor("#FFFFFF");
@@ -46,7 +55,17 @@ public class AlbumList extends Block {
         link.setText(item.getName());
         link.addParameter(AlbumCollectionBusiness._PRM_ALBUM_ID,item.getID());
         link.addParameter(AlbumCollection._PRM_STATE,AlbumCollection._STATE_ALBUMINFO);
-        contentTable.add(link,1,index++);
+        contentTable.add(link,1,index);
+
+        Link update = (Link)updateAlbumLinkTemplate.clone();
+        update.addParameter(AlbumCollectionBusiness._PRM_ALBUM_ID,item.getID());
+        contentTable.add(update,2,index);
+
+        Link delete = (Link)deleteAlbumLinkTemplate.clone();
+        delete.addParameter(DeleteConfirmWindow._PRM_ID,item.getID());
+        contentTable.add(delete,3,index);
+
+        index++;
       }
       this.add(contentTable);
     }

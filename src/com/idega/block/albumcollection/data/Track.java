@@ -87,6 +87,10 @@ public class Track extends GenericEntity {
     this.setColumn(_COLUMNNAME_LYRIC_ID,id);
   }
 
+  public void setLyricIdAsNull() throws SQLException{
+    this.setColumnAsNull(_COLUMNNAME_LYRIC_ID);
+  }
+
   public int getLength(){
     return this.getIntColumnValue(_COLUMNNAME_LENGTH);
   }
