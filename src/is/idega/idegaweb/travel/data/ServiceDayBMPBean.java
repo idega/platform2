@@ -236,9 +236,11 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
         Collection coll = this.idoFindAllIDsByColumnsBySQL(getColumnNameServiceId(),Integer.toString(serviceId),getColumnNameDayOfWeek(),Integer.toString(dayOfWeek));
         
         if (coll != null && !coll.isEmpty()) {
-          returner = true;
-        }else {
-          System.err.println("ServiceDay : getIfDay : Primary Key Error");
+        	if (coll.size() == 1) {
+        		returner = true;
+        	} else {
+          	System.err.println("ServiceDay : getIfDay : Primary Key Error");
+          }
         }
     }catch (FinderException sql) {
       sql.printStackTrace(System.err);
