@@ -37,11 +37,11 @@ public class CommuneCaseBusinessBean extends IBOServiceBean implements CommuneCa
 	public CaseCode[] getUserHiddenCaseCodes(){
 		if(userHiddenCaseCodes==null){
 			try{
-				//userHiddenCaseCodes = new CaseCode[3];
-				userHiddenCaseCodes = new CaseCode[2];	
+				userHiddenCaseCodes = new CaseCode[3];
+				//userHiddenCaseCodes = new CaseCode[2];	
 				userHiddenCaseCodes[0]=getMessageBusiness().getCaseCodePrintedLetterMessage();
 				userHiddenCaseCodes[1]=getMessageBusiness().getCaseCodeUserMessage();
-				//userHiddenCaseCodes[2]=getMessageBusiness().getCaseCodeSystemArchivationMessage();
+				userHiddenCaseCodes[2]=getMessageBusiness().getCaseCodeSystemArchivationMessage();
 			}
 			catch(Exception e){
 				e.printStackTrace();	
