@@ -372,8 +372,8 @@ public class ReportsEditorWindow extends IWAdminWindow {
     if(iSaveCategoryIds != null){
       int count = 0;
       for (int i = 0; i < iSaveCategoryIds.length; i++) {
-        boolean saved = ReportEntityHandler.saveReport(name,info,headers,sql,iSaveCategoryIds[i].intValue());
-        if(saved)
+        Report saved = ReportEntityHandler.saveReport(name,info,headers,sql,iSaveCategoryIds[i].intValue() );
+        if(saved!=null)
           count++;
       }
       if(count > 0 && count == iSaveCategoryIds.length){
@@ -457,8 +457,8 @@ public class ReportsEditorWindow extends IWAdminWindow {
     if(iSaveCategoryIds != null){
       int count = 0;
       for (int i = 0; i < iSaveCategoryIds.length; i++) {
-        boolean saved = ReportEntityHandler.saveReport(name,info,heads,sql,iSaveCategoryIds[i].intValue());
-        if(saved)
+        Report saved = ReportEntityHandler.saveReport(name,info,heads,sql,iSaveCategoryIds[i].intValue());
+        if(saved!=null)
           count++;
       }
       if(count > 0 && count == iSaveCategoryIds.length){
@@ -559,7 +559,7 @@ public class ReportsEditorWindow extends IWAdminWindow {
     int catid = sReportCatId != null?Integer.parseInt(sReportCatId):-1;
     int id = sReportId!=null? Integer.parseInt(sReportId ):-1;
 
-    boolean saved = false;
+    Report saved = null;
     if(sName != null && sName.length() > 1 ){
       if(sSql != null && sHeaders!= null){
         String[] he = str2array(sHeaders,",:;");
@@ -568,14 +568,14 @@ public class ReportsEditorWindow extends IWAdminWindow {
             int iSaveCat = iSaveCategoryIds[i].intValue();
             if(id < 1 && catid != iSaveCat ){
               saved = ReportEntityHandler.saveReport(sName ,sInfo ,he,sSql,iSaveCat);
-              if(saved)
+              if(saved!=null)
                 msg = iwrb.getLocalizedString("report_saved","Report was saved");
               else
                 msg = iwrb.getLocalizedString("report_not_saved","Report was not saved");
             }
             else{
               saved = ReportEntityHandler.updateReport(id,sName ,sInfo ,he,sSql,iSaveCat);
-              if(saved)
+              if(saved!=null)
                 msg = iwrb.getLocalizedString("report_updated","Report was updated");
               else
                 msg = iwrb.getLocalizedString("report_not_updated","Report was not updated");
@@ -589,7 +589,7 @@ public class ReportsEditorWindow extends IWAdminWindow {
     else
       msg = iwrb.getLocalizedString("no_name","No name entered");
 
-    if(saved){
+    if(saved!=null){
       setParentToReload();
       close();
     }

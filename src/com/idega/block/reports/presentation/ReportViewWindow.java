@@ -18,14 +18,14 @@ import com.idega.idegaweb.IWBundle;
  * @version 1.1
  */
 
-public class ReportViewWindow extends IWAdminWindow {
+public class ReportViewWindow extends IWAdminWindow implements Reports{
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.reports";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
-  public static final  String prmCategoryId = ReportSQLEditor.prmCategoryId;
-  public final static String prmReportId = ReportContentViewer.prmReportId;
+  public static final  String prmCategoryId = PRM_CATEGORYID;
+  public final static String prmReportId = PRM_REPORTID;
 
   public ReportViewWindow() {
     setWidth(800);
