@@ -367,10 +367,10 @@ public class HandicapScorecardView extends GolfWindow {
 			Text totalGreensText = getSmallText(total_greens + "/" + statistic.length);
 			Text totalPuttsText = getSmallText(String.valueOf(total_putts));
 
-			if (total_fairway > 0) {
+			if (total_fairway > 0 || total_greens > 0) {
 				infoTable.add(totalFairwayText, 2, 8);
 			}
-			if (total_greens > 0) {
+			if (total_fairway > 0 || total_greens > 0) {
 				infoTable.add(totalGreensText, 2, 9);
 			}
 			if (total_putts > 0) {
