@@ -141,7 +141,11 @@ public class ContractSignWindow extends Window{
 
       int row = 1;
       HiddenInput HI = new HiddenInput("signed_id",String.valueOf(eContract.getID()));
+
       T.add(HI,1,row);
+      if(iwc.isParameterSet(prmAdmin)){
+        T.add(new HiddenInput(prmAdmin,"true"));
+      }
       T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),1,row);
       T.add(Edit.formatText(eApplicant.getFullName()),2,row);
       row++;

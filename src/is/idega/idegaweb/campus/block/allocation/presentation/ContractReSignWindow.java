@@ -125,6 +125,9 @@ public class ContractReSignWindow extends Window{
         if(user !=null){
           T.add(new HiddenInput("contract_id",String.valueOf(eContract.getID())),1,row);
           T.add(new HiddenInput("us_id",String.valueOf(eContract.getUserId().intValue())),1,row);
+          if(iwc.isParameterSet(prmAdmin)){
+            T.add(new HiddenInput(prmAdmin,"true"));
+          }
           T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),1,row);
           T.add(Edit.formatText(user.getName()),2,row);
           row++;
