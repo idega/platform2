@@ -43,6 +43,9 @@ private String height = "60";
 private Link _link;
 private String _target;
 
+private Vector parameterName  = new Vector();
+private Vector parameterValue = new Vector();
+
 private Hashtable dayColors = null;
 private Hashtable dayFontColors = null;
 
@@ -98,12 +101,19 @@ public SmallCalendar(int year,int month) {
       right.setFontSize(2);
       right.setBold();
       right.setFontStyle("font-face: Arial, Helvetica, sans-serif; font-weight: bold; color: "+headerTextColor+"; font-size: 8pt; text-decoration: none;");
+      for (int i = 0; i < parameterName.size(); i++) {
+        right.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+      }
+
     this.addNextMonthPrm(right,stamp);
     Link left = new Link("<");
       left.setFontColor(headerTextColor);
       left.setFontSize(2);
       left.setBold();
       left.setFontStyle("font-face: Arial, Helvetica, sans-serif; font-weight: bold; color: "+headerTextColor+"; font-size: 8pt; text-decoration: none;");
+      for (int i = 0; i < parameterName.size(); i++) {
+        left.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+      }
     this.addLastMonthPrm(left,stamp);
 
     Table T2 = new Table(1,2);
@@ -198,6 +208,9 @@ public SmallCalendar(int year,int month) {
           theLink.addParameter(CalendarBusiness.PARAMETER_YEAR,stamp.getYear());
           theLink.setFontColor(textColor);
           theLink.setFontSize(1);
+          for (int i = 0; i < parameterName.size(); i++) {
+            theLink.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+          }
         T.add(theLink,xpos,ypos);
       }
       else {
@@ -508,6 +521,14 @@ public SmallCalendar(int year,int month) {
     this.stamp = stamp;
   }
 
+  public void addParameterToLink(String name, int value) {
+    addParameterToLink(name, Integer.toString(value));
+  }
+  public void addParameterToLink(String name, String value) {
+    parameterName.add(name);
+    parameterValue.add(value);
+  }
+
   public synchronized Object clone() {
     SmallCalendar obj = null;
     try {
@@ -526,6 +547,12 @@ public SmallCalendar(int year,int month) {
       }
       if (this.dayFontColors != null) {
         obj.dayFontColors = (Hashtable)dayFontColors.clone();
+      }
+      if (this.parameterName != null) {
+        obj.parameterName = (Vector) parameterName.clone();
+      }
+      if (this.parameterValue != null) {
+        obj.parameterValue = (Vector) parameterValue.clone();
       }
 
       obj.cal = this.cal;
