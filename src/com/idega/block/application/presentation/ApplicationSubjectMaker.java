@@ -11,6 +11,7 @@ import com.idega.business.IBOLookup;
 import com.idega.core.builder.presentation.ICPropertyHandler;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -146,7 +147,7 @@ public class ApplicationSubjectMaker extends Block{
     Edit.setStyle(Description);
     DateInput ExpireDate = new DateInput("app_subj_xdate",true);
     ExpireDate.setStyleAttribute("style",Edit.styleAttribute);
-    ExpireDate.setDate(IWTimestamp.RightNow().getSQLDate());
+    ExpireDate.setDate(IWTimestamp.RightNow().getDate());
     TextInput extra = new TextInput("app_subj_extra");
    
     if(subject !=null){
@@ -220,7 +221,7 @@ public class ApplicationSubjectMaker extends Block{
     Integer id = subject !=null?(Integer)subject.getPrimaryKey():new Integer(-1);
     if(sDesc.length() > 0){
      try {
-		 getApplicationService(iwc).storeApplicationSubject(id,sDesc,new IWTimestamp(sDate).getSQLDate(),extra);
+		 getApplicationService(iwc).storeApplicationSubject(id,sDesc,new IWTimestamp(sDate).getDate(),extra);
 	}
 	catch (RemoteException e) {
 		e.printStackTrace();
@@ -232,7 +233,7 @@ public class ApplicationSubjectMaker extends Block{
     isAdmin = iwc.hasEditPermission(this);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-    core = iwc.getIWMainApplication().getBundle( iwc.getIWMainApplication().CORE_BUNDLE_IDENTIFIER );
+    core = iwc.getIWMainApplication().getBundle( IWMainApplication.CORE_BUNDLE_IDENTIFIER );
     control(iwc);
   }
   
