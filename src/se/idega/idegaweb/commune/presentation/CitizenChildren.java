@@ -206,7 +206,7 @@ public class CitizenChildren extends CommuneBlock {
 		/** @todo familymethods from usersystem */
 		MemberFamilyLogic ml = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
 		try {
-			return ml.getChildrenFor(user);
+			return ml.getChildrenInCustodyOf(user);
 		}
 		catch (RemoteException e) {
 		}
