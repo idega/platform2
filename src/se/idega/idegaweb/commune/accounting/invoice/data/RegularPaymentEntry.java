@@ -28,12 +28,14 @@ public interface RegularPaymentEntry extends com.idega.data.IDOEntity{
 	School getProvider(); 
 	String getOwnPosting();
 	String getDoublePostin();
-	Float getAmount();
+	float getAmount();
+	float getVAT();
+	int getVatRegulationID();
 	String getNote();
 	
 	String setFrom(Date from);
 	String setTo(Date to);	
 	String setPlacing(String plascint);
-	String setAmount(Float amount);
+	String setAmount(float amount);
 	String setNote(String note);	
 }
