@@ -14,7 +14,7 @@ import com.idega.presentation.text.*;
 public class LinkGenerator extends TravelWindow {
 
   public static String parameterProductId = "linkGeneratorProductId";
-  private static String http = "http";
+  private static String http = "https";
 
   public LinkGenerator() {
     super.setWidth(600);
@@ -35,17 +35,11 @@ public class LinkGenerator extends TravelWindow {
     add(tLink);
     add(Text.getBreak());
 
-    /*if (iwc.getRequest().isSecure()) {
-      http = "https";
-    }*/
-
     Link lLink = getLink(iwc,Integer.parseInt(productId));
 
     add("&lt;a target=\"_blank\" href=\""+link+"\"&gt;Book&lt;/a&gt;");
-//    add(lLink.getURL());
     add(Text.getBreak());
     add(Text.getBreak());
-//    add("<a target=\"_blank\" href=\""+http+"://"+link+"\">Try link</a>");
     add(lLink);
   }
 
