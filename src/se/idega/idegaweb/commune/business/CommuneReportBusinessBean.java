@@ -649,7 +649,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		hasDeceasedInTimePeriode(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
 		livesInNacka(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
 		hasMovedFromNacka(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
-		hasChanedAddressToHidden(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+		hasChangedAddressToHidden(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
 		
 		
 		return null;
@@ -664,7 +664,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	 * @param lastDateOfConditionInPeriode
 	 * @return Returns time of the event or null if condition is not fulfilled
 	 */
-	private java.util.Date hasChanedAddressToHidden(User usr, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) {
+	private java.util.Date hasChangedAddressToHidden(User usr, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) {
 		// TODO Auto-generated method stub
 		return null;
 	}
