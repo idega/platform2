@@ -3,16 +3,14 @@ package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.school.data.SchoolSeason;
-import com.idega.block.school.data.SchoolSeasonHome;
 import com.idega.business.InputHandler;
-import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
@@ -33,6 +31,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	private Map metaDataMap = null;
 	protected GroupBusiness groupBiz = null;
 	private String displayNameSeperator = ",";
+	private boolean _stringResults = false;
 
 	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
@@ -174,26 +173,41 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 		}
 		return this;
 	}
-
+	
+	public void setResultAsString() {
+		_stringResults = true;
+	}
+	
 	/**
 	 * @return a Collection of Group's
 	 *  
 	 */
 	public Object getResultingObject(String[] values, IWContext iwc) throws Exception {
 		Collection groups = null;
-		if (values != null && values.length > 0) {
-			try {
-				groups = getGroupBusiness(iwc).getGroups(values);
-
+		
+		if(_stringResults) {
+			if (values != null && values.length > 0) {
+				groups = new ArrayList();
+				
+				for(int i=0; i<values.length; i++) {
+					groups.add(values[i]);
+				}
 			}
-			catch (IDOLookupException e) {
-				e.printStackTrace();
-			}
-			catch (FinderException e) {
-				e.printStackTrace();
-			}
-			catch (Exception e) {
-				e.printStackTrace();
+		} else {
+			if (values != null && values.length > 0) {
+				try {
+					groups = getGroupBusiness(iwc).getGroups(values);
+	
+				}
+				catch (IDOLookupException e) {
+					e.printStackTrace();
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
