@@ -463,7 +463,7 @@ public class RunRegistration extends Block {
 
 		t.add(addressText, column, row);
 		if (!isIcelandic) {
-			t.add(redStar, column, row++);
+			t.add(redStar, column, row);
 		}
 		row++;
 		t.setHeight(row++, 3);
@@ -473,7 +473,7 @@ public class RunRegistration extends Block {
 
 		t.add(cityText, column, row);
 		if (!isIcelandic) {
-			t.add(redStar, column, row++);
+			t.add(redStar, column, row);
 		}
 		row++;
 		t.setHeight(row++, 3);
@@ -483,7 +483,7 @@ public class RunRegistration extends Block {
 
 		t.add(postalText, column, row);
 		if (!isIcelandic) {
-			t.add(redStar, column, row++);
+			t.add(redStar, column, row);
 		}
 		row++;
 		t.setHeight(row++, 3);
@@ -493,7 +493,7 @@ public class RunRegistration extends Block {
 
 		t.add(countryText, column, row);
 		if (!isIcelandic) {
-			t.add(redStar, column, row++);
+			t.add(redStar, column, row);
 		}
 		row++;
 		t.setHeight(row++, 3);
@@ -518,7 +518,7 @@ public class RunRegistration extends Block {
 
 		t.add(emailText, column, row);
 		if (!isIcelandic) {
-			t.add(redStar, column, row++);
+			t.add(redStar, column, row);
 		}
 		row++;
 		t.setHeight(row++, 3);
