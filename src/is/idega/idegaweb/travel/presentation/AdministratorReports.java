@@ -22,7 +22,8 @@ import com.idega.util.IWTimestamp;
 public class AdministratorReports extends Reports {
 
   private Supplier _supplier;
-  private List _suppliers;
+  private List _usedSuppliers;
+  private List _allSuppliers;
   protected AdministratorReport _report;
   private static final String PARAMETER_ONLINE_REPORT = OnlineBookingReport.class.toString();//"adRep_or";
   private String PARAMETER_SUPPLIER_ID = "adRep_spID";
@@ -39,12 +40,20 @@ public class AdministratorReports extends Reports {
 
       add(Text.BREAK);
       String _action = iwc.getParameter(ACTION);
-      if (_action == null) {
+      if (_action == null && _report == null) {
         reportList(iwc);
       }else {
         Form form = new Form();
         form.maintainParameter(this.ACTION);
-        form.add(topTable(iwc));
+				if (parametersToMaintain != null && !parametersToMaintain.isEmpty()) {
+					Iterator iter = parametersToMaintain.iterator();
+					Parameter p;
+					while (iter.hasNext()) {
+							p = (Parameter) iter.next();
+								form.addParameter(p.getName(), p.getValue());
+					}
+				}
+				form.add(topTable(iwc));
         form.add(report(iwc));
         form.add(Text.BREAK);
         add(form);
@@ -65,33 +74,36 @@ public class AdministratorReports extends Reports {
 
     String action = iwc.getParameter(ACTION);
     if (action == null) action = "";
-
-    if (action.equals(PARAMETER_ONLINE_REPORT)) {
+    
+    if (action.equals(PARAMETER_ONLINE_REPORT) && _report != null) {
       _report = new OnlineBookingReport(iwc);
     }
 
-    _suppliers = new Vector();
     String suppId = iwc.getParameter(PARAMETER_SUPPLIER_ID);
     if (suppId != null && !suppId.equals("-1")) {
       SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
       _supplier = suppHome.findByPrimaryKey(new Integer(suppId));
-      _suppliers.add(_supplier);
-    }else if (suppId != null && suppId.equals("-1")) {
-      Supplier[] supps = new Supplier[]{};
-      try {
-        supps = com.idega.block.trade.stockroom.data.SupplierBMPBean.getValidSuppliers();
-        for (int i = 0; i < supps.length; i++) {
-          _suppliers.add(supps[i]);
-        }
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.out);
-      }
-
-    }
+      _usedSuppliers = new Vector();
+      _usedSuppliers.add(_supplier);
+    }else { //if (suppId != null && suppId.equals("-1") && _allSuppliers != null) {
+    	_usedSuppliers = _allSuppliers;
+    } /*else {
+			_usedSuppliers = new Vector();
+		  Supplier[] supps = new Supplier[]{};
+		  try {
+				supps = com.idega.block.trade.stockroom.data.SupplierBMPBean.getValidSuppliers();
+				for (int i = 0; i < supps.length; i++) {
+					_usedSuppliers.add(supps[i]);
+				}
+		  }catch (SQLException sql) {
+			sql.printStackTrace(System.out);
+	  }
+    	
+    }*/
 
   }
 
-  protected Table topTable(IWContext iwc) {
+  public Table topTable(IWContext iwc) {
       Table topTable = new Table(5,3);
         topTable.setBorder(0);
         topTable.setWidth("90%");
@@ -101,12 +113,7 @@ public class AdministratorReports extends Reports {
           tframeText.addToText(":");
 
 
-      Supplier[] supps = new Supplier[]{};
-      try {
-        supps = com.idega.block.trade.stockroom.data.SupplierBMPBean.getValidSuppliers();
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.out);
-      }
+      Supplier[] supps = getSuppliers();
       DropdownMenu trip = new DropdownMenu(supps, PARAMETER_SUPPLIER_ID);
 
 //        trip = ProductBusiness.getDropdownMenuWithProducts(iwc, _supplier.getID(), PARAMETER_PRODUCT_ID);
@@ -166,7 +173,21 @@ public class AdministratorReports extends Reports {
   }
 
 
-  protected void reportList(IWContext iwc) throws Exception {
+protected Supplier[] getSuppliers() {
+	if (this._allSuppliers != null) {
+		return (Supplier[]) _allSuppliers.toArray(new Supplier[]{});
+	} else {
+		Supplier[] supps = new Supplier[]{};
+	  try {
+	    supps = com.idega.block.trade.stockroom.data.SupplierBMPBean.getValidSuppliers();
+	  }catch (SQLException sql) {
+	    sql.printStackTrace(System.out);
+	  }
+	  return supps;
+	}
+}
+
+protected void reportList(IWContext iwc) throws Exception {
     Table table = super.getTable();
 
     OnlineBookingReport obr = new OnlineBookingReport(iwc);
@@ -188,7 +209,7 @@ public class AdministratorReports extends Reports {
   }
 
 
-  protected Table report(IWContext iwc) throws Exception{
+  public Table report(IWContext iwc) throws Exception{
     Table table = new Table();
       table.setWidth("90%");
       table.setAlignment("center");
@@ -196,12 +217,19 @@ public class AdministratorReports extends Reports {
 
 
     if (_report.useTwoDates()) {
-      table.add(_report.getAdministratorReport(_suppliers, iwc, _stamp, _toStamp));
+      table.add(_report.getAdministratorReport(_usedSuppliers, iwc, _stamp, _toStamp));
     }else {
-      table.add(_report.getAdministratorReport(_suppliers, iwc, _stamp));
+      table.add(_report.getAdministratorReport(_usedSuppliers, iwc, _stamp));
     }
 
     return table;
   }
-
+  
+  public void setSuppliers(Collection suppliers) {
+  	this._allSuppliers = (Vector) suppliers;
+  }
+  
+  public void setReport(AdministratorReport report) {
+  	this._report = report;
+  }
 }

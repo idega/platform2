@@ -1,23 +1,27 @@
 package is.idega.idegaweb.travel.presentation;
-import com.idega.presentation.ui.DropdownMenu;
+import is.idega.idegaweb.travel.business.BookingComparator;
+import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.interfaces.Booking;
+
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.data.IDOLookup;
-import com.idega.block.trade.stockroom.business.ProductBusiness;
-import java.util.Iterator;
-import com.idega.block.trade.stockroom.data.Supplier;
-import javax.ejb.FinderException;
-import java.rmi.RemoteException;
-import com.idega.presentation.text.Text;
-import com.idega.util.text.TextSoap;
-import com.idega.presentation.text.Link;
-import is.idega.idegaweb.travel.data.GeneralBooking;
-import com.idega.presentation.*;
-import is.idega.idegaweb.travel.business.BookingComparator;
-import is.idega.idegaweb.travel.interfaces.Booking;
-import is.idega.idegaweb.travel.business.Booker;
-import com.idega.util.IWTimestamp;
-import java.util.List;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -31,13 +35,13 @@ import com.idega.idegaweb.IWResourceBundle;
 public class OnlineBookingReport extends TravelManager implements Report, AdministratorReport{
 
   private IWResourceBundle _iwrb;
-  private Supplier _supplier;
-  private String PARAMETER_VIEW_SUPPLIER = AdministratorReports.PARAMETER_SUPPLIER_ID_STATIC;//"obrVS";
+  protected Supplier _supplier;
+  protected String PARAMETER_VIEW_SUPPLIER = AdministratorReports.PARAMETER_SUPPLIER_ID_STATIC;//"obrVS";
   private String PARAMETER_SEARCH_BY = "obrVDB";
   private String PARAMETER_SEARCH_BY_DATE = "obrSBD";
   private String PARAMETER_SEARCH_BY_DATE_OF_BOOKING = "obrSBDB";
-  private boolean isAdminReport = false;
-  private boolean searchByDateOfBooking = false;
+  protected boolean isAdminReport = false;
+  protected boolean searchByDateOfBooking = false;
 
   private String reportWidth = "90%";
 
@@ -87,11 +91,12 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
   public PresentationObject getReport(IWContext iwc, List products, IWTimestamp stamp) throws RemoteException, FinderException {
     if (_supplier != null) {
       Booking[] bookings = new Booking[]{};
-      if (this.searchByDateOfBooking ){
+      bookings = getBookings(iwc, stamp, null, products);
+/*      if (this.searchByDateOfBooking ){
         bookings = getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING}, stamp, null, null, null, true);
       } else {
         bookings = getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING},stamp);
-      }
+      }*/
       return getReport(iwc, bookings);
     } else {
       return super.getLoggedOffTable(iwc);
@@ -99,13 +104,14 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
   }
 
   public PresentationObject getReport(IWContext iwc, List products, IWTimestamp fromStamp, IWTimestamp toStamp) throws RemoteException, FinderException {
-    if (_supplier != null) {
+    if (_supplier != null || super.getTravelSessionManager(iwc).getSearchEngine() != null) {
       Booking[] bookings = new Booking[]{};
-      if (this.searchByDateOfBooking ){
+      bookings = getBookings(iwc, fromStamp, toStamp, products);
+/*      if (this.searchByDateOfBooking ){
         bookings = getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING}, fromStamp, toStamp, null, null, true);
       } else {
         bookings = getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING},fromStamp, toStamp, null, null);
-      }
+      }*/
       return getReport(iwc, bookings);
     } else {
       return super.getLoggedOffTable(iwc);
@@ -187,7 +193,7 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
     return table;
   }
 
-  private Table getAdminReport(IWContext iwc, List suppliers, IWTimestamp fromStamp, IWTimestamp toStamp) throws FinderException, RemoteException{
+  protected Table getAdminReport(IWContext iwc, Collection suppliers, IWTimestamp fromStamp, IWTimestamp toStamp) throws FinderException, RemoteException{
     Table table = super.getTable();
       table.setWidth(reportWidth);
       table.setAlignment(Table.HORIZONTAL_ALIGN_CENTER);
@@ -212,11 +218,7 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
     while (iter.hasNext()) {
       _supplier = (Supplier) iter.next();
       products = getProductBusiness(iwc).getProducts(iwc, _supplier.getID());
-      if (this.searchByDateOfBooking) {
-        bookings = getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING}, fromStamp, toStamp, null, null, true);
-      }else {
-        bookings = getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING}, fromStamp, toStamp, null, null);
-      }
+      bookings = getBookings(iwc, fromStamp, toStamp, products);
 
       iCount = bookings.length;
       price = getBooker(iwc).getBookingPrice(bookings);
@@ -250,7 +252,11 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
     return table;
   }
 
-  private int insertSearchByDropdown(Table table, int row, int noColumns) {
+  protected Booking[] getBookings(IWContext iwc, IWTimestamp fromStamp, IWTimestamp toStamp, List products) throws RemoteException, FinderException {
+    return getBooker(iwc).getBookings(products, new int[] {Booking.BOOKING_TYPE_ID_ONLINE_BOOKING}, fromStamp, toStamp, null, null, searchByDateOfBooking);
+	}
+	
+	private int insertSearchByDropdown(Table table, int row, int noColumns) {
     Text orderByText = super.getHeaderText(_iwrb.getLocalizedString("travel.search_by", "Search by"));
     orderByText.addToText(" : ");
     DropdownMenu searchMenu = new DropdownMenu(PARAMETER_SEARCH_BY);

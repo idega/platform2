@@ -51,6 +51,8 @@ public class Reports extends TravelManager {
   protected static final String PARAMATER_DATE_FROM = "active_from";
   protected static final String PARAMATER_DATE_TO = "active_to";
 
+  protected static List parametersToMaintain = new Vector();
+  
   public Reports() {
   }
 
@@ -60,11 +62,20 @@ public class Reports extends TravelManager {
     add(Text.BREAK);
 
     if (super.isLoggedOn(iwc)) {
-      if (_action == null) {
+      if (_action == null && _report == null) {
         reportList(iwc);
       }else {
         Form form = new Form();
           form.maintainParameter(this.ACTION);
+					if (parametersToMaintain != null && !parametersToMaintain.isEmpty()) {
+			      Iterator iter = parametersToMaintain.iterator();
+			      Parameter p;
+			      while (iter.hasNext()) {
+			      	p = (Parameter) iter.next();
+			      	form.addParameter(p.getName(), p.getValue());
+			      }
+					}
+          
         form.add(topTable(iwc));
         form.add(report(iwc));
         form.add(Text.BREAK);
@@ -113,7 +124,7 @@ public class Reports extends TravelManager {
     _action = iwc.getParameter(this.ACTION);
 
     /** @todo hmmm er haegt ad fordast thetta check her ??? */
-    if (_action != null) {
+    if (_action != null && _report == null) {
       if (_action.equals(PARAMETER_USER_REPORT)) {
         _report = new UserBookingReporter(iwc);
       }else if (_action.equals(PARAMETER_PICKUP_REPORT)) {
@@ -192,7 +203,7 @@ public class Reports extends TravelManager {
   }
 
 
-  protected Table topTable(IWContext iwc) throws RemoteException{
+  public Table topTable(IWContext iwc) throws RemoteException{
       Table topTable = new Table(5,3);
         topTable.setBorder(0);
         topTable.setWidth("90%");
@@ -202,7 +213,11 @@ public class Reports extends TravelManager {
           tframeText.addToText(":");
 
       DropdownMenu trip = null;
+      if (_supplier == null) {
+      	trip = getProductBusiness(iwc).getDropdownMenuWithProducts(iwc, _products, PARAMETER_PRODUCT_ID);
+      } else {
         trip = getProductBusiness(iwc).getDropdownMenuWithProducts(iwc, _supplier.getID(), PARAMETER_PRODUCT_ID);
+      }
         if (_product != null) {
             trip.setSelectedElement(Integer.toString(_product.getID()));
         }
@@ -269,7 +284,7 @@ public class Reports extends TravelManager {
       return topTable;
   }
 
-  protected Table report(IWContext iwc) throws Exception{
+  public Table report(IWContext iwc) throws Exception{
     Table table = new Table();
       table.setWidth("90%");
       table.setAlignment("center");
@@ -291,6 +306,14 @@ public class Reports extends TravelManager {
       form.maintainParameter(ACTION);
       form.maintainParameter(PARAMATER_DATE_FROM);
       form.maintainParameter(PARAMATER_DATE_TO);
+		  if (parametersToMaintain != null && !parametersToMaintain.isEmpty()) {
+				Iterator iter = parametersToMaintain.iterator();
+				Parameter p;
+				while (iter.hasNext()) {
+				  p = (Parameter) iter.next();
+				  form.maintainParameter(p.getName());
+				}
+		  }
     }
     return (Form) _form.clone();
   }
@@ -307,8 +330,29 @@ public class Reports extends TravelManager {
       _link.setToMaintainParameter(ACTION, true);
       _link.setToMaintainParameter(PARAMATER_DATE_FROM, true);
       _link.setToMaintainParameter(PARAMATER_DATE_TO, true);
+		  if (parametersToMaintain != null && !parametersToMaintain.isEmpty()) {
+				Iterator iter = parametersToMaintain.iterator();
+				Parameter p;
+				while (iter.hasNext()) {
+				  p = (Parameter) iter.next();
+				  _link.setToMaintainParameter(p.getName(), true);
+				}
+		  }
     }
     return (Link) _link.clone();
   }
-
+  
+  public void setReport(Report report) {
+  	this._report = report;
+  }
+  
+  public void setProducts(List products) {
+  	this._products = products;
+  }
+  
+  public void maintainParameter(String name, String value) {
+  	Parameter p = new Parameter(name, value);
+  	parametersToMaintain.add(p);
+  }
+  
 }
