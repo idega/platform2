@@ -2,7 +2,6 @@ package com.idega.block.dataquery.data.xml;
 
 import java.util.StringTokenizer;
 
-import com.idega.block.dataquery.data.xml.*;
 import com.idega.xml.XMLElement;
 
 /**
