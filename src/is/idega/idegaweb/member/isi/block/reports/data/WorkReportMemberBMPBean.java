@@ -16,6 +16,7 @@ import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * Description: The list of people that are members in a club/union/league for a particular year<br>
@@ -190,6 +191,51 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 
 		
 		return idoFindIDsBySQL(sql.toString());
+	}
+	
+	private IWTimestamp getYearlyAgeBorderIWTimestamp(int age, int year){
+		IWTimestamp stamp = new IWTimestamp(31,12,year-1);//work reports are for the year before
+		stamp.addYears(-age);
+		
+		return stamp;
+	}
+
+	
+	
+	public int ejbHomeGetCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		IDOQuery sql = idoQuery();
+		IWTimestamp stamp = getYearlyAgeBorderIWTimestamp(age,report.getYearOfReport().intValue());
+		String leagueIDColumnName = league.getEntityDefinition().getPrimaryKeyDefinition().toString();
+		String IDColumnName = getIDColumnName();
+		
+		sql.appendSelectCountFrom(this.getEntityName()).append(" memb, ")
+		.append(getNameOfMiddleTable(this,league)).append(" middle, ")
+		.appendWhere()
+		.appendEquals("memb."+COLUMN_NAME_REPORT_ID, ((Integer)report.getPrimaryKey()).intValue())
+		.appendAnd()
+		.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
+		.appendLessThanOrEqualsSign()
+		.append(stamp.toSQLString())
+		.appendAnd()
+		.append("memb.")
+		.append(IDColumnName)
+		.appendEqualSign()
+		.append("middle.")
+		.append(IDColumnName)
+		.appendAnd()
+		.append("memb.")
+		.append(leagueIDColumnName)
+		.appendEqualSign()
+		.append(league.getPrimaryKey());
+		
+
+		try {
+			return idoGetNumberOfRecords(sql);
+		}
+		catch (IDOException e) {
+			e.printStackTrace();
+			return 0;
+		}
 	}
 	
 
