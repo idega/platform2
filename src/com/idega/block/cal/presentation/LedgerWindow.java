@@ -794,6 +794,11 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		addTitle(iwrb.getLocalizedString("ledgerWindow.ledger","Ledger"),titleFont);
 		
 		form = new Form();
+		form.maintainAllParameters();
+		form.maintainParameter(LEDGER);
+		form.maintainParameter(CalendarParameters.PARAMETER_YEAR);
+		form.maintainParameter(CalendarParameters.PARAMETER_MONTH);
+		form.maintainParameter(CalendarParameters.PARAMETER_DAY);
 		initializeTexts(iwc);
 		initializeFields(iwc);
 		
@@ -821,10 +826,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 			mon = Integer.parseInt(month);
 		}
 		
-		form.maintainParameter(LEDGER);
-		form.maintainParameter(CalendarParameters.PARAMETER_YEAR);
-		form.maintainParameter(CalendarParameters.PARAMETER_MONTH);
-		form.maintainParameter(CalendarParameters.PARAMETER_DAY);
+		
 		
 		try {
 			users = getCalendarBusiness(iwc).getUsersInLedger(ledgerID.intValue());
