@@ -78,6 +78,17 @@ public class Reseller extends GenericEntity {
     return EntityFinder.findRelated(this,Email.getStaticInstance(Email.class));
   }
 
+  public Email getEmail() throws SQLException{
+    Email returner = null;
+    List list = getEmails();
+    if (list != null) {
+      if (list.size() > 0) {
+        returner = (Email) list.get(list.size() -1);
+      }
+    }
+    return returner;
+  }
+
   public void setIsValid(boolean isValid) {
     setColumn(getColumnNameIsValid(), isValid);
   }

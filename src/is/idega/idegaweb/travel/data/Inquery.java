@@ -3,6 +3,7 @@ package is.idega.travel.data;
 import java.sql.*;
 import com.idega.data.*;
 import com.idega.core.data.*;
+import com.idega.block.trade.stockroom.data.Reseller;
 
 /**
  * Title:        IW Travel
@@ -33,6 +34,8 @@ public class Inquery extends GenericEntity{
     addAttribute(getServiceIDColumnName(), "Vara", true, true, Integer.class, "many-to-one", Service.class);
     addAttribute(getNumberOfSeatsColumnName(), "sæti", true, true, Integer.class);
     addAttribute(getBookingIdColumnName(), "bókun", true, true, Integer.class);
+
+    this.addManyToManyRelationShip(Reseller.class);
   }
 
 

@@ -119,7 +119,8 @@ public class ServiceOverview extends TravelManager {
       add(Text.getBreak());
       Form form = new Form();
       Table topTable = this.getTopTable(modinfo);
-        form.add(topTable);
+//        form.add(topTable);
+        form.add(Text.BREAK);
       Table table = new Table();
         table.setBorder(0);
         table.setWidth(1,"150");
@@ -166,7 +167,8 @@ public class ServiceOverview extends TravelManager {
       Supplier supplier = super.getSupplier();
       if (supplier != null) {
         TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
-        Product[] products = tsb.getProducts(supplier.getID(), this.getFromIdegaTimestamp(modinfo), this.getToIdegaTimestamp(modinfo));
+        //Product[] products = tsb.getProducts(supplier.getID(), this.getFromIdegaTimestamp(modinfo), this.getToIdegaTimestamp(modinfo));
+        Product[] products = tsb.getProducts(supplier.getID());
 
         Service service;
         Timeframe timeframe;

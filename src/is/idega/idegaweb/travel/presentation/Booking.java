@@ -209,21 +209,17 @@ public class Booking extends TravelManager {
           }
 
       idegaTimestamp temp = idegaTimestamp.RightNow();
-      DropdownMenu year = new DropdownMenu("year");
+      DropdownMenu year = new DropdownMenu("chosen_year");
           for (int i = 2000; i < ( temp.getYear() +4 ); i++) {
               year.addMenuElement(i,""+i);
           }
 
-          String parYear = modinfo.getParameter("year");
+          String parYear = modinfo.getParameter("chosen_year");
           if (parYear != null) {
               year.setSelectedElement(parYear);
           }else {
               year.setSelectedElement(Integer.toString(temp.getYear()));
           }
-
-      topTable.add(new HiddenInput("month",Integer.toString(stamp.getMonth()) ));
-      topTable.add(new HiddenInput("day",Integer.toString(stamp.getDay())));
-      topTable.add(new HiddenInput("year",Integer.toString(stamp.getYear())));
 
       Text nameText = (Text) theText.clone();
           nameText.setText(iwrb.getLocalizedString("travel.trip_name_lg","Name of trip"));
@@ -238,6 +234,10 @@ public class Booking extends TravelManager {
 
       topTable.setAlignment(5,1,"right");
       topTable.add(new SubmitButton("TEMP-Sækja",this.BookingAction, ""),5,1);
+
+      topTable.add(new HiddenInput("month",Integer.toString(stamp.getMonth()) ));
+      topTable.add(new HiddenInput("day",Integer.toString(stamp.getDay())));
+      topTable.add(new HiddenInput("year",Integer.toString(stamp.getYear())));
 
       return topTable;
   }
@@ -484,7 +484,7 @@ public class Booking extends TravelManager {
           sm.setBackgroundColor(super.backgroundColor);
           sm.setTextColor("WHITE");
           sm.setDaysAsLink(true);
-          sm.showNameOfDays(false);
+          sm.showNameOfDays(true);
           sm.setHeaderTextColor("#666699");
           sm.setHeaderColor(super.textColor);
           sm.setBodyColor("#8484D6");
@@ -969,6 +969,9 @@ public class Booking extends TravelManager {
       String month = modinfo.getParameter("month");
       String day = modinfo.getParameter("day");
 
+      String chYear = modinfo.getParameter("chosen_year");
+      if ((chYear != null) && (year != null)) year = chYear;
+
       if (stamp == null)
 
       try {
@@ -1185,6 +1188,11 @@ public class Booking extends TravelManager {
           inq.setNumberOfSeats(Integer.parseInt(numberOfSeats));
           inq.setBookingId(bookingId);
         inq.insert();
+
+        if (this.reseller != null) {
+          inq.addTo(reseller);
+        }
+
     }catch (SQLException sql) {
       sql.printStackTrace();
     }
@@ -1220,20 +1228,29 @@ public class Booking extends TravelManager {
 
         if (book.booleanValue() == false) {
             responseString.append("Beiðninni er hafnað");
-            sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
-
         }else if (book.booleanValue() == true) {
             responseString.append("Beiðnin er samþykk, búið er að bóka");
-//            is.idega.travel.data.Booking booking = inquery.getBooking();
               booking.setIsValid(true);
             booking.update();
-
-            sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
         }
+
         inquery.setAnswered(true);
         inquery.setAnswerDate(idegaTimestamp.getTimestampRightNow());
         inquery.update();
+
+        Reseller[] resellers = (Reseller[]) inquery.findRelated((Reseller) Reseller.getStaticInstance(Reseller.class));
         tm.commit();
+
+        sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
+        if (resellers != null) {
+          responseString = new StringBuffer();
+          responseString.append("T - Svar við fyrirspurn varðandi "+inquery.getNumberOfSeats()+" sæti fyrir \""+inquery.getName()+"\" í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(modinfo)+"\n");
+          for (int i = 0; i < resellers.length; i++) {
+            if (resellers[i].getEmail() != null)
+            sm.send(supplier.getEmail().getEmailAddress(),resellers[i].getEmail().getEmailAddress(), "","",mailHost,mailSubject,responseString.toString());
+          }
+        }
+
       }catch (Exception e) {
         e.printStackTrace(System.err);
         try {
