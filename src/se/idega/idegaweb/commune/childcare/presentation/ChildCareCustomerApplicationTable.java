@@ -37,7 +37,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.37 2003/05/28 11:34:57 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.38 2003/05/28 11:36:48 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -514,8 +514,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		layoutTbl.add(appTable, 1, 1);
 		layoutTbl.setHeight(2, 12);
 		layoutTbl.add(cancelBtn, 1, 3);
+		layoutTbl.add(Text.getNonBrakingSpace(), 1, 3);
 		layoutTbl.add(submitBtn, 1, 3);
-		layoutTbl.setAlignment(1, 3, "right");
+		layoutTbl.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_RIGHT);
 
 		return "return confirm('" + localize(SUBMIT_ALERT_2) + "')";
 	}
