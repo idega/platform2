@@ -319,7 +319,7 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
 				Iterator iter = coll.iterator();
 				PickupPlace p;
 				while (iter.hasNext()) {
-					p = ppHome.findByPrimaryKey(iter.next());
+					p = (PickupPlace) iter.next();
 					pickupPlaces.addMenuElement(p.getPrimaryKey().toString(), p.getName());
 				}	
 			}
@@ -329,7 +329,7 @@ public class CarRentalDesigner extends TravelManager implements DesignerForm {
 				Iterator iter = coll.iterator();
 				PickupPlace p;
 				while (iter.hasNext()) {
-					p = ppHome.findByPrimaryKey(iter.next());
+					p = (PickupPlace) iter.next();
 					dropoffPlaces.addMenuElement(p.getPrimaryKey().toString(), p.getName());
 				}	
 			}
