@@ -70,7 +70,7 @@ public class AccountTariffer extends Finance {
 
     if(isAdmin){
       accBuiz = (AccountBusiness) IBOLookup.getServiceInstance(iwc,AccountBusiness.class);
-      iCategoryId = Finance.parseCategoryId(iwc);
+//      iCategoryId = Finance.parseCategoryId(iwc);
 
 
       List groups = FinanceFinder.getInstance().listOfTariffGroups(iCategoryId);
