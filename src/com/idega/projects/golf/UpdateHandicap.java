@@ -173,7 +173,7 @@ public class UpdateHandicap {
 
                   scorecard[m].update();
 
-                System.out.print(".");
+                //System.out.print(".");
 
             }
 
