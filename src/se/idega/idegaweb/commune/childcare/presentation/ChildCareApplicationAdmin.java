@@ -17,6 +17,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.Converter;
 import com.idega.user.data.User;
@@ -50,8 +51,12 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	private final static String CHECK_NUMBER = "ccaa_check_number";
 	private final static String ACCEPT = "ccaa_accept";
 
+	private final static String PARAM_PROGNOSIS = "ccaa_prognosis";
+	private final static String PARAM_PRESENTATION = "ccaa_presentation";
 	private final static String PARAM_FORM_CONTRACT = "ccaa_contract";
+	private final static String PARAM_FORM_CONTRACT_CHECK = "ccaa_contract_check";
 	private final static String PARAM_FORM_ASSIGN = "ccaa_assign";
+	private final static String PARAM_FORM_ASSIGN_CHECK = "ccaa_assign_check";
 	
 	private final static String PARAM_WANT_FROM_OK = "ccaa_want_from_ok";
 	private final static String PARAM_CARE_TIME = "ccaa_care_time";
@@ -63,11 +68,15 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	private final static String ERROR_NO_APPLICATIONS = "ccaa_no_applications";
 	private final static String ERROR_UNABLE_TO_CHANGE = "ccaa_unable_to_change_status";
 	private final static String ERROR_MUST_BE_INTEGER	 = "ccaa_must_be_integer";
-
+	private final static String ERROR_UNABLE_TO_ASSIGN_CONTRACT = "ccaa_unable_to_assign_contract";
+	private final static String ERROR_UNABLE_TO_ASSIGN_PLACE = "ccaa_unable_to_assign_place";
+	
 	private final static String EMAIL_PROVIDER_SUBJECT = "cca_provider_email_subject";
 	private final static String EMAIL_PROVIDER_MESSAGE = "cca_provider_email_message";
 	private final static String EMAIL_USER_SUBJECT = "cca_user_email_subject";
 	private final static String EMAIL_USER_MESSAGE = "cca_user_email_message";
+
+	private final static String HIDDEN_PARAM_APPL_COUNT = "ccaa_appl_count";
 	
 	protected User _user = null;
 
@@ -97,15 +106,23 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	}
 
 	private void control(IWContext iwc, int action) {
-		if (action == ACTION_VIEW) {
-			viewList(iwc);	
-		}
-		else if ((action == ACTION_YES) || (action == ACTION_NO)) {
+		if ((action == ACTION_YES) || (action == ACTION_NO)) {
 			boolean done = changeApplication(iwc,action);
 			if (!done)
 				add(getErrorText(localize(ERROR_UNABLE_TO_CHANGE,"Unable to change application status")));
-			viewList(iwc);	
-		}		
+		}
+		else if (action == ACTION_ASSIGN_CONTRACT) {
+			boolean done = assignContract(iwc);
+			if (!done)
+				add(getErrorText(localize(ERROR_UNABLE_TO_ASSIGN_CONTRACT,"Unable to assign a contract to the application")));
+		}	
+		else if (action == ACTION_ASSIGN_PLACE) {
+			boolean done = assignPlace(iwc);
+			if (!done)
+				add(getErrorText(localize(ERROR_UNABLE_TO_ASSIGN_PLACE,"Unable to assign a place to the application")));
+		}	
+
+		viewList(iwc);	
 	}
 
 	private void viewList(IWContext iwc) {
@@ -122,7 +139,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 		
 		if (appl != null) {
 			int row = 1;
-			Table outer = new Table(1,2);
+			Table outer = new Table(1,6);
 			Table data = new Table(10,appl.size()+1);
 			data.setCellspacing(2);
 			data.setCellpadding(4);
@@ -210,8 +227,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 					careTime.setLength(3);
 					data.add(careTime,5,row);
 					
-					CheckBox check = new CheckBox();
-					check.setName(PARAM_WANT_FROM_OK);
+					CheckBox check = new CheckBox(PARAM_WANT_FROM_OK,id);
 					data.add(check,7,row);
 				}
 				else if (prel) {
@@ -221,13 +237,14 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 					careTime.setLength(3);
 					data.add(careTime,5,row);
 					
-					CheckBox check = new CheckBox();
+/*					CheckBox check = new CheckBox();
 					check.setName(PARAM_WANT_FROM_OK);
-					data.add(check,7,row);
+					data.add(check,7,row);*/
 					
-					CheckBox contract = new CheckBox();
-					contract.setName(PARAM_FORM_CONTRACT);
-					data.add(contract,9,row);					
+					CheckBox contract = new CheckBox(PARAM_FORM_CONTRACT_CHECK,id);
+				}
+				else if (kout) {
+					
 				}
 				
 				row++;
@@ -244,6 +261,19 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 			outer.add(Text.getNonBrakingSpace(),1,2);
 			outer.add(assign,1,2);
 			
+			outer.add(getHeader(localize(PARAM_PROGNOSIS,"Prognosis")),1,3);
+			outer.add(getHeader(localize(PARAM_PRESENTATION,"Presentation")),1,5);
+			
+			TextArea prognosis = new TextArea(PARAM_PROGNOSIS,80,5);
+			TextArea presentation = new TextArea(PARAM_PRESENTATION,80,5);
+			prognosis.setMaximumCharacters(1000);
+			presentation.setMaximumCharacters(1000);
+			prognosis.setStyleAttribute(getSmallTextFontStyle());
+			presentation.setStyleAttribute(getSmallTextFontStyle());
+
+			outer.add(prognosis,1,4);
+			outer.add(presentation,1,6);
+			
 			form.add(outer);
 		}
 		else {
@@ -251,6 +281,24 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 		}
 		
 		add(form);		
+	}
+	
+	private boolean assignContract(IWContext iwc) {
+    String[] ids = iwc.getParameterValues(PARAM_FORM_CONTRACT);
+	
+		if (ids != null) {
+			try {
+				return getChildCareBusiness(iwc).assignContractToApplication(ids);
+			}
+			catch (RemoteException e) {
+			}
+		}
+		
+		return false;	
+	}
+	
+	private boolean assignPlace(IWContext iwc) {
+		return true;	
 	}
 	
 	private boolean changeApplication(IWContext iwc, int action) {
@@ -273,9 +321,22 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 			if (id != null) {
 				try {
 					String subject = localize(EMAIL_USER_SUBJECT,"Child care application");
-					String message = localize(EMAIL_USER_MESSAGE,"Your child care application has been accepted.");
+					StringBuffer message = new StringBuffer(localize(EMAIL_USER_MESSAGE,"Your child care application has been accepted."));
+					
+					String prognosis = iwc.getParameter(PARAM_PROGNOSIS);
+					String presentation = iwc.getParameter(PARAM_PRESENTATION);
+					
+					if (prognosis != null) {
+						message.append("\n");
+						message.append(prognosis);	
+					}
 
-					return getChildCareBusiness(iwc).acceptApplication(Integer.parseInt(id),subject,message);
+					if (presentation != null) {
+						message.append("\n");
+						message.append(presentation);	
+					}
+
+					return getChildCareBusiness(iwc).acceptApplication(Integer.parseInt(id),subject,message.toString());
 				}
 				catch (RemoteException e) {
 					e.printStackTrace();
@@ -292,6 +353,12 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 		}
 		else if (iwc.isParameterSet(PARAM_YES)) {
 			return ACTION_YES;
+		}
+		else if (iwc.isParameterSet(PARAM_FORM_CONTRACT)) {
+			return ACTION_ASSIGN_CONTRACT;	
+		}
+		else if (iwc.isParameterSet(PARAM_FORM_ASSIGN)) {
+			return ACTION_ASSIGN_PLACE;	
 		}
 
 		return ACTION_VIEW;	

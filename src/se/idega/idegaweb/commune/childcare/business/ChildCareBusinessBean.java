@@ -9,6 +9,7 @@
  */
 package se.idega.idegaweb.commune.childcare.business;
 
+import com.idega.block.contract.business.ContractBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.business.SchoolBusiness;
@@ -371,4 +372,42 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}
 	}	
+	
+	public boolean assignContractToApplication(int id) {
+		try {
+			ChildCareApplication appl = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).findByPrimaryKey(new Integer(id));
+			/**
+			 * @todo Fix hardcoding of category and add the other parameters to the contract.
+			 */
+			int contractId = ContractBusiness.createContract(2,IWTimestamp.RightNow(),IWTimestamp.RightNow(),"C",null);
+			
+			appl.setContractId(contractId);
+			appl.setCaseStatus(getCaseStatusContract());
+			appl.store();
+		}
+		catch (RemoteException e) {
+		}
+		catch (FinderException e) {
+		}
+		
+		
+//		ContractBusiness
+		
+		return false;	
+	}
+	
+	public boolean assignContractToApplication(String ids[]) {
+		boolean done = true;
+		
+		if (ids != null && ids.length > 0) {
+			for (int i = 0; i < ids.length; i++) {
+				String id = ids[i];
+				done = assignContractToApplication(Integer.parseInt(id));
+				if (!done)
+					return done;	
+			}
+		}
+		
+		return done;	
+	}
 }
