@@ -463,7 +463,11 @@ public class CitizenEditor extends UserEditor {
 				Group communeGroup = communeUserService.getRootCitizenGroup();
 				Integer ID = communeGroup != null ? (Integer) communeGroup.getPrimaryKey() : new Integer(-1);
 				if ( user.getPrimaryGroupID() == ID.intValue() || user.hasRelationTo(communeGroup) ) {
-					return getCommuneBusiness(iwc).getCommuneHome().findDefaultCommune();
+					if (super.showDefaultCommuneOption) {
+						return getCommuneBusiness(iwc).getCommuneHome().findDefaultCommune();
+					} else {
+						return null;
+					}
 				}
 			}
 		}catch (Exception e) {
