@@ -322,6 +322,7 @@ public class UserSearcher extends Block {
 		if (showPersonalIDInSearch) {
 			Text tPersonalID = new Text(iwrb.getLocalizedString(SEARCH_PERSONAL_ID, "Personal ID"));
 			tPersonalID.setStyleClass(headerFontStyleName);
+			tPersonalID.setStyleAttribute(headerFontStyle);			
 			searchTable.add(tPersonalID, col, row);
 			TextInput input = new TextInput(SEARCH_PERSONAL_ID + uniqueIdentifier);
 			input.setStyleClass(interfaceStyleName);
@@ -338,6 +339,7 @@ public class UserSearcher extends Block {
 		if (showLastNameInSearch) {
 			Text tLastName = new Text(iwrb.getLocalizedString(SEARCH_LAST_NAME, "Last name"));
 			tLastName.setStyleClass(headerFontStyleName);
+			tLastName.setStyleAttribute(headerFontStyle);			
 			searchTable.add(tLastName, col, row);
 			TextInput input = new TextInput(SEARCH_LAST_NAME + uniqueIdentifier);
 			input.setStyleClass(interfaceStyleName);
@@ -354,6 +356,8 @@ public class UserSearcher extends Block {
 		if (showMiddleNameInSearch) {
 			Text tMiddleName = new Text(iwrb.getLocalizedString(SEARCH_MIDDLE_NAME, "Middle name"));
 			tMiddleName.setStyleClass(headerFontStyleName);
+			tMiddleName.setStyleAttribute(headerFontStyle);
+			
 			searchTable.add(tMiddleName, col, row);
 			TextInput input = new TextInput(SEARCH_MIDDLE_NAME + uniqueIdentifier);
 			input.setStyleClass(interfaceStyleName);
@@ -370,6 +374,7 @@ public class UserSearcher extends Block {
 		if (showFirstNameInSearch) {
 			Text tFirstName = new Text(iwrb.getLocalizedString(SEARCH_FIRST_NAME, "First name"));
 			tFirstName.setStyleClass(headerFontStyleName);
+			tFirstName.setStyleAttribute(headerFontStyle);
 			searchTable.add(tFirstName, col, row);
 			TextInput input = new TextInput(SEARCH_FIRST_NAME + uniqueIdentifier);
 			input.setStyleClass(interfaceStyleName);
