@@ -222,13 +222,11 @@ public class FieldOverview extends GolfBlock {
 		handicapTables.setWindowToOpen(HandicapTable.class);
 		formTable.add(handicapTables, 2, 1);
 
-		if (gameHandicapPage != null) {
-		  GenericButton gameHandicaps = new GenericButton("game_handicap", getResourceBundle().getLocalizedString("field.game_handicap", "Game handicap"));
-			gameHandicaps.addParameterToPage("field_id", field_id);
-			gameHandicaps.setPageToOpen(gameHandicapPage);
-			formTable.add(Text.getNonBrakingSpace(), 2, 1);
-			formTable.add(gameHandicaps, 2, 1);
-		}
+	  GenericButton gameHandicaps = new GenericButton("game_handicap", getResourceBundle().getLocalizedString("field.game_handicap", "Game handicap"));
+		gameHandicaps.addParameterToWindow("field_id", field_id);
+		gameHandicaps.setWindowToOpen(FieldHandicapCalculator.class);
+		formTable.add(Text.getNonBrakingSpace(), 2, 1);
+		formTable.add(gameHandicaps, 2, 1);
 		
 		contentTable.setHeight(row, 40);
 		contentTable.add(formTable, 1, row++);
@@ -267,7 +265,6 @@ public class FieldOverview extends GolfBlock {
 				hole_text[0].store();
 			}
 			fieldText = new TextReader(hole_text[0].getTextID());
-			fieldText.displayHeadline(false);
 			fieldText.setEnableDelete(false);
 			fieldText.setCacheable(false);
 		}
@@ -385,7 +382,6 @@ public class FieldOverview extends GolfBlock {
 				hole_text[0].store();
 			}
 			fieldText = new TextReader(hole_text[0].getTextID());
-			fieldText.displayHeadline(false);
 			fieldText.setEnableDelete(false);
 			fieldText.setCacheable(false);
 			outerTable.add(fieldText, 1, row);
