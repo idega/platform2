@@ -38,7 +38,6 @@ public class GolfCardPage extends GolfMainJSPModulePage{
     Image dot = new Image("/pics/golfcard/punktalina.gif","",3,3);
       leftTable.setBackgroundImage(2,1,dot);
 
-    leftTable.add("<br>",1,1);
     leftTable.add(getLinks(),1,1);
 
     return leftTable;
@@ -163,10 +162,15 @@ public class GolfCardPage extends GolfMainJSPModulePage{
         apply.setFontSize(1);
 
       Link offersLink = new Link(offers,"/card/text.jsp");
+        offersLink.addParameter("text_id",727);
       Link termsLink = new Link(terms,"/card/text.jsp");
+        termsLink.addParameter("text_id",728);
       Link discountsLink = new Link(discounts,"/card/text.jsp");
+        discountsLink.addParameter("text_id",729);
       Link insuranceLink = new Link(insurance,"/card/text.jsp");
+        insuranceLink.addParameter("text_id",730);
       Link infoLink = new Link(info,"/card/text.jsp");
+        infoLink.addParameter("text_id",731);
       Link applyLink = new Link(apply,"http://www.europay.is");
         applyLink.setTarget("_blank");
 
