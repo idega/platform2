@@ -248,11 +248,11 @@ public class RunBMPBean extends GenericEntity implements Run {
 		setColumn(getColumnNameRunGroupGroupID(), runGroupGroupID);
 	}
 
-	public void setRunTime(double runTime) {
+	public void setRunTime(int runTime) {
 		setColumn(getColumnNameRunTime(), runTime);
 	}
 
-	public void setChipTime(double chipTime) {
+	public void setChipTime(int chipTime) {
 		setColumn(getColumnNameChipTime(), chipTime);
 	}
 	
