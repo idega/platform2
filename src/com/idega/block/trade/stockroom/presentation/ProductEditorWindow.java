@@ -320,6 +320,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 				ICCategory element = (ICCategory) iter.next();
 				metaData.putAll(getCategoryService(iwc).getInheritedMetaData(element.getMetaDataAttributes(), element));
 				metaDataTypes.putAll(getCategoryService(iwc).getInheritedMetaDataTypes(element.getMetaDataTypes(), element));
+				super.addHiddenInput(new HiddenInput(PARAMETER_CATEGORY_ID, element.getPrimaryKey().toString()));
 			}
 
 			Iterator iterator = metaData.keySet().iterator();

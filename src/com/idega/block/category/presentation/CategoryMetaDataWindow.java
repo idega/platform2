@@ -155,7 +155,7 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 				column = 1;
 				String key = (String) iter.next();
 				String value = (String) superMetaData.get(key);
-				String locName = categoryBlockResourceBundle.getLocalizedString(METADATA + key, key);
+				String locName = categoryBlockResourceBundle.getLocalizedString(METADATA + key);
 				
 				table.setAlignment(column, row, Table.HORIZONTAL_ALIGN_CENTER);
 				table.add(deleteMetadata, column++, row);
@@ -174,7 +174,7 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 				column = 1;
 				String key = (String) iter.next();
 				String value = (String) metaData.get(key);
-				String locName = categoryBlockResourceBundle.getLocalizedString(METADATA + key, key);
+				String locName = categoryBlockResourceBundle.getLocalizedString(METADATA + key);
 				deleteMetadata = new CheckBox(PARAMETER_DELETE, key);
 				
 				if (_metaData != null && _metaData.equals(key)) {
@@ -279,6 +279,9 @@ public class CategoryMetaDataWindow extends IWAdminWindow {
 			
 			if (key != null && iwc.isParameterSet(PARAMETER_LOCALIZED_NAME)) {
 				categoryBlockResourceBundle.setLocalizedString(METADATA + key, iwc.getParameter(PARAMETER_LOCALIZED_NAME));
+				if (updateName != null && !updateName.equals(key)) {
+					categoryBlockResourceBundle.removeString( updateName );
+				}
 			}
 			
 			if (iwc.isParameterSet(PARAMETER_DELETE)) {

@@ -215,6 +215,7 @@ public class CategoryWindow extends IWAdminWindow {
 		newLink.addParameter(prmCategoryId, -1);
 		newLink.addParameter(prmObjInstId, iObjectInstanceId);
 		newLink.addParameter(actForm, "true");
+		newLink.maintainParameter(prmBundleIdentifier, iwc);
 		/** @todo  permission handling */
 		//List L = CategoryFinder.getInstance().listOfCategories(sType);
 		Collection L = null;
@@ -236,6 +237,8 @@ public class CategoryWindow extends IWAdminWindow {
 		DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(prmLocale);
 	    LocaleDrop.setToSubmit();
 	    LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
+	    
+	    addHiddenInput(new HiddenInput(prmBundleIdentifier, iwc.getParameter(prmBundleIdentifier)));
 	    T.add(LocaleDrop,1,row);
 	    T.mergeCells(1,row,3,row);
 	    row++;
@@ -428,7 +431,7 @@ public class CategoryWindow extends IWAdminWindow {
 		L.addParameter(prmCategoryType, sType);
 		L.addParameter(prmObjInstId, String.valueOf(iObjectInstanceId));
 		L.addParameter(prmLocale,String.valueOf(iLocaleId));
-
+		L.addParameter(prmBundleIdentifier, bundleIdentifier);
 	}
 	/**
 	 * @deprecated

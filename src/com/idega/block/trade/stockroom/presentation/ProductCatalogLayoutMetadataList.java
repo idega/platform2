@@ -15,6 +15,7 @@ import com.idega.block.trade.stockroom.business.ProductEditorBusiness;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.business.IBOLookup;
 import com.idega.core.file.data.ICFile;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
@@ -32,8 +33,18 @@ import com.idega.presentation.ui.Window;
 public class ProductCatalogLayoutMetadataList extends AbstractProductCatalogLayout {
 
 	private static final String METADATA = "metadata_";
+	private Locale defaultLocale = null;
+	private Locale locale = null;
+	private int defaultLocaleID = -1;
+	private int localeID = -1;
 	
 	public PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) throws RemoteException, FinderException {
+		localeID = iwc.getCurrentLocaleId();
+		locale = iwc.getCurrentLocale();
+		defaultLocale = iwc.getIWMainApplication().getSettings().getDefaultLocale();
+		defaultLocaleID = ICLocaleBusiness.getLocaleId(defaultLocale);
+		
+
 		Table table = new Table();
 		table.setWidth("100%");
 		table.setCellspacing(1);
@@ -79,18 +90,29 @@ public class ProductCatalogLayoutMetadataList extends AbstractProductCatalogLayo
 		Product product;
 		String key;
 		String meta;
-		Locale locale = iwc.getCurrentLocale();
+		Locale localeInUse;
+		int localeIDinUse;
 		while ( iter.hasNext() ) {
 			++row;
 			product = (Product) iter.next();
+			
+			
+			if ("".equals(product.getProductName(localeID))) {
+				localeInUse = defaultLocale;
+				localeIDinUse = defaultLocaleID;
+			} else {
+				localeInUse = locale;
+				localeIDinUse = localeID;
+			}
+			
 			if (productCatalog.hasEditPermission()) {
 				table.add(productCatalog.getProductEditorLink(product), 1, row);
 			}
-			table.add(productCatalog.getNamePresentationObject(product), 1, row);
+			table.add(productCatalog.getNamePresentationObject(product, product.getProductName(localeIDinUse), false), 1, row);
 			for (int i = 0; i < metadata.length; i++) {
 				key = metadata[i];
 				if (key != null) {
-					meta = product.getMetaData(METADATA + key + "_" + locale.toString());
+					meta = product.getMetaData(METADATA + key + "_" + localeInUse.toString());
 					if (meta != null) {
 						table.add(productCatalog.getText(meta), i, row);
 					}
