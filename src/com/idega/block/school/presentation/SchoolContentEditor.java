@@ -203,7 +203,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 		
 		SelectorUtility util = new SelectorUtility();
 		DropdownMenu manType = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SCHOOL_MANAGEMENT_TYPE), getSchoolBusiness(iwc).getSchoolManagementTypes(), "getLocalizedKey", _iwrb);
-
+		
 		TextInput phone = new TextInput(PARAMETER_SCHOOL_PHONE);
 		TextInput fax = new TextInput(PARAMETER_SCHOOL_FAX);
 		TextInput email = new TextInput(PARAMETER_SCHOOL_EMAIL);
