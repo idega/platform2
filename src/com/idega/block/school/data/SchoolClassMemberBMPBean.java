@@ -175,7 +175,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
   public Collection ejbFindAllBySeasonAndMaximumAge(int seasonID,int maxAge)throws FinderException,RemoteException{
         final StringBuffer sql = new StringBuffer ();
         sql.append ("select student.*");
-        sql.append (" from sch_school_sch_school_year school,sch_school_year schoolyear, sch_school_class class, " + getTableName () + "student");
+        sql.append (" from sch_school_sch_school_year school,sch_school_year schoolyear, sch_school_class class, " + getTableName () + " student");
         sql.append (" where school.sch_school_year_id = schoolyear.sch_school_year_id");
         sql.append (" and class.sch_school_year_id = school.sch_school_year_id");
         sql.append (" and class.school_id = school.sch_school_id");
