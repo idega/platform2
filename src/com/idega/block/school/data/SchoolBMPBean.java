@@ -587,7 +587,7 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	}
 
 	public Collection ejbFindAllByAreaAndTypes(int area, Collection types) throws javax.ejb.FinderException {
-		StringBuffer sql = new StringBuffer("select s.* ");
+		StringBuffer sql = new StringBuffer("select distinct s.* ");
 		sql.append(" from sch_school_area a, sch_school s, sch_school_type t, sch_school_sch_school_type m ");
 		sql.append(" where a.sch_school_area_id = s.sch_school_area_id ");
 		sql.append(" and t.sch_school_type_id = m.sch_school_type_id ");
