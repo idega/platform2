@@ -929,7 +929,11 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			printedLetterDocs.add(String.valueOf(count));
 			printedLetterDocs.add(msg.getCreated().toString());
 			//messageList.add("-");
-			printedLetterDocs.add(msg.getOwner().getName());
+			if (msg.getOwner() != null) {
+				printedLetterDocs.add(msg.getOwner().getName());
+			} else {
+				printedLetterDocs.add("-");
+			}
 			printedLetterDocs.add(msg.getSubject());
 			int fileID = msg.getMessageDataFileID();
 			Link viewLink = new Link(String.valueOf(fileID));
