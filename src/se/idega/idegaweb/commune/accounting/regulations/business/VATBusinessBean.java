@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.21 2004/01/13 12:33:41 roar Exp $
+ * $Id: VATBusinessBean.java,v 1.22 2004/02/06 13:56:47 tryggvil Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -22,6 +22,7 @@ import com.idega.util.IWTimestamp;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.block.school.data.SchoolManagementTypeBMPBean;
 import com.idega.business.IBOLookupException;
 
 import se.idega.idegaweb.commune.accounting.regulations.data.Condition;
@@ -33,10 +34,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 /**
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2004/01/13 12:33:41 $ by $Author: roar $
+ * Last modified: $Date: 2004/02/06 13:56:47 $ by $Author: tryggvil $
  * 
  * @author Anders Lindman
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness {
 
@@ -526,20 +527,19 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	 * only applicable to privately run schools.
 	 */
 	public boolean isSchoolVATEligible(School school) {
-		/*String manType = (String) school.getManagementType().getPrimaryKey();
-		if (manType.equals(SchoolManagementTypeBMPBean.TYPE_PRIVATE)
-			|| manType.equals(SchoolManagementTypeBMPBean.TYPE_COMPANY)
-			|| manType.equals(SchoolManagementTypeBMPBean.TYPE_FOUNDATION)) {
-			return true;
+		String manType = (String) school.getManagementType().getPrimaryKey();
+		if (manType.equals(SchoolManagementTypeBMPBean.TYPE_COMMUNE)
+			|| manType.equals(SchoolManagementTypeBMPBean.TYPE_COUNTY_COUNCIL)
+			|| manType.equals(SchoolManagementTypeBMPBean.TYPE_GOVERNMENT)) {
+			return false;
 		}
-		return false;
-		*/
-		Provider provider = new Provider(school);
+		return true;
+		/*Provider provider = new Provider(school);
 		//TODO: TL do this more cleanly:
 		int provTypeId = provider.getProviderTypeId();
 		if(provTypeId==2){
 			return true;
 		}
-		return false;
+		return false;*/
 	}
 }
