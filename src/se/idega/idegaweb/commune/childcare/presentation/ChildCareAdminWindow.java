@@ -245,6 +245,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private boolean _showEmploymentDrop = true;
 
 	private boolean _showPreSchool = true;
+	
+	private boolean _showParental = true;
 
 	// private IWTimestamp earliestDate;
 
@@ -1116,18 +1118,21 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			if (canCancel) {
 				if (application.getApplicationStatus() == getBusiness().getStatusReady() || application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
 					if (application.getApplicationStatus() == getBusiness().getStatusReady()) {
-						RadioButton parentalLeave = this.getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(true));
-						parentalLeave.keepStatusOnAction(true);
-						RadioButton other = getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(false));
-						other.keepStatusOnAction(true);
-						other.setSelected(true);
-	
-						table.add(getSmallHeader(localize("child_care.enter_cancel_information", "Enter cancel information:")), 1, row++);
-						table.add(parentalLeave, 1, row);
-						table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_parental_leave", "Cancel because of parental leave")), 1, row);
-						table.add(new Break(), 1, row);
-						table.add(other, 1, row);
-						table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_other", "Other reason")), 1, row++);
+						if(_showParental){
+							RadioButton parentalLeave = this.getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(true));
+							parentalLeave.keepStatusOnAction(true);
+							RadioButton other = getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(false));
+							other.keepStatusOnAction(true);
+							other.setSelected(true);
+							
+							table.add(getSmallHeader(localize("child_care.enter_cancel_information", "Enter cancel information:")), 1, row++);
+							table.add(parentalLeave, 1, row);
+							table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_parental_leave", "Cancel because of parental leave")), 1, row);
+							table.add(new Break(), 1, row);
+							table.add(other, 1, row);
+							table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_other", "Other reason")), 1, row++);
+						}
+						
 					}
 					
 					IWTimestamp stampNow = new IWTimestamp();
@@ -1597,31 +1602,31 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		calendar.addDays(-1);
 		fromDate.setEarliestPossibleDate(calendar.getDate(), localize("ccecw_date_alert", "Date must be not earlier than two months from today."));
 		layoutTbl.add(fromDate, 2, row++);
+		if (_showParental){
+			RadioButton parentalLeave = this.getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(true));
+			parentalLeave.keepStatusOnAction(true);
+			RadioButton other = getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(false));
+			other.keepStatusOnAction(true);
+			other.setSelected(true);
 
-		RadioButton parentalLeave = this.getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(true));
-		parentalLeave.keepStatusOnAction(true);
-		RadioButton other = getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(false));
-		other.keepStatusOnAction(true);
-		other.setSelected(true);
-
-		layoutTbl.mergeCells(1, row, 2, row);
-		layoutTbl.add(getSmallHeader(localize("child_care.enter_cancel_information", "Enter cancel information:")), 1, row++);
-		layoutTbl.mergeCells(1, row, 2, row);
-		layoutTbl.add(parentalLeave, 1, row);
-		layoutTbl.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_parental_leave", "Cancel because of parental leave")), 1, row);
-		layoutTbl.add(new Break(), 1, row);
-		layoutTbl.add(other, 1, row);
-		layoutTbl.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_other", "Other reason")), 1, row++);
-
-		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_REJECT_MESSAGE));
-		textArea.setWidth(Table.HUNDRED_PERCENT);
-		textArea.setRows(7);
-
-		layoutTbl.mergeCells(1, row, 2, row);
-		layoutTbl.add(getSmallHeader(localize("child_care.cancel_message_info", "Message")), 1, row);
-		layoutTbl.add(new Break(), 1, row);
-		layoutTbl.add(textArea, 1, row++);
-
+			layoutTbl.mergeCells(1, row, 2, row);
+			layoutTbl.add(getSmallHeader(localize("child_care.enter_cancel_information", "Enter cancel information:")), 1, row++);
+			layoutTbl.mergeCells(1, row, 2, row);
+			layoutTbl.add(parentalLeave, 1, row);
+			layoutTbl.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_parental_leave", "Cancel because of parental leave")), 1, row);
+			layoutTbl.add(new Break(), 1, row);
+			layoutTbl.add(other, 1, row);
+			layoutTbl.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_other", "Other reason")), 1, row++);
+	
+			TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_REJECT_MESSAGE));
+			textArea.setWidth(Table.HUNDRED_PERCENT);
+			textArea.setRows(7);
+	
+			layoutTbl.mergeCells(1, row, 2, row);
+			layoutTbl.add(getSmallHeader(localize("child_care.cancel_message_info", "Message")), 1, row);
+			layoutTbl.add(new Break(), 1, row);
+			layoutTbl.add(textArea, 1, row++);
+		}
 		SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("cc_ok", "Submit"), PARAMETER_ACTION, String.valueOf(ACTION_END_CONTRACT)));
 		form.setToDisableOnSubmit(submit, true);
 		layoutTbl.add(submit, 1, row);
@@ -1938,6 +1943,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			_showEmploymentDrop = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_EMPLOYMENT_DROP)).booleanValue();
 		if (iwc.isParameterSet(PARAMETER_SHOW_PRE_SCHOOL))
 			_showPreSchool = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_PRE_SCHOOL)).booleanValue();
+		if (iwc.isParameterSet(PARAMETER_SHOW_PARENTAL))
+			_showParental = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_PARENTAL)).booleanValue();
+		
+		
 	}
 
 	private void alterCareTime(IWContext iwc) throws RemoteException {
