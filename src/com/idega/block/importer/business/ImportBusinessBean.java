@@ -10,7 +10,7 @@ import com.idega.block.importer.data.*;
 import com.idega.business.IBOServiceBean;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
-import com.sun.tools.javac.v8.code.ClassWriter;
+
 
 /**
  * <p>Title: IdegaWeb classes</p>
