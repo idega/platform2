@@ -346,23 +346,40 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     }
     
 
-    // first phone and second phone
-    Collection phones = clubDivision.getPhones();
-    Iterator phoneIterator = phones.iterator();
-    int index = 0;
-    while (phoneIterator.hasNext() && index < 2) {
-      Phone phone = (Phone) phoneIterator.next();
-      String phoneNumber = phone.getNumber();
-      if ( index == 0)  {
-        // first phone
-        workReportDivisionBoard.setFirstPhone(phoneNumber);
+    // home phone
+    try {
+      Phone homePhone = groupBusiness.getGroupPhone(clubDivision, PhoneType.HOME_PHONE_ID);
+      if (homePhone != null) {
+        String number = homePhone.getNumber();
+        if (number != null)   {
+          workReportDivisionBoard.setFirstPhone(number);
+        }
       }
-      else if ( index == 1)  {
-        // second phone
-        workReportDivisionBoard.setSecondPhone(phoneNumber);
+    }      
+    catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportBusiness]: Can't retrieve home phone. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve home phone.");
+    }  
+    // work phone
+    try {
+      Phone workPhone = groupBusiness.getGroupPhone(clubDivision, PhoneType.WORK_PHONE_ID);
+      if (workPhone != null) {
+        String number = workPhone.getNumber();
+        if (number != null)   {
+          workReportDivisionBoard.setSecondPhone(number);
+        }
       }
-      index++;
-    }
+    }      
+    catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportBusiness]: Can't retrieve work phone. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve work phone.");
+    }  
     // fax
     try {
       Phone fax = groupBusiness.getGroupPhone(clubDivision, PhoneType.FAX_NUMBER_ID);
@@ -375,10 +392,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     }      
     catch (RemoteException ex) {
       System.err.println(
-        "[WorkReportBusiness]: Can't retrieve Address. Message is: "
+        "[WorkReportBusiness]: Can't retrieve fax phone. Message is: "
           + ex.getMessage());
       ex.printStackTrace(System.err);
-      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve Address.");
+      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve fax phone.");
     }  
     // email
     String eMail = workReportDivisionBoard.getEmail();
