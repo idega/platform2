@@ -24,6 +24,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Paragraph;
+import com.idega.presentation.text.Strong;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CloseButton;
@@ -289,49 +290,85 @@ public class RegisterTime extends GolfBlock {
                 max++;
                 lines[j] = getTime(Line, myGolfField);
                 groupNums[j] = Line;
-
               }
-
-
 
               Text timeText = new Text(localize("start.time", "Time"));
               //new Label(this.localize("start.social_nr","Social nr."),);
 
-
-
               String unionAbbrevation = null;
-              
+
               if(memberAvailable){
                 unionAbbrevation = member.getMainUnion().getAbbrevation();
               }
               
-              Table myTable = new Table();
-              int topRows = 0;
-              
-              int i = 1;
-              for ( ;i < skraMarga+1 ; i++)
-              {
-              	FieldSet set = new FieldSet(lines[i-1]+" - " +i);
-              	set.add(new HiddenInput("group_num",Integer.toString(groupNums[i-1])));
-              	set.add(Text.getBreak());
-              	InterfaceObject ob;
-                  if(i == 1 && memberAvailable){
-                  	ob = insertEditBox("secure_num", member.getSocialSecurityNumber());
-                  }else{
-                  	ob = insertEditBox("secure_num", myForm);
-                  }
-                  Label label = new Label(localize("start.social_nr","Social nr."),ob);
-                  set.add(label);
-                  set.add(Text.getBreak());
-                  set.add(ob);
-                  
-                  myTable.add(set,1,i+topRows);
+              if(false){
+	              Table myTable = new Table();
+	              int topRows = 0;
+	
+	              int i = 1;
+	              for ( ;i < skraMarga+1 ; i++)
+	              {
+	              	FieldSet set = new FieldSet(lines[i-1]+" - " +i);
+	              	set.add(new HiddenInput("group_num",Integer.toString(groupNums[i-1])));
+	              	set.add(Text.getBreak());
+	              	InterfaceObject ob;
+	                  if(i == 1 && memberAvailable){
+	                  	ob = insertEditBox("secure_num", member.getSocialSecurityNumber());
+	                  }else{
+	                  	ob = insertEditBox("secure_num", myForm);
+	                  }
+	                  Label label = new Label(localize("start.social_nr","Social nr."),ob);
+	                  set.add(label);
+	                  set.add(Text.getBreak());
+	                  set.add(ob);
+	                  
+	                  myTable.add(set,1,i+topRows);
+	              }
+	
+	              myTable.add(new SubmitButton(localize("start.reserve","Reserve")),1, i+topRows);
+	              frameTable.empty();
+	              frameTable.add(myTable);
+              } else {
+              	
+              	this.empty();
+              	
+              	
+              	Paragraph message = new Paragraph();
+              	
+              	String sMessage = localize("start.are_you_sure_you_want_to_reserve_this_teetime","Are you sure you want to reserve teetime at");
+              	sMessage += " "+lines[0]+" "+(new IWTimestamp(Date)).getDateString("EEE d MMM", modinfo.getCurrentLocale())+" ";
+              	//sMessage += localize("start.at_the_field","at the field")+....;
+              	sMessage += "?";
+				
+              	message.add(new Text(sMessage));
+              	
+              	add(message);
+              	
+              	Paragraph links = new Paragraph();
+              	
+              	Link yes = new Link(localize("start.reserve","Reserve"));
+              	yes.maintainParameter("secure_num",modinfo);
+              	yes.maintainParameter("line",modinfo);
+              	yes.maintainParameter("date",modinfo);
+              	yes.maintainParameter("field_id",modinfo);
+              	yes.maintainParameter("union_id",modinfo);
+              	yes.maintainParameter(PRM_LOCKED_AS_WML_LAYOUT,modinfo);
+              	yes.maintainParameter(PRM_BACK_PAGE,modinfo);
+              	
+              	yes.addParameter("secure_num",member.getSocialSecurityNumber());
+              	yes.addParameter("group_num",Integer.toString(groupNums[0]));
+              	
+              	Strong y = new Strong();
+              	y.add(yes);
+              	links.add(y);
+              	
+          		BackButton cancel = new BackButton(localize("start.cancel","Cancel"));
+              	links.add(new Text(" | "));
+              	Strong s = new Strong();
+              	s.add(cancel);
+              	links.add(s);
+              	add(links);
               }
-
-              myTable.add(new SubmitButton(localize("start.reserve","Reserve")),1, i+topRows);
-              frameTable.empty();
-              frameTable.add(myTable);
-
             }
             catch (SQLException E) {
                     E.printStackTrace();
@@ -439,6 +476,16 @@ public class RegisterTime extends GolfBlock {
             	
             
             if(legal.size() > 0){
+            	 if(lockedAsWapLayout || modinfo.isClientHandheld()){    
+            	 	Text myText = (Text)templText.clone();
+                    myText.setText(localize("start.you_have_been_registered","You have been registered"));
+
+            	 	Paragraph p = new Paragraph();
+	             p.add(myText);
+	             frameTable.add(p);
+	             
+            	 } else {
+            	
                 Text myText = (Text)templText.clone();
                 myText.setText(localize("start.the_following_where_registered","The following where registered:"));
 
@@ -469,7 +516,7 @@ public class RegisterTime extends GolfBlock {
                 p.add(Text.getBreak());
                 p.add(tempTable);
                 frameTable.add(p);
-
+            	 }
 //                frameTable.add(Text.getBreak());
 //                frameTable.add(Text.getBreak());
 //                frameTable.add(new CloseButton(localize("start.close_window","Close Window")));
@@ -477,7 +524,6 @@ public class RegisterTime extends GolfBlock {
               }
 
               if(illegal.size() > 0){
-
                 Text myText = (Text)templText.clone();
                 myText.setText(localize("start.error_in_following","Error in following:"));
 
@@ -575,7 +621,7 @@ public class RegisterTime extends GolfBlock {
 	            			Link link = new Link(localize("start.wml_back_link","Back to overview"));
 	            			link.setPage(backPage);
 	            			p.add(link);
-	                      frameTable.add(p);
+	                     frameTable.add(p);
               		}
               	}else{
 	                this.getParentPage().setParentToReload();

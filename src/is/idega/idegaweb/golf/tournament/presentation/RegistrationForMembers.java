@@ -1,37 +1,46 @@
 package is.idega.idegaweb.golf.tournament.presentation;
 
 import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberBMPBean;
 import is.idega.idegaweb.golf.entity.MemberHome;
+import is.idega.idegaweb.golf.entity.StartingtimeView;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentGroup;
 import is.idega.idegaweb.golf.entity.TournamentGroupHome;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.TournamentRoundHome;
+import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.ejb.FinderException;
+
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Strong;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 
 /**
@@ -142,7 +151,11 @@ public class RegistrationForMembers extends GolfBlock {
           String subAction = modinfo.getParameter("sub_action");
           if (subAction == null) {
             try {
-              getDirectRegistrationTable(modinfo,iwrb);
+            		if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
+            			getDirectRegistrationTableWML(modinfo,iwrb);
+              	} else {
+              		getDirectRegistrationTable(modinfo,iwrb);
+              	}
             }
             catch (Exception e) {
               e.printStackTrace(System.err);
@@ -415,34 +428,27 @@ public class RegistrationForMembers extends GolfBlock {
 
     if (tournament_round_id != null) {
 
-    	  add(Text.getBreak());
-        add("<center>");
-
-        Table table = new Table();
-          table.setWidth("90%");
-
-          table.setAlignment(2,1,"left");
-          table.setAlignment(2,2,"left");
-          table.setAlignment(1,1,"right");
-          table.setAlignment(1,2,"right");
-
-          addHeading(localize("tournament.tournament_registration","Tournament registration"));
-          table.add("1",1,1);
-          
-          table.add(getLocalizedText("tournament.choose_teetime_and_enter_ssn_in_the_textbox.__it_is_posible_to_register_more_than_one_at_a_time","Choose teetime and enter social security number.  It is posible to register more than one at a time."),2,1);
-
-          table.add("2",1,2);
-          table.add(getText(localize("tournament.press_the","Press the")+" \""+localize("tournament.save","Save")+"\" "+localize("tournament.button_located_at_the_bottom_of_the_page","button located at the bottom of the page.")),2,2);
-
         TournamentStartingtimeList form = getTournamentBusiness(modinfo).getStartingtimeTable(tournament,tournament_round_id,false,true,false,true);
         form.setSubmitButtonParameter("action", "open");
 
-        add(table);
-        add("<hr>");
-        add(Text.getBreak());
-        add(form);
-        add("</center>");
-
+        
+        Form from = new Form();
+        
+        DropdownMenu teetimes = new DropdownMenu();
+        
+        Label l = new Label(localize("start.choose_teetime","Choose teetime"),teetimes);
+        
+        SubmitButton button = new SubmitButton(localize("tournament.register","Register"));
+        
+        from.add(l);
+        form.add(teetimes);
+        form.add(button);
+        //add(form);
+		
+        Paragraph p = new Paragraph();
+        p.add(new Text(localize("temp.not_ready","It is not possible to register to this type of tournament at the moment.")));
+        add(p);
+        
     }
     else {
         incorrectSetup(modinfo);
@@ -450,6 +456,235 @@ public class RegistrationForMembers extends GolfBlock {
 
 
 }
+  
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
+	 */
+	public void getStartingtimeRegistrationForm(IWContext modinfo, Tournament tournament, String tournament_round_id) throws Exception {
+
+
+		if (tournament != null ){
+			Form form = new Form();
+			
+			
+			Table topTable = new Table();
+			Table table = new Table();
+			Table borderTable = new Table();
+
+
+			
+			form.add(topTable);
+			borderTable.add(table);
+			form.add(borderTable);
+			int row = 1;
+			int numberOfMember = 0;
+
+
+			TournamentRound[] tourRounds = tournament.getTournamentRounds();
+
+			int tournamentRoundId = -1;
+			if (tournament_round_id == null) {
+				tournament_round_id = "-1";
+				tournamentRoundId = tourRounds[0].getID();
+			}
+			else {
+				tournamentRoundId = Integer.parseInt(tournament_round_id);
+			}
+
+			TournamentRound tournamentRound = null;
+			try {
+				tournamentRound = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(tournamentRoundId);
+			}
+			catch (FinderException fe) {
+				throw new SQLException(fe.getMessage());
+			}
+
+			boolean display = false;
+			if (tournamentRound.getVisibleStartingtimes()) {
+				display = true;
+			}
+			int roundNumber = tournamentRound.getRoundNumber();
+
+			IWTimestamp tourDay = null;
+
+			DropdownMenu rounds = (DropdownMenu) getStyledInterface(new DropdownMenu("tournament_round"));
+
+				tourDay = new IWTimestamp(tournamentRound.getRoundDate());
+				rounds.addMenuElement(tournamentRound.getID(), getResourceBundle().getLocalizedString("tournament.round", "Round") + " " + tournamentRound.getRoundNumber() + " " + tourDay.getISLDate(".", true));
+
+			Text timeText;
+			Text dMemberSsn;
+			Text dMemberName;
+			Text dMemberHand;
+			Text dMemberUnion;
+
+			Text tim = new Text(getResourceBundle().getLocalizedString("tournament.time", "Time"));
+			Text sc = new Text(getResourceBundle().getLocalizedString("tournament.social_security_number", "Social security number"));
+			Text name = new Text(getResourceBundle().getLocalizedString("tournament.name", "Name"));
+			Text club = new Text(getResourceBundle().getLocalizedString("tournament.club", "Club"));
+			Text hc = new Text(getResourceBundle().getLocalizedString("tournament.handicap", "Handicap"));
+
+			table.add(tim, 1, row);
+			table.add(sc, 2, row);
+			table.add(name, 3, row);
+			table.add(club, 4, row);
+			table.add(hc, 5, row);
+
+	
+			table.setRowStyleClass(row, getHeaderRowClass());
+
+			java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
+			java.text.DecimalFormat handicapFormat = new java.text.DecimalFormat("###.0");
+			Field field = tournament.getField();
+			List members;
+			CheckBox delete;
+
+			Image removeImage = getBundle().getImage("/shared/tournament/de.gif", getResourceBundle().getLocalizedString("tournament.remove_from_tournament", "Remove from tournament"));
+			removeImage.setToolTip(getResourceBundle().getLocalizedString("tournament.remove_from_tournament", "Remove from tournament"));
+
+			Text tTime = new Text("");
+
+
+			Link remove;
+			Text tooMany = getSmallErrorText(getResourceBundle().getLocalizedString("tournament.no_room", "No room"));
+
+			Union union;
+			int union_id;
+			String abbrevation = "'";
+
+			boolean displayTee = false;
+			if (tournamentRound.getStartingtees() > 1) {
+				displayTee = true;
+			}
+
+			int groupCounterNum = 0;
+
+			for (int y = 1; y <= tournamentRound.getStartingtees(); y++) {
+				// HARÐKÓÐUN DAUÐANS
+				int tee_number = 1;
+				if (y == 2) tee_number = 10;
+
+				IWTimestamp startHour = new IWTimestamp(tournamentRound.getRoundDate());
+				IWTimestamp endHour = new IWTimestamp(tournamentRound.getRoundEndDate());
+				endHour.addMinutes(1);
+
+				int minutesBetween = tournament.getInterval();
+				int numberInGroup = tournament.getNumberInGroup();
+				int groupCounter = 0;
+
+				if (displayTee) {
+					++row;
+					Text startTee = new Text(getResourceBundle().getLocalizedString("tournament.starting_tee", "Starting tee") + " : " + tee_number);
+					table.add(startTee, 1, row);
+				}
+
+				int startInGroup = 0;
+				is.idega.idegaweb.golf.entity.Member tempMember;
+				TextInput socialNumber;
+				CheckBox paid;
+				int zebraRow = 1;
+
+				StartingtimeView[] sView;
+
+				while (endHour.isLaterThan(startHour)) {
+					++row;
+					++groupCounter;
+					++groupCounterNum;
+					startInGroup = 0;
+
+					timeText = (Text) tTime.clone();
+					timeText.setText(Text.NON_BREAKING_SPACE + extraZero.format(startHour.getHour()) + ":" + extraZero.format(startHour.getMinute()) + Text.NON_BREAKING_SPACE);
+					table.add(timeText, 1, row);
+
+					sView = getTournamentBusiness(modinfo).getStartingtimeView(tournamentRound.getID(), "", "", "grup_num", groupCounter + "", tee_number, "");
+
+
+					startInGroup = sView.length;
+
+					String styleClass = null;
+					for (int i = 0; i < sView.length; i++) {
+						if (zebraRow % 2 != 0) {
+							styleClass = getLightRowClass();
+						}
+						else {
+							styleClass = getDarkRowClass();
+						}
+						zebraRow++;
+						
+						table.setHeight(row, 10);
+						++numberOfMember;
+						if (i != 0) table.add(tooMany, 1, row);
+
+						if (display) {
+							dMemberSsn = null;
+							dMemberName = null;
+							dMemberHand = null;
+							dMemberUnion = null;
+							if (sView[i].getMemberId() != 1) {
+								dMemberSsn = new Text(sView[i].getSocialSecurityNumber());
+								dMemberName = new Text(sView[i].getName());
+								dMemberUnion = new Text(sView[i].getAbbrevation());
+								dMemberHand = new Text(com.idega.util.text.TextSoap.singleDecimalFormat(sView[i].getHandicap()));
+							}
+							else {
+								dMemberSsn = new Text("-");
+								dMemberName = new Text(getResourceBundle().getLocalizedString("tournament.reserved", "Reserved"));
+								dMemberUnion = new Text("-");
+								dMemberHand = new Text("-");
+							}
+
+							table.add(dMemberSsn, 2, row);
+							table.add(dMemberName, 3, row);
+							table.add(dMemberUnion, 4, row);
+							table.add(dMemberHand, 5, row);
+						}
+						else {
+							table.mergeCells(2, row, 7, row);
+							table.setStyleClass(2, row, styleClass);
+						}
+						row++;
+					}
+
+					for (int i = startInGroup; i < (numberInGroup); i++) {
+						if (tee_number == 10) {
+							socialNumber = (TextInput) getStyledInterface(new TextInput("social_security_number_for_group_" + groupCounter + "_"));
+						}
+						else {
+							socialNumber = (TextInput) getStyledInterface(new TextInput("social_security_number_for_group_" + groupCounter));
+						}
+						socialNumber.setLength(15);
+						socialNumber.setMaxlength(10);
+						table.add(socialNumber, 2, row);
+
+					}
+					startHour.addMinutes(minutesBetween);
+					--row;
+				}
+			}
+
+			++row;
+
+			Text many = getSmallHeader(getResourceBundle().getLocalizedString("tournament.number_of_participants", "Number of participants") + " : " + numberOfMember);
+			table.add(many, 1, row);
+
+
+			SubmitButton submitButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("tournament.save", "Save")));
+//			if (submitButtonParameter != null) {
+//				submitButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("tournament.save", "Save"), submitButtonParameter[0], submitButtonParameter[1]));
+//			}
+			table.add(new HiddenInput("sub_action", "saveDirectRegistration"), 4, row);
+			table.add(submitButton, 4, row);
+			table.add(new HiddenInput("number_of_groups", "" + groupCounterNum), 4, row);
+
+
+			add(form);
+		} else {
+			logError("Tournament not found in session, or in parameter");
+			
+		}
+	}
 
 
 
