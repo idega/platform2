@@ -284,7 +284,7 @@ public class RunResultViewer extends Block {
 			while (iterator.hasNext()) {
 				RunGroup runGroup = (RunGroup) iterator.next();
 				Collection runnersInRunGroup = (Collection) map.get(runGroup);
-				row = insertRunGroupIntoTable(table, row, runGroup.getGroupName());
+				row = insertRunGroupIntoTable(table, row, runGroup.getGroupName() + " - " + runGroup.getCounter().toString());
 
 				Iterator runIter = runnersInRunGroup.iterator();
 				int num = 1;
