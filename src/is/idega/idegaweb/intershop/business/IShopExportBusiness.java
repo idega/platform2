@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopExportBusiness.java,v 1.7 2002/04/17 11:54:49 palli Exp $
+ *  $Id: IShopExportBusiness.java,v 1.8 2002/05/03 13:58:33 palli Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -37,7 +37,7 @@ public class IShopExportBusiness {
     return(_instance);
   }
 
-  public boolean exportPage(IShopTemplate page, Properties dbProps, String html, IWApplicationContext iwac) {
+  public boolean exportPage(IShopTemplate page, Properties dbProps, String html, IWApplicationContext iwac, String resetCacheURL) {
     try {
       IShopXMLDesc desc = new IShopXMLDesc(iwac);
       if (!desc.hasModifyPermissions(page.getIShopClass()))
@@ -85,6 +85,9 @@ public class IShopExportBusiness {
 
       stmt.close();
       conn.close();
+
+      if (resetCacheURL != null)
+        com.idega.util.FileUtil.getStringFromURL(resetCacheURL);
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -126,7 +129,7 @@ public class IShopExportBusiness {
       sql.append(page.getIShopLanguageNr());
       sql.append(")");
 
-      System.out.println("sql1 = " + sql.toString());
+//      System.out.println("sql1 = " + sql.toString());
       Statement stmt = conn.createStatement();
       int res = stmt.executeUpdate(sql.toString());
 
@@ -152,7 +155,7 @@ public class IShopExportBusiness {
       sql.append(page.getIShopDescription());
       sql.append("')");
 
-      System.out.println("sql2 = " + sql.toString());
+//      System.out.println("sql2 = " + sql.toString());
       stmt = conn.createStatement();
       int res2 = stmt.executeUpdate(sql.toString());
 

@@ -1,5 +1,5 @@
 /*
- * $Id: IShopExportPage.java,v 1.4 2002/04/06 19:11:21 tryggvil Exp $
+ * $Id: IShopExportPage.java,v 1.5 2002/05/03 13:58:33 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -79,7 +79,9 @@ public class IShopExportPage extends IWAdminWindow {
       return(false);
     }
 
-    IShopExportBusiness.getInstance().exportPage(is_page,props,html,iwc.getApplicationContext());
+    String resetURL = bundle.getProperty("resetCacheURL");
+
+    IShopExportBusiness.getInstance().exportPage(is_page,props,html,iwc.getApplicationContext(),resetURL);
 
     return(true);
   }
