@@ -32,7 +32,7 @@ public class GroupApplicationBMPBean extends com.idega.data.GenericEntity implem
 
 
     private static final String COLUMN_USER_ID = "ic_user_id";
-    private static final String COLUMN_APPLICATION_GROUP_ID = "ic_group_id";
+    private static final String COLUMN_APPLICATION_GROUP_ID = "application_group_id";
     private static final String COLUMN_STATUS = "status";
     private static final String COLUMN_USER_COMMENT = "user_comment";
     private static final String COLUMN_ADMIN_COMMENT = "admin_comment";
