@@ -326,7 +326,7 @@ public class ProductPriceDesigner extends TravelWindow {
 		      }
 
 				  row = insertMiscellaneousProductCategories(table, row, misc, tFrames[i].getID(),-1);
-				  row = insertSpecialPriceCategories(table, row, spec, -1, -1);
+				  row = insertSpecialPriceCategories(table, row, spec, tFrames[i].getID(), -1);
       
 				}
     	}
@@ -365,7 +365,7 @@ public class ProductPriceDesigner extends TravelWindow {
         }
 
 				row = insertMiscellaneousProductCategories(table, row, misc, tFrames[k].getID(),address.getID());
-				row = insertSpecialPriceCategories(table, row, spec, -1, -1);
+				row = insertSpecialPriceCategories(table, row, spec, tFrames[k].getID(), address.getID());
       }
     }
 
@@ -415,7 +415,8 @@ public class ProductPriceDesigner extends TravelWindow {
 		  table.add(catName, 1, row);
 		  table.setRowColor(row, TravelManager.backgroundColor);
 		}
-		
+		//System.out.println("[ProductPriceDesigner] timeframId = "+tFrameId);
+		//System.out.println("[ProductPriceDesigner] addressId  = "+addressId);
 		
 		ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)_product.getPrimaryKey()).intValue(), tFrameId, addressId, false, 0, _currencyId, bf.getPriceCategorySearchKey());
 		for (int i = 0; i < specials.length; i++) {
@@ -475,6 +476,8 @@ public class ProductPriceDesigner extends TravelWindow {
             }
 
             pCategory = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(priceCategoryId);
+
+						//System.out.println("[ProductPriceDesigner] pCat = "+pCategory.getName()+", timeframeId = "+iTimeframeId+", addressId = "+iAddressId);
 
             if (pCategory.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)) {
               priceDiscount[i] = TextSoap.findAndReplace(priceDiscount[i],',','.');
