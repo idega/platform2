@@ -124,7 +124,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 			} catch (FinderException e) {}
 		}
 		
-		sue = new SchoolUserEditor(iwc);
+		sue = getSchoolUserEditor(iwc);
 		//GIMMI FIX THIS
 		//sue.addParameter(PARAMETER_SCHOOL_ID, schoolId);
 		
@@ -138,6 +138,10 @@ public class SchoolContentEditor extends IWAdminWindow{
 		sue.setTextStyleTitle( testText2 );
 
 		sue.setInputStyle(this.STYLE);
+	}
+
+	protected SchoolUserEditor getSchoolUserEditor(IWContext iwc) throws RemoteException {
+		return new SchoolUserEditor(iwc);
 	}
 
 
