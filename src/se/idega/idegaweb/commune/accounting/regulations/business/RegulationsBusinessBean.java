@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.87 2003/12/09 09:02:56 anders Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.88 2003/12/10 10:54:54 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1631,7 +1631,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							reg.getPaymentFlowType().getLocalizationKey(),
 							period,
 							RuleTypeConstant.FORMULA,
-							RegSpecConstant.CHECK,
+							RegSpecConstant.SUBVENTION,
 							conditions,
 							total_sum,
 							contract);
