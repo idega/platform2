@@ -13,6 +13,7 @@ import javax.ejb.RemoveException;
 import com.idega.block.login.presentation.LoginEditor;
 import com.idega.block.login.presentation.LoginEditorWindow;
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.business.SchoolContentBusinessBean;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.business.SchoolUserBusinessBean;
 import com.idega.block.school.data.School;
@@ -59,8 +60,9 @@ public class SchoolUserEditor extends Block {
   String PARAMETER_ACTION = "sue_act";
   String ACTION_VIEW_SCHOOL = "sue_pvs";
   String ACTION_UPDATE = "sue_up_usrs";
-  String PARAMETER_SCHOOL_ID = "sue_sId";
-
+  //String PARAMETER_SCHOOL_ID = "sue_sId";
+	String PARAMETER_SCHOOL_ID = SchoolContentBusinessBean.PARAMETER_SCHOOL_ID;
+	
 	private String PARAMETER_SCHOOL_USER_NAME = "sue_un";
 	private String PARAMETER_SCHOOL_USER_TELEPHONE = "sue_utf";
 	private String PARAMETER_SCHOOL_USER_EMAIL = "sue_uem";
