@@ -306,6 +306,8 @@ public class PhoneFiles extends Finance {
 
   public void main(IWContext iwc){
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
+  	iwb = getBundle(iwc);
+  	iwrb = getResourceBundle(iwc);
     isAdmin = iwc.hasEditPermission(this);
     control(iwc);
   }
