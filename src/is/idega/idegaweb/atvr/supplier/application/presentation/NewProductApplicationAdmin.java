@@ -13,6 +13,7 @@ import com.idega.core.user.data.User;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.SubmitButton;
 
@@ -64,13 +65,13 @@ public class NewProductApplicationAdmin extends Block {
 					t.add(check, 1, i);
 					String type = appl.getApplicationType();
 					if (type.equals("0"))
-						t.add("Reynsla", 2, i);
+						t.add(new Link("Reynsla"), 2, i);
 					else if (type.equals("1"))
-						t.add("Sérlisti", 2, i);
+						t.add(new Link("Sérlisti"), 2, i);
 					else if (type.equals("2"))
-						t.add("Mánaðarfl.", 2, i);
+						t.add(new Link("Mánaðarfl."), 2, i);
 					else if (type.equals("3"))
-						t.add("Tóbak", 2, i);
+						t.add(new Link("Tóbak"), 2, i);
 
 					t.add(appl.getDescription(), 3, i);
 					User supplier = appl.getSupplier();
