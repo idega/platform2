@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE invoke >
+<invoke>
+<method_description name="getAllMembersForWorkReportId">
+<class_description class="is.idega.idegaweb.member.isi.block.reports.business.WorkReportStatsBusiness" default_display_name="WorkReportStatsBusiness" type="IBOSessionBean">
+</class_description>
+<input>
+<class_description class="java.lang.Integer" default_display_name="Work report id" name="workReportId">
+<localized_name name="workreportid" locale="sv_SE"/>
+<class_handler class="com.idega.block.school.presentation.SchoolSeasonDropdown" />
+</class_description>
+</input>
+<output>
+<class_description class="com.idega.block.datareport.util.ReportableCollection" default_display_name="">
+</class_description>
+</output>
+</method_description>
+</invoke>
