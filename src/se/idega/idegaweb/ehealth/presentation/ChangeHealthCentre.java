@@ -101,7 +101,7 @@ public class ChangeHealthCentre extends EHealthBlock {
 		
 		PresentationObject pictureDr=null;
 		User doctor = null;
-		int userIDDr = 41047; //45   41047
+		int userIDDr = 45; //45   41047
 		int userImageID = -1;
 		try {
 			doctor = ((UserBusiness) IBOLookup.getServiceInstance(_iwc, UserBusiness.class)).getUser(userIDDr);	
@@ -137,7 +137,7 @@ public class ChangeHealthCentre extends EHealthBlock {
 		}
 		table.add(pictureDr,1,1);
 		
-		String doctorInfo = "<b>Dr. Magne Syhl</b><br>Allmänläkare<br>Telefon:<br>018-987654<br>Telefontid: Mån-ons, kl 08-10.00<br>Webbsida: <a href='http://www.norrudden.se' target='_new'>www.norrudden.se</a>";
+		String doctorInfo = "<b>Dr. Magne Syhl</b><br>Allmänläkare<br>Telefon:<br>018-987654<br>Telefontid: Mån-ons, kl 08-10.00<br>Webbsida: <a href='http://www.norrudden.se' target='_new'>www.gimovc.se</a>";
 		
 		table.add(doctorInfo,3,1);
 		
