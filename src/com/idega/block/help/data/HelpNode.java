@@ -12,6 +12,7 @@ package com.idega.block.help.data;
 import com.idega.core.data.ICTreeNode;
 import com.idega.idegaweb.IWApplicationContext;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -46,8 +47,19 @@ public class HelpNode implements ICTreeNode {
 	 * @see com.idega.core.ICTreeNode#getChildrenIterator()
 	 */
 	public Iterator getChildrenIterator() {
+	    Iterator it = null;
+	    if (getChildren() != null) {
+	        it = getChildren().iterator();
+	    }
+	    return it;
+	}
+
+	/**
+	 * @see com.idega.core.ICTreeNode#getChildren()
+	 */
+	public Collection getChildren() {
 		if (_children != null)
-			return _children.iterator();
+			return _children;
 		else
 			return null;
 	}

@@ -343,7 +343,7 @@ public class Importer extends StyledIWAdminWindow {
 				if (sortBy == null || sortBy.equals("")) {
 					files = folder.getChildrenIterator();
 				} else {
-					files = folder.getChildren(sortBy);
+					files = folder.getChildrenIterator(sortBy);
 				}
 				Form form = new Form();
 				//name,size,creationdate(uploaddate),modificationdata(importdate),

@@ -155,16 +155,26 @@ public class UnionBMPBean extends GenericEntity implements Union,idegaTreeNode,I
 		}
 
 	}
+	/**
+	 * Returns the children of the reciever as an Iterator. Returns null if no children found
+	 */
+	public Iterator getChildrenIterator() {
+	    Iterator it = null;
+	    if (getChildren() != null) {
+	        it = getChildren().iterator();
+	    }
+	    return it;
+	}
 
 
 /**
- * Returns the children of the reciever as an Iterator. Returns null if no children found
+ * Returns the children of the reciever as a Collection. Returns null if no children found
  */
-public Iterator getChildrenIterator(){
+public Collection getChildren(){
   try{
   List list = EntityFinder.findAll(this,"select * from union_,union_tree where union_.union_id=union_tree.child_union_id and union_tree.union_id='"+this.getID()+"'");
   if(list != null){
-    return list.iterator();
+    return list;
   }
   else{
     return null;

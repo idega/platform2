@@ -276,7 +276,7 @@ public class ResellerManager {
   }
 
   public static Iterator getResellerChilds(Reseller reseller, String orderBy) {
-    Iterator iter = reseller.getChildren(orderBy);
+    Iterator iter = reseller.getChildrenIterator(orderBy);
     if (iter != null) {
     /*  List listi = new Vector();
       Reseller tempReseller;
