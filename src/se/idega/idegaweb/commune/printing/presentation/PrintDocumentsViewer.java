@@ -177,10 +177,11 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	public void add(PresentationObject po) {
 		if (mainTable == null) {
 			mainTable = new Table();
-			mainTable.setCellpadding(14);
+			//mainTable.setCellpadding(14);
 			mainTable.setCellspacing(0);
 			mainTable.setColor(getBackgroundColor());
 			mainTable.setWidth(getWidth());
+			
 		}
 		mainTable.add(po);
 	}
