@@ -4,8 +4,8 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
@@ -15,7 +15,6 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import com.idega.core.data.Address;
 import com.idega.data.IDOException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -52,7 +51,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 	private void printForm(IWContext iwc) {
 		try {
 			WorkReportBusiness wBiz = getWorkReportBusiness(iwc);
-			Collection members = wBiz.getWorkReportClubMemberHome().findAllClubMembersByWorkReportIdOrderedByMemberName(getWorkReportId());
+			Collection members = wBiz.getWorkReportMemberHome().findAllWorkReportMembersByWorkReportIdOrderedByMemberName(getWorkReportId());
 			Collection leagues = wBiz.getAllWorkReportGroupsForYearAndType( wBiz.getWorkReportById(getWorkReportId()).getYearOfReport().intValue(),IWMemberConstants.GROUP_TYPE_LEAGUE);
 			
 			Form form = new Form();
@@ -81,7 +80,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 			while (iter.hasNext()) {
 				column = 1;
 				
-				WorkReportClubMember user = (WorkReportClubMember) iter.next();
+				WorkReportMember user = (WorkReportMember) iter.next();
 				table.add(user.getName(), column++, row);
 				table.add(user.getPersonalId(), column++, row);
 

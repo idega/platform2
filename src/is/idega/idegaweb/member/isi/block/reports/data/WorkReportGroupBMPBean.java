@@ -167,7 +167,7 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 		return getStringColumnValue(COLUMN_NAME_EMAIL);
 	}
 	
-	public void addMember(WorkReportClubMember member) throws IDOAddRelationshipException{
+	public void addMember(WorkReportMember member) throws IDOAddRelationshipException{
 		this.idoAddTo(member);
 	}
 	

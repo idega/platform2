@@ -3,7 +3,7 @@ package is.idega.idegaweb.member.isi.block.reports.data;
 
 public interface WorkReportGroup extends com.idega.data.IDOEntity
 {
- public void addMember(is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubMember p0)throws com.idega.data.IDOAddRelationshipException;
+ public void addMember(is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember p0)throws com.idega.data.IDOAddRelationshipException;
  public java.lang.String getEmail();
  public java.lang.String getFax();
  public java.lang.Integer getGroupId();

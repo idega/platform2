@@ -6,8 +6,8 @@ import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKey;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKeyHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecord;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecordHome;
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubMember;
-import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubMemberHome;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMemberHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroupHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportHome;
@@ -64,7 +64,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	private WorkReportClubAccountRecordHome workReportClubAccountRecordHome;
 	private WorkReportAccountKeyHome workReportAccountKeyHome;
 	private WorkReportHome workReportHome;
-	private WorkReportClubMemberHome workReportClubMemberHome;
+	private WorkReportMemberHome workReportMemberHome;
 	
 	private static final short COLUMN_MEMBER_NAME = 0;
 	private static final short COLUMN_MEMBER_SSN = 1;
@@ -129,16 +129,16 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return workReportHome;
 	}
 		
-	public WorkReportClubMemberHome getWorkReportClubMemberHome(){
-		if(workReportClubMemberHome==null){
+	public WorkReportMemberHome getWorkReportMemberHome(){
+		if(workReportMemberHome==null){
 			try{
-				workReportClubMemberHome = (WorkReportClubMemberHome) IDOLookup.getHome(WorkReportClubMember.class);
+				workReportMemberHome = (WorkReportMemberHome) IDOLookup.getHome(WorkReportMember.class);
 			}
 			catch(RemoteException rme){
 				throw new RuntimeException(rme.getMessage());
 			}
 		}
-		return workReportClubMemberHome;
+		return workReportMemberHome;
 	}
 	
 	
@@ -190,7 +190,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			
 			Age age = new Age(user.getDateOfBirth());
 
-			WorkReportClubMember member = getWorkReportClubMemberHome().create();
+			WorkReportMember member = getWorkReportMemberHome().create();
 			member.setReportId(reportID);
 			member.setName(user.getName());
 			member.setPersonalId(personalID);
@@ -250,7 +250,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		//clear the table first
 			deleteWorkReportClubMembersForReport(workReportId);
 		
-			WorkReportClubMemberHome membHome = getWorkReportClubMemberHome();
+			WorkReportMemberHome membHome = getWorkReportMemberHome();
 			WorkReport report = getWorkReportById(workReportId);
 			int year = report.getYearOfReport().intValue();
 			//update or create the league groups so we can connect the users to them
@@ -295,12 +295,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 						
 						try {
-							membHome.findClubMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
+							membHome.findWorkReportMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
 						}
 						catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
 						
-							WorkReportClubMember member = membHome.create();
+							WorkReportMember member = membHome.create();
 							member.setReportId(workReportId);
 							member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
 							member.setName(name);
@@ -367,7 +367,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 			deleteWorkReportClubMembersForReport(workReportId);
 	
-			WorkReportClubMemberHome membHome = getWorkReportClubMemberHome();
+			WorkReportMemberHome membHome = getWorkReportMemberHome();
 			WorkReport report = getWorkReportById(workReportId);
 			int year = report.getYearOfReport().intValue();
 			createOrUpdateLeagueWorkReportGroupsForYear(year);
@@ -411,12 +411,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 					
 						try {
-							membHome.findClubMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
+							membHome.findWorkReportMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
 						}
 						catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
 					
-							WorkReportClubMember member = membHome.create();
+							WorkReportMember member = membHome.create();
 							member.setReportId(workReportId);
 							member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
 							member.setName(name);
@@ -483,7 +483,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			
 				deleteWorkReportClubMembersForReport(workReportId);
 				
-				WorkReportClubMemberHome membHome = getWorkReportClubMemberHome();
+				WorkReportMemberHome membHome = getWorkReportMemberHome();
 				WorkReport report = getWorkReportById(workReportId);
 				int year = report.getYearOfReport().intValue();
 				createOrUpdateLeagueWorkReportGroupsForYear(year);
@@ -527,12 +527,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 							User user = this.getUser(ssn); 
 							
 							try {
-								membHome.findClubMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
+								membHome.findWorkReportMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
 							}
 							catch (FinderException e4) {
 							//this should happen, we don't want them created twice	
 						
-								WorkReportClubMember member = membHome.create();
+								WorkReportMember member = membHome.create();
 								member.setReportId(workReportId);
 								member.setUserId(((Integer)user.getPrimaryKey()).intValue());							
 								member.setName(name);
@@ -603,11 +603,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 */
 	private void deleteWorkReportClubMembersForReport(int reportId) {
 		try {
-			Collection members = getWorkReportClubMemberHome().findAllClubMembersByWorkReportIdOrderedByMemberName(reportId);
+			Collection members = getWorkReportMemberHome().findAllWorkReportMembersByWorkReportIdOrderedByMemberName(reportId);
 			Iterator iter = members.iterator();
 			
 			while (iter.hasNext()) {
-				WorkReportClubMember memb = (WorkReportClubMember) iter.next();
+				WorkReportMember memb = (WorkReportMember) iter.next();
 				try {
 					memb.remove();
 				}

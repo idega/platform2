@@ -16,12 +16,12 @@ import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
 /**
- * Description: The list of people in a club for a particular year<br>
+ * Description: The list of people that are members in a club/union/league for a particular year<br>
  * Copyright: Idega Software 2003 <br>
  * Company: Idega Software <br>
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class WorkReportClubMemberBMPBean extends GenericEntity implements WorkReportClubMember{
+public class WorkReportMemberBMPBean extends GenericEntity implements WorkReportMember{
 	protected final static String ENTITY_NAME = "ISI_WR_CLUB_MEMB";
 	protected final static String COLUMN_NAME_REPORT_ID = "ISI_WORK_REPORT_ID";
 	protected final static String COLUMN_NAME_WORK_REPORT_GROUP = "WR_GROUP_ID";
@@ -46,7 +46,7 @@ public class WorkReportClubMemberBMPBean extends GenericEntity implements WorkRe
 	protected final static String FEMALE = "f";
 
 	
-	public WorkReportClubMemberBMPBean() {
+	public WorkReportMemberBMPBean() {
 		super();
 	}
 
@@ -152,11 +152,11 @@ public class WorkReportClubMemberBMPBean extends GenericEntity implements WorkRe
 		setColumn(COLUMN_NAME_USER_ID,userId);
 	}
 	
-	public Collection ejbFindAllClubMembersByWorkReportIdOrderedByMemberName(int reportId) throws FinderException{
+	public Collection ejbFindAllWorkReportMembersByWorkReportIdOrderedByMemberName(int reportId) throws FinderException{
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_NAME);
 	}
 	
-	public Integer ejbFindClubMemberByUserIdAndWorkReportId(int userId, int reportId) throws FinderException{
+	public Integer ejbFindWorkReportMemberByUserIdAndWorkReportId(int userId, int reportId) throws FinderException{
 		IDOQuery sql = idoQuery();
 		
 		sql.appendSelectAllFrom(this.getEntityName())
