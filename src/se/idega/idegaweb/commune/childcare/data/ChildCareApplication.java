@@ -36,9 +36,9 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public int getQueueOrder();
  public java.sql.Date getRejectionDate();
  public void initializeAttributes();
- public boolean isAcceptedByParent()throws java.rmi.RemoteException;
+ public boolean isAcceptedByParent();
  public boolean isActive();
- public boolean isCancelledOrRejectedByParent()throws java.rmi.RemoteException;
+ public boolean isCancelledOrRejectedByParent();
  public void setApplicationStatus(char p0);
  public void setCareTime(int p0);
  public void setCheck(se.idega.idegaweb.commune.childcare.check.data.GrantedCheck p0);

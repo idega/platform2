@@ -1,13 +1,6 @@
 package se.idega.idegaweb.commune.childcare.check.data;
 
 
-import java.util.Collection;
-
-import javax.ejb.FinderException;
-
-import com.idega.user.data.User;
-
-
 public class CheckHomeImpl extends com.idega.data.IDOFactory implements CheckHome
 {
  protected Class getEntityInterfaceClass(){
@@ -20,7 +13,7 @@ public class CheckHomeImpl extends com.idega.data.IDOFactory implements CheckHom
  }
 
 
-public java.util.Collection findAllCasesByStatus(com.idega.block.process.data.CaseStatus p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findAllCasesByStatus(com.idega.block.process.data.CaseStatus p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindAllCasesByStatus(p0);
 	this.idoCheckInPooledEntity(entity);
@@ -32,6 +25,34 @@ public java.util.Collection findApprovedChecksByUser(com.idega.user.data.User p0
 	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindApprovedChecksByUser(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findByStatusAndChild(java.lang.String p0,java.lang.Integer p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindByStatusAndChild(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findByStatusAndUserAndChild(java.lang.String p0,com.idega.user.data.User p1,java.lang.Integer p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindByStatusAndUserAndChild(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findByUserAndChild(com.idega.user.data.User p0,java.lang.Integer p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindByUserAndChild(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public Check findCheckForChild(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((CheckBMPBean)entity).ejbFindCheckForChild(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
 }
 
 public java.util.Collection findChecks()throws javax.ejb.FinderException{
@@ -55,20 +76,11 @@ public java.util.Collection findChecksByUserAndStatus(com.idega.user.data.User p
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findNonApprovedChecks()throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findNonApprovedChecks()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindNonApprovedChecks();
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-
-
-public Check findCheckForChild(int p0)throws javax.ejb.FinderException {
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object id = ((CheckBMPBean)entity).ejbFindCheckForChild(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(id);
 }
 
  public Check findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
@@ -76,35 +88,5 @@ public Check findCheckForChild(int p0)throws javax.ejb.FinderException {
  }
 
 
-
-	/* (non-Javadoc)
-	 * @see se.idega.idegaweb.commune.childcare.check.data.CheckHome#findByStatusAndChild(java.lang.String, java.lang.Integer)
-	 */
-	public Collection findByStatusAndChild(String status, Integer childID) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((CheckBMPBean)entity).ejbFindByStatusAndChild(status,childID);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	/* (non-Javadoc)
-	 * @see se.idega.idegaweb.commune.childcare.check.data.CheckHome#findByStatusAndUserAndChild(java.lang.String, com.idega.user.data.User, java.lang.Integer)
-	 */
-	public Collection findByStatusAndUserAndChild(String status, User user, Integer childID)throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((CheckBMPBean)entity).ejbFindByStatusAndUserAndChild(status,user,childID);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
-
-	/* (non-Javadoc)
-	 * @see se.idega.idegaweb.commune.childcare.check.data.CheckHome#findByUserAndChild(com.idega.user.data.User, java.lang.Integer)
-	 */
-	public Collection findByUserAndChild(User user, Integer childID) throws FinderException {
-		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((CheckBMPBean)entity).ejbFindByUserAndChild(user,childID);
-		this.idoCheckInPooledEntity(entity);
-		return this.getEntityCollectionForPrimaryKeys(ids);
-	}
 
 }

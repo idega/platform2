@@ -109,6 +109,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int METHOD_END_CONTRACT = 16;
 	public static final int METHOD_NEW_CARE_TIME = 17;
 	public static final int METHOD_SIGN_CONTRACT = 18;
+	public static final int METHOD_REJECT_APPLICATION = 19;
 	
 	public static final int ACTION_CLOSE = 0;
 	public static final int ACTION_GRANT_PRIORITY = 1;
@@ -130,6 +131,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final int ACTION_END_CONTRACT = 17;	
 	public static final int ACTION_NEW_CARE_TIME = 18;
 	public static final int ACTION_SIGN_CONTRACT = 19;	
+	public static final int ACTION_REJECT_APPLICATION = 20;	
 
 	private int _method = -1;
 	private int _action = -1;
@@ -211,7 +213,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			case ACTION_SIGN_CONTRACT :
 				processSignContract(iwc);
 				break;								
-
+			case ACTION_REJECT_APPLICATION :
+				rejectApplication(iwc);
+				break;								
 		}
 
 		if (_method != -1)
@@ -329,6 +333,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				} else {
 					headerTable.add(getHeader(localize("child_care.fill_in_fields", "Fill in contract fields")));										
 				}
+				break;		
+			case METHOD_REJECT_APPLICATION :
+				headerTable.add(getHeader(localize("child_care.reject_application", "Reject application")));			
+				contentTable.add(getRejectApplicationForm(iwc));	
 				break;		
 							
 		}
@@ -455,6 +463,32 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		SubmitButton retract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.retract_offer", "Retract offer"), PARAMETER_ACTION, String.valueOf(ACTION_RETRACT_OFFER)));
 		table.add(retract, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
+		table.add(close, 1, row);
+		table.setHeight(row, Table.HUNDRED_PERCENT);
+		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
+
+		return table;
+	}
+
+	private Table getRejectApplicationForm(IWContext iwc) throws RemoteException {
+		Table table = new Table();
+		table.setCellpadding(5);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		table.setHeight(Table.HUNDRED_PERCENT);
+		int row = 1;
+
+		String message = MessageFormat.format(localize("child_care.reject_application_message", "We have rejection your application for {0} for a placing in our childcare.\n\nRegards,\n{1}\n{2}\n{3}"), getArguments(iwc));
+		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_OFFER_MESSAGE, message));
+		textArea.setWidth(Table.HUNDRED_PERCENT);
+		textArea.setRows(7);
+		textArea.setAsNotEmpty(localize("child_care.rejected_message_required","You must fill in the message."));
+
+		table.add(getSmallHeader(localize("child_care.offer_message_info", "The following message will be sent to the child's parents.")), 1, row++);
+		table.add(textArea, 1, row++);
+
+		SubmitButton reject = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.reject_application", "Reject application"), PARAMETER_ACTION, String.valueOf(ACTION_REJECT_APPLICATION)));
+		table.add(reject, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
@@ -1307,6 +1341,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		String messageHeader = localize("child_care.offer_retracted_subject", "Offer for child care retracted.");
 		String messageBody = iwc.getParameter(PARAMETER_OFFER_MESSAGE);
 		getBusiness().retractOffer(_applicationID, messageHeader, messageBody, iwc.getCurrentUser());
+
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
+		getParentPage().close();
+	}
+	
+	private void rejectApplication(IWContext iwc) throws RemoteException {
+		String messageHeader = localize("child_care.application_rejected_subject", "Application for after school placing rejected.");
+		String messageBody = iwc.getParameter(PARAMETER_REJECT_MESSAGE);
+		getBusiness().rejectApplication(_applicationID, messageHeader, messageBody, iwc.getCurrentUser());
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();

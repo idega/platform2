@@ -2,6 +2,8 @@ package se.idega.idegaweb.commune.childcare.business;
 
 import java.rmi.RemoteException;
 
+import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
+
 import com.idega.block.process.business.CaseBusiness;
 
 public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBusiness
@@ -79,8 +81,8 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public void parentsAgree(int p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean placeApplication(int p0,java.lang.String p1,java.lang.String p2,int p3,int p4,com.idega.user.data.User p5, java.util.Locale locale)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean redeemApplication(java.lang.String p0,com.idega.user.data.User p1) throws java.rmi.RemoteException;
- public boolean rejectApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,com.idega.user.data.User p5) throws java.rmi.RemoteException;
- public boolean rejectApplication(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,com.idega.user.data.User p5) throws java.rmi.RemoteException;
+ public boolean rejectApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,java.lang.String p1,java.lang.String p2,com.idega.user.data.User p3) throws java.rmi.RemoteException;
+ public boolean rejectApplication(int p0,java.lang.String p1,java.lang.String p2,com.idega.user.data.User p3) throws java.rmi.RemoteException;
  public boolean rejectOffer(int p0,com.idega.user.data.User p1) throws java.rmi.RemoteException;
  public boolean rejectOfferWithNewDate(int applicationId, com.idega.user.data.User user, java.sql.Date date) throws java.rmi.RemoteException;
  public void removeFromProvider(int p0,int p1,java.sql.Timestamp p2,boolean p3,java.lang.String p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
@@ -144,4 +146,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public java.util.Collection getCaseLogTerminatedContracts(java.sql.Timestamp fromDate, java.sql.Timestamp toDate) throws java.rmi.RemoteException;
  public boolean canCancelContract(int applicationID) throws RemoteException;
  public int getNumberOfContractsForApplication(int applicationID) throws RemoteException;
+ public SchoolChoiceBusiness getSchoolChoiceBusiness() throws RemoteException;
+ public AfterSchoolBusiness getAfterSchoolBusiness() throws RemoteException;
+ public boolean isAfterSchoolApplication(com.idega.block.process.data.Case application) throws RemoteException;
 }

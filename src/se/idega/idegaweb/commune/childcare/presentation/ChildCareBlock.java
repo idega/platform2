@@ -4,11 +4,15 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolSeason;
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.util.SelectorUtility;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
@@ -161,5 +165,33 @@ public abstract class ChildCareBlock extends CommuneBlock {
 		}
 		
 		return "";
+	}
+
+	protected DropdownMenu getSeasons() throws RemoteException {
+		SelectorUtility util = new SelectorUtility();
+		Collection seasons = business.getSchoolBusiness().findAllSchoolSeasons();
+
+		DropdownMenu menu = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(getSession().getParameterSeasonID()), seasons, "getSchoolSeasonName");
+		menu.setToSubmit();
+		
+		if ( getSession().getSeasonID() != -1 )
+			menu.setSelectedElement(getSession().getSeasonID());
+		else {
+			try {
+				SchoolSeason currentSeason = getBusiness().getSchoolBusiness().getCurrentSchoolSeason();
+				menu.setSelectedElement(currentSeason.getPrimaryKey().toString());
+			}
+			catch (FinderException e) {
+				try {
+					SchoolSeason currentSeason = getBusiness().getSchoolChoiceBusiness().getCurrentSeason();
+					menu.setSelectedElement(currentSeason.getPrimaryKey().toString());
+				}
+				catch (FinderException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		
+		return (DropdownMenu) getStyledInterface(menu);	
 	}
 }

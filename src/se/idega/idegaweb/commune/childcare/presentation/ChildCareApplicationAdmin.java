@@ -319,7 +319,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 				String receiveSubject = localize(EMAIL_USER_SUBJECT,"Child care application");
 				String receiveMessage = localize(EMAIL_USER_MESSAGE,"You have received a new childcare application");
 
-				return getChildCareBusiness(iwc).rejectApplication(Integer.parseInt(id),rejectSubject,rejectMessage,receiveSubject,receiveMessage,iwc.getCurrentUser());
+				return getChildCareBusiness(iwc).rejectApplication(Integer.parseInt(id),rejectSubject,rejectMessage,iwc.getCurrentUser());
 			}
 		}
 		else if (action == ACTION_YES) {

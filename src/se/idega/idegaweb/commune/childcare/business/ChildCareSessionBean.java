@@ -26,6 +26,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected static final String PARAMETER_FROM = "cc_from";
 	protected static final String PARAMETER_TO = "cc_to";
 	protected static final String PARAMETER_SORT_BY = "cc_sort_by";
+	protected static final String PARAMETER_SEASON = "cc_season";
 
 	protected int _childcareID = -1;
 	protected School _provider;
@@ -34,6 +35,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected int _applicationID = -1;
 	protected int _groupID = -1;
 	protected int _checkID = -1;
+	protected int _seasonID = -1;
 	protected int _sortBy = -1;
 	protected IWTimestamp fromTimestamp;
 	protected IWTimestamp toTimestamp;
@@ -247,6 +249,13 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	/**
 	 * @return String
 	 */
+	public String getParameterSeasonID() {
+		return PARAMETER_SEASON;
+	}
+
+	/**
+	 * @return String
+	 */
 	public String getParameterSortBy() {
 		return PARAMETER_SORT_BY;
 	}
@@ -322,6 +331,20 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 */
 	public void setGroupID(int groupID) {
 		_groupID = groupID;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getSeasonID() {
+		return _seasonID;
+	}
+
+	/**
+	 * @param seasonID
+	 */
+	public void setSeasonID(int seasonID) {
+		_seasonID = seasonID;
 	}
 
 }

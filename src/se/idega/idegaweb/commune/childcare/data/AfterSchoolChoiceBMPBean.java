@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoiceBMPBean.java,v 1.3 2003/10/03 01:53:10 tryggvil Exp $
+ * $Id: AfterSchoolChoiceBMPBean.java,v 1.4 2003/10/05 20:07:06 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -34,31 +34,12 @@ import com.idega.user.data.User;
  * @author palli
  * @version 1.0
  */
-public class AfterSchoolChoiceBMPBean extends AbstractCaseBMPBean implements AfterSchoolChoice, Case {
-	protected final static String ENTITY_NAME = "comm_afterschool";
+public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implements AfterSchoolChoice {
+
 	private final static String CASE_CODE_KEY = "MBFRITV";
 	private final static String CASE_CODE_KEY_DESC = "Application for after school centre";
 
-	public final static String SCHOOL_SEASON = "school_season_id";
-	protected final static String PROVIDER_ID = "provider_id";
-	protected final static String FROM_DATE = "from_date";
-	protected final static String CHILD_ID = "child_id";
-	protected final static String METHOD = "method";
-	protected final static String CHOICE_NUMBER = "choice_number";
-	protected final static String CHECK_ID = "check_id";
-	protected final static String CONTRACT_ID = "contract_id";
-	protected final static String CONTRACT_FILE_ID = "contract_file_id";
-	protected final static String OFFER_VALID_UNTIL = "offer_valid_until";
-	protected final static String REJECTION_DATE = "rejection_date";
-	protected final static String PROGNOSIS = "prognosis";
-	protected final static String PRESENTATION = "presentation";
-	protected final static String CC_MESSAGE = "cc_message";
-	protected final static String APPLICATION_STATUS = "application_status";
-	protected final static String PREFERRED_PLACEMENT_DATE = "placement_date";
-
-	protected final int SORT_DATE_OF_BIRTH = 1;
-	protected final int SORT_QUEUE_DATE = 2;
-	protected final int SORT_PLACEMENT_DATE = 3;
+	private final static String SCHOOL_SEASON = "school_season_id";
 
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
@@ -73,636 +54,21 @@ public class AfterSchoolChoiceBMPBean extends AbstractCaseBMPBean implements Aft
 	public String getCaseCodeDescription() {
 		return CASE_CODE_KEY_DESC;
 	}
-
-	/**
-	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
+	/* (non-Javadoc)
+	 * @see com.idega.data.GenericEntity#initializeAttributes()
 	 */
-	public String getEntityName() {
-		return ENTITY_NAME;
-	}
-
-	/**
-	 * @see com.idega.data.IDOLegacyEntity#initializeAttributes()
-	 */
+	
 	public void initializeAttributes() {
-		addAttribute(getIDColumnName());
-		addAttribute(FROM_DATE, "", true, true, java.sql.Date.class);
-		addAttribute(METHOD, "", true, true, java.lang.Integer.class);
-		addAttribute(CHOICE_NUMBER, "", true, true, java.lang.Integer.class);
-		addAttribute(REJECTION_DATE, "", true, true, java.sql.Date.class);
-		addAttribute(OFFER_VALID_UNTIL, "", true, true, java.sql.Date.class);
-		addAttribute(PROGNOSIS, "", true, true, java.lang.String.class, 1000);
-		addAttribute(PRESENTATION, "", true, true, java.lang.String.class, 1000);
-		addAttribute(CC_MESSAGE,"",true,true,java.lang.String.class,1000);
-		addAttribute(APPLICATION_STATUS, "", true, true, java.lang.String.class, 1);
-		this.addAttribute(PREFERRED_PLACEMENT_DATE, "Preferred placement date", true, true, Date.class);
-
-		addManyToOneRelationship(PROVIDER_ID, School.class);
-		addManyToOneRelationship(SCHOOL_SEASON, SchoolSeason.class);
-		addManyToOneRelationship(CHILD_ID, User.class);
-		addManyToOneRelationship(CHECK_ID, GrantedCheck.class);
-		addManyToOneRelationship(CONTRACT_ID, Contract.class);
-		addManyToOneRelationship(CONTRACT_FILE_ID, ICFile.class);
-	}
-
-	public Integer getProviderId() {
-		return getIntegerColumnValue(PROVIDER_ID);
-	}
-
-	public School getProvider() {
-		return (School) getColumnValue(PROVIDER_ID);
-	}
-
-	public Date getFromDate() {
-		return (Date) getColumnValue(FROM_DATE);
-	}
-
-	public Integer getChildId() {
-		return getIntegerColumnValue(CHILD_ID);
-	}
-
-	public User getChild() {
-		return (User) getColumnValue(CHILD_ID);
-	}
-
-	public Integer getMethod() {
-		return getIntegerColumnValue(METHOD);
-	}
-
-	public Integer getChoiceNumber() {
-		return getIntegerColumnValue(CHOICE_NUMBER);
-	}
-
-	public Integer getCheckId() {
-		return getIntegerColumnValue(CHECK_ID);
-	}
-
-	public GrantedCheck getCheck() {
-		return (GrantedCheck) getColumnValue(CHECK_ID);
-	}
-
-	public Date getRejectionDate() {
-		return (Date) getColumnValue(REJECTION_DATE);
-	}
-
-	public Integer getContractId() {
-		return getIntegerColumnValue(CONTRACT_ID);
-	}
-
-	public Contract getContract() {
-		return (Contract) getColumnValue(CONTRACT_ID);
-	}
-
-	public Integer getContractFileId() {
-		return getIntegerColumnValue(CONTRACT_FILE_ID);
-	}
-
-	public String getPrognosis() {
-		return getStringColumnValue(PROGNOSIS);
-	}
-
-	public String getPresentation() {
-		return getStringColumnValue(PRESENTATION);
-	}
-	
-	public String getMessage() {
-		return getStringColumnValue(CC_MESSAGE);	
-	}
-	
-	public Character getApplicationStatus() {
-		String status = this.getStringColumnValue(APPLICATION_STATUS);
-		if (status != null)
-			return new Character(status.charAt(0));
-		else
-			return new Character('A');
-	}
-
-	public void setProviderID(Integer id) {
-		setColumn(PROVIDER_ID, id);
-	}
-
-	public void setProvider(School provider) {
-		setColumn(PROVIDER_ID, provider);
-	}
-
-	public void setFromDate(Date date) {
-		setColumn(FROM_DATE, date);
-	}
-
-	public void setChildId(Integer id) {
-		setColumn(CHILD_ID, id);
-	}
-
-	public void setChild(User child) {
-		setColumn(CHILD_ID, child);
-	}
-
-	public void setMethod(Integer method) {
-		setColumn(METHOD, method);
-	}
-
-	public void setChoiceNumber(Integer number) {
-		setColumn(CHOICE_NUMBER, number);
-	}
-
-	public void setCheckId(Integer checkId) {
-		setColumn(CHECK_ID, checkId);
-	}
-
-	public void setCheck(GrantedCheck check) {
-		setColumn(CHECK_ID, check);
-	}
-
-	public void setRejectionDate(Date date) {
-		setColumn(REJECTION_DATE, date);
-	}
-
-	public void setContractId(Integer id) {
-		setColumn(CONTRACT_ID, id);
-	}
-
-	public void setContractFileId(Integer id) {
-		setColumn(CONTRACT_FILE_ID, id);
-	}
-
-	public void setPrognosis(String prognosis) {
-		setColumn(PROGNOSIS, prognosis);
-	}
-
-	public void setPresentation(String presentation) {
-		setColumn(PRESENTATION, presentation);
-	}
-	
-	public void setMessage(String message) {
-		setColumn(CC_MESSAGE,message);	
-	}
-
-	public void setApplicationStatus(char status) {
-		setColumn(APPLICATION_STATUS, String.valueOf(status));
-	}
-
-	public Integer getSchoolSeasonId() {
-		return getIntegerColumnValue(SCHOOL_SEASON);
-	}
-	public void setSchoolSeasonId(Integer id) {
-		setColumn(SCHOOL_SEASON, id);
-	}
-	
-
-	public Date getPlacementDate() {
-		return (Date) getColumnValue(PREFERRED_PLACEMENT_DATE);
-	}
-
-	public void setPlacementDate(Date date) {
-		setColumn(PREFERRED_PLACEMENT_DATE, date);
-	}
-
-	public void setRejectionDateAsNull(boolean setAsNull) {
-		if (setAsNull)
-			removeFromColumn(ENTITY_NAME);
-	}
-
-	public Collection ejbFindAll() throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this);
-
-		return idoFindPKsBySQL(sql.toString());
-	}
-
-	public Collection ejbFindAllCasesByProviderAndStatus(Integer providerId, CaseStatus caseStatus)
-		throws FinderException {
-		try {
-			return ejbFindAllCasesByProviderStatus(providerId, caseStatus.getStatus());
-		}
-		catch (RemoteException e) {
-			throw new FinderException(e.getMessage());
-		}
-	}
-
-	public Collection ejbFindAllCasesByProviderAndStatus(School provider, String caseStatus) throws FinderException {
-		return ejbFindAllCasesByProviderStatus(((Integer) provider.getPrimaryKey()), caseStatus);
-	}
-
-	public Collection ejbFindAllCasesByProviderAndStatus(School provider, CaseStatus caseStatus)
-		throws FinderException {
-		try {
-			return ejbFindAllCasesByProviderStatus(
-				((Integer) provider.getPrimaryKey()),
-				caseStatus.getStatus());
-		}
-		catch (RemoteException e) {
-			throw new FinderException(e.getMessage());
-		}
-	}
-
-	public Collection ejbFindAllCasesByProviderStatus(Integer providerId, String caseStatus) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append("c , proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + PROVIDER_ID, providerId);
-		sql.appendAnd().appendEqualsQuoted("p.case_status", caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		//sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
-
-		return idoFindPKsBySQL(sql.toString());
-	}
-
-	public Collection ejbFindAllChildCasesByProvider(Integer providerId) throws FinderException, RemoteException {
-
-		StringBuffer sql =
-			new StringBuffer(
-				"select m.* from msg_letter_message m, proc_case p, comm_childcare c"
-					+ " where m.msg_letter_message_id = p.proc_case_id and "
-					+ " c.provider_id = "
-					+ providerId
-					+ " and "
-					+ " p.parent_case_id in (select proc_case_id from proc_case where case_code = 'MBANBOP' and proc_case_id = c.comm_childcare_id)");
-
-		return idoFindPKsBySQL(sql.toString());
-	}
-
-	public Collection ejbFindAllCasesByProviderAndStatus(
-		Integer providerId,
-		String caseStatus,
-		int numberOfEntries,
-		int startingEntry)
-		throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append(" c, proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + PROVIDER_ID, providerId.intValue());
-		sql.appendAnd().appendEqualsQuoted("p.case_status", caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-
-		return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
-	}
-
-	public Collection ejbFindAllCasesByProviderAndNotInStatus(
-		Integer providerId,
-		String[] caseStatus,
-		int numberOfEntries,
-		int startingEntry)
-		throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append(" c, proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + PROVIDER_ID, providerId);
-		if (caseStatus != null)
-			sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		//sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_DATE+", c."+QUEUE_ORDER);
-
-		return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
-	}
-
-	public Collection ejbFindAllCasesByProviderAndNotInStatus(
-		Integer providerId,
-		int sortBy,
-		Date fromDate,
-		Date toDate,
-		String[] caseStatus,
-		int numberOfEntries,
-		int startingEntry)
-		throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append(" c, proc_case p");
-		if (sortBy == SORT_DATE_OF_BIRTH)
-			sql.append(", ic_user u");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + PROVIDER_ID, providerId);
-		if (caseStatus != null)
-			sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		if (sortBy == SORT_DATE_OF_BIRTH) {
-			sql.appendAndEquals("c." + CHILD_ID, "u.ic_user_id");
-			sql.appendAnd().append("u.date_of_birth").appendGreaterThanOrEqualsSign().append(fromDate);
-			sql.appendAnd().append("u.date_of_birth").appendLessThanOrEqualsSign().append(toDate);
-		}
-		else if (sortBy == SORT_PLACEMENT_DATE) {
-			sql.appendAnd().append("c." + FROM_DATE).appendGreaterThanOrEqualsSign().append(fromDate);
-			sql.appendAnd().append("c." + FROM_DATE).appendLessThanOrEqualsSign().append(toDate);
-		}
-
-		return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
-	}
-
-	public Collection ejbFindAllCasesByProviderStatus(Integer providerId, String caseStatus[]) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append(" c, proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + PROVIDER_ID, providerId);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-
-		return idoFindPKsBySQL(sql.toString());
-	}
-
-	public Collection ejbFindAllCasesByProviderStatusNotRejected(Integer providerId, String caseStatus)
-		throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append(" c, proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + PROVIDER_ID, providerId);
-		sql.appendAnd().appendEqualsQuoted("p.case_status", caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		sql.appendAnd().append(REJECTION_DATE).append(" is null");
-
-		return idoFindPKsBySQL(sql.toString());
-	}
-
-	public Collection ejbFindAllCasesByUserAndStatus(User owner, String caseStatus) throws FinderException {
-		return super.ejbFindAllCasesByUserAndStatus(owner, caseStatus);
-	}
-
-	public Collection ejbFindAllCasesByStatus(String caseStatus) throws FinderException {
-		return super.ejbFindAllCasesByStatus(caseStatus);
-	}
-
-	public Collection ejbFindApplicationsByProviderAndStatus(Integer providerID, String caseStatus)
-		throws FinderException {
-		String[] status = { caseStatus };
-		return ejbFindApplicationsByProviderAndStatus(providerID, status, -1, -1);
-	}
-
-	public Collection ejbFindApplicationsByProviderAndStatus(Integer providerID, String[] caseStatus)
-		throws FinderException {
-		return ejbFindApplicationsByProviderAndStatus(providerID, caseStatus, -1, -1);
-	}
-
-	public Collection ejbFindApplicationsByProviderAndStatus(
-		Integer providerID,
-		String caseStatus,
-		int numberOfEntries,
-		int startingEntry)
-		throws FinderException {
-		String[] status = { caseStatus };
-		return ejbFindApplicationsByProviderAndStatus(providerID, status, numberOfEntries, startingEntry);
-	}
-
-	public Collection ejbFindApplicationsByProviderAndStatus(
-		Integer providerID,
-		String[] caseStatus,
-		int numberOfEntries,
-		int startingEntry)
-		throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append(" c, proc_case p, ic_user u");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + CHILD_ID, "u.ic_user_id");
-		sql.appendAndEquals("c." + PROVIDER_ID, providerID);
-		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
-
-		if (numberOfEntries == -1)
-			return idoFindPKsBySQL(sql.toString());
-		else
-			return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
-	}
-
-	public Integer ejbFindApplicationByChildAndChoiceNumber(User child, Integer choiceNumber) throws FinderException {
-		return ejbFindApplicationByChildAndChoiceNumber(((Integer) child.getPrimaryKey()), choiceNumber);
-	}
-
-	public Integer ejbFindApplicationByChildAndChoiceNumber(Integer childID, Integer choiceNumber) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(CHOICE_NUMBER, choiceNumber).appendAndEquals(CHILD_ID, childID);
-		return (Integer) idoFindOnePKByQuery(sql);
-	}
-
-	public Integer ejbFindApplicationByChildAndChoiceNumberWithStatus(Integer childID, Integer choiceNumber, String caseStatus)
-		throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.append("select c.* from ").append(ENTITY_NAME).append(" c , proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + CHILD_ID, childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_status", caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		sql.appendAndEquals(CHOICE_NUMBER, choiceNumber);
-		return (Integer) idoFindOnePKByQuery(sql);
-	}
-
-	public Integer ejbFindApplicationByChildAndChoiceNumberInStatus(Integer childID, Integer choiceNumber, String[] caseStatus)
-		throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append(" c, proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + CHILD_ID, childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		sql.appendAndEquals(CHOICE_NUMBER, choiceNumber);
-		return (Integer) idoFindOnePKByQuery(sql);
-	}
-
-	public Integer ejbFindApplicationByChildAndChoiceNumberNotInStatus(
-		Integer childID,
-		Integer choiceNumber,
-		String[] caseStatus)
-		throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append(" c, proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + CHILD_ID, childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAndEquals(CHOICE_NUMBER, choiceNumber);
-		return (Integer) idoFindOnePKByQuery(sql);
-	}
-
-	public Collection ejbFindApplicationByChild(Integer childID) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(CHILD_ID, childID);
-		sql.appendOrderBy(CHOICE_NUMBER);
-		return super.idoFindPKsByQuery(sql);
-	}
-
-	public Integer ejbFindApplicationByChildAndProvider(Integer childID, Integer providerID) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(CHILD_ID, childID);
-		sql.appendAndEquals(PROVIDER_ID, providerID);
-		return (Integer) idoFindOnePKByQuery(sql);
-	}
-
-	public Integer ejbFindApplicationByChildAndProviderAndStatus(Integer childID, Integer providerID, String[] status)
-		throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(CHILD_ID, childID);
-		sql.appendAndEquals(PROVIDER_ID, providerID);
-		sql.appendAnd().append(APPLICATION_STATUS).appendInArrayWithSingleQuotes(status);
-		return (Integer) idoFindOnePKByQuery(sql);
-	}
-
-	public Collection ejbFindApplicationByChildAndNotInStatus(Integer childID, String[] caseStatus)
-		throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append(" c, proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + CHILD_ID, childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendOrderBy(CHOICE_NUMBER);
-		return super.idoFindPKsByQuery(sql);
-	}
-
-	public Integer ejbFindActiveApplicationByChild(Integer childID) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append(" c, proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + CHILD_ID, childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		sql.appendAnd().appendEqualsQuoted("p.case_status", "KLAR");
-		return (Integer) idoFindOnePKByQuery(sql);
-	}
-
-	public Integer ejbFindActiveApplicationByChildAndStatus(Integer childID, String[] caseStatus) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append(" c, proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + CHILD_ID, childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		sql.appendOrderBy(CHOICE_NUMBER);
-		return (Integer) idoFindOnePKByQuery(sql);
-	}
-
-	public int ejbHomeGetNumberOfActiveApplications(Integer childID) throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.append("select count(c." + CHILD_ID + ") from ").append(ENTITY_NAME).append(" c, proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + CHILD_ID, childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		sql.appendAnd().appendEqualsQuoted("p.case_status", "KLAR");
-		return idoGetNumberOfRecords(sql);
-	}
-
-	public Collection ejbFindApplicationsByProvider(Integer providerID) throws FinderException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(PROVIDER_ID, providerID);
-		return super.idoFindPKsByQuery(sql);
-	}
-
-	public int ejbHomeGetNumberOfApplications(Integer providerID, String caseStatus) throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.append("select count(c." + CHILD_ID + ") from ").append(ENTITY_NAME).append(" c , proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + PROVIDER_ID, providerID);
-		sql.appendAnd().appendEqualsQuoted("p.case_status", caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-
-		return idoGetNumberOfRecords(sql);
-	}
-
-	public int ejbHomeGetNumberOfApplications(Integer providerID, String[] caseStatus) throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.append("select count(c." + CHILD_ID + ") from ").append(ENTITY_NAME).append(" c , proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + PROVIDER_ID, providerID);
-		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-
-		return idoGetNumberOfRecords(sql);
-	}
-
-	public int ejbHomeGetNumberOfApplicationsForChild(Integer childID) throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectCountFrom(this).appendWhereEquals(CHILD_ID, childID);
-
-		return idoGetNumberOfRecords(sql);
-	}
-
-	public int ejbHomeGetNumberOfApplicationsForChild(Integer childID, String caseStatus) throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.append("select count(c." + CHILD_ID + ") from ").append(ENTITY_NAME).append(" c , proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + CHILD_ID, childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_status", caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-
-		return idoGetNumberOfRecords(sql);
-	}
-
-	public int ejbHomeGetNumberOfApplicationsForChildNotInStatus(Integer childID, String[] caseStatus)
-		throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.append("select count(c." + CHILD_ID + ") from ").append(ENTITY_NAME).append(" c , proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + CHILD_ID, childID);
-		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-
-		return idoGetNumberOfRecords(sql);
+		super.initializeAttributes();
+		this.addManyToOneRelationship(SCHOOL_SEASON, SchoolSeason.class);
 	}
 
-	public int ejbHomeGetNumberOfPlacedApplications(Integer childID, Integer providerID, String[] caseStatus)
-		throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.append("select count(c." + CHILD_ID + ") from ").append(ENTITY_NAME).append(" c , proc_case p");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAnd().append("c." + PROVIDER_ID).appendNOTEqual().append(providerID);
-		sql.appendAndEquals(CHILD_ID, childID);
-		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-
-		return idoGetNumberOfRecords(sql);
-	}
-
-	public int ejbHomeGetNumberOfApplications(
-		Integer providerID,
-		String[] caseStatus,
-		int sortBy,
-		Date fromDate,
-		Date toDate)
-		throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.append("select count(c." + CHILD_ID + ") from ").append(ENTITY_NAME).append(" c , proc_case p");
-		if (sortBy == SORT_DATE_OF_BIRTH)
-			sql.append(", ic_user u");
-		sql.appendWhereEquals("c." + getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c." + PROVIDER_ID, providerID);
-		if (caseStatus != null)
-			sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-		if (sortBy == SORT_DATE_OF_BIRTH) {
-			sql.appendAndEquals("c." + CHILD_ID, "u.ic_user_id");
-			sql.appendAnd().append("u.date_of_birth").appendGreaterThanOrEqualsSign().append(fromDate);
-			sql.appendAnd().append("u.date_of_birth").appendLessThanOrEqualsSign().append(toDate);
-		}
-		else if (sortBy == SORT_PLACEMENT_DATE) {
-			sql.appendAnd().append("c." + FROM_DATE).appendGreaterThanOrEqualsSign().append(fromDate);
-			sql.appendAnd().append("c." + FROM_DATE).appendLessThanOrEqualsSign().append(toDate);
-		}
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
-
-		return idoGetNumberOfRecords(sql);
-	}
-
-	public int ejbHomeGetNumberOfApplicationsByProviderAndChoiceNumber(Integer providerID, Integer choiceNumber)
-		throws IDOException {
-		IDOQuery sql = idoQuery();
-		sql.appendSelectCountFrom(this).appendWhereEquals(PROVIDER_ID, providerID.intValue());
-		sql.appendAndEquals(CHOICE_NUMBER, choiceNumber.intValue());
-		return idoGetNumberOfRecords(sql);
-	}
-
-	public boolean isAcceptedByParent() throws RemoteException {
-		return getStatus().equals("PREL") && //CaseBMPBean.CASE_STATUS_PRELIMINARY_KEY (make public...?)
-		getApplicationStatus().charValue() == 'D'; //ChildCareBusinessBean.STATUS_PARENTS_ACCEPT (make public...?)
+	public int getSchoolSeasonId() {
+		return getIntColumnValue(SCHOOL_SEASON);
 	}
-
-	public boolean isCancelledOrRejectedByParent() throws RemoteException {
-		return getStatus().equals("TYST") //CaseBMPBean.CASE_STATUS_INACTIVE_KEY (make public...?)
-		&& (getApplicationStatus().charValue() == 'Z' //ChildCareBusinessBean.STATUS_CANCELLED (make public...?)
-		|| getApplicationStatus().charValue() == 'V'); //ChildCareBusinessBean.STATUS_REJECTED (make public...?)
-	}
-
-	public boolean isActive() {
-		Contract contract = getContract();
-		java.util.Date today = new java.util.Date();
 
-		return contract != null
-			&& contract.getValidFrom().compareTo(today) <= 0
-			&& contract.getValidTo().compareTo(today) >= 0
-			&& contract.isSigned();
+	public void setSchoolSeasonId(int schoolSeasonID) {
+		setColumn(SCHOOL_SEASON, schoolSeasonID);
 	}
 
 	public Collection ejbFindByChildAndSeason(Integer childID, Integer seasonID) throws javax.ejb.FinderException {
@@ -714,12 +80,50 @@ public class AfterSchoolChoiceBMPBean extends AbstractCaseBMPBean implements Aft
 	}
 	
 	public Object ejbFindByChildAndChoiceNumberAndSeason(Integer childID,Integer choiceNumber, Integer seasonID) throws javax.ejb.FinderException {
-			IDOQuery query = super.idoQueryGetSelect().appendWhereEquals(CHILD_ID, childID.intValue());
-			query.appendAndEquals(SCHOOL_SEASON, seasonID.intValue());
-			query.appendAndEquals(CHOICE_NUMBER,choiceNumber.intValue());
-			query.appendOrderBy(CHOICE_NUMBER);
+		IDOQuery query = super.idoQueryGetSelect().appendWhereEquals(CHILD_ID, childID.intValue());
+		query.appendAndEquals(SCHOOL_SEASON, seasonID.intValue());
+		query.appendAndEquals(CHOICE_NUMBER,choiceNumber.intValue());
+		query.appendOrderBy(CHOICE_NUMBER);
 
-			return super.idoFindOnePKByQuery(query);
-		}
+		return super.idoFindOnePKByQuery(query);
+	}
 
+	public Object ejbFindByChildAndChoiceNumberAndSeason(Integer childID,Integer choiceNumber, Integer seasonID, String[] caseStatus) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append("c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+SCHOOL_SEASON, seasonID.intValue());
+		sql.appendAndEquals("c."+CHOICE_NUMBER,choiceNumber.intValue());
+		sql.appendAndEquals("c."+CHILD_ID,childID.intValue());
+		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
+
+		return super.idoFindOnePKByQuery(sql);
+	}
+	
+	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, CaseStatus caseStatus) throws FinderException {
+		return ejbFindAllCasesByProviderStatus(providerId, caseStatus.getStatus());
+	}
+
+	public Collection ejbFindAllCasesByProviderAndStatus(School provider, String caseStatus) throws FinderException {
+		return ejbFindAllCasesByProviderStatus(((Integer)provider.getPrimaryKey()).intValue(), caseStatus);
+	}
+	
+	public Collection ejbFindAllCasesByProviderAndStatus(School provider, CaseStatus caseStatus) throws FinderException {
+		return ejbFindAllCasesByProviderStatus(((Integer)provider.getPrimaryKey()).intValue(), caseStatus.getStatus());
+	}
+	
+	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, String caseStatus) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append("c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
+		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
+
+		return idoFindPKsBySQL(sql.toString());
+	}	
+	
 }

@@ -268,11 +268,12 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			boolean hasPriority = application.getHasPriority();
 			char status = application.getApplicationStatus();
 
-
 			if (status == getBusiness().getStatusSentIn()) {
+				int column = 3;
 				if (numberInQueue == 1 || hasPriority) {
 					GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
-					table.add(changeDate, 3, 1);
+					table.add(changeDate, column++, 1);
+					column++;
 
 					GenericButton offer = (GenericButton) getStyledInterface(new GenericButton("offer", localize("child_care.offer_placing","Offer placing")));
 					if (application.getHasDateSet()) {
@@ -284,11 +285,22 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					}
 					else
 						offer.setDisabled(true);
-					table.add(offer, 5, 1);
+					table.add(offer, column++, 1);
 				}
 				else {
 					GenericButton priority = getButton("priority", localize("child_care.grant_priority","Grant priority"), ChildCareAdminWindow.METHOD_GRANT_PRIORITY);
-					table.add(priority, 3, 1);
+					table.add(priority, column++, 1);
+				}
+				column++;
+
+				if (getBusiness().isAfterSchoolApplication(application)) {
+					GenericButton reject = (GenericButton) getStyledInterface(new GenericButton("reject", localize("child_care.reject_application","Reject application")));
+					reject.setWindowToOpen(ChildCareWindow.class);
+					reject.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
+					reject.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
+					reject.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_REJECT_APPLICATION);
+					reject.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+					table.add(reject, column++, 1);
 				}
 			}
 			else if (status == getBusiness().getStatusAccepted()) {

@@ -9,7 +9,6 @@
  */
 package se.idega.idegaweb.commune.childcare.data;
 
-import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.Collection;
 
@@ -330,12 +329,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
   }
   
 	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, CaseStatus caseStatus) throws FinderException {
-		try {
-			return ejbFindAllCasesByProviderStatus(providerId, caseStatus.getStatus());
-		}
-		catch (RemoteException e) {
-			throw new FinderException(e.getMessage());
-		}
+		return ejbFindAllCasesByProviderStatus(providerId, caseStatus.getStatus());
 	}
 
 	public Collection ejbFindAllCasesByProviderAndStatus(School provider, String caseStatus) throws FinderException {
@@ -343,12 +337,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public Collection ejbFindAllCasesByProviderAndStatus(School provider, CaseStatus caseStatus) throws FinderException {
-		try {
-			return ejbFindAllCasesByProviderStatus(((Integer)provider.getPrimaryKey()).intValue(), caseStatus.getStatus());
-		}
-		catch (RemoteException e) {
-			throw new FinderException(e.getMessage()); 
-		}
+		return ejbFindAllCasesByProviderStatus(((Integer)provider.getPrimaryKey()).intValue(), caseStatus.getStatus());
 	}
 	
 	public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus) throws FinderException {
@@ -357,20 +346,20 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
 		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
 
 		return idoFindPKsBySQL(sql.toString());
 	}	
 	
 	
-	public Collection ejbFindAllChildCasesByProvider(int providerId) throws FinderException, RemoteException {
+	public Collection ejbFindAllChildCasesByProvider(int providerId) throws FinderException {
 		
 		StringBuffer sql = new StringBuffer(
             "select m.* from msg_letter_message m, proc_case p, comm_childcare c" +
             " where m.msg_letter_message_id = p.proc_case_id and " +
             " c.provider_id = " + providerId + " and " +
-            " p.parent_case_id in (select proc_case_id from proc_case where case_code = 'MBANBOP' and proc_case_id = c.comm_childcare_id)");
+            " p.parent_case_id in (select proc_case_id from proc_case where p.proc_case_id = c.comm_childcare_id)");
 		
 		return idoFindPKsBySQL(sql.toString());
 	}	
@@ -385,7 +374,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
 		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendOrderBy("c."+QUEUE_ORDER);
 
 		return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
@@ -398,7 +387,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
 		if (caseStatus != null)
 			sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendOrderBy("c."+APPLICATION_STATUS+" desc, c."+QUEUE_DATE+", c."+QUEUE_ORDER);
 
 		return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
@@ -413,7 +402,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
 		if (caseStatus != null)
 			sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		if (sortBy == SORT_DATE_OF_BIRTH) {
 			sql.appendAndEquals("c."+CHILD_ID, "u.ic_user_id");
 			sql.appendAnd().append("u.date_of_birth").appendGreaterThanOrEqualsSign().append(fromDate);
@@ -437,7 +426,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
 		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
 
@@ -450,7 +439,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
 		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().append(REJECTION_DATE).append(" is null");
 		
 		return idoFindPKsBySQL(sql.toString());
@@ -485,7 +474,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals("c."+CHILD_ID, "u.ic_user_id");
 		sql.appendAndEquals("c."+PROVIDER_ID, providerID);
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
 
 		if (numberOfEntries == -1)
@@ -510,7 +499,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID, childID);
 		sql.appendAnd().appendEqualsQuoted("p.case_status", caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
 		sql.appendAndEquals(CHOICE_NUMBER, choiceNumber);
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
@@ -531,7 +520,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID, childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code", CASE_CODE_KEY);
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
 		sql.appendAndEquals(CHOICE_NUMBER, choiceNumber);
 		return (Integer) idoFindOnePKByQuery(sql);
@@ -580,7 +569,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
 		sql.appendOrderBy(CHOICE_NUMBER);
 		return super.idoFindPKsByQuery(sql);
@@ -591,7 +580,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().appendEqualsQuoted("p.case_status", "KLAR");
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
@@ -601,7 +590,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
 		sql.appendOrderBy(CHOICE_NUMBER);
 		return (Integer) idoFindOnePKByQuery(sql);
@@ -612,7 +601,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().appendEqualsQuoted("p.case_status", "KLAR");
 		return idoGetNumberOfRecords(sql);
 	}
@@ -631,7 +620,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 
 		return idoGetNumberOfRecords(sql);
 	}
@@ -642,7 +631,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 
 		return idoGetNumberOfRecords(sql);
 	}
@@ -660,7 +649,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
 		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 
 		return idoGetNumberOfRecords(sql);
 	}
@@ -671,7 +660,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 
 		return idoGetNumberOfRecords(sql);
 	}
@@ -683,7 +672,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAnd().append("c."+PROVIDER_ID).appendNOTEqual().append(providerID);
 		sql.appendAndEquals(CHILD_ID, childID);
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 
 		return idoGetNumberOfRecords(sql);
 	}
@@ -711,7 +700,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			sql.appendAnd().append("c."+FROM_DATE).appendGreaterThanOrEqualsSign().append(fromDate);
 			sql.appendAnd().append("c."+FROM_DATE).appendLessThanOrEqualsSign().append(toDate);
 		}
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 
 		return idoGetNumberOfRecords(sql);
 	}
@@ -722,7 +711,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().append(QUEUE_DATE).appendLessThanSign().append(queueDate);
 		return idoGetNumberOfRecords(sql);
 	}
@@ -733,7 +722,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
-		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAnd().append(QUEUE_DATE).appendLessThanSign().append(queueDate);
 		return idoGetNumberOfRecords(sql);
 	}
@@ -744,7 +733,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAndEquals(QUEUE_DATE, queueDate);
 		sql.appendAnd().append(QUEUE_ORDER).appendLessThanOrEqualsSign().append(queueOrder);
 		return idoGetNumberOfRecords(sql);
@@ -756,7 +745,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
-		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendAndEquals(QUEUE_DATE, queueDate);
 		sql.appendAnd().append(QUEUE_ORDER).appendLessThanOrEqualsSign().append(queueOrder);
 		return idoGetNumberOfRecords(sql);
@@ -768,7 +757,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		return idoGetNumberOfRecords(sql);
 		
 	}
@@ -779,7 +768,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
-		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		return idoGetNumberOfRecords(sql);
 	}
 
@@ -790,7 +779,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals("s.sch_school_id","c."+PROVIDER_ID);
 		sql.appendAndEquals("s.sch_school_area_id",areaID);
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		return idoGetNumberOfRecords(sql);
 		
 	}
@@ -802,7 +791,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAndEquals("s.sch_school_id","c."+PROVIDER_ID);
 		sql.appendAndEquals("s.sch_school_area_id",areaID);
 		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
-		sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		//sql.appendAndEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		return idoGetNumberOfRecords(sql);
 	}
 	
@@ -813,12 +802,12 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return idoGetNumberOfRecords(sql);
 	}
 	
-		public boolean isAcceptedByParent() throws RemoteException{
+		public boolean isAcceptedByParent() {
 		return 	getStatus().equals("PREL") && //CaseBMPBean.CASE_STATUS_PRELIMINARY_KEY (make public...?)
 			getApplicationStatus() == 'D'; //ChildCareBusinessBean.STATUS_PARENTS_ACCEPT (make public...?)
 	}
 	
-	public boolean isCancelledOrRejectedByParent() throws RemoteException{
+	public boolean isCancelledOrRejectedByParent() {
 		return 	getStatus().equals("TYST") //CaseBMPBean.CASE_STATUS_INACTIVE_KEY (make public...?)
 		&& (getApplicationStatus() == 'Z' //ChildCareBusinessBean.STATUS_CANCELLED (make public...?)
 		|| getApplicationStatus() == 'V'); //ChildCareBusinessBean.STATUS_REJECTED (make public...?)

@@ -6,7 +6,6 @@ import com.idega.block.process.data.CaseStatus;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
@@ -95,147 +94,147 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 		return CASE_STATUS_DESCRIPTIONS;
 	}
 
-	public void setChildCareType(int type) throws java.rmi.RemoteException {
+	public void setChildCareType(int type) {
 		this.setColumn(COLUMN_CHILD_CARE_TYPE, type);
 	}
 
-	public int getChildCareType() throws java.rmi.RemoteException {
+	public int getChildCareType() {
 		return this.getIntColumnValue(COLUMN_CHILD_CARE_TYPE);
 	}
 
-	public void setWorkSituation1(int type) throws java.rmi.RemoteException {
+	public void setWorkSituation1(int type) {
 		this.setColumn(COLUMN_WORK_SITUATION_1, new Integer(type));
 	}
 
-	public int getWorkSituation1() throws java.rmi.RemoteException {
+	public int getWorkSituation1() {
 		return this.getIntColumnValue(COLUMN_WORK_SITUATION_1);
 	}
 
-	public void setWorkSituation2(int type) throws java.rmi.RemoteException {
+	public void setWorkSituation2(int type) {
 		this.setColumn(COLUMN_WORK_SITUATION_2, new Integer(type));
 	}
 
-	public int getWorkSituation2() throws java.rmi.RemoteException {
+	public int getWorkSituation2() {
 		return this.getIntColumnValue(COLUMN_WORK_SITUATION_2);
 	}
 
-	public void setMotherTongueMotherChild(String s) throws java.rmi.RemoteException {
+	public void setMotherTongueMotherChild(String s) {
 		this.setColumn(COLUMN_MOTHER_TONGUE_MC, s);
 	}
 
-	public String getMotherToungueMotherChild() throws java.rmi.RemoteException {
+	public String getMotherToungueMotherChild() {
 		return this.getStringColumnValue(COLUMN_MOTHER_TONGUE_MC);
 	}
 
-	public void setMotherTongueFatherChild(String s) throws java.rmi.RemoteException {
+	public void setMotherTongueFatherChild(String s) {
 		this.setColumn(COLUMN_MOTHER_TONGUE_FC, s);
 	}
 
-	public String getMotherToungueFatherChild() throws java.rmi.RemoteException {
+	public String getMotherToungueFatherChild() {
 		return this.getStringColumnValue(COLUMN_MOTHER_TONGUE_FC);
 	}
 
-	public void setMotherTongueParents(String s) throws java.rmi.RemoteException {
+	public void setMotherTongueParents(String s) {
 		this.setColumn(COLUMN_MOTHER_TONGUE_P, s);
 	}
 
-	public String getMotherToungueParents() throws java.rmi.RemoteException {
+	public String getMotherToungueParents() {
 		return this.getStringColumnValue(COLUMN_MOTHER_TONGUE_P);
 	}
 
-	public void setChildId(int id) throws java.rmi.RemoteException {
+	public void setChildId(int id) {
 		this.setColumn(COLUMN_CHILD_ID, new Integer(id));
 	}
 
-	public int getChildId() throws java.rmi.RemoteException {
+	public int getChildId() {
 		return this.getIntColumnValue(COLUMN_CHILD_ID);
 	}
 
-	public void setMethod(int type) throws java.rmi.RemoteException {
+	public void setMethod(int type) {
 		this.setColumn(COLUMN_METHOD, new Integer(type));
 	}
 
-	public int getMethod() throws java.rmi.RemoteException {
+	public int getMethod() {
 		return this.getIntColumnValue(COLUMN_METHOD);
 	}
 
-	public void setAmount(int amount) throws java.rmi.RemoteException {
+	public void setAmount(int amount) {
 		this.setColumn(COLUMN_AMOUNT, new Integer(amount));
 	}
 
-	public int getAmount() throws java.rmi.RemoteException {
+	public int getAmount() {
 		return this.getIntColumnValue(COLUMN_AMOUNT);
 	}
 
-	public void setCheckFee(int fee) throws java.rmi.RemoteException {
+	public void setCheckFee(int fee)  {
 		this.setColumn(COLUMN_CHECK_FEE, new Integer(fee));
 	}
 
-	public int getCheckFee() throws java.rmi.RemoteException {
+	public int getCheckFee()  {
 		return this.getIntColumnValue(COLUMN_CHECK_FEE);
 	}
 
-	public void setManagerId(int id) throws java.rmi.RemoteException {
+	public void setManagerId(int id)  {
 		this.setColumn(COLUMN_MANAGER_ID, new Integer(id));
 	}
 
-	public int getManagerId() throws java.rmi.RemoteException {
+	public int getManagerId()  {
 		return this.getIntColumnValue(COLUMN_MANAGER_ID);
 	}
 
-	public void setNotes(String notes) throws java.rmi.RemoteException {
+	public void setNotes(String notes)  {
 		this.setColumn(COLUMN_NOTES, notes);
 	}
 
-	public String getNotes() throws java.rmi.RemoteException {
+	public String getNotes()  {
 		return this.getStringColumnValue(COLUMN_NOTES);
 	}
 
-	public void setRule1(boolean flag) throws java.rmi.RemoteException {
+	public void setRule1(boolean flag)  {
 		this.setColumn(COLUMN_RULE_1, new Boolean(flag));
 	}
 
-	public boolean getRule1() throws java.rmi.RemoteException {
+	public boolean getRule1()  {
 		return this.getBooleanColumnValue(COLUMN_RULE_1);
 	}
 
-	public void setRule2(boolean flag) throws java.rmi.RemoteException {
+	public void setRule2(boolean flag)  {
 		this.setColumn(COLUMN_RULE_2, new Boolean(flag));
 	}
 
-	public boolean getRule2() throws java.rmi.RemoteException {
+	public boolean getRule2()  {
 		return this.getBooleanColumnValue(COLUMN_RULE_2);
 	}
 
-	public void setRule3(boolean flag) throws java.rmi.RemoteException {
+	public void setRule3(boolean flag)  {
 		this.setColumn(COLUMN_RULE_3, new Boolean(flag));
 	}
 
-	public boolean getRule3() throws java.rmi.RemoteException {
+	public boolean getRule3()  {
 		return this.getBooleanColumnValue(COLUMN_RULE_3);
 	}
 
-	public void setRule4(boolean flag) throws java.rmi.RemoteException {
+	public void setRule4(boolean flag)  {
 		this.setColumn(COLUMN_RULE_4, new Boolean(flag));
 	}
 
-	public boolean getRule4() throws java.rmi.RemoteException {
+	public boolean getRule4()  {
 		return this.getBooleanColumnValue(COLUMN_RULE_4);
 	}
 
-	public void setRule5(boolean flag) throws java.rmi.RemoteException {
+	public void setRule5(boolean flag)  {
 		this.setColumn(COLUMN_RULE_5, new Boolean(flag));
 	}
 
-	public boolean getRule5() throws java.rmi.RemoteException {
+	public boolean getRule5()  {
 		return this.getBooleanColumnValue(COLUMN_RULE_5);
 	}
 
-	public void setUserNotes(String userNotes) throws java.rmi.RemoteException {
+	public void setUserNotes(String userNotes)  {
 		this.setColumn(COLUMN_USER_NOTES, userNotes);
 	}
 
-	public String getUserNotes() throws java.rmi.RemoteException {
+	public String getUserNotes()  {
 		return this.getStringColumnValue(COLUMN_USER_NOTES);
 	}
 
@@ -254,15 +253,10 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 	}
 
 	public Collection ejbFindApprovedChecksByUser(User user) throws FinderException {
-		try {
-			return ejbFindChecksByUserAndStatus(user,this.getCaseStatusGranted());
-		}
-		catch (RemoteException e) {
-			return null;
-		}
+		return ejbFindChecksByUserAndStatus(user,this.getCaseStatusGranted());
 	}
 
-	public Collection ejbFindNonApprovedChecks() throws FinderException, RemoteException {
+	public Collection ejbFindNonApprovedChecks() throws FinderException {
 		String[] statusArray = { getCaseStatusOpen(),CASE_STATUS_KEYS[2] };
 		return ejbFindAllCasesByStatusArray(statusArray);
 	}
@@ -270,7 +264,7 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 	/**
 	 * Finds all cases for all users with the specified caseStatus and the associated caseCode
 	 */
-	public Collection ejbFindAllCasesByStatus(CaseStatus caseStatus) throws FinderException, RemoteException {
+	public Collection ejbFindAllCasesByStatus(CaseStatus caseStatus) throws FinderException {
 		return super.ejbFindAllCasesByStatus(caseStatus.getStatus());
 	}
 	

@@ -69,6 +69,7 @@ import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolUser;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.location.data.Address;
@@ -100,6 +101,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	final int FS_WITHOUT_PLACE = 3;
 
 	private final static String CASE_CODE_KEY = "MBANBOP";
+	private final static String AFTER_SCHOOL_CASE_CODE_KEY = "MBFRITV";
 	public final static char STATUS_SENT_IN = 'A';
 	private final static char STATUS_PRIORITY = 'B';
 	private final static char STATUS_ACCEPTED = 'C';
@@ -827,8 +829,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}
 	}
+	
+	public boolean isAfterSchoolApplication(Case application) {
+		if (application.getCode().equals(AFTER_SCHOOL_CASE_CODE_KEY))
+			return true;
+		return false;
+	}
 
-	public boolean rejectApplication(ChildCareApplication application, String subject, String message, String newSubject, String newBody, User user) {
+	public boolean rejectApplication(ChildCareApplication application, String subject, String message, User user) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
@@ -838,11 +846,24 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			application.setApplicationStatus(getStatusRejected());
 			caseBiz.changeCaseStatus(application, getCaseStatusDenied().getStatus(), user);
 			sendMessageToParents(application, subject, message);
+			
+			if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
+				Iterator iter = application.getChildren();
+				while (iter.hasNext()) {
+					Case element = (Case) iter.next();
+					if (element instanceof ChildCareApplication) {
+						application = (ChildCareApplication) element;
+						application.setApplicationStatus(getStatusSentIn());
+						caseBiz.changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
+					}
+				}
+			}
 
 			t.commit();
 
 			return true;
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			try {
 				t.rollback();
 			} catch (SystemException ex) {
@@ -854,11 +875,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
-	public boolean rejectApplication(int applicationId, String rejectSubject, String rejectBody, String newSubject, String newBody, User user) {
+	public boolean rejectApplication(int applicationId, String subject, String body, User user) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			ChildCareApplication appl = home.findByPrimaryKey(new Integer(applicationId));
-			return rejectApplication(appl, rejectSubject, rejectBody, newSubject, newBody, user);
+			return rejectApplication(appl, subject, body, user);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
@@ -1018,6 +1039,18 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			sendMessageToParents(application, subject, message);
 
+			if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
+				Iterator iter = application.getChildren();
+				while (iter.hasNext()) {
+					Case element = (Case) iter.next();
+					if (element instanceof ChildCareApplication) {
+						application = (ChildCareApplication) element;
+						application.setApplicationStatus(getStatusSentIn());
+						caseBiz.changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
+					}
+				}
+			}
+
 			t.commit();
 
 			return true;
@@ -1120,6 +1153,18 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				String body = getLocalizedString("child_care.rejected_offer_body", "Custodian for {0}, {5} rejects an offer for placing at {1}.");
 				sendMessageToProvider(application, subject, body);
 			
+				if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
+					Iterator iter = application.getChildren();
+					while (iter.hasNext()) {
+						Case element = (Case) iter.next();
+						if (element instanceof ChildCareApplication) {
+							application = (ChildCareApplication) element;
+							application.setApplicationStatus(getStatusSentIn());
+							caseBiz.changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
+						}
+					}
+				}
+
 				t.commit();
 			
 				return true;
@@ -1186,13 +1231,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		
 	}
 	
-
-/*	public boolean signApplication(ChildCareApplication application) {
-		return false;	
-	}
-	*/
-
-	
 	public boolean removeFromQueue(int applicationId, User user) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
@@ -1220,6 +1258,19 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			String subject = getLocalizedString("child_care.removed_from_queue_subject", "A child removed from the queue.");
 			String body = getLocalizedString("child_care.removed_from_queue_body", "Custodian for {0}, {3} has removed you as a choice alternative.  {0} can therefore no longer be found in the queue but in the list of those removed from the queue.");
 			sendMessageToProvider(application, subject, body);
+
+			if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
+				Iterator iter = application.getChildren();
+				while (iter.hasNext()) {
+					Case element = (Case) iter.next();
+					if (element instanceof ChildCareApplication) {
+						application = (ChildCareApplication) element;
+						application.setApplicationStatus(getStatusSentIn());
+						changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
+					}
+				}
+			}
+
 			return true;
 		}
 		catch (RemoteException e) {
@@ -2034,20 +2085,58 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return MessageFormat.format(desc, arguments);
 	}
 
-	public MessageBusiness getMessageBusiness() throws RemoteException {
-		return (MessageBusiness) this.getServiceInstance(MessageBusiness.class);
+	public MessageBusiness getMessageBusiness() {
+		try {
+			return (MessageBusiness) this.getServiceInstance(MessageBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
 	}
 
-	public CommuneUserBusiness getUserBusiness() throws RemoteException {
-		return (CommuneUserBusiness) this.getServiceInstance(CommuneUserBusiness.class);
+	public CommuneUserBusiness getUserBusiness() {
+		try {
+			return (CommuneUserBusiness) this.getServiceInstance(CommuneUserBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
 	}
 
-	public SchoolBusiness getSchoolBusiness() throws RemoteException {
-		return (SchoolBusiness) this.getServiceInstance(SchoolBusiness.class);
+	public SchoolBusiness getSchoolBusiness() {
+		try {
+			return (SchoolBusiness) this.getServiceInstance(SchoolBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
 	}
 
-	public CheckBusiness getCheckBusiness() throws RemoteException {
-		return (CheckBusiness) this.getServiceInstance(CheckBusiness.class);
+	public CheckBusiness getCheckBusiness() {
+		try {
+			return (CheckBusiness) this.getServiceInstance(CheckBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+
+	public SchoolChoiceBusiness getSchoolChoiceBusiness() {
+		try {
+			return (SchoolChoiceBusiness) this.getServiceInstance(SchoolChoiceBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+
+	public AfterSchoolBusiness getAfterSchoolBusiness() {
+		try {
+			return (AfterSchoolBusiness) this.getServiceInstance(AfterSchoolBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
 	}
 
 	/**
