@@ -381,13 +381,19 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				else {
 					if (getBusiness().hasTerminationInFutureNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {
 						ChildCareContract archive = getBusiness().getLatestTerminatedContract(getSession().getChildID());
-						IWTimestamp terminationDate = new IWTimestamp(archive.getTerminatedDate());
-						IWTimestamp validFrom = new IWTimestamp(application.getFromDate());
-						if (terminationDate.isLaterThanOrEquals(validFrom)) {
-							terminationDate.addDays(1);
-							changeDate.addParameterToWindow(ChildCareAdminWindow.PARAMETER_EARLIEST_DATE, terminationDate.toString());
-							table.add(changeDate, 3, 1);
-							table.add(disabledCreateContract, 5, 1);
+						if (archive != null) {
+							IWTimestamp terminationDate = new IWTimestamp(archive.getTerminatedDate());
+							IWTimestamp validFrom = new IWTimestamp(application.getFromDate());
+							if (terminationDate.isLaterThanOrEquals(validFrom)) {
+								terminationDate.addDays(1);
+								changeDate.addParameterToWindow(ChildCareAdminWindow.PARAMETER_EARLIEST_DATE, terminationDate.toString());
+								table.add(changeDate, 3, 1);
+								table.add(disabledCreateContract, 5, 1);
+							}
+							else {
+								table.add(changeDate, 3, 1);
+								table.add(createContract, 5, 1);
+							}
 						}
 						else {
 							table.add(changeDate, 3, 1);
