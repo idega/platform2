@@ -364,7 +364,7 @@ public class Register extends Block {
 						buf.append(address);
 					}
 					
-					return _iwrb.getLocalizedString("register.email_sent_to", "Registration nofification sent to: ") + buf.toString();
+					return _iwrb.getLocalizedString("register.email_sent_to", "Registration notification sent to: ") + buf.toString();
 				} else {
 					return _iwrb.getLocalizedString("register.no_email_address", "Couldn't send email notification of registration, no address to send to");
 				}
