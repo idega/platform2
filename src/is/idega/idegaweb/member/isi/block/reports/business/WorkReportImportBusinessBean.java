@@ -243,6 +243,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 				} else {
 					accKey = null;
 				}
+				
+				if (currRow == 10) {
+					accKey = "29998";
+				}
 
 				WorkReportAccountKey eAccKey = null;
 				try {
@@ -322,6 +326,12 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 					accKey = null;
 				}
 
+				if (currRow == 28) {
+					accKey = "74999";
+				} else if (currRow == 29) {
+					accKey = "75000";
+				}
+				
 				WorkReportAccountKey eAccKey = null;
 				try {
 					eAccKey = (WorkReportAccountKey) accKeyHome
@@ -470,6 +480,10 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 				} else {
 					accKey = null;
 				}
+				
+				if (currRow == 43) {
+					accKey = "99998";
+				}
 
 				WorkReportAccountKey eAccKey = null;
 				try {
@@ -506,7 +520,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 							.get(new Integer(leaguesStartColumn + i));
 
 					if (val != 0.0) {
-
 						if (currRow >= 41 && currRow <= 42) {
 							debtSubSum[i] += val;
 						}

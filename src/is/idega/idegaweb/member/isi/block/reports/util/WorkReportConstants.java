@@ -62,12 +62,13 @@ public class WorkReportConstants extends IWMemberConstants {
 
     public static final String EXPENSES_SUM_KEY = "FIN_expenses_sum";
 
+    public static final String INCOME_EXPENSES_SUB_SUM_KEY = "FIN_income_expenses_sub_sum";
+
     public static final String INCOME_EXPENSES_SUM_KEY = "FIN_income_expenses_sum";
 
     public static final String ASSET_SUM_KEY = "FIN_asset_sum";
 
     public static final String DEBT_SUM_KEY = "FIN_debt_sum";
 
-    public static final String[] NOT_EDITABLE_FIN_NAMES = { "FIN_40000",
-            "FIN_92000"};
+    public static final String[] NOT_EDITABLE_FIN_NAMES = { "FIN_29998, FIN_74999, FIN_75000, FIN_99998"};
 }

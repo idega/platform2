@@ -120,6 +120,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         specialFieldList.add(LEAGUE_NAME);
         specialFieldList.add(WorkReportConstants.INCOME_SUM_KEY);
         specialFieldList.add(WorkReportConstants.EXPENSES_SUM_KEY);
+        specialFieldList.add(WorkReportConstants.INCOME_EXPENSES_SUB_SUM_KEY);
         specialFieldList.add(WorkReportConstants.INCOME_EXPENSES_SUM_KEY);
         specialFieldList.add(WorkReportConstants.ASSET_SUM_KEY);
         specialFieldList.add(WorkReportConstants.DEBT_SUM_KEY);
@@ -145,6 +146,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         // yellow
         specialFieldColorMap.put(WorkReportConstants.INCOME_EXPENSES_SUM_KEY,
                 "#FAFA46");
+        specialFieldColorMap.put(WorkReportConstants.INCOME_EXPENSES_SUB_SUM_KEY,
+        "#FAFA46");
         // black
         specialFieldColorMap.put(EMPTY_COLUMN, "#0000");
         specialFieldColorMap.put(OKAY_BUTTON, "#0000");
