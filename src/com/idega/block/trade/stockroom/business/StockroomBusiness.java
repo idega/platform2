@@ -74,11 +74,11 @@ public class StockroomBusiness /* implements SupplyManager */ {
         prPrice.addTo(Address.class, addressId);
        }
   }
-/*
+
   public static float getPrice(int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
     return getPrice(-1, productId, priceCategoryId, currencyId, time);
   }
-*/
+
   public static float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
     /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
     /*skila verði ef PRICETYPE_PRICE annars verði með tilliti til afsláttar*/
