@@ -57,11 +57,13 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 
 	private IWResourceBundle iwrb;
 	private List failedInserts;
+	
+	private String mainStyleClass = "main";
 
 
 	public ClubMemberExchangeWindow() {
-		setHeight(220);
-		setWidth(620);	
+		setHeight(260);
+		setWidth(680);	
 		setResizable(true);
 	}
 	
@@ -124,9 +126,12 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 		
 		Table table = new Table(3,5);
 		form.add(table);
+		table.setStyleClass(mainStyleClass);
+		table.setWidth(660);
+		table.setHeight(200);
 		table.mergeCells(1,1,3,1);
 		table.mergeCells(2,5,3,5);
-		table.setWidthAndHeightToHundredPercent();
+//		table.setWidthAndHeightToHundredPercent();
 		table.setAlignment(2,5,Table.HORIZONTAL_ALIGN_RIGHT);
 		
 		List groups = null;
@@ -189,8 +194,9 @@ public class ClubMemberExchangeWindow extends StyledIWAdminWindow { //changed fr
 		table.add(divisionTo,2,4);
 		table.add(initDate,3,4);
 		table.add(help,1,5);
-		table.add(close,2,5);
 		table.add(save,2,5);
+		table.add(Text.NON_BREAKING_SPACE,2,5);
+		table.add(close,2,5);
 		
 		//changed from add(form) - birna
 		add(form, iwc);
