@@ -85,7 +85,7 @@ public class CreateIFSFiles extends AccountingBlock {
 		String period = iwc.getParameter(PARAM_PERIOD_TEXT);
 		
 		try {
-			getIFSBusiness(iwc).createFiles(_currentOperation,date,period);
+			getIFSBusiness(iwc).createFiles(_currentOperation,date,period,iwc.getCurrentUser());
 		}
 		catch (RemoteException e1) {
 			e1.printStackTrace();

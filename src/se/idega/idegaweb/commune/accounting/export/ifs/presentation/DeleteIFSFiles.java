@@ -72,7 +72,7 @@ public class DeleteIFSFiles extends AccountingBlock {
 		}
 		
 		try {
-			getIFSBusiness(iwc).deleteFiles(_currentOperation);
+			getIFSBusiness(iwc).deleteFiles(_currentOperation,iwc.getCurrentUser());
 		}
 		catch (RemoteException e1) {
 			e1.printStackTrace();

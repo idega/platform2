@@ -72,7 +72,7 @@ public class SendIFSFiles extends AccountingBlock {
 		}
 		
 		try {
-			getIFSBusiness(iwc).sendFiles(_currentOperation);
+			getIFSBusiness(iwc).sendFiles(_currentOperation,iwc.getCurrentUser());
 		}
 		catch (RemoteException e1) {
 			e1.printStackTrace();
