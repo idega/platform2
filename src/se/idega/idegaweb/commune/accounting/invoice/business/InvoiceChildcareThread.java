@@ -77,10 +77,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/04/02 12:35:11 $ by $Author: staffan $
+ * Last modified: $Date: 2004/04/06 12:36:54 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.145 $
+ * @version $Revision: 1.146 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -731,7 +731,8 @@ public class InvoiceChildcareThread extends BillingThread{
 						}
 						invoiceRecord.setAmount(amount);
 						invoiceRecord.setVATRuleRegulation(regularInvoiceEntry.getVatRuleRegulationId());
-						invoiceRecord.setAmountVAT (AccountingUtil.roundAmount(vat));
+						//invoiceRecord.setAmountVAT (AccountingUtil.roundAmount(vat));
+						invoiceRecord.setAmountVAT (0);
 						invoiceRecord.setRegSpecType(regularInvoiceEntry.getRegSpecType());
 						
 						invoiceRecord.setOwnPosting(regularInvoiceEntry.getOwnPosting());
@@ -928,7 +929,8 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setDateCreated(currentDate);
 		invoiceRecord.setCreatedBy(BATCH_TEXT);
 		invoiceRecord.setAmount(AccountingUtil.roundAmount(postingDetail.getAmount()*(isDiscount ? 1.0f : placementTimes.getMonths())));
-		invoiceRecord.setAmountVAT(AccountingUtil.roundAmount(postingDetail.getVATPercent()*invoiceRecord.getAmount ()/100.0f));
+		//invoiceRecord.setAmountVAT(AccountingUtil.roundAmount(postingDetail.getVATPercent()*invoiceRecord.getAmount ()/100.0f));
+		invoiceRecord.setAmountVAT (0);
 		invoiceRecord.setVATRuleRegulation(postingDetail.getVatRuleRegulationId());
 		invoiceRecord.setOrderId(postingDetail.getOrderID());
 		invoiceRecord.setSchoolType(contract.getSchoolClassMember().getSchoolType());
