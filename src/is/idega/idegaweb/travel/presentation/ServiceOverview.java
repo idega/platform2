@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.*;
 import java.text.DecimalFormat;
-
+import java.util.List;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness.*;
 
 import is.idega.idegaweb.travel.data.*;
@@ -39,7 +39,7 @@ public class ServiceOverview extends TravelManager {
 
   private String actionParameter = "service_overview_action";
   private String deleteParameter = "service_to_delete_id";
-
+  private String parameterStartNumber = "parameterStartNumber";
   private Supplier supplier;
 
   private idegaCalendar cal = new idegaCalendar();
@@ -162,6 +162,17 @@ public class ServiceOverview extends TravelManager {
           sYear = Text.emptyString().toString();
       }
 
+      int iStartNumber = 0;
+      int manyPerPage = 5;
+      int iStopNumber = manyPerPage;
+      int pages = 1;
+      int currentPage = 1;
+
+      String startNumber = iwc.getParameter(parameterStartNumber);
+      if (startNumber != null) {
+        iStartNumber = Integer.parseInt(startNumber);
+      }
+
       int row = 0;
       idegaTimestamp stamp = idegaTimestamp.RightNow();
 
@@ -181,20 +192,40 @@ public class ServiceOverview extends TravelManager {
 
       Supplier supplier = super.getSupplier();
       if (supplier != null) {
-        //Product[] products = tsb.getProducts(supplier.getID(), this.getFromIdegaTimestamp(iwc), this.getToIdegaTimestamp(iwc));
+        List products = ProductBusiness.getProducts(supplier.getID());
+        if (products == null) { products = com.idega.util.ListUtil.getEmptyList(); }
 
-        Product[] products = tsb.getProducts(supplier.getID());
+        int productsSize = products.size();
 
+        if (productsSize > iStartNumber + manyPerPage) {
+          iStopNumber = iStartNumber + manyPerPage;
+        }else {
+          iStopNumber = productsSize;
+        }
+
+        pages = (int) productsSize / manyPerPage;
+        if ( (productsSize % manyPerPage) > 0) ++pages;
+
+        if (pages == 0) pages = 1;
+
+        if ((productsSize - iStartNumber) < manyPerPage) {
+          currentPage = pages;
+        }else {
+          for (int i = manyPerPage, j=1; i <= productsSize; i += manyPerPage,j++) {
+            if (iStartNumber < i) {
+              currentPage = j;
+              break;
+            }
+          }
+        }
 
         Table contentTable;
-        is.idega.idegaweb.travel.presentation.ServiceViewer sv = new is.idega.idegaweb.travel.presentation.ServiceViewer();
-          sv.setSupplier(supplier);
-          sv.setZebraColors("#FFFFFF","#CCCCCC");
-//        table.add(sv);
+        Product product;
 
-        for (int i = 0; i < products.length; i++) {
+        for (int i = iStartNumber; i < iStopNumber; i++) {
           try {
-            contentTable = getProductInfoTable(iwc,iwrb,products[i]);
+            product = (Product) products.get(i);
+            contentTable = getProductInfoTable(iwc,iwrb,product);
 
             ++row;
             table.mergeCells(1,row,5,row);
@@ -208,17 +239,17 @@ public class ServiceOverview extends TravelManager {
 
             getLink = new Link(iwrb.getImage("buttons/link.gif"));
               getLink.setWindowToOpen(LinkGenerator.class);
-              getLink.addParameter(LinkGenerator.parameterProductId ,products[i].getID());
+              getLink.addParameter(LinkGenerator.parameterProductId ,product.getID());
 
             delete = new Link(iwrb.getImage("buttons/delete.gif"));
               delete.addParameter(actionParameter,"delete");
-              delete.addParameter(deleteParameter,products[i].getID());
+              delete.addParameter(deleteParameter,product.getID());
 
             book = (Link) bookClone.clone();
-              book.addParameter(Booking.parameterProductId,products[i].getID());
+              book.addParameter(Booking.parameterProductId,product.getID());
 
             edit = (Link) editClone.clone();
-              edit.addParameter(ServiceDesigner.parameterUpdateServiceId, products[i].getID());
+              edit.addParameter(ServiceDesigner.parameterUpdateServiceId, product.getID());
 
             if (super.isInPermissionGroup) {
               table.add(edit,1,row);
@@ -255,11 +286,61 @@ public class ServiceOverview extends TravelManager {
           }
         }
 
+
+
+        Table pagesTable = new Table(pages+2, 1);
+          pagesTable.setCellpadding(2);
+          pagesTable.setCellspacing(2);
+
+        Text pageText;
+
+
+        if (currentPage > 1) {
+          pageText = getWhiteText(iwrb.getLocalizedString("travel.previous","Previous"));
+          Link prevLink = new Link(pageText);
+            prevLink.addParameter(this.parameterStartNumber, iStartNumber - manyPerPage);
+          pagesTable.add(prevLink, 1, 1);
+        }
+
+        Link pageLink;
+        for (int i = 1; i <= pages; i++) {
+          if (i == currentPage) {
+            pageText = getWhiteTextBold(Integer.toString(i));
+          }else {
+            pageText = getWhiteText(Integer.toString(i));
+          }
+          pageLink = new Link(pageText);
+            pageLink.addParameter(this.parameterStartNumber, (i-1) * manyPerPage);
+          pagesTable.add(pageLink, i+1, 1);
+        }
+
+        if (currentPage < pages) {
+          pageText = getWhiteText(iwrb.getLocalizedString("travel.next","Next"));
+          Link nextLink = new Link(pageText);
+            nextLink.addParameter(this.parameterStartNumber, iStartNumber + manyPerPage);
+          pagesTable.add(nextLink, pages + 2, 1);
+        }
+
+
+        table.add(pagesTable,1, row);
+        table.setAlignment(1,row,"center");
+
       }
 
       add(form);
   }
 
+  public Text getWhiteTextBold(String content) {
+    Text text = (Text)  super.theBoldText.clone();
+      text.setText(content);
+    return text;
+  }
+
+  public Text getWhiteText(String content) {
+    Text text = (Text)  super.theText.clone();
+      text.setText(content);
+    return text;
+  }
 
   // BUSINESS
   public idegaTimestamp getFromIdegaTimestamp(IWContext iwc) {

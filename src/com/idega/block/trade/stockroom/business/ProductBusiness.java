@@ -189,6 +189,7 @@ public class ProductBusiness {
           sqlQuery.append(pTable+"."+Product.getColumnNameIsValid()+" = 'Y'");
           if (supplierId != -1)
           sqlQuery.append(" AND "+pTable+"."+Product.getColumnNameSupplierId()+" = "+supplierId);
+          sqlQuery.append(" order by "+Product.getColumnNameNumber());
 
         products =EntityFinder.findAll(Product.getStaticInstance(Product.class),sqlQuery.toString());
       }catch(SQLException sql) {
