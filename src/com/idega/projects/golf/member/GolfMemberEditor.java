@@ -57,6 +57,7 @@ public class GolfMemberEditor extends Editor{
 
   }
   private void doMain(ModuleInfo modinfo)throws SQLException{
+    add("hallo");
     add(drawTable(modinfo));
   }
   private ModuleObject drawTable(ModuleInfo modinfo) throws SQLException{
@@ -105,7 +106,9 @@ public class GolfMemberEditor extends Editor{
     //table.setVerticalAlignment(1,3,"bottom");
 
     //BorderTable memberTable = getMemberTable();
-   /* BorderTable addressTable = getAddressTable();
+    AddressInput AI = new AddressInput();
+    BorderTable addressTable = AI.getAddressTable(this.profile);
+    System.err.println("hallo");
     form.add(addressTable);
     /*
     BorderTable phoneTable = getPhoneTable();

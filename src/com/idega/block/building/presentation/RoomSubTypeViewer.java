@@ -161,6 +161,7 @@ public RoomSubTypeViewer(int room_sub_type_id){
         if ( appartment.length > 0 ) {
           Floor floor = new Floor(appartment[0].getFloorId());
           building_id = floor.getBuildingId();
+          Building building = new Building(building_id);
         }
 
       RoomSubType[] rooms = BuildingFinder.findRoomSubTypesInBuilding(building_id);

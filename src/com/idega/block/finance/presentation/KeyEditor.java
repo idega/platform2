@@ -28,6 +28,7 @@ public abstract class KeyEditor extends com.idega.jmodule.object.ModuleObjectCon
   protected int fontSize = 2;
   protected boolean fontBold = false;
   protected String styleAttribute = "font-size: 8pt";
+  private int iBorder = 2;
 
   public KeyEditor(String sHeader){
     LightColor = "#D7DADF";
@@ -50,6 +51,9 @@ public abstract class KeyEditor extends com.idega.jmodule.object.ModuleObjectCon
       this.MiddleColor = MainColor;
     if(DarkColor.startsWith("#"))
       this.DarkColor = DarkColor;
+  }
+  public void setBorder(int border){
+    this.iBorder = border;
   }
   public void setHeaderText(String sHeader){
     this.sHeader = sHeader;
@@ -104,7 +108,7 @@ public abstract class KeyEditor extends com.idega.jmodule.object.ModuleObjectCon
   }
   protected void addFrame(){
     Table BorderTable = new Table();
-    BorderTable.setCellpadding(2);
+    BorderTable.setCellpadding(this.iBorder);
     BorderTable.setCellspacing(0);
     BorderTable.setColor(DarkColor);
     BorderTable.setWidth("100%");

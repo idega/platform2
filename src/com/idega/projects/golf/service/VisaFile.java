@@ -103,6 +103,7 @@ public class VisaFile  {
     out.write(c);
 
     Member M;
+    UnionMemberInfo UMI;
     idegaTimestamp cardexpiredate,startDate;
     Card card;
     String sCardNumber, sCardName,sCardKt,sCardExpires,sInstallments,sStartDate;
@@ -127,8 +128,8 @@ public class VisaFile  {
         else if (iAmount != 0)
           total = total + iAmount;
         M = new Member(newMemberID);
-
-        card = M.getCard();
+        UMI = M.getUnionMemberInfo(iUnionId);
+        card = UMI.getCard();
          if(card.getExpireDate()!= null){
           cardexpiredate = new idegaTimestamp(card.getExpireDate());
           sCardExpires = cardexpiredate.getISLDate(".", true);
@@ -200,6 +201,7 @@ public class VisaFile  {
     out.write(c);
 
     Member M;
+    UnionMemberInfo UMI;
     idegaTimestamp cardexpiredate,startDate;
     Card card;
     String cardnr, cardname,cardkt,cardexpires,installments,startd;
@@ -224,7 +226,8 @@ public class VisaFile  {
         else if (amount != 0)
           total = total + amount;
         M = new Member(newMemberID);
-        card = M.getCard();
+        UMI = M.getUnionMemberInfo(un_id);
+        card = UMI.getCard();
         if(card.getExpireDate()!= null){
           cardexpiredate = new idegaTimestamp(card.getExpireDate());
           cardexpires = cardexpiredate.getISLDate(".", true);

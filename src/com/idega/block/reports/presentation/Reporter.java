@@ -7,6 +7,8 @@ import com.idega.jmodule.object.ModuleInfo;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.Collections;
+import java.util.List;
+import com.idega.data.EntityFinder;
 import com.idega.jmodule.object.Editor;
 import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.interfaceobject.*;
@@ -37,38 +39,94 @@ public class Reporter extends Editor{
   private int iViewCategories[] = null;
   private int iCategory = -1;
   private int[] iCategories = null;
-
+  private boolean sqlEditAdmin = false;
+  private String sMainCategoryAttribute = null,sViewCategoryAttribute = null;
+  private int iMainCategoryAttributeId = 0, iViewCategoryAttributeId= 0;
 
   public Reporter(){
-
   }
   public Reporter(int iMainCategory){
+    iCategory = iMainCategory;
     this.setMainCategory(iMainCategory);
   }
-
   public void setMainCategory(int iMainCategory){
     this.iMainCategories = new int[1];
     this.iMainCategories[0] = iMainCategory;
   }
-
   public void setViewCategory(int iViewCategory){
     this.iViewCategories = new int[1];
     this.iViewCategories[0] = iViewCategory;
   }
-
   public void setMainCategories(int[] iMainCategories){
     this.iMainCategories= iMainCategories;
   }
-
   public void setViewCategories(int[] iViewCategories){
     this.iViewCategories = iViewCategories;
   }
+  public void setSQLEdit(boolean value){
+    sqlEditAdmin = value;
+  }
+  public void setMainCategoryAttribute(String name,int id){
+    sMainCategoryAttribute = name;
+    iMainCategoryAttributeId = id;
+  }
+  public void setMainCategoryAttribute(String name){
+    sMainCategoryAttribute = name;
+  }
+  public void setMainCategoryAttributeId(int id){
+    iMainCategoryAttributeId = id;
+  }
+  public void setViewCategoryAttribute(String name,int id){
+    sViewCategoryAttribute = name;
+    iViewCategoryAttributeId = id;
+  }
+  public void setViewCategoryAttribute(String name){
+    sViewCategoryAttribute = name;
+  }
+  public void setViewCategoryAttributeId(int id){
+    iViewCategoryAttributeId = id;
+  }
 
-  private void checkCategory(ModuleInfo modinfo){
-    if(ReportService.isSessionCategory(modinfo))
-      iCategory = ReportService.getSessionCategory(modinfo);
-    else
-      ReportService.setSessionCategory(modinfo,iCategory);
+  private void checkCategories(ModuleInfo modinfo){
+    ReportCategoryAttribute RCA = null;
+    if(sMainCategoryAttribute != null){
+      List L = null;
+      try{
+        if(iMainCategoryAttributeId!= 0){
+          L = EntityFinder.findAllByColumn(new ReportCategoryAttribute(),"ATTRIBUTE_NAME",sMainCategoryAttribute,"ATTRIBUTE_ID",String.valueOf(iMainCategoryAttributeId));
+        }
+        else
+          L = EntityFinder.findAllByColumn(new ReportCategoryAttribute(),"ATTRIBUTE_NAME",sMainCategoryAttribute);
+      }
+      catch(SQLException sql){sql.printStackTrace();}
+
+      if(L != null){
+        iMainCategories = new int[L.size()];
+        for (int i = 0; i < L.size(); i++) {
+          RCA = (ReportCategoryAttribute)L.get(i);
+          iMainCategories[i] = RCA.getReportCategoryId();
+        }
+      }
+    }
+    if(sViewCategoryAttribute != null){
+      List K = null;
+      try{
+        if(iViewCategoryAttributeId!= 0){
+          K = EntityFinder.findAllByColumn(new ReportCategoryAttribute(),"ATTRIBUTE_NAME",sViewCategoryAttribute,"ATTRIBUTE_ID",String.valueOf(iViewCategoryAttributeId));
+        }
+        else
+          K = EntityFinder.findAllByColumn(new ReportCategoryAttribute(),"ATTRIBUTE_NAME",sViewCategoryAttribute);
+      }
+      catch(SQLException sql){sql.printStackTrace();}
+
+      if(K!= null){
+        iViewCategories = new int[K.size()];
+        for (int i = 0; i < K.size(); i++) {
+          RCA = (ReportCategoryAttribute)K.get(i);
+          iViewCategories[i] = RCA.getReportCategoryId();
+        }
+      }
+    }
   }
 
   protected void control(ModuleInfo modinfo){
@@ -78,7 +136,7 @@ public class Reporter extends Editor{
     if(modinfo.getSessionAttribute("headers") != null){
         modinfo.removeSessionAttribute("headers");
     }
-    //checkCategory(modinfo);
+    checkCategories(modinfo);
     if(modinfo.getParameter(sAction) != null){
       sActPrm = modinfo.getParameter(sAction);
       try{
@@ -126,18 +184,19 @@ public class Reporter extends Editor{
     int a = 1;
     if(iMainCategories != null){
       for (int i = 0; i < iMainCategories.length; i++) {
+        if(i==0)
+          iCategory = iMainCategories[i];
         T.add(getCategoryReports(iMainCategories[i],true),1,a++);
-        System.err.println("maincategory"+iMainCategories[i]);
       }
     }
     if(iViewCategories != null){
       for (int i = 0; i < iViewCategories.length; i++) {
         T.add(getCategoryReports(iViewCategories[i],false),1,a++);
-        System.err.println("viewcategory"+iViewCategories[i]);
       }
     }
     form.add(T);
     Link back =  new Link(new Image("/reports/pics/new.gif"),"/reports/reportedit.jsp");
+    back.addParameter("category_id",iCategory);
     addToHeader(back);
     this.setTextFontColor(DarkColor);
     this.setTextFontBold(true);
@@ -195,7 +254,7 @@ public class Reporter extends Editor{
     for (int i = 0; i < len; i++) {
       int col = 1;
       int row = i+3;
-      if(isAdmin){
+      if(sqlEditAdmin){
         T.add(getAdminLink(R[i].getID()),col,row);
       }
       T.add(getLink(R[i].getID()),col,row);

@@ -56,7 +56,6 @@ public class MemberInsert extends EntityInsert {
     eMember = new Member();
     if(debug) {
         eMember.setDefaultValues();
-        eMember.setCardId(1);
     }
     inputSocial = new TextInput(inputSocialName);
     inputName = new TextInput(inputNameName);

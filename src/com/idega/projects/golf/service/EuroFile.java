@@ -103,6 +103,7 @@ public class EuroFile  {
     out.write(c);
 
     Member M;
+    UnionMemberInfo UMI;
     idegaTimestamp cardexpiredate,startDate;
     Card card;
     String sCardNumber, sCardName,sCardKt,sCardExpires,sInstallments,sStartDate;
@@ -127,7 +128,8 @@ public class EuroFile  {
         else if (iAmount != 0)
           total = total + iAmount;
         M = new Member(newMemberID);
-        card = M.getCard();
+        UMI = M.getUnionMemberInfo(iUnionId);
+        card = UMI.getCard();
          if(card.getExpireDate()!= null){
           cardexpiredate = new idegaTimestamp(card.getExpireDate());
           sCardExpires = cardexpiredate.getISLDate(".", true);
@@ -201,6 +203,7 @@ public class EuroFile  {
     out.write(c);
 
     Member M;
+    UnionMemberInfo UMI;
     idegaTimestamp cardexpiredate,startDate;
     Card card;
     String sCardNumber, sCardName,sCardKt,sCardExpires,sInstallments,sStartDate;
@@ -225,7 +228,8 @@ public class EuroFile  {
         else if (iAmount != 0)
           total = total + iAmount;
         M = new Member(newMemberID);
-        card = M.getCard();
+        UMI = M.getUnionMemberInfo(un_id);
+        card = UMI.getCard();
         cardexpiredate = new idegaTimestamp(card.getExpireDate());
         sCardExpires = cardexpiredate.getISLDate(".", true);
         sCardNumber = card.getCardNumber();

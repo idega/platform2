@@ -38,7 +38,7 @@ public class BuildingMaker extends JModuleObject{
   private final String PicPath = "/adm/buildings/temp";
   private boolean isAdmin;
   private final int NOACT = 0,UPLOAD = 1, SAVE = 2,  NEW = 3, QUIT = 4;
-  private final int BUILDING=1,FLOOR=2,ROOMTYPE=3,ROOM=4;
+  private final int BUILDING=1,FLOOR=2,ROOMTYPE=3,ROOM=4,ROOMSUBTYPE=5;
   private Table MainFrame,Frame,InnerFrame;
   private Form theForm;
   private int BORDER= 0;
@@ -48,6 +48,8 @@ public class BuildingMaker extends JModuleObject{
   private void control(ModuleInfo modinfo){
 
     try{
+      if(modinfo.getSession().getAttribute("lodging_id")!=null)
+        add(modinfo.getSession().getAttribute("lodging_id"));
       if(modinfo.getSession().getAttribute("build_multi")!=null)
         isMulti = (Boolean)  modinfo.getSession().getAttribute("build_multi");
       if(modinfo.getSession().getAttribute("bm_ip")!=null)
@@ -85,9 +87,10 @@ public class BuildingMaker extends JModuleObject{
     ModuleObject MO = null;
     switch (choice) {
       case BUILDING :  MO = this.makeBuildingFields("","","");      break;
-      case FLOOR    :  MO = this.makeFloorFields("","");             break;
+      case FLOOR    :  MO = this.makeFloorFields("","");            break;
       case ROOMTYPE :  MO = this.makeTypeFields("");                break;
-      case ROOM     :  MO = this.makeRoomFields("","","");            break;
+      case ROOM     :  MO = this.makeRoomFields("","","");          break;
+      case ROOMSUBTYPE : MO = this.makeSubTypeFields("","","","","",false,false,false,false,false,false,false);        break;
       default : MO = this.makeBuildingFields("","","");
     }
     if(MO!=null)
@@ -106,15 +109,17 @@ public class BuildingMaker extends JModuleObject{
     Part part;
     File dir = null;
     String value = null;
-    String sName="",sAddress="",sZip="",sInfo="",sFloor="",sHouse="",sType="";
+    String sName="",sAddress="",sZip="",sInfo="",sFloor="",sHouse="",sType="",sSubType="";
     String sButton = "",sGet = "";
+    String sRoomCount ="",sArea = "";
+    boolean bKitchen=false,bBath=false,bStorage=false,bBalcony=false,bStudy=false,bLoft=false,bPlan=false;
     String submitAction="",sLodging="",sId="";
     while ((part = mp.readNextPart()) != null) {
       String name = part.getName();
       if(part.isParam()){
         ParamPart paramPart = (ParamPart) part;
         value = paramPart.getStringValue();
-        if(name.equalsIgnoreCase("bm_name") )          sName     = value;
+         if(name.equalsIgnoreCase("bm_name") )          sName     = value;
         else if(name.equalsIgnoreCase("bm_address") )  sAddress  = value;
         else if(name.equalsIgnoreCase("bm_zip"))       sZip      = value;
         else if(name.equalsIgnoreCase("bm_info"))      sInfo     = value;
@@ -123,10 +128,21 @@ public class BuildingMaker extends JModuleObject{
         else if(name.equalsIgnoreCase("bm_floor"))     sFloor    = value;
         else if(name.equalsIgnoreCase("bm_info"))      sInfo     = value;
         else if(name.equalsIgnoreCase("bm_roomtype"))  sType     = value;
+        else if(name.equalsIgnoreCase("bm_subtype"))   sSubType     = value;
+        else if(name.equalsIgnoreCase("bm_roomcount")) sRoomCount = value;
+        else if(name.equalsIgnoreCase("bm_area"))      sArea = value;
+        else if(name.equalsIgnoreCase("bm_kitch"))     bKitchen = true;
+        else if(name.equalsIgnoreCase("bm_bath"))      bBath = true;
+        else if(name.equalsIgnoreCase("bm_stor"))      bStorage = true;
+        else if(name.equalsIgnoreCase("bm_balc"))      bBalcony = true;
+        else if(name.equalsIgnoreCase("bm_study"))     bStudy = true;
+        else if(name.equalsIgnoreCase("bm_loft"))      bLoft = true;
+        else if(name.equalsIgnoreCase("bm_plan"))      bPlan = true;
         else if(name.equalsIgnoreCase("submit"))       submitAction = value;
         else if(name.equalsIgnoreCase("button"))       sButton = value;
         else if(name.equalsIgnoreCase("get"))          sGet = value;
         else if(name.equalsIgnoreCase("dr_id"))        sId = value;
+
         add(name+" : "+value+"<br>");
       }
       else if (part.isFile()) {
@@ -150,6 +166,7 @@ public class BuildingMaker extends JModuleObject{
         }
       }
     }
+    add("plan:"+bPlan);
     boolean multi = true;
     modinfo.getSession().setAttribute("build_multi",new Boolean(multi));
 
@@ -162,6 +179,7 @@ public class BuildingMaker extends JModuleObject{
       else if(sButton.equalsIgnoreCase("Floor")) iChoice = this.FLOOR;
       else if(sButton.equalsIgnoreCase("Type")) iChoice = this.ROOMTYPE;
       else if(sButton.equalsIgnoreCase("Room")) iChoice = this.ROOM;
+      else if(sButton.equalsIgnoreCase("Subtype")) iChoice = this.ROOMSUBTYPE;
       doMain(modinfo,true,iChoice);
       //add("choice "+iChoice);
       return;
@@ -190,8 +208,13 @@ public class BuildingMaker extends JModuleObject{
         this.doMain(modinfo,true,this.ROOMTYPE );
       }
       else if(sLodging.equalsIgnoreCase("room") ){
-        this.storeRoom(sName,sFloor,sType,sInfo,iImageId,id);
+        this.storeRoom(sName,sFloor,sSubType,sInfo,iImageId,id);
         this.doMain(modinfo,true,this.ROOM);
+      }
+      else if(sLodging.equalsIgnoreCase("subtype") ){
+        this.storeRoomSubType(sName, sInfo,id,Integer.parseInt(sType),iImageId,bPlan,
+        sArea, sRoomCount,bKitchen,bBath,bStorage,bLoft,bStudy,bBalcony);
+        this.doMain(modinfo,true,this.ROOMSUBTYPE);
       }
       if(modinfo.getSession().getAttribute("lodging_id")!=null)
         modinfo.getSession().removeAttribute("lodging_id");
@@ -230,6 +253,17 @@ public class BuildingMaker extends JModuleObject{
             einfo = r.getInfo();
             imageid = r.getImageId();
             fields = this.makeRoomFields(r.getName(),String.valueOf(r.getFloorId()),String.valueOf(r.getRoomSubTypeId()));
+          }
+           else if(sLodging.equalsIgnoreCase("subtype") ){
+            RoomSubType r = new RoomSubType(id);
+            einfo = r.getInfo();
+            if(bPlan)
+              imageid = r.getFloorPlanId();
+            else
+              imageid = r.getImageId();
+            fields = this.makeSubTypeFields(r.getName(),String.valueOf(r.getRoomTypeId()),String.valueOf(r.getArea()),
+            String.valueOf(r.getID()),String.valueOf(r.getRoomCount()),bPlan,r.getKitchen(),r.getBathRoom(),
+            r.getStorage(),r.getBalcony(),r.getStudy(),r.getLoft());
           }
         }
         catch(SQLException e){}
@@ -273,6 +307,9 @@ public class BuildingMaker extends JModuleObject{
         this.addFields(this.makeTypeFields(sName));
       else if(sLodging.equalsIgnoreCase("room") )
         this.addFields(this.makeRoomFields(sName,sFloor,sType));
+      else if(sLodging.equalsIgnoreCase("subtype") )
+        this.addFields(this.makeSubTypeFields(sName,sType,sArea,"",sRoomCount,bPlan
+        ,bKitchen,bBath,bStorage,bBalcony,bStudy,bLoft));
     }
 
   }
@@ -342,6 +379,36 @@ public class BuildingMaker extends JModuleObject{
         etype = new RoomType(id);
       etype.setName(name);
       etype.setInfo(info);
+      if(id != -1)
+        etype.update();
+      else
+        etype.insert();
+    }
+    catch(SQLException e){}
+
+  }
+  private void storeRoomSubType(String name, String info,int id,int roomtypeid,
+                int imageid,boolean plan,String area,String roomcount,
+                boolean kitch,boolean bath,boolean stor,boolean loft,boolean stud,boolean balc){
+    try{
+      RoomSubType etype = new RoomSubType();
+      if(id != -1)
+        etype = new RoomSubType(id);
+      etype.setName(name);
+      etype.setInfo(info);
+      if(plan)
+        etype.setFloorPlanId(imageid);
+      else
+        etype.setImageId(imageid);
+      etype.setRoomTypeId(roomtypeid);
+      etype.setArea(Float.parseFloat(area));
+      etype.setRoomCount(Integer.parseInt(roomcount));
+      etype.setBalcony(balc);
+      etype.setBathRoom(bath);
+      etype.setKitchen(kitch);
+      etype.setLoft(loft);
+      etype.setStorage(stor);
+      etype.setStudy(stud);
       if(id != -1)
         etype.update();
       else
@@ -509,11 +576,13 @@ public class BuildingMaker extends JModuleObject{
       SubmitButton B2 = new SubmitButton("button","Floor");
       SubmitButton B3 = new SubmitButton("button","Type");
       SubmitButton B4 = new SubmitButton("button","Room");
+      SubmitButton B5 = new SubmitButton("button","Subtype");
 
       LinkTable.add(B1);
       LinkTable.add(B2);
       LinkTable.add(B3);
       LinkTable.add(B4);
+      LinkTable.add(B5);
       return LinkTable;
     }
 
@@ -572,6 +641,7 @@ public class BuildingMaker extends JModuleObject{
   }
   private ModuleObject makeTypeFields(String sName){
     Table T = new Table();
+    String s;
     TextInput name = new TextInput("bm_name",sName);
     DropdownMenu roomtypes = drpLodgings(new RoomType(),"dr_id","Gerð","");
     HiddenInput HI = new HiddenInput("bm_choice","roomtype");
@@ -585,21 +655,59 @@ public class BuildingMaker extends JModuleObject{
     return T;
   }
 
-  private ModuleObject makeSubTypeFields(String sName){
+ private ModuleObject makeSubTypeFields(String sName,String sType,String sArea,String sSubType,
+    String sRoomCount,boolean bPlan,boolean bKitch,boolean bBath,boolean bStor, boolean bBalc,
+    boolean bStud, boolean bLoft){
     Table T = new Table();
     TextInput name = new TextInput("bm_name",sName);
-    DropdownMenu roomtypes = drpLodgings(new RoomType(),"dr_id","Gerð","");
-    HiddenInput HI = new HiddenInput("bm_choice","roomtype");
+    name.setLength(30);
+    DropdownMenu roomcount = drpCount("bm_roomcount","--","",6);
+    TextInput area = new TextInput("bm_area",sArea);
+    area.setLength(4);
+    CheckBox kitch = new CheckBox("bm_kitch","true");
+    if(bKitch) kitch.setChecked(true);
+    CheckBox bath = new CheckBox("bm_bath","true");
+    if(bBath) bath.setChecked(true);
+    CheckBox stor = new CheckBox("bm_stor","true");
+    if(bStor) stor.setChecked(true);
+    CheckBox balc = new CheckBox("bm_balc","true");
+    if(bBalc) balc.setChecked(true);
+    CheckBox study = new CheckBox("bm_study","true");
+    if(bStud) study.setChecked(true);
+    CheckBox loft = new CheckBox("bm_loft","true");
+    if(bLoft) loft.setChecked(true);
+    CheckBox plan = new CheckBox("bm_plan","true");
+    if(bPlan) plan.setChecked(true);
+    DropdownMenu roomtypes = drpLodgings(new RoomSubType(),"dr_id","Undirgerð",sSubType);
+    HiddenInput HI = new HiddenInput("bm_choice","subtype");
     name.setLength(30);
     T.add(HI);
-    T.add("Sækja gerð:",1,1);
+    T.add("Sækja undirgerð:",1,1);
     T.add(roomtypes,1,2);
     T.add(new SubmitButton("get","Get"),1,2);
     T.add("Heiti:",1,3);
     T.add(name,1,4);
+    T.add("Gerð:",1,5);
+    T.add(this.drpLodgings(new RoomType(),"bm_roomtype","Gerð",sType),1,5);
+    T.add("Fjöldi herbergja",1,6);
+    T.add(roomcount,2,6);
+    T.add("Flatarmál(m2)",1,7);
+    T.add(area,2,7);
+    T.add("Eldhús",1,8);
+    T.add(kitch,2,8);
+    T.add("Bað",1,9);
+    T.add(bath,2,9);
+    T.add("Geymsla",1,10);
+    T.add(stor,2,10);
+    T.add("Lesaðstaða",1,11);
+    T.add(study,2,11);
+    T.add("HáaLoft",1,12);
+    T.add(loft,2,12);
+    T.add("Teikning",1,13);
+    T.add(plan,2,13);
     return T;
   }
- private ModuleObject makeRoomFields(String sName,String sFloor,String sType){
+ private ModuleObject makeRoomFields(String sName,String sFloor,String sSubType){
     Table T = new Table();
     TextInput name = new TextInput("bm_name",sName);
     DropdownMenu rooms = drpLodgings(new Room(),"dr_id","Rými","");
@@ -614,7 +722,7 @@ public class BuildingMaker extends JModuleObject{
     T.add("Hæð:",1,5);
     T.add(this.drpFloors("bm_floor","Hæð",sFloor,true),1,6);
     T.add("Gerð:",1,7);
-    T.add(this.drpLodgings(new RoomType(),"bm_roomtype","Gerð",sFloor),1,8);
+    T.add(this.drpLodgings(new RoomSubType(),"bm_subtype","Gerð",sSubType),1,8);
     return T;
   }
 
@@ -661,6 +769,19 @@ public class BuildingMaker extends JModuleObject{
     return drp;
   }
 
+  private DropdownMenu drpCount(String name,String display,String selected,int len) {
+    DropdownMenu drp = new DropdownMenu(name);
+    drp.addDisabledMenuElement("0",display);
+    for(int i = 1; i < len+1 ; i++){
+      drp.addMenuElement(String.valueOf(i));
+    }
+    if(!selected.equalsIgnoreCase("")){
+      drp.setSelectedElement(selected);
+    }
+    return drp;
+  }
+
+
 
 
   private DropdownMenu drpLodgings(GenericEntity lodgings,String name,String display,String selected) {
@@ -689,5 +810,3 @@ public class BuildingMaker extends JModuleObject{
     control(modinfo);
   }
 }// class BuildingMaker
-
-

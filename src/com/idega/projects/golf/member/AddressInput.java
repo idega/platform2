@@ -67,7 +67,7 @@ public class AddressInput extends Input{
     return hTable;
   }
 
-  private void AddressUpdate(ModuleInfo modinfo,GolfMemberProfile profile){
+  public void AddressUpdate(ModuleInfo modinfo,GolfMemberProfile profile){
     Address eAddress1 = null,eAddress2 = null;
     boolean a1 = false,a2 = false;
     if(profile.bHasAddresses){
@@ -170,6 +170,4 @@ public class AddressInput extends Input{
     }
     return drp;
   }
-
-
 }

@@ -294,13 +294,13 @@ public class Member extends com.idega.data.genericentity.Member {
   }
 
   public boolean isMemberInUnion(Union union)throws SQLException{
-      int numRecords = getNumberOfRecords("select count (member_id) from union_member where union_id = "+union.getID()+" and member_id = "+this.getID());
+      int numRecords = getNumberOfRecords("select count (member_id) from union_member_info where union_id = "+union.getID()+" and member_id = "+this.getID());
 
       return (numRecords > 0);
   }
 
   public boolean isMemberInUnion()throws SQLException{
-      int numRecords = getNumberOfRecords("select count (member_id) from union_member where member_id = "+this.getID());
+      int numRecords = getNumberOfRecords("select count (member_id) from union_member_info where member_id = "+this.getID());
       return (numRecords > 0);
   }
 

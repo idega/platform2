@@ -16,8 +16,6 @@ public class MainPageJSPModule extends PageJSPModule{
     setPage(new MainPage());
   }
 
-
-
   public void setWidth( String width ){
     ((MainPage)getPage()).setWidth( width );
   }

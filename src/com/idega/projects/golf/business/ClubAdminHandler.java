@@ -105,12 +105,12 @@ public class ClubAdminHandler extends JModuleObject {
 
     Member member = new Member();
 
-    member.setFirstInstallmentDate(new idegaTimestamp().getSQLDate());
+   //member.setFirstInstallmentDate(new idegaTimestamp().getSQLDate());
     member.setFirstName("");
     member.setGender("");
     member.setSocialSecurityNumber("1010101010");
-    member.setVisible(false);
-    member.setMemberNumber(-1);
+    //member.setVisible(false);
+    //member.setMemberNumber(-1);
     member.setLastName("- admin");
     //member.insert();
 
