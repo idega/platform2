@@ -16,7 +16,7 @@ public class MemberInfoBMPBean extends GenericEntity implements MemberInfo{
     addAttribute("handicap_first","Upphafsforgjöf",true,true,"java.lang.Float");
     addAttribute("history", "Saga", true, true, "java.lang.String",20000);
     
-    addIndex("IDX_MINFO_1", "member_id");
+    addIndex("IDX_MEMBER_INFO_1", new String[]{ "member_id", "handicap" });
     hasAutoIncrement(false);
   }
 
