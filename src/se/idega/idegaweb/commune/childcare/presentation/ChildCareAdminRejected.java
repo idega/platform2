@@ -126,6 +126,7 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 			String name = null;
 			Link emailLink = null;
 			String emails = null;
+			Email email = null;
 			
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
@@ -133,7 +134,8 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				application = (ChildCareApplication) iter.next();
 				child = application.getChild();
 				emailLink = null;
-				emails = null;
+				email = null;
+				emails = "";
 				
 				if (application.getQueueDate() != null)
 					queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getQueueDate());
@@ -171,8 +173,9 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 							User parent = (User) iterPar.next();
 							
 							try {
-								Email email = getCommuneUserBusiness(iwc).getUsersMainEmail(parent);
-								if (email != null && email.getEmailAddress() != null) {
+								email = getCommuneUserBusiness(iwc).getUsersMainEmail(parent);
+								if (email != null && email.getEmailAddress() != null && !email.getEmailAddress().equals(" ")) {
+								//if (email != null && email.getEmailAddress() != null) {
 									emailLink = this.getSmallLink(email.getEmailAddress());
 									if (emails != null)
 										emails = emails + "; " + email.getEmailAddress();
