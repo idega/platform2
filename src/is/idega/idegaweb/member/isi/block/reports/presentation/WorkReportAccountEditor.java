@@ -903,6 +903,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     try {
       WorkReport workReport = workReportBusiness.getWorkReportById(workReportId);
       workReport.setAccountPartDone(true);
+      workReport.store();
     }
     catch (RemoteException ex) {
       String message =

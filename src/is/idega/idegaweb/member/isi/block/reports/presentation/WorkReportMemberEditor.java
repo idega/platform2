@@ -715,6 +715,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     try {
       WorkReport workReport = workReportBusiness.getWorkReportById(workReportId);
       workReport.setMembersPartDone(true);
+      workReport.store();
     }
     catch (RemoteException ex) {
       String message =

@@ -436,9 +436,9 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
         WorkReportBusiness business = getWorkReportBusiness(iwc);
         Collection coll = null;
         try {
-          coll = business.getAllLeagueWorkReportGroupsForYear(getYear());
+          coll = business.getLeaguesOfWorkReportById(getWorkReportId());
         }
-        catch (RemoteException ex) {
+        catch (Exception ex) {
           System.err.println(
             "[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportBusiness. Message is: "
               + ex.getMessage());
@@ -608,6 +608,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     try {
       WorkReport workReport = workReportBusiness.getWorkReportById(workReportId);
       workReport.setBoardPartDone(true);
+      workReport.store();
     }
     catch (RemoteException ex) {
       String message =
