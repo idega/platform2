@@ -39,31 +39,31 @@ import com.idega.util.IWTimestamp;
  * @author palli
  */
 public class AssessmentRoundThread extends Thread {
-	private AssessmentRound _round = null;
-	private IWApplicationContext _iwac = null;
-	private List _tariffs = null;
+	private AssessmentRound round = null;
+	private IWApplicationContext iwac = null;
+	private List tariffs = null;
 	
 	public AssessmentRoundThread(AssessmentRound assessmentRound, IWApplicationContext iwac, List tariffs) {
-		_round = assessmentRound;
-		_iwac = iwac;
+		round = assessmentRound;
+		this.iwac = iwac;
 		if (tariffs != null) {
-			_tariffs = new ArrayList();
-			_tariffs.addAll(tariffs);
+			this.tariffs = new ArrayList();
+			this.tariffs.addAll(tariffs);
 		}
 	}
 
 	public void run() {
-		Group top = _round.getGroup();
-		if (_tariffs != null && !_tariffs.isEmpty()) {
-			Iterator it = _tariffs.iterator();
+		Group top = round.getGroup();
+		if (tariffs != null && !tariffs.isEmpty()) {
+			Iterator it = tariffs.iterator();
 			while (it.hasNext()) {
 				String id = (String) it.next();
 				try {
 					ClubTariffType tariffType = ((ClubTariffTypeHome) IDOLookup.getHome(ClubTariffType.class)).findByPrimaryKey(new Integer(id));
 			
-					_round.addTariffType(tariffType);
+					round.addTariffType(tariffType);
 			
-					assessGroup(top, _round.getIncludeChildren(), tariffType);
+					assessGroup(top, round.getIncludeChildren(), tariffType);
 				}
 				catch (IDOLookupException e) {
 					e.printStackTrace();
@@ -81,15 +81,15 @@ public class AssessmentRoundThread extends Thread {
 		}
 		
 		IWTimestamp now = IWTimestamp.RightNow();
-		_round.setEndTime(now.getTimestamp());
-		_round.store();
+		round.setEndTime(now.getTimestamp());
+		round.store();
 	}
 
 	private void assessGroup(Group group, boolean includeChildren, ClubTariffType tariffType) {
 		try {
 			IWTimestamp runOnDate = null;
-			if (_round.getRunOnDate() != null) {
-				runOnDate = new IWTimestamp(_round.getRunOnDate());
+			if (round.getRunOnDate() != null) {
+				runOnDate = new IWTimestamp(round.getRunOnDate());
 			}
 			Collection tariffs = ((ClubTariffHome) IDOLookup.getHome(ClubTariff.class)).findByGroupAndTariffType(group, tariffType, runOnDate);
 			if (tariffs != null && !tariffs.isEmpty()) {
@@ -105,9 +105,9 @@ public class AssessmentRoundThread extends Thread {
 								
 							FinanceEntry entry = getFinanceEntryHome().create();
 							entry.setUser(user);
-							entry.setAssessment(_round);
-							entry.setClub(_round.getClub());
-							Group division = _round.getDivision();
+							entry.setAssessment(round);
+							entry.setClub(round.getClub());
+							Group division = round.getDivision();
 							if (division == null) {
 								division = getAccountingBusiness().findDivisionForGroup(group);
 							}
@@ -121,7 +121,7 @@ public class AssessmentRoundThread extends Thread {
 							entry.setStatusCreated();
 							entry.setTypeAssessment();
 							entry.setEntryOpen(true);
-							entry.setInsertedByUser(_round.getExecutedBy());
+							entry.setInsertedByUser(round.getExecutedBy());
 							entry.store();
 						}
 					}
@@ -154,7 +154,7 @@ public class AssessmentRoundThread extends Thread {
 	
 	private UserBusiness getUserBusiness() {
 		try {
-			return (UserBusiness) IBOLookup.getServiceInstance(_iwac, UserBusiness.class);
+			return (UserBusiness) IBOLookup.getServiceInstance(iwac, UserBusiness.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
@@ -163,7 +163,7 @@ public class AssessmentRoundThread extends Thread {
 	
 	private AccountingBusiness getAccountingBusiness() {
 		try {
-			return (AccountingBusiness) IBOLookup.getServiceInstance(_iwac, AccountingBusiness.class);
+			return (AccountingBusiness) IBOLookup.getServiceInstance(iwac, AccountingBusiness.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());

@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.util.Locale;
 
 import com.idega.block.poll.business.PollBusiness;
-import com.idega.block.text.business.TextFinder;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;

@@ -21,4 +21,8 @@ public class ExportBusinessBean extends IBOServiceBean implements ExportBusiness
 	public void decryptFile(String keyFileName, String inputFileName, String outputFileName) {
 		
 	}
+	
+	public void createFileFromContracts() {
+	    
+	}
 }
