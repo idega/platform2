@@ -97,7 +97,7 @@ public class CampusApprover extends KeyEditor{
       }
     }
     else
-      add(formatText("Ekki Réttindi"));
+      add(formatText(iwrb.getLocalizedString("access_denied","Access denied")));
     //add(String.valueOf(iSubjectId));
   }
 
@@ -127,10 +127,11 @@ public class CampusApprover extends KeyEditor{
   }
 
   public ModuleObject makeApplicantTable(ModuleInfo modinfo,IWResourceBundle iwrb){
+
     Table T = new Table();
       T.setCellpadding(2);
       T.setCellspacing(1);
-    List L = ApplicationFinder.listOfNewApplicationHoldersInSubject(this.iSubjectId,this.sGlobalStatus,this.sGlobalOrder);
+    List L = ApplicationFinder.listOfApplicationHoldersInSubject(this.iSubjectId,this.sGlobalStatus,this.sGlobalOrder);
 
     if(L != null){
       ListIterator iterator = L.listIterator();
@@ -138,7 +139,7 @@ public class CampusApprover extends KeyEditor{
       int len = L.size();
       int row = 1;
       int col = 1;
-
+       System.out.println("lengd:"+len);
       Image printImage = new Image("/pics/print.gif");
       Image viewImage = new Image("/pics/view.gif");
       T.add(headerText(iwrb.getLocalizedString("nr","Nr")),col++,row);
@@ -179,6 +180,7 @@ public class CampusApprover extends KeyEditor{
       T.add(formatText(" "),1,lastrow);
       T.setHeight(lastrow,bottomThickness);
       T.add(getPDFLink(printImage,sGlobalStatus,iSubjectId),1,++row);
+
     }
     else{
       T.add(formatText(iwrb.getLocalizedString("no_applications","No applications in database")));
