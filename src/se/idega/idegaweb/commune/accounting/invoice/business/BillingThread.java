@@ -227,8 +227,7 @@ public abstract class BillingThread extends Thread{
 					PaymentRecordHome prechome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
 					paymentRecord = prechome.findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(ownPosting,doublePosting,vatRuleRegulation,paymentText,month);
 					
-					//If it already exists, just update the changes needed.
-					paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
+					//paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
 		
 					paymentRecord.setTotalAmount(AccountingUtil.roundAmount(paymentRecord.getTotalAmount()+newamount));
 					paymentRecord.setTotalAmountVAT(vatAmount);
@@ -247,7 +246,7 @@ public abstract class BillingThread extends Thread{
 					paymentRecord.setPaymentText(paymentText);
 					paymentRecord.setDateCreated(currentDate);
 					paymentRecord.setCreatedBy(BATCH_TEXT);
-					paymentRecord.setPlacements(1);
+					paymentRecord.setPlacements(0);
 					//paymentRecord.setPieceAmount(0);
 					paymentRecord.setTotalAmount(AccountingUtil.roundAmount(newamount));
 					paymentRecord.setTotalAmountVAT(vatAmount);
