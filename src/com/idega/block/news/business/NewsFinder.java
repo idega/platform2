@@ -26,17 +26,22 @@ import com.idega.core.data.ICFile;
 
 public class NewsFinder {
 
+	public static final int PUBLISHISING = 1,UNPUBLISHED = 2, PUBLISHED = 3;
+
   public NewsFinder() {
 
   }
 
   public static NewsCategory getNewsCategory(int iCategoryId){
-    try {
-      return new NewsCategory(iCategoryId );
-    }
-    catch (SQLException ex) {
-      return null;
-    }
+    if( iCategoryId > 0){
+		  try {
+        return new NewsCategory(iCategoryId );
+      }
+      catch (SQLException ex) {
+
+      }
+		}
+		return null;
   }
 
   public static List listOfAllNwNewsInCategory(int newsCategoryId){
@@ -242,38 +247,6 @@ public class NewsFinder {
     return L;
   }
 
-  public static LocalizedText getLocalizedText(int iNwNewsId,int iLocaleId){
-    LocalizedText LTX = null;
-    List L =   listOfLocalizedText(iNwNewsId,iLocaleId);
-    if(L!= null){
-      LTX = (LocalizedText) L.get(0);
-    }
-
-    return LTX;
-  }
-  public static List listOfLocalizedText(int iNwNewsId,int iLocaleId){
-    StringBuffer sql = new StringBuffer("select lt.* from tx_localized_text lt, nw_news n,NW_NEWS_TX_LOCALIZED_TEXT ttl ");
-    sql.append(" where ttl.nw_news_id = n.nw_news_id  ");
-    sql.append(" and ttl.tx_localized_text_id = lt.tx_localized_text_id ");
-    sql.append(" and n.nw_news_id = ");
-    sql.append(iNwNewsId);
-    sql.append(" and lt.ic_locale_id =  ");
-    sql.append(iLocaleId);
-    try {
-      return EntityFinder.findAll(new LocalizedText(),sql.toString());
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return null;
-    }
-  }
-
-  public static LocalizedText getLocalizedText(int iNwNewsId,Locale locale){
-    int Lid = getLocaleId(locale);
-    return getLocalizedText(iNwNewsId,Lid);
-  }
-
-
 
   public static NwNews getNews(int iNewsId){
     try {
@@ -284,11 +257,73 @@ public class NewsFinder {
       return null;
     }
   }
-/*
-  public static listOfObjectInstanceTexts(){
 
-  }
-*/
+	public static int	countNewsInCategory(int iCategoryId){
+		try {
+			NwNews news = (NwNews)NwNews.getStaticInstance(NwNews.class);
+			return news.getNumberOfRecords(news.getColumnNameNewsCategoryId(),String.valueOf(iCategoryId));
+		}
+		catch (SQLException ex) {
+
+		}
+		return 0;
+
+	}
+
+	public static int countNewsInCategory(int iCategoryId, int PublishType){
+	  StringBuffer sql = new StringBuffer("select count(*) from ");
+		sql.append(NwNews.getEntityTableName());
+		sql.append(" n,");
+		sql.append(Content.getEntityTableName());
+		sql.append(" c where n.");
+		sql.append(NwNews.getColumnNameContentId());
+		sql.append(" = c.");
+		sql.append(Content.getEntityTableName());
+		sql.append("_id and ");
+		sql.append(NwNews.getColumnNameNewsCategoryId());
+		sql.append(" = ");
+		sql.append(iCategoryId);
+		if(PublishType > 0){
+			String today = idegaTimestamp.RightNow().toSQLString();
+			switch (PublishType) {
+				case UNPUBLISHED :
+						sql.append(" and c.");
+						sql.append(Content.getColumnNamePublishFrom() );
+						sql.append(" >= '");
+						sql.append(today);
+						sql.append("' ");
+				break;
+				case PUBLISHISING:
+						sql.append(" and c.");
+						sql.append(Content.getColumnNamePublishFrom() );
+						sql.append(" <= '");
+						sql.append(today);
+						sql.append("' and c.");
+						sql.append(Content.getColumnNamePublishTo());
+						sql.append(" >= '");
+						sql.append(today);
+						sql.append("' ");
+				break;
+				case PUBLISHED:
+				  sql.append(" and c.");
+					sql.append(Content.getColumnNamePublishTo());
+					sql.append(" <= '");
+					sql.append(today);
+					sql.append("' ");
+				break;
+			}
+		}
+		NwNews ge = (NwNews)NwNews.getStaticInstance(NwNews.class);
+		try {
+			//System.err.println(sql.toString());
+			return ge.getIntTableValue(sql.toString());
+		}
+		catch (SQLException ex) {
+
+		}
+		return 0;
+	}
+
   public static List listOfLocales(){
     return ICLocaleBusiness.listLocaleCreateIsEn();
   }

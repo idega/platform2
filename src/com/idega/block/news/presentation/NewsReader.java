@@ -294,14 +294,17 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
 
     Text tFrom = formatText(df.format((java.util.Date)from.getTimestamp()),false);
     Text tTo = formatText(df.format((java.util.Date)to.getTimestamp()),false);
+		// Unpublished
     if(from.isLaterThan(now)){
       tFrom.setFontColor("#FF0000");
       tTo.setFontColor("#FF0000");
     }
+		// Published
     else if(now.isLaterThan(to)){
       tFrom.setFontColor("#0000FF");
       tTo.setFontColor("#0000FF");
     }
+		// Publishing
     else if(now.isLaterThan(from) && to.isLaterThan(now)){
       tFrom.setFontColor("#00FF00");
       tTo.setFontColor("#00FF00");

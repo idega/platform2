@@ -281,15 +281,20 @@ public class NewsBusiness{
       newsCat.setDescription(sDesc);
       newsCat.setValid(true);
 
+
       if(update){
         newsCat.update();
       }
       else{
         newsCat.insert();
-        if(iObjectInstanceId > 0){
-          ICObjectInstance objIns = new ICObjectInstance(iObjectInstanceId);
-          newsCat.addTo(objIns);
-        }
+      }
+
+			// Binding category to instanceId
+			if(iObjectInstanceId > 0){
+				ICObjectInstance objIns = new ICObjectInstance(iObjectInstanceId);
+				// Allows only one category per instanceId
+				objIns.removeFrom(new NewsCategory());
+        newsCat.addTo(objIns);
       }
 
       t.commit();

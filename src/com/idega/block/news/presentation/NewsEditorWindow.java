@@ -47,6 +47,7 @@ private int iUserId = -1;
 private User eUser = null;
 private int iObjInsId = -1;
 private int defaultPublishDays = 50;
+private int SAVECATEGORY = 1,SAVENEWS = 2;
 
 private static String prmHeadline = "nwep_headline";
 private static String prmAuthor = "nwep_author";
@@ -115,6 +116,7 @@ private IWResourceBundle iwrb;
     String sCategoryId = iwc.getParameter(prmCategory);
     int iCategoryId = sCategoryId !=null?Integer.parseInt(sCategoryId):-1;
     String sAtt = null;
+		int saveInfo = getSaveInfo(iwc);
 
     // LocaleHandling
     int iLocaleId = -1;
@@ -150,21 +152,22 @@ private IWResourceBundle iwrb;
       else if(iwc.getParameter(prmObjInstId)!= null){
         iObjInsId = Integer.parseInt(iwc.getParameter(prmObjInstId ) );
         doView = false;
-        if(iObjInsId > 0)
+        if(iObjInsId > 0 && saveInfo != SAVECATEGORY)
           iCategoryId = NewsFinder.getObjectInstanceCategoryId(iObjInsId );
         addCategoryFields(NewsFinder.getNewsCategory(iCategoryId),iObjInsId  );
       }
+			//add("category id "+iCategoryId);
+			//add(" instance id "+iObjInsId);
       // end of News initialization
 
       // Form processing
-      if(iwc.getParameter(prmFormProcess)!=null){
-        if(iwc.getParameter(prmFormProcess).equals("Y"))
-          processForm(iwc,sNewsId,sLocTextId, sCategoryId);
-        else if(iwc.getParameter(prmFormProcess).equals("C"))
-          processCategoryForm(iwc,sCategoryId,iObjInsId);
+      if(saveInfo == SAVENEWS)
+        processForm(iwc,sNewsId,sLocTextId, sCategoryId);
+      else if(saveInfo == SAVECATEGORY)
+        processCategoryForm(iwc,sCategoryId,iObjInsId);
 
-        //doView = false;
-      }
+      //doView = false;
+
       if(doView)
         doViewNews(sNewsId,sAttribute,chosenLocale,iLocaleId,iCategoryId );
     }
@@ -172,6 +175,17 @@ private IWResourceBundle iwrb;
       noAccess();
     }
   }
+
+	private int getSaveInfo(IWContext iwc){
+	  if(iwc.getParameter(prmFormProcess)!=null){
+      if(iwc.getParameter(prmFormProcess).equals("Y"))
+        return SAVENEWS;
+      else if(iwc.getParameter(prmFormProcess).equals("C"))
+        return SAVECATEGORY;
+        //doView = false;
+    }
+		return 0;
+	}
 
   // Form Processing :
   private void processForm(IWContext iwc,String sNewsId,String sLocTextId,String sCategory){
@@ -205,10 +219,14 @@ private IWResourceBundle iwrb;
     String sDesc = iwc.getParameter(prmCatDesc);
     if(sName!=null){
       int iCatId = sCategoryId != null ? Integer.parseInt(sCategoryId):-1;
-      NewsBusiness.saveNewsCategory(iCatId,sName,sDesc,iObjInsId);
+			if(iwc.getParameter(actSave)!=null || iwc.getParameter(actSave+".x")!=null ){
+				//System.err.println("saving CATId = "+iCatId +" ObjInstId = "+iObjInsId);
+        NewsBusiness.saveNewsCategory(iCatId,sName,sDesc,iObjInsId);
+				setParentToReload();
+				close();
+			}
     }
-    setParentToReload();
-    close();
+
   }
 
   private void doViewNews(String sNewsId,String sAttribute,Locale locale,int iLocaleId,int iCategoryId){
@@ -236,8 +254,8 @@ private IWResourceBundle iwrb;
     String sSource = iwc.getParameter(prmSource);
     String sPubFrom = iwc.getParameter(prmPubFrom);
     String sPubTo = iwc.getParameter(prmPubTo);
-    System.err.println("publish from" + sPubFrom);
-    System.err.println("publish to" + sPubTo);
+    //System.err.println("publish from" + sPubFrom);
+    //System.err.println("publish to" + sPubTo);
     if(sHeadline != null || sBody != null){
       int iNwNewsId = sNwNewsId!=null?Integer.parseInt(sNwNewsId): -1;
       int iLocalizedTextId = sLocalizedTextId != null ? Integer.parseInt(sLocalizedTextId): -1;
@@ -292,23 +310,60 @@ private IWResourceBundle iwrb;
   }
 
   private void addCategoryFields(NewsCategory newsCategory,int iObjInst){
-    boolean hasCategory = newsCategory !=null ? true:false;
+
+	  String sCategory= iwrb.getLocalizedString("category","Category");
+    String sName = iwrb.getLocalizedString("name","Name");
+    String sDesc = iwrb.getLocalizedString("description","Description");
+
+		List L = NewsFinder.listOfNewsCategories();
+		DropdownMenu catDrop = new DropdownMenu(L,prmCategory);
+		catDrop.addMenuElementFirst("-1",sCategory);
+		catDrop.setToSubmit();
+
+		boolean hasCategory = newsCategory !=null ? true:false;
     TextInput tiName = new TextInput(prmCatName);
     tiName.setLength(40);
     tiName.setMaxlength(255);
 
-    TextArea taDesc = new TextArea(prmCatDesc,65,10);
+    TextArea taDesc = new TextArea(prmCatDesc,65,5);
     SubmitButton save = new SubmitButton(iwrb.getImage("save.gif"),actSave);
     if(hasCategory){
+			int id = newsCategory.getID();
+			catDrop.setSelectedElement(String.valueOf(newsCategory.getID()));
       if(newsCategory.getName()!=null)
         tiName.setContent(newsCategory.getName());
       if(newsCategory.getDescription()!=null)
         taDesc.setContent(newsCategory.getDescription());
-      addHiddenInput(new HiddenInput(prmCategory ,String.valueOf(newsCategory.getID())));
+      addHiddenInput(new HiddenInput(prmCategory ,String.valueOf(id)));
+
+			int iNewsCount = NewsFinder.countNewsInCategory(id);
+			int iUnPublishedCount = NewsFinder.countNewsInCategory(id,NewsFinder.UNPUBLISHED);
+			int iPublishingCount = NewsFinder.countNewsInCategory(id,NewsFinder.PUBLISHISING);
+			int iPublishedCount = NewsFinder.countNewsInCategory(id,NewsFinder.PUBLISHED);
+
+			String sNewsCount = iwrb.getLocalizedString("newscount","News count");
+			String sUnPublishedCount = iwrb.getLocalizedString("unpublished","Unpublished");
+			String sPublishingCount = iwrb.getLocalizedString("publishing","In publish");
+			String sPublishedCount = iwrb.getLocalizedString("published","Published");
+
+			Table table = new Table(2,4);
+			table.add(formatText(sNewsCount),1,1);
+			table.add(String.valueOf(iNewsCount),2,1);
+			table.add(formatText(sUnPublishedCount),1,2);
+			table.add(String.valueOf(iUnPublishedCount),2,2);
+			table.add(formatText(sPublishingCount),1,3);
+			table.add(String.valueOf(iPublishingCount),2,3);
+			table.add(formatText(sPublishedCount),1,4);
+			table.add(String.valueOf(iPublishedCount),2,4);
+
+			String sInfo = iwrb.getLocalizedString("info","Info");
+
+			addRight(sInfo,table,true);
+
     }
 
-    String sName = iwrb.getLocalizedString("name","Name");
-    String sDesc = iwrb.getLocalizedString("description","Description");
+
+		addLeft(sCategory,catDrop,true);
     addLeft(sName,tiName,true);
     addLeft(sDesc,taDesc,true);
 
