@@ -15,6 +15,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWResourceMessage;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.Layer;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.DownloadLink;
 import com.idega.presentation.text.Link;
@@ -89,6 +90,12 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private final static String STYLENAME_TEMPLATE_HEADER = "TemplateHeader";
 	private final static String STYLENAME_TEMPLATE_HEADER_LINK = "TemplateHeaderLink";
 	private final static String STYLENAME_TEMPLATE_SMALL_HEADER = "TemplateSmallHeader";
+	
+	private final static String STYLENAME_WINDOW_HEADER = "windowHeader";
+    private final static String DEFAULT_WINDOW_HEADER_STYLE = "border-bottom: 1px solid #000000;background: #cccccc;padding: 12px;";
+    
+    private final static String STYLENAME_WINDOW_BODY = "windowBody";
+    private final static String DEFAULT_WINDOW_BODY_STYLE = "margin: 8px;";
 
 	private final static String DEFAULT_BACKGROUND_COLOR = "#ffffff";
 	private final static String DEFAULT_HEADER_COLOR = "#d0daea";
@@ -622,8 +629,8 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	 */
 	public Map getStyleNames() {
 		HashMap map = new HashMap();
-		String[] styleNames = { STYLENAME_HEADING_ROW, STYLENAME_HEADER_ROW2, STYLENAME_HEADER_ROW, STYLENAME_LIGHT_ROW, STYLENAME_DARK_ROW, STYLENAME_BIG_HEADER, STYLENAME_TEXT, STYLENAME_SMALL_TEXT, STYLENAME_HEADER, STYLENAME_SMALL_HEADER, STYLENAME_LINK, STYLENAME_LIST_HEADER, STYLENAME_LIST_TEXT, STYLENAME_LIST_LINK, STYLENAME_ERROR_TEXT, STYLENAME_SMALL_ERROR_TEXT, STYLENAME_INTERFACE, STYLENAME_SMALL_LINK, STYLENAME_SMALL_LINK+":hover", STYLENAME_TEMPLATE_LINK, STYLENAME_TEMPLATE_LINK+":hover", STYLENAME_TEMPLATE_HEADER, STYLENAME_TEMPLATE_SMALL_HEADER, STYLENAME_TEMPLATE_LINK_SELECTED, STYLENAME_TEMPLATE_LINK_SELECTED+":hover", STYLENAME_TEMPLATE_SUBLINK, STYLENAME_TEMPLATE_SUBLINK+":hover", STYLENAME_TEMPLATE_SUBLINK_SELECTED, STYLENAME_TEMPLATE_SUBLINK_SELECTED+":hover", STYLENAME_TEMPLATE_HEADER_LINK, STYLENAME_TEMPLATE_HEADER_LINK+":hover", STYLENAME_TEMPLATE_LINK2, STYLENAME_TEMPLATE_LINK2+":hover", STYLENAME_TEMPLATE_LINK3, STYLENAME_TEMPLATE_LINK3+":hover", STYLENAME_CHECKBOX, STYLENAME_INTERFACE_BUTTON, STYLENAME_SMALL_HEADER_LINK, STYLENAME_SMALL_HEADER_LINK+":hover" };
-		String[] styleValues = { "", "", "", "", "", "", DEFAULT_TEXT_FONT_STYLE, DEFAULT_SMALL_TEXT_FONT_STYLE, DEFAULT_HEADER_FONT_STYLE, DEFAULT_SMALL_HEADER_FONT_STYLE, DEFAULT_LINK_FONT_STYLE, DEFAULT_LIST_HEADER_FONT_STYLE, DEFAULT_LIST_FONT_STYLE, DEFAULT_LIST_LINK_FONT_STYLE, DEFAULT_ERROR_TEXT_FONT_STYLE, DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE, DEFAULT_INTERFACE_STYLE, DEFAULT_SMALL_LINK_FONT_STYLE, DEFAULT_SMALL_LINK_FONT_STYLE_HOVER, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", DEFAULT_CHECKBOX_STYLE, DEFAULT_INTERFACE_BUTTON_STYLE, DEFAULT_SMALL_HEADER_LINK_FONT_STYLE, DEFAULT_SMALL_HEADER_LINK_FONT_STYLE_HOVER };
+		String[] styleNames = { STYLENAME_HEADING_ROW, STYLENAME_HEADER_ROW2, STYLENAME_HEADER_ROW, STYLENAME_LIGHT_ROW, STYLENAME_DARK_ROW, STYLENAME_BIG_HEADER, STYLENAME_TEXT, STYLENAME_SMALL_TEXT, STYLENAME_HEADER, STYLENAME_SMALL_HEADER, STYLENAME_LINK, STYLENAME_LIST_HEADER, STYLENAME_LIST_TEXT, STYLENAME_LIST_LINK, STYLENAME_ERROR_TEXT, STYLENAME_SMALL_ERROR_TEXT, STYLENAME_INTERFACE, STYLENAME_SMALL_LINK, STYLENAME_SMALL_LINK+":hover", STYLENAME_TEMPLATE_LINK, STYLENAME_TEMPLATE_LINK+":hover", STYLENAME_TEMPLATE_HEADER, STYLENAME_TEMPLATE_SMALL_HEADER, STYLENAME_TEMPLATE_LINK_SELECTED, STYLENAME_TEMPLATE_LINK_SELECTED+":hover", STYLENAME_TEMPLATE_SUBLINK, STYLENAME_TEMPLATE_SUBLINK+":hover", STYLENAME_TEMPLATE_SUBLINK_SELECTED, STYLENAME_TEMPLATE_SUBLINK_SELECTED+":hover", STYLENAME_TEMPLATE_HEADER_LINK, STYLENAME_TEMPLATE_HEADER_LINK+":hover", STYLENAME_TEMPLATE_LINK2, STYLENAME_TEMPLATE_LINK2+":hover", STYLENAME_TEMPLATE_LINK3, STYLENAME_TEMPLATE_LINK3+":hover", STYLENAME_CHECKBOX, STYLENAME_INTERFACE_BUTTON, STYLENAME_SMALL_HEADER_LINK, STYLENAME_SMALL_HEADER_LINK+":hover",STYLENAME_WINDOW_HEADER,STYLENAME_WINDOW_BODY };
+		String[] styleValues = { "", "", "", "", "", "", DEFAULT_TEXT_FONT_STYLE, DEFAULT_SMALL_TEXT_FONT_STYLE, DEFAULT_HEADER_FONT_STYLE, DEFAULT_SMALL_HEADER_FONT_STYLE, DEFAULT_LINK_FONT_STYLE, DEFAULT_LIST_HEADER_FONT_STYLE, DEFAULT_LIST_FONT_STYLE, DEFAULT_LIST_LINK_FONT_STYLE, DEFAULT_ERROR_TEXT_FONT_STYLE, DEFAULT_SMALL_ERROR_TEXT_FONT_STYLE, DEFAULT_INTERFACE_STYLE, DEFAULT_SMALL_LINK_FONT_STYLE, DEFAULT_SMALL_LINK_FONT_STYLE_HOVER, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", DEFAULT_CHECKBOX_STYLE, DEFAULT_INTERFACE_BUTTON_STYLE, DEFAULT_SMALL_HEADER_LINK_FONT_STYLE, DEFAULT_SMALL_HEADER_LINK_FONT_STYLE_HOVER ,DEFAULT_WINDOW_HEADER_STYLE,DEFAULT_WINDOW_BODY_STYLE};
 
 		for (int a = 0; a < styleNames.length; a++) {
 			map.put(styleNames[a], styleValues[a]);
@@ -658,6 +665,48 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	
 	protected CommuneUserBusiness getUserBusiness(IWApplicationContext  iwc) throws IBOLookupException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
+	}
+	
+	/**
+	 * Gets a styled layer to display in top of window
+	 * @return
+	 */
+	protected Layer getWindowHeader(){
+	    Layer layer = new Layer(Layer.DIV);
+        layer.setStyleClass(getStyleName(STYLENAME_WINDOW_HEADER));
+        return layer;
+	}
+	
+	/**
+	 * Gets a styled layer to display in top of window, with the given object added to it
+	 * @param headerObject
+	 * @return
+	 */
+	protected Layer getWindowHeader(PresentationObject headerObject){
+	    Layer layer = getWindowHeader();
+	    layer.add(headerObject);
+	    return layer;
+	}
+	
+	/**
+	 * Gets a styled layer to display in top of window,
+	 * @return
+	 */
+	protected Layer getWindowBody(){
+	    Layer layer = new Layer(Layer.DIV);
+        layer.setStyleClass(getStyleName(STYLENAME_WINDOW_BODY));
+        return layer;
+	}
+	
+	/**
+	 * Gets a styled layer to display in main part of window, with the given object added to it
+	 * @param bodyObject
+	 * @return
+	 */
+	protected Layer getWindowBody(PresentationObject bodyObject){
+	    Layer layer = getWindowBody();
+	    layer.add(bodyObject);
+	    return layer;
 	}
 	
 	
