@@ -3145,7 +3145,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						if (schoolClassId != -1) {
 							student.setSchoolClassId(schoolClassId);
 							student.store();
-							if (!createNewStudent && oldSchoolClassID != -1 && schoolClassId != oldSchoolClassID) {
+							if (createNewStudent && oldSchoolClassID != -1 && schoolClassId != oldSchoolClassID) {
 								try {
 									SchoolClass schoolClass = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassId));
 									getSchoolBusiness().addToSchoolClassMemberLog(student, schoolClass, validFrom, null, user);

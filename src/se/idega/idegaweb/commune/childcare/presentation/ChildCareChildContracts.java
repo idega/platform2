@@ -224,9 +224,9 @@ public class ChildCareChildContracts extends ChildCareBlock {
 						startDate = new IWTimestamp(log.getStartDate());
 					}
 					
-					if (!iter.hasNext()) {
+					if (!iterator.hasNext()) {
 						if (contract.getTerminatedDate() != null) {
-							endDate = contract.getTerminatedDate() != null ? new IWTimestamp(log.getEndDate()) : null;
+							endDate = contract.getTerminatedDate() != null ? new IWTimestamp(contract.getTerminatedDate()) : null;
 						}
 						else {
 							endDate = log.getEndDate() != null ? new IWTimestamp(log.getEndDate()) : null;
