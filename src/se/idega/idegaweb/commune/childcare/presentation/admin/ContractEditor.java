@@ -418,7 +418,7 @@ public class ContractEditor extends ChildCareBlock {
 		boolean showNotActiveComment = false;
 		boolean showRemovedComment = false;
 		
-		if (contracts != null) {
+		if (contracts != null && !contracts.isEmpty()) {
 			ChildCareContract contract;
 			SchoolClassMember placement;
 			User child;
@@ -582,11 +582,16 @@ public class ContractEditor extends ChildCareBlock {
 				}
 				row++;
 			}
+			
 			table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 			table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 			table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
 			table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 			table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
+		}
+		else{
+		    table.add(getSmallErrorText("no contract for application"),1,row);
+		    table.mergeCells(1,row,table.getColumns(),row);
 		}
 		
 		if (showComment) {
