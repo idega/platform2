@@ -27,9 +27,9 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.user.business.UserBusiness;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.business.IBOLookup;
 
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-import com.idega.business.IBOLookup;
 
 /*
 import com.idega.presentation.ExceptionWrapper;
@@ -75,6 +75,8 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private final static String PARAMETER_CO_POSTAL_CODE = "cap_co_pc";
 	private final static String PARAMETER_CO_CITY = "cap_co_ct";
 
+	private final int MIN_PASSWORD_LENGTH = 6;
+	
 	private final static String KEY_PREFIX = "citizen.";
 	private final static String KEY_EMAIL = KEY_PREFIX + "email";
 	private final static String KEY_LOGIN = KEY_PREFIX + "login";
@@ -95,7 +97,11 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private final static String KEY_MESSAGES_VIA_EMAIL = KEY_PREFIX + "messages_via_email";
 	private final static String KEY_PASSWORD_EMPTY = KEY_PREFIX + "password_empty";
 	private final static String KEY_PASSWORDS_NOT_SAME = KEY_PREFIX + "passwords_not_same";
-	private final static String KEY_INVALID_PASSWORD = KEY_PREFIX + "invalid_password";	
+	private final static String KEY_PASSWORD_INVALID = KEY_PREFIX + "invalid_password";	
+	private final static String KEY_PASSWORD_TOO_SHORT = KEY_PREFIX + "password_too_short";	
+	private final static String KEY_PASSWORD_CHAR_ILLEGAL = KEY_PREFIX + "password_char_illegal";	
+	private final static String KEY_EMAIL_INVALID = KEY_PREFIX + "email_invalid";	
+	private final static String KEY_EMAIL_EMPTY = KEY_PREFIX + "email_empty";	
 
 	private final static String DEFAULT_EMAIL = "E-mail";	
 	private final static String DEFAULT_LOGIN = "Login";	
@@ -116,7 +122,11 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private final static String DEFAULT_MESSAGES_VIA_EMAIL = "I want to get my messages via e-email";		
 	private final static String DEFAULT_PASSWORD_EMPTY = "Password cannot be empty.";		
 	private final static String DEFAULT_PASSWORDS_NOT_SAME = "New passwords not the same.";		
-	private final static String DEFAULT_INVALID_PASSWORD = "Invalid password.";		
+	private final static String DEFAULT_PASSWORD_INVALID = "Invalid password.";		
+	private final static String DEFAULT_PASSWORD_TOO_SHORT = "Password too short.";		
+	private final static String DEFAULT_PASSWORD_CHAR_ILLEGAL = "Password contains illegal character(s).";		
+	private final static String DEFAULT_EMAIL_INVALID = "Email address invalid.";		
+	private final static String DEFAULT_EMAIL_EMPTY = "Email address cannot be empty.";		
 	
 	private User user = null;
 		
@@ -166,7 +176,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	
 	private void viewPreferencesForm(IWContext iwc) throws java.rmi.RemoteException {
 		drawPermanentUserInfo(iwc);
-		drawForm();
+		drawForm(iwc);
 	}
 	
 	private void drawPermanentUserInfo(IWContext iwc) throws java.rmi.RemoteException {
@@ -179,7 +189,19 @@ public class CitizenAccountPreferences extends CommuneBlock {
 
 		int row = 1;
 		table.add(getSmallHeader(localize(KEY_NAME, DEFAULT_NAME)), 1, row);
-		table.add(getSmallText(user.getLastName()+", "+user.getFirstName()), 2, row);
+		String userName = user.getFirstName();
+		if (user.getLastName() != null) {
+			userName = user.getLastName() + ", " + userName;
+		}
+		table.add(getSmallText(userName), 2, row);
+
+		row++;
+		table.add(getSmallHeader(localize(KEY_LOGIN, DEFAULT_LOGIN)), 1, row);
+		LoginTable loginTable = LoginDBHandler.getUserLogin(((Integer) user.getPrimaryKey()).intValue());
+		if (loginTable != null) {
+			table.add(new HiddenInput(PARAMETER_OLD_LOGIN, loginTable.getUserLogin()), 2, row);
+			table.add(getSmallText(loginTable.getUserLogin()), 2, row);
+		}
 
 		row++;
 		table.add(getSmallHeader(localize(KEY_ADDRESS, DEFAULT_ADDRESS)), 1, row);
@@ -196,7 +218,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		add(table);
 	}
 
-	private void drawForm() throws RemoteException {
+	private void drawForm(IWContext iwc) throws RemoteException {
 		Form form = new Form();
 		Table table = new Table();	
 //		table.setWidth(getWidth());
@@ -204,6 +226,8 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		table.setCellspacing(getCellspacing());
 		form.add(table);
 		int row = 1;
+		
+		String paramPhoneHome = iwc.getParameter(PARAMETER_PHONE_HOME);
 
 		Text tEmail = getSmallText(localize(KEY_EMAIL, DEFAULT_EMAIL));
 		Text tLogin = getSmallText(localize(KEY_LOGIN, DEFAULT_LOGIN));
@@ -217,8 +241,9 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		Text tCOPostalCode = getSmallText(localize(KEY_CO_POSTAL_CODE, DEFAULT_CO_POSTAL_CODE));
 		Text tCOCity = getSmallText(localize(KEY_CO_CITY, DEFAULT_CO_CITY));
 		Text tMessagesViaEmail = getSmallText(" " + localize(KEY_MESSAGES_VIA_EMAIL, DEFAULT_MESSAGES_VIA_EMAIL));
-		TextInput tiLogin = (TextInput) getStyledInterface(new TextInput(PARAMETER_LOGIN));		
-		TextInput tiPhoneHome = (TextInput) getStyledInterface(new TextInput(PARAMETER_PHONE_HOME));		
+//		TextInput tiLogin = (TextInput) getStyledInterface(new TextInput(PARAMETER_LOGIN));		
+		TextInput tiPhoneHome = (TextInput) getStyledInterface(new TextInput(PARAMETER_PHONE_HOME));
+		tiPhoneHome.setValue(paramPhoneHome);		
 		TextInput tiPhoneWork = (TextInput) getStyledInterface(new TextInput(PARAMETER_PHONE_WORK));		
 		TextInput tiCOStreetAddress = (TextInput) getStyledInterface(new TextInput(PARAMETER_CO_STREET_ADDRESS));		
 		TextInput tiCOPostalCode = (TextInput) getStyledInterface(new TextInput(PARAMETER_CO_POSTAL_CODE));		
@@ -255,14 +280,14 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			super.add(new ExceptionWrapper(e, this));
 		}
 		
-		row++;
-		LoginTable loginTable = LoginDBHandler.getUserLogin(((Integer) user.getPrimaryKey()).intValue());
-		if (loginTable != null) {
-			tiLogin.setContent(loginTable.getUserLogin());	
-			table.add(new HiddenInput(PARAMETER_OLD_LOGIN, loginTable.getUserLogin()), 2, row);
-		}
-		table.add(tLogin, 1, row);
-		table.add(tiLogin, 2, row);
+//		row++;
+//		LoginTable loginTable = LoginDBHandler.getUserLogin(((Integer) user.getPrimaryKey()).intValue());
+//		if (loginTable != null) {
+//			tiLogin.setContent(loginTable.getUserLogin());	
+//			table.add(new HiddenInput(PARAMETER_OLD_LOGIN, loginTable.getUserLogin()), 2, row);
+//		}
+//		table.add(tLogin, 1, row);
+//		table.add(tiLogin, 2, row);
 		
 		row++;
 		table.add(tCurrentPassword, 1, row);
@@ -329,39 +354,101 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	}
 	
 	private void updatePreferences(IWContext iwc)  throws Exception {
-		String login    = iwc.getParameter(PARAMETER_LOGIN);
-		String loginOld = iwc.getParameter(PARAMETER_OLD_LOGIN);
+		LoginTable loginTable = LoginDBHandler.getUserLogin(((Integer) user.getPrimaryKey()).intValue());
+		String login    = loginTable.getUserLogin();
+//		String loginOld = iwc.getParameter(PARAMETER_OLD_LOGIN);
 		String currentPassword = iwc.getParameter(PARAMETER_CURRENT_PASSWORD);
 		String newPassword1 = iwc.getParameter(PARAMETER_NEW_PASSWORD);
-		String newPassword2 = iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED);
-
+		String newPassword2 = iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED);		
+		String sEmail = iwc.getParameter(PARAMETER_EMAIL);
+		
 		String errorMessage = null;
+		boolean updatePassword = false;
+		boolean updateEmail = false;
 		
 		try {
-			if (!LoginDBHandler.verifyPassword(loginOld, currentPassword)) {
-				throw new Exception(localize(KEY_INVALID_PASSWORD, DEFAULT_INVALID_PASSWORD));
+			if (!LoginDBHandler.verifyPassword(login, currentPassword)) {
+				throw new Exception(localize(KEY_PASSWORD_INVALID, DEFAULT_PASSWORD_INVALID));
 			}
-			if (newPassword1.equals("")) {
-				throw new Exception(localize(KEY_PASSWORD_EMPTY, DEFAULT_PASSWORD_EMPTY));
+			if (!newPassword1.equals("") && !newPassword2.equals("")) {
+				if (newPassword1.equals("")) {
+					throw new Exception(localize(KEY_PASSWORD_EMPTY, DEFAULT_PASSWORD_EMPTY));
+				}
+				if (!newPassword1.equals(newPassword2)) {
+					throw new Exception(localize(KEY_PASSWORDS_NOT_SAME, DEFAULT_PASSWORDS_NOT_SAME));
+				}
+				if (newPassword1.length() < MIN_PASSWORD_LENGTH) {
+					throw new Exception(localize(KEY_PASSWORD_TOO_SHORT, DEFAULT_PASSWORD_TOO_SHORT));
+				}
+				for (int i = 0; i < newPassword1.length(); i++) {
+					char c = newPassword1.charAt(i);
+					boolean isPasswordCharOK = false;
+					if ((c >= 'a') && (c <= 'z')) {
+						isPasswordCharOK = true;
+					} else if ((c >= 'A') && (c <= 'Z')) {
+						isPasswordCharOK = true;
+					} else if ((c >= '0') && (c <= '9')) {
+						isPasswordCharOK = true;
+					} else if ((c == 'Œ') || (c == 'Š') || (c == 'š')) {
+						isPasswordCharOK = true;
+					} else if ((c == '') || (c == '€') || (c == '…')) {
+						isPasswordCharOK = true;
+					}
+					if (!isPasswordCharOK) {
+						throw new Exception(localize(KEY_PASSWORD_CHAR_ILLEGAL, DEFAULT_PASSWORD_CHAR_ILLEGAL));
+					}
+				}
+				updatePassword = true;
 			}
-			if (!newPassword1.equals(newPassword2)) {
-				throw new Exception(localize(KEY_PASSWORDS_NOT_SAME, DEFAULT_PASSWORDS_NOT_SAME));
+
+			Email email = getUserEmail(iwc);
+			String oldEmail = email.getEmailAddress();
+			if (sEmail != oldEmail) {
+				if (sEmail.equals("")) {
+					throw new Exception(localize(KEY_EMAIL_EMPTY, DEFAULT_EMAIL_EMPTY));
+				}
+				if (sEmail.length() < 6) {
+					throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+				}
+				if (sEmail.indexOf('.') == -1) {
+					throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+				}					
+				if (sEmail.indexOf('@') == -1) {
+					throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+				}					
+				String testEmail = sEmail.toLowerCase();
+				for (int i = 0; i < testEmail.length(); i++) {
+					char c = testEmail.charAt(i);
+					if ((c < 'a') || (c > 'z')) {
+						if ((c != '.') || (c != '@')) {
+							throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
+						}
+					}
+				}
+				updateEmail = true;
 			}
-			// Check old vs new login ...
-			// Check e-mail address ...
-			// Check c/o address ...
 		} catch (Exception e) {
 			errorMessage = e.getMessage();
 		}
 		
+
+				// Check e-mail address ...
+				// Check c/o address ...
 		if (errorMessage != null) {
 			add(getErrorText(errorMessage));
 		} else {
 			// Ok to update preferences
-			LoginDBHandler.updateLogin(user.getID(), login, newPassword1);
+			if (updatePassword) {
+				LoginDBHandler.updateLogin(user.getID(), login, newPassword1);
+			}
+			if (updateEmail) {
+				Email email = getUserEmail(iwc);
+				email.setEmailAddress(sEmail);
+				email.store();
+			}
 		}
 		drawPermanentUserInfo(iwc);
-		drawForm();
+		drawForm(iwc);
 	}
 	
 	private Email getUserEmail(IWContext iwc) {
