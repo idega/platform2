@@ -16,24 +16,18 @@ import javax.ejb.*;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 /**
- * Title:        idegaWeb
- * Description:
+ * Title:        se.idega.idegaweb.commune.business.CommuneUserBusinessBean
+ * Description:	Use this business class to handle Citizen information
  * Copyright:    Copyright (c) 2001
  * Company:      idega software
- * @author
+ * @author AguraIT and idega
  * @version 1.0
  */
-public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUserBusiness
+public class CommuneUserBusinessBean extends UserBusinessBean implements CommuneUserBusiness
 {
 	private final String ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME = "commune_id";
-	protected UserBusiness getUserBusiness() throws RemoteException
-	{
-		return (UserBusiness) this.getServiceInstance(UserBusiness.class);
-	}
-	protected GroupBusiness getGroupBusiness() throws RemoteException
-	{
-		return (GroupBusiness) this.getServiceInstance(GroupBusiness.class);
-	}
+
+
 	/**
 	 * Creates a new citizen with a firstname,middlename, lastname and personalID where middlename and personalID can be null.<br>
 	 * Also adds the citizen to the Commune Root Group.
@@ -57,7 +51,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
         User newUser = null;
 		try {
             final Group rootGroup = getRootCitizenGroup();
-            final UserBusiness business = getUserBusiness();
+
 
            /* System.out.println ("firstname='" + firstname + "'\n" +
                                 "middlename='" + middlename + "'\n" +
@@ -67,7 +61,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
                                 "dateOfBirth='" + dateOfBirth + "'\n" +
                                 "rootGroup='" + rootGroup + "'\n");*/
 
-			newUser = business.createUser (firstname, middlename, lastname,
+			newUser = createUser (firstname, middlename, lastname,
                                            personalID, gender, dateOfBirth,
                                            rootGroup);
 		} catch (final Exception e) {
@@ -94,8 +88,8 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 
 		User user = null;
 		try {
-            final UserBusiness business = getUserBusiness();
-            final UserHome home = business.getUserHome();
+
+            final UserHome home = getUserHome();
 			user = home.findByPersonalID (personalID);
 		
 			//update if found
@@ -135,7 +129,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 		/**
 		 * @todo: put the user in an administrator group
 		 */
-		newUser = this.getUserBusiness().createUser(firstname, middlename, lastname);
+		newUser = createUser(firstname, middlename, lastname);
 		return newUser;
 	}
 	/**
@@ -148,7 +142,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 		SchoolBusiness schlBuiz = (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
 		Group rootSchoolAdminGroup = getRootProviderAdministratorGroup();
 		Group schoolGroup = getGroupBusiness().getGroupHome().findByPrimaryKey(new Integer(school.getHeadmasterGroupId()));
-		newUser = this.getUserBusiness().createUser(firstname, middlename, lastname, rootSchoolAdminGroup);
+		newUser = createUser(firstname, middlename, lastname, rootSchoolAdminGroup);
 		//rootSchoolAdminGroup.addGroup(newUser);
 		schoolGroup.addGroup(newUser);
 		return newUser;
@@ -163,7 +157,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 		SchoolBusiness schlBuiz = (SchoolBusiness) getServiceInstance(SchoolBusiness.class);
 		Group rootSchoolAdminGroup = getRootSchoolAdministratorGroup();
 		Group schoolGroup = getGroupBusiness().getGroupHome().findByPrimaryKey(new Integer(school.getHeadmasterGroupId()));
-		newUser = this.getUserBusiness().createUser(firstname, middlename, lastname, rootSchoolAdminGroup);
+		newUser = createUser(firstname, middlename, lastname, rootSchoolAdminGroup);
 		//rootSchoolAdminGroup.addGroup(newUser);
 		schoolGroup.addGroup(newUser);
 		return newUser;
@@ -175,7 +169,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 	 */
 	public LoginTable generateUserLogin(User user) throws LoginCreateException, RemoteException
 	{
-			return getUserBusiness().generateUserLogin(user);
+			return generateUserLogin(user);
 	}
 
 	/**
@@ -191,9 +185,9 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
         final IWMainApplicationSettings settings = iwc.getApplicationSettings();
 		String groupId = (String) settings.getProperty
                 (ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME);
-        final UserBusiness userBusiness = getUserBusiness();
+
 		if (groupId != null) {
-            final GroupHome groupHome = userBusiness.getGroupHome();
+            final GroupHome groupHome = getGroupHome();
 			rootGroup = groupHome.findByPrimaryKey (new Integer(groupId));
 		} else {
 			System.err.println("trying to store Commune Root group");
@@ -201,7 +195,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 			final GroupTypeHome typeHome
                     = (GroupTypeHome) getIDOHome(GroupType.class);
 			final GroupType type = typeHome.create();
-            final GroupBusiness groupBusiness = userBusiness.getGroupBusiness();
+            final GroupBusiness groupBusiness = getGroupBusiness();
 			rootGroup = groupBusiness.createGroup
                     ("Commune Citizens", "The Commune Root Group.",
                      type.getGeneralGroupTypeString());
@@ -291,7 +285,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 		String groupId = bundle.getProperty(ROOT_COMMUNE_ADMINISTRATORS_GROUP);
 		if (groupId != null)
 		{
-			rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
+			rootGroup = getGroupHome().findByPrimaryKey(new Integer(groupId));
 		} else
 		{
 			System.err.println("trying to store Commune administrators Root group");
@@ -299,7 +293,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 			GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
 			GroupType type = typeHome.create();
 			rootGroup =
-				getUserBusiness().getGroupBusiness().createGroup(
+				getGroupBusiness().createGroup(
 					"Commune Administrators",
 					"The Commune Administrators Root Group.",
 					type.getGeneralGroupTypeString());
@@ -316,7 +310,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 	{
 		try
 		{
-			return getUserBusiness().getUsersInPrimaryGroup(getRootCommuneAdministratorGroup());
+			return getUsersInPrimaryGroup(getRootCommuneAdministratorGroup());
 		} catch (Exception e)
 		{
 			throw new IDOFinderException(e);
@@ -357,11 +351,11 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 	}
 	
 	public boolean hasCitizenAccount(User user)throws RemoteException{
-		return getUserBusiness().hasUserLogin(user);
+		return hasUserLogin(user);
 	}
 	
 	public boolean hasCitizenAccount(int userID)throws RemoteException{
-		return getUserBusiness().hasUserLogin(userID);
+		return hasUserLogin(userID);
 	}
 	
 	public SchoolBusiness getSchoolBusiness() throws RemoteException{
