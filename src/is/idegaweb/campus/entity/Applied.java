@@ -1,5 +1,5 @@
 /*
- * $Id: Applied.java,v 1.4 2001/07/09 17:49:28 aron Exp $
+ * $Id: Applied.java,v 1.5 2001/07/23 10:00:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -34,10 +34,10 @@ public class Applied extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(complexId_,"Complex",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.Complex");
-    addAttribute(apartmentTypeId_,"Apartment type",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.AppartmentType");
-    addAttribute(applicationId_,"Application",true,true,"java.lang.Integer","one-to-many","is.idegaweb.campus.entity.Application");
-    addAttribute(order_,"Order",true,true,"java.lang.Integer");
+    addAttribute(complexId_,"Complex",true,true,java.lang.Integer.class.getClass(),"one-to-many",com.idega.block.building.data.Complex.class.getClass());
+    addAttribute(apartmentTypeId_,"Apartment type",true,true,java.lang.Integer.class.getClass(),"one-to-many",com.idega.block.building.data.ApartmentType.class.getClass());
+    addAttribute(applicationId_,"Application",true,true,java.lang.Integer.class.getClass(),"one-to-many",is.idegaweb.campus.entity.Application.class.getClass());
+    addAttribute(order_,"Order",true,true,java.lang.Integer.class.getClass());
   }
 
   public String getEntityName() {

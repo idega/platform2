@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinance.java,v 1.2 2001/06/22 11:33:55 aron Exp $
+ * $Id: CampusFinance.java,v 1.3 2001/07/23 10:00:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,42 +31,37 @@ public class CampusFinance extends KeyEditor{
   }
 
   protected void control(ModuleInfo modinfo){
-
-      this.makeView();
-      this.addHeader((this.makeLinkTable(0)));
-      this.addHeader((Text.getBreak()));
-
+    this.add((this.makeLinkTable(0)));
   }
 
   public ModuleObject makeLinkTable(int menuNr){
-    Table LinkTable = new Table(6,1);
-    int last = 6;
+    Table LinkTable = new Table();
+
     LinkTable.setWidth("100%");
     LinkTable.setCellpadding(2);
     LinkTable.setCellspacing(1);
-    LinkTable.setColor(this.DarkColor);
-    LinkTable.setWidth(last,"100%");
+
     Link Link1 = new Link("Heim");
-    Link1.setFontColor(this.LightColor);
+    Link1.setFontColor(this.DarkColor);
     Link1.addParameter(this.strAction,String.valueOf(this.ACT1));
     Link Link2 = new Link("Bókhaldsliðir","/finance/accountkey.jsp");
-    Link2.setFontColor(this.LightColor);
+    Link2.setFontColor(this.DarkColor);
     Link2.addParameter(this.strAction,String.valueOf(this.ACT2));
     Link Link3 = new Link("Gjaldliðir","/finance/tariffkey.jsp");
-    Link3.setFontColor(this.LightColor);
+    Link3.setFontColor(this.DarkColor);
     Link3.addParameter(this.strAction,String.valueOf(this.ACT3));
     Link Link4 = new Link("Gjöld","/finance/tariff.jsp");
-    Link4.setFontColor(this.LightColor);
+    Link4.setFontColor(this.DarkColor);
     Link4.addParameter(this.strAction,String.valueOf(this.ACT4));
     Link Link5 = new Link("Álagning","/finance/assessment.jsp");
-    Link5.setFontColor(this.LightColor);
+    Link5.setFontColor(this.DarkColor);
     Link5.addParameter(this.strAction,String.valueOf(this.ACT5));
     if(isAdmin){
       LinkTable.add(Link1,1,1);
-      LinkTable.add(Link2,2,1);
-      LinkTable.add(Link3,3,1);
-      LinkTable.add(Link4,4,1);
-      LinkTable.add(Link5,5,1);
+      LinkTable.add(Link2,1,2);
+      LinkTable.add(Link3,1,3);
+      LinkTable.add(Link4,1,4);
+      LinkTable.add(Link5,1,5);
     }
     return LinkTable;
   }

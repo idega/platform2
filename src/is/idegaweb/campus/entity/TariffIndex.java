@@ -1,5 +1,5 @@
 /*
- * $Id: TariffIndex.java,v 1.2 2001/06/22 11:33:55 aron Exp $
+ * $Id: TariffIndex.java,v 1.3 2001/07/23 10:00:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ public class TariffIndex extends GenericEntity{
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
     addAttribute(getIndexColumnName(), "Vísitala", true, true, "java.lang.Float");
-    addAttribute(getDateColumnName(), "Dags", true, true, "java.sql.Timestamp");
+    addAttribute(getDateColumnName(), "Dags", true, true, "java.sql.Date");
     addAttribute(getInfoColumnName(), "Upplýsingar", true, true, "java.lang.String");
   }
 
@@ -57,10 +57,10 @@ public class TariffIndex extends GenericEntity{
   public void setInfo(String info){
     setColumn(getInfoColumnName(), info);
   }
-  public Timestamp getDate(){
-    return (Timestamp) getColumnValue(getDateColumnName());
+  public java.sql.Date getDate(){
+    return (java.sql.Date) getColumnValue(getDateColumnName());
   }
-  public void setDate(java.sql.Timestamp use_date){
+  public void setDate(java.sql.Date use_date){
     setColumn(getDateColumnName(),use_date);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.8 2001/07/18 11:42:51 aron Exp $
+ * $Id: CampusApplicationFinder.java,v 1.9 2001/07/23 10:00:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -301,9 +301,10 @@ public abstract class CampusApplicationFinder {
     }
     int count = 0;
     try{
-      count = new Applied().getNumberOfRecords(sql.toString());
+      count = new Application().getNumberOfRecords(sql.toString());
     }
     catch(SQLException ex){}
+
     if(count < 0)
       count = 0;
     return count;
@@ -318,6 +319,30 @@ public abstract class CampusApplicationFinder {
     sql.append(cmplxId);
     //System.err.println(sql.toString());
     int count = 0;
+    try{
+      count = new Applied().getNumberOfRecords(sql.toString());
+    }
+    catch(SQLException ex){}
+    if(count < 0)
+      count = 0;
+    return count;
+  }
+  public static int countWaitingWithTypeAndComplex(int typeId,int cmplxId,int order){
+    StringBuffer sql = new StringBuffer("select count(distinct cam_waiting_list_id) ");
+    sql.append(" from cam_waiting_list wl ,cam_applied ad ");
+    sql.append(" where wl.bu_apartment_type_id = ad.bu_aprt_type_id ");
+    sql.append(" and wl.bu_complex_id = ad.bu_complex_id ");
+    sql.append(" and wl.bu_apartment_type_id =  ");
+    sql.append(typeId);
+    sql.append(" and wl.bu_complex_id =  ");
+    sql.append(cmplxId);
+     if(order > 0){
+      sql.append(" and ad.ordered = ");
+      sql.append(order);
+    }
+    int count = 0;
+    System.err.println(sql.toString());
+    System.err.println();
     try{
       count = new Applied().getNumberOfRecords(sql.toString());
     }

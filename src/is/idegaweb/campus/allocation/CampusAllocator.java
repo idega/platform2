@@ -159,11 +159,12 @@ public class CampusAllocator extends KeyEditor{
             cmpx = eAprtType.getKeyTwo();
             listCount = BuildingFinder.countApartmentsInTypeAndComplex(type,cmpx);
             contractCount = ContractFinder.countApartmentsInTypeAndComplex(type,cmpx,"");
-            appliedCount = CampusApplicationFinder.countAppliedInTypeAndComplex(type,cmpx,0);
 
-            appCnt1 = CampusApplicationFinder.countAppliedInTypeAndComplex(type,cmpx,1);
-            appCnt2 = CampusApplicationFinder.countAppliedInTypeAndComplex(type,cmpx,2);
-            appCnt3 = CampusApplicationFinder.countAppliedInTypeAndComplex(type,cmpx,3);
+            appliedCount = CampusApplicationFinder.countWaitingWithTypeAndComplex(type,cmpx,0);
+            appCnt1 = CampusApplicationFinder.countWaitingWithTypeAndComplex(type,cmpx,1);
+            appCnt2 = CampusApplicationFinder.countWaitingWithTypeAndComplex(type,cmpx,2);
+            appCnt3 = CampusApplicationFinder.countWaitingWithTypeAndComplex(type,cmpx,3);
+
             totalCount+=listCount;
             catlist+=listCount;
             freeCount = listCount-contractCount;
@@ -173,6 +174,7 @@ public class CampusAllocator extends KeyEditor{
             catapp += appliedCount;
             totApp1 += appCnt1;totApp2 += appCnt2;totApp3 += appCnt3;
             catcnt1+=appCnt1;catcnt2+= appCnt2;catcnt3+= appCnt3;
+
             T.add(getPDFLink(printImage,type,cmpx),1,row);
             T.add(getListLink(eAprtType),2,row);
             T.add(formatText(listCount),3,row);

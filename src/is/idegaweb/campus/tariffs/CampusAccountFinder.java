@@ -1,0 +1,47 @@
+
+package is.idegaweb.campus.tariffs;
+
+import com.idega.util.idegaTimestamp;
+import com.idega.util.idegaCalendar;
+import java.sql.SQLException;
+import java.util.StringTokenizer;
+import java.util.List;
+import java.util.Vector;
+import com.idega.data.EntityFinder;
+import is.idegaweb.campus.entity.ContractAccountApartment;
+
+/**
+ *
+ * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
+ * @version 1.0
+ */
+public class CampusAccountFinder  {
+
+  public static List listOfRentingUserAccounts(){
+   try {
+     return EntityFinder.findAll(new ContractAccountApartment());
+   }
+   catch (SQLException ex) {
+    return null;
+   }
+  }
+  public static List listOfConAccAprtByType(int typeId){
+    try {
+      ContractAccountApartment CAA = new ContractAccountApartment();
+      return EntityFinder.findAllByColumn(new ContractAccountApartment(),CAA.getApartmentTypeIdColumnName(),typeId);
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+  public static List listOfConAccAprtByApartment(int aprtId){
+    try {
+      ContractAccountApartment CAA = new ContractAccountApartment();
+      return EntityFinder.findAllByColumn(new ContractAccountApartment(),CAA.getApartmentIdColumnName(),aprtId);
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
+}

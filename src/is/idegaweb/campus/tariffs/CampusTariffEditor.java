@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffEditor.java,v 1.4 2001/07/23 10:00:00 aron Exp $
+ * $Id: CampusTariffEditor.java,v 1.5 2001/07/23 10:04:56 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -327,7 +327,7 @@ public class CampusTariffEditor extends KeyEditor{
         idInput = new HiddenInput("te_idinput"+i,"-1");
       }
       nameInput.setSize(20);
-      priceInput.setSize(6);
+      priceInput.setSize(8);
       infoInput.setSize(30);
 
       setStyle(nameInput);
@@ -405,7 +405,7 @@ public class CampusTariffEditor extends KeyEditor{
       try {
         TariffIndex TI = new TariffIndex();
         TI.setIndex((new Double(index)).floatValue());
-        TI.setDate(idegaTimestamp.getTimestampRightNow());
+        TI.setDate(idegaTimestamp.RightNow().getSQLDate());
         TI.setInfo("");
         TI.insert();
       }
