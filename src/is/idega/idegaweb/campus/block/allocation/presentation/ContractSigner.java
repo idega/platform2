@@ -52,8 +52,8 @@ import com.idega.block.finance.business.FinanceFinder;
 
 import com.idega.block.finance.data.Account;
 
-import com.idega.block.login.business.LoginCreator;
 
+import com.idega.core.accesscontrol.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 
 import com.idega.core.user.data.User;

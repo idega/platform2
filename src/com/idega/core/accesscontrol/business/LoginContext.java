@@ -1,4 +1,4 @@
-package com.idega.block.login.business;
+package com.idega.core.accesscontrol.business;
 
 import com.idega.core.user.data.User;
 

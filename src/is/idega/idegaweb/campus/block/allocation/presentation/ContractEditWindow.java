@@ -23,7 +23,7 @@ import com.idega.core.data.Email;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.block.finance.business.AccountManager;
 import com.idega.block.finance.data.Account;
-import com.idega.block.login.business.LoginCreator;
+import com.idega.core.accesscontrol.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.user.data.User;
 import com.idega.core.data.GenericGroup;

@@ -1,4 +1,4 @@
-package com.idega.block.login.business;
+package com.idega.core.accesscontrol.business;
 
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.data.EntityFinder;

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.20 2002/09/30 16:45:59 aron Exp $
+ * $Id: ContractBusiness.java,v 1.21 2003/05/05 07:23:53 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -35,7 +35,7 @@ import com.idega.core.data.Email;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.block.finance.business.AccountManager;
 import com.idega.block.finance.data.Account;
-import com.idega.block.login.business.LoginCreator;
+import com.idega.core.accesscontrol.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.user.data.User;
 import com.idega.core.data.GenericGroup;

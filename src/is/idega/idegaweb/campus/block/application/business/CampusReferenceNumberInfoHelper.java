@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.12 2002/09/04 23:00:48 palli Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.13 2003/05/05 07:23:53 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,14 +14,13 @@ import com.idega.block.application.data.Applicant;
 //import com.idega.block.application.data.ApplicantBean;
 import com.idega.presentation.IWContext;
 import com.idega.core.user.data.User;
+import com.idega.core.accesscontrol.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.block.login.business.LoginCreator;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.business.ReferenceNumberHandler;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationHolder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import java.sql.SQLException;
