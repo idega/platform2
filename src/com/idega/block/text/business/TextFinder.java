@@ -126,6 +126,8 @@ public class TextFinder {
 
   }
 
+
+
   public static LocalizedText getLocalizedText(int iTxTextId,int iLocaleId){
     LocalizedText LTX = null;
     List L =   listOfLocalizedText(iTxTextId,iLocaleId);
@@ -154,6 +156,33 @@ public class TextFinder {
       ex.printStackTrace();
       return -2;
 
+    }
+  }
+
+  public static int getObjectInstanceIdFromTextId(int iTextId){
+    try {
+      TxText tx = new TxText(iTextId);
+      List L = EntityFinder.findRelated( tx,new ICObjectInstance());
+      if(L!= null){
+        return ((ICObjectInstance) L.get(0)).getID();
+      }
+      else
+        return -1;
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return -2;
+
+    }
+  }
+
+  public static List listOfTextForObjectInstanceId( ICObjectInstance obj){
+    try {
+      List L = EntityFinder.findRelated(obj,new TxText());
+      return L;
+    }
+    catch (SQLException ex) {
+      return null;
     }
   }
 
@@ -198,7 +227,11 @@ public class TextFinder {
       return null;
     }
   }
+/*
+  public static listOfObjectInstanceTexts(){
 
+  }
+*/
   public static List listOfLocales(){
     return ICLocaleBusiness.listLocaleCreateIsEn();
   }

@@ -1,5 +1,14 @@
 package com.idega.block.text.presentation;
 
+/**
+ * Title:
+ * Description:
+ * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
+ * Company:      idega
+  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
+ * @version 1.2
+ */
+
 import java.sql.*;
 import java.util.*;
 import java.io.*;
@@ -82,6 +91,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     TxText txText = null;
     LocalizedText locText = null;
     Table T = new Table(1,2);
+    T.setCellpadding(0);
+    T.setCellspacing(0);
+    T.setBorder(0);
+    T.setWidth(textWidth);
 
     if(iTextId < 0){
       String sTextId = modinfo.getParameter(prmTextId );
@@ -96,22 +109,28 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     }
     int iLocaleId = ICLocaleBusiness.getLocaleId(locale);
 
-    if ( sAttribute != null ){
-      System.err.println("TextReader attribute "+sAttribute);
+    if(iTextId > 0) {
+      txText = new TxText((iTextId));
+    }
+    else if ( sAttribute != null ){
       txText = TextFinder.getText(sAttribute);
       newWithAttribute = true;
     }
-    else if(iTextId > 0) {
-      txText = new TxText((iTextId));
-    }
+
+    boolean hasId = false;
+
     if(txText != null){
+      iTextId = txText.getID();
       locText = TextFinder.getLocalizedText(txText.getID(),iLocaleId);
+      hasId = true;
     }
+
     if(locText != null){
-        T.add(getTextTable(txText,locText),1,1);
+       T.add(getTextTable(txText,locText),1,1);
+
     }
     if(isAdmin){
-      T.add(getAdminPart(iTextId,enableDelete,newobjinst,newWithAttribute),1,2);
+      T.add(getAdminPart(iTextId,enableDelete,newobjinst,newWithAttribute,hasId),1,2);
     }
     else
       T.mergeCells(1,1,1,2);
@@ -124,11 +143,12 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
 
     T.setCellpadding(3);
     T.setCellspacing(3);
+    T.setBorder(0);
     T.mergeCells(1,1,2,1);
     T.mergeCells(1,2,2,2);
     T.setRowColor(1,headlineBgColor);
     T.setRowColor(2,textBgColor);
-    T.setWidth(textWidth);
+    T.setWidth("100%");
 
     Text headline = new Text(locText.getHeadline());
     headline.setFontSize(headlineSize);
@@ -140,13 +160,13 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     String textBody = locText.getBody();
 
     if ( reverse ) {
-      textBody = textReverse(textBody);
+      textBody = TextFormatter.textReverse(textBody);
     }
     if ( crazy ) {
-      textBody = textCrazy(textBody);
+      textBody = TextFormatter.textCrazy(textBody);
     }
 
-    textBody = formatText(textBody);
+    textBody = TextFormatter.formatText(textBody,tableTextSize,tableWidth);
 
     Text body = new Text(textBody);
     body.setFontSize(textSize);
@@ -188,113 +208,11 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     return T;
   }
 
-/*
-  public void textTable() throws IOException,SQLException {
-    myTable.setCellpadding(3);
-    myTable.setCellspacing(3);
-    myTable.mergeCells(1,1,2,1);
-    myTable.mergeCells(1,2,2,2);
-    myTable.setRowColor(1,headlineBgColor);
-    myTable.setRowColor(2,textBgColor);
-    myTable.setWidth(textWidth);
-
-    //Text headline = new Text(text.getTextHeadline());
-    Text headline = new Text(locText.getHeadline());
-    headline.setFontSize(headlineSize);
-    headline.setFontColor(headlineColor);
-    headline.setBold();
-    headline.setAttribute("class","headlinetext");
-    headline.setFontStyle(headlineStyle);
-
-    //String textBody = text.getTextBody();
-    String textBody = locText.getBody();
-
-    if ( reverse ) {
-      textBody = textReverse(textBody);
-    }
-    if ( crazy ) {
-      textBody = textCrazy(textBody);
-    }
-
-    textBody = formatText(textBody);
-
-    Text body = new Text(textBody);
-    body.setFontSize(textSize);
-    body.setFontColor(textColor);
-    body.setAttribute("class","bodytext");
-    body.setFontStyle(textStyle);
-
-    Image bodyImage;
-
-    //if ( text.getIncludeImage().equals("Y") ) {
-      //bodyImage = new Image(text.getImageId());
-    if ( txText.getIncludeImage() ) {
-      bodyImage = new Image(txText.getImageId());
-      bodyImage.setAttribute("align","right");
-      bodyImage.setAttribute("vspace","6");
-      bodyImage.setAttribute("hspace","6");
-
-      if ( displayHeadline ) {
-        myTable.add(bodyImage,1,2);
-      }
-      else {
-        myTable.add(bodyImage,1,1);
-      }
-    }
-
-    if ( displayHeadline ) {
-      if ( headline.getText() != null ) {
-      Anchor headlineAnchor = new Anchor(headline,headline.getText());
-      headlineAnchor.setFontColor(headlineColor);
-      myTable.add(headlineAnchor ,1,1);
-      myTable.add(body,1,2);
-      }
-    }
-    else {
-      myTable.mergeCells(1,1,1,2);
-      myTable.add(body,1,1);
-    }
-
-  }
-*/
-/*
-  public void addAdminPart(){
-     Window adminWindow = new Window("AdminWindow",TextEditorWindow.class,com.idega.jmodule.object.Page.class);
-      adminWindow.setWidth(570);
-      adminWindow.setHeight(430);
-      myTable.resize(2,3);
-      if(iTextId > 0){
-      Link breyta = new Link(iwrb.getImage("change.gif"));
-        breyta.setWindowToOpen(TextEditorWindow.class);
-        breyta.addParameter(TextEditorWindow.prmTextId,iTextId);
-      myTable.add(breyta,1,3);
-      Link delete = new Link(iwrb.getImage("delete.gif"));
-        delete.setWindowToOpen(TextEditorWindow.class);
-        delete.addParameter(TextEditorWindow.prmDelete,iTextId);
-         if ( enableDelete ) {
-          myTable.add(delete,2,3);
-        }
-      }
-      if(newobjinst){
-        Link newObjectInstanceLink = new Link(iwrb.getImage("new.gif"));
-        newObjectInstanceLink.setWindowToOpen(TextEditorWindow.class);
-        newObjectInstanceLink.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
-        myTable.add(newObjectInstanceLink,1,3);
-      }
-      else if(newWithAttribute){
-        Link newAttributeLink = new Link(iwrb.getImage("new.gif"));
-        newAttributeLink.setWindowToOpen(TextEditorWindow.class);
-        System.err.println(sAttribute);
-        newAttributeLink.addParameter(TextEditorWindow.prmAttribute,sAttribute);
-        myTable.add(newAttributeLink,1,3);
-      }
-
-  }
-*/
-  public ModuleObject getAdminPart(int iTextId,boolean enableDelete,boolean newObjInst,boolean newWithAttribute){
+  public ModuleObject getAdminPart(int iTextId,boolean enableDelete,boolean newObjInst,boolean newWithAttribute,boolean hasId){
     Table T = new Table();
-    T.setCellpadding(0);
-    T.setCellspacing(0);
+    T.setCellpadding(2);
+    T.setCellspacing(2);
+    T.setBorder(0);
     Window adminWindow = new Window("AdminWindow",TextEditorWindow.class,com.idega.jmodule.object.Page.class);
     adminWindow.setWidth(570);
     adminWindow.setHeight(430);
@@ -302,214 +220,28 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     Link breyta = new Link(iwrb.getImage("change.gif"));
       breyta.setWindowToOpen(TextEditorWindow.class);
       breyta.addParameter(TextEditorWindow.prmTextId,iTextId);
-    T.add(breyta,1,3);
+    T.add(breyta,1,1);
+
     Link delete = new Link(iwrb.getImage("delete.gif"));
       delete.setWindowToOpen(TextEditorWindow.class);
       delete.addParameter(TextEditorWindow.prmDelete,iTextId);
        if ( enableDelete ) {
-        T.add(delete,2,3);
+        T.add(delete,3,1);
       }
     }
-    if(newObjInst){
-      Link newObjectInstanceLink = new Link(iwrb.getImage("new.gif"));
-      newObjectInstanceLink.setWindowToOpen(TextEditorWindow.class);
-      newObjectInstanceLink.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
-      T.add(newObjectInstanceLink,1,3);
-    }
-    else if(newWithAttribute){
-      Link newAttributeLink = new Link(iwrb.getImage("new.gif"));
-      newAttributeLink.setWindowToOpen(TextEditorWindow.class);
-      newAttributeLink.addParameter(TextEditorWindow.prmAttribute,sAttribute);
-      T.add(newAttributeLink,1,3);
+    if(newObjInst && !hasId){
+      Link newLink = new Link(iwrb.getImage("new.gif"));
+      newLink.setWindowToOpen(TextEditorWindow.class);
+      if(newObjInst)
+        newLink.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
+      else if(newWithAttribute)
+        newLink.addParameter(TextEditorWindow.prmAttribute,sAttribute);
+
+      T.add(newLink,2,1);
     }
 
+    T.setWidth("100%");
     return T;
-
-  }
-/*
-  public void noTextID() throws IOException,SQLException {
-
-    //TextModule[] texts = (TextModule[]) (new TextModule()).findAll();
-    TxText[] texts = (TxText[]) (new TxText()).findAll();
-
-    myTable = new Table(2,texts.length+1);
-    myTable.mergeCells(1,1,2,1);
-
-    //		Text text_heading = new Text("Texts in this database:");
-    // Breytt af gimmi 13.03.2001
-    Text text_heading = new Text("");
-    text_heading.setFontSize(3);
-    text_heading.setBold();
-
-    for ( int a = 0; a < texts.length; a++ ) {
-
-      //Link textLink = new Link(texts[a].getTextHeadline(),"");
-      Link textLink = new Link(texts[a].getHeadline(),"");
-      textLink.addParameter(TextEditorWindow.prmTextId,texts[a].getID());
-
-      myTable.addText(texts[a].getID()+".",1,a+2);
-      myTable.add(textLink,2,a+2);
-    }
-
-    if ( texts.length == 0 ) {
-      myTable.resize(2,2);
-      myTable.addText("",2,2);
-    }
-
-    myTable.add(text_heading,1,1);
-
-  }
-*/
-  public String formatText(String textBody) {
-    //Búa til töflu
-    if (textBody==null || textBody.equals("")) textBody = "";
-
-    Vector tableVector = createTextTable(textBody);
-
-    for ( int a = 0; a < tableVector.size(); a++ ) {
-
-      String tableRow = tableVector.elementAt(a).toString();
-
-      if ( a == 0 ) {
-        tableRow = TextSoap.findAndReplace(tableRow,"|","</font></td><td valign=\"top\"><font size=\""+(tableTextSize+1)+"\">");
-      }
-      else {
-        tableRow = TextSoap.findAndReplace(tableRow,"|","</font></td><td valign=\"top\"><font size=\""+tableTextSize+"\">");
-      }
-
-      if ( a == 0 || a == tableVector.size()-1) {
-        if ( a == 0 ) {
-          tableRow = "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" width=\""+tableWidth+"\"><tr bgcolor=\"#FFFFFF\"><td valign=\"top\"><font size=\""+(tableTextSize+1)+"\">"+tableRow+"</font></td></tr>";
-        }
-
-        if ( a == tableVector.size()-1 ) {
-          tableRow = "<tr bgcolor=\"#FFFFFF\"><td valign=\"top\"><font size=\""+tableTextSize+"\">"+tableRow+"</font></td></tr></table>";
-        }
-      }
-      else {
-        tableRow = "<tr bgcolor=\"#FFFFFF\"><td valign=\"top\"><font size=\""+tableTextSize+"\">"+tableRow+"</font></td></tr>";
-      }
-
-      textBody = TextSoap.findAndReplace(textBody,tableVector.elementAt(a).toString(),tableRow);
-    }
-
-    textBody = TextSoap.findAndReplace(textBody,"|\r\n","");
-    textBody = TextSoap.findAndReplace(textBody,"|","");
-    //Töflugerð lokið
-
-
-    //Búa til töflu 2
-    if (textBody==null || textBody.equals("")) textBody = "";
-    tableVector = createTextTableNoBanner(textBody);
-
-    for ( int a = 0; a < tableVector.size(); a++ ) {
-
-      String tableRow = tableVector.elementAt(a).toString();
-
-      if ( a == 0 ) {
-        tableRow = TextSoap.findAndReplace(tableRow,"?","</font></td><td><font size=\""+(tableTextSize+1)+"\">");
-      }
-      else {
-        tableRow = TextSoap.findAndReplace(tableRow,"?","</font></td><td><font size=\""+tableTextSize+"\">");
-      }
-
-      if ( a == 0 || a == tableVector.size()-1) {
-        if ( a == 0 ) {
-          tableRow = "<table border=\"0\" cellpadding=\"3\" cellspacing=\"0\" width=\""+tableWidth+"\"><tr bgcolor=\"#FFFFFF\"><td><font size=\""+(tableTextSize+1)+"\">"+tableRow+"</font></td></tr>";
-        }
-
-        if ( a == tableVector.size()-1 ) {
-          tableRow = "<tr bgcolor=\"#FFFFFF\"><td><font size=\""+tableTextSize+"\">"+tableRow+"</font></td></tr></table>";
-        }
-      }
-      else {
-        tableRow = "<tr bgcolor=\"#FFFFFF\"><td><font size=\""+tableTextSize+"\">"+tableRow+"</font></td></tr>";
-      }
-
-      textBody = TextSoap.findAndReplace(textBody,tableVector.elementAt(a).toString(),tableRow);
-    }
-
-    textBody = TextSoap.findAndReplace(textBody,"?\r\n","");
-    textBody = TextSoap.findAndReplace(textBody,"?","");
-    //Töflugerð lokið
-
-    //Búa til tengla
-    Vector linkVector = createTextLink(textBody);
-    for ( int a = 0; a < linkVector.size(); a++ ) {
-      String link = linkVector.elementAt(a).toString();
-      int comma = link.indexOf(",");
-      link = "<a href=\""+link.substring(comma+1,link.length())+"\" target=\"_blank\">"+link.substring(0,comma)+"</a>";
-      textBody = TextSoap.findAndReplace(textBody,"Link("+linkVector.elementAt(a).toString()+")",link);
-    }
-
-    //Almenn hreinsun
-    textBody = TextSoap.findAndReplace(textBody,"*","<li>");
-    textBody = TextSoap.findAndReplace(textBody,".\r\n",".<br><br>");
-    textBody = TextSoap.findAndReplace(textBody,"?\r\n","?<br><br>");
-    textBody = TextSoap.findAndReplace(textBody,"!\r\n","!<br><br>");
-
-    //Búa til headline
-    /*Vector testVector = testText(textBody);
-
-    while ( textBody.indexOf("\r\n\r\n\r\n") != -1 ) {
-      textBody = TextSoap.findAndReplace(textBody,"\r\n\r\n\r\n","\r\n\r\n");
-    }
-
-    int head_size = textSize + 1;
-
-    for ( int a = 0; a < testVector.size(); a++ ) {
-      textBody = TextSoap.findAndReplace(textBody,"\r\n\r\n"+testVector.elementAt(a).toString(),"temp");
-      textBody = TextSoap.findAndReplace(textBody,"temp","<font size=\""+head_size+"\"><b>"+testVector.elementAt(a).toString()+"</b></font>");
-    }*/
-    //Headlinegerð búin
-
-    textBody = TextSoap.findAndReplace(textBody,"\r\n","<br>");
-    textBody = TextSoap.findAndReplace(textBody,"\t","&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-
-    return textBody;
-  }
-
-  public Vector testText(String textBody) {
-    Vector testVector = TextSoap.FindAllBetween(textBody,"\r\n\r\n","\r\n");
-    return testVector;
-  }
-
-  public Vector createTextTable(String textBody) {
-    Vector tableVector = TextSoap.FindAllBetween(textBody,"|","|\r\n");
-    return tableVector;
-  }
-
-  public Vector createTextTableNoBanner(String textBody) {
-    Vector tableVector = TextSoap.FindAllBetween(textBody,"?","?\r\n");
-    return tableVector;
-  }
-
-  public Vector createTextLink(String textBody) {
-    Vector linkVector = TextSoap.FindAllBetween(textBody,"Link(",")");
-    return linkVector;
-  }
-
-  public String textReverse(String strengur) {
-    StringBuffer buffer = new StringBuffer(strengur);
-    String reverse = buffer.reverse().toString();
-    return reverse;
-  }
-
-  public String textCrazy(String strengur) {
-
-    String crazy = "";
-
-    StringTokenizer token = new StringTokenizer(strengur);
-
-    while ( token.hasMoreTokens() ) {
-      StringBuffer buffer = new StringBuffer(token.nextToken());
-      crazy += buffer.reverse().toString();
-      if ( token.hasMoreTokens() ) {
-        crazy += " ";
-      }
-    }
-
-    return crazy;
 
   }
 

@@ -26,21 +26,30 @@ public class TextBusiness{
     return TX;
   }
 
-  public static void deleteText(int iTextId) {
 
+
+  public static void deleteText(int iTextId) {
+    int iObjectInstanceId = TextFinder.getObjectInstanceIdFromTextId(iTextId);
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try {
       t.begin();
-      List L = TextFinder.listOfLocalizedText(iTextId);
+    //  List O = TextFinder.listOfObjectInstanceTexts();
+      TxText txText= new TxText(iTextId);
+      List L = TextFinder.listOfLocalizedText(txText.getID());
       if(L != null){
         LocalizedText lt;
         for (int i = 0; i < L.size(); i++) {
           lt = (LocalizedText) L.get(i);
+          lt.removeFrom(txText);
           lt.delete();
         }
-
       }
-      new TxText(iTextId).delete();
+
+      if(iObjectInstanceId > 0  ){
+        ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+        txText.removeFrom(obj);
+      }
+      txText.delete();
      t.commit();
     }
     catch(Exception e) {
@@ -202,7 +211,6 @@ public class TextBusiness{
             String sHeadline,String sTitle,String sBody,
             int iImageId,boolean useImage,int iLocaleId ,int iUserId,int InstanceId,String sAttribute){
 
-
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try {
       t.begin();
@@ -243,7 +251,6 @@ public class TextBusiness{
         txText.setAttribute(sAttribute);
       }
 
-
       if(txUpdate ){
         txText.update();
         if(locUpdate){
@@ -263,7 +270,9 @@ public class TextBusiness{
         locText.insert();
         locText.addTo(txText);
         if(InstanceId > 0){
+          System.err.println("instance er til");
           ICObjectInstance objIns = new ICObjectInstance(InstanceId);
+          System.err.println(" object instance "+objIns.getID() + objIns.getName());
           txText.addTo(objIns);
         }
       }
