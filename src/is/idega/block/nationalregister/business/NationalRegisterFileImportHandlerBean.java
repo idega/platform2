@@ -3,7 +3,6 @@ package is.idega.block.nationalregister.business;
 import is.idega.block.nationalregister.data.NationalRegister;
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,10 +15,11 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.block.importer.business.ImportFileHandler;
-import com.idega.block.importer.data.GenericImportFile;
 import com.idega.block.importer.data.ImportFile;
+import com.idega.block.importer.presentation.Importer;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
+import com.idega.idegaweb.IWBundle;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -77,6 +77,9 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	public final static int COLUMN_DATE_OF_DELETION = 28;
 	public final static int COLUMN_NEW_SSN_OR_NAME = 29;
 	public final static int COLUMN_DATE_OF_BIRTH = 30;
+	
+	private final static String PROPERTY_NAME_CREATE_ONLY = "NAT_REG_CREATE_ONLY";
+	private boolean createOnly = false;
 	/**
 	 * @see com.idega.block.importer.business.ImportFileHandler#handleRecords()
 	 */
@@ -94,7 +97,13 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			String item;
 			_familyRelations = new MultivaluedHashMap();
 			_spouseRelations = new MultivaluedHashMap();
+			IWBundle bundle = getIWMainApplication().getBundle(Importer.IW_BUNDLE_IDENTIFIER);
+			String sCreateOnly = bundle.getProperty(PROPERTY_NAME_CREATE_ONLY);
+			createOnly = (sCreateOnly != null && sCreateOnly.equalsIgnoreCase("yes"));
 			int count = 0;
+			if (createOnly) {
+				System.out.println("NationalRegisterHandler create only variable set to TRUE");
+			}
 			System.out.println("NationalRegisterHandler processing RECORD [0] time: " + IWTimestamp.getTimestampRightNow().toString());
 			while (!(item = (String) _file.getNextRecord()).equals("")) {
 				count++;
@@ -329,11 +338,25 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		//			//initialize business beans and data homes           
 		NationalRegisterBusiness natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
 		
-		boolean success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
-		                          floor,sex,maritialStatus,empty,prohibitMarking,
-		                          nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
-															addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
-															agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth);
+		boolean success = false;
+		if (createOnly) {
+			NationalRegister reg = natReg.getEntryBySSN(ssn);
+			if (reg == null) {
+				success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
+            floor,sex,maritialStatus,empty,prohibitMarking,
+            nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
+						addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
+						agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth);
+			} else {
+				success = true;
+			}
+		} else {
+			success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
+          floor,sex,maritialStatus,empty,prohibitMarking,
+          nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
+					addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
+					agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth);
+		}
 		if (success) {
 			_familyRelations.put(familyId, ssn);
 		}
