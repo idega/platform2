@@ -6,6 +6,7 @@ import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
+import com.idega.block.school.data.SchoolManagementType;
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -34,18 +35,22 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 
 /**
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/24 10:36:49 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/24 12:56:33 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -113,6 +118,14 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
+    private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
+    private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
+    private static final String SCHOOL_CLASS_DEFAULT = "Grupp";
+    private static final String SCHOOL_CLASS_KEY = PREFIX + "school_class";
+    private static final String SCHOOL_TYPE_DEFAULT = "Verksamhet";
+    private static final String SCHOOL_TYPE_KEY = PREFIX + "school_type";
+    private static final String SCHOOL_YEAR_DEFAULT = "Skolår";
+    private static final String SCHOOL_YEAR_KEY = PREFIX + "school_year";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_KEY = PREFIX + "search";
     private static final String SIGNATURE_DEFAULT = "Sigantur";
@@ -138,6 +151,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private static final String VAT_AMOUNT_KEY = PREFIX + "vat_amount";
     private static final String VAT_RULE_DEFAULT = "Momstyp";
     private static final String VAT_RULE_KEY = PREFIX + "vat_rule";
+
 
     private static final String ACTION_KEY = PREFIX + "action_key";
     private static final String LAST_ACTION_KEY = PREFIX + "last_action_key";
@@ -199,29 +213,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         renderRecordDetailsOrForm (context, new java.util.HashMap ());
     }
     
-    private void addSmallText (final java.util.Map map, final String key,
-                               final String value) {
-        map.put (key, getSmallText (null != value && !value.equals (null + "")
-                                    ? value : ""));
-    }
-
-    private void addSmallText (final java.util.Map map, final String key,
-                               final long value) {
-        map.put (key, getSmallText (-1 != value ? value + "" : "0"));
-    }
-
-    private void addSmallText (final java.util.Map map, final String key,
-                               final Date date) {
-        map.put (key, getSmallText (null != date ? dateFormatter.format (date)
-                                    : ""));
-    }
-
-    private void addSmallPeriodText (final java.util.Map map, final String key,
-                                     final Date date) {
-        map.put (key, getSmallText (null != date ? periodFormatter.format (date)
-                                    : ""));
-    }
-
     private void showRecord (final IWContext context) 
         throws RemoteException, FinderException {
         final PaymentRecord record = getPaymentRecord (context);
@@ -231,21 +222,52 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addSmallText (map, CREATED_SIGNATURE_KEY, record.getCreatedBy ());
         addSmallText (map, DATE_ADJUSTED_KEY, record.getDateChanged ());
         addSmallText (map, DATE_CREATED_KEY, record.getDateCreated ());
-        addSmallText (map, DOUBLE_POSTING_KEY, record.getDoublePosting ());
-        //MANAGEMENT_TYPE_KEY
+        map.put (DOUBLE_POSTING_KEY,
+                 getPostingListTable (context, record.getDoublePosting ()));
         addSmallText (map, NOTE_KEY, record.getNotes ());
-        addSmallText (map, OWN_POSTING_KEY, record.getOwnPosting ());
+        map.put (OWN_POSTING_KEY,
+                 getPostingListTable (context, record.getOwnPosting ()));
         addSmallText (map, PAYMENT_TEXT_KEY, record.getPaymentText ());
         addSmallPeriodText (map, PERIOD_KEY, record.getPeriod ());
         addSmallText (map, PIECE_AMOUNT_KEY, (long) record.getPieceAmount ());
         addSmallText (map, NUMBER_OF_PLACEMENTS_KEY, record.getPlacements ());
-        //PROVIDER_KEY
         addSmallText (map, STATUS_KEY, record.getStatus () + "");
         addSmallText (map, TRANSACTION_DATE_KEY, record.getDateTransaction ());
         addSmallText (map, VAT_AMOUNT_KEY, (long) record.getTotalAmountVAT ());
-        //VAT_RULE_KEY public int getVATType();
+        final String ruleSpecType = record.getRuleSpecType ();
+        addSmallText (map, REGULATION_SPEC_TYPE_KEY,
+                      localize (ruleSpecType, ruleSpecType));
+        if (0 < record.getVATType ()) {
+            final InvoiceBusiness business
+                    = (InvoiceBusiness) IBOLookup.getServiceInstance
+                    (context, InvoiceBusiness.class);
+            final VATRule rule = business.getVatRule (record.getVATType ());
+            final String ruleName = rule.getVATRule ();
+            map.put (VAT_RULE_KEY, getSmallText (localize (ruleName,
+                                                              ruleName)));
+        }
+
+        try {
+            final PaymentHeader header = getPaymentHeader (context);
+            final School school = header.getSchool ();
+            final SchoolManagementType managementType
+                    = school.getManagementType ();
+            //--verksamhet
+            //--skolår/timmar
+            //--grupp
+            addSmallText (map, PROVIDER_KEY, school.getName ());
+            addSmallText (map, MANAGEMENT_TYPE_KEY,
+                          localize (managementType.getLocalizedKey (),
+                                    managementType.getName ()));
+        } catch (Exception e) {
+            logWarning ("Missing school properties i payment record "
+                        + record.getPrimaryKey ());
+            log (e);
+        }
+
         map.put (HEADER_KEY, getSmallHeader
                  (localize (PAYMENT_RECORD_KEY, PAYMENT_RECORD_DEFAULT)));
+
         renderRecordDetailsOrForm (context, map);
     }
     
@@ -657,6 +679,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addPresentation (table, presentationObjects, MANAGEMENT_TYPE_KEY, col++,
                          row);
         col = 1; row++;
+        table.setHeight (row++, 12);
         addSmallHeader (table, col++, row, PLACEMENT_KEY, PLACEMENT_DEFAULT,
                         ":");
         table.mergeCells (col, row, table.getColumns (), row);
@@ -696,6 +719,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addPresentation (table, presentationObjects, STATUS_KEY, col++,
                          row);
         col = 1; row++;
+        table.setHeight (row++, 12);
         addSmallHeader (table, col++, row, NUMBER_OF_PLACEMENTS_KEY,
                         NUMBER_OF_PLACEMENTS_DEFAULT, ":");
         addPresentation (table, presentationObjects, NUMBER_OF_PLACEMENTS_KEY,
@@ -714,20 +738,39 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         addPresentation (table, presentationObjects, VAT_AMOUNT_KEY, col++,
                          row);
         col = 1; row++;
+        table.setHeight (row++, 12);
         addSmallHeader (table, col++, row, NOTE_KEY, NOTE_DEFAULT, ":");
         addPresentation (table, presentationObjects, NOTE_KEY, col++, row);
         col = 1; row++;
-
-        //--verksamhet
-        //--skolår/timmar
-        //--grupp
-        //-- public java.lang.String PaymentRecord.getRuleSpecType();
-
+        table.setHeight (row++, 12);
+        addSmallHeader (table, col++, row, SCHOOL_TYPE_KEY, SCHOOL_TYPE_DEFAULT,
+                        ":");
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, SCHOOL_TYPE_KEY, col++,
+                         row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, SCHOOL_YEAR_KEY, SCHOOL_YEAR_DEFAULT,
+                        ":");
+        addPresentation (table, presentationObjects, SCHOOL_YEAR_KEY, col++,
+                         row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, SCHOOL_CLASS_KEY,
+                        SCHOOL_CLASS_DEFAULT, ":");
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, SCHOOL_CLASS_KEY, col++,
+                         row);
+        col = 1; row++;
+        table.setHeight (row++, 12);
+        addSmallHeader (table, col++, row, REGULATION_SPEC_TYPE_KEY,
+                        REGULATION_SPEC_TYPE_DEFAULT, ":");
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, REGULATION_SPEC_TYPE_KEY,
+                         col++, row);
+        col = 1; row++;
         addSmallHeader (table, col++, row, VAT_RULE_KEY, VAT_RULE_DEFAULT, ":");
         table.mergeCells (col, row, table.getColumns (), row);
         addPresentation (table, presentationObjects, VAT_RULE_KEY, col++, row);
         col = 1; row++;
-
         addSmallHeader (table, col++, row, OWN_POSTING_KEY, OWN_POSTING_DEFAULT,
                         ":");
         col = 1; row++;
@@ -1002,6 +1045,62 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         logWarning (message.toString ());
         log (exception);
         add ("Det inträffade ett fel. Försök igen senare.");
+    }
+
+	private ListTable getPostingListTable (final IWContext context,
+                                           final String postingString) 
+        throws RemoteException {
+        final PostingField [] fields = getCurrentPostingFields (context);
+		final ListTable result = new ListTable (this, fields.length);
+        int offset = 0;
+        for (int i = 0; i < fields.length; i++) {
+            final PostingField field = fields [i];
+            final int endPosition = min (offset + field.getLen (),
+                                         postingString.length ());
+            result.setHeader (field.getFieldTitle (), i + 1);
+            result.add (getSmallText (postingString.substring
+                                      (offset, endPosition).trim ()));
+            offset = endPosition;
+        }       
+		return result;
+	}
+
+    private int min (final int a, final int b) {
+        return a < b ? a : b;
+    }
+
+    private PostingField [] getCurrentPostingFields (final IWContext context)
+        throws RemoteException {
+        final PostingBusiness business = (PostingBusiness)
+                IBOLookup.getServiceInstance (context, PostingBusiness.class);
+        final Date now = new Date (System.currentTimeMillis ());
+        final Collection fields = business.getAllPostingFieldsByDate (now);
+        final PostingField [] array = new PostingField [0];
+        return fields != null ? (PostingField []) fields.toArray (array)
+                : array;
+    }
+
+    private void addSmallText (final java.util.Map map, final String key,
+                               final String value) {
+        map.put (key, getSmallText (null != value && !value.equals (null + "")
+                                    ? value : ""));
+    }
+
+    private void addSmallText (final java.util.Map map, final String key,
+                               final long value) {
+        map.put (key, getSmallText (-1 != value ? value + "" : "0"));
+    }
+
+    private void addSmallText (final java.util.Map map, final String key,
+                               final Date date) {
+        map.put (key, getSmallText (null != date ? dateFormatter.format (date)
+                                    : ""));
+    }
+
+    private void addSmallPeriodText (final java.util.Map map, final String key,
+                                     final Date date) {
+        map.put (key, getSmallText (null != date ? periodFormatter.format (date)
+                                    : ""));
     }
 
     private static Integer getIntegerParameter (final IWContext context,
