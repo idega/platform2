@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.17 2002/03/15 09:43:16 palli Exp $
+ *  $Id: TPosClient.java,v 1.18 2002/03/15 09:46:25 palli Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -17,7 +17,6 @@ import com.idega.block.tpos.business.TPosException;
 import com.idega.block.tpos.business.TPosAuthorisationEntriesHome;
 import com.idega.block.tpos.data.TPosAuthorisationEntries;
 import com.idega.util.idegaTimestamp;
-
 
 /**
  * @author    <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -291,8 +290,9 @@ public class TPosClient {
 //    entry.setXMLAttachment(_client.getProperty(TPOS3Client.));
 
     boolean inserted = TPosAuthorisationEntriesHome.getInstance().insert(entry);
-    if (!inserted)
+    if (!inserted) {
       System.err.println("Unable to save entry to database");
+    }
 
     if (!valid) {
       TPosException e = new TPosException("Error in authorisation");
