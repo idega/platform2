@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.12 2003/10/10 15:16:35 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.13 2003/11/05 23:59:20 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,14 +21,12 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.12 2003/10/10 15:16:35 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.13 2003/11/05 23:59:20 palli Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
  */
-
 public class RegulationBMPBean extends GenericEntity implements Regulation {
-
 	private static final String ENTITY_NAME = "cacc_regulation";
 
 	private static final String COLUMN_PERIOD_FROM = "period_from";
@@ -47,21 +45,20 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	private static final String COLUMN_CONDITION_ORDER = "condition_order";
 	private static final String COLUMN_VAT_ELIGIBLE = "vat_eligible";
 	private static final String COLUMN_MAX_AMOUNT_DISCOUNT = "max_amount_discount";
-	
-	
+
 	/**
 	 * @see com.idega.data.GenericEntity#getEntityName()
 	 */
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
-	
+
 	/**
 	 * @see com.idega.data.GenericEntity#initializeAttributes()
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		
+
 		addAttribute(COLUMN_PERIOD_FROM, "From period", true, true, Date.class);
 		addAttribute(COLUMN_PERIOD_TO, "To period", true, true, Date.class);
 		addAttribute(COLUMN_CHANGED_DATE, "Ändrings datum", true, true, java.sql.Timestamp.class);
@@ -71,126 +68,193 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		addAttribute(COLUMN_DISCOUNT, "Discount", true, true, java.lang.Float.class);
 		addAttribute(COLUMN_CONDITION_ORDER, "Condition order", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_VAT_ELIGIBLE, "VAT Eligible", true, true, java.lang.Integer.class);
-		
-		addAttribute(COLUMN_OPERATION_ID, "Operation ID", true, true, 
-						String.class, "many-to-one", SchoolCategory.class);
-						
-		addAttribute(COLUMN_PAYMENT_FLOW_TYPE_ID, "Flow type relation ID", true, true,
-						Integer.class, "many-to-one", PaymentFlowType.class);
-						
-		addAttribute(COLUMN_REG_SPEC_TYPE_ID, "Regelspecificationstyp", true, true, 
-						Integer.class, "many-to-one", RegulationSpecType.class);
-						
-		addAttribute(COLUMN_CONDITION_TYPE_ID, "Condition type relation", true, true,
-						Integer.class, "many-to-one", ConditionType.class);
-						
-		addAttribute(COLUMN_SPECIAL_CALCULATION_ID, "Special calculation relation", true, true,
-						Integer.class, "many-to-one", SpecialCalculationType.class);
-		 
-		addAttribute(COLUMN_VAT_RULE_ID, "VAT rule relation", true, true,
-						Integer.class, "many-to-one", VATRule.class);
+		addAttribute(COLUMN_OPERATION_ID, "Operation ID", true, true, String.class, "many-to-one", SchoolCategory.class);
+		addAttribute(COLUMN_PAYMENT_FLOW_TYPE_ID, "Flow type relation ID", true, true, Integer.class, "many-to-one", PaymentFlowType.class);
+		addAttribute(COLUMN_REG_SPEC_TYPE_ID, "Regelspecificationstyp", true, true, Integer.class, "many-to-one", RegulationSpecType.class);
+		addAttribute(COLUMN_CONDITION_TYPE_ID, "Condition type relation", true, true, Integer.class, "many-to-one", ConditionType.class);
+		addAttribute(COLUMN_SPECIAL_CALCULATION_ID, "Special calculation relation", true, true, Integer.class, "many-to-one", SpecialCalculationType.class);
+		addAttribute(COLUMN_VAT_RULE_ID, "VAT rule relation", true, true, Integer.class, "many-to-one", VATRule.class);
 		addAttribute(COLUMN_MAX_AMOUNT_DISCOUNT, "Max amount discount", true, true, java.lang.Float.class);
-		
+
 		setAsPrimaryKey(getIDColumnName(), true);
+		
 		setNullable(COLUMN_OPERATION_ID, true);
 		setNullable(COLUMN_PAYMENT_FLOW_TYPE_ID, true);
 		setNullable(COLUMN_REG_SPEC_TYPE_ID, true);
 		setNullable(COLUMN_CONDITION_TYPE_ID, true);
 		setNullable(COLUMN_SPECIAL_CALCULATION_ID, true);
 		setNullable(COLUMN_VAT_RULE_ID, true);
-		
 	}
-	
-	public float getDiscount() { return getFloatColumnValue(COLUMN_DISCOUNT); }
-	public Date getPeriodFrom() { return getDateColumnValue(COLUMN_PERIOD_FROM); }
-	public Date getPeriodTo() { return getDateColumnValue(COLUMN_PERIOD_TO); }
-	public Timestamp getChangedDate() { return (Timestamp) getColumnValue(COLUMN_CHANGED_DATE); }
-	public String getChangedSign() { return (String) getColumnValue(COLUMN_CHANGED_SIGN); }
-	public String getName() { return getStringColumnValue(COLUMN_NAME); }
-	public String getLocalizationKey() { return getStringColumnValue(COLUMN_NAME); }
-	public Integer getAmount() { return getIntegerColumnValue(COLUMN_AMOUNT); }
-	public Integer getConditionOrder() { return getIntegerColumnValue(COLUMN_CONDITION_ORDER); }
-	public Integer getVATEligible() { return getIntegerColumnValue(COLUMN_VAT_ELIGIBLE); }
-	public float getMaxAmountDiscount() { return getFloatColumnValue(COLUMN_MAX_AMOUNT_DISCOUNT); }
-	
-	public SchoolCategory getOperation() { 
-		return (SchoolCategory) getColumnValue(COLUMN_OPERATION_ID); 
-	}
-	public PaymentFlowType getPaymentFlowType() { 
-		return (PaymentFlowType) getColumnValue(COLUMN_PAYMENT_FLOW_TYPE_ID); 
-	}
-	public RegulationSpecType getRegSpecType() { 
-		return (RegulationSpecType) getColumnValue(COLUMN_REG_SPEC_TYPE_ID); 
-	}
-	public ConditionType getConditionType() { 
-		return (ConditionType) getColumnValue(COLUMN_CONDITION_TYPE_ID); 
-	}
-	public SpecialCalculationType getSpecialCalculation() { 
-		return (SpecialCalculationType) getColumnValue(COLUMN_SPECIAL_CALCULATION_ID); 
-	}
-	public VATRule getVATRegulation() { 
-		return (VATRule) getColumnValue(COLUMN_VAT_RULE_ID); 
-	}
-		
-	public void setPeriodFrom(Date from) {setColumn(COLUMN_PERIOD_FROM, from);}
-	public void setPeriodTo(Date to) {setColumn(COLUMN_PERIOD_TO, to);}
-	public void setChangedDate(Timestamp date){setColumn(COLUMN_CHANGED_DATE, date);}
-	public void setChangedSign(String sign){setColumn(COLUMN_CHANGED_SIGN, sign);}
-	public void setName(String name) { setColumn(COLUMN_NAME, name); }	
-	public void setDiscount(float discount) { setColumn(COLUMN_DISCOUNT, discount); }	
-	public void setLocalizationKey(String name) { setColumn(COLUMN_NAME, name); }	
-	public void setAmount(int amount) { setColumn(COLUMN_AMOUNT, amount); }	
-	public void setConditionOrder(int value) { setColumn(COLUMN_CONDITION_ORDER, value); }	
-	public void setMaxAmountDiscount(float discount) { setColumn(COLUMN_MAX_AMOUNT_DISCOUNT, discount); }	
 
-	public void setOperation(String id) { 
+	public float getDiscount() {
+		return getFloatColumnValue(COLUMN_DISCOUNT);
+	}
+
+	public Date getPeriodFrom() {
+		return getDateColumnValue(COLUMN_PERIOD_FROM);
+	}
+
+	public Date getPeriodTo() {
+		return getDateColumnValue(COLUMN_PERIOD_TO);
+	}
+
+	public Timestamp getChangedDate() {
+		return (Timestamp) getColumnValue(COLUMN_CHANGED_DATE);
+	}
+
+	public String getChangedSign() {
+		return getStringColumnValue(COLUMN_CHANGED_SIGN);
+	}
+
+	public String getName() {
+		return getStringColumnValue(COLUMN_NAME);
+	}
+
+	public String getLocalizationKey() {
+		return getStringColumnValue(COLUMN_NAME);
+	}
+
+	public Integer getAmount() {
+		return getIntegerColumnValue(COLUMN_AMOUNT);
+	}
+
+	public Integer getConditionOrder() {
+		return getIntegerColumnValue(COLUMN_CONDITION_ORDER);
+	}
+
+	public Integer getVATEligible() {
+		return getIntegerColumnValue(COLUMN_VAT_ELIGIBLE);
+	}
+
+	public float getMaxAmountDiscount() {
+		return getFloatColumnValue(COLUMN_MAX_AMOUNT_DISCOUNT);
+	}
+
+	public SchoolCategory getOperation() {
+		return (SchoolCategory) getColumnValue(COLUMN_OPERATION_ID);
+	}
+
+	public PaymentFlowType getPaymentFlowType() {
+		return (PaymentFlowType) getColumnValue(COLUMN_PAYMENT_FLOW_TYPE_ID);
+	}
+
+	public RegulationSpecType getRegSpecType() {
+		return (RegulationSpecType) getColumnValue(COLUMN_REG_SPEC_TYPE_ID);
+	}
+
+	public ConditionType getConditionType() {
+		return (ConditionType) getColumnValue(COLUMN_CONDITION_TYPE_ID);
+	}
+
+	public SpecialCalculationType getSpecialCalculation() {
+		return (SpecialCalculationType) getColumnValue(COLUMN_SPECIAL_CALCULATION_ID);
+	}
+
+	public VATRule getVATRegulation() {
+		return (VATRule) getColumnValue(COLUMN_VAT_RULE_ID);
+	}
+
+	public void setPeriodFrom(Date from) {
+		setColumn(COLUMN_PERIOD_FROM, from);
+	}
+
+	public void setPeriodTo(Date to) {
+		setColumn(COLUMN_PERIOD_TO, to);
+	}
+
+	public void setChangedDate(Timestamp date) {
+		setColumn(COLUMN_CHANGED_DATE, date);
+	}
+
+	public void setChangedSign(String sign) {
+		setColumn(COLUMN_CHANGED_SIGN, sign);
+	}
+
+	public void setName(String name) {
+		setColumn(COLUMN_NAME, name);
+	}
+
+	public void setDiscount(float discount) {
+		setColumn(COLUMN_DISCOUNT, discount);
+	}
+
+	public void setLocalizationKey(String name) {
+		setColumn(COLUMN_NAME, name);
+	}
+
+	public void setAmount(int amount) {
+		setColumn(COLUMN_AMOUNT, amount);
+	}
+
+	public void setConditionOrder(int value) {
+		setColumn(COLUMN_CONDITION_ORDER, value);
+	}
+
+	public void setMaxAmountDiscount(float discount) {
+		setColumn(COLUMN_MAX_AMOUNT_DISCOUNT, discount);
+	}
+
+	public void setOperation(String id) {
 		if (id.compareTo("0") != 0) {
-			setColumn(COLUMN_OPERATION_ID, id); 
-		} else {
+			setColumn(COLUMN_OPERATION_ID, id);
+		}
+		else {
 			removeFromColumn(COLUMN_OPERATION_ID);
 		}
 	}
-	public void setPaymentFlowType(int id) { 
-		if (id != 0) { 
+
+	public void setPaymentFlowType(int id) {
+		if (id != 0) {
 			setColumn(COLUMN_PAYMENT_FLOW_TYPE_ID, id);
-		} else {
+		}
+		else {
 			removeFromColumn(COLUMN_PAYMENT_FLOW_TYPE_ID);
-		}			 
+		}
 	}
-	public void setConditionType(int id) { 
-		if (id != 0) { 
+
+	public void setConditionType(int id) {
+		if (id != 0) {
 			setColumn(COLUMN_CONDITION_TYPE_ID, id);
-		} else {
+		}
+		else {
 			removeFromColumn(COLUMN_CONDITION_TYPE_ID);
-		}			 
+		}
 	}
-	public void setRegSpecType(int id) { 
-		if (id != 0) { 
+
+	public void setRegSpecType(int id) {
+		if (id != 0) {
 			setColumn(COLUMN_REG_SPEC_TYPE_ID, id);
-		} else {
+		}
+		else {
 			removeFromColumn(COLUMN_REG_SPEC_TYPE_ID);
-		}			 
+		}
 	}
-	public void setSpecialCalculation(int id) { 
-		if (id != 0) { 
+
+	public void setSpecialCalculation(int id) {
+		if (id != 0) {
 			setColumn(COLUMN_SPECIAL_CALCULATION_ID, id);
-		} else {
+		}
+		else {
 			removeFromColumn(COLUMN_SPECIAL_CALCULATION_ID);
-		}			 
+		}
 	}
-	public void setVATEligible(int id) { 
-		if (id != 0) { 
+
+	public void setVATEligible(int id) {
+		if (id != 0) {
 			setColumn(COLUMN_VAT_ELIGIBLE, id);
-		} else {
+		}
+		else {
 			removeFromColumn(COLUMN_VAT_ELIGIBLE);
-		}			 
+		}
 	}
-	public void setVATRegulation(int id) { 
-		if (id != 0) { 
+
+	public void setVATRegulation(int id) {
+		if (id != 0) {
 			setColumn(COLUMN_VAT_RULE_ID, id);
-		} else {
+		}
+		else {
 			removeFromColumn(COLUMN_VAT_RULE_ID);
-		}			 
+		}
 	}
 
 	public Collection ejbFindAllRegulations() throws FinderException {
@@ -206,41 +270,101 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere(COLUMN_PERIOD_FROM);
-		sql.appendGreaterThanOrEqualsSign().append("'"+from+"'");
+		sql.appendGreaterThanOrEqualsSign().append("'" + from + "'");
 		sql.appendAnd().append(COLUMN_PERIOD_TO);
-		sql.appendLessThanOrEqualsSign().append("'"+to+"'");
+		sql.appendLessThanOrEqualsSign().append("'" + to + "'");
 		sql.appendOrderBy(COLUMN_PERIOD_FROM);
 		sql.append(", ");
 		sql.append(COLUMN_NAME);
 		return idoFindPKsBySQL(sql.toString());
 	}
 
-	public Collection ejbFindRegulationsByPeriod(
-			Date from, 
-			Date to, 
-			String operationID, 
-			int flowTypeID, 
-			int sortByID
-		) throws FinderException {
-				
+	public Collection ejbFindRegulationsByPeriod(Date from, Date to, String operationID, int flowTypeID, int sortByID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhere(COLUMN_PERIOD_FROM);
-		sql.appendGreaterThanOrEqualsSign().append("'"+from+"'");
+		sql.appendGreaterThanOrEqualsSign().append("'" + from + "'");
 		sql.appendAnd().append(COLUMN_PERIOD_TO);
-		sql.appendLessThanOrEqualsSign().append("'"+to+"'");
-		if(operationID.compareTo("0") != 0) {
-			sql.appendAndEquals(COLUMN_OPERATION_ID, "'"+operationID+"'");
+		sql.appendLessThanOrEqualsSign().append("'" + to + "'");
+		if (operationID.compareTo("0") != 0) {
+			sql.appendAndEquals(COLUMN_OPERATION_ID, "'" + operationID + "'");
 			sql.appendAndEquals(COLUMN_PAYMENT_FLOW_TYPE_ID, flowTypeID);
 		}
-		if(sortByID == 2) {
+		if (sortByID == 2) {
 			sql.appendOrderBy(COLUMN_NAME);
-		} else {
+		}
+		else {
 			sql.appendOrderBy(COLUMN_PERIOD_FROM);
 		}
 		return idoFindPKsBySQL(sql.toString());
 	}
 
+	public Collection ejbFindRegulations(Date from, Date to, String operationID, int flowTypeID, int condTypeID, int regSpecTypeID) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		//Check if this is the first condition.
+		boolean first = true;
+		if (from != null) {
+			sql.appendWhere(COLUMN_PERIOD_FROM);
+			sql.appendGreaterThanOrEqualsSign().append("'" + from + "'");
+			first = false;
+		}
+		
+		if (to != null) {
+			if (!first) {
+				sql.appendAnd();
+			}
+			else {
+				first = false;
+			}
+			sql.append(COLUMN_PERIOD_TO);
+			sql.appendLessThanOrEqualsSign().append("'" + to + "'");
+		}
+		
+		if (operationID != null && !"".equals(operationID) && !"0".equals(operationID)) {
+			if (!first) {
+				sql.appendAnd();
+			}
+			else {
+				first = false;
+			}
+			sql.appendEqualsQuoted(COLUMN_OPERATION_ID,operationID);			
+		}
+		
+		if (flowTypeID != -1) {
+			if (!first) {
+				sql.appendAnd();
+			}
+			else {
+				first = false;
+			}
+			sql.appendEquals(COLUMN_PAYMENT_FLOW_TYPE_ID,flowTypeID);						
+		}
+		
+		if (condTypeID != -1) {
+			if (!first) {
+				sql.appendAnd();
+			}
+			else {
+				first = false;
+			}
+			sql.appendEquals(COLUMN_CONDITION_TYPE_ID,condTypeID);						
+		}
+
+		if (regSpecTypeID != -1) {
+			if (!first) {
+				sql.appendAnd();
+			}
+			else {
+				first = false;
+			}
+			sql.appendEquals(COLUMN_REG_SPEC_TYPE_ID,regSpecTypeID);						
+		}
+
+		sql.appendOrderBy(COLUMN_CONDITION_ORDER);
+
+		return idoFindPKsBySQL(sql.toString());
+	}
 
 	public Object ejbFindRegulation(int id) throws FinderException {
 		IDOQuery sql = idoQuery();
@@ -254,56 +378,59 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		sql.appendWhere();
 		sql.append(" ((");
 		sql.append(COLUMN_PERIOD_FROM);
-		sql.appendLessThanOrEqualsSign().append("'"+to+"'");
+		sql.appendLessThanOrEqualsSign().append("'" + to + "'");
 		sql.appendAnd();
 		sql.append(COLUMN_PERIOD_TO);
-		sql.appendGreaterThanSign().append("'"+to+"'");
+		sql.appendGreaterThanSign().append("'" + to + "'");
 		sql.append(") ");
 
 		sql.appendOr();
 
 		sql.append(" (");
 		sql.append(COLUMN_PERIOD_FROM);
-		sql.appendLessThanOrEqualsSign().append("'"+from+"'");
+		sql.appendLessThanOrEqualsSign().append("'" + from + "'");
 		sql.appendAnd();
 		sql.append(COLUMN_PERIOD_TO);
-		sql.appendGreaterThanSign().append("'"+from+"'");
+		sql.appendGreaterThanSign().append("'" + from + "'");
 		sql.append(") ");
 
 		sql.appendOr();
 
 		sql.append(" (");
 		sql.append(COLUMN_PERIOD_FROM);
-		sql.appendLessThanOrEqualsSign().append("'"+to+"'");
+		sql.appendLessThanOrEqualsSign().append("'" + to + "'");
 		sql.appendAnd();
 		sql.append(COLUMN_PERIOD_TO);
-		sql.appendGreaterThanSign().append("'"+from+"'");
+		sql.appendGreaterThanSign().append("'" + from + "'");
 		sql.append(") ");
 
 		sql.appendOr();
 
 		sql.append(" (");
 		sql.append(COLUMN_PERIOD_FROM);
-		sql.appendEqualSign().append("'"+to+"'");
+		sql.appendEqualSign().append("'" + to + "'");
 		sql.appendAnd();
 		sql.append(COLUMN_PERIOD_TO);
-		sql.appendEqualSign().append("'"+from+"'");
+		sql.appendEqualSign().append("'" + from + "'");
 		sql.append(")) ");
 
 		sql.appendAnd();
 		sql.append(COLUMN_NAME);
 		sql.appendEqualSign();
-		sql.append("'"+name+"'");			
+		sql.append("'" + name + "'");
 
 		if (r != null) {
 			sql.appendAnd();
 			sql.append(getIDColumnName());
 			sql.appendNOTEqual();
-			sql.append("'"+r.getPrimaryKey().toString()+"'");			
+			sql.append("'" + r.getPrimaryKey().toString() + "'");
 		}
 
 		return idoFindOnePKByQuery(sql);
 	}
-
-			  
+	
+	//Find functions for C&P
+	public Collection ejbFindAllBy() throws FinderException {
+		return null;
+	}
 }
