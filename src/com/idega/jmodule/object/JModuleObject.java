@@ -17,6 +17,12 @@ import com.idega.jmodule.login.business.*;
 public class JModuleObject extends ModuleObjectContainer{
 
 
+  private static Map permissionKeyMap = new Hashtable();
+
+  public JModuleObject(){
+
+  }
+
   public boolean isAdministrator(ModuleInfo modinfo)throws Exception{
     return AccessControl.isAdmin(modinfo);
   }
@@ -60,5 +66,35 @@ public class JModuleObject extends ModuleObjectContainer{
     return this.getClass().getName();
   }
 
+  /**
+   * Implement in subclasses:
+   */
+  protected void registerPermissionKeys(){
+  }
+
+  protected void registerPermissionKey(String permissionKey,String localizeableKey){
+    Map m = (Map)getPermissionKeyMap().get(this.getClass());
+    if(m==null){
+      m = new Hashtable();
+      getPermissionKeyMap().put(this.getClass(),m);
+    }
+    m.put(permissionKey,localizeableKey);
+  }
+
+  protected void registerPermissionKey(String permissionKey){
+    registerPermissionKey(permissionKey,permissionKey);
+  }
+
+  private Map getPermissionKeyMap(){
+    return permissionKeyMap;
+  }
+
+  String[] getPermissionKeys(JModuleObject obj){
+    Map m = (Map)getPermissionKeyMap().get(this.getClass());
+    if(m!=null){
+      return (String[])m.keySet().toArray(new String[0]);
+    }
+    return null;
+  }
 
 }
