@@ -160,4 +160,6 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public String getAfterSchoolCareCaseCode() throws java.rmi.RemoteException;
  public boolean alterContract(int childcareContractID, int careTime, java.sql.Date fromDate, java.sql.Date endDate, java.util.Locale locale, com.idega.user.data.User performer) throws java.rmi.RemoteException;
  public boolean alterContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract childcareContract, int careTime, java.sql.Date fromDate, java.sql.Date endDate, java.util.Locale locale, com.idega.user.data.User performer) throws java.rmi.RemoteException;
+ public boolean removeContract(int childcareContractID, com.idega.user.data.User performer) throws java.rmi.RemoteException;
+ public boolean removeContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract childcareContract, com.idega.user.data.User performer) throws java.rmi.RemoteException;
 }

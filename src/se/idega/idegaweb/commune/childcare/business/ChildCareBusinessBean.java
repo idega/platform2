@@ -1041,7 +1041,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		
 			application.setFromDate(firstContract.getValidFromDate());
 			application.setRejectionDate(lastContract.getTerminatedDate());
-			if (application.getRejectionDate() != null) {
+			application.setCareTime(lastContract.getCareTime());
+			application.setContractId(lastContract.getContractID());
+			application.setContractFileId(lastContract.getContractFileID());
+			if (application.getRejectionDate() == null) {
 				application.setApplicationStatus(getStatusReady());
 				changeCaseStatus(application, getCaseStatusReady().getStatus(), performer);
 			}
@@ -2569,6 +2572,45 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				ex.printStackTrace();
 			}
 		}
+	}
+	
+	public boolean removeContract(int childcareContractID, User performer) {
+		try {
+			return removeContract(getChildCareContractArchiveHome().findByPrimaryKey(new Integer(childcareContractID)), performer);
+		}
+		catch (FinderException e) {
+			return false;
+		}
+	}
+	
+	public boolean removeContract(ChildCareContract childcareContract, User performer) {
+		UserTransaction t = getSessionContext().getUserTransaction();
+
+		try {
+			t.begin();
+			
+			Contract contract = childcareContract.getContract();
+			contract.removeFileFromContract(childcareContract.getContractFile());
+			
+			ChildCareApplication application = childcareContract.getApplication();
+			
+			childcareContract.remove();
+			verifyApplication(application, performer);
+			contract.remove();
+			
+			t.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				t.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
+			return false;
+		}
+		return true;
 	}
 	
 	public void addMissingGrantedChecks() {
