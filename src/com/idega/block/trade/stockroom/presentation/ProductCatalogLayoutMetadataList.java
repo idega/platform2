@@ -97,7 +97,7 @@ public class ProductCatalogLayoutMetadataList extends AbstractProductCatalogLayo
 			product = (Product) iter.next();
 			
 			
-			if ("".equals(product.getProductName(localeID))) {
+			if (null == product.getProductName(localeID, null)) {
 				localeInUse = defaultLocale;
 				localeIDinUse = defaultLocaleID;
 			} else {

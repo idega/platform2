@@ -37,7 +37,7 @@ public class ProductItemName extends ProductItem {
   private void drawObject() throws RemoteException{
     Text text = getText(defaultText);
     if ( _product != null ) {
-      text.setText(_product.getProductName(_localeId));
+      text.setText(_product.getProductName(_productLocaleId));
     }
     add(text);
   }

@@ -493,6 +493,15 @@ public class ProductBMPBean extends GenericEntity implements Product, IDOLegacyE
     this.idoRemoveFrom(address);
   }
 
+  public String getProductName(int localeId, String returnIfNull) {
+    LocalizedText text = TextFinder.getLocalizedText(this, localeId);
+  		if (text == null) {
+  			return returnIfNull;
+  		} else {
+  			return text.getHeadline();
+  		}
+  }
+  
   public String getProductName(int localeId) {
     LocalizedText text = TextFinder.getLocalizedText(this, localeId);
     if (text == null) text = TextFinder.getLocalizedText(this, 1);

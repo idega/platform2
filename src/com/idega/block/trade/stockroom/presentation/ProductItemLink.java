@@ -1,12 +1,9 @@
 package com.idega.block.trade.stockroom.presentation;
 
 import java.rmi.RemoteException;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
 import com.idega.presentation.text.Link;
 
 /**
@@ -19,10 +16,6 @@ import com.idega.presentation.text.Link;
  */
 
 public class ProductItemLink extends ProductItem {
-
-  private Image defaultImage = _defaultImage;
-  private int _width = 0;
-  private int _height = 0;
 
   public ProductItemLink() { }
   public ProductItemLink(int productId) throws RemoteException, FinderException{

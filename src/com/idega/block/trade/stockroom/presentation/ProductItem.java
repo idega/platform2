@@ -41,7 +41,9 @@ public class ProductItem extends Block {
   protected Image _defaultImage;
   protected IWResourceBundle _iwrb;
   protected IWBundle _iwb;
-
+  protected IWResourceBundle _productIWRB;
+  protected Locale _productLocale;
+  protected int _productLocaleId = -1;
   protected String _fontStyle;
   protected String _headerFontStyle;
 
@@ -81,8 +83,21 @@ public class ProductItem extends Block {
     _iwb = getBundle(iwc);
     this._iwrb = _iwb.getResourceBundle(iwc);
 
-    String IMAGE_BUNDLE_IDENTIFIER="com.idega.block.image";
+    String IMAGE_BUNDLE_IDENTIFIER="com.idega.block.media";
     _defaultImage = iwc.getIWMainApplication().getBundle(IMAGE_BUNDLE_IDENTIFIER).getLocalizedImage("picture.gif", _locale);
+
+    if (_product != null) {
+	    if ( null == _product.getProductName(_localeId, null)) {
+		  		_productLocale = iwc.getIWMainApplication().getSettings().getDefaultLocale();
+		  		_productLocaleId = ICLocaleBusiness.getLocaleId(_productLocale);
+		  		_productIWRB = _iwb.getResourceBundle(_productLocale);
+	    } else {
+	    		_productLocale = _locale;
+	    		_productLocaleId = _localeId;
+		  		_productIWRB = _iwrb;
+	    }
+    }
+    
   }
 
   protected Text getText(String content) {

@@ -25,6 +25,7 @@ public interface Product extends com.idega.data.IDOEntity, com.idega.data.MetaDa
  public java.util.Collection getProductCategories()throws com.idega.data.IDORelationshipException, java.rmi.RemoteException;
  public java.lang.String getProductDescription(int p0) throws java.rmi.RemoteException;
  public java.lang.String getProductName(int p0) throws java.rmi.RemoteException;
+ public java.lang.String getProductName(int p0, String returnIfNull) throws java.rmi.RemoteException;
  public java.lang.String getProductTeaser(int p0) throws java.rmi.RemoteException;
  public Supplier getSupplier();
  public int getSupplierId() throws java.rmi.RemoteException;

@@ -86,7 +86,7 @@ public class ProductItemMetaData extends ProductItem {
 				
 				String meta = null;
 				if (type.equalsIgnoreCase(IWMetaDataConstants.METADATA_TYPE_STRING))
-					meta = _product.getMetaData(METADATA + key + "_" + iwc.getCurrentLocale().toString());
+					meta = _product.getMetaData(METADATA + key + "_" + _productLocale.toString());
 				else
 					meta = _product.getMetaData(METADATA + key);
 					
@@ -99,20 +99,20 @@ public class ProductItemMetaData extends ProductItem {
 						while (tokens.hasMoreTokens()) {
 							String token = tokens.nextToken();
 							Image image = _iwb.getImage("shared/"+token+".gif");
-							image.setAlt(_iwrb.getLocalizedString(METADATA + "multi_" + token, token));
+							image.setAlt(_productIWRB.getLocalizedString(METADATA + "multi_" + token, token));
 							multiTable.add(image, 1, 2);
 						}
-						multiTable.add(getHeaderText(_iwrb.getLocalizedString(METADATA + key, key)), 1, 1);
+						multiTable.add(getHeaderText(_productIWRB.getLocalizedString(METADATA + key, key)), 1, 1);
 					}
 					else if (type.equals(IWMetaDataConstants.METADATA_TYPE_LINK)) {
-						metaTable.add(getHeaderText(_iwrb.getLocalizedString(METADATA + key, key) + ":"), 1, row);
+						metaTable.add(getHeaderText(_productIWRB.getLocalizedString(METADATA + key, key) + ":"), 1, row);
 						metaTable.add(getLink(meta, meta), 3, row++);
 						metaTable.setHeight(row++, 1);
 					}
 					else {
-						metaTable.add(getHeaderText(_iwrb.getLocalizedString(METADATA + key, key) + ":"), 1, row);
+						metaTable.add(getHeaderText(_productIWRB.getLocalizedString(METADATA + key, key) + ":"), 1, row);
 						if (type.equals(IWMetaDataConstants.METADATA_TYPE_MULTIVALUED_SINGLE_SELECT))
-							meta = _iwrb.getLocalizedString(METADATA + "multi_" + meta, meta);
+							meta = _productIWRB.getLocalizedString(METADATA + "multi_" + meta, meta);
 						else if (type.equals(IWMetaDataConstants.METADATA_TYPE_INTEGER) || type.equals(IWMetaDataConstants.METADATA_TYPE_FLOAT)) {
 							if (value.length() > 0)
 								meta = meta + " " + value;
