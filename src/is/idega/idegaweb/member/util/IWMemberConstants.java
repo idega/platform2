@@ -79,5 +79,8 @@ public class IWMemberConstants {
   public static final String INCOME_EXPONSES_SUM_KEY = "FIN_income_exponses_sum";
   public static final String ASSET_SUM_KEY = "FIN_asset_sum";
   public static final String DEBT_SUM_KEY = "FIN_debt_sum";
+  
+  public static final String[] NOT_EDITABLE_FIN_NAMES = {"FIN_40000", "FIN_92000" };
+   
 
 }

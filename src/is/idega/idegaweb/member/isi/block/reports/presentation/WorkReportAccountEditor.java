@@ -14,6 +14,8 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
@@ -42,6 +44,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.transaction.IdegaTransactionManager;
 import com.idega.util.datastructures.HashMatrix;
 
 /**
@@ -68,6 +71,11 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private static final String CHECK_BOX = "checkBox";
   private static final String OKAY_BUTTON = "okayButton";
   
+  private static final String INCOME = "income";
+  private static final String EXPONSES = "exponses";
+  private static final String ASSET = "asset";
+  private static final String DEBT = "debt";
+  
   private List specialFieldList;
   
   { 
@@ -79,13 +87,20 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     specialFieldList.add(IWMemberConstants.INCOME_EXPONSES_SUM_KEY);
     specialFieldList.add(IWMemberConstants.ASSET_SUM_KEY);
     specialFieldList.add(IWMemberConstants.DEBT_SUM_KEY); 
+    for (int i = 0; i < IWMemberConstants.NOT_EDITABLE_FIN_NAMES.length; i++) {
+      specialFieldList.add(IWMemberConstants.NOT_EDITABLE_FIN_NAMES[i]);
+    }
   }   
 
   private List fieldList = new ArrayList();
       
   private HashMatrix leagueKeyMatrix = new HashMatrix();
   
-  private Map accountKeyNamePrimaryKey = new HashMap();
+  private Map accountKeyNameAccountKeyMap = new HashMap();
+  private Map accountKeyNumberAccountKeyMap = new HashMap();
+  
+  private Map specialFieldAccountKeyIdsPlus = new HashMap();
+  private Map specialFieldAccountKeyIdsMinus = new HashMap();
 
   public WorkReportAccountEditor() {
     super();
@@ -311,14 +326,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     Collections.sort(debtKeys, keyComparator);
     // add sorted keys to the fields
     fieldList.add(LEAGUE_NAME);
-    addKeys(incomeKeys);
+    addKeys(incomeKeys,INCOME);
     fieldList.add(IWMemberConstants.INCOME_SUM_KEY);
-    addKeys(exponsesKeys);
+    addKeys(exponsesKeys,EXPONSES);
     fieldList.add(IWMemberConstants.EXPONSES_SUM_KEY);
     fieldList.add(IWMemberConstants.INCOME_EXPONSES_SUM_KEY);
-    addKeys(assetKeys);
+    addKeys(assetKeys,ASSET);
     fieldList.add(IWMemberConstants.ASSET_SUM_KEY);
-    addKeys(debtKeys);
+    addKeys(debtKeys,DEBT);
     fieldList.add(IWMemberConstants.DEBT_SUM_KEY);
 
   }    
@@ -396,15 +411,27 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     return mainTable;
   }
   
-  private void addKeys(List accountKeys)  {
+  private void addKeys(List accountKeys, String accountArea)  {
+    List minus = new ArrayList();
+    List plus = new ArrayList();
     Iterator iterator = accountKeys.iterator();
     while (iterator.hasNext())  {
       WorkReportAccountKey key = (WorkReportAccountKey) iterator.next();
-      Integer primaryKey = (Integer) key.getPrimaryKey();
       String name = key.getKeyName();
+      String keyNumber = key.getKeyNumber();
+      Integer primaryKey = (Integer) key.getPrimaryKey();
       fieldList.add(name);
-      accountKeyNamePrimaryKey.put(name, primaryKey);
+      accountKeyNameAccountKeyMap.put(name, key);
+      accountKeyNumberAccountKeyMap.put(keyNumber, key);
+      if (key.getParentKeyNumber() == null) {
+        plus.add(primaryKey);
+      }
+      else {
+        minus.add(primaryKey);
+      }
     }
+    specialFieldAccountKeyIdsPlus.put(accountArea, plus);
+    specialFieldAccountKeyIdsMinus.put(accountArea,minus);
   }
   
   private PresentationObject getCreateNewEntityButton(IWResourceBundle resourceBundle) {
@@ -527,7 +554,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       while (iteratorRecords.hasNext())  {
         WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) iteratorRecords.next();
         try {
+          int accountKey = record.getAccountKeyId();
           record.remove();
+          // remove the value from the matrix
+          leagueKeyMatrix.remove(groupId, new Integer(accountKey));
         }
         catch (EJBException ex) {
           String message =
@@ -580,11 +610,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       // give up
       return;
     }
-    Integer accountKey;
-    accountKey = (Integer) accountKeyNamePrimaryKey.get(pathShortKey);
+    WorkReportAccountKey accountKey = (WorkReportAccountKey) accountKeyNameAccountKeyMap.get(pathShortKey);
     if (accountKey == null) {
       String message =
-        "[WorkReportAccountEditor]: Can't find corresponding primary key to pathShortKey.";
+        "[WorkReportAccountEditor]: Can't find corresponding account key to pathShortKey.";
       System.err.println(message);
       // give up
       return;
@@ -594,7 +623,70 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       // nothing to do
       return;
     }
-    WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, accountKey);
+    Float oldValue;
+    try {
+      oldValue = new Float(previousValue.toString());
+    }
+    catch (NumberFormatException ex)  {
+      String message =
+        "[WorkReportAccountEditor]: Can't restore previous value of account record.";
+      System.err.println(message);
+      // give up
+      return;
+    }
+    Integer accountKeyId = (Integer) accountKey.getPrimaryKey();
+    // check if the account key is a child of a parent account key
+    String parentKeyNumber = accountKey.getParentKeyNumber();
+    // look up the parent account key
+    if (parentKeyNumber != null) {
+      WorkReportAccountKey parentAccountKey = (WorkReportAccountKey) accountKeyNumberAccountKeyMap.get(parentKeyNumber);
+      if (parentAccountKey == null) {
+        String message =
+          "[WorkReportAccountEditor]: Can't find corresponding account key to pathShortKey.";
+        System.err.println(message);
+        // give up
+        return;
+      }
+      // get amount of the parent
+      Integer parentAccountKeyId = (Integer) parentAccountKey.getPrimaryKey();
+      WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, parentAccountKeyId);
+      // calculate new parent value
+      float parentAmount = (record == null) ? 0 : record.getAmount();
+      parentAmount = parentAmount + (amount.floatValue()) - (oldValue.floatValue());
+      // store parent and child in one transaction to avoid inconsistency
+      TransactionManager tm = IdegaTransactionManager.getInstance();
+      try {
+        tm.begin();
+        // child 
+        createOrUpdateRecord(workReportBusiness, groupId, accountKeyId, amount);
+        // parent
+        createOrUpdateRecord(workReportBusiness, groupId, parentAccountKeyId, new Float(parentAmount));
+        tm.commit();
+      }
+      catch (Exception ex)  {
+        String message =
+          "[WorkReportAccountEditor]: Can't store records.";
+        System.err.println(message + " Message is: " + ex.getMessage());
+        ex.printStackTrace(System.err);
+        try {
+          tm.rollback();
+        }
+        catch (SystemException sysEx) {
+          String sysMessage =
+            "[WorkReportAccountEditor]: Can't rollback.";
+          System.err.println(sysMessage + " Message is: "+ sysEx.getMessage());
+          sysEx.printStackTrace(System.err);
+        }
+      }
+    }
+    else {
+     createOrUpdateRecord(workReportBusiness, groupId, accountKeyId, amount);
+    }
+  } 
+     
+    
+  private void createOrUpdateRecord(WorkReportBusiness workReportBusiness, Integer groupId, Integer accountKeyId, Float amount)  {
+    WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, accountKeyId);
     if (record == null)   {
       // okay, first create a record
       WorkReportClubAccountRecordHome home;
@@ -611,9 +703,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       try {
         record = home.create();
         record.setReportId(getWorkReportId());
-        record.setAccountKeyId(accountKey.intValue());
+        record.setAccountKeyId(accountKeyId.intValue());
         // add this new record to the matrix
-        leagueKeyMatrix.put(groupId, accountKey, record);
+        leagueKeyMatrix.put(groupId, accountKeyId, record);
       }
       catch (CreateException ex) {
         String message =
@@ -648,11 +740,12 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
     
     public Object getEntry(String accountKeyName) {
-      Integer primaryKey = (Integer) accountKeyNamePrimaryKey.get(accountKeyName);
-      if (primaryKey == null) {
+      WorkReportAccountKey accountKey = ( WorkReportAccountKey) accountKeyNameAccountKeyMap.get(accountKeyName);
+      if (accountKey == null) {
         return getSpecialValues(accountKeyName);
       }
-      WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, primaryKey);
+      Integer id = (Integer) accountKey.getPrimaryKey();
+      WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, id);
       // sometimes the record does not exist yet
       if (record == null) {
         return new Float(0);
@@ -677,22 +770,56 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       if (accountKeyName.equals(LEAGUE_NAME)) {
         return groupName;
       }
-//      else if (accountKeyName.equals(INCOME_SUM_KEY)) {
-//      }
-//      else if (accountKeyName.equals(EXPONSES_SUM_KEY)) {
-//      }
-//      else if (accountKeyName.equals(INCOME_EXPONSES_SUM_KEY))  {
-//      }
-//      else if (accountKeyName.equals(ASSET_SUM_KEY))  {
-//      }
-//      else if (accountKeyName.equals(DEBT_SUM_KEY)) {
-//      }
+      else if (accountKeyName.equals(IWMemberConstants.INCOME_SUM_KEY)) {
+        float result = calculateAccountArea(INCOME);
+        return new Float(result);
+      }
+      else if (accountKeyName.equals(IWMemberConstants.EXPONSES_SUM_KEY)) {
+        float result = calculateAccountArea(EXPONSES);
+        return new Float(result);
+
+      }
+      else if (accountKeyName.equals(IWMemberConstants.INCOME_EXPONSES_SUM_KEY))  {
+        float income = calculateAccountArea(INCOME);
+        float exponses = calculateAccountArea(EXPONSES);
+        float result = income - exponses;
+        return new Float(result);
+      }
+      else if (accountKeyName.equals(IWMemberConstants.ASSET_SUM_KEY))  {
+        float result = calculateAccountArea(ASSET);
+        return new Float(result);
+      }
+      else if (accountKeyName.equals(IWMemberConstants.DEBT_SUM_KEY)) {
+        float result = calculateAccountArea(DEBT);
+        return new Float(result);
+      }
       else {
         return "unknown";
       }
     }
-  }
+    
+    private float calculateAccountArea(String accountArea)  {
+      List minusIds = (List) specialFieldAccountKeyIdsMinus.get(accountArea);
+      List plusIds = (List) specialFieldAccountKeyIdsPlus.get(accountArea);
+      float minus = addRecords(minusIds);
+      float plus = addRecords(plusIds);
+      return plus - minus;
+    }
+    
+    private float addRecords(List accountKeyIds)  {
+      float sum = 0;
+      Iterator iterator = accountKeyIds.iterator();
+      while (iterator.hasNext())  {
+        Integer primaryKey = (Integer) iterator.next();
+        WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) leagueKeyMatrix.get(groupId, primaryKey);
+        if (record != null) {
+          sum += record.getAmount();
+        }
+      }
+      return sum;
+    }
   
+  }
   /**
    * 
    */
