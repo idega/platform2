@@ -553,10 +553,13 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		sql.appendEquals("sc."+SchoolClassBMPBean.SCHOOLCLASSID,"scm."+SchoolClassMemberBMPBean.SCHOOLCLASS);
 		sql.appendAnd();
 		sql.appendEquals("sc."+SchoolClassBMPBean.SCHOOL,school.getPrimaryKey().toString());
-		sql.appendAnd().appendLeftParenthesis();
+/*		sql.appendAnd().appendLeftParenthesis();
 		sql.appendEqualsQuoted("c.APPLICATION_STATUS","F");
 		sql.appendOr().appendEqualsQuoted("c.APPLICATION_STATUS","V");
-		sql.appendRightParenthesis();
+		sql.appendRightParenthesis();*/
+		sql.appendAnd();
+		sql.append("c.APPLICATION_STATUS in ").appendLeftParenthesis();
+		sql.append("'F', 'V', 'R', 'P'").appendRightParenthesis();
 		sql.appendAnd().append("a."+COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(endDate);
 		sql.appendAnd().appendLeftParenthesis().append("a."+COLUMN_TERMINATED_DATE).appendGreaterThanOrEqualsSign().append(startDate);
 		sql.appendOr().append("a."+COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
@@ -573,10 +576,13 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		IDOQuery sql = idoQuery();
 		sql.appendSelect().append(" distinct a.COMM_CHILDCARE_ARCHIVE_ID from "+getEntityName()).append(" a, ").append(ChildCareApplicationBMPBean.ENTITY_NAME).append(" c");
 		sql.appendWhereEquals("a."+COLUMN_APPLICATION_ID, "c.COMM_CHILDCARE_ID");
-		sql.appendAnd().appendLeftParenthesis();
+/*		sql.appendAnd().appendLeftParenthesis();
 		sql.appendEqualsQuoted("c.APPLICATION_STATUS","F");
 		sql.appendOr().appendEqualsQuoted("c.APPLICATION_STATUS","V");
-		sql.appendRightParenthesis();
+		sql.appendRightParenthesis();*/
+		sql.appendAnd();
+		sql.append("c.APPLICATION_STATUS in ").appendLeftParenthesis();
+		sql.append("'F', 'V', 'R', 'P'").appendRightParenthesis();
 		sql.appendAnd().append("a."+COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(endDate);
 		sql.appendAnd().appendLeftParenthesis().append("a."+COLUMN_TERMINATED_DATE).appendGreaterThanOrEqualsSign().append(startDate);
 		sql.appendOr().append("a."+COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
