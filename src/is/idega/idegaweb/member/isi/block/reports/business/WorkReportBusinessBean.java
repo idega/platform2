@@ -1452,14 +1452,20 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			catch (FinderException e) {
 				try {
 					board = (WorkReportDivisionBoard)getWorkReportDivisionBoardHome().create();
+					board.setGroupId(id.intValue());
 				}
 				catch (CreateException e1) {
 					e1.printStackTrace();
 					throw new WorkReportImportException("workreportimportexception.error_creating_division");
 				}
 			}
-
-			board.store();
+		
+			try {
+				board.store();
+			}
+			catch(Exception e) {
+				
+			}
 		}
 
 
@@ -1635,7 +1641,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			Iterator iter = members.iterator();
 
 			while (iter.hasNext()) {
-				WorkReportMember memb = (WorkReportMember)iter.next();
+				WorkReportBoardMember memb = (WorkReportBoardMember)iter.next();
 				try {
 					memb.remove();
 				}
