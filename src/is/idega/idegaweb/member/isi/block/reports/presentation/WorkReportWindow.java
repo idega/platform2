@@ -37,6 +37,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 	private static final String STATS_LAYOUT_PARAM = "STATS_LAYOUT_PARAM";
 	private static final String STATS_INVOCATION_PARAM = "STATS_INVOCATION_PARAM";
 	private static final String STATS_INVOCATION_PREFIX = "stats_invocation_xml_file_id_";
+	private static final String STATS_LAYOUT_NAME_FROM_BUNDLE = "STATS_LAYOUT_NAME_FROM_BUNDLE";
+	
 	private MemberUserBusiness memBiz;
 	private GroupBusiness groupBiz;
 	private UserBusiness userBiz;
@@ -229,6 +231,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				
 				String invocationKey = iwc.getParameter(STATS_INVOCATION_PARAM);
 				String layoutKey = iwc.getParameter(STATS_LAYOUT_PARAM);
+				String layoutFileName = iwc.getParameter(STATS_LAYOUT_NAME_FROM_BUNDLE);
 				String localizedNameKey = iwc.getParameter(STATS_LOCALIZABLE_KEY_NAME);
 				
 				if(invocationKey!=null && iwb.getProperty(invocationKey,"-1")!=null ){
@@ -240,6 +243,9 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 						Integer layoutICFileID = new Integer(iwb.getProperty(layoutKey));
 						if(layoutICFileID.intValue()>0)
 						repGen.setLayoutICFileID(layoutICFileID);
+					}
+					else if(layoutFileName!=null){
+						repGen.setLayoutBundleAndFileName(iwb,layoutFileName);
 					}
 					
 					if(localizedNameKey!=null){
@@ -277,6 +283,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		if(!selectorIsSet) {
 			addTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"), IWConstants.BUILDER_FONT_STYLE_TITLE);		
 		}
+		
 	}
 
 	private Form getYearSelectionForm(IWContext iwc, int year) throws RemoteException {
@@ -464,7 +471,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_1_1.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_1_1_reportname", "Players per club -/+ 16"), false));
 		b12_1_1.addParameter(ACTION, ACTION_STATISTICS);
 		b12_1_1.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_1_1");
-		b12_1_1.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_1_1");
+		b12_1_1.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.1.1.xml");
 		b12_1_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_1_1_reportname");
 		b12_1_1.setStyleClass(styledLink);
 		
@@ -475,7 +482,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_1_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_1_2_reportname", "Players per reg.uni. -/+ 16"), false));
 		b12_1_2.addParameter(ACTION, ACTION_STATISTICS);
 		b12_1_2.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_1_2");
-		b12_1_2.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_1_2");
+		b12_1_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.1.2.xml");
 		b12_1_2.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_1_2_reportname");
 		b12_1_2.setStyleClass(styledLink);
 		
@@ -486,7 +493,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_1_3.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_1_3_reportname", "Players per league -/+ 16"), false));
 		b12_1_3.addParameter(ACTION, ACTION_STATISTICS);
 		b12_1_3.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_1_3");
-		b12_1_3.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_1_3");
+		b12_1_3.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.1.3.xml");
 		b12_1_3.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_1_3_reportname");
 		b12_1_3.setStyleClass(styledLink);
 		
@@ -497,7 +504,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_1_4.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_1_4_reportname", "Compare player stats with previous year"), false));
 		b12_1_4.addParameter(ACTION, ACTION_STATISTICS);
 		b12_1_4.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_1_4");
-		b12_1_4.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_1_4");
+		b12_1_4.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.1.4.xml");
 		b12_1_4.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_1_4_reportname");
 		b12_1_4.setStyleClass(styledLink);
 		
@@ -511,7 +518,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_2_1.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_2_1_reportname", "Members per reg.uni."), false));
 		b12_2_1.addParameter(ACTION, ACTION_STATISTICS);
 		b12_2_1.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_2_1");
-		b12_2_1.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_2_1");
+		b12_2_1.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.2.1.xml");
 		b12_2_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_2_1_reportname");
 		b12_2_1.setStyleClass(styledLink);
 		
@@ -522,7 +529,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_2_2.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_2_2_reportname", "Members per reg.uni. -/+ 16"), false));
 		b12_2_2.addParameter(ACTION, ACTION_STATISTICS);
 		b12_2_2.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_2_2");
-		b12_2_2.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_2_2");
+		b12_2_2.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.2.2.xml");
 		b12_2_2.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_2_2_reportname");
 		b12_2_2.setStyleClass(styledLink);
 		
@@ -533,7 +540,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_2_3.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_2_3_reportname", "Players per club -/+ 16"), false));
 		b12_2_3.addParameter(ACTION, ACTION_STATISTICS);
 		b12_2_3.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_2_3");
-		b12_2_3.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_2_3");
+		b12_2_3.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.2.3.xml");
 		b12_2_3.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_2_3_reportname");
 		b12_2_3.setStyleClass(styledLink);
 		
@@ -545,7 +552,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_2_4.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_2_4_reportname", "Members per club -/+ 16"), false));
 		b12_2_4.addParameter(ACTION, ACTION_STATISTICS);
 		b12_2_4.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_2_4");
-		b12_2_4.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_2_4");
+		b12_2_4.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.2.4.xml");
 		b12_2_4.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_2_4_reportname");
 		b12_2_4.setStyleClass(styledLink);
 		
@@ -556,7 +563,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_2_5.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_2_5_reportname", "Players per reg.uni. -/+ 16"), false));
 		b12_2_5.addParameter(ACTION, ACTION_STATISTICS);
 		b12_2_5.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_2_5");
-		b12_2_5.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_2_5");
+		b12_2_5.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.2.5.xml");
 		b12_2_5.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_2_5_reportname");
 		b12_2_5.setStyleClass(styledLink);
 		
@@ -567,7 +574,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		b12_2_6.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_2_6_reportname", "Players per league -/+ 16"), false));
 		b12_2_6.addParameter(ACTION, ACTION_STATISTICS);
 		b12_2_6.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_2_6");
-		b12_2_6.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_2_6");
+		b12_2_6.addParameter(STATS_LAYOUT_NAME_FROM_BUNDLE,"Layout-B12.2.6.xml");
 		b12_2_6.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_2_6_reportname");
 		b12_2_6.setStyleClass(styledLink);
 		
