@@ -236,7 +236,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
   public PresentationObject getAdminPart(int iTextId,boolean enableDelete,boolean newObjInst,boolean newWithAttribute,boolean hasId){
     Table T = new Table();
     T.setCellpadding(2);
-    T.setCellspacing(2);
+    //T.setCellspacing(2);
     T.setBorder(0);
 
     if(iTextId > 0){
@@ -249,7 +249,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
         Link delete = new Link(iwb.getImage("/shared/delete.gif"));
         delete.setWindowToOpen(TextEditorWindow.class);
         delete.addParameter(TextEditorWindow.prmDelete,iTextId);
-        T.add(delete,3,1);
+        T.add(delete,2,1);
       }
     }
     if(newObjInst && !hasId){
@@ -260,10 +260,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       else if(newWithAttribute)
         newLink.addParameter(TextEditorWindow.prmAttribute,sAttribute);
 
-      T.add(newLink,2,1);
+      T.add(newLink,3,1);
     }
-
-    T.setWidth("100%");
+    //T.setAlignment(1,1,"left");
+    //T.setAlignment(2,1,"right");
     return T;
 
   }

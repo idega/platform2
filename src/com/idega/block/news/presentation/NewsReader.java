@@ -150,7 +150,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     String sNewsId = iwc.getParameter(prmMore);
     NewsCategory newsCategory = null;
     boolean listCategory = iwc.getParameter(prmListCategory)!= null?true:false;
-
+    boolean info = listCategory?true:false;
     if(iCategoryId <= 0){
       String sCategoryId = iwc.getParameter(prmNewsCategoryId );
       if(sCategoryId != null)
@@ -167,7 +167,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     T.setCellpadding(0);
     T.setWidth( "100%");
     if(isAdmin){
-      T.add(getAdminPart(iCategoryId,false,newobjinst),1,1);
+      T.add(getAdminPart(iCategoryId,false,newobjinst,info),1,1);
     }
     if(iCategoryId >0){
       newsCategory = NewsFinder.getNewsCategory(iCategoryId);
@@ -178,6 +178,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
           T.add(getNewsTable(nh,newsCategory,locale,true),1,1);
         }
         else if(listCategory){
+
           T.add(getCategoryList(newsCategory,locale),1,1);
         }
         else
@@ -191,7 +192,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     super.add(T);
   }
 
-  public PresentationObject getAdminPart(int iCategoryId,boolean enableDelete,boolean newObjInst){
+  public PresentationObject getAdminPart(int iCategoryId,boolean enableDelete,boolean newObjInst,boolean info){
     Table T = new Table(3,1);
     T.setCellpadding(2);
     T.setCellspacing(2);
@@ -204,8 +205,8 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
       T.add(ne,1,1);
 
       Link list = new Link(iwb.getImage("/shared/info.gif"));
-      list.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
-      list.addParameter(prmListCategory,"true");
+      if(!info)
+        list.addParameter(prmListCategory,"true");
       T.add(list,1,1);
 
       Link change = new Link(iwb.getImage("/shared/edit.gif"));
@@ -329,7 +330,9 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     Link moreLink = new Link(iwrb.getImage("more.gif"));
     moreLink.addParameter(prmMore,news.getID());
     T.add(moreLink, 1, 4);
-
+    if(isAdmin){
+      T.add(getNewsAdminPart(news),1,4);
+    }
     return T;
   }
 
@@ -478,8 +481,9 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
       newsDelete.setWindowToOpen(NewsEditorWindow.class);
       newsDelete.addParameter(NewsEditorWindow.prmDelete,news.getID());
 
-      links.setAlignment(1,1,"left");
-      links.setAlignment(2,1,"right");
+      //links.setAlignment(1,1,"left");
+      //links.setAlignment(2,1,"right");
+      links.setCellpadding(2);
       links.add(newsEdit,1,1);
       links.add(newsDelete,2,1);
     return links;

@@ -85,7 +85,7 @@ private IWResourceBundle iwrb;
 
   public NewsEditorWindow(){
     setWidth(570);
-    setHeight(500);
+    setHeight(550);
     setResizable(true);
     setUnMerged();
   }
