@@ -14,6 +14,7 @@ import com.idega.core.data.ICLocale;
 import com.idega.block.poll.data.*;
 import com.idega.block.poll.business.*;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.text.business.TextFinder;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.idegaweb.IWResourceBundle;
@@ -24,6 +25,7 @@ public class PollAdminWindow extends IWAdminWindow{
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.poll";
 private boolean isAdmin = false;
+private boolean superAdmin = false;
 private boolean save = false;
 private int iObjInsId = -1;
 public  static String prmID = "poll.id";
@@ -33,6 +35,7 @@ public  static String prmObjInstId = "poll.icobjinstid";
 private static String prmHeadline = "poll.headline";
 
 private int _pollID = -1;
+private int _userID = -1;
 private int _newObjInst = -1;
 private String _newWithAttribute;
 private int _pollQuestionID = -1;
@@ -55,10 +58,18 @@ public PollAdminWindow(){
      * @todo permission
      */
     isAdmin = true; //AccessControl.hasEditPermission(this,modinfo);
+    superAdmin = AccessControl.isAdmin(modinfo);
     iwb = getBundle(modinfo);
     iwrb = getResourceBundle(modinfo);
     addTitle(iwrb.getLocalizedString("poll_admin","Poll Admin"));
     Locale currentLocale = modinfo.getCurrentLocale(),chosenLocale;
+
+    try {
+      _userID = LoginBusiness.getUser(modinfo).getID();
+    }
+    catch (Exception e) {
+      _userID = -1;
+    }
 
     editImage = iwrb.getImage("edit.gif");
       editImage.setHorizontalSpacing(4);
@@ -218,6 +229,7 @@ public PollAdminWindow(){
   }
 
   private void getPoll(int pollQuestionID, int iLocaleID) {
+    PollQuestion _pollQuestion = null;
     String pollQuestion = PollBusiness.getLocalizedQuestion(pollQuestionID,iLocaleID);
     if ( pollQuestion == null ) {
       pollQuestion = iwrb.getLocalizedString("no_text_in_language","No text in this language");
@@ -225,6 +237,10 @@ public PollAdminWindow(){
     if ( pollQuestionID == -1 ) {
       pollQuestion = iwrb.getLocalizedString("no_question","No question selected");
     }
+    else {
+      _pollQuestion = PollBusiness.getPollQuestion(pollQuestionID);
+    }
+
 
     String[] pollAnswers = PollBusiness.getLocalizedAnswers(pollQuestionID,iLocaleID);
     String[] pollAnswersIDs = PollBusiness.getAnswerIDs(pollQuestionID);
@@ -248,9 +264,11 @@ public PollAdminWindow(){
       questionTable.setCellspacing(0);
       questionTable.mergeCells(1,1,2,1);
       questionTable.add(questionText,1,1);
-      if ( pollQuestionID != -1 ) {
-        questionTable.add(questionEditLink,1,2);
-        questionTable.add(questionDeleteLink,2,2);
+      if ( pollQuestionID != -1 && _pollQuestion != null ) {
+        if ( _userID == _pollQuestion.getUserID() || superAdmin ) {
+          questionTable.add(questionEditLink,1,2);
+          questionTable.add(questionDeleteLink,2,2);
+        }
       }
 
     addLeft(iwrb.getLocalizedString("question","Question")+":",questionTable,true,false);
@@ -272,8 +290,10 @@ public PollAdminWindow(){
 
           answerTable.add("<li>",1,row);
           answerTable.add(formatText(pollAnswers[a],true),1,row);
-          answerTable.add(editAnswerLink,2,row);
-          answerTable.add(deleteAnswerLink,3,row);
+          if ( _userID == _pollQuestion.getUserID() || superAdmin ) {
+            answerTable.add(editAnswerLink,2,row);
+            answerTable.add(deleteAnswerLink,3,row);
+          }
           row++;
         }
       }
@@ -281,7 +301,9 @@ public PollAdminWindow(){
       Link createAnswerLink = new Link(createImage);
         createAnswerLink.setWindowToOpen(PollAnswerEditor.class);
         createAnswerLink.addParameter(PollBusiness._PARAMETER_POLL_QUESTION,pollQuestionID);
-        answerTable.add(createAnswerLink,1,row);
+        if ( _userID == _pollQuestion.getUserID() || superAdmin ) {
+          answerTable.add(createAnswerLink,1,row);
+        }
 
       addLeft(iwrb.getLocalizedString("answers","Answers")+":",answerTable,true,false);
       addHiddenInput(new HiddenInput(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestionID)));

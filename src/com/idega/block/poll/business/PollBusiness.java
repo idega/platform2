@@ -280,26 +280,19 @@ public static final String _PARAMETER_CLOSE = "close";
     }
   }
 
-  public static DropdownMenu getQuestions(String name, int pollID, int iLocaleId) {
+  public static DropdownMenu getQuestions(String name, int userID, int iLocaleId, boolean superAdmin) {
     DropdownMenu drp = new DropdownMenu(name);
       drp.addMenuElementFirst("-1","");
-    PollEntity poll = null;
     PollQuestion[] pollQuestion = null;
 
     try {
-      poll = new PollEntity(pollID);
+      if ( superAdmin )
+        pollQuestion = (PollQuestion[]) PollQuestion.getStaticInstance(PollQuestion.class).findAll();
+      else
+        pollQuestion = (PollQuestion[]) PollQuestion.getStaticInstance(PollQuestion.class).findAllByColumn(PollQuestion.getColumnNameUserID(),userID);
     }
     catch (SQLException e) {
-      poll = null;
-    }
-
-    if ( poll != null ) {
-      try {
-        pollQuestion = (PollQuestion[]) poll.findRelated(PollQuestion.getStaticInstance(PollQuestion.class));
-      }
-      catch (SQLException e) {
-        pollQuestion = null;
-      }
+      pollQuestion = null;
     }
 
     if( pollQuestion != null ) {
@@ -315,7 +308,7 @@ public static final String _PARAMETER_CLOSE = "close";
     return drp;
   }
 
-  public static int savePollQuestion(int pollID,int pollQuestionID,String pollQuestionString,int iLocaleID) {
+  public static int savePollQuestion(int userID,int pollID,int pollQuestionID,String pollQuestionString,int iLocaleID) {
     boolean update = false;
     boolean newLocText = false;
     int _pollQuestionID = -1;
@@ -337,8 +330,8 @@ public static final String _PARAMETER_CLOSE = "close";
 
     if ( !update ) {
       try {
+        pollQuestion.setUserID(userID);
         pollQuestion.insert();
-        pollQuestion.addTo(new PollEntity(pollID));
         _pollQuestionID = pollQuestion.getID();
       }
       catch (SQLException e) {
@@ -556,9 +549,37 @@ public static final String _PARAMETER_CLOSE = "close";
           poll.addTo(objIns);
         }
       }
+
+      if ( pollQuestionID != -1 ) {
+        addToPoll(poll,pollQuestionID);
+      }
     }
     catch(Exception e) {
       e.printStackTrace();
+    }
+  }
+
+  public static void addToPoll(PollEntity poll, int pollQuestionID) {
+    try {
+      System.out.println("Is here, pollQuestionID = "+pollQuestionID+", pollID = "+poll.getID());
+      PollQuestion question = getPollQuestion(pollQuestionID);
+      if ( question != null ) {
+        System.out.println("question is not null");
+        PollQuestion[] polls = (PollQuestion[]) poll.findRelated(new PollQuestion(pollQuestionID));
+        if ( polls == null || polls.length == 0 ) {
+          System.out.println("list is not null");
+          poll.addTo(question);
+        }
+        else {
+          System.out.println("Length: "+polls.length);
+          if ( polls.length > 0 ) {
+            System.out.println(polls[0].getID());
+          }
+        }
+      }
+    }
+    catch (Exception e) {
+      e.printStackTrace(System.err);
     }
   }
 

@@ -14,6 +14,7 @@ import com.idega.core.data.ICLocale;
 import com.idega.block.poll.data.*;
 import com.idega.block.poll.business.*;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.text.business.TextFinder;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.idegaweb.IWResourceBundle;
@@ -24,8 +25,10 @@ public class PollQuestionChooser extends IWAdminWindow{
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.poll";
 private boolean isAdmin = false;
+private boolean superAdmin = false;
 private boolean close = false;
 private int pollID = -1;
+private int userID = -1;
 public static String prmQuestions = "poll.questions";
 
 private IWBundle iwb;
@@ -41,10 +44,18 @@ public PollQuestionChooser(){
      * @todo permission
      */
     isAdmin = true; //AccessControl.hasEditPermission(this,modinfo);
+    superAdmin = AccessControl.isAdmin(modinfo);
     iwb = getBundle(modinfo);
     iwrb = getResourceBundle(modinfo);
     addTitle(iwrb.getLocalizedString("poll_question_chooser","Poll Question Chooser"));
     Locale currentLocale = modinfo.getCurrentLocale(),chosenLocale;
+
+    try {
+      userID = LoginBusiness.getUser(modinfo).getID();
+    }
+    catch (Exception e) {
+      userID = -1;
+    }
 
     String sLocaleId = modinfo.getParameter(PollAdminWindow.prmLocale);
 
@@ -95,7 +106,7 @@ public PollQuestionChooser(){
         localeDrop.setToSubmit();
         localeDrop.setSelectedElement(Integer.toString(iLocaleId));
 
-      DropdownMenu questionDrop = PollBusiness.getQuestions(prmQuestions,pollID,iLocaleId);
+      DropdownMenu questionDrop = PollBusiness.getQuestions(prmQuestions,userID,iLocaleId,superAdmin);
         questionDrop.setAttribute("style",STYLE);
         questionDrop.setToSubmit();
 

@@ -14,6 +14,7 @@ import com.idega.core.data.ICLocale;
 import com.idega.block.poll.data.*;
 import com.idega.block.poll.business.*;
 import com.idega.core.accesscontrol.business.AccessControl;
+import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.text.business.TextFinder;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.idegaweb.IWResourceBundle;
@@ -160,12 +161,20 @@ public PollQuestionEditor(){
     String pollQuestionString = modinfo.getParameter(this.prmQuestionParameter);
     String localeString = modinfo.getParameter("iLocaleID");
     int _pollQuestionID = -1;
+    int _userID = -1;
+
+    try {
+      _userID = LoginBusiness.getUser(modinfo).getID();
+    }
+    catch (Exception e) {
+      _userID = -1;
+    }
 
     if ( pollQuestionString == null || pollQuestionString.length() == 0 ) {
       pollQuestionString = iwrb.getLocalizedString("no_text","No question entered");
     }
     if ( localeString != null ) {
-      _pollQuestionID = PollBusiness.savePollQuestion(pollID,pollQuestionID,pollQuestionString,Integer.parseInt(localeString));
+      _pollQuestionID = PollBusiness.savePollQuestion(_userID,pollID,pollQuestionID,pollQuestionString,Integer.parseInt(localeString));
     }
     modinfo.setApplicationAttribute(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(_pollQuestionID));
 
