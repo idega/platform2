@@ -1,7 +1,6 @@
 package se.idega.idegaweb.commune.school.presentation;
 
 import se.idega.idegaweb.commune.accounting.invoice.presentation.RegularPaymentEntriesList;
-
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -178,7 +177,7 @@ public class CentralPlacementRegularPaymentEntriesList extends Window {
 	 * Reload ParentPage and close this window
 	 */
 	private void reloadParentAndClose() {
-		setParentPageFormToSubmitOnUnLoad(CentralPlacementEditor.FORM_NAME);
+		setParentPageFormToSubmitOnUnLoad(CentralPlacementEditorConstants.FORM_NAME);
 		close();
 	}
 
