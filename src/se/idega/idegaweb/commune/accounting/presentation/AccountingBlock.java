@@ -241,4 +241,23 @@ public class AccountingBlock extends CommuneBlock {
 		}
 		return p;
 	}
+	
+	/**
+	 * Returns the form parameter with the specified parameter name
+	 * from the specified IWContext object as an integer. Returns -1 if
+	 * the parameter is not set. 
+	 * @param iwc the idegaWeb context object
+	 * @param parameterName the name of the form parameter
+	 * @author anders
+	 */
+	protected int getIntParameter(IWContext iwc, String parameterName) {
+		int intValue = 0;
+		String s = getParameter(iwc, parameterName);
+		try {
+			intValue = Integer.parseInt(s);
+		} catch (NumberFormatException  e) {
+			intValue = -1;
+		}
+		return intValue;
+	}
 }
