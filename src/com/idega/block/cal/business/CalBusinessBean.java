@@ -18,6 +18,8 @@ import com.idega.block.cal.data.AttendanceEntityHome;
 import com.idega.block.cal.data.AttendanceMark;
 import com.idega.block.cal.data.AttendanceMarkHome;
 import com.idega.block.cal.data.CalendarEntry;
+import com.idega.block.cal.data.CalendarEntryGroup;
+import com.idega.block.cal.data.CalendarEntryGroupHome;
 import com.idega.block.cal.data.CalendarEntryHome;
 import com.idega.block.cal.data.CalendarEntryType;
 import com.idega.block.cal.data.CalendarEntryTypeHome;
@@ -90,6 +92,16 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		}
 		return list;
 	}
+	public Collection getEntriesByEntryGroupID(int entryGroupID) {
+		List list = null;
+		try {
+			CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
+			list = new ArrayList(entryHome.findEntriesByEntryGroupID(entryGroupID));
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
 	public Collection getPracticesByLedgerID(int ledgerID) {
 		List list = new ArrayList();
 		List entries = (List) getEntriesByLedgerID(ledgerID);
@@ -117,6 +129,21 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			}
 		}
 		return list;		
+	}
+	//GET methods for EntryGroup
+	public CalendarEntryGroup getEntryGroup(int entryGroupID) {
+
+		CalendarEntryGroup entryGroup = null;
+		Integer id = new Integer(entryGroupID);
+		try {
+			CalendarEntryGroupHome entryGroupHome = (CalendarEntryGroupHome) getIDOHome(CalendarEntryGroup.class);
+			entryGroup = entryGroupHome.findByPrimaryKey(id);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return entryGroup;		
+		
+		
 	}
 	
 	//GET methods for EntryTypes
@@ -262,15 +289,41 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		
 	}
 	
-	public void deleteEntry(int entryID) {
-		CalendarEntry cal = getEntry(entryID);
-		if (cal != null) {
+	public void deleteEntry(int entryID) {		
+		CalendarEntry entry = getEntry(entryID);
+		if (entry != null) {
 			try {
-				cal.remove();
+				entry.remove();
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
 		}
+	}
+	
+	public void deleteEntryGroup(int entryID) {
+		CalendarEntry entry = getEntry(entryID);
+		CalendarEntryGroup entryGroup = null;
+		if(entry != null) {
+			entryGroup = getEntryGroup(entry.getEntryGroupID());
+			try {
+				entryGroup.removeEntryRelation();
+				entryGroup.remove();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+			Collection entries = getEntriesByEntryGroupID(entry.getEntryGroupID());
+			Iterator entIter = entries.iterator();
+			while(entIter.hasNext()) {
+				CalendarEntry e = (CalendarEntry) entIter.next();
+				try {
+					e.remove();
+				} catch (Exception ex) {
+					ex.printStackTrace(System.err);
+				}
+			}
+			
+		}
+		
 	}
 	public void deleteLedger(int ledgerID) {
 		CalendarLedger led = getLedger(ledgerID);	
@@ -379,7 +432,18 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 	/**
 	 * startDate and endDate have to be of the form  yyyy-MM-dd hh:mm:ss.S
 	 */
-	public void createNewEntry(String headline, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String ledger, String description, String location) {
+	public void createNewEntry(String headline, User user, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String ledger, String description, String location) {
+		CalendarEntryGroup entryGroup = null;
+		if(repeat != null && !repeat.equals("")) {
+			try {
+				CalendarEntryGroupHome entryGroupHome = (CalendarEntryGroupHome) getIDOHome(CalendarEntryGroup.class);
+				entryGroup = entryGroupHome.create();
+				entryGroup.setName(repeat);
+				entryGroup.store();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}			
+		}
 		Timestamp startTime = Timestamp.valueOf(startDate);		
 		//modifications of the time properties of the start timestamp
 		if(startHour != null || !startHour.equals("")) {
@@ -428,6 +492,13 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		else {
 			groupID = new Integer(-1);
 		}
+		Integer userID = null;
+		if(user != null) {
+			userID = (Integer) user.getPrimaryKey();
+		}
+		else {
+			userID = new Integer(-1);
+		}
 		while(start < end) {	
 			Timestamp endOfEntryTime = Timestamp.valueOf(startTime.toString());
 			if(endHour != null || !endHour.equals("")) {
@@ -448,6 +519,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 				CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
 				CalendarEntry entry = entryHome.create();
 				entry.setName(headline);
+				entry.setUserID(userID.intValue());
 				entry.setEntryTypeID(entryTypePK.intValue());
 				entry.setEntryType(entryType.getName());
 				entry.setRepeat(repeat);
@@ -462,6 +534,11 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 				entry.setDescription(description);
 				entry.setLocation(location);
 				entry.store();
+				if(entryGroup !=null) {
+					entryGroup.addEntry(entry);
+					entry.setEntryGroupID(entryGroup.getEntryGroupID());
+					entry.store();
+				}
 				
 			} catch(Exception e) {
 				e.printStackTrace();
@@ -565,8 +642,9 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		}			
 		
 	}
-	public void updateEntry(String entryID, String headline, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String ledger, String description, String location) {
-
+	public void updateEntry(int entryID, String headline, User user, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String ledger, String description, String location, String oneOrMany) {
+		CalendarEntry entry = getEntry(entryID);
+		
 		Timestamp startTime = Timestamp.valueOf(startDate);		
 		//modifications of the time properties of the start timestamp
 		if(startHour != null || !startHour.equals("")) {
@@ -609,11 +687,18 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		long week = 7L*24L*60L*60L*1000L;
 		long day = 24L*60L*60L*1000L;
 		
-		Integer id = new Integer(entryID);
 		Integer groupID = null;
 		if(attendees != null && !attendees.equals("")) {
 			groupID = new Integer(attendees);
 		}	
+		Integer userID = null;
+		if(user != null) {
+			userID = (Integer) user.getPrimaryKey();
+		}
+		else {
+			userID = new Integer(-1);
+		}
+		
 		while(start < end) {
 			Timestamp endOfEntryTime = Timestamp.valueOf(startTime.toString());
 			if(endHour != null || !endHour.equals("")) {
@@ -627,12 +712,11 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			endOfEntryTime.setSeconds(0);
 			
 			try {
-				CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
-				CalendarEntry entry = entryHome.findByPrimaryKey(id);
 				CalendarEntryType entryType = getEntryTypeByName(type);
 				Integer entryTypePK = (Integer) entryType.getPrimaryKey();
 				Integer ledgerID = new Integer(ledger);
 				entry.setName(headline);
+				entry.setUserID(userID.intValue());
 				entry.setEntryTypeID(entryTypePK.intValue());
 				entry.setEntryType(entryType.getName());
 				entry.setRepeat(repeat);
@@ -744,11 +828,8 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			
 			startTime = Timestamp.valueOf(f);
 			int year = sd.getYear() + 1900;
-			startTime.setYear(year);	
-			
-			
-		}			
-		
+			startTime.setYear(year);				
+		}					
 	}
 	public void createNewLedger(String name, int groupID, String coachName, String date,int coachGroupID) {
 		IWContext iwc = IWContext.getInstance();
