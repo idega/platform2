@@ -257,9 +257,11 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     }
     JRBand header = design.getColumnHeader();
     List headerChildren = header.getChildren();
+    int headerChildrenSize = headerChildren.size();
     
     JRBand detail = design.getDetail();
     List detailChildren = detail.getChildren();
+    int detailChildrenSize = detailChildren.size();
     
     // remove the redundant design fields 
     Iterator removeIterator = fieldNames.iterator();
@@ -270,8 +272,12 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       design.removeField(fieldId);
       // remove expression from header
       int orderNumber = fieldOrder.indexOf(fieldId) - indexCorrection;
-      headerChildren.remove(orderNumber);
-      detailChildren.remove(orderNumber); 
+      if (headerChildrenSize > orderNumber) {
+      	headerChildren.remove(orderNumber);
+      }
+      if (detailChildrenSize > orderNumber) {
+      	detailChildren.remove(orderNumber);
+      }
       // adjust the index because elements have been removed
       indexCorrection++; 
     }
