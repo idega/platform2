@@ -175,20 +175,33 @@ public class CommuneUserLogin extends CommuneBlock {
 	private void logIn(IWContext iwc) {
 		LoginBusiness business = new LoginBusiness();
 		try {
-			business.logInByPersonalID(iwc, personalID);
+			boolean canLogIn = business.logInByPersonalID(iwc, personalID);
 			
-			User user = getUserBusiness(iwc).getUser(personalID);
-			Group group = user.getPrimaryGroup();
-			if ( user.getHomePageID() != -1 )
-				iwc.forwardToIBPage(getParentPage(), user.getHomePage());
-			if (group != null && group.getHomePageID() != -1 )
-				iwc.forwardToIBPage(getParentPage(), group.getHomePage());
+			if (canLogIn) {
+				User user = getUserBusiness(iwc).getUser(personalID);
+				Group group = user.getPrimaryGroup();
+				if ( user.getHomePageID() != -1 )
+					iwc.forwardToIBPage(getParentPage(), user.getHomePage());
+				if (group != null && group.getHomePageID() != -1 )
+					iwc.forwardToIBPage(getParentPage(), group.getHomePage());
+			}
+			else {
+				add(getBackTable());
+			}
 		}
 		catch (Exception e) {
-			add(localize("commune.login_error","Error logging in as user")+": "+personalID);
-			add(new Break(2));
-			add(new BackButton(localize("back","Back")));
+			add(getBackTable());
 		}
+	}
+	
+	private Form getBackTable() {
+		Form form = new Form();
+		form.add(new HiddenInput(PARAMETER_METHOD,String.valueOf(METHOD_SEARCH)));
+		form.add(localize("commune.login_error","Error logging in as user")+": "+personalID);
+		form.add(new Break(2));
+		form.add(new SubmitButton(localize("back","Back")));
+		
+		return form;
 	}
 	
 	private CommuneUserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
