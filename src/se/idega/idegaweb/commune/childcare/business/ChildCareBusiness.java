@@ -524,6 +524,16 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	public SchoolClassMember createNewPlacement(Integer childID, Integer schooltypeID, Integer schoolclassID, SchoolClassMember oldStudent, IWTimestamp validFrom, User user) throws RemoteException, EJBException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#isOnlyGroupChange
+	 */
+	public boolean isOnlyGroupChange(int applicationId, String careTime, Date validFrom, int schoolTypeId) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#changeGroup
+	 */
+	public void changeGroup(int applicationId, Date validFrom, int schoolClassId, User user) throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#assignContractToApplication
 	 */
 	public boolean assignContractToApplication(int applicationID, int oldArchiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus) throws java.rmi.RemoteException;
@@ -1077,6 +1087,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getLatestContractByApplication
 	 */
 	public ChildCareContract getLatestContractByApplication(int applicationID) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getContractByApplicationAndDate
+	 */
+	public ChildCareContract getContractByApplicationAndDate(int applicationID, Date date) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getCaseLogNewContracts

@@ -2144,6 +2144,73 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return assignContractToApplication(applicationID, -1, childCareTime, validFrom, employmentTypeID, user, locale, changeStatus, false, -1, -1);
 	}
 
+	public boolean isOnlyGroupChange(int applicationId, String careTime, Date validFrom, int schoolTypeId) {
+		boolean isOnlyGroupChange = false;
+
+		try {
+			ChildCareContract archive = getContractByApplicationAndDate(applicationId, validFrom);
+			SchoolClassMember member = archive.getSchoolClassMember();
+			
+			String oldCareTime = archive.getCareTime();
+			int oldSchoolTypeId = member.getSchoolTypeId();
+			
+			if (careTime.equals(oldCareTime) && schoolTypeId == oldSchoolTypeId) {
+				isOnlyGroupChange = true;
+			}
+		} catch (Exception e) {}
+		
+		return isOnlyGroupChange;
+	}
+	
+	public void changeGroup(int applicationId, Date validFrom, int schoolClassId, User user) {
+		UserTransaction transaction = getSessionContext().getUserTransaction();
+		try {
+			transaction.begin();
+			ChildCareContract archive = getContractByApplicationAndDate(applicationId, validFrom);
+			SchoolClassMember member = archive.getSchoolClassMember();
+			SchoolClassMemberLog pastLog = getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(member, validFrom);
+			if (pastLog.getSchoolClass().compareTo(validFrom) == 0) {
+				pastLog.setSchoolClass(new Integer(schoolClassId));
+				pastLog.setUserPlacing(user);
+				pastLog.store();
+			} else {
+				Date validTo = null;
+				try {
+					SchoolClassMemberLog futureLog = getSchoolBusiness().getSchoolClassMemberLogHome().findFutureLogByPlacementAndDate(member, validFrom);
+					try {
+						IWTimestamp t = new IWTimestamp(futureLog.getStartDate());
+						t.addDays(-1);
+						validTo = t.getDate();
+					} catch (Exception e) {}
+				} catch (FinderException fe) {}				
+				SchoolClassMemberLog newLog = getSchoolBusiness().getSchoolClassMemberLogHome().create();				
+				newLog.setUserPlacing(user);
+				newLog.setSchoolClass(new Integer(schoolClassId));
+				newLog.setSchoolClassMember(member);
+				newLog.setStartDate(validFrom);
+				newLog.setEndDate(validTo);
+				if (validTo != null) {
+					newLog.setUserTerminating(user);
+				}
+				newLog.store();
+				
+				IWTimestamp t = new IWTimestamp(validFrom);
+				t.addDays(-1);
+				pastLog.setEndDate(t.getDate());
+				pastLog.setUserTerminating(user);
+				pastLog.store();
+			}		
+			transaction.commit();
+		} catch (Exception e) {
+			log(e);
+			try {
+				transaction.rollback();
+			} catch (SystemException ex) {
+				ex.printStackTrace();
+			}
+		}		
+	}
+	
 	public boolean assignContractToApplication(int applicationID, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId) {
 		UserTransaction transaction = getSessionContext().getUserTransaction();
 		try {
@@ -4329,6 +4396,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public ChildCareContract getLatestContractByApplication(int applicationID) {
 		try {
 			return getChildCareContractArchiveHome().findLatestContractByApplication(applicationID);
+		}
+		catch (FinderException e) {
+			return null;
+		}
+	}
+
+	public ChildCareContract getContractByApplicationAndDate(int applicationID, Date date) {
+		try {
+			return getChildCareContractArchiveHome().findContractByApplicationAndDate(applicationID, date);
 		}
 		catch (FinderException e) {
 			return null;
