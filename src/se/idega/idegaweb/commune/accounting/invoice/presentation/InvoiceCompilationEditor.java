@@ -1,9 +1,37 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.presentation.UserSearcher;
+
+import java.awt.Color;
+import java.io.OutputStream;
+import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
+import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.ListTable;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
+
 import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
-import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.business.IBOLookup;
@@ -35,36 +63,6 @@ import com.lowagie.text.PageSize;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
-import is.idega.idegaweb.member.presentation.UserSearcher;
-import java.awt.Color;
-import java.io.OutputStream;
-import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
-import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
-import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
-import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
-import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
-import se.idega.idegaweb.commune.accounting.presentation.ListTable;
-import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
-import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 
 /**
  * InvoiceCompilationEditor is an IdegaWeb block were the user can search, view
@@ -79,10 +77,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/28 13:34:50 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/30 11:58:09 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.67 $
+ * @version $Revision: 1.68 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -783,7 +781,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final Table table = createTable (4);
         setColumnWidthsEqual (table);
         int row = 2;
-        addOperationalFieldRow (table, context, header, row);
+        addOperationalFieldRow (table, header, row);
         final SubmitButton button
                 = getSubmitButton (ACTION_GENERATE_COMPILATION_PDF, PDF_KEY,
                                    PDF_DEFAULT);
@@ -1042,14 +1040,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         (final IWContext context, final java.util.Map presentationObjects)
         throws RemoteException, FinderException {
         final InvoiceHeader header = getInvoiceHeader (context);
-		final User custodian = header.getCustodian ();
+        //final User custodian = header.getCustodian ();
 
         // render form/details
         final Table table = createTable (4);
         setColumnWidthsEqual (table);
         int row = 2;
         int col = 1;
-        addOperationalFieldRow (table, context, header, row++);
+        addOperationalFieldRow (table, header, row++);
         col = 1;
         addSmallHeader (table, col++, row, INVOICE_RECEIVER_KEY,
                         INVOICE_RECEIVER_DEFAULT, ":");
@@ -1385,7 +1383,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
         // show each invoice header in a row
         for (int i = 0; i < headers.length; i++) {
-			showInvoiceHeaderOnARow (context, table, row++, invoiceBusiness,
+			showInvoiceHeaderOnARow (table, row++, invoiceBusiness,
                                      headers [i]);
         }
         
@@ -1393,7 +1391,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
 	private void showInvoiceHeaderOnARow
-        (final IWContext context, final Table table, final int row,
+        (final Table table, final int row,
          final InvoiceBusiness business, final InvoiceHeader header)
         throws FinderException {
 		int col = 1;
@@ -1556,8 +1554,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final String groupName = placement.getSchoolClass ().getName ();
         return providerName + " " + groupName;
     }
-    private String getSchoolCategoryName (final IWContext context,
-                                        final InvoiceHeader header) {
+    private String getSchoolCategoryName (final InvoiceHeader header) {
         try {
             final SchoolCategory category = header.getSchoolCategory ();
             return localize (category.getLocalizedKey (), category.getName ());
@@ -1900,13 +1897,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
     private void addOperationalFieldRow
-        (final Table table, final IWContext context, final InvoiceHeader header,
+        (final Table table, final InvoiceHeader header,
          final int row) throws RemoteException {
         int col = 1;
         addSmallHeader (table, col++, row, MAIN_ACTIVITY_KEY,
                         MAIN_ACTIVITY_DEFAULT, ":");
         table.mergeCells (col, row, table.getColumns () - 1, row);
-        addSmallText (table, getSchoolCategoryName (context, header), col++,
+        addSmallText (table, getSchoolCategoryName (header), col++,
                       row);
         final String schoolCategory = header.getSchoolCategoryID ();
         if (null != schoolCategory && 0 < schoolCategory.length ()) {
