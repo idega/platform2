@@ -70,11 +70,11 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 /**
- * Last modified: $Date: 2004/03/23 14:04:05 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/24 14:15:57 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -103,9 +103,19 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		broadcastInfo.setSchoolCategory (schoolCategory);
 		broadcastInfo.setStartTime (new Timestamp (System.currentTimeMillis ()));
 		broadcastInfo.setSchoolCount (null == schools ? 0 : schools.size ());
+		if (null != currentUser) broadcastInfo.setCreatedBy (currentUser);
 		broadcastInfo.store ();
 		
-		new Thread () { public void run () { try {
+		new Thread () {
+			public void run () {
+				doBroadcastCheckAmountLists(schools, broadcastInfo);
+			}
+		}.start ();
+	}
+	
+	void doBroadcastCheckAmountLists
+		(final Collection schools, final CheckAmountBroadcast broadcastInfo) {
+		try {
 			if (schools != null && !schools.isEmpty ()) {
 				final MemoryFileBuffer checkAmountListsBuffer = new MemoryFileBuffer ();
 				final OutputStream outStream
@@ -116,6 +126,9 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 				document.open ();
 				final CheckAmountReceivingSchoolHome  recievingSchoolHome
 						= getCheckAmountReceivingSchoolHome ();
+				final SchoolCategory schoolCategory
+						= broadcastInfo.getSchoolCategory ();
+				final User currentUser = broadcastInfo.getCreatedBy ();
 				for (Iterator i = schools.iterator (); i.hasNext();) {
 					final School school = (School) i.next();
 					final PaymentRecord [] records
@@ -123,7 +136,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 					final Collection emailReceivers = new HashSet ();
 					if (0 < records.length) {
 						emailReceivers.addAll (findEmailReceiversAndNotifyThem
-																	 (currentUser, school));					
+																	 (currentUser, school));
 						if (emailReceivers.isEmpty ()) {
 							addCheckAmountListToDocument (writer, document, schoolCategory,
 																						school, records);
@@ -141,14 +154,15 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 				outStream.close ();
 				putCheckAmountListsInPrinterQueue(checkAmountListsBuffer, currentUser,
 																					schoolCategory);
-				createJournalLog(currentUser, schoolCategoryPK);
+				createJournalLog(currentUser, "" + schoolCategory.getPrimaryKey ());
 			}
 			broadcastInfo.setEndTime (new Timestamp (System.currentTimeMillis ()));
 			broadcastInfo.store ();
-		} catch (Exception e) { e.printStackTrace (); }}}.start ();
+		} catch (Exception e) {
+			e.printStackTrace (); 
+		}
 	}
-
-
+	
 	private static void createJournalLog
 		(final User currentUser, final String schoolCategoryPK)
 		throws CreateException, IDOLookupException {

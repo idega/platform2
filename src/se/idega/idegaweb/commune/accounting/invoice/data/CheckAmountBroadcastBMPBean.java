@@ -4,15 +4,16 @@ import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryBMPBean;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
+import com.idega.user.data.User;
 import java.sql.Timestamp;
 import java.util.Collection;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2004/03/23 14:04:06 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/24 14:15:57 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CheckAmountBroadcastBMPBean extends GenericEntity
 	implements CheckAmountBroadcast {
@@ -23,6 +24,7 @@ public class CheckAmountBroadcastBMPBean extends GenericEntity
 	public static final String COLUMN_SCHOOL_CATEGORY_ID
 		= SchoolCategoryBMPBean.COLUMN_CATEGORY;
 	public static final String COLUMN_SCHOOL_COUNT = "school_count";
+	public static final String COLUMN_CREATED_BY = "created_by";
 	
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -34,6 +36,7 @@ public class CheckAmountBroadcastBMPBean extends GenericEntity
 		addAttribute (COLUMN_ENDTIME, "", true, true, Timestamp.class);
 		addManyToOneRelationship (COLUMN_SCHOOL_CATEGORY_ID, SchoolCategory.class);
 		addAttribute (COLUMN_SCHOOL_COUNT, "", true, true, Integer.class);
+		addManyToOneRelationship (COLUMN_CREATED_BY, User.class);
 	}
 
 	public String getSchoolCategoryId () {
@@ -56,6 +59,14 @@ public class CheckAmountBroadcastBMPBean extends GenericEntity
 		return getIntColumnValue (COLUMN_SCHOOL_COUNT);
 	}
 
+	public int getCreatedById () {
+		return getIntColumnValue (COLUMN_CREATED_BY);
+	}
+
+	public User getCreatedBy () {
+		return (User) getColumnValue (COLUMN_CREATED_BY);
+	}
+
 	public void setSchoolCategoryId (final String id) {
 		setColumn (COLUMN_SCHOOL_CATEGORY_ID, id);
 	}
@@ -74,6 +85,14 @@ public class CheckAmountBroadcastBMPBean extends GenericEntity
 
 	public void setSchoolCount (final int count) {
 		setColumn (COLUMN_SCHOOL_COUNT, count);
+	}
+
+	public void setCreatedById (final int id) {
+		setColumn (COLUMN_CREATED_BY, id);
+	}
+
+	public void setCreatedBy (final User createdBy) {
+		setColumn (COLUMN_CREATED_BY, createdBy);
 	}
 
 	public Integer ejbFindLatestBySchoolCategoryId (final String schoolCategoryId)
