@@ -218,12 +218,12 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
   }
 
   public  Map mapOfAccountKeys(){
-  	 Collection L = listOfTariffKeys();
+  	 Collection L = listOfAccountKeys();
      if(L != null){
        int len = L.size();
        Hashtable H = new Hashtable(len);
        for (Iterator iter = L.iterator(); iter.hasNext();) {
-       	TariffKey AK = (TariffKey)  iter.next();
+       	AccountKey AK = (AccountKey)  iter.next();
          H.put((Integer)AK.getPrimaryKey(),AK);
        }
        return H;
