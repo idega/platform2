@@ -19,24 +19,28 @@ public class SchoolYearComparator implements Comparator {
 		SchoolYear schoolYear1 = (SchoolYear) o1;
 		SchoolYear schoolYear2 = (SchoolYear) o2;
 		
-		SchoolType type1 = null;
-		try {
-			type1 = schoolYear1.getSchoolType();
-		}
-		catch (Exception e) {
-			type1 = null;
-		}
-		SchoolType type2 = null;
-		try {
-			type2 = schoolYear2.getSchoolType();
-		}
-		catch (Exception e) {
-			type2 = null;
+		if (schoolYear1.getSchoolTypeId() != schoolYear2.getSchoolTypeId()) {
+			SchoolType type1 = null;
+			try {
+				type1 = schoolYear1.getSchoolType();
+			}
+			catch (Exception e) {
+				type1 = null;
+			}
+			SchoolType type2 = null;
+			try {
+				type2 = schoolYear2.getSchoolType();
+			}
+			catch (Exception e) {
+				type2 = null;
+			}
+			
+			returner = compareTypes(type1, type2);
 		}
 		
-		returner = compareTypes(type1, type2);
 		if (returner == 0)
 			returner = compareAge(schoolYear1.getSchoolYearAge(), schoolYear2.getSchoolYearAge());
+
 		return returner;
 	}
 	
