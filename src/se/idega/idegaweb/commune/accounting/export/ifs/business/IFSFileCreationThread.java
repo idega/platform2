@@ -1042,7 +1042,7 @@ public class IFSFileCreationThread extends Thread {
 								bWriter.write(amount);
 								//Antal, pris,
 								bWriter.write("000000000000100");
-								bWriter.write(amount.substring(3, 12));
+								bWriter.write(amount.substring(0, 12));
 								//moms, filler
 								bWriter.write(empty.substring(0, 2));
 								//Avser period f.o.m
@@ -1131,7 +1131,7 @@ public class IFSFileCreationThread extends Thread {
 								bWriter.write(amount);
 								//Kvantitet and Apris
 								bWriter.write("000000000000100");
-								bWriter.write(amount.substring(3, 12));
+								bWriter.write(amount.substring(0, 12));
 								//Ansvar
 								String tmp = pb.findFieldInStringByName(posting, "Ansvar");
 								if (tmp.length() < 10) {
@@ -1600,6 +1600,9 @@ public class IFSFileCreationThread extends Thread {
 				}
 			}
 			row = sheet.createRow(rowNumber++);
+			cell = row.createCell(cellNumber);
+			cell.setCellValue("Summa");
+			cell.setCellStyle(getStyleBold());
 			cell = row.createCell(cellNumber += 2);
 			cell.setCellValue(getNumberFormat().format(totalAmount));
 			cell.setCellStyle(getStyleBoldAlignRight());
@@ -1745,7 +1748,7 @@ public class IFSFileCreationThread extends Thread {
 	private void createPaymentSigningFilesExcel(Collection data, String fileName, String headerText, boolean signingFooter) throws IOException, FinderException {
 		if (data != null && !data.isEmpty()) {
 			int[] columnWidths = { 25, 35, 12, 12 };
-			String[] columnNames = { "Anordnare", "Text", "Studenter", "Belopp" };
+			String[] columnNames = { "Anordnare", "Text", "Placeringer", "Belopp" };
 			createExcelWorkBook(columnWidths, columnNames, headerText);
 			HSSFSheet sheet = wb.getSheet("Excel");
 			short rowNumber = (short) (sheet.getLastRowNum() + 1);
@@ -1786,21 +1789,12 @@ public class IFSFileCreationThread extends Thread {
 						cell.setCellStyle((getStyleAlignRight()));
 						cellNumber--;
 						if (!prIt.hasNext()) {
-							row = sheet.createRow(rowNumber++);
 							cellNumber--;
+							row = sheet.createRow(rowNumber++);							
 							row.createCell(cellNumber++).setCellValue("");
-							cell = row.createCell(cellNumber++);
-							cell.setCellValue("Total studenter");
-							cell.setCellStyle(getStyleItalicAlignRight());
-							cell = row.createCell(cellNumber--);
-							cell.setCellValue(totalHeaderStudents);
-							cell.setCellStyle(getStyleItalicAlignRight());
-							cellNumber--;
-							row = sheet.createRow(rowNumber++);
-							row.createCell(cellNumber++).setCellValue("");
-							row.createCell(cellNumber++).setCellValue("Summa att utbetala");
-							row.createCell(cellNumber++).setCellValue("");
-							row.createCell(cellNumber--).setCellValue(getNumberFormat().format(totalHeaderAmount));
+							row.createCell(cellNumber++).setCellValue("Summa");
+							row.createCell(cellNumber++).setCellValue(totalHeaderStudents);
+							row.createCell(cellNumber--).setCellValue(getNumberFormat().format(totalHeaderAmount));					
 						}
 						firstRecord = false;
 					}
@@ -1828,15 +1822,24 @@ public class IFSFileCreationThread extends Thread {
 				setInCommuneSum(totalAmount);
 			}
 			else {
-				cell.setCellValue("Summa från egna kommunala anordnare " + getNumberFormat().format(getInCommuneSum()));
+				cell.setCellValue("Summa från egna kommunala anordnare");
+				cell = row.createCell(cellNumber+=3);
+				cell.setCellValue(getNumberFormat().format(getInCommuneSum()));
+				cell.setCellStyle(getStyleAlignRight());
 				row = sheet.createRow(rowNumber++);
-				cell = row.createCell(cellNumber);
-				cell.setCellValue("Summa från övriga anordnare " + getNumberFormat().format(totalAmount - getInCommuneSum()));
+				cell = row.createCell(cellNumber-=3);
+				cell.setCellValue("Summa från övriga anordnare");
+				cell = row.createCell(cellNumber+=3);
+				cell.setCellValue(getNumberFormat().format(totalAmount - getInCommuneSum()));
+				cell.setCellStyle(getStyleAlignRight());
 				row = sheet.createRow(rowNumber++);
-				cell = row.createCell(cellNumber);
+				cell = row.createCell(cellNumber-=3);
 			}
-			cell.setCellValue("Bruttosumma att utbetala " + getNumberFormat().format(totalAmount));
+			cell.setCellValue("Bruttosumma att utbetala");
 			cell.setCellStyle(getStyleBold());
+			cell = row.createCell(cellNumber+=3);
+			cell.setCellValue(getNumberFormat().format(totalAmount));
+			cell.setCellStyle(getStyleBoldAlignRight());
 
 			if (signingFooter) {
 				createSigningFooter(sheet, rowNumber);
