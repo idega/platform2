@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.1 2003/08/23 21:01:48 anders Exp $
+ * $Id: VATBusinessBean.java,v 1.2 2003/08/24 22:35:38 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import java.sql.Date;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 import javax.ejb.CreateException;
+import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
@@ -21,10 +22,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/08/23 21:01:48 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/24 22:35:38 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -61,7 +62,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	 * @param periodToString the unparsed to date
 	 * @return collection of VAT regulation objects
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data#VATRegulation
-	 * @throws VATException 
+	 * @throws VATException if invalid period parameters
 	 * @author anders
 	 */
 	public Collection findVATRegulations(
@@ -109,7 +110,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	 * @param vatPercentString the VAT percent value
 	 * @param paymentFlowTypeIdString the payment flow type id
 	 * @param providerTypeIdString the provider type id
-	 * @throws VATException
+	 * @throws VATException if invalid parameters
 	 */
 	public void createVATRegulation(
 			Date periodFrom,
@@ -192,6 +193,28 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			throw new VATException(VATException.KEY_CANNOT_SAVE_VAT_REGULATION, VATException.DEFAULT_CANNOT_SAVE_VAT_REGULATION);
 		} catch (CreateException e) { 
 			throw new VATException(VATException.KEY_CANNOT_SAVE_VAT_REGULATION, VATException.DEFAULT_CANNOT_SAVE_VAT_REGULATION);
+		}		
+	}
+	
+	/**
+	 * Deletes the VAT regulation objects with the specified ids.
+	 * @param vatRegulationIds the array of VAT regulation ids
+	 * @throws VATException if a VAT regulation could not be deleted
+	 */ 
+	public void deleteVATRegulations(String[] vatRegulationIds) throws VATException {
+		try {
+			VATRegulationHome home = getVATRegulationHome();
+			for (int i = 0; i < vatRegulationIds.length; i++) {
+				int id = Integer.parseInt(vatRegulationIds[i]);
+				VATRegulation vr = home.findByPrimaryKey(new Integer(id));
+				vr.remove();
+			}
+		} catch (RemoteException e) { 
+			throw new VATException(VATException.KEY_CANNOT_DELETE_VAT_REGULATION, VATException.DEFAULT_CANNOT_DELETE_VAT_REGULATION);
+		} catch (FinderException e) { 
+			throw new VATException(VATException.KEY_CANNOT_DELETE_VAT_REGULATION, VATException.DEFAULT_CANNOT_DELETE_VAT_REGULATION);
+		} catch (RemoveException e) { 
+			throw new VATException(VATException.KEY_CANNOT_DELETE_VAT_REGULATION, VATException.DEFAULT_CANNOT_DELETE_VAT_REGULATION);
 		}		
 	}
 }

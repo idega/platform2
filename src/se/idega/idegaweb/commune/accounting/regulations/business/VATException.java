@@ -1,5 +1,5 @@
 /*
- * $Id: VATException.java,v 1.1 2003/08/23 18:42:24 anders Exp $
+ * $Id: VATException.java,v 1.2 2003/08/24 22:35:38 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -12,10 +12,10 @@ package se.idega.idegaweb.commune.accounting.regulations.business;
 /**
  * Exception for data input errors in VATBusiness.  
  * <p>
- * Last modified: $Date: 2003/08/23 18:42:24 $
+ * Last modified: $Date: 2003/08/24 22:35:38 $
  *
  * @author Anders Lindman
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class VATException extends Exception {
 
@@ -30,6 +30,7 @@ public class VATException extends Exception {
 	public final static String KEY_PAYMENT_FLOW_TYPE_MISSING = KP + "payment_flow_type_missing";
 	public final static String KEY_PROVIDER_TYPE_MISSING = KP + "provider_type_missing";
 	public final static String KEY_CANNOT_SAVE_VAT_REGULATION = KP + "cannot_save_vat_regulation";
+	public final static String KEY_CANNOT_DELETE_VAT_REGULATION = KP + "cannot_delete_vat_regulation";
 
 	public final static String DEFAULT_DATE_FORMAT = "Datum måste anges på formen ÅÅMM, ÅÅMMDD, eller ÅÅÅÅMMDD.";
 	public final static String DEFAULT_FROM_DATE_MISSING = "Periodens startdatum måste fyllas i.";
@@ -40,6 +41,7 @@ public class VATException extends Exception {
 	public final static String DEFAULT_PAYMENT_FLOW_TYPE_MISSING = "Ström måste väljas.";
 	public final static String DEFAULT_PROVIDER_TYPE_MISSING = "Anordnartyp måste väljas.";
 	public final static String DEFAULT_CANNOT_SAVE_VAT_REGULATION = "Momssatsen kunde inte sparas på grund av tekniskt fel.";
+	public final static String DEFAULT_CANNOT_DELETE_VAT_REGULATION = "Momssatsen kunde inte tas bort på grund av tekniskt fel.";
 
 	private String textKey = null;
 	private String defaultText = null;

@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.9 2003/08/24 21:40:19 laddi Exp $
+ * $Id: VATEditor.java,v 1.10 2003/08/24 22:34:44 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -34,10 +34,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATRegulations is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/08/24 21:40:19 $ by $Author: laddi $
+ * Last modified: $Date: 2003/08/24 22:34:44 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -129,6 +129,8 @@ public class VATEditor extends AccountingBlock {
 			action = ACTION_NEW;
 		} else if (iwc.isParameterSet(PARAMETER_SAVE)) {
 			action = ACTION_SAVE;
+		} else if (iwc.isParameterSet(PARAMETER_DELETE)) {
+			action = ACTION_DELETE;
 		}
 
 		return action;
@@ -204,9 +206,27 @@ public class VATEditor extends AccountingBlock {
 		String errorMessage = null;
 		try {
 			VATBusiness vb = getVATBusiness(iwc);
-		}
-		catch (RemoteException e) {
+			vb.deleteVATRegulations(iwc.getParameterValues(PARAMETER_VAT_REGULATION_ID));
+		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
+		} catch (VATException e) {
+			errorMessage = localize(e.getTextKey(), e.getDefaultText());
+		}
+
+		if (errorMessage != null) {
+			ApplicationForm app = new ApplicationForm();
+			app.setLocalizedTitle(KEY_TITLE_DELETE, "Ta bort momssats");
+			Table table = new Table();
+			table.setCellpadding(getCellpadding());
+			table.setCellspacing(getCellspacing());
+			table.add(getErrorText(errorMessage), 1, 1);
+			app.setMainPanel(table);
+			ButtonPanel bp = new ButtonPanel();
+			bp.addLocalizedButton(PARAMETER_CANCEL, KEY_CANCEL, "Avbryt");
+			app.setButtonPanel(bp);
+			add(app);		
+		} else {
+			handleDefaultAction(iwc);
 		}
 	}
 	 
@@ -299,13 +319,14 @@ public class VATEditor extends AccountingBlock {
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel bp = new ButtonPanel();
 		bp.addLocalizedButton(PARAMETER_NEW, KEY_NEW, "Ny");
-		bp.addLocalizedConfirmButton(
-				PARAMETER_DELETE,
-				KEY_DELETE,
-				"Ta bort",
-				PARAMETER_VAT_REGULATION_ID,
-				KEY_CONFIRM_DELETE_MESSAGE,
-				"Vill du verkligen ta bort markerade momssatser?");
+		bp.addLocalizedButton(PARAMETER_DELETE, KEY_DELETE, "Ta bort");
+
+//		bp.addLocalizedConfirmButton(
+//				PARAMETER_DELETE,
+//				KEY_DELETE,
+//				"Ta bort",
+//				KEY_CONFIRM_DELETE_MESSAGE,
+//				"Vill du verkligen ta bort markerade momssatser?");
 		return bp;
 	}
 	
