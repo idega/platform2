@@ -14,6 +14,7 @@ import com.idega.util.text.*;
 import com.idega.util.*;
 import com.idega.util.idegaTimestamp;
 
+
 public class SmallCalendar extends Block{
 
 private idegaTimestamp today;
