@@ -30,7 +30,8 @@ import com.idega.core.user.data.User;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.accesscontrol.data.LoginTable;
 import java.util.List;
-import com.idega.util.SendMail;
+import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
+import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 
 /**
  * Title:   idegaclasses

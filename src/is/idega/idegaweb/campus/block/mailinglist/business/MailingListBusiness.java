@@ -25,7 +25,6 @@ import com.idega.idegaweb.IWResourceBundle;
 
 public class MailingListBusiness {
 
-  private static String LETTER_KEY = "email_";
   public static String CATEGORYTYPE = "cam_mail";
 
   public static MailingList createMailingList(int iCategoryId,String name){
@@ -136,10 +135,10 @@ public class MailingListBusiness {
     return false;
   }
 
-  public static boolean sendMail(int letterId,EntityHolder holder,IWResourceBundle iwrb){
+  public static boolean sendMail(int letterId,EntityHolder holder){
     try {
       EmailLetter letter = new EmailLetter(letterId);
-       return sendMail(letter,holder,iwrb);
+       return sendMail(letter,holder);
     }
     catch (Exception ex) {
 
@@ -147,39 +146,75 @@ public class MailingListBusiness {
     return false;
 
   }
-  public static boolean sendMail(EmailLetter letter,EntityHolder holder,IWResourceBundle iwrb){
+
+  public static boolean processMailEvent(int iContractId,String type){
+    return processMailEvent(new EntityHolder(iContractId),type);
+  }
+
+  public static boolean processMailEvent(EntityHolder holder,String type){
     try {
-      String Body = getEmailBody(letter,iwrb);
-      if(letter.getParse()){
+      System.err.println("Sending email of type : "+type);
+      List letters = EntityFinder.findAllByColumn(new EmailLetter(),EmailLetter.TYPE,type);
+      if(letters !=null){
+        System.err.println("Number of letters : "+letters.size());
+        java.util.Iterator iter = letters.iterator();
+        EmailLetter letter;
+        while(iter.hasNext()){
+          letter = (EmailLetter) iter.next();
+          sendMail(letter,holder);
+        }
+        return true;
+      }
+      else
+        System.err.println("no letters to send");
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    return true;
+  }
+
+  /**
+   *  Parses an email letter and sends it to all recipients
+   */
+  public static boolean sendMail(EmailLetter letter,EntityHolder holder){
+    try {
+      String Body = letter.getBody();
+      List holderEmails = null;
+      if(holder !=null && letter.getParse()){
         LetterParser parser = new LetterParser(holder);
         Body = new ContentParser().parse(parser,Body);
+        holderEmails = holder.getEmails();
       }
+      String subject = letter.getSubject();
 
-      String subject = getEmailSubject(letter,iwrb);
+      List emails = new Vector();
+
+      if(holderEmails!=null)
+        emails.addAll(holderEmails);
+
       List lists =  EntityFinder.findRelated(letter,new MailingList());
-      if(lists!=null){
+      MailingList mlist;
+      if(!letter.getOnlyUser() && lists!=null){
         Iterator mIter = lists.iterator();
-        Iterator eIter;
-        MailingList mlist;
-        List emails = new Vector();
         List temp;
-        Email email;
         while (mIter.hasNext()) {
           mlist = (MailingList) mIter.next();
           temp = EntityFinder.findRelated(mlist,new Email());
-          if(temp !=null){
-            eIter = temp.iterator();
-            while (eIter.hasNext()) {
-              email = (Email) eIter.next();
-              SendMail.send(letter.getFrom(),email.getEmailAddress(),"","",letter.getHost(),subject,Body);
-            }
-
-          }
-
+          if(temp!=null)
+            emails.addAll(temp);
+        }
+      }
+      if(emails !=null){
+        Iterator eIter = emails.iterator();
+        Email email;
+        while (eIter.hasNext()) {
+          email = (Email) eIter.next();
+          System.err.println("Sending letter to "+email.getEmailAddress());
+          SendMail.send(letter.getFrom(),email.getEmailAddress(),"","",letter.getHost(),subject,Body);
         }
 
       }
-
       return true;
     }
     catch (Exception ex) {
@@ -216,7 +251,7 @@ public class MailingListBusiness {
     //iwrb.storeState();
   }
 
-  public static EmailLetter saveEmailLetter(int iEmailLetterId, String sHost,String sFrom,boolean Parse,String type){
+  public static EmailLetter saveEmailLetter(int iEmailLetterId, String sHost,String sFrom,String subject,String body,boolean Parse,boolean OnlyUser,String type){
     EmailLetter letter = null;
     try {
       boolean update = false;
@@ -225,17 +260,17 @@ public class MailingListBusiness {
         letter = new EmailLetter(iEmailLetterId);
         update = true;
       }
-      letter.setEmailKey(LETTER_KEY+iEmailLetterId);
+      letter.setSubject(subject);
+      letter.setBody(body);
       letter.setHost(sHost);
       letter.setFrom(sFrom);
       letter.setParse(Parse);
+      letter.setOnlyUser(OnlyUser);
       letter.setType(type);
       if(update)
         letter.update();
       else{
         letter.insert();
-        letter.setEmailKey(LETTER_KEY+iEmailLetterId);
-        letter.update();
       }
     }
     catch (Exception ex) {
@@ -244,43 +279,22 @@ public class MailingListBusiness {
     return letter;
   }
 
-  public static EmailLetter createEmailLetter(String sHost,String sFrom,String sSubject,String sBody,boolean bParse,String type,IWResourceBundle iwrb){
-    EmailLetter letter = saveEmailLetter(-1,sHost,sFrom,bParse,type);
-    if(letter!=null){
-      setEmailBody(letter,iwrb,sBody);
-      setEmailSubject(letter,iwrb,sSubject);
-      return letter;
-    }
-    else
-      return null;
+  public static EmailLetter createEmailLetter(String sHost,String sFrom,String sSubject,String sBody,boolean bParse,boolean bOnlyUser,String type){
+    return saveEmailLetter(-1,sHost,sFrom,sSubject,sBody,bParse,bOnlyUser,type);
   }
 
-  public static EmailLetter createEmailLetter(EmailLetter emailletter,String sHost,String sFrom,String sSubject,String sBody,boolean bParse,String type,IWResourceBundle iwrb){
+  public static EmailLetter createEmailLetter(EmailLetter emailletter,String sHost,String sFrom,String sSubject,String sBody,boolean bParse,boolean onlyUser,String type){
     int id = emailletter!=null ? emailletter.getID():-1;
-    System.err.println("letter id = "+id);
-    EmailLetter letter = saveEmailLetter(id,sHost,sFrom,bParse,type);
-    if(letter!=null){
-      setEmailBody(letter,iwrb,sBody);
-      setEmailSubject(letter,iwrb,sSubject);
-      return letter;
-    }
-    else{
-      System.err.println("letter is null");
-      return null;
-    }
+    return saveEmailLetter(id,sHost,sFrom,sSubject,sBody,bParse,onlyUser,type);
   }
 
-  public static void deleteEmailLetter(EmailLetter letter,IWResourceBundle iwrb){
-    try {
-      iwrb.getIWBundleParent().removeLocalizableString(letter.getEmailKey());
-      iwrb.getIWBundleParent().removeLocalizableString(letter.getSubjectKey());
-      letter.removeFrom(MailingList.class);
+  public static void deleteEmailLetter(EmailLetter letter){
+    try{
       letter.delete();
     }
     catch (Exception ex) {
       ex.printStackTrace();
     }
-
   }
 
   public static void deleteMailingList(MailingList list){

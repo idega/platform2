@@ -38,7 +38,7 @@ import java.util.Iterator;
 public class Emailer extends Block {
 
   private IWBundle iwb,core;
-  private IWResourceBundle iwrb,iwrbloc;
+  private IWResourceBundle iwrb;
   private static String prmLocale ="em_locales";
   private static String prmLetter = "em_letter";
   private static String prmLetterDelete = "em_letter_del";
@@ -50,6 +50,7 @@ public class Emailer extends Block {
   private static String prmSubject = "em_subject";
   private static String prmFrom = "em_from";
   private static String prmParse = "em_parse";
+  private static String prmUserOnly = "em_useronly";
   private static String prmHost = "em_host";
   private static String prmBody = "em_body";
   private static String prmEmailDelete = "em_email_delete";
@@ -85,7 +86,7 @@ public class Emailer extends Block {
   }
 
   private void control(IWContext iwc){
-    debugParameters(iwc);
+    //debugParameters(iwc);
     Table T = new Table(3,2);
     T.setWidth("100%");
     T.setWidth(1,1,"30%");
@@ -150,8 +151,8 @@ public class Emailer extends Block {
       if(iwc.isParameterSet("save_letter.x")){
         MailingListBusiness.createEmailLetter(letter,iwc.getParameter(prmHost),
         iwc.getParameter(prmFrom),iwc.getParameter(prmSubject),
-        iwc.getParameter(prmBody),iwc.isParameterSet(prmParse),
-        iwc.getParameter(prmType),iwrbloc);
+        iwc.getParameter(prmBody),iwc.isParameterSet(prmParse),iwc.isParameterSet(prmUserOnly),
+        iwc.getParameter(prmType));
         saved = true;
       }
       else if(iwc.isParameterSet("save_letter_list.x")){
@@ -166,13 +167,13 @@ public class Emailer extends Block {
       }
       else if(iwc.isParameterSet(prmLetterDelete)){
         if(letter !=null){
-          MailingListBusiness.deleteEmailLetter(letter,iwrbloc);
+          MailingListBusiness.deleteEmailLetter(letter);
           letter = null;
         }
       }
       else if(iwc.isParameterSet("mail_letter")){
         if(letter !=null){
-          MailingListBusiness.sendMail(letter,null,iwrbloc);
+          MailingListBusiness.sendMail(letter,null);
         }
       }
       T.add(getEmailLetterList(),1,1);
@@ -181,7 +182,7 @@ public class Emailer extends Block {
           T.add(getLetterMailingLists(letter),2,1);
       }
       else if(!saved && (iwc.isParameterSet("new_letter") || letter !=null) ){
-        T.add(getEmailLetterForm(iwc,letter,iwrbloc),2,1);
+        T.add(getEmailLetterForm(iwc,letter),2,1);
         if(contentParsable!=null)
           T.add(getTags(),3,1);
       }
@@ -218,7 +219,7 @@ public class Emailer extends Block {
       Iterator iter = letters.iterator();
       while(iter.hasNext()){
         letter = (EmailLetter) iter.next();
-        dTable.add(Edit.formatText(MailingListBusiness.getEmailSubject(letter,iwrb)),1,row);
+        dTable.add(Edit.formatText(letter.getSubject()),1,row);
         dTable.add(Edit.formatText(letter.getFrom()),2,row);
         dTable.add(Edit.formatText(letter.getType()),3,row);
         dTable.add(getLetterChangeLink(letter),4,row);
@@ -233,11 +234,11 @@ public class Emailer extends Block {
     dTable.addButton(newButton);
     return dTable;
   }
-  public PresentationObject getEmailLetterForm(IWContext iwc,EmailLetter letter,IWResourceBundle iwrbloc){
+  public PresentationObject getEmailLetterForm(IWContext iwc,EmailLetter letter){
     DataTable dTable = new DataTable();
     dTable.setWidth("100%");
     dTable.addTitle(iwrb.getLocalizedString("new_letter","New letter"));
-    DropdownMenu locales = Localizer.getAvailableLocalesDropdown(iwc.getApplication(),prmLocale);
+
     DropdownMenu types = null;
     if(contentParsable !=null)
        types = getTypeDrop(prmType);
@@ -248,12 +249,11 @@ public class Emailer extends Block {
     body.setWidth(30);
     body.setHeight(6);
     CheckBox parse = new CheckBox(prmParse);
+    CheckBox useronly = new CheckBox(prmUserOnly);
 
-    locales.setToSubmit();
-    locales.setSelectedElement(iwrbloc.getLocale().toString());
     if(letter !=null){
-      subject.setContent(MailingListBusiness.getEmailSubject(letter,iwrbloc));
-      body.setContent(MailingListBusiness.getEmailBody(letter,iwrbloc));
+      subject.setContent(letter.getSubject());
+      body.setContent(letter.getBody());
       host.setContent(letter.getHost());
       from.setContent(letter.getFrom());
       if(types!=null)
@@ -263,9 +263,7 @@ public class Emailer extends Block {
     }
     int col_1 = 1,col_2 = 2;
     int row = 1;
-    dTable.add(Edit.formatText(iwrb.getLocalizedString("locale","Locale")),col_1,row);
-    dTable.add(locales,col_2,row);
-    row++;
+
     if(types!=null){
       dTable.add(Edit.formatText(iwrb.getLocalizedString("type","Type")),col_1,row);
       dTable.add(types,col_2,row);
@@ -285,6 +283,9 @@ public class Emailer extends Block {
     row++;
     dTable.add(Edit.formatText(iwrb.getLocalizedString("parse","Parse")),col_1,row);
     dTable.add(parse,col_2,row);
+    row++;
+    dTable.add(Edit.formatText(iwrb.getLocalizedString("useronly","Useronly")),col_1,row);
+    dTable.add(useronly,col_2,row);
     dTable.addButton(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save_letter"));
     return dTable;
   }
@@ -511,11 +512,6 @@ public class Emailer extends Block {
     editImage = core.getImage("/shared/edit.gif");
     deleteImage = core.getImage("/shared/delete.gif");
     mailImage = core.getImage("/shared/empty.gif");
-    if(iwc.isParameterSet(prmLocale)){
-      iwrbloc = iwb.getResourceBundle(LocaleUtil.getLocale(iwc.getParameter(prmLocale)));
-    }
-    else
-      iwrbloc = getResourceBundle(iwc);
     iwrb = getResourceBundle(iwc);
     control(iwc);
   }

@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.7 2002/01/09 13:12:44 aron Exp $
+ * $Id: ReferenceNumber.java,v 1.8 2002/02/20 00:04:51 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -69,7 +69,7 @@ public class ReferenceNumber extends Block {
     iwb_ = getBundle(iwc);
     iwrb_ = getResourceBundle(iwc);
 
-    referenceImage_ = iwrb_.getImage("get.gif");
+    referenceImage_ = iwrb_.getLocalizedImageButton("get","Get");
 
     referenceText_ = iwrb_.getLocalizedString("referenceNumber","Tilvísunarnr.");
     setup();

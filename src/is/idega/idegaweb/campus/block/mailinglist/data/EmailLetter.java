@@ -17,8 +17,11 @@ public class EmailLetter extends GenericEntity{
 
   public final static String TableName = "cam_email_letter";
   public final static String EMAIL_KEY = "email_key";
+  public final static String SUBJECT = "subject";
+  public final static String BODY = "body";
   public final static String FROM = "from_email";
   public final static String PARSE = "parse";
+  public final static String ONLYUSER = "only_user";
   public final static String HOST = "host";
   public final static String TYPE = "mail_type";
 
@@ -32,7 +35,10 @@ public class EmailLetter extends GenericEntity{
     addAttribute(getIDColumnName());
     addAttribute(FROM, "from", true, true, String.class);
     addAttribute(EMAIL_KEY, "body", true, true, java.lang.String.class);
+    addAttribute(SUBJECT, "subject", true, true, java.lang.String.class);
+    addAttribute(BODY, "body", true, true, java.lang.String.class,4000);
     addAttribute(PARSE,"parse",true,true,java.lang.Boolean.class);
+    addAttribute(ONLYUSER,"Only user",true,true,java.lang.Boolean.class);
     addAttribute(HOST,"host",true,true,java.lang.String.class);
     addAttribute(TYPE,"type",true,true,java.lang.String.class);
 
@@ -45,6 +51,18 @@ public class EmailLetter extends GenericEntity{
   }
   public void setEmailKey(String key){
     setColumn(EMAIL_KEY,key);
+  }
+  public String getBody(){
+    return getStringColumnValue(BODY);
+  }
+  public void setBody(String body){
+    setColumn(BODY,body);
+  }
+  public String getSubject(){
+    return getStringColumnValue(SUBJECT);
+  }
+  public void setSubject(String subject){
+    setColumn(SUBJECT,subject);
   }
   public String getFrom(){
     return getStringColumnValue(FROM);
@@ -69,6 +87,13 @@ public class EmailLetter extends GenericEntity{
   }
   public void setParse(boolean parse){
     setColumn(PARSE,parse);
+  }
+
+  public boolean getOnlyUser(){
+    return getBooleanColumnValue(ONLYUSER);
+  }
+  public void setOnlyUser(boolean onlyUser){
+    setColumn(ONLYUSER,onlyUser);
   }
 
   public String getSubjectKey(){

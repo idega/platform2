@@ -31,6 +31,8 @@ import com.idega.core.data.GenericGroup;
 import com.idega.core.accesscontrol.data.LoginTable;
 import java.util.List;
 import com.idega.util.SendMail;
+import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
+import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 
 /**
  * Title:   idegaclasses
@@ -204,10 +206,14 @@ public class ContractReSignWindow extends Window{
     if(sMovDate !=null && sMovDate.length() == 10 )
       movDate = new idegaTimestamp(sMovDate);
     boolean datesync = iwc.getParameter(prmDateSync)!=null;
-    if(isAdmin)
+    if(isAdmin){
       ContractBusiness.endContract(id,movDate,sInfo,datesync);
-    else if(eUser !=null)
+
+    }
+    else if(eUser !=null){
       ContractBusiness.resignContract(id,movDate,sInfo,datesync);
+
+    }
     setParentToReload();
     close();
   }

@@ -5,6 +5,9 @@ import is.idega.idegaweb.campus.presentation.Edit;
 import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
+import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
+import is.idega.idegaweb.campus.block.mailinglist.business.EntityHolder;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.Image;
@@ -162,6 +165,11 @@ public class CampusApprover extends Block{
       Application A = new Application(id);
       A.setStatus(status);
       A.update();
+      Applicant Appli = new Applicant(A.getApplicantId());
+      if(status.equals("A"))
+        MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
+      if(status.equals("R"))
+        MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.REJECTION);
     }
     catch(Exception e){
       e.printStackTrace();
@@ -788,7 +796,10 @@ public class CampusApprover extends Block{
     String sEY = iwc.getParameter("dr_sp_ey");
 
     try{
-      int iIncome = Integer.parseInt(sSPIncome);
+
+      int iIncome = 0;
+      if(sSPIncome!=null && sSPIncome.length() >0 )
+        iIncome = Integer.parseInt(sSPIncome);
       int iBM = Integer.parseInt(sBM);
       int iEM = Integer.parseInt(sEM);
       int iBY = Integer.parseInt(sBY);
@@ -800,7 +811,7 @@ public class CampusApprover extends Block{
       eCampusApplication.setSpouseStudyEndYear(iEY);
     }
     catch(Exception ex){
-      ex.printStackTrace();
+      //ex.printStackTrace();
     }
     /*
     eCampusApplication.setChildren();

@@ -25,9 +25,12 @@ public class ContentParser{
       if(M.containsKey(token)){
         finalText.append(M.get(token));
       }
+
+      /*
       else{
         finalText.append(token);
       }
+      */
     }
     /*
     int from = 0,to = 0;
@@ -47,8 +50,11 @@ public class ContentParser{
   private Map getMappedParseStrings(ContentParsable parsableObject){
     Hashtable H = new Hashtable();
     String[] tags = parsableObject.getParseTags();
+    String value;
     for (int i = 0; i < tags.length; i++) {
-      H.put(tags[i],parsableObject.getParsedString(tags[i]));
+      value = parsableObject.getParsedString(tags[i]);
+      if(value !=null)
+        H.put(tags[i],value);
     }
     return H;
   }

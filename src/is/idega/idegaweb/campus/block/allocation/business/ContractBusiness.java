@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.7 2002/02/13 13:08:07 aron Exp $
+ * $Id: ContractBusiness.java,v 1.8 2002/02/20 00:06:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,8 @@ import is.idega.idegaweb.campus.presentation.SysPropsSetter;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.data.SystemProperties;
+import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
+import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -90,16 +92,19 @@ public  class ContractBusiness {
         //System.err.println("changing application status ");
         changeApplicationStatus( eContract);
 
+
+        /*
         if(sendMail){
           sendMail(iUserId,login,pass,iwrb);
         }
-
+        */
         //System.err.println("changing contract status ");
         eContract.setStatusSigned();
         //eContract.setIsRented(true);
         //System.err.println("updateing contract ");
         eContract.update();
         //System.err.println("lets try to commit");
+        MailingListBusiness.processMailEvent(iContractId,LetterParser.SIGNATURE);
       }
 
 
@@ -229,6 +234,7 @@ public  class ContractBusiness {
       Contract C = new Contract(iContractId );
       C.setEnded();
       C.update();
+      MailingListBusiness.processMailEvent(iContractId,LetterParser.RETURN);
     }
     catch (SQLException ex) {
       ex.printStackTrace( );
@@ -240,6 +246,7 @@ public  class ContractBusiness {
       Contract C = new Contract(iContractId );
       C.setStarted();
       C.update();
+       MailingListBusiness.processMailEvent(iContractId,LetterParser.DELIVER);
     }
     catch (SQLException ex) {
       ex.printStackTrace( );
@@ -255,6 +262,7 @@ public  class ContractBusiness {
       C.setResignInfo(info);
       C.setStatusResigned();
       C.update();
+      MailingListBusiness.processMailEvent(iContractId,LetterParser.RESIGN);
     }
     catch (SQLException ex) {
       ex.printStackTrace();

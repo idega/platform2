@@ -37,6 +37,8 @@ import is.idega.idegaweb.campus.block.application.presentation.CampusApprover;
 import is.idega.idegaweb.campus.data.*;
 import is.idega.idegaweb.campus.presentation.CampusProperties;
 import is.idega.idegaweb.campus.presentation.Campus;
+import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
+import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.LinkedList;
@@ -904,7 +906,7 @@ public class CampusAllocator extends Block implements Campus{
         try{
           eApplicant = new Applicant(iApplicantId);
         }
-        catch(SQLException ex){}
+        catch(SQLException ex){ex.printStackTrace();}
 
         List L = ContractFinder.listOfApplicantContracts(iApplicantId);
         if(L == null && eApplicant != null ){
@@ -915,6 +917,8 @@ public class CampusAllocator extends Block implements Campus{
             else
               returner = iwrb.getLocalizedString("alloc_not_saved","Contract was not saved");
           }
+          else
+          returner = iwrb.getLocalizedString("no_user","No user was made");
         }
       }
       else if(sContractId !=null){
@@ -961,7 +965,12 @@ public class CampusAllocator extends Block implements Campus{
   private User makeNewUser(Applicant A){
     UserBusiness ub = new UserBusiness();
     try{
-    return ub.insertUser(A.getFirstName(),A.getMiddleName(),A.getLastName(),A.getFirstName(),"",null,null,null);
+    User u = ub.insertUser(A.getFirstName(),A.getMiddleName(),A.getLastName(),A.getFirstName(),"",null,null,null);
+    String[] emails = CampusApplicationFinder.getApplicantEmail(A.getID());
+    if(emails !=null && emails.length >0)
+      ub.addNewUserEmail(u.getID(),emails[0]);
+
+    return u;
     }
     catch(SQLException ex){
       ex.printStackTrace();
@@ -980,6 +989,7 @@ public class CampusAllocator extends Block implements Campus{
       eContract.setValidTo(to.getSQLDate());
       try{
         eContract.insert();
+        MailingListBusiness.processMailEvent( eContract.getID(),LetterParser.ALLOCATION);
         return true;
       }
       catch(SQLException ex){

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.2 2001/12/07 12:22:33 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.3 2002/02/20 00:06:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -555,4 +555,26 @@ public abstract class CampusApplicationFinder {
       }
     }
   }
+
+  public static String[] getApplicantEmail(int iApplicantId){
+    /*
+      select b.email from cam_application b,app_application a
+      where b.app_application_id = a.app_application_id
+      and a.app_applicant_id = 819
+    */
+    StringBuffer sql = new StringBuffer("select c.email from ");
+    sql.append(new CampusApplication().getEntityName()).append(" c,");
+    sql.append(Application.getEntityTableName()).append(" b " );
+    sql.append(" where c.app_application_id = b.app_application_id ");
+    sql.append(" and b.app_applicant_id = ");
+    sql.append(iApplicantId);
+    try {
+      return com.idega.data.SimpleQuerier.executeStringQuery(sql.toString()) ;
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    return new String[0];
+  }
+
 }

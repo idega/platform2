@@ -6,6 +6,8 @@ import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.data.SystemProperties;
 import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
+import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -17,7 +19,6 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.*;
 import com.idega.block.application.data.Applicant;
-
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
 import com.idega.core.data.Email;
@@ -189,10 +190,12 @@ public class ContractKeyWindow extends Window{
     int id = Integer.parseInt(iwc.getParameter(prmContractId));
     if(iwc.isParameterSet("val")){
       String val = iwc.getParameter("val");
-      if(val.equals("return"))
+      if(val.equals("return")){
         ContractBusiness.returnKey(id);
-      else if(val.equals("deliver"))
+      }
+      else if(val.equals("deliver")){
         ContractBusiness.deliverKey(id);
+      }
     }
   }
 
