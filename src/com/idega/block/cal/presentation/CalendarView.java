@@ -217,7 +217,7 @@ public class CalendarView extends Block{
 
 				if(isInGroup || iwc.isSuperAdmin() || 
 						getViewGroupID() == entry.getGroupID() ||
-						userID.intValue() == entry.getUserID()) {
+						(userID!=null && userID.intValue() == entry.getUserID())) {
 					Timestamp fStamp = entry.getDate();
 					Timestamp tStamp = entry.getEndDate();
 					//i is the current hour 
@@ -417,7 +417,7 @@ public class CalendarView extends Block{
 						
 						if(isInGroup || iwc.isSuperAdmin() || 
 								getViewGroupID() == entry.getGroupID() ||
-								userID.intValue() == entry.getUserID()) {
+								(userID!=null && userID.intValue() == entry.getUserID()) ) {
 							Timestamp fStamp = entry.getDate();
 							Timestamp ttStamp = entry.getEndDate();
 							if(j <= ttStamp.getHours() && j >= fStamp.getHours()) {
@@ -627,7 +627,7 @@ public class CalendarView extends Block{
 				}
 				if(isInGroup || iwc.isSuperAdmin() || 
 						getViewGroupID() == entry.getGroupID() ||
-						userID.intValue() == entry.getUserID()) {
+						(userID!=null && userID.intValue() == entry.getUserID())) {
 					String headline = getEntryHeadline(entry);
 					Link headlineLink = new Link(headline);
 					headlineLink.addParameter(ACTION,OPEN);
