@@ -333,7 +333,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			//UPDATE ALWAYS UNLESS IS READ ONLY
 			wrId = ((Integer)report.getPrimaryKey()).intValue();
 			
-			if (report != null && !isWorkReportReadOnly(wrId)) {
+			if (!isWorkReportReadOnly(wrId)) {
 				createOrUpdateLeagueWorkReportGroupsForYear(year);
 				
 				if(!justCreated ) {
@@ -1358,7 +1358,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
   public WorkReportGroup getMainBoardWorkReportGroup(int year)  {
     String mainBoardName  = getIWApplicationContext().getApplication().getBundle(ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.WR_MAIN_BOARD_NAME);
+    
+    
     WorkReportGroup group = findWorkReportGroupByNameAndYear(mainBoardName, year);
+    
+    
     return group;
   }
   
@@ -1915,17 +1919,19 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   }
   
   /**
+   * If there are no date limits set to the workreports this returns true otherwize the year must be
+   * within the other two.
 	 * @param year
 	 * @return
 	 */
 	private boolean isWorkReportYearWithinYearLimits(int year) {
 		Date fromDate = getWorkReportOpenFromDate();
 		Date toDate = getWorkReportOpenToDate();
-		
 		if(fromDate!=null && toDate!=null) {
-			return ( (year==fromDate.getYear()) || (year==toDate.getYear()) );
+			//check if we are in the allowed timespan
+			return ( year >= fromDate.getYear() && year<=toDate.getYear() );				
 		}
-		else return true;//no limit set
+		return true;
 		
 	}
 
