@@ -44,20 +44,26 @@ public abstract class AccountingBlock extends CommuneBlock {
 	private AccountingBusiness business;
 	private AccountingSession session;
 	
-	public void main(IWContext iwc) throws Exception{
+	
+	public void _main(IWContext iwc) throws Exception{
 		setResourceBundle(getResourceBundle(iwc));
 		business = getAccountingBusiness(iwc);
 		session = getAccountingSession(iwc);
-
+		super._main(iwc);
+	}
+	
+	public void main(IWContext iwc) throws Exception{
 		init(iwc);
 	}
 	
 	/**
-	 * Override this method instead of the main method from Block.
+	 * This method can be overridden instead of the main method from Block.
 	 * @param iwc
 	 * @throws Exception
 	 */
-	public abstract void init(IWContext iwc) throws Exception;
+	public void init(IWContext iwc) throws Exception{
+		//Does nothing
+	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
