@@ -25,8 +25,8 @@ import is.idega.idegaweb.travel.interfaces.Booking;
 public class CarRentalBookingBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.travel.interfaces.Booking, CarRentalBooking {
 
   GeneralBooking _booking;
+
   private static String TABLE_NAME = "TB_CAR_BOOKING";
-  
   private static String COLUMN_PICKUP_TIME = "PICKUP_TIME";
   private static String COLUMN_DROPOFF_PLACE_ID = "DROPOFF_PLACE_ID";
   private static String COLUMN_DROPOFF_TIME = "DROPOFF_TIME";
@@ -38,11 +38,10 @@ public class CarRentalBookingBMPBean extends com.idega.data.GenericEntity implem
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addAttribute(COLUMN_PICKUP_TIME, "pickup time", true, true, Timestamp.class);
-    addAttribute(COLUMN_DROPOFF_PLACE_ID, "dropoff place", true, true, PickupPlace.class);
-		addAttribute(COLUMN_DROPOFF_TIME, "dropoff time", true, true, Timestamp.class);
+    addAttribute(COLUMN_DROPOFF_PLACE_ID, "dropoff place", true, true, Integer.class, "many_to_one", PickupPlace.class);
+	addAttribute(COLUMN_DROPOFF_TIME, "dropoff time", true, true, Timestamp.class);
   }
   public String getEntityName() {
-  	System.out.println("CarRentalBookingBMPBEan : gettingEntityName = "+TABLE_NAME);
     return TABLE_NAME;
   }
 
