@@ -1351,8 +1351,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     return true;
   }
   
-  private void updateWorkReportData(int workReportId) throws FinderException, IDOException{
+  public void updateWorkReportData(int workReportId) throws FinderException, IDOException, RemoteException {
     Collection members;
+    Map groupIdUserIds = new HashMap();
     members = getAllWorkReportMembersForWorkReportId(workReportId);
     // create map: member as key, leagues as value 
     Map leagueCountMap = new HashMap();
@@ -1361,26 +1362,40 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     Iterator membersIterator = members.iterator();
     while (membersIterator.hasNext())  {
       WorkReportMember member = (WorkReportMember) membersIterator.next();
-      try {
-        Iterator leagues = member.getLeaguesForMember().iterator();
-        List leaguesList = new ArrayList();
-        // if there is at least one league the member is a player
-        if (leagues.hasNext())  {
-          playersCount++;
+      Iterator leagues = member.getLeaguesForMember().iterator();
+      boolean isPlayer = false;
+      while (leagues.hasNext()) {
+        WorkReportGroup league = (WorkReportGroup) leagues.next();
+        Integer groupId = league.getGroupId();
+        // use caching
+        // get all users that are players of that league
+        List userPks = (List) groupIdUserIds.get(groupId);
+        if (userPks == null) {
+          Group group = getGroupHome().findByPrimaryKey(groupId);
+          Collection groupTypes = new ArrayList(1);
+          groupTypes.add(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
+          Collection users = getGroupBusiness().getUsersFromGroupRecursive(group, groupTypes, false);
+          List userIds = new ArrayList();
+          Iterator userIterator = users.iterator();
+          while (userIterator.hasNext())  {
+            Integer userId = (Integer) ( (User) userIterator.next() ).getPrimaryKey();
+            userIds.add(userId);
+          }
+          groupIdUserIds.put(groupId, userIds);
+          userPks = userIds;
         }
-        while (leagues.hasNext()) {
-          WorkReportGroup league = (WorkReportGroup) leagues.next();
-          String leagueName = league.getName();
-          leaguesList.add(leagueName);
-          Integer count = (Integer) leagueCountMap.get(leagueName);
-          count = (count == null) ? null : new Integer( (count.intValue()) + 1 );
-          leagueCountMap.put(leagueName, count);
+        // is the current member a player within the current league?
+        Integer userId = new Integer(member.getUserId());
+        if (userPks.contains(userId)) {
+          isPlayer = true;
+          Integer leagueId = (Integer) league.getPrimaryKey();
+          Integer count = (Integer) leagueCountMap.get(leagueId);
+          count = (count == null) ? new Integer(1) : new Integer( (count.intValue()) + 1 );
+          leagueCountMap.put(leagueId, count);
         }
       }
-      catch (IDOException ex) {
-        System.err.println("[WorkReportMemberEditor] Can't get leagues. Message is: " + 
-          ex.getMessage());
-        ex.printStackTrace(System.err);
+      if (isPlayer) {
+        playersCount++;
       }
     }
     WorkReport workReport = getWorkReportById(workReportId);
@@ -1396,8 +1411,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     while (iterator.hasNext())  {
       WorkReportDivisionBoard board = (WorkReportDivisionBoard) iterator.next();
       WorkReportGroup workReportGroup = board.getLeague();
-      String leagueName = workReportGroup.getName();
-      Integer number = (Integer) leagueCountMap.get(leagueName);
+      Integer leagueId = (Integer) workReportGroup.getPrimaryKey();
+      Integer number = (Integer) leagueCountMap.get(leagueId);
       if (number == null) {
         board.setNumberOfPlayers(0);  
       }
