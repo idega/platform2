@@ -1260,16 +1260,19 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					contract.remove();
 				}
 				application.setApplicationStatus(getStatusRejected());
+				application.setRejectionDate(new IWTimestamp().getDate());
 				changeCaseStatus(application, getCaseStatusInactive().getStatus(), performer);
 			}
 			else if (newStatus == getStatusAccepted()) {
 				t.begin();
 				application.setApplicationStatus(getStatusAccepted());
+				application.setRejectionDate(null);
 				changeCaseStatus(application, getCaseStatusGranted().getStatus(), performer);
 			}
 			else if (newStatus == getStatusDeleted()) {
 				t.begin();
 				application.setApplicationStatus(getStatusDeleted());
+				application.setRejectionDate(new IWTimestamp().getDate());
 				changeCaseStatus(application, getCaseStatusDeleted().getStatus(), performer);
 			}
 			else {
