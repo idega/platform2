@@ -153,14 +153,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       }
     }
 
-//    // does the user want to create a new entry?
-//    if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
-//      WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
-//      if (iwc.isParameterSet(SSN)) {
-//        String personalId = iwc.getParameter(SSN);
-//        createWorkReportMember(personalId, iwc);
-//      }
-//    }  
+    // does the user want to create a new entry?
+    if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
+      return ACTION_SHOW_NEW_ENTRY;
+    }  
     // does the user want to modify an existing entity? 
     if (iwc.isParameterSet(ConverterConstants.EDIT_ENTITY_SUBMIT_KEY)) {
       WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
@@ -816,6 +812,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         record = home.create();
         record.setReportId(getWorkReportId());
         record.setAccountKeyId(accountKeyId.intValue());
+        record.setWorkReportGroupId(groupId.intValue());
         // add this new record to the matrix
         leagueKeyMatrix.put(groupId, accountKeyId, record);
       }
