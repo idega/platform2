@@ -5,17 +5,23 @@
 package se.idega.idegaweb.commune.accounting.presentation;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection; 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
+import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
+import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
@@ -24,7 +30,9 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolHome;
+import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
+import com.idega.core.location.data.Commune;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -45,12 +53,13 @@ public class RegulationSearchPanel extends AccountingBlock {
 	private static final String KEY_PROVIDER = "provider";
 	private static final String KEY_PLACING = "placing";	
 	private static final String KEY_VALID_DATE = "valid_date";	
-	private static final String KEY_SEARCH = "search";	
+	private static final String KEY_SEARCH = "search";		
 	
 	private static String PAR_PROVIDER = KEY_PROVIDER; 
 	private static final String PAR_PLACING = KEY_PLACING;	
 	private static final String PAR_VALID_DATE = KEY_VALID_DATE; 
 	private static final String PAR_ENTRY_PK = "PAR_ENTRY_PK";
+
 	
 	public static final String SEARCH_REGULATION = "ACTION_SEARCH_REGULATION";
 	
@@ -63,6 +72,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 	private String _currentPlacing = null;
 	private String _placingErrorMessage = null;
 	private String _dateFormatErrorMessage = null;
+	private PostingException _postingException = null;
 	
 		
 	//Force the request to be processed at once.
@@ -89,6 +99,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 	 * @see se.idega.idegaweb.commune.accounting.presentation.AccountingBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
+				
 		process(iwc); //This should not be necessary, as the request will always be processed by now...
 
 		maintainParameter(PAR_PLACING);
@@ -143,8 +154,20 @@ public class RegulationSearchPanel extends AccountingBlock {
 				String regId = iwc.getParameter(PAR_ENTRY_PK);
 				//regId and _currentRegulation will get a value only after choosing a regulation (by clicking a link)
 				if (regId != null){
+					SchoolType type = null;
 					_currentRegulation = getRegulation(regId);
-					_currentPosting = getPosting(iwc, getCurrentSchoolCategory(iwc), _currentRegulation, new Provider(_currentSchool), _validDate);				
+					try{
+						RegulationsBusiness biz = (RegulationsBusiness) IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
+						type = biz.getSchoolType(_currentRegulation);
+					}catch(RemoteException ex){
+						ex.printStackTrace();
+					}
+					try{
+						_currentPosting = getPosting(iwc, getCurrentSchoolCategory(iwc), type, _currentRegulation, new Provider(_currentSchool), _validDate);	
+					}catch (PostingException ex){
+						_postingException = ex;
+					}
+									
 				}
 				if (_currentRegulation!= null){
 					_currentPlacing = _currentRegulation.getName();
@@ -256,6 +279,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 		return table;
 	}
 
+
 	/**
 	 *	Does the search in the regulations and return them as a Collection
 	 */
@@ -321,48 +345,68 @@ public class RegulationSearchPanel extends AccountingBlock {
 	 * @param date
 	 * @return the Posting strings as String[]
 	 */
-	private String[] getPosting(IWContext iwc, SchoolCategory TODO_USE_THIS_PARAMETER, Regulation reg, Provider provider, Date date) {
+	private String[] getPosting(IWContext iwc, SchoolCategory category, SchoolType type, Regulation reg, Provider provider, Date date) throws PostingException{
 		
+
 		String ownPosting = null, doublePosting = null;
 		if (reg != null){
 			int regSpecType = new Integer("" + reg.getRegSpecType().getPrimaryKey()).intValue();
 		
-			int catId =  1; //new Integer("" + category.getPrimaryKey()).intValue();
-	
 			try{
+				Commune commune = provider.getSchool().getCommune();
+				CommuneBelongingTypeHome home = (CommuneBelongingTypeHome) IDOLookup.getHome(CommuneBelongingType.class);
+				CommuneBelongingType cbt = commune.getIsDefault() ? home.findHomeCommune() : home.findNoHomeCommune();
+				
+				
+				ExportDataMapping categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).
+					findByPrimaryKeyIDO(category.getPrimaryKey());				
 				//Set the posting strings
 				PostingBusiness postingBusiness = (PostingBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), PostingBusiness.class);
 		
 				PostingParameters parameters;
-				parameters = postingBusiness.getPostingParameter(date, catId, regSpecType, 0, 0);
+				parameters = postingBusiness.getPostingParameter(date, ((Integer) type.getPrimaryKey()).intValue(), regSpecType, provider.getSchool().getManagementTypeId(), ((Integer) cbt.getPrimaryKey()).intValue());
 		
 				ownPosting = parameters.getPostingString();
 				ownPosting = postingBusiness.generateString(ownPosting, provider.getOwnPosting(), date);
-		//			ownPosting = postingBusiness.generateString(ownPosting, categoryPosting.getAccount(), date);
+				ownPosting = postingBusiness.generateString(ownPosting, categoryPosting.getAccount(), date);
 				postingBusiness.validateString(ownPosting,date);
 		
 				doublePosting = parameters.getDoublePostingString();
 				doublePosting = postingBusiness.generateString(doublePosting, provider.getDoublePosting(), date);
-		//			doublePosting = postingBusiness.generateString(doublePosting, categoryPosting.getCounterAccount(), date);
+				doublePosting = postingBusiness.generateString(doublePosting, categoryPosting.getCounterAccount(), date);
 				postingBusiness.validateString(doublePosting,date);
-			}catch(Exception ex){
+			}catch(NullPointerException ex){
 				ex.printStackTrace();
-	//		}catch(IDOLookupException ex){
-	//		}catch(CreateException ex){
-	//		}catch(RemoteException ex){
-	//		}catch(PostingException ex){
-	//		}catch(MissingMandatoryFieldException ex){
-	//		}catch(PostingParametersException ex){
-			}		
+				throw new PostingException("TODO...", ex.getMessage()); 
+			}catch(RemoteException ex){
+				ex.printStackTrace();
+				throw new PostingException("", ex.getMessage()); 				
+			}catch(FinderException ex){			
+				ex.printStackTrace();
+				throw new PostingException("", ex.getMessage()); 				
+			}catch(PostingException ex){
+				ex.printStackTrace();
+				throw new PostingException("", ex.getMessage()); 				
+			}catch(MissingMandatoryFieldException ex){
+				ex.printStackTrace();
+				throw new PostingException("", ex.getMessage()); 				
+			}catch(PostingParametersException ex){
+				ex.printStackTrace();
+				throw new PostingException("", ex.getMessage()); 				
+			}
 		}
 		return new String[] {ownPosting, doublePosting};
 	}
 			
+	
 	/**
 	 * 
 	 * @return the currently chosen posting strings as String[]
 	 */
-	public String[] getPosting(){
+	public String[] getPosting() throws PostingException{
+		if (_postingException != null){
+			throw _postingException;
+		}
 		return _currentPosting;
 	}	
 
@@ -371,7 +415,8 @@ public class RegulationSearchPanel extends AccountingBlock {
 	 * @param iwc
 	 * @return
 	 */
-	private Table getSearchForm(IWContext iwc){
+	private Table getSearchForm(IWContext iwc) throws PostingException{
+		
 		Collection providers = new ArrayList();		
 		try{
 			SchoolHome home = (SchoolHome) IDOLookup.getHome(School.class);				
@@ -386,7 +431,20 @@ public class RegulationSearchPanel extends AccountingBlock {
 		int row = 1;
 		
 		String currentSchoolId = _currentSchool != null ? "" + _currentSchool.getPrimaryKey() : "0";
-		addDropDown(table, PAR_PROVIDER, KEY_PROVIDER, providers, currentSchoolId, "getSchoolName", 1, row++);
+		addDropDown(table, PAR_PROVIDER, KEY_PROVIDER, providers, currentSchoolId, "getSchoolName", true, 1, row++);
+		
+//		Collection types = null;
+//		try{
+//			types = _currentSchool != null ? _currentSchool.getSchoolTypes() : new ArrayList();
+//		}catch(IDORelationshipException ex ){
+//			ex.printStackTrace();
+//		}
+
+//		if (! providers.isEmpty()){
+//			String currentTypeId = iwc.getParameter(PAR_TYPE) != null ? iwc.getParameter(PAR_TYPE) : "0";
+//			addDropDown(table, PAR_TYPE, KEY_TYPE, types, currentTypeId, "getName", false, 1, row++);
+//		}
+		
 		if (_placingErrorMessage != null){
 			table.add(getErrorText(_placingErrorMessage), 2, row);
 		}		
@@ -416,11 +474,13 @@ public class RegulationSearchPanel extends AccountingBlock {
 		_leftColMinWidth = minWidth;
 	}
 	
-	private Table addDropDown(Table table, String parameter, String key, Collection options, String selected, String method, int col, int row) {
+	
+	private Table addDropDown(Table table, String parameter, String key, Collection options, String selected, String method, boolean setToSubmit, int col, int row) {
 		DropdownMenu dropDown = getDropdownMenu(parameter, options, method);
+		dropDown.setToSubmit(setToSubmit);
 		dropDown.setSelectedElement(selected);
 		return addWidget(table, key, dropDown, col, row);		
-	}
+	}	
 	
 	private Table addField(Table table, String parameter, String key, String value, int col, int row, int width){
 		return addWidget(table, key, getTextInput(parameter, value, width), col, row);
