@@ -692,7 +692,7 @@ public class CarRentalBookingForm extends BookingForm {
   public Form getPublicBookingForm(IWContext iwc, Product product) throws RemoteException, FinderException {
 			try {
 				/** Not tested 100% here, but seems to work at other places... */
-				if (isFullyBooked(iwc, product, _stamp)) {
+				if (isFullyBooked(iwc, product, _stamp) || isUnderBooked(iwc, product, _stamp)) {
 					_useInquiryForm	= true;
 				}
 			} catch (CreateException e) {

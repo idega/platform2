@@ -410,16 +410,16 @@ public class PublicBooking extends TravelBlock  {
 //				float price = bf.getOrderPrice(iwc, product, stamp);
 
 //        TourBookingForm tbf = new TourBookingForm(iwc,product);
-        int bookingId = bf.saveBooking(iwc); // WAS handleInsert(iwc), changed 14.10.2002, because Booking has already been checked, and verified
-        gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
-        gBooking.setRefererUrl(getRefererUrl(iwc));
-        gBooking.store();
+//        int bookingId = bf.saveBooking(iwc); // WAS handleInsert(iwc), changed 14.10.2002, because Booking has already been checked, and verified
+        int bookingId = bf.handleInsert(iwc); // WAS handleInsert(iwc), changed 14.10.2002, because Booking has already been checked, and verified
 
         if (bookingId == BookingForm.inquirySent) {
           inquirySent = true;
           tm.commit();
         }else {
-          debug("commiting");
+          gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+          gBooking.setRefererUrl(getRefererUrl(iwc));
+          gBooking.store();
           tm.commit();
           success = true;
         }

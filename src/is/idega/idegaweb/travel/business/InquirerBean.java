@@ -66,15 +66,17 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
     return this.collectionToInqueryArray(getInquiryHome().findInqueries(serviceId, stamp,-1, unansweredOnly, travelAddress, orderBy ));
   }
 
-  public int sendInquery(String name,String email, IWTimestamp inqueryDate, int productId, int numberOfSeats, int bookingId, Reseller reseller)  throws RemoteException, FinderException, CreateException {
-    String sInquery = "Are the available seats this day";
+  public int sendInquery(String name,String email, IWTimestamp inqueryDate, int productId, int numberOfSeats, String comment, int bookingId, Reseller reseller)  throws RemoteException, FinderException, CreateException {
+  		if ( comment == null || comment.equals("")) {
+  			comment = "Are the available seats this day";
+  		}
     try {
       int returner = -1;
           Inquery inq = ((is.idega.idegaweb.travel.data.InqueryHome)com.idega.data.IDOLookup.getHome(Inquery.class)).create();
             inq.setAnswered(false);
             inq.setEmail(email);
             inq.setInqueryDate(inqueryDate.getTimestamp());
-            inq.setInquery(sInquery);
+            inq.setInquery(comment);
             inq.setInqueryPostDate(IWTimestamp.getTimestampRightNow());
             inq.setName(name);
             inq.setServiceID(productId);

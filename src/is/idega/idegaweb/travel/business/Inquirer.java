@@ -18,5 +18,5 @@ public interface Inquirer extends com.idega.business.IBOService
  public int[] getMultibleInquiriesNumber(is.idega.idegaweb.travel.data.Inquery p0)throws javax.ejb.FinderException,javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.presentation.Table getInquiryResponseError(com.idega.idegaweb.IWResourceBundle p0) throws java.rmi.RemoteException;
  public int getInqueredSeats(int p0,com.idega.util.IWTimestamp p1,boolean p2)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
- public int sendInquery(java.lang.String p0,java.lang.String p1,com.idega.util.IWTimestamp p2,int p3,int p4,int p5,com.idega.block.trade.stockroom.data.Reseller p6)throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public int sendInquery(java.lang.String p0,java.lang.String p1,com.idega.util.IWTimestamp p2,int p3,int p4,String comment, int p5,com.idega.block.trade.stockroom.data.Reseller p6)throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
 }

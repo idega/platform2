@@ -341,6 +341,7 @@ public class TourBookingForm extends BookingForm{
           table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
           table.add(comment, 2, row);
 
+          
 					row = addCreditcardInputForm(iwc, table, row);
 
 
@@ -1804,6 +1805,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
     String areaCode = iwc.getParameter("area_code");
     String email = iwc.getParameter("e-mail");
     String phone = iwc.getParameter("telephone_number");
+    String comment = iwc.getParameter(PARAMETER_COMMENT);
 
     String city = iwc.getParameter("city");
     String country = iwc.getParameter("country");
@@ -1836,7 +1838,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 			gBooking.setIsValid(false);
 			gBooking.store();
 	
-	    inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, stamp, _product.getID() , numberOfSeats, gBooking.getID(), _reseller);
+	    inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, stamp, _product.getID() , numberOfSeats, comment, gBooking.getID(), _reseller);
 	
 
       if (returnInquiryId) {
@@ -1927,6 +1929,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 		if (max > 0) {
 			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp);
 			if (currentBookings >= max) {
+				_useInquiryForm = true;
 				return true;	
 			}
 		}
@@ -1939,6 +1942,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 		if (min > 0) {
 			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp);
 			if (currentBookings < min) {
+				_useInquiryForm = true;
 				return true;	
 			}
 		}

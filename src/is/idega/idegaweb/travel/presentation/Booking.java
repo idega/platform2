@@ -421,7 +421,7 @@ public class Booking extends TravelManager {
 
 
           table.add(Text.BREAK ,1,row);
-          table.add(getBookingForm(iwc),1,row);
+          table.add(getBookingForm(iwc, bf),1,row);
 
       }else {
         if (isExpired) {
@@ -828,16 +828,16 @@ public class Booking extends TravelManager {
       return form;
   }
 
-  private Form getBookingForm(IWContext iwc) throws Exception{
+  private Form getBookingForm(IWContext iwc, BookingForm bf) throws Exception{
 
-    BookingForm bf = super.getServiceHandler(iwc).getBookingForm(iwc, product);
+    //BookingForm bf = super.getServiceHandler(iwc).getBookingForm(iwc, product);
 //    TourBookingForm tbf = new TourBookingForm(iwc,product);
     try {
 //      if (reseller != null) tbf.setReseller(reseller);
       bf.setTimestamp(stamp);
       if (_booking != null)  {
-      	bf.setBooking(_booking);
-      	bf.setTimestamp(new IWTimestamp(_booking.getBookingDate()));	
+      		bf.setBooking(_booking);
+      		bf.setTimestamp(new IWTimestamp(_booking.getBookingDate()));	
       }
       return bf.getBookingForm(iwc);
     }catch (Exception e) {

@@ -673,7 +673,10 @@ public abstract class BookingForm extends TravelManager{
 	protected int addCreditcardInputForm(IWContext iwc, Table table, int row) {
 		// Virkar, vantar HTTPS
 		
-		  TextInput ccNumber = new TextInput(this.parameterCCNumber);
+		if (this._useInquiryForm) {
+		  table.add(new HiddenInput(this.parameterInquiry,"true"), 1, row);
+		}else {
+			TextInput ccNumber = new TextInput(this.parameterCCNumber);
 		    ccNumber.setMaxlength(16);
 		    ccNumber.setLength(20);
 		  TextInput ccMonth = new TextInput(this.parameterCCMonth);
@@ -720,6 +723,7 @@ public abstract class BookingForm extends TravelManager{
 					table.add(cvcLink, 2, row);
 				}
 		  }
+		} 
 		return row;
 	}
   
@@ -2162,6 +2166,7 @@ public abstract class BookingForm extends TravelManager{
     String areaCode = iwc.getParameter("area_code");
     String email = iwc.getParameter("e-mail");
     String phone = iwc.getParameter("telephone_number");
+    String comment = iwc.getParameter(this.PARAMETER_COMMENT);
 
     String city = iwc.getParameter("city");
     String country = iwc.getParameter("country");
@@ -2198,7 +2203,7 @@ public abstract class BookingForm extends TravelManager{
         booking.setIsValid(false);
         booking.store();
 
-        inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, fromStamp, _product.getID() , numberOfSeats, booking.getID(), _reseller);
+        inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, fromStamp, _product.getID() , numberOfSeats, comment, booking.getID(), _reseller);
 
         fromStamp.addDays(1);
         ++counter;
@@ -2882,6 +2887,7 @@ public abstract class BookingForm extends TravelManager{
 	  	if (max > 0 ) {
 				int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp);
 				if (currentBookings >= max) {
+					_useInquiryForm = true;
 					return true;	
 				}
 	  	}
@@ -2903,6 +2909,7 @@ public abstract class BookingForm extends TravelManager{
 	  	if (min > 0 ) {
 				int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp);
 				if (currentBookings < min) {
+					_useInquiryForm = true;
 					return true;	
 				}
 	  	}
