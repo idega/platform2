@@ -11,12 +11,12 @@ public interface ChildCareApplicationHome extends com.idega.data.IDOHome
  public java.util.Collection findAllByAreaAndApplicationStatus(java.lang.Object p0,java.lang.String[] p1,java.lang.String p2,java.sql.Date p3,java.sql.Date p4,boolean p5)throws javax.ejb.FinderException;
  public java.util.Collection findAllCasesByProviderAndNotInStatus(int p0,java.lang.String[] p1,int p2,int p3)throws javax.ejb.FinderException;
  public java.util.Collection findAllCasesByProviderAndNotInStatus(int p0,int p1,java.sql.Date p2,java.sql.Date p3,java.lang.String[] p4,int p5,int p6)throws javax.ejb.FinderException;
+ public java.util.Collection findAllCasesByProviderAndStatus(int p0,com.idega.block.process.data.CaseStatus p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllCasesByProviderAndStatus(com.idega.block.school.data.School p0,com.idega.block.process.data.CaseStatus p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllCasesByProviderAndStatus(com.idega.block.school.data.School p0,java.lang.String p1)throws javax.ejb.FinderException;
- public java.util.Collection findAllCasesByProviderAndStatus(int p0,com.idega.block.process.data.CaseStatus p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllCasesByProviderAndStatus(int p0,java.lang.String p1,int p2,int p3)throws javax.ejb.FinderException;
- public java.util.Collection findAllCasesByProviderStatus(int p0,java.lang.String[] p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllCasesByProviderStatus(int p0,java.lang.String p1)throws javax.ejb.FinderException;
+ public java.util.Collection findAllCasesByProviderStatus(int p0,java.lang.String[] p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllCasesByProviderStatusNotRejected(int p0,java.lang.String p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllCasesByStatus(java.lang.String p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllCasesByUserAndStatus(com.idega.user.data.User p0,java.lang.String p1)throws javax.ejb.FinderException;
@@ -39,22 +39,24 @@ public interface ChildCareApplicationHome extends com.idega.data.IDOHome
  public java.util.Collection findApplicationsByProviderAndApplicationStatus(int p0,java.lang.String[] p1,java.lang.String p2)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndBeforeDate(int p0,java.sql.Date p1,java.lang.String[] p2)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndDate(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
- public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1,java.lang.String p2,int p3,int p4)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1,int p2,int p3)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1,java.lang.String p2)throws javax.ejb.FinderException;
+ public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1,java.lang.String p2,int p3,int p4)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String p1)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String p1,int p2,int p3)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsInSchoolAreaByStatus(int p0,java.lang.String[] p1,int p2)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsWithoutPlacing()throws javax.ejb.FinderException;
  public ChildCareApplication findNewestApplication(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
  public ChildCareApplication findOldestApplication(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
+ public int getBruttoQueueByProviderAndChoiceNumber(int p0,int p1,java.lang.String p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException;
+ public int getBruttoQueueSizeInStatus(int p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException;
  public int getBruttoQueueSizeInStatus(int p0,java.lang.String p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException;
- public int getBruttoQueueSizeNotInStatus(int p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException;
+ public int getNettoQueueByProviderAndChoiceNumber(int p0,int p1,java.lang.String p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException;
+ public int getNettoQueueSizeInStatus(int p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException;
  public int getNettoQueueSizeInStatus(int p0,java.lang.String p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException;
- public int getNettoQueueSizeNotInStatus(int p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException;
- public int getNumberOfActiveApplications(int p0,java.lang.String p1)throws com.idega.data.IDOException;
  public int getNumberOfActiveApplications(int p0)throws com.idega.data.IDOException;
+ public int getNumberOfActiveApplications(int p0,java.lang.String p1)throws com.idega.data.IDOException;
  public int getNumberOfApplications(int p0,java.lang.String p1)throws com.idega.data.IDOException;
  public int getNumberOfApplications(int p0,java.lang.String[] p1)throws com.idega.data.IDOException;
  public int getNumberOfApplications(int p0,java.lang.String[] p1,int p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException;
@@ -70,11 +72,12 @@ public interface ChildCareApplicationHome extends com.idega.data.IDOHome
  public int getPositionInQueue(java.sql.Date p0,int p1,java.lang.String p2)throws com.idega.data.IDOException;
  public int getPositionInQueueByDate(int p0,java.sql.Date p1,int p2,java.lang.String[] p3)throws com.idega.data.IDOException;
  public int getPositionInQueueByDate(int p0,java.sql.Date p1,int p2,java.lang.String p3)throws com.idega.data.IDOException;
+ public int getQueueByProviderAndChoiceNumber(int p0,int p1,java.lang.String p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException;
  public int getQueueSizeByAreaInStatus(int p0,java.lang.String p1)throws com.idega.data.IDOException;
  public int getQueueSizeByAreaNotInStatus(int p0,java.lang.String[] p1)throws com.idega.data.IDOException;
  public int getQueueSizeInStatus(int p0,java.lang.String p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException;
+ public int getQueueSizeInStatus(int p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException;
  public int getQueueSizeInStatus(int p0,java.lang.String p1)throws com.idega.data.IDOException;
- public int getQueueSizeNotInStatus(int p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException;
  public int getQueueSizeNotInStatus(int p0,java.lang.String[] p1)throws com.idega.data.IDOException;
 
 }

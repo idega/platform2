@@ -55,6 +55,13 @@ public java.util.Collection findAllCasesByProviderAndNotInStatus(int p0,int p1,j
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllCasesByProviderAndStatus(int p0,com.idega.block.process.data.CaseStatus p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderAndStatus(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllCasesByProviderAndStatus(com.idega.block.school.data.School p0,com.idega.block.process.data.CaseStatus p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderAndStatus(p0,p1);
@@ -69,13 +76,6 @@ public java.util.Collection findAllCasesByProviderAndStatus(com.idega.block.scho
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCasesByProviderAndStatus(int p0,com.idega.block.process.data.CaseStatus p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderAndStatus(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
 public java.util.Collection findAllCasesByProviderAndStatus(int p0,java.lang.String p1,int p2,int p3)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderAndStatus(p0,p1,p2,p3);
@@ -83,14 +83,14 @@ public java.util.Collection findAllCasesByProviderAndStatus(int p0,java.lang.Str
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCasesByProviderStatus(int p0,java.lang.String[] p1)throws javax.ejb.FinderException{
+public java.util.Collection findAllCasesByProviderStatus(int p0,java.lang.String p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findAllCasesByProviderStatus(int p0,java.lang.String p1)throws javax.ejb.FinderException{
+public java.util.Collection findAllCasesByProviderStatus(int p0,java.lang.String[] p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
@@ -251,13 +251,6 @@ public java.util.Collection findApplicationsByProviderAndDate(int p0,java.sql.Da
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1,java.lang.String p2,int p3,int p4)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindApplicationsByProviderAndStatus(p0,p1,p2,p3,p4);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
 public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindApplicationsByProviderAndStatus(p0,p1);
@@ -275,6 +268,13 @@ public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang
 public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1,java.lang.String p2)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindApplicationsByProviderAndStatus(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1,java.lang.String p2,int p3,int p4)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindApplicationsByProviderAndStatus(p0,p1,p2,p3,p4);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -326,6 +326,20 @@ public ChildCareApplication findOldestApplication(int p0,java.sql.Date p1)throws
  }
 
 
+public int getBruttoQueueByProviderAndChoiceNumber(int p0,int p1,java.lang.String p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetBruttoQueueByProviderAndChoiceNumber(p0,p1,p2,p3,p4);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getBruttoQueueSizeInStatus(int p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetBruttoQueueSizeInStatus(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public int getBruttoQueueSizeInStatus(int p0,java.lang.String p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetBruttoQueueSizeInStatus(p0,p1,p2,p3);
@@ -333,9 +347,16 @@ public int getBruttoQueueSizeInStatus(int p0,java.lang.String p1,java.sql.Date p
 	return theReturn;
 }
 
-public int getBruttoQueueSizeNotInStatus(int p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException{
+public int getNettoQueueByProviderAndChoiceNumber(int p0,int p1,java.lang.String p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetBruttoQueueSizeNotInStatus(p0,p1,p2,p3);
+	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetNettoQueueByProviderAndChoiceNumber(p0,p1,p2,p3,p4);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getNettoQueueSizeInStatus(int p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetNettoQueueSizeInStatus(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
@@ -347,9 +368,9 @@ public int getNettoQueueSizeInStatus(int p0,java.lang.String p1,java.sql.Date p2
 	return theReturn;
 }
 
-public int getNettoQueueSizeNotInStatus(int p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException{
+public int getNumberOfActiveApplications(int p0)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetNettoQueueSizeNotInStatus(p0,p1,p2,p3);
+	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetNumberOfActiveApplications(p0);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
@@ -357,13 +378,6 @@ public int getNettoQueueSizeNotInStatus(int p0,java.lang.String[] p1,java.sql.Da
 public int getNumberOfActiveApplications(int p0,java.lang.String p1)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetNumberOfActiveApplications(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return theReturn;
-}
-
-public int getNumberOfActiveApplications(int p0)throws com.idega.data.IDOException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetNumberOfActiveApplications(p0);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
@@ -473,6 +487,13 @@ public int getPositionInQueueByDate(int p0,java.sql.Date p1,int p2,java.lang.Str
 	return theReturn;
 }
 
+public int getQueueByProviderAndChoiceNumber(int p0,int p1,java.lang.String p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetQueueByProviderAndChoiceNumber(p0,p1,p2,p3,p4);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 public int getQueueSizeByAreaInStatus(int p0,java.lang.String p1)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetQueueSizeByAreaInStatus(p0,p1);
@@ -494,16 +515,16 @@ public int getQueueSizeInStatus(int p0,java.lang.String p1,java.sql.Date p2,java
 	return theReturn;
 }
 
-public int getQueueSizeInStatus(int p0,java.lang.String p1)throws com.idega.data.IDOException{
+public int getQueueSizeInStatus(int p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetQueueSizeInStatus(p0,p1);
+	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetQueueSizeInStatus(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
 
-public int getQueueSizeNotInStatus(int p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3)throws com.idega.data.IDOException{
+public int getQueueSizeInStatus(int p0,java.lang.String p1)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetQueueSizeNotInStatus(p0,p1,p2,p3);
+	int theReturn = ((ChildCareApplicationBMPBean)entity).ejbHomeGetQueueSizeInStatus(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }
