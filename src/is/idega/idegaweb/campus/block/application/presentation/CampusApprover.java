@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.34 2002/06/20 16:24:55 palli Exp $
+ * $Id: CampusApprover.java,v 1.35 2002/07/03 10:53:26 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1667,20 +1667,21 @@ public class CampusApprover extends Block {
     List L = listOfSubjects;
     DropdownMenu drp = new DropdownMenu("app_subject_id");
     drp.addMenuElement(-1,iwrb.getLocalizedString("subject","Subject"));
-    if(L!=null){
+    drp.addMenuElement(-99,iwrb.getLocalizedString("all_subject","All"));
+    if (L!=null) {
       ApplicationSubject AS;
       int len = L.size();
       for (int i = 0; i < len; i++) {
-	AS = (ApplicationSubject) L.get(i);
-	drp.addMenuElement(AS.getID(),AS.getName());
+      	AS = (ApplicationSubject) L.get(i);
+      	drp.addMenuElement(AS.getID(),AS.getName());
       }
       Edit.setStyle(drp);
-      if(selected.equals("-1")){
-	this.iSubjectId =((ApplicationSubject) L.get(0)).getID();
-	drp.setSelectedElement(String.valueOf(iSubjectId));
+      if(selected.equals("-1")) {
+      	this.iSubjectId =((ApplicationSubject) L.get(0)).getID();
+      	drp.setSelectedElement(String.valueOf(iSubjectId));
       }
       else
-	drp.setSelectedElement(selected);
+      	drp.setSelectedElement(selected);
     }
     return drp;
   }

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.17 2002/04/06 18:52:26 tryggvil Exp $
+ * $Id: ApplicationFinder.java,v 1.18 2002/07/03 10:53:10 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -47,7 +47,11 @@ public class ApplicationFinder {
   public static List listOfApplicationInSubject(int subjectId,String status){
     try {
       Application A = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy();
-      String sql = "select * from "+A.getEntityName()+" where "+com.idega.block.application.data.ApplicationBMPBean.getSubjectIdColumnName()+" = "+subjectId +" and "+com.idega.block.application.data.ApplicationBMPBean.getStatusColumnName()+"='"+status+"'";
+      String sql = null;
+      if (subjectId != -99)
+        sql = "select * from "+A.getEntityName()+" where " +com.idega.block.application.data.ApplicationBMPBean.getSubjectIdColumnName()+" = "+subjectId +" and "+com.idega.block.application.data.ApplicationBMPBean.getStatusColumnName()+"='"+status+"'";
+      else
+        sql = "select * from "+A.getEntityName()+" where " +com.idega.block.application.data.ApplicationBMPBean.getStatusColumnName()+"='"+status+"'";
       //System.err.println(sql);
       return(EntityFinder.findAll(A,sql));
 
