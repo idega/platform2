@@ -85,7 +85,7 @@ public class PageCounter extends Block {
         item = (PageStatistics) pageList.next();
         thePage = pHome.findByPrimaryKey(new Integer(item.getPageId()));
         page.add(thePage.getName(),1,++y);
-        page.add(String.valueOf(item.getSessions()),2,y);
+        page.add(String.valueOf(item.getHits()),2,y);
       }
 
       add(page);
