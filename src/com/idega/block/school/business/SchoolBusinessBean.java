@@ -203,17 +203,27 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			throw new java.rmi.RemoteException(ce.getMessage());
 		}
 		
+		if(area_id > 0)
+			newSchool.setSchoolAreaId(area_id);
+		if(address!=null)
+			newSchool.setSchoolAddress(address);
+		if(info!=null)
+			newSchool.setSchoolInfo(info);
+		if(keycode!=null)
+			newSchool.setSchoolKeyCode(keycode);
+		if(latitude!=null)
+			newSchool.setSchoolLatitude(latitude);
+		if(longitude!=null)
+			newSchool.setSchoolLongitude(longitude);
+		if(name!=null)
+			newSchool.setSchoolName(name);
+		if(phone!=null)
+			newSchool.setSchoolPhone(phone);
+		if(ziparea!=null)
+			newSchool.setSchoolZipArea(ziparea);
+		if(zipcode!=null)
+			newSchool.setSchoolZipCode(zipcode);
 		
-		newSchool.setSchoolAddress(address);
-		newSchool.setSchoolAreaId(area_id);
-		newSchool.setSchoolInfo(info);
-		newSchool.setSchoolKeyCode(keycode);
-		newSchool.setSchoolLatitude(latitude);
-		newSchool.setSchoolLongitude(longitude);
-		newSchool.setSchoolName(name);
-		newSchool.setSchoolPhone(phone);
-		newSchool.setSchoolZipArea(ziparea);
-		newSchool.setSchoolZipCode(zipcode);
 		newSchool.store();
 		if (type_ids != null)
 			newSchool.addSchoolTypesRemoveOther(type_ids);
