@@ -22,7 +22,6 @@ import com.idega.util.text.TextSoap;
 import com.idega.util.text.TextStyler;
 
 public class Box extends Block implements Builderaware {
-
 	private int _boxID = -1;
 	private int _boxCategoryID = -1;
 	private boolean _isAdmin = false;
@@ -66,6 +65,7 @@ public class Box extends Block implements Builderaware {
 	private String _hoverStyle;
 	private String _name;
 	private String _highlightColor = "#0000FF";
+	private boolean _showOnlyBelongingToUser = false;
 
 	private String _target;
 
@@ -172,7 +172,7 @@ public class Box extends Block implements Builderaware {
 		if (categories != null) {
 			switch (_layout) {
 				case BOX_VIEW :
-					getBoxView(box, categories, boxTable);
+					getBoxView(box, categories, boxTable,iwc);
 					break;
 				case CATEGORY_VIEW :
 					boxTable.setWidth(_boxWidth);
@@ -189,7 +189,7 @@ public class Box extends Block implements Builderaware {
 		return boxTable;
 	}
 
-	private void getBoxView(BoxEntity box, BoxCategory[] categories, Table boxTable) {
+	private void getBoxView(BoxEntity box, BoxCategory[] categories, Table boxTable, IWContext iwc) {
 		int row = 1;
 		int column = 1;
 
@@ -226,7 +226,13 @@ public class Box extends Block implements Builderaware {
 
 			int linkRow = 1;
 
-			BoxLink[] links = BoxFinder.getLinksInBox(box, categories[a]);
+			BoxLink[] links = null;
+			System.out.println("Getting links in getBoxView()");
+			System.out.println("_showOnlyBelongingToUser = " + _showOnlyBelongingToUser);
+			if (_showOnlyBelongingToUser)
+				links = BoxFinder.getLinksInBoxByUser(box, categories[a],iwc.getUserId());
+			else
+				links = BoxFinder.getLinksInBox(box, categories[a]);
 			int linksLength = _numberOfDisplayed;
 			if (links != null) {
 				if (links.length < linksLength) {
@@ -312,7 +318,15 @@ public class Box extends Block implements Builderaware {
 		if (_boxCategoryID != -1) {
 			int linkRow = 1;
 
-			BoxLink[] links = BoxFinder.getLinksInBox(box, category);
+			BoxLink[] links = null;
+			System.out.println("Getting links in getCategoryView()");
+			System.out.println("_showOnlyBelongingToUser = " + _showOnlyBelongingToUser);
+			
+			if (_showOnlyBelongingToUser)
+				links = BoxFinder.getLinksInBoxByUser(box, category,iwc.getUserId());
+			else
+				links = BoxFinder.getLinksInBox(box, category);
+			
 			if (links != null && category != null) {
 				Table linksTable = new Table();
 				linksTable.setCellpadding(0);
@@ -380,7 +394,14 @@ public class Box extends Block implements Builderaware {
 
 			int linkRow = 2;
 
-			BoxLink[] links = BoxFinder.getLinksInBox(box, categories[a]);
+			BoxLink[] links = null;
+			System.out.println("Getting links in getCollectionView()");
+			System.out.println("_showOnlyBelongingToUser = " + _showOnlyBelongingToUser);
+			
+			if (_showOnlyBelongingToUser)
+				links = BoxFinder.getLinksInBoxByUser(box, categories[a], iwc.getUserId());
+			else
+				links = BoxFinder.getLinksInBox(box, categories[a]);
 			if (links != null) {
 				for (int b = 0; b < links.length; b++) {
 					Link link = getLink(links[b]);
@@ -579,6 +600,14 @@ public class Box extends Block implements Builderaware {
 
 	public void setTarget(String target) {
 		_target = target;
+	}
+
+	public void setShowOnlyBelongingToUser(boolean show) {
+		_showOnlyBelongingToUser = show;
+	}
+	
+	public boolean getShowOnlyBelongingToUser() {
+		return _showOnlyBelongingToUser;
 	}
 
 	/**
