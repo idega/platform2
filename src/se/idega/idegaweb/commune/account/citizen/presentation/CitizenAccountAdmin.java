@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.9 2002/11/14 15:36:05 staffan Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.10 2002/11/14 19:17:16 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -30,11 +30,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/14 15:36:05 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/14 19:17:16 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -42,19 +42,18 @@ public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_APPROVE = 2;
 	private final static int ACTION_REJECT = 3;
 
-    private final static String ADDRESS_DEFAULT = "Address";
-    private final static String ADDRESS_KEY = "caa_adm_address";
-    private final static String MESSAGE_DEFAULT = "Meddelande";
-    private final static String MESSAGE_KEY = "caa_adm_message";
-    private final static String NAME_DEFAULT = "Namn";
-    private final static String NAME_KEY = "caa_adm_name";
+	private final static String ADDRESS_DEFAULT = "Address";
+	private final static String ADDRESS_KEY = "caa_adm_address";
+	private final static String MESSAGE_DEFAULT = "Meddelande";
+	private final static String MESSAGE_KEY = "caa_adm_message";
+	private final static String NAME_DEFAULT = "Namn";
+	private final static String NAME_KEY = "caa_adm_name";
 
 	private final static String PARAM_FORM_APPROVE = "caa_adm_approve";
 	private final static String PARAM_FORM_REJECT = "caa_adm_reject";
 	private final static String PARAM_FORM_DETAILS = "caa_adm_details";
 	private final static String PARAM_FORM_CANCEL = "caa_adm_cancel";
 	private final static String PARAM_FORM_LIST = "caa_adm_list";
-
 
 	public void main(IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
@@ -106,9 +105,11 @@ public class CitizenAccountAdmin extends CommuneBlock {
 	private void viewList(IWContext iwc) {
 		Form form = new Form();
 		Table table = new Table();
+		table.setColumns(4);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		table.setWidth(getWidth());
+		table.setWidth(4, "12");
 
 		int row = 1;
 		int col = 1;
@@ -125,23 +126,25 @@ public class CitizenAccountAdmin extends CommuneBlock {
 		catch (RemoteException e) {
 		}
 
-		Iterator it = applications.iterator();
-		while (it.hasNext()) {
-			col = 1;
-			AdminListOfApplications list = (AdminListOfApplications) it.next();
-			table.add(getSmallText(list.getName()), col++, row);
-			String personalID = PersonalIDFormatter.format(list.getPID(), iwc.getApplication().getSettings().getApplicationLocale());
-			table.add(getSmallText(personalID), col++, row);
-			table.add(getSmallText(list.getAddress()), col++, row);
-
-			if (row % 2 == 0)
-				table.setRowColor(row, getZebraColor1());
-			else
-				table.setRowColor(row, getZebraColor2());
-			
-			SubmitButton details = new SubmitButton(getVariousIcon(""), PARAM_FORM_DETAILS, list.getId());
-			details.setDescription(localize(PARAM_FORM_DETAILS, "Administrate"));
-			table.add(details, col, row++);
+		if (applications != null && !applications.isEmpty()) {
+			Iterator it = applications.iterator();
+			while (it.hasNext()) {
+				col = 1;
+				AdminListOfApplications list = (AdminListOfApplications) it.next();
+				table.add(getSmallText(list.getName()), col++, row);
+				String personalID = PersonalIDFormatter.format(list.getPID(), iwc.getApplication().getSettings().getApplicationLocale());
+				table.add(getSmallText(personalID), col++, row);
+				table.add(getSmallText(list.getAddress()), col++, row);
+	
+				if (row % 2 == 0)
+					table.setRowColor(row, getZebraColor1());
+				else
+					table.setRowColor(row, getZebraColor2());
+	
+				SubmitButton details = new SubmitButton(getVariousIcon(""), PARAM_FORM_DETAILS, list.getId());
+				details.setDescription(localize(PARAM_FORM_DETAILS, "Administrate"));
+				table.add(details, col, row++);
+			}
 		}
 
 		form.add(table);
@@ -151,63 +154,81 @@ public class CitizenAccountAdmin extends CommuneBlock {
 	private void viewDetails(IWContext iwc) {
 		Form form = new Form();
 		Table table = new Table();
+		table.setWidth(getWidth());
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(0);
+		table.setColumns(3);
 		table.setWidth(1, "30%");
-		table.setWidth(2, "70%");
-
 		int row = 1;
-		int col = 1;
-		table.add(getSmallHeader(localize(NAME_KEY, NAME_DEFAULT)), col, row++);
-        table.add (getSmallHeader(localize(CitizenAccountApplication.SSN_KEY, CitizenAccountApplication.SSN_DEFAULT)), col, row++);
-        table.add (getSmallHeader(localize(CitizenAccountApplication.EMAIL_KEY, CitizenAccountApplication.EMAIL_DEFAULT)), col, row++);
-        table.add (getSmallHeader(localize(CitizenAccountApplication.PHONE_HOME_KEY, CitizenAccountApplication.PHONE_HOME_DEFAULT)), col, row++);
-        table.add (getSmallHeader(localize(CitizenAccountApplication.PHONE_WORK_KEY, CitizenAccountApplication.PHONE_WORK_DEFAULT)), col, row++);
-		table.add(getSmallHeader(localize(ADDRESS_KEY, ADDRESS_DEFAULT)), col, row++);
-        table.add (getSmallHeader(localize(CitizenAccountApplication.GENDER_KEY, CitizenAccountApplication.GENDER_DEFAULT)), col, row++);
-        table.add (getSmallHeader(localize(CitizenAccountApplication.CIVIL_STATUS_KEY, CitizenAccountApplication.CIVIL_STATUS_DEFAULT)), col, row++);
-        table.add (getSmallHeader(localize(CitizenAccountApplication.COHABITANT_KEY, CitizenAccountApplication.COHABITANT_DEFAULT)), col, row++);
-        table.add (getSmallHeader(localize(CitizenAccountApplication.CHILDREN_COUNT_KEY, CitizenAccountApplication.CHILDREN_COUNT_DEFAULT)), col, row++);
-        table.add (getSmallHeader(localize(CitizenAccountApplication.APPLICATION_REASON_KEY, CitizenAccountApplication.APPLICATION_REASON_DEFAULT)), col, row++);
-        table.add (getSmallHeader(localize(MESSAGE_KEY, MESSAGE_DEFAULT)), col, row++);
 
 		try {
 			final CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
 			final String idAsString = iwc.getParameter(PARAM_FORM_DETAILS);
 			final int id = new Integer(idAsString).intValue();
 			final CitizenAccount applicant = (CitizenAccount) business.getAccount(id);
-			row = 1;
-            col = 2;
-			table.add(getSmallText(applicant.getApplicantName()), col, row++);
-			final String pid = PersonalIDFormatter.format(applicant.getSsn (), iwc.getApplication().getSettings().getApplicationLocale());
-			table.add(getText(pid), col, row++);
-			final String email = applicant.getEmail();
-			table.add(new Link(email, "mailto:" + email), col, row++);
-			table.add(getSmallText(applicant.getPhoneHome()), col, row++);
-			table.add(getSmallText(applicant.getPhoneWork()), col, row++);
+
+			table.add(getSmallHeader(localize(NAME_KEY, NAME_DEFAULT)), 1, row);
+			table.add(getSmallText(applicant.getApplicantName()), 3, row++);
+			
+			table.add(getSmallHeader(localize(CitizenAccountApplication.SSN_KEY, CitizenAccountApplication.SSN_DEFAULT)), 1, row);
+			final String pid = PersonalIDFormatter.format(applicant.getSsn(), iwc.getApplication().getSettings().getApplicationLocale());
+			table.add(getSmallText(pid), 3, row++);
+			
+			table.add(getSmallHeader(localize(CitizenAccountApplication.EMAIL_KEY, CitizenAccountApplication.EMAIL_DEFAULT)), 1, row);
+			final Link email = getSmallLink(applicant.getEmail());
+			email.setURL("mailto:" + applicant.getEmail());
+			table.add(email, 3, row++);
+			
+			table.add(getSmallHeader(localize(CitizenAccountApplication.PHONE_HOME_KEY, CitizenAccountApplication.PHONE_HOME_DEFAULT)), 1, row);
+			table.add(getSmallText(applicant.getPhoneHome()), 3, row++);
+			
+			table.add(getSmallHeader(localize(CitizenAccountApplication.PHONE_WORK_KEY, CitizenAccountApplication.PHONE_WORK_DEFAULT)), 1, row);
+			table.add(getSmallText(applicant.getPhoneWork()), 3, row++);
+			
 			final String address = applicant.getStreet() + "; " + applicant.getZipCode() + " " + applicant.getCity();
-			table.add(getSmallText(address), col, row++);
-            final Gender [] genders = business.getGenders ();
-            for (int i = 0; i < genders.length; i++) {
-                if (genders [i].getPrimaryKey ().equals (applicant.getGenderId ())) {
-                    final String nameInDb = genders [i].getName ();
-                    final String genderName = localize ("caa_" + nameInDb, nameInDb);
-                    table.add (getSmallText(genderName), col, row++);
-                }
-            }
-            
-            table.add (getSmallText(applicant.getCivilStatus ()), col, row++); 
-            table.add (getSmallText(applicant.getChildrenCount () + ""), col, row++);
-            final String hasCohabitant = applicant.hasCohabitant ()
-                    ? localize (CitizenAccountApplication.YES_KEY, CitizenAccountApplication.YES_DEFAULT)
-                    : localize (CitizenAccountApplication.NO_KEY, CitizenAccountApplication.NO_DEFAULT);
-            table.add (getSmallText(hasCohabitant), col, row++);
-            final String applicationReason = localize (applicant.getApplicationReason (), "?");
-            table.add (getSmallText(applicationReason), col, row++);
+			if (applicant.getStreet() != null && applicant.getZipCode() != null && applicant.getCity() != null) {
+				table.add(getSmallHeader(localize(ADDRESS_KEY, ADDRESS_DEFAULT)), 1, row);
+				table.add(getSmallText(address), 3, row++);
+			}
+
+			table.add(getSmallHeader(localize(CitizenAccountApplication.GENDER_KEY, CitizenAccountApplication.GENDER_DEFAULT)), 1, row);
+			final Gender[] genders = business.getGenders();
+			for (int i = 0; i < genders.length; i++) {
+				if (genders[i].getPrimaryKey().equals(applicant.getGenderId())) {
+					final String nameInDb = genders[i].getName();
+					final String genderName = localize("caa_" + nameInDb, nameInDb);
+					table.add(getSmallText(genderName), 3, row);
+				}
+			}
+			row++;
+
+			if (applicant.getCivilStatus() != null) {
+				table.add(getSmallHeader(localize(CitizenAccountApplication.CIVIL_STATUS_KEY, CitizenAccountApplication.CIVIL_STATUS_DEFAULT)), 1, row);
+				table.add(getSmallText(applicant.getCivilStatus()), 3, row++);
+			}
+
+			table.add(getSmallHeader(localize(CitizenAccountApplication.COHABITANT_KEY, CitizenAccountApplication.COHABITANT_DEFAULT)), 1, row);
+			final String hasCohabitant = applicant.hasCohabitant() ? localize(CitizenAccountApplication.YES_KEY, CitizenAccountApplication.YES_DEFAULT) : localize(CitizenAccountApplication.NO_KEY, CitizenAccountApplication.NO_DEFAULT);
+			table.add(getSmallText(hasCohabitant), 3, row++);
+			
+			table.add(getSmallHeader(localize(CitizenAccountApplication.CHILDREN_COUNT_KEY, CitizenAccountApplication.CHILDREN_COUNT_DEFAULT)), 1, row);
+			table.add(getSmallText(String.valueOf(applicant.getChildrenCount())), 3, row++);
+			
+			if (applicant.getApplicationReason() != null) {
+				table.add(getSmallHeader(localize(CitizenAccountApplication.APPLICATION_REASON_KEY, CitizenAccountApplication.APPLICATION_REASON_DEFAULT)), 1, row);
+				final String applicationReason = localize(applicant.getApplicationReason(), "?");
+				table.add(getSmallText(applicationReason), 3, row++);
+			}
+			
+			table.setHeight(row++, 6);
+			table.mergeCells(1, row, 3, row);
+			table.setWidth(row, Table.HUNDRED_PERCENT);
+			table.add(getSmallHeader(localize(MESSAGE_KEY, MESSAGE_DEFAULT)), 1, row);
+			table.add(new Break(), 1, row);
 			TextArea area = new TextArea(MESSAGE_KEY);
 			area.setHeight(7);
 			area.setWidth(40);
-			table.add(area, col, row++);
+			table.add(area, 1, row++);
 
 			SubmitButton approve = (SubmitButton) getButton(new SubmitButton(localize(PARAM_FORM_APPROVE, "Godkänn"), PARAM_FORM_APPROVE, idAsString));
 			SubmitButton reject = (SubmitButton) getButton(new SubmitButton(localize(PARAM_FORM_REJECT, "Avslå"), PARAM_FORM_REJECT, idAsString));
@@ -215,7 +236,7 @@ public class CitizenAccountAdmin extends CommuneBlock {
 
 			table.setHeight(row++, 12);
 			table.mergeCells(1, row, table.getColumns(), row);
-			
+
 			table.add(approve, 1, row);
 			table.add(Text.NON_BREAKING_SPACE, 1, row);
 			table.add(reject, 1, row);
