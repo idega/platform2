@@ -1426,6 +1426,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		link.maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, iwc);
 		link.maintainParameter(PARAMETER_FROM_DATE, iwc);
 		link.maintainParameter(ACTION, iwc);
+		link.maintainParameter(PARAMETER_POSTAL_CODE_NAME, iwc);
 		link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
 		link.maintainParameter(PARAMETER_TO_DATE, iwc);
 		link.maintainParameter(PARAMETER_SORT_BY, iwc);
