@@ -7,6 +7,12 @@
  */
 package se.idega.idegaweb.commune.accounting.export.ifs.business;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -18,6 +24,7 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeader;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeaderHome;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckRecord;
@@ -306,6 +313,72 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					se.printStackTrace();
 				}
 			}
+		}
+	}
+	
+	public void moveFiles(String schoolCategory) throws MoveFileException
+	{
+		ExportDataMapping mapping = null;
+		String fileFolder = null;		//Source folder
+		String ifsFolder = null;		//Destination folder
+		String backupFolder = null;	//Destination folder
+		String fileName = null;			//Filename without path
+		System.out.println("Category "+schoolCategory);
+		try {
+			mapping = getExportBusiness().getExportDataMapping(schoolCategory);
+			fileFolder = mapping.getFileCreationFolder();
+			ifsFolder = mapping.getIFSFileFolder();
+			backupFolder = mapping.getFileBackupFolder();
+			System.out.println("Files:"+fileFolder+"   IFS:"+ifsFolder+"   Backup:"+backupFolder);
+			
+			if(null!=fileFolder){
+				//Get all the files in the source folder
+				File ff = new File("."+fileFolder);
+				File[] filesToMove = ff.listFiles();
+				if(null!=filesToMove){
+					System.out.println("# of files to move:"+filesToMove.length);
+					//Move them to first destination folder
+					for(int i=0;i<filesToMove.length; i++){
+						
+						//Get filename
+						fileName = filesToMove[i].getName();
+						System.out.println("Filename:"+fileName);
+	
+						if(null!=backupFolder){
+							//Copy to the bacup folder
+							FileChannel srcChannel = new FileInputStream(filesToMove[i].getPath()).getChannel();
+							
+							// Create channel on the destination
+							FileChannel dstChannel = new FileOutputStream(backupFolder+fileName).getChannel();
+							
+							// Copy file contents from source to destination
+							dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
+							
+							// Close the channels
+							srcChannel.close();
+							dstChannel.close();
+						}
+		
+						//Move
+						if(null!=ifsFolder){
+							System.out.println("Backup:"+ifsFolder+fileName);
+							filesToMove[i].renameTo(new File(ifsFolder+fileName));
+						}
+					}
+				}else{
+					throw new MoveFileException();
+				}
+			}else{
+				throw new MoveFileException();
+			}
+		}catch (RemoteException e1) {
+			e1.printStackTrace();
+		}catch (FinderException e1) {
+			e1.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

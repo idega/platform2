@@ -7,22 +7,17 @@
  */
 package se.idega.idegaweb.commune.accounting.export.ifs.presentation;
 
-import com.idega.block.school.data.SchoolCategory;
-import com.idega.block.school.data.SchoolCategoryHome;
-import com.idega.business.IBOLookup;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.presentation.ExceptionWrapper;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.user.data.User;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Iterator;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+
+import se.idega.idegaweb.commune.accounting.export.ifs.business.IFSBusiness;
+import se.idega.idegaweb.commune.accounting.export.ifs.business.MoveFileException;
 import se.idega.idegaweb.commune.accounting.invoice.business.CheckAmountBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.CheckAmountBroadcast;
 import se.idega.idegaweb.commune.accounting.invoice.data.CheckAmountBroadcastHome;
@@ -32,6 +27,16 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.business.IBOLookup;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.presentation.ExceptionWrapper;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.user.data.User;
 
 /**
  * @author palli
@@ -54,7 +59,8 @@ public class SendIFSFiles extends AccountingBlock {
 	protected final static String KEY_SEND = PREFIX + "save";
 	protected final static String KEY_STARTED = PREFIX + "started";
 	protected final static String KEY_UPDATE_INFORMATION_BELOW = PREFIX + "update_information_below";
-
+	protected final static String KEY_MOVE_FILE_COULDNT_FIND_DIRECTORY = PREFIX + "move_file_couldnt_find_directory";
+	
 	protected final static String PARAM_SEND_FILE = "ifs_file_send";
 	protected final static String PARAM_UPDATE = "ifs_update";
 
@@ -71,7 +77,11 @@ public class SendIFSFiles extends AccountingBlock {
 			add ("<p/>"); 
 			switch (action) {
 				case ACTION_SEND :
-					sendFiles (iwc);
+					try{
+						sendFiles (iwc);
+					}catch(MoveFileException e){
+						add(getLocalizedText(KEY_MOVE_FILE_COULDNT_FIND_DIRECTORY,KEY_MOVE_FILE_COULDNT_FIND_DIRECTORY));
+					}
 					break;
 			}
 			if (null != _currentOperation && 0 < _currentOperation.length ()) {
@@ -201,12 +211,14 @@ public class SendIFSFiles extends AccountingBlock {
 		return table;
 	}
 	
-	private void sendFiles(IWContext context) throws RemoteException {
+	private void sendFiles(IWContext context) throws RemoteException, MoveFileException {
 		try {
 			final CheckAmountBusiness business = getCheckAmountBusiness(context);
+			final IFSBusiness ifsBusiness = getIFSBusiness(context);
 			business.sendCheckAmountLists (context.getCurrentUser(),
 																		 _currentOperation);
 			business.deleteOldCheckAmountBroadcastInfo (_currentOperation, 90);
+			ifsBusiness.moveFiles(_currentOperation);
 		} catch (CreateException e) {
 			e.printStackTrace ();
 		} catch (FinderException e) {
@@ -276,8 +288,14 @@ public class SendIFSFiles extends AccountingBlock {
 	}
 	
 	private static CheckAmountBusiness getCheckAmountBusiness
-		(final IWContext context) throws RemoteException {
+	(final IWContext context) throws RemoteException {
 		return (CheckAmountBusiness) IBOLookup.getServiceInstance
-				(context, CheckAmountBusiness.class);	
+		(context, CheckAmountBusiness.class);	
+	}
+
+	private static IFSBusiness getIFSBusiness
+	(final IWContext context) throws RemoteException {
+		return (IFSBusiness) IBOLookup.getServiceInstance
+		(context, IFSBusiness.class);	
 	}
 }
