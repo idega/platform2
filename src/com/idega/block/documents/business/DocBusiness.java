@@ -55,141 +55,7 @@ public static final int LINK = 1;
 public static final int FILE = 2;
 public static final int PAGE = 3;
 
-  /**
-   * @todo finde out what attribute does
-   */
-  public static void saveDoc(int boxID,int InstanceId,String attribute){
-    try {
-      boolean update = false;
 
-      ICInformationFolder folder = new ICInformationFolder();
-      if ( boxID != -1 ) {
-        update = true;
-        folder = DocFinder.getFolder(boxID);
-        if ( folder == null ) {
-          folder = new ICInformationFolder();
-          update = false;
-        }
-      }
-
-      if(attribute != null){
-        ICInformationFolder boxAttribute = DocFinder.getFolder(attribute);
-        if ( boxAttribute != null ) {
-          folder = boxAttribute;
-          update = true;
-        }
-        //folder.setAttribute(attribute);
-      }
-
-      if ( update ) {
-        try {
-          folder.update();
-        }
-        catch (SQLException e) {
-          e.printStackTrace(System.err);
-        }
-      }
-      else {
-        folder.insert();
-        if(InstanceId > 0){
-          ICObjectInstance objIns = new ICObjectInstance(InstanceId);
-          folder.addTo(objIns);
-        }
-      }
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-
-  public static void addToDoc(ICInformationFolder folder, int boxCategoryID) {
-    try {
-      ICInformationCategory category = DocFinder.getCategory(boxCategoryID);
-      if ( category != null ) {
-        ICInformationCategory[] categories = (ICInformationCategory[]) folder.findRelated(category);
-        if ( categories == null || categories.length == 0 ) {
-          folder.addTo(category);
-        }
-      }
-    }
-    catch (Exception e) {
-      e.printStackTrace(System.err);
-    }
-  }
-
-  public static boolean deleteDoc(ICInformationFolder folder) {
-    try {
-      if ( folder != null ) {
-        folder.delete();
-      }
-      return true;
-    }
-    catch (SQLException e) {
-      e.printStackTrace(System.err);
-      return false;
-    }
-  }
-
-  public static boolean deleteDoc(int iObjectInstanceId) {
-    ICInformationFolder folder = DocFinder.getObjectInstanceFromID(iObjectInstanceId);
-    if(folder !=null){
-      return deleteDoc(folder,iObjectInstanceId);
-    }
-    return false;
-  }
-
-  public static boolean deleteDoc(int iDocId,int iObjectInstanceId) {
-          try{
-      ICInformationFolder folder= new ICInformationFolder(iDocId);
-                  if(folder !=null){
-                          return deleteDoc(folder,iObjectInstanceId);
-                  }
-          }
-          catch(SQLException ex){
-
-          }
-          return false;
-
-  }
-
-  public static boolean deleteDoc(ICInformationFolder folder,int iObjectInstanceId) {
-    try {
-      if (folder !=null ) {
-
-				disconnectDoc(folder,iObjectInstanceId);
-        folder.delete();
-      }
-      return true;
-    }
-    catch (SQLException e) {
-      e.printStackTrace(System.err);
-      return false;
-    }
-  }
-
-  public static boolean disconnectDoc(int instanceid){
-		ICInformationFolder folder = DocFinder.getObjectInstanceFromID(instanceid);
-    if(folder!= null){
-			return disconnectDoc(folder,instanceid);
-
-    }
-    return false;
-
-  }
-
-  public static boolean disconnectDoc(ICInformationFolder folder,int iObjectInstanceId){
-    try {
-      if(iObjectInstanceId > 0  ){
-        ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
-        folder.removeFrom(obj);
-      }
-      return true;
-    }
-    catch (SQLException ex) {
-
-    }
-    return false;
-  }
 
   /**
    * @todo check performance
@@ -367,91 +233,91 @@ public static final int PAGE = 3;
     deleteLink(DocFinder.getLink(linkID));
   }
 
-  public static int saveCategory(int userID,int boxCategoryID,String categoryName,int iLocaleID) {
-    boolean update = false;
-    boolean newLocText = false;
-    int _boxCategoryID = -1;
+//  public static int saveCategory(int userID,int boxCategoryID,String categoryName,int iLocaleID) {
+//    boolean update = false;
+//    boolean newLocText = false;
+//    int _boxCategoryID = -1;
+//
+//    if ( boxCategoryID != -1 ) {
+//      update = true;
+//    }
+//
+//    ICInformationCategory category = new ICInformationCategory();
+//    if ( update ) {
+//      category = DocFinder.getCategory(boxCategoryID);
+//      if ( category == null ) {
+//        category = new ICInformationCategory();
+//        update = false;
+//      }
+//
+//    }
+//
+//    if ( !update ) {
+//      try {
+//        /**
+//         * @todo check if ok to comment out category.setUser(new User(userID));
+//         */
+//        //category.setUser(new User(userID));
+//        category.insert();
+//        _boxCategoryID = category.getID();
+//      }
+//      catch (SQLException e) {
+//        e.printStackTrace(System.err);
+//      }
+//    }
+//    else {
+//      try {
+//        category.update();
+//        _boxCategoryID = category.getID();
+//      }
+//      catch (SQLException e) {
+//        e.printStackTrace(System.err);
+//      }
+//    }
+//
+//    LocalizedText locText = TextFinder.getLocalizedText(category,iLocaleID);
+//    if ( locText == null ) {
+//      locText = new LocalizedText();
+//      newLocText = true;
+//    }
+//
+//    locText.setHeadline(categoryName);
+//		locText.setBody("");
+//		locText.setCreated(com.idega.util.idegaTimestamp.getTimestampRightNow());
+//
+//    if ( newLocText ) {
+//      locText.setLocaleId(iLocaleID);
+//      try {
+//        locText.insert();
+//        locText.addTo(category);
+//      }
+//      catch (SQLException e) {
+//        e.printStackTrace(System.err);
+//      }
+//    }
+//    else {
+//      try {
+//        locText.update();
+//      }
+//      catch (SQLException e) {
+//        e.printStackTrace(System.err);
+//      }
+//    }
+//    return _boxCategoryID;
+//  }
 
-    if ( boxCategoryID != -1 ) {
-      update = true;
-    }
-
-    ICInformationCategory category = new ICInformationCategory();
-    if ( update ) {
-      category = DocFinder.getCategory(boxCategoryID);
-      if ( category == null ) {
-        category = new ICInformationCategory();
-        update = false;
-      }
-
-    }
-
-    if ( !update ) {
-      try {
-        /**
-         * @todo check if ok to comment out category.setUser(new User(userID));
-         */
-        //category.setUser(new User(userID));
-        category.insert();
-        _boxCategoryID = category.getID();
-      }
-      catch (SQLException e) {
-        e.printStackTrace(System.err);
-      }
-    }
-    else {
-      try {
-        category.update();
-        _boxCategoryID = category.getID();
-      }
-      catch (SQLException e) {
-        e.printStackTrace(System.err);
-      }
-    }
-
-    LocalizedText locText = TextFinder.getLocalizedText(category,iLocaleID);
-    if ( locText == null ) {
-      locText = new LocalizedText();
-      newLocText = true;
-    }
-
-    locText.setHeadline(categoryName);
-		locText.setBody("");
-		locText.setCreated(com.idega.util.idegaTimestamp.getTimestampRightNow());
-
-    if ( newLocText ) {
-      locText.setLocaleId(iLocaleID);
-      try {
-        locText.insert();
-        locText.addTo(category);
-      }
-      catch (SQLException e) {
-        e.printStackTrace(System.err);
-      }
-    }
-    else {
-      try {
-        locText.update();
-      }
-      catch (SQLException e) {
-        e.printStackTrace(System.err);
-      }
-    }
-    return _boxCategoryID;
-  }
-
-  public static void deleteCategory(int boxCategoryID) {
-    try {
-      ICInformationCategory category = DocFinder.getCategory(boxCategoryID);
-      if ( category != null ) {
-        deleteLinks(category);
-        category.delete();
-      }
-    }
-    catch (SQLException e) {
-      e.printStackTrace(System.err);
-    }
-  }
+//  public static void deleteCategory(int boxCategoryID) {
+//    try {
+//      ICInformationCategory category = DocFinder.getCategory(boxCategoryID);
+//      if ( category != null ) {
+//        deleteLinks(category);
+//        category.delete();
+//      }
+//    }
+//    catch (SQLException e) {
+//      e.printStackTrace(System.err);
+//    }
+//  }
 /*
   public static DropdownMenu getCategories(String name, int iLocaleId, ICInformationFolder folder, int userID) {
     DropdownMenu drp = new DropdownMenu(name);
@@ -471,46 +337,181 @@ public static final int PAGE = 3;
     return drp;
   }
 */
-  public static void detachCategory(int boxID, int boxCategoryID) {
-    try {
-      ICInformationFolder boxEntity = DocFinder.getFolder(boxID);
-      ICInformationCategory boxCategory = DocFinder.getCategory(boxCategoryID);
+//  public static void detachCategory(int boxID, int boxCategoryID) {
+//    try {
+//      ICInformationFolder boxEntity = DocFinder.getFolder(boxID);
+//      ICInformationCategory boxCategory = DocFinder.getCategory(boxCategoryID);
+//
+//      if ( boxEntity != null && boxCategory != null ) {
+//        boxEntity.removeFrom(boxCategory);
+//      }
+//    }
+//    catch (Exception e) {
+//      e.printStackTrace(System.err);
+//    }
+//  }
 
-      if ( boxEntity != null && boxCategory != null ) {
-        boxEntity.removeFrom(boxCategory);
-      }
-    }
-    catch (Exception e) {
-      e.printStackTrace(System.err);
-    }
-  }
+//  public static void deleteLinks(ICInformationCategory boxCategory) {
+//    try {
+//      DocLink[] links = DocFinder.getLinksInCategory(boxCategory);
+//      if ( links != null ) {
+//        for ( int a = 0; a < links.length; a++ ) {
+//          deleteLink(links[a]);
+//        }
+//      }
+//    }
+//    catch (Exception e) {
+//      e.printStackTrace(System.err);
+//    }
+//  }
 
-  public static void deleteLinks(ICInformationCategory boxCategory) {
-    try {
-      DocLink[] links = DocFinder.getLinksInCategory(boxCategory);
-      if ( links != null ) {
-        for ( int a = 0; a < links.length; a++ ) {
-          deleteLink(links[a]);
-        }
-      }
-    }
-    catch (Exception e) {
-      e.printStackTrace(System.err);
-    }
-  }
+//  public static String getLocalizedString(GenericEntity entity, int iLocaleID) {
+//    String locString = null;
+//
+//    if ( entity != null ) {
+//      LocalizedText locText = TextFinder.getLocalizedText(entity,iLocaleID);
+//      if ( locText != null ) {
+//        locString = locText.getHeadline();
+//      }
+//    }
+//
+//    return locString;
+//  }
 
-  public static String getLocalizedString(GenericEntity entity, int iLocaleID) {
-    String locString = null;
+//  /**
+//   * @todo finde out what attribute does
+//   */
+//  public static void saveDoc(int boxID,int InstanceId,String attribute){
+//    try {
+//      boolean update = false;
+//
+//      ICInformationFolder folder = new ICInformationFolder();
+//      if ( boxID != -1 ) {
+//        update = true;
+//        folder = DocFinder.getFolder(boxID);
+//        if ( folder == null ) {
+//          folder = new ICInformationFolder();
+//          update = false;
+//        }
+//      }
+//
+//      if(attribute != null){
+//        ICInformationFolder boxAttribute = DocFinder.getFolder(attribute);
+//        if ( boxAttribute != null ) {
+//          folder = boxAttribute;
+//          update = true;
+//        }
+//        //folder.setAttribute(attribute);
+//      }
+//
+//      if ( update ) {
+//        try {
+//          folder.update();
+//        }
+//        catch (SQLException e) {
+//          e.printStackTrace(System.err);
+//        }
+//      }
+//      else {
+//        folder.insert();
+//        if(InstanceId > 0){
+//          ICObjectInstance objIns = new ICObjectInstance(InstanceId);
+//          folder.addTo(objIns);
+//        }
+//      }
+//    }
+//    catch(Exception e) {
+//      e.printStackTrace();
+//    }
+//  }
 
-    if ( entity != null ) {
-      LocalizedText locText = TextFinder.getLocalizedText(entity,iLocaleID);
-      if ( locText != null ) {
-        locString = locText.getHeadline();
-      }
-    }
+//  public static void addToDoc(ICInformationFolder folder, int boxCategoryID) {
+//    try {
+//      ICInformationCategory category = DocFinder.getCategory(boxCategoryID);
+//      if ( category != null ) {
+//        ICInformationCategory[] categories = (ICInformationCategory[]) folder.findRelated(category);
+//        if ( categories == null || categories.length == 0 ) {
+//          folder.addTo(category);
+//        }
+//      }
+//    }
+//    catch (Exception e) {
+//      e.printStackTrace(System.err);
+//    }
+//  }
+//
+//  public static boolean deleteDoc(ICInformationFolder folder) {
+//    try {
+//      if ( folder != null ) {
+//        folder.delete();
+//      }
+//      return true;
+//    }
+//    catch (SQLException e) {
+//      e.printStackTrace(System.err);
+//      return false;
+//    }
+//  }
+//
+//  public static boolean deleteDoc(int iObjectInstanceId) {
+//    ICInformationFolder folder = DocFinder.getObjectInstanceFromID(iObjectInstanceId);
+//    if(folder !=null){
+//      return deleteDoc(folder,iObjectInstanceId);
+//    }
+//    return false;
+//  }
+//
+//  public static boolean deleteDoc(int iDocId,int iObjectInstanceId) {
+//          try{
+//      ICInformationFolder folder= new ICInformationFolder(iDocId);
+//                  if(folder !=null){
+//                          return deleteDoc(folder,iObjectInstanceId);
+//                  }
+//          }
+//          catch(SQLException ex){
+//
+//          }
+//          return false;
+//
+//  }
+//
+//  public static boolean deleteDoc(ICInformationFolder folder,int iObjectInstanceId) {
+//    try {
+//      if (folder !=null ) {
+//
+//				disconnectDoc(folder,iObjectInstanceId);
+//        folder.delete();
+//      }
+//      return true;
+//    }
+//    catch (SQLException e) {
+//      e.printStackTrace(System.err);
+//      return false;
+//    }
+//  }
 
-    return locString;
-  }
-
+//  public static boolean disconnectDoc(int instanceid){
+//		ICInformationFolder folder = DocFinder.getObjectInstanceFromID(instanceid);
+//    if(folder!= null){
+//			return disconnectDoc(folder,instanceid);
+//
+//    }
+//    return false;
+//
+//  }
+//
+//  public static boolean disconnectDoc(ICInformationFolder folder,int iObjectInstanceId){
+//    try {
+//      if(iObjectInstanceId > 0  ){
+//        ICObjectInstance obj = new ICObjectInstance(iObjectInstanceId);
+//        folder.removeFrom(obj);
+//      }
+//      return true;
+//    }
+//    catch (SQLException ex) {
+//
+//    }
+//    return false;
+//  }
 
 }

@@ -161,6 +161,9 @@ public class Doc extends FolderBlock implements IWBlock {
                 _folderID = folder.getID();
             }
         } else {
+            /**
+             * @todo move from DocFinder to FolderBusiness
+             */
             folder = DocFinder.getFolder(_folderID);
         }
 
@@ -860,26 +863,16 @@ public class Doc extends FolderBlock implements IWBlock {
     }
 
 
-    /**
-     *  Description of the Method
-     *
-     *@param  ICObjectInstanceId  Description of the Parameter
-     *@return                     Description of the Return Value
-     */
-    public boolean deleteBlock(int ICObjectInstanceId) {
-        return DocBusiness.deleteDoc(ICObjectInstanceId);
-    }
+//    /**
+//     *  Description of the Method
+//     *
+//     *@param  ICObjectInstanceId  Description of the Parameter
+//     *@return                     Description of the Return Value
+//     */
+//    public boolean deleteBlock(int ICObjectInstanceId) {
+//        return DocBusiness.deleteDoc(ICObjectInstanceId);
+//    }
 
-
-    /**
-     *  Description of the Method
-     *
-     *@param  ICObjectInstanceId  Description of the Parameter
-     *@return                     Description of the Return Value
-     */
-    public boolean copyBlock(int ICObjectInstanceId) {
-        return DocBusiness.deleteDoc(ICObjectInstanceId);
-    }
 
 
     /**

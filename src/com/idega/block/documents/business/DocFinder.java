@@ -52,26 +52,26 @@ public class DocFinder {
     }
 
 
-    /**
-     *@param  attribute  Description of the Parameter
-     *@return            The folder value
-     *@todo:             reimplement
-     */
-    public static ICInformationFolder getFolder(String attribute) {
-        /*
-         *  try {
-         *  List L = null; // EntityFinder.findAllByColumn(ICInformationFolder.getStaticInstance(ICInformationFolder.class),ICInformationFolder.getColumnNameAttribute(),attribute);
-         *  if(L!= null) {
-         *  return (ICInformationFolder) L.get(0);
-         *  }
-         *  return null;
-         *  }
-         *  catch (SQLException ex) {
-         *  ex.printStackTrace();
-         */
-        return null;
-        // }
-    }
+//    /**
+//     *@param  attribute  Description of the Parameter
+//     *@return            The folder value
+//     *@todo:             reimplement
+//     */
+//    public static ICInformationFolder getFolder(String attribute) {
+//        /*
+//         *  try {
+//         *  List L = null; // EntityFinder.findAllByColumn(ICInformationFolder.getStaticInstance(ICInformationFolder.class),ICInformationFolder.getColumnNameAttribute(),attribute);
+//         *  if(L!= null) {
+//         *  return (ICInformationFolder) L.get(0);
+//         *  }
+//         *  return null;
+//         *  }
+//         *  catch (SQLException ex) {
+//         *  ex.printStackTrace();
+//         */
+//        return null;
+//        // }
+//    }
 
 
     /**
