@@ -13,11 +13,14 @@ import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolType;
+import com.idega.core.data.ICFile;
+import com.idega.data.BlobWrapper;
 import com.idega.user.data.User;
 
 import se.idega.idegaweb.commune.childcare.check.data.Check;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.Collection;
@@ -36,18 +39,20 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	private final static String CASE_CODE_KEY = "MBANBOP";
 	private final static String CASE_CODE_KEY_DESC = "Application for child care";
 	
-//	protected final static String CHILDREN_CARE_TYPE = "child_care_type";
 	protected final static String PROVIDER_ID = "provider_id";
 	protected final static String FROM_DATE = "from_date";
 	protected final static String CHILD_ID = "child_id";
-//	protected final static String PARENTS_AGREE = "parents_agree";
 	protected final static String QUEUE_DATE = "queue_date";
 	protected final static String METHOD = "method";
 	protected final static String CARE_TIME = "care_time";
 	protected final static String CHOICE_NUMBER = "choice_number";
 	protected final static String CHECK_ID = "check_id";
-	protected final static String CONTRACT = "contract";
-
+	protected final static String CONTRACT_ID = "contract_id";
+	protected final static String REJECTION_DATE = "rejection_date";
+	
+	private ICFile _file;
+	private BlobWrapper _wrapper;
+	
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
 	 */
@@ -75,25 +80,17 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(FROM_DATE,"",true,true,java.sql.Date.class);
-//		addAttribute(PARENTS_AGREE,"",true,true,java.lang.Boolean.class);
 		addAttribute(QUEUE_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(METHOD,"",true,true,java.lang.Integer.class);
 		addAttribute(CARE_TIME,"",true,true,java.lang.Integer.class);
 		addAttribute(CHOICE_NUMBER,"",true,true,java.lang.Integer.class);
+		addAttribute(REJECTION_DATE,"",true,true,java.sql.Date.class);
 		
-//		addManyToOneRelationship(CHILDREN_CARE_TYPE,SchoolType.class);
 		addManyToOneRelationship(PROVIDER_ID,School.class);
 		addManyToOneRelationship(CHILD_ID,User.class);
 		addManyToOneRelationship(CHECK_ID,Check.class);
+		addManyToOneRelationship(CONTRACT_ID,ICFile.class);
 	}
-	
-//	public int getChildrenCareTypeId() {
-//		return getIntColumnValue(CHILDREN_CARE_TYPE);	
-//	}
-	
-//	public SchoolType getChildrenCareType() {
-//		return (SchoolType)getColumnValue(CHILDREN_CARE_TYPE);	
-//	}
 	
 	public int getProviderId() {
 		return getIntColumnValue(PROVIDER_ID);
@@ -143,13 +140,9 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return (Check)getColumnValue(CHECK_ID);	
 	}
 		
-//	public void setChildrenCareTypeId(int type) {
-//		setColumn(CHILDREN_CARE_TYPE,type);	
-//	}
-//
-//	public void setChildrenCareType(SchoolType type) {
-//		setColumn(CHILDREN_CARE_TYPE,type);	
-//	}
+	public Date getRejectionDate() {
+		return (Date)getColumnValue(REJECTION_DATE);	
+	}
 	
 	public void setProviderId(int id) {
 		setColumn(PROVIDER_ID,id);
@@ -170,11 +163,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public void setChild(User child) {
 		setColumn(CHILD_ID,child);	
 	}
-	
-//	public void setParentsAgree(boolean agree) {
-//		setColumn(PARENTS_AGREE,agree);	
-//	}
-	
+		
 	public void setQueueDate(Date date) {
 		setColumn(QUEUE_DATE,date);	
 	}
@@ -198,6 +187,63 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public void setCheck(Check check) {
 		setColumn(CHECK_ID,check);	
 	}	
+
+	public void setRejectionDate(Date date) {
+		setColumn(REJECTION_DATE,date);	
+	}
+
+	private int getFileID() {
+		return getIntColumnValue(REJECTION_DATE);
+	}
+
+	public ICFile getFile() {
+		int fileID = getFileID();
+		if (fileID != -1) {
+			_file = (ICFile) getColumnValue(REJECTION_DATE);
+		}
+		
+		return _file;
+	}
+
+	public void setFile(ICFile file) {
+//		file.setMimeType(com.idega.core.data.ICMimeTypeBMPBean.IC_MIME_TYPE_XML);
+		setColumn(REJECTION_DATE, file);
+		_file = file;
+	}
+
+	public void setPageValue(InputStream stream) {
+		ICFile file = getFile();
+		if (file == null) {
+			file = ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
+			setFile(file);
+		}
+		file.setFileValue(stream);
+	}
+
+	public InputStream getPageValue() {
+		try {
+			ICFile file = getFile();
+			if (file != null) {
+				return (file.getFileValue());
+			}
+		}
+		catch (Exception e) {
+		}
+
+		return null;
+	}
+
+	public OutputStream getPageValueForWrite() {
+		ICFile file = getFile();
+		if (file == null) {
+			file = ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
+			setFile(file);
+		}
+		OutputStream theReturn = file.getFileValueForWrite();
+		_wrapper = (BlobWrapper) file.getColumnValue(com.idega.core.data.ICFileBMPBean.getColumnFileValue());
+
+		return theReturn;
+	}
 
 	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, CaseStatus caseStatus) throws FinderException, RemoteException {
 		return ejbFindAllCasesByProviderStatus(providerId, caseStatus.getStatus());
