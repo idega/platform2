@@ -53,7 +53,7 @@ public class UserHistoryList extends Page {
 				if (status != null)
 					size += status.size();
 				table = new Table(4, size + 1);
-				table.add("Hï¿½pur", 1, row);
+				table.add("Hópur", 1, row);
 				table.add("Virkni", 2, row);
 				table.add("Upphafsdags.", 3, row);
 				table.add("Lokadags.", 4, row++);
