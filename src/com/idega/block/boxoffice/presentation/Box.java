@@ -53,6 +53,7 @@ private String _name;
 private String _target;
 
 public Box(){
+  setDefaultValues();
 }
 
 public Box(int boxID){
@@ -134,7 +135,6 @@ public Box(String attribute){
 	}
 
   private Table getBox(BoxEntity box) {
-    setDefaultValues();
     setStyles();
 
     Table boxTable = new Table();
@@ -254,8 +254,9 @@ public Box(String attribute){
             addLink.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,categories[a].getID());
             addLink.addParameter(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE,BoxBusiness.PARAMETER_TRUE);
           if ( _isAdmin ) {
-            linksTable.setVerticalAlignment(1,_numberOfDisplayed+1,"bottom");
             linksTable.add(addLink,1,_numberOfDisplayed+1);
+            linksTable.setHeight(1,_numberOfDisplayed+1,"100%");
+            linksTable.setVerticalAlignment(1,_numberOfDisplayed+1,"bottom");
           }
         }
 
