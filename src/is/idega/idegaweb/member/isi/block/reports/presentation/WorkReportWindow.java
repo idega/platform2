@@ -227,6 +227,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				repGen.setParameterToMaintain(ACTION);
 				repGen.setParameterToMaintain(STATS_INVOCATION_PARAM);
 				repGen.setParameterToMaintain(STATS_LAYOUT_PARAM);
+				repGen.setParameterToMaintain(STATS_LAYOUT_NAME_FROM_BUNDLE);
 				repGen.setParameterToMaintain(STATS_LOCALIZABLE_KEY_NAME);
 				
 				String invocationKey = iwc.getParameter(STATS_INVOCATION_PARAM);
