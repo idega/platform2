@@ -694,7 +694,10 @@ public class StaffBrowser extends Block implements Builderaware {
 		Image adminImage = _iwb.getImage("shared/edit.gif");
 		Link adminLink = new Link(adminImage);
 		Class  staffApplicationImpl = ImplementorRepository.getInstance().getAnyClassImpl(StaffApplication.class, this.getClass());
-		adminLink.setWindowToOpen(staffApplicationImpl);
+		if (staffApplicationImpl == null) {
+			logWarning("[StaffBrowser] Implementation of StaffApplication could not be found. Implementing bundle was not loaded.");
+			adminLink.setWindowToOpen(staffApplicationImpl);
+		}
 		// prior version adminLink.setWindowToOpen(UserApplication.class);
 
 		return adminLink;
