@@ -281,6 +281,7 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
 		return null;
 	}
   
+  
   /** Checks if the user is assignable from the specified source to the specified target.
    * 
    * @param user the user that should be moved.
@@ -315,6 +316,12 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
         return iwrb.getLocalizedString("age_gender_user_already_member_of_the_target_group", "The user is already a member of the target group");
       }
     }
+    return isUserSuitedForGroup(user, targetGroup);
+  }
+    
+  public String isUserSuitedForGroup(User user, Group targetGroup)  {  
+    // get my resource bundle for all the messages
+    IWResourceBundle iwrb = getResourceBundle();
     // get date of birth
     Date date = user.getDateOfBirth();
     if (date == null) {

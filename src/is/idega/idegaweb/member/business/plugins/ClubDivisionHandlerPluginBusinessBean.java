@@ -110,4 +110,8 @@ public class ClubDivisionHandlerPluginBusinessBean extends IBOServiceBean implem
   public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
     return null;
   }
+
+  public String isUserSuitedForGroup(User user, Group targetGroup)  {
+    return null;
+  }  
 }

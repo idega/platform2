@@ -113,4 +113,8 @@ public class FlokkarPluginBusinessBean extends IBOServiceBean implements Flokkar
   public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
     return null;
   }
+  
+  public String isUserSuitedForGroup(User user, Group targetGroup)  {
+    return null;
+  }
 }

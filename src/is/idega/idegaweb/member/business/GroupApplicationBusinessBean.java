@@ -469,4 +469,8 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
     return null;
   }
 
+  public String isUserSuitedForGroup(User user, Group targetGroup)  {
+    return null;
+  }
+
 }
