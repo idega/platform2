@@ -23,6 +23,7 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.TextSoap;
 
 /**
  * @author laddi
@@ -59,6 +60,12 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 			String first = iwc.getParameter(PARAMETER_FIRST_NAME);
 			String middle = iwc.getParameter(PARAMETER_MIDDLE_NAME);
 			String last = iwc.getParameter(PARAMETER_LAST_NAME);
+			if (first != null)
+				first = TextSoap.capitalize(first);
+			if (middle != null)
+				middle = TextSoap.capitalize(middle);
+			if (last != null)
+				last = TextSoap.capitalize(last);
 			String pid = iwc.getParameter(PARAMETER_PERSONAL_ID);
 			UserHome home = (UserHome) IDOLookup.getHome(User.class);
 			try {
