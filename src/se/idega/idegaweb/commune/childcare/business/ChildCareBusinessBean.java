@@ -2352,4 +2352,50 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}
 	}
+	
+	public void importChildToProvider(int childID, int providerID, int groupID, int careTime, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin) {
+		UserTransaction t = getSessionContext().getUserTransaction();
+
+		try {
+			t.begin();
+			ChildCareApplication application = getChildCareApplicationHome().create();
+			application.setChildId(childID);
+			application.setProviderId(providerID);
+			application.setFromDate(fromDate.getDate());
+			application.setCareTime(careTime);
+			application.setOwner(parent);
+			if (toDate != null) {
+				application.setRejectionDate(toDate.getDate());
+			}
+	
+			PDFTemplateWriter pdfWriter = new PDFTemplateWriter();
+			int fileID = pdfWriter.writeToDatabase(getTagMap(application, locale, fromDate, false), getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+			//TODO Change to a more appropriate method call
+			int contractID = ContractBusiness.createContract(application.getChildId(), 2, fromDate, toDate, "C", (Map)null);
+			
+			application.setContractId(contractID);
+			application.setContractFileId(fileID);
+			if (toDate != null) {
+				application.setApplicationStatus(getStatusCancelled());
+				changeCaseStatus(application, getCaseStatusCancelled().getStatus(), admin);
+			}
+			else {
+				application.setApplicationStatus(getStatusReady());
+				changeCaseStatus(application, getCaseStatusReady().getStatus(), admin);
+			}
+			
+			addContractToArchive(-1, application, contractID, fromDate.getDate());
+			getSchoolBusiness().storeSchoolClassMember(childID, groupID, fromDate.getTimestamp(), toDate.getTimestamp(), ((Integer)admin.getPrimaryKey()).intValue(), null);
+			t.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				t.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
 }
