@@ -47,8 +47,8 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 		applicationTable.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.address","Address"), column++, row);
-		applicationTable.add(getLocalizedSmallHeader("child_care.phone","Phone"), column, row++);
-		applicationTable.add(getLocalizedSmallHeader("child_care.queue_date","Queue date"), column, row++);
+		applicationTable.add(getLocalizedSmallHeader("child_care.phone","Phone"), column++, row++);
+		applicationTable.add(getLocalizedSmallHeader("child_care.queue_date","Queue date"), column++, row++);
 		applicationTable.add(getLocalizedSmallHeader("child_care.placement_date","Placement date"), column++, row++);
 		
 		Collection applications = getApplicationCollection();
