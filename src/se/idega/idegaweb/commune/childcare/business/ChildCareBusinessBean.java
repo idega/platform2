@@ -251,9 +251,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public int getNumberInQueue(int queueOrder, int providerID) {
+	public int getNumberInQueue(ChildCareApplication application) {
 		try {
-			return getChildCareApplicationHome().getPositionInQueue(queueOrder, providerID);
+			return getChildCareApplicationHome().getPositionInQueue(application.getQueueOrder(), application.getProviderId());
 		}
 		catch (RemoteException e) {
 			return -1;

@@ -80,7 +80,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 				address = getBusiness().getUserBusiness().getUsersMainAddress(child);
 				queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getCreated());
 				placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getFromDate());
-				queueOrder = getBusiness().getNumberInQueue(application.getQueueOrder(), application.getProviderId());
+				queueOrder = getBusiness().getNumberInQueue(application);
 				
 				if (row % 2 == 0)
 					applicationTable.setRowColor(row, getZebraColor1());
@@ -111,5 +111,4 @@ public class ChildCareAdmin extends ChildCareBlock {
 			applicationTable.setColumnAlignment(7, Table.HORIZONTAL_ALIGN_CENTER);
 		}
 	}
-
 }
