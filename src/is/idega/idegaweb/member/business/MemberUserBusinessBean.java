@@ -160,7 +160,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 			theMessageBody.append(iwrb.getLocalizedString("member_transfer.email_body_automatic_message_text","This is an automatic confirmation message for a member transfer.\n"))
 			.append(iwrb.getLocalizedString("member_transfer.email_main_text","The member stated in this email will transfered from : "))
 			.append(getGroupBusiness().getNameOfGroupWithParentName(fromDivisionGroup))
-			.append(" to : ").append(getGroupBusiness().getNameOfGroupWithParentName(toDivisionGroup)).append(".\n");
+			.append(iwrb.getLocalizedString("member_transfer.email_main_to"," to : ")).append(getGroupBusiness().getNameOfGroupWithParentName(toDivisionGroup)).append(".\n");
 		}
 		catch (RemoteException e1) {
 			
