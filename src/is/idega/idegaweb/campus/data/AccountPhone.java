@@ -1,7 +1,7 @@
 package is.idega.idegaweb.campus.data;
 
 
-public interface AccountPhone extends com.idega.data.IDOEntity
+public interface AccountPhone extends com.idega.data.IDOLegacyEntity
 {
  public java.lang.Integer getAccountId();
  public java.lang.String getPhoneNumber();
