@@ -1,5 +1,5 @@
 /*
- * $Id: CampusContractWriter.java,v 1.6 2001/08/16 01:44:27 aron Exp $
+ * $Id: CampusContractWriter.java,v 1.7 2001/08/16 23:41:57 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -24,7 +24,10 @@ import com.idega.block.application.data.Applicant;
 import com.idega.util.text.TextSoap;
 import com.idega.util.idegaTimestamp;
 import is.idegaweb.campus.entity.TariffIndex;
+import java.util.StringTokenizer;
+import java.util.Hashtable;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 /**
  *
  * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
@@ -88,6 +91,7 @@ public class CampusContractWriter{
 
         Font chapterFont = new Font(Font.HELVETICA, 16, Font.BOLD);
         Font nameFont = new Font(Font.HELVETICA, 10, Font.BOLD);
+        Font tagFont = new Font(Font.COURIER,9,Font.BOLD);
         Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
         Font filledFont = new Font(Font.HELVETICA,8,Font.BOLD);
         filledFont.setStyle("underline");
@@ -98,21 +102,24 @@ public class CampusContractWriter{
         Paragraph cTitle = new Paragraph(title , chapterFont);
         Chapter chapter = new Chapter(cTitle, 1);
         chapter.setNumberDepth(0);
+        Paragraph P;
         List L = listOfTexts();
+        Hashtable H = getHashTags(id,iwrb);
         if(L!=null){
           int len = L.size();
           for (int i = 0; i < len; i++) {
             ContractText CT = (ContractText) L.get(i);
-            Paragraph name = new Paragraph(CT.getName(),nameFont);
-            name.setAlignment(Element.ALIGN_LEFT);
+            P = new Paragraph(new Phrase(CT.getName()+"\n",nameFont));
             String sText = CT.getText();
             if(bEntity &&CT.getUseTags()){
-              sText = getDeTaggedParagraph(sText,iwrb,id);
+              Phrase phrase = detagParagraph(H,sText);
+              P.add(phrase);
             }
-            Paragraph text = new Paragraph(sText,textFont);
-            text.setAlignment(Element.ALIGN_LEFT);
-            chapter.add(name);
-            chapter.add(text);
+            else{
+              Phrase phrase = new Phrase(sText,textFont);
+              P.add(phrase);
+            }
+            chapter.add(P);
           }
         }
         document.add(chapter);
@@ -177,7 +184,7 @@ public class CampusContractWriter{
   private static float getTariffIndex(){
     TariffIndex ti = new TariffIndex();
     try {
-      List L = EntityFinder.findAllDescendingOrdered(ti,TariffIndex.getDateColumnName());
+      List L = EntityFinder.findAllDescendingOrdered(ti,TariffIndex.getColumnNameDate());
       if(L!= null){
         ti = (TariffIndex)L.get(0);
         return ti.getIndex();
@@ -191,26 +198,23 @@ public class CampusContractWriter{
     }
   }
 
-  private static String getDeTaggedParagraph(String sParagraph,IWResourceBundle iwrb,int contractId){
-    String returnString = sParagraph;
-    for (int i = 0; i < TAGS.length; i++) {
-      int index = returnString.indexOf(TAGS[i]);
-      if(index != -1){
-        String head = returnString.substring(0,index);
-        String tail = returnString.substring(index+TAGS[i].length());
-        String mid =  getTagString(TAGS[i],contractId,iwrb);
-        returnString = head+ mid+tail;
-
+  private static Phrase detagParagraph(Hashtable H,String sParagraph){
+    Phrase phrase = new Phrase();
+    StringTokenizer ST  = new StringTokenizer(sParagraph);
+    while(ST.hasMoreTokens()){
+      String token = ST.nextToken();
+      if(H.containsKey(token)){
+        phrase.add(H.get(token));
       }
-      //System.err.println("returnString: "+returnString);
+      else{
+        phrase.add(token);
+      }
     }
-
-    return returnString;
+    return phrase;
   }
 
-  private static String getTagString(String tag,int contractId,IWResourceBundle iwrb){
-     String s = "";
-     try {
+  private static Hashtable getHashTags(int contractId,IWResourceBundle iwrb){
+    try{
       Contract eContract = new Contract(contractId);
       Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
       Apartment eApartment = new Apartment(eContract.getApartmentId().intValue());
@@ -218,67 +222,34 @@ public class CampusContractWriter{
       Floor eFloor = new Floor(eApartment.getFloorId());
       Building eBuilding = new Building(eFloor.getBuildingId());
       Complex eComplex = new Complex(eBuilding.getComplexId());
+
+      Hashtable H = new Hashtable(TAGS.length);
       DateFormat dfLong = DateFormat.getDateInstance(DateFormat.LONG,iwrb.getLocale());
-      if(tag.equalsIgnoreCase(renter_name)){
-
-      }
-      else if(tag.equalsIgnoreCase(renter_address)){
-
-      }
-      else if(tag.equalsIgnoreCase(renter_id)){
-
-      }
-      else if(tag.equalsIgnoreCase(today)){
-        s = dfLong.format(new java.util.Date());
-      }
-      else if(tag.equalsIgnoreCase(tenant_name)){
-        s = eApplicant.getFullName();
-      }
-      else if(tag.equalsIgnoreCase(tenant_address)){
-        s = eApplicant.getLegalResidence();
-      }
-      else if(tag.equalsIgnoreCase(tenant_id)){
-        s = eApplicant.getSSN();
-      }
-      else if(tag.equalsIgnoreCase(apartment_name)){
-        s = eApartment.getName();
-      }
-      else if(tag.equalsIgnoreCase(apartment_floor)){
-        s = eFloor.getName();
-      }
-      else if(tag.equalsIgnoreCase(apartment_address)){
-        s = eBuilding.getStreet();
-      }
-      else if(tag.equalsIgnoreCase(apartment_campus)){
-        s = eComplex.getName();
-      }
-      else if(tag.equalsIgnoreCase(apartment_area)){
-        s = String.valueOf(eApartmentType.getArea());
-      }
-      else if(tag.equalsIgnoreCase(apartment_roomcount)){
-        s = String.valueOf(eApartmentType.getRoomCount());
-      }
-      else if(tag.equalsIgnoreCase(apartment_info)){
-        s = (eApartmentType.getExtraInfo());
-      }
-      else if(tag.equalsIgnoreCase(contract_starts)){
-        s = dfLong.format(eContract.getValidFrom());
-      }
-      else if(tag.equalsIgnoreCase(contract_ends)){
-        s = dfLong.format(eContract.getValidTo());
-      }
-      else if(tag.equalsIgnoreCase(apartment_rent)){
-        s = String.valueOf(eApartmentType.getRent());
-      }
-      else if(tag.equalsIgnoreCase(renting_index)){
-        s = String.valueOf( getTariffIndex());
-      }
-
+      NumberFormat nf = NumberFormat.getCurrencyInstance(iwrb.getLocale());
+      H.put(renter_name,"Stúdentagarðar");
+      H.put(renter_address,"Hringbraut");
+      H.put(renter_id,"00000000");
+      H.put(today,dfLong.format(new java.util.Date()));
+      H.put(tenant_name,eApplicant.getFullName());
+      H.put(tenant_address,eApplicant.getLegalResidence());
+      H.put(tenant_id,eApplicant.getSSN());
+      H.put(apartment_name,eApartment.getName());
+      H.put(apartment_floor, eFloor.getName());
+      H.put(apartment_address,eBuilding.getStreet());
+      H.put(apartment_campus, eComplex.getName());
+      H.put(apartment_area,String.valueOf( eApartmentType.getArea()));
+      H.put(apartment_roomcount,String.valueOf(eApartmentType.getRoomCount()));
+      H.put(apartment_info,eApartmentType.getExtraInfo());
+      H.put(contract_starts,dfLong.format(eContract.getValidFrom()));
+      H.put(contract_ends,dfLong.format(eContract.getValidTo()));
+      H.put(apartment_rent,nf.format((long)eApartmentType.getRent()));
+      H.put(renting_index, String.valueOf( getTariffIndex()));
+      return H;
     }
-    catch (SQLException ex) {
+    catch(SQLException ex){
       ex.printStackTrace();
+      return new Hashtable();
     }
-    return s;
 
   }
 
