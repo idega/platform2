@@ -253,13 +253,13 @@ public class TeeTimeSearch extends GolfBlock {
 		return myLink;
 	}
 
-	public Form getWapSearchForm(IWContext modinfo, IWTimestamp dateFunc) throws IOException, SQLException {
+	public Form getWapSearchForm(IWContext modinfo, IWTimestamp dateFunc) throws IOException, SQLException, FinderException {
 		Form myForm = new Form();
 		myForm.add(new HiddenInput("state", "search"));
 		
 		Table table = new Table();
 		
-		InterfaceObject fieldDropdownMenu = getFieldDropdownMenu(modinfo);
+		InterfaceObject fieldDropdownMenu = getFieldDropdownMenu(modinfo,false);
 		
 		DropdownMenu countOfPlayers = new DropdownMenu("fjoldi");
 		countOfPlayers.addMenuElement(1,"1");
@@ -270,8 +270,8 @@ public class TeeTimeSearch extends GolfBlock {
 		
 		InterfaceObject playerCountInputBox = countOfPlayers;//insertEditBox("fjoldi", 2);
 		
-		IWTimestamp firstOpenTime = service.getFirstOpentime();
-		IWTimestamp lastOpenTime = service.getLastClosetime();
+		IWTimestamp firstOpenTime = service.getFirstOpentime(IWTimestamp.RightNow());
+		IWTimestamp lastOpenTime = service.getLastClosetime(IWTimestamp.RightNow());
 		IWTimestamp approxSelectedTime = IWTimestamp.RightNow();
 		approxSelectedTime.setAsTime();
 		
@@ -360,7 +360,7 @@ public class TeeTimeSearch extends GolfBlock {
 	}
 
 
-	public Form getSearchForm(IWContext modinfo, IWTimestamp dateFunc) throws IOException, SQLException {
+	public Form getSearchForm(IWContext modinfo, IWTimestamp dateFunc) throws IOException, SQLException, FinderException {
 
 		Form myForm = new Form();
 		myForm.add(new HiddenInput("state", "search"));
@@ -822,14 +822,22 @@ public class TeeTimeSearch extends GolfBlock {
 		return myObject;
 	}
 	
-	public DropdownMenu getFieldDropdownMenu(IWContext modinfo) throws IOException, SQLException {
+	public DropdownMenu getFieldDropdownMenu(IWContext modinfo,boolean showAll) throws IOException, SQLException {
 		DropdownMenu myDropdownMenu = new DropdownMenu("fields");
 		Field[] field = service.getStartingEntryField();
+		IWTimestamp opent = new IWTimestamp(1, 1, 1, 7, 59, 59);
+		opent.setAsTime();
+		IWTimestamp now = IWTimestamp.RightNow();
+		now.setAsTime();
+		boolean userHasPermissionToRegister = true;
 		for (int i = 0; i < field.length; i++) {
 			try {
-//				if ((isUser(iwc) && myField.nonMemberRegistration()) || (isMemberOfUnion(iwc, iwc.getSessionAttribute("union_id").toString()) && myField.publicRegistration())&&((iwc.getSessionAttribute("union_id").equals("100")&&now.isLaterThan(opent)) || !iwc.getSessionAttribute("union_id").equals("100") ))
 				Union union = ((UnionHome) IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKey(field[i].getUnionID());
-				myDropdownMenu.addMenuElement(field[i].getID(), union.getAbbrevation() + " - " + field[i].getName());
+				StartingtimeFieldConfig conf = service.getFieldConfig(field[i].getID(),IWTimestamp.RightNow());
+				userHasPermissionToRegister = (conf!=null&&((conf.getNonMemberRegistration()) || (getMember()!=null&&getMember().isMemberInUnion(union) && conf.publicRegistration())&&((union.getPrimaryKey().toString().equals("100")&&now.isLaterThan(opent)) || !union.getPrimaryKey().toString().equals("100"))));
+				if(showAll || userHasPermissionToRegister){
+					myDropdownMenu.addMenuElement(field[i].getID(), union.getAbbrevation() + " - " + field[i].getName());
+				}
 			}
 			catch (FinderException fe) {
 				log(fe);
@@ -1101,15 +1109,26 @@ public class TeeTimeSearch extends GolfBlock {
 		SimpleDateFormat valueFormat = new SimpleDateFormat("HH:mm:ss");
 		SimpleDateFormat displayFormat = new SimpleDateFormat("HH:mm");
 		boolean selectedElementChosen = false;
+		
+		IWTimestamp current = (IWTimestamp)firstOpenTime.clone();
+		IWTimestamp next = (IWTimestamp)firstOpenTime.clone();
 
-		while(lastCloseTime.isLaterThanOrEquals(firstOpenTime)){
-			myDropdown.addMenuElement(valueFormat.format(firstOpenTime.getDate()), displayFormat.format(firstOpenTime.getDate()));
-			if(!selectedElementChosen && firstOpenTime.isLaterThanOrEquals(approxSelectedTime)){
-				myDropdown.setSelectedElement(valueFormat.format(firstOpenTime.getDate()));
+		while(lastCloseTime.isLaterThanOrEquals(next)){
+			current = next;
+			myDropdown.addMenuElement(valueFormat.format(current.getDate()), displayFormat.format(current.getDate()));
+			if(!selectedElementChosen && current.isLaterThanOrEquals(approxSelectedTime)){
+				myDropdown.setSelectedElement(valueFormat.format(current.getDate()));
 				selectedElementChosen=true;
 			}
-				
-			firstOpenTime.addMinutes(interval);
+			next = ((IWTimestamp)current.clone());
+			next.addMinutes(interval);
+			if(current.isLaterThan(next)){
+				myDropdown.addMenuElement("24:00:00", "24:00");
+				if(!selectedElementChosen){
+					myDropdown.setSelectedElement("24:00:00");
+				}
+				break;
+			}
 		}
 
 		myDropdown.keepStatusOnAction();
@@ -1199,20 +1218,16 @@ public class TeeTimeSearch extends GolfBlock {
 		return service.getFieldName(field_id);
 	}
 
-	public String getFirstOpentime() throws SQLException, IOException {
-		String time = "08:00:00";
-		if (service.getFirstOpentime() != null) time = service.getFirstOpentime().toSQLTimeString();
-		return time;
+	public String getFirstOpentime() throws IOException, SQLException, FinderException {
+		return service.getFirstOpentime(IWTimestamp.RightNow()).toSQLTimeString();
 	}
 
-	public int getMaxDaysShown() throws SQLException, IOException {
-		return service.getMaxDaysShown();
+	public int getMaxDaysShown() throws IOException, SQLException, FinderException {
+		return service.getMaxDaysShown(IWTimestamp.RightNow());
 	}
 
-	public String getLastClosetime() throws SQLException, IOException {
-		String time = "23:00:00";
-		if (service.getLastClosetime() != null) time = service.getLastClosetime().toSQLTimeString();
-		return time;
+	public String getLastClosetime() throws IOException, SQLException, FinderException {
+		return service.getLastClosetime(IWTimestamp.RightNow()).toSQLTimeString();
 	}
 
 	public int getFieldUnion(int field_id) throws SQLException, IOException, FinderException {
