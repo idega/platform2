@@ -10,9 +10,7 @@ package se.idega.idegaweb.commune.block.forum.presentation;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -80,6 +78,7 @@ public class CommuneForum extends Forum {
 			Text lastUpdatedText = null;
 			ICCategory topic;
 			User user;
+			boolean isModerator = false;
 			int row = 2;
 			int size = list.size();
 			for (int a = 0; a < size; a++) {
@@ -112,13 +111,19 @@ public class CommuneForum extends Forum {
 						table.add(lastUpdatedText, 3, row);
 
 					if (user != null) {
-						table.add(formatText(user.getName(), _textStyle), 4, row);	
+						table.add(formatText(user.getName(), _textStyle), 4, row);
+						User admin = iwc.getCurrentUser();
+						if (admin != null && ((Integer)user.getPrimaryKey()).intValue() == ((Integer)admin.getPrimaryKey()).intValue())
+							isModerator = true;
+						else
+							isModerator = false;
 					}
-					//table.add(new Text("Jón Jónsson"),4,row);
+					else
+						isModerator = false;
 					
 					Timestamp stamp = topic.getInvalidationDate();
 					
-					if( stamp!=null ){
+					if (stamp!=null) {
 						table.add(getFormattedDate(new IWTimestamp(stamp.getTime()),iwc),5,row);
 					}
 					
@@ -131,6 +136,14 @@ public class CommuneForum extends Forum {
 					} catch (RemoteException e) {
 						e.printStackTrace(System.err);
 						throw new RuntimeException(e.getMessage());
+					}
+					
+					if (isModerator) {
+						table.setColumns(7);
+						Link editTopic = new Link(_iwrb.getLocalizedString("edit_topic","Edit"));
+						editTopic.setAsImageButton(true);
+						editTopic.setWindowToOpen(CommuneForumTopicWindow.class);
+						editTopic.addParameter(CommuneForumTopicEditor.PARAMETER_TOPIC_ID, topic.getID());
 					}
 					
 

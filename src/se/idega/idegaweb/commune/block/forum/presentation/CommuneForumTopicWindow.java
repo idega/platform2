@@ -15,20 +15,15 @@ import com.idega.presentation.ui.Window;
  */
 public class CommuneForumTopicWindow extends Window {
 	
-	public static String PARAMETER_TOPIC_ID = "cm_forum_t_id";
-	
 	public CommuneForumTopicWindow(){
-		super();
+		this.setWidth(400);
+		this.setHeight(350);
+		this.setScrollbar(true);
+		this.setResizable(true);	
+		this.setAllMargins(0);
 	}
 	
-
 	public void main(IWContext iwc) throws Exception {
-		
-		//get parameter
-		//fetch iccategory instance
-		//make form with edit fields
-		//and save and close button
-		//the invalidation date should then lock the topic if the date has been reached
+		add(new CommuneForumTopicEditor());
 	}
-	
 }
