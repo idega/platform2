@@ -235,7 +235,8 @@ public class ProductEditorWindow extends IWAdminWindow {
 		teaser.setHeight("4");
 
 		if (_product != null) {
-			number.setContent(_product.getNumber());
+			if (_product.getNumber() != null)
+				number.setContent(_product.getNumber());
 			name.setContent(_product.getProductName(iLocaleID));
 			description.setContent(_product.getProductDescription(iLocaleID));
 			teaser.setContent(_product.getProductTeaser(iLocaleID));

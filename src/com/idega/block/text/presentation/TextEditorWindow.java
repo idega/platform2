@@ -294,7 +294,7 @@ public class TextEditorWindow extends AbstractChooserWindow{
 
     if ( hasContent ) {
       List files = contentHelper.getFiles();
-      if(files != null){
+      if(files != null && files.size() > 0){
         imageTable.mergeCells(1,row,3,row);
         imageTable.add( formatText(iwrb.getLocalizedString("textimages","Text images :")),1,row++);
         ICFile file1 = (ICFile) files.get(0);

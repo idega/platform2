@@ -48,7 +48,7 @@ import com.idega.presentation.ui.Parameter;
 public class ProductCatalog extends CategoryBlock{
   int _spaceBetweenEntries = 0;
 	int _indent = 0;
-	private String prmClrCache = "prmClCh";
+	public String prmClrCache = "prmClCh";
   private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
   private static final String _VIEW_PAGE = "prod_cat_view_page";
   private static final String _ORDER_BY ="prod_cat_order_by";
@@ -70,8 +70,9 @@ public class ProductCatalog extends CategoryBlock{
   Image iEdit = null;
   Image iDetach = null;
 
-  private String _fontStyle = null;
-  private String _catFontStyle = null;
+  public String _fontStyle = null;
+  public String _catFontStyle = null;
+  public String _headerFontStyle = null;
   private String _teaserFontStyle = null;
   private String _anchorString = "prodCatAnchorID_";
 
@@ -105,6 +106,7 @@ public class ProductCatalog extends CategoryBlock{
 
   private Class _layoutClass = ProductCatalogLayoutSingleFile.class;
   private AbstractProductCatalogLayout layout = null;
+public String _topColor;
 
   public ProductCatalog() {
     super.setCacheable(getCacheKey(), 999999999);//CACHE_KEY, 999999999);
@@ -123,7 +125,7 @@ public class ProductCatalog extends CategoryBlock{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  private void clearCache(IWContext iwc) {
+  public void clearCache(IWContext iwc) {
     iwc.getApplication().getIWCacheManager().invalidateCache(getCacheState(iwc,     super.getCachePrefixString(iwc)));
   }
 
@@ -294,6 +296,10 @@ public class ProductCatalog extends CategoryBlock{
     this._catFontStyle = catFontStyle;
   }
 
+  public void setHeaderFontStyle(String headerFontStyle) {
+	this._headerFontStyle = headerFontStyle;
+  }
+
   public void setTeaserFontStyle(String teaserFontStyle) {
     this._teaserFontStyle = teaserFontStyle;
   }
@@ -364,6 +370,10 @@ public class ProductCatalog extends CategoryBlock{
 
   public void setShowThumbnail(boolean showThumbnail) {
     this._showThumbnail = showThumbnail;
+  }
+  
+  public void setTopColor(String color) {
+  	this._topColor = color;
   }
 
   public boolean getMultible() {
