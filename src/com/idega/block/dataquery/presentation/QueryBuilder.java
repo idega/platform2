@@ -4,7 +4,7 @@
  * QueryBuilder is a wizard that constructs a ReportQuery from the user input.
  */
 package com.idega.block.dataquery.presentation;
-import java.awt.Color;
+//import java.awt.Color;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -43,7 +43,7 @@ import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TreeViewer;
-import com.idega.util.IWColor;
+//import com.idega.util.IWColor;
 
 /**
  * <p>Title: idegaWeb</p>
