@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolUserChooser.java,v 1.1 2005/03/04 10:37:33 anna Exp $ Created on 24.2.2005
+ * $Id: SchoolUserChooser.java,v 1.2 2005/03/07 08:35:11 anna Exp $ Created on 24.2.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  * 
@@ -16,11 +16,11 @@ import com.idega.user.presentation.UserChooser;
  * Last modified: 24.2.2005 15:05:35 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SchoolUserChooser extends UserChooser {
 
-	public static final String PARAMETER_SCHOOL_ID = null;
+	public final String PARAMETER_SCHOOL_ID = "prm_school_id";
 
 	private School school;
 
