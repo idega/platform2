@@ -209,13 +209,13 @@ public abstract class EntityNavigationList extends Block {
         Object tObj = getDisplayedText(null);
         if(selectedItem <=0 && initSelectedElement == 1){
           selectedElement = 1;
-          if (tObj instanceof String){
+          /*if (tObj instanceof String){
             firstT = new Text((String)tObj);
             ((Text)firstT).setFontSize(1);
           } else {
             firstT = (PresentationObject)tObj;
-          }
-        } else {
+          }*/
+        } //else {
           if (tObj instanceof String){
             firstT = new Link((String)tObj);
           } else {
@@ -223,7 +223,7 @@ public abstract class EntityNavigationList extends Block {
           }
           ((Link)firstT).setFontSize(1);
           addParameters(iwc, null, (Link)firstT);
-        }
+        //}
 
     }
 
@@ -247,14 +247,14 @@ public abstract class EntityNavigationList extends Block {
         }
         PresentationObject t = null;
         Object tObj = getDisplayedText(lItem);
-        if(selectedElement > 0 && (selectedElement == index)){
+        /*if(selectedElement > 0 && (selectedElement == index)){
           if (tObj instanceof String){
             t = new Text((String)tObj);
             ((Text)t).setFontSize(1);
           } else {
             t = (PresentationObject)tObj;
           }
-        } else {
+        } else {*/
           if (tObj instanceof String){
             t = new Link((String)tObj);
           } else {
@@ -262,7 +262,7 @@ public abstract class EntityNavigationList extends Block {
           }
           ((Link)t).setFontSize(1);
           addParameters(iwc, lItem, (Link)t);
-        }
+        //}
         table.add(t,nameColumn,index);
       }
 
