@@ -40,6 +40,8 @@ public class ProductViewer extends Block {
   Image _seperator = null;
   boolean _useHRasSeperator = false;
   boolean _showRandom = false;
+  String _imageWidth = null;
+  String _textAlignment = Paragraph.HORIZONTAL_ALIGN_LEFT;
 
   public ProductViewer() { }
 
@@ -144,6 +146,7 @@ public class ProductViewer extends Block {
   Text getText(String content) {
     Text text = new Text(content);
     if (this._fontStyle != null) text.setFontStyle(_fontStyle);
+    text.setHorizontalAlignment(_textAlignment);
     return text;
   }
 
@@ -163,6 +166,14 @@ public class ProductViewer extends Block {
 
   public void setWidth(String width) {
     this._width = width;
+  }
+
+  public void setImageWidth(String width) {
+    this._imageWidth = width;
+  }
+
+  public void setDescriptionAlignment(String alignment) {
+    _textAlignment = alignment;
   }
 
   public void setLayoutClassName(String className) {

@@ -68,28 +68,35 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
     Text header = productViewer.getHeaderText(this._name);
     Text description = productViewer.getText(this._description);
 
-    table.add(header, 1, 1);
+    int row = 1;
 
-    table.mergeCells(1, 2, 2, 2);
+    table.add(header, 1, row);
+
+    table.mergeCells(1, row, 2, row++);
 
     if (productViewer._useHRasSeperator) {
+      table.mergeCells(1, row, 2, row);
       HorizontalRule hr = new HorizontalRule("100%");
-      table.add(hr, 1, 2);
-    }else {
+      table.add(hr, 1, row++);
+    }
+    else {
       if (productViewer._seperator != null) {
-	table.add(productViewer._seperator, 1, 2);
+	table.mergeCells(1, row, 2, row);
+	table.add(productViewer._seperator, 1, row++);
       }
     }
-    table.add(description, 1, 3);
+    table.add(description, 1, row);
     if (_product != null) {
       ProductItemImages pii = new ProductItemImages(_product);
 	pii.setVerticalView(true);
 	pii.setImageAlignment(Table.HORIZONTAL_ALIGN_CENTER);
-      table.add(pii, 2, 3);
+	if ( productViewer._imageWidth != null )
+	  pii.setWidth(productViewer._imageWidth);
+      table.add(pii, 2, row);
+      table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_CENTER);
+      table.setVerticalAlignment(2,row, Table.VERTICAL_ALIGN_TOP);
     }
 
-    table.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
-    table.setAlignment(2, 3, Table.HORIZONTAL_ALIGN_RIGHT);
     table.setVerticalAlignment(1,1, Table.VERTICAL_ALIGN_BOTTOM);
     table.setVerticalAlignment(2,1, Table.VERTICAL_ALIGN_BOTTOM);
     table.setVerticalAlignment(1,3, Table.VERTICAL_ALIGN_TOP);
