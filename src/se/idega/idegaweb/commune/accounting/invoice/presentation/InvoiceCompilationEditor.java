@@ -79,10 +79,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/28 09:21:30 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/28 12:52:50 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.65 $
+ * @version $Revision: 1.66 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -572,7 +572,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                      CREATE_INVOICE_RECORD_DEFAULT));
         inputs.put (HEADER_KEY, localize (CREATE_INVOICE_RECORD_KEY,
                                           CREATE_INVOICE_RECORD_DEFAULT));
-        inputs.put (RULE_TEXT_KEY, getRuleTextDropdown (header));
+        inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY));
         inputs.put (PLACEMENT_KEY, getPlacementDropdown (context, header));
         renderRecordDetailsOrForm (context, inputs);
     }
@@ -643,8 +643,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                           EDIT_INVOICE_RECORD_DEFAULT));
         inputs.put (RULE_TEXT_KEY, getSmallText (record.getRuleText ()));
         final String providerName = getProviderName
-                (context, record.getProviderId (),
-                 record.getSchoolClassMemberId ());
+                (record.getSchoolClassMember ());
         inputs.put (PLACEMENT_KEY, getSmallText (providerName));
         renderRecordDetailsOrForm (context, inputs);
     }
@@ -1515,6 +1514,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
     }
 
+    /*
     private DropdownMenu getRuleTextDropdown (final InvoiceHeader header) {
         final DropdownMenu dropdown = (DropdownMenu)
                 getStyledInterface (new DropdownMenu (RULE_TEXT_KEY));
@@ -1533,91 +1533,19 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             // do nothing, ok to return the dropdown as empty as might be
         }
         return dropdown;
-    }
-
-    private PresentationObject getPlacementDropdown
-        (final IWContext context, final InvoiceHeader header) {
-
-        PresentationObject result = getSmallText ("");
-        try {
-            // get business objects
-            final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
-                    .getServiceInstance (context, SchoolBusiness.class);
-            
-            // get home objects
-            final SchoolClassMemberHome placementHome
-                    = schoolBusiness.getSchoolClassMemberHome ();
-            
-            final UserHome userHome = (UserHome) IDOLookup.getHome(User.class);
-            final User child = userHome.findByPrimaryKey
-                    (new Integer (context.getParameter (IN_CUSTODY_OF_KEY)));
-            final SchoolCategory category =  header.getSchoolCategory ();
-
-            final Collection placements = placementHome
-                    .findAllByUserAndSchoolCategory (child, category);
-            if (1 == placements.size ()) {
-                final Table table = createTable (1);
-                final SchoolClassMember placement
-                        = (SchoolClassMember) placements.iterator ().next ();
-                table.add (new HiddenInput
-                           (PLACEMENT_KEY, placement.getPrimaryKey () + ""), 1,
-                           1);
-                addSmallText (table, getProviderName (placement), 1, 1);
-                result = table;
-            } else {
-                final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
-                        (new DropdownMenu (PLACEMENT_KEY));
-                for (Iterator i = placements.iterator (); i.hasNext ();) {
-                    final SchoolClassMember placement
-                            = (SchoolClassMember) i.next ();
-                    dropdown.addMenuElement (placement.getPrimaryKey () + "",
-                                             getProviderName (placement));
-                }
-                result = dropdown;
-            }
-        } catch (Exception e) {
-            // do nothing, ok to return the dropdown as empty as might be
-        }
-        return result;
-    }
+        }*/
 
     private String getProviderName (final SchoolClassMember placement) {
-        final String studentName = placement.getStudent ().getName ();
+        if (null == placement) return "";
         final String providerName
                 = placement.getSchoolClass ().getSchool ().getName ();
-        return providerName + " (" + studentName + ")";
+        final String groupName = placement.getSchoolClass ().getName ();
+        return providerName + " " + groupName;
     }
-
-    private String getProviderName
-        (final IWContext context, final int providerId, final int placementId)
-        throws RemoteException, FinderException {
-        final StringBuffer result = new StringBuffer ();
-        final SchoolBusiness schoolBusiness
-                = (SchoolBusiness) IBOLookup.getServiceInstance
-                (context, SchoolBusiness.class);
-        if (0 < placementId) {
-            final SchoolClassMemberHome placementHome
-                    = schoolBusiness.getSchoolClassMemberHome ();
-            final SchoolClassMember placement = placementHome.findByPrimaryKey
-                    (new Integer (placementId));
-            result.append (getProviderName (placement));
-        } else if (0 < providerId) {
-            final School school = schoolBusiness.getSchool
-                    (new Integer (providerId));
-            result.append (school.getName ());
-        }
-        return result.toString ();
-    }
-
     private String getSchoolCategoryName (final IWContext context,
                                         final InvoiceHeader header) {
         try {
-            final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
-                    .getServiceInstance (context, SchoolBusiness.class);
-            final SchoolCategoryHome categoryHome
-                    = schoolBusiness.getSchoolCategoryHome ();
-            final SchoolCategory category = categoryHome.findByPrimaryKey
-                    (header.getSchoolCategoryID ());
+            final SchoolCategory category = header.getSchoolCategory ();
             return localize (category.getLocalizedKey (), category.getName ());
         } catch (Exception dummy) {
             return "";
@@ -2152,31 +2080,78 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return dropdown;
     }
 
-    private DropdownMenu getInCustodyOfDropdown
+    private PresentationObject getPlacementDropdown
+        (final IWContext context, final InvoiceHeader header) {
+
+        PresentationObject result = getSmallText ("");
+        try {
+            // get business objects
+            final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
+                    .getServiceInstance (context, SchoolBusiness.class);
+            
+            // get home objects
+            final SchoolClassMemberHome placementHome
+                    = schoolBusiness.getSchoolClassMemberHome ();
+            
+            final UserHome userHome = (UserHome) IDOLookup.getHome(User.class);
+            final User child = userHome.findByPrimaryKey
+                    (new Integer (context.getParameter (IN_CUSTODY_OF_KEY)));
+            final SchoolCategory category =  header.getSchoolCategory ();
+
+            final Collection placements = placementHome
+                    .findAllByUserAndSchoolCategory (child, category);
+            if (1 == placements.size ()) {
+                final Table table = createTable (1);
+                final SchoolClassMember placement
+                        = (SchoolClassMember) placements.iterator ().next ();
+                table.add (new HiddenInput
+                           (PLACEMENT_KEY, placement.getPrimaryKey () + ""), 1,
+                           1);
+                addSmallText (table, getProviderName (placement), 1, 1);
+                result = table;
+            } else {
+                final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
+                        (new DropdownMenu (PLACEMENT_KEY));
+                for (Iterator i = placements.iterator (); i.hasNext ();) {
+                    final SchoolClassMember placement
+                            = (SchoolClassMember) i.next ();
+                    dropdown.addMenuElement (placement.getPrimaryKey () + "",
+                                             getProviderName (placement));
+                }
+                result = dropdown;
+            }
+        } catch (Exception e) {
+            // do nothing, ok to return the dropdown as empty as might be
+        }
+        return result;
+    }
+
+    private PresentationObject getInCustodyOfDropdown
         (final IWContext context, final User custodian) throws RemoteException {
         return getInCustodyOfDropdown (context, custodian, null);
     }
 
-    private DropdownMenu getInCustodyOfDropdown
+    private PresentationObject getInCustodyOfDropdown
         (final IWContext context, final User custodian,
          final InvoiceRecord record) throws RemoteException {
-        final DropdownMenu dropdown = (DropdownMenu)
-                getStyledInterface (new DropdownMenu (IN_CUSTODY_OF_KEY));
-        dropdown.addMenuElement ("", localize (CHOOSE_CHILDREN_KEY,
-                                               CHOOSE_CHILDREN_DEFAULT));
+        PresentationObject result = getSmallText ("");
         try {
-            Object currentChildId = getIntegerParameter (context,
-                                                         IN_CUSTODY_OF_KEY);
+            final MemberFamilyLogic familyBusiness
+                    = (MemberFamilyLogic) IBOLookup.getServiceInstance
+                    (context, MemberFamilyLogic.class);
+            final Collection children
+                    = familyBusiness.getChildrenInCustodyOf (custodian);
+            Object currentChildId
+                    = getIntegerParameter (context, IN_CUSTODY_OF_KEY);
             if (null == currentChildId && null != record
                 && 0 < record.getSchoolClassMemberId ()) {
                 currentChildId = record.getSchoolClassMember ().getStudent ()
-                    .getPrimaryKey ();
+                        .getPrimaryKey ();
             }
-            final MemberFamilyLogic familyBusiness = (MemberFamilyLogic)
-                    IBOLookup.getServiceInstance (context,
-                                                  MemberFamilyLogic.class);
-            final Collection children
-                    = familyBusiness.getChildrenInCustodyOf (custodian);
+            final DropdownMenu dropdown = (DropdownMenu)
+                    getStyledInterface (new DropdownMenu (IN_CUSTODY_OF_KEY));
+            dropdown.addMenuElement ("", localize (CHOOSE_CHILDREN_KEY,
+                                                   CHOOSE_CHILDREN_DEFAULT));
             for (Iterator i = children.iterator (); i.hasNext ();) {
                 final User child = (User) i.next ();
                 final Object key = child.getPrimaryKey ();
@@ -2186,12 +2161,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 }
             }
             dropdown.setOnChange ("this.form.submit()");
+            result = dropdown;
         } catch (FinderException fe) {
             // no problem - return empty dropdown
         } catch (Exception e) {
             e.printStackTrace ();
         }
-        return dropdown;
+        return result;
     }
 
     private DropdownMenu getLocalizedDropdown
