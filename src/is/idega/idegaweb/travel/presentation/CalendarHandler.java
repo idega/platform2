@@ -62,6 +62,7 @@ public class CalendarHandler extends TravelManager {
 
   private String _fontColor;
   private boolean _viewInquiries = true;
+  private boolean _showPast = false;
 
 
   public CalendarHandler(IWContext iwc) throws Exception{
@@ -131,11 +132,48 @@ public class CalendarHandler extends TravelManager {
       sm.setTimestamp(_fromStamp);
       this.timeframeCheck();
 
-      Table table = new Table(4,6);
+      Table table = new Table(4,7);
           table.setBorder(0);
           table.setColor(this.backgroundColor);
           table.setAlignment("center");
 
+      int row = 1;
+
+      if (_timeframe.getIfYearly()) {
+        Form form = new Form();
+        for (int i = 0; i < parameterName.size(); i++) {
+          form.maintainParameter((String) parameterName.get(i));
+        }
+        form.maintainParameter(CalendarBusiness.PARAMETER_DAY);
+        form.maintainParameter(CalendarBusiness.PARAMETER_MONTH);
+
+        Table yearTable = new Table(2,1);
+        idegaTimestamp temp = idegaTimestamp.RightNow();
+        DropdownMenu year = new DropdownMenu(CalendarBusiness.PARAMETER_YEAR);
+          for (int i = 2000; i < ( temp.getYear() +4 ); i++) {
+              year.addMenuElement(i,""+i);
+          }
+          year.setSelectedElement(Integer.toString(this._stamp.getYear()));
+          year.setToSubmit();
+
+        Text yearTxt = (Text) theText.clone();
+          yearTxt.setText(iwrb.getLocalizedString("travel.year","Year"));
+          yearTxt.setBold();
+          if (_fontColor != null) {
+            yearTxt.setFontColor(_fontColor);
+          }
+
+        yearTable.add(yearTxt,1,1);
+        yearTable.add(year,2,1);
+        yearTable.setAlignment(1,1,"left");
+        yearTable.setAlignment(2,1,"left");
+
+        form.add(yearTable);
+        table.mergeCells(1,row,4,row);
+        table.setAlignment(1,row,"center");
+        table.add(form,1,row);
+        ++row;
+      }
 
       Text jan = (Text) theText.clone();
         jan.setFontStyle("text-decoration: none;");
@@ -267,18 +305,20 @@ public class CalendarHandler extends TravelManager {
       }
 
 
-      table.add(lJan,1,1);
-      table.add(lFeb,2,1);
-      table.add(lMar,3,1);
-      table.add(lApr,4,1);
-      table.add(lMay,1,2);
-      table.add(lJun,2,2);
-      table.add(lJul,3,2);
-      table.add(lAug,4,2);
-      table.add(lSep,1,3);
-      table.add(lOct,2,3);
-      table.add(lNov,3,3);
-      table.add(lDec,4,3);
+      table.add(lJan,1,row);
+      table.add(lFeb,2,row);
+      table.add(lMar,3,row);
+      table.add(lApr,4,row);
+      ++row;
+      table.add(lMay,1,row);
+      table.add(lJun,2,row);
+      table.add(lJul,3,row);
+      table.add(lAug,4,row);
+      ++row;
+      table.add(lSep,1,row);
+      table.add(lOct,2,row);
+      table.add(lNov,3,row);
+      table.add(lDec,4,row);
 
 
       int month = _fromStamp.getMonth();
@@ -288,7 +328,7 @@ public class CalendarHandler extends TravelManager {
       idegaTimestamp temp = new idegaTimestamp(1, month , year);
       int iBookings = 0;
 
-      List depDays = this.getDepartureDays(iwc, false);
+      List depDays = this.getDepartureDays(iwc, _showPast);
       int seats = 0;
       int minSeats = 0;
 
@@ -425,12 +465,14 @@ public class CalendarHandler extends TravelManager {
         legend.setColor(3,lRow,colorForFullyBooked);
         legend.setWidth(3,lRow,"18");
         legend.setHeight(lRow,"14");
-      table.setAlignment(1,6,"center");
 
-      table.mergeCells(1,5,4,5);
-      table.add(sm,1,5);
-      table.mergeCells(1,6,4,6);
-      table.add(legend,1,6);
+      ++row;
+      table.mergeCells(1,row,4,row);
+      table.add(sm,1,row);
+      ++row;
+      table.mergeCells(1,row,4,row);
+      table.add(legend,1,row);
+      table.setAlignment(1,row,"center");
 
       return table;
   }
@@ -537,8 +579,12 @@ public class CalendarHandler extends TravelManager {
     _viewInquiries = show;
   }
 
+  public void showPast(boolean showPast) {
+    this._showPast = showPast;
+  }
+
   public List getDepartureDays(IWContext iwc) {
-    return getDepartureDays(iwc, false);
+    return getDepartureDays(iwc, _showPast);
   }
 
   public List getDepartureDays(IWContext iwc, boolean showPast) {
@@ -546,12 +592,12 @@ public class CalendarHandler extends TravelManager {
       if (_tour != null) {
         if (_tour.getNumberOfDays() > 1) {
           if (_timeframe.getIfYearly()) {
-            depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp);
+            depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast);
           }else {
-            depDays = TourBusiness.getDepartureDays(iwc, _tour);
+            depDays = TourBusiness.getDepartureDays(iwc, _tour, showPast);
           }
         }else {
-          depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp);
+          depDays = TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast);
         }
       }else {
           depDays = TravelStockroomBusiness.getDepartureDays(iwc, _product, _fromStamp, _toStamp, showPast);

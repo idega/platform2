@@ -416,10 +416,10 @@ public class TourBookingForm extends TravelManager {
           Text subHeader;
 
           Text availSeats = (Text) theText.clone();
-            availSeats.setText(iwrb.getLocalizedString("travel.there_are_available_seats ","There are available seats "));
+            availSeats.setText(iwrb.getLocalizedString("travel.there_are_available_seats","There are available seats "));
 
           Text notAvailSeats = (Text) theText.clone();
-            notAvailSeats.setText(iwrb.getLocalizedString("travel.there_are_no_available_seats ","There are no available seats "));
+            notAvailSeats.setText(iwrb.getLocalizedString("travel.there_are_no_available_seats","There are no available seats "));
 
           Text dateText = (Text) theBoldText.clone();
             dateText.setText(stamp.getLocaleDate(iwc));

@@ -535,11 +535,15 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   private static boolean isDateValid(Contract contract, idegaTimestamp stamp) {
     idegaTimestamp theStamp= idegaTimestamp.RightNow();
       theStamp.addDays(contract.getExpireDays()-1);
+
+    return idegaTimestamp.isInTimeframe(new idegaTimestamp(contract.getFrom()), new idegaTimestamp(contract.getTo()), stamp, false);
+    /*
     if (stamp.isLaterThan(theStamp)) {
       return new idegaTimestamp(contract.getTo()).isLaterThan(stamp);
     }else {
       return false;
     }
+    */
 
   }
 
@@ -549,7 +553,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
   private static boolean isDayValid(Product product, Contract contract, idegaTimestamp stamp) {
     boolean returner = false;
-    int numberOfYearsToCheck = 5;
+
     try {
       boolean goOn = false;
       if (contract == null) {
@@ -559,47 +563,10 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       }
       if (goOn) {
         Service service = TravelStockroomBusiness.getService(product);
-        String middleTable = EntityControl.getManyToManyRelationShipTableName(Service.class, Timeframe.class);
         Timeframe frame = service.getTimeframe();
         boolean isYearly = frame.getIfYearly();
-        StringBuffer sb = new StringBuffer();
-          sb.append("Select "+frame.getIDColumnName()+" from "+frame.getTimeframeTableName()+" t, "+middleTable+" st");
-          sb.append(" where ");
-          sb.append("st."+service.getIDColumnName()+" = "+product.getID());
-          sb.append(" and ");
-          sb.append("st."+frame.getIDColumnName()+" = "+frame.getID());
-          sb.append(" and ");
-          sb.append("st."+frame.getIDColumnName()+" = t."+frame.getIDColumnName());
-          if (isYearly) {
-            int fromYear = (new idegaTimestamp(frame.getFrom())).getYear();
-            int toYear = (new idegaTimestamp(frame.getTo())).getYear();
 
-            sb.append(" and (");
-            sb.append(frame.getTimeframeFromColumnName() +" <= '"+fromYear+"-"+stamp.getMonth()+"-"+stamp.getDay()+"'");
-            sb.append(" and ");
-            sb.append(frame.getTimeframeToColumnName() +" >= '"+fromYear+"-"+stamp.getMonth()+"-"+stamp.getDay()+"'");
-            sb.append(") OR (");
-            sb.append(frame.getTimeframeFromColumnName() +" <= '"+toYear+"-"+stamp.getMonth()+"-"+stamp.getDay()+"'");
-            sb.append(" and ");
-            sb.append(frame.getTimeframeToColumnName() +" >= '"+toYear+"-"+stamp.getMonth()+"-"+stamp.getDay()+"'");
-            sb.append(")");
-          }else {
-            sb.append(" and ");
-            sb.append(frame.getTimeframeFromColumnName() +" <= '"+stamp.toSQLDateString()+"'");
-            sb.append(" and ");
-            sb.append(frame.getTimeframeToColumnName() +" >= '"+stamp.toSQLDateString()+"'");
-          }
-
-          String[] result = SimpleQuerier.executeStringQuery(sb.toString());
-//          System.err.println(sb.toString());
-
-          if (result != null) {
-            if (result.length > 0)
-            if (!result[0].equals("0")) {
-              //System.err.println("Result.length = "+result.length);
-              returner = true;
-            }
-          }
+        returner = idegaTimestamp.isInTimeframe(new idegaTimestamp(frame.getFrom()), new idegaTimestamp(frame.getTo() ), stamp, isYearly);
 
       }
     }catch (Exception e) {
@@ -858,36 +825,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     boolean yearly = timeframe.getIfYearly();
     idegaTimestamp from = new idegaTimestamp(timeframe.getFrom());
     idegaTimestamp to   = new idegaTimestamp(timeframe.getTo());
-    return isBetweenTimestamps(from, to, stamp,yearly);
-  }
-
-  public static boolean isBetweenTimestamps(idegaTimestamp fromStamp, idegaTimestamp toStamp, idegaTimestamp stampToCheck, boolean yearly) {
-    idegaTimestamp from = new idegaTimestamp(fromStamp);
-    idegaTimestamp to = new idegaTimestamp(toStamp);
-    //from.addDays(-1);
-    from.setHour(0);
-    from.setMinute(0);
-    from.setSecond(0);
-    to.addDays(1);
-
-    if (yearly) {
-      idegaTimestamp temp = new idegaTimestamp(stampToCheck);
-      if (from.getYear() == to.getYear()) {
-        temp.setYear(from.getYear());
-        return (temp.isLaterThan(from) && to.isLaterThan(temp));
-      }else {
-        if (temp.getYear() >= to.getYear()) {
-          if (temp.getMonth() > to.getMonth()) {
-            temp.setYear(from.getYear());
-          }else {
-            temp.setYear(to.getYear() );
-          }
-        }
-        return isBetweenTimestamps(from, to, temp, false);
-      }
-    }else {
-      return (stampToCheck.isLaterThan(from) && to.isLaterThan(stampToCheck));
-    }
+    return idegaTimestamp.isInTimeframe(from, to, stamp,yearly);
   }
 
 }

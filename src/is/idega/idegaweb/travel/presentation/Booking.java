@@ -217,7 +217,7 @@ public class Booking extends TravelManager {
           if (product != null) {
               trip.setSelectedElement(Integer.toString(product.getID()));
           }
-
+/*
       idegaTimestamp temp = idegaTimestamp.RightNow();
       DropdownMenu year = new DropdownMenu("chosen_year");
           for (int i = 2000; i < ( temp.getYear() +4 ); i++) {
@@ -230,7 +230,7 @@ public class Booking extends TravelManager {
           }else {
               year.setSelectedElement(Integer.toString(temp.getYear()));
           }
-
+*/
       Text nameText = (Text) theText.clone();
           nameText.setText(iwrb.getLocalizedString("travel.trip_name_lg","Name of trip"));
           nameText.addToText(":");
@@ -239,8 +239,8 @@ public class Booking extends TravelManager {
       topTable.setColumnAlignment(2,"left");
       topTable.add(nameText,1,1);
       topTable.add(trip,2,1);
-      topTable.add(tframeText,3,1);
-      topTable.add(year,4,1);
+//      topTable.add(tframeText,3,1);
+//      topTable.add(year,4,1);
 
       topTable.setAlignment(5,1,"right");
       topTable.add(new SubmitButton(iwrb.getImage("buttons/get.gif"),"", ""),5,1);
@@ -300,35 +300,14 @@ public class Booking extends TravelManager {
       }
 
 
-      //System.err.println("isDayVisible : "+isDayVisible);
       boolean yearly = timeframe.getIfYearly();
       List depDays = null;
 
-      if (!yearly) /** @todo implente fyrir annual */
-      if (isDayVisible) {
-        CalendarHandler ch = new CalendarHandler(iwc);
-          ch.setProduct(product);
-        depDays = ch.getDepartureDays(iwc, false);
-
-        isDayVisible = false;
-        idegaTimestamp tempStamp;
-        for (int i = 0; i < depDays.size(); i++) {
-          tempStamp = (idegaTimestamp) depDays.get(i);
-          if (tempStamp.toSQLDateString().equals(stamp.toSQLDateString())) {
-            isDayVisible = true;
-            break;
-          }
-        }
-      }
-      //System.err.println("isDayVisible 2 : "+isDayVisible);
-
-
       if (isDayVisible) {
           table.setColor(6,row,super.backgroundColor);
-          table.setVerticalAlignment(6,row,"top");
-          table.add(Text.BREAK ,6,row);
           table.add(Text.BREAK ,6,row);
           table.add(getCalendar(iwc),6,row);
+          table.setVerticalAlignment(6,row,"top");
 
           table.mergeCells(1,row,5,row);
           if (supplier != null) {
@@ -416,8 +395,9 @@ public class Booking extends TravelManager {
           table.setAlignment(1,row, "center");
 
           table.setColor(6,row,super.backgroundColor);
-          table.setVerticalAlignment(6,row,"top");
+          table.add(Text.BREAK,6,row);
           table.add(getCalendar(iwc),6,row);
+          table.setVerticalAlignment(6,row,"top");
 
           ++row;
           table.mergeCells(1,row,5,row);

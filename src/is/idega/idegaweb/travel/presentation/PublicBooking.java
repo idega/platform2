@@ -246,6 +246,13 @@ public class PublicBooking extends Block  {
 
       String stampTxt1 = new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc);
       String stampTxt2 = new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc);
+      if (timeframe.getIfYearly()) {
+        try {
+          stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
+          stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
+        }catch (NumberFormatException n) {}
+      }
+
       idegaTimestamp depTimeStamp = new idegaTimestamp(service.getDepartureTime());
       Address depAddress = TravelStockroomBusiness.getDepartureAddress(service);
       ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), true);
@@ -378,19 +385,7 @@ public class PublicBooking extends Block  {
       CalendarHandler ch  = new CalendarHandler(iwc);
         ch.setProduct(product);
 
-      boolean legalDay = false;
-
-      List depDays = ch.getDepartureDays(iwc, false);
-      idegaTimestamp temp;
-      for (int i = 0; i < depDays.size(); i++) {
-        temp = (idegaTimestamp) depDays.get(i);
-        if (temp.toSQLDateString().equals(this.stamp.toSQLDateString())) {
-          legalDay = true;
-          break;
-        }
-      }
-
-
+      boolean legalDay = stamp.isLaterThanOrEquals(idegaTimestamp.RightNow()) && idegaTimestamp.isInTimeframe(new idegaTimestamp(timeframe.getFrom()), new idegaTimestamp(timeframe.getTo()), stamp, timeframe.getIfYearly());;
 
       Form form = new Form();
 
@@ -670,7 +665,7 @@ public class PublicBooking extends Block  {
           table.setAlignment(1,1,"left");
           table.setAlignment(1,2,"right");
         }catch (Exception e) {
-          table.add("Villa í try");
+          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.booking_not_successful_try_again_later","Booking not successful. Please try again later.")));
           e.printStackTrace(System.err);
         }
 

@@ -259,10 +259,14 @@ public class TourBusiness extends TravelStockroomBusiness {
   }
 
   public static List getDepartureDays(IWContext iwc, Tour tour) {
-    return getDepartureDays(iwc, tour, null, null);
+    return getDepartureDays(iwc, tour, true);
   }
 
-  public static List getDepartureDays(IWContext iwc, Tour tour, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
+  public static List getDepartureDays(IWContext iwc, Tour tour, boolean showPast) {
+    return getDepartureDays(iwc, tour, null, null, showPast);
+  }
+
+  public static List getDepartureDays(IWContext iwc, Tour tour, idegaTimestamp fromStamp, idegaTimestamp toStamp, boolean showPast) {
     List returner = new Vector();
     try {
       Service service = new Service(tour.getID());
@@ -321,21 +325,29 @@ public class TourBusiness extends TravelStockroomBusiness {
               yearsBetween = to.getYear() - toY;
             }
 
-
-
           idegaTimestamp stamp = new idegaTimestamp(from);
           idegaTimestamp temp;
 
+      idegaTimestamp now = idegaTimestamp.RightNow();
 
           while (to.isLaterThan(stamp)) {
             temp = getNextAvailableDay(iwc, service, stamp);
             if (temp != null) {
-              if (isBetweenTimestamps(tFrom, tTo, temp, yearly)) {
+              if (idegaTimestamp.isInTimeframe(tFrom, tTo, temp, yearly)) {
                 if (yearly) {
                   temp.addYears(-yearsBetween);
                 }
-                returner.add(temp);
-                stamp = new idegaTimestamp(temp);
+                if (!showPast) {
+                  if (temp.isLaterThanOrEquals(now)) {
+                    returner.add(temp);
+                    stamp = new idegaTimestamp(temp);
+                  }else {
+                    stamp = new idegaTimestamp(temp);
+                  }
+                }else {
+                  returner.add(temp);
+                  stamp = new idegaTimestamp(temp);
+                }
                 if (yearly) {
                   stamp.addYears(yearsBetween);
                 }
