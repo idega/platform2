@@ -364,7 +364,8 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   		Map.Entry entry = (Map.Entry) iterator.next();
   		String identifier = entry.getKey().toString();
   		if ( ! (DirectSQLStatement.USER_ACCESS_VARIABLE.equals(identifier) ||
-  				DirectSQLStatement.GROUP_ACCESS_VARIABLE.equals(identifier))) {
+  				DirectSQLStatement.GROUP_ACCESS_VARIABLE.equals(identifier) ||
+					DirectSQLStatement.USER_GROUP_ACCESS_VARIABLE.equals(identifier)	) ) {
 	   		InputDescription inputDescription = (InputDescription) entry.getValue();
 	  		List inputValues = (List) identifierValueMap.get(identifier);
 	  		// get handler

@@ -186,7 +186,8 @@ public class QueryResultViewer extends Block {
 	  boolean calculateAccess = false;
 	  boolean containsOnlyAccessVariable = 
 	  	(	(calculateAccess = identifierValueMap.containsKey(DirectSQLStatement.USER_ACCESS_VARIABLE))  || 
-	    (calculateAccess = identifierValueMap.containsKey(DirectSQLStatement.GROUP_ACCESS_VARIABLE))) && 
+	    (calculateAccess = identifierValueMap.containsKey(DirectSQLStatement.GROUP_ACCESS_VARIABLE)) ||
+	  	(calculateAccess = identifierValueMap.containsKey(DirectSQLStatement.USER_GROUP_ACCESS_VARIABLE))	) && 
 	    (identifierValueMap.size() == 1);
 	  if (! (containsOnlyAccessVariable || iwc.isParameterSet(EXECUTE_QUERY_KEY))) {
 	  	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();
@@ -258,7 +259,8 @@ public class QueryResultViewer extends Block {
   		Map.Entry entry = (Map.Entry) iterator.next();
   		String key = (String) entry.getKey();
   		if (! DirectSQLStatement.USER_ACCESS_VARIABLE.equals(key) && 
-  				! DirectSQLStatement.GROUP_ACCESS_VARIABLE.equals(key)) {
+  				! DirectSQLStatement.GROUP_ACCESS_VARIABLE.equals(key) &&
+					! DirectSQLStatement.USER_GROUP_ACCESS_VARIABLE.endsWith(key)) {
 	  		InputDescription inputDescription = (InputDescription) identifierInputDescriptionMap.get(key);
 	  		Object object = identifierValueMap.get(key);
 	  		String value = null;
@@ -428,6 +430,7 @@ public class QueryResultViewer extends Block {
 		buffer.append(" )");
 		userBuffer.append(buffer).append(" and group_relation_status = 'ST_ACTIVE')");
 		identifierValueMap.put(DirectSQLStatement.USER_ACCESS_VARIABLE, userBuffer.toString());
+		identifierValueMap.put(DirectSQLStatement.USER_GROUP_ACCESS_VARIABLE, buffer.toString());
 		// create the where condition for group view
 		identifierValueMap.put(DirectSQLStatement.GROUP_ACCESS_VARIABLE, buffer.toString());
 	}
