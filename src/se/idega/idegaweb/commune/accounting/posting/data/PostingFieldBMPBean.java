@@ -1,5 +1,5 @@
 /*
- * $Id: PostingFieldBMPBean.java,v 1.1 2003/08/14 11:41:21 joakim Exp $
+ * $Id: PostingFieldBMPBean.java,v 1.2 2003/08/20 16:38:09 joakim Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -29,7 +29,7 @@ public class PostingFieldBMPBean extends GenericEntity implements PostingField, 
 	private static final String ENTITY_NAME = "cp_posting_field";
 
 //	private static final String COLUMN_KONTERING_ID = "posting_field_id";
-	private static final String COLUMN_CP_KONTERING_STRING_ID = "cp_posting_string_id";
+	private static final String COLUMN_CP_POSTING_STRING_ID = "cp_posting_string_id";
 	private static final String COLUMN_ORDER_NR = "order_nr";
 	private static final String COLUMN_FIELD_TITLE = "field_title";
 	private static final String COLUMN_LEN = "len";
@@ -52,7 +52,7 @@ public class PostingFieldBMPBean extends GenericEntity implements PostingField, 
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_CP_KONTERING_STRING_ID, "", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_CP_POSTING_STRING_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_ORDER_NR, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_FIELD_TITLE, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_LEN, "", true, true, java.lang.Integer.class);
@@ -61,8 +61,8 @@ public class PostingFieldBMPBean extends GenericEntity implements PostingField, 
 		addAttribute(COLUMN_PAD_CHAR, "", true, true, java.lang.String.class, 1);
 		
 		
-		addManyToOneRelationship(COLUMN_CP_KONTERING_STRING_ID,PostingString.class);
-		setNullable(COLUMN_CP_KONTERING_STRING_ID, false);
+		addManyToOneRelationship(COLUMN_CP_POSTING_STRING_ID,PostingString.class);
+		setNullable(COLUMN_CP_POSTING_STRING_ID, false);
 		setNullable(COLUMN_ORDER_NR, false);
 		setNullable(COLUMN_FIELD_TITLE, false);
 		setNullable(COLUMN_LEN, false);
@@ -72,7 +72,7 @@ public class PostingFieldBMPBean extends GenericEntity implements PostingField, 
 	}
 
 	public int getPostingStringId() {
-		return getIntColumnValue(COLUMN_CP_KONTERING_STRING_ID);	
+		return getIntColumnValue(COLUMN_CP_POSTING_STRING_ID);	
 	}
 	
 	public int getOrderNr() {
@@ -100,7 +100,7 @@ public class PostingFieldBMPBean extends GenericEntity implements PostingField, 
 	}
 
 	public void setPostingStringId(int postingStringId) {
-		setColumn(COLUMN_CP_KONTERING_STRING_ID, postingStringId);
+		setColumn(COLUMN_CP_POSTING_STRING_ID, postingStringId);
 	}
 
 	public void setOrderNr(int orderNr) {
@@ -130,7 +130,7 @@ public class PostingFieldBMPBean extends GenericEntity implements PostingField, 
 	public Collection ejbFindAllFieldsByPostingString(int PostingStringId) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.appendWhereEquals(COLUMN_CP_KONTERING_STRING_ID, PostingStringId);
+		sql.appendWhereEquals(COLUMN_CP_POSTING_STRING_ID, PostingStringId);
 		sql.appendOrderBy(COLUMN_ORDER_NR);
 
 		return idoFindPKsByQuery(sql);
