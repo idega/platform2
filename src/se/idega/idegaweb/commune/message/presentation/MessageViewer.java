@@ -192,7 +192,7 @@ public class MessageViewer extends CommuneBlock {
 		table.add(new Break(), 1, row);
 		table.add(body, 1, row++);
 
-		SubmitButton reply = (SubmitButton) getStyledInterface(new SubmitButton(localize("message.reply", "Reply"), PARAMETER_ACTION, String.valueOf(ACTION_REPLY_MESSAGE)));
+		SubmitButton reply = (SubmitButton) getStyledInterface(new SubmitButton(localize("message.send", "Send"), PARAMETER_ACTION, String.valueOf(ACTION_REPLY_MESSAGE)));
 		table.add(reply, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close,1,row);
