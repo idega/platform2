@@ -135,6 +135,8 @@ public class CreateIFSFiles extends AccountingBlock {
 		date.setToCurrentDate();
 		if (paymentDate != -1)
 			date.setDay(paymentDate);
+		int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
+		date.setYearRange(currentYear - 1, currentYear + 1);
 		TextInput period = getTextInput(PARAM_PERIOD_TEXT,"");
 		period.setMaxlength(20);
 		period.setSize(20);

@@ -54,6 +54,8 @@ public class RemovePreliminaryInvoicing  extends AccountingBlock{
 		DateInput monthInput = new DateInput(PARAM_MONTH,true);
 		monthInput.setToCurrentDate();
 		monthInput.setToShowDay(false);
+		int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
+		monthInput.setYearRange(currentYear - 1, currentYear + 1);
 		
 		InputContainer month = getInputContainer(PARAM_MONTH,"Month", monthInput);
 		form.add(month);

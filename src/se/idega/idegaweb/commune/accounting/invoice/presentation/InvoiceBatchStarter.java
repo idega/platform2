@@ -61,11 +61,14 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		monthInput = new DateInput(PARAM_MONTH,true);
 		monthInput.setToCurrentDate();
 		monthInput.setToShowDay(false);
+		int currentYear = java.util.Calendar.getInstance ().get (java.util.Calendar.YEAR);
+		monthInput.setYearRange(currentYear - 1, currentYear + 1);
 		
 		InputContainer month = getInputContainer(PARAM_MONTH,"Month", monthInput);
 
 		readDateInput = new DateInput(PARAM_READ_DATE,true);	
 
+		readDateInput.setYearRange(currentYear - 1, currentYear + 1);
 		InputContainer readDate = getInputContainer(PARAM_READ_DATE,"Read date", readDateInput);
 		try {
 			InvoiceBusiness invoiceBusiness = (InvoiceBusiness)IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
