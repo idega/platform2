@@ -22,6 +22,7 @@ public abstract class NBSSignedEntity {
 	public abstract void setSignedBy(int userId);
 	public abstract void setSignedDate(Date time);
 	public abstract void setSignedFlag(boolean flag);
+	public abstract void setText(String text);
 	public abstract void store();
 	public abstract String getText();
 	
