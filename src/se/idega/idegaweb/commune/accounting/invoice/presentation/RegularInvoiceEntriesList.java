@@ -9,6 +9,8 @@ import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -64,6 +66,10 @@ import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class RegularInvoiceEntriesList extends AccountingBlock {
+
+	//Keys to error Map
+	private Object ERROR_PLACING_EMPTY = "error_placing_empty";
+	private Object ERROR_DATE_FORMAT = "error_date_form";
 
 	private String LOCALIZER_PREFIX = "regular_invoice_entries_list.";
 	
@@ -333,12 +339,21 @@ private UserSearcher _userSearcher = null;
 		entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
 		entry.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
 		
-		if (from != null && to != null){
+		Map errorMessages = new HashMap();
+		
+		if (from == null || to == null){
+			errorMessages.put(ERROR_DATE_FORMAT, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));
+		}else if (entry.getPlacing() == null || entry.getPlacing().length() == 0){
+			errorMessages.put(ERROR_PLACING_EMPTY, localize(LOCALIZER_PREFIX + "placing_null", "Placing must be given a value"));
+		} 
+		
+		if (! errorMessages.isEmpty()){
+			handleEditAction(iwc, entry, user, errorMessages);					
+			
+		} else {
 			entry.store();		
 			handleDefaultAction(iwc, user, parseDate(iwc.getParameter(PAR_SEEK_FROM)), parseDate(iwc.getParameter(PAR_SEEK_TO)));					
-		} else {
-			handleEditAction(iwc, entry, user, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));	
-		}
+		} 
 	}
 
 	private RegularInvoiceEntry getRegularInvoiceEntry(String pk) {
@@ -366,32 +381,40 @@ private UserSearcher _userSearcher = null;
 	}
 		
 	private void handleEditAction(IWContext iwc, User user){
-		handleEditAction(iwc, user, null);
-				
-	}
-	private void handleEditAction(IWContext iwc, User user, String errorMessage){
-		RegularInvoiceEntry entry = null;
-				
-		if (errorMessage != null){
+		RegularInvoiceEntry entry = null;		
+		try{
+			entry = getRegularInvoiceEntryHome().findByPrimaryKey(iwc.getParameter(PAR_PK));
+		}catch(FinderException ex){
 			entry = getNotStoredEntry(iwc);
-		} else {
-			try{
-				entry = getRegularInvoiceEntryHome().findByPrimaryKey(iwc.getParameter(PAR_PK));
-			}catch(FinderException ex){
-				entry = getNotStoredEntry(iwc);
-			}
-		}
-	
-		handleEditAction(iwc, entry, user, errorMessage);
+		}		
+		handleEditAction(iwc, entry, user);
+				
 	}
+	
+//	private void handleEditAction(IWContext iwc, User user, String errorMessage){
+//		RegularInvoiceEntry entry = null;
+//				
+//		if (errorMessage != null){
+//			entry = getNotStoredEntry(iwc);
+//		} else {
+//			try{
+//				entry = getRegularInvoiceEntryHome().findByPrimaryKey(iwc.getParameter(PAR_PK));
+//			}catch(FinderException ex){
+//				entry = getNotStoredEntry(iwc);
+//			}
+//		}
+//	
+//		
+//		handleEditAction(iwc, entry, user, errorMessage);
+//	}
 
 
 	private void handleEditAction(IWContext iwc, RegularInvoiceEntry entry, User user){
-		handleEditAction(iwc, entry, user, null);
+		handleEditAction(iwc, entry, user, new HashMap());
 	}
 
 			
-	private void handleEditAction(IWContext iwc, RegularInvoiceEntry entry, User user, String errorMessage){
+	private void handleEditAction(IWContext iwc, RegularInvoiceEntry entry, User user, Map errorMessages){
 		Collection regTypes = new ArrayList(), vatTypes = new ArrayList();
 		try {
 			regTypes = getRegulationsBusiness(iwc.getApplicationContext()).findAllRegulationSpecTypes();
@@ -412,7 +435,7 @@ private UserSearcher _userSearcher = null;
 		form.maintainParameter(PAR_SEEK_FROM);
 		form.maintainParameter(PAR_SEEK_TO);
 		
-		form.add(getDetailPanel(iwc, user, entry, regTypes, vatTypes, errorMessage));
+		form.add(getDetailPanel(iwc, user, entry, regTypes, vatTypes, errorMessages));
 		
 		add(form);
 	}
@@ -610,7 +633,7 @@ private UserSearcher _userSearcher = null;
 		return list;
 	}
 	
-	private Table getDetailPanel(IWContext iwc, User user, RegularInvoiceEntry entry, Collection regTypes, Collection vatTypes, String errorMessage){
+	private Table getDetailPanel(IWContext iwc, User user, RegularInvoiceEntry entry, Collection regTypes, Collection vatTypes, Map errorMessages){
 				
 		final int EMPTY_ROW_HEIGHT = 8;
 		Table table = new Table();
@@ -628,13 +651,16 @@ private UserSearcher _userSearcher = null;
 		RegulationSearchPanel searchPanel = new RegulationSearchPanel(iwc);
 		
 		searchPanel.maintainParameter(new String[]{PAR_USER_SSN, PAR_FROM, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_SEEK_FROM, PAR_SEEK_TO, PAR_PK});
+		if (errorMessages.get(ERROR_PLACING_EMPTY) != null) {
+			searchPanel.setError((String) errorMessages.get(ERROR_PLACING_EMPTY));			
+		}		
 		searchPanel.setPlacingIfNull(entry.getPlacing());
 		searchPanel.setSchoolIdIfNull(entry.getSchoolId());
 		
 		searchPanel.setParameter(PAR_EDIT, " ");
 		searchPanel.maintainAllParameters();
 		table.mergeCells(1, row, 10, row);
-		table.add(searchPanel, 1, row++);
+		table.add(searchPanel, 1, row++); 
 
 		Regulation reg = searchPanel.getRegulation(); 
 		
@@ -644,9 +670,8 @@ private UserSearcher _userSearcher = null;
 
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
-		
-		if (errorMessage != null){
-			table.add(getErrorText(errorMessage), 1, row++);			
+		if (errorMessages.get(ERROR_DATE_FORMAT) != null) {
+			table.add(getErrorText((String) errorMessages.get(ERROR_DATE_FORMAT)), 1, row++);			
 		}
 		table.add(getLocalizedLabel(KEY_PERIODE, "Periode:"), 1, row);
 		TextInput fromInput = getTextInput(PAR_FROM, KEY_FROM);
@@ -694,7 +719,7 @@ private UserSearcher _userSearcher = null;
 				
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PAR_SAVE, KEY_SAVE, "Save");
-		bp.addLocalizedButton(PAR_CANCEL_NEW_EDIT, KEY_CANCEL, "Delete");
+		bp.addLocalizedButton(PAR_CANCEL_NEW_EDIT, KEY_CANCEL, "Delete"); 
 		table.add(bp, 1, row);
 		
 		return table;

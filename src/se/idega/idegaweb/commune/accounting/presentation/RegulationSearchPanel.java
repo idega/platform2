@@ -52,6 +52,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 	private static final String PAR_VALID_DATE = KEY_VALID_DATE; 
 	private static final String PAR_ENTRY_PK = "PAR_ENTRY_PK";
 	
+		
 	//Force the request to be processed at once.
 	private RegulationSearchPanel(){
 		super();
@@ -71,7 +72,8 @@ public class RegulationSearchPanel extends AccountingBlock {
 	private int _currentSchoolId = 0;
 	private Date _validDate = null;
 	private String _currentPlacing = null;
-	private String _errorMessage = null;
+	private String _placingErrorMessage = null;
+	private String _dateFormatErrorMessage = null;
 
 
 	/* (non-Javadoc)
@@ -105,7 +107,7 @@ public class RegulationSearchPanel extends AccountingBlock {
 			String vDate = iwc.getParameter(PAR_VALID_DATE);
 			_validDate = parseDate(vDate);		
 			if (vDate != null && vDate.length() > 0 && _validDate == null){
-				_errorMessage = localize("regulation_search_panel.date_format_error", "Error i dateformat");
+				_dateFormatErrorMessage = localize("regulation_search_panel.date_format_error", "Error i dateformat");
 			} else {
 				School currentSchool = null;
 				try{
@@ -369,9 +371,17 @@ public class RegulationSearchPanel extends AccountingBlock {
 		int row = 1;
 		
 		addDropDown(table, PAR_PROVIDER, KEY_PROVIDER, providers, "" + _currentSchoolId, "getSchoolName", 1, row++);
-		if (_errorMessage != null){
-			table.add(getErrorText(_errorMessage), 4, row++);
+		if (_placingErrorMessage != null){
+			table.add(getErrorText(_placingErrorMessage), 2, row);
 		}		
+		if (_dateFormatErrorMessage != null){
+			table.add(getErrorText(_dateFormatErrorMessage), 4, row);
+		}		
+
+		if (_dateFormatErrorMessage != null || _placingErrorMessage != null){
+			row++;
+		}
+		
 		addField(table, PAR_PLACING, KEY_PLACING, _currentPlacing, 1, row);		
 		addField(table, PAR_VALID_DATE, KEY_VALID_DATE, iwc.getParameter(PAR_VALID_DATE), 3, row);	
 		table.add(getLocalizedButton(ACTION_SEARCH_REGULATION, KEY_SEARCH, "Search"), 5, row++);
@@ -414,8 +424,10 @@ public class RegulationSearchPanel extends AccountingBlock {
 	}		
 		
 
-		
-		
+
+	public void setError(String placingErrorMessage){
+		_placingErrorMessage = placingErrorMessage;
+	}
 	
 
 }
