@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 14.1.2005 laddi Exp $
- * Created on 14.1.2005
+ * $Id: ChildCareBusiness.java 1.1 23.1.2005 laddi Exp $
+ * Created on 23.1.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -321,7 +321,7 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#isAfterSchoolApplication
 	 */
-	public boolean isAfterSchoolApplication(int applicationID) throws RemoteException;
+	public boolean isAfterSchoolApplication(int applicationID) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#placeApplication
@@ -336,7 +336,17 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#alterValidFromDate
 	 */
+	public void alterValidFromDate(int applicationID, Date newDate, int employmentTypeID, int schoolTypeID, int schoolClassID, Locale locale, User user) throws RemoteException, NoPlacementFoundException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#alterValidFromDate
+	 */
 	public void alterValidFromDate(ChildCareApplication application, Date newDate, int employmentTypeID, Locale locale, User user) throws RemoteException, NoPlacementFoundException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#alterValidFromDate
+	 */
+	public void alterValidFromDate(ChildCareApplication application, Date newDate, int employmentTypeID, int schoolTypeID, int schoolClassID, Locale locale, User user) throws RemoteException, NoPlacementFoundException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#alterContract
@@ -441,7 +451,7 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#removeFromQueue
 	 */
-	public boolean removeFromQueue(ChildCareApplication application, User user) throws RemoteException;
+	public boolean removeFromQueue(ChildCareApplication application, User user) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getAcceptedApplicationsByChild
@@ -597,12 +607,12 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getApplicationForChildAndProvider
 	 */
 	public ChildCareApplication getApplicationForChildAndProvider(int childID, int providerID) throws java.rmi.RemoteException;
-	
+
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getApplicationForChildAndProviderinStatus
 	 */
 	public ChildCareApplication getApplicationForChildAndProviderinStatus(int childID, int providerID) throws java.rmi.RemoteException;
-	
+
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#findAllGrantedApplications
 	 */

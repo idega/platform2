@@ -704,45 +704,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				}
 			}
 		}
-		/*
-		 * if(helper.hasEarliestPlacementDate()){
-		 * dateInput.setDate((java.sql.Date)helper.getEarliestPlacementDate());
-		 * dateInput.setEarliestPossibleDate(helper.getEarliestPlacementDate(),localize(helper.getEarliestPlacementMessage())); }
-		 * if(helper.hasLatestPlacementDate()){
-		 * dateInput.setLatestPossibleDate(helper.getLatestPlacementDate(),localize(helper.getLatestPlacementMessage())); }
-		 */
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date", "You must select a date."));
-
-		// /IWTimestamp stampNow = new IWTimestamp();
-		// /boolean oldPlacementTerminated = false;
-		// /IWTimestamp terminationDate = null;
-		/*
-		 * /// if (restrictDates) { if (earliestDate != null) {
-		 * dateInput.setEarliestPossibleDate(earliestDate.getDate(),
-		 * localize("child_care.contract_dates_overlap", "You can not choose a date
-		 * which overlaps another contract."));
-		 * dateInput.setDate(earliestDate.getDate()); terminationDate = new
-		 * IWTimestamp(earliestDate); oldPlacementTerminated = true; } else {
-		 * ChildCareContract archive = getBusiness().getLatestContract(_userID); if
-		 * (archive != null && archive.getTerminatedDate() != null) { IWTimestamp
-		 * stamp = new IWTimestamp(archive.getTerminatedDate()); terminationDate =
-		 * new IWTimestamp(stamp); oldPlacementTerminated = true; stamp.addDays(1);
-		 * if (stamp.isEarlierThan(stampNow)) {
-		 * dateInput.setEarliestPossibleDate(stampNow.getDate(),
-		 * localize("child_care.not_a_valid_date", "You can not choose a date back
-		 * in time.")); dateInput.setDate(stampNow.getDate()); } else {
-		 * dateInput.setEarliestPossibleDate(stamp.getDate(),
-		 * localize("child_care.contract_dates_overlap", "You can not choose a date
-		 * which overlaps another contract.")); dateInput.setDate(stamp.getDate()); } }
-		 * else { dateInput.setEarliestPossibleDate(stampNow.getDate(),
-		 * localize("child_care.not_a_valid_date", "You can not choose a date back
-		 * in time.")); if (application != null) { IWTimestamp fromDate = new
-		 * IWTimestamp(application.getFromDate()); if
-		 * (fromDate.isLaterThan(stampNow)) dateInput.setDate(fromDate.getDate());
-		 * else dateInput.setDate(stampNow.getDate()); } else
-		 * dateInput.setDate(stampNow.getDate()); } } } else {
-		 * dateInput.setDate(stampNow.getDate()); }
-		 */
 
 		String dateHeader = null;
 		if (isAlteration) {
@@ -755,15 +717,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (helper.hasDeadlinePassed())
 			table.add(getText(localize("school.deadline_msg_for_passedby_date", "Chosen period has been invoiced. Earliest possible date is the first day of next month.")), 1, row++);
 		table.add(dateInput, 1, row++);
-
-		/*
-		 * if (oldPlacementTerminated) {
-		 * table.add(getSmallHeader(localize("child_care.old_placement_terminated",
-		 * "Old placement terminated") + ":"), 1, row);
-		 * table.add(Text.NON_BREAKING_SPACE, 1, row);
-		 * table.add(getSmallErrorText(terminationDate.getLocaleDate(iwc.getCurrentLocale(),
-		 * IWTimestamp.SHORT)), 1, row); table.add(new Break(2), 1, row); }
-		 */
 
 		if (isAlteration) {
 			table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
@@ -784,7 +737,44 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				textInput.setAsIntegers(localize("child_care.only_integers_allowed", "Not a valid child care time."));
 				table.add(textInput, 1, row++);
 			}
+			
+			Collection types = null;
+			SchoolBusiness schBuiz = getBusiness().getSchoolBusiness();
+			SchoolCategory typeChildcare = schBuiz.getCategoryChildcare();
 
+			try {
+				types = helper.getApplication().getProvider().findRelatedSchoolTypes(typeChildcare);
+
+			}
+			catch (IDORelationshipException e) {
+				e.printStackTrace();
+			}
+			catch (EJBException e) {
+				e.printStackTrace();
+			}
+
+			SchoolClassDropdownDouble schoolClasses = new SchoolClassDropdownDouble(PARAMETER_SCHOOL_TYPES, PARAMETER_SCHOOL_CLASS);
+			schoolClasses.setLayoutVertical(true);
+			schoolClasses.setPrimaryLabel(getSmallText(localize("child_care.school_type", "School type")));
+			schoolClasses.setSecondaryLabel(getSmallText(localize("child_care.school_class", "School class")));
+			schoolClasses.setVerticalSpaceBetween(15);
+			schoolClasses.setSpaceBetween(15);
+			schoolClasses.setNoDataListEntry(localize("child_care.no_school_classes", "No school classes"));
+			schoolClasses = (SchoolClassDropdownDouble) getStyledInterface(schoolClasses);
+
+			if (!types.isEmpty()) {
+				Map typeGroupMap = getBusiness().getSchoolTypeClassMap(types, helper.getApplication().getProviderId(), getSession().getSeasonID(), null, null, localize("child_care.no_school_classes", "No school classes"));
+				if (typeGroupMap != null) {
+					Iterator iter = typeGroupMap.keySet().iterator();
+					while (iter.hasNext()) {
+						SchoolType schoolType = (SchoolType) iter.next();
+						schoolClasses.addMenuElement(schoolType.getPrimaryKey().toString(), schoolType.getSchoolTypeName(), (Map) typeGroupMap.get(schoolType));
+					}
+				}
+			}
+			if (helper.getCurrentClassID() != null)
+				schoolClasses.setSelectedValues(helper.getCurrentSchoolTypeID().toString(), helper.getCurrentClassID().toString());
+			table.add(schoolClasses, 1, row++);
 		}
 
 		// Pre-school
@@ -1014,67 +1004,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			if (rejectionDate != null)
 				dateInput.setLatestPossibleDate(rejectionDate.getDate(), localize("child_care.contract_date_expired", "You can not choose a date after the contract has been terminated. The termination date is ") + format.format(rejectionDate.getDate()));
 		}
-		/*
-		 * if(helper.hasEarliestPlacementDate()){
-		 * dateInput.setDate((java.sql.Date)helper.getEarliestPlacementDate());
-		 * dateInput.setEarliestPossibleDate(helper.getEarliestPlacementDate(),localize(helper.getEarliestPlacementMessage())); }
-		 * if(helper.hasLatestPlacementDate()){
-		 * dateInput.setLatestPossibleDate(helper.getLatestPlacementDate(),localize(helper.getLatestPlacementMessage())); }
-		 */
 
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date", "You must select a date."));
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
 		table.add(dateInput, 1, row++);
-		// /IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
-		// validFrom.addDays(1);
-		// /dateInput.setDate(validFrom.getDate());
 
-		/*
-		 * if (restrictDates) { IWTimestamp stamp = new IWTimestamp(); if (archive !=
-		 * null) { //IWTimestamp validFrom = new
-		 * IWTimestamp(archive.getValidFromDate()); //validFrom.addDays(1);
-		 * //dateInput.setDate(validFrom.getDate()); if
-		 * (validFrom.isEarlierThan(stamp)) { if(onlyAllowFutureCareDate){
-		 * dateInput.setEarliestPossibleDate(stamp.getDate(),
-		 * localize("child_care.not_a_valid_date", "You can not choose a date back
-		 * in time.")); } } else{
-		 * dateInput.setEarliestPossibleDate(validFrom.getDate(),
-		 * localize("child_care.contract_dates_overlap", "You can not choose a date
-		 * which overlaps another contract.")); } if (archive.getTerminatedDate() !=
-		 * null) { IWTimestamp terminated = new
-		 * IWTimestamp(archive.getTerminatedDate());
-		 * dateInput.setLatestPossibleDate(terminated.getDate(),
-		 * localize("child_care.contract_date_expired", "You can not choose a date
-		 * after the contract has been terminated.")); } } else {
-		 * dateInput.setDate(new IWTimestamp().getDate());
-		 * dateInput.setEarliestPossibleDate(stamp.getDate(),
-		 * localize("child_care.not_a_valid_date", "You can not choose a date back
-		 * in time.")); } } else { if (archive.getTerminatedDate() != null) {
-		 * IWTimestamp terminated = new IWTimestamp(archive.getTerminatedDate());
-		 * dateInput.setLatestPossibleDate(terminated.getDate(),
-		 * localize("child_care.contract_date_expired", "You can not choose a date
-		 * after the contract has been terminated.")); } }
-		 * 
-		 * IWTimestamp earliestDate = IWTimestamp.RightNow();
-		 * earliestDate.addWeeks(-2);
-		 * 
-		 * if (archive != null && archive.getTerminatedDate()!=null) { IWTimestamp
-		 * terminated = new IWTimestamp(archive.getTerminatedDate());
-		 * dateInput.setLatestPossibleDate(terminated.getDate(),
-		 * localize("child_care.contract_date_expired", "You can not choose a date
-		 * after the contract has been terminated.")); } else{
-		 * //dateInput.setEarliestPossibleDate(earliestDate.getDate(),
-		 * localize("child_care.not_a_valid_date", "You can not choose a date back
-		 * in time.")); dateInput.setEarliestPossibleDate(earliestDate.getDate(),
-		 * localize("child_care.not_a_valid_date_more_than_two_weeks", "You can not
-		 * choose a date more than 2 weeks back in time.")); }
-		 * 
-		 *  /* New requirements: Add Schooltype and Group dropdowns
-		 */
-
-		// Schooltype change :
-		// Group change, (school class)
-		// DropdownMenu schoolTypes = new DropdownMenu(PARAMETER_SCHOOL_TYPES);
 		Collection types = null;
 		SchoolBusiness schBuiz = getBusiness().getSchoolBusiness();
 		SchoolCategory typeChildcare = schBuiz.getCategoryChildcare();
@@ -1098,9 +1032,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		schoolClasses.setSpaceBetween(15);
 		schoolClasses.setNoDataListEntry(localize("child_care.no_school_classes", "No school classes"));
 		schoolClasses = (SchoolClassDropdownDouble) getStyledInterface(schoolClasses);
-		// int classID = archive.getSchoolClassMember().getSchoolClassId();
-
-		// if (getChildcareID() != -1) {
 
 		if (!types.isEmpty()) {
 			Map typeGroupMap = getBusiness().getSchoolTypeClassMap(types, helper.getApplication().getProviderId(), getSession().getSeasonID(), null, null, localize("child_care.no_school_classes", "No school classes"));
@@ -1112,15 +1043,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				}
 			}
 		}
-		// }
-
-		// /SchoolClassMember currentClassMember = archive.getSchoolClassMember();
-		// /if (currentClassMember !=null)
-		// /
-		// schoolClasses.setSelectedValues(String.valueOf(currentClassMember.getSchoolTypeId()),String.valueOf(currentClassMember.getSchoolClassId()));
 		if (helper.getCurrentClassID() != null)
 			schoolClasses.setSelectedValues(helper.getCurrentSchoolTypeID().toString(), helper.getCurrentClassID().toString());
-
 		table.add(schoolClasses, 1, row++);
 
 		if (_showEmploymentDrop) {
@@ -2050,7 +1974,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void alterValidFromDate(IWContext iwc) throws RemoteException, NoPlacementFoundException {
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
 		String careTime = iwc.getParameter(PARAMETER_CHILDCARE_TIME);
-		getBusiness().alterValidFromDate(_applicationID, validFrom.getDate(), -1, iwc.getCurrentLocale(), iwc.getCurrentUser());
+
+		int schoolTypeId = -1;
+		if (iwc.isParameterSet(PARAMETER_SCHOOL_TYPES))
+			schoolTypeId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPES));
+		int schoolClassId = -1;
+		if (iwc.isParameterSet(PARAMETER_SCHOOL_CLASS))
+			schoolClassId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_CLASS));
+
+		getBusiness().alterValidFromDate(_applicationID, validFrom.getDate(), -1, schoolTypeId, schoolClassId, iwc.getCurrentLocale(), iwc.getCurrentUser());
 		getBusiness().placeApplication(_applicationID, null, null, careTime, -1, -1, -1, iwc.getCurrentUser(), iwc.getCurrentLocale());
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));

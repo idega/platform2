@@ -1135,9 +1135,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public void alterValidFromDate(int applicationID, Date newDate, int employmentTypeID, Locale locale, User user) throws RemoteException, NoPlacementFoundException {
+		alterValidFromDate(applicationID, newDate, employmentTypeID, -1, -1, locale, user);
+	}
+	
+	public void alterValidFromDate(int applicationID, Date newDate, int employmentTypeID, int schoolTypeID, int schoolClassID, Locale locale, User user) throws RemoteException, NoPlacementFoundException {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
-			alterValidFromDate(application, newDate, employmentTypeID, locale, user);
+			alterValidFromDate(application, newDate, employmentTypeID, schoolTypeID, schoolClassID, locale, user);
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
@@ -1145,6 +1149,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public void alterValidFromDate(ChildCareApplication application, Date newDate, int employmentTypeID, Locale locale, User user) throws RemoteException, NoPlacementFoundException {
+		alterValidFromDate(application, newDate, employmentTypeID, -1, -1, locale, user);
+	}
+	
+	public void alterValidFromDate(ChildCareApplication application, Date newDate, int employmentTypeID, int schoolTypeID, int schoolClassID, Locale locale, User user) throws RemoteException, NoPlacementFoundException {
 		application.setApplicationStatus(getStatusReady());
 		int oldFileID = application.getContractFileId();
 		IWTimestamp fromDate = new IWTimestamp(newDate);
@@ -1162,6 +1170,19 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		application.store();
 		try {
 			SchoolClassMember member = getLatestPlacement(application.getChildId(), application.getProviderId());
+			if (schoolTypeID != -1 && schoolClassID != -1) {
+				member.setSchoolTypeId(schoolTypeID);
+				member.setSchoolClassId(schoolClassID);
+				try {
+					SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findOpenLogByUser(member);
+					log.setSchoolClass(new Integer(schoolClassID));
+					log.setStartDate(fromDate.getDate());
+					log.store();
+				}
+				catch (FinderException fe) {
+					//No log found...
+				}
+			}
 			member.setRegisterDate(fromDate.getTimestamp());
 			member.store();
 		}
