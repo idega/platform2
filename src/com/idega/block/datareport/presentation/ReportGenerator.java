@@ -135,7 +135,8 @@ public class ReportGenerator extends Block {
 					String name = field.getUniqueFieldName();
 					_parameterMap.put(name,name);  //TMP
 					//TODO - Temporary datatype is set to String not field.getDataTypeClass()
-					designTemplate.addField(name,String.class,columnWidth);
+					//designTemplate.addField(name,String.class,columnWidth);
+					designTemplate.addField(name,field.getDataTypeClass(),columnWidth);
 				} catch (IDOLookupException e) {
 					e.printStackTrace();
 				} catch (ClassNotFoundException e) {

@@ -43,6 +43,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean implements QueryToSQLBr
       statement = connection.createStatement();
       resultSet = statement.executeQuery(sqlQuery);
       metadata = resultSet.getMetaData();
+      
       int numberOfColumns = metadata.getColumnCount();
       int i;
       for (i=1; i <= numberOfColumns; i++) {
@@ -57,13 +58,14 @@ public class QueryToSQLBridgeBean extends IBOServiceBean implements QueryToSQLBr
         queryResult.addField(field);
       }
       int numberOfRow = 1;
-      while (resultSet.next())  {
+       while (resultSet.next())  {
         String id = Integer.toString(numberOfRow++);
         for (i=1 ; i <= numberOfColumns; i++)  {
           Object columnValue = resultSet.getObject(i);
           // store into QueryResultCell
-          String fieldId = Integer.toString(i);  
-          QueryResultCell cell = new QueryResultCell(id, fieldId, columnValue);
+          //String fieldId = Integer.toString(i);  
+          //QueryResultCell cell = new QueryResultCell(id, fieldId, columnValue);
+		  QueryResultCell cell = new QueryResultCell(id, metadata.getColumnName(i), columnValue);
           queryResult.addCell(cell);
         }
       }

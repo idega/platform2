@@ -245,7 +245,7 @@ public class DynamicReportDesign {
 
 
 	private void addColumn(String fieldName, Class classType, int columnWidth){
-		addFieldToColumnHeader(fieldName, classType, columnWidth);
+		addFieldToColumnHeader(fieldName, String.class, columnWidth);
 		addToFieldDetail(fieldName, classType, columnWidth);
 	}
 	
