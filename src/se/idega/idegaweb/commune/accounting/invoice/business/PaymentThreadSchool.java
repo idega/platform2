@@ -69,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/13 11:18:39 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/13 13:03:46 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.101 $
+ * @version $Revision: 1.102 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -170,7 +170,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 							}
 							catch (NullPointerException e) {
 								e.printStackTrace();
-								createNewErrorMessage("invoice.PaymentSchool", "invoice.nullpointer");
+								errorRelated.append(e);
+								createNewErrorMessage(errorRelated, "invoice.nullpointer");
 							}
 							catch (MissingFlowTypeException e) {
 								e.printStackTrace();
