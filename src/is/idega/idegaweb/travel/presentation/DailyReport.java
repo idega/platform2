@@ -12,6 +12,8 @@ import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.Hashtable;
 
 import is.idega.travel.business.Booker;
 import is.idega.travel.business.TravelStockroomBusiness;
@@ -42,6 +44,11 @@ public class DailyReport extends TravelManager {
 
   private String sAction = "dailyReportAction";
   private String parameterUpdate = "dailyReportUpdate";
+  private String parameterToggleCloser = "dailyReportCloser";
+  private String parameterYes = "yes";
+  private String parameterNo = "no";
+
+  private boolean closerLook = false;
 
 
   public DailyReport() {
@@ -92,6 +99,13 @@ public class DailyReport extends TravelManager {
       }catch (TravelStockroomBusiness.TourNotFoundException tnfe) {
           tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
+
+      String sCloserLook = modinfo.getParameter(this.parameterToggleCloser);
+      if (sCloserLook != null) {
+        if (sCloserLook.equals(this.parameterYes)) {
+          this.closerLook = true;
+        }
+      }
 
       stamp = getFromIdegaTimestamp(modinfo);
   }
@@ -297,6 +311,7 @@ public class DailyReport extends TravelManager {
       table.add(bookedHText,3,1);
       table.add(attHText,4,1);
       table.add(amountHText,5,1);
+      table.setAlignment(2,1, "center");
 
       table.setWidth(2,twoWidth);
       table.setWidth(3,threeWidth);
@@ -310,9 +325,20 @@ public class DailyReport extends TravelManager {
       float amount;
 
       int[] bookingTypeIds = {is.idega.travel.data.Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING , is.idega.travel.data.Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING , is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING };
+      ProductPrice[] prices = tsb.getProductPrices(service.getID(), false);
+      ProductPrice price;
+      Integer entryCount;
+      int iEntryCount;
+
+      Map map = new Hashtable();
+      for (int i = 0; i < prices.length; i++) {
+        map.put(prices[i].getPriceCategoryIDInteger(),new Integer(0));
+      }
 
 
       is.idega.travel.data.Booking[] bookings = Booker.getBookings(product.getID(),stamp,bookingTypeIds);
+
+      BookingEntry[] entries;
       for (int i = 0; i < bookings.length; i++) {
           row++;
           attendance = 0;
@@ -348,11 +374,41 @@ public class DailyReport extends TravelManager {
           table.add(bookedText,3,row);
           table.add(attTextBox,4,row);
           table.add(amountText,5,row);
+          table.setAlignment(2,row, "center");
+
+          if (closerLook)
+          try {
+            entries = bookings[i].getBookingEntries();
+            for (int j = 0; j < entries.length; j++) {
+              ++row;
+              price = entries[j].getProductPrice();
+              iEntryCount = (int) Booker.getBookingEntryPrice(entries[j], bookings[i]);
+
+              nameText = (Text) smallText.clone();
+                nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
+              bookedText = (Text) smallText.clone();
+                bookedText.setText(Integer.toString(entries[j].getCount()));
+              amountText = (Text) smallText.clone();
+                amountText.setText(Integer.toString(iEntryCount));
+
+              entryCount = (Integer) map.get(price.getPriceCategoryIDInteger());
+              entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
+              map.put(price.getPriceCategoryIDInteger(),entryCount);
+
+              table.add(nameText,2,row);
+              table.add(bookedText,3,row);
+              table.add(amountText,4,row);
+              table.setAlignment(2,row, "LEFT");
+            }
+
+
+          }catch (SQLException sql) {
+            sql.printStackTrace(System.err);
+          }
 
       }
 
       table.setColumnAlignment(1,"left");
-      table.setColumnAlignment(2,"center");
       table.setColumnAlignment(3,"center");
       table.setColumnAlignment(4,"center");
       table.setColumnAlignment(5,"center");
@@ -373,6 +429,8 @@ public class DailyReport extends TravelManager {
       bookings = Booker.getBookings(product.getID(),stamp,is.idega.travel.data.Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING);
       for (int i = 0; i < bookings.length; i++) {
           ++addRow;
+          addTable.setRowColor(addRow,super.backgroundColor);
+          addTable.setAlignment(2,addRow,"center");
           ibookings = bookings[i].getTotalCount();
           attendance = bookings[i].getAttendance();
           amount = Booker.getBookingPrice(bookings[i]);
@@ -401,9 +459,39 @@ public class DailyReport extends TravelManager {
           addTable.add(bookedText,3,addRow);
           addTable.add(attTextBox,4,addRow);
           addTable.add(amountText,5,addRow);
+
+          if (closerLook)
+          try {
+            entries = bookings[i].getBookingEntries();
+            for (int j = 0; j < entries.length; j++) {
+              ++addRow;
+              price = entries[j].getProductPrice();
+              iEntryCount = (int) Booker.getBookingEntryPrice(entries[j], bookings[i]);
+
+              nameText = (Text) smallText.clone();
+                nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
+              bookedText = (Text) smallText.clone();
+                bookedText.setText(Integer.toString(entries[j].getCount()));
+              amountText = (Text) smallText.clone();
+                amountText.setText(Integer.toString(iEntryCount));
+
+              entryCount = (Integer) map.get(price.getPriceCategoryIDInteger());
+              entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
+              map.put(price.getPriceCategoryIDInteger(),entryCount);
+
+              addTable.add(nameText,2,addRow);
+              addTable.add(bookedText,3,addRow);
+              addTable.add(amountText,4,addRow);
+              addTable.setAlignment(2,addRow, "LEFT");
+            }
+
+
+          }catch (SQLException sql) {
+            sql.printStackTrace(System.err);
+          }
+
       }
       addTable.setColumnAlignment(1,"left");
-      addTable.setColumnAlignment(2,"center");
       addTable.setColumnAlignment(3,"center");
       addTable.setColumnAlignment(4,"center");
       addTable.setColumnAlignment(5,"center");
@@ -420,24 +508,45 @@ public class DailyReport extends TravelManager {
           totalTable.setWidth(4,fourWidth);
           totalTable.setWidth(5,fiveWidth);
           totalTable.setColumnAlignment(1,"left");
-          totalTable.setColumnAlignment(2,"center");
           totalTable.setColumnAlignment(3,"center");
           totalTable.setColumnAlignment(4,"center");
           totalTable.setColumnAlignment(5,"center");
 
 
-          bookedText = (Text) smallText.clone();
+          bookedText = (Text) theSmallBoldText.clone();
             bookedText.setText(Integer.toString(totalBookings));
           attTextBox = (TextInput) textBoxToClone.clone();
             attTextBox.setSize(3);
             attTextBox.setContent(Integer.toString(totalAttendance));
-          amountText = (Text) smallText.clone();
+          amountText = (Text) theSmallBoldText.clone();
             amountText.setText(Integer.toString((int) totalAmount));
 
           totalTable.add(totalHText,1,1);
           totalTable.add(bookedText,3,1);
           totalTable.add(attTextBox,4,1);
           totalTable.add(amountText,5,1);
+          totalTable.setRowColor(1,super.backgroundColor);
+
+          int tRow = 1;
+          int many;
+
+          if (closerLook)
+          for (int i = 0; i < prices.length; i++) {
+              ++tRow;
+              nameText = (Text) smallText.clone();
+                nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE+prices[i].getPriceCategory().getName());
+              bookedText = (Text) smallText.clone();
+                bookedText.setText(((Integer) map.get(prices[i].getPriceCategoryIDInteger())).toString());
+
+              totalTable.setAlignment(2,tRow,"left");
+              totalTable.add(nameText,2,tRow);
+              totalTable.add(bookedText,3,tRow);
+//              totalTable.add(prices[i].getPriceCategory().getName() +" , "+ );
+          }
+          totalTable.setColumnAlignment(1,"left");
+          totalTable.setColumnAlignment(3,"center");
+          totalTable.setColumnAlignment(4,"center");
+          totalTable.setColumnAlignment(5,"center");
 
 
       Link link = new Link();
@@ -455,8 +564,17 @@ public class DailyReport extends TravelManager {
 
       SubmitButton submit = new SubmitButton("T update",this.sAction, this.parameterUpdate);
 
+      SubmitButton open = null;
+      if (this.closerLook) {
+        open = new SubmitButton("T close extra info",this.parameterToggleCloser, this.parameterNo);
+      }else {
+        open = new SubmitButton("T extra info",this.parameterToggleCloser, this.parameterYes);
+      }
+
       theTable.setAlignment(1,6,"right");
+      theTable.add(open,1,6);
       theTable.add(submit,1,6);
+
 
       return theTable;
 

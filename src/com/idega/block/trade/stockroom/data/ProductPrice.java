@@ -59,6 +59,10 @@ public class ProductPrice extends GenericEntity{
     return getIntColumnValue(getColumnNamePriceCategoryId());
   }
 
+  public Integer getPriceCategoryIDInteger() {
+    return getIntegerColumnValue(getColumnNamePriceCategoryId());
+  }
+
   public void setPriceCategoryID(int id) {
     setColumn(getColumnNamePriceCategoryId(), id);
   }

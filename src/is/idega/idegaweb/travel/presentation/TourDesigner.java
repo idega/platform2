@@ -1,0 +1,437 @@
+package is.idega.travel.presentation;
+
+import com.idega.jmodule.object.*;
+import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.jmodule.object.textObject.*;
+import com.idega.util.idegaTimestamp;
+import com.idega.idegaweb.*;
+import is.idega.travel.business.*;
+import com.idega.block.trade.stockroom.data.*;
+import java.sql.SQLException;
+
+/**
+ * Title:        idegaWeb TravelBooking
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:      idega
+ * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
+ * @version 1.0
+ */
+
+public class TourDesigner extends TravelManager {
+  IWResourceBundle iwrb;
+  IWBundle iwb;
+  Supplier supplier;
+  TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+  String NAME_OF_FORM = ServiceDesigner.NAME_OF_FORM;
+  String ServiceAction = ServiceDesigner.ServiceAction;
+
+
+  public TourDesigner(ModuleInfo modinfo) throws SQLException{
+    init(modinfo);
+  }
+
+  public void init(ModuleInfo modinfo) throws SQLException{
+    super.main(modinfo);
+    iwrb = super.getResourceBundle();
+    iwb = super.getBundle();
+    supplier = super.getSupplier();
+  }
+
+  public Form getTourDesignerForm() {
+      Form form = new Form();
+        form.setName(NAME_OF_FORM);
+      Table table = new Table();
+
+      ShadowBox sb = new ShadowBox();
+        form.add(sb);
+        sb.setWidth("90%");
+        sb.setAlignment("center");
+        sb.add(table);
+
+      table.setWidth("95%");
+
+      int row = 0;
+      idegaTimestamp stamp = idegaTimestamp.RightNow();
+
+      TextInput name = new TextInput("name_of_trip");
+          name.setSize(40);
+          name.keepStatusOnAction();
+      TextArea description = new TextArea("description");
+          description.setWidth(50);
+          description.setHeight(12);
+          description.keepStatusOnAction();
+      DateInput active_from = new DateInput("active_from");
+          active_from.setDate(stamp.getSQLDate());
+         active_from.keepStatusOnAction();
+      DateInput active_to = new DateInput("active_to");
+          stamp.addDays(92);
+          active_to.setDate(stamp.getSQLDate());
+          active_to.keepStatusOnAction();
+      BooleanInput active_yearly = new BooleanInput("active_yearly");
+        active_yearly.setSelected(false);
+        active_yearly.keepStatusOnAction();
+
+
+      CheckBox allDays = new CheckBox("all_days");
+      CheckBox mondays = new CheckBox("mondays");
+      CheckBox tuesdays = new CheckBox("tuesdays");
+      CheckBox wednesdays = new CheckBox("wednesdays");
+      CheckBox thursdays = new CheckBox("thursdays");
+      CheckBox fridays = new CheckBox("fridays");
+      CheckBox saturdays = new CheckBox("saturdays");
+      CheckBox sundays = new CheckBox("sundays");
+        allDays.keepStatusOnAction();
+        mondays.keepStatusOnAction();
+        tuesdays.keepStatusOnAction();
+        wednesdays.keepStatusOnAction();
+        thursdays.keepStatusOnAction();
+        fridays.keepStatusOnAction();
+        saturdays.keepStatusOnAction();
+        sundays.keepStatusOnAction();
+
+
+      TextInput departure_from = new TextInput("departure_from");
+          departure_from.setSize(40);
+          departure_from.keepStatusOnAction();
+      TimeInput departure_time = new TimeInput("departure_time");
+          departure_time.setHour(8);
+          departure_time.setMinute(0);
+          departure_time.keepStatusOnAction();
+      TextInput arrival_at = new TextInput("arrival_at");
+          arrival_at.setSize(40);
+          arrival_at.keepStatusOnAction();
+      TimeInput arrival_time = new TimeInput("arrival_time");
+          arrival_time.setHour(8);
+          arrival_time.setMinute(0);
+          arrival_time.keepStatusOnAction();
+
+      RadioButton hotelPickupYes = new RadioButton("hotel_pickup","yes");
+          hotelPickupYes.setSelected();
+          hotelPickupYes.keepStatusOnAction();
+      RadioButton hotelPickupNo = new RadioButton("hotel_pickup","no");
+        hotelPickupYes.keepStatusOnAction();
+      TimeInput hotelPickupTime = new TimeInput("hotel_pickup_time");
+          hotelPickupTime.setHour(8);
+          hotelPickupTime.setMinute(0);
+          hotelPickupTime.keepStatusOnAction();
+      TextInput hotelPickup = new TextInput("hotel_pickup_address");
+        hotelPickup.keepStatusOnAction();
+
+        hotelPickup.setSize(40);
+        hotelPickupYes.setOnClick("this.form."+hotelPickup.getName()+".disabled=false");
+        hotelPickupYes.setOnClick("this.form."+hotelPickupTime.getHourName()+".disabled=false");
+        hotelPickupYes.setOnClick("this.form."+hotelPickupTime.getMinuteName()+".disabled=false");
+        hotelPickupNo.setOnClick("this.form."+hotelPickup.getName()+".disabled=true");
+        hotelPickupNo.setOnClick("this.form."+hotelPickupTime.getHourName()+".disabled=true");
+        hotelPickupNo.setOnClick("this.form."+hotelPickupTime.getMinuteName()+".disabled=true");
+
+      TextInput numberOfSeats = new TextInput("number_of_seats");
+        numberOfSeats.keepStatusOnAction();
+
+
+      ++row;
+      Text nameText = (Text) theBoldText.clone();
+          nameText.setText(iwrb.getLocalizedString("travel.name_of_trip","Name of trip"));
+      table.add(nameText,1,row);
+      table.add(name,2,row);
+
+      ++row;
+
+      Text descText = (Text) theBoldText.clone();
+          descText.setText(iwrb.getLocalizedString("travel.description","Description"));
+      Table descFixTable = new Table(3,1);
+        descFixTable.setCellpadding(0);
+        descFixTable.setCellspacing(0);
+        descFixTable.setBorder(0);
+        descFixTable.setAlignment("left");
+        descFixTable.setAlignment(1,1,"left");
+        descFixTable.setColumnAlignment(1,"center");
+        descFixTable.setColumnAlignment(2,"center");
+        descFixTable.setColumnAlignment(3,"center");
+
+
+      descFixTable.add(description,1,1);
+      com.idega.jmodule.image.presentation.ImageInserter imageInserter = new com.idega.jmodule.image.presentation.ImageInserter("design_image_id");
+      descFixTable.add(imageInserter,3,1);
+
+      table.setVerticalAlignment(1,row,"top");
+      table.setVerticalAlignment(2,row,"top");
+      table.add(descText,1,row);
+      table.add(descFixTable,2,row);
+
+
+      ++row;
+      Text timeframeText = (Text) theBoldText.clone();
+        timeframeText.setText(iwrb.getLocalizedString("travel.timeframe","Timeframe"));
+      Text tfFromText = (Text) smallText.clone();
+        tfFromText.setText(iwrb.getLocalizedString("travel.from","from"));
+      Text tfToText = (Text) smallText.clone();
+        tfToText.setText(iwrb.getLocalizedString("travel.to","to"));
+      Text tfYearlyText = (Text) smallText.clone();
+        tfYearlyText.setText(iwrb.getLocalizedString("travel.yearly","yearly"));
+
+      Table activeTable = new Table(5,2);
+
+        activeTable.add(tfFromText,1,1);
+        activeTable.add(active_from,1,2);
+        activeTable.add(tfToText,3,1 );
+        activeTable.add(active_to,3,2);
+        activeTable.add(tfYearlyText,5,1 );
+        activeTable.add(active_yearly,5,2);
+
+        activeTable.setVerticalAlignment(1,1,"bottom");
+        activeTable.setVerticalAlignment(3,1,"bottom");
+        activeTable.setVerticalAlignment(5,1,"bottom");
+
+
+      table.add(timeframeText,1,row );
+      table.add(activeTable,2,row);
+
+
+
+      ++row;
+      Table weekdayFixTable = new Table(9,2);
+        weekdayFixTable.setCellpadding(0);
+        weekdayFixTable.setCellspacing(1);
+        weekdayFixTable.setWidth("350");
+        weekdayFixTable.setColumnAlignment(1,"center");
+        weekdayFixTable.setColumnAlignment(2,"center");
+        weekdayFixTable.setColumnAlignment(3,"center");
+        weekdayFixTable.setColumnAlignment(4,"center");
+        weekdayFixTable.setColumnAlignment(5,"center");
+        weekdayFixTable.setColumnAlignment(6,"center");
+        weekdayFixTable.setColumnAlignment(7,"center");
+        weekdayFixTable.setColumnAlignment(8,"center");
+        weekdayFixTable.setColumnAlignment(9,"center");
+
+        Text alld = (Text) smallText.clone();
+            alld.setText(iwrb.getLocalizedString("travel.all_days","All"));
+        Text mond = (Text) smallText.clone();
+            mond.setText(iwrb.getLocalizedString("travel.mon","mon"));
+        Text tued = (Text) smallText.clone();
+            tued.setText(iwrb.getLocalizedString("travel.tue","tue"));
+        Text wedd = (Text) smallText.clone();
+            wedd.setText(iwrb.getLocalizedString("travel.wed","wed"));
+        Text thud = (Text) smallText.clone();
+            thud.setText(iwrb.getLocalizedString("travel.thu","thu"));
+        Text frid = (Text) smallText.clone();
+            frid.setText(iwrb.getLocalizedString("travel.fri","fri"));
+        Text satd = (Text) smallText.clone();
+            satd.setText(iwrb.getLocalizedString("travel.sat","sat"));
+        Text sund = (Text) smallText.clone();
+            sund.setText(iwrb.getLocalizedString("travel.sun","sun"));
+
+
+        weekdayFixTable.add(alld,1,1);
+        weekdayFixTable.add(mond,3,1);
+        weekdayFixTable.add(tued,4,1);
+        weekdayFixTable.add(wedd,5,1);
+        weekdayFixTable.add(thud,6,1);
+        weekdayFixTable.add(frid,7,1);
+        weekdayFixTable.add(satd,8,1);
+        weekdayFixTable.add(sund,9,1);
+
+        weekdayFixTable.add(allDays,1,2);
+        weekdayFixTable.add(mondays,3,2);
+        weekdayFixTable.add(tuesdays,4,2);
+        weekdayFixTable.add(wednesdays,5,2);
+        weekdayFixTable.add(thursdays,6,2);
+        weekdayFixTable.add(fridays,7,2);
+        weekdayFixTable.add(saturdays,8,2);
+        weekdayFixTable.add(sundays,9,2);
+
+      Text weekdaysText = (Text) theBoldText.clone();
+          weekdaysText.setText(iwrb.getLocalizedString("travel.weekdays","Weekdays"));
+      table.add(weekdaysText,1,row);
+      table.add(weekdayFixTable,2,row);
+
+      ++row;
+      Text departureFromText = (Text) theBoldText.clone();
+          departureFromText.setText(iwrb.getLocalizedString("travel.departure_from","Departure from"));
+      table.add(departureFromText,1,row);
+      table.add(departure_from,2,row);
+
+      ++row;
+      Text departureTimeText = (Text) theBoldText.clone();
+          departureTimeText.setText(iwrb.getLocalizedString("travel.departure_time","Departure time"));
+      table.add(departureTimeText,1,row);
+      table.add(departure_time,2,row);
+
+      ++row;
+      Text arrivalAtText = (Text) theBoldText.clone();
+          arrivalAtText.setText(iwrb.getLocalizedString("travel.arrival_at","Arrival at"));
+      table.add(arrivalAtText,1,row);
+      table.add(arrival_at,2,row);
+
+      ++row;
+      Text arrivalTimeText = (Text) theBoldText.clone();
+          arrivalTimeText.setText(iwrb.getLocalizedString("travel.arrival_time","Arrival time"));
+      table.add(arrivalTimeText,1,row);
+      table.add(arrival_time,2,row);
+
+      ++row;
+      Text hotelPickupText = (Text) theBoldText.clone();
+          hotelPickupText.setText(iwrb.getLocalizedString("travel.hotel_pickup","Hotel pick-up"));
+      SelectionBox hotels = new SelectionBox(tsb.getHotelPickupPlaces(this.supplier));
+        hotels.setName("hotelPickupId");
+        hotels.keepStatusOnAction();
+
+      Link alink = new Link();
+        alink.setText("T-pickupPlaceDesigner");
+        alink.setWindowToOpen(HotelPickupPlaceDesigner.class);
+
+      table.add(hotelPickupText,1,row);
+      table.add(hotels,2,row);
+      table.add(alink,2,row);
+
+      table.setVerticalAlignment(1,row,"top");
+      table.setVerticalAlignment(2,row,"top");
+
+
+
+      ++row;
+
+      Text nOSText = (Text) theBoldText.clone();
+        nOSText.setText("TEMP-Number of seats");
+      table.add(nOSText,1,row);
+      table.add(numberOfSeats,2,row);
+
+      ++row;
+      table.mergeCells(1,row,2,row);
+      table.setAlignment(1,row,"right");
+      SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),ServiceAction,"create");
+      table.add(submit,1,row);
+
+
+      table.setColumnAlignment(1,"right");
+      table.setColumnAlignment(2,"left");
+
+      return form;
+  }
+
+  public int createTour(ModuleInfo modinfo) {
+
+      String name = modinfo.getParameter("name_of_trip");
+      String description = modinfo.getParameter("description");
+      String imageId = modinfo.getParameter("design_image_id");
+      String activeFrom = modinfo.getParameter("active_from");
+      String activeTo = modinfo.getParameter("active_to");
+      String activeYearly = modinfo.getParameter("active_yearly");
+
+      String allDays = modinfo.getParameter("all_days");
+      String mondays = modinfo.getParameter("mondays");
+      String tuesdays = modinfo.getParameter("tuesdays");
+      String wednesdays = modinfo.getParameter("wednesdays");
+      String thursdays = modinfo.getParameter("thursdays");
+      String fridays = modinfo.getParameter("fridays");
+      String saturdays = modinfo.getParameter("saturdays");
+      String sundays = modinfo.getParameter("sundays");
+
+      String departureFrom = modinfo.getParameter("departure_from");
+      String departureTime = modinfo.getParameter("departure_time");
+      String arrivalAt = modinfo.getParameter("arrival_at");
+      String arrivalTime = modinfo.getParameter("arrival_time");
+      String[] hotelPickup = modinfo.getParameterValues("hotelPickupId");
+
+      String numberOfSeats = modinfo.getParameter("number_of_seats");
+/*
+      if (hotelPickup != null) {
+        if (hotelPickup.equals("N")) hotelPickupAddress = "";
+      }
+*/
+      int serviceId = -1;
+
+      boolean yearly = false;
+      if (activeYearly != null) {
+        if (activeYearly.equals("Y")) yearly = true;
+      }
+
+
+      Integer iImageId = null;
+      if (imageId != null) {
+        if (!imageId.equals("-1")) {
+          iImageId = new Integer(imageId);
+        }
+      }
+
+      Integer iNumberOfSeats = null;
+      if (numberOfSeats != null) {
+        try {
+        iNumberOfSeats = new Integer(numberOfSeats);
+        }catch (NumberFormatException n) {
+          iNumberOfSeats = new Integer(0);
+        }
+      }else {
+        iNumberOfSeats = new Integer(0);
+      }
+
+      idegaTimestamp activeFromStamp = null;
+      if (activeFrom != null) {
+        activeFromStamp = new idegaTimestamp(activeFrom);
+      }
+
+      idegaTimestamp activeToStamp = null;
+      if (activeTo != null) {
+        activeToStamp = new idegaTimestamp(activeTo);
+      }
+
+      idegaTimestamp departureStamp = null;
+      if (departureTime != null) {
+        departureStamp = new idegaTimestamp("2001-01-01 "+departureTime);
+      }
+
+      idegaTimestamp arrivalStamp = null;
+      if (arrivalTime != null) {
+        arrivalStamp = new idegaTimestamp("2001-01-01 "+arrivalTime);
+      }
+/*
+      idegaTimestamp hotelPickupTimeStamp = null;
+      if (hotelPickupTime != null) {
+        hotelPickupTimeStamp = new idegaTimestamp("2001-01-01 "+hotelPickupTime);
+      }
+*/
+      int[] tempDays = new int[7];
+      int counter = 0;
+        if (allDays != null) {
+          tempDays[counter++] = java.util.GregorianCalendar.SUNDAY;
+          tempDays[counter++] = java.util.GregorianCalendar.MONDAY;
+          tempDays[counter++] = java.util.GregorianCalendar.TUESDAY;
+          tempDays[counter++] = java.util.GregorianCalendar.WEDNESDAY;
+          tempDays[counter++] = java.util.GregorianCalendar.THURSDAY;
+          tempDays[counter++] = java.util.GregorianCalendar.FRIDAY;
+          tempDays[counter++] = java.util.GregorianCalendar.SATURDAY;
+        }else {
+          if (sundays != null) tempDays[counter++] = java.util.GregorianCalendar.SUNDAY;
+          if (mondays != null) tempDays[counter++] = java.util.GregorianCalendar.MONDAY;
+          if (tuesdays != null) tempDays[counter++] = java.util.GregorianCalendar.TUESDAY;
+          if (wednesdays != null) tempDays[counter++] = java.util.GregorianCalendar.WEDNESDAY;
+          if (thursdays != null) tempDays[counter++] = java.util.GregorianCalendar.THURSDAY;
+          if (fridays != null) tempDays[counter++] = java.util.GregorianCalendar.FRIDAY;
+          if (saturdays != null) tempDays[counter++] = java.util.GregorianCalendar.SATURDAY;
+        }
+
+      int[] activeDays = new int[counter];
+      System.arraycopy(tempDays,0,activeDays,0,counter);
+
+      try {
+          TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
+            tsb.setTimeframe(activeFromStamp, activeToStamp, yearly);
+            serviceId = tsb.createTourService(supplier.getID(),iImageId,name,description,true, departureFrom,departureStamp, arrivalAt, arrivalStamp, hotelPickup,  activeDays, iNumberOfSeats);
+        /**
+         * @todo TravelStockroomBusiness.removeServiceDayHashtable....
+         */
+
+
+
+      }catch (Exception e) {
+        e.printStackTrace(System.err);
+        //add("TEMP - Service EKKI smíðuð");
+      }
+
+
+      return serviceId;
+
+  }
+
+}

@@ -175,6 +175,23 @@ public class Booker {
     return returner;
   }
 
+  public static float getBookingEntryPrice(BookingEntry entry, Booking booking) {
+      float total = 0;
+
+      try {
+        ProductPrice pPrice;
+
+        pPrice = entry.getProductPrice();
+        total = entry.getCount() * TravelStockroomBusiness.getPrice(booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), booking.getDateOfBooking());
+
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+      }
+
+
+      return total;
+  }
+
   public static float getBookingPrice(Booking booking) {
       float total = 0;
 
@@ -186,9 +203,11 @@ public class Booker {
         ProductPrice pPrice;
 
         for (int i = 0; i < entries.length; i++) {
-          pPrice = entries[i].getProductPrice();
-          price = TravelStockroomBusiness.getPrice(booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), booking.getDateOfBooking());
-          total += price * entries[i].getCount();
+          //pPrice = entries[i].getProductPrice();
+          //price = TravelStockroomBusiness.getPrice(booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), booking.getDateOfBooking());
+
+          total += getBookingEntryPrice(entries[i], booking);
+          //price * entries[i].getCount();
         }
 
       }catch (SQLException sql) {

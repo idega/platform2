@@ -14,6 +14,7 @@ import com.idega.util.text.TextSoap;
 import com.idega.core.accesscontrol.business.AccessControl;
 import is.idega.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
+import com.idega.block.trade.data.Currency;
 
 import is.idega.travel.data.*;
 import com.idega.core.data.*;
@@ -122,7 +123,7 @@ public class ServiceOverview extends TravelManager {
       Table topTable = this.getTopTable(modinfo);
         form.add(Text.BREAK);
       Table table = new Table();
-        table.setBorder(1);
+        table.setBorder(0);
         table.setWidth(1,"100");
         table.setWidth(2,"90");
         table.setWidth(4,"90");
@@ -199,6 +200,7 @@ public class ServiceOverview extends TravelManager {
         Text nameOfCategory;
         Text priceText;
         ProductPrice[] prices;
+        Currency currency;
 
 
         for (int i = 0; i < products.length; i++) {
@@ -275,11 +277,17 @@ public class ServiceOverview extends TravelManager {
             table.mergeCells(3,row,3,(row+prices.length-1));
 
             for (int j = 0; j < prices.length; j++) {
+              currency = new Currency(prices[j].getCurrencyId());
               nameOfCategory = (Text) theText.clone();
                 nameOfCategory.setText(prices[j].getPriceCategory().getName());
                 nameOfCategory.addToText(":");
               priceText = (Text) theBoldText.clone();
-                priceText.setText(Float.toString(tsb.getPrice(service.getID(),prices[j].getPriceCategoryID() , prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+                priceText.setText(Integer.toString((int)tsb.getPrice(service.getID(),prices[j].getPriceCategoryID() , prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+                priceText.addToText(Text.NON_BREAKING_SPACE);
+                priceText.addToText(currency.getCurrencyAbbreviation());
+                if (prices[j].getPriceType() == ProductPrice.PRICETYPE_DISCOUNT) {
+                  priceText.addToText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)");
+                }
 
 
               table.setVerticalAlignment(4,row,"top");
