@@ -135,7 +135,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		return true;
 	}
 
-	private AfterSchoolChoice createAfterSchoolChoice(User user, Integer childID, Integer providerID, Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate, SchoolSeason season, String subject, String body) throws CreateException, RemoteException {
+	private AfterSchoolChoice createAfterSchoolChoice(IWTimestamp stamp, User user, Integer childID, Integer providerID, Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate, SchoolSeason season, String subject, String body) throws CreateException, RemoteException {
 		if (season == null) {
 			try {
 				season = getSchoolChoiceBusiness().getCurrentSeason();
@@ -169,9 +169,8 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		}
 		if (placementDate != null)
 			choice.setFromDate(placementDate);
-		IWTimestamp stamp = new IWTimestamp();
 		choice.setQueueDate(stamp.getDate());
-		stamp.addSeconds((10 - (choiceNumber.intValue() * 10)));
+		stamp.addSeconds(1 - choiceNumber.intValue());
 		choice.setCreated(stamp.getTimestamp());
 		choice.setCaseStatus(caseStatus);
 		choice.setApplicationStatus(getStatusSentIn());
@@ -206,6 +205,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			CaseStatus status = null;
 			boolean firstIsFamilyFreetime = false;
 			AfterSchoolChoice choice = null;
+			IWTimestamp timeNow = new IWTimestamp();
 			for (int i = 0; i < caseCount; i++) {
 				if (providerIDs[i] != null && providerIDs[i].intValue() > 0) {
 					stamp = new IWTimestamp(placementDates[i]);
@@ -221,7 +221,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 							status = other;
 						}
 					}
-					choice = createAfterSchoolChoice(user, childId, providerIDs[i], new Integer(i + 1), message, status, choice, stamp.getDate(), season, subject, body);
+					choice = createAfterSchoolChoice(timeNow, user, childId, providerIDs[i], new Integer(i + 1), message, status, choice, stamp.getDate(), season, subject, body);
 					returnList.add(choice);
 				}
 			}
