@@ -416,6 +416,7 @@ public class TourOverview extends AbstractServiceOverview {
       }else {
         for (int j = 0; j < days.length; j++) {
           if (j > 0) daysTextBold.addToText(", ");
+          System.out.println("[TourOverview] : j = "+j+", days[j] = "+days[j]);
           daysTextBold.addToText(dayOfWeekName[days[j]]);
         }
       }

@@ -133,7 +133,7 @@ public class FishingBookingOverview extends AbstractBookingOverview {
             if (_supplier != null) {
               bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,prod,tempStamp);
             }else if (_reseller != null) {
-              bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,getContract(prod),prod,tempStamp);
+              bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,getContract(iwc,prod),prod,tempStamp);
             }
             if (bContinue) {
               iCount = 0;
@@ -162,13 +162,13 @@ public class FishingBookingOverview extends AbstractBookingOverview {
                 //iInquery = Inquirer.getInqueredSeats(service.getID() ,tempStamp, true);
                 iAvailable = iCount - iBooked - iAssigned;
               }else if (_reseller != null) {
-                iCount = getContract(prod).getAlotment();
+                iCount = getContract(iwc, prod).getAlotment();
                 iBooked = getBooker(iwc).getBookingsTotalCountByReseller(_reseller.getID() ,((Integer) service.getPrimaryKey()).intValue(), tempStamp);
                 iAssigned = 0;
 
                 iInquery = getInquirer(iwc).getInquiryHome().getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(),tempStamp,_reseller.getID(), true);
                 iAvailable = iCount - iBooked - iAssigned -iInquery;
-                iCount = iCount -iBooked;
+                //iCount = iCount -iBooked;
               }
               countTextBold = (Text) theSmallBoldText.clone();
               countTextBold.setText(Integer.toString(iCount));
@@ -224,7 +224,7 @@ public class FishingBookingOverview extends AbstractBookingOverview {
                 table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,8,row);
                 table.add(btnBook,8,row);
               } else if (_reseller != null) {
-                if (!getTravelStockroomBusiness(iwc).getIfExpired(getContract(prod), tempStamp))
+                if (!getTravelStockroomBusiness(iwc).getIfExpired(getContract(iwc, prod), tempStamp))
                   table.add(btnBook,8,row);
               }
               table.setRowColor(row,theColor);
@@ -456,9 +456,9 @@ public class FishingBookingOverview extends AbstractBookingOverview {
 			int[] iNumbers;
 			if (_supplier != null) inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp, true, null, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
 			if (_reseller != null) {
-				inqueries = inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp, true, null, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
-				//              Collection coll = getInquirer(iwc).getInquiryHome().findInqueries(service.getID(), stamp, _reseller.getID(),true, trAddress,is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
-				//              inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
+				//inqueries = inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp, true, null, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
+				              Collection coll = getInquirer(iwc).getInquiryHome().findInqueries(product.getID(), stamp, _reseller.getID(),true, null,is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
+				              inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
 			}
 			for (int i = 0; i < inqueries.length; i++) {
 				++row;
@@ -489,7 +489,7 @@ public class FishingBookingOverview extends AbstractBookingOverview {
 
 				link = (Link) answerLink.clone();
 //				link.addParameter(HotelBookingForm.parameterDepartureAddressId, trAddress.getID());
-				table.add(link, 8, row);
+				table.add(link, 9, row);
 
 			}
 

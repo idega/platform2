@@ -25,7 +25,7 @@ public class AbstractBookingOverview extends TravelManager implements BookingOve
 
   protected Supplier _supplier;
   protected Reseller _reseller;
-  //protected Contract _contract;
+  private Contract _contract;
 
   private String PARAMETER_FROM_STAMP = "active_from";
   private String PARAMETER_TO_STAMP = "active_to";
@@ -56,21 +56,12 @@ public class AbstractBookingOverview extends TravelManager implements BookingOve
 
   }
 
-  protected Contract getContract(Product product) throws RemoteException{
-    if ((_reseller != null) && (product != null)){
-      try {
-          Contract[] contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId(), Integer.toString(_reseller.getID()), is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );
-          if (contracts.length > 0) {
-            return contracts[0];
-          }
-
-      }catch (SQLException sql) {
-          sql.printStackTrace(System.err);
-      }
-
-    }
-    return null;
-  }
+	protected Contract getContract(IWContext iwc, Product product) throws RemoteException{
+		if (_contract == null) {
+			_contract = getContractBusiness(iwc).getContract(_reseller, product);
+		}	
+		return _contract;
+	}
 
   public Table getBookingOverviewTable(IWContext iwc, Collection products) throws CreateException, RemoteException, FinderException {
     Table table = new Table();

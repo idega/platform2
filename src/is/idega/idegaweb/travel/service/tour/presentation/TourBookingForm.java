@@ -1402,18 +1402,25 @@ public class TourBookingForm extends BookingForm{
       debug(e.getMessage());
     }
 
-    ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-    ServiceDay sDay = sDayHome.create();
-
-    sDay = sDay.getServiceDay(serviceId, fromStamp.getDayOfWeek());
-    if (sDay != null) {
-      totalSeats = sDay.getMax();
-      if (totalSeats < 1) {
-        totalSeats = _tour.getTotalSeats();
-      }
-    }else {
-      totalSeats = _tour.getTotalSeats();
-    }
+		if (supplier != null) {
+	    ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+	    ServiceDay sDay = sDayHome.create();
+	
+	    sDay = sDay.getServiceDay(serviceId, fromStamp.getDayOfWeek());
+	    if (sDay != null) {
+	      totalSeats = sDay.getMax();
+	      if (totalSeats < 1) {
+	        totalSeats = _tour.getTotalSeats();
+	      }
+	    }else {
+	      totalSeats = _tour.getTotalSeats();
+	    }
+		}else if (_reseller != null) {
+			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
+			if (cont != null) {
+				totalSeats = cont.getAlotment();
+			}	
+		}
 
     iMany -= previousBookings;
 
@@ -1881,43 +1888,29 @@ public class TourBookingForm extends BookingForm{
 
     try {
       int iManyDays = 1;
-      if ( Integer.parseInt(manyDays) > 1) {
-        iManyDays = Integer.parseInt(manyDays);
-      }
 
-      IWTimestamp fromStamp = new IWTimestamp(fromDate);
-      IWTimestamp toStamp = new IWTimestamp(fromStamp);
-        toStamp.addDays(iManyDays);
+      IWTimestamp stamp = new IWTimestamp(fromDate);
 
       if (bookingId == -1) {
         bookingId = saveBooking(iwc);
       }
 
       GeneralBooking gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
-      List bookings = getTourBooker(iwc).getMultibleBookings(gBooking);
-      Booking booking = null;
+//      List bookings = getTourBooker(iwc).getMultibleBookings(gBooking);
+//      Booking booking = null;
 
       int numberOfSeats = gBooking.getTotalCount();
       int counter = 0;
       int inquiryId = 0;
 
-      while (toStamp.isLaterThan(fromStamp)) {
-        booking = (Booking) bookings.get(counter);
-        booking.setIsValid(false);
-        booking.store();
-
-        inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, fromStamp, _product.getID() , numberOfSeats, booking.getID(), _reseller);
-
-        if (_tour != null) {
-          fromStamp = getTourBusiness(iwc).getNextAvailableDay(iwc, _tour, _product, fromStamp);
-          if (fromStamp == null) {
-            break;
-          }
-        }else {
-          fromStamp.addDays(1);
-        }
-        ++counter;
-      }
+//	    booking = (Booking) bookings.get(counter);
+//	    booking.setIsValid(false);
+//	    booking.store();
+			gBooking.setIsValid(false);
+			gBooking.store();
+	
+	    inquiryId = getInquirer(iwc).sendInquery(surname+" "+lastname, email, stamp, _product.getID() , numberOfSeats, gBooking.getID(), _reseller);
+	
 
       if (returnInquiryId) {
         return inquiryId;
@@ -1984,7 +1977,13 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 
 	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
 		Tour tour = getTourHome().findByPrimaryKey(product.getPrimaryKey());
-		int max = tour.getTotalSeats();
+		int max = 0;
+		if (supplier != null) {
+			max = tour.getTotalSeats();
+		}else if (_reseller != null) {
+			Contract cont = getContractBusiness(iwc).getContract(_reseller, product);
+			max = cont.getAlotment();
+		}
 		if (max > 0) {
 			int currentBookings = getTourBooker(iwc).getBookingsTotalCount( product.getID() , stamp);
 			if (currentBookings >= max) {
@@ -2235,8 +2234,13 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 //      price *= Integer.parseInt(manyDays);
 //			System.out.println("[TourBookingForm]  : 3b");
       table.add(getBoldTextWhite(this.df.format(price) + " "),2,row);
-      if (currency != null)
-      table.add(getBoldTextWhite(currency.getCurrencyAbbreviation()),2,row);
+      if (currency != null){
+      	table.add(getBoldTextWhite(currency.getCurrencyAbbreviation()),2,row);
+      }
+			if (price <= 0) {
+				valid = false;
+				table.add(star, 2, row);
+			}
 
 
 //      SubmitButton yes = new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.sAction, this.parameterBookingVerified);

@@ -1499,6 +1499,10 @@ public class HotelBookingForm extends BookingForm {
       if (currency != null) {
         table.add(getBoldTextWhite(currency.getCurrencyAbbreviation()),2,row);
       }
+			if (price <= 0) {
+				valid = false;
+				table.add(star, 2, row);
+			}
 
 
       if (inquiry == null) {
@@ -1640,6 +1644,7 @@ public class HotelBookingForm extends BookingForm {
 			iManyDays = Integer.parseInt(manyDays);
 		}catch (NumberFormatException n) {}
     
+  
     try {
       fromStamp = new IWTimestamp(fromDate);
 //      heildarbokanir = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);
@@ -1656,14 +1661,18 @@ public class HotelBookingForm extends BookingForm {
     	e.printStackTrace(System.err);
     }
 
-//    ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-//    ServiceDay sDay = sDayHome.create();
+		int totalRooms = 0;
+		
+		if (supplier != null) {
+			hotel.getNumberOfUnits();
+		}else if (_reseller != null) {
+			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
+			if (cont != null) {
+				totalRooms = cont.getAlotment();
+			}	
+		}
 
-//    sDay = sDay.getServiceDay(serviceId, fromStamp.getDayOfWeek());
-//    if (sDay != null) {
-//      totalSeats = sDay.getMax();
-//    }
-		int totalRooms = hotel.getNumberOfUnits();
+
 		int maxPerRoom = hotel.getMaxPerUnit();
 		
 		
@@ -1723,8 +1732,16 @@ public class HotelBookingForm extends BookingForm {
 	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
 		Hotel hotel = getHotelHome().findByPrimaryKey( product.getPrimaryKey() );
 		
-		int max = hotel.getNumberOfUnits();
+		int max = 0;
 		
+		if (supplier != null) {
+			hotel.getNumberOfUnits();
+		}else if (_reseller != null) {
+			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
+			if (cont != null) {
+				max = cont.getAlotment();
+			}	
+		}
 	
 		if (max > 0) {
 			int currentBookings = getHotelBooker(iwc).getBookingsTotalCount(product.getID(), stamp);

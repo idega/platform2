@@ -1491,12 +1491,19 @@ public abstract class BookingForm extends TravelManager{
 			e.printStackTrace(System.err);
 		}
 
-    ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-    ServiceDay sDay = sDayHome.create();
-
-    sDay = sDay.getServiceDay(serviceId, fromStamp.getDayOfWeek());
-    if (sDay != null) {
-      totalSeats = sDay.getMax();
+    if (supplier != null) {
+	    ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+	    ServiceDay sDay = sDayHome.create();
+	
+	    sDay = sDay.getServiceDay(serviceId, fromStamp.getDayOfWeek());
+	    if (sDay != null) {
+	      totalSeats = sDay.getMax();
+	    }
+    }else if (_reseller != null) {
+			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
+			if (cont != null) {
+				totalSeats = cont.getAlotment();
+			}	
     }
 
     iMany -= previousBookings;
@@ -2387,6 +2394,10 @@ public abstract class BookingForm extends TravelManager{
       table.add(getBoldTextWhite(this.df.format(price) + " "),2,row);
       if (currency != null)
       table.add(getBoldTextWhite(currency.getCurrencyAbbreviation()),2,row);
+			if (price <= 0) {
+				valid = false;
+				table.add(star, 2, row);
+			}
 
 //      SubmitButton yes = new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.sAction, this.parameterBookingVerified);
       SubmitButton yes = new SubmitButton(iwrb.getLocalizedString("yes","Yes"));
@@ -2621,19 +2632,28 @@ public abstract class BookingForm extends TravelManager{
 	}
 
 	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {
-	  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-	  ServiceDay sDay = sDayHome.create();
-	  sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
-	  
-	  if (sDay != null) {
-	  	int max = sDay.getMax();
-	  	if (max > 0 ) {
-				int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp);
-				if (currentBookings >= max) {
-					return true;	
-				}
-	  	}
+	  int max = 0;
+	  if (supplier != null) {
+		  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+		  ServiceDay sDay = sDayHome.create();
+		  sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
+		  
+		  if (sDay != null) {
+		  	max = sDay.getMax();
+		  }
+	  }else if (_reseller != null) {
+			Contract cont = super.getContractBusiness(iwc).getContract(_reseller, _product);
+			if (cont != null) {
+				max = cont.getAlotment();
+			}	
 	  }
+
+  	if (max > 0 ) {
+			int currentBookings = super.getBooker(iwc).getBookingsTotalCount(product.getID(), stamp);
+			if (currentBookings >= max) {
+				return true;	
+			}
+  	}
 		
 		return false;
 	}

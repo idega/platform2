@@ -37,7 +37,7 @@ public class CarRentalBookingOverview extends AbstractBookingOverview {
   private IWResourceBundle _iwrb;
 
   public CarRentalBookingOverview(IWContext iwc) throws RemoteException{
-    super.main(iwc);
+		super.main(iwc);
     _iwrb = super.getTravelSessionManager(iwc).getIWResourceBundle();
   }
 
@@ -133,7 +133,7 @@ public class CarRentalBookingOverview extends AbstractBookingOverview {
             if (_supplier != null) {
               bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,prod,tempStamp);
             }else if (_reseller != null) {
-              bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,getContract(prod),prod,tempStamp);
+              bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,getContract(iwc, prod),prod,tempStamp);
             }
             if (bContinue) {
               iCount = 0;
@@ -162,13 +162,13 @@ public class CarRentalBookingOverview extends AbstractBookingOverview {
                 //iInquery = Inquirer.getInqueredSeats(service.getID() ,tempStamp, true);
                 iAvailable = iCount - iBooked - iAssigned;
               }else if (_reseller != null) {
-                iCount = getContract(prod).getAlotment();
+                iCount = getContract(iwc, prod).getAlotment();
                 iBooked = getBooker(iwc).getBookingsTotalCountByReseller(_reseller.getID() ,((Integer) service.getPrimaryKey()).intValue(), tempStamp);
                 iAssigned = 0;
 
                 iInquery = getInquirer(iwc).getInquiryHome().getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(),tempStamp,_reseller.getID(), true);
                 iAvailable = iCount - iBooked - iAssigned -iInquery;
-                iCount = iCount -iBooked;
+                //iCount = iCount -iBooked;
               }
               countTextBold = (Text) theSmallBoldText.clone();
               countTextBold.setText(Integer.toString(iCount));
@@ -210,21 +210,21 @@ public class CarRentalBookingOverview extends AbstractBookingOverview {
                 table.add(countTextBold,3,row);
                 table.add(availableTextBold,7,row);
               }
-      /*
-                                table.setColor(1,row,theColor);
-                                table.setColor(2,row,theColor);
-                                table.setColor(3,row,theColor);
-                                table.setColor(4,row,theColor);
-                                table.setColor(5,row,theColor);
-                                table.setColor(6,row,theColor);
-                                table.setColor(7,row,theColor);
-      */
+      
+//                                table.setColor(1,row,theColor);
+//                                table.setColor(2,row,theColor);
+//                                table.setColor(3,row,theColor);
+//                                table.setColor(4,row,theColor);
+//                                table.setColor(5,row,theColor);
+//                                table.setColor(6,row,theColor);
+//                                table.setColor(7,row,theColor);
+      
               table.add(btnNanar,8,row);
               if (_supplier != null) {
                 table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,8,row);
                 table.add(btnBook,8,row);
               } else if (_reseller != null) {
-                if (!getTravelStockroomBusiness(iwc).getIfExpired(getContract(prod), tempStamp))
+                if (!getTravelStockroomBusiness(iwc).getIfExpired(getContract(iwc, prod), tempStamp))
                   table.add(btnBook,8,row);
               }
               table.setRowColor(row,theColor);
@@ -334,13 +334,13 @@ public class CarRentalBookingOverview extends AbstractBookingOverview {
 				seats = sDay.getMax();
 			}
 
-			/*
-			try {
-					Hotel hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(product.getPrimaryKey() );
-					seats = hotel.getNumberOfUnits();
-			} catch (FinderException e) {
-				debug("Cannot find hotel for Product...");
-			}*/
+			
+			//try {
+			//		Hotel hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(product.getPrimaryKey() );
+			//		seats = hotel.getNumberOfUnits();
+			//} catch (FinderException e) {
+			//	debug("Cannot find hotel for Product...");
+			//}
 			assigned = getAssigner(iwc).getNumberOfAssignedSeats(((Integer) product.getPrimaryKey()).intValue(), stamp);
 			iInqueries = getInquirer(iwc).getInqueredSeats(product.getID() , stamp, true);
 //			booked = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);
@@ -456,9 +456,9 @@ public class CarRentalBookingOverview extends AbstractBookingOverview {
 			int[] iNumbers;
 			if (_supplier != null) inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp, true, null, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
 			if (_reseller != null) {
-				inqueries = inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp, true, null, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
-				//              Collection coll = getInquirer(iwc).getInquiryHome().findInqueries(service.getID(), stamp, _reseller.getID(),true, trAddress,is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
-				//              inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
+				//inqueries = inqueries = getInquirer(iwc).getInqueries(product.getID(), stamp, true, null, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
+				              Collection coll = getInquirer(iwc).getInquiryHome().findInqueries(product.getID(), stamp, _reseller.getID(),true, null,is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
+				              inqueries = getInquirer(iwc).collectionToInqueryArray(coll);
 			}
 			for (int i = 0; i < inqueries.length; i++) {
 				++row;
@@ -489,7 +489,7 @@ public class CarRentalBookingOverview extends AbstractBookingOverview {
 
 				link = (Link) answerLink.clone();
 //				link.addParameter(HotelBookingForm.parameterDepartureAddressId, trAddress.getID());
-				table.add(link, 8, row);
+				table.add(link, 9, row);
 
 			}
 
