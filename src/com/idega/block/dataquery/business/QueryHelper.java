@@ -126,7 +126,7 @@ public class QueryHelper {
 		if(doc == null)
 			doc = new XMLDocument(getRootElement());
 		if(isTemplate()){
-			root.setAttribute(QueryXMLConstants.TEMPLATE,Boolean.toString(isTemplate()));
+			root.setAttribute(QueryXMLConstants.TEMPLATE, String.valueOf(isTemplate()));
 		}
 		//		SOURCE ENTITY PART (STEP 1)
 		if(sourceEntity!=null){
