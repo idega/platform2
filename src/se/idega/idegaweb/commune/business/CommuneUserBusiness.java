@@ -1,6 +1,9 @@
 package se.idega.idegaweb.commune.business;
 
+import java.rmi.RemoteException;
 import javax.ejb.*;
+
+import com.idega.user.data.User;
 
 public interface CommuneUserBusiness extends com.idega.business.IBOService
 {
@@ -25,4 +28,6 @@ public interface CommuneUserBusiness extends com.idega.business.IBOService
  public com.idega.user.data.Group getRootCommuneAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.Group getRootProviderAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.Group getRootSchoolAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public boolean hasCitizenAccount(com.idega.user.data.User user)throws RemoteException;
+ public boolean hasCitizenAccount(int userID)throws RemoteException;
 }

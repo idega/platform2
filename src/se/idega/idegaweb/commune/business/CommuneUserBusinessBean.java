@@ -338,5 +338,13 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 
 		throw new FinderException("No school found that " + user.getName() + " manages");
 	}
+	
+	public boolean hasCitizenAccount(User user)throws RemoteException{
+		return getUserBusiness().hasUserLogin(user);
+	}
+	
+	public boolean hasCitizenAccount(int userID)throws RemoteException{
+		return getUserBusiness().hasUserLogin(userID);
+	}
 
 }
