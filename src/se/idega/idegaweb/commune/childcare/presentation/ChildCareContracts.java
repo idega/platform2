@@ -50,7 +50,10 @@ public class ChildCareContracts extends ChildCareBlock {
 			table.add(getLocalizedSmallHeader("child_care.created","Created"), column++, row);
 			table.add(getLocalizedSmallHeader("child_care.valid_from","Valid from"), column++, row);
 			table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
-			table.add(getLocalizedSmallHeader("child_care.care_time","Care time"), column++, row++);
+			table.add(getLocalizedSmallHeader("child_care.care_time","Care time"), column++, row);
+			if(isCommuneAdministrator(iwc))
+				table.add(getLocalizedSmallHeader("child_care.invoice_receiver","Invoice Receiver"), column++, row);
+			row++;
 	
 			boolean showComment = false;
 			boolean showNotActiveComment = false;
@@ -163,6 +166,14 @@ public class ChildCareContracts extends ChildCareBlock {
 							table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
 						column++;
 						table.add(getSmallText(String.valueOf(contract.getCareTime())), column++, row);
+						if(isCommuneAdministrator(iwc)){
+							if(contract.getInvoiceReceiverID()>0){
+								table.add(getSmallText(contract.getInvoiceReceiver().getName()),column++,row);
+							}
+							else{
+								table.add(getSmallErrorText(localize("child_care.no_invoice_receiver","No receiver")),column++,row);
+							}
+						}
 						
 						table.setWidth(column, row, 12);
 						table.add(viewContract, column++, row);
