@@ -8,11 +8,15 @@
  */
 package is.idega.idegaweb.member.presentation;
 
-import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness;
-
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Iterator;
 
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -24,6 +28,7 @@ import com.idega.presentation.ui.SelectOption;
 import com.idega.user.business.UserStatusBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.Status;
+import com.idega.user.data.StatusHome;
 import com.idega.user.presentation.UserTab;
 
 /**
@@ -125,29 +130,32 @@ public class UserStatusTab extends UserTab {
 
 		_groupField = new Text(); //see initFieldContents
 
-//		_parent1StatusField = new CheckBox(_parent1StatusFieldName);
-//		_parent2StatusField = new CheckBox(_parent2StatusFieldName);
 		_parent3StatusField = new CheckBox(_parent3StatusFieldName);
 		_statusField = new SelectDropdown(_statusFieldName);
 
-		Status[] status = null;
+		IWContext iwc = IWContext.getInstance();
+		Collection status = null;
 		try {
-			status = (Status[]) com.idega.user.data.StatusBMPBean.getStaticInstance(Status.class).findAll();
+			status = ((StatusHome)IDOLookup.getHome(Status.class)).findAll();
 		}
-		catch (SQLException ex) {
-			ex.printStackTrace();
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
 		}
 
 		if (status != null) {
-			if (status.length > 0) {
-				IWContext iwc = IWContext.getInstance();
+			if (status.size() > 0) {
 				IWResourceBundle iwrb = getResourceBundle(iwc);
 
-				for (int i = 0; i < status.length; i++) {
-					String n = status[i].getStatusKey();
+				Iterator it = status.iterator();
+				while (it.hasNext()) {
+					Status s = (Status)it.next();
+					String n = s.getStatusKey();
 					if (n != null) {
 						String l = iwrb.getLocalizedString("usr_stat_" + n, n);
-						_statusField.addOption(new SelectOption(l, ((Integer) status[i].getPrimaryKey()).intValue()));
+						_statusField.addOption(new SelectOption(l, ((Integer) s.getPrimaryKey()).intValue()));
 					}
 				}
 			}
