@@ -78,8 +78,6 @@ public Box(String attribute){
       doMode(mode,modinfo);
     }
 
-    setStyles();
-
     BoxEntity box = null;
 
     _myTable = new Table(1,2);
@@ -133,6 +131,8 @@ public Box(String attribute){
 	}
 
   private Table getBox(BoxEntity box) {
+    setStyles();
+
     Table boxTable = new Table();
       boxTable.setCellpadding(0);
       boxTable.setCellspacing(_boxSpacing);
@@ -297,6 +297,9 @@ public Box(String attribute){
         _name = "boxoffice_"+Integer.toString(_boxID);
       else
         _name = "boxoffice_"+_attribute;
+    }
+    if ( _name == null ) {
+      _name = "boxoffice_"+Integer.toString(_boxID);
     }
 
     getParentPage().setStyleDefinition("A."+_name+":link",_linkStyle);
