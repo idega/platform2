@@ -536,7 +536,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         return;
       }
       WorkReportMember wrMember = findWorkReportMember(socialSecurityNumber, iwac);
-      if (wrMember != null) {
+      // if you have found the member that you are currently editing do not complain please
+      if (wrMember != null &&
+          ! (member.getPrimaryKey().equals(wrMember.getPrimaryKey())) ) {
         memberAlreadyExist = true;
         return;
       }
