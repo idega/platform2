@@ -143,7 +143,15 @@ public void main(ModuleInfo modinfo)throws Exception{
   outerTable.setHeight(1,3,"23");
   outerTable.setCellpadding(2);
   outerTable.setCellspacing(0);
- // outerTable.setBorder(1);
+
+  Table links = new Table(3,1);
+  links.setWidth("100%");
+  links.setCellpadding(0);
+  links.setCellspacing(0);
+  links.setAlignment(1,1,"left");
+  links.setAlignment(2,1,"center");
+  links.setAlignment(3,1,"right");
+
   if ( headerBackgroundImage != null ) outerTable.setBackgroundImage(1,1,headerBackgroundImage);
   if ( footerBackgroundImage != null ) outerTable.setBackgroundImage(1,3,footerBackgroundImage);
 
@@ -161,8 +169,14 @@ public void main(ModuleInfo modinfo)throws Exception{
       imageName.setFontColor(textColor);
       imageName.setFontSize(3);
       outerTable.add(imageName,1,1);
-
       outerTable.add(displayImage(image[0]),1,2);
+      Text backtext = new Text("Bakka <<");
+      backtext.setBold();
+      Link backLink = new Link(backtext);
+      backLink.setFontColor(textColor);
+      backLink.setAsBackLink();
+      links.add(backLink,1,1);
+      outerTable.add(links,1,3);
       add(outerTable);
      }
     catch(NumberFormatException e) {
@@ -184,21 +198,22 @@ public void main(ModuleInfo modinfo)throws Exception{
 
           if( (previousCatagory!=null) && (!previousCatagory.equalsIgnoreCase(imageCategoryId)) ){
             modinfo.getSession().removeAttribute("image_previous_catagory_id");
-            modinfo.getSession().removeAttribute("image_entities");
           }
 
-        ImageEntity[] inSession = (ImageEntity[]) modinfo.getSession().getAttribute("image_entities");
+        ImageEntity[] inApplication = (ImageEntity[]) modinfo.getServletContext().getAttribute("image_entities_"+imageCategoryId);
         modinfo.getSession().setAttribute("image_previous_catagory_id",imageCategoryId);
 
           categoryId = Integer.parseInt(imageCategoryId);
           ImageCatagory category = new ImageCatagory(categoryId);
-          if ( inSession == null ){
+          if ( inApplication == null ){
             imageEntity = (ImageEntity[]) category.findRelated(new ImageEntity());
           }
-          else imageEntity = inSession;
+          else imageEntity = inApplication;
 
-          modinfo.getSession().setAttribute("image_entities",imageEntity);
-
+          if( imageEntity!=null ){
+            modinfo.getServletContext().removeAttribute("image_entities_"+imageCategoryId);
+            modinfo.getServletContext().setAttribute("image_entities_"+imageCategoryId,imageEntity);
+          }
 
           Text categoryName = new Text(category.getName());
           categoryName.setBold();
@@ -237,19 +252,10 @@ public void main(ModuleInfo modinfo)throws Exception{
             forward.addParameter("iv_first",inext);
             forward.addParameter("image_catagory_id",category.getID());
 
-            Table links = new Table(3,1);
-
-            links.setWidth("100%");
-            links.setCellpadding(0);
-            links.setCellspacing(0);
-            links.setAlignment(1,1,"left");
-            links.setAlignment(2,1,"center");
-            links.setAlignment(3,1,"right");
-
             links.add(back,1,1);
             links.add(middleText,2,1);
             links.add(forward,3,1);
-            outerTable.add(links,1,3);
+
 
           }
         }
@@ -266,7 +272,7 @@ public void main(ModuleInfo modinfo)throws Exception{
 
 
         }
-
+        outerTable.add(links,1,3);
         outerTable.add(displayCatagory(imageEntity),1,2);
         add(outerTable);
 
