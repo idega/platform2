@@ -48,12 +48,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/05/24 23:04:07 $ by $Author: laddi $
+ * Last modified: $Date: 2004/05/25 11:16:57 $ by $Author: tryggvil $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -229,7 +229,7 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 		table.add(getSingleInput(iwc, PHONE_CELL_KEY, 25, false), 1, row++);
 
 		table.add(getHeader(EMAIL_KEY, EMAIL_DEFAULT), 1, row++);
-		table.add(getSingleInput(iwc, EMAIL_KEY, 25, false), 1, row++);
+		table.add(getSingleInput(iwc, EMAIL_KEY, 25, 255, false), 1, row++);
 
 		table.setHeight(row++, 18);
 		table.mergeCells(1, row, 3, row);
@@ -239,10 +239,14 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 	}
 
 	private TextInput getSingleInput(IWContext iwc, final String paramId, final int maxLength, boolean notEmpty) {
+		return getSingleInput(iwc,paramId,maxLength,maxLength,notEmpty);
+	}
+	
+	private TextInput getSingleInput(IWContext iwc, final String paramId, final int length,final int maxLength, boolean notEmpty) {
 		TextInput textInput = (TextInput) getStyledInterface(new TextInput(paramId));
 		textInput.setLength(maxLength);
 		textInput.setMaxlength(maxLength);
-		textInput.setSize(maxLength);
+		textInput.setSize(length);
 		if (notEmpty) {
 			final String fieldCanNotBeEmpty = localize(ERROR_FIELD_CAN_NOT_BE_EMPTY_KEY, ERROR_FIELD_CAN_NOT_BE_EMPTY_DEFAULT);
 			String name = localize(paramId, paramId);
