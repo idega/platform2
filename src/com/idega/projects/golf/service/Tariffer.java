@@ -18,6 +18,8 @@ import java.text.NumberFormat.*;
 import java.sql.*;
 import java.io.*;
 import java.util.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 
 /**
@@ -59,6 +61,10 @@ public class Tariffer extends ModuleObjectContainer {
   private Hashtable HeadsHash = null, AccHsh = null;
   private Table MainFrame;
 
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.projects.golf.tariff";
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
+
   public Tariffer(){
     pricecatalogue = new PriceCatalogue();
     HeaderColor = "#336660";
@@ -94,7 +100,8 @@ public class Tariffer extends ModuleObjectContainer {
 
   private Table makeMainTable(int menuNr){
     Link PiLink = new Link( "_" ,"/tarif/pi.jsp");
-    Text HeaderText = new Text("  F\u00e9lagsgj\u00f6ld  "+ unionAbbrev);
+    String sHeader = iwrb.getLocalizedString("clubtariffs","Club Tariffs of");
+    Text HeaderText = new Text(sHeader + unionAbbrev);
     HeaderText.setFontColor("#FFFFFF");
     Table HeaderTable = new Table(1,1);
     HeaderTable.setColor(HeaderColor );
@@ -113,11 +120,11 @@ public class Tariffer extends ModuleObjectContainer {
     MainTable.add(HeaderTable,2,2);
     //MainTable.add(PiLink,1,5);
 
-    Link SaveLink = new Link(new Image("/pics/tarif/vista.gif"));
+    Link SaveLink = new Link((iwrb.getImage("save.gif")));
     SaveLink.addParameter("catal_action","save");
     SaveLink.addParameter("union_id",union_id);
 
-    MainTable.add(new CloseButton(new Image("/pics/tarif/loka.gif")),2,4);
+    MainTable.add(new CloseButton((iwrb.getImage("close.gif"))),2,4);
     if(menuNr == 3)
       MainTable.add(SaveLink,2,4);
 
@@ -139,7 +146,8 @@ public class Tariffer extends ModuleObjectContainer {
     public DropdownMenu getExtraCatalogueDropdownMenu(String unionID)throws SQLException{
       DropdownMenu drp = new DropdownMenu();
       PriceCatalogue[] p = getExtraCatalogues(unionID);
-      drp.addDisabledMenuElement("0","Engin flokkur valinn !");
+      String sSelected = iwrb.getLocalizedString("specialtariffs","Category");
+      drp.addDisabledMenuElement("0",sSelected);
       for(int i = 0; i < p.length; i++){
         drp.addMenuElement(p[i].getID(),p[i].getName());
       }
@@ -148,7 +156,8 @@ public class Tariffer extends ModuleObjectContainer {
     public DropdownMenu getExtraCatalogueDropdownMenu(String name,String unionID)throws SQLException{
       DropdownMenu drp = new DropdownMenu(name);
       PriceCatalogue[] p = getExtraCatalogues(unionID);
-      drp.addDisabledMenuElement("0","Engin flokkur valinn !");
+      String sSelected = iwrb.getLocalizedString("specialtariffs","Category");
+      drp.addDisabledMenuElement("0",sSelected);
       for(int i = 0; i < p.length; i++){
         drp.addMenuElement(p[i].getID(),p[i].getName());
       }
@@ -185,44 +194,35 @@ public class Tariffer extends ModuleObjectContainer {
 
     LinkTable.setWidth(tablewidth);
 
-    Link sidan = new Link(new Image(menuNr == 1?"/pics/tarif/gjaldskra.gif":"/pics/tarif/gjaldskra1.gif"));
+    Link sidan = new Link(iwrb.getImage(menuNr == 1? ("ratelist.gif"):("ratelist1.gif")));
     sidan.addParameter("catal_action","main");
     sidan.addParameter("union_id",union_id);
 
-    Link UpdateLink = new Link(new Image(menuNr == 2?"/pics/tarif/breyta.gif":"/pics/tarif/breyta1.gif"));
+    Link UpdateLink = new Link(iwrb.getImage(menuNr == 2?("change.gif"):("change1.gif")));
     UpdateLink.addParameter("catal_action","change");
     UpdateLink.addParameter("union_id",union_id);
 
-    Link ViewLink = new Link(new Image(menuNr == 3?"/pics/tarif/skoda.gif":"/pics/tarif/skoda1.gif"));
+    Link ViewLink = new Link(iwrb.getImage(menuNr == 3?("look.gif"):("look1.gif")));
     ViewLink.addParameter("catal_action","view");
     ViewLink.addParameter("union_id",union_id);
-/**
-    Link SaveLink = new Link(new Image(menuNr == 4?"/pics/tarif/vista.gif":"/pics/tarif/vista1.gif"));
-    SaveLink.addParameter("catal_action","save");
-    SaveLink.addParameter("union_id",union_id);
-*/
-    Link PriceLink = new Link(new Image(menuNr == 5?"/pics/tarif/alagning.gif":"/pics/tarif/alagning1.gif"));
+
+    Link PriceLink = new Link(iwrb.getImage(menuNr == 5?("createratelist.gif"):("createratelist1.gif")));
     PriceLink.addParameter("catal_action","price");
     PriceLink.addParameter("union_id",union_id);
 
-    //Link OutLink = new Link(new Image("/pics/tarif/utskraning.gif"),"/tarif/filepaym.jsp");
     Link OutLink = new Link(new Image(menuNr == 6?"/pics/tarif/utskrift.gif":"/pics/tarif/utskrift1.gif"));
     OutLink.addParameter("catal_action","file");
     OutLink.addParameter("union_id",union_id);
 
-    Link BookingLink = new Link(new Image(menuNr == 7?"/pics/tarif/boka.gif":"/pics/tarif/boka1.gif"),"/tarif/paymentbook.jsp");
-   //Rollback.addParameter("catal_action","rollback");
+    Link BookingLink = new Link(iwrb.getImage(menuNr == 7?("book.gif"):("book1.gif")),"/tarif/paymentbook.jsp");
     BookingLink.addParameter("union_id",union_id);
 
     LinkTable.add(sidan,1,1);
     if(isAdmin){
       LinkTable.add(UpdateLink,1,1);
       LinkTable.add(ViewLink,1,1);
-      //LinkTable.add(SaveLink,1,1);
       LinkTable.add(PriceLink,1,1);
-      //LinkTable.add(OutLink,1,1);
       LinkTable.add(BookingLink,1,1);
-
     }
     return LinkTable;
   }
@@ -244,15 +244,20 @@ public class Tariffer extends ModuleObjectContainer {
     T.setCellpadding(cellpadding);
     T.setCellspacing(cellspacing) ;
 
-    T.add("Nr",1,1);
-    T.add("L\u00fdsing",2,1);
-    T.add("Upph\u00e6\u00f0",3,1);
+    String sNumber = iwrb.getLocalizedString("nr","Nr");
+    String sDesc = iwrb.getLocalizedString("description","Description");
+    String sAmount = iwrb.getLocalizedString("amount","Amount");
+    String sCount = iwrb.getLocalizedString("count","Count");
+    String sTotal = iwrb.getLocalizedString("total","Total");
+    String sList = iwrb.getLocalizedString("list","List");
 
-
-    T.add("Fjöldi",4,1);
+    T.add(sNumber,1,1);
+    T.add(sDesc,2,1);
+    T.add(sAmount,3,1);
+    T.add(sCount,4,1);
     T.add("%",5,1);
-    T.add("Upphæð",6,1);
-    T.add("Listi",7,1);
+    T.add(sTotal,6,1);
+    T.add(sList,7,1);
 
     if(Values != null){
       int sum = 0;
@@ -279,7 +284,7 @@ public class Tariffer extends ModuleObjectContainer {
           }
         }
         if(mbsVectorArray != null){
-        Link L = new Link(" Listi "+(i+1));
+        Link L = new Link(sList+(i+1));
         L.addParameter("catal_action","list");
         L.addParameter("catal_list_number",i);
         L.addParameter("union_id",union_id);
@@ -289,9 +294,8 @@ public class Tariffer extends ModuleObjectContainer {
       }
       if(totals != null){
         T.setRowColor(tablelines, "#FFFFFF");
-        T.add("ALLS  : ",3,tablelines);
+        T.add(sTotal+"  : ",3,tablelines);
         if(memberCount != 0){
-          //T.add(Integer.toString(count)+"/"+memberCount,4,tablelines);
           T.add(String.valueOf(memberCount),4,tablelines);
         }
         else{
@@ -300,24 +304,24 @@ public class Tariffer extends ModuleObjectContainer {
         T.add(nf.format(sum)+" Kr",6,tablelines);
         if(mbsVectorArray != null){
           if(mbsVectorArray[mbsVectorArray.length-2] != null && mbsVectorArray[mbsVectorArray.length-2].size() > 0){
-            Link L = new Link(" Óháðir " );
+            String sIndependent = iwrb.getLocalizedString("independent","Independent");
+            Link L = new Link(sIndependent );
             L.addParameter("catal_action","list");
             L.addParameter("catal_list_number",mbsVectorArray.length-2 );
             L.addParameter("union_id",union_id);
             L.addParameter("listextra","ups");
             T.add(totals[totals.length-2][0].toString() ,4,tablelines-2);
-            //T.add(nf.format(totals[totals.length-2][1])+" Kr" ,6,tablelines-2);
             T.add(L,6,tablelines-2);
 
           }
           if(mbsVectorArray[mbsVectorArray.length-1] != null && mbsVectorArray[mbsVectorArray.length-1].size() > 0){
-            Link L = new Link(" Afgangs " );
+            String sRemaining = iwrb.getLocalizedString("remaining","Remaining");
+            Link L = new Link(sRemaining );
             L.addParameter("catal_action","list");
             L.addParameter("catal_list_number",mbsVectorArray.length-1 );
             L.addParameter("union_id",union_id);
             L.addParameter("listextra","not");
             T.add(totals[totals.length-1][0].toString() ,4,tablelines-1);
-            //T.add(nf.format(totals[totals.length-1][1])+" Kr" ,6,tablelines-1);
             T.add(L,7,tablelines-1);
           }
         }
@@ -338,24 +342,23 @@ public class Tariffer extends ModuleObjectContainer {
   }
   private void control(ModuleInfo modinfo) throws IOException{
 
-    try{/*
-      if(modinfo.getRequest().getParameter("union_id") != null){
-         union_id = modinfo.getRequest().getParameter("union_id");
-      }
-      else{*/
-         union_id = (String)  modinfo.getSession().getAttribute("golf_union_id");
-      //}
+    try{
+
+      union_id = (String)  modinfo.getSession().getAttribute("golf_union_id");
 
       if(modinfo.getSession().getAttribute("member_login")!= null){
         Cashier = (Member) modinfo.getSession().getAttribute("member_login");
         cashier_id = Cashier.getID();
       }
-
       try{
-        if(union_id == null) { add("Enginn Klúbbur");return;}
+        String sNoClub = iwrb.getLocalizedString("noclub","Need to choose a club");
+        if(union_id == null) { add(sNoClub);return;}
         un_id = Integer.parseInt(union_id)  ;
       }
-      catch(NumberFormatException nfe){ add("Enginn klúbbur");}
+      catch(NumberFormatException nfe){
+        String sNoClub = iwrb.getLocalizedString("noclub","Need to choose a club");
+        add(sNoClub);
+      }
       unions = (Union[]) (new Union()).findAllByColumn("union_id",un_id);
       unionName = unions[0].getName();
       unionAbbrev = unions[0].getAbbrevation();
@@ -386,8 +389,6 @@ public class Tariffer extends ModuleObjectContainer {
       }
     }
     catch(SQLException S){S.printStackTrace();}
-    //catch(IOException IO){IO.printStackTrace();}
-    //catch(Exception E){ E.printStackTrace(); add("<br> villa "+E.toString()  );}
 }
 
     private void doMain(ModuleInfo modinfo) throws SQLException {
@@ -406,9 +407,12 @@ public class Tariffer extends ModuleObjectContainer {
       catalTable.setCellpadding(cellpadding);
       catalTable.setCellspacing(cellspacing) ;
       catalTable.setColumnAlignment(3, "right");
-      catalTable.add("Nr",1,1);
-      catalTable.add("L\u00fdsing",2,1);
-      catalTable.add("Upph\u00e6\u00f0",3,1);
+      String sNumber = iwrb.getLocalizedString("nr"," ");
+      String sDesc = iwrb.getLocalizedString("description","Description");
+      String sAmount = iwrb.getLocalizedString("amount","Amount");
+      catalTable.add(sNumber,1,1);
+      catalTable.add(sDesc,2,1);
+      catalTable.add(sAmount,3,1);
       if(isAdmin){
         if(count > 0){
           PriceCatalogue PC;
@@ -444,14 +448,23 @@ public class Tariffer extends ModuleObjectContainer {
       inputTable.setCellspacing(1);
       inputTable.setColumnAlignment(1,"right");
       inputTable.setHorizontalZebraColored(DarkColor,LightColor);
-      inputTable.add("Nr",1,1);
-      inputTable.add("L\u00fdsing",2,1);
-      inputTable.add("Upph\u00e6\u00f0",3,1);
-      inputTable.add("Fr\u00e1",4,1);
-      inputTable.add("Til",5,1);
-      //inputTable.add("Stofnár",6,1);
-      inputTable.add("Hverjir",6,1);
-      inputTable.add("Tegund",7,1);
+      String sNumber = iwrb.getLocalizedString("nr"," ");
+      String sDesc = iwrb.getLocalizedString("description","Description");
+      String sAmount = iwrb.getLocalizedString("amount","Amount");
+      String sFrom = iwrb.getLocalizedString("from","From");
+      String sTo = iwrb.getLocalizedString("to","To");
+      String sWho = iwrb.getLocalizedString("who","Who");
+      String sType = iwrb.getLocalizedString("type","Type");
+      String sCount = iwrb.getLocalizedString("count","Count");
+      String sTotal = iwrb.getLocalizedString("total","Total");
+      String sList = iwrb.getLocalizedString("list","List");
+      inputTable.add(sNumber,1,1);
+      inputTable.add(sDesc,2,1);
+      inputTable.add(sAmount,3,1);
+      inputTable.add(sFrom,4,1);
+      inputTable.add(sTo,5,1);
+      inputTable.add(sWho,6,1);
+      inputTable.add(sType,7,1);
 
       for (int i = 1; i < inputLines+1 ;i++){
         String rownum = String.valueOf(i);
@@ -461,6 +474,18 @@ public class Tariffer extends ModuleObjectContainer {
         String genderValue,extraValue;
 
         String tmp;
+
+        String sAll = iwrb.getLocalizedString("all","All");
+        String sMen = iwrb.getLocalizedString("men","Men");
+        String sWomen = iwrb.getLocalizedString("women","Women");
+        String sPartner = iwrb.getLocalizedString("partner","Partner");
+        String sCouple = iwrb.getLocalizedString("couple","Couple");
+        String sFamily = iwrb.getLocalizedString("family","Family");
+        String sRookie = iwrb.getLocalizedString("rookie","Rookie");
+
+        String sMain = iwrb.getLocalizedString("main","Main");
+        String sExtra = iwrb.getLocalizedString("extra","Extra");
+        String sLocker = iwrb.getLocalizedString("locker","Locker");
 
         if(Values != null && i <= Values.length ){
           textInput  = new TextInput("catal_text"+i,(Values[i-1][1].equalsIgnoreCase("null")?"":Values[i-1][1]));
@@ -472,17 +497,18 @@ public class Tariffer extends ModuleObjectContainer {
           extraValue = (Values[i-1][7].equalsIgnoreCase("null")?"I":Values[i-1][7]);
           drpGender = new DropdownMenu("catal_gender"+i);
           drpExtra = new DropdownMenu("catal_extra"+i);
-          drpGender.addMenuElement("A","Allir");
-          drpGender.addMenuElement("M","Karlar");
-          drpGender.addMenuElement("F","Konur");
-          drpGender.addMenuElement("P","Makar");
-          drpGender.addMenuElement("C","Hjón");
-          drpGender.addMenuElement("G","Fjölskylda");
-          drpGender.addMenuElement("N","Nýliðar");
+
+          drpGender.addMenuElement("A",sAll);
+          drpGender.addMenuElement("M",sMen);
+          drpGender.addMenuElement("F",sWomen);
+          drpGender.addMenuElement("P",sPartner);
+          drpGender.addMenuElement("C",sCouple);
+          drpGender.addMenuElement("G",sFamily);
+          drpGender.addMenuElement("N",sRookie);
           drpGender.setSelectedElement(genderValue);
-          drpExtra.addMenuElement("I","Aðal");
-          drpExtra.addMenuElement("N","Auka");
-          drpExtra.addMenuElement("L","Skáp");
+          drpExtra.addMenuElement("I",sMain);
+          drpExtra.addMenuElement("N",sExtra);
+          drpExtra.addMenuElement("L",sLocker);
           drpExtra.setSelectedElement(extraValue);
 
         }
@@ -494,16 +520,16 @@ public class Tariffer extends ModuleObjectContainer {
           membForInput = new TextInput("catal_memberfor"+i);
           drpGender = new DropdownMenu("catal_gender"+i);
           drpExtra = new DropdownMenu("catal_extra"+i);
-          drpGender.addMenuElement("A","Allir");
-          drpGender.addMenuElement("M","Karlar");
-          drpGender.addMenuElement("F","Konur");
-          drpGender.addMenuElement("P","Makar");
-          drpGender.addMenuElement("C","Hjón");
-          drpGender.addMenuElement("G","Fjölskylda");
-          drpGender.addMenuElement("N","Nýliðar");
-          drpExtra.addMenuElement("I","Aðal");
-          drpExtra.addMenuElement("N","Auka");
-          drpExtra.addMenuElement("L","Skáp");
+         drpGender.addMenuElement("A",sAll);
+          drpGender.addMenuElement("M",sMen);
+          drpGender.addMenuElement("F",sWomen);
+          drpGender.addMenuElement("P",sPartner);
+          drpGender.addMenuElement("C",sCouple);
+          drpGender.addMenuElement("G",sFamily);
+          drpGender.addMenuElement("N",sRookie);
+          drpExtra.addMenuElement("I",sMain);
+          drpExtra.addMenuElement("N",sExtra);
+          drpExtra.addMenuElement("L",sLocker);
         }
         textInput.setSize(20);
         priceInput.setSize(4);
@@ -526,7 +552,7 @@ public class Tariffer extends ModuleObjectContainer {
       myForm.add(new HiddenInput("numofcatal", String.valueOf(inputLines) ));
       myForm.add(new HiddenInput("catal_action","update" ));
       myForm.add(inputTable);
-      myForm.add(new SubmitButton(new Image("/pics/tarif/uppfaera.gif")));
+      myForm.add(new SubmitButton((iwrb.getImage("update.gif"))));
 
       Table MainTable = makeMainTable(2);
       MainTable.add(myForm,2,3);
@@ -591,14 +617,16 @@ public class Tariffer extends ModuleObjectContainer {
       this.removeMemberVectorArray(modinfo);
       Table MainTable = makeMainTable(3);
       MainTable.add(makeSubZeroTable(),2,3);
-      Text T = new Text("<H3>Veldu SKOÐA til að fá útreikninga í töfluna<br> VISTA til að vista gjaldskrá í gagnagrunn</H3>");
+      String sHelp1 = iwrb.getLocalizedString("help1","Choose Look to get a calculation");
+      String sHelp2 = iwrb.getLocalizedString("help2","Save to save to database");
+      Text T = new Text("<H3>"+sHelp1+"<br>"+sHelp2+"</H3>");
       MainTable.add(T ,2,3);
       add(MainTable);
     }
 
     private void doView(ModuleInfo modinfo) {
       this.getEveryThing(modinfo);
-      Link findLink = new Link(new Image("/pics/tarif/finna.gif"));
+      Link findLink = new Link(iwrb.getImage("search.gif"));
       findLink.addParameter("catal_action","seek");
       Table MainTable = makeMainTable(3);
       MainTable.add(findLink,2,4);
@@ -621,10 +649,12 @@ public class Tariffer extends ModuleObjectContainer {
       	makeAllUnUsable();
       	saveCatalogs();
         removeMemberTotals(modinfo);
-      	messageText = new Text("<H3> Gjaldskrá var vistuð ! </H3> ");
+        String sMsg1 = iwrb.getLocalizedString("msg1","Rate list was saved !");
+      	messageText = new Text("<H3>"+sMsg1+"</H3> ");
       }
       else{
-      	messageText = new Text("<H3> Ekkert vistað !  </H3> ");
+        String sMsg2 = iwrb.getLocalizedString("msg2","Nothing was saved !");
+      	messageText = new Text("<H3>"+ sMsg2+"</H3> ");
       }
       Table MainTable = makeMainTable(3);
       MainTable.add(makeSubZeroTable(),2,3);
@@ -659,13 +689,19 @@ public class Tariffer extends ModuleObjectContainer {
       String[] strDisplays = new String[1];
       int[] pcIds = new int[1];
 
+      String sNumber = iwrb.getLocalizedString("nr","Nr");
+      String sName = iwrb.getLocalizedString("name","Name");
+      String sSSN = iwrb.getLocalizedString("ssn","Socialnumber");
+      String sSpecGroup = iwrb.getLocalizedString("specialgroup","Special group");
+      String sNone = iwrb.getLocalizedString("none","None");
+
       Table T = new Table(9,len+2);
-      T.add("Nr",1,1);
-      T.add("Nafn",2,1);
-      T.add("Kennitala",4,1);
+      T.add(sNumber,1,1);
+      T.add(sName,2,1);
+      T.add(sSSN,4,1);
       if(listextra != null){
         ExtraCatalogs = true;
-        T.add("Sérflokkur",8,1);
+        T.add(sSpecGroup,8,1);
         List pcList = this.getExtraCatalogList(union_id);
         if(pcList != null){
         Object[] obs = pcList.toArray();
@@ -677,7 +713,7 @@ public class Tariffer extends ModuleObjectContainer {
         if(listextra.equalsIgnoreCase("not")){
           PcCheck = true;
           drpXPCs = new DropdownMenu("catal_extrapcdrop");
-          drpXPCs.addMenuElement("0","Enginn");
+          drpXPCs.addMenuElement("0",sNone);
 
           pclen = pcs.length;
           strDisplays = new String[pclen];
@@ -704,7 +740,7 @@ public class Tariffer extends ModuleObjectContainer {
         if(ExtraCatalogs){
           if(PcCheck ){
               drpXPCs = new DropdownMenu("catal_extrapcdrop"+b);
-              drpXPCs.addMenuElement("0","Enginn");
+              drpXPCs.addMenuElement("0",sNone);
               String strDisplay;
               for(int r = 0; r < pclen; r++){
                 drpXPCs.addMenuElement(pcIds[r],strDisplays[r]);
@@ -733,10 +769,13 @@ public class Tariffer extends ModuleObjectContainer {
       myForm.add(T);
       MainTable.add(makeSubZeroTable(),2,3);
       MainTable.add(myForm,2,4);
-      MainTable.add("<H2><BLINK>  Muna að vista breytingar !</BLINK></H2> ",2,3);
+      String sHelp3 = iwrb.getLocalizedString("help3","Remember to save changes !");
+      MainTable.add("<H2><BLINK>"+sHelp3+"</BLINK></H2> ",2,3);
       }
-      else
-         MainTable.add("<H2><BLINK>  Enginn afgangur !</BLINK></H2> ",2,3);
+      else{
+        String sHelp4 = iwrb.getLocalizedString("help4","No leftover !");
+        MainTable.add("<H2><BLINK>"+sHelp4+"</BLINK></H2> ",2,3);
+      }
 
       add(MainTable);
     }
@@ -780,6 +819,8 @@ public class Tariffer extends ModuleObjectContainer {
         }
       }
 
+
+
       DropdownMenu drpBank = new DropdownMenu("catal_bank");
       drpBank.addMenuElement("nobnk", "Enginn");
       drpBank.addMenuElement("spsj", "Sparisjóður");
@@ -791,8 +832,9 @@ public class Tariffer extends ModuleObjectContainer {
       bankofficeInput.setSize(4);
       bankofficeInput.setMaxlength(4);
 
+      String sNone = iwrb.getLocalizedString("none","None");
       DropdownMenu drdFinalPayDay = new DropdownMenu("catal_finalpayday");
-      drdFinalPayDay.addDisabledMenuElement("0", "Enginn");
+      drdFinalPayDay.addDisabledMenuElement("0", sNone);
       for(int i = 1; i < 31;i++){ drdFinalPayDay.addMenuElement( String.valueOf(i));}
 
       TextInput B1input = new TextInput("catal_girotext1");B1input.setMaxlength(70);B1input.setSize(70);
@@ -805,15 +847,24 @@ public class Tariffer extends ModuleObjectContainer {
       T.setCellpadding(cellpadding);
       T.setCellspacing(cellspacing) ;
       T.setWidth(tablewidth) ;
-      T.add("Álagning",1,1);
-      T.add("Banki",1,3);
-      T.add("Útibú banka",1,4);
-      T.add("Eindagi ",1,5);
-      T.add("Texti Gíróseðla :",1,6);
-      T.add(" 1.Textalína",1,7);
-      T.add(" 2.Textalína",1,8);
-      T.add(" 3.Textalína",1,9);
-      T.add(" 4.Textalína",1,10);
+      String sAssessment = iwrb.getLocalizedString("assessment","Assessment");
+      String sBank = iwrb.getLocalizedString("bank","Bank");
+      String sBankOffice = iwrb.getLocalizedString("bankoffice","Bank office");
+      String sDuedate = iwrb.getLocalizedString("finalduedate","Final due day");
+      String sGiroText = iwrb.getLocalizedString("girotext","Giro text");
+      String sLine1 = iwrb.getLocalizedString("line1","Line1");
+      String sLine2 = iwrb.getLocalizedString("line2","Line2");
+      String sLine3 = iwrb.getLocalizedString("line3","Line3");
+      String sLine4 = iwrb.getLocalizedString("line4","Line4");
+      T.add(sAssessment,1,1);
+      T.add(sBank,1,3);
+      T.add(sBankOffice,1,4);
+      T.add(sDuedate,1,5);
+      T.add(sGiroText+" :",1,6);
+      T.add(sLine1,1,7);
+      T.add(sLine2,1,8);
+      T.add(sLine3,1,9);
+      T.add(sLine4,1,10);
 
       T.add(drpRound ,3,1);
       T.add(drpBank,3,3);
@@ -919,13 +970,17 @@ public class Tariffer extends ModuleObjectContainer {
 
             }
           }
-           Message =("<H3>Skrá var vistuð</H3>");
+          String sMsg3 = iwrb.getLocalizedString("msg3","File was saved !");
+           Message =("<H3>"+sMsg3+"</H3>");
         }
-        else
-          Message = "<H3> Engin skrá var gerð - engin álagning</H3>";
+        else{
+          String sMsg4 = iwrb.getLocalizedString("msg4","No File was saved !");
+          Message = "<H3>"+sMsg4+"</H3>";
+        }
       }
       catch(NumberFormatException e){
-        Message = "<H3> Engin skrá var gerð</H3>";
+        String sMsg4 = iwrb.getLocalizedString("msg4","No File was saved !");
+        Message = "<H3>"+sMsg4+"</H3>";
       }
       finally{
         add(makeMainTable(6));
@@ -993,18 +1048,24 @@ public class Tariffer extends ModuleObjectContainer {
       DefineTable.setColumnColor(4, LightColor);
       DefineTable.setColumnColor(1,LightColor);
 
-      DefineTable.add(" Gíró",2,3);
+      DefineTable.add(" Giro",2,3);
       DefineTable.add(" Euro",3,3);
       DefineTable.add(" Visa",4,3);
       DefineTable.add(GiroBox,2,3);
       DefineTable.add(EuroBox,3,3);
       DefineTable.add(VisaBox,4,3);
 
-      DefineTable.add("Prósenta kostnaðar (%)",1,5);
-      DefineTable.add("Upphæð kostnaðar pr.seðil",1,6);
-      DefineTable.add("Greiðslufjöldi",1,7);
-      DefineTable.add("Mánaðardagur gjalddaga",1,8);
-      DefineTable.add("Mánuður fyrsta gjalddaga",1,9);
+      String sCostPercent = iwrb.getLocalizedString("costpercent","Cost percent (%)");
+      String sCostPerNote = iwrb.getLocalizedString("costpernote","Cost per Note ");
+      String sNumberOfPayment = iwrb.getLocalizedString("numberofpayment","Number of payments");
+      String sDayOfPay = iwrb.getLocalizedString("dayofpay","Day of first pay");
+      String sMontOfPay = iwrb.getLocalizedString("monthofpay","Month of first pay");
+
+      DefineTable.add(sCostPercent,1,5);
+      DefineTable.add(sCostPerNote,1,6);
+      DefineTable.add(sNumberOfPayment,1,7);
+      DefineTable.add(sDayOfPay,1,8);
+      DefineTable.add(sMontOfPay,1,9);
 
       DefineTable.add(GiroBankInterest,2,5);
       DefineTable.add(GiroBankCost,2,6);
@@ -1028,7 +1089,7 @@ public class Tariffer extends ModuleObjectContainer {
       Table MainTable = makeMainTable(5);
       MainTable.add(DefineTable,2,3);
       myForm.add(new HiddenInput("catal_action","gjalda" ));
-      MainTable.add(new SubmitButton(new Image("/pics/tarif/leggjaa.gif")),2,3);
+      MainTable.add(new SubmitButton(iwrb.getImage("bill.gif")),2,3);
       myForm.add( MainTable );
       add(myForm);
     }
@@ -1098,10 +1159,12 @@ public class Tariffer extends ModuleObjectContainer {
 
         }
       System.err.print("\nÁlagningu lýkur "+ new idegaTimestamp().toSQLTimeString());
-      add("<H2><BLINK>  Álagningu er lokið ! </BLINK></H2> ");
+      String sMsg5 = iwrb.getLocalizedString("msg5","Assessment finished");
+      add("<H2>"+sMsg5+"</H2> ");
       }
       else{
-      add("<H2><BLINK>  Engin álagning var gerð ! </BLINK></H2> ");
+        String sMsg6 = iwrb.getLocalizedString("msg6","No assessment was made !");
+      add("<H2>"+sMsg6+"</H2> ");
       }
       add(makeMainTable(5));
     }
@@ -1642,8 +1705,10 @@ public class Tariffer extends ModuleObjectContainer {
     this.setMemberCount( modinfo , memberCount ) ;
     this.setTotalMembersVector( modinfo , TotalMembersVector );
     }
-    else
-      add("<H2><BLINK>  Tókst ekki að leita! </BLINK></H2> ");
+    else{
+      String sMsg7 = iwrb.getLocalizedString("msg7","Search failed");
+      add("<H2>"+sMsg7+"</H2> ");
+    }
   }// seekThem
 
   private void setEverything( ModuleInfo modinfo ){
@@ -1662,7 +1727,7 @@ public class Tariffer extends ModuleObjectContainer {
     StringBuffer RoundName = new StringBuffer("Félagsgjöld ");
     RoundName.append(this.unionAbbrev);
     switch(payTypeId){
-      case 1: RoundName.append(" Gíro"); break;
+      case 1: RoundName.append(" Giro"); break;
       case 2: RoundName.append(" Euro"); break;
       case 3: RoundName.append(" Vísa"); break;
     }
@@ -1845,8 +1910,14 @@ public class Tariffer extends ModuleObjectContainer {
   public void main(ModuleInfo modinfo) throws IOException {
     //isAdmin = com.idega.jmodule.object.ModuleObject.isAdministrator(this.modinfo);
     /** @todo: fixa Admin*/
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
     isAdmin = true;
     control(modinfo);
+  }
+
+   public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 
 }// class Tariffer

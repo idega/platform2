@@ -18,6 +18,9 @@ import java.text.NumberFormat;
 import java.sql.*;
 import java.io.*;
 import java.util.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+
 
 /**
 *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
@@ -49,6 +52,10 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
   private NumberFormat NF ;
   private String styleAttribute = "font-size: 8pt";
   private String storage;
+
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.projects.golf.tariff";
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
 
   public AccountViewer(){
 
@@ -141,7 +148,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       }
     }
     catch(SQLException S){	S.printStackTrace();	}
-    catch(Exception s){ add("villa");}
+    catch(Exception s){ }
     }
 
     private void doMain(ModuleInfo modinfo) throws SQLException {
@@ -173,10 +180,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       MainFrame.setWidth(2,"450");
       MainFrame.setWidth(3,"20");
       MainFrame.setWidth(4,"250");
-      //MainFrame.setBorder(1);
-      //MainFrame.setHeight(4,3,"100%");
       MainFrame.setAlignment(4,3,"top");
-      //MainFrame.setColumnColor(3,WhiteColor);
       MainFrame.setCellspacing(0);
       MainFrame.setCellpadding(0);
     }
@@ -188,7 +192,6 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
 
     private void makeFrame(){
       Frame = new Table(1,3);
-      //Frame.setBorder(1);
       Frame.setCellspacing(0);
       Frame.setCellpadding(0);
       Frame.setWidth("100%");
@@ -197,13 +200,11 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
 
     private void makeFrame2(){
       Frame2 = new Table(1,2);
-      //Frame2.setBorder(1);
       Frame2.setCellspacing(0);
       Frame2.setCellpadding(0);
       Frame2.setWidth("100%");
       Frame2.setHeight("100%");
     }
-
 
     private void addMain(ModuleObject T){
       Frame.add(T,1,3);
@@ -266,7 +267,9 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
         try{
           P.delete();
         }
-        catch(SQLException e){strMessage = "Tókst ekki að eyða greiðslu";}
+        catch(SQLException e){
+          String av_msg1 = iwrb.getLocalizedString("av_msg1"," Payment could not be erased");
+          strMessage = av_msg1;}
         }
         else{
         if(strChkPaid != null && strChkPaid.equalsIgnoreCase("true"))
@@ -279,7 +282,9 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
         try{
           P.update();
         }
-        catch(SQLException e){strMessage = "Tókst ekki að breyta greiðslu";}
+        catch(SQLException e){
+          String av_msg2 = iwrb.getLocalizedString("av_msg2"," Payment could not be changed");
+          strMessage = av_msg2;}
       }
       }
       this.doMain(modinfo);
@@ -447,7 +452,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
             }
           }
           catch(SQLException sql){
-            add("villa");
+
           }
         }
       }
@@ -531,7 +536,11 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
             try{
               P.insert();
             }
-            catch(SQLException e){e.printStackTrace();  strMessage = "Tókst ekki að breyta greiðslu";}
+            catch(SQLException e){
+              e.printStackTrace();
+              String av_msg2 = iwrb.getLocalizedString("av_msg2"," Payment could not be changed");
+              strMessage = av_msg2;
+            }
           }
         }
       }
@@ -580,7 +589,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
         }
         eAccount.update();
       }
-      catch(SQLException sql){ add("mistókst");
+      catch(SQLException sql){ ;
       }
       this.doMain(modinfo);
     }
@@ -775,15 +784,18 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
 
       String fontColor = WhiteColor;
       int fontSize = 1;
-
-      Text Title = new Text(" Núverandi Gjaldskrá",true,false,false);
+      String sTariffList = iwrb.getLocalizedString("tarifflist","List of Tariffs");
+      String sChoice = iwrb.getLocalizedString("choice","Choice");
+      String sDesc = iwrb.getLocalizedString("description","Description");
+      String sAmount = iwrb.getLocalizedString("amount","Amount");
+      Text Title = new Text(sTariffList,true,false,false);
       Title.setFontColor(HeaderColor);
       T2.add(Title,1,1);
 
       Text[] TableTitles = new Text[3];
-      TableTitles[0] = new Text("Val");
-      TableTitles[1] = new Text("Lýsing");
-      TableTitles[2] = new Text("Upphæð");
+      TableTitles[0] = new Text(sChoice);
+      TableTitles[1] = new Text(sDesc);
+      TableTitles[2] = new Text(sAmount);
 
       for(int i = 0 ; i < TableTitles.length;i++){
         TableTitles[i].setFontSize(fontSize);
@@ -832,15 +844,17 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
 
       String fontColor = WhiteColor;
       int fontSize = 1;
-
+      String sNewTariff = iwrb.getLocalizedString("newtariff","New tariff");
       Text Title = new Text(" Nýtt Gjald",true,false,false);
       Title.setFontColor(HeaderColor);
       T2.add(Title,1,1);
 
+      String sDesc = iwrb.getLocalizedString("description","Description");
+      String sAmount = iwrb.getLocalizedString("amount","Amount");
+
       Text[] TableTitles = new Text[2];
-      TableTitles[0] = new Text("Lýsing");
-      TableTitles[1] = new Text("Upphæð");
-      //TableTitles[2] = new Text("Gjalddagi");
+      TableTitles[0] = new Text(sDesc);
+      TableTitles[1] = new Text(sAmount);
 
       for(int i = 0 ; i < TableTitles.length;i++){
         TableTitles[i].setFontSize(fontSize);
@@ -891,16 +905,26 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
 
       int fontSize = 1;
 
-      Text Title = new Text("Greiðsla",true,false,false);
+      String sDesc = iwrb.getLocalizedString("description","Description");
+      String sAmount = iwrb.getLocalizedString("amount","Amount");
+      String sPart = iwrb.getLocalizedString("part","Part");
+      String sType = iwrb.getLocalizedString("paytype","Paytype");
+      String sDueDate = iwrb.getLocalizedString("duedate","Duedate");
+      String sPayment = iwrb.getLocalizedString("payment","Payment");
+      String sPay = iwrb.getLocalizedString("pay","Pay");
+      String sDelete = iwrb.getLocalizedString("delete","Delete");
+      String sUpdate = iwrb.getLocalizedString("update","Update");
+
+      Text Title = new Text(sPayment,true,false,false);
       Title.setFontColor(HeaderColor);
       T2.add(Title,1,1);
 
       Text[] TableTitles = new Text[5];
-      TableTitles[0] = new Text("Gjalddagi");
-      TableTitles[1] = new Text("Máti");
-      TableTitles[2] = new Text("Hluti");
-      TableTitles[3] = new Text("Lýsing");
-      TableTitles[4] = new Text("Upphæð");
+      TableTitles[0] = new Text(sDueDate);
+      TableTitles[1] = new Text(sType);
+      TableTitles[2] = new Text(sPart);
+      TableTitles[3] = new Text(sDesc);
+      TableTitles[4] = new Text(sAmount);
 
       for(int i = 0 ; i < TableTitles.length;i++){
         TableTitles[i].setFontSize(fontSize);
@@ -929,13 +953,13 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       Text tPart = new Text(P.getInstallmentNr()+"/"+P.getTotalInstallment());
       tPart.setFontSize(fontSize);
       tPart.setFontColor(HeaderColor);
-      Text tPay = new Text("Greiða");
+      Text tPay = new Text(sPay);
       tPay.setFontSize(fontSize);
       tPay.setFontColor(HeaderColor);
-      Text tDel = new Text("Eyða");
+      Text tDel = new Text(sDelete);
       tDel.setFontSize(fontSize);
       tDel.setFontColor(HeaderColor);
-      Text tUpd = new Text("Upfæra");
+      Text tUpd = new Text(sUpdate);
       tUpd.setFontSize(fontSize);
       tUpd.setFontColor(HeaderColor);
 
@@ -943,7 +967,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       CheckBox chkUpd = new CheckBox("payment_ichkupdate","true");
       CheckBox chkDel= new CheckBox("payment_ichkdel","true");
 
-      SubmitButton B = new SubmitButton(new Image("/pics/tarif/small/boka.gif"),"updatepay");
+      SubmitButton B = new SubmitButton(iwrb.getImage("bill.gif"),"updatepay");
 
       Table T3 = new Table(8,1);
       T3.add(tPay,1,1);
@@ -985,14 +1009,19 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       String fontColor = WhiteColor;
       int fontSize = 1;
 
-      Text Title = new Text("Stillingar",true,false,false);
+      String sSettings = iwrb.getLocalizedString("settings","Settings");
+      String sPaytype = iwrb.getLocalizedString("paytype","Paytype");
+      String sFirstpaydate = iwrb.getLocalizedString("firstpaydate","1.Paydate");
+      String sPayments = iwrb.getLocalizedString("payments","Payments");
+
+      Text Title = new Text(sSettings,true,false,false);
       Title.setFontColor(HeaderColor);
       T2.add(Title,1,1);
 
       Text[] TableTitles = new Text[3];
-      TableTitles[0] = new Text("Skipting");
-      TableTitles[1] = new Text("Greiðslugerð");
-      TableTitles[2] = new Text("1.Gjalddagi");
+      TableTitles[0] = new Text(sPayments);
+      TableTitles[1] = new Text(sPaytype);
+      TableTitles[2] = new Text(sFirstpaydate);
 
       for(int i = 0 ; i < TableTitles.length;i++){
         TableTitles[i].setFontSize(fontSize);
@@ -1026,12 +1055,14 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       CostTable.setColumnAlignment(2,"right");
       CostTable.setColumnAlignment(3,"left");
       CostTable.setColumnAlignment(4,"right");
-      Text cost = new Text("Upphæð");
+      String sAmount = iwrb.getLocalizedString("amount","Amount");
+      String sPercent = iwrb.getLocalizedString("percent","Percent");
+      Text cost = new Text(sAmount);
       cost.setFontSize(fontSize);
       cost.setFontColor(HeaderColor);
       CostTable.add(cost,1,1);
       CostTable.add(Cost,2,1);
-      Text interest = new Text("Prósenta");
+      Text interest = new Text(sPercent);
       interest.setFontSize(fontSize);
       interest.setFontColor(HeaderColor);
       CostTable.add(interest,3,1);
@@ -1055,7 +1086,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       T.setWidth("100%");
       T.setCellspacing(0);
       T.setCellpadding(0);
-      T.add(new SubmitButton(new Image("/pics/tarif/small/leggjaa.gif"),"makenew"),1,1);
+      T.add(new SubmitButton(iwrb.getImage("bill.gif"),"makenew"),1,1);
       T2.add(T,1,1);
       return T2;
     }
@@ -1105,16 +1136,21 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       String fontColor = HeaderColor;
       int fontSize = 2;
 
-      Text Title = new Text("Reikningur",true,false,false);
+      String sAccount = iwrb.getLocalizedString("account","Account");
+      String sOwner = iwrb.getLocalizedString("owner","Owner");
+      String sBalance= iwrb.getLocalizedString("balance","Balance");
+      String sLastEntry = iwrb.getLocalizedString("lastentry","Last Entry");
+
+      Text Title = new Text(sAccount,true,false,false);
       Title.setFontColor(HeaderColor);
       T.add(Title,1,1);
 
 
       Text[] TableTitles = new Text[4];
-      TableTitles[0] = new Text("Reikningur");
-      TableTitles[1] = new Text("Eigandi");
-      TableTitles[2] = new Text("Síðasta hreyfing");
-      TableTitles[3] = new Text("Staða");
+      TableTitles[0] = new Text(sAccount);
+      TableTitles[1] = new Text(sOwner);
+      TableTitles[2] = new Text(sLastEntry);
+      TableTitles[3] = new Text(sBalance);
 
       Text[] TableTexts = new Text[4];
       TableTexts[0] = new Text(this.eAccount.getName());
@@ -1177,10 +1213,12 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       Text Name = new Text(this.eMember.getName());
       Name.setFontColor(HeaderColor);
       Name.setBold();
-      Text Kt = new Text("Kt: "+this.eMember.getSocialSecurityNumber());
+      String sSsn = iwrb.getLocalizedString("ssn","Socialnumber");
+      String sAccountBalance = iwrb.getLocalizedString("accountbalance","Account Balance");
+      Text Kt = new Text(sSsn+": "+this.eMember.getSocialSecurityNumber());
       Kt.setFontColor(HeaderColor);
 
-      Text AccountStatus = new Text("Staða reiknings:");
+      Text AccountStatus = new Text(sAccountBalance);
       AccountStatus.setFontColor(HeaderColor);
 
       Account account = null;
@@ -1234,12 +1272,13 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
         T.setColumnAlignment(3,"right");
 
         //T.setHorizontalZebraColored(LightColor,WhiteColor);
-
-        Text header = new Text("Fjölskylda :");
+        String sFamily = iwrb.getLocalizedString("family","Family");
+        String sSsn = iwrb.getLocalizedString("ssn","Socialnumber");
+        Text header = new Text(sFamily+" :");
         header.setFontColor(WhiteColor);
         T.add(header,1,1);
 
-        Text socialnr = new Text("Kennitala :");
+        Text socialnr = new Text(sSsn+" :");
         socialnr.setFontColor(WhiteColor);
         T.add(socialnr,3,1);
 
@@ -1287,16 +1326,21 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
 
     String fontColor = WhiteColor;
     int fontSize = 2;
+    String sMovement = iwrb.getLocalizedString("movement","Movement");
+    String sDate = iwrb.getLocalizedString("date","Date");
+    String sDesc = iwrb.getLocalizedString("description","Description");
+    String sText = iwrb.getLocalizedString("text","Text");
+    String sAmount = iwrb.getLocalizedString("amount","Amount");
 
-    Text Title = new Text("Hreyfingar",true,false,false);
+    Text Title = new Text(sMovement,true,false,false);
     Title.setFontColor(HeaderColor);
     T.add(Title,1,1);
 
     Text[] TableTitles = new Text[4];
-    TableTitles[0] = new Text("Dags");
-    TableTitles[1] = new Text("Skýring");
-    TableTitles[2] = new Text("Texti");
-    TableTitles[3] = new Text("Hreyfing");
+    TableTitles[0] = new Text(sDate);
+    TableTitles[1] = new Text(sDesc);
+    TableTitles[2] = new Text(sText);
+    TableTitles[3] = new Text(sAmount);
 
     for(int i = 0 ; i < TableTitles.length;i++){
       TableTitles[i].setFontSize(fontSize);
@@ -1352,15 +1396,21 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     String fontColor = WhiteColor;
     int fontSize = 2;
 
-    Text Title = new Text("  Álögð gjöld",true,false,false);
+    String sAssessment = iwrb.getLocalizedString("assessedtariffs","Assessed Tariffs");
+    String sDate = iwrb.getLocalizedString("date","Date");
+    String sDesc = iwrb.getLocalizedString("description","Description");
+    String sText = iwrb.getLocalizedString("text","Text");
+    String sAmount = iwrb.getLocalizedString("amount","Amount");
+
+    Text Title = new Text(sAssessment,true,false,false);
     Title.setFontColor(HeaderColor);
     T2.add(Title,1,1);
 
     Text[] TableTitles = new Text[4];
-    TableTitles[0] = new Text("Dags");
-    TableTitles[1] = new Text("Skýring");
-    TableTitles[2] = new Text("Texti");
-    TableTitles[3] = new Text("Gjald");
+    TableTitles[0] = new Text(sDate);
+    TableTitles[1] = new Text(sDesc);
+    TableTitles[2] = new Text(sText);
+    TableTitles[3] = new Text(sAmount);
 
     for(int i = 0 ; i < TableTitles.length;i++){
       TableTitles[i].setFontSize(fontSize);
@@ -1401,7 +1451,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     catch(SQLException e){balance =  this.eAccount.getBalance();}
 
     if(balance == 0){
-    Link L = new Link(new Image("/pics/tarif/small/hreinsa.gif"));
+    Link L = new Link(iwrb.getImage("clear.gif"));
     L.addParameter(this.prmString, "clearaccount");
     T2.setAlignment(1,3,"right");
     T2.add(L,1,3);
@@ -1445,16 +1495,25 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     String fontColor = WhiteColor;
     int fontSize = 2;
 
-    Text Title = new Text("Skipting gjalda",true,false,false);
+    String sPaymentview = iwrb.getLocalizedString("pamentview","Payment view");
+    String sDuedate = iwrb.getLocalizedString("duedate","Duedate");
+    String sType = iwrb.getLocalizedString("paytype","Paytype");
+    String sPart = iwrb.getLocalizedString("part","Part");
+    String sPaid = iwrb.getLocalizedString("paid","Paid");
+    String sAmount = iwrb.getLocalizedString("amount","Amount");
+    String sYes = iwrb.getLocalizedString("yes","Yes");
+    String sNo = iwrb.getLocalizedString("no","No");
+
+    Text Title = new Text(sPaymentview,true,false,false);
     Title.setFontColor(HeaderColor);
     T2.add(Title,1,1);
 
     Text[] TableTitles = new Text[5];
-    TableTitles[0] = new Text("Gjalddagi");
-    TableTitles[1] = new Text("Máti");
-    TableTitles[2] = new Text("Hluti");
-    TableTitles[3] = new Text("Útskrifað");
-    TableTitles[4] = new Text("Upphæð");
+    TableTitles[0] = new Text(sDuedate);
+    TableTitles[1] = new Text(sType);
+    TableTitles[2] = new Text(sPart);
+    TableTitles[3] = new Text(sPaid);
+    TableTitles[4] = new Text(sAmount);
 
     for(int i = 0 ; i < 5;i++){
       TableTitles[i].setFontSize(fontSize);
@@ -1470,7 +1529,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       TableTexts[1] = new Text(getPaymentType(payments[j].getPaymentTypeID()));
       TableTexts[2] = new Text(payments[j].getInstallmentNr()+"/"+payments[j].getTotalInstallment());
       boolean paid = payments[j].getStatus();
-      String sOut = paid?"Já":"Nei";
+      String sOut = paid?sYes:sNo;
       TableTexts[3] = new Text(sOut);
       TableTexts[4] = new Text(NF.format(payments[j].getPrice()));
 
@@ -1494,8 +1553,8 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     T2.add(T,1,1);
     T2.setAlignment(1,2,"right");
     T2.setAlignment(1,3,"right");
-    T2.add(new SubmitButton(new Image("/pics/tarif/small/eyda.gif"),"deleteall"),1,2);
-    T2.add(new SubmitButton(new Image("/pics/tarif/small/greida.gif"),"payall"),1,3);
+    T2.add(new SubmitButton(iwrb.getImage("delete.gif"),"deleteall"),1,2);
+    T2.add(new SubmitButton(iwrb.getImage("pay.gif"),"payall"),1,3);
     myForm.add(T2);
     Table T4 = new Table();
     T4.setWidth("100%");
@@ -1520,14 +1579,14 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       LinkTable.setCellpadding(0);
       LinkTable.setCellspacing(0);
 
-      Link BookLink = new Link(new Image(menuNr == 1?"/pics/tarif/boka.gif":"/pics/tarif/boka1.gif"),"/tarif/paymentbook.jsp");
+      Link BookLink = new Link(iwrb.getImage(menuNr == 1?"book.gif":"book1.gif"),"/tarif/paymentbook.jsp");
       BookLink.addParameter(prmString,"view");
       BookLink.addParameter("union_id",union_id);
 
-      Link EntryLink = new Link(new Image(menuNr == 2?"/pics/tarif/greidslur.gif":"/pics/tarif/greidslur1.gif"));
+      Link EntryLink = new Link(iwrb.getImage(menuNr == 2?"payments.gif":"payments1.gif"));
       EntryLink.addParameter(prmString,"main");
 
-      Link TariffLink = new Link(new Image(menuNr == 3?"/pics/tarif/alagning.gif":"/pics/tarif/alagning1.gif"));
+      Link TariffLink = new Link(iwrb.getImage(menuNr == 3?"createratelist.gif":"createratelist1.gif"));
       TariffLink.addParameter(prmString,"tariffs");
 
       if(isAdmin){
@@ -1539,7 +1598,8 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     }
 
     private Link makeChangeLink(int iAccountEntryId){
-      Link L = new Link("Breyta");
+      String sChange = iwrb.getLocalizedString("change","Change");
+      Link L = new Link(sChange);
       L.addParameter("account_action","change");
       L.addParameter("account_id",iAccountEntryId);
       L.addParameter("account_member_id",member_id);
@@ -1581,8 +1641,13 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
     }
     catch(SQLException sql){ isAdmin = false;}
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
     /** @todo: fixa Admin*/
     //isAdmin = true;
     control(modinfo);
+  }
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 }// class AccountViewer

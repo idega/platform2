@@ -19,6 +19,8 @@ import java.io.*;
 import java.util.*;
 import com.oreilly.servlet.*;
 import com.oreilly.servlet.multipart.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 /**
 *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
@@ -39,6 +41,10 @@ import com.oreilly.servlet.multipart.*;
   private String sAction = "",sMessage = "";
   private String sParameterPrefix = "payment_booker_";
   private final int iEUROID = 2, iVISAID = 3, iGIROID = 1;
+
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.projects.golf.tariff";
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
 
 
   public PaymentBooker(){
@@ -112,23 +118,28 @@ import com.oreilly.servlet.multipart.*;
       T.setRowColor(1,sHeaderColor);
       T.setCellpadding(2);
       T.setCellspacing(1);
-      T.add("Greiðslugerð :",1,2);
-      T.add("Gjalddagi :",1,3);
-      T.add("Hvernig :",1,4);
+      String sPayType = iwrb.getLocalizedString("paytype","Paytype");
+      String sDueDAte = iwrb.getLocalizedString("duedate","Duedate");
+      String sHow = iwrb.getLocalizedString("how","How");
+      String sUnpaid = iwrb.getLocalizedString("unpaid","Unpaid");
+      String sIspaid = iwrb.getLocalizedString("ispaid","Paid");
+      T.add(sPayType+" :",1,2);
+      T.add(sDueDAte+" :",1,3);
+      T.add(sHow+" :",1,4);
       T.add(this.drpPayType(sParameterPrefix+"drppaytype"),2,2);
       T.add(this.drpDays(sParameterPrefix+"drpday"),2,3);
       T.add(this.drpMonth(sParameterPrefix+"drpmonth"),2,3);
       T.add(this.drpYear(sParameterPrefix+"drpyear"),2,3);
-      T.add("Ógreidd ",2,4);
+      T.add(sUnpaid,2,4);
       RadioButton RB = new RadioButton(sParameterPrefix+"radio","notpaid");
       RB.setSelected();
       T.add(RB,2,4);
-      T.add("Greidd ",2,4);
+      T.add(sIspaid,2,4);
       T.add(new RadioButton(sParameterPrefix+"radio","paid"),2,4);
 
 
       myForm.add(T);
-      myForm.add(new SubmitButton(new Image("/pics/tarif/finna.gif")));
+      myForm.add(new SubmitButton(iwrb.getImage("search.gif")));
       myForm.add(new HiddenInput(sParameterPrefix+"action","list" ));
 
       Table MainTable = makeMainTable();
@@ -178,17 +189,25 @@ import com.oreilly.servlet.multipart.*;
 
         String sfontColor = this.sWhiteColor;
 
-        Text tNr = new Text("Nr",true,false,false);
+        String sNumber = iwrb.getLocalizedString("nr","Nr");
+        String sName = iwrb.getLocalizedString("name","Name");
+        String sSsn = iwrb.getLocalizedString("ssn","Socialnumber");
+        String sAmount = iwrb.getLocalizedString("amount","Amount");
+
+         String sDueDAte = iwrb.getLocalizedString("duedate","Duedate");
+         String sPaid = iwrb.getLocalizedString("paid","Paid");
+
+        Text tNr = new Text(sNumber,true,false,false);
         tNr.setFontColor(sfontColor);
-        Text tMember = new Text("Félagi",true,false,false);
+        Text tMember = new Text(sName,true,false,false);
         tMember.setFontColor(sfontColor);
-        Text tKt = new Text("Kennitala",true,false,false);
+        Text tKt = new Text(sSsn,true,false,false);
         tKt.setFontColor(sfontColor);
-        Text tPrice = new Text("Upphæð",true,false,false);
+        Text tPrice = new Text(sAmount,true,false,false);
         tPrice.setFontColor(sfontColor);
-        Text tPaydate = new Text("Gjalddagi",true,false,false);
+        Text tPaydate = new Text(sDueDAte,true,false,false);
         tPaydate.setFontColor(sfontColor);
-        Text tPaid = new Text("Greitt",true,false,false);
+        Text tPaid = new Text(sPaid,true,false,false);
         tPaid.setFontColor(sfontColor);
 
         T.add(tNr,1,1);
@@ -224,13 +243,14 @@ import com.oreilly.servlet.multipart.*;
             T.add( new CheckBox(this.sParameterPrefix+"pmnt_chk"+i,String.valueOf(pe.getPaymentId())),6,i+2);
           }
           else
-            T.add( new Image("/pics/clubs/members/greitt.gif"),6,i+2);
+            T.add( iwrb.getImage("greitt.gif"),6,i+2);
 
         }
+        String sTotal = iwrb.getLocalizedString("total","Total");
         T.add("Alls : ",4,iSlen+2);
         T.add(nf.format(totalprice),5,iSlen+2);
         if(!ifPaid)
-          T.add(new SubmitButton(new Image("/pics/tarif/uppfaera.gif")),6,iSlen+2);
+          T.add(new SubmitButton(iwrb.getImage("update.gif")),6,iSlen+2);
         myForm.add(T);
 
         myForm.add(new HiddenInput(sParameterPrefix+"action","update" ));
@@ -238,7 +258,11 @@ import com.oreilly.servlet.multipart.*;
         MainTable.add(myForm,1,2);
       }
       else
-        this.sMessage = " Ekkert fannst ";
+      {
+        String sMsg = iwrb.getLocalizedString("pb_msg1","Found nothing");
+        this.sMessage = sMsg;
+
+      }
 
       MainTable.add("<br><br><br>",1,3);
       MainTable.add(sMessage,1,3);
@@ -260,9 +284,12 @@ import com.oreilly.servlet.multipart.*;
             eP.update();
             int accountId = TariffService.findAccountID(eP.getMemberId(),Integer.parseInt(sUnionID));
             TariffService.makeAccountEntry(accountId,eP.getPrice(),eP.getName(),"Greiðsla","","","",this.iCashierID,idegaTimestamp.getTimestampRightNow(),idegaTimestamp.getTimestampRightNow());
-            sMessage = "Greiðslur voru bókaðar";
+            String sMsg = iwrb.getLocalizedString("pb_msg2","Payments were booked");
+            sMessage = sMsg;
           }
-          catch(SQLException e){this.sMessage = "Mistókst að uppfæra greiðslur";e.printStackTrace();}
+          catch(SQLException e){
+            String sMsg = iwrb.getLocalizedString("pb_msg3","Failed to update payments");
+            this.sMessage = sMsg;e.printStackTrace();}
 
         }
 
@@ -427,13 +454,16 @@ import com.oreilly.servlet.multipart.*;
       T.setRowColor(5,"#FFFFFF");
       T.setCellpadding(2);
       T.setCellspacing(1);
-      T.add("Fyrirtæki :",1,2);
-      T.add("Mánuður gjalddaga :",1,3);
-      T.add("Hvernig :",1,4);
+      String sPaytype = iwrb.getLocalizedString("paytype","Paytype");
+      String sMonth = iwrb.getLocalizedString("montofduedate","Due month");
+      String sHow = iwrb.getLocalizedString("how","How");
+      T.add(sPaytype+" :",1,2);
+      T.add(sMonth+" :",1,3);
+      T.add(sHow+" :",1,4);
       T.add(this.drpPayCompany(sParameterPrefix+"drppaycompany"),2,2);
       T.add(this.drpMonth(sParameterPrefix+"drpmonth"),2,3);
       T.add(this.drpYear(sParameterPrefix+"drpyear"),2,3);
-      T.add(new SubmitButton(new Image("/pics/tarif/velja.gif")),2,5);
+      T.add(new SubmitButton(iwrb.getImage("choose.gif")),2,5);
 
       myForm.add(T);
       myForm.add(new HiddenInput(sParameterPrefix+"action","file" ));
@@ -464,7 +494,7 @@ import com.oreilly.servlet.multipart.*;
 
       Table MainTable = makeMainTable();
       MainTable.add(makeLinkTable(5),1,1);
-      MainTable.add("Veldu skjal",1,2);
+      MainTable.add("Choose file",1,2);
       MainTable.add(myForm,1,3);
       MainTable.add("<br><br><br>",1,4);
       add(MainTable);
@@ -557,9 +587,9 @@ import com.oreilly.servlet.multipart.*;
         bankofficeInput.setLength(4);
         bankofficeInput.setSize(4);
         bankofficeInput.setMaxlength(4);
-
+        String sNone = iwrb.getLocalizedString("none","None");
         DropdownMenu drdFinalPayDay = new DropdownMenu("payment_finalpayday");
-        drdFinalPayDay.addDisabledMenuElement("0", "Enginn");
+        drdFinalPayDay.addDisabledMenuElement("0", "sNone");
         for(int i = 1; i < 31;i++){ drdFinalPayDay.addMenuElement( String.valueOf(i));}
 
         TextInput B1input = new TextInput("payment_girotext1");B1input.setMaxlength(70);B1input.setSize(70);
@@ -574,6 +604,7 @@ import com.oreilly.servlet.multipart.*;
         T.setCellpadding(iCellpadding);
         T.setCellspacing(iCellspacing) ;
         T.setWidth(sTablewidth) ;
+
         T.add("Útibú banka",1,2);
         T.add("Eindagi ",1,3);
         T.add("Texti Gíróseðla :",1,4);
@@ -681,7 +712,7 @@ import com.oreilly.servlet.multipart.*;
             GiroFile GF = new GiroFile();
             GF.writeFile(modinfo,ePayments,bankOffice,finalpayday,B1input,B2input,B3input,B4input,this.iUnionID);
             sFileLink = GF.getFileLinkString();
-            Message =("<H3>Skrá var vistuð</H3>");
+            Message =("<H3>File was saved</H3>");
           }
         }
         else if(iCompany == this.iEUROID || iCompany == this.iVISAID){
@@ -705,26 +736,26 @@ import com.oreilly.servlet.multipart.*;
             EuroFile EF = new EuroFile();
             EF.writeFile(modinfo,ePayments,sContractNumber,dPercent,iAmount,this.iUnionID);
             sFileLink = EF.getFileLinkString();
-            Message =("<H3>Skrá var vistuð</H3>");
+            Message =("<H3>File was saved</H3>");
           }
           if(iCompany == this.iVISAID){
             VisaFile VF = new VisaFile();
             VF.writeFile(modinfo,ePayments,sContractNumber,dPercent,iAmount,this.iUnionID);
             sFileLink = VF.getFileLinkString();
-            Message =("<H3>Skrá var vistuð</H3>");
+            Message =("<H3>File was saved</H3>");
           }
         }
         else
-          Message = "<H3> Engin skrá var gerð - engin álagning</H3>";
+          Message = "<H3> No file was saved</H3>";
       }
       catch(NumberFormatException e){
-        Message = "<H3> Engin skrá var gerð</H3>";
+        Message = "<H3> No file was saved</H3>";
       }
       finally{
         Table MainTable = makeMainTable();
         MainTable.add(makeLinkTable(3),1,2);
         MainTable.add(Message,1,4);
-        MainTable.add(new Link("Hægri smellið hér og vistið",sFileLink),1,5);
+        MainTable.add(new Link("right click and save",sFileLink),1,5);
         add(MainTable);
         //add(modinfo.getRequest().getRequestURI());
       }
@@ -805,30 +836,30 @@ import com.oreilly.servlet.multipart.*;
 
       LinkTable.setWidth(sTablewidth);
 
-      Link MainLink = new Link(new Image(menuNr == 1?"/pics/tarif/gjaldskra.gif":"/pics/tarif/gjaldskra1.gif"),"/tarif/tarif.jsp");
+      Link MainLink = new Link(iwrb.getImage(menuNr == 1?"ratelist.gif":"ratelist1.gif"),"/tarif/tarif.jsp");
       MainLink.addParameter("catal_action","view");
       MainLink.addParameter("union_id",this.sUnionID);
 
-      Link UpdateLink = new Link(new Image(menuNr == 2?"/pics/tarif/yfirlit.gif":"/pics/tarif/yfirlit1.gif"));
+      Link UpdateLink = new Link(iwrb.getImage(menuNr == 2?"find.gif":"find1.gif"));
       UpdateLink.addParameter("payment_action","main");
 
-      Link OutLink = new Link(new Image(menuNr == 3?"/pics/tarif/utskrift.gif":"/pics/tarif/utskrift1.gif"));
+      Link OutLink = new Link(iwrb.getImage(menuNr == 3?"/pics/tarif/utskrift.gif":"/pics/tarif/utskrift1.gif"));
       OutLink.addParameter(sParameterPrefix+"action","view");
 
-      Link RollbackLink = new Link(new Image(menuNr == 4?"/pics/tarif/bakfaersla.gif":"/pics/tarif/bakfaersla1.gif"),"/tarif/rollbackpaym.jsp");
+      Link RollbackLink = new Link(iwrb.getImage(menuNr == 4?"correction.gif":"correction1.gif"),"/tarif/rollbackpaym.jsp");
       //Rollback.addParameter("catal_action","rollback");
       RollbackLink.addParameter("union_id",sUnionID);
 
-      Link UploadLink = new Link(new Image(menuNr == 5?"/pics/tarif/skraning.gif":"/pics/tarif/skraning1.gif"));
+      Link UploadLink = new Link(iwrb.getImage(menuNr == 5?"/pics/tarif/skraning.gif":"/pics/tarif/skraning1.gif"));
       UploadLink.addParameter(sParameterPrefix+"action","fetch");
 
 
       LinkTable.add(MainLink,1,1);
       if(isAdmin){
         LinkTable.add(UpdateLink,1,1);
-        LinkTable.add(OutLink,1,1);
+        //LinkTable.add(OutLink,1,1);
         LinkTable.add(RollbackLink,1,1);
-        LinkTable.add(UploadLink,1,1);
+        //LinkTable.add(UploadLink,1,1);
       }
       return LinkTable;
     }
@@ -842,7 +873,7 @@ import com.oreilly.servlet.multipart.*;
         P = (Payment[]) (new Payment()).findAll("select * from payment where payment_type_id = '"+payment_type_id+"' and payment_date like '"+today.getYear()+"-"+strMonth+"-%'  and  status ='N' ") ;
       }
       catch(SQLException e){
-        sMessage =  "Engar greiðslur í gagnagrunni";
+        sMessage =  "";
         P = null;
       }
       return P;
@@ -852,8 +883,9 @@ import com.oreilly.servlet.multipart.*;
     public void main(ModuleInfo modinfo) throws IOException {
       //isAdmin = com.idega.jmodule.object.ModuleObject.isAdministrator(this.modinfo);
       /** @todo: fixa Admin*/
+      iwrb = getResourceBundle(modinfo);
+      iwb = getBundle(modinfo);
       isAdmin = true;
       control(modinfo);
     }
 }// class PaymentBooker
-
