@@ -30,6 +30,8 @@ public class WorkReportConstants extends IWMemberConstants{
 	public static final String WR_SESSION_PARAM_WORK_REPORT_ID = "wr_sess_wr_id";
 	public static final String WR_SESSION_PARAM_WORK_REPORT_YEAR = "wr_sess_wr_yr";
 	public static final String WR_SESSION_CLEAR = "wr_sess_clear";
+
+  public static final String ISI_MAIN_BOARD_NAME = "ISI_MAIN_BOARD_NAME";
 	
   // name of the "group" that represents the main board
   public static final String MAIN_BOARD_GROUP_NAME = "AÐA"; 
