@@ -43,6 +43,7 @@ public class EHealthBlock extends Block {
 	public final static String STYLENAME_INTERFACE = "Interface";
 	public final static String STYLENAME_INTERFACE_BUTTON = "InterfaceButton";
 	public final static String STYLENAME_SMALL_HEADER = "SmallHeader";
+	public final static String STYLENAME_HEADER = "Header";
 	public final static String STYLENAME_ERROR_TEXT = "ErrorText";
 	public final static String STYLENAME_SMALL_TEXT = "SmallText";
 	
@@ -114,6 +115,13 @@ public class EHealthBlock extends Block {
 	
 	public Text getSmallHeader(String s) {
 		return getStyleText(s, STYLENAME_SMALL_HEADER);
+	}
+	
+	public Text getHeader(String s) {
+		return getStyleText(s, STYLENAME_HEADER);
+	}
+	public Text getLocalizedHeader(String s, String d) {
+		return getHeader(localize(s, d));
 	}
 	
 	/**

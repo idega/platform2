@@ -8,6 +8,9 @@ package se.idega.idegaweb.ehealth.presentation;
 
 
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
@@ -88,11 +91,16 @@ public class Medication extends EHealthBlock {
 			}
 		}
 		
-		String infoDiv[] = {"<b>Dosering</b><br>1 st 1 gånger dagligen.<br><br><b>Övrig information</b><br>Bör tas i samband med mat",
-				"<b>Dosering</b><br>1 + 1 + 1 gånger dagligen.<br><br><b>Övrig information</b><br>Morgon, middag, kväll",
-				"<b>Dosering</b><br>1 + 1 + 1 gånger dagligen.<br><br><b>Övrig information</b><br>Bör tas i samband med mat",
-				"<b>Dosering</b><br>2 st 4 dagligen.<br><br><b>Övrig information</b><br>",
-				"<b>Dosering</b><br>1 + 1 + 1 gånger dagligen.<br><br><b>Övrig information</b><br>Bör tas i samband med mat"};
+			
+		ArrayList info = new ArrayList();
+		
+		info.add("<b>Dosering</b><br>1 st 1 gånger dagligen.<br><br><b>Övrig information</b><br>Bör tas i samband med mat");
+		info.add("<b>Dosering</b><br>1 + 1 + 1 gånger dagligen.<br><br><b>Övrig information</b><br>Morgon, middag, kväll");
+		info.add("<b>Dosering</b><br>1 + 1 + 1 gånger dagligen.<br><br><b>Övrig information</b><br>Bör tas i samband med mat");
+		info.add("<b>Dosering</b><br>2 st 4 dagligen.<br><br><b>Övrig information</b><br>");
+		info.add("<b>Dosering</b><br>1 + 1 + 1 gånger dagligen.<br><br><b>Övrig information</b><br>Bör tas i samband med mat");
+		
+		GenericButton renew = getButton(new GenericButton("renew", localize(prmRenewReceipe, "Renew receipe")));
 		
 		Layer layer = new Layer(Layer.DIV);
 		layer.setVisibility("hidden");
@@ -104,13 +112,20 @@ public class Medication extends EHealthBlock {
 		
 		
 		
-		int theRow;
-		for (theRow = 1; theRow <= 5; theRow++) {
+		int theRow= 1;
+		
+		Iterator iter = info.iterator();
+		while (iter.hasNext()){
+		//for (theRow = 1; theRow <= 5; theRow++) {
 			Layer layers = (Layer) layer.clone();
 			layers.setID("lay" + theRow + "_");	
-			layers.add(infoDiv[theRow-1]);
+			String theInfo = (String) iter.next();
+			layers.add(theInfo);
+			layers.add(new Break());
+			layers.add(renew);
 						
 			T.add(layers, 1, 3);
+			theRow++;
 		}
 		
 		
@@ -128,7 +143,7 @@ public class Medication extends EHealthBlock {
 		layerInfo.setHeight("100");
 		layerInfo.setMarkupAttribute("class", "ehealth_div");
 		
-		Table tableInfo = new Table(11, 6);
+		Table tableInfo = new Table(9, 6);
 		tableInfo.setNoWrap();
 		tableInfo.setCellpadding(0);
 		tableInfo.setCellspacing(0);
@@ -142,14 +157,14 @@ public class Medication extends EHealthBlock {
 		tableInfo.setWidth(6, 1, "15");
 		tableInfo.setWidth(7, 1, "100");
 		tableInfo.setWidth(8, 1, "15");
-		tableInfo.setWidth(10, 1, "15");
+		//tableInfo.setWidth(10, 1, "15");
 		
 		
 		Image transpImg = Table.getTransparentCell(_iwc);
 		transpImg.setWidth(20);
 		transpImg.setHeight(13);
 		
-		GenericButton renew = getButton(new GenericButton("renew", localize(prmRenewReceipe, "Renew receipe")));
+		//GenericButton renew = getButton(new GenericButton("renew", localize(prmRenewReceipe, "Renew receipe")));
 		
 		Layer layer = new Layer(Layer.DIV);
 		layer.setOnMouseOver("setRowColor(this);");
@@ -194,9 +209,9 @@ public class Medication extends EHealthBlock {
 				else if (theColumn == 9){
 					layers.add(dates[theRow-1]);
 				}
-				else if (theColumn == 11){
+				/*else if (theColumn == 11){
 					layers.add(renew);
-				}
+				}*/
 				tableInfo.add(layers, theColumn, theRow);
 			}
 			
@@ -265,8 +280,8 @@ public class Medication extends EHealthBlock {
 			
 		DropdownMenu dropShow = (DropdownMenu) getStyledInterface(new DropdownMenu(prmShow));
 		dropShow.addMenuElementFirst("1", "Visa alla");
-		dropShow.addMenuElement("2", "Visa aktuella");
-		dropShow.addMenuElement("3", "Visa utgångna");
+		dropShow.addMenuElement("2", "Visa pågående behandling");
+		dropShow.addMenuElement("3", "Visa icke pågående behandling");
 
 		table.add(dropShow, 1, 1);
 		table.add(new Break(2), 1, 1);

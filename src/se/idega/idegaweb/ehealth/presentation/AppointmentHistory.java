@@ -239,6 +239,7 @@ public class AppointmentHistory extends EHealthBlock {
 		
 		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_BOTTOM);
+		table.setVerticalAlignment(3, 2, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(1, 4, Table.VERTICAL_ALIGN_BOTTOM);
@@ -247,6 +248,8 @@ public class AppointmentHistory extends EHealthBlock {
 		table.setHeight(1, 2, "25");
 		table.setHeight(1, 3, "25");
 		table.setHeight(1, 4, "25");
+		table.setHeight(3, 1, "25");
+		table.setHeight(3, 2, "25");
 		table.setWidth(2, 1, "20");
 	
 		IWTimestamp stamp = new IWTimestamp();

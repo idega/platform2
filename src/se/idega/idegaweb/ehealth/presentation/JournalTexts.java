@@ -55,7 +55,7 @@ public class JournalTexts extends EHealthBlock {
 	private String prmFrom = prefix + "from";
 	private String prmTo = prefix + "to";
 	private String prmSearch = prefix + "search";
-	private String prmLoglist = prefix + "loglist";
+	//private String prmLoglist = prefix + "loglist";
 	
 	private String keyFrom = prefix + "from";
 	private String keyTo = prefix + "to";
@@ -402,13 +402,13 @@ public class JournalTexts extends EHealthBlock {
 			
 		GenericButton search = getButton(new GenericButton("search", localize(prmSearch, "Search")));
 		
-		GenericButton loglist = getButton(new GenericButton("loglist", localize(prmLoglist, "Loglist")));
+	//	GenericButton loglist = getButton(new GenericButton("loglist", localize(prmLoglist, "Loglist")));
 		
 		table.add(getSmallHeader(localize(keyFrom, "From")+": "), 1, 1);
 		table.add(from, 1, 2);
 		table.add(getSmallHeader(localize(keyTo, "To")+": "), 3, 1);
 		table.add(to, 3, 2);
-		table.add(loglist, 3, 3);
+	//	table.add(loglist, 3, 3);
 		table.add(dropHCentre, 1, 3);
 		table.add(dropCaregiver, 1, 4);
 		table.add(search, 1, 5);

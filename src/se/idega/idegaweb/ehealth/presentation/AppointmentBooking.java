@@ -126,7 +126,7 @@ public class AppointmentBooking extends EHealthBlock {
 		}
 		
 		DropdownMenu dropReceiver = (DropdownMenu) getStyledInterface(new DropdownMenu(prmReceiver));
-		dropReceiver.addMenuElementFirst("-1", "Välj mottagare");
+		dropReceiver.addMenuElementFirst("-1", "Välj vårdgivare");
 		dropReceiver.addMenuElement("1", "Husläkare");
 		dropReceiver.addMenuElement("2", "Distriktssköterska");
 		dropReceiver.addMenuElement("3", "Astmamottagningen");

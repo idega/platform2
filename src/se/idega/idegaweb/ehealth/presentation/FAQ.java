@@ -8,6 +8,9 @@ package se.idega.idegaweb.ehealth.presentation;
 
 
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
@@ -45,23 +48,23 @@ public class FAQ extends EHealthBlock {
 	public PresentationObject getAppointmentHistoryForm(){
 		Form myForm = new Form();
 		myForm.setName(prmForm);
-		Table T = new Table(1, 4);
+		Table T = new Table(1, 3);
 		T.setCellpadding(0);
 		T.setCellspacing(0);
 		T.setBorder(0);
 		T.setBorderColor("#000000");
 		T.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_TOP);
-		T.setVerticalAlignment(1, 4, Table.VERTICAL_ALIGN_BOTTOM);
-		
+			
 		//T.add(getSearchSortTable(), 1, 1);
 		//T.add(getHeadingTable(), 1, 2);
-		T.add(getInfoLayer(), 1, 3);
+		T.add(getInfoLayer(), 1, 1);
+		T.add(getLocalizedHeader("faq_reply", "Reply to selected question"), 1, 2);
 		//T.add(getTableButtons(), 1, 4);
 		
-		T.add(new Break(), 1, 3);
+		T.add(new Break(), 1, 1);
 		T.setWidth(1, 3, "200");
-		T.setHeight(1, 3, "160");		
-		T.setHeight(1, 4, "40");
+		//T.setHeight(1, 1, "160");		
+		T.setHeight(1, 3, "160");
 		myForm.add(T);
 		
 		Page pVisit = this.getParentPage();
@@ -76,25 +79,34 @@ public class FAQ extends EHealthBlock {
 			}
 		}
 		
-		String infoDiv[] = {localize("faq_vkid", "VKID"),localize("faq_how_to", "How to"), localize("faq_personal_info", "Personal info"),
-				localize("faq_can_do", "What can I do?"),
-				localize("faq_not_log_in", "Cannot log in"),
-				localize("faq_browser", "Which browsers?"),
-				localize("faq_version_browser", "Version of browser"),
-				localize("faq_personal_info", "What is cookies?")};
+			
+		ArrayList info = new ArrayList();
+		
+		info.add(localize("faq_how_to", "How to"));
+		info.add(localize("faq_can_do", "What can I do?"));
+		info.add(localize("faq_not_log_in", "Cannot log in"));
+		info.add(localize("faq_browser", "Which browsers?"));
+		info.add(localize("faq_version_browser", "Version of browser"));
+		info.add(localize("faq_personal_info", "What is cookies?"));
 		
 		Layer layer = new Layer(Layer.DIV);
 		layer.setVisibility("hidden");
 		layer.setPositionType("absolute");
 		layer.setWidth("400");
+		layer.setPadding(5, "top");
 				
-		int theRow;
-		for (theRow = 1; theRow <= 8; theRow++) {
+		int theRow = 1; 
+		Iterator iter = info.iterator();
+		
+		while (iter.hasNext()){
 			Layer layers = (Layer) layer.clone();
-			layers.setID("lay" + theRow + "_");			
-			layers.add(infoDiv[theRow-1]);
+			layers.setID("lay" + theRow + "_");	
+			
+			String theInfo = (String) iter.next();
+			layers.add(theInfo);
 			
 			T.add(layers, 1, 3);
+			theRow++;
 		}
 		
 		
@@ -132,14 +144,25 @@ public class FAQ extends EHealthBlock {
 		int theRow = 1;
 		int theColumn = 1;
 		
-		String questions[] = {"Vad är ett VårdkontoID?", "Hur skaffar jag ett vårdkonto?", "Hur kommer jag åt mina personliga uppgifter?", "Vad kan jag göra på Mitt Vårdkonto?", "Varför kan jag inte logga in på Mitt Vårdkonto?", "Finns det några krav på vilken webbläsare jag ska använda?", "Hur ser jag vilken version av Internet Explorer jag har?", "Vad är cookies?"};
-				
-		for (theRow = 1; theRow <= 8; theRow++) {
+		ArrayList questions = new ArrayList();
+		
+		questions.add("Hur skaffar jag ett vårdkonto?");
+		questions.add("Vad kan jag göra på Mitt Vårdkonto?");
+		questions.add("Varför kan jag inte logga in på Mitt Vårdkonto?");
+		questions.add("Finns det några krav på vilken webbläsare jag ska använda?");
+		questions.add("Hur ser jag vilken version av Internet Explorer jag har");
+		questions.add("Vad är cookies?");
+		
+		Iterator iter = questions.iterator();
+		
+		while (iter.hasNext()){
 				Layer layers = (Layer) layer.clone();
 				layers.setID("lay" + theRow + "_"+ theColumn);
-				layers.add(getSmallHeader(questions[theRow-1]));							
+				String question = (String) iter.next();
+				layers.add(getSmallHeader(question));							
 				tableInfo.add(layers, theColumn, theRow);
-						
+				
+				theRow++;	
 		}
 		
 		layerInfo.add(tableInfo);

@@ -10,6 +10,7 @@ package se.idega.idegaweb.ehealth.presentation;
 import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookup;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -43,6 +44,8 @@ public class MyHealthCentre extends EHealthBlock {
 	private int userID = -1;
 	private User user;
 	IWContext _iwc = null;
+	ICPage _messagePage = null;
+	ICPage _appointmentPage = null;
 	
 	public void main(IWContext iwc) throws Exception {
 		
@@ -132,12 +135,14 @@ public class MyHealthCentre extends EHealthBlock {
 			
 			
 			GenericButton visitbooking = getButton(new GenericButton("visit", localize(prmVisitBooking, "Book an appointment")));
-			visitbooking.setPageToOpen(132);
+			if (_appointmentPage != null) 
+				visitbooking.setPageToOpen(_appointmentPage);
 			
 			SubmitButton smb = new SubmitButton();
 			smb.setStyleClass("ehealth_InterfaceButton");
 			smb.setValue("Skicka meddelande >");
-			smb.setPageToOpen(132);
+			if (_messagePage != null) 
+				smb.setPageToOpen(_messagePage);
 		
 			table.add(visitbooking, 3, 3);
 				
@@ -145,6 +150,19 @@ public class MyHealthCentre extends EHealthBlock {
 		return myForm;
 	}
 	
+	/**
+	 * @param messagePage The message Page to set.
+	 */
+	public void setMessagePage(ICPage messagePage) {
+		_messagePage = messagePage;
+	}
+	
+	/**
+	 * @param appointmentPage The appointment Page to set.
+	 */
+	public void setAppointmentPage(ICPage appointmentPage) {
+		_appointmentPage = appointmentPage;
+	}
 	
 	
 	}
