@@ -742,6 +742,7 @@ public class ReportGenerator extends Block {
 		Link excel = new Link(_reportName, (String) _reportFilePathsMap.get(EXCEL_FORMAT));
 		excel.setTarget(Link.TARGET_NEW_WINDOW);
 		Link pdf = new Link(_reportName, (String) _reportFilePathsMap.get(PDF_FORMAT));
+		pdf.setTarget(Link.TARGET_NEW_WINDOW);
 		Link html = new Link(_reportName, (String) _reportFilePathsMap.get(HTML_FORMAT));
 		html.setTarget(Link.TARGET_NEW_WINDOW);
 		
