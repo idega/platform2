@@ -41,7 +41,7 @@ public class PrognosisViewer extends ChildCareBlock {
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setColumns(3);
+		table.setColumns(4);
 		table.setRows(3);
 		table.setRowColor(1, getHeaderColor());
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
@@ -55,18 +55,27 @@ public class PrognosisViewer extends ChildCareBlock {
 				
 			table.add(getLocalizedSmallHeader("child_care.prognosis","Prognosis"), column++, row);
 			table.add(getLocalizedSmallHeader("child_care.placings","Placings"), column++, row);
+			table.add(getLocalizedSmallHeader("child_care.priorities","Priorities"), column++, row);
 			table.add(getLocalizedSmallHeader("child_care.last_updated","Last updated"), column, row++);
 			column = 1;
 			
 			table.setRowColor(row, getZebraColor1());
 			table.add(getLocalizedSmallText("child_care.three_months_prognosis","Three months prognosis"), column++, row);
 			table.add(getSmallText(String.valueOf(prognosis.getThreeMonthsPrognosis())), column++, row);
+			if (prognosis.getThreeMonthsPriority() != -1)
+				table.add(getSmallText(String.valueOf(prognosis.getThreeMonthsPriority())), column++, row);
+			else
+				table.add(getSmallText(""), column++, row);
 			table.add(getSmallText(stamp.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
 			column = 1;
 			
 			table.setRowColor(row, getZebraColor2());
 			table.add(getLocalizedSmallText("child_care.one_year_prognosis","Twelve months prognosis"), column++, row);
 			table.add(getSmallText(String.valueOf(prognosis.getOneYearPrognosis())), column++, row);
+			if (prognosis.getOneYearPriority() != -1)
+				table.add(getSmallText(String.valueOf(prognosis.getOneYearPriority())), column++, row);
+			else
+				table.add(getSmallText(""), column++, row);
 			table.add(getSmallText(stamp.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
 		}
 		
