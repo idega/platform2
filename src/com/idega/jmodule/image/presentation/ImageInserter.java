@@ -49,6 +49,7 @@ public ImageInserter(int imageId, String imSessionImageName) {
 
       if ( imageSessionId != null ) {
         imageId = Integer.parseInt(imageSessionId);
+        modinfo.removeSessionAttribute(imSessionImageName);
       }
 
       Image image;
@@ -58,10 +59,12 @@ public ImageInserter(int imageId, String imSessionImageName) {
         else {
           image = new Image(imageId);
         }
+        image.setMaxImageWidth(140);
 
-      Window insertNewsImageWindow = new Window("Ný mynd",adminURL);
+      Window insertNewsImageWindow = new Window("Ný mynd",ImageBusiness.IM_BROWSER_WIDTH,ImageBusiness.IM_BROWSER_HEIGHT,adminURL);
       Link imageAdmin = new Link(image,insertNewsImageWindow);
         imageAdmin.addParameter("submit","new");
+        imageAdmin.addParameter("im_image_session_name",imSessionImageName);
 
       HiddenInput hidden = new HiddenInput(imSessionImageName,imageId+"");
       CheckBox insertImage = new CheckBox("insertImage","Y");
