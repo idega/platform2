@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.68 2002/02/21 17:54:23 eiki Exp $
+ * $Id: NewsReader.java,v 1.69 2002/02/21 18:40:30 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1074,9 +1074,10 @@ public class NewsReader extends Block implements IWBlock {
     return obj;
   }
 
-/**@todo finish this**/
-  private String getCacheState(IWContext iwc, String cacheStatePrefix, String locale, boolean edit){
+/**@todo finish this for all states**/
+  protected String getCacheState(IWContext iwc, String cacheStatePrefix, String locale, boolean edit){
     String returnString = iwc.getParameter(prmMore+getInstanceIDString(iwc));
+    debug(prmMore+getInstanceIDString(iwc));
     if( returnString == null ) returnString = "";
     return  cacheStatePrefix+returnString;
   }
