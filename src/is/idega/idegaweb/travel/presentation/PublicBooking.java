@@ -164,8 +164,8 @@ public class PublicBooking extends TravelBlock  {
 	    table.setAlignment("center");
 	    table.setCellspacing(0);
 	    table.setCellpadding(0);
-	    table.setBorder(0);
-	    table.setWidth(1, "175");
+//	    table.setBorder(1);
+//	    table.setWidth(1, "175");
 	    table.setWidth(2, "5");
 
 	    	if (product.getIsValid() && supplier.getIsValid()) {
@@ -195,6 +195,7 @@ public class PublicBooking extends TravelBlock  {
       table.add(header(iwc), 1, 2);
       table.setCellpaddingBottom(1, 2, 4);
       table.add(leftBottom(iwc),1,3);
+      table.setWidth(1, 3, "175");
 
       table.setRowHeight(4, "1");
       table.setStyleClass(1, 4, getStyleName(BookingForm.STYLENAME_HEADER_BACKGROUND_COLOR));
@@ -220,7 +221,8 @@ public class PublicBooking extends TravelBlock  {
   private Table topHeader(IWContext iwc) {
   		Table table = new Table();
   		table.setWidth("100%");
-  		table.setBorder(0);
+//  		table.setBorder(1);
+//  		table.setBorderColor("RED");
   		table.setCellpaddingAndCellspacing(0);
   		table.setStyleClass(1, 1, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
   		table.setStyleClass(2, 1, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
@@ -237,7 +239,7 @@ public class PublicBooking extends TravelBlock  {
   		table.setCellpaddingBottom(1, 1, 8);
   		table.setCellpaddingBottom(2, 1, 8);
   		table.setHeight(1, 1, 50);
-  		
+  		table.setWidth(2, 1, "100%");
   		table.mergeCells(1, 3, 2, 3);
   		table.setStyleClass(1, 3, getStyleName(BookingForm.STYLENAME_BLUE_BACKGROUND_COLOR));
   		
