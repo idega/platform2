@@ -105,7 +105,7 @@ public class WorkReportWindow extends IWAdminWindow {
 				table.add(new WorkReportSelector(),2,1);	
 			}
 			else if( action.equals(ACTION_IMPORT_MEMBERS) ){
-				table.add(new WorkReportImporter(),2,1);
+				table.add(new WorkReportMemberImporter(),2,1);
 			}
 			else if( action.equals(ACTION_IMPORT_ACCOUNT) ){
 				table.add(new WorkReportImporter(),2,1);
