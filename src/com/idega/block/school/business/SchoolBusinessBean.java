@@ -672,7 +672,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				e.printStackTrace(System.err);
 			}
 
-			if (user != null) {
+			if (users != null) {
 				Iterator iter = users.iterator();
 				while (iter.hasNext()) {
 					if (iter.next().equals(user)) {
