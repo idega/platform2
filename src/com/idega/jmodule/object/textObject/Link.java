@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.46 2001/09/27 14:24:27 laddi Exp $
+ * $Id: Link.java,v 1.47 2001/09/29 11:25:05 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -595,6 +595,17 @@ public class Link extends Text {
     }
   }
 
+  public void setPage(int pageID) {
+    IBPage page = null;
+    try {
+      page = new IBPage(pageID);
+    }
+    catch (Exception e) {
+      page = null;
+    }
+    setPage(page);
+  }
+
   /**
    * method for adding a link to a file object
    */
@@ -611,6 +622,17 @@ public class Link extends Text {
       url.append(file.getID());
       setURL(url.toString());
     }
+  }
+
+  public void setFile(int fileID) {
+    ICFile file = null;
+    try {
+      file = new ICFile(fileID);
+    }
+    catch (Exception e) {
+      file = null;
+    }
+    setFile(file);
   }
 
 
