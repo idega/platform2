@@ -51,11 +51,6 @@ private int _orderID = -1;
 private TextStyler styler;
 private Image image;
 
-private String darkBlue = "#27334B";
-private String darkGray = "#D9DDE1";
-private String lightGray = "#ECEEF0";
-private String white = "#FFFFFF";
-private String darkRed = "#932A2D";
 
   public TenantsHabitants() {
   }

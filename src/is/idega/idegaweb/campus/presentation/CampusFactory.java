@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFactory.java,v 1.8 2002/01/06 23:58:59 aron Exp $
+ * $Id: CampusFactory.java,v 1.9 2002/01/08 13:10:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -61,34 +61,41 @@ public class CampusFactory extends Block implements Campus {
    *
    */
   public void main(IWContext iwc) {
-    String view = iwc.getParameter(prmContentView);
-    String refnum = iwc.getParameter(ReferenceNumber.CAM_REF_NUMBER);
-    if (view != null) {
-      iwc.setSessionAttribute(prmContentViewContent,view);
-    }
-    else if(iwc.getSessionAttribute(prmContentViewContent) != null) {
-      view = (String)iwc.getSessionAttribute(prmContentViewContent);
-    }
-
-    if (refnum != null) {
-      iwc.setSessionAttribute(ReferenceNumberInfo.SESSION_REFERENCE_NUMBER,refnum);
-    }
-    else {
-      iwc.setSessionAttribute(ReferenceNumberInfo.SESSION_REFERENCE_NUMBER,"");
-    }
-
-    int iView = 0;
-    if (view !=null)
-      iView = Integer.parseInt(view);
-
     if (iContentType == TABBER){
       add(new CampusTabber());
     }
     else if(iContentType == MENU){
       add(new CampusMenu());
     }
-    else if(iContentType == CONTENT)
+    else if(iContentType == CONTENT){
+      String view = iwc.getParameter(prmContentView);
+      String refnum = iwc.getParameter(ReferenceNumber.CAM_REF_NUMBER);
+      if (view != null) {
+        iwc.setSessionAttribute(prmContentViewContent,view);
+      }
+      else if(iwc.getSessionAttribute(prmContentViewContent) != null) {
+        view = (String)iwc.getSessionAttribute(prmContentViewContent);
+      }
+
+      if (refnum != null) {
+        iwc.setSessionAttribute(ReferenceNumberInfo.SESSION_REFERENCE_NUMBER,refnum);
+      }
+      else {
+        iwc.setSessionAttribute(ReferenceNumberInfo.SESSION_REFERENCE_NUMBER,"");
+      }
+
+      int iView = 0;
+      if (view !=null){
+        iView = Integer.parseInt(view);
+        if(iView < 20 && !iwc.isLoggedOn()){
+          iwc.removeSessionAttribute(prmContentViewContent);
+          iView = HOME;
+
+        }
+       // System.err.println("view "+iView);
+      }
       add(getPresentationObject(iView));
+    }
   }
 
   /**

@@ -78,11 +78,11 @@ private CampusApplication campusApplication;
 private TextStyler styler;
 private Image image;
 
-public static final String darkBlue = "#27334B";
-public static final String darkGray = "#D7DADF";
-public static final String lightGray = "#F4F4F4";
-public static final String white = "#FFFFFF";
-public static final String darkRed = "#932A2D";
+public static final String darkBlue = CampusColors.DARKBLUE;
+public static final String darkGray = CampusColors.DARKGREY;
+public static final String lightGray = CampusColors.LIGHTGREY;
+public static final String white = CampusColors.WHITE;
+public static final String darkRed = CampusColors.DARKRED;
 
   public TenantsProfile() {
   }
