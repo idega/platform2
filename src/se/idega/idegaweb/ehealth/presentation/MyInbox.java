@@ -1,5 +1,5 @@
 /*
- * Created on 2004-okt-11
+ * Created on 2004-okt-13
  *
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Generation - Code and Comments
@@ -8,6 +8,7 @@ package se.idega.idegaweb.ehealth.presentation;
 
 
 
+import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
@@ -16,12 +17,11 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
-
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
 
 
 /**
@@ -30,27 +30,42 @@ import com.idega.presentation.ui.GenericButton;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class Medication extends EHealthBlock {
+public class MyInbox extends EHealthBlock {
 	
 	private String prefix = "patient_";
-	private String prmForm = prefix + "form_medication";
+	private String prmForm = "form_inbox";
+	private String prmCase = prefix + "case";
+	private String prmDate= prefix + "date";
 	
-	private String prmMedicName = prefix + "medicin_name";
-	private String prmMedicForm = prefix + "form";
-	private String prmDose = prefix + "dose";
-	private String prmPrescCareGiver = prefix + "prescr_care_giver";
-	private String prmDateActive = prefix + "date_for_activation";
-	private String prmRenewReceipe = prefix + "renew_receipe";
-	private String prmLinkFass = prefix + "link_to_fass";
-	private String prmShow = prefix + "visa";
+	private String prmReceiver = prefix + "receiver";
+	private String prmSender = prefix + "sender";
+	private String prmCareUnit = prefix + "care_unit";
+	
+	private String prmReply = prefix + "reply";
+	private String prmClear = prefix + "clear";
+	private String prmDelete = prefix + "delete";
+	private String prmSend = prefix + "send";
 	
 	
-	
+	private int userID = -1;
+	private User user;
 	IWContext _iwc = null;
+	
+	public String name = null;
 
 	public void main(IWContext iwc) throws Exception {
 		_iwc = iwc;
+		userID = iwc.getUserId();
+		
+		if (userID > 0) {
+			user = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userID);
+			
+			name = user.getFirstName() + " " + user.getLastName();
+		}
+		else 
+			name = "-";
 		add(getAppointmentHistoryForm());
+		
 		
 	}
 	
@@ -67,13 +82,14 @@ public class Medication extends EHealthBlock {
 		T.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_TOP);
 		T.setVerticalAlignment(1, 4, Table.VERTICAL_ALIGN_BOTTOM);
 		
-		T.add(getSearchSortTable(), 1, 1);
-		T.add(getHeadingTable(), 1, 2);
-		T.add(getInfoLayer(), 1, 3);
+	
+		T.add(getHeadingTable(), 1, 1);
+		T.add(getInfoLayer(), 1, 2);
 		T.add(getTableButtons(), 1, 4);
 		
+		
 		T.add(new Break(), 1, 3);
-		T.setHeight(1, 3, "160");		
+		T.setHeight(1, 3, "130");		
 		T.setHeight(1, 4, "90");
 		myForm.add(T);
 		
@@ -89,18 +105,25 @@ public class Medication extends EHealthBlock {
 			}
 		}
 		
-		String infoDiv[] = {"<b>Dosering</b><br>1 st 1 gånger dagligen.<br><br><b>Övrig information</b><br>Bör tas i samband med mat",
-				"<b>Dosering</b><br>1 + 1 + 1 gånger dagligen.<br><br><b>Övrig information</b><br>Morgon, middag, kväll",
-				"<b>Dosering</b><br>1 + 1 + 1 gånger dagligen.<br><br><b>Övrig information</b><br>Bör tas i samband med mat",
-				"<b>Dosering</b><br>2 st 4 dagligen.<br><br><b>Övrig information</b><br>",
-				"<b>Dosering</b><br>1 + 1 + 1 gånger dagligen.<br><br><b>Övrig information</b><br>Bör tas i samband med mat"};
+		
+		String message = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
+		String message1 = "Lorem ium dolor, consectetuer adi cing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
+		String message2 = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
+		String message3 = "Lorem dolor ipsum sit amet, consr acing elit, sed diaummy nibh euiod tindut ut lareetlore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
+		String message4 = "Lorem ipsum dolort kai amet, tetuer adipiscing elit, sed diam nonum nibh eu tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
+		
+		String infoDiv[] = {"<b>Ärende</b><br>Ont i foten<br><br><b>Meddelande</b><br>" + message,
+				"<b>Ärende</b><br>Halsont<br><br><b>Meddelande</b><br>" + message1,
+				"<b>Ärende</b><br>Böld på smalbenet<br><br><b>Meddelande</b><br>" + message2,
+				"<b>Ärende</b><br>Feber och huvudvärk<br><br><b>Meddelande</b><br>" + message3,
+				"<b>Ärende</b><br>Feber<br><br><b>Meddelande</b><br>" + message4};
 		
 		Layer layer = new Layer(Layer.DIV);
 		layer.setVisibility("hidden");
 		layer.setOverflow("scroll");
 		layer.setPositionType("absolute");
 		layer.setWidth("610");
-		layer.setHeight("100");
+		layer.setHeight("150");
 		layer.setMarkupAttribute("class", "ehealth_div");
 		
 		
@@ -115,8 +138,8 @@ public class Medication extends EHealthBlock {
 		}
 		
 		
-		return myForm;
 		
+		return myForm;		
 		
 	}
 	
@@ -129,29 +152,28 @@ public class Medication extends EHealthBlock {
 		layerInfo.setHeight("100");
 		layerInfo.setMarkupAttribute("class", "ehealth_div");
 		
-		Table tableInfo = new Table(11, 6);
+		Table tableInfo = new Table(9, 6);
 		tableInfo.setNoWrap();
 		tableInfo.setCellpadding(0);
 		tableInfo.setCellspacing(0);
 		tableInfo.setBorder(0);			
 		tableInfo.setWidth(570);
-		tableInfo.setWidth(1, 1, "88");
+		tableInfo.setWidth(1, 1, "100");
 		tableInfo.setWidth(2, 1, "15");
-		tableInfo.setWidth(3, 1, "60");
+		tableInfo.setWidth(3, 1, "70");
 		tableInfo.setWidth(4, 1, "15");
-		tableInfo.setWidth(5, 1, "60");
+		tableInfo.setWidth(5, 1, "100");
 		tableInfo.setWidth(6, 1, "15");
-		tableInfo.setWidth(7, 1, "100");
+		tableInfo.setWidth(7, 1, "120");
 		tableInfo.setWidth(8, 1, "15");
-		tableInfo.setWidth(10, 1, "15");
+	
 		
 		
 		Image transpImg = Table.getTransparentCell(_iwc);
-		transpImg.setWidth(20);
+		transpImg.setWidth(15);
 		transpImg.setHeight(13);
 		
-		GenericButton renew = getButton(new GenericButton("renew", localize(prmRenewReceipe, "Renew receipe")));
-		
+			
 		Layer layer = new Layer(Layer.DIV);
 		layer.setOnMouseOver("setRowColor(this);");
 		layer.setPositionType("relative");
@@ -163,41 +185,39 @@ public class Medication extends EHealthBlock {
 		
 		
 		
-		String medicName[] = {"Furix", "Salazoppyrin", "Salazoppyrin", "Alvedon", "Furix"};
-		String form[] = {"Tabl", "Tabl", "Tabl", "Tabl", "Tabl", "Tabl"};
-		String dose[] = {"20 mg", "500 mg", "500 mg", "500 mg", "20 mg"};
-		String caregivers[] = {"Dr Magne Syhl", "Dr Alve Don", "Dr Inga Pren", "Dr Alve Don", "Dr Alve Don"};
+		String cases[] = {"Ont i foten", "Halsont", "Böld på smalb..", "Feber och huv..", "Feber"};
 		String dates[] = {"2004-10-11", "2004-10-06", "2004-06-15", "2004-02-07", "2003-12-16"};
+		String receivers[] = {name, name, name, name, name};
+		String senders[] = {"Dr Magne Syhl", "Dr Alve Don", "Dr Inga Pren", "Dr Alve Don", "Dr Alve Don"};
+		String careunits[] = {"Gimo VC", "Östberga VC", "Flogsta VC", "Östberga VC", "Östberga VC"};
 		
 			
 				
 		for (theRow = 1; theRow <= 5; theRow++) {
 			
-			for (theColumn = 1; theColumn <= 11; theColumn++) {
+			for (theColumn = 1; theColumn <= 9; theColumn++) {
 				Layer layers = (Layer) layer.clone();
 				layers.setID("lay" + theRow + "_"+ theColumn);
 				if (theColumn % 2 == 0){
 					layers.add(transpImg);
-					layers.setWidth("20");
+					layers.setWidth("15");
 				}
 				else if (theColumn == 1){
-					layers.add(medicName[theRow-1]);
+					layers.add(cases[theRow-1]);
 				}
 				else if (theColumn == 3){
-					layers.add(form[theRow-1]);
-				}
-				else if (theColumn == 5){
-					layers.add(dose[theRow-1]);
-				}
-				else if (theColumn == 7){
-					layers.add(caregivers[theRow-1]);
-				}
-				else if (theColumn == 9){
 					layers.add(dates[theRow-1]);
 				}
-				else if (theColumn == 11){
-					layers.add(renew);
+				else if (theColumn == 5){
+					layers.add(receivers[theRow-1]);
 				}
+				else if (theColumn == 7){
+					layers.add(senders[theRow-1]);
+				}
+				else if (theColumn == 9){
+					layers.add(careunits[theRow-1]);
+				}
+				
 				tableInfo.add(layers, theColumn, theRow);
 			}
 			
@@ -223,55 +243,32 @@ public class Medication extends EHealthBlock {
 		table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
 		
 		
-		table.setWidth(1, 1, "88");
-		table.setWidth(2, 1, "20");
-		table.setWidth(3, 1, "60");
-		table.setWidth(4, 1, "20");
-		table.setWidth(5, 1, "60");
-		table.setWidth(6, 1, "20");
-		table.setWidth(7, 1, "100");
-		table.setWidth(8, 1, "20");
+		table.setWidth(1, 1, "100");
+		table.setWidth(2, 1, "15");
+		table.setWidth(3, 1, "70");
+		table.setWidth(4, 1, "15");
+		table.setWidth(5, 1, "100");
+		table.setWidth(6, 1, "15");
+		table.setWidth(7, 1, "120");
+		table.setWidth(8, 1, "15");
 		
-		Text name = getLocalizedSmallHeader(prmMedicName,"Medication");
-		Text form = getLocalizedSmallHeader(prmMedicForm,"Form");
-		Text dose = getLocalizedSmallHeader(prmDose,"Dose");
-		Text presCaregiver = getLocalizedSmallHeader(prmPrescCareGiver,"Prescribed by");
-		Text dateActivation = getLocalizedSmallHeader(prmDateActive,"Date for activation");
+		Text tcase = getLocalizedSmallHeader(prmCase,"Case");
+		Text date = getLocalizedSmallHeader(prmDate,"Date");
+		Text receiver = getLocalizedSmallHeader(prmReceiver,"Receiver");
+		Text sender = getLocalizedSmallHeader(prmSender,"Sender");
+		Text careunit = getLocalizedSmallHeader(prmCareUnit,"Care unit");
+		
 				
-		table.add(name, 1, 1);
-		table.add(form, 3, 1);
-		table.add(dose, 5, 1);
-		table.add(presCaregiver, 7, 1);
-		table.add(dateActivation, 9, 1);
-		
-		
+		table.add(tcase, 1, 1);
+		table.add(date, 3, 1);
+		table.add(receiver, 5, 1);
+		table.add(sender, 7, 1);
+		table.add(careunit, 9, 1);		
 		layerHead.add(table);
 		
 		return layerHead;
 	}
 	
-	private Table getSearchSortTable(){
-		
-		Table table = new Table(3, 5);
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setBorder(0);
-		
-		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_BOTTOM);
-		table.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_BOTTOM);
-		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_BOTTOM);
-		table.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_BOTTOM);
-		
-		table.setHeight(1, 1, "25");
-			
-		DropdownMenu dropShow = (DropdownMenu) getStyledInterface(new DropdownMenu(prmShow));
-		dropShow.addMenuElementFirst("1", "Visa");
-
-		table.add(dropShow, 1, 1);
-		table.add(new Break(2), 1, 1);
-				
-		return table;
-	}
 	
 	private String setRowColorScript() {
 		StringBuffer s = new StringBuffer();
@@ -285,7 +282,7 @@ public class Medication extends EHealthBlock {
 		s.append("}").append("\n\t");
 		s.append("document.all.tags('div')[i].style.backgroundColor = '#ffffff';");
 		s.append("}").append("\n\t");
-		s.append("for (i = 1; i <= 11; i++){").append(" \n\t");
+		s.append("for (i = 1; i <= 9; i++){").append(" \n\t");
 		s.append("elementName = eval(elementBase + i);").append(" \n\t");		
 		s.append("document.getElementById(elementName.id).style.backgroundColor = '#CCCCCC';").append(" \n\t");
 		s.append("}").append("\n\t");
@@ -299,7 +296,7 @@ public class Medication extends EHealthBlock {
 	
 	
 	private Table getTableButtons() {
-		Table table = new Table(3, 1);
+		Table table = new Table(5, 2);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setBorder(0);
@@ -307,19 +304,22 @@ public class Medication extends EHealthBlock {
 		
 		
 		table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
+		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_BOTTOM);
 		
-		table.setWidth(2, 1, "20");
+		table.setWidth(2, 1, "10");
+		table.setWidth(4, 1, "10");
+		table.setHeight(1, 2, "25");
+		table.mergeCells(1, 2, 2, 2);
+		
+		GenericButton reply = getButton(new GenericButton("reply", localize(prmReply, "Reply")));
+		GenericButton clear = getButton(new GenericButton("clear", localize(prmClear, "Clear")));
+		GenericButton send = getButton(new GenericButton("send", localize(prmSend, "Send")));
+		GenericButton delete = getButton(new GenericButton("delete", localize(prmDelete, "Delete")));
 				
-		
-		GenericButton fass = getButton(new GenericButton("linkFass", localize(prmLinkFass, "Link to Fass >")));
-		
-		Link fassLink = new Link("linkFass", localize(prmLinkFass, "Link to Fass >"));
-		fassLink.setURL("http://www.fass.se");
-		fassLink.setTarget("_new");
-		fassLink.setAsImageButton(true);
-		table.add(fassLink, 1, 1);
-		table.add(fass, 2, 1);
-		
+		table.add(reply, 1, 1);
+		table.add(clear, 3, 1);
+		table.add(send, 5, 1);
+		table.add(delete, 1, 2);
 		
 		return table;
 		

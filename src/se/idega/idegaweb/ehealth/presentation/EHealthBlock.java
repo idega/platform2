@@ -159,7 +159,6 @@ public class EHealthBlock extends Block {
 	
 	/**
 	 * @param iwc
-	 * @param healthcentre
 	 * @return
 	 */
 	public PresentationObject getVKLogo(IWContext iwc)
