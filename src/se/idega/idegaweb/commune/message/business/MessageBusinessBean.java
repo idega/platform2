@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.65 2004/10/20 15:51:41 aron Exp $
+ * $Id: MessageBusinessBean.java,v 1.66 2004/11/02 08:36:29 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -67,6 +67,7 @@ public class MessageBusinessBean extends CaseBusinessBean implements MessageBusi
 	private static String DEFAULT_SMTP_MAILSERVER="mail.agurait.com";
 	private static String PROP_SYSTEM_SMTP_MAILSERVER="messagebox_smtp_mailserver";
 	private static String PROP_MESSAGEBOX_FROM_ADDRESS="messagebox_from_mailaddress";
+	private static String PROP_SYSTEM_FORCED_RECEIVER="messagebox_forced_receiver_address";
 	private static String DEFAULT_MESSAGEBOX_FROM_ADDRESS="messagebox@idega.com";
 	
 	public static final String USER_PROP_SEND_TO_MESSAGE_BOX = "msg_send_box";
@@ -339,7 +340,7 @@ public class MessageBusinessBean extends CaseBusinessBean implements MessageBusi
 			
 			if (sendMail) {
 				boolean sendEmail = false;
-				Email mail = ((UserBusiness)com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(),UserBusiness.class)).getUserMail(msgValue.receiver);	
+				Email mail = ((UserBusiness)getServiceInstance(UserBusiness.class)).getUserMail(msgValue.receiver);	
 				if (mail != null) {
 					if (mail.getEmailAddress() != null)
 						sendEmail = true;
@@ -684,25 +685,30 @@ public class MessageBusinessBean extends CaseBusinessBean implements MessageBusi
 	}
 	
 	public void sendMessage(String email, String subject, String body, File attachment) {
-
+	    	String receiver = email.trim();
 		String mailServer = DEFAULT_SMTP_MAILSERVER;
 		String fromAddress = DEFAULT_MESSAGEBOX_FROM_ADDRESS;
+		String forcedToAddress = null;
 		try{
 			IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 			mailServer = iwb.getProperty(PROP_SYSTEM_SMTP_MAILSERVER,DEFAULT_SMTP_MAILSERVER);
 			fromAddress = iwb.getProperty(PROP_MESSAGEBOX_FROM_ADDRESS,DEFAULT_MESSAGEBOX_FROM_ADDRESS);
+			forcedToAddress = iwb.getProperty(PROP_SYSTEM_FORCED_RECEIVER,"notset");
 		}
 		catch(Exception e){
 			System.err.println("MessageBusinessBean: Error getting mail property from bundle");
 			e.printStackTrace();	
 		}
+		
+		if(forcedToAddress!=null && !"notset".equals(forcedToAddress))
+		    receiver = forcedToAddress;
 			
 
 		try {
 			if (attachment == null) {
-				com.idega.util.SendMail.send(fromAddress, email.trim(), "", "", mailServer, subject, body);
+				com.idega.util.SendMail.send(fromAddress, receiver, "", "", mailServer, subject, body);
 			} else {
-				com.idega.util.SendMail.send(fromAddress, email.trim(), "", "", mailServer, subject, body, attachment);
+				com.idega.util.SendMail.send(fromAddress, receiver, "", "", mailServer, subject, body, attachment);
 			}
 		}
 		catch (javax.mail.MessagingException me) {
