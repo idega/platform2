@@ -49,12 +49,13 @@ public class ParticipantNumberSetter extends IBOServiceBean{
 		}
 		if(run != null) {
 			Iterator iter = run.iterator();
+			Iterator iter2 = run.iterator();
 			while(iter.hasNext()) {
 				Run r = (Run) iter.next();
 				r.setParticipantNumber(-1);
 				r.store();
 			}
-			Iterator iter2 = run.iterator(); 
+			 
 			while(iter2.hasNext()) {
 				Run r = (Run) iter.next();
 				if(r.getParticipantNumber() == -1)
