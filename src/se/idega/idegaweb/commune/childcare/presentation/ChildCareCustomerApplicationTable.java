@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Collections;
 import java.sql.Date;
+import java.util.Calendar;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.ArrayList;
@@ -16,10 +17,14 @@ import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
+import com.idega.block.process.data.CaseBMPBean;
+import com.idega.builder.data.IBPage;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.RadioGroup;
 import com.idega.presentation.ui.SubmitButton;
@@ -27,7 +32,7 @@ import com.idega.presentation.ui.SubmitButton;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.2 2003/03/05 14:33:13 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.3 2003/03/21 18:37:12 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -40,15 +45,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	
 	public final static String STATUS_UBEH = "UBEH";
 	
-	private final static String ACTION = "ACTION";
-	private final static int NO_ACTION = 0;	
-	private final static int ACTION_SUBMIT_1 = 1;	
-	private final static int ACTION_CANCEL_1 = 2;	
-	private final static int ACTION_SUBMIT_2 = 3;	
-	private final static int ACTION_CANCEL_2 = 4;	
-	private final static int ACTION_SUBMIT_3 = 5;	
-	private final static int ACTION_CANCEL_3 = 6;		
-	private final static int ACTION_REQUEST_INFO = 7;
+
+
 	
 
 	
@@ -63,38 +61,40 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		//layoutTbl.mergeCells(1, 1, 2, 1); //merging upper two cells
 		
 		switch(parseAction(iwc)){
-			case ACTION_SUBMIT_1: 
+			case CCConstants.ACTION_SUBMIT_1: 
 				iwc.setSessionAttribute(CCConstants.SESSION_ACCEPTED_STATUS, getAcceptedStatus(iwc));
 				createPagePhase2(iwc, layoutTbl); 
 				break;
 				
-			case ACTION_CANCEL_1: 
+			case CCConstants.ACTION_CANCEL_1: 
 				/**@todo: What should happen here? */ 
 				break;
 				
-			case ACTION_SUBMIT_2: 
+			case CCConstants.ACTION_SUBMIT_2: 
 				iwc.setSessionAttribute(CCConstants.SESSION_KEEP_IN_QUEUE, getKeepInQueue(iwc));
 				createSubmitPage(iwc, layoutTbl);
 				break;
 				
-			case ACTION_CANCEL_2: 
+			case CCConstants.ACTION_CANCEL_2: 
 				/**@todo: What should happen here? */ 
 				break;
 
-			case ACTION_REQUEST_INFO: 
+			case CCConstants.ACTION_REQUEST_INFO: 
 				/**@todo: How do i 'connect' to the message editor block? */ 
-				layoutTbl.add(new Text("[Requesting info from " + 
+				iwc.forwardToIBPage(getParentPage(), getMessageBoxPage());
+				
+			/*	layoutTbl.add(new Text("[Requesting info from " + 
 					getChildCareBusiness(iwc)
 					.getApplicationByPrimaryKey(iwc.getParameter(CCConstants.APPID))
-					.getProvider().getName() + "]"));
+					.getProvider().getName() + "]")); */
 				break;
 				
-			case ACTION_SUBMIT_3: 
+			case CCConstants.ACTION_SUBMIT_3: 
 				handleKeepQueueStatus(iwc, (List) iwc.getSessionAttribute(CCConstants.SESSION_KEEP_IN_QUEUE));
 				handleAcceptStatus(iwc, (List) iwc.getSessionAttribute(CCConstants.SESSION_ACCEPTED_STATUS));
 				break;
 				
-			case ACTION_CANCEL_3:
+			case CCConstants.ACTION_CANCEL_3:
 				break; 
 
 			default: 
@@ -110,7 +110,6 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	private void createSubmitPage(IWContext iwc, Table layoutTbl) throws RemoteException{
 
 		Iterator acceptedStatus = ((List) iwc.getSessionAttribute(CCConstants.SESSION_ACCEPTED_STATUS)).iterator();
-		Iterator keepInQueue = ((List) iwc.getSessionAttribute(CCConstants.SESSION_KEEP_IN_QUEUE)).iterator();
 		String s = "";
 		while(acceptedStatus.hasNext()){
 			AcceptedStatus as = (AcceptedStatus) acceptedStatus.next();
@@ -131,7 +130,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				}
 			}
 		}
+		
 
+		Iterator keepInQueue = ((List) iwc.getSessionAttribute(CCConstants.SESSION_KEEP_IN_QUEUE)).iterator();
 		while (keepInQueue.hasNext()){
 			
 			String[] status = (String[]) keepInQueue.next();
@@ -140,15 +141,21 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 					s += "<p>You have decided to cancel the appliction sent to " +
 						getChildCareBusiness(iwc).getApplicationByPrimaryKey(status[0]).getProvider().getName() +
 						". ";
+				} else {
+				    s+= "<p> "+getChildCareBusiness(iwc).getApplicationByPrimaryKey(status[0]).getProvider().getName() +
+  "Status: " + status[1];	
+				
 				}
 			}
 		}		
 
-		SubmitButton submitBtn = new SubmitButton(localize(SUBMIT), ACTION, new Integer(ACTION_SUBMIT_3).toString());
+		SubmitButton submitBtn = new SubmitButton(localize(SUBMIT), CCConstants.ACTION, new Integer(CCConstants.ACTION_SUBMIT_3).toString());
+		submitBtn.setSubmitConfirm("Are you sure you want to submit?");
+
 		//submitBtn.setName(SUBMIT[0] + PAGE_1);
 		submitBtn.setAsImageButton(true);
 
-		SubmitButton cancelBtn = new SubmitButton(localize(CANCEL), ACTION, new Integer(ACTION_CANCEL_3).toString());
+		SubmitButton cancelBtn = new SubmitButton(localize(CANCEL), CCConstants.ACTION, new Integer(CCConstants.ACTION_CANCEL_3).toString());
 		//cancelBtn.setName(CANCEL[0] + PAGE_1);
 		cancelBtn.setAsImageButton(true);	
 		
@@ -176,8 +183,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			String[] status = (String[]) i.next(); 
 			if (status[0] != null){
 				if (status[1] != null && status[1].equals(CCConstants.NO)){
-					ChildCareApplication application = getChildCareBusiness(iwc).getApplicationByPrimaryKey(status[0]);
-//					application.remove();
+					getChildCareBusiness(iwc).rejectOffer(new Integer(status[0]).intValue(), iwc.getCurrentUser());
+					//ChildCareApplication application = getChildCareBusiness(iwc).getApplicationByPrimaryKey(status[0]);
+					//application.setStatus(CaseBMPBean.STATE_DELETED);
 				}
 			}
 		}
@@ -275,7 +283,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			list.add( new AcceptedStatus(
 				iwc.getParameter(CCConstants.APPID + i),
 				iwc.getParameter(CCConstants.ACCEPT_OFFER + i),
-				iwc.getParameter(CCConstants.NEW_DATE + i)
+				iwc.getParameter(CCConstants.NEW_DATE + i + "_day"),
+				iwc.getParameter(CCConstants.NEW_DATE + i + "_month"),
+				iwc.getParameter(CCConstants.NEW_DATE + i + "_year")
 			));
 			i++;
 		}
@@ -286,12 +296,17 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	private class AcceptedStatus{
 		String _appid, _status;
 		Date _date;
-		AcceptedStatus(String appId, String status, String date){
+		AcceptedStatus(String appId, String status, String day, String month, String year){
 			_appid = appId;
 			_status = status;
-			if (date != null) {
+			if (day != null && month != null && year != null) {
 				try{
-					_date = new java.sql.Date(new java.util.Date(date).getTime());
+					Calendar c = Calendar.getInstance();
+					c.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
+					c.set(Calendar.MONTH, Integer.parseInt(month) - 1);
+					c.set(Calendar.YEAR, Integer.parseInt(year));
+					_date = new java.sql.Date(c.getTimeInMillis());
+					//new java.sql.Date(new java.util.Date(date).getTime());
 				}catch(IllegalArgumentException ex){
 					_date = new Date(0); /**@TODO: IS THIS OK?*/
 				}
@@ -338,20 +353,20 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			});
 			i++;
 		}
-		
+		add(new Text("Length:" + list.size()));
 		return list;
 	}
 		
 	
 	
 	private int parseAction(IWContext iwc) {
-		if (iwc.isParameterSet(ACTION)) {			
-			return Integer.parseInt(iwc.getParameter(ACTION));
+		if (iwc.isParameterSet(CCConstants.ACTION)) {			
+			return Integer.parseInt(iwc.getParameter(CCConstants.ACTION));
 		} else if (iwc.isParameterSet(ChildCarePlaceOfferTable1.REQUEST_INFO[0])) {
-			return ACTION_REQUEST_INFO;		
+			return CCConstants.ACTION_REQUEST_INFO;		
 		}
 
-		return NO_ACTION;	
+		return CCConstants.NO_ACTION;	
 	}
 		
 		
@@ -359,11 +374,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Table appTable = new ChildCarePlaceOfferTable1(
 			this, sortApplications(findApplications(iwc), false));
 
-		SubmitButton submitBtn = new SubmitButton(localize(SUBMIT), ACTION, new Integer(ACTION_SUBMIT_1).toString());
+		SubmitButton submitBtn = new SubmitButton(localize(SUBMIT), CCConstants.ACTION, new Integer(CCConstants.ACTION_SUBMIT_1).toString());
 //		submitBtn.setName(SUBMIT[0] + PAGE_1);
 		submitBtn.setAsImageButton(true);
+		submitBtn.setSubmitConfirm("Are you sure you want to submit?");
 
-		SubmitButton cancelBtn = new SubmitButton(localize(CANCEL), ACTION, new Integer(ACTION_CANCEL_1).toString());
+		SubmitButton cancelBtn = new SubmitButton(localize(CANCEL), CCConstants.ACTION, new Integer(CCConstants.ACTION_CANCEL_1).toString());
 //		cancelBtn.setName(CANCEL[0] + PAGE_1);
 		cancelBtn.setAsImageButton(true);	
 		
@@ -378,11 +394,13 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Table appTable = new ChildCarePlaceOfferTable2(
 			this, sortApplications(findApplications(iwc), true));
 						
-		SubmitButton submitBtn = new SubmitButton(localize(SUBMIT), ACTION, new Integer(ACTION_SUBMIT_2).toString());
+		SubmitButton submitBtn = new SubmitButton(localize(SUBMIT), CCConstants.ACTION, new Integer(CCConstants.ACTION_SUBMIT_2).toString());
 //		submitBtn.setName(SUBMIT[0] + PAGE_2);
 		submitBtn.setAsImageButton(true);
+		submitBtn.setSubmitConfirm("Are you sure you want to submit?");
+		
 
-		SubmitButton cancelBtn = new SubmitButton(localize(CANCEL), ACTION, new Integer(ACTION_CANCEL_2).toString());
+		SubmitButton cancelBtn = new SubmitButton(localize(CANCEL), CCConstants.ACTION, new Integer(CCConstants.ACTION_CANCEL_2).toString());
 //		cancelBtn.setName(CANCEL[0] + PAGE_2);
 		cancelBtn.setAsImageButton(true);	
 		
@@ -449,6 +467,61 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @return Text
 	 */
 	public Text getLocalHeader(String key, String defaultValue){
-		return getHeader(localize(key, defaultValue));
+		return getSmallHeader(localize(key, defaultValue));
 	}
+	
+	private IBPage _messageBoxPage;
+	
+	/**
+	 * 
+	 * Property method
+	 * @param page
+	 */
+	public void setMessageBoxPage(IBPage page){
+		_messageBoxPage = page;
+	}
+	
+	public IBPage getMessageBoxPage(){
+		return _messageBoxPage;
+	}
+	
+	//Because these methods is made protected in CommuneBlock, 
+	//they need to be made public to delegates
+	
+	public String getZebraColor1(){
+		return super.getZebraColor1();	
+	}
+	
+	public String getZebraColor2(){
+		return super.getZebraColor2();	
+	}
+	
+	public Text getSmallHeader(String s){
+		return super.getSmallHeader(s);
+	}
+	
+	public String getHeaderColor(){
+		return super.getHeaderColor();
+	}
+	
+	public int getCellpadding(){
+		return super.getCellpadding();
+	}
+
+	public int getCellspacing(){
+		return super.getCellspacing();
+	}
+	
+	public Text getSmallText(String s){
+		return super.getSmallText(s);
+	}
+	
+	public String getSmallTextFontStyle(){
+		return super.getSmallTextFontStyle();
+	}
+	
+	public InterfaceObject getStyledInterface(InterfaceObject o){
+		return super.getStyledInterface(o);
+	}
+	
 }
