@@ -869,6 +869,9 @@ public abstract class BookingForm extends TravelManager{
 		if ((max > 0 && max <= bookings) || (min > 0 && min > bookings)){
 			_useInquiryForm = true;
 		}
+		if(_product.getAuthorizationCheck()) {
+			_useInquiryForm = true;
+		}
 		
 		try {
 			return getPublicBookingFormPrivate(iwc, product);
@@ -3606,7 +3609,11 @@ public abstract class BookingForm extends TravelManager{
 
 				
 				if(product != null && product.getAuthorizationCheck()) {
-					creditCardReferenceString = t.creditcardAuthorization(gBooking.getName(), ccNumber,ccMonth,ccYear, ccCVC, price,currency, gBooking.getReferenceNumber());
+					if (t.supportsDelayedTransactions()) {
+						creditCardReferenceString = t.creditcardAuthorization(gBooking.getName(), ccNumber,ccMonth,ccYear, ccCVC, price,currency, gBooking.getReferenceNumber());
+					} else {
+						throw new CreditCardAuthorizationException(iwrb.getLocalizedString("travel.unsupported_operation","Unsupported operation"));
+					}
 				}
 				else {
 					heimild = t.doSale(gBooking.getName(), ccNumber,ccMonth,ccYear, ccCVC, price,currency, gBooking.getReferenceNumber());
