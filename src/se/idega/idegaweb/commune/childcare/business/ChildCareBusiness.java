@@ -13,7 +13,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean assignContractToApplication(java.lang.String[] p0,com.idega.user.data.User p1,java.util.Locale p2) throws java.rmi.RemoteException;
  public boolean assignContractToApplication(int p0,int p1,com.idega.util.IWTimestamp p2,com.idega.user.data.User p3,java.util.Locale p4,boolean p5) throws java.rmi.RemoteException;
  public boolean cancelContract(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,boolean p1,com.idega.util.IWTimestamp p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,com.idega.user.data.User p6) throws java.rmi.RemoteException;
- public void changePlacingDate(int p0,java.sql.Date p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public void changePlacingDate(int p0,java.sql.Date p1,String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findAllApplicationsWithChecksToRedeem() throws java.rmi.RemoteException;
  public java.util.Collection findAllGrantedApplications() throws java.rmi.RemoteException;
  public java.util.Collection getAcceptedApplicationsByProvider(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
