@@ -190,6 +190,16 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   
   private PresentationObject getContent(IWContext iwc, IWResourceBundle resourceBundle, Form form, String action) {
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    try {
+      // create data from the database
+      workReportBusiness.createWorkReportBoardData(getWorkReportId());
+    } catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
+    } 
     Collection coll;
     try {
       coll =
