@@ -21,21 +21,23 @@ public class BooleanInput extends DropdownMenu{
   private static final String NO_KEY = "booleaninput.no";
   private static final String YES_KEY = "booleaninput.yes";
 
-public BooleanInput(){
-	this("booleaninput");
-}
+  public BooleanInput(){
+      this("booleaninput");
+  }
 
-public BooleanInput(String name){
-	super(name);
-}
+  public BooleanInput(String name){
+    super(name);
+    addMenuElement("N");
+    addMenuElement("Y");
+  }
 
-public void main(ModuleInfo modinfo)throws Exception{
-  super.main(modinfo);
-  IWBundle iwb = this.getBundle(modinfo);
-  IWResourceBundle iwrb = iwb.getResourceBundle(modinfo);
-  addMenuElement("N",iwrb.getLocalizedString(NO_KEY));
-  addMenuElement("Y",iwrb.getLocalizedString(YES_KEY));
-}
+  public void main(ModuleInfo modinfo)throws Exception{
+    super.main(modinfo);
+    IWBundle iwb = this.getBundle(modinfo);
+    IWResourceBundle iwrb = iwb.getResourceBundle(modinfo);
+    setMenuElementDisplayString("N",iwrb.getLocalizedString(NO_KEY));
+    setMenuElementDisplayString("Y",iwrb.getLocalizedString(YES_KEY));
+  }
 
 
 
