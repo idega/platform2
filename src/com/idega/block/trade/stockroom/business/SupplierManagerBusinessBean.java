@@ -137,6 +137,27 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
   	return manager;
 	}
 	
+	public Collection getSupplierManagerAdmins(Group supplierManager) throws RemoteException, FinderException {
+		Collection coll = getGroupBusiness().getChildGroups(supplierManager, new String[]{SUPPLIER_MANAGER_USER_GROUP_TYPE}, true);
+//		Collection coll = supplierManager.getChildGroups(new String[]{SUPPLIER_MANAGER_ADMIN_GROUP_TYPE}, true);
+		if (coll != null) {
+			Iterator iter = coll.iterator();
+			if (iter.hasNext()) {
+				Group userGroup = (Group) iter.next();
+				Collection coll2 = getGroupBusiness().getChildGroups(userGroup, new String[]{SUPPLIER_MANAGER_ADMIN_GROUP_TYPE}, true);
+				if (coll2 != null) {
+					Iterator iter2 = coll2.iterator();
+					if (iter2.hasNext()) {
+						Group adminGroup = (Group) iter2.next();
+						return getGroupBusiness().getUsers(adminGroup);
+					}
+				}
+			}
+			return null;
+		}
+		return null;
+	}
+	
   public Group getSupplierManagerGroup() {
   	try {
   		Collection coll = getGroupBusiness().getGroups(new String[] {SUPPLIER_MANAGER_GROUP_TYPE_COLLECTION}, true);
