@@ -43,6 +43,19 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	private final long millisecondsInOneDay = 8640000;
 	
+	// keys for localized strings
+	private static final String LOCALIZED_LABEL = "WorkReportStatsBusiness.label";
+	private static final String LOCALIZED_CLUB_NAME = "WorkReportStatsBusiness.club_name";
+	private static final String LOCALIZED_REGIONAL_UNION_NAME = "WorkReportStatsBusiness.regional_union_name";
+	private static final String LOCALIZED_LEAGUE_INFO = "WorkReportStatsBusiness.league_info";
+	private static final String LOCALIZED_WOMEN_UNDER = "WorkReportStatsBusiness.womenUnderAgeLimit_";
+	private static final String LOCALIZED_WOMEN_OVER_OR_EQUAL = "WorkReportStatsBusiness.womenOverOrEqualAgeLimit_";
+	private static final String LOCALIZED_MEN_UNDER = "WorkReportStatsBusiness.menUnderAgeLimit_";
+	private static final String LOCALIZED_MEN_OVER_OR_EQUAL = "WorkReportStatsBusiness.menOverOrEqualAgeLimit_";
+	private static final String LOCALIZED_ALL_UNDER = "WorkReportStatsBusiness.bothGendersUnderAge_";
+	private static final String LOCALIZED_ALL_EQUAL_OR_OVER = "WorkReportStatsBusiness.bothGendersEqualOverAge_";
+	private static final String LOCALIZED_ALL_LAST_YEAR = "WorkReportStatsBusiness.bothGendersLastYear";
+	
 	/**
 	 *  
 	 */
@@ -96,7 +109,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//Add extra...because the inputhandlers supply the basic header texts
 		reportCollection.addExtraHeaderParameter(
 				"workreportreport",
-				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
+				_iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
 				"label",
 				IWTimestamp.getTimestampRightNow().toGMTString());
 		
@@ -104,41 +117,41 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		//The name you give the field/parameter must not contain spaces or special characters
 		final ReportableField clubName = new ReportableField("club_name", String.class);
-		clubName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.club_name", "Club name"), currentLocale);
+		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
 		reportCollection.addField(clubName);
 		
 		final ReportableField regionalUnionAbbreviation = new ReportableField("regional_union_name", String.class);
-		regionalUnionAbbreviation.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
+		regionalUnionAbbreviation.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_REGIONAL_UNION_NAME, "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionAbbreviation);
 		
 		//fake columns (data gotten by business methods)
 		final ReportableField leagueString = new ReportableField("league_info", String.class);
-		leagueString.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.league_info", "League"), currentLocale);
+		leagueString.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_LEAGUE_INFO, "League"), currentLocale);
 		reportCollection.addField(leagueString);
 		
 		ReportableField womenUnderAgeLimit = new ReportableField("womenUnderAgeLimit", Integer.class);
-		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimit_"+age, "women -"+age), currentLocale);
+		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER + age, "women -"+age), currentLocale);
 		reportCollection.addField(womenUnderAgeLimit);
 		
 		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
-		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL + age, "women "+age+"+"),currentLocale);
 		reportCollection.addField(womenOverOrEqualAgeLimit);
 		
 		ReportableField menUnderAgeLimit = new ReportableField("menUnderAgeLimit", Integer.class);
-		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimit_"+age, "men -"+age), currentLocale);
+		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER + age, "men -"+age), currentLocale);
 		reportCollection.addField(menUnderAgeLimit);
 		
 		ReportableField menOverOrEqualAgeLimit = new ReportableField("menOverOrEqualAgeLimit", Integer.class);
-		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit_"+age, "men "+age+"+"), currentLocale);
+		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL + age, "men "+age+"+"), currentLocale);
 		reportCollection.addField(menOverOrEqualAgeLimit);
 		
 		
 		ReportableField bothGendersUnderAge = new ReportableField("bothGendersUnderAge", Integer.class);
-		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersUnderAge"+age, "all -"+age), currentLocale);
+		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER + age, "all -"+age), currentLocale);
 		reportCollection.addField(bothGendersUnderAge);
 		
 		ReportableField bothGendersEqualOverAge = new ReportableField("bothGendersEqualOverAge", Integer.class);
-		bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersEqualOverAge"+age, "all "+age+"+"), currentLocale);
+		bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER + age, "all "+age+"+"), currentLocale);
 		reportCollection.addField(bothGendersEqualOverAge);
 		
 		//Real data stuff
@@ -248,78 +261,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			reportCollection.addAll(datas);
 		}
 		
-		// sort the reportable collection
-		/*Comparator comparator = new Comparator() {
-			public int compare(Object o1, Object o2) {
-				if(o1==o2) {
-					return 0;		
-				}
-				try {
-					ReportableData data1 = (ReportableData) o1;
-					ReportableData data2 = (ReportableData) o2;
-					if(data1==null) {
-						return -1;
-					} else if (data2==null) {
-						return 1;
-					}
-					String league1 = (String) data1.getFieldValue(leagueString);
-					String regionalUnionCode1 = (String) data1.getFieldValue(regionalUnionAbbreviation);
-					String clubName1 = (String) data1.getFieldValue(clubName);
-		
-					String league2 = (String) data2.getFieldValue(leagueString);
-					String regionalUnionCode2 = (String) data2.getFieldValue(regionalUnionAbbreviation);
-					String clubName2 = (String) data2.getFieldValue(clubName);;
-		
-					Locale locale = new Locale("is","IS");
-					Collator collator = Collator.getInstance(locale);
-		
-					boolean sameLeague = league1==league2 || (league1!=null && league1.equals(league2));
-					if(!sameLeague) {
-						// not same league, sort by league first
-						return collator.compare(league1, league2);
-					}
-		
-					int i1 = getInt(regionalUnionCode1);
-					int i2 = getInt(regionalUnionCode2);
-					if(i1!=-1 && i2!=-1) {
-						// sort by regional union second
-						if(i1!=i2) {
-							// regional union code differs, sorting by that
-							return i1-i2;
-						}
-					}
-		
-					// regional unions numbers differ or are invalid, sort by regional union string 
-					int stri = collator.compare(regionalUnionCode1, regionalUnionCode2);
-					if(stri!=0) {
-						return stri;
-					}
-		
-					// sort by club name last
-					return collator.compare(clubName1, clubName2);
-				} catch(Exception e) {
-					//e.printStackTrace();
-					return 42;
-				}
-			}
-
-			private int getInt(String str) {
-				int i = str.indexOf(" ");
-				String c1;
-				if(i==-1) {
-					c1 = str; 
-				} else {
-					c1 = str.substring(0, i);
-				}
-				try {
-					return Integer.parseInt(c1);
-				} catch(Exception e) {
-					//e.printStackTrace();
-					return -1;
-				}
-			}			
-		};*/
-		
 		ReportableField[] sortFields = new ReportableField[] {leagueString, regionalUnionAbbreviation, clubName};
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
@@ -357,38 +298,37 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		//The name you give the field/parameter must not contain spaces or special characters		
 		ReportableField regionalUnionAbbreviation = new ReportableField("regional_union_name", String.class);
-		regionalUnionAbbreviation.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
+		regionalUnionAbbreviation.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_REGIONAL_UNION_NAME, "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionAbbreviation);
 		
 		//fake columns (data gotten by business methods)
 		ReportableField leagueString = new ReportableField("league_info", String.class);
-		leagueString.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.league_info", "League"), currentLocale);
+		leagueString.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_LEAGUE_INFO, "League"), currentLocale);
 		reportCollection.addField(leagueString);
 		
 		ReportableField womenUnderAgeLimit = new ReportableField("womenUnderAgeLimit", Integer.class);
-		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimit_"+age, "women -"+age), currentLocale);
+		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
 		reportCollection.addField(womenUnderAgeLimit);
 		
 		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
-		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
 		reportCollection.addField(womenOverOrEqualAgeLimit);
 		
 		ReportableField menUnderAgeLimit = new ReportableField("menUnderAgeLimit", Integer.class);
-		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimit_"+age, "men -"+age), currentLocale);
+		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
 		reportCollection.addField(menUnderAgeLimit);
 		
 		ReportableField menOverOrEqualAgeLimit = new ReportableField("menOverOrEqualAgeLimit", Integer.class);
-		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit_"+age, "men "+age+"+"), currentLocale);
+		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "men "+age+"+"), currentLocale);
 		reportCollection.addField(menOverOrEqualAgeLimit);
 		
 		ReportableField bothGendersUnderAge = new ReportableField("bothGendersUnderAge", Integer.class);
-		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersUnderAge"+age, "all -"+age), currentLocale);
+		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "all -"+age), currentLocale);
 		reportCollection.addField(bothGendersUnderAge);
 		
 		ReportableField bothGendersEqualOverAge = new ReportableField("bothGendersEqualOverAge", Integer.class);
-		bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersEqualOverAge"+age, "all "+age+"+"), currentLocale);
+		bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "all "+age+"+"), currentLocale);
 		reportCollection.addField(bothGendersEqualOverAge);
-		
 		
 		
 		//Real data stuff
@@ -510,31 +450,31 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		
 		//fake columns (data gotten by business methods)
 		ReportableField leagueString = new ReportableField("league_info", String.class);
-		leagueString.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.league_info", "League"), currentLocale);
+		leagueString.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_LEAGUE_INFO, "League"), currentLocale);
 		reportCollection.addField(leagueString);
 		
 		ReportableField womenUnderAgeLimit = new ReportableField("womenUnderAgeLimit", Integer.class);
-		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimit_"+age, "women -"+age), currentLocale);
+		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
 		reportCollection.addField(womenUnderAgeLimit);
 		
 		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
-		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
 		reportCollection.addField(womenOverOrEqualAgeLimit);
 		
 		ReportableField menUnderAgeLimit = new ReportableField("menUnderAgeLimit", Integer.class);
-		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimit_"+age, "men -"+age), currentLocale);
+		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
 		reportCollection.addField(menUnderAgeLimit);
 		
 		ReportableField menOverOrEqualAgeLimit = new ReportableField("menOverOrEqualAgeLimit", Integer.class);
-		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit_"+age, "men "+age+"+"), currentLocale);
+		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "men "+age+"+"), currentLocale);
 		reportCollection.addField(menOverOrEqualAgeLimit);
 		
 		ReportableField bothGendersUnderAge = new ReportableField("bothGendersUnderAge", Integer.class);
-		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersUnderAge"+age, "all -"+age), currentLocale);
+		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "all -"+age), currentLocale);
 		reportCollection.addField(bothGendersUnderAge);
 		
 		ReportableField bothGendersEqualOverAge = new ReportableField("bothGendersEqualOverAge", Integer.class);
-		bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersEqualOverAge"+age, "all "+age+"+"), currentLocale);
+		bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "all "+age+"+"), currentLocale);
 		reportCollection.addField(bothGendersEqualOverAge);
 		
 		//Real data stuff
@@ -644,57 +584,57 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(comparingYearStat);
 		
 		ReportableField leagueString = new ReportableField("league_info", String.class);
-		leagueString.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.league_info", "League"), currentLocale);
+		leagueString.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_LEAGUE_INFO, "League"), currentLocale);
 		reportCollection.addField(leagueString);
 		
 		//Selected years parameters and fields
 		ReportableField womenUnderAgeLimit = new ReportableField("womenUnderAgeLimit", Integer.class);
-		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimit_"+age, "women -"+age), currentLocale);
+		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
 		reportCollection.addField(womenUnderAgeLimit);
 		
 		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
-		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
 		reportCollection.addField(womenOverOrEqualAgeLimit);
 		
 		ReportableField menUnderAgeLimit = new ReportableField("menUnderAgeLimit", Integer.class);
-		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimit_"+age, "men -"+age), currentLocale);
+		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
 		reportCollection.addField(menUnderAgeLimit);
 		
 		ReportableField menOverOrEqualAgeLimit = new ReportableField("menOverOrEqualAgeLimit", Integer.class);
-		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit_"+age, "men "+age+"+"), currentLocale);
+		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "men "+age+"+"), currentLocale);
 		reportCollection.addField(menOverOrEqualAgeLimit);
 		
 		ReportableField bothGendersUnderAge = new ReportableField("bothGendersUnderAge", Integer.class);
-		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersUnderAge"+age, "all -"+age), currentLocale);
+		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "all -"+age), currentLocale);
 		reportCollection.addField(bothGendersUnderAge);
 		
 		ReportableField bothGendersEqualOverAge = new ReportableField("bothGendersEqualOverAge", Integer.class);
-		bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersEqualOverAge"+age, "all "+age+"+"), currentLocale);
+		bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "all "+age+"+"), currentLocale);
 		reportCollection.addField(bothGendersEqualOverAge);
 		
 		//last years parameters and fields
 		ReportableField womenUnderAgeLimitLastYear = new ReportableField("womenUnderAgeLimitLastYear", Integer.class);
-		womenUnderAgeLimitLastYear.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimit_"+age, "women -"+age), currentLocale);
+		womenUnderAgeLimitLastYear.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
 		reportCollection.addField(womenUnderAgeLimitLastYear);
 		
 		ReportableField womenOverOrEqualAgeLimitLastYear = new ReportableField("womenOverOrEqualAgeLimitLastYear", Integer.class);
-		womenOverOrEqualAgeLimitLastYear.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		womenOverOrEqualAgeLimitLastYear.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
 		reportCollection.addField(womenOverOrEqualAgeLimitLastYear);
 		
 		ReportableField menUnderAgeLimitLastYear = new ReportableField("menUnderAgeLimitLastYear", Integer.class);
-		menUnderAgeLimitLastYear.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimit_"+age, "men -"+age), currentLocale);
+		menUnderAgeLimitLastYear.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
 		reportCollection.addField(menUnderAgeLimitLastYear);
 		
 		ReportableField menOverOrEqualAgeLimitLastYear = new ReportableField("menOverOrEqualAgeLimitLastYear", Integer.class);
-		menOverOrEqualAgeLimitLastYear.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit_"+age, "men "+age+"+"), currentLocale);
+		menOverOrEqualAgeLimitLastYear.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "men "+age+"+"), currentLocale);
 		reportCollection.addField(menOverOrEqualAgeLimitLastYear);
 		
 		ReportableField bothGendersUnderAgeLastYear = new ReportableField("bothGendersUnderAgeLastYear", Integer.class);
-		bothGendersUnderAgeLastYear.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersUnderAge"+age, "all -"+age), currentLocale);
+		bothGendersUnderAgeLastYear.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "all -"+age), currentLocale);
 		reportCollection.addField(bothGendersUnderAgeLastYear);
 		
 		ReportableField bothGendersEqualOverAgeLastYear = new ReportableField("bothGendersEqualOverAgeLastYear", Integer.class);
-		bothGendersEqualOverAgeLastYear.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersEqualOverAge"+age, "all "+age+"+"), currentLocale);
+		bothGendersEqualOverAgeLastYear.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "all "+age+"+"), currentLocale);
 		reportCollection.addField(bothGendersEqualOverAgeLastYear);
 		
 		//Real data stuff
@@ -841,7 +781,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//The name you give the field/parameter must not contain spaces or special characters
 		//fake columns (data gotten by business methods)		
 		ReportableField leagueString = new ReportableField("league_info", String.class);
-		leagueString.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.league_info", "League"), currentLocale);
+		leagueString.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_LEAGUE_INFO, "League"), currentLocale);
 		reportCollection.addField(leagueString);
 		
 		
@@ -970,15 +910,15 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(regionalUnionName);*/
 	
 		ReportableField regionalUnionFiffName = new ReportableField("regional_union_name", String.class);
-		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
+		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_REGIONAL_UNION_NAME, "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionFiffName);
 
 		ReportableField bothGendersUnderAge = new ReportableField("bothGendersUnderAge", Integer.class);
-		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersUnderAge"+age, "all -"+age), currentLocale);
+		bothGendersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "all -"+age), currentLocale);
 		reportCollection.addField(bothGendersUnderAge);
 
 		ReportableField bothGendersEqualOverAge = new ReportableField("bothGendersEqualOverAge", Integer.class);
-		bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersEqualOverAge"+age, "all "+age+"+"), currentLocale);
+		bothGendersEqualOverAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "all "+age+"+"), currentLocale);
 		reportCollection.addField(bothGendersEqualOverAge);
 
 		//Real data stuff
@@ -1024,6 +964,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		// iterate through the ordered map and ordered lists and add to the final collection
 		reportCollection.addAll(regionalUnionsStatsMap.values());
 
+		ReportableField[] sortFields = new ReportableField[] {regionalUnionFiffName};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+		
 		//finished return the collection
 		return reportCollection;
 	}
@@ -1062,31 +1006,27 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(regionalUnionNumber);*/
 		
 		ReportableField regionalUnionFiffName = new ReportableField("regionalUnionName", String.class);
-		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
+		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_REGIONAL_UNION_NAME, "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionFiffName);
 
-		/*ReportableField regionalUnionPopulation = new ReportableField("regionalUnionPopulation", String.class);
-		regionalUnionPopulation.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_population", "Reg.U."), currentLocale);
-		reportCollection.addField(regionalUnionPopulation);*/
-		
 		ReportableField menUnderAge = new ReportableField("menUnderAge", Integer.class);
-		menUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimitLastYear"+age, "all -"+age), currentLocale);
+		menUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "all -"+age), currentLocale);
 		reportCollection.addField(menUnderAge);
 		
 		ReportableField womenUnderAge = new ReportableField("womenUnderAge", Integer.class);
-		womenUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimitLastYear"+age, "all -"+age), currentLocale);
+		womenUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "all -"+age), currentLocale);
 		reportCollection.addField(womenUnderAge);
 
 		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
-		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
 		reportCollection.addField(womenOverOrEqualAgeLimit);
 	
 		ReportableField menOverOrEqualAgeLimit = new ReportableField("menOverOrEqualAgeLimit", Integer.class);
-		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "men "+age+"+"),currentLocale);
 		reportCollection.addField(menOverOrEqualAgeLimit);
 		
 		ReportableField bothGendersLastYear = new ReportableField("bothGendersLastYear", Integer.class);
-		bothGendersLastYear.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersLastYear"+age, "women "+age+"+"),currentLocale);
+		bothGendersLastYear.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_LAST_YEAR, "all "+age+"+ last year"),currentLocale);
 		reportCollection.addField(bothGendersLastYear);
 
 		//Real data stuff
@@ -1151,7 +1091,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	
 		// iterate through the ordered map and ordered lists and add to the final collection
 		reportCollection.addAll(regionalUnionsStatsMap.values());
-
+		
+		ReportableField[] sortFields = new ReportableField[] {regionalUnionFiffName};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+		
 		//finished return the collection
 		return reportCollection;
 	}
@@ -1200,27 +1144,27 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(regionalUnionNumber);*/
 	
 		ReportableField regionalUnionFiffName = new ReportableField("regionalUnionName", String.class);
-		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
+		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_REGIONAL_UNION_NAME, "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionFiffName);
 		
 		ReportableField clubName = new ReportableField("club_name", String.class);
-		clubName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.club_name", "Club name"), currentLocale);
+		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
 		reportCollection.addField(clubName);
 
 		ReportableField menUnderAge = new ReportableField("menUnderAge", Integer.class);
-		menUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimitLastYear"+age, "all -"+age), currentLocale);
+		menUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "all -"+age), currentLocale);
 		reportCollection.addField(menUnderAge);
 	
 		ReportableField womenUnderAge = new ReportableField("womenUnderAge", Integer.class);
-		womenUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimitLastYear"+age, "all -"+age), currentLocale);
+		womenUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "all -"+age), currentLocale);
 		reportCollection.addField(womenUnderAge);
 
 		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
-		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
 		reportCollection.addField(womenOverOrEqualAgeLimit);
 
 		ReportableField menOverOrEqualAgeLimit = new ReportableField("menOverOrEqualAgeLimit", Integer.class);
-		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "men "+age+"+"),currentLocale);
 		reportCollection.addField(menOverOrEqualAgeLimit);
 	
 		//Real data stuff
@@ -1254,7 +1198,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			regData.addData(menOverOrEqualAgeLimit, new Integer(menMembersEqualOrOver));
 			reportCollection.addElement(regData);
 		}
-
+	
+		ReportableField[] sortFields = new ReportableField[] {regionalUnionFiffName, clubName};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+		
+		
 		//finished return the collection
 		return reportCollection;
 	}
@@ -1293,31 +1242,31 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(regionalUnionNumber);*/
 	
 		ReportableField regionalUnionFiffName = new ReportableField("regionalUnionName", String.class);
-		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
+		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_REGIONAL_UNION_NAME, "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionFiffName);
 
-		ReportableField regionalUnionPopulation = new ReportableField("regionalUnionPopulation", String.class);
+		/*ReportableField regionalUnionPopulation = new ReportableField("regionalUnionPopulation", String.class);
 		regionalUnionPopulation.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_population", "Reg.U."), currentLocale);
-		reportCollection.addField(regionalUnionPopulation);
+		reportCollection.addField(regionalUnionPopulation);*/
 	
 		ReportableField menUnderAge = new ReportableField("menUnderAge", Integer.class);
-		menUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimitLastYear"+age, "all -"+age), currentLocale);
+		menUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "all -"+age), currentLocale);
 		reportCollection.addField(menUnderAge);
 	
 		ReportableField womenUnderAge = new ReportableField("womenUnderAge", Integer.class);
-		womenUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimitLastYear"+age, "all -"+age), currentLocale);
+		womenUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "all -"+age), currentLocale);
 		reportCollection.addField(womenUnderAge);
 
 		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
-		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
 		reportCollection.addField(womenOverOrEqualAgeLimit);
 
 		ReportableField menOverOrEqualAgeLimit = new ReportableField("menOverOrEqualAgeLimit", Integer.class);
-		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
 		reportCollection.addField(menOverOrEqualAgeLimit);
 	
 		ReportableField bothGendersLastYear = new ReportableField("bothGendersLastYear", Integer.class);
-		bothGendersLastYear.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.bothGendersLastYear"+age, "women "+age+"+"),currentLocale);
+		bothGendersLastYear.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_LAST_YEAR+age, "women "+age+"+"),currentLocale);
 		reportCollection.addField(bothGendersLastYear);
 
 		//Real data stuff
@@ -1382,7 +1331,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 
 		// iterate through the ordered map and ordered lists and add to the final collection
 		reportCollection.addAll(regionalUnionsStatsMap.values());
-
+		
+		ReportableField[] sortFields = new ReportableField[] {regionalUnionFiffName};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+		
 		//finished return the collection
 		return reportCollection;
 	}
@@ -1413,27 +1366,27 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//fake columns (data gotten by business methods)
 		
 		ReportableField regionalUnionFiffName = new ReportableField("regionalUnionName", String.class);
-		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
+		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_REGIONAL_UNION_NAME, "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionFiffName);
 				
 		ReportableField leagueString = new ReportableField("league_info", String.class);
-		leagueString.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.league_info", "League"), currentLocale);
+		leagueString.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_LEAGUE_INFO, "League"), currentLocale);
 		reportCollection.addField(leagueString);
 	
 		ReportableField womenUnderAgeLimit = new ReportableField("womenUnderAgeLimit", Integer.class);
-		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimit_"+age, "women -"+age), currentLocale);
+		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
 		reportCollection.addField(womenUnderAgeLimit);
 	
 		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
-		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
+		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
 		reportCollection.addField(womenOverOrEqualAgeLimit);
 	
 		ReportableField menUnderAgeLimit = new ReportableField("menUnderAgeLimit", Integer.class);
-		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimit_"+age, "men -"+age), currentLocale);
+		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
 		reportCollection.addField(menUnderAgeLimit);
 	
 		ReportableField menOverOrEqualAgeLimit = new ReportableField("menOverOrEqualAgeLimit", Integer.class);
-		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit_"+age, "men "+age+"+"), currentLocale);
+		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "men "+age+"+"), currentLocale);
 		reportCollection.addField(menOverOrEqualAgeLimit);
 		
 		//Real data stuff
@@ -1503,9 +1456,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		
 		}
 	
-
 		//add the data to the collection
 		reportCollection.addAll(leagueStatsMap.values());
+
+		ReportableField[] sortFields = new ReportableField[] {regionalUnionFiffName, leagueString};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
 	
 		//finished return the collection
 		return reportCollection;
@@ -1545,9 +1501,9 @@ private String getLeagueIdentifier(WorkReportGroup league) {
 	StringBuffer leagueBuf = new StringBuffer();
 	leagueBuf.append( (league.getNumber()!=null)? league.getNumber() : "" )
 	.append("  ")
-	.append( (league.getShortName()!=null)? league.getShortName() : "")
-	.append("  ")
-	.append( (league.getName()!=null)? league.getName() : "");
+	.append( (league.getShortName()!=null)? league.getShortName() : "");
+	//.append("  ")
+	//.append( (league.getName()!=null)? league.getName() : "");
 	String leagueText=league.toString();
 	return leagueText;
 }
@@ -1556,9 +1512,9 @@ private String getRegionalUnionIdentifier(WorkReport report) {
 	StringBuffer ruBuf = new StringBuffer();
 	ruBuf.append( (report.getRegionalUnionNumber()!=null)? report.getRegionalUnionNumber() : "" )
 	.append("  ")
-	.append( (report.getRegionalUnionAbbreviation()!=null)? report.getRegionalUnionAbbreviation() : "")
-	.append("  ")
-	.append( (report.getRegionalUnionName()!=null)? report.getRegionalUnionName() : "");
+	.append( (report.getRegionalUnionAbbreviation()!=null)? report.getRegionalUnionAbbreviation() : "");
+	//.append("  ")
+	//.append( (report.getRegionalUnionName()!=null)? report.getRegionalUnionName() : "");
 	return ruBuf.toString();
 }
 
