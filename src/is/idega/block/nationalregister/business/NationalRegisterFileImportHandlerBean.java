@@ -714,6 +714,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 					try {
 						dom = new IWTimestamp(dateOfModification);
 					}catch(IllegalArgumentException e) {
+						System.out.println("Could not parse the date '"+dateOfModification+"'");
 						e.printStackTrace();
 						dom = IWTimestamp.RightNow();
 					}
