@@ -14,4 +14,6 @@ public interface ContractTag extends com.idega.data.IDOLegacyEntity
  public void setInUse(boolean p0);
  public void setInfo(java.lang.String p0);
  public void setName(java.lang.String p0);
+ public Class getType();
+ public void setType(Class type);
 }
