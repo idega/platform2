@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.34 2001/08/09 19:04:50 eiki Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.35 2001/08/09 19:07:44 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -409,9 +409,9 @@ public class GolfMainJSPModulePage extends MainPage {
 
 
               table.add(logo1Link);
-              table.add("<br>");
+              table.add(Text.getBreak());
               table.add(logo2Link);
-              table.add("<br>");
+              table.add(Text.getBreak());
               table.add(logo3Link);
 
 
@@ -520,7 +520,7 @@ public class GolfMainJSPModulePage extends MainPage {
           rightTable.add(gLinks,1,7);//1,9
 
           JModuleObject yellow = new JModuleObject();
-          add(getYellowLine());
+          yellow.add(getYellowLine());
           yellow.setCacheable("yellow",86400000);//24 hour
           rightTable.add(getYellowLine(),1,9);//1,11
 
