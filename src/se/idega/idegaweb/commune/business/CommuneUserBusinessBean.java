@@ -490,6 +490,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 
 		rootGroup.removeUser(user);
+		
 		rootSpecialGroup.addGroup(user);
 
 		/*	transaction.commit();
@@ -535,7 +536,11 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 
 		rootSpecialGroup.removeUser(user);
+		
 		rootGroup.addGroup(user);
+		
+		
+		
 		/*
 		transaction.commit();
 		}
