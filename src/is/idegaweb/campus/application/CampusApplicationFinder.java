@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.3 2001/07/09 17:49:35 aron Exp $
+ * $Id: CampusApplicationFinder.java,v 1.4 2001/07/11 14:35:48 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import is.idegaweb.campus.entity.SpouseOccupation;
 import is.idegaweb.campus.entity.CurrentResidency;
 import is.idegaweb.campus.entity.Application;
 import is.idegaweb.campus.entity.Applied;
+import is.idegaweb.campus.entity.WaitingList;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.business.ApplicationFinder;
 import java.sql.SQLException;
@@ -142,6 +143,16 @@ public abstract class CampusApplicationFinder {
       }
     }
     return V;
+  }
+
+  public static List listOfWaitinglist(int aprtTypeId,int cmplxId){
+     try {
+      WaitingList WL = new WaitingList();
+      return(EntityFinder.findAllByColumn(WL,WL.getApartmentTypeIdColumnName(),String.valueOf(aprtTypeId),WL.getComplexIdColumnName(),String.valueOf(cmplxId)));
+    }
+    catch(SQLException e){
+      return(null);
+    }
   }
 }
 

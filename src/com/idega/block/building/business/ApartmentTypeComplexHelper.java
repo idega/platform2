@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentTypeComplexHelper.java,v 1.2 2001/07/09 12:06:38 palli Exp $
+ * $Id: ApartmentTypeComplexHelper.java,v 1.3 2001/07/11 14:35:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,6 +17,7 @@ import java.util.StringTokenizer;
  * @version 1.0
  */
 public class ApartmentTypeComplexHelper {
+  private int iKey_1,iKey_2;
   private String key_ = null;
   private String name_ = null;
 
@@ -24,7 +25,17 @@ public class ApartmentTypeComplexHelper {
   }
 
   public void setKey(int key1, int key2) {
+    iKey_1 = key1;
+    iKey_2 = key2;
     key_ = Integer.toString(key1) + "-" + Integer.toString(key2);
+  }
+
+  public int getKeyOne(){
+    return iKey_1;
+  }
+
+  public int getKeyTwo(){
+    return iKey_2;
   }
 
   public void setKey(String key) {
