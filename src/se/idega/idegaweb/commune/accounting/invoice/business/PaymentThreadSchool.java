@@ -94,7 +94,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).
 					findByPrimaryKeyIDO(category.getPrimaryKey());
 			ProviderTypeHome providerTypeHome = (ProviderTypeHome) IDOLookup.getHome(ProviderType.class);
-			ProviderType providerType = (ProviderType)providerTypeHome.findPrivateType();
+			ProviderType providerType = providerTypeHome.findPrivateType();
 			
 			int privateType = ((Integer)providerType.getPrimaryKey()).intValue();
 
