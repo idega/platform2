@@ -26,106 +26,102 @@ import com.idega.data.*;
 public class MemberInfoInsert extends EntityInsert {
 
 
-  private MemberInfo memInfo;
+  private MemberInfo eMemberInfo;
   private String inputHandicapName = "MemberInfoInsert_memInfonumber";
   private int memberID = 1;
-
   private TextInput inputHandicap;
-
   private String inputHandicapValue;
   private String headerText = "Forgjöf";
+  private Text handicap = null;
 
-  public MemberInfoInsert(ModuleInfo modinfo) {
-      super(modinfo);
-      isUpdate = false;
-      memInfo = new MemberInfo();
-      memInfo.setDefaultValues();
-      inputHandicap = new TextInput(inputHandicapName);
-      //setVariables();
+  public MemberInfoInsert() {
+    bUpdate = false;
+    this.eMemberInfo = new MemberInfo();
+    this.eMemberInfo.setDefaultValues();
+    inputHandicap = new TextInput(inputHandicapName);
   }
 
-  public MemberInfoInsert(ModuleInfo modinfo, int memInfoId)throws java.sql.SQLException {
-      super(modinfo, memInfoId);
-      isUpdate = true;
-      memInfo = new MemberInfo(memInfoId);
-      memInfo.setDefaultValues();
-      inputHandicap = new TextInput(inputHandicapName, String.valueOf(memInfo.getHandicap()));
-      //setVariables();
+  public MemberInfoInsert( MemberInfo eMemberInfo)throws java.sql.SQLException {
+    bUpdate = true;
+    this.eMemberInfo = eMemberInfo;
+    this.eMemberInfo.setDefaultValues();
+    handicap = formatText(String.valueOf(this.eMemberInfo.getHandicap()));
+    handicap.setFontSize(6);
   }
 
   public MemberInfo getMemberInfo() {
-      return this.memInfo;
+    return this.eMemberInfo;
   }
 
   public void setMemberId(int id) {
-      memberID = id;
+    memberID = id;
   }
 
-  public boolean areNeetedFieldsEmpty() {
-      return false;
+  public boolean areNeededFieldsEmpty(ModuleInfo modinfo) {
+    return false;
   }
 
-  public Vector getNeetedEmptyFields() {
-      return new Vector();
+  public Vector getNeededEmptyFields(ModuleInfo modinfo) {
+    return new Vector();
   }
 
   public TextInput getInputHandicap() {
-      return inputHandicap;
+    inputHandicap.setMaxlength(4);
+    inputHandicap.setLength(4);
+    return inputHandicap;
   }
 
-  public boolean areAllFieldsEmpty() {
-      return (isEmpty(inputHandicapName));
+  public Text getHandicap(){
+    return this.handicap;
   }
 
-  public boolean areSomeFieldsEmpty() {
-      return areAllFieldsEmpty();
+  public boolean areSomeFieldsEmpty(ModuleInfo modinfo) {
+    return (isEmpty(modinfo,inputHandicapName));
   }
 
   public Vector getEmptyFields() {
-      Vector vec = new Vector();
-
-      if (isInvalid(inputHandicapValue)) {
-          vec.addElement("Forgjöf");
-      }
-
-      return vec;
+    Vector vec = new Vector();
+    if (isInvalid(inputHandicapValue)) {
+        vec.addElement("Forgjöf");
+    }
+    return vec;
   }
 
-  public HeaderTable getInputTable() {
-      HeaderTable hTable = new HeaderTable();
-      hTable.setHeaderText(headerText);
-      Table table = new Table(2, 1);
+  public BorderTable getInputTable() {
+    BorderTable hTable = new BorderTable();
+    if(bUpdate){
+      Table table = new Table(1, 1);
       hTable.add(table);
-
-      table.add("Forgjöf", 1, 1);
-      table.add(getInputHandicap(), 2, 1);
-
-      return hTable;
+      table.add(getHandicap(),1,1);
+    }
+    else{
+      Table table = new Table(1, 2);
+      hTable.add(table);
+      table.add(formatText("Forgjöf"), 1, 1);
+      table.add(getInputHandicap(), 1, 2);
+    }
+    return hTable;
   }
 
-  public void store()throws SQLException, IOException {
-      PrintWriter out = modinfo.getResponse().getWriter();
-      setVariables();
-      if(isUpdate())
-          memInfo.update();
-      else {
-          idegaTimestamp stamp = new idegaTimestamp(new java.sql.Date(System.currentTimeMillis()));
-          memInfo.setHistory(stamp.toString()+": Félagi skráður í kerfið");
-          memInfo.setMemberId(memberID);
-          memInfo.setFirstHandicap(memInfo.getHandicap());
-          memInfo.insert();
-      }
-
-
+  public void store(ModuleInfo modinfo)throws SQLException, IOException {
+    setVariables(modinfo);
+    if(bUpdate)
+        eMemberInfo.update();
+    else {
+      idegaTimestamp stamp = new idegaTimestamp();
+      eMemberInfo.setHistory(stamp.toString()+": Félagi skráður í kerfið");
+      eMemberInfo.setMemberId(memberID);
+      eMemberInfo.setFirstHandicap(eMemberInfo.getHandicap());
+      eMemberInfo.insert();
+    }
   }
 
-  public void setVariables() {
-      inputHandicapValue = getValue(inputHandicapName);
-
-      if (! isInvalid(inputHandicapValue)) {
-          memInfo.setHandicap(Float.valueOf(inputHandicapValue));
-      }
-      else
-          memInfo.setHandicap(Float.valueOf("100"));
+  public void setVariables(ModuleInfo modinfo) {
+    inputHandicapValue = getValue(modinfo,inputHandicapName);
+    if (! isInvalid(inputHandicapValue)) {
+      this.eMemberInfo.setHandicap(Float.valueOf(inputHandicapValue));
+    }
+    else
+      this.eMemberInfo.setHandicap(Float.valueOf("100"));
   }
 }

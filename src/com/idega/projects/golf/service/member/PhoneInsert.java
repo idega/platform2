@@ -26,7 +26,7 @@ import com.idega.data.*;
  */
 public class PhoneInsert extends EntityInsert {
 
-  private Phone phone;
+  private Phone ePhone;
   private String phoneNumberName = "PhoneInsert_phonenumber";
   private String countryName = "PhoneInsert_country";
   private String typeName = "PhoneInsert_phonetype";
@@ -40,94 +40,88 @@ public class PhoneInsert extends EntityInsert {
   private String typeValue = "1";
 
   private String phoneType = "Sími";
-  private boolean allowEmpty = false;
-  private String headerText = "Sími";
 
-  public PhoneInsert(ModuleInfo modinfo) {
-      super(modinfo);
-      isUpdate = false;
-      phone = new Phone();
-      phone.setDefaultValues();
-      inputPhoneNumber = new TextInput(phoneNumberName);
-      countryDrop = countryDropDown(countryName, "1");
+  public PhoneInsert() {
+    bUpdate = false;
+    ePhone = new Phone();
+    ePhone.setDefaultValues();
+    inputPhoneNumber = new TextInput(phoneNumberName);
+    countryDrop = countryDropDown(countryName, "1");
+    typeDrop = typeDropDown(typeName, "1");
+    init();
+  }
+
+  public PhoneInsert(String inputPhoneName, String dropdownTypeName) {
+    bUpdate = false;
+    ePhone = new Phone();
+    ePhone.setDefaultValues();
+    phoneNumberName = inputPhoneName;
+    typeName = dropdownTypeName;
+    inputPhoneNumber = new TextInput(phoneNumberName);
+    countryDrop = countryDropDown(countryName, "1");
+    typeDrop = typeDropDown(typeName, "1");
+    init();
+  }
+
+  public PhoneInsert( String inputPhoneName, String countryDropName, String dropdownTypeName) {
+    this.bUpdate = false;
+    this.ePhone = new Phone();
+    ePhone.setDefaultValues();
+    phoneNumberName = inputPhoneName;
+    typeName = dropdownTypeName;
+    countryName = countryDropName;
+    inputPhoneNumber = new TextInput(phoneNumberName);
+    countryDrop = countryDropDown(countryName, "1");
+    typeDrop = typeDropDown(typeName, "1");
+    init();
+  }
+
+  public PhoneInsert( Phone ePhone)throws java.sql.SQLException {
+    this.ePhone = ePhone;
+    this.bUpdate = true;
+    ePhone.setDefaultValues();
+    inputPhoneNumber = new TextInput(phoneNumberName, ePhone.getNumber());
+    countryDrop = countryDropDown(countryName, String.valueOf(ePhone.getCountryId()));
+    if(ePhone.getPhoneTypeId() != -1)
+        typeDrop = typeDropDown(typeName, String.valueOf(ePhone.getPhoneTypeId()));
+    else
+        typeDrop = typeDropDown(typeName, "1");
+    init();
+  }
+
+
+  public PhoneInsert(Phone ePhone, String inputPhoneName, String countryDropName, String dropdownTypeName)throws java.sql.SQLException {
+    this.bUpdate = true;
+    this.ePhone = ePhone;
+    ePhone.setDefaultValues();
+    phoneNumberName = inputPhoneName;
+    typeName = dropdownTypeName;
+    countryName = countryDropName;
+    inputPhoneNumber = new TextInput(phoneNumberName, ePhone.getNumber());
+    countryDrop = countryDropDown(countryName, String.valueOf(ePhone.getCountryId()));
+    if(ePhone.getPhoneTypeId() != -1)
+      typeDrop = typeDropDown(typeName, String.valueOf(ePhone.getPhoneTypeId()));
+    else
       typeDrop = typeDropDown(typeName, "1");
-      //setVariables();
+      init();
   }
 
-  public PhoneInsert(ModuleInfo modinfo, String inputPhoneName, String dropdownTypeName) {
-      super(modinfo);
-      isUpdate = false;
-      phone = new Phone();
-      phone.setDefaultValues();
-      phoneNumberName = inputPhoneName;
-      typeName = dropdownTypeName;
-      inputPhoneNumber = new TextInput(phoneNumberName);
-      countryDrop = countryDropDown(countryName, "1");
-      typeDrop = typeDropDown(typeName, "1");
-      //setVariables();
+  private void init(){
+    setStyle(inputPhoneNumber);
+    setStyle(countryDrop);
+    setStyle(typeDrop);
   }
 
-  public PhoneInsert(ModuleInfo modinfo, String inputPhoneName, String countryDropName, String dropdownTypeName) {
-      super(modinfo);
-      isUpdate = false;
-      phone = new Phone();
-      phone.setDefaultValues();
-      phoneNumberName = inputPhoneName;
-      typeName = dropdownTypeName;
-      countryName = countryDropName;
-      inputPhoneNumber = new TextInput(phoneNumberName);
-      countryDrop = countryDropDown(countryName, "1");
-      typeDrop = typeDropDown(typeName, "1");
-      //setVariables();
+  public boolean areNeededFieldsEmpty(ModuleInfo modinfo) {
+    return isEmpty(modinfo,phoneNumberName);
   }
 
-  public PhoneInsert(ModuleInfo modinfo, int phoneId)throws java.sql.SQLException {
-      super(modinfo, phoneId);
-      isUpdate = true;
-      phone = new Phone(phoneId);
-      phone.setDefaultValues();
-      inputPhoneNumber = new TextInput(phoneNumberName, phone.getNumber());
-      countryDrop = countryDropDown(countryName, String.valueOf(phone.getCountryId()));
-      if(phone.getPhoneTypeId() != -1)
-          typeDrop = typeDropDown(typeName, String.valueOf(phone.getPhoneTypeId()));
-      else
-          typeDrop = typeDropDown(typeName, "1");
-      //setVariables();
-  }
-
-
-  public PhoneInsert(ModuleInfo modinfo, int phoneId, String inputPhoneName, String countryDropName, String dropdownTypeName)throws java.sql.SQLException {
-      super(modinfo, phoneId);
-      isUpdate = true;
-      phone = new Phone(phoneId);
-      phone.setDefaultValues();
-      phoneNumberName = inputPhoneName;
-      typeName = dropdownTypeName;
-      countryName = countryDropName;
-      inputPhoneNumber = new TextInput(phoneNumberName, phone.getNumber());
-      countryDrop = countryDropDown(countryName, String.valueOf(phone.getCountryId()));
-      if(phone.getPhoneTypeId() != -1)
-          typeDrop = typeDropDown(typeName, String.valueOf(phone.getPhoneTypeId()));
-      else
-          typeDrop = typeDropDown(typeName, "1");
-      //setVariables();
-  }
-
-  public boolean areNeetedFieldsEmpty() {
-      return isEmpty(phoneNumberName);
-  }
-
-  public Vector getNeetedEmptyFields() {
-      setVariables();
-      Vector vec = new Vector();
-
-      if(allowEmpty == false) {
-          if (isInvalid(phoneNumberValue)) {
-              vec.addElement(phoneType);
-          }
-      }
-
-      return vec;
+  public Vector getNeededEmptyFields(ModuleInfo modinfo) {
+    Vector vec = new Vector();
+    if (isInvalid(phoneNumberValue)) {
+        vec.addElement(phoneType);
+    }
+    return vec;
   }
 
   public TextInput getInputPhoneNumber() {
@@ -142,128 +136,115 @@ public class PhoneInsert extends EntityInsert {
       return this.typeDrop;
   }
 
-  public boolean areAllFieldsEmpty() {
-      return (isEmpty(phoneNumberName) && isEmpty(countryName) && isEmpty(typeName));
+  public boolean areAllFieldsEmpty(ModuleInfo modinfo) {
+      return (isEmpty(modinfo,phoneNumberName) && isEmpty(modinfo,countryName) && isEmpty(modinfo,typeName));
   }
 
-  public boolean areSomeFieldsEmpty() {
-      return areAllFieldsEmpty();
+  public boolean areSomeFieldsEmpty(ModuleInfo modinfo) {
+      return areAllFieldsEmpty(modinfo);
   }
 
   public void setPhoneType(String phoneType) {
       this.phoneType = phoneType;
   }
 
-  public void allowEmpty(boolean empty) {
-      this.allowEmpty = empty;
-  }
-
   public Vector getEmptyFields() {
-      Vector vec = new Vector();
-
-      if (isInvalid(phoneNumberValue)) {
-          vec.addElement(phoneType);
-      }
-      //if (isInvalid(countryValue)) {
-        //  vec.addElement("Land");
-      //}
-      //if (isInvalid(typeValue)) {
-        //  vec.addElement("Tegund síma");
-      //}
-
-      return vec;
+    Vector vec = new Vector();
+    if (isInvalid(phoneNumberValue)) {
+        vec.addElement(phoneType);
+    }
+    return vec;
   }
 
-  public HeaderTable getInputTable(boolean submitButton) {
+  public BorderTable getInputTable(boolean submitButton) {
+    BorderTable hTable = new BorderTable();
+    Table table = new Table(2, 3);
+    hTable.add(table);
+    table.add("Tegund", 1, 1);
+    table.add("Númer", 1, 2);
+    table.add(getDropType(), 2, 1);
+    table.add(getInputPhoneNumber(), 2, 2);
+    if(submitButton)
+      table.add(new SubmitButton(), 2, 3);
 
-      HeaderTable hTable = new HeaderTable();
-      hTable.setHeaderText(headerText);
-      Table table = new Table(2, 3);
-      hTable.add(table);
-      table.add("Tegund", 1, 1);
-      table.add("Númer", 1, 2);
-      table.add(getDropType(), 2, 1);
-      table.add(getInputPhoneNumber(), 2, 2);
-      if(submitButton)
-          table.add(new SubmitButton(), 2, 3);
-
-      return hTable;
-
+    return hTable;
   }
-  public void store()throws SQLException, IOException {
-  PrintWriter out = modinfo.getResponse().getWriter();
-      if(allowEmpty && getNeetedEmptyFields().size() == 0) {
-          return;
-      }
-      else if(isUpdate())
-          phone.update();
-      else {
-          phone.insert();
-      }
+  public void store(ModuleInfo modinfo)throws SQLException, IOException {
+    setVariables(modinfo);
+    if(phoneNumberValue == null) {
+      return;
+    }
+    else if(isUpdate()) {
+      ePhone.update();
+    }
+    else {
+      ePhone.insert();
+    }
   }
 
-  public void store(Member member)throws SQLException, IOException {
-
-      PrintWriter out = modinfo.getResponse().getWriter();
-      if(allowEmpty && areNeetedFieldsEmpty()) {
-          return;
-      }
-      else if(isUpdate())
-          phone.update();
-      else {
-          phone.insert();
-          phone.addTo(member);
-      }
-
-
+  public void store(ModuleInfo modinfo,Member member)throws SQLException, IOException {
+    setVariables(modinfo);
+    if(phoneNumberValue == null) {
+        System.err.println("   Empty   ()");
+        return;
+    }
+    else if(isUpdate()) {
+        if((ePhone.getNumber() != null) && (! ePhone.getNumber().equals("")) ){
+            ePhone.update();
+        }
+        else {
+            ePhone.removeFrom(member);
+            ePhone.delete();
+        }
+    }
+    else if((ePhone.getNumber() != null) && (! ePhone.getNumber().equals("")) ){
+        ePhone.insert();
+        ePhone.addTo(member);
+    }
   }
-  public void setVariables() {
-      phoneNumberValue = getValue(phoneNumberName);
-      typeValue = getValue(typeName);
+  public void setVariables(ModuleInfo modinfo) {
+    phoneNumberValue = getValue(modinfo,phoneNumberName);
+    typeValue = getValue(modinfo,typeName);
 
-     // if(getValue(countryName) != null)
-         // countryValue = getValue(countryName);
+    if(! isInvalid(typeValue))
+        ePhone.setPhoneTypeId(Integer.parseInt(typeValue));
 
-      if(! isInvalid(typeValue))
-          phone.setPhoneTypeId(Integer.parseInt(typeValue));
+    if (phoneNumberValue != null) {
+        ePhone.setNumber(phoneNumberValue);
+    }
+    else
+        ePhone.setNumber("");
 
-      if (phoneNumberValue != null) {
-          phone.setNumber(phoneNumberValue);
-      }
-      else
-          phone.setNumber("");
-
-      phone.setCountryId(new Integer(countryValue));
-      //phone.setPhoneType(phoneType);
+    ePhone.setCountryId(new Integer(countryValue));
   }
 
   private DropdownMenu countryDropDown(String name, String selected) {
-	DropdownMenu drp = new DropdownMenu(name);
-        Country country = new Country();
-	try {
-            Country[] countryArr = (Country[]) country.findAll();
-            for(int i = 0; i < countryArr.length; i++) {
-                drp.addMenuElement(countryArr[i].getID(), countryArr[i].getName());
-            }
-            drp.setSelectedElement(selected);
-	}catch(Exception e) {
-            e.printStackTrace();
-	}
-	return drp;
+    DropdownMenu drp = new DropdownMenu(name);
+    Country country = new Country();
+    try {
+        Country[] countryArr = (Country[]) country.findAll();
+        for(int i = 0; i < countryArr.length; i++) {
+            drp.addMenuElement(countryArr[i].getID(), countryArr[i].getName());
+        }
+        drp.setSelectedElement(selected);
+    }catch(Exception e) {
+        e.printStackTrace();
+    }
+    return drp;
   }
 
   private DropdownMenu typeDropDown(String name, String selected) {
-	DropdownMenu drp = new DropdownMenu(name);
-        PhoneType type = new PhoneType();
-	try {
-            PhoneType[] typeArr = (PhoneType[]) type.findAll();
-            for(int i = 0; i < typeArr.length; i++) {
-                drp.addMenuElement(String.valueOf(typeArr[i].getID()), typeArr[i].getName());
-            }
-            drp.setSelectedElement(selected);
-	}catch(Exception e) {
-            e.printStackTrace();
-	}
-	return drp;
+    DropdownMenu drp = new DropdownMenu(name);
+    PhoneType type = new PhoneType();
+    try {
+        PhoneType[] typeArr = (PhoneType[]) type.findAll();
+        for(int i = 0; i < typeArr.length; i++) {
+            drp.addMenuElement(String.valueOf(typeArr[i].getID()), typeArr[i].getName());
+        }
+        drp.setSelectedElement(selected);
+    }catch(Exception e) {
+        e.printStackTrace();
+    }
+    return drp;
   }
 }

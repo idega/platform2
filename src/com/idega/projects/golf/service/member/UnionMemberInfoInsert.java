@@ -1,21 +1,20 @@
 package com.idega.projects.golf.service.member;
+
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.projects.golf.service.*;
-import com.idega.util.*;
-import com.idega.util.text.*;
-import java.util.*;
-import java.sql.Date;
-import java.sql.*;
-import java.io.*;
-
-import com.idega.jmodule.object.*;
-
 import com.idega.jmodule.object.textObject.*;
-import com.idega.projects.golf.*;
-import com.idega.util.*;
-import com.idega.data.*;
+import com.idega.jmodule.object.Table;
+import com.idega.jmodule.object.Image;
+import com.idega.jmodule.object.ModuleInfo;
+import com.idega.projects.golf.service.Tariffer;
+import java.util.Vector;
+import java.util.List;
+import java.util.ListIterator;
+import java.sql.SQLException;
+import java.io.IOException;
+import java.sql.Date;
+import java.util.GregorianCalendar;
+
 /**
  * Title:
  * Description:
@@ -26,10 +25,12 @@ import com.idega.data.*;
  */
 
 
-  public class UnionMemberInfoInsert extends EntityInsert {
+ public class UnionMemberInfoInsert extends EntityInsert {
 
-  private UnionMemberInfo member;
+  private UnionMemberInfo eUMI;
 
+  private TextInput inputMemberNumber;
+  private DropdownMenu dropMemberShipType;
   private DropdownMenu dropFamilyStatus;
   private DropdownMenu dropNumberOfPaiments;
   private TextInput inputLocker;
@@ -40,6 +41,8 @@ import com.idega.data.*;
   private DropdownMenu dropCatalogue;
   private DropdownMenu dropActive;
 
+  private final String inputMemberNumberName = "UnionMemberInfoInsert_member_number";
+  private final String dropMemberShipTypeName = "UnionMemberInfoInsert_mbshiptype";
   private final String dropFamilyStatusName = "UnionMemberInfoInsert_family_status";
   private final String dropNumberOfPaimentsName = "UnionMemberInfoInsert_numpayments";
   private final String inputLockerName = "UnionMemberInfoInsert_locker";
@@ -50,6 +53,8 @@ import com.idega.data.*;
   private final String dropCatalogueName = "UnionMemberInfoInsert_catalogue";
   private final String dropActiveName = "UnionMemberInfoInsert_isactive";
 
+  private String inputMemberNumberValue;
+  private String dropMemberShipTypeValue;
   private String dropFamilyStatusValue;
   private String dropNumberOfPaimentsValue;
   private String inputLockerValue;
@@ -61,103 +66,126 @@ import com.idega.data.*;
   private String dropActiveValue;
 
 
-  public UnionMemberInfoInsert(ModuleInfo modinfo) throws java.sql.SQLException{
-      super(modinfo);
-      isUpdate = false;
-      GregorianCalendar cal = new GregorianCalendar();
-      dateInputFirstPayday = new DateInput(dateInputFirstPaydayName, true);
-      dateInputFirstPayday.setDay(1);
-      dateInputFirstPayday.setMonth(2);
-      //dateInputFirstPayday.setYearRange(cal.get(cal.YEAR), cal.get(cal.YEAR));
-      dateInputFirstPayday.setYear(cal.get(cal.YEAR));
+  public UnionMemberInfoInsert(int iUnionId) throws java.sql.SQLException{
+    bUpdate = false;
+    this.eUMI = new UnionMemberInfo();
+    GregorianCalendar cal = new GregorianCalendar();
+    dateInputFirstPayday = new DateInput(dateInputFirstPaydayName, true);
+    dateInputFirstPayday.setDay(1);
+    dateInputFirstPayday.setMonth(2);
+    dateInputFirstPayday.setYear(cal.get(cal.YEAR));
 
-      member = new UnionMemberInfo();
-      member.setRegistrationDate(new Date(System.currentTimeMillis()));
+    eUMI.setUnionID( iUnionId);
+    eUMI.setRegistrationDate(new Date(System.currentTimeMillis()));
 
-      inputLocker = new TextInput(inputLockerName);
-      inputLocker.setSize(15);
-      areaComment = new TextArea(areaCommentName);
-      dropVisible = visibleDropdown(dropVisibleName, "Y");
-      dropPaymentTypes = paymentTypeDrop(dropPaymentTypesName, "1");
-      dropCatalogue = catalogueDrop(dropCatalogueName, "0");
-      dropActive = activeDropdown(dropActiveName, "a");
-      dropNumberOfPaiments = numberOfPaymentDrop(dropNumberOfPaimentsName, "0");
-      dropFamilyStatus = familyStatusDropdown(dropFamilyStatusName, "höfuð");
-      //setVariables();
+    inputMemberNumber = new TextInput(inputMemberNumberName);
+    inputMemberNumber.setLength(4);
+    inputLocker = new TextInput(inputLockerName);
+    inputLocker.setSize(8);
+    areaComment = new TextArea(areaCommentName);
+    dropMemberShipType = mbshiptypeDropdown(dropMemberShipTypeName,"main");
+    dropVisible = visibleDropdown(dropVisibleName, "Y");
+    dropPaymentTypes = paymentTypeDrop(dropPaymentTypesName, "1");
+    dropCatalogue = catalogueDrop(dropCatalogueName, "0");
+    dropActive = activeDropdown(dropActiveName, "A");
+    dropNumberOfPaiments = numberOfPaymentDrop(dropNumberOfPaimentsName, "0");
+    dropFamilyStatus = familyStatusDropdown(dropFamilyStatusName, "head");
+    init();
   }
 
-  public UnionMemberInfoInsert(ModuleInfo modinfo, int unionMemInfoId, int memberID, int unionID)throws SQLException {
-      super(modinfo, unionMemInfoId);
-      isUpdate = true;
+  public UnionMemberInfoInsert(UnionMemberInfo umi)throws SQLException {
+      this.eUMI  = umi;
+      bUpdate = true;
       GregorianCalendar cal = new GregorianCalendar();
-      member = new UnionMemberInfo(unionMemInfoId);
-      setMemberId(memberID);
-      setUnionId(unionID);
       dateInputFirstPayday = new DateInput(dateInputFirstPaydayName, true);
-      //dateInputFirstPayday.setYearRange(cal.get(cal.YEAR), cal.get(cal.YEAR));
       dateInputFirstPayday.setYear(cal.get(cal.YEAR));
 
-      if(member.getMemberStatus() != null) {
-          //debug
-          dropActive = activeDropdown(dropActiveName, member.getMemberStatus());
-          //dropActive = activeDropdown(dropActiveName, "a");
+      if(eUMI.getMemberStatus() != null) {
+        dropActive = activeDropdown(dropActiveName, eUMI.getMemberStatus());
       }
       else
-          dropActive = activeDropdown(dropActiveName, "a");
-      if(member.getFamilyStatus() != null)
-          dropFamilyStatus = familyStatusDropdown(dropFamilyStatusName, member.getFamilyStatus());
+          dropActive = activeDropdown(dropActiveName, "A");
+      if(eUMI.getFamilyStatus() != null)
+          dropFamilyStatus = familyStatusDropdown(dropFamilyStatusName, eUMI.getFamilyStatus());
       else
-          dropFamilyStatus = familyStatusDropdown(dropFamilyStatusName, "höfuð");
-      if(member.getPreferredInstallmentNr() != -1)
-          dropNumberOfPaiments = numberOfPaymentDrop(dropNumberOfPaimentsName, String.valueOf(member.getPreferredInstallmentNr()));
+          dropFamilyStatus = familyStatusDropdown(dropFamilyStatusName, "head");
+      if(eUMI.getPreferredInstallmentNr() != -1)
+          dropNumberOfPaiments = numberOfPaymentDrop(dropNumberOfPaimentsName, String.valueOf(eUMI.getPreferredInstallmentNr()));
       else
           dropNumberOfPaiments = numberOfPaymentDrop(dropNumberOfPaimentsName, "0");
-      if(member.getLockerNumber() != null)
-          inputLocker = new TextInput(inputLockerName, member.getLockerNumber());
+      if(eUMI.getLockerNumber() != null)
+          inputLocker = new TextInput(inputLockerName, eUMI.getLockerNumber());
       else
           inputLocker = new TextInput(inputLockerName);
-      if(member.getComment() != null)
-          areaComment = new TextArea(areaCommentName, member.getComment());
+      if(eUMI.getComment() != null)
+          areaComment = new TextArea(areaCommentName, eUMI.getComment());
       else
           areaComment = new TextArea(areaCommentName);
 
-      if(member.getVisible())
+      if(eUMI.getVisible())
           dropVisible = visibleDropdown(dropVisibleName, "Y");
       else
           dropVisible = visibleDropdown(dropVisibleName, "N");
-      if(member.getPaymentTypeID() != -1)
-          dropPaymentTypes = paymentTypeDrop(dropPaymentTypesName, String.valueOf(member.getPaymentTypeID()));
+      if(eUMI.getPaymentTypeID() != -1)
+          dropPaymentTypes = paymentTypeDrop(dropPaymentTypesName, String.valueOf(eUMI.getPaymentTypeID()));
       else
           dropPaymentTypes = paymentTypeDrop(dropPaymentTypesName, "1");
-      if(member.getFirstInstallmentDate() != null) {
-          dateInputFirstPayday.setDate(member.getFirstInstallmentDate());
+      if(eUMI.getFirstInstallmentDate() != null) {
+          dateInputFirstPayday.setDate(eUMI.getFirstInstallmentDate());
       }
       else {
           dateInputFirstPayday.setDay(1);
           dateInputFirstPayday.setMonth(2);
       }
-      inputLocker.setSize(15);
-      dropCatalogue = catalogueDrop(dropCatalogueName, String.valueOf(member.getPriceCatalogueID()));
+      if(eUMI.getMembershipType()!=null){
+        dropMemberShipType = mbshiptypeDropdown(dropMemberShipTypeName,eUMI.getMembershipType());
+      }
+      else{
+        dropMemberShipType = mbshiptypeDropdown(dropMemberShipTypeName,"main");
+      }
+      String mn = String.valueOf(eUMI.getMemberNumber());
+      inputMemberNumber = new TextInput(inputMemberNumberName,mn);
+      dropCatalogue = catalogueDrop(dropCatalogueName, String.valueOf(eUMI.getPriceCatalogueID()));
+      init();
+  }
+  private void init(){
+    inputMemberNumber.setLength(4);
+    inputLocker.setSize(8);
+    dateInputFirstPayday.setStyle(this.styleAttribute);
+    setStyle(inputMemberNumber);
+    setStyle(inputLocker);
+    setStyle(areaComment);
+    setStyle(dropMemberShipType);
+    setStyle(dropPaymentTypes);
+    setStyle(dropVisible);
+    setStyle(dropCatalogue);
+    setStyle(dropActive);
+    setStyle(dropNumberOfPaiments);
+    setStyle(dropFamilyStatus);
   }
 
- /* public TextInput getInputMemberNumber() {
-      return inputNumber;
-  }*/
-
+  public TextInput getInputMemberNumber() {
+      return inputMemberNumber;
+  }
   public UnionMemberInfo getUnionMemberInfo() {
-      return member;
+      return this.eUMI;
   }
-
   public void setUnionId(int id ) {
-      this.member.setUnionID(id);
+      this.eUMI.setUnionID(id);
   }
-
   public void setMemberId(int id ) {
-      this.member.setMemberID(id);
+      this.eUMI.setMemberID(id);
   }
-
   public void setCardId(int id ) {
-      this.member.setCardId(id);
+      this.eUMI.setCardId(id);
+  }
+  //debug added by eiki
+  public void setMemberStatus( String status ) {
+      this.eUMI.setMemberStatus(status);
+  }
+    //debug added by eiki
+  public void setMembershipType(String type ) {
+      this.eUMI.setMembershipType(type);
   }
 
   public DropdownMenu getDropdownNumberOfPayments() {
@@ -179,243 +207,255 @@ import com.idega.data.*;
   public DropdownMenu getDropVisible() {
       return this.dropVisible;
   }
-
   public DropdownMenu getDropCatalogue() {
       return dropCatalogue;
   }
-
   public DropdownMenu getDropMemberStatus() {
       return dropActive;
   }
-
+  public DropdownMenu getDropMemberShipType() {
+      return dropMemberShipType;
+  }
   public DropdownMenu getDropdownPaymentType() {
       return dropPaymentTypes;
   }
-
   public TextArea getAreaComment() {
       return areaComment;
   }
-
   public Vector getEmptyFields() {
-      Vector vec = new Vector();
+    Vector vec = new Vector();
 
-      if ( isInvalid(inputLockerValue)) {
-          vec.addElement("Skápanúmer");
-      }
-      if (! isDateInputValid(dateInputFirstPaydayName)) {
-          vec.addElement("Dagsetning fyrstu afborgunar");
-      }
-
-      return vec;
-  }
-
-  public Vector getNeetedEmptyFields() {
-      return new Vector();
-  }
-
-  public boolean areSomeFieldsEmpty() {
-      return (getEmptyFields().size() > 0);
-  }
-
-  public boolean areNeetedFieldsEmpty() {
-    return (getNeetedEmptyFields().size() > 0);
-  }
-
-  public void store() throws java.io.IOException, java.sql.SQLException {
-      setVariables();
-
-      if(isUpdate())
-          member.update();
-      else {
-          if(member.getUnionID() == 0 || member.getUnionID() == -1 || member.getMemberID() == 0 || member.getMemberID() == -1)
-              throw new SQLException("<br><B>ABB ABB BABB!!! SETTU UNION_ID OG/EÐA MEMBER_ID GILDI A KALLINN</B><BR>");
-          int nextNumber = member.getMaxColumnValue("member_number", "union_id", String.valueOf(member.getUnionID()));
-          nextNumber++;
-          member.setMemberNumber(nextNumber);
-          member.insert();
-      }
-  }
-
-
-    public HeaderTable getInputTable() {
-
-      Table table = null;
-
-      Link link = Tariffer.getExtraCatalogueLink("Skrá Gjaldflokk", String.valueOf(member.getUnionID()));
-      link.setObject(new Image("/pics/flipar_takkar/form_takkar/skra.gif"));
-
-      if(isUpdate()) {
-          table = new Table(2, 10);
-          table.add("Númer", 1, 1);
-          table.add("Staða", 1, 2);
-          table.add("Greiðslufjöldi", 1, 3);
-          table.add("Fyrsta borgun", 1, 4);
-          table.add("Greiðslumáti", 1, 5);
-          table.add("Vefur", 1, 6);
-          table.add("Skápur", 1, 7);
-          table.add("Fjölskyldustaða", 1, 8);
-          table.add("Gjaldflokkar", 1, 9);
-
-          table.add(String.valueOf(member.getMemberNumber()), 2, 1);
-          table.add(getDropMemberStatus(), 2, 2);
-          table.add(getDropdownNumberOfPayments(), 2, 3);
-          table.add(getDateInputFirstPaymentDate(), 2, 4);
-          table.add(getDropdownPaymentType(), 2, 5);
-          table.add(getDropVisible(), 2, 6);
-          table.add(getInputLocker(), 2, 7);
-          table.add(getDropdownFamilyStatus(), 2, 8);
-          table.add(getDropCatalogue(), 2, 9);
-          table.add(link, 2, 10);
-      }
-      else {
-          table = new Table(2, 9);
-          table.add("Staða", 1, 1);
-          table.add("Greiðslufjöldi", 1, 2);
-          table.add("Fyrsta borgun", 1, 3);
-          table.add("Greiðslumáti", 1, 4);
-          table.add("Vefur", 1, 5);
-          table.add("Skápur", 1, 6);
-          table.add("Fjölskyldustaða", 1, 7);
-          table.add("Gjaldflokkar", 1, 8);
-
-          table.add(getDropMemberStatus(), 2, 1);
-          table.add(getDropdownNumberOfPayments(), 2, 2);
-          table.add(getDateInputFirstPaymentDate(), 2, 3);
-          table.add(getDropdownPaymentType(), 2, 4);
-          table.add(getDropVisible(), 2, 5);
-          table.add(getInputLocker(), 2, 6);
-          table.add(getDropdownFamilyStatus(), 2, 7);
-          table.add(getDropCatalogue(), 2, 8);
-          table.add(link, 2, 9);
-      }
-      //table.setWidth(2, "800");
-      HeaderTable hTable = new HeaderTable();
-      hTable.setHeaderText("Félags upplýsingar");
-
-      hTable.add(table);
-
-      return hTable;
+    if ( isInvalid(inputLockerValue)) {
+        vec.addElement("Skápanúmer");
+    }
+    if (! isDateInputValid(dateInputFirstPaydayName)) {
+        vec.addElement("Dagsetning fyrstu afborgunar");
     }
 
-  public void setVariables() {
-      dropNumberOfPaimentsValue = getValue(dropNumberOfPaimentsName);
-      inputLockerValue = getValue(inputLockerName);
-      dateInputFirstPaydayValue = getDateFromInput(dateInputFirstPaydayName);
-      areaCommentValue = getValue(areaCommentName);
-      dropVisibleValue = getValue(dropVisibleName);
-      dropPaymentTypesValue = getValue(dropPaymentTypesName);
-      dropCatalogueValue = getValue(dropCatalogueName);
-      dropActiveValue = getValue(dropActiveName);
-      dropFamilyStatusValue = getValue(dropFamilyStatusName);
-      setEntity();
+    return vec;
+  }
+  public Vector getNeededEmptyFields(ModuleInfo modinfo) {
+      return new Vector();
+  }
+  public boolean areSomeFieldsEmpty(ModuleInfo modinfo) {
+      return (getEmptyFields().size() > 0);
+  }
+  public boolean areNeededFieldsEmpty(ModuleInfo modinfo) {
+    return (getNeededEmptyFields(modinfo).size() > 0);
+  }
+  public void store(ModuleInfo modinfo) throws java.io.IOException, java.sql.SQLException {
+      setVariables(modinfo);
+
+      if(isUpdate())
+          eUMI.update();
+      else {
+          if(eUMI.getUnionID() == 0 || eUMI.getUnionID() == -1 || eUMI.getMemberID() == 0 || eUMI.getMemberID() == -1)
+              throw new SQLException("Vantar UNION_ID OG/EÐA MEMBER_ID GILDI A KALLINN");
+          int nextNumber = eUMI.getMaxColumnValue("member_number", "union_id", String.valueOf(eUMI.getUnionID()));
+          nextNumber++;
+          eUMI.setMemberNumber(nextNumber);
+          eUMI.insert();
+      }
+  }
+  public BorderTable getInputTable() {
+
+    Table table = null;
+
+    Link link = Tariffer.getExtraCatalogueLink("Skrá Gjaldflokk", String.valueOf(eUMI.getUnionID()));
+    link.setObject(new Image("/pics/formtakks/edit.gif"));
+
+    if(isUpdate()) {
+      table = new Table(2, 8);
+      table.add(formatText("Númer"), 1, 1);
+      table.add(formatText("Staða"), 1, 2);
+      table.add(formatText("Greiðslur"), 1, 3);
+      table.add(formatText("1.Gjaldd."), 1, 4);
+      //table.add(formatText("Greiðslumáti"), 1, 5);
+      table.add(formatText("Vefur"), 1, 5);
+      table.add(formatText("Skápur"), 1, 6);
+      table.add(formatText("Fj.staða"), 1, 7);
+      table.add(formatText("Sérgjald"), 1, 8);
+
+      table.add(getInputMemberNumber(), 2, 1);
+      table.add(getDropMemberStatus(), 2, 2);
+      table.add(getDropMemberShipType(),2,2);
+      table.add(getDropdownNumberOfPayments(), 2, 3);
+      table.add(getDropdownPaymentType(), 2, 3);
+      table.add(getDateInputFirstPaymentDate(), 2, 4);
+
+      table.add(getDropVisible(), 2, 5);
+      table.add(getInputLocker(), 2, 6);
+      table.add(getDropdownFamilyStatus(), 2, 7);
+      table.add(getDropCatalogue(), 2,8);
+      table.add(link, 2, 8);
+    }
+    else {
+      table = new Table(2, 8);
+      table.add(formatText("Staða"), 1, 2);
+      table.add(formatText("Greiðslur"), 1, 3);
+      table.add(formatText("1.Gjalddagi"), 1, 4);
+      //table.add(formatText("Greiðslumáti"), 1, 4);
+      table.add(formatText("Vefur"), 1, 5);
+      table.add(formatText("Skápur"), 1, 6);
+      table.add(formatText("Fj.staða"), 1, 7);
+      table.add(formatText("Sérgjald"), 1, 8);
+
+      table.add(getDropMemberStatus(), 2, 2);
+      table.add(getDropMemberShipType(),2,2);
+      table.add(getDropdownNumberOfPayments(), 2, 3);
+      table.add(getDropdownPaymentType(), 2, 3);
+      table.add(getDateInputFirstPaymentDate(), 2, 4);
+      table.add(getDropVisible(), 2, 5);
+      table.add(getInputLocker(), 2, 6);
+      table.add(getDropdownFamilyStatus(), 2, 7);
+      table.add(getDropCatalogue(), 2, 8);
+      table.add(link, 2, 8);
+    }
+
+    BorderTable hTable = new BorderTable();
+    hTable.add(table);
+    return hTable;
+  }
+
+  public void setVariables(ModuleInfo modinfo) {
+    inputMemberNumberValue = getValue(modinfo,inputMemberNumberName);
+    dropMemberShipTypeValue = getValue(modinfo,dropMemberShipTypeName);
+    dropNumberOfPaimentsValue = getValue(modinfo,dropNumberOfPaimentsName);
+    inputLockerValue = getValue(modinfo,inputLockerName);
+    dateInputFirstPaydayValue = getDateFromInput(modinfo,dateInputFirstPaydayName);
+    areaCommentValue = getValue(modinfo,areaCommentName);
+    dropVisibleValue = getValue(modinfo,dropVisibleName);
+    dropPaymentTypesValue = getValue(modinfo,dropPaymentTypesName);
+    dropCatalogueValue = getValue(modinfo,dropCatalogueName);
+    dropActiveValue = getValue(modinfo,dropActiveName);
+    dropFamilyStatusValue = getValue(modinfo,dropFamilyStatusName);
+    setEntity();
   }
 
   private void setEntity() {
-      if (! isInvalid(dropNumberOfPaimentsValue)) {
-          if(isDigitOnly(dropNumberOfPaimentsValue))
-              member.setPreferredInstallmentNr(new Integer(dropNumberOfPaimentsValue));
+    if (! isInvalid(dropNumberOfPaimentsValue)) {
+        if(isDigitOnly(dropNumberOfPaimentsValue))
+            eUMI.setPreferredInstallmentNr(new Integer(dropNumberOfPaimentsValue));
+    }
+    if(inputMemberNumberValue != null){
+      try {
+        int number = Integer.parseInt(inputMemberNumberValue);
+        eUMI.setMemberNumber(number);
       }
-      if (inputLockerValue != null) {
-          member.setLockerNumber(inputLockerValue);
+      catch (NumberFormatException ex) {
+        System.err.println("membernumber not integer:");
+        ex.printStackTrace();
       }
-      if (dateInputFirstPaydayValue != null) {
-          member.setFirstInstallmentDate(dateInputFirstPaydayValue);
-      }
-      /*if (! isInvalid(areaCommentValue)) {
-          member.setComment(areaCommentValue);
-      }*/
-      if (! isInvalid(dropVisibleValue)) {
-          if(dropVisibleValue.equalsIgnoreCase("Y"))
-              member.setVisible(true);
-          else
-              member.setVisible(false);
-      }
-      if (! isInvalid(dropPaymentTypesValue)) {
-          member.setPaymentTypeID(new Integer(dropPaymentTypesValue));
-      }
-      if(! isInvalid(dropCatalogueValue)) {
-          member.setPriceCatalogueID(Integer.parseInt(dropCatalogueValue));
-      }
-      member.setMemberStatus(dropActiveValue);
-      member.setFamilyStatus(dropFamilyStatusValue);
 
-  }
+    }
+    if (inputLockerValue != null) {
+        eUMI.setLockerNumber(inputLockerValue);
+    }
+    if (dateInputFirstPaydayValue != null) {
+        eUMI.setFirstInstallmentDate(dateInputFirstPaydayValue);
+    }
+    /*if (! isInvalid(areaCommentValue)) {
+        member.setComment(areaCommentValue);
+    }*/
+    if (! isInvalid(dropVisibleValue)) {
+        if(dropVisibleValue.equalsIgnoreCase("Y"))
+            eUMI.setVisible(true);
+        else
+            eUMI.setVisible(false);
+    }
+    if (! isInvalid(dropPaymentTypesValue)) {
+        eUMI.setPaymentTypeID(new Integer(dropPaymentTypesValue));
+    }
+    if(! isInvalid(dropCatalogueValue)) {
+        eUMI.setPriceCatalogueID(Integer.parseInt(dropCatalogueValue));
+    }
+    eUMI.setMembershipType( dropMemberShipTypeValue);
+    eUMI.setMemberStatus(dropActiveValue);
+    eUMI.setFamilyStatus(dropFamilyStatusValue);
 
-  public boolean areAllFieldsEmpty() {
-      return (getEmptyFields().size() == 7);
   }
 
   public DropdownMenu paymentTypeDrop(String name, String selected)throws java.sql.SQLException {
-	DropdownMenu drp = new DropdownMenu(name);
-	PaymentType type = new PaymentType();
-        PaymentType[] types = (PaymentType[]) type.findAll();
+    DropdownMenu drp = new DropdownMenu(name);
+    PaymentType type = new PaymentType();
+    PaymentType[] types = (PaymentType[]) type.findAll();
 
-        for( int i=0;i<types.length;i++){
-            drp.addMenuElement(types[i].getID(),types[i].getName());
-        }
-        drp.setSelectedElement(selected);
-	return drp;
+    for( int i=0;i<types.length;i++){
+      String sname = types[i].getName();
+
+      if(sname.length() > 5)
+        sname = sname.substring(0,5);
+      drp.addMenuElement(types[i].getID(),sname);
+    }
+    drp.setSelectedElement(selected);
+    return drp;
   }
 
   public DropdownMenu catalogueDrop(String name, String selected)throws java.sql.SQLException {
-	if(selected.equals("-1"))
-            selected = "0";
-        DropdownMenu drp = new DropdownMenu( name);
-        drp.addMenuElement(0, "Enginn sér gjaldflokkur er valinn");
-        List list = Tariffer.getExtraCatalogList(String.valueOf(member.getUnionID()));
-        if(list != null) {
-            ListIterator iter = list.listIterator();
-            PriceCatalogue cate = null;
-
-            while(iter.hasNext()) {
-                cate = (PriceCatalogue) iter.next();
-                drp.addMenuElement(cate.getID(), cate.getName());
-            }
-            drp.setSelectedElement(selected);
-        }
-	return drp;
+      if(selected.equals("-1"))
+          selected = "0";
+      DropdownMenu drp = new DropdownMenu( name);
+      drp.addMenuElement(0, "-----");
+      List list = Tariffer.getExtraCatalogList(String.valueOf(this.eUMI.getUnionID()));
+      if(list != null) {
+          ListIterator iter = list.listIterator();
+          PriceCatalogue cate = null;
+          String sname;
+          while(iter.hasNext()) {
+              cate = (PriceCatalogue) iter.next();
+              sname = cate.getName();
+              if(sname.length() > 15)
+                sname = sname.substring(0,15)+"..";
+              drp.addMenuElement(cate.getID(), sname);
+          }
+          drp.setSelectedElement(selected);
+      }
+      return drp;
   }
 
-  public DropdownMenu numberOfPaymentDrop(String name, String selected)throws java.sql.SQLException {
-
-        DropdownMenu drp = new DropdownMenu( name);
-        drp.addMenuElement(0, "Óskilgreint");
-
-        for(int i = 1; i < 13; i++) {
-            drp.addMenuElement(i, String.valueOf(i));
-        }
-        drp.setSelectedElement(selected);
-	return drp;
+  public DropdownMenu numberOfPaymentDrop(String name, String selected) {
+    DropdownMenu drp = new DropdownMenu( name);
+    drp.addMenuElement(0, "--");
+    for(int i = 1; i < 13; i++) {
+        drp.addMenuElement(i, String.valueOf(i));
+    }
+    drp.setSelectedElement(selected);
+    return drp;
   }
 
+  public DropdownMenu mbshiptypeDropdown(String name,String selected){
+    DropdownMenu drp = new DropdownMenu(name);
+    drp.addMenuElement("main","Aðalkl.");
+    drp.addMenuElement("sub","Aukakl.");
+    drp.setSelectedElement(selected);
+    return drp;
+  }
 
   public DropdownMenu activeDropdown(String name, String selected) {
-	DropdownMenu drp = new DropdownMenu(name);
-	drp.addMenuElement("a", "Virkur meðlimur");
-	drp.addMenuElement("i", "Óvirkur meðlimur");
-        drp.addMenuElement("w", "Í bið");
-        drp.addMenuElement("q", "Hættur");
-        drp.addMenuElement("d", "Látinn");
-        drp.setSelectedElement(selected);
-	return drp;
+    DropdownMenu drp = new DropdownMenu(name);
+    drp.addMenuElement("A", "Virkur");
+    drp.addMenuElement("I", "Óvirkur");
+    drp.addMenuElement("W", "Í bið");
+    drp.addMenuElement("Q", "Hættur");
+    drp.addMenuElement("D", "Látinn");
+    drp.setSelectedElement(selected);
+    return drp;
   }
 
   public DropdownMenu familyStatusDropdown(String name, String selected) {
-	DropdownMenu drp = new DropdownMenu(name);
-	drp.addMenuElement("höfuð", "Höfuð");
-	drp.addMenuElement("maki", "Maki");
-        drp.addMenuElement("barn", "barn");
-        drp.setSelectedElement(selected);
-	return drp;
+    DropdownMenu drp = new DropdownMenu(name);
+    drp.addMenuElement("head", "Höfuð");
+    drp.addMenuElement("partner", "Maki");
+    drp.addMenuElement("child", "Barn");
+    drp.setSelectedElement(selected);
+    return drp;
   }
 
   public DropdownMenu visibleDropdown(String name, String selected) {
-	DropdownMenu drp = new DropdownMenu(name);
-	drp.addMenuElement("Y", "Sjást á vef");
-	drp.addMenuElement("N", "Ekki sjást á vef");
-        drp.setSelectedElement(selected);
-	return drp;
+    DropdownMenu drp = new DropdownMenu(name);
+    drp.addMenuElement("Y", "Sjást á vef");
+    drp.addMenuElement("N", "Ekki sjást á vef");
+    drp.setSelectedElement(selected);
+    return drp;
   }
-
-
 }

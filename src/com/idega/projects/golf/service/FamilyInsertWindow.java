@@ -32,7 +32,8 @@ public class FamilyInsertWindow extends com.idega.jmodule.object.interfaceobject
   private static final String NAME_AND_MIDDLE = "2";
   private static final String SOSIAL_SEC_NUM = "3";
   private static final String ALL = "4";
-  private final String SUBMIT_PARAM_NAME = "Cmd";
+  private final String STORE_NAME = "STOREFAMILY";
+  private final String FIND_NAME = "FINDFAMILY";
   private final String STORE = "store";
   private final String FIND = "find";
 
@@ -51,7 +52,7 @@ public class FamilyInsertWindow extends com.idega.jmodule.object.interfaceobject
   private String findName = "familyFinder";
 
 
-  private String choiseName = "";
+  private String choiseName = "keyToSearch";
   private String choiseValue;
 
 
@@ -86,69 +87,88 @@ public class FamilyInsertWindow extends com.idega.jmodule.object.interfaceobject
 
   public Form getInputTable(ModuleInfo modinfo){
       Form form = new Form();
+      form.setMethod("get");
       try {
 
 
-          String strCommand = modinfo.getRequest().getParameter(SUBMIT_PARAM_NAME);
+        String strStore = modinfo.getRequest().getParameter(STORE_NAME+".x");
+        String strFind = modinfo.getRequest().getParameter(FIND_NAME+".x");
+
+        BorderTable hTable = new BorderTable();
+
+        Table table = new Table(1, 6);
+        table.mergeCells(1, 1, 2, 1);
+        table.add(choise, 1, 3);
+        table.add(inputFind, 1, 3);
+
+        Table buttonTable = new Table(2,1);
+        buttonTable.setCellpadding(0);
+        buttonTable.setCellspacing(0);
 
 
+        table.add(new SubmitButton(new Image("/pics/formtakks/finna.gif"), FIND_NAME, "findval"), 1, 4);
 
-          HeaderTable hTable = new HeaderTable();
-          hTable.setHeaderText(headerText);
+        buttonTable.add(new SubmitButton(new Image("/pics/formtakks/skra.gif"), STORE_NAME, "storeval"), 1, 1);
+        buttonTable.add(new CloseButton(new Image("/pics/formtakks/loka.gif")), 2, 1);
 
-          Table table = new Table(1, 6);
-          table.mergeCells(1, 1, 2, 1);
-          table.add(choise, 1, 3);
-          table.add(inputFind, 1, 3);
-          table.add(new SubmitButton("Leita", SUBMIT_PARAM_NAME, FIND), 1, 4);
-          table.add(new CloseButton("Loka"), 1, 6);
-          table.add(new SubmitButton("Skrá", SUBMIT_PARAM_NAME, STORE), 1, 6);
+        table.add(buttonTable, 1, 6);
+        if(strStore != null) {
+          store(modinfo);
+          close();
+          setParentToReload();
+        }
+        else {
+          if(strFind != null) {
+            setVariables(modinfo);
+            int numRecords = 0;
+            List l = find(findValue, choiseValue);
 
-          if((strCommand != null) && (strCommand.equals(STORE))) {
+            System.err.println("\n\nVilla i getInputTable\n\n"+findValue+" hitttt "+ choiseValue);
+            //List l = find("Agnar Ármannsson", "1");
+            setSelectionBox(l);
 
-              store(modinfo);
-              close();
-              setParentToReload();
+
+            if(l != null) {
+               numRecords = l.size();
+            }
+            table.add("Fjöldi svara: "+numRecords, 1, 1);
+            table.add(selectFamily, 1, 5);
           }
-          else {
-              if((strCommand != null) && (strCommand.equals(FIND))) {
-                  setVariables(modinfo);
-                  int numRecords = 0;
-                  List l = find(findValue, choiseValue);
-
-                  System.err.println("\n\nVilla i getInputTable\n\n"+findValue+" hitttt "+ choiseValue);
-                  //List l = find("Agnar Ármannsson", "1");
-                  setSelectionBox(l);
-
-
-                  if(l != null) {
-                     numRecords = l.size();
-                  }
-                  table.add("Fjöldi svara: "+numRecords, 1, 1);
-                  table.add(selectFamily, 1, 5);
-              }
-          }
-          hTable.add(table);
-          form.add(hTable);
-      }
-      catch(Exception e) {
-          System.err.println("\n\nVilla i getInputTable\n\n");
-          e.printStackTrace();
-      }
-      return form;
+        }
+        hTable.add(table);
+        form.add(hTable);
+    }
+    catch(Exception e) {
+        System.err.println("\n\nVilla i getInputTable\n\n");
+        e.printStackTrace();
+    }
+    return form;
   }
 
-  public void store(ModuleInfo modinfo)throws SQLException, IOException {
+
+  private void store(ModuleInfo modinfo) {
       selectionFamilyValues = modinfo.getRequest().getParameterValues(selectionFamilyName);
+      String familyId = selectionFamilyValues[0];
+      int nOldFamilyID = this.uniMemInfo.getFamilyId();
 
-      if(selectionFamilyValues != null && selectionFamilyValues.length > 0) {
-          System.err.println("\n\nselectionFamilyValues: "+selectionFamilyValues[0]);
+      try {
+          if(selectionFamilyValues != null && selectionFamilyValues.length > 0) {
+          System.err.println("\n\nNýtt Fjölskyldu id: "+familyId);
+          System.err.println("Member id: "+this.uniMemInfo.getMemberID()+"\n");
+          System.err.println("Union id: "+this.uniMemInfo.getUnionID()+"\n");
+          System.err.println("Gamalt Fjölskyldu id: "+nOldFamilyID+"\n");
 
-          uniMemInfo.setFamilyId(Integer.parseInt(selectionFamilyValues[0]));
-          uniMemInfo.update();
+            if(! familyId.equals("")) {
+                uniMemInfo.setFamilyId(new Integer(familyId));
+                uniMemInfo.update();
+            }
+          }
+          System.err.println(" Fjölskyldu id nu: "+nOldFamilyID+"\n");
       }
-
-
+      catch(SQLException e) {
+          System.err.println("Villa í store!! ... !!\n");
+          System.err.println(e.getMessage());
+      }
   }
 
   public String getValue(String attribute, ModuleInfo modinfo) {
@@ -156,86 +176,86 @@ public class FamilyInsertWindow extends com.idega.jmodule.object.interfaceobject
   }
 
   private DropdownMenu getChoises(String name) {
-      DropdownMenu drp = new DropdownMenu(name);
-      drp.addMenuElement(NAME, "Fornafn/Fullt nafn");
-      drp.addMenuElement(NAME_AND_MIDDLE, "Fornafn og millinafn");
-      drp.addMenuElement(SOSIAL_SEC_NUM, "Kennitala");
-      drp.addMenuElement(ALL, "Allir");
-      return drp;
+    DropdownMenu drp = new DropdownMenu(name);
+    drp.addMenuElement(NAME, "Fornafn/Fullt nafn");
+    drp.addMenuElement(NAME_AND_MIDDLE, "Fornafn og millinafn");
+    drp.addMenuElement(SOSIAL_SEC_NUM, "Kennitala");
+    drp.addMenuElement(ALL, "Allir");
+    return drp;
   }
 
   private List find(String toFind, String cmd) {
-      toFind = toFind.replace('*', '%');
-      Name name = new Name(toFind);
+    toFind = toFind.replace('*', '%');
+    Name name = new Name(toFind);
 
-      List list = null;
+    List list = null;
 
-      System.err.println("\n\n nafn \n\n"+name.getFirstName()+name.getMiddleName()+name.getLastName());
+    System.err.println("\n\n nafn \n\n"+name.getFirstName()+name.getMiddleName()+name.getLastName());
 
-      try {
-          if ((name.getFirstName().equals("")) && (! cmd.equals(ALL))) {
-              return list;
-          }
+    try {
+        if ((name.getFirstName().equals("")) && (! cmd.equals(ALL))) {
+            return list;
+        }
 
-          if(cmd.equals(SOSIAL_SEC_NUM)) {
-              //System.err.println("\n\n kennitala \n\n");
-              list = EntityFinder.findAll(new UnionMemberInfo(), "select union_member_info.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.SOCIAL_SECURITY_NUMBER like '"+name.getFirstName()+"'");
-          }
-          else if(cmd.equals(ALL)) {
-              list = EntityFinder.findAll(new UnionMemberInfo(), "select union_member_info.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" order by member.first_name");
-          }
+        if(cmd.equals(SOSIAL_SEC_NUM)) {
+            //System.err.println("\n\n kennitala \n\n");
+            list = EntityFinder.findAll(new UnionMemberInfo(), "select union_member_info.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.SOCIAL_SECURITY_NUMBER like '"+name.getFirstName()+"'");
+        }
+        else if(cmd.equals(ALL)) {
+            list = EntityFinder.findAll(new UnionMemberInfo(), "select union_member_info.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" order by member.first_name");
+        }
 
-          else if (! name.getMiddleName().equals("")) {
-              if (cmd.equals(this.NAME)) {
-                  //System.err.println("\n\n öll  \n\n");
-                  //System.err.println(" \n\n SQL ER: select member.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.first_name = "+name.getFirstName()+" and member.middle_name = "+name.getMiddleName()+" and member.last_name = "+name.getLastName());
-                  list = EntityFinder.findAll(new UnionMemberInfo(), "select union_member_info.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.first_name like '"+name.getFirstName()+"' and member.middle_name like '"+name.getMiddleName()+"' and member.last_name like '"+name.getLastName()+"'");
-              }
-              else { // if (cmd.equals(this.NAME_AND_MIDDLE))
-                  //System.err.println("\n\n nafn og millinafn \n\n");
-                  list = EntityFinder.findAll(new UnionMemberInfo(), "select union_member_info.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.first_name like '"+name.getFirstName()+"' and member.middle_name like '"+name.getMiddleName()+"'");
-              }
-          }
-          else if (! name.getLastName().equals("")) {
-              //System.err.println("\n\n milli og endanafn \n\n");
-              list = EntityFinder.findAll(new UnionMemberInfo(), "select union_member_info.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.first_name like '"+name.getFirstName()+"' and member.last_name like '"+name.getLastName()+"'");
-          }
-          else {
-              //System.err.println("\n\n 1 nafn \n\n");
-              System.err.println(" \n\n SQL ER: select member.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.first_name = '"+name.getFirstName()+"'");
-              list = EntityFinder.findAll(new UnionMemberInfo(), "select union_member_info.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.first_name like '"+name.getFirstName()+"'");
+        else if (! name.getMiddleName().equals("")) {
+            if (cmd.equals(this.NAME)) {
+                //System.err.println("\n\n öll  \n\n");
+                //System.err.println(" \n\n SQL ER: select member.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.first_name = "+name.getFirstName()+" and member.middle_name = "+name.getMiddleName()+" and member.last_name = "+name.getLastName());
+                list = EntityFinder.findAll(new UnionMemberInfo(), "select union_member_info.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.first_name like '"+name.getFirstName()+"' and member.middle_name like '"+name.getMiddleName()+"' and member.last_name like '"+name.getLastName()+"'");
+            }
+            else { // if (cmd.equals(this.NAME_AND_MIDDLE))
+                //System.err.println("\n\n nafn og millinafn \n\n");
+                list = EntityFinder.findAll(new UnionMemberInfo(), "select union_member_info.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.first_name like '"+name.getFirstName()+"' and member.middle_name like '"+name.getMiddleName()+"'");
+            }
+        }
+        else if (! name.getLastName().equals("")) {
+            //System.err.println("\n\n milli og endanafn \n\n");
+            list = EntityFinder.findAll(new UnionMemberInfo(), "select union_member_info.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.first_name like '"+name.getFirstName()+"' and member.last_name like '"+name.getLastName()+"'");
+        }
+        else {
+          //System.err.println("\n\n 1 nafn \n\n");
+          System.err.println(" \n\n SQL ER: select member.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.first_name = '"+name.getFirstName()+"'");
+          list = EntityFinder.findAll(new UnionMemberInfo(), "select union_member_info.* from member, union_member_info where member.member_id = union_member_info.member_id and union_member_info.union_id = "+unionId+" and member.first_name like '"+name.getFirstName()+"'");
 
-          }
-      }
-      catch(Exception e) {
-          System.err.println("Villa i FamilyWinow "+e.getMessage());
-          e.printStackTrace();
-          return list;
-      }
-
+        }
+    }
+    catch(Exception e) {
+      System.err.println("Villa i FamilyWinow "+e.getMessage());
+      e.printStackTrace();
       return list;
+    }
+
+    return list;
   }
 
   private void setSelectionBox(List list)throws Exception {
-      selectFamily = new DropdownMenu(selectionFamilyName);
-      //selectFamily.setHeight(8);
-      selectFamily.setAttribute("size", "8");
-      Member mem = null;
-      UnionMemberInfo uni = null;
+    selectFamily = new DropdownMenu(selectionFamilyName);
+    //selectFamily.setHeight(8);
+    selectFamily.setAttribute("size", "8");
+    Member mem = null;
+    UnionMemberInfo uni = null;
 
 
-      if((list == null) || list.isEmpty()) {
-          selectFamily.addMenuElement("", "Ekkert fannst ...");
-      }
-      else if(list != null) {
-          for (int i = 0; i < list.size(); i++) {
-              uni = (UnionMemberInfo) list.get(i);
-              mem = new Member(uni.getMemberID());
-              if( mem!=null){
-                  selectFamily.addMenuElement(uni.getFamilyId(), mem.getName());
-              }
-          }
-      }
+    if((list == null) || list.isEmpty()) {
+        selectFamily.addMenuElement("", "Leit bar ekki árangur");
+    }
+    else if(list != null) {
+        for (int i = 0; i < list.size(); i++) {
+            uni = (UnionMemberInfo) list.get(i);
+            mem = new Member(uni.getMemberID());
+            if( mem!=null){
+                selectFamily.addMenuElement(uni.getFamilyId(), mem.getName());
+            }
+        }
+    }
   }
 
 }

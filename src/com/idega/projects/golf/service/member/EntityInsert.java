@@ -2,6 +2,8 @@ package com.idega.projects.golf.service.member;
 
 
 import com.idega.jmodule.object.*;
+import com.idega.jmodule.object.textObject.*;
+import com.idega.jmodule.object.interfaceobject.InterfaceObject;
 import com.idega.util.*;
 import java.util.*;
 import java.sql.*;
@@ -19,39 +21,21 @@ import java.io.*;
 
 public abstract class EntityInsert {
 
-  protected String errorRedirect;
-  protected String sessionId;
-  protected ModuleInfo modinfo;
-  protected boolean isUpdate;
-  protected String headerText = "";
-  private int entityID;
+  protected boolean bUpdate;
+  public String styleAttribute = "font-size: 8pt";
+  private int fontSize = 1;
+  private String fontColor = "#336660";
 
-  public EntityInsert(ModuleInfo modinfo) {
-      this.modinfo = modinfo;
-      errorRedirect = "membererror.jsp";
-      sessionId = "error";
-      isUpdate = false;
+  public EntityInsert() {
+    bUpdate = false;
   }
 
-  public EntityInsert(ModuleInfo modinfo, int entityId) {
-      this.modinfo = modinfo;
-      errorRedirect = "membererror.jsp";
-      sessionId = "error";
-      isUpdate = true;
-      entityID = entityId;
-  }
-
-
-  public abstract boolean areAllFieldsEmpty();
-  public abstract boolean areSomeFieldsEmpty();
-  public abstract boolean areNeetedFieldsEmpty();
-  //public abstract String[] getEmptyFields();
-  //public abstract String[] getNeetedEmptyFields();
+  public abstract boolean areSomeFieldsEmpty(ModuleInfo modinfo);
+  public abstract boolean areNeededFieldsEmpty(ModuleInfo modinfo);
   public abstract Vector getEmptyFields();
-  public abstract Vector getNeetedEmptyFields();
- // public abstract void showInputForm()throws SQLException, IOException;
-  public abstract void store()throws SQLException, IOException;
-  public abstract void setVariables();
+  public abstract Vector getNeededEmptyFields(ModuleInfo modinfo);
+  public abstract void store(ModuleInfo modinfo)throws SQLException, IOException;
+  public abstract void setVariables(ModuleInfo modinfo);
 
   public boolean isDateInputValid(String inputName) {
       if(inputName+"_day" == null || (inputName+"_day").equals(""))
@@ -75,37 +59,28 @@ public abstract class EntityInsert {
       return true;
   }
 
-  public boolean isEmpty(String inputName) {
-      return (getValue(inputName) == null || getValue(inputName).equals(""));
+  public boolean isEmpty(ModuleInfo modinfo,String inputName) {
+      return (getValue(modinfo,inputName) == null || getValue(modinfo,inputName).equals(""));
   }
 
-  public String getValue(String attribute) {
+  public String getValue(ModuleInfo modinfo,String attribute) {
       return modinfo.getParameter(attribute);
   }
 
-  public void setErrorRedirectPageAndSessionID(String redirectPage, String sessionID) {
-      this.errorRedirect = redirectPage;
-      this.sessionId = sessionID;
-  }
-
   protected boolean isUpdate() {
-      return isUpdate;
+      return bUpdate;
   }
 
-  protected java.sql.Date getDateFromInput(String inputName) {
-      String strDay = getValue(inputName+"_day");
-      String strMonth = getValue(inputName+"_month");
-      String strYear = getValue(inputName+"_year");
+  protected java.sql.Date getDateFromInput(ModuleInfo modinfo,String inputName) {
+      String strDay = getValue(modinfo,inputName+"_day");
+      String strMonth = getValue(modinfo,inputName+"_month");
+      String strYear = getValue(modinfo,inputName+"_year");
       if(strDay == null || strMonth == null || strYear == null ||
           strDay.equals("") || strMonth.equals("") || strYear.equals("")) {
           return null;
       }
       idegaTimestamp stamp = new idegaTimestamp(strDay, strMonth, strYear);
       return stamp.getSQLDate();
-  }
-
-  public void setHeaderText(String text) {
-      this.headerText = text;
   }
 
   public boolean isInvalid(String str) {
@@ -120,11 +95,19 @@ public abstract class EntityInsert {
       return vec;
   }
 
-  public void forward(String forwardPage)throws IOException
-   {
-      modinfo.getResponse().sendRedirect(forwardPage);
-   }
-
-
-
+   public Text formatText(String s){
+    Text T= new Text();
+    if(s!=null){
+      T= new Text(s);
+      T.setFontColor(this.fontColor);
+      T.setFontSize(this.fontSize);
+    }
+    return T;
+  }
+  public Text formatText(int i){
+    return formatText(String.valueOf(i));
+  }
+  protected void setStyle(InterfaceObject O){
+    O.setAttribute("style",this.styleAttribute);
+  }
 }

@@ -26,7 +26,7 @@ import com.idega.data.*;
 
 public class MemberInsert extends EntityInsert {
 
-  private Member member;
+  private Member eMember;
 
   private TextInput inputSocial;
   private TextInput inputName;
@@ -48,67 +48,72 @@ public class MemberInsert extends EntityInsert {
   private String inputJobValue;
   private String inputWorkPlaceValue;
   private String dropGenderValue;
-  private String headerText = "Meðlimur";
 
   public boolean debug = true;
 
-  public MemberInsert(ModuleInfo modinfo) throws java.sql.SQLException{
-      super(modinfo);
-      isUpdate = false;
-
-      member = new Member();
-      if(debug) {
-          member.setDefaultValues();
-          member.setCardId(1);
-      }
-      inputSocial = new TextInput(inputSocialName);
-      inputName = new TextInput(inputNameName);
-      inputName.setAsNotEmpty("Vinsamelgast settu nafn");
-      inputSocial.setAsNotEmpty("Vinsamelgast settu Kennitölu");
-      inputEmail = new TextInput(inputEmailName);
-      inputJob = new TextInput(inputJobName);
-      inputWorkPlace = new TextInput(inputWorkPlaceName);
-      dropGender = genderDrop(dropGenderName, "m");
-      //setVariables();
+  public MemberInsert() throws java.sql.SQLException{
+    bUpdate = false;
+    eMember = new Member();
+    if(debug) {
+        eMember.setDefaultValues();
+        eMember.setCardId(1);
+    }
+    inputSocial = new TextInput(inputSocialName);
+    inputName = new TextInput(inputNameName);
+    inputName.setAsNotEmpty("Vinsamelgast settu nafn");
+    inputSocial.setAsNotEmpty("Vinsamelgast settu Kennitölu");
+    inputEmail = new TextInput(inputEmailName);
+    inputJob = new TextInput(inputJobName);
+    inputWorkPlace = new TextInput(inputWorkPlaceName);
+    dropGender = genderDrop(dropGenderName, "M");
+    init();
   }
 
-  public MemberInsert(ModuleInfo modinfo, int memberId)throws SQLException {
-      super(modinfo, memberId);
-      isUpdate = true;
-      member = new Member(memberId);
+  public MemberInsert(Member eMember)throws SQLException {
+    bUpdate = true;
+    this.eMember = eMember;
 
-      if(member.getSocialSecurityNumber() != null)
-          inputSocial = new TextInput(inputSocialName, member.getSocialSecurityNumber());
-      else
-          inputSocial = new TextInput(inputSocialName);
-      if(member.getName() != null)
-          inputName = new TextInput(inputNameName, member.getName());
-      else
-          inputName = new TextInput(inputNameName);
-      if(member.getEmail() != null)
-          inputEmail = new TextInput(inputEmailName, member.getEmail());
-      else
-          inputEmail = new TextInput(inputEmailName);
+    if(eMember.getSocialSecurityNumber() != null)
+        inputSocial = new TextInput(inputSocialName, eMember.getSocialSecurityNumber());
+    else
+        inputSocial = new TextInput(inputSocialName);
+    if(eMember.getName() != null)
+        inputName = new TextInput(inputNameName, eMember.getName());
+    else
+        inputName = new TextInput(inputNameName);
+    if(eMember.getEmail() != null)
+        inputEmail = new TextInput(inputEmailName, eMember.getEmail());
+    else
+        inputEmail = new TextInput(inputEmailName);
 
-      if(member.getJob() != null)
-          inputJob = new TextInput(inputJobName, member.getJob());
-      else
-          inputJob = new TextInput(inputJobName);
-      if(member.getWorkPlace() != null)
-          inputWorkPlace = new TextInput(inputWorkPlaceName, member.getWorkPlace());
-      else
-          inputWorkPlace = new TextInput(inputWorkPlaceName);
+    if(eMember.getJob() != null)
+        inputJob = new TextInput(inputJobName, eMember.getJob());
+    else
+        inputJob = new TextInput(inputJobName);
+    if(eMember.getWorkPlace() != null)
+        inputWorkPlace = new TextInput(inputWorkPlaceName, eMember.getWorkPlace());
+    else
+        inputWorkPlace = new TextInput(inputWorkPlaceName);
 
-      if(member.getGender() != null)
-          dropGender = genderDrop(dropGenderName, member.getGender());
-      else
-          dropGender = genderDrop(dropGenderName, "m");
+    if(eMember.getGender() != null)
+        dropGender = genderDrop(dropGenderName, eMember.getGender());
+    else
+        dropGender = genderDrop(dropGenderName, "M");
 
-      inputName.setAsNotEmpty("Vinsamelgast settu nafn");
-
-      //setVariables();
+    inputName.setAsNotEmpty("Vinsamelgast settu nafn");
+    init();
   }
 
+  private void init(){
+    setStyle(inputSocial);
+    setStyle(inputName);
+    setStyle(inputName);
+    setStyle(inputSocial);
+    setStyle(inputEmail);
+    setStyle(inputJob);
+    setStyle(inputWorkPlace);
+    setStyle(dropGender);
+  }
 
   public TextInput getInputSocialSecurityNumber() {
       return this.inputSocial;
@@ -167,8 +172,8 @@ public class MemberInsert extends EntityInsert {
       return vec;
   }
 
-  public Vector getNeetedEmptyFields() {
-    setVariables();
+  public Vector getNeededEmptyFields(ModuleInfo modinfo) {
+    setVariables(modinfo);
     Vector vec = new Vector();
 
       if ( isInvalid(inputSocialValue)) {
@@ -187,56 +192,54 @@ public class MemberInsert extends EntityInsert {
       return vec;
   }
 
-  public boolean areSomeFieldsEmpty() {
+  public boolean areSomeFieldsEmpty(ModuleInfo modinfo) {
       return (getEmptyFields().size() > 0);
   }
 
   public Member getMember() {
-      return this.member;
+      return this.eMember;
   }
 
-  public boolean areNeetedFieldsEmpty() {
-    return (getNeetedEmptyFields().size() > 0);
+  public boolean areNeededFieldsEmpty(ModuleInfo modinfo) {
+    return (getNeededEmptyFields(modinfo).size() > 0);
   }
 
   //precondition Have to call getNetedEmptyFields() !!!
-  public void store() throws java.io.IOException, java.sql.SQLException {
-      if(isUpdate())
-          member.update();
-      else
-          member.insert();
+  public void store(ModuleInfo modinfo) throws java.io.IOException, java.sql.SQLException {
+    if(isUpdate())
+      eMember.update();
+    else
+      eMember.insert();
   }
 
-  public HeaderTable getInputTable() {
-      HeaderTable hTable = new HeaderTable();
-      hTable.setHeaderText(headerText);
-      Table table = new Table(2, 6);
-      hTable.add(table);
+  public BorderTable getInputTable() {
+    BorderTable hTable = new BorderTable();
+    Table table = new Table(2, 6);
+    hTable.add(table);
 
-      table.add("Nafn", 1, 1);
-      table.add("Kennitala", 1, 2);
-      table.add("Kyn", 1, 3);
-      table.add("Netfang", 1, 4);
-      table.add("Starfsheiti", 1, 5);
-      table.add("Vinnustaður", 1, 6);
-      table.add(getInputMemberName(), 2, 1);
-      table.add(getInputSocialSecurityNumber(), 2, 2);
-      table.add(getDropdownGender(), 2, 3);
-      table.add(getInputEmail(), 2, 4);
-      table.add(getInputJob(), 2, 5);
-      table.add(getInputWorkPlace(), 2, 6);
+    table.add(formatText("Nafn"), 1, 1);
+    table.add(formatText("Kennitala"), 1, 2);
+    table.add(formatText("Kyn"), 1, 3);
+    table.add(formatText("Netfang"), 1, 4);
+    table.add(formatText("Starf"), 1, 5);
+    table.add(formatText("Vinna"), 1, 6);
+    table.add(getInputMemberName(), 2, 1);
+    table.add(getInputSocialSecurityNumber(), 2, 2);
+    table.add(getDropdownGender(), 2, 3);
+    table.add(getInputEmail(), 2, 4);
+    table.add(getInputJob(), 2, 5);
+    table.add(getInputWorkPlace(), 2, 6);
 
-      return hTable;
+    return hTable;
   }
 
-
-  public void setVariables() {
-      inputSocialValue = getValue(inputSocialName);
-      inputNameValue = getValue(inputNameName);
-      inputEmailValue = getValue(inputEmailName);
-      inputJobValue = getValue(inputJobName);
-      inputWorkPlaceValue = getValue(inputWorkPlaceName);
-      dropGenderValue = getValue(dropGenderName);
+  public void setVariables(ModuleInfo modinfo) {
+      inputSocialValue = getValue(modinfo,inputSocialName);
+      inputNameValue = getValue(modinfo,inputNameName);
+      inputEmailValue = getValue(modinfo,inputEmailName);
+      inputJobValue = getValue(modinfo,inputJobName);
+      inputWorkPlaceValue = getValue(modinfo,inputWorkPlaceName);
+      dropGenderValue = getValue(modinfo,dropGenderName);
       setEntity();
   }
 
@@ -244,38 +247,35 @@ public class MemberInsert extends EntityInsert {
 
       if (! isInvalid(inputSocialValue)) {
           if(ErrorChecker.isValidSosialSecurityNumber(inputSocialValue)) {
-              member.setSocialSecurityNumber(inputSocialValue);
-              member.setDateOfBirth(DateManipulator.getDateSQLFromSocialSecurityNumber(inputSocialValue));
+              eMember.setSocialSecurityNumber(inputSocialValue);
+              eMember.setDateOfBirth(DateManipulator.getDateSQLFromSocialSecurityNumber(inputSocialValue));
           }
       }
       if (! isInvalid(inputNameValue)) {
           Name name = new Name(inputNameValue);
-          member.setFirstName(name.getFirstName());
-          member.setMiddleName(name.getMiddleName());
-          member.setLastName(name.getLastName());
+          eMember.setFirstName(name.getFirstName());
+          eMember.setMiddleName(name.getMiddleName());
+          eMember.setLastName(name.getLastName());
       }
       if (inputEmailValue != null) {
-          member.setEmail(inputEmailValue);
+          eMember.setEmail(inputEmailValue);
       }
       if (inputJobValue != null) {
-          member.setJob(inputJobValue);
+          eMember.setJob(inputJobValue);
       }
       if (inputWorkPlaceValue != null) {
-          member.setWorkPlace(inputWorkPlaceValue);
+          eMember.setWorkPlace(inputWorkPlaceValue);
       }
       if (dropGenderValue != null) {
-          member.setGender(dropGenderValue);
+          eMember.setGender(dropGenderValue);
       }
-  }
-  public boolean areAllFieldsEmpty() {
-      return (getEmptyFields().size() == 6);
   }
 
   public DropdownMenu genderDrop(String name, String selected) {
-          DropdownMenu drp = new DropdownMenu(name);
-          drp.addMenuElement("m", "KK");
-          drp.addMenuElement("f", "KVK");
-          drp.setSelectedElement(selected);
-          return drp;
+    DropdownMenu drp = new DropdownMenu(name);
+    drp.addMenuElement("M", "KK");
+    drp.addMenuElement("F", "KVK");
+    drp.setSelectedElement(selected);
+    return drp;
   }
 }

@@ -26,7 +26,7 @@ import com.idega.data.*;
   public class AddressInsert extends EntityInsert{
 
 
-  private Address address;
+  private Address eAddress;
   private TextInput addressInput;
   private DropdownMenu zipDrop;
   private DropdownMenu countryDrop;
@@ -38,87 +38,83 @@ import com.idega.data.*;
   private String addressValue = null;
   private String zipValue = null;
   private String countryValue = null;
+  //private boolean bUpdate = false;
 
-  private String errorRedirect = "membererror.jsp";
-  private String sessionId = "error";
-  private boolean allowEmpty = false;
-
-  public AddressInsert(ModuleInfo modinfo) {
-      super(modinfo);
-      isUpdate = false;
-      address = new Address();
-      addressInput = new TextInput(addressName);
-      countryDrop = countryDropDown(countryName, "1");
-      zipDrop = zipDropDown(zipName, "2");
-      //setVariables();
+  private void init(){
+    setStyle(addressInput);
+    setStyle(countryDrop);
+    setStyle(zipDrop);
   }
 
-  public AddressInsert(ModuleInfo modinfo, String addressInputName, String countryDropDownName, String zipCodeDropDownName) {
-      super(modinfo);
-      isUpdate = false;
-      address = new Address();
-      addressName = addressInputName;
-      countryName = countryDropDownName;
-      zipName = zipCodeDropDownName;
-      addressInput = new TextInput(addressName);
-      countryDrop = countryDropDown(countryName, "1");
-      zipDrop = zipDropDown(zipName, "2");
-      //setVariables();
+  public AddressInsert() {
+    this.bUpdate = false;
+    this.eAddress = new Address();
+    addressInput = new TextInput(addressName);
+    countryDrop = countryDropDown(countryName, "1");
+    zipDrop = zipDropDown(zipName, "2");
+    init();
   }
 
-  public AddressInsert(ModuleInfo modinfo, int addressId)throws java.sql.SQLException {
-      super(modinfo, addressId);
-      isUpdate = true;
-      address = new Address(addressId);
-      if(address.getStreet() != null)
-          addressInput = new TextInput(addressName, address.getStreet());
-      else
-          addressInput = new TextInput(addressName, "");
-      if(address.getCountryId() != -1)
-          countryDrop = countryDropDown(countryName, String.valueOf(address.getCountryId()));
-      else
-          countryDrop = countryDropDown(countryName, "2");
-      zipDrop = zipDropDown(zipName, String.valueOf(address.getZipcodeId()));
-      //setVariables();
+  public AddressInsert( String addressInputName, String countryDropDownName, String zipCodeDropDownName) {
+    this.bUpdate = false;
+    this.eAddress = new Address();
+    addressName = addressInputName;
+    countryName = countryDropDownName;
+    zipName = zipCodeDropDownName;
+    addressInput = new TextInput(addressName);
+    countryDrop = countryDropDown(countryName, "1");
+    zipDrop = zipDropDown(zipName, "2");
+    init();
   }
 
-  public AddressInsert(ModuleInfo modinfo, int addressId, String addressInputName, String countryDropDownName, String zipCodeDropDownName)throws java.sql.SQLException {
-      super(modinfo, addressId);
-      isUpdate = true;
-      address = new Address(addressId);
-      addressName = addressInputName;
-      countryName = countryDropDownName;
-      zipName = zipCodeDropDownName;
-      if(address.getStreet() != null)
-          addressInput = new TextInput(addressName, address.getStreet());
-      else
-          addressInput = new TextInput(addressName, "");
-      if(address.getCountryId() != -1)
-          countryDrop = countryDropDown(countryName, String.valueOf(address.getCountryId()));
-      else
-          countryDrop = countryDropDown(countryName, "2");
-      zipDrop = zipDropDown(zipName, String.valueOf(address.getZipcodeId()));
-      //setVariables();
+  public AddressInsert( Address address)throws java.sql.SQLException {
+    this.eAddress = address;
+    this.bUpdate = true;
+    if(eAddress.getStreet() != null)
+        addressInput = new TextInput(addressName, eAddress.getStreet());
+    else
+        addressInput = new TextInput(addressName, "");
+    if(eAddress.getCountryId() != -1)
+        countryDrop = countryDropDown(countryName, String.valueOf(eAddress.getCountryId()));
+    else
+        countryDrop = countryDropDown(countryName, "2");
+    zipDrop = zipDropDown(zipName, String.valueOf(eAddress.getZipcodeId()));
+    init();
   }
 
+  public AddressInsert(Address address, String addressInputName, String countryDropDownName, String zipCodeDropDownName)throws java.sql.SQLException {
+    this.eAddress = address;
+    this.bUpdate = true;
 
-  public void allowEmpty(boolean allow) {
-      allowEmpty = allow;
+    addressName = addressInputName;
+    countryName = countryDropDownName;
+    zipName = zipCodeDropDownName;
+    if(address.getStreet() != null)
+        addressInput = new TextInput(addressName, address.getStreet());
+    else
+        addressInput = new TextInput(addressName, "");
+    if(address.getCountryId() != -1)
+        countryDrop = countryDropDown(countryName, String.valueOf(address.getCountryId()));
+    else
+        countryDrop = countryDropDown(countryName, "2");
+    zipDrop = zipDropDown(zipName, String.valueOf(address.getZipcodeId()));
+    init();
   }
+
 
   private DropdownMenu countryDropDown(String name, String selected) {
-	DropdownMenu drp = new DropdownMenu(name);
-        Country country = new Country();
-	try {
-            Country[] countryArr = (Country[]) country.findAll();
-            for(int i = 0; i < countryArr.length; i++) {
-                drp.addMenuElement(countryArr[i].getID(), countryArr[i].getName());
-            }
-            drp.setSelectedElement(selected);
-	}catch(Exception e) {
-            e.printStackTrace();
-	}
-	return drp;
+    DropdownMenu drp = new DropdownMenu(name);
+    Country country = new Country();
+    try {
+        Country[] countryArr = (Country[]) country.findAll();
+        for(int i = 0; i < countryArr.length; i++) {
+            drp.addMenuElement(countryArr[i].getID(), countryArr[i].getName());
+        }
+        drp.setSelectedElement(selected);
+    }catch(Exception e) {
+        e.printStackTrace();
+    }
+    return drp;
   }
 
   private DropdownMenu zipDropDown(String name, String selected) {
@@ -137,46 +133,41 @@ import com.idega.data.*;
     return drp;
   }
 
-  public void setVariables() {
-      addressValue = getValue(addressName);
-      zipValue = getValue(zipName);
-      countryValue = getValue(countryName);
+  public void setVariables(ModuleInfo modinfo) {
+      addressValue = getValue(modinfo,addressName);
+      zipValue = getValue(modinfo,zipName);
+      countryValue = getValue(modinfo,countryName);
+
+      addressInput.keepStatusOnAction();
+      zipDrop.keepStatusOnAction();
+      countryDrop.keepStatusOnAction();
 
       if (addressValue  != null) {
-          address.setStreet(addressValue);
+          this.eAddress.setStreet(addressValue);
       }
       if (zipValue  != null) {
-          address.setZipcodeId(new Integer(zipValue));
+          this.eAddress.setZipcodeId(new Integer(zipValue));
       }
       if (countryValue  != null) {
-          address.setCountryId(new Integer(countryValue));
+          this.eAddress.setCountryId(new Integer(countryValue));
       }
   }
 
   public TextInput getInputAddress() {
       return addressInput;
   }
-
   public DropdownMenu getDropCountry() {
       return countryDrop;
   }
-
   public DropdownMenu getDropZipcode() {
       return zipDrop;
   }
-
-  public boolean areSomeFieldsEmpty() {
-      return (isEmpty(addressName) || isEmpty(zipName) || isEmpty(countryName));
+  public boolean areSomeFieldsEmpty(ModuleInfo modinfo) {
+      return (isEmpty(modinfo,addressName) || isEmpty(modinfo,zipName) || isEmpty(modinfo,countryName));
   }
-
-  public boolean areAllFieldsEmpty() {
-      return (isEmpty(addressName) && isEmpty(zipName) && isEmpty(countryName));
+  public boolean areNeededFieldsEmpty(ModuleInfo modinfo) {
+      return isEmpty(modinfo,addressName);
   }
-
-  public boolean areNeetedFieldsEmpty() {
-      return isEmpty(addressName);
-  }
-
   public Vector getEmptyFields() {
       Vector vec = new Vector();
 
@@ -189,56 +180,52 @@ import com.idega.data.*;
       if (isInvalid(zipValue)) {
           vec.addElement("Póstnúmer");
       }
-
       return vec;
   }
 
-  public Vector getNeetedEmptyFields() {
-      setVariables();
+  public Vector getNeededEmptyFields(ModuleInfo modinfo) {
+      setVariables(modinfo);
       Vector vec = new Vector();
 
-      if(allowEmpty == false) {
-          if (isInvalid(addressValue)) {
-              vec.addElement("Heimilisfang");
-          }
+      if (isInvalid(addressValue)) {
+          vec.addElement("Heimilisfang");
       }
 
       return vec;
   }
 
   public Address getAddress () {
-      return this.address;
+      return this.eAddress;
   }
 
-
-  public void store()throws SQLException, IOException {
-
-      PrintWriter out = modinfo.getResponse().getWriter();
-      if(allowEmpty && areNeetedFieldsEmpty()) {
-          return;
-      }
-
-      if(isUpdate)
-          address.update();
-      else
-          address.insert();
-
+  public void store(ModuleInfo modinfo)throws SQLException, IOException {
+    setVariables(modinfo);
+    if(addressValue == null) {
+        return;
+    }
+    if(this.bUpdate)
+        this.eAddress.update();
+    else
+        this.eAddress.insert();
   }
   /** If to link the address to a member*/
-  public void store(Member member)throws SQLException, IOException {
-
-      PrintWriter out = modinfo.getResponse().getWriter();
-      if(allowEmpty && areNeetedFieldsEmpty()) {
-          return;
-      }
-
-      if(isUpdate)
-          address.update();
+  public void store(ModuleInfo modinfo,Member member)throws SQLException, IOException {
+    setVariables(modinfo);
+    if(addressValue == null) {
+        return;
+    }
+    if(this.bUpdate) {
+      if((this.eAddress.getStreet() != null) && (! this.eAddress.getStreet().equals("")))
+        this.eAddress.update();
       else {
-          address.insert();
-          address.addTo(member);
+        this.eAddress.removeFrom(member);
+        this.eAddress.delete();
       }
-
+    }
+    else if((this.eAddress.getStreet() != null) && (! this.eAddress.getStreet().equals("")) ){
+      this.eAddress.insert();
+      this.eAddress.addTo(member);
+    }
   }
-
 }
+
