@@ -11,13 +11,13 @@ import is.idega.idegaweb.member.presentation.UserFamilyTab;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.repository.data.ImplementorRepository;
-import com.idega.user.business.UserConstants;
 import com.idega.user.handler.UserNationalRegisterFileImportHandler;
 import com.idega.user.handler.UserNationalRegisterImportFile;
 import com.idega.user.handler.UserPinLookupToGroupImportHandler;
 import com.idega.user.presentation.FamilyTab;
 import com.idega.user.presentation.UserCashierWindow;
 import com.idega.user.presentation.UserClubMemberExchangeWindow;
+import com.idega.user.presentation.UserConstants;
 import com.idega.user.presentation.UserUpdateClubDivisionTemplate;
 import com.idega.user.presentation.UserWorkReportWindow;
 

@@ -1,4 +1,4 @@
-package com.idega.user.business;
+package com.idega.user.presentation;
 
 import com.idega.repository.data.ConstantsPlaceholder;
 
