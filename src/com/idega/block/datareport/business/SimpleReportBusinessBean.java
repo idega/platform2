@@ -1,5 +1,5 @@
 /*
- * $Id: SimpleReportBusinessBean.java,v 1.4 2004/10/15 13:58:15 sigtryggur Exp $
+ * $Id: SimpleReportBusinessBean.java,v 1.5 2004/10/15 17:01:46 sigtryggur Exp $
  * Created on 21.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -29,10 +29,10 @@ import com.idega.util.text.TextSoap;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/15 13:58:15 $ by $Author: sigtryggur $
+ *  Last modified: $Date: 2004/10/15 17:01:46 $ by $Author: sigtryggur $
  * 
  * @author <a href="mailto:gummi@idega.com">Gudmundur Agust Saemundsson</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SimpleReportBusinessBean extends IBOServiceBean implements SimpleReportBusiness {
 
@@ -49,12 +49,8 @@ public class SimpleReportBusinessBean extends IBOServiceBean implements SimpleRe
 		if(nameOfReport==null || "".equals(nameOfReport)){
 			nameOfReport = "Report";
 		}
-		System.out.println(nameOfReport);
-		System.out.println(TextSoap.encodeToValidExcelSheetName(nameOfReport));
-		System.out.println(nameOfReport);
-		
 		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFSheet sheet = sheet = wb.createSheet(TextSoap.encodeToValidExcelSheetName(nameOfReport));
+		HSSFSheet sheet = wb.createSheet(TextSoap.encodeToValidExcelSheetName(nameOfReport));
 	    int rowIndex = 0;
 
 	    
