@@ -41,7 +41,7 @@ public class TournamentRoundParticipants extends TournamentParticipants{
 	}
 
 	public int getGroupNumber() {
-		return getIntColumnValue("group_num");
+		return getIntColumnValue("grup_num");
 	}
 
   public String getGroupName() {
