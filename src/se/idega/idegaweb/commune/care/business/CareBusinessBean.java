@@ -1,5 +1,5 @@
 /*
- * $Id: CareBusinessBean.java,v 1.1 2004/10/13 15:29:57 thomas Exp $
+ * $Id: CareBusinessBean.java,v 1.2 2004/10/14 13:42:44 thomas Exp $
  * Created on Oct 13, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -26,17 +26,20 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/13 15:29:57 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/14 13:42:44 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 	
-	public School getProviderForUser(User user) throws FinderException {
+	private SchoolBusiness schoolBusiness = null;
+	
+	public School getProviderForUser(User user) throws FinderException, RemoteException {
 		Group primaryGroup = user.getPrimaryGroup();
+		SchoolBusiness schoolBuiz = getSchoolBusiness();
 		try {
-			if (primaryGroup.equals(getRootProviderAdministratorGroup()) || primaryGroup.equals(getRootSchoolAdministratorGroup()) || primaryGroup.equals(getRootMusicSchoolAdministratorGroup())) {
+			if (primaryGroup.equals(schoolBuiz.getRootProviderAdministratorGroup()) || primaryGroup.equals(schoolBuiz.getRootSchoolAdministratorGroup()) || primaryGroup.equals(schoolBuiz.getRootMusicSchoolAdministratorGroup())) {
 				SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);
 				Collection schoolIds = sub.getSchools(user);
 				if (!schoolIds.isEmpty()) {
@@ -71,30 +74,11 @@ public class CareBusinessBean extends IBOServiceBean  implements CareBusiness{
 		}
 		throw new FinderException("No provider found for user: "+user.getPrimaryKey().toString());
 	}
-	
-	/**
-	* Returns or creates (if not available) the default usergroup all ChildCare(provider) administors have as their primary group.
-	* @throws CreateException if it failed to create the group.
-	* @throws FinderException if it failed to locate the group.
-	*/
-	public Group getRootProviderAdministratorGroup() throws CreateException, FinderException, RemoteException {
-		return getSchoolBusiness().getRootProviderAdministratorGroup();
-	}
-	
-	/**
-	* Returns or creates (if not available) the default usergroup all school administors have as their primary group.
-	* @throws CreateException if it failed to create the group.
-	* @throws FinderException if it failed to locate the group.
-	*/
-	public Group getRootSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException {
-		return getSchoolBusiness().getRootSchoolAdministratorGroup();
-	}
 
-	public Group getRootMusicSchoolAdministratorGroup() throws CreateException, FinderException, RemoteException {
-		return getSchoolBusiness().getRootMusicSchoolAdministratorGroup();
-	}
-	
-	public SchoolBusiness getSchoolBusiness() throws RemoteException {
-		return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
+	private SchoolBusiness getSchoolBusiness() throws RemoteException {
+		if (schoolBusiness == null) {
+			schoolBusiness = (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
+		}
+		return schoolBusiness;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneUserBusiness.java,v 1.44 2004/10/14 07:33:59 laddi Exp $
+ * $Id: CommuneUserBusiness.java,v 1.45 2004/10/14 13:42:44 thomas Exp $
  * Created on 18.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -32,10 +32,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/14 07:33:59 $ by $Author: laddi $
+ *  Last modified: $Date: 2004/10/14 13:42:44 $ by $Author: thomas $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.44 $
+ * @version $Revision: 1.45 $
  */
 public interface CommuneUserBusiness extends IBOService, UserBusiness {
     /**
@@ -319,7 +319,7 @@ public interface CommuneUserBusiness extends IBOService, UserBusiness {
     /**
      * @see se.idega.idegaweb.commune.business.CommuneUserBusinessBean#getSnailMailAddress
      */
-    public Address getSnailMailAddress(User user) throws RemoteException,
+    public Address getPostalAddress(User user) throws RemoteException,
             NoUserAddressException;
 
 }
