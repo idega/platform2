@@ -9,6 +9,7 @@ import se.idega.idegaweb.commune.account.data.AccountApplication;
 public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
     String getCaseCodeDescription () throws RemoteException;
     String getCaseCodeKey () throws RemoteException;
+    void setOwner ();
 
     String getApplicantName () throws RemoteException;
     String getEmail () throws RemoteException;

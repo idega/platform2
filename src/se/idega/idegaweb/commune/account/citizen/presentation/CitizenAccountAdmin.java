@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.5 2002/11/01 10:51:00 staffan Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.6 2002/11/01 13:32:32 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -241,21 +241,30 @@ public class CitizenAccountAdmin extends CommuneBlock {
 	}
 
 	private void approve(IWContext iwc) {
-		Form form = new Form();
-		String id = iwc.getParameter(PARAM_FORM_APPROVE);
+		final Form form = new Form();
+		final String id = iwc.getParameter(PARAM_FORM_APPROVE);
 
 		try {
-			CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
-			business.acceptApplication(new Integer(id).intValue(),Converter.convertToNewUser(iwc.getUser()));
-
-			form.add(getText(localize("caa_acc_application", "Approved application number : ") + id));
+			final CitizenAccountBusiness business
+                    = (CitizenAccountBusiness) IBOLookup.getServiceInstance
+                    (iwc, CitizenAccountBusiness.class);
+			business.acceptApplication (new Integer(id).intValue(),
+                                        iwc.getCurrentUser());
+            
+			form.add(getText(localize("caa_acc_application",
+                                      "Godkänd ansökan: ") + id));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			form.add(getText(localize("caa_acc_application_failed", "There was an error accepting application number : " + id)));
+			form.add(getText
+                     (localize("caa_acc_application_failed",
+                               "Ett fel inträffade vid godkännade av ansökan: ")
+                      + id));
 		}
-
-		SubmitButton list = new SubmitButton(localize(PARAM_FORM_LIST, "List"), PARAM_FORM_LIST, "");
+        
+		final SubmitButton list
+                = new SubmitButton(localize(PARAM_FORM_LIST, "Lista"),
+                                   PARAM_FORM_LIST, "");
 		list.setAsImageButton(true);
 		form.add(Text.BREAK);
 		form.add(list);

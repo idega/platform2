@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.14 2002/11/01 10:51:00 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.15 2002/11/01 13:32:32 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -20,6 +20,7 @@ import javax.ejb.*;
 import se.idega.idegaweb.commune.account.business.*;
 import se.idega.idegaweb.commune.account.citizen.data.*;
 import se.idega.idegaweb.commune.account.data.AccountApplication;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -196,8 +197,22 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		return CitizenAccount.class;
 	}
 
-	public void acceptApplication(int applicationID, User performer) throws RemoteException, CreateException, FinderException {
-		super.acceptApplication(applicationID, performer);
+	public void acceptApplication
+        (final int applicationID, final User performer)
+        throws RemoteException, CreateException, FinderException {
+        final CitizenAccount applicant = getAccount (applicationID);
+        final String name = applicant.getApplicantName();
+        final int spaceIndex = name.indexOf(" ");
+		final String firstName
+                = spaceIndex != -1 ? name.substring(0, spaceIndex) : "";
+		final String lastName = spaceIndex != -1
+                ? name.substring(spaceIndex + 1, name.length ()) : name;
+        final CommuneUserBusiness business = getUserBusiness ();
+        //final User user = business.createCitizen (firstName, null, lastName, applicant.getPID ());
+        final User user = business.createCitizenByPersonalIDIfDoesNotExist
+        (firstName, "", lastName, applicant.getPID ());
+		applicant.setOwner (performer);
+		super.acceptApplication (applicationID, performer);
 	}
 
 	public void rejectApplication(int applicationID, User performer, String reasonDescription) throws RemoteException, CreateException, FinderException {
