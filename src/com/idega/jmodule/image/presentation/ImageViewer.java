@@ -16,20 +16,23 @@ public class ImageViewer extends JModuleObject{
 
 private int categoryId = -1;
 private int numberOfImages=3;
-private boolean limitNumberOfImages=false;
-private int numberOfDisplayedImages=1;
+private boolean limitNumberOfImages=true;
+private int numberOfDisplayedImages=9;
 private int iNumberInRow = 3; //iXXXX for int
 private int ifirst = 0;
 private int maxImageWidth =100;
-private boolean limitImageWidth=false;
+private boolean limitImageWidth=true;
 
 private boolean backbutton = false;
 private Table outerTable = new Table(1,3);
 private boolean isAdmin = false;
 private String outerTableWidth = "100%";
 private String outerTableHeight = "100%";
-private String headerFooterColor = "#CCCCCC";
-private String textColor = "#000000";
+private String headerFooterColor = "#8AA7D6";
+private String textColor = "#FFFFFF";
+private Image footerBackgroundImage;
+private Image headerBackgroundImage;
+
 
 
 private Text textProxy = new Text();
@@ -110,6 +113,21 @@ public void main(ModuleInfo modinfo)throws Exception{
   String imageId = modinfo.getRequest().getParameter("image_id");
   String imageCategoryId = modinfo.getRequest().getParameter("image_catagory_id");
 
+  outerTable.setColor(1,1,headerFooterColor);
+  outerTable.setColor(1,3,headerFooterColor);
+  outerTable.setAlignment(1,1,"left");
+  outerTable.setAlignment(1,2,"center");
+  outerTable.setAlignment(1,3,"center");
+  outerTable.setWidth(outerTableWidth);
+  outerTable.setHeight(outerTableHeight);
+  outerTable.setHeight(1,1,"18");
+  outerTable.setHeight(1,3,"18");
+  outerTable.setCellpadding(2);
+  outerTable.setCellspacing(0);
+  outerTable.setBorder(1);
+  if ( headerBackgroundImage != null ) outerTable.setBackgroundImage(1,1,headerBackgroundImage);
+  if ( footerBackgroundImage != null ) outerTable.setBackgroundImage(1,3,footerBackgroundImage);
+
   if(isAdmin) {
     Link imageEditor = new Link(editor,"/image/imageadmin.jsp");
     outerTable.add(imageEditor,1,1);
@@ -119,7 +137,14 @@ public void main(ModuleInfo modinfo)throws Exception{
     try{
       limitImageWidth = false;
       image[0] = new ImageEntity(Integer.parseInt(imageId));
-      add(displayImage(image[0]));
+      Text imageName = new Text(image[0].getName());
+      imageName.setBold();
+      imageName.setFontColor(textColor);
+      imageName.setFontSize(3);
+      outerTable.add(imageName,1,1);
+
+      outerTable.add(displayImage(image[0]),1,2);
+      add(outerTable);
      }
     catch(NumberFormatException e) {
       add(new Text("ImageId must be a number"));
@@ -140,18 +165,6 @@ public void main(ModuleInfo modinfo)throws Exception{
         categoryName.setFontColor(textColor);
         categoryName.setFontSize(3);
         outerTable.add(categoryName,1,1);
-        outerTable.setColor(1,1,headerFooterColor);
-        outerTable.setColor(1,3,headerFooterColor);
-        outerTable.setAlignment(1,1,"left");
-        outerTable.setAlignment(1,2,"center");
-        outerTable.setAlignment(1,3,"center");
-        outerTable.setWidth(outerTableWidth);
-        outerTable.setHeight(outerTableHeight);
-        outerTable.setCellpadding(2);
-        outerTable.setCellspacing(0);
-        outerTable.setBorder(1);
-
-
 
         String sFirst = modinfo.getParameter("iv_first");//browsing from this image
         if (sFirst!=null) ifirst = Integer.parseInt(sFirst);
@@ -339,6 +352,22 @@ public void setNumberInRow(int NumberOfImagesInOneRow){
 
 public void setHeaderFooterColor(String headerFooterColor){
   this.headerFooterColor=headerFooterColor;
+}
+
+public void setHeaderBackgroundImage(Image headerBackgroundImage){
+  this.headerBackgroundImage=headerBackgroundImage;
+}
+
+public void setHeaderBackgroundImage(String headerBackgroundImageURL){
+  setHeaderBackgroundImage(new Image(headerBackgroundImageURL));
+}
+
+public void setFooterBackgroundImage(Image footerBackgroundImage){
+  this.footerBackgroundImage=footerBackgroundImage;
+}
+
+public void setFooterBackgroundImage(String footerBackgroundImageURL){
+  setFooterBackgroundImage(new Image(footerBackgroundImageURL));
 }
 
 public void setTextColor(String textColor){
