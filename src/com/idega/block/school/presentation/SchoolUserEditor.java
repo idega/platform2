@@ -351,16 +351,10 @@ public class SchoolUserEditor extends Block {
 		
 		if (emails != null) {
 			Email email;
-			EmailHome eHome = (EmailHome) IDOLookup.getHome(Email.class);
 			Iterator iEm = emails.iterator();
 			while (iEm.hasNext()) {
-				try {
-					email = eHome.findByPrimaryKey(iEm.next());
-					Text tEmail = getTextNormal(email.getEmailAddress() );
-					table.add(tEmail, 3, row);
-				} catch (FinderException e) {
-					table.add(getTextNormal(_iwrb.getLocalizedString("school.not_fount","Not found")), 3, row);
-				}
+				email = (Email) iEm.next();
+				table.add(getTextNormal(email.getEmailAddress() ), 3, row);
 				++row;
 			}
 		}
@@ -369,16 +363,10 @@ public class SchoolUserEditor extends Block {
 		row = uRow;
 		if (phones != null) {
 			Phone phone;
-			PhoneHome pHome = (PhoneHome) IDOLookup.getHome(Phone.class);
 			Iterator iPh = phones.iterator();
 			while (iPh.hasNext()) {
-				try {
-					phone = pHome.findByPrimaryKey(iPh.next());
-					Text tPhone = getTextNormal(phone.getNumber());
-					table.add(tPhone, 5, row);
-				} catch (FinderException e) {
-					table.add(getTextNormal(_iwrb.getLocalizedString("school.not_fount","Not found")), 5, row);
-				}
+				phone = (Phone) iPh.next();
+				table.add(getTextNormal(phone.getNumber()), 5, row);
 				++row;
 			}
 		}
