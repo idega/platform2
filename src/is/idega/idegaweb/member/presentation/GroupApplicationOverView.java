@@ -237,6 +237,7 @@ public class GroupApplicationOverView extends Page implements IWBrowserView, Sta
 	         // if( userIsSuperAdmin && iwc.getAccessController().isAdmin(iwc)){
 	            Link approve = new Link(new Text("Approve"));
 	            approve.setWindowToOpen(ChangeStatusWindow.class);
+	            //geyma i session?
 	            approve.addParameter(ChangeStatusWindow.GROUP_APPLICATION_ID_PARAM ,((Integer) app.getPrimaryKey()).intValue());
 	            approve.addParameter(ChangeStatusWindow.CHANGE_STATUS_PARAM , approved);
 	            approve.setAsImageButton(true);
