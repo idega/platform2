@@ -236,7 +236,7 @@ public void makeDefaultSizes(){
     }
 
     public static List getAllImageCatagories(){
-      return ImageBusiness.getImageCatagories(-1);
+      return getImageCatagories(-1);
     }
 
 
@@ -293,48 +293,6 @@ public void makeDefaultSizes(){
 
 //}
     }
-
-
-  public Form Upload(Connection Conn, ModuleInfo modinfo)throws IOException,SQLException{
-    Form newImageForm = new Form();
-   // MultipartRequest multi=null;
-
-    try {
-
-     // multi = new MultipartRequest(modinfo.getRequest(),Conn,".", 5 * 1024 * 1024);
-
-      ImageCatagory[] imgCat = (ImageCatagory[]) (new ImageCatagory()).findAll();
-      DropdownMenu category = new DropdownMenu("category");
-      for (int i = 0 ; i < imgCat.length ; i++ ) {
-        category.addMenuElement(imgCat[i].getID(),imgCat[i].getImageCatagoryName());
-      }
-
-
-      Table UploadDoneTable = new Table(2,3);
-      UploadDoneTable.mergeCells(1,1,2,1);
-      UploadDoneTable.mergeCells(1,2,2,2);
-      UploadDoneTable.setBorder(0);
-      newImageForm.add(UploadDoneTable);
-
-      UploadDoneTable.add(category,2,3);
-
-      UploadDoneTable.add(new Text("Hér er myndin eins og hún kemur út á vefnum. Veldu aftur ef eitthvað fór úrskeiðis"),1,1);
-      UploadDoneTable.add(new Image(Integer.parseInt((String)modinfo.getSessionAttribute("image_id")) ),1,2);
-
-      UploadDoneTable.add(new SubmitButton("submit","Ný mynd"),1,3);
-      UploadDoneTable.add(new SubmitButton("submit","Vista"),1,3);
-      /*	newImageForm.add(new SubmitButton("submit","Ný mynd"));
-      newImageForm.add(new SubmitButton("submit","Vista"));
-      newImageForm.setMethod("GET");
-      *///	UploadDoneTable.add(newImageForm,1,3);
-      //	add(UploadDoneTable);
-
-  }
-  catch (Exception e) {
-    e.printStackTrace();
-  }
-  return newImageForm;
-}
 
   public static int SaveImage(ImageProperties ip){
     int id = -1;
@@ -404,5 +362,77 @@ public void makeDefaultSizes(){
     return ip;
 }
 
+public static boolean deleteImageFile(String pathToImage){
+    File file = new File(pathToImage);
+    return file.delete();
+}
+
+public static void setImageDimensions(ImageProperties ip) {
+  try{
+    ImageHandler handler =  new ImageHandler(ip.getId());
+    handler.updateOriginalInfo();
+  }
+  catch(Exception e){
+   e.printStackTrace(System.err);
+   System.err.println("ImageBusiness : setImageDimensions failed!");
+  }
+
+}
+
+  public static void handleSaveImage(ModuleInfo modinfo){
+    ImageProperties ip = (ImageProperties) modinfo.getSessionAttribute("im_ip");
+    String submit = modinfo.getParameter("submit");
+    String categoryId = modinfo.getParameter("category_id");
+
+    if( (ip!=null) && !("cancel".equalsIgnoreCase(submit)) ){
+      int imageId = SaveImage(ip);
+      ip.setId(imageId);
+      setImageDimensions(ip);//adds width height and size in bytes to database
+
+      try{
+        ImageEntity image = new ImageEntity(imageId);
+        ImageCatagory cat = new ImageCatagory(Integer.parseInt(categoryId));
+        cat.addTo(image);
+      }
+      catch(SQLException e){
+        e.printStackTrace(System.err);
+        System.err.println("ImageBusiness : failed to add to image_image_catagory");
+      }
+
+      modinfo.setSessionAttribute("im_image_id",Integer.toString(imageId));
+      deleteImageFile(ip.getRealPath());
+      modinfo.removeSessionAttribute("im_ip");
+      modinfo.setSessionAttribute("refresh",new String("true"));
+
+    }
+    else {
+      System.err.println("Image save failed or was cancelled!");
+    }
+  }
+
+  public static void handleTextSave(ModuleInfo modinfo) throws Exception{
+    String submit = modinfo.getParameter("submit");
+    if( !"cancel".equalsIgnoreCase(submit) ){
+      boolean update = true;
+      String imageId = modinfo.getParameter("image_id");
+      String imageText = modinfo.getParameter("image_text");
+      String imageLink = modinfo.getParameter("image_link");
+      ImageEntity image = new ImageEntity(Integer.parseInt(imageId));
+
+      if( imageText!=null ) image.setImageText(imageText);
+      else update = false;
+
+      if( imageLink!=null ){
+        image.setImageLink(imageLink);
+        image.setImageLinkOwner("both");
+      }
+      else update = false;
+
+      if(update){
+        image.update();
+        modinfo.setSessionAttribute("im_refresh",new String("true"));
+      }
+    }
+  }
 }//end of class
 

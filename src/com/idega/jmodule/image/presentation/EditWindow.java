@@ -19,6 +19,11 @@ import com.idega.jmodule.object.interfaceobject.*;
  */
 
 public class EditWindow extends Window {
+  private String windowColor = "#336699";
+  private String language = "IS";
+  private Table outerTable = new Table(1,2);
+  private Image save;
+  private Image cancel;
 
   public EditWindow(){
     super();
@@ -45,61 +50,44 @@ public class EditWindow extends Window {
   }
 
   public void main(ModuleInfo modinfo)throws Exception{
+    setBackgroundColor(windowColor);
+    setAllMargins(0);
+    setTitle("IdegaWeb : Image");
+
+    save = new Image("/pics/jmodules/image/"+language+"/save.gif");
+    cancel = new Image("/pics/jmodules/image/"+language+"/cancel.gif");
+
+
+    outerTable.setCellpadding(0);
+    outerTable.setCellspacing(0);
+    outerTable.setWidth("100%");
+    outerTable.setHeight("100%");
+    outerTable.setHeight(1,1,"25");
+    outerTable.setBackgroundImage(1,1,new Image("/pics/jmodules/image/myndamodule/topp/topptiler.gif"));
+    outerTable.setVerticalAlignment(1,2,"top");
+
     String action = modinfo.getParameter("action");
-    if("save_text".equalsIgnoreCase(action)) handleTextSave(modinfo);
+    if("save_text".equalsIgnoreCase(action)){
+       ImageBusiness.handleTextSave(modinfo);
+       close(modinfo);
+    }
     else if("upload".equalsIgnoreCase(action)){
-      add(getUploadForm(modinfo));
+      outerTable.add(getUploadForm(modinfo),1,2);
     }
     else if("text".equalsIgnoreCase(action)){
-      add(getEditForm(modinfo));
+      outerTable.add(getEditForm(modinfo),1,2);
+    }
+    else if("save_image".equalsIgnoreCase(action)){
+      ImageBusiness.handleSaveImage(modinfo);
+      close(modinfo);
     }
     else{
-      try{
-        ImageProperties ip = ImageBusiness.doUpload(modinfo);
-
-        int imageId = ImageBusiness.SaveImage(ip);
-        add(new Image(imageId));
-
-            ImageCatagory[] imgCat = (ImageCatagory[]) (new ImageCatagory()).findAll();
-    DropdownMenu category = new DropdownMenu("category");
-    for (int i = 0 ; i < imgCat.length ; i++ ) {
-      category.addMenuElement(imgCat[i].getID(),imgCat[i].getImageCatagoryName());
+      uploadAndSaveToCategory(modinfo);
     }
-    add(category);
-/*
-      Table UploadDoneTable = new Table(2,3);
-      UploadDoneTable.mergeCells(1,1,2,1);
-      UploadDoneTable.mergeCells(1,2,2,2);
-      UploadDoneTable.setBorder(0);
-      newImageForm.add(UploadDoneTable);
-
-      UploadDoneTable.add(category,2,3);
-
-      UploadDoneTable.add(new Text("Hér er myndin eins og hún kemur út á vefnum. Veldu aftur ef eitthvað fór úrskeiðis"),1,1);
-      UploadDoneTable.add(new Image(Integer.parseInt((String)modinfo.getSessionAttribute("image_id")) ),1,2);
-
-      UploadDoneTable.add(new SubmitButton("submit","Ný mynd"),1,3);
-      UploadDoneTable.add(new SubmitButton("submit","Vista"),1,3);*/
-
-
-      }
-      catch(Exception e){
-        e.printStackTrace(System.err);
-      }
-    }
-
-    modinfo.getSession().setAttribute("reload",new String("true"));
+    add(outerTable);
 
   }
 
-  private void handleTextSave(ModuleInfo modinfo) throws Exception{
-    String imageId = modinfo.getParameter("image_id");
-    String imageText = modinfo.getParameter("image_text");
-    ImageEntity image = new ImageEntity(Integer.parseInt(imageId));
-    image.setImageText(imageText);
-    image.update();
-
-  }
 
   private void close(ModuleInfo modinfo){
     setParentToReload();
@@ -108,20 +96,63 @@ public class EditWindow extends Window {
 
 
   private Form getEditForm(ModuleInfo modinfo) throws Exception{
-    Table table = new Table(1,2);
     String imageId = modinfo.getParameter("image_id");
-    ImageEntity image = new ImageEntity(Integer.parseInt(imageId));
-    String imageText = image.getText();
-    if( imageText==null ) imageText = "";
     Form form = new Form();
     form.add(new HiddenInput("image_id",imageId));
     form.add(new HiddenInput("action","save_text"));
-    TextArea input = new TextArea("image_text",imageText);
-    input.setWidth(40);
-    input.setWrap(true);
-    table.add(input,1,1);
-    table.add(new SubmitButton(),1,2);
+
+    Table table = new Table(1,5);
+    table.setWidth("100%");
+    table.setHeight("100%");
+    table.setAlignment(1,1,"left");
     table.setAlignment(1,2,"left");
+    table.setAlignment(1,3,"left");
+    table.setAlignment(1,4,"left");
+    table.setVerticalAlignment(1,1,"top");
+    table.setVerticalAlignment(1,2,"top");
+    table.setVerticalAlignment(1,3,"top");
+    table.setVerticalAlignment(1,4,"top");
+    table.setAlignment(1,5,"right");
+    table.setWidth(1,1,"10%");
+    table.setWidth(1,2,"20%");
+    table.setWidth(1,3,"10%");
+    table.setWidth(1,4,"20%");
+
+
+    ImageEntity image = new ImageEntity(Integer.parseInt(imageId));
+    String imageText = image.getText();
+    String imageLink = image.getLink();
+
+    if( imageText==null ) imageText = "";
+    if( imageLink==null ) imageLink= "";
+
+
+    TextArea input = new TextArea("image_text",imageText);
+    TextInput input2 = new TextInput("image_link",imageLink);
+
+    Text texti = new Text("Texti með mynd");
+    texti.setFontColor("#FFFFFF");
+    texti.setFontSize(2);
+    texti.setBold();
+
+    Text texti2 = new Text("Tengill á mynd og texta");
+    texti2.setFontColor("#FFFFFF");
+    texti2.setFontSize(2);
+    texti2.setBold();
+
+    input.setWidth(35);
+    input.setWrap(true);
+
+    input.setWidth(35);
+
+    table.add(texti,1,1);
+    table.add(input,1,2);
+    table.add(texti2,1,3);
+    table.add(input2,1,4);
+    table.add(new SubmitButton(cancel,"submit","cancel"),1,5);
+    table.add(new SubmitButton(save),1,5);
+
+
     form.add(table);
     return form;
   }
@@ -129,9 +160,89 @@ public class EditWindow extends Window {
   private Form getUploadForm(ModuleInfo modinfo) throws Exception{
     Form form = new Form();
     form.setMultiPart();
-    form.add(new FileInput());
-    form.add(new SubmitButton());
+    Table table = new Table(2,2);
+    Text texti = new Text("Veldu mynd með því að ýta á \"Browse\" og smelltu svo á \"Submit\".");
+    texti.setFontColor("#FFFFFF");
+    texti.setFontSize(2);
+    texti.setBold();
+    table.mergeCells(1,1,2,1);
+    table.add(texti,1,1);
+    table.add(Text.getBreak(),1,2);
+    table.add(Text.getBreak(),2,2);
+    table.add(new FileInput(),1,2);
+    table.add(new SubmitButton(),2,2);
+    table.setAlignment(1,2,"left");
+    table.setAlignment(2,2,"right");
+    form.add(table);
     return form;
+  }
+
+  private void uploadAndSaveToCategory(ModuleInfo modinfo) throws Exception{
+    Form form = new Form();
+    form.add(new HiddenInput("action","save_image"));
+    Table upload = new Table(1,3);
+    upload.setWidth("100%");
+    upload.setHeight("100%");
+    upload.setHeight(1,1,"25");
+    upload.setHeight(1,2,"25");
+    upload.setAlignment(1,3,"center");
+    upload.setVerticalAlignment(1,3,"top");
+
+    try{
+      ImageProperties ip = ImageBusiness.doUpload(modinfo);
+      modinfo.setSessionAttribute("im_ip",ip);
+      Image imagefile = new Image(ip.getWebPath());
+
+      Text texti = new Text("Veldu nú myndaflokk og hakaðu við þær aukastærðir af myndinni sem þú vilt fá.");
+      texti.setFontColor("#FFFFFF");
+      texti.setFontSize(2);
+      texti.setBold();
+
+      Table toolbar = new Table(6,1);
+      toolbar.setWidth("100%");
+      toolbar.setAlignment(1,1,"left");
+      toolbar.setAlignment(2,1,"left");
+      toolbar.setAlignment(3,1,"left");
+      toolbar.setAlignment(4,1,"left");
+      toolbar.setAlignment(5,1,"right");
+      toolbar.setAlignment(6,1,"right");
+
+      toolbar.setWidth(1,1,"12%");
+      toolbar.setWidth(2,1,"16%");
+      toolbar.setWidth(5,1,"10%");
+      toolbar.setWidth(6,1,"10%");
+
+      Text flokkur = new Text("Myndaflokkur ");
+      flokkur.setFontColor("#FFFFFF");
+      flokkur.setFontSize(2);
+      flokkur.setBold();
+
+
+
+      ImageCatagory[] imgCat = (ImageCatagory[]) (new ImageCatagory()).findAll();
+      DropdownMenu category = new DropdownMenu("category_id");
+      for (int i = 0 ; i < imgCat.length ; i++ ) {
+        category.addMenuElement(imgCat[i].getID(),imgCat[i].getImageCatagoryName());
+      }
+
+      upload.add(texti,1,1);
+
+      toolbar.add(flokkur,1,1);
+      toolbar.add(category,2,1);
+      toolbar.add(new SubmitButton(cancel,"submit","cancel"),5,1);
+      toolbar.add(new SubmitButton(save),6,1);
+
+      upload.add(toolbar);
+      upload.add(imagefile,1,3);
+
+      form.addAtBeginning(upload);
+      outerTable.add(form,1,2);
+
+    }
+    catch(Exception e){
+    outerTable.add("Error while uploading!",1,2);
+    e.printStackTrace(System.err);
+    }
   }
 
 }

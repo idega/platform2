@@ -139,6 +139,10 @@ public void setOnUnLoad(String action){
   setAttribute("onUnLoad",action);
 }
 
+public void close(){
+  setOnLoad("window.close()");
+}
+
 // Displaying an Alert
 // aron@idega.is
 public void setToLoadAlert(String sMessage){

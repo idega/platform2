@@ -100,7 +100,6 @@ public Table writeTable(Vector items,ModuleInfo modinfo) throws SQLException {
 
   Text more = new Text("+");
     more.setFontColor("#FFFFFF");
-  String URI = modinfo.getRequestURI();
   String imageId = modinfo.getParameter("image_id");
   String openCat = modinfo.getParameter("open_catagory_id");
     if (openCat == null) { openCat = "-3";}
@@ -140,11 +139,11 @@ public Table writeTable(Vector items,ModuleInfo modinfo) throws SQLException {
         text = new Text(catagory.getImageCatagoryName());
           text.setFontColor("#FFFFFF");
 
-        openLink = new Link(more,URI);
+        openLink = new Link(more);
         openLink.setFontColor("#FFFFFF");
         openLink.setAttribute("style","text-decoration:none");
 
-        idLink = new Link(text,URI);
+        idLink = new Link(text);
         idLink.setFontColor("#FFFFFF");
         idLink.setBold();
         idLink.setAttribute("style","text-decoration:none");
@@ -187,7 +186,7 @@ public Table writeTable(Vector items,ModuleInfo modinfo) throws SQLException {
         text = new Text(extrainfo.toString());
         text.setFontSize(1);
 
-        idLink = new Link(text,URI);
+        idLink = new Link(text);
         idLink.setFontColor("#FFFFFF");
         idLink.setAttribute("style","text-decoration:none");
         if (preCatId != -1 ) {

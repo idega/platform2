@@ -33,15 +33,17 @@ public class ImageEntity extends GenericEntity{
                 addAttribute("image_text","Image text",true,true,"java.lang.String");
                 addAttribute("image_link","Image link",true,true,"java.lang.String");
                 addAttribute("image_link_owner","Which has a link the image/text/both/none?",true,true,"java.lang.String");
+                addAttribute("image_size","Image size in bytes",true,true,"java.lang.Integer");
                 addAttribute("width","Image width",true,true,"java.lang.String");
                 addAttribute("height","Image height",true,true,"java.lang.String");
                 addAttribute("parent_id","Image parent",true,true,"java.lang.Integer");
 
 
+
 	}
 
 	public String getEntityName(){
-		return "image";
+          return "image";
 	}
 
          public void setDefaultValues() {
@@ -169,6 +171,14 @@ public class ImageEntity extends GenericEntity{
 
         public int getParentId() {
           return getIntColumnValue("parent_id");
+        }
+
+        public void setSize(int parent_id) {
+          setColumn("image_size",new Integer(parent_id));
+        }
+
+        public int getSize() {
+          return getIntColumnValue("image_size");
         }
 
 

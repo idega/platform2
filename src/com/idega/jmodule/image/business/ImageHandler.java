@@ -58,6 +58,7 @@ private int brightness = 30;
 private KernelJAI kernel;
 private float sum = 9.0F;
 private String modifiedImageURL="";
+private int modifiedsize = 0;
 
 public ImageHandler( int imageId ) throws Exception{
   setImageId(imageId);
@@ -117,6 +118,7 @@ private void getImageFromDatabase() throws Exception{
       inputStream = RS.getBinaryStream("image_value");
   }
 
+  modifiedsize = inputStream.available();
   BufferedInputStream bufStream = getBufferedInputStream(inputStream);
   MemoryCacheSeekableStream memStream = getMemoryCacheSeekableStream(bufStream);
   originalImage = getPlanarImageFromStream(memStream);
@@ -140,12 +142,13 @@ private void getImageFromDatabase() throws Exception{
 
 }
 
-private void updateOriginalInfo() throws SQLException{
+public void updateOriginalInfo() throws SQLException{
   ImageEntity imageInfo = new ImageEntity( imageId , false);
   setContentType( imageInfo.getContentType() );
   setImageName( imageInfo.getName() );
   imageInfo.setWidth(Integer.toString(originalImage.getWidth()));
   imageInfo.setHeight(Integer.toString(originalImage.getHeight()));
+  imageInfo.setSize(modifiedsize);
   imageInfo.update();
 }
 
@@ -364,6 +367,8 @@ public void writeModifiedImageToDatabase(boolean update) throws Exception{
 
   try{
     InputStream input = new FileInputStream(modifiedImageURL);
+    modifiedsize = input.available();
+
     String dataBaseType = "";
     Conn = GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity").getConnection();
     if (Conn!=null) dataBaseType = com.idega.data.DatastoreInterface.getDataStoreType(Conn);

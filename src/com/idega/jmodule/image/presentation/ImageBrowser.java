@@ -56,13 +56,13 @@ private ImageViewer viewer = new ImageViewer();
     String edit = modinfo.getParameter("edit");//so it doesn't conflict with imageviewer
     String action = modinfo.getParameter("action");//so it doesn't conflict with imageviewer
 
-    String refreshing = (String) modinfo.getSession().getAttribute("refresh");
+    String refreshing = (String) modinfo.getSessionAttribute("refresh");
     if( refreshing!=null ) refresh = true;
 
     if ( refresh ) {
       tree.refresh();
       viewer.refresh();
-      modinfo.getSession().removeAttribute("refresh");
+      modinfo.removeSessionAttribute("refresh");
     }
 
       if ( mode == null ) { mode = "image"; }
@@ -116,7 +116,7 @@ private ImageViewer viewer = new ImageViewer();
       imageTable.add(viewer,3,1);
       //debug because of refresh problem could solve with an invisible businenss class that is added first
       if( (!"delete".equalsIgnoreCase(action)) && (!"save".equalsIgnoreCase(action)) && (!"savenew".equalsIgnoreCase(action)) ){
-        System.err.println("TRAAAAAAAAAAAAAVERSE");
+        System.err.println("ImageBrowser: no action add tree");
         imageTable.add(tree,1,1);
       }
     }

@@ -52,6 +52,7 @@ private String percent = "100";
 private Link continueRefresh = new Link("Click here to continue...");
 
 
+
 private Text textProxy = new Text();
 
 private Image view;
@@ -65,20 +66,19 @@ private Image cancel;
 private Image newImage;
 private Image newCategory;
 private Image text;
+private Image reload;
 
 private String language = "IS";
 
 private int textSize = 1;
 
 private String attributeName = "union_id";
-//private int attributeId = -1;
 private int attributeId = 3;
 
-//private ImageBusiness business;
+
 
 
 public ImageViewer(){
-//  business = new ImageBusiness();
   continueRefresh.addParameter("refresh","true");
 }
 
@@ -131,11 +131,23 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 public void main(ModuleInfo modinfo)throws Exception{
   //isAdmin= isAdministrator(modinfo);
-   isAdmin= true;
+  isAdmin= true;
   setSpokenLanguage(modinfo);
   ImageEntity[] image =  new ImageEntity[1];
+  String imageId = modinfo.getParameter("image_id");
+  String imageCategoryId = modinfo.getParameter("image_catagory_id");
+  percent = modinfo.getParameter("percent");
+  String sEdit = modinfo.getParameter("edit");
+  String action = modinfo.getParameter("action");
 
-  String refreshing = (String) modinfo.getSession().getAttribute("refresh");
+  String refreshing = (String) modinfo.getSessionAttribute("im_refresh");
+  String sessionImageId = (String) modinfo.getSessionAttribute("im_image_id");
+
+  if( sessionImageId!=null ){// new uploaded image
+     imageId = sessionImageId;
+     modinfo.removeSessionAttribute("im_image_id");
+  }
+
   if( refreshing!=null ) refresh = true;
 
   /*  ImageBusiness.storeEditForm(modinfo);
@@ -145,7 +157,7 @@ public void main(ModuleInfo modinfo)throws Exception{
 */
   if( refresh ){
     refresh(modinfo);
-    modinfo.getSession().removeAttribute("refresh");
+    modinfo.removeSessionAttribute("im_refresh");
   }
 
   view = new Image("/pics/jmodules/image/"+language+"/view.gif","View all sizes");
@@ -159,17 +171,21 @@ public void main(ModuleInfo modinfo)throws Exception{
   save = new Image("/pics/jmodules/image/"+language+"/save.gif","Edit this image");
   cancel = new Image("/pics/jmodules/image/"+language+"/cancel.gif","Edit this image");
   newImage = new Image("/pics/jmodules/image/"+language+"/newimage.gif","Upload a new image");
-  newCategory = new Image("/pics/jmodules/image/"+language+"/newcategory.gif","Edit this image");
+  newCategory = new Image("/pics/jmodules/image/"+language+"/newcategory.gif","Edit categories");
+  reload = new Image("/pics/jmodules/image/"+language+"/refresh.gif","Refresh everything");
 
 
   Window window = new Window("IdegaWeb : Image",800,600,"/image/editWindow.jsp");
-  window.setAllMargins(0);
   window.setResizable(true);
   Link uploadLink = new Link(newImage,window);
   uploadLink.addParameter("action","upload");
 
+  Link reloads = new Link(reload);
+  reloads.addParameter("refresh","true");
+  reloads.addParameter("idega","best&"+modinfo.getQueryString());
 
-  if(isAdmin) {
+  if(isAdmin && (sEdit==null) ) {
+    outerTable.add(reloads,2,1);
     outerTable.add(uploadLink,2,1);
     outerTable.add(newCategory,2,1);
   }
@@ -181,6 +197,7 @@ public void main(ModuleInfo modinfo)throws Exception{
   outerTable.setAlignment(1,2,"center");
   outerTable.setAlignment(1,3,"center");
   outerTable.setVerticalAlignment(1,2,"top");
+  outerTable.setVerticalAlignment(1,1,"top");
   outerTable.mergeCells(1,2,2,2);
   outerTable.mergeCells(1,3,2,3);
   outerTable.setWidth(outerTableWidth);
@@ -201,17 +218,10 @@ public void main(ModuleInfo modinfo)throws Exception{
   if ( headerBackgroundImage != null ) outerTable.setBackgroundImage(1,1,headerBackgroundImage);
   if ( footerBackgroundImage != null ) outerTable.setBackgroundImage(1,3,footerBackgroundImage);
 
-  String imageId = modinfo.getParameter("image_id");
-  String imageCategoryId = modinfo.getParameter("image_catagory_id");
-  percent = modinfo.getParameter("percent");
-  String edit = modinfo.getParameter("edit");
-  String action = modinfo.getParameter("action");
-
-  if(edit!=null){
+  if(sEdit!=null){
     try{
       getEditor(modinfo);
       outerTable.setColor(1,2,"FFFFFF");
-      add(outerTable);
     }
     catch(Throwable e){
       e.printStackTrace(System.err);
@@ -236,11 +246,10 @@ public void main(ModuleInfo modinfo)throws Exception{
           backLink.setAsBackLink();
           links.add(backLink,1,1);
           outerTable.add(links,1,3);
-          add(outerTable);
         }
         else{
           System.out.println("ImageViewer: action but not editing!");
-          Text texti;
+          Text texti = new Text("NO ACTION?");
           ImageHandler handler = null;
           if( "delete".equalsIgnoreCase(action) ){
              texti = new Text("Image deleted.");
@@ -254,7 +263,11 @@ public void main(ModuleInfo modinfo)throws Exception{
              texti = new Text("Image saved as a new image.");
              handler = (ImageHandler) modinfo.getSessionAttribute("handler");
           }
-          else texti = new Text("NO ACTION?");
+          else if( "use".equalsIgnoreCase(action) ){
+            modinfo.setSessionAttribute("image_id",imageId);
+            this.getParentPage().close();
+          }
+
 
           ImageBusiness.handleEvent(modinfo,handler);
 
@@ -268,7 +281,7 @@ public void main(ModuleInfo modinfo)throws Exception{
           continueRefresh.setFontSize(3);
           outerTable.add(continueRefresh,1,2);
 
-          add(outerTable);
+
         }
        }
       catch(NumberFormatException e) {
@@ -292,8 +305,8 @@ public void main(ModuleInfo modinfo)throws Exception{
               modinfo.getSession().removeAttribute("image_previous_catagory_id");
             }
 
-          ImageEntity[] inApplication = (ImageEntity[]) modinfo.getServletContext().getAttribute("image_entities_"+imageCategoryId);
-          modinfo.setSessionAttribute("image_previous_catagory_id",imageCategoryId);
+            ImageEntity[] inApplication = (ImageEntity[]) modinfo.getServletContext().getAttribute("image_entities_"+imageCategoryId);
+            modinfo.setSessionAttribute("image_previous_catagory_id",imageCategoryId);
 
             categoryId = Integer.parseInt(imageCategoryId);
             ImageCatagory category = new ImageCatagory(categoryId);
@@ -369,8 +382,6 @@ public void main(ModuleInfo modinfo)throws Exception{
           }
           outerTable.add(links,1,3);
           outerTable.add(displayCatagory(imageEntity),1,2);
-          add(outerTable);
-
         }
 
     }
@@ -381,6 +392,8 @@ public void main(ModuleInfo modinfo)throws Exception{
   }
 
   }
+
+  add(outerTable);
 }
 
 public static Table getImageInTable(int imageId) throws SQLException {
@@ -440,14 +453,12 @@ private Table displayImage( ImageEntity image ) throws SQLException
     imageEdit6.addParameter("image_id",imageId);
     imageEdit6.addParameter("edit","true");
 
-    Window window = new Window("IdegaWeb : Image",350,300,"/image/editWindow.jsp");
+    Window window = new Window("IdegaWeb : Image",350,230,"/image/editWindow.jsp");
     window.setAllMargins(0);
     window.setResizable(true);
     Link imageEdit7 = new Link(text,window);
     imageEdit7.addParameter("image_id",imageId);
     imageEdit7.addParameter("action","text");
-
-
 
 
     editTable.add(imageEdit,1,1);
