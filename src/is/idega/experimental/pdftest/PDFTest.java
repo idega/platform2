@@ -49,8 +49,6 @@ public class PDFTest {
 		}
 		catch (FileNotFoundException e) {
 		}
-		catch (IOException e) {
-		}
 
 		try {
 			Document outerDocument = getLetterDocumentTemplate();
