@@ -22,6 +22,7 @@ public class ProjectInvalidationLink extends Block {
   protected Link modifyProjectLink = null;
   protected Image optionalImage = null;
   public static final String _PROJECT_BUNDLE_IDENTIFIER = "is.idega.idegaweb.project";
+  private int pageId = -1;
 
 
   public ProjectInvalidationLink() {
@@ -36,6 +37,9 @@ public class ProjectInvalidationLink extends Block {
     optionalImage = image;
   }
 
+  public void setDestinationPageId(int id){
+    pageId = id;
+  }
 
   public void main(IWContext iwc) throws Exception {
     //IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
@@ -58,6 +62,9 @@ public class ProjectInvalidationLink extends Block {
     modifyProjectLink.setWindowToOpen(IPDeleteProjectWindow.class);
     modifyProjectLink.addParameter(IPDeleteProjectWindow._PRM_DELETE,"true");
     modifyProjectLink.addParameter(IPDeleteProjectWindow._PRM_INSTANCE_ID, ProjectBusiness.getCurrentProjectId(iwc));
+    if(pageId != -1){
+      modifyProjectLink.addParameter(IPDeleteProjectWindow._PRM_PAGE_ID,pageId);
+    }
     this.add(modifyProjectLink);
 
   }

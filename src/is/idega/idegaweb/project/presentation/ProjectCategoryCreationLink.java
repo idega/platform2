@@ -21,6 +21,7 @@ public class ProjectCategoryCreationLink extends Block {
   protected Link createProjectCategoryLink = null;
   protected Image optionalImage = null;
   public static final String _PROJECT_BUNDLE_IDENTIFIER = "is.idega.idegaweb.project";
+  protected int _categoryTypeId = -1;
 
 
   public ProjectCategoryCreationLink() {
@@ -33,6 +34,10 @@ public class ProjectCategoryCreationLink extends Block {
 
   public void setImage(Image image){
     optionalImage = image;
+  }
+
+  public void setCategoryTypeId(int id){
+    _categoryTypeId = id;
   }
 
 
@@ -56,6 +61,9 @@ public class ProjectCategoryCreationLink extends Block {
 
     createProjectCategoryLink.setName("create category");
     createProjectCategoryLink.setWindowToOpen(IPCategoryCreator.class);
+    if(_categoryTypeId != -1){
+      createProjectCategoryLink.addParameter(IPCategoryCreator._PRM_CATTYPE, _categoryTypeId);
+    }
     this.add(createProjectCategoryLink);
 
   }

@@ -13,6 +13,7 @@ import com.idega.presentation.Table;
 import is.idega.idegaweb.project.business.ProjectBusiness;
 import is.idega.idegaweb.project.data.IPCategoryType;
 import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.HiddenInput;
 
 import java.util.List;
 import java.util.Iterator;
@@ -30,9 +31,12 @@ public class IPCategoryCreator extends IWAdminWindow {
 
   protected final static String _PRM_SUBMIT = "ip_submit";
   public final static String _PRM_UPDATE = ProjectBusiness._PRM_UPDATE;
+
   protected final static String categoryNameFieldName = "ip_cat_name";
   protected final static String categoryDescriptionFieldName = "ip_cat_description";
   protected final static String categoryTypeFieldName = "ip_cat_type";
+
+  public final static String _PRM_CATTYPE = categoryTypeFieldName;
 
   private Form myForm;
 
@@ -107,8 +111,15 @@ public class IPCategoryCreator extends IWAdminWindow {
 
     nameTable.add(categoryNameText,1,1);
     nameTable.add(categoryNameField,1,2);
-    nameTable.add(categoryTypeText,1,3);
-    nameTable.add(categoryTypeField,1,4);
+
+    String cType = iwc.getParameter(_PRM_CATTYPE);
+    if(!(cType != null && !cType.equals("-1"))){
+      nameTable.add(categoryTypeText,1,3);
+      nameTable.add(categoryTypeField,1,4);
+    } else {
+      nameTable.add(new HiddenInput(categoryTypeFieldName,cType),1,4);
+    }
+
     nameTable.add(categoryDescriptionText,1,5);
     nameTable.add(categoryDescriptionField,1,6);
     // nameTable end
@@ -196,7 +207,10 @@ public class IPCategoryCreator extends IWAdminWindow {
           }
        }
     } else {
-      configureCategoryTypeDropdown(iwc);
+      String cType = iwc.getParameter(_PRM_CATTYPE);
+      if(!(cType != null && !cType.equals("-1"))){
+        configureCategoryTypeDropdown(iwc);
+      }
       myForm.add(lineUpElements(iwc));
     }
 

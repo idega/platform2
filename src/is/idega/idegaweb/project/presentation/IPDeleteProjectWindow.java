@@ -33,6 +33,7 @@ public class IPDeleteProjectWindow extends IBAdminWindow{
   public IPDeleteProjectWindow() {
     setWidth(300);
     setHeight(200);
+    this.setStatus(true);
   }
 
   public void main(IWContext iwc){
@@ -40,10 +41,10 @@ public class IPDeleteProjectWindow extends IBAdminWindow{
       setTitle("Confirm delete");
 
       String ib_parent_id = iwc.getParameter(_PRM_INSTANCE_ID);
-      this.setParentToReload();
+      //this.setParentToReload();
 
-      //tmp
-      boolean doConfirm = (iwc.getParameter(_PRM_CONFIRM)==null);//false;//!iwc.isParameterSet(_PRM_CONFIRM);
+
+      boolean doConfirm = (iwc.getParameter(_PRM_CONFIRM)==null);
       if(doConfirm){
         add(getConfirmBox(iwc));
       }
@@ -57,7 +58,6 @@ public class IPDeleteProjectWindow extends IBAdminWindow{
         }
 
         ProjectBusiness.getInstance().invalidateProject(iwc,Integer.parseInt(iwc.getParameter(_PRM_INSTANCE_ID)),userID);
-        //deleteObject(ib_page_id,ib_parent_id,ic_object_id);
         String page = iwc.getParameter(_PRM_PAGE_ID);
         if(page != null){
           try {
@@ -71,7 +71,7 @@ public class IPDeleteProjectWindow extends IBAdminWindow{
           pageId = BuilderLogic.getStartPageId(iwc);
         }
 
-        this.setOnUnLoad("parent.location.href='"+BuilderLogic.getInstance().getIBPageURL(pageId)+"'");
+        this.setOnUnLoad("window.opener.location='"+BuilderLogic.getInstance().getIBPageURL(pageId)+"'");
         this.close();
       }
   }
