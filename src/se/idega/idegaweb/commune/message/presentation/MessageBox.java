@@ -14,6 +14,7 @@ import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.event.MessageListener;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
+
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -22,6 +23,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+
 import com.idega.user.data.User;
 import com.idega.util.CustomDateFormat;
 
@@ -71,6 +73,8 @@ public class MessageBox extends CommuneBlock {
 			super.add(new ExceptionWrapper(e, this));
 		}
 	}
+	
+	
 
 	private void viewMessageList(IWContext iwc) throws Exception {
 		Form f = new Form();
@@ -83,9 +87,8 @@ public class MessageBox extends CommuneBlock {
 		messageTable.setCellspacing(getCellspacing());
 		f.add(messageTable);
 
-		messageTable.add(getSmallHeader(localize("message.subject", "Subject")), 1, row);
-		messageTable.add(getSmallHeader(localize("message.date", "Date")), 2, row);
-		messageTable.setWidth(3, "12");
+
+		addTableHeader(messageTable);
 		messageTable.setRowColor(row++, getHeaderColor());
 		boolean hasMessages = false;
 
@@ -94,11 +97,12 @@ public class MessageBox extends CommuneBlock {
 			MessageSession messageSession = getMessageSession(iwc);
 			
 			User user = iwc.getCurrentUser();
-			Collection messages = messageBusiness.findMessages(user);
-			Link subject = null;
-			Text date = null;
-			CheckBox deleteCheck = null;
-			boolean isRead = false;
+			Collection messages = getMessages(iwc, user, messageBusiness); 
+						
+//			Link subject = null;
+//			Text date = null;
+//			CheckBox deleteCheck = null;
+//			boolean isRead = false;
 			DateFormat dateFormat = CustomDateFormat.getDateTimeInstance(iwc.getCurrentLocale());
 
 			if (messages != null && !messages.isEmpty()) {
@@ -108,27 +112,9 @@ public class MessageBox extends CommuneBlock {
 				Iterator iter = messageVector.iterator();
 				while (iter.hasNext()) {
 					Message msg = (Message) iter.next();
-					Date msgDate = new Date(msg.getCreated().getTime());
+					
+					addMessageToTable(iwc, messageTable, msg, row, dateFormat);
 
-					isRead = getMessageBusiness(iwc).isMessageRead(msg);
-					
-					subject = getSmallLink(msg.getSubject());
-					subject.setWindowToOpen(MessageViewerWindow.class);
-					subject.addParameter(PARAM_MESSAGE_ID, msg.getPrimaryKey().toString());
-					subject.addParameter(MessageViewer.PARAMETER_METHOD, MessageViewer.METHOD_VIEW_MESSAGE);
-					subject.addParameter(MessageViewer.PARAMETER_PAGE_ID, this.getParentPageID());
-					if (!isRead)
-						subject.setBold();
-					
-					date = this.getSmallText(dateFormat.format(msgDate));
-					if (!isRead)
-						date.setBold();
-					
-					deleteCheck = getCheckBox(PARAM_MESSAGE_ID, msg.getPrimaryKey().toString());
-
-					messageTable.add(subject, 1, row);
-					messageTable.add(date, 2, row);
-					messageTable.add(deleteCheck, 3, row);
 					if (row % 2 == 0)
 						messageTable.setRowColor(row++, getZebraColor1());
 					else
@@ -186,6 +172,74 @@ public class MessageBox extends CommuneBlock {
 
 		add(f);
 	}
+
+/**
+ * Adds headers to the table. 
+ * @param messageTable
+ */
+	void addTableHeader(Table messageTable) {
+		messageTable.add(getSmallHeader(localize("message.subject", "Subject")), getSubjectColumn(), 1);
+		messageTable.add(getSmallHeader(localize("message.date", "Date")), getDateColumn(), 1);
+		messageTable.setWidth(getDeleteColumn(), "12");
+	}
+	
+	/**
+	 * Returns the messages for the user specified. This method is called from subclass AdminMessageBox.
+	 * @param iwc Used in subclass implemetation
+	 * @param user
+	 * @param messageBusiness
+	 * @return
+	 * @throws Exception
+	 */
+	Collection getMessages(IWContext iwc, User user, MessageBusiness messageBusiness) throws Exception{
+		return messageBusiness.findMessages(user);		
+	}
+	
+	/**
+	 * Adds the messages to the Table. . This method is called from subclass AdminMessageBox
+	 * @param iwc
+	 * @param messageTable
+	 * @param msg
+	 * @param row
+	 * @param dateFormat
+	 * @throws Exception
+	 */
+	void addMessageToTable(IWContext iwc, Table messageTable, Message msg, int row, DateFormat dateFormat) throws Exception{
+		Date msgDate = new Date(msg.getCreated().getTime());
+
+		boolean isRead = getMessageBusiness(iwc).isMessageRead(msg);
+					
+		Link subject = getSmallLink(msg.getSubject());
+		subject.setWindowToOpen(MessageViewerWindow.class);
+		subject.addParameter(PARAM_MESSAGE_ID, msg.getPrimaryKey().toString());
+		subject.addParameter(MessageViewer.PARAMETER_METHOD, MessageViewer.METHOD_VIEW_MESSAGE);
+		subject.addParameter(MessageViewer.PARAMETER_PAGE_ID, this.getParentPageID());
+		if (!isRead)
+			subject.setBold();
+					
+		Text date = this.getSmallText(dateFormat.format(msgDate));
+		if (!isRead)
+			date.setBold();
+					
+		CheckBox deleteCheck = getCheckBox(PARAM_MESSAGE_ID, msg.getPrimaryKey().toString());
+
+		messageTable.add(subject, getSubjectColumn(), row);
+		messageTable.add(date, getDateColumn(), row);
+		messageTable.add(deleteCheck, getDeleteColumn(), row);	
+	}
+	
+	int getSubjectColumn(){
+		return 1;
+	}
+	
+	int getDateColumn(){
+		return 2;
+	}
+	
+	int getDeleteColumn(){
+		return 3;
+	}
+	
 
 	private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
 		return (MessageBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, MessageBusiness.class);
