@@ -10,6 +10,7 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Block;
 import com.idega.user.data.Group;
+import com.idega.presentation.ui.PostalCodeDropdownMenu;
 import com.idega.user.presentation.GroupSelectionDoubleBox;
 import com.idega.util.IWTimestamp;
 
@@ -31,6 +32,8 @@ public class GroupApplicationFormHandler extends Block {
 	public static final String ADMIN_COMMENT_PARAM = "admin_comment";
 	
 	public static final String GROUPS_PARAM = GroupSelectionDoubleBox.selectedGroupsParameterDefaultValue;//hack!
+	public static final String POSTAL_CODE_PARAM = PostalCodeDropdownMenu.IW_POSTAL_CODE_MENU_PARAM_NAME;//hack!
+	
 	public static final String GENDER_PARAM = "gender";
 	
 
@@ -60,6 +63,7 @@ public class GroupApplicationFormHandler extends Block {
 				String email = iwc.getParameter(EMAIL_PARAM);
 				String email2 = iwc.getParameter(EMAIL2_PARAM);
 				String address = iwc.getParameter(ADDRESS_PARAM);
+				String postal = iwc.getParameter(POSTAL_CODE_PARAM);
 				String phone = iwc.getParameter(PHONE_PARAM);
 				String phone2 = iwc.getParameter(PHONE2_PARAM);
 				String comment = iwc.getParameter(COMMENT_PARAM);
@@ -95,10 +99,11 @@ public class GroupApplicationFormHandler extends Block {
 
 				
 				String[] groups = iwc.getParameterValues(GROUPS_PARAM);
+				if( groups == null ) System.err.println("GROUPS are Null!");
 				
 				
 				try {
-					biz.createGroupApplication(applicationGroup,name,pin,gender,email,email2,address,phone,phone2,comment,adminComment,groups);
+					biz.createGroupApplication(applicationGroup,name,pin,gender,email,email2,address,postal,phone,phone2,comment,adminComment,groups);
 				
 				} catch (Exception e) {
 					add("Error : Application creation failed!");

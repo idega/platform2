@@ -26,6 +26,7 @@ import com.idega.core.data.Phone;
 import com.idega.core.data.PhoneHome;
 import com.idega.core.data.PhoneType;
 import com.idega.core.data.PhoneTypeHome;
+import com.idega.core.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
@@ -50,7 +51,7 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 	private static final String GENDER_FEMALE = "f";
 	 
 	
-	public GroupApplication createGroupApplication(Group applicationGroup, String name, String pin , String gender, String email, String email2, String address, String phone, String phone2, String comment, String adminComment, String[] groupIds) throws RemoteException, FinderException, CreateException ,IDOAddRelationshipException{
+	public GroupApplication createGroupApplication(Group applicationGroup, String name, String pin , String gender, String email, String email2, String address, String postal, String phone, String phone2, String comment, String adminComment, String[] groupIds) throws RemoteException, FinderException, CreateException ,IDOAddRelationshipException{
 		UserBusiness userBiz = this.getUserBusiness();
 		EmailHome eHome = userBiz.getEmailHome();
 		AddressHome addressHome = userBiz.getAddressHome();
@@ -109,6 +110,10 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		
 		//address
 		if( address!=null ){			
+			
+			//nytt find fall og breyta interfacinu
+			PostalCode code = addressBiz.getPostalCodeHome().findByPostalCodeAndCountryId(postal,((Integer)addressBiz.getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue() );
+						
 			Address uAddress = getUserBusiness().getUsersMainAddress(user);
 			boolean add = false;
 			if( uAddress == null ){	
@@ -120,6 +125,9 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 			
 			uAddress.setStreetName(addressBiz.getStreetNameFromAddressString(address));
 			uAddress.setStreetNumber(addressBiz.getStreetNumberFromAddressString(address));
+			
+			uAddress.setPostalCode(code);
+			
 			uAddress.store();
 			if ( add ) user.addAddress(uAddress);
 		}
