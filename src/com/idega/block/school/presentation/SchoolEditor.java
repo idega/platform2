@@ -36,7 +36,17 @@ import com.idega.presentation.ui.util.SelectorUtility;
 
 public class SchoolEditor extends SchoolBlock {
 
+	boolean _useProviderStringId = false;
+	
 	Collection schoolTypeIds = null;
+	
+	public boolean getUseProviderStringId() {
+		return _useProviderStringId;
+	}
+
+	public void setUseProviderStringId(boolean b) {
+		_useProviderStringId = b;
+	}
 
 	protected void init(IWContext iwc) throws Exception {
 		Form F = new Form();
@@ -73,6 +83,7 @@ public class SchoolEditor extends SchoolBlock {
 		if (iwc.isParameterSet("sch_save_school")) {
 			String id = iwc.getParameter("sch_school_id");
 
+			String providerStringId = iwc.getParameter("sch_provider_string_id");
 			String name = iwc.getParameter("sch_name");
 			String address = iwc.getParameter("sch_address");
 			String info = iwc.getParameter("sch_info");
@@ -112,7 +123,7 @@ public class SchoolEditor extends SchoolBlock {
 				communePK = new Integer(commune);
 			}
 			//		System.err.println("school id is "+id);
-			getBusiness().storeSchool(sid, name, info, address, zipcode, ziparea, phone, keycode, lat, lon, areaId, types, years, communePK);
+			getBusiness().storeSchool(sid, name, info, address, zipcode, ziparea, phone, keycode, lat, lon, areaId, types, years, communePK, providerStringId);
 		}
 	}
 
@@ -211,6 +222,8 @@ public class SchoolEditor extends SchoolBlock {
 		Table T = new Table(3, last);
 		T.mergeCells(1, 1, 3, 1);
 
+		TextInput inputProviderStringId = (TextInput) getStyledInterface(new TextInput("sch_provider_string_id"));
+		inputProviderStringId.setAsNotEmpty(localize("sch_provider_id_not_empty", "Provider id must be entered."));
 		TextInput inputName = (TextInput) getStyledInterface(new TextInput("sch_name"));
 		TextInput inputAddress = (TextInput) getStyledInterface(new TextInput("sch_address"));
 		TextArea inputInfo = (TextArea) getStyledInterface(new TextArea("sch_info"));
@@ -238,6 +251,9 @@ public class SchoolEditor extends SchoolBlock {
 				commune = ent.getCommune();
 
 				Id = ((Integer) ent.getPrimaryKey()).intValue();
+				if (_useProviderStringId) {
+					inputProviderStringId.setContent(ent.getProviderStringId());
+				}
 				inputName.setContent(ent.getSchoolName());
 				inputAddress.setContent(ent.getSchoolAddress());
 				inputInfo.setContent(ent.getSchoolInfo());
@@ -262,10 +278,12 @@ public class SchoolEditor extends SchoolBlock {
 			}
 		}
 
-		int row = 1;
+		int row = 2;
 
 		T.add(new HiddenInput("sch_school_id", String.valueOf(Id)));
-		T.add(getHeader(localize("area", "Area")), 1, row++);
+		if (_useProviderStringId) {
+			T.add(getHeader(localize("provider_id", "Provider ID")), 1, row++);
+		}
 		T.add(getHeader(localize("name", "Name")), 1, row++);
 		T.add(getHeader(localize("address", "Address")), 1, row++);
 		T.add(getHeader(localize("zipcode", "Zipcode")), 1, row++);
@@ -281,6 +299,9 @@ public class SchoolEditor extends SchoolBlock {
 		row = 2;
 		//T.add(drpType,3,row++);
 
+		if (_useProviderStringId) {
+			T.add(inputProviderStringId, 3, row++);
+		}
 		T.add(inputName, 3, row++);
 		T.add(inputAddress, 3, row++);
 		T.add(inputZipCode, 3, row++);
