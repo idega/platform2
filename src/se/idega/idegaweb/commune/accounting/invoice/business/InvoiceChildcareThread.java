@@ -76,7 +76,7 @@ import com.idega.util.Age;
  */
 public class InvoiceChildcareThread extends BillingThread{
 
-	private static final String HOURS_PER_WEEK = "t/v";		//Localize this text in the user interface
+	private static final String HOURS_PER_WEEK = "t/v ";		//Localize this text in the user interface
 	private static final String CHECK = "Check ";
 	private static final String DAYS = "dagar";
 	private ChildCareContract contract;
