@@ -18,6 +18,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.user.data.User;
@@ -33,6 +34,10 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	private boolean showRecreateContract = false;
 
 	private static final String PARAMETER_COMMENTS = "cc_comments";
+	private static final String PARAMETER_CREATE_CONTRACT = "cc_create_contract";
+	
+	private static final String ACTION_CREATE_REGULAR_CONTRACT = "cc_create_regular_contract";
+	private static final String ACTION_CREATE_BANKID_CONTRACT = "cc_create_bankid_contract";
 	
 	private User child;
 	private ChildCareApplication application;
@@ -251,13 +256,17 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		return table;
 	}
 	
-	protected Table getButtonTable(boolean showAllButtons) throws RemoteException {
+	protected Form getButtonTable(boolean showAllButtons) throws RemoteException {
+		Form form = new Form();
+		form.add(new HiddenInput(PARAMETER_CREATE_CONTRACT, ""));
+		
 		Table table = new Table(7,1);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(2, "4");
 		table.setWidth(4, "4");
 		table.setWidth(6, "4");
+		form.add(table);
 		
 		GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back",localize("back","Back")));
 		back.setPageToOpen(getResponsePage());
@@ -337,20 +346,24 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				}
 			}
 			else if (status == getBusiness().getStatusParentsAccept()) {
-				GenericButton createContract = null;
+				SubmitButton createContract = null;
 				GenericButton disabledCreateContract = null;
 				
 				if (getBusiness().getUserBusiness().hasBankLogin(application.getOwner())) {
-					createContract = getButton("create_contract", localize("child_care.create_contract_for_digital_signing","Create contract for BankID"), -1);
-					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT_FOR_BANKID);
-
+					createContract = (SubmitButton) getButton(new SubmitButton(localize("child_care.create_contract_for_digital_signing","Create contract for BankID")));
+					createContract.setValueOnClick(PARAMETER_CREATE_CONTRACT, ACTION_CREATE_BANKID_CONTRACT);
+					createContract.setSubmitConfirm(localize("child_care.confirm_create_contract", "OK to proceed with creating contract?"));
+					form.setToDisableOnSubmit(createContract, true);
+							
 					disabledCreateContract = (GenericButton) getStyledInterface(new GenericButton("create_contract", localize("child_care.create_contract_for_digital_signing","Create contract for BankID")));
 					disabledCreateContract.setDisabled(true);
 				}
 				else {
-					createContract = getButton("create_contract", localize("child_care.create_contract","Create contract"), -1);
-				  createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT);
-
+					createContract = (SubmitButton) getButton(new SubmitButton(localize("child_care.create_contract","Create contract")));
+					createContract.setValueOnClick(PARAMETER_CREATE_CONTRACT, ACTION_CREATE_REGULAR_CONTRACT);
+					createContract.setSubmitConfirm(localize("child_care.confirm_create_contract", "OK to proceed with creating contract?"));
+					form.setToDisableOnSubmit(createContract, true);
+					
 					disabledCreateContract = (GenericButton) getStyledInterface(new GenericButton("create_contract", localize("child_care.create_contract","Create contract")));
 				  disabledCreateContract.setDisabled(true);
 				}
@@ -417,7 +430,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			}
 		}
 		
-		return table;
+		return form;
 	}
 	
 	protected GenericButton getButton(String name, String value, int method)  throws RemoteException {
@@ -447,6 +460,15 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	
 	private void parse(IWContext iwc) throws RemoteException {
 		getBusiness().saveComments(getSession().getApplicationID(), iwc.getParameter(PARAMETER_COMMENTS));
+		
+		if (iwc.isParameterSet(PARAMETER_CREATE_CONTRACT)) {
+			if (iwc.getParameter(PARAMETER_CREATE_CONTRACT).equals(ACTION_CREATE_REGULAR_CONTRACT)) {
+				getBusiness().assignContractToApplication(getSession().getApplicationID(), -1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
+			}
+			else if (iwc.getParameter(PARAMETER_CREATE_CONTRACT).equals(ACTION_CREATE_BANKID_CONTRACT)) {
+				getBusiness().assignContractToApplication(getSession().getApplicationID(), -1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
+			}
+		}
 	}
 
 	public void setContractsPage(ICPage page) {
