@@ -4,18 +4,23 @@
 package is.idega.idegaweb.marathon.presentation;
 
 import is.idega.idegaweb.marathon.business.RunBusiness;
+import is.idega.idegaweb.marathon.business.RunGroup;
+import is.idega.idegaweb.marathon.business.RunGroupMap;
+import is.idega.idegaweb.marathon.business.RunResultsComparator;
 import is.idega.idegaweb.marathon.data.Run;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 
 import java.rmi.RemoteException;
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.ejb.FinderException;
 
@@ -33,6 +38,7 @@ import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.Counter;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -156,7 +162,7 @@ public class RunResultViewer extends Block {
 							getGroupResults(table, row);
 							break;
 						case IWMarathonConstants.RYSDD_GROUPS_COMP:
-							
+							getGroupCompetitionResults(table, row);
 							break;
 					}
 			}
@@ -233,6 +239,71 @@ public class RunResultViewer extends Block {
 		}
 	}
 
+	private void getGroupCompetitionResults(Table table, int row) {
+		try {
+			List groups = new ArrayList(getGroupBiz().getChildGroups(distance));
+			List runs = new ArrayList();
+			Iterator runGroupIter = groups.iterator();
+			while (runGroupIter.hasNext()) {
+				Group runGroup = (Group) runGroupIter.next();
+				List runners = new ArrayList(getGroupBiz().getUsers(runGroup));
+				runs.addAll(getRunsForRunners(runners));
+			}
+			sortRuns(runs);
+			
+			List groupRunners = new ArrayList();
+			Iterator iter = runs.iterator();
+			while (iter.hasNext()) {
+				Run runner = (Run) iter.next();
+				if (runner.getRunGroupName() != null || runner.getRunGroupName().length() > 0) {
+					groupRunners.add(runner);
+				}
+			}
+			
+			Map runGroups = new HashMap();
+			RunGroupMap map = new RunGroupMap();
+			Iterator iterator = groupRunners.iterator();
+			while (iterator.hasNext()) {
+				Run runner = (Run) iterator.next();
+				RunGroup runnerGroup = (RunGroup) runGroups.get(groups);
+				if (runnerGroup == null) {
+					runnerGroup = new RunGroup(runner.getRunGroupName());
+					runGroups.put(runner.getRunGroupName(), runnerGroup);
+				}
+				map.put(runnerGroup, runner);
+			}
+			
+			Map orderedGroups = new TreeMap();
+			iterator = map.keySet().iterator();
+			while (iterator.hasNext()) {
+				RunGroup group = (RunGroup) iterator.next();
+				orderedGroups.put(group.getCounter(), group);
+			}
+			
+			iterator = orderedGroups.values().iterator();
+			while (iterator.hasNext()) {
+				RunGroup runGroup = (RunGroup) iterator.next();
+				Collection runnersInRunGroup = (Collection) map.get(runGroup);
+				row = insertRunGroupIntoTable(table, row, runGroup.getGroupName());
+
+				Iterator runIter = runnersInRunGroup.iterator();
+				int num = 1;
+				int count = 0;
+				while (runIter.hasNext()) {
+					if (count < 3) {
+						Run run = (Run) runIter.next();
+						num = runs.indexOf(run);
+						row = insertRunIntoTable(table, row, run, num);
+					}
+					count++;
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	private DropdownMenu getYearsDropdown() throws RemoteException {
 		DropdownMenu years = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(IWMarathonConstants.GROUP_TYPE_RUN_YEAR), getRunBiz().getYears(run), "getName", iwrb);
 		years.addMenuElementFirst("", "");
@@ -293,6 +364,7 @@ public class RunResultViewer extends Block {
 		while (runnerIter.hasNext()) {
 			User runner = (User) runnerIter.next();
 			Run run = getRunBiz().getRunObjByUserIDandDistanceID(((Integer) runner.getPrimaryKey()).intValue(), ((Integer) distance.getPrimaryKey()).intValue()); // @TODO
+			boolean addToList = false;
 			if (run != null) {
 				_runToRunnerMap.put(run, runner);
 				runs.add(run);
@@ -309,14 +381,7 @@ public class RunResultViewer extends Block {
 	 *            The list of Run objects to sort
 	 */
 	private void sortRuns(List runs) {
-		Collections.sort(runs, new Comparator() {
-
-			public int compare(Object arg0, Object arg1) {
-				Run r0 = (Run) arg0;
-				Run r1 = (Run) arg1;
-				return r1.getRunTime() - r0.getRunTime();
-			}
-		});
+		Collections.sort(runs, new RunResultsComparator());
 	}
 
 	/**
@@ -342,12 +407,12 @@ public class RunResultViewer extends Block {
 		table.setStyleClass(1, row, getStyleName(STYLENAME_LIST_ROW));
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
 
-		String runTime = getTimeStringFromMillis(run.getRunTime());
+		String runTime = getTimeStringFromRunTime(run.getRunTime());
 		table.add(getRunnerRowText(runTime), 3, row);
 		table.setStyleClass(3, row, getStyleName(STYLENAME_LIST_ROW));
 		table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_CENTER);
 
-		String chipTime = getTimeStringFromMillis(run.getChipTime());
+		String chipTime = getTimeStringFromRunTime(run.getChipTime());
 		table.add(getRunnerRowText(chipTime), 5, row);
 		table.setStyleClass(5, row, getStyleName(STYLENAME_LIST_ROW));
 		table.setAlignment(5, row, Table.HORIZONTAL_ALIGN_CENTER);
@@ -420,17 +485,10 @@ public class RunResultViewer extends Block {
 		return ++row;
 	}
 
-	private String getTimeStringFromMillis(int millis) {
-		int seks = millis / 1000;
-		int mins = millis / 60000;
-		float fr = ((float) millis % 1000) / 10.0f;
-		String strFr = Integer.toString(Math.round(fr));
-		strFr = strFr.length() == 1 ? "0" + strFr : strFr;
-		String strSecs = Integer.toString(seks - mins * 60);
-		strSecs = strSecs.length() == 1 ? "0" + strSecs : strSecs;
-		String strMins = Integer.toString(mins);
-		strMins = strMins.length() == 1 ? "0" + strMins : strMins;
-		return strMins + ":" + strSecs + ":" + strFr;
+	private String getTimeStringFromRunTime(int seconds) {
+		Counter counter = new Counter();
+		counter.addSeconds(seconds);
+		return counter.toString();
 	}
 
 	private Text getRunnerRowText(String text) {
