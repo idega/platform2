@@ -68,6 +68,14 @@ public class CreateIFSFiles extends AccountingBlock {
 	}
 
 	private int parseAction(IWContext iwc) {
+		try {
+			_currentOperation = getSession().getOperationalField();
+			if (_currentOperation == null)
+				_currentOperation = "";
+		}
+		catch (RemoteException e) {
+		}
+
 		if (iwc.isParameterSet(PARAM_CREATE_FILE)) {
 			return ACTION_CREATE;
 		}
@@ -75,12 +83,6 @@ public class CreateIFSFiles extends AccountingBlock {
 	}
 
 	private void createFiles(IWContext iwc) {
-		try {
-			_currentOperation = getSession().getOperationalField() == null ? "" : _currentOperation;
-		}
-		catch (RemoteException e) {
-		}
-
 		String date = iwc.getParameter(PARAM_PAYMENT_DATE);
 		String period = iwc.getParameter(PARAM_PERIOD_TEXT);
 		
@@ -96,13 +98,6 @@ public class CreateIFSFiles extends AccountingBlock {
 
 	private void viewForm(IWContext iwc) {
 		ApplicationForm form = new ApplicationForm(this);
-
-		try {
-			_currentOperation = getSession().getOperationalField() == null ? "" : _currentOperation;
-		}
-		catch (RemoteException e) {
-		}
-
 		form.setLocalizedTitle(KEY_HEADER, "Create files");
 		form.setSearchPanel(getTopPanel(iwc));
 		form.setButtonPanel(getButtonPanel());
