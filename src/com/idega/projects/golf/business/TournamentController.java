@@ -347,15 +347,9 @@ public class TournamentController{
 
     }
 
-    /**
-     * Þarf að bæta við TournamentRound_Startingtime...
-     *
-     */
-
     public static boolean isMemberRegisteredInTournament(Tournament tournament,TournamentRound tourRound,int howManyEachGroup, com.idega.projects.golf.entity.Member member) throws SQLException {
         boolean returner = false;
         com.idega.util.idegaTimestamp startStamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundDate());
-//        com.idega.util.idegaTimestamp endStamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundEndDate());
         Startingtime[] startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT startingtime.* FROM STARTINGTIME, tournament_STARTINGTIME, tournament WHERE tournament.tournament_id = "+tournament.getID()+" AND tournament.tournament_id = tournament_startingtime.tournament_id AND tournament_startingtime.startingtime_id = startingtime.startingtime_id AND STARTINGTIME_DATE = '"+startStamp.toSQLDateString()+"' AND field_id="+tournament.getFieldId()+" AND member_id = "+member.getID());
         if (startingtimes.length > 0 ) {
             returner = true;
@@ -413,29 +407,8 @@ public class TournamentController{
 
         return tGroup;
     }
-/*
-    public static List getUnions(ModuleInfo modinfo) throws SQLException {
-            if (AccessControl.isClubAdmin(modinfo)) {
 
-            }
-            else if (AccessControl.isAdmin(modinfo)) {
 
-            }
-
-            return null;
-    }
-
-    public static List getFields(ModuleInfo modinfo, Union union) throws SQLException{
-            if (AccessControl.isClubAdmin(modinfo)) {
-
-            }
-            else if (AccessControl.isAdmin(modinfo)) {
-
-            }
-
-            return null;
-    }
-*/
     public static SubmitButton getAheadButton(String name, String value) {
         com.idega.jmodule.object.Image aheadImage = new com.idega.jmodule.object.Image("/pics/formtakks/afram.gif","");
         SubmitButton aheadButton = new SubmitButton(aheadImage,name,value);
@@ -484,33 +457,16 @@ public class TournamentController{
         }
 
         TournamentRound tournamentRound = new TournamentRound(tournamentRoundId);
-//        TournamentDay tournamentDay = new TournamentDay(tournamentDayId);
-
 
         idegaTimestamp tourDay = null;
-/*
-        if (tournament_round_id.equals("-1")) {
-            tourDay = new idegaTimestamp(tournament.getStartTime());
-        }
-        else {
-            tourDay = new idegaTimestamp(tournamentRound.getRoundDate());
-        }
-*/
-
 
         DropdownMenu rounds = new DropdownMenu("tournament_round");
-//        for (int i = 0; i < tourRounds.length; i++) {
-//            tourDay = new idegaTimestamp(tourRounds[i].getRoundDate());
-//            rounds.addMenuElement(tourRounds[i].getID(),"Hringur "+tourRounds[i].getRoundNumber()+" "+tourDay.getISLDate(".",true) );
-//        }
 
             if (tournamentRoundId != -1) {
               tourDay = new idegaTimestamp(tournamentRound.getRoundDate());
                 rounds.addMenuElement(tournamentRound.getID() ,"Hringur "+tournamentRound.getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
                 table.add(rounds,1,row);
             }
-//            rounds.setToSubmit();
-
 
         table.mergeCells(1,row,6,row);
         table.setAlignment(1,row,"right");
@@ -520,11 +476,19 @@ public class TournamentController{
             table.add("Nafn",3,row);
             table.add("Klúbbur",4,row);
             table.add("Forgjöf",5,row);
+            if (viewOnly || onlineRegistration){
+                table.mergeCells(5,row,6,row);
+            }
+            else{
+                table.add("Eyða",6,row);
+            }
 
         java.text.DecimalFormat extraZero = new java.text.DecimalFormat("00");
         java.text.DecimalFormat handicapFormat = new java.text.DecimalFormat("0.0");
         Field field = tournament.getField();
         List members;
+        CheckBox delete;
+
         com.idega.jmodule.object.Image rusl = new com.idega.jmodule.object.Image("/pics/icons/trash.gif","Skrá úr móti");
         com.idega.jmodule.object.Image time;
 
@@ -584,13 +548,8 @@ public class TournamentController{
                         table.add(handicapFormat.format(tempMember.getHandicap()),5,row);
                         if (!viewOnly) {
                             if (!onlineRegistration) {
-                                remove = new Link(rusl);
-                                    remove.addParameter("sub_action","removeMemberFromTournament");
-                                    remove.addParameter("action","selectmember");
-                                    remove.addParameter("tournament_round",Integer.toString(tournamentRoundId));
-                                    remove.addParameter("member_id",Integer.toString(tempMember.getID()));
-                                    remove.addParameter("startingGroupNumber", Integer.toString(groupCounter));
-                                table.add(remove,6,row);
+                                delete = new CheckBox("deleteMember",Integer.toString(tempMember.getID()));
+                                table.add(delete,6,row);
                             }
                         }
                         row++;
@@ -627,7 +586,6 @@ public class TournamentController{
                 table.setAlignment(4,row,"right");
             }
 
-        //}
         return form;
     }
 
