@@ -101,7 +101,22 @@ public class ChangeHealthCentre extends EHealthBlock {
 		
 		PresentationObject pictureDr=null;
 		User doctor = null;
-		int userIDDr = 45; //45   41047
+		
+		Age age = null;
+		String doctorInfo = null;
+		
+		if (user != null && user.getDateOfBirth() != null)
+			age = new Age(user.getDateOfBirth());
+		else if (user != null && user.getPersonalID() != null)
+			age = new Age(PIDChecker.getInstance().getDateFromPersonalID(user.getPersonalID()));
+		
+		int userIDDr = 45;
+		
+		if (age != null && age.getYears() >= 70){		
+			userIDDr = 46; //45   41047
+		}
+		
+		
 		int userImageID = -1;
 		try {
 			doctor = ((UserBusiness) IBOLookup.getServiceInstance(_iwc, UserBusiness.class)).getUser(userIDDr);	
@@ -137,7 +152,13 @@ public class ChangeHealthCentre extends EHealthBlock {
 		}
 		table.add(pictureDr,1,1);
 		
-		String doctorInfo = "<b>Dr. Magne Syhl</b><br>Allmänläkare<br>Telefon:<br>018-987654<br>Telefontid: Mån-ons, kl 08-10.00<br>Webbsida: <a href='http://www.norrudden.se' target='_new'>www.gimovc.se</a>";
+		if (age != null && age.getYears() >= 70){	
+			doctorInfo = "<b>Dr. Inga Pren</b><br>Allmänläkare<br>Telefon:<br>018-987624<br>Telefontid: Mån-ons, kl 08:30-10.00<br>Webbsida: <a href='http://www.flogsta.se' target='_new'>www.flogsta.se</a>";	
+		}
+		else{
+			doctorInfo = "<b>Dr. Magne Syhl</b><br>Allmänläkare<br>Telefon:<br>018-987654<br>Telefontid: Mån-ons, kl 08-10.00<br>Webbsida: <a href='http://www.gimovc.se' target='_new'>www.gimovc.se</a>";
+		}
+		
 		
 		table.add(doctorInfo,3,1);
 		
@@ -205,13 +226,26 @@ public class ChangeHealthCentre extends EHealthBlock {
 		
 		tableHCentre.add(picture,1,1);
 		
-		String centreInfo = "<b>Gimo <br>Husläkarmottagning</b><br>Lorem ipsum dolor sit amet, consecteuter andi elit, sed diam ninummy nibh.<br>Telefon:<br>018-987654<br>Telefontid: Mån-ons, kl 08-10.00<br>Webbsida: <a href='http://www.norrudden.se' target='_new'>www.norrudden.se</a>";
+		String centreInfo = null;
+		
+		if (age != null && age.getYears() >= 70){	
+			centreInfo = "<b>Flogsta VC</b><br>Husläkarmottagning med 7 st allmänläkare<br>Telefon:<br>018-987624<br>Telefontid: Mån-ons, kl 08:30-10.00<br>Webbsida: <a href='http://www.flogsta.se' target='_new'>www.flogsta.se</a>";	
+		}
+		else{
+			centreInfo = "<b>Gimo VC</b><br>Husläkarmottagning med 5 st allmänläkare<br>Telefon:<br>018-987654<br>Telefontid: Mån-ons, kl 08-10.00<br>Webbsida: <a href='http://www.gimovc.se' target='_new'>www.gimovc.se</a>";
+		}
+		
 		
 		tableHCentre.add(centreInfo,3,1);
 		
 		
 		DropdownMenu dropHCentre = new DropdownMenu(prmHealthCentre);
-		dropHCentre.addMenuElementFirst("1", "Gimo VC");
+		if (age != null && age.getYears() >= 70){
+			dropHCentre.addMenuElement("1", "Flogsta VC");
+		}
+		else{
+			dropHCentre.addMenuElementFirst("1", "Gimo VC");
+		}
 		dropHCentre.addMenuElement("2", "Östhammar VC");
 		dropHCentre.addMenuElement("3", "Alunda VC");
 		dropHCentre.addMenuElement("4", "Österbybruk VC");
@@ -223,8 +257,16 @@ public class ChangeHealthCentre extends EHealthBlock {
 		tableHCentre.add(dropHCentre,1,2);
 		
 		DropdownMenu dropDr = new DropdownMenu(prmDoctor);
-		dropDr.addMenuElementFirst("1", "Dr Magne Syhl");
-		dropDr.addMenuElement("2", "Dr Alve Don");
+		if (age != null && age.getYears() >= 70){
+			dropDr.addMenuElementFirst("1", "Dr Magne Syhl");
+			dropDr.addMenuElement("2", "Dr Inga Pren");
+		}
+		else{
+			dropDr.addMenuElementFirst("1", "Dr Inga Pren");
+			dropDr.addMenuElement("2", "Dr Magne Syhl");
+		}
+			
+		dropDr.addMenuElement("3", "Dr Alve Don");
 		
 		dropDr.setStyleClass("lul_form");
 		tableHCentre.add(dropDr,1,3);
