@@ -196,7 +196,7 @@ public class UserSearcher extends Block {
 		String searchIdentifier = constrainToUniqueSearch ? uniqueIdentifier : "";
 		
 		if (iwc.isParameterSet(PRM_USER_ID + uniqueIdentifier)) {
-			userID = Integer.valueOf(iwc.getParameter(PRM_USER_ID + uniqueIdentifier));
+			userID = Integer.valueOf((iwc.getParameter(PRM_USER_ID + uniqueIdentifier)).trim());
 		}
 		if (iwc.isParameterSet(SEARCH_COMMITTED + searchIdentifier)) {
 			processSearch(iwc);
