@@ -153,7 +153,7 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
       }
       count = bookings[i].getTotalCount();
       tCount += count;
-      price = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
+      price = getBooker(iwc).getBookingPrice(bookings[i]);
       tPrice += price;
 
       table.add(getText(stamp.getLocaleDate(iwc)), 1, row);
@@ -219,7 +219,7 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
       }
 
       iCount = bookings.length;
-      price = getBooker(iwc).getBookingPrice(iwc, bookings);
+      price = getBooker(iwc).getBookingPrice(bookings);
 
       totalCount += iCount;
       totalPrice += price;

@@ -346,7 +346,7 @@ public abstract class Voucher extends TravelManager {
         table.add(getText(_iwrb.getLocalizedString("travel.amount_paid_lg","AMOUNT PAID")),1,2);
         table.add(getText(" : "),1,2);
 //        table.add(getText(df.format(Booker.getBookingPrice(iwc, _booking))),1,2);
-        table.add(getText(df.format(getBooker(iwc).getBookingPrice(iwc, _bookings))),1,2);
+        table.add(getText(df.format(getBooker(iwc).getBookingPrice(_bookings))),1,2);
         table.add(getText(" "),1,2);
         com.idega.block.trade.data.Currency currency = getBooker(iwc).getCurrency(_booking);
         if (currency != null)

@@ -218,7 +218,7 @@ public class DailyReport extends TravelManager implements Report{
 
             ibookings = bookings[i].getTotalCount();
             attendance = bookings[i].getAttendance();
-            amount = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
+            amount = getBooker(iwc).getBookingPrice(bookings[i]);
 
             totalBookings += ibookings;
             if (attendance != -1000)
@@ -277,7 +277,7 @@ public class DailyReport extends TravelManager implements Report{
                 ++row;
                 table.setRowColor(row, theColor);
                 price = entries[j].getProductPrice();
-                iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(iwc, entries[j], bookings[i]);
+                iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(entries[j], bookings[i]);
 
                 nameText = (Text) smallText.clone();
                   nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
@@ -351,7 +351,7 @@ public class DailyReport extends TravelManager implements Report{
             addTable.setAlignment(2,addRow,"center");
             ibookings = bookings[i].getTotalCount();
             attendance = bookings[i].getAttendance();
-            amount = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
+            amount = getBooker(iwc).getBookingPrice(bookings[i]);
 
             totalBookings += ibookings;
             if (attendance != -1000)
@@ -410,7 +410,7 @@ public class DailyReport extends TravelManager implements Report{
                 ++addRow;
                 addTable.setRowColor(addRow, theColor);
                 price = entries[j].getProductPrice();
-                iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(iwc, entries[j], bookings[i]);
+                iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(entries[j], bookings[i]);
 
                 nameText = (Text) smallText.clone();
                   nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
@@ -483,7 +483,7 @@ public class DailyReport extends TravelManager implements Report{
             correctionTable.setAlignment(2,corrRow,"center");
             ibookings = bookings[i].getTotalCount();
             attendance = bookings[i].getAttendance();
-            amount = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
+            amount = getBooker(iwc).getBookingPrice(bookings[i]);
 
             totalBookings += ibookings;
             if (attendance != -1000)
@@ -535,7 +535,7 @@ public class DailyReport extends TravelManager implements Report{
                 ++corrRow;
                 correctionTable.setRowColor(corrRow, theColor);
                 price = entries[j].getProductPrice();
-                iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(iwc, entries[j], bookings[i]);
+                iEntryCount = (int) getBooker(iwc).getBookingEntryPrice(entries[j], bookings[i]);
 
                 nameText = (Text) smallText.clone();
                   nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE + price.getPriceCategory().getName());
@@ -870,7 +870,7 @@ public class DailyReport extends TravelManager implements Report{
 	prod = (Product) products.get(i);
 	bookings = getBooker(iwc).getBookings(prod.getID(), stamp);
 	count = getBooker(iwc).getNumberOfBookings(prod.getID(), stamp);
-	price =  getBooker(iwc).getBookingPrice(iwc, bookings);
+	price =  getBooker(iwc).getBookingPrice(bookings);
 	depTime = getServiceHandler(iwc).getDepartureTime(prod);
 	totalCount += count;
 	totalPrice += price;

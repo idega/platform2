@@ -1,25 +1,41 @@
 package is.idega.idegaweb.travel.business;
 
-import java.rmi.*;
-import java.sql.*;
-import java.util.*;
+import is.idega.idegaweb.travel.data.BookingEntry;
+import is.idega.idegaweb.travel.data.BookingEntryHome;
+import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.data.GeneralBookingHome;
+import is.idega.idegaweb.travel.interfaces.Booking;
+import is.idega.idegaweb.travel.service.business.ProductCategoryFactory;
+import is.idega.idegaweb.travel.service.business.ProductCategoryFactoryBean;
+import is.idega.idegaweb.travel.service.business.ServiceHandler;
+import is.idega.idegaweb.travel.service.tour.data.Tour;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import javax.ejb.*;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
-import com.idega.block.trade.data.*;
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.business.*;
-import com.idega.data.*;
-import com.idega.idegaweb.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.util.*;
-import com.idega.util.text.*;
-import is.idega.idegaweb.travel.data.*;
-import is.idega.idegaweb.travel.interfaces.*;
-import is.idega.idegaweb.travel.service.business.*;
-import is.idega.idegaweb.travel.service.tour.data.*;
+import com.idega.block.trade.data.Currency;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductCategory;
+import com.idega.block.trade.stockroom.data.ProductPrice;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.block.trade.stockroom.data.TravelAddressHome;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDORemoveRelationshipException;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -114,7 +130,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
           }
         booking.store();
         /** @todo fixa þetta getStaticInstance() crap */
-        removeBookingPriceApplication(IWContext.getInstance(), booking);
+        removeBookingPriceApplication(booking);
       }
 
       GeneralBooking temp = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(booking.getID()));
@@ -317,17 +333,17 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 
 
-  public  float getBookingEntryPrice(IWContext iwc, BookingEntry entry, Booking booking) throws RemoteException{
+  public  float getBookingEntryPrice(BookingEntry entry, Booking booking) throws RemoteException{
     String applName = bookingEntryPriceApplication+((Integer)entry.getPrimaryKey()).intValue();;
       float total = 0;
 
       try {
         ProductPrice pPrice;
-        Float temp = (Float) iwc.getApplicationAttribute(applName);
+        Float temp = (Float) getIWApplicationContext().getApplicationAttribute(applName);
         if (temp == null) {
           pPrice = entry.getProductPrice();
           total = entry.getCount() * getTravelStockroomBusiness().getPrice(pPrice.getID(), booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), booking.getDateOfBooking());
-          iwc.setApplicationAttribute(applName, new Float(total));
+          getIWApplicationContext().setApplicationAttribute(applName, new Float(total));
         }else {
           total = temp.floatValue();
         }
@@ -342,39 +358,39 @@ public class BookerBean extends IBOServiceBean implements Booker{
       return total;
   }
 
-  public  float getBookingPrice(IWContext iwc, List bookings) throws RemoteException, FinderException{
+  public  float getBookingPrice(List bookings) throws RemoteException, FinderException{
     float price = 0;
     Booking gBook;
     if (bookings != null) {
       for (int i = 0; i < bookings.size(); i++) {
         gBook = (Booking) bookings.get(i);
-        price += getBookingPrice(iwc, gBook);
+        price += getBookingPrice(gBook);
       }
     }
     return price;
   }
 
-  public  float getBookingPrice(IWContext iwc, GeneralBooking[] bookings) throws RemoteException, FinderException{
+  public  float getBookingPrice(GeneralBooking[] bookings) throws RemoteException, FinderException{
     float price = 0;
     for (int i = 0; i < bookings.length; i++) {
-      price += getBookingPrice(iwc, (Booking) bookings[i]);
+      price += getBookingPrice((Booking) bookings[i]);
     }
     return price;
   }
 
-  public  float getBookingPrice(IWContext iwc, Booking[] bookings) throws RemoteException, FinderException{
+  public  float getBookingPrice(Booking[] bookings) throws RemoteException, FinderException{
     float price = 0;
     for (int i = 0; i < bookings.length; i++) {
-      price += getBookingPrice(iwc, bookings[i]);
+      price += getBookingPrice(bookings[i]);
     }
     return price;
   }
 
-  public  float getBookingPrice(IWContext iwc, Booking booking) throws RemoteException , FinderException{
+  public  float getBookingPrice(Booking booking) throws RemoteException , FinderException{
       float total = 0;
       String applName = bookingPriceApplication+booking.getID();
 
-      Float temp = (Float) iwc.getApplicationAttribute(applName);
+      Float temp = (Float) getIWApplicationContext().getApplicationAttribute(applName);
       if (temp == null) {
         BookingEntry[] entries = booking.getBookingEntries();
 
@@ -382,9 +398,9 @@ public class BookerBean extends IBOServiceBean implements Booker{
         ProductPrice pPrice;
 
         for (int i = 0; i < entries.length; i++) {
-          total += getBookingEntryPrice(iwc, entries[i], booking);
+          total += getBookingEntryPrice(entries[i], booking);
         }
-        iwc.setApplicationAttribute(applName, new Float(total));
+        getIWApplicationContext().setApplicationAttribute(applName, new Float(total));
       }else {
         total = temp.floatValue();
       }
@@ -393,11 +409,11 @@ public class BookerBean extends IBOServiceBean implements Booker{
       return total;
   }
 
-  public  void removeBookingPriceApplication(IWContext iwc, Booking booking) throws RemoteException{
+  public  void removeBookingPriceApplication(Booking booking) throws RemoteException{
     String applName = bookingPriceApplication+booking.getID();
     String applNameEnt = bookingEntryPriceApplication+booking.getID();
-    iwc.removeApplicationAttribute(applName);
-    iwc.removeApplicationAttribute(applNameEnt);
+    getIWApplicationContext().removeApplicationAttribute(applName);
+    getIWApplicationContext().removeApplicationAttribute(applNameEnt);
   }
 
   public  BookingEntry[] getBookingEntries(Booking booking) throws RemoteException, FinderException{

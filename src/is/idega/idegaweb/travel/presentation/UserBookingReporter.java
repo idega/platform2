@@ -150,7 +150,7 @@ public class UserBookingReporter extends TravelManager implements Report{
         ++row;
         owner = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getOwnerId());
         prod = getProductBusiness(iwc).getProduct(bookings[i].getServiceID());
-        price = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
+        price = getBooker(iwc).getBookingPrice(bookings[i]);
         count = bookings[i].getTotalCount();
         totalPrice += price;
         totalCount += count;
@@ -237,7 +237,7 @@ public class UserBookingReporter extends TravelManager implements Report{
         ++row;
         user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getUserId());
         prod = getProductBusiness(iwc).getProduct(bookings[i].getServiceID());
-        price = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
+        price = getBooker(iwc).getBookingPrice(bookings[i]);
         count = bookings[i].getTotalCount();
         totalPrice += price;
         totalCount += count;
@@ -344,7 +344,7 @@ public class UserBookingReporter extends TravelManager implements Report{
         table.add(getText(new IWTimestamp(bookings[i].getBookingDate()).getLocaleDate(getLocale())), 1, row);
         table.add(getText(prod.getProductName(getLocaleId())), 2, row);
         table.add(getText(Integer.toString(bookings[i].getTotalCount())), 3, row);
-        table.add(getText(TextSoap.decimalFormat(getBooker(iwc).getBookingPrice(iwc, bookings[i]), 0)), 6, row);
+        table.add(getText(TextSoap.decimalFormat(getBooker(iwc).getBookingPrice(bookings[i]), 0)), 6, row);
 
         table.setRowColor(row, super.GRAY);
 

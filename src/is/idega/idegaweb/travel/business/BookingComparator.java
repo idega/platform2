@@ -1,17 +1,23 @@
 package is.idega.idegaweb.travel.business;
 
-import java.rmi.*;
-import java.sql.*;
-import java.util.*;
+import is.idega.idegaweb.travel.data.HotelPickupPlace;
+import is.idega.idegaweb.travel.interfaces.Booking;
+import is.idega.idegaweb.travel.service.tour.data.TourBooking;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
 
-import javax.ejb.*;
+import javax.ejb.FinderException;
 
-import com.idega.core.user.data.*;
-import com.idega.presentation.*;
-import com.idega.util.*;
-import is.idega.idegaweb.travel.data.*;
-import is.idega.idegaweb.travel.interfaces.*;
-import is.idega.idegaweb.travel.service.tour.data.*;
+import com.idega.core.user.data.User;
+import com.idega.presentation.IWContext;
+import com.idega.util.IWTimestamp;
+import com.idega.util.IsCollator;
 
 /**
  * Title:
@@ -122,8 +128,8 @@ public class BookingComparator implements Comparator {
       Booking p1 = (Booking) o1;
       Booking p2 = (Booking) o2;
 
-      float one = getBooker().getBookingPrice(iwc, p1);
-      float two = getBooker().getBookingPrice(iwc, p2);
+      float one = getBooker().getBookingPrice(p1);
+      float two = getBooker().getBookingPrice(p2);
 
       if (one > two) return -1;
       else if (one < two) return 1;
