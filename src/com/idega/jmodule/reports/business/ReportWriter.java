@@ -136,8 +136,8 @@ public class ReportWriter {
         document.open();
 
         Table datatable = new Table(Headers.length);
-        datatable.setCellpadding(0);
-        datatable.setCellspacing(3);
+        datatable.setSpaceInsideCell(0);
+        datatable.setSpaceBetweenCells(3);
         datatable.setBorder(Rectangle.NO_BORDER);
         datatable.setWidth(100);
         for (int i = 0; i < Hlen; i++) {
