@@ -444,7 +444,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		
 		String[] types = { FinanceEntryBMPBean.TYPE_ASSESSMENT, FinanceEntryBMPBean.TYPE_MANUAL};
 		Collection finEntries = getAccountingBusiness().getFinanceEntriesByDateIntervalDivisionsAndGroups(club, types, dateFromFilter, dateToFilter, divisionsFilter, groupsFilter);
-		Map financeEntriesByDivisions = new TreeMap();
+		Map financeEntriesByPersons = new TreeMap();
 		
 		//Iterating through reports and creating report data 
 		Iterator iter = finEntries.iterator();
@@ -472,26 +472,26 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(infoField, financeEntry.getInfo() );
 			data.addData(tariffTypeField, financeEntry.getTariffType().getName() );		
 			
-			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
-			if (statsForDivision == null)
-				statsForDivision = new Vector();
-			statsForDivision.add(data);
-			financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);			 	
+			List statsForPersons = (List) financeEntriesByPersons.get(personalID);
+			if (statsForPersons == null)
+				statsForPersons = new Vector();
+			statsForPersons.add(data);
+			financeEntriesByPersons.put(personalID, statsForPersons);			 	
 			//}
 			//catch (Exception e) {
 			//	e.printStackTrace();
 			//}
 		} 
 		// iterate through the ordered map and ordered lists and add to the final collection
-		Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
+		Iterator statsDataIter = financeEntriesByPersons.keySet().iterator();
 		while (statsDataIter.hasNext()) {
 			
-			List datas = (List) financeEntriesByDivisions.get(statsDataIter.next());
+			List datas = (List) financeEntriesByPersons.get(statsDataIter.next());
 			// don't forget to add the row to the collection
 			reportCollection.addAll(datas);
 		}
 		
-		ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, personalIDField, entryDateField };
+		ReportableField[] sortFields = new ReportableField[] {nameField, divisionField, groupField, entryDateField };
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 		
