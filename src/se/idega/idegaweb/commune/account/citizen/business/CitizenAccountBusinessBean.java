@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.26 2002/11/15 11:35:29 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.27 2002/11/15 12:11:16 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -158,6 +158,30 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
                           : cohabitant.getPrimaryKey());
     }
 
+    public Integer insertChildren
+        (final Integer applicationId, final String firstName,
+         final String lastName, final String ssn)
+        throws RemoteException,CreateException {
+		CitizenApplicantChildren children = null;
+        try {
+            final CitizenApplicantChildrenHome citizenApplicantChildrenHome
+                    = (CitizenApplicantChildrenHome)
+                    IDOLookup.getHome(CitizenApplicantChildren.class);
+			children = citizenApplicantChildrenHome.create ();
+            children.setApplicationId (applicationId.intValue ());
+            children.setFirstName (firstName);
+            children.setLastName (lastName);
+            children.setSsn (ssn);
+			children.store ();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+        
+		return (Integer) (children == null ? null
+                          : children.getPrimaryKey());
+    }
 
     public Gender [] getGenders () throws RemoteException {
         final GenderHome home = (GenderHome) IDOLookup.getHome (Gender.class);

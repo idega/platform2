@@ -3,15 +3,14 @@ package se.idega.idegaweb.commune.account.citizen.data;
 import com.idega.data.GenericEntity;
 
 /**
- * Last modified: $Date: 2002/11/15 08:34:29 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/15 12:11:16 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CitizenApplicantMovingToBMPBean extends GenericEntity
     implements CitizenApplicantMovingTo {
-    private static final String ENTITY_NAME
-        = "comm_cit_acc_applicant_moving_to";
+    private static final String ENTITY_NAME = "comm_cit_moving_to";
     private static final String COLUMN_ID = ENTITY_NAME + "_id";
 	private static final String COLUMN_APPLICATION_ID = "application_id";
     private final static String COLUMN_ADDRESS = "address";

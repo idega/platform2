@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.32 2002/11/15 11:35:29 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.33 2002/11/15 12:11:16 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,11 +28,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/15 11:35:29 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/15 12:11:16 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -462,6 +462,21 @@ public class CitizenAccountApplication extends CommuneBlock {
                          cohabitantSsn,cohabitantCivilStatus,
                          cohabitantPhoneWork);
             }
+
+            if (null != applicationId && childrenCount > 0) {
+                for (int i = 0; i < childrenCount; i++) {
+                    final String childrenFirstName  = parameters.get
+                            (FIRST_NAME_KEY + CHILDREN_KEY + i).toString ();;
+                    final String childrenLastName = parameters.get
+                            (LAST_NAME_KEY + CHILDREN_KEY + i).toString ();
+                    final String childrenSsn = parameters.get
+                            (SSN_KEY + CHILDREN_KEY + i).toString ();
+                    business.insertChildren
+                            (applicationId, childrenFirstName, childrenLastName,
+                             childrenSsn);                    
+                }
+            }
+
 		} catch (final ParseException e) {
 			final Text text = new Text(e.getMessage(), true, false, false);
 			text.setFontColor(COLOR_RED);

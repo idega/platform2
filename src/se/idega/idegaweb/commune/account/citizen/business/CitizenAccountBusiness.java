@@ -49,5 +49,9 @@ public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
     Integer insertCohabitant (Integer applicationId, String firstName,
                               String lastName, String ssn, String civilStatus,
                               String phoneWork)
-        throws RemoteException,CreateException;
+        throws RemoteException, CreateException;
+
+    Integer insertChildren (Integer applicationId, String firstName,
+                            String lastName, String ssn)
+        throws RemoteException, CreateException;
 }
