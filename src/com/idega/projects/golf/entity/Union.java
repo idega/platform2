@@ -267,6 +267,17 @@ public List getMembersInUnion(){
   return theReturn;
 }
 
+public List getAllMembersInUnion(){
+  List theReturn=null;
+  try{
+    theReturn = EntityFinder.findAll(new Member(),"select member.* from member m, union_member_info umi where m.member_id = umi.member_id and umi.membership_type = 'main' and umi.union_id = "+this.getID());
+  }
+  catch(Exception ex){
+    ex.printStackTrace(System.err);
+  }
+  return theReturn;
+}
+
 public List getAllActiveMembers(){
   List theReturn=null;
   try{
@@ -282,6 +293,28 @@ public List getAllInActiveMembers(){
   List theReturn=null;
   try{
     theReturn = EntityFinder.findAll(new Member(),"select member.* from member m, union_member_info umi where m.member_id = umi.member_id and umi.member_status = 'I' and umi.membership_type = 'main'");
+  }
+  catch(Exception ex){
+    ex.printStackTrace(System.err);
+  }
+  return theReturn;
+}
+
+public List getActiveMembers(){
+  List theReturn=null;
+  try{
+    theReturn = EntityFinder.findAll(new Member(),"select member.* from member m, union_member_info umi where m.member_id = umi.member_id and umi.member_status = 'A' and umi.membership_type = 'main' and umi.union_id = "+this.getID());
+  }
+  catch(Exception ex){
+    ex.printStackTrace(System.err);
+  }
+  return theReturn;
+}
+
+public List getInActiveMembers(){
+  List theReturn=null;
+  try{
+    theReturn = EntityFinder.findAll(new Member(),"select member.* from member m, union_member_info umi where m.member_id = umi.member_id and umi.member_status = 'I' and umi.membership_type = 'main' and umi.union_id = "+this.getID());
   }
   catch(Exception ex){
     ex.printStackTrace(System.err);

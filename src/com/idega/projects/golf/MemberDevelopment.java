@@ -90,7 +90,6 @@ private boolean phones = false;
       data.append("Forgjöf fyrir"); data.append("\t");
       data.append("Forgjöf eftir");data.append("\t");
       data.append("Mismunur"); data.append("\t");
-      data.append("Símar"); data.append("\t");
       data.append("\n");
       out.write(data.toString().toCharArray());
 
@@ -102,11 +101,11 @@ private boolean phones = false;
       }
       else {
         if ( this.onlyActive )
-          memberList = union.getAllActiveMembers();
+          memberList = union.getActiveMembers();
         else if ( this.onlyInActive )
-          memberList = union.getAllInActiveMembers();
+          memberList = union.getInActiveMembers();
         else
-          memberList = union.getMembersInUnion();
+          memberList = union.getAllMembersInUnion();
       }
 
       //Collections.sort(memberList,new GenericMemberComparator(GenericMemberComparator.FIRSTLASTMIDDLE));
