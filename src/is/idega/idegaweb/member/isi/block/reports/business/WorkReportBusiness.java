@@ -1,5 +1,5 @@
 /*
- * $Id: WorkReportBusiness.java,v 1.57 2004/09/08 00:44:24 eiki Exp $
+ * $Id: WorkReportBusiness.java,v 1.58 2004/10/28 12:03:25 eiki Exp $
  * Created on Sep 7, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/09/08 00:44:24 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/10/28 12:03:25 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.57 $
+ * @version $Revision: 1.58 $
  */
 public interface WorkReportBusiness extends IBOService,MemberUserBusiness,UserGroupPlugInBusiness{
 /**
@@ -450,7 +450,7 @@ public void beforeUserRemove(User user) throws RemoveException,RemoteException,j
 /**
  * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#afterUserCreate
  */
-public void afterUserCreate(User user) throws CreateException,RemoteException,java.rmi.RemoteException;
+public void afterUserCreateOrUpdate(User user) throws CreateException,RemoteException,java.rmi.RemoteException;
 /**
  * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#beforeGroupRemove
  */
@@ -458,7 +458,7 @@ public void beforeGroupRemove(Group group) throws RemoveException,RemoteExceptio
 /**
  * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#afterGroupCreate
  */
-public void afterGroupCreate(Group group) throws CreateException,RemoteException,java.rmi.RemoteException;
+public void afterGroupCreateOrUpdate(Group group) throws CreateException,RemoteException,java.rmi.RemoteException;
 /**
  * @see is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusinessBean#getPresentationObjectClass
  */

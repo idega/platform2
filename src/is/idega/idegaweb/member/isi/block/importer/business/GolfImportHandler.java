@@ -1,5 +1,5 @@
 /*
- * $Id: GolfImportHandler.java,v 1.1 2004/10/12 14:52:33 eiki Exp $
+ * $Id: GolfImportHandler.java,v 1.2 2004/10/28 12:03:53 eiki Exp $
  * Created on Oct 11, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -25,10 +25,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/12 14:52:33 $ by $Author: eiki $
+ *  Last modified: $Date: 2004/10/28 12:03:53 $ by $Author: eiki $
  * 
  * @author <a href="mailto:eiki@idega.com">eiki</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface GolfImportHandler extends IBOSession, ImportFileHandler, UserGroupPlugInBusiness {
 
@@ -60,7 +60,7 @@ public interface GolfImportHandler extends IBOSession, ImportFileHandler, UserGr
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#afterUserCreate
 	 */
-	public void afterUserCreate(User user) throws CreateException, RemoteException;
+	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#beforeGroupRemove
@@ -70,7 +70,7 @@ public interface GolfImportHandler extends IBOSession, ImportFileHandler, UserGr
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#afterGroupCreate
 	 */
-	public void afterGroupCreate(Group group) throws CreateException, RemoteException;
+	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.member.isi.block.importer.business.GolfImportHandlerBean#getPresentationObjectClass

@@ -81,7 +81,7 @@ public interface NationalRegisterBusiness extends IBOService , UserGroupPlugInBu
 	/**
 	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#afterUserCreate
 	 */
-	public void afterUserCreate(User user) throws CreateException, RemoteException;
+	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#beforeGroupRemove
@@ -91,7 +91,7 @@ public interface NationalRegisterBusiness extends IBOService , UserGroupPlugInBu
 	/**
 	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#afterGroupCreate
 	 */
-	public void afterGroupCreate(Group group) throws CreateException, RemoteException;
+	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException;
 
 	/**
 	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getPresentationObjectClass

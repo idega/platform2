@@ -1182,7 +1182,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(com.idega.user.data.User)
 	 */
-	public void afterUserCreate(User user) throws CreateException, RemoteException {
+	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
 	}
 
 	/* (non-Javadoc)
@@ -1194,7 +1194,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(com.idega.user.data.Group)
 	 */
-	public void afterGroupCreate(Group group) throws CreateException, RemoteException {
+	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
 	}
 
 	/* (non-Javadoc)

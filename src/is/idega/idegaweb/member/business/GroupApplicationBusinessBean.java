@@ -379,16 +379,16 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 	    return dob;
 	  }
 	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(Group)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreateOrUpdate(Group)
 	 */
-	public void afterGroupCreate(Group group)
+	public void afterGroupCreateOrUpdate(Group group)
 		throws CreateException, RemoteException {
 	}
 
 	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(User)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreateOrUpdate(User)
 	 */
-	public void afterUserCreate(User user)
+	public void afterUserCreateOrUpdate(User user)
 		throws CreateException, RemoteException {
 	}
 

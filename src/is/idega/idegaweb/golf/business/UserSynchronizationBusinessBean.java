@@ -11,15 +11,17 @@ import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionHome;
 import is.idega.idegaweb.golf.entity.ZipCode;
 import is.idega.idegaweb.golf.entity.ZipCodeHome;
+import is.idega.idegaweb.golf.legacy.business.GolfLegacyBusiness;
 import is.idega.idegaweb.golf.util.GolfConstants;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import com.idega.business.IBOLookup;
+import javax.ejb.RemoveException;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.contact.data.Email;
@@ -27,7 +29,9 @@ import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.Group;
@@ -35,9 +39,11 @@ import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 
 /**
- * @author gimmi
+ * This UserGroupPlugin is used to synchronize the golf data tables with the user system. <br>
+ * Methods in this plugin are called after the LDAPReplicator has replicated a user.
+ * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>,<a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
-public class UserSynchronizationBusinessBean extends IBOServiceBean implements UserSynchronizationBusiness {
+public class UserSynchronizationBusinessBean extends IBOServiceBean implements UserSynchronizationBusiness,UserGroupPlugInBusiness,GolfConstants {
 
 	private static int USERS_PER_CHECK = 10;
 	
@@ -49,11 +55,13 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	private CountryHome cHome;
 	private PhoneHome oldPhoneHome;
 	private UnionHome unionHome;
-	private UnionCorrect unionCorrect = new UnionCorrect();;
+	private UnionCorrect unionCorrect = new UnionCorrect();
 	private UserBusiness userBusiness;
+	private GolfLegacyBusiness golfLegacyBiz;
 	private static HashMap genders = new HashMap();
 	private static HashMap postalToAreaCode = new HashMap();
 	private static HashMap countries = new HashMap();
+	private boolean initDone = false;
 	
 	public UserSynchronizationBusinessBean() {
 		super();
@@ -184,15 +192,19 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	 * @throws IBOLookupException
 	 */
 	private void init() throws IDOLookupException, IBOLookupException {
-		uHome = (UserHome) IDOLookup.getHome(User.class);
-		mHome = (MemberHome) IDOLookup.getHome(Member.class);
-		gHome = (GenderHome) IDOLookup.getHome(Gender.class);
-		oldAddressHome = (AddressHome) IDOLookup.getHome(is.idega.idegaweb.golf.entity.Address.class);
-		zHome = (ZipCodeHome) IDOLookup.getHome(ZipCode.class);
-		cHome = (CountryHome) IDOLookup.getHome(Country.class);
-		oldPhoneHome = (PhoneHome) IDOLookup.getHome(is.idega.idegaweb.golf.entity.Phone.class);
-		unionHome = (UnionHome) IDOLookup.getHome(Union.class);
-		userBusiness = (UserBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), UserBusiness.class);
+		if(!initDone){
+			uHome = (UserHome) IDOLookup.getHome(User.class);
+			mHome = (MemberHome) IDOLookup.getHome(Member.class);
+			gHome = (GenderHome) IDOLookup.getHome(Gender.class);
+			oldAddressHome = (AddressHome) IDOLookup.getHome(is.idega.idegaweb.golf.entity.Address.class);
+			zHome = (ZipCodeHome) IDOLookup.getHome(ZipCode.class);
+			cHome = (CountryHome) IDOLookup.getHome(Country.class);
+			oldPhoneHome = (PhoneHome) IDOLookup.getHome(is.idega.idegaweb.golf.entity.Phone.class);
+			unionHome = (UnionHome) IDOLookup.getHome(Union.class);
+			userBusiness = (UserBusiness) getServiceInstance(UserBusiness.class);
+			golfLegacyBiz = (GolfLegacyBusiness) getServiceInstance(GolfLegacyBusiness.class);
+			initDone = true;
+		}
 	}
 
 	private void synchronizeUser(User user, Member member) throws CreateException, RemoteException {
@@ -217,6 +229,7 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 	}
 	
 	private void synchronizeUnion(User user, Member member) throws RemoteException {
+		
 		Collection coll = userBusiness.getUserGroups(user, new String[]{GolfConstants.GROUP_TYPE_CLUB}, true);
 		if (coll != null) {
 			Group group;
@@ -394,16 +407,145 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		return uHome.findNewestUsers(USERS_PER_CHECK, currentCheck*USERS_PER_CHECK);
 	}
 
-	/*
-	 * IC_USER UNION_MEMBER_INFO
-	 * 
-	 * Spyrja Gumma œt ’ group_type IWME_CLUB
-	 * 
-	 * member union_member_info
-	 * 
-	 * user <- member
-	 * 
-	 * Byrja meÝ user...
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
 	 */
+	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
 
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreateOrUpdate(com.idega.user.data.User)
+	 */
+	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {		
+		init();
+		if (user.getPersonalID() != null) {
+			System.out.print("Synchronizing user : "+user.getPersonalID()+" ("+user.getID()+") ");
+			Member member = getMemberFromUser(user);
+//			try {
+				synchronizeAddresses(user, member);
+				synchronizePhones(user, member);
+				synchronizeUnion(user, member);
+				
+				//unionCorrect.setMainUnion(member, union.getID());
+
+				System.out.println("done.");
+//			}
+//			catch (SQLException e1) {
+//				System.out.println("failed ("+e1.getMessage()+")");
+//			}
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
+	 */
+	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreateOrUpdate(com.idega.user.data.Group)
+	 */
+	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
+		//if the group is a club then search for the union and update it, create if it does not exist
+		Union union = getUnionFromGroup(group);
+		if(union==null){
+			
+			
+		}
+		
+		
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
+	 */
+	public Class getPresentationObjectClass() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateEditor(com.idega.user.data.Group)
+	 */
+	public PresentationObject instanciateEditor(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateViewer(com.idega.user.data.Group)
+	 */
+	public PresentationObject instanciateViewer(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getUserPropertiesTabs(com.idega.user.data.User)
+	 */
+	public List getUserPropertiesTabs(User user) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupPropertiesTabs(com.idega.user.data.Group)
+	 */
+	public List getGroupPropertiesTabs(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getMainToolbarElements()
+	 */
+	public List getMainToolbarElements() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupToolbarElements(com.idega.user.data.Group)
+	 */
+	public List getGroupToolbarElements(Group group) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
+	 */
+	public Collection getListViewerFields() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(java.util.Collection, java.util.Collection, java.util.Collection)
+	 */
+	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators, Collection listViewerFieldValues) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserAssignableFromGroupToGroup(com.idega.user.data.User, com.idega.user.data.Group, com.idega.user.data.Group)
+	 */
+	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserSuitedForGroup(com.idega.user.data.User, com.idega.user.data.Group)
+	 */
+	public String isUserSuitedForGroup(User user, Group targetGroup) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

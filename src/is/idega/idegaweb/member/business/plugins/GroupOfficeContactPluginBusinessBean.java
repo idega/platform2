@@ -25,15 +25,15 @@ import com.idega.user.data.User;
 public class GroupOfficeContactPluginBusinessBean extends IBOServiceBean implements GroupOfficeContactPluginBusiness, UserGroupPlugInBusiness {
 
 	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(com.idega.user.data.Group)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreateOrUpdate(com.idega.user.data.Group)
 	 */
-	public void afterGroupCreate(Group group) throws CreateException, RemoteException {
+	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
 	}
 
 	/**
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(com.idega.user.data.User)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreateOrUpdate(com.idega.user.data.User)
 	 */
-	public void afterUserCreate(User user) throws CreateException, RemoteException {
+	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * $Id: UpdateClubDivisionTemplatePluginBusinessBean.java,v 1.2 2004/09/02 07:54:07 laddi Exp $
+ * $Id: UpdateClubDivisionTemplatePluginBusinessBean.java,v 1.3 2004/10/28 12:02:55 eiki Exp $
  * Created on Sep 1, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/09/02 07:54:07 $ by $Author: laddi $
+ *  Last modified: $Date: 2004/10/28 12:02:55 $ by $Author: eiki $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class UpdateClubDivisionTemplatePluginBusinessBean extends IBOServiceBean implements UpdateClubDivisionTemplatePluginBusiness{
 
@@ -45,7 +45,7 @@ public class UpdateClubDivisionTemplatePluginBusinessBean extends IBOServiceBean
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(com.idega.user.data.User)
 	 */
-	public void afterUserCreate(User user) throws CreateException, RemoteException {
+	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -61,7 +61,7 @@ public class UpdateClubDivisionTemplatePluginBusinessBean extends IBOServiceBean
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(com.idega.user.data.Group)
 	 */
-	public void afterGroupCreate(Group group) throws CreateException, RemoteException {
+	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
 		// TODO Auto-generated method stub
 		
 	}

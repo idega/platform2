@@ -3,8 +3,8 @@ package is.idega.idegaweb.member.business.plugins;
 
 public interface ClubInformationPluginBusiness extends com.idega.business.IBOService,com.idega.user.business.UserGroupPlugInBusiness
 {
- public void afterGroupCreate(com.idega.user.data.Group p0)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void afterUserCreate(com.idega.user.data.User p0)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public void afterGroupCreateOrUpdate(com.idega.user.data.Group p0)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public void afterUserCreateOrUpdate(com.idega.user.data.User p0)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
  public void beforeGroupRemove(com.idega.user.data.Group p0)throws javax.ejb.RemoveException,java.rmi.RemoteException, java.rmi.RemoteException;
  public void beforeUserRemove(com.idega.user.data.User p0)throws javax.ejb.RemoveException,java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean createSpecialConnection(java.lang.String p0,int p1,java.lang.String p2,com.idega.presentation.IWContext p3) throws java.rmi.RemoteException;

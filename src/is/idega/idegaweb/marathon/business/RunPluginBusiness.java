@@ -14,8 +14,8 @@ import com.idega.user.data.User;
 
 
 public interface RunPluginBusiness extends com.idega.business.IBOService, UserGroupPlugInBusiness {
-	public void afterGroupCreate(Group group) throws CreateException, RemoteException;
-	public void afterUserCreate(User user) throws CreateException, RemoteException;
+	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException;
+	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException;
 	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException;
 	public void beforeUserRemove(User user) throws RemoveException, RemoteException;
 	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators,

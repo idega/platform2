@@ -2409,7 +2409,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(com.idega.user.data.User)
 	 */
-	public void afterUserCreate(User user) throws CreateException, RemoteException {
+	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
 		// TODO Auto-generated method stub
 	}
 
@@ -2427,7 +2427,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(com.idega.user.data.Group)
 	 */
-	public void afterGroupCreate(Group group) throws CreateException, RemoteException {
+	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
 		// TODO Auto-generated method stub
 	}
 

@@ -1,5 +1,6 @@
 package is.idega.idegaweb.member.isi.block.importer.business;
 
+import is.idega.idegaweb.golf.util.GolfConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -49,8 +50,7 @@ import com.idega.util.text.TextSoap;
  * @author <a href="mailto:eiki@idega.is">Eirikur Sveinn Hrafnsson </a>
  * @version 1.0
  */
-public class GolfImportHandlerBean extends IBOSessionBean implements ImportFileHandler, GolfImportHandler,
-		UserGroupPlugInBusiness {
+public class GolfImportHandlerBean extends IBOSessionBean implements ImportFileHandler, GolfImportHandler, GolfConstants, UserGroupPlugInBusiness {
 
 	
 private static final String MAIN_CLUB_TYPE = "main";
@@ -58,17 +58,17 @@ private static final String MAIN_CLUB_TYPE = "main";
 
 	private static final int NAME_COLUMN = 1;
 
-	private static final int HANDICAP_COLUMN = 2;
+	//private static final int HANDICAP_COLUMN = 2;
 
-	private static final int CLUB_ABBR_COLUMN = 3;
+	private static final int CLUB_ABBR_COLUMN = 2;
 
-	private static final int STATUS_COLUMN = 4;
+	private static final int STATUS_COLUMN = 3;
+	
+	private static final int MEMBERSHIP_STATUS_COLUMN = 4;
 
-	private static final int MEMBERSHIP_STATUS_COLUMN = 5;
+	private static final int EMAIL_COLUMN = 5;
 
-	private static final int EMAIL_COLUMN = 6;
-
-	private static final int PHONE_COLUMN = 7;
+	private static final int PHONE_COLUMN = 6;
 
 	private static final String NO_VALUE = "NOVALUE";
 
@@ -104,13 +104,6 @@ private static final String MAIN_CLUB_TYPE = "main";
 
 	private User currentUser;
 
-	private static final String META_PREFIX = "golf_";
-	
-	private static final String SUB_CLUBS_META_DATA_KEY = META_PREFIX+"sub_clubs";
-		
-	private static final String MAIN_CLUB_META_DATA_KEY = META_PREFIX+"main_club";
-		
-	private static final String HANDICAP_META_DATA_KEY = META_PREFIX+"handicap";
 
 	public GolfImportHandlerBean() {
 	}
@@ -135,7 +128,7 @@ private static final String MAIN_CLUB_TYPE = "main";
 			//iterate through the records and process them
 			String item;
 			int count = 0;
-			while (!(item = (String) file.getNextRecord()).equals("")) {
+			while ( (item = (String) file.getNextRecord())!=null) {
 				count++;
 				if (!processRecord(item))
 					failedRecords.add(item);
@@ -184,7 +177,7 @@ private static final String MAIN_CLUB_TYPE = "main";
 				PIN = "0"+PIN;
 			}
 			String name = ((String) userProperties.get(NAME_COLUMN)).trim();
-			String handicap = ((String) userProperties.get(HANDICAP_COLUMN)).trim();
+			//String handicap = ((String) userProperties.get(HANDICAP_COLUMN)).trim();
 			String clubAbbr = ((String) userProperties.get(CLUB_ABBR_COLUMN)).trim();
 			String status = ((String) userProperties.get(STATUS_COLUMN)).trim();
 			String membershipStatus = ((String) userProperties.get(MEMBERSHIP_STATUS_COLUMN)).trim();
@@ -212,9 +205,11 @@ private static final String MAIN_CLUB_TYPE = "main";
 						
 						//ONLY TEMP SHOULD NOT CREATE!
 						//user = userBiz.createUserByPersonalIDIfDoesNotExist(name, PIN, null, null);
-						if(!NO_VALUE.equals(handicap)){
-							user.setMetaData(HANDICAP_META_DATA_KEY, handicap);
-						}
+						
+						
+//						if(!NO_VALUE.equals(handicap)){
+//							user.setMetaData(HANDICAP_META_DATA_KEY, handicap);
+//						}
 						//user.setMetaData(META_PREFIX+"status", status);
 						
 						setClubMetaData(user, clubAbbr, membershipStatus);
@@ -393,7 +388,7 @@ private static final String MAIN_CLUB_TYPE = "main";
 	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(com.idega.user.data.User)
 	 */
-	public void afterUserCreate(User user) throws CreateException, RemoteException {
+	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
 	}
 
 	/*
@@ -409,7 +404,7 @@ private static final String MAIN_CLUB_TYPE = "main";
 	 * 
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(com.idega.user.data.Group)
 	 */
-	public void afterGroupCreate(Group group) throws CreateException, RemoteException {
+	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
 	}
 
 	/*

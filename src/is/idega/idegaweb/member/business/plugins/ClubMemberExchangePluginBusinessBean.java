@@ -1,5 +1,5 @@
 /*
- * $Id: ClubMemberExchangePluginBusinessBean.java,v 1.3 2004/09/07 20:01:16 thomas Exp $
+ * $Id: ClubMemberExchangePluginBusinessBean.java,v 1.4 2004/10/28 12:02:55 eiki Exp $
  * Created on Aug 30, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/09/07 20:01:16 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/28 12:02:55 $ by $Author: eiki $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ClubMemberExchangePluginBusinessBean extends IBOServiceBean implements ClubMemberExchangePluginBusiness {
 
@@ -42,7 +42,7 @@ public class ClubMemberExchangePluginBusinessBean extends IBOServiceBean impleme
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(com.idega.user.data.User)
 	 */
-	public void afterUserCreate(User user) throws CreateException, RemoteException {
+	public void afterUserCreateOrUpdate(User user) throws CreateException, RemoteException {
 		// TODO Auto-generated method stub
 		
 	}
@@ -58,7 +58,7 @@ public class ClubMemberExchangePluginBusinessBean extends IBOServiceBean impleme
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(com.idega.user.data.Group)
 	 */
-	public void afterGroupCreate(Group group) throws CreateException, RemoteException {
+	public void afterGroupCreateOrUpdate(Group group) throws CreateException, RemoteException {
 		// TODO Auto-generated method stub
 		
 	}
