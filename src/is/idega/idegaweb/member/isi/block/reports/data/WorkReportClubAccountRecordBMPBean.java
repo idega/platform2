@@ -36,6 +36,8 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 		addAttribute(COLUMN_NAME_WORK_REPORT_GROUP,"The league id / club",true,true,String.class);
 		addAttribute(COLUMN_NAME_AMOUNT,"Amount",true,true,Float.class);	
 		addAttribute(COLUMN_NAME_ACCOUNT_KEY_ID, "Account key",true,true,Integer.class,"many-to-one",WorkReportAccountKey.class);
+		
+		this.addManyToOneRelationship(COLUMN_NAME_WORK_REPORT_GROUP,WorkReportGroup.class);		
 	}
 	public String getEntityName() {
 		return ENTITY_NAME;
