@@ -38,8 +38,8 @@ public class TestPosts extends InvoiceBatchStarter{
 	
 
 	
-	protected PresentationObject getShoolDropDown(IWContext iwc){
-		DropdownMenu dropDown = getDropdownMenu(PAR_PROVIDER, getSchools(iwc), "getSchoolName");
+	protected PresentationObject getShoolDropDown(){
+		DropdownMenu dropDown = getDropdownMenu(PAR_PROVIDER, getSchools(getIWContext()), "getSchoolName");
 		dropDown.setToSubmit(false);
 		if (_currentSchool != null){
 			dropDown.setSelectedElement((String) _currentSchool.getPrimaryKey());

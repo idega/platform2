@@ -43,9 +43,10 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	DateInput dateInput;
 	DateInput readDateInput;
 	private String link=null;
+	private IWContext _iwc;
 
 	public void init(IWContext iwc){
-	
+		_iwc = iwc;
 		String schoolCategory=null;
 		OperationalFieldsMenu opFields = new OperationalFieldsMenu();
 		try {
@@ -62,7 +63,7 @@ public class InvoiceBatchStarter extends AccountingBlock{
 		Form form = new Form();
 		add(form);
 
-		form.add(getShoolDropDown(iwc));
+		form.add(getShoolDropDown());
 
 		try {
 			ExportBusiness exportBusiness = getBusiness().getExportBusiness();
@@ -189,8 +190,12 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	/*
 	 * The IWContext parameter is used in the TestPosts subclass
 	 */
-	protected PresentationObject getShoolDropDown(IWContext iwc){
+	protected PresentationObject getShoolDropDown(){
 		return new Text("");
+	}
+	
+	protected IWContext getIWContext() {
+		return _iwc;
 	}
 
 }
