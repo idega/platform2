@@ -67,9 +67,11 @@ public class WorkReportYearSelectionBox extends SelectionBox implements InputHan
 			int beginningYear = 2001;//Because we have no older data, could also be an application setting
 			
 			values = new String[currentYear-beginningYear+1];
+			int count = 0;
 			
 			for (int i = beginningYear; i <= currentYear; i++) {
-				values[i] = Integer.toString(i);
+				values[count] = Integer.toString(i);
+				count++;
 			}
 		}
 		
