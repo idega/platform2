@@ -60,6 +60,7 @@ public class WorkReportYearSelectionBox extends SelectionBox implements InputHan
 	}
 		
 	public Object getResultingObject(String[] values, IWContext iwc) throws Exception{
+		Collection result = new ArrayList();
 		if(values == null || values.length==0) {
 			IWTimestamp stamp = IWTimestamp.RightNow();
 	
@@ -75,7 +76,11 @@ public class WorkReportYearSelectionBox extends SelectionBox implements InputHan
 			}
 		}
 		
-		return values;
+		for(int i=0; i<values.length; i++) {
+			result.add(values[i]);
+		}
+		
+		return result;
 	}
 	
 	public String getDisplayNameOfValue(Object value, IWContext iwc) {
